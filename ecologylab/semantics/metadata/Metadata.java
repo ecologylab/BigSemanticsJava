@@ -23,7 +23,7 @@ abstract public class Metadata extends ElementState
 {
 	MetaMetadata 			metaMetadata;
 	
-	HashMapArrayList<Class<? extends Metadata>, MetaMetadata> metaMetadataMap;
+	HashMapArrayList<String, MetaMetadata> metaMetadataMap = new HashMapArrayList<String, MetaMetadata>();
 	
 	TermVector 				termVector;
 	
@@ -84,4 +84,156 @@ abstract public class Metadata extends ElementState
 			termVector.add(wf);
 		}
 	}
+	
+	public MetaMetadata getMetaMetadata()
+	{
+		return metaMetadata;
+	}
+	
+	public MetaMetadata getMetaMetadata(String metadataName)
+	{
+		MetaMetadata mmData;
+		
+		if(metadataName == this.getClassName())
+			mmData = metaMetadata;
+		else
+		{
+			mmData = metaMetadataMap.get(metadataName);
+		}
+		
+		return mmData;
+	}
+	
+	
+	
+	/**
+	 * Modifies interest by delta. This function modifies the interest
+	 * in the composite TermVector, the constituent individual TermVectors,
+	 * and the interest in actual fields themselves (for the semantic web/DLs) 
+	 * 
+	 * @param delta		The amount to modify interest
+	 */
+	public void incrementInterest(short delta)
+	{
+		// first modify the composite TermVector
+		termVector.incrementParticipantInterest(delta);
+		
+		// then the individual TermVectors and fields
+		Iterator it = iterator();
+		while (it.hasNext())
+		{
+			//TODO Sashikanth: Iteration will be something like T extends Metadata
+			// TermVectors
+			Metadata mData = (Metadata) it.next();
+			mData.termVector().incrementParticipantInterest(delta);
+			
+			// Lastly the actual fields
+			mData.incrementParticipantInterest(delta);
+		}
+		
+	}
+	
+	/**
+	 * Get an Iterator for iterating the HashMap.
+	 * @return	The HashMap Iterator.
+	 */
+	public Iterator iterator()
+	{
+		//TODO Sashikanth: Figure out how to iterate through the fields 
+		//within this metadata object and return the appropriate Iterator
+
+		return null;
+	}
+	
+	
+	/**
+	 * Initializes the data termvector structure. This is not added to the individual
+	 * fields (so that it can be changed) but is added to the composite term vector.
+	 * If the data termvector has already been initialized, this operation will replace
+	 * the old one and rebuild the composite term vector.
+	 * 
+	 * @param initialTermVector The initial set of terms
+	 */
+	public void initializeTermVector(TermVector initialTermVector)
+	{
+		//System.out.println("Initializing TermVector. size is " + this.size());
+		
+		if (this.size() > 0)
+		{
+//			dataTermVector = initialTermVector;
+			
+			//initialize the composite TermVector
+			rebuildCompositeTermVector();
+		}
+//		if there is no cFMetadata then add to the composite TermVector
+		else
+		{
+			termVector = initialTermVector;
+		}
+		
+		// change from vikram's semantic branch
+		//unscrapedTermVector.addAll(termVector);
+	}
+
+	private int size() {
+		// TODO Sashikanth: Use Reflection to get the number of fields 
+		//of the instantiated metadata object
+		return 0;
+	}
+	
+	/**
+	 * Rebuilds the composite TermVector from the individual TermVectors
+	 */
+	public void rebuildCompositeTermVector()
+	{
+		//if there are no metadatafields retain the composite termvector
+		//because it might have meaningful entries
+		if (this.size() > 0)
+		{
+			if (termVector != null)
+				termVector.clear();
+			else
+				termVector	= new TermVector();
+//			termVector.clear();
+			
+			Iterator it = iterator();
+			while (it.hasNext())
+			{
+				//TODO Sashikanth: Iteration will be something like T extends Metadata
+				Metadata mData = (Metadata) it.next();
+				if (mData.termVector != null)
+				{
+					TermVector fieldTermVector = mData.termVector();
+					termVector.combine(fieldTermVector);
+				}
+			}
+		}
+		
+		//add any actual data terms to the composite term vector
+//		if (dataTermVector != null)
+//			termVector.combine(dataTermVector);
+		
+	}
+	
+	
+	/**
+	 * The weight of the composite TermVector.
+	 * @return	The composite TermVector's weight.
+	 * @see ecologylab.model.text.TermVector#getWeight()
+	 */
+	public float getWeight()
+	{
+		return termVector.getWeight();
+	}
+	
+	/**
+	 * The lnWeight
+	 * @return	The lnWeight() of the composite TermVector.
+	 * @see ecologylab.model.text.TermVector#lnWeight()
+	 */
+	public float lnWeight()
+	{
+		return termVector.lnWeight();
+	}
+	
 }
