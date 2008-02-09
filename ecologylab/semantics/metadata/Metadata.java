@@ -1,5 +1,6 @@
 package ecologylab.semantics.metadata;
 
+import java.lang.reflect.Field;
 import java.util.Iterator;
 
 import ecologylab.generic.HashMapArrayList;
@@ -8,6 +9,7 @@ import ecologylab.model.text.TermVector;
 import ecologylab.model.text.WordForms;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.xml.ElementState;
+import ecologylab.xml.ElementState.xml_leaf;
 
 /**
  * This is the new metadata class that is the base class for the 
@@ -23,15 +25,10 @@ abstract public class Metadata extends ElementState
 {
 	MetaMetadata 			metaMetadata;
 	
-	HashMapArrayList<String, MetaMetadata> metaMetadataMap = new HashMapArrayList<String, MetaMetadata>();
+	TermVector 				compositeTermVector;
 	
-	TermVector 				termVector;
-	
-	/**
-    * Stores a reference to the <code>Metadata</code> that refers to this Metadata.
-    */
-	Metadata				metadataReferer;
-	
+	final static int		INITIAL_SIZE		= 5;
+
 	/**
 	 * Represents interest in this field as a whole
 	 * (Example: author = Ben Shneiderman), in addition to interest
@@ -41,11 +38,13 @@ abstract public class Metadata extends ElementState
 	 * in the context of the semantic web / digital libraries.
 	 */  
 	ParticipantInterest		participantInterest = new ParticipantInterest();
-	
+
+	@xml_leaf
+	String context;
 	
 	public TermVector termVector()
 	{
-		return termVector;
+		return compositeTermVector;
 	}
    
    /**
@@ -57,19 +56,37 @@ abstract public class Metadata extends ElementState
 		participantInterest.increment(delta);
 	}
 	
-	public Metadata metadataReferer()
-	{
-		return this.metadataReferer;
-	}
-	
 	public void recycle()
 	{
 		//termVector.clear();
-		termVector 				= null;
-		metadataReferer 		= null;
+		compositeTermVector 				= null;
 		participantInterest		= null;
 	}
 	
+	/**
+    * Append the term to the field "value" as well as the term vector.
+    * 
+    * @param wf The term to add.
+    */
+	public void addTerm(WordForms wf)
+	{
+		compositeTermVector.add(wf);
+		   
+		//value = null; //force value to be updated later
+		   
+		//if (termVector.size() > 0)
+		   
+		//this concat is way cheaper than rebuilding the termvector toString().
+		//value			= value.toString() + ' ' + wf.string();
+		   
+		//this.value = termVector.toString();
+		//this.value = termVector.toString(termVector.size(), ' ');
+		//else
+		//	   this.value = "";
+		
+		compositeTermVector.combine(compositeTermVector, false);
+	}
+	   
 	/**
 	* Append terms to the field "value" as well as the term vector.
 	* 
@@ -81,30 +98,9 @@ abstract public class Metadata extends ElementState
 		while (it.hasNext())
 		{ 
 			WordForms wf = (WordForms) it.next();
-			termVector.add(wf);
+			compositeTermVector.add(wf);
 		}
 	}
-	
-	public MetaMetadata getMetaMetadata()
-	{
-		return metaMetadata;
-	}
-	
-	public MetaMetadata getMetaMetadata(String metadataName)
-	{
-		MetaMetadata mmData;
-		
-		if(metadataName == this.getClassName())
-			mmData = metaMetadata;
-		else
-		{
-			mmData = metaMetadataMap.get(metadataName);
-		}
-		
-		return mmData;
-	}
-	
-	
 	
 	/**
 	 * Modifies interest by delta. This function modifies the interest
@@ -115,21 +111,25 @@ abstract public class Metadata extends ElementState
 	 */
 	public void incrementInterest(short delta)
 	{
-		// first modify the composite TermVector
-		termVector.incrementParticipantInterest(delta);
-		
-		// then the individual TermVectors and fields
-		Iterator it = iterator();
-		while (it.hasNext())
+		if(compositeTermVector != null && !compositeTermVector.isEmpty())
 		{
-			//TODO Sashikanth: Iteration will be something like T extends Metadata
-			// TermVectors
-			Metadata mData = (Metadata) it.next();
-			mData.termVector().incrementParticipantInterest(delta);
+			// first modify the composite TermVector
+			compositeTermVector.incrementParticipantInterest(delta);
 			
-			// Lastly the actual fields
-			mData.incrementParticipantInterest(delta);
+			//TODO Sashikanth: iterate on child fields
+			Iterator it = iterator();
+			while (it.hasNext())
+			{
+				
+				// TermVectors
+				Metadata mData = (Metadata) it.next();
+				mData.termVector().incrementParticipantInterest(delta);
+				
+				// Lastly the actual fields
+				mData.incrementParticipantInterest(delta);
+			}
 		}
+		
 		
 	}
 	
@@ -168,19 +168,28 @@ abstract public class Metadata extends ElementState
 //		if there is no cFMetadata then add to the composite TermVector
 		else
 		{
-			termVector = initialTermVector;
+			compositeTermVector = initialTermVector;
 		}
 		
 		// change from vikram's semantic branch
 		//unscrapedTermVector.addAll(termVector);
 	}
 
-	private int size() {
+	public int size() 
+	{
 		// TODO Sashikanth: Use Reflection to get the number of fields 
 		//of the instantiated metadata object
 		return 0;
 	}
 	
+	/**
+	 * Determine if the Metadata has any entries.
+	 * @return	True if there are Metadata entries.
+	 */
+	public boolean hasCompositeTermVector()
+	{
+		return (compositeTermVector != null);
+	}
 	/**
 	 * Rebuilds the composite TermVector from the individual TermVectors
 	 */
@@ -190,21 +199,22 @@ abstract public class Metadata extends ElementState
 		//because it might have meaningful entries
 		if (this.size() > 0)
 		{
-			if (termVector != null)
-				termVector.clear();
+			if (compositeTermVector != null)
+				compositeTermVector.clear();
 			else
-				termVector	= new TermVector();
+				compositeTermVector	= new TermVector();
 //			termVector.clear();
 			
+			//TODO Sashikanth: Iterate on Child Fields
 			Iterator it = iterator();
 			while (it.hasNext())
 			{
-				//TODO Sashikanth: Iteration will be something like T extends Metadata
+				
 				Metadata mData = (Metadata) it.next();
-				if (mData.termVector != null)
+				if (mData.compositeTermVector != null)
 				{
 					TermVector fieldTermVector = mData.termVector();
-					termVector.combine(fieldTermVector);
+					compositeTermVector.combine(fieldTermVector);
 				}
 			}
 		}
@@ -223,7 +233,7 @@ abstract public class Metadata extends ElementState
 	 */
 	public float getWeight()
 	{
-		return termVector.getWeight();
+		return compositeTermVector == null ? 1 : compositeTermVector.getWeight();
 	}
 	
 	/**
@@ -233,7 +243,27 @@ abstract public class Metadata extends ElementState
 	 */
 	public float lnWeight()
 	{
-		return termVector.lnWeight();
+		return compositeTermVector == null ? 0 : compositeTermVector.lnWeight();
 	}
 	
+	public Field getFields()
+	{
+		
+		return null;
+	}
+	
+	public MetaMetadata childMetaMetadata(String name)
+	{
+		return metaMetadata == null ? null : metaMetadata.lookupChild(name);
+	}
+
+	public String getContext()
+	{
+		return context;
+	}
+
+	public void setContext(String context)
+	{
+		this.context = context;
+	}
 }

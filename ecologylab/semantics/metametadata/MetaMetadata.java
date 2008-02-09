@@ -11,23 +11,23 @@ public class MetaMetadata extends ElementState implements Mappable<String>
 
 	@xml_attribute private ScalarType metadataType;									
 	
-	@xml_map("meta_metadata_field") private HashMapArrayList<String, MetaMetadata>	set;
+	@xml_map("meta_metadata_field") private HashMapArrayList<String, MetaMetadata>	childMetaMetadata;
 
 	public MetaMetadata(String name, ScalarType metadataType,HashMapArrayList<String, MetaMetadata> set)
 	{
 		this.name = name;
 		this.metadataType = metadataType;
-		this.set = set;
+		this.childMetaMetadata = set;
 	}
 	
 	public int size()
 	{
-		return set == null ? 0 : set.size();
+		return childMetaMetadata == null ? 0 : childMetaMetadata.size();
 	}
 
 	public HashMapArrayList<String, MetaMetadata> getSet()
 	{
-		return set;
+		return childMetaMetadata;
 	}
 
 	public String getName()
@@ -45,4 +45,8 @@ public class MetaMetadata extends ElementState implements Mappable<String>
 		return metadataType;
 	}
 
+	public MetaMetadata lookupChild(String name)
+	{
+		return childMetaMetadata.get(name);
+	}
 }
