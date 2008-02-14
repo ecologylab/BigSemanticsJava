@@ -1,5 +1,10 @@
 package ecologylab.semantics.library;
 
+/**
+ * 
+ * @author damaraju
+ *
+ */
 public class Nsdl extends Search
 {
 	@xml_attribute String		Subject;

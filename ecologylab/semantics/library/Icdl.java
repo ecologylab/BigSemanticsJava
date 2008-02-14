@@ -1,5 +1,10 @@
 package ecologylab.semantics.library;
 
+/**
+ * 
+ * @author damaraju
+ *
+ */
 public class Icdl extends Search
 {
 	@xml_attribute String		languages;

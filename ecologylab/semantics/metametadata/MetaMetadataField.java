@@ -5,6 +5,11 @@ import ecologylab.xml.ElementState;
 import ecologylab.xml.types.element.Mappable;
 import ecologylab.xml.types.scalar.ScalarType;
 
+/**
+ * 
+ * @author damaraju
+ *
+ */
 public class MetaMetadataField extends ElementState implements Mappable<String>
 {
 	@xml_attribute private String	name;

@@ -1,5 +1,10 @@
 package ecologylab.semantics.library;
 
+/**
+ * 
+ * @author damaraju
+ *
+ */
 public class Rss extends Document
 {
 	@xml_attribute 	String		subject;

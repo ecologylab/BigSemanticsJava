@@ -4,6 +4,11 @@ import ecologylab.model.TextChunkBase;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.metadata.Metadata;
 
+/**
+ * 
+ * @author damaraju
+ *
+ */
 public class Document extends Metadata
 {
 	@xml_attribute	String 			title;

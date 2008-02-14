@@ -4,6 +4,11 @@ import ecologylab.model.TextChunkBase;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.xml.ElementState.xml_nested;
 
+/**
+ * 
+ * @author damaraju
+ *
+ */
 public class Text extends Metadata
 {
 
