@@ -1,14 +1,17 @@
 package ecologylab.semantics.metadata;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import ecologylab.generic.HashMapArrayList;
+import ecologylab.generic.ReflectionTools;
 import ecologylab.model.ParticipantInterest;
 import ecologylab.model.text.TermVector;
 import ecologylab.model.text.WordForms;
-import ecologylab.semantics.metametadata.MetaMetadata;
+import ecologylab.semantics.metametadata.MetaMetadataField;
 import ecologylab.xml.ElementState;
+import ecologylab.xml.Optimizations;
 import ecologylab.xml.ElementState.xml_leaf;
 
 /**
@@ -23,7 +26,7 @@ import ecologylab.xml.ElementState.xml_leaf;
  */
 abstract public class Metadata extends ElementState
 {
-	MetaMetadata 			metaMetadata;
+	MetaMetadataField 			metaMetadata;
 	
 	TermVector 				compositeTermVector;
 	
@@ -41,6 +44,12 @@ abstract public class Metadata extends ElementState
 
 	@xml_leaf
 	String context;
+	
+//	public Metadata(boolean createTermVector)
+//	{
+//		if(createTermVector)
+//			compositeTermVector = new TermVector();
+//	}
 	
 	public TermVector termVector()
 	{
@@ -60,7 +69,7 @@ abstract public class Metadata extends ElementState
 	{
 		//termVector.clear();
 		compositeTermVector 				= null;
-		participantInterest		= null;
+		participantInterest					= null;
 	}
 	
 	/**
@@ -205,6 +214,10 @@ abstract public class Metadata extends ElementState
 				compositeTermVector	= new TermVector();
 //			termVector.clear();
 			
+			
+//			Optimizations rootOptimizations = Optimizations.lookupRootOptimizations(this);
+//			ArrayList<Field> fields = rootOptimizations.getFields();
+			
 			//TODO Sashikanth: Iterate on Child Fields
 			Iterator it = iterator();
 			while (it.hasNext())
@@ -252,7 +265,7 @@ abstract public class Metadata extends ElementState
 		return null;
 	}
 	
-	public MetaMetadata childMetaMetadata(String name)
+	public MetaMetadataField childMetaMetadata(String name)
 	{
 		return metaMetadata == null ? null : metaMetadata.lookupChild(name);
 	}
