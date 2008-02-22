@@ -46,6 +46,15 @@ abstract public class Metadata extends ElementState
 	@xml_leaf
 	String context;
 	
+	public Metadata()
+	{
+		
+	}
+	
+	public Metadata(MetaMetadata metaMetadata)
+	{
+		this.metaMetadata		= metaMetadata;
+	}
 //	public Metadata(boolean createTermVector)
 //	{
 //		if(createTermVector)
