@@ -38,10 +38,10 @@ public class MetaMetadataField extends ElementState implements Mappable<String>
 	public static void main(String args[]) throws XMLTranslationException
 	{
 		final TranslationSpace TS = MetaMetadataTranslationSpace.get();
-		String patternXMLFilepath = "exampleMetaMetadata2.xml";
+		String patternXMLFilepath = "config/examplePatternFlickr.xml";
 
 //		ElementState.setUseDOMForTranslateTo(true);
-		MetaMetadata test = (MetaMetadata) ElementState.translateFromXML(patternXMLFilepath, TS);
+		MetaMetadataRepository test = (MetaMetadataRepository) ElementState.translateFromXML(patternXMLFilepath, TS);
 		println("Stop");
 		
 		test.writePrettyXML(System.out);

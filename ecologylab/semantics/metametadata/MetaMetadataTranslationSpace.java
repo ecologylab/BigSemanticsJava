@@ -12,7 +12,8 @@ public class MetaMetadataTranslationSpace extends Debug
 	protected static final Class TRANSLATIONS[] = 
 	{
 		MetaMetadata.class,
-		MetaMetadataField.class
+		MetaMetadataField.class,
+		MetaMetadataRepository.class,
 	};
 		
 	public static TranslationSpace get()
