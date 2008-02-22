@@ -2,6 +2,7 @@ package ecologylab.semantics.library;
 
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.metadata.Metadata;
+import ecologylab.semantics.metametadata.MetaMetadata;
 
 /**
  * 
@@ -12,7 +13,15 @@ public class Image extends Metadata
 {
 	@xml_attribute	String caption;
 	@xml_attribute	ParsedURL location;
-
+	
+	public Image()
+	{
+		
+	}
+	public Image(MetaMetadata metaMetadata)
+	{
+		super(metaMetadata);
+	}
 	public String getCaption()
 	{
 		return caption;
