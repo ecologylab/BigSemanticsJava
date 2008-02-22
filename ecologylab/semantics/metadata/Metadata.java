@@ -9,6 +9,7 @@ import ecologylab.generic.ReflectionTools;
 import ecologylab.model.ParticipantInterest;
 import ecologylab.model.text.TermVector;
 import ecologylab.model.text.WordForms;
+import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataField;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.Optimizations;
@@ -26,7 +27,7 @@ import ecologylab.xml.ElementState.xml_leaf;
  */
 abstract public class Metadata extends ElementState
 {
-	MetaMetadataField 			metaMetadata;
+	MetaMetadata 			metaMetadata;
 	
 	TermVector 				compositeTermVector;
 	
@@ -278,5 +279,15 @@ abstract public class Metadata extends ElementState
 	public void setContext(String context)
 	{
 		this.context = context;
+	}
+
+	public MetaMetadata getMetaMetadata()
+	{
+		return metaMetadata;
+	}
+
+	public void setMetaMetadata(MetaMetadata metaMetadata)
+	{
+		this.metaMetadata = metaMetadata;
 	}
 }

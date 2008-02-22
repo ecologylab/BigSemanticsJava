@@ -1,0 +1,6 @@
+<meta_metadata name="FlickrSearch" url_base="http://www.flickr.com/">
+	<meta_metadata_field name='Title' scalar_type='String'/>
+	<meta_metadata_field name='Caption' scalar_type="String"/>
+	<meta_metadata_field name='Tags' scalar_type="String"/>
+	<meta_metadata_field name='Author' scalar_type="String"/>
+</meta_metadata>
