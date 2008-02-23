@@ -10,5 +10,6 @@
 		<meta_metadata_field name='caption' scalar_type="String"/>
 		<meta_metadata_field name='tags' scalar_type="String"/>
 		<meta_metadata_field name='author' scalar_type="String"/>
+		<meta_metadata_field name='raga' scalar_type="String"/>
 	</meta_metadata>
 </meta_metadata_repository>

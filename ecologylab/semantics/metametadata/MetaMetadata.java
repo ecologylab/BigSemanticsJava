@@ -16,8 +16,6 @@ import ecologylab.xml.xml_inherit;
  */
 public class MetaMetadata extends MetaMetadataField
 {
-	
-	@xml_attribute 			String 		name;
 	@xml_attribute private 	String 		urlBase;
 	
 	TranslationSpace 					translationSpace;
@@ -30,14 +28,6 @@ public class MetaMetadata extends MetaMetadataField
 	public boolean isSupported(ParsedURL purl)
 	{
 		return purl.toString().startsWith(urlBase);
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	public String getUrlBase() {
@@ -74,7 +64,7 @@ public class MetaMetadata extends MetaMetadataField
 	 * 
 	 * @return	An instance of the Metadata subclass that corresponds to this, or null, if there is none.
 	 */
-	public Metadata newMetadata()
+	public Metadata constructMetadata()
 	{
 		Metadata result	= null;
 		Class<? extends Metadata> metadataClass	= getMetadataClass();

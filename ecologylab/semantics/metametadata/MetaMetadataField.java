@@ -16,7 +16,7 @@ import ecologylab.xml.types.scalar.ScalarType;
 @xml_inherit
 public class MetaMetadataField extends ElementState implements Mappable<String>
 {
-	@xml_attribute private String	name;
+	@xml_attribute protected String	name;
 
 	//@xml_attribute @xml_tag("scalar_type") private ScalarType metadataType;
 	@xml_attribute private ScalarType scalarType;

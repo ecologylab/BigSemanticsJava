@@ -3,15 +3,8 @@
  */
 package ecologylab.semantics.metametadata;
 
-import java.util.HashMap;
-
 import ecologylab.generic.HashMapArrayList;
-import ecologylab.semantics.library.DefaultMetadataTranslationSpace;
-import ecologylab.semantics.metadata.Metadata;
 import ecologylab.xml.ElementState;
-import ecologylab.xml.TranslationSpace;
-import ecologylab.xml.XMLTranslationException;
-import ecologylab.xml.types.element.HashMapState;
 
 /**
  * @author damaraju
@@ -21,6 +14,7 @@ import ecologylab.xml.types.element.HashMapState;
 public class MetaMetadataRepository extends ElementState
 {
 	
+	//@xml_collection("meta_metadata") private ArrayList<MetaMetadata> stuff; 
 	@xml_map("meta_metadata") private HashMapArrayList<String, MetaMetadata> repository; 
 
 	/**
