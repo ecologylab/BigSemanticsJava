@@ -12,6 +12,7 @@ import ecologylab.model.text.WordForms;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataField;
 import ecologylab.xml.ElementState;
+import ecologylab.xml.FieldAccessor;
 import ecologylab.xml.Optimizations;
 import ecologylab.xml.ElementState.xml_leaf;
 
@@ -225,9 +226,14 @@ abstract public class Metadata extends ElementState
 //			termVector.clear();
 			
 			
-//			Optimizations rootOptimizations = Optimizations.lookupRootOptimizations(this);
-//			ArrayList<Field> fields = rootOptimizations.getFields();
+			Optimizations rootOptimizations = Optimizations.lookupRootOptimizations(this);
+			HashMapArrayList<String, FieldAccessor> fieldAccessors = rootOptimizations.getFieldAccessors();
 			
+			Iterator<FieldAccessor> fieldIterator = fieldAccessors.iterator();
+			while(fieldIterator.hasNext())
+			{
+				FieldAccessor fieldAccessor = fieldIterator.next();
+			}
 			//TODO Sashikanth: Iterate on Child Fields
 			Iterator it = iterator();
 			while (it.hasNext())
@@ -236,8 +242,8 @@ abstract public class Metadata extends ElementState
 				Metadata mData = (Metadata) it.next();
 				if (mData.compositeTermVector != null)
 				{
-					TermVector fieldTermVector = mData.termVector();
-					compositeTermVector.combine(fieldTermVector);
+					
+//					compositeTermVector.add
 				}
 			}
 		}
