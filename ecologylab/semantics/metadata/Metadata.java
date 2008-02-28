@@ -233,18 +233,8 @@ abstract public class Metadata extends ElementState
 			while(fieldIterator.hasNext())
 			{
 				FieldAccessor fieldAccessor = fieldIterator.next();
-			}
-			//TODO Sashikanth: Iterate on Child Fields
-			Iterator it = iterator();
-			while (it.hasNext())
-			{
-				
-				Metadata mData = (Metadata) it.next();
-				if (mData.compositeTermVector != null)
-				{
-					
-//					compositeTermVector.add
-				}
+				String valueString = fieldAccessor.getValueString(this);
+				compositeTermVector.addTerms(valueString, false);
 			}
 		}
 		
