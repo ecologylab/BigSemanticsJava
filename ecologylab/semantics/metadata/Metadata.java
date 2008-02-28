@@ -157,12 +157,17 @@ abstract public class Metadata extends ElementState
 	 * Get an Iterator for iterating the HashMap.
 	 * @return	The HashMap Iterator.
 	 */
+	//Metadata Transition --bharat
 	public Iterator iterator()
 	{
 		//TODO Sashikanth: Figure out how to iterate through the fields 
 		//within this metadata object and return the appropriate Iterator
-
-		return null;
+		Optimizations rootOptimizations = Optimizations.lookupRootOptimizations(this);
+		HashMapArrayList<String, FieldAccessor> fieldAccessors = rootOptimizations.getFieldAccessors();
+		
+		Iterator<FieldAccessor> fieldIterator = fieldAccessors.iterator();
+		return fieldIterator;
+//		return null;
 	}
 	
 	
@@ -195,11 +200,15 @@ abstract public class Metadata extends ElementState
 		//unscrapedTermVector.addAll(termVector);
 	}
 
+	//Metadata Transition --bharat
 	public int size() 
 	{
 		// TODO Sashikanth: Use Reflection to get the number of fields 
 		//of the instantiated metadata object
-		return 0;
+		Optimizations rootOptimizations = Optimizations.lookupRootOptimizations(this);
+		HashMapArrayList<String, FieldAccessor> fieldAccessors = rootOptimizations.getFieldAccessors();
+		return fieldAccessors.size();
+//		return 0;
 	}
 	
 	/**
@@ -234,7 +243,8 @@ abstract public class Metadata extends ElementState
 			{
 				FieldAccessor fieldAccessor = fieldIterator.next();
 				String valueString = fieldAccessor.getValueString(this);
-				compositeTermVector.addTerms(valueString, false);
+				compositeTermVector.add(valueString);
+//				compositeTermVector.addTerms(valueString, false);
 			}
 		}
 		
