@@ -3,12 +3,14 @@ package ecologylab.semantics.library;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metametadata.MetaMetadata;
+import ecologylab.xml.xml_inherit;
 
 /**
  * 
  * @author damaraju
  *
  */
+@xml_inherit
 public class Image extends Metadata
 {
 	@xml_attribute	String caption;

@@ -7,16 +7,16 @@ package ecologylab.semantics.library;
  */
 public class Nsdl extends Search
 {
-	@xml_attribute String		Subject;
+	@xml_attribute String		subject;
 
 	public String getSubject()
 	{
-		return Subject;
+		return subject;
 	}
 
 	public void setSubject(String subject)
 	{
-		Subject = subject;
+		subject = subject;
 	}
 	
 }

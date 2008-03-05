@@ -1,10 +1,13 @@
 package ecologylab.semantics.library;
 
+import ecologylab.xml.xml_inherit;
+
 /**
  * 
  * @author damaraju
  *
  */
+@xml_inherit
 public class Flickr extends Image
 {
 	@xml_attribute String	tags;

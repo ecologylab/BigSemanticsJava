@@ -1,5 +1,6 @@
 package ecologylab.semantics.library;
 
+import ecologylab.semantics.metadata.Metadata;
 import ecologylab.xml.xml_inherit;
 
 /**
@@ -22,5 +23,4 @@ public class Dlms extends Search
 	{
 		this.subject = subject;
 	}
-	
 }
