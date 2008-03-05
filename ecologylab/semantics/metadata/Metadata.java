@@ -30,7 +30,7 @@ abstract public class Metadata extends ElementState
 {
 	MetaMetadata 			metaMetadata;
 	
-	TermVector 				compositeTermVector;
+	public TermVector 				compositeTermVector;
 	
 	final static int		INITIAL_SIZE		= 5;
 
@@ -44,6 +44,13 @@ abstract public class Metadata extends ElementState
 	 */  
 	ParticipantInterest		participantInterest = new ParticipantInterest();
 
+	/**
+	 * Set to true if this cFMetadata object was restored from a saved collage.
+	 * This is necessary to prevent cFMetadata from being added again and hence
+	 * overwritting edited cFMetadata when the elements are recrawled on a restore.
+	 */
+	private boolean loadedFromPreviousSession 	= false;
+	
 	@xml_leaf
 	String context;
 	
@@ -131,24 +138,30 @@ abstract public class Metadata extends ElementState
 	 */
 	public void incrementInterest(short delta)
 	{
+		//Metadata Transition --bharat
 		if(compositeTermVector != null && !compositeTermVector.isEmpty())
 		{
-			// first modify the composite TermVector
 			compositeTermVector.incrementParticipantInterest(delta);
-			
-			//TODO Sashikanth: iterate on child fields
-			Iterator it = iterator();
-			while (it.hasNext())
-			{
-				
-				// TermVectors
-				Metadata mData = (Metadata) it.next();
-				mData.termVector().incrementParticipantInterest(delta);
-				
-				// Lastly the actual fields
-				mData.incrementParticipantInterest(delta);
-			}
+			incrementParticipantInterest(delta);
 		}
+//		if(compositeTermVector != null && !compositeTermVector.isEmpty())
+//		{
+//			// first modify the composite TermVector
+//			compositeTermVector.incrementParticipantInterest(delta);
+//			
+//			//TODO Sashikanth: iterate on child fields
+//			Iterator it = iterator();
+//			while (it.hasNext())
+//			{
+//				
+//				// TermVectors
+//				Metadata mData = (Metadata) it.next();
+//				mData.termVector().incrementParticipantInterest(delta);
+//				
+//				// Lastly the actual fields
+//				mData.incrementParticipantInterest(delta);
+//			}
+//		}
 		
 		
 	}
@@ -183,7 +196,7 @@ abstract public class Metadata extends ElementState
 	{
 		//System.out.println("Initializing TermVector. size is " + this.size());
 		
-		if (this.size() > 0)
+		if (compositeTermVector != null)
 		{
 //			dataTermVector = initialTermVector;
 			
@@ -200,15 +213,53 @@ abstract public class Metadata extends ElementState
 		//unscrapedTermVector.addAll(termVector);
 	}
 
+	public boolean isFilled(String attributeName)
+	{
+		Optimizations rootOptimizations = Optimizations.lookupRootOptimizations(this);
+		HashMapArrayList<String, FieldAccessor> fieldAccessors = rootOptimizations.getFieldAccessors();
+
+		Iterator<FieldAccessor> fieldIterator = fieldAccessors.iterator();
+		while(fieldIterator.hasNext())
+		{
+			FieldAccessor fieldAccessor = fieldIterator.next();
+			// getFieldName() or getTagName()??? attributeName is from TypeTagNames.java
+			if(attributeName.equals(fieldAccessor.getFieldName()))
+			{
+				String valueString = fieldAccessor.getValueString(this);
+				if(valueString != null)
+				{
+					return true;
+				}
+				else 
+				{
+					return false;
+				}
+			}
+		}
+		return false;
+	}
+	
 	//Metadata Transition --bharat
 	public int size() 
 	{
 		// TODO Sashikanth: Use Reflection to get the number of fields 
 		//of the instantiated metadata object
+		int size = 0;
 		Optimizations rootOptimizations = Optimizations.lookupRootOptimizations(this);
 		HashMapArrayList<String, FieldAccessor> fieldAccessors = rootOptimizations.getFieldAccessors();
-		return fieldAccessors.size();
-//		return 0;
+
+		Iterator<FieldAccessor> fieldIterator = fieldAccessors.iterator();
+		while(fieldIterator.hasNext())
+		{
+			FieldAccessor fieldAccessor = fieldIterator.next();
+			String valueString = fieldAccessor.getValueString(this);
+			if(valueString != null)
+			{
+				size++;
+			}
+		}
+		return size;
+
 	}
 	
 	/**
@@ -226,28 +277,29 @@ abstract public class Metadata extends ElementState
 	{
 		//if there are no metadatafields retain the composite termvector
 		//because it might have meaningful entries
-		if (this.size() > 0)
+
+		if (compositeTermVector != null)
+			compositeTermVector.clear();
+		else
+			compositeTermVector	= new TermVector();
+//		termVector.clear();
+
+
+		Optimizations rootOptimizations = Optimizations.lookupRootOptimizations(this);
+		HashMapArrayList<String, FieldAccessor> fieldAccessors = rootOptimizations.getFieldAccessors();
+
+		Iterator<FieldAccessor> fieldIterator = fieldAccessors.iterator();
+		while(fieldIterator.hasNext())
 		{
-			if (compositeTermVector != null)
-				compositeTermVector.clear();
-			else
-				compositeTermVector	= new TermVector();
-//			termVector.clear();
-			
-			
-			Optimizations rootOptimizations = Optimizations.lookupRootOptimizations(this);
-			HashMapArrayList<String, FieldAccessor> fieldAccessors = rootOptimizations.getFieldAccessors();
-			
-			Iterator<FieldAccessor> fieldIterator = fieldAccessors.iterator();
-			while(fieldIterator.hasNext())
+			FieldAccessor fieldAccessor = fieldIterator.next();
+			String valueString = fieldAccessor.getValueString(this);
+			if(valueString != null)
 			{
-				FieldAccessor fieldAccessor = fieldIterator.next();
-				String valueString = fieldAccessor.getValueString(this);
-				compositeTermVector.add(valueString);
-//				compositeTermVector.addTerms(valueString, false);
+				compositeTermVector.addTerms(valueString, false);
 			}
 		}
-		
+
+
 		//add any actual data terms to the composite term vector
 //		if (dataTermVector != null)
 //			termVector.combine(dataTermVector);
@@ -273,6 +325,19 @@ abstract public class Metadata extends ElementState
 	public float lnWeight()
 	{
 		return compositeTermVector == null ? 0 : compositeTermVector.lnWeight();
+	}
+	/**
+	 * Setting the field to the specified value.
+	 * @param fieldName
+	 * @param value
+	 */
+	//Metadata Transition -- TODO -- May be through exception if there is no field accessor.
+	public void set(String fieldName, String value)
+	{
+		Optimizations rootOptimizations = Optimizations.lookupRootOptimizations(this);
+		HashMapArrayList<String, FieldAccessor> fieldAccessors = rootOptimizations.getFieldAccessors();
+		FieldAccessor fieldAccessor = fieldAccessors.get(fieldName);
+		fieldAccessor.set(this, value);
 	}
 	
 	public Field getFields()
@@ -305,4 +370,16 @@ abstract public class Metadata extends ElementState
 	{
 		this.metaMetadata = metaMetadata;
 	}
+	
+	//Metadata Transition --bharat
+	public void initializeMetadataCompTermVector()
+	{
+		compositeTermVector = new TermVector();
+	}
+	
+	public boolean loadedFromPreviousSession()
+	{
+		return loadedFromPreviousSession;
+	}
+	
 }
