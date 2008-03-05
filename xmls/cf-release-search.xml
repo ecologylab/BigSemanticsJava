@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<composition version="3.0">
+  <preferences>
+    <screen height="695" size="2" width="634"/>
+  </preferences>
+  <seed_set>
+    <search engine="flickr" query="sunset"/>
+    <search engine="yahoo_image" query="red sunset"/>
+  </seed_set>
+  <site_set>
+    <site domain="yahoo.com" font_index="1" stroke_hue="0.3611111"/>
+    <site domain="flickr.com" stroke_hue="0.16666667"/>
+  </site_set>
+  <traversable_set>
+    <traversable url_string="www.flickr.com/photos"/>
+    <traversable url_string="www.flickr.com/services/feeds"/>
+    <traversable url_string="www.maximumhits.com/marty"/>
+    <traversable url_string="www.bayridge.org/open/photo_gallery/pages"/>
+    <traversable url_string="www.allisonvillenursery.com"/>
+    <traversable url_string="api.search.yahoo.com/ImageSearchService/V1/imageSearch"/>
+    <traversable url_string="www.ehrnet.com/photos/hillside/pages"/>
+    <traversable url_string="www.ehrnet.com/photos/clarks/pages"/>
+    <traversable url_string="www.3dvalley.com/gallery/v/Markus-Gann"/>
+    <traversable url_string="flooringbroker.net/SPECIAL_SALE_LINKS"/>
+    <traversable url_string="www.fernhousestudio.com/art"/>
+    <traversable url_string="www.neilvandyke.org/weblog/2002/04"/>
+    <traversable url_string="www.studio18.co.uk/shop"/>
+    <traversable url_string="www.patriciacrossley.com/Photos/Tofinfo"/>
+    <traversable url_string="pickenstreefarm.com/store/large/qfwj/Shade_Tree"/>
+    <traversable url_string="www.travellerspoint.com/photos/stream/size/L/photoID/11468/orderByID"/>
+    <traversable url_string="www.trees-online.com/types_of_trees"/>
+    <traversable url_string="www.zoenewman.com/gallery"/>
+  </traversable_set>
+  <untraversable_set>
+    <untraversable>null</untraversable>
+  </untraversable_set>
+  <reject_domain_set/>
+  <term_set/>
+  <container_set>
+    <container bias="1.0" document_type="YahooImageSearch" generation="1" purl="http://api.search.yahoo.com/ImageSearchService/V1/imageSearch?appid=yahoosearchwebrss&amp;results=40&amp;start=1&amp;query=red+sunset">
+      <participant/>
+      <metadata>
+        <metadata_field name="Query" value="red sunset"/>
+      </metadata>
+    </container>
+    <container bias="1.0" document_type="FlickrSearch" generation="1" purl="http://www.flickr.com/services/feeds/photos_public.gne?format=rss_200&amp;tags=sunset">
+      <participant/>
+      <metadata>
+        <metadata_field name="Query" value="sunset"/>
+        <metadata_field name="Title" value="Photos from everyone tagged sunset"/>
+      </metadata>
+    </container>
+  </container_set>
+  <surrogate_set>
+    <surrogate containerURL="http://api.search.yahoo.com/ImageSearchService/V1/imageSearch?appid=yahoosearchwebrss&amp;results=40&amp;start=1&amp;query=red+sunset" history_num="1">
+      <image_element alpha_radius="32" bias="1.0" has_transparency="true" href="http://pickenstreefarm.com/store/large/qfwj/Shade_Tree/Acer_rubrum_Franksred_Red_Sunset_Red_Maple.html" min_alpha="786432" purl="http://pickenstreefarm.com/store/image/qfwj/Shade_Tree/Acer_rubrum_Franksred_Red_Sunset_Red_Maple.jpg">
+        <participant/>
+        <metadata>
+          <metadata_field name="Caption" value="Acer rubrum 'Franksred' Red Sunset Red Maple"/>
+        </metadata>
+      </image_element>
+      <visual>
+        <extent height="72" width="90" x="540" y="627"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://api.search.yahoo.com/ImageSearchService/V1/imageSearch?appid=yahoosearchwebrss&amp;results=40&amp;start=1&amp;query=red+sunset" history_num="5">
+      <image_element alpha_radius="10" bias="1.0" has_transparency="true" href="http://www.bayridge.org/open/photo_gallery/pages/red_sunset.htm" min_alpha="5963776" purl="http://www.bayridge.org/open/photo_gallery/images/red%20sunset%20best_jpg.jpg">
+        <participant/>
+        <metadata>
+          <metadata_field name="Caption" value="red sunset best"/>
+        </metadata>
+      </image_element>
+      <visual>
+        <extent height="39" width="60" x="570" y="462"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://api.search.yahoo.com/ImageSearchService/V1/imageSearch?appid=yahoosearchwebrss&amp;results=40&amp;start=1&amp;query=red+sunset" history_num="6">
+      <image_element alpha_radius="20" bias="1.0" has_transparency="true" href="http://www.maximumhits.com/marty/sunsets.shtml" min_alpha="393216" purl="http://www.maximumhits.com/marty/family/red-sunset.jpg">
+        <participant/>
+        <metadata>
+          <metadata_field name="Caption" value="red-sunset"/>
+        </metadata>
+      </image_element>
+      <visual>
+        <extent height="45" width="60" x="450" y="462"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/services/feeds/photos_public.gne?format=rss_200&amp;tags=sunset" history_num="4">
+      <image_element alpha_radius="17" bias="1.0" has_transparency="true" href="http://www.flickr.com/photos/kernowseb/2311065110/" min_alpha="2424832" purl="http://farm3.static.flickr.com/2025/2311065110_df81f5ec3f_m.jpg">
+        <participant/>
+        <metadata>
+          <metadata_field name="Caption" value="2008-03-04 Carn Brea Sunset 157"/>
+          <metadata_field name="Tags" value="sunset cornwall carnbrea"/>
+        </metadata>
+      </image_element>
+      <visual>
+        <extent height="40" width="60" x="420" y="528"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://api.search.yahoo.com/ImageSearchService/V1/imageSearch?appid=yahoosearchwebrss&amp;results=40&amp;start=1&amp;query=red+sunset" history_num="7">
+      <image_element bias="1.0" href="http://www.studio18.co.uk/shop/index.php?main_page=popup_image&amp;amp;pID=633" purl="http://www.studio18.co.uk/shop/images/fedden/Red_Sunset.jpg">
+        <participant/>
+        <metadata>
+          <metadata_field name="Caption" value="Red_Sunset"/>
+        </metadata>
+      </image_element>
+      <visual>
+        <extent height="48" width="60" x="510" y="429"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://api.search.yahoo.com/ImageSearchService/V1/imageSearch?appid=yahoosearchwebrss&amp;results=40&amp;start=1&amp;query=red+sunset" history_num="10">
+      <image_element bias="1.0" href="http://www.ehrnet.com/photos/hillside/pages/1_HILLSIDE_Acer_Red_Sunset.htm" purl="http://www.ehrnet.com/photos/hillside/images/1_HILLSIDE_Acer_Red_Sunset.jpg">
+        <participant/>
+        <metadata>
+          <metadata_field name="Caption" value="1_HILLSIDE_Acer_Red_Sunset"/>
+        </metadata>
+      </image_element>
+      <visual>
+        <extent x="420" y="495"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/services/feeds/photos_public.gne?format=rss_200&amp;tags=sunset" history_num="9">
+      <image_element alpha_radius="38" bias="1.0" has_transparency="true" href="http://www.flickr.com/photos/kernowseb/2310256821/" min_alpha="6488064" purl="http://farm3.static.flickr.com/2030/2310256821_0235a508b5_m.jpg">
+        <participant/>
+        <metadata>
+          <metadata_field name="Caption" value="2008-03-04 Carn Brea Sunset 015"/>
+          <metadata_field name="Tags" value="sunset cornwall carnbrea"/>
+        </metadata>
+      </image_element>
+      <visual>
+        <extent height="120" width="180" x="360" y="561"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/services/feeds/photos_public.gne?format=rss_200&amp;tags=sunset" history_num="11">
+      <image_element alpha_radius="47" bias="1.0" has_transparency="true" href="http://www.flickr.com/photos/kernowseb/2310258859/" min_alpha="2359296" purl="http://farm3.static.flickr.com/2248/2310258859_c44e4f4be2_m.jpg">
+        <participant/>
+        <metadata>
+          <metadata_field name="Caption" value="2008-03-04 Carn Brea Sunset 099"/>
+          <metadata_field name="Tags" value="sunset cornwall carnbrea"/>
+        </metadata>
+      </image_element>
+      <visual>
+        <extent height="120" width="180" x="450" y="396"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://api.search.yahoo.com/ImageSearchService/V1/imageSearch?appid=yahoosearchwebrss&amp;results=40&amp;start=1&amp;query=red+sunset" history_num="12">
+      <image_element alpha_radius="20" bias="1.0" has_transparency="true" href="http://www.3dvalley.com/gallery/v/Markus-Gann/tirgrin_sunset_red.jpg.html" min_alpha="2490368" purl="http://www.3dvalley.com/gallery/d/16892-2/tirgrin_sunset_red.jpg">
+        <participant/>
+        <metadata>
+          <metadata_field name="Caption" value="1024x768"/>
+        </metadata>
+      </image_element>
+      <visual>
+        <extent height="45" width="60" x="450" y="330"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/services/feeds/photos_public.gne?format=rss_200&amp;tags=sunset" history_num="13">
+      <image_element alpha_radius="33" bias="1.0" has_transparency="true" href="http://www.flickr.com/photos/kernowseb/2310259053/" min_alpha="3801088" purl="http://farm3.static.flickr.com/2098/2310259053_01abbd11e7_m.jpg">
+        <participant/>
+        <metadata>
+          <metadata_field name="Caption" value="2008-03-04 Carn Brea Sunset 109"/>
+          <metadata_field name="Tags" value="sunset cornwall carnbrea"/>
+        </metadata>
+      </image_element>
+      <visual>
+        <extent height="120" width="180" x="450" y="264"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/services/feeds/photos_public.gne?format=rss_200&amp;tags=sunset" history_num="14">
+      <image_element alpha_radius="28" bias="1.0" has_transparency="true" href="http://www.flickr.com/photos/14996946@N02/2311070588/" min_alpha="2686976" purl="http://farm3.static.flickr.com/2030/2311070588_21f469dc35_m.jpg">
+        <participant/>
+        <metadata>
+          <metadata_field name="Tags" value="trees sunset sky"/>
+        </metadata>
+      </image_element>
+      <visual>
+        <extent height="80" width="60" x="300" y="528"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/services/feeds/photos_public.gne?format=rss_200&amp;tags=sunset" history_num="15">
+      <image_element alpha_radius="34" bias="1.0" has_transparency="true" href="http://www.flickr.com/photos/kernowseb/2310258545/" min_alpha="3407872" purl="http://farm4.static.flickr.com/3289/2310258545_cec4a97c3e_m.jpg">
+        <participant/>
+        <metadata>
+          <metadata_field name="Caption" value="2008-03-04 Carn Brea Sunset 065"/>
+          <metadata_field name="Tags" value="sunset cornwall carnbrea"/>
+        </metadata>
+      </image_element>
+      <visual>
+        <extent height="40" width="60" x="360" y="528"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/services/feeds/photos_public.gne?format=rss_200&amp;tags=sunset" history_num="3">
+      <image_element bias="1.0" href="http://www.flickr.com/photos/kernowseb/2311063236/" purl="http://farm4.static.flickr.com/3044/2311063236_7a3c68108d_m.jpg">
+        <participant/>
+        <metadata>
+          <metadata_field name="Caption" value="2008-03-04 Carn Brea Sunset 038"/>
+          <metadata_field name="Tags" value="sunset cornwall carnbrea"/>
+        </metadata>
+      </image_element>
+      <visual>
+        <extent height="135" width="90" x="260" y="264"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/services/feeds/photos_public.gne?format=rss_200&amp;tags=sunset" history_num="8">
+      <image_element alpha_radius="46" bias="1.0" has_transparency="true" href="http://www.flickr.com/photos/kernowseb/2311064672/" min_alpha="3866624" purl="http://farm3.static.flickr.com/2137/2311064672_0dcca06887_m.jpg">
+        <participant/>
+        <metadata>
+          <metadata_field name="Caption" value="2008-03-04 Carn Brea Sunset 130"/>
+          <metadata_field name="Tags" value="sunset cornwall carnbrea"/>
+        </metadata>
+      </image_element>
+      <visual>
+        <extent height="120" width="180" x="203" y="364"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://api.search.yahoo.com/ImageSearchService/V1/imageSearch?appid=yahoosearchwebrss&amp;results=40&amp;start=1&amp;query=red+sunset" history_num="2">
+      <image_element alpha_radius="32" bias="1.0" has_transparency="true" href="http://www.fernhousestudio.com/art/red_flower_sunset.htm" min_alpha="327680" purl="http://www.fernhousestudio.com/images/product_shots/art/red_flower_sunset.jpg">
+        <participant/>
+        <metadata>
+          <metadata_field name="Caption" value="Red Flower Sunset (one of a kind original) Acrylic and Oil Pastel on Bristol Board (a heavy, rigid paper)"/>
+        </metadata>
+      </image_element>
+      <visual>
+        <extent height="120" width="120" x="307" y="330"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/services/feeds/photos_public.gne?format=rss_200&amp;tags=sunset" history_num="16">
+      <image_element alpha_radius="48" bias="1.0" has_transparency="true" href="http://www.flickr.com/photos/23546520@N05/2310252245/" min_alpha="589824" purl="http://farm3.static.flickr.com/2333/2310252245_3912d8557a_m.jpg">
+        <participant/>
+        <metadata>
+          <metadata_field name="Caption" value="Abend am Ziegelteich "/>
+          <metadata_field name="Tags" value="sunset austria abend sonnenuntergang abendstimmung 18135 d40"/>
+        </metadata>
+      </image_element>
+      <visual>
+        <extent height="102" width="150" x="480" y="528"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://api.search.yahoo.com/ImageSearchService/V1/imageSearch?appid=yahoosearchwebrss&amp;results=40&amp;start=1&amp;query=red+sunset" history_num="17">
+      <image_element alpha_radius="13" bias="1.0" has_transparency="true" href="http://www.trees-online.com/types_of_trees/red_sunset_red_maple.shtml" min_alpha="4194304" purl="http://www.trees-online.com/images/red_sunset_red_maple.jpg">
+        <participant/>
+        <metadata>
+          <metadata_field name="Caption" value="Red Sunset Red Maple picture"/>
+        </metadata>
+      </image_element>
+      <visual>
+        <extent height="83" width="60" x="390" y="495"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://api.search.yahoo.com/ImageSearchService/V1/imageSearch?appid=yahoosearchwebrss&amp;results=40&amp;start=1&amp;query=red+sunset" history_num="18">
+      <image_element alpha_radius="22" bias="1.0" has_transparency="true" href="http://www.zoenewman.com/gallery/landscape07.html" min_alpha="6094848" purl="http://www.zoenewman.com/images/gallery/landscapes/lge_red%20sunset.jpg">
+        <participant/>
+        <metadata>
+          <metadata_field name="Caption" value="lge_red sunset"/>
+        </metadata>
+      </image_element>
+      <visual>
+        <extent height="61" width="60" x="206" y="231"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/services/feeds/photos_public.gne?format=rss_200&amp;tags=sunset" history_num="19">
+      <image_element alpha_radius="32" bias="1.0" has_transparency="true" href="http://www.flickr.com/photos/kernowseb/2310257859/" min_alpha="3473408" purl="http://farm4.static.flickr.com/3074/2310257859_803bd56a95_m.jpg">
+        <participant/>
+        <metadata>
+          <metadata_field name="Caption" value="2008-03-04 Carn Brea Sunset 036"/>
+          <metadata_field name="Tags" value="sunset cornwall carnbrea"/>
+        </metadata>
+      </image_element>
+      <visual>
+        <extent height="80" width="120" x="360" y="495"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://api.search.yahoo.com/ImageSearchService/V1/imageSearch?appid=yahoosearchwebrss&amp;results=40&amp;start=1&amp;query=red+sunset" history_num="20">
+      <image_element bias="1.0" href="http://www.ehrnet.com/photos/clarks/pages/1_CLARKS_Acer_Red_Sunset.htm" purl="http://www.ehrnet.com/photos/clarks/images/1_CLARKS_Acer_Red_Sunset.jpg">
+        <participant/>
+        <metadata>
+          <metadata_field name="Caption" value="1_CLARKS_Acer_Red_Sunset"/>
+        </metadata>
+      </image_element>
+      <visual>
+        <extent x="240" y="528"/>
+      </visual>
+    </surrogate>
+  </surrogate_set>
+</composition>
