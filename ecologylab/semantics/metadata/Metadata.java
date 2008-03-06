@@ -320,12 +320,23 @@ abstract public class Metadata extends ElementState
 		return compositeTermVector == null ? 0 : compositeTermVector.lnWeight();
 	}
 	/**
-	 * Setting the field to the specified value.
+	 * Setting the field to the specified value and rebuilds the composteTermVector.
 	 * @param fieldName
 	 * @param value
 	 */
 	//Metadata Transition -- TODO -- May throw exception if there is no field accessor.
 	public void set(String fieldName, String value)
+	{
+		HashMapArrayList<String, FieldAccessor> fieldAccessors = Optimizations.getFieldAccessors(this.getClass());
+		FieldAccessor fieldAccessor = fieldAccessors.get(fieldName);
+		rebuildCompositeTermVector();
+	}
+	/**
+	 * Sets the field to the specified value and wont rebuild composteTermVector
+	 * @param fieldName
+	 * @param value
+	 */
+	public void lwSet(String fieldName, String value)
 	{
 		HashMapArrayList<String, FieldAccessor> fieldAccessors = Optimizations.getFieldAccessors(this.getClass());
 		FieldAccessor fieldAccessor = fieldAccessors.get(fieldName);
