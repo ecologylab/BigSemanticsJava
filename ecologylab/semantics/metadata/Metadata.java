@@ -167,16 +167,16 @@ abstract public class Metadata extends ElementState
 	}
 	
 	/**
-	 * Get an Iterator for iterating the HashMap.
+	 * This is going to return a Iterator of <code>FieldAccessor</code>
+	 * 
 	 * @return	The HashMap Iterator.
 	 */
 	//Metadata Transition --bharat
-	public Iterator iterator()
+	public Iterator<FieldAccessor> fieldIterator()
 	{
 		//TODO Sashikanth: Figure out how to iterate through the fields 
 		//within this metadata object and return the appropriate Iterator
-		Optimizations rootOptimizations = Optimizations.lookupRootOptimizations(this);
-		HashMapArrayList<String, FieldAccessor> fieldAccessors = rootOptimizations.getFieldAccessors();
+		HashMapArrayList<String, FieldAccessor> fieldAccessors = Optimizations.getFieldAccessors(this.getClass());
 		
 		Iterator<FieldAccessor> fieldIterator = fieldAccessors.iterator();
 		return fieldIterator;
@@ -215,10 +215,7 @@ abstract public class Metadata extends ElementState
 
 	public boolean isFilled(String attributeName)
 	{
-		Optimizations rootOptimizations = Optimizations.lookupRootOptimizations(this);
-		HashMapArrayList<String, FieldAccessor> fieldAccessors = rootOptimizations.getFieldAccessors();
-
-		Iterator<FieldAccessor> fieldIterator = fieldAccessors.iterator();
+		Iterator<FieldAccessor> fieldIterator = fieldIterator();
 		while(fieldIterator.hasNext())
 		{
 			FieldAccessor fieldAccessor = fieldIterator.next();
@@ -245,10 +242,10 @@ abstract public class Metadata extends ElementState
 		// TODO Sashikanth: Use Reflection to get the number of fields 
 		//of the instantiated metadata object
 		int size = 0;
-		Optimizations rootOptimizations = Optimizations.lookupRootOptimizations(this);
-		HashMapArrayList<String, FieldAccessor> fieldAccessors = rootOptimizations.getFieldAccessors();
+		
+		
 
-		Iterator<FieldAccessor> fieldIterator = fieldAccessors.iterator();
+		Iterator<FieldAccessor> fieldIterator = fieldIterator();
 		while(fieldIterator.hasNext())
 		{
 			FieldAccessor fieldAccessor = fieldIterator.next();
@@ -284,11 +281,7 @@ abstract public class Metadata extends ElementState
 			compositeTermVector	= new TermVector();
 //		termVector.clear();
 
-
-		Optimizations rootOptimizations = Optimizations.lookupRootOptimizations(this);
-		HashMapArrayList<String, FieldAccessor> fieldAccessors = rootOptimizations.getFieldAccessors();
-
-		Iterator<FieldAccessor> fieldIterator = fieldAccessors.iterator();
+		Iterator<FieldAccessor> fieldIterator = fieldIterator();
 		while(fieldIterator.hasNext())
 		{
 			FieldAccessor fieldAccessor = fieldIterator.next();
@@ -331,11 +324,10 @@ abstract public class Metadata extends ElementState
 	 * @param fieldName
 	 * @param value
 	 */
-	//Metadata Transition -- TODO -- May be through exception if there is no field accessor.
+	//Metadata Transition -- TODO -- May throw exception if there is no field accessor.
 	public void set(String fieldName, String value)
 	{
-		Optimizations rootOptimizations = Optimizations.lookupRootOptimizations(this);
-		HashMapArrayList<String, FieldAccessor> fieldAccessors = rootOptimizations.getFieldAccessors();
+		HashMapArrayList<String, FieldAccessor> fieldAccessors = Optimizations.getFieldAccessors(this.getClass());
 		FieldAccessor fieldAccessor = fieldAccessors.get(fieldName);
 		fieldAccessor.set(this, value);
 	}
