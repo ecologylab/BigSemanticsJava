@@ -17,5 +17,11 @@ public class Rss extends Document
 	public void setSubject(String subject)
 	{
 		this.subject = subject;
+		rebuildCompositeTermVector();
+	}
+	
+	public void setLwSubject(String subject)
+	{
+		this.subject = subject;
 	}
 }

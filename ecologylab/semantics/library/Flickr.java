@@ -20,12 +20,22 @@ public class Flickr extends Image
 	public void setTags(String tags)
 	{
 		this.tags = tags;
+		rebuildCompositeTermVector();
 	}
 	public String getAuthor()
 	{
 		return author;
 	}
 	public void setAuthor(String author)
+	{
+		this.author = author;
+		rebuildCompositeTermVector();
+	}
+	public void setLwTags(String tags)
+	{
+		this.tags = tags;
+	}
+	public void setLwAuthor(String author)
 	{
 		this.author = author;
 	}

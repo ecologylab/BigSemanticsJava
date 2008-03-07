@@ -37,9 +37,21 @@ public class Image extends Metadata
 	public void setCaption(String caption)
 	{
 		this.caption = caption;
+		rebuildCompositeTermVector();
 	}
 
 	public void setLocation(ParsedURL location)
+	{
+		this.location = location;
+		rebuildCompositeTermVector();
+	}
+	
+	public void setLwCaption(String caption)
+	{
+		this.caption = caption;
+	}
+
+	public void setLwLocation(ParsedURL location)
 	{
 		this.location = location;
 	}

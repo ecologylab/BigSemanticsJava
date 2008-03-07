@@ -21,6 +21,7 @@ public class Search extends Document
 	public void setQuery(String query)
 	{
 		this.query = query;
+		rebuildCompositeTermVector();
 	}
 	public String getGist()
 	{
@@ -28,7 +29,15 @@ public class Search extends Document
 	}
 	public void setGist(String gist)
 	{
-		this.gist = gist;
+		this.gist = gist;	
+		rebuildCompositeTermVector();
 	}
-	
+	public void setLwQuery(String query)
+	{
+		this.query = query;
+	}
+	public void setLwGist(String gist)
+	{
+		this.gist = gist;	
+	}
 }

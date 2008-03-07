@@ -47,14 +47,32 @@ public class Document extends Metadata
 	public void setTitle(String title)
 	{
 		this.title = title;
+		rebuildCompositeTermVector();
 	}
 
 	public void setDescription(String description)
 	{
 		this.description = description;
+		rebuildCompositeTermVector();
 	}
 
 	public void setLocation(ParsedURL location)
+	{
+		this.location = location;
+		rebuildCompositeTermVector();
+	}
+	
+	public void setLwTitle(String title)
+	{
+		this.title = title;
+	}
+
+	public void setLwDescription(String description)
+	{
+		this.description = description;
+	}
+
+	public void setLwLocation(ParsedURL location)
 	{
 		this.location = location;
 	}

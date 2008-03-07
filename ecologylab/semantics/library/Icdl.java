@@ -17,6 +17,12 @@ public class Icdl extends Search
 	public void setLanguages(String languages)
 	{
 		this.languages = languages;
+		rebuildCompositeTermVector();
+	}
+	
+	public void setLwLanguages(String languages)
+	{
+		this.languages = languages;
 	}
 	
 	

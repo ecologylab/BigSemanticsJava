@@ -22,5 +22,11 @@ public class Text extends Metadata
 	public void setText(TextChunkBase text)
 	{
 		this.text = text;
+		rebuildCompositeTermVector();
+	}
+	
+	public void setLwText(TextChunkBase text)
+	{
+		this.text = text;
 	}
 }
