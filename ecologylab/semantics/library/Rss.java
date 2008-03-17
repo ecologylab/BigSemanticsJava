@@ -20,7 +20,7 @@ public class Rss extends Document
 		rebuildCompositeTermVector();
 	}
 	
-	public void setLwSubject(String subject)
+	public void lwSetSubject(String subject)
 	{
 		this.subject = subject;
 	}

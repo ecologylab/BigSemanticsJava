@@ -20,4 +20,6 @@ public interface TypeTagNames
 	
 	public static final String	NSDL_TAG		= "nsdl";
 	
+	public static final String 	PDF_TAG			= "pdf";
+	
 }

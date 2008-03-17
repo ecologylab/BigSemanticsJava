@@ -20,7 +20,7 @@ public class Icdl extends Search
 		rebuildCompositeTermVector();
 	}
 	
-	public void setLwLanguages(String languages)
+	public void lwSetLanguages(String languages)
 	{
 		this.languages = languages;
 	}

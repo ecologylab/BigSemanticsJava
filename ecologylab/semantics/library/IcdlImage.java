@@ -23,7 +23,7 @@ public class IcdlImage extends Image
 		this.languages = languages;
 	}
 	
-	public void setLwLanguages(String languages)
+	public void lwSetLanguages(String languages)
 	{
 		this.languages = languages;
 	}

@@ -324,11 +324,13 @@ abstract public class Metadata extends ElementState
 	 * @param fieldName
 	 * @param value
 	 */
-	//Metadata Transition -- TODO -- May throw exception if there is no field accessor.
+	//Metadata TransitionTODO -- May throw exception if there is no field accessor.
 	public void set(String fieldName, String value)
 	{
+		//Metadata TransitionTODO --Must have similar changes as lwSet
 		HashMapArrayList<String, FieldAccessor> fieldAccessors = Optimizations.getFieldAccessors(this.getClass());
 		FieldAccessor fieldAccessor = fieldAccessors.get(fieldName);
+		fieldAccessor.set(this, value);
 		rebuildCompositeTermVector();
 	}
 	/**
@@ -336,11 +338,24 @@ abstract public class Metadata extends ElementState
 	 * @param fieldName
 	 * @param value
 	 */
+	//Metadata Transition -- TODO -- May throw exception if there is no field accessor.
 	public void lwSet(String fieldName, String value)
 	{
+		//In PDFTypeMultiAndBox.java this method is called with "Author"
+		fieldName = fieldName.toLowerCase();
 		HashMapArrayList<String, FieldAccessor> fieldAccessors = Optimizations.getFieldAccessors(this.getClass());
 		FieldAccessor fieldAccessor = fieldAccessors.get(fieldName);
-		fieldAccessor.set(this, value);
+//		fieldAccessor.set(this, value);
+		if(fieldAccessor != null)
+		{
+			fieldAccessor.set(this, value);
+		}
+		else 
+		{
+			System.out.println("No field Accessor");
+			//fieldAccessor.set(this, value);
+		}
+			
 	}
 	
 	public Field getFields()

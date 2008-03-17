@@ -20,7 +20,7 @@ public class Nsdl extends Search
 		rebuildCompositeTermVector();
 	}
 	
-	public void setLwSubject(String subject)
+	public void lwSetSubject(String subject)
 	{
 		subject = subject;
 	}

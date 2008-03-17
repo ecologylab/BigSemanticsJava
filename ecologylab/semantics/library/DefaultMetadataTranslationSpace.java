@@ -23,11 +23,13 @@ public class DefaultMetadataTranslationSpace extends Debug
 		Document.class,
 		Flickr.class,
 		Icdl.class,
+		IcdlImage.class,
 		Image.class,
 		Nsdl.class,
 		Rss.class,
 		Search.class,
-		Text.class
+		Text.class,
+		Pdf.class
 	};
 
 	public static TranslationSpace get()

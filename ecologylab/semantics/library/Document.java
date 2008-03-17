@@ -5,6 +5,7 @@ import ecologylab.net.ParsedURL;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.xml.xml_inherit;
+import ecologylab.xml.ElementState.xml_attribute;
 
 /**
  * 
@@ -18,6 +19,13 @@ public class Document extends Metadata
 	@xml_attribute	String 			title;
 	@xml_attribute	String 			description;
 	@xml_attribute	ParsedURL 		location;
+	//Metadata TransitionTODO -- In PDFTypeMultiAndBox the following are used...shall i create a new class or shall i keep them here??
+	@xml_attribute 	String			author; 	
+	@xml_attribute  String			summary;
+	@xml_attribute 	String			keywords;
+	@xml_attribute	String 			subject;
+	@xml_attribute	String			trapped;
+	
 	
 	public Document()
 	{
@@ -62,17 +70,17 @@ public class Document extends Metadata
 		rebuildCompositeTermVector();
 	}
 	
-	public void setLwTitle(String title)
+	public void lwSetTitle(String title)
 	{
 		this.title = title;
 	}
 
-	public void setLwDescription(String description)
+	public void lwSetDescription(String description)
 	{
 		this.description = description;
 	}
 
-	public void setLwLocation(ParsedURL location)
+	public void lwSetLocation(ParsedURL location)
 	{
 		this.location = location;
 	}

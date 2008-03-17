@@ -31,11 +31,11 @@ public class Flickr extends Image
 		this.author = author;
 		rebuildCompositeTermVector();
 	}
-	public void setLwTags(String tags)
+	public void lwSetTags(String tags)
 	{
 		this.tags = tags;
 	}
-	public void setLwAuthor(String author)
+	public void lwSetAuthor(String author)
 	{
 		this.author = author;
 	}

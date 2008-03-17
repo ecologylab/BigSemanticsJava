@@ -25,7 +25,7 @@ public class Dlms extends Search
 		rebuildCompositeTermVector();
 	}
 	
-	public void setLwSubject(String subject)
+	public void lwSetSubject(String subject)
 	{
 		this.subject = subject;
 	}

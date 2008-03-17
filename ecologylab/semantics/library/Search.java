@@ -32,11 +32,11 @@ public class Search extends Document
 		this.gist = gist;	
 		rebuildCompositeTermVector();
 	}
-	public void setLwQuery(String query)
+	public void lwSetQuery(String query)
 	{
 		this.query = query;
 	}
-	public void setLwGist(String gist)
+	public void lwSetGist(String gist)
 	{
 		this.gist = gist;	
 	}

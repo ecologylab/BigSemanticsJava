@@ -46,12 +46,12 @@ public class Image extends Metadata
 		rebuildCompositeTermVector();
 	}
 	
-	public void setLwCaption(String caption)
+	public void lwSetCaption(String caption)
 	{
 		this.caption = caption;
 	}
 
-	public void setLwLocation(ParsedURL location)
+	public void lwSetLocation(ParsedURL location)
 	{
 		this.location = location;
 	}
