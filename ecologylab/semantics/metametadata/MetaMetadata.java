@@ -7,7 +7,7 @@ import ecologylab.generic.ReflectionTools;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.library.DefaultMetadataTranslationSpace;
 import ecologylab.semantics.metadata.Metadata;
-import ecologylab.xml.TranslationSpace;
+import ecologylab.xml.TranslationScope;
 import ecologylab.xml.xml_inherit;
 
 /**
@@ -18,7 +18,7 @@ public class MetaMetadata extends MetaMetadataField
 {
 	@xml_attribute private 	String 		urlBase;
 	
-	TranslationSpace 					translationSpace;
+	TranslationScope 					translationSpace;
 
 	public MetaMetadata()
 	{
@@ -38,15 +38,15 @@ public class MetaMetadata extends MetaMetadataField
 		this.urlBase = urlBase;
 	}
 
-	public TranslationSpace getTS() {
+	public TranslationScope getTS() {
 		return translationSpace;
 	}
 
-	public void setTS(TranslationSpace ts) {
+	public void setTS(TranslationScope ts) {
 		translationSpace = ts;
 	}
 	
-	TranslationSpace DEFAULT_METADATA_TRANSLATIONS	= DefaultMetadataTranslationSpace.get();
+	TranslationScope DEFAULT_METADATA_TRANSLATIONS	= DefaultMetadataTranslationSpace.get();
 	
 	/**
 	 * Lookup the Metadata class object that corresponds to the tag_name in this.

@@ -2,7 +2,7 @@ package ecologylab.semantics.metametadata;
 
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.xml.ElementState;
-import ecologylab.xml.TranslationSpace;
+import ecologylab.xml.TranslationScope;
 import ecologylab.xml.XMLTranslationException;
 import ecologylab.xml.xml_inherit;
 import ecologylab.xml.types.element.Mappable;
@@ -37,7 +37,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>
 	
 	public static void main(String args[]) throws XMLTranslationException
 	{
-		final TranslationSpace TS = MetaMetadataTranslationSpace.get();
+		final TranslationScope TS = MetaMetadataTranslationSpace.get();
 		String patternXMLFilepath = "config/examplePatternFlickr.xml";
 
 //		ElementState.setUseDOMForTranslateTo(true);

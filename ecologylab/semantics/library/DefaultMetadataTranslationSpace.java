@@ -4,7 +4,7 @@
 package ecologylab.semantics.library;
 
 import ecologylab.generic.Debug;
-import ecologylab.xml.TranslationSpace;
+import ecologylab.xml.TranslationScope;
 
 /**
  * 
@@ -32,9 +32,9 @@ public class DefaultMetadataTranslationSpace extends Debug
 		Pdf.class
 	};
 
-	public static TranslationSpace get()
+	public static TranslationScope get()
 	{
-		return TranslationSpace.get(PACKAGE_NAME, TRANSLATIONS);
+		return TranslationScope.get(PACKAGE_NAME, TRANSLATIONS);
 	}
 	
 }

@@ -2,7 +2,7 @@ package ecologylab.semantics.metametadata;
 
 
 import ecologylab.generic.Debug;
-import ecologylab.xml.TranslationSpace;
+import ecologylab.xml.TranslationScope;
 
 public class MetaMetadataTranslationSpace extends Debug
 {
@@ -16,8 +16,8 @@ public class MetaMetadataTranslationSpace extends Debug
 		MetaMetadataRepository.class,
 	};
 		
-	public static TranslationSpace get()
+	public static TranslationScope get()
 	{
-		return TranslationSpace.get(PACKAGE_NAME, TRANSLATIONS);
+		return TranslationScope.get(PACKAGE_NAME, TRANSLATIONS);
 	}
 }
