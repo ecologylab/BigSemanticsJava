@@ -18,7 +18,7 @@ public class MetaMetadata extends MetaMetadataField
 {
 	@xml_attribute private 	String 		urlBase;
 	
-	TranslationScope 					translationSpace;
+	TranslationScope 					translationScope;
 
 	public MetaMetadata()
 	{
@@ -39,11 +39,11 @@ public class MetaMetadata extends MetaMetadataField
 	}
 
 	public TranslationScope getTS() {
-		return translationSpace;
+		return translationScope;
 	}
 
 	public void setTS(TranslationScope ts) {
-		translationSpace = ts;
+		translationScope = ts;
 	}
 	
 	TranslationScope DEFAULT_METADATA_TRANSLATIONS	= DefaultMetadataTranslationSpace.get();

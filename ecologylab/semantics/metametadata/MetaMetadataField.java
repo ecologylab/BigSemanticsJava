@@ -37,7 +37,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>
 	
 	public static void main(String args[]) throws XMLTranslationException
 	{
-		final TranslationScope TS = MetaMetadataTranslationSpace.get();
+		final TranslationScope TS = MetaMetadataTranslationScope.get();
 		String patternXMLFilepath = "config/examplePatternFlickr.xml";
 
 //		ElementState.setUseDOMForTranslateTo(true);
