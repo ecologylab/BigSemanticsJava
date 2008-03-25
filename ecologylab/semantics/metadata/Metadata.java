@@ -215,6 +215,7 @@ abstract public class Metadata extends ElementState
 
 	public boolean isFilled(String attributeName)
 	{
+		attributeName = attributeName.toLowerCase();
 		Iterator<FieldAccessor> fieldIterator = fieldIterator();
 		while(fieldIterator.hasNext())
 		{
@@ -223,7 +224,7 @@ abstract public class Metadata extends ElementState
 			if(attributeName.equals(fieldAccessor.getFieldName()))
 			{
 				String valueString = fieldAccessor.getValueString(this);
-				if(valueString != null)
+				if(valueString != null && valueString != "null")
 				{
 					return true;
 				}
@@ -250,8 +251,9 @@ abstract public class Metadata extends ElementState
 		{
 			FieldAccessor fieldAccessor = fieldIterator.next();
 			String valueString = fieldAccessor.getValueString(this);
-			if(valueString != null)
+			if(valueString != null && valueString != "null")
 			{
+				System.out.println("field:"+fieldAccessor.getFieldName()+ " value:"+valueString);
 				size++;
 			}
 		}
@@ -286,7 +288,7 @@ abstract public class Metadata extends ElementState
 		{
 			FieldAccessor fieldAccessor = fieldIterator.next();
 			String valueString = fieldAccessor.getValueString(this);
-			if(valueString != null)
+			if(valueString != null && valueString != "null")
 			{
 				compositeTermVector.addTerms(valueString, false);
 			}
@@ -331,6 +333,11 @@ abstract public class Metadata extends ElementState
 		HashMapArrayList<String, FieldAccessor> fieldAccessors = Optimizations.getFieldAccessors(this.getClass());
 		FieldAccessor fieldAccessor = fieldAccessors.get(fieldName);
 		fieldAccessor.set(this, value);
+		if(fieldAccessor.getFieldName() == "title")
+		{
+			String valuestring = fieldAccessor.getValueString(this);
+			System.out.println("location:"+fieldAccessor.getValueString(this));
+		}
 		rebuildCompositeTermVector();
 	}
 	/**
