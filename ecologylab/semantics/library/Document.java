@@ -20,11 +20,11 @@ public class Document extends Metadata
 	@xml_attribute	String 			description;
 	@xml_attribute	ParsedURL 		location;
 	//Metadata TransitionTODO -- In PDFTypeMultiAndBox the following are used...shall i create a new class or shall i keep them here??
-	@xml_attribute 	String			author; 	
-	@xml_attribute  String			summary;
-	@xml_attribute 	String			keywords;
-	@xml_attribute	String 			subject;
-	@xml_attribute	String			trapped;
+//	@xml_attribute 	String			author; 	
+//	@xml_attribute  String			summary;
+//	@xml_attribute 	String			keywords;
+//	@xml_attribute	String 			subject;
+//	@xml_attribute	String			trapped;
 	
 	
 	public Document()
