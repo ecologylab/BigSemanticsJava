@@ -11,10 +11,10 @@ import ecologylab.xml.xml_inherit;
  *
  */
 @xml_inherit
-public class Image extends Metadata
+public class Image extends Media
 {
-	@xml_attribute	String caption;
-	@xml_attribute	ParsedURL location;
+	@xml_attribute	String 		caption;
+	@xml_attribute	ParsedURL 	location;
 	
 	public Image()
 	{
@@ -29,6 +29,7 @@ public class Image extends Metadata
 		return caption;
 	}
 
+	@Override
 	public ParsedURL getLocation()
 	{
 		return location;

@@ -3,6 +3,8 @@
  */
 package ecologylab.semantics.metametadata;
 
+import java.util.ArrayList;
+
 import ecologylab.generic.ReflectionTools;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.library.DefaultMetadataTranslationSpace;
@@ -19,6 +21,8 @@ public class MetaMetadata extends MetaMetadataField
 	@xml_attribute private 	String 		urlBase;
 	
 	TranslationScope 					translationScope;
+	
+	boolean								doNotTranslateToJava;
 
 	public MetaMetadata()
 	{

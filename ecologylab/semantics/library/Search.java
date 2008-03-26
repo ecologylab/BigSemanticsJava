@@ -12,7 +12,7 @@ public class Search extends Document
 {
 
 	@xml_attribute 	String	query;
-	@xml_leaf		String	gist;
+	@xml_leaf		String	snippet;
 	
 	public String getQuery()
 	{
@@ -23,21 +23,21 @@ public class Search extends Document
 		this.query = query;
 		rebuildCompositeTermVector();
 	}
-	public String getGist()
+	public String getSnippet()
 	{
-		return gist;
+		return snippet;
 	}
-	public void setGist(String gist)
+	public void setSnippet(String gist)
 	{
-		this.gist = gist;	
+		this.snippet = gist;	
 		rebuildCompositeTermVector();
 	}
 	public void lwSetQuery(String query)
 	{
 		this.query = query;
 	}
-	public void lwSetGist(String gist)
+	public void lwSetSnippet(String gist)
 	{
-		this.gist = gist;	
+		this.snippet = gist;	
 	}
 }

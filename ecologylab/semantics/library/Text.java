@@ -9,7 +9,7 @@ import ecologylab.xml.ElementState.xml_nested;
  * @author damaraju
  *
  */
-public class Text extends Metadata
+public class Text extends Media
 {
 
 	@xml_nested	TextChunkBase text;

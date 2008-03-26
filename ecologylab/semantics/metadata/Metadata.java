@@ -9,12 +9,13 @@ import ecologylab.generic.ReflectionTools;
 import ecologylab.model.ParticipantInterest;
 import ecologylab.model.text.TermVector;
 import ecologylab.model.text.WordForms;
+import ecologylab.net.ParsedURL;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataField;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.FieldAccessor;
 import ecologylab.xml.Optimizations;
-import ecologylab.xml.ElementState.xml_leaf;
+import ecologylab.xml.types.element.ArrayListState;
 
 /**
  * This is the new metadata class that is the base class for the 
@@ -30,6 +31,9 @@ abstract public class Metadata extends ElementState
 {
 	MetaMetadata 			metaMetadata;
 	
+	@xml_nested	ArrayListState<Metadata>	mixins;
+	
+	//FIXME -- not public!
 	public TermVector 				compositeTermVector;
 	
 	final static int		INITIAL_SIZE		= 5;
@@ -50,9 +54,6 @@ abstract public class Metadata extends ElementState
 	 * overwritting edited cFMetadata when the elements are recrawled on a restore.
 	 */
 	private boolean loadedFromPreviousSession 	= false;
-	
-	@xml_leaf
-	String context;
 	
 	public Metadata()
 	{
@@ -365,6 +366,11 @@ abstract public class Metadata extends ElementState
 			
 	}
 	
+	public ParsedURL getLocation()
+	{
+		return null;
+	}
+	
 	public Field getFields()
 	{
 		
@@ -374,16 +380,6 @@ abstract public class Metadata extends ElementState
 	public MetaMetadataField childMetaMetadata(String name)
 	{
 		return metaMetadata == null ? null : metaMetadata.lookupChild(name);
-	}
-
-	public String getContext()
-	{
-		return context;
-	}
-
-	public void setContext(String context)
-	{
-		this.context = context;
 	}
 
 	public MetaMetadata getMetaMetadata()

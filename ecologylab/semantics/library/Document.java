@@ -19,6 +19,13 @@ public class Document extends Metadata
 	@xml_attribute	String 			title;
 	@xml_attribute	String 			description;
 	@xml_attribute	ParsedURL 		location;
+	
+	/**
+	 * Occasionally, we want to navigate to somewhere other than the regular purl,
+	 * as in when this is an RSS feed, but there's an equivalent HTML page.
+	 */
+	@xml_attribute	ParsedURL		navLocation;
+	
 	//Metadata TransitionTODO -- In PDFTypeMultiAndBox the following are used...shall i create a new class or shall i keep them here??
 //	@xml_attribute 	String			author; 	
 //	@xml_attribute  String			summary;
@@ -47,6 +54,7 @@ public class Document extends Metadata
 		return description;
 	}
 
+	@Override
 	public ParsedURL getLocation()
 	{
 		return location;

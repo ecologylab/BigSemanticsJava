@@ -17,8 +17,10 @@ public class Pdf extends Document
 	@xml_attribute  String			summary;
 	@xml_attribute 	String			keywords;
 	@xml_attribute	String 			subject;
+	//TODO -- get rid of this
 	@xml_attribute	String			trapped;
 	@xml_attribute 	String			modified;
+	//TODO -- what is this? why do we have it?
 	@xml_attribute	String 			contents;
 	@xml_attribute	String			creationdate;
 	/**

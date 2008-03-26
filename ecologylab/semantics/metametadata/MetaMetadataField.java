@@ -1,10 +1,13 @@
 package ecologylab.semantics.metametadata;
 
+import java.util.ArrayList;
+
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.TranslationScope;
 import ecologylab.xml.XMLTranslationException;
 import ecologylab.xml.xml_inherit;
+import ecologylab.xml.ElementState.xml_collection;
 import ecologylab.xml.types.element.Mappable;
 import ecologylab.xml.types.scalar.ScalarType;
 
@@ -23,6 +26,11 @@ public class MetaMetadataField extends ElementState implements Mappable<String>
 	
 	@xml_map("meta_metadata_field") private HashMapArrayList<String, MetaMetadataField>	childMetaMetadata;
 
+	/**
+	 * For adding @xml_other_tag translations to a Metadata definition, for backwards compatability.
+	 */
+	@xml_collection("other_tag")		ArrayList<String>		otherTags;
+	
 	public MetaMetadataField()
 	{
 		
