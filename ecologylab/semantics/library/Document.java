@@ -59,7 +59,12 @@ public class Document extends Metadata
 	{
 		return location;
 	}
-
+	
+	public ParsedURL getNavLocation()
+	{
+		return navLocation;
+	}
+	
 	public void setTitle(String title)
 	{
 		this.title = title;
@@ -78,6 +83,12 @@ public class Document extends Metadata
 		rebuildCompositeTermVector();
 	}
 	
+	public void setNavLocation(ParsedURL navLocation)
+	{
+		this.navLocation = navLocation;
+		rebuildCompositeTermVector();
+	}
+	
 	public void lwSetTitle(String title)
 	{
 		this.title = title;
@@ -91,6 +102,11 @@ public class Document extends Metadata
 	public void lwSetLocation(ParsedURL location)
 	{
 		this.location = location;
+	}
+	
+	public void lwSetNavLocation(ParsedURL navLocation)
+	{
+		this.navLocation = navLocation;
 	}
 
 }
