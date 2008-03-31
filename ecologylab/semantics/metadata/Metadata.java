@@ -328,11 +328,12 @@ abstract public class Metadata extends ElementState
 	 * @param value
 	 */
 	//Metadata TransitionTODO -- May throw exception if there is no field accessor.
-	public void set(String fieldName, String value)
+	public void set(String tagName, String value)
 	{
 		//Metadata TransitionTODO --Must have similar changes as lwSet
+		tagName = tagName.toLowerCase();
 		HashMapArrayList<String, FieldAccessor> fieldAccessors = Optimizations.getFieldAccessors(this.getClass());
-		FieldAccessor fieldAccessor = fieldAccessors.get(fieldName);
+		FieldAccessor fieldAccessor = fieldAccessors.get(tagName);
 		fieldAccessor.set(this, value);
 		if(fieldAccessor.getFieldName() == "title")
 		{

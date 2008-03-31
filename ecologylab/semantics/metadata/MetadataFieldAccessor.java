@@ -6,6 +6,9 @@ package ecologylab.semantics.metadata;
 import java.lang.reflect.Field;
 
 import ecologylab.generic.HashMapArrayList;
+//import ecologylab.model.MetadataEndEditListener;
+import ecologylab.model.MetadataField;
+import ecologylab.semantics.gui.MetadataEndEditListener;
 import ecologylab.xml.FieldAccessor;
 import ecologylab.xml.Optimizations;
 import ecologylab.xml.types.scalar.ScalarType;
@@ -26,6 +29,16 @@ public class MetadataFieldAccessor<M extends Metadata, T> extends FieldAccessor
 		super(field, scalarType, tagName);
 		this.setMetadata(metadata);
 	}
+	
+	public void endEditHandlerDispatch(MetadataEndEditListener listener, String iconID)
+  	{
+  		endEditHandler(listener, iconID);
+  	}
+	
+	protected void endEditHandler(MetadataEndEditListener listener, String iconID)
+  	{
+		listener.endEditHandler(iconID, this);
+  	}
 	
 //	public HashMapArrayList<String, FieldAccessor> getFieldAccessorsForThis(Class<? extends FieldAccessor> fieldAccessorClass)
 //	{
