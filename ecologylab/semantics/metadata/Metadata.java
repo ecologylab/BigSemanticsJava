@@ -31,6 +31,9 @@ abstract public class Metadata extends ElementState
 {
 	MetaMetadata 			metaMetadata;
 	
+	/**
+	 * Helps in the user annotation.
+	 */
 	@xml_nested	ArrayListState<Metadata>	mixins;
 	
 	//FIXME -- not public!

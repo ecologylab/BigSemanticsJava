@@ -8,7 +8,7 @@ import java.lang.reflect.Field;
 import ecologylab.generic.HashMapArrayList;
 //import ecologylab.model.MetadataEndEditListener;
 import ecologylab.model.MetadataField;
-import ecologylab.semantics.gui.MetadataEndEditListener;
+import ecologylab.semantics.gui.MetadataValueChangedListener;
 import ecologylab.xml.FieldAccessor;
 import ecologylab.xml.Optimizations;
 import ecologylab.xml.types.scalar.ScalarType;
@@ -22,6 +22,9 @@ public class MetadataFieldAccessor<M extends Metadata, T> extends FieldAccessor
 
 	public static final String NULL = "null";
 	private M metadata;
+	
+	MetadataValueChangedListener	metadataValueChangedListener;
+	
 //	T	value = null;
 	
 	public MetadataFieldAccessor(M metadata, Field field, ScalarType<?> scalarType, String tagName)
@@ -30,12 +33,20 @@ public class MetadataFieldAccessor<M extends Metadata, T> extends FieldAccessor
 		this.setMetadata(metadata);
 	}
 	
-	public void endEditHandlerDispatch(MetadataEndEditListener listener, String iconID)
+	public void editValue(Metadata context, String newValue)
+	{
+		if (metadataValueChangedListener != null)
+			metadataValueChangedListener.fieldValueChanged(context);
+		
+		this.hwSet(context, newValue);
+	}
+	
+	public void endEditHandlerDispatch(MetadataValueChangedListener listener, String iconID)
   	{
   		endEditHandler(listener, iconID);
   	}
 	
-	protected void endEditHandler(MetadataEndEditListener listener, String iconID)
+	protected void endEditHandler(MetadataValueChangedListener listener, String iconID)
   	{
 		listener.endEditHandler(iconID, this);
   	}
