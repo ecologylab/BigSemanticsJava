@@ -16,13 +16,13 @@ public class Nsdl extends Search
 
 	public void setSubject(String subject)
 	{
-		subject = subject;
+		this.subject = subject;
 		rebuildCompositeTermVector();
 	}
 	
 	public void lwSetSubject(String subject)
 	{
-		subject = subject;
+		this.subject = subject;
 	}
 	
 }
