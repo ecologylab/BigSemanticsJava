@@ -5,6 +5,11 @@ import ecologylab.net.ParsedURL;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.xml.xml_inherit;
 
+/**
+ * 
+ * @author damaraju
+ *
+ */
 @xml_inherit
 public class ScholarlyPublication extends Metadata
 {

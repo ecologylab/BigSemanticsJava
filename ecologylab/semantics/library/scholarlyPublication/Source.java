@@ -5,7 +5,11 @@ import ecologylab.net.ParsedURL;
 import ecologylab.semantics.metadata.Metadata;
 
 
-
+/**
+ * 
+ * @author damaraju
+ *
+ */
 public class Source extends Metadata
 {
 	@xml_leaf String		heading;
