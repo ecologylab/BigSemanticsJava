@@ -1,11 +1,18 @@
-package ecologylab.semantics.library;
-
 /**
  * 
- * @author damaraju
+ */
+package ecologylab.semantics.library;
+
+import ecologylab.xml.xml_inherit;
+import ecologylab.xml.ElementState.xml_attribute;
+import ecologylab.semantics.metadata.Metadata;
+
+/**
+ * @author bharat
  *
  */
-public class Rss extends Document
+@xml_inherit
+public class DcDocument extends Document
 {
 	@xml_attribute 	String		subject;
 

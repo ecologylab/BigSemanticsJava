@@ -22,4 +22,6 @@ public interface TypeTagNames
 	
 	public static final String 	PDF_TAG			= "pdf";
 	
+	public static final String 	DCDOCUMENT_TAG	= "dcdocument";
+	
 }

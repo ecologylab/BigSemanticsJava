@@ -17,7 +17,7 @@ public class Flickr extends Image
 	{
 		return tags;
 	}
-	public void setTags(String tags)
+	public void hwSetTags(String tags)
 	{
 		this.tags = tags;
 		rebuildCompositeTermVector();
@@ -26,16 +26,16 @@ public class Flickr extends Image
 	{
 		return author;
 	}
-	public void setAuthor(String author)
+	public void hwSetAuthor(String author)
 	{
 		this.author = author;
 		rebuildCompositeTermVector();
 	}
-	public void lwSetTags(String tags)
+	public void setTags(String tags)
 	{
 		this.tags = tags;
 	}
-	public void lwSetAuthor(String author)
+	public void setAuthor(String author)
 	{
 		this.author = author;
 	}

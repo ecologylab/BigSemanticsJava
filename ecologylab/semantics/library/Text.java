@@ -19,13 +19,13 @@ public class Text extends Media
 		return text;
 	}
 
-	public void setText(TextChunkBase text)
+	public void hwSetText(TextChunkBase text)
 	{
 		this.text = text;
 		rebuildCompositeTermVector();
 	}
 	
-	public void lwSetText(TextChunkBase text)
+	public void setText(TextChunkBase text)
 	{
 		this.text = text;
 	}

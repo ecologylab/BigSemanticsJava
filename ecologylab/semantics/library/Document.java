@@ -60,51 +60,56 @@ public class Document extends Metadata
 		return location;
 	}
 	
+	@Override
 	public ParsedURL getNavLocation()
 	{
 		return navLocation;
 	}
 	
-	public void setTitle(String title)
+	public void hwSetTitle(String title)
 	{
 		this.title = title;
 		rebuildCompositeTermVector();
 	}
 
-	public void setDescription(String description)
+	public void hwSetDescription(String description)
 	{
 		this.description = description;
 		rebuildCompositeTermVector();
 	}
 
-	public void setLocation(ParsedURL location)
+	@Override
+	public void hwSetLocation(ParsedURL location)
 	{
 		this.location = location;
 		rebuildCompositeTermVector();
 	}
 	
-	public void setNavLocation(ParsedURL navLocation)
+	@Override
+	public void hwSetNavLocation(ParsedURL navLocation)
 	{
 		this.navLocation = navLocation;
 		rebuildCompositeTermVector();
 	}
 	
-	public void lwSetTitle(String title)
+	public void setTitle(String title)
 	{
 		this.title = title;
 	}
 
-	public void lwSetDescription(String description)
+	public void setDescription(String description)
 	{
 		this.description = description;
 	}
 
-	public void lwSetLocation(ParsedURL location)
+	@Override
+	public void setLocation(ParsedURL location)
 	{
 		this.location = location;
 	}
 	
-	public void lwSetNavLocation(ParsedURL navLocation)
+	@Override
+	public void setNavLocation(ParsedURL navLocation)
 	{
 		this.navLocation = navLocation;
 	}

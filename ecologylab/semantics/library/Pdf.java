@@ -33,7 +33,7 @@ public class Pdf extends Document
 	/**
 	 * @param author the author to set
 	 */
-	public void setAuthor(String author)
+	public void hwSetAuthor(String author)
 	{
 		this.author = author;
 		rebuildCompositeTermVector();
@@ -41,7 +41,7 @@ public class Pdf extends Document
 	/**
 	 * @param author the author to set
 	 */
-	public void lwSetAuthor(String author)
+	public void setAuthor(String author)
 	{
 		this.author = author;
 	}
@@ -55,7 +55,7 @@ public class Pdf extends Document
 	/**
 	 * @param summary the summary to set
 	 */
-	public void setSummary(String summary)
+	public void hwSetSummary(String summary)
 	{
 		this.summary = summary;
 		rebuildCompositeTermVector();
@@ -63,7 +63,7 @@ public class Pdf extends Document
 	/**
 	 * @param summary the summary to set
 	 */
-	public void lwSetSummary(String summary)
+	public void setSummary(String summary)
 	{
 		this.summary = summary;
 	}
@@ -77,7 +77,7 @@ public class Pdf extends Document
 	/**
 	 * @param keywords the keywords to set
 	 */
-	public void setKeywords(String keywords)
+	public void hwSetKeywords(String keywords)
 	{
 		this.keywords = keywords;
 		rebuildCompositeTermVector();
@@ -85,7 +85,7 @@ public class Pdf extends Document
 	/**
 	 * @param keywords the keywords to set
 	 */
-	public void lwSetKeywords(String keywords)
+	public void setKeywords(String keywords)
 	{
 		this.keywords = keywords;
 	}
@@ -99,7 +99,7 @@ public class Pdf extends Document
 	/**
 	 * @param subject the subject to set
 	 */
-	public void setSubject(String subject)
+	public void hwSetSubject(String subject)
 	{
 		this.subject = subject;
 		rebuildCompositeTermVector();
@@ -107,7 +107,7 @@ public class Pdf extends Document
 	/**
 	 * @param subject the subject to set
 	 */
-	public void lwSetSubject(String subject)
+	public void setSubject(String subject)
 	{
 		this.subject = subject;
 	}
@@ -121,7 +121,7 @@ public class Pdf extends Document
 	/**
 	 * @param trapped the trapped to set
 	 */
-	public void setTrapped(String trapped)
+	public void hwSetTrapped(String trapped)
 	{
 		this.trapped = trapped;
 		rebuildCompositeTermVector();
@@ -129,7 +129,7 @@ public class Pdf extends Document
 	/**
 	 * @param trapped the trapped to set
 	 */
-	public void lwSetTrapped(String trapped)
+	public void setTrapped(String trapped)
 	{
 		this.trapped = trapped;
 	}

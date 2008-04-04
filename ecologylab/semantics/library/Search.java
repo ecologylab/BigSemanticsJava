@@ -18,7 +18,7 @@ public class Search extends Document
 	{
 		return query;
 	}
-	public void setQuery(String query)
+	public void hwSetQuery(String query)
 	{
 		this.query = query;
 		rebuildCompositeTermVector();
@@ -27,17 +27,17 @@ public class Search extends Document
 	{
 		return snippet;
 	}
-	public void setSnippet(String gist)
+	public void hwSetSnippet(String gist)
 	{
 		this.snippet = gist;	
 		rebuildCompositeTermVector();
 	}
-	public void lwSetQuery(String query)
+	public void setQuery(String query)
 	{
 		this.query = query;
 	}
-	public void lwSetSnippet(String gist)
+	public void setSnippet(String snippet)
 	{
-		this.snippet = gist;	
+		this.snippet = snippet;	
 	}
 }

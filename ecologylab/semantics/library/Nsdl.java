@@ -5,7 +5,7 @@ package ecologylab.semantics.library;
  * @author damaraju
  *
  */
-public class Nsdl extends Search
+public class Nsdl extends Document
 {
 	@xml_attribute String		subject;
 
@@ -14,13 +14,13 @@ public class Nsdl extends Search
 		return subject;
 	}
 
-	public void setSubject(String subject)
+	public void hwSetSubject(String subject)
 	{
 		this.subject = subject;
 		rebuildCompositeTermVector();
 	}
 	
-	public void lwSetSubject(String subject)
+	public void setSubject(String subject)
 	{
 		this.subject = subject;
 	}

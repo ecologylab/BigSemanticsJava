@@ -5,7 +5,7 @@ package ecologylab.semantics.library;
  * @author damaraju
  *
  */
-public class Icdl extends Search
+public class Icdl extends Document
 {
 	@xml_attribute String		languages;
 
@@ -14,13 +14,13 @@ public class Icdl extends Search
 		return languages;
 	}
 
-	public void setLanguages(String languages)
+	public void hwSetLanguages(String languages)
 	{
 		this.languages = languages;
 		rebuildCompositeTermVector();
 	}
 	
-	public void lwSetLanguages(String languages)
+	public void setLanguages(String languages)
 	{
 		this.languages = languages;
 	}

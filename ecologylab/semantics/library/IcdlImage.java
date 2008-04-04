@@ -18,12 +18,13 @@ public class IcdlImage extends Image
 		return languages;
 	}
 
-	public void setLanguages(String languages)
+	public void hwSetLanguages(String languages)
 	{
 		this.languages = languages;
+		rebuildCompositeTermVector();
 	}
 	
-	public void lwSetLanguages(String languages)
+	public void setLanguages(String languages)
 	{
 		this.languages = languages;
 	}

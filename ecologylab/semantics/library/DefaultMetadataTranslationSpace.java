@@ -19,13 +19,15 @@ public class DefaultMetadataTranslationSpace extends Debug
 	
 	protected static final Class TRANSLATIONS[] = 
 	{
-		Dlms.class,
+//		Dlms.class,
+		DcDocument.class,
 		Document.class,
+		Media.class,
 		Flickr.class,
-		Icdl.class,
+//		Icdl.class,
 		IcdlImage.class,
 		Image.class,
-		Nsdl.class,
+//		Nsdl.class,
 		Rss.class,
 		Search.class,
 		Text.class,
