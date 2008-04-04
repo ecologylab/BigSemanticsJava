@@ -31,6 +31,8 @@ public class MetaMetadataField extends ElementState implements Mappable<String>
 	 */
 	@xml_collection("other_tag")		ArrayList<String>		otherTags;
 	
+//	@xml_collection("mixin")		ArrayList<String>		mixin;
+	
 	public MetaMetadataField()
 	{
 		

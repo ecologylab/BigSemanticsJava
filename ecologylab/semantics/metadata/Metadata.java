@@ -34,7 +34,7 @@ abstract public class Metadata extends ElementState
 	/**
 	 * Helps in the user annotation.
 	 */
-	@xml_nested	ArrayListState<Metadata>	mixins;
+	@xml_nested	ArrayListState<Metadata>	mixins = new ArrayListState<Metadata>();
 	
 	//FIXME -- not public!
 	public TermVector 				compositeTermVector;
@@ -92,6 +92,14 @@ abstract public class Metadata extends ElementState
 		//termVector.clear();
 		compositeTermVector 				= null;
 		participantInterest					= null;
+	}
+	
+	public void addMixin(Metadata mixin)
+	{
+		if(mixin != null)
+		{
+			mixins.add(mixin);
+		}
 	}
 	
 	/**
@@ -238,6 +246,31 @@ abstract public class Metadata extends ElementState
 				}
 			}
 		}
+		
+		//Supporting Mixins
+		if(mixins != null && mixins.size() > 0)
+		{
+			Iterator<Metadata> metadataIterator = mixins.iterator();
+			while(metadataIterator.hasNext())
+			{
+				Metadata metadata = metadataIterator.next();
+				fieldIterator = metadata.fieldIterator();
+				while(fieldIterator.hasNext())
+				{
+					FieldAccessor fieldAccessor = fieldIterator.next();
+					String valueString = fieldAccessor.getValueString(metadata);
+					if(valueString != null && valueString != "null")
+					{
+						return true;
+					}
+					else
+					{
+						return false;
+					}
+				}
+			}
+		}
+		
 		return false;
 	}
 	
@@ -261,6 +294,28 @@ abstract public class Metadata extends ElementState
 				size++;
 			}
 		}
+		
+		//Supporting Mixins
+		if(mixins != null && mixins.size() > 0)
+		{
+			Iterator<Metadata> metadataIterator = mixins.iterator();
+			while(metadataIterator.hasNext())
+			{
+				Metadata metadata = metadataIterator.next();
+				fieldIterator = metadata.fieldIterator();
+				while(fieldIterator.hasNext())
+				{
+					FieldAccessor fieldAccessor = fieldIterator.next();
+					String valueString = fieldAccessor.getValueString(metadata);
+					if(valueString != null && valueString != "null")
+					{
+						System.out.println("field:"+fieldAccessor.getFieldName()+ " value:"+valueString);
+						size++;
+					}
+				}
+			}
+		}
+		
 		return size;
 
 	}
@@ -299,6 +354,26 @@ abstract public class Metadata extends ElementState
 		}
 
 
+		//Supporting Mixins
+		if(mixins != null && mixins.size() > 0)
+		{
+			Iterator<Metadata> metadataIterator = mixins.iterator();
+			while(metadataIterator.hasNext())
+			{
+				Metadata metadata = metadataIterator.next();
+				fieldIterator = metadata.fieldIterator();
+				while(fieldIterator.hasNext())
+				{
+					FieldAccessor fieldAccessor = fieldIterator.next();
+					String valueString = fieldAccessor.getValueString(metadata);
+					if(valueString != null && valueString != "null")
+					{
+						compositeTermVector.addTerms(valueString, false);
+					}
+				}
+			}
+		}
+		
 		//add any actual data terms to the composite term vector
 //		if (dataTermVector != null)
 //			termVector.combine(dataTermVector);
@@ -325,55 +400,115 @@ abstract public class Metadata extends ElementState
 	{
 		return compositeTermVector == null ? 0 : compositeTermVector.lnWeight();
 	}
-	/**
-	 * Setting the field to the specified value and rebuilds the composteTermVector.
-	 * @param fieldName
-	 * @param value
-	 */
-	//Metadata TransitionTODO -- May throw exception if there is no field accessor.
-	public void set(String tagName, String value)
-	{
-		//Metadata TransitionTODO --Must have similar changes as lwSet
-		tagName = tagName.toLowerCase();
-		HashMapArrayList<String, FieldAccessor> fieldAccessors = Optimizations.getFieldAccessors(this.getClass());
-		FieldAccessor fieldAccessor = fieldAccessors.get(tagName);
-		fieldAccessor.set(this, value);
-		if(fieldAccessor.getFieldName() == "title")
-		{
-			String valuestring = fieldAccessor.getValueString(this);
-			System.out.println("location:"+fieldAccessor.getValueString(this));
-		}
-		rebuildCompositeTermVector();
-	}
+	
 	/**
 	 * Sets the field to the specified value and wont rebuild composteTermVector
 	 * @param fieldName
 	 * @param value
 	 */
 	//Metadata Transition -- TODO -- May throw exception if there is no field accessor.
-	public void lwSet(String fieldName, String value)
+	public void set(String tagName, String value)
 	{
-		//In PDFTypeMultiAndBox.java this method is called with "Author"
-		fieldName = fieldName.toLowerCase();
-		HashMapArrayList<String, FieldAccessor> fieldAccessors = Optimizations.getFieldAccessors(this.getClass());
-		FieldAccessor fieldAccessor = fieldAccessors.get(fieldName);
-//		fieldAccessor.set(this, value);
-		if(fieldAccessor != null)
+		tagName = tagName.toLowerCase();
+		Metadata metadata = getMetadataWhichhasField(tagName);
+
+		if(metadata != null)
 		{
-			fieldAccessor.set(this, value);
+			HashMapArrayList<String, FieldAccessor> fieldAccessors = Optimizations.getFieldAccessors(metadata.getClass());
+			FieldAccessor fieldAccessor = fieldAccessors.get(tagName);
+			if(fieldAccessor != null)
+			{
+				fieldAccessor.set(metadata, value);
+			}
+			else 
+			{
+				debug("No field Accessor");
+			}
 		}
-		else 
-		{
-			System.out.println("No field Accessor");
-			//fieldAccessor.set(this, value);
-		}
-			
 	}
 	
-	public ParsedURL getLocation()
+	/**
+	 * Setting the field to the specified value and rebuilds the composteTermVector.
+	 * @param fieldName
+	 * @param value
+	 */
+	//Metadata TransitionTODO -- May throw exception if there is no field accessor.
+	public void hwSet(String tagName, String value)
 	{
+		tagName = tagName.toLowerCase();
+		Metadata metadata = getMetadataWhichhasField(tagName);
+		
+		if(metadata != null)
+		{
+			HashMapArrayList<String, FieldAccessor> fieldAccessors = Optimizations.getFieldAccessors(metadata.getClass());
+			FieldAccessor fieldAccessor = fieldAccessors.get(tagName);
+			if(fieldAccessor != null)
+			{
+				fieldAccessor.set(metadata, value);
+				rebuildCompositeTermVector();
+			}
+			else 
+			{
+				System.out.println("No field Accessor");
+			}
+			//Debugging
+//			if(fieldAccessor.getFieldName() == "title")
+//			{
+//			String valuestring = fieldAccessor.getValueString(this);
+//			System.out.println("location:"+fieldAccessor.getValueString(this));
+//			}
+		}
+	}
+	
+	public Metadata getMetadataWhichhasField(String tagName)
+	{
+		HashMapArrayList<String, FieldAccessor> fieldAccessors = Optimizations.getFieldAccessors(this.getClass());
+		FieldAccessor fieldAccessor = fieldAccessors.get(tagName);
+		if(fieldAccessor != null)
+		{
+			return this;
+		}
+		//The field may be in mixin
+		if(mixins != null && mixins.size() > 0)
+		{
+			Iterator<Metadata> metadataIterator = mixins.iterator();
+			while(metadataIterator.hasNext())
+			{
+				Metadata metadata = metadataIterator.next();
+				fieldAccessors = Optimizations.getFieldAccessors(metadata.getClass());
+				fieldAccessor = fieldAccessors.get(tagName);
+				if(fieldAccessor != null)
+				{
+					return metadata;
+				}
+			}
+		}
 		return null;
 	}
+	
+	//Metadata Transition
+//	public void setMixinField(String tagName, String value)
+//	{
+//		tagName = tagName.toLowerCase();
+//		Metadata metadata = getMetadataWhichhasField(tagName); 
+//		
+//		if(metadata != null)
+//		{
+//			HashMapArrayList<String, FieldAccessor> fieldAccessors = Optimizations.getFieldAccessors(metadata.getClass());
+//			FieldAccessor fieldAccessor = fieldAccessors.get(tagName);
+//			if(fieldAccessor != null)
+//			{
+//				fieldAccessor.set(metadata, value);
+//			}
+//			else 
+//			{
+//				System.out.println("No field Accessor");
+//				//fieldAccessor.set(this, value);
+//			}
+//		}
+//	}
+	
+	
 	
 	public Field getFields()
 	{
@@ -407,4 +542,40 @@ abstract public class Metadata extends ElementState
 		return loadedFromPreviousSession;
 	}
 	
+	public ParsedURL getLocation()
+	{
+		return null;
+	}
+	public void hwSetLocation(ParsedURL location)
+	{
+	}
+	public void setLocation(ParsedURL location)
+	{
+	}
+	public ParsedURL getNavLocation()
+	{
+		return null;
+	}
+	public void setNavLocation(ParsedURL navLocation)
+	{
+	}
+	public void hwSetNavLocation(ParsedURL navLocation)
+	{
+	}
+
+	/**
+	 * @return the mixins
+	 */
+	public ArrayListState<Metadata> getMixins()
+	{
+		return mixins;
+	}
+
+	/**
+	 * @param mixins the mixins to set
+	 */
+	public void setMixins(ArrayListState<Metadata> mixins)
+	{
+		this.mixins = mixins;
+	}
 }

@@ -23,7 +23,9 @@ public class MetaMetadata extends MetaMetadataField
 	TranslationScope 					translationScope;
 	
 	boolean								doNotTranslateToJava;
-
+	
+	@xml_collection("mixins")  ArrayList<String> 		mixins;
+	
 	public MetaMetadata()
 	{
 		super();
@@ -58,6 +60,10 @@ public class MetaMetadata extends MetaMetadataField
 	 */
 	public Class<? extends Metadata> getMetadataClass()
 	{
+		return getMetadataClass(name);
+	}
+	public Class<? extends Metadata> getMetadataClass(String name)
+	{
 		return (Class<? extends Metadata>) DEFAULT_METADATA_TRANSLATIONS.getClassByTag(name);
 	}
 	
@@ -72,11 +78,26 @@ public class MetaMetadata extends MetaMetadataField
 	{
 		Metadata result	= null;
 		Class<? extends Metadata> metadataClass	= getMetadataClass();
+		
+		
 		if (metadataClass != null)
 		{
 			result		= ReflectionTools.getInstance(metadataClass);
 			result.setMetaMetadata(this);
+			if(mixins != null && mixins.size() > 0)
+			{
+				for(String mixinName : mixins)
+				{
+					Class<? extends Metadata> mixinClass = getMetadataClass(mixinName);
+					if(mixinClass != null)
+					{
+						result.addMixin(ReflectionTools.getInstance(mixinClass));
+					}
+				}
+			}
 		}
 		return result;
 	}
+
+		
 }
