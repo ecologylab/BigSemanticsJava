@@ -18,7 +18,7 @@ public class ScholarlyPublication extends Metadata
 	@xml_nested	Source					source;
 	@xml_map Author						author;
 	@xml_map Reference					reference;
-	@xml_map Citation					citation;
+	@xml_map Reference					citation;
 	
 
 }

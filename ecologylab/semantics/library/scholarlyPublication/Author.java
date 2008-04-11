@@ -13,13 +13,17 @@ public class Author extends Metadata implements Mappable<String>
 {
 
 	@xml_attribute String		name;
-	@xml_leaf ParsedURL			resultsPage;
 	@xml_leaf String			affiliation;
-
+	@xml_leaf ParsedURL			resultsPage;
+	
+	public Author(String name)
+	{
+		this.name = name;
+	}
 
 	public String key() {
 		
-		return null;
+		return name;
 	}
 
 }

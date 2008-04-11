@@ -2,15 +2,29 @@ package ecologylab.semantics.library.scholarlyPublication;
 
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.metadata.Metadata;
+import ecologylab.xml.types.element.Mappable;
 
 /**
  * 
  * @author damaraju
  *
  */
-public class Reference extends Metadata 
+public class Reference extends Metadata implements Mappable<ParsedURL>
 {
-	@xml_leaf String 		referenceText;
-	@xml_leaf ParsedURL		referenceUrl;
+	@xml_attribute ParsedURL		link;
+	@xml_leaf String 				bibTex;
 
+	public Reference(ParsedURL link)
+	{
+		this.link = link;
+	}
+	public Reference(String link)
+	{
+		this.link = ParsedURL.getAbsolute(link);
+	}
+	@Override
+	public ParsedURL key()
+	{
+		return link;
+	}
 }
