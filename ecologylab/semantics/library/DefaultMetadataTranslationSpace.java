@@ -4,12 +4,16 @@
 package ecologylab.semantics.library;
 
 import ecologylab.generic.Debug;
+import ecologylab.semantics.library.scholarlyPublication.Author;
+import ecologylab.semantics.library.scholarlyPublication.Reference;
+import ecologylab.semantics.library.scholarlyPublication.AcmPortal;
+import ecologylab.semantics.library.scholarlyPublication.Source;
 import ecologylab.xml.TranslationScope;
 
 /**
  * 
  * 
- * @author Bharat Bandaru
+ * @author bharat
  * 
  */
 public class DefaultMetadataTranslationSpace extends Debug
@@ -31,7 +35,11 @@ public class DefaultMetadataTranslationSpace extends Debug
 		Rss.class,
 		Search.class,
 		Text.class,
-		Pdf.class
+		Pdf.class,
+		Author.class,
+		Reference.class,
+		Source.class,
+		AcmPortal.class
 	};
 
 	public static TranslationScope get()

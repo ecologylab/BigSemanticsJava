@@ -24,4 +24,6 @@ public interface TypeTagNames
 	
 	public static final String 	DCDOCUMENT_TAG	= "dcdocument";
 	
+	public static final String 	ACM_PORTAL_TAG	= "acm_portal";
+	
 }
