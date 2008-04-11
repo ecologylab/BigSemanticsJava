@@ -10,6 +10,7 @@ import ecologylab.model.ParticipantInterest;
 import ecologylab.model.text.TermVector;
 import ecologylab.model.text.WordForms;
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.library.scholarlyPublication.Author;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataField;
 import ecologylab.xml.ElementState;
@@ -401,6 +402,15 @@ abstract public class Metadata extends ElementState
 		return compositeTermVector == null ? 0 : compositeTermVector.lnWeight();
 	}
 	
+	//Metadata TransitionTODO -- 
+//	public Metadata lookupChildMetadata(String tagName)
+//	{
+//		HashMapArrayList<String, FieldAccessor> fieldAccessors = Optimizations.getFieldAccessors(this.getClass());
+//		FieldAccessor fieldAccessor = fieldAccessors.get(tagName);
+//		Metadata metadata = fieldAccessor.getField();
+//		return metadata;
+//	}
+	
 	/**
 	 * Sets the field to the specified value and wont rebuild composteTermVector
 	 * @param fieldName
@@ -410,7 +420,8 @@ abstract public class Metadata extends ElementState
 	public void set(String tagName, String value)
 	{
 		tagName = tagName.toLowerCase();
-		Metadata metadata = getMetadataWhichhasField(tagName);
+		//Taking care of mixins
+		Metadata metadata = getMetadataWhichContainsField(tagName);
 
 		if(metadata != null)
 		{
@@ -436,7 +447,7 @@ abstract public class Metadata extends ElementState
 	public void hwSet(String tagName, String value)
 	{
 		tagName = tagName.toLowerCase();
-		Metadata metadata = getMetadataWhichhasField(tagName);
+		Metadata metadata = getMetadataWhichContainsField(tagName);
 		
 		if(metadata != null)
 		{
@@ -459,10 +470,32 @@ abstract public class Metadata extends ElementState
 //			}
 		}
 	}
-	
-	public Metadata getMetadataWhichhasField(String tagName)
+	/**
+	 * Returns the metadata class if it contains a Field with name
+	 * NOTE: Currently should be used ONLY for mixins
+	 * @param tagName
+	 * @return
+	 */
+	public Metadata getMetadataWhichContainsField(String tagName)
 	{
 		HashMapArrayList<String, FieldAccessor> fieldAccessors = Optimizations.getFieldAccessors(this.getClass());
+		
+//		Iterator<FieldAccessor> fieldIterator = fieldIterator();
+//		while(fieldIterator.hasNext())
+//		{
+//			FieldAccessor fieldAccessor = fieldIterator.next();
+//			String valueString = fieldAccessor.getValueString(this);
+//			if(valueString.equals("source") || valueString.equals("authors"))
+//			{
+//				Field field = fieldAccessor.getField();
+//			}
+//			
+//			if(valueString != null && valueString != "null")
+//			{
+//				compositeTermVector.addTerms(valueString, false);
+//			}
+//		}
+		
 		FieldAccessor fieldAccessor = fieldAccessors.get(tagName);
 		if(fieldAccessor != null)
 		{
@@ -577,5 +610,30 @@ abstract public class Metadata extends ElementState
 	public void setMixins(ArrayListState<Metadata> mixins)
 	{
 		this.mixins = mixins;
+	}
+	
+	public FieldAccessor getFieldAccessor(String fieldName)
+	{
+		HashMapArrayList<String, FieldAccessor> fieldAccessors = Optimizations.getFieldAccessors(this.getClass());
+
+		FieldAccessor fieldAccessor = fieldAccessors.get(fieldName);
+		
+		return fieldAccessor;
+	}
+	
+	//For adding mapped attributes
+	public void add(String key)
+	{
+		
+	}
+	
+	public Metadata get(String key)
+	{
+		return null;
+	}
+	
+	public Metadata get(int index)
+	{
+		return null;
 	}
 }
