@@ -22,7 +22,7 @@ public class Reference extends Metadata implements Mappable<ParsedURL>
 	{
 		this.link = ParsedURL.getAbsolute(link);
 	}
-	@Override
+
 	public ParsedURL key()
 	{
 		return link;
