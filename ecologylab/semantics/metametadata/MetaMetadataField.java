@@ -7,6 +7,7 @@ import ecologylab.xml.ElementState;
 import ecologylab.xml.TranslationScope;
 import ecologylab.xml.XMLTranslationException;
 import ecologylab.xml.xml_inherit;
+import ecologylab.xml.ElementState.xml_attribute;
 import ecologylab.xml.ElementState.xml_collection;
 import ecologylab.xml.types.element.Mappable;
 import ecologylab.xml.types.scalar.ScalarType;
@@ -20,7 +21,11 @@ import ecologylab.xml.types.scalar.ScalarType;
 public class MetaMetadataField extends ElementState implements Mappable<String>
 {
 	@xml_attribute protected String	name;
-
+	@xml_attribute private String xpath;
+	
+	// no idea what this is for....added while parsing for acmportal
+	@xml_attribute private String stringPrefix; 
+	
 	//@xml_attribute @xml_tag("scalar_type") private ScalarType metadataType;
 	@xml_attribute private ScalarType scalarType;
 	
@@ -33,6 +38,15 @@ public class MetaMetadataField extends ElementState implements Mappable<String>
 	
 //	@xml_collection("mixin")		ArrayList<String>		mixin;
 	
+	//For acmportal
+	@xml_attribute private boolean 			isLink;
+	@xml_attribute private boolean 			isList;
+	@xml_attribute private boolean 			isFacet;
+	
+	@xml_attribute private boolean 			isNested;
+	@xml_attribute private String 			key;
+	@xml_attribute private boolean			isMap;
+
 	public MetaMetadataField()
 	{
 		
@@ -85,5 +99,54 @@ public class MetaMetadataField extends ElementState implements Mappable<String>
 	public MetaMetadataField lookupChild(String name)
 	{
 		return childMetaMetadata.get(name);
+	}
+	
+	public String getXpath()
+	{
+		return xpath;
+	}
+	
+	public boolean isList()
+	{
+		return isList;
+	}
+	
+	public boolean isNested()
+	{
+		return isNested;
+	}
+	
+	public boolean isMap()
+	{
+		return isMap;
+	}
+	
+	public String getStringPrefix()
+	{
+		return stringPrefix;
+	}
+
+	/**
+	 * @return the key
+	 */
+	public String getKey()
+	{
+		return key;
+	}
+
+	/**
+	 * @param key the key to set
+	 */
+	public void setKey(String key)
+	{
+		this.key = key;
+	}
+
+	/**
+	 * @return the scalarType
+	 */
+	public ScalarType getScalarType()
+	{
+		return scalarType;
 	}
 }
