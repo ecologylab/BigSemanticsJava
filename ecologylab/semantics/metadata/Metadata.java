@@ -42,6 +42,8 @@ abstract public class Metadata extends ElementState
 	
 	final static int		INITIAL_SIZE		= 5;
 
+	private HashMapArrayList<String, MetadataFieldAccessor>	metadataFieldAccessors;
+	
 	/**
 	 * Represents interest in this field as a whole
 	 * (Example: author = Ben Shneiderman), in addition to interest
@@ -61,13 +63,33 @@ abstract public class Metadata extends ElementState
 	
 	public Metadata()
 	{
-		
+//		setupMetadataFieldAccessors();
 	}
 	
 	public Metadata(MetaMetadata metaMetadata)
 	{
 		this.metaMetadata		= metaMetadata;
+//		setupMetadataFieldAccessors();
 	}
+	
+	public void setupMetadataFieldAccessors()
+	{
+		if(metadataFieldAccessors == null)
+		{
+			metadataFieldAccessors = new HashMapArrayList<String, MetadataFieldAccessor>();
+		}
+		Iterator<FieldAccessor> fieldIterator = fieldAccessorIterator();
+		while(fieldIterator.hasNext())
+		{
+			FieldAccessor fieldAccessor = fieldIterator.next();
+			MetadataFieldAccessor metadataFieldAccessor = new MetadataFieldAccessor(this, fieldAccessor);
+			if(fieldAccessor != null)
+			{
+				metadataFieldAccessors.put(fieldAccessor.getTagName(), metadataFieldAccessor);
+			}
+		}
+	}
+	
 //	public Metadata(boolean createTermVector)
 //	{
 //		if(createTermVector)
@@ -185,13 +207,24 @@ abstract public class Metadata extends ElementState
 	 * @return	The HashMap Iterator.
 	 */
 	//Metadata Transition --bharat
-	public Iterator<FieldAccessor> fieldIterator()
+	public Iterator<FieldAccessor> fieldAccessorIterator()
 	{
 		//TODO Sashikanth: Figure out how to iterate through the fields 
 		//within this metadata object and return the appropriate Iterator
 		HashMapArrayList<String, FieldAccessor> fieldAccessors = Optimizations.getFieldAccessors(this.getClass());
 		
 		Iterator<FieldAccessor> fieldIterator = fieldAccessors.iterator();
+		return fieldIterator;
+//		return null;
+	}
+	
+	public Iterator<MetadataFieldAccessor> metadatafieldAccessorIterator()
+	{
+		//TODO Sashikanth: Figure out how to iterate through the fields 
+		//within this metadata object and return the appropriate Iterator
+//		HashMapArrayList<String, FieldAccessor> fieldAccessors = Optimizations.getFieldAccessors(this.getClass());
+		
+		Iterator<MetadataFieldAccessor> fieldIterator = metadataFieldAccessors.iterator();
 		return fieldIterator;
 //		return null;
 	}
@@ -229,7 +262,7 @@ abstract public class Metadata extends ElementState
 	public boolean isFilled(String attributeName)
 	{
 		attributeName = attributeName.toLowerCase();
-		Iterator<FieldAccessor> fieldIterator = fieldIterator();
+		Iterator<FieldAccessor> fieldIterator = fieldAccessorIterator();
 		while(fieldIterator.hasNext())
 		{
 			FieldAccessor fieldAccessor = fieldIterator.next();
@@ -255,7 +288,7 @@ abstract public class Metadata extends ElementState
 			while(metadataIterator.hasNext())
 			{
 				Metadata metadata = metadataIterator.next();
-				fieldIterator = metadata.fieldIterator();
+				fieldIterator = metadata.fieldAccessorIterator();
 				while(fieldIterator.hasNext())
 				{
 					FieldAccessor fieldAccessor = fieldIterator.next();
@@ -284,7 +317,7 @@ abstract public class Metadata extends ElementState
 		
 		
 
-		Iterator<FieldAccessor> fieldIterator = fieldIterator();
+		Iterator<FieldAccessor> fieldIterator = fieldAccessorIterator();
 		while(fieldIterator.hasNext())
 		{
 			FieldAccessor fieldAccessor = fieldIterator.next();
@@ -303,7 +336,7 @@ abstract public class Metadata extends ElementState
 			while(metadataIterator.hasNext())
 			{
 				Metadata metadata = metadataIterator.next();
-				fieldIterator = metadata.fieldIterator();
+				fieldIterator = metadata.fieldAccessorIterator();
 				while(fieldIterator.hasNext())
 				{
 					FieldAccessor fieldAccessor = fieldIterator.next();
@@ -343,7 +376,7 @@ abstract public class Metadata extends ElementState
 			compositeTermVector	= new TermVector();
 //		termVector.clear();
 
-		Iterator<FieldAccessor> fieldIterator = fieldIterator();
+		Iterator<FieldAccessor> fieldIterator = fieldAccessorIterator();
 		while(fieldIterator.hasNext())
 		{
 			FieldAccessor fieldAccessor = fieldIterator.next();
@@ -362,7 +395,7 @@ abstract public class Metadata extends ElementState
 			while(metadataIterator.hasNext())
 			{
 				Metadata metadata = metadataIterator.next();
-				fieldIterator = metadata.fieldIterator();
+				fieldIterator = metadata.fieldAccessorIterator();
 				while(fieldIterator.hasNext())
 				{
 					FieldAccessor fieldAccessor = fieldIterator.next();
@@ -619,6 +652,13 @@ abstract public class Metadata extends ElementState
 		FieldAccessor fieldAccessor = fieldAccessors.get(fieldName);
 		
 		return fieldAccessor;
+	}
+	
+	public MetadataFieldAccessor getMetadataFieldAccessor(String fieldName)
+	{
+		MetadataFieldAccessor metadataFieldAccessor = metadataFieldAccessors.get(fieldName);
+		
+		return metadataFieldAccessor;
 	}
 	
 	//For adding mapped attributes

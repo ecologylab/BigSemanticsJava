@@ -17,7 +17,7 @@ import ecologylab.xml.types.scalar.ScalarType;
  * @author bharat
  *
  */
-public class MetadataFieldAccessor<M extends Metadata, T> extends FieldAccessor
+public class MetadataFieldAccessor<M extends Metadata> extends FieldAccessor
 {
 
 	public static final String NULL = "null";
@@ -26,6 +26,11 @@ public class MetadataFieldAccessor<M extends Metadata, T> extends FieldAccessor
 	private MetadataValueChangedListener	metadataValueChangedListener;
 	
 //	T	value = null;
+	
+	public MetadataFieldAccessor(M metadata, FieldAccessor fieldAccessor)
+	{
+		this(metadata,fieldAccessor.getField(),fieldAccessor.getScalarType(), fieldAccessor.getTagName());
+	}
 	
 	public MetadataFieldAccessor(M metadata, Field field, ScalarType<?> scalarType, String tagName)
 	{
@@ -63,9 +68,10 @@ public class MetadataFieldAccessor<M extends Metadata, T> extends FieldAccessor
 //		listener.endEditHandler(iconID, this);
 //  	}
 	
-//	public HashMapArrayList<String, FieldAccessor> getFieldAccessorsForThis(Class<? extends FieldAccessor> fieldAccessorClass)
-//	{
-//		return Optimizations.getFieldAccessors(metadata, this);
+	public HashMapArrayList<String, FieldAccessor> getFieldAccessorsForThis(Class<? extends FieldAccessor> fieldAccessorClass)
+	{
+		return Optimizations.getFieldAccessors(metadata.getClass());
+	}
 //		
 //		
 //		HashMapArrayList<String, FieldAccessor> result	= fieldAccessors;
