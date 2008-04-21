@@ -18,6 +18,10 @@ public class MetaMetadataRepository extends ElementState
 	@xml_map("meta_metadata") private HashMapArrayList<String, MetaMetadata> repository; 
 
 	/**
+	 * Metadata Transition: TODO
+	 * Have to create the prefix collection of the url_bases and have to access from here. 
+	 */
+	/**
 	 * 
 	 */
 	public MetaMetadataRepository()
