@@ -3,7 +3,10 @@
  */
 package ecologylab.semantics.metametadata;
 
+import java.util.Iterator;
+
 import ecologylab.generic.HashMapArrayList;
+import ecologylab.net.ParsedURL;
 import ecologylab.xml.ElementState;
 
 /**
@@ -21,6 +24,8 @@ public class MetaMetadataRepository extends ElementState
 	 * Metadata Transition: TODO
 	 * Have to create the prefix collection of the url_bases and have to access from here. 
 	 */
+	private HashMapArrayList<ParsedURL, MetaMetadata> purlMapRepository = new HashMapArrayList<ParsedURL, MetaMetadata>(); 
+	
 	/**
 	 * 
 	 */
@@ -28,6 +33,28 @@ public class MetaMetadataRepository extends ElementState
 	{
 		
 	}
+	
+	public void populatePurlMapRepository()
+	{
+		Iterator<MetaMetadata> iterator = repository.iterator();
+		while(iterator.hasNext())
+		{
+			MetaMetadata metaMetadata = iterator.next();
+			purlMapRepository.put(metaMetadata.getUrlBase(), metaMetadata);
+		}
+	}
+	
+	public MetaMetadata getMetaMetaData(ParsedURL parsedURL)
+	{
+		String purl = "http://www." + parsedURL.domain() + "/";
+		MetaMetadata metaMetadata = purlMapRepository.get(ParsedURL.getAbsolute(purl));
+		
+		/**
+		 * returns null if there is no url_base.
+		 */
+		return metaMetadata;
+	}
+	
 	//Bharat:
 	public MetaMetadata getMetaMetaData(String docType)
 	{
