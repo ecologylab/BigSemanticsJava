@@ -18,7 +18,9 @@ import ecologylab.xml.xml_inherit;
  */
 public class MetaMetadata extends MetaMetadataField
 {
-	@xml_attribute private 	String 		urlBase;
+	@xml_attribute ParsedURL 	 		urlBase;
+	
+//	@xml_attribute private 	String 		urlBase;
 	
 	TranslationScope 					translationScope;
 	
@@ -33,15 +35,19 @@ public class MetaMetadata extends MetaMetadataField
 
 	public boolean isSupported(ParsedURL purl)
 	{
-		return purl.toString().startsWith(urlBase);
+		return purl.toString().startsWith(urlBase.toString());
 	}
 
-	public String getUrlBase() {
+	public ParsedURL getUrlBase() {
 		return urlBase;
 	}
 
-	public void setUrlBase(String urlBase) {
+	public void setUrlBase(ParsedURL urlBase) {
 		this.urlBase = urlBase;
+	}
+	
+	public void setUrlBase(String urlBase) {
+		this.urlBase = ParsedURL.getAbsolute(urlBase);
 	}
 
 	public TranslationScope getTS() {
