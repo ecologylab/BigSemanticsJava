@@ -23,8 +23,9 @@ public class MetaMetadataRepository extends ElementState
 	/**
 	 * Metadata Transition: TODO
 	 * Have to create the prefix collection of the url_bases and have to access from here. 
+	 * For now we are using the domain as the key.
 	 */
-	private HashMapArrayList<ParsedURL, MetaMetadata> purlMapRepository = new HashMapArrayList<ParsedURL, MetaMetadata>(); 
+	private HashMapArrayList<String, MetaMetadata> purlMapRepository = new HashMapArrayList<String, MetaMetadata>(); 
 	
 	/**
 	 * 
@@ -40,15 +41,15 @@ public class MetaMetadataRepository extends ElementState
 		while(iterator.hasNext())
 		{
 			MetaMetadata metaMetadata = iterator.next();
-			purlMapRepository.put(metaMetadata.getUrlBase(), metaMetadata);
+			ParsedURL purl = metaMetadata.getUrlBase();
+			if(purl != null)
+				purlMapRepository.put(purl.domain(), metaMetadata);
 		}
 	}
 	
 	public MetaMetadata getMetaMetaData(ParsedURL parsedURL)
 	{
-		String purl = "http://www." + parsedURL.domain() + "/";
-		MetaMetadata metaMetadata = purlMapRepository.get(ParsedURL.getAbsolute(purl));
-		
+		MetaMetadata metaMetadata = purlMapRepository.get(parsedURL.domain());
 		/**
 		 * returns null if there is no url_base.
 		 */
