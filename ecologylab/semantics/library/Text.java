@@ -13,7 +13,7 @@ import ecologylab.xml.ElementState.xml_nested;
 @xml_inherit
 public class Text extends Media
 {
-
+/*
 	@xml_attribute	TextChunkBase text;
 
 	public TextChunkBase getText()
@@ -31,4 +31,5 @@ public class Text extends Media
 	{
 		this.text = text;
 	}
+	*/
 }
