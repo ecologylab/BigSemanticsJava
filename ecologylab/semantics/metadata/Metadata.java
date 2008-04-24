@@ -286,7 +286,8 @@ abstract public class Metadata extends ElementState
 			String valueString = fieldAccessor.getValueString(this);
 			if(valueString != null && valueString != "null")
 			{
-				System.out.println("field:"+fieldAccessor.getFieldName()+ " value:"+valueString);
+//				Metadata Transition: debug
+//				System.out.println("field:"+fieldAccessor.getFieldName()+ " value:"+valueString);
 				size++;
 			}
 		}
@@ -305,7 +306,8 @@ abstract public class Metadata extends ElementState
 					String valueString = fieldAccessor.getValueString(metadata);
 					if(valueString != null && valueString != "null")
 					{
-						System.out.println("field:"+fieldAccessor.getFieldName()+ " value:"+valueString);
+//						Metadata Transition: debug
+//						System.out.println("field:"+fieldAccessor.getFieldName()+ " value:"+valueString);
 						size++;
 					}
 				}
