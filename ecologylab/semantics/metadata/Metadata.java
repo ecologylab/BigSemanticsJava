@@ -420,7 +420,7 @@ abstract public class Metadata extends ElementState
 
 		if(metadata != null)
 		{
-			HashMapArrayList<String, FieldAccessor> fieldAccessors = Optimizations.getFieldAccessors(metadata.getClass());
+			HashMapArrayList<String, FieldAccessor> fieldAccessors = metadataFieldAccessors();
 			FieldAccessor fieldAccessor = fieldAccessors.get(tagName);
 			if(fieldAccessor != null)
 			{
@@ -446,7 +446,7 @@ abstract public class Metadata extends ElementState
 		
 		if(metadata != null)
 		{
-			HashMapArrayList<String, FieldAccessor> fieldAccessors = Optimizations.getFieldAccessors(metadata.getClass());
+			HashMapArrayList<String, FieldAccessor> fieldAccessors = metadataFieldAccessors();
 			FieldAccessor fieldAccessor = fieldAccessors.get(tagName);
 			if(fieldAccessor != null)
 			{
@@ -473,7 +473,7 @@ abstract public class Metadata extends ElementState
 	 */
 	public Metadata getMetadataWhichContainsField(String tagName)
 	{
-		HashMapArrayList<String, FieldAccessor> fieldAccessors = Optimizations.getFieldAccessors(this.getClass());
+		HashMapArrayList<String, FieldAccessor> fieldAccessors = metadataFieldAccessors();
 		
 //		Iterator<FieldAccessor> fieldIterator = fieldIterator();
 //		while(fieldIterator.hasNext())
@@ -503,7 +503,7 @@ abstract public class Metadata extends ElementState
 			while(metadataIterator.hasNext())
 			{
 				Metadata metadata = metadataIterator.next();
-				fieldAccessors = Optimizations.getFieldAccessors(metadata.getClass());
+				fieldAccessors = metadataFieldAccessors();
 				fieldAccessor = fieldAccessors.get(tagName);
 				if(fieldAccessor != null)
 				{
