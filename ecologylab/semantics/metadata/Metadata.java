@@ -503,7 +503,7 @@ abstract public class Metadata extends ElementState
 			while(metadataIterator.hasNext())
 			{
 				Metadata metadata = metadataIterator.next();
-				fieldAccessors = metadataFieldAccessors();
+				fieldAccessors = metadata.metadataFieldAccessors();
 				fieldAccessor = fieldAccessors.get(tagName);
 				if(fieldAccessor != null)
 				{
