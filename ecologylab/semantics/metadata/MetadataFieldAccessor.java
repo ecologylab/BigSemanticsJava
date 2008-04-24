@@ -10,6 +10,7 @@ import ecologylab.generic.HashMapArrayList;
 import ecologylab.model.MetadataField;
 import ecologylab.semantics.gui.MetadataValueChangedListener;
 import ecologylab.xml.FieldAccessor;
+import ecologylab.xml.FieldToXMLOptimizations;
 import ecologylab.xml.Optimizations;
 import ecologylab.xml.types.scalar.ScalarType;
 
@@ -21,21 +22,12 @@ public class MetadataFieldAccessor<M extends Metadata> extends FieldAccessor
 {
 
 	public static final String NULL = "null";
-	private M metadata;
 	
 	private MetadataValueChangedListener	metadataValueChangedListener;
 	
-//	T	value = null;
-	
-	public MetadataFieldAccessor(M metadata, FieldAccessor fieldAccessor)
+	public MetadataFieldAccessor(FieldToXMLOptimizations f2XO)
 	{
-		this(metadata,fieldAccessor.getField(),fieldAccessor.getScalarType(), fieldAccessor.getTagName());
-	}
-	
-	public MetadataFieldAccessor(M metadata, Field field, ScalarType<?> scalarType, String tagName)
-	{
-		super(field, scalarType, tagName);
-		this.setMetadata(metadata);
+		super(f2XO);
 	}
 	
 	public void editValue(Metadata context, String newValue)
@@ -67,42 +59,6 @@ public class MetadataFieldAccessor<M extends Metadata> extends FieldAccessor
 //  	{
 //		listener.endEditHandler(iconID, this);
 //  	}
-	
-	public HashMapArrayList<String, FieldAccessor> getFieldAccessorsForThis(Class<? extends FieldAccessor> fieldAccessorClass)
-	{
-		return Optimizations.getFieldAccessors(metadata.getClass());
-	}
-//		
-//		
-//		HashMapArrayList<String, FieldAccessor> result	= fieldAccessors;
-//		if (result == null)
-//		{
-//			result				= createFieldAccessors(fieldAccessorClass);
-//			this.fieldAccessors	= result;
-//		}
-//		return result;
-//	}
-
-	public String getValueString()
-	{
-		return super.getValueString(metadata);
-	}
-	
-	/**
-	 * @return the metadata
-	 */
-	public M getMetadata()
-	{
-		return metadata;
-	}
-
-	/**
-	 * @param metadata the metadata to set
-	 */
-	public void setMetadata(M metadata)
-	{
-		this.metadata = metadata;
-	}
 
 	/**
 	 * @return the metadataValueChangedListener
