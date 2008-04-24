@@ -42,8 +42,6 @@ abstract public class Metadata extends ElementState
 	
 	final static int		INITIAL_SIZE		= 5;
 
-	private HashMapArrayList<String, MetadataFieldAccessor>	metadataFieldAccessors;
-	
 	/**
 	 * Represents interest in this field as a whole
 	 * (Example: author = Ben Shneiderman), in addition to interest
@@ -70,24 +68,6 @@ abstract public class Metadata extends ElementState
 	{
 		this.metaMetadata		= metaMetadata;
 //		setupMetadataFieldAccessors();
-	}
-	
-	public void setupMetadataFieldAccessors()
-	{
-		if(metadataFieldAccessors == null)
-		{
-			metadataFieldAccessors = new HashMapArrayList<String, MetadataFieldAccessor>();
-		}
-		Iterator<FieldAccessor> fieldIterator = fieldAccessorIterator();
-		while(fieldIterator.hasNext())
-		{
-			FieldAccessor fieldAccessor = fieldIterator.next();
-			MetadataFieldAccessor metadataFieldAccessor = new MetadataFieldAccessor(this, fieldAccessor);
-			if(fieldAccessor != null)
-			{
-				metadataFieldAccessors.put(fieldAccessor.getTagName(), metadataFieldAccessor);
-			}
-		}
 	}
 	
 //	public Metadata(boolean createTermVector)
@@ -202,34 +182,16 @@ abstract public class Metadata extends ElementState
 	}
 	
 	/**
-	 * This is going to return a Iterator of <code>FieldAccessor</code>
+	 * This is going to return a Iterator of <code>FieldAccessor</code>. Uses lazy evaluation :-)
 	 * 
 	 * @return	The HashMap Iterator.
 	 */
 	//Metadata Transition --bharat
 	public Iterator<FieldAccessor> fieldAccessorIterator()
 	{
-		//TODO Sashikanth: Figure out how to iterate through the fields 
-		//within this metadata object and return the appropriate Iterator
-		HashMapArrayList<String, FieldAccessor> fieldAccessors = Optimizations.getFieldAccessors(this.getClass());
-		
-		Iterator<FieldAccessor> fieldIterator = fieldAccessors.iterator();
-		return fieldIterator;
-//		return null;
+		return metadataFieldAccessors().iterator();
 	}
-	
-	public Iterator<MetadataFieldAccessor> metadatafieldAccessorIterator()
-	{
-		//TODO Sashikanth: Figure out how to iterate through the fields 
-		//within this metadata object and return the appropriate Iterator
-//		HashMapArrayList<String, FieldAccessor> fieldAccessors = Optimizations.getFieldAccessors(this.getClass());
 		
-		Iterator<MetadataFieldAccessor> fieldIterator = metadataFieldAccessors.iterator();
-		return fieldIterator;
-//		return null;
-	}
-	
-	
 	/**
 	 * Initializes the data termvector structure. This is not added to the individual
 	 * fields (so that it can be changed) but is added to the composite term vector.
@@ -645,20 +607,28 @@ abstract public class Metadata extends ElementState
 		this.mixins = mixins;
 	}
 	
-	public FieldAccessor getFieldAccessor(String fieldName)
-	{
-		HashMapArrayList<String, FieldAccessor> fieldAccessors = Optimizations.getFieldAccessors(this.getClass());
-
-		FieldAccessor fieldAccessor = fieldAccessors.get(fieldName);
-		
-		return fieldAccessor;
-	}
-	
+	/**
+	 * Efficiently retrieve appropriate MetadataFieldAccessor, using lazy evaluation.
+	 * 
+	 * @param fieldName
+	 * @return
+	 */
 	public MetadataFieldAccessor getMetadataFieldAccessor(String fieldName)
 	{
-		MetadataFieldAccessor metadataFieldAccessor = metadataFieldAccessors.get(fieldName);
-		
-		return metadataFieldAccessor;
+		return (MetadataFieldAccessor) metadataFieldAccessors().get(fieldName);
+	}
+	
+	HashMapArrayList<String, FieldAccessor> metadataFieldAccessors;
+	
+	HashMapArrayList<String, FieldAccessor> metadataFieldAccessors()
+	{
+		HashMapArrayList<String, FieldAccessor> result	= this.metadataFieldAccessors;
+		if (result == null)
+		{
+			result			= Optimizations.getFieldAccessors(this.getClass(), MetadataFieldAccessor.class);
+			metadataFieldAccessors	= result;
+		}
+		return result;
 	}
 	
 	//For adding mapped attributes
