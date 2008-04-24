@@ -190,7 +190,7 @@ public class HtmlDomExtractor<M extends Metadata> extends Debug
 				if(mmdElement.isNested())
 				{
 					//Have to return the nested object for the field.
-					FieldAccessor fieldAccessor = metadata.getFieldAccessor(mmdElementName);
+					FieldAccessor fieldAccessor = metadata.getMetadataFieldAccessor(mmdElementName);
 					Field field 				= fieldAccessor.getField();
 					nestedMetadata 				= (M) ReflectionTools.getFieldValue(metadata , field);
 					
@@ -208,7 +208,7 @@ public class HtmlDomExtractor<M extends Metadata> extends Debug
 				else if(mmdElement.isMap())
 				{
 					debug("");
-					FieldAccessor fieldAccessor = metadata.getFieldAccessor(mmdElementName);
+					FieldAccessor fieldAccessor = metadata.getMetadataFieldAccessor(mmdElementName);
 					Field field = fieldAccessor.getField();
 					HashMapArrayList<?, Metadata> mappedMetadata;
 					nestedMetadata = (M) ReflectionTools.getFieldValue(metadata , field);
