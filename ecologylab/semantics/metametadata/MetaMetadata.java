@@ -28,6 +28,12 @@ public class MetaMetadata extends MetaMetadataField
 	
 	@xml_collection("mixins")  ArrayList<String> 		mixins;
 	
+	/**
+	 * Just for debugging
+	 * This is used for generation of Metadata classes. Currently not used. 
+	 */
+	@xml_attribute @xml_tag("extends") String parent;
+	
 	public MetaMetadata()
 	{
 		super();
