@@ -477,39 +477,21 @@ abstract public class Metadata extends ElementState
 	{
 		HashMapArrayList<String, FieldAccessor> fieldAccessors = metadataFieldAccessors();
 		
-//		Iterator<FieldAccessor> fieldIterator = fieldIterator();
-//		while(fieldIterator.hasNext())
-//		{
-//			FieldAccessor fieldAccessor = fieldIterator.next();
-//			String valueString = fieldAccessor.getValueString(this);
-//			if(valueString.equals("source") || valueString.equals("authors"))
-//			{
-//				Field field = fieldAccessor.getField();
-//			}
-//			
-//			if(valueString != null && valueString != "null")
-//			{
-//				compositeTermVector.addTerms(valueString, false);
-//			}
-//		}
-		
-		FieldAccessor fieldAccessor = fieldAccessors.get(tagName);
-		if(fieldAccessor != null)
+		FieldAccessor metadataFieldAccessor = fieldAccessors.get(tagName);
+		if (metadataFieldAccessor != null)
 		{
 			return this;
 		}
 		//The field may be in mixin
 		if(mixins != null && mixins.size() > 0)
 		{
-			Iterator<Metadata> metadataIterator = mixins.iterator();
-			while(metadataIterator.hasNext())
+			for (Metadata mixinMetadata : mixins)
 			{
-				Metadata metadata = metadataIterator.next();
-				fieldAccessors = metadata.metadataFieldAccessors();
-				fieldAccessor = fieldAccessors.get(tagName);
-				if(fieldAccessor != null)
+				fieldAccessors 	= mixinMetadata.metadataFieldAccessors();
+				FieldAccessor mixinFieldAccessor 	= fieldAccessors.get(tagName);
+				if(mixinFieldAccessor != null)
 				{
-					return metadata;
+					return mixinMetadata;
 				}
 			}
 		}
