@@ -292,7 +292,7 @@ abstract public class Metadata extends ElementState
 			}
 		}
 		
-		//Supporting Mixins
+		//Supporting Mixins -- Not used as yet but these are working fine.
 		if(mixins != null && mixins.size() > 0)
 		{
 			Iterator<Metadata> metadataIterator = mixins.iterator();
