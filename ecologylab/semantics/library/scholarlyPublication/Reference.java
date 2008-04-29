@@ -14,6 +14,10 @@ public class Reference extends Metadata implements Mappable<ParsedURL>
 	@xml_attribute ParsedURL		link;
 	@xml_leaf String 				bibTex;
 
+	public Reference()
+	{
+		// TODO Auto-generated constructor stub
+	}
 	public Reference(ParsedURL link)
 	{
 		this.link = link;

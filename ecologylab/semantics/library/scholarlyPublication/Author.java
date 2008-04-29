@@ -15,6 +15,10 @@ public class Author extends Metadata implements Mappable<String>
 	@xml_attribute String		name;
 	@xml_leaf String			affiliation;
 	@xml_leaf ParsedURL			resultsPage;
+	public Author()
+	{
+		// TODO Auto-generated constructor stub
+	}
 	
 	public Author(String name)
 	{

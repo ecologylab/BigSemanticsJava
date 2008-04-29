@@ -29,24 +29,24 @@ public class AcmPortal extends Document
 	@xml_leaf 	String														title;
 	@xml_leaf	ParsedURL 													fullText;
 	@xml_nested	Source														source 		= new Source();
-//	@xml_map("author") 
-//	public 	HashMapArrayList<String, Author>							author 		= new HashMapArrayList<String, Author>();
+	@xml_map("author") 
+	public 	HashMapArrayList<String, Author>							author 		= new HashMapArrayList<String, Author>();
 	
 //	@xml_map("author")
-	@xml_map private AuthorsMap author = new AuthorsMap();
+//	@xml_map private AuthorsMap author = new AuthorsMap();
 	
 	
 	@xml_tag("abstract")
 	@xml_leaf 	String														abst;
-//	@xml_map("references") 
-//	private HashMapArrayList<ParsedURL, Reference>							references 	= new HashMapArrayList<ParsedURL, Reference>();
-//	@xml_map("citations") 
-//	private HashMapArrayList<ParsedURL, Reference>							citations 	= new HashMapArrayList<ParsedURL, Reference>();
-	
 	@xml_map("references") 
-	private ReferencesMap references = new ReferencesMap();
-	@xml_map("citations")
-	private ReferencesMap citations = new ReferencesMap();
+	private HashMapArrayList<ParsedURL, Reference>							references 	= new HashMapArrayList<ParsedURL, Reference>();
+	@xml_map("citations") 
+	private HashMapArrayList<ParsedURL, Reference>							citations 	= new HashMapArrayList<ParsedURL, Reference>();
+	
+//	@xml_map("references") 
+//	private ReferencesMap references = new ReferencesMap();
+//	@xml_map("citations")
+//	private ReferencesMap citations = new ReferencesMap();
 	
 	public AcmPortal(MetaMetadata metaMetadata)
 	{
