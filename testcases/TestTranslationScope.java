@@ -2,6 +2,7 @@ package testcases;
 
 
 import ecologylab.generic.Debug;
+import ecologylab.semantics.library.scalar.MetadataString;
 import ecologylab.xml.TranslationScope;
 
 public class TestTranslationScope extends Debug
@@ -12,6 +13,7 @@ public class TestTranslationScope extends Debug
 	protected static final Class TRANSLATIONS[] = 
 	{
 		TestDocument.class,
+		MetadataString.class,
 	};
 		
 	public static TranslationScope get()
