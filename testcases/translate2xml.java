@@ -28,7 +28,7 @@ public class translate2xml
 //			try
 //			{
 //				testDocument.translateToXML(file1);
-				testDocumentfromXML = (TestDocument) TestDocument.translateFromXML(file1, TS);
+				testDocumentfromXML = (TestDocument) TestDocument.translateFromXMLSAX(file1, TS);
 //			} 
 //			catch (IOException e)
 //			{
