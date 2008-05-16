@@ -15,26 +15,17 @@ public class translate2xml
 	 */
 	public static void main(String[] args)
 	{
-		// TODO Auto-generated method stub
 		TranslationScope TS = TestTranslationScope.get();
 		TestDocument testDocument = new TestDocument();
-		TestDocument testDocumentfromXML = new TestDocument();
 		testDocument.setContext("Sample Context");
 		testDocument.getTitle().setValue("Sample Title");
 		testDocument.setValue("Sample scalarText Value");
-		File file1 = new File("./testcases/file1.xml");
+		
+		File file = new File("./testcases/file1.xml");
 		try
 		{
-//			try
-//			{
-//				testDocument.translateToXML(file1);
-				testDocumentfromXML = (TestDocument) TestDocument.translateFromXMLSAX(file1, TS);
-//			} 
-//			catch (IOException e)
-//			{
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
+			TestDocument testDocumentfromXML = (TestDocument) TestDocument.translateFromXML(file, TS);
+			testDocumentfromXML.translateToXML(System.out);
 		} catch (XMLTranslationException e)
 		{
 			// TODO Auto-generated catch block
