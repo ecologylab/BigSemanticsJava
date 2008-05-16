@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?><composition version="3.0">
+  <preferences>
+    <screen height="695" width="634"/>
+  </preferences>
+  <seed_set>
+    <curated_seeding name="news"/>
+  </seed_set>
+  <site_set>
+    <site domain="nytimes.com" stroke_hue="0.16666667"/>
+    <site domain="cnn.com" font_index="1" stroke_hue="0.3611111"/>
+  </site_set>
+  <traversable_set>
+    <traversable url_string="nytimes.com"/>
+    <traversable url_string="www10.nytimes.com"/>
+    <traversable url_string="www.cnn.com"/>
+    <traversable url_string="thecaucus.blogs.nytimes.com/2008/04/18/new-obama-endorsements"/>
+    <traversable url_string="movies.nytimes.com/2008/04/18/movies"/>
+    <traversable url_string="theater2.nytimes.com/2008/04/18/theater/reviews"/>
+    <traversable url_string="my.abcnews.go.com/rsspublic"/>
+    <traversable url_string="rss.cnn.com/rss"/>
+    <traversable url_string="www.guardian.co.uk/rssfeed"/>
+    <traversable url_string="cityroom.blogs.nytimes.com/2008/04/18/return-of-lost-bass-proves-to-be-a-jazzy-but-thankless-effort"/>
+    <traversable url_string="thelede.blogs.nytimes.com/2008/04/18/an-earthquake-rattles-the-midwest"/>
+    <traversable url_string="abcnews.go.com"/>
+    <traversable url_string="newsrss.bbc.co.uk/rss/newsonline_uk_edition/sci/tech"/>
+    <traversable url_string="news.bbc.co.uk"/>
+    <traversable url_string="dotearth.blogs.nytimes.com/2008/04/18/looking-forward-an-energy-scramble-or-a-blueprint"/>
+    <traversable url_string="bits.blogs.nytimes.com/2008/04/17/three-certain-things-death-taxes-and-the-shift-to-the-web"/>
+    <traversable url_string="bits.blogs.nytimes.com/2008/04/17/the-raggie-grannies-greet-the-fcc"/>
+    <traversable url_string="bits.blogs.nytimes.com/2008/04/17/comcasts-concession-to-net-neutrality"/>
+    <traversable url_string="bits.blogs.nytimes.com/2008/04/17/amazon-gains-share-of-shrinking-paid-music-market"/>
+    <traversable url_string="bits.blogs.nytimes.com/2008/04/18/how-much-should-microsoft-charge-for-its-home-software-subscription"/>
+    <traversable url_string="cnn.com"/>
+    <traversable url_string="www.nytimes.com/2008/04/20/magazine"/>
+    <traversable url_string="www.nytimes.com/2008/04/19/washington"/>
+    <traversable url_string="www.nytimes.com/2008/04/19/technology"/>
+    <traversable url_string="www.nytimes.com/2008/04/19/us"/>
+    <traversable url_string="www.nytimes.com/2008/04/19/business"/>
+    <traversable url_string="www.nytimes.com/2008/04/19/world/asia"/>
+    <traversable url_string="www.nytimes.com/2008/04/19/world/africa"/>
+    <traversable url_string="www.nytimes.com/2008/04/17/technology"/>
+    <traversable url_string="www.nytimes.com/2008/04/17/business"/>
+    <traversable url_string="www.nytimes.com/2008/04/18/books"/>
+    <traversable url_string="www.nytimes.com/2008/04/18/technology"/>
+    <traversable url_string="www.nytimes.com/2008/04/18/nyregion"/>
+    <traversable url_string="www.nytimes.com/2008/04/18/arts"/>
+    <traversable url_string="www.nytimes.com/2008/04/18/style"/>
+    <traversable url_string="www.nytimes.com/2008/04/18/movies"/>
+    <traversable url_string="www.nytimes.com/2008/04/18/us/nationalspecial2"/>
+    <traversable url_string="www.nytimes.com/2008/04/18/business"/>
+    <traversable url_string="www.nytimes.com/2008/04/15/movies/homevideo"/>
+    <traversable url_string="www.nytimes.com/2008/04/16/arts/design"/>
+    <traversable url_string="www.nytimes.com/2008/04/16/business/media"/>
+    <traversable url_string="www.nytimes.com/2008/04/13/magazine"/>
+    <traversable url_string="www.nytimes.com/services/xml/rss/nyt"/>
+    <traversable url_string="www.nytimes.com/2007/11/29/business/media"/>
+    <traversable url_string="www.nytimes.com/2007/12/08/movies"/>
+    <traversable url_string="www.nytimes.com/2007/12/09/fashion"/>
+    <traversable url_string="www.nytimes.com/2007/12/09/theater"/>
+    <traversable url_string="www.nytimes.com/2007/12/04/movies/homevideo"/>
+    <traversable url_string="www.nytimes.com/2007/12/05/education"/>
+    <traversable url_string="www.nytimes.com/2007/12/06/movies/awardsseason"/>
+    <traversable url_string="www.nytimes.com/2007/12/02/movies"/>
+    <traversable url_string="www.nytimes.com/2007/12/02/world/americas"/>
+    <traversable url_string="www.nytimes.com/2007/12/03/movies"/>
+    <traversable url_string="www.nytimes.com/idg"/>
+    <traversable url_string="www.nytimes.com/interactive/2008/04/02/us"/>
+    <traversable url_string="www.nytimes.com/slideshow/2008/04/02/sports"/>
+    <traversable url_string="www.nytimes.com/slideshow/2008/04/02/us"/>
+    <traversable url_string="www.nytimes.com/slideshow/2008/04/02/world"/>
+    <traversable url_string="www.nytimes.com/slideshow/2008/04/03/world"/>
+    <traversable url_string="www.nytimes.com/aponline/technology"/>
+    <traversable url_string="www.nytimes.com/aponline/business"/>
+  </traversable_set>
+  <untraversable_set>
+    <untraversable>transcripts.cnn.com</untraversable>
+  </untraversable_set>
+  <reject_domain_set>
+    <reject>joshualandis.com</reject>
+    <reject>digg.com</reject>
+    <reject>typepad.com</reject>
+    <reject>dooce.com</reject>
+    <reject>unitedway.org</reject>
+    <reject>powells.com</reject>
+    <reject>amys.com</reject>
+    <reject>zeralko.az</reject>
+    <reject>amazon.com</reject>
+    <reject>ccidnet.com</reject>
+    <reject>uwint.org</reject>
+    <reject>careerbuilder.com</reject>
+    <reject>earth-netone.com</reject>
+    <reject>hitbox.com</reject>
+    <reject>avenuea.com</reject>
+    <reject>dmiblog.com</reject>
+    <reject>skepticseye.com</reject>
+  </reject_domain_set>
+  <term_set/>
+  <container_set>
+    <container bias="1.0" document_type="HTMLDOMImageText" generation="1" purl="http://www.cnn.com/2008/WORLD/asiapcf/04/18/afghanistan.ap/index.html?eref=rss_world">
+      <participant/>
+      <rss><location>http://www.cnn.com/2008/WORLD/asiapcf/04/18/afghanistan.ap/index.html?eref=rss_world</location><title>Son of Dutch army chief killed in Afghanistan</title></rss>
+    </container>
+    <container bias="1.0" document_type="HTMLDOMImageText" generation="1" purl="http://bits.blogs.nytimes.com/2008/04/17/three-certain-things-death-taxes-and-the-shift-to-the-web/index.html">
+      <participant/>
+      <rss><description>For the first time, more people filled out their tax forms using TurboTax&#8217;s online product than the store-bought packaged software.</description><location>http://bits.blogs.nytimes.com/2008/04/17/three-certain-things-death-taxes-and-the-shift-to-the-web/index.html</location><title>Bits: Three Certain Things: Death, Taxes and the Shift to the Web</title></rss>
+    </container>
+    <container bias="1.0" document_type="HTMLDOMImageText" generation="1" purl="http://www.cnn.com/2008/WORLD/europe/04/18/putin.denial.ap/index.html?eref=rss_world">
+      <participant/>
+      <rss><location>http://www.cnn.com/2008/WORLD/europe/04/18/putin.denial.ap/index.html?eref=rss_world</location><title>Putin denies planning to marry gymnast, 24</title></rss>
+    </container>
+    <container bias="1.0" document_type="HTMLDOMImageText" generation="1" purl="http://www.cnn.com/2008/WORLD/meast/04/18/carter.hamas/index.html?eref=rss_topstories">
+      <participant/>
+      <rss><location>http://www.cnn.com/2008/WORLD/meast/04/18/carter.hamas/index.html?eref=rss_topstories</location><title>Carter meets with exiled Hamas leader</title></rss>
+    </container>
+    <container bias="1.0" document_type="HTMLDOMImageText" generation="1" purl="http://cityroom.blogs.nytimes.com/2008/04/18/return-of-lost-bass-proves-to-be-a-jazzy-but-thankless-effort/index.html">
+      <participant/>
+      <rss><description>It takes awhile for a good Samaritan's good deed to be appreciated: The tale of a valued missing musical instrument, which was stolen and eventually returned -- the hard way -- to its owner.</description><location>http://cityroom.blogs.nytimes.com/2008/04/18/return-of-lost-bass-proves-to-be-a-jazzy-but-thankless-effort/index.html</location><title>City Room: Lost and Found Bass</title></rss>
+    </container>
+    <container bias="1.0" document_type="HTMLDOMImageText" generation="1" purl="http://www.cnn.com/2008/WORLD/meast/04/18/iraq.attacks/index.html?eref=rss_topstories">
+      <participant/>
+      <rss><location>http://www.cnn.com/2008/WORLD/meast/04/18/iraq.attacks/index.html?eref=rss_topstories</location><title>Al Qaeda plans Baghdad hits, says U.S.</title></rss>
+    </container>
+    <container bias="1.0" document_type="HTMLDOMImageText" generation="1" purl="http://www.cnn.com/2008/WORLD/asiapcf/04/18/thailand.torch/index.html?eref=rss_world">
+      <participant/>
+      <rss><location>http://www.cnn.com/2008/WORLD/asiapcf/04/18/thailand.torch/index.html?eref=rss_world</location><title>Buddhist temple withdraws from relay</title></rss>
+    </container>
+    <container bias="1.0" document_type="HTMLDOMImageText" generation="1" purl="http://www.cnn.com/2008/WORLD/americas/04/18/argentina.fires/index.html?eref=rss_topstories">
+      <participant/>
+      <rss><location>http://www.cnn.com/2008/WORLD/americas/04/18/argentina.fires/index.html?eref=rss_topstories</location><title>Smoke chokes Argentina's capital</title></rss>
+    </container>
+    <container bias="1.0" document_type="HTMLDOMImageText" generation="1" purl="http://www.cnn.com/2008/WORLD/africa/04/16/zimbabwe.clancy/index.html?eref=rss_topstories">
+      <participant/>
+      <rss><location>http://www.cnn.com/2008/WORLD/africa/04/16/zimbabwe.clancy/index.html?eref=rss_topstories</location><title>Hungry slither under fence as artist sings </title></rss>
+    </container>
+    <container bias="1.0" document_type="HTMLDOMImageText" generation="1" purl="http://www.cnn.com/2008/US/04/18/church.victims/index.html?eref=rss_topstories">
+      <participant/>
+      <rss><location>http://www.cnn.com/2008/US/04/18/church.victims/index.html?eref=rss_topstories</location><title>Church victim: 'My tears alone spoke'</title></rss>
+    </container>
+    <container bias="1.0" document_type="HTMLDOMImageText" generation="1" purl="http://www.cnn.com/2008/WORLD/americas/04/18/argentina.fires/index.html?eref=rss_world">
+      <participant/>
+      <rss><location>http://www.cnn.com/2008/WORLD/americas/04/18/argentina.fires/index.html?eref=rss_world</location><title>Smoke chokes Argentina's capital</title></rss>
+    </container>
+    <container bias="1.0" document_type="HTMLDOMImageText" generation="1" purl="http://www.cnn.com/2008/US/04/18/pope.fri/index.html?eref=rss_world">
+      <participant/>
+      <rss><location>http://www.cnn.com/2008/US/04/18/pope.fri/index.html?eref=rss_world</location><title>Pope promotes human rights at U.N.</title></rss>
+    </container>
+    <container bias="1.0" document_type="HTMLDOMImageText" generation="1" purl="http://www.cnn.com/2008/WORLD/europe/04/18/spain.drought/index.html?eref=rss_world">
+      <participant/>
+      <rss><location>http://www.cnn.com/2008/WORLD/europe/04/18/spain.drought/index.html?eref=rss_world</location><title>Spain suffers worst drought</title></rss>
+    </container>
+    <container bias="1.0" document_type="HTMLDOMImageText" generation="1" purl="http://www.nytimes.com/idg/IDG_852573C4006938800025742F0061AAFF.html">
+      <participant/>
+      <rss><description>PayPal, eBay&#8217;s payment service and the frequent target of fraudsters, plans to block browsers that don&#8217;t include anti-phishing features from accessing its site.</description><location>http://www.nytimes.com/idg/IDG_852573C4006938800025742F0061AAFF.html</location><title>PayPal Plans to Block Safari and Old Browsers</title></rss>
+    </container>
+    <container bias="1.0" document_type="HTMLDOMImageText" generation="1" purl="http://thelede.blogs.nytimes.com/2008/04/18/an-earthquake-rattles-the-midwest/index.html">
+      <participant/>
+      <rss><description>A part of the country prone to earthquakes but not known for them gets a predawn shaking.</description><location>http://thelede.blogs.nytimes.com/2008/04/18/an-earthquake-rattles-the-midwest/index.html</location><title>The Lede: Earthquake Rattles the Midwest</title></rss>
+    </container>
+  </container_set>
+  <surrogate_set>
+    <surrogate containerURL="http://www.cnn.com/2008/WORLD/americas/04/18/argentina.fires/index.html?eref=rss_topstories" history_num="1">
+      <text_element bias="1.0" face_index="1" font_color="90000000" stroke_color="e872fd89">
+        <text_chunk font_size="13" non_stop_index="0.5">
+          <cf_text_token delims_before="" string="The"/>
+          <cf_text_token delims_before=" " string="smoke"/>
+          <cf_text_token delims_before=" " string="has"/>
+          <cf_text_token delims_before=" " string="obscured"/>
+          <cf_text_token delims_before=" " string="views"/>
+          <cf_text_token delims_before=" " string="of"/>
+        </text_chunk>
+        <participant/>
+        <text>
+          <context>Text</context>
+        </text>
+      </text_element>
+      <visual>
+        <extent height="51" width="112" x="510"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.cnn.com/2008/US/04/18/pope.fri/index.html?eref=rss_world" history_num="3">
+      <image_element bias="1.0" has_transparency="true" href="http://www.cnn.com/video/?/video/world/2008/04/11/impact.your.world.thai.cnn?iref=mpvideosemail" purl="http://i2.cdn.turner.com/cnn/video/world/2008/04/11/impact.your.world.thai.cnn.60x45.jpg">
+        <participant/>
+        <image><caption>Orphan living in garbage dump</caption><location>http://i2.cdn.turner.com/cnn/video/world/2008/04/11/impact.your.world.thai.cnn.60x45.jpg</location></image>
+      </image_element>
+      <visual>
+        <extent height="45" width="60" x="570" y="66"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.cnn.com/2008/WORLD/africa/04/16/zimbabwe.clancy/index.html?eref=rss_topstories" history_num="5">
+      <text_element bias="1.0" face_index="1" font_color="89000000" stroke_color="e172fd89">
+        <text_chunk font_size="12" non_stop_index="0.42857143">
+          <cf_text_token delims_before="" string=" "/>
+          <cf_text_token delims_before="" string="--"/>
+          <cf_text_token delims_before=" " string="Singer"/>
+          <cf_text_token delims_before=" " string="Eli"/>
+          <cf_text_token delims_before=" " string="Amor"/>
+          <cf_text_token delims_before=" " string="is"/>
+          <cf_text_token delims_before=" " string="a"/>
+        </text_chunk>
+        <participant/>
+        <text>
+          <context>Text</context>
+        </text>
+      </text_element>
+      <visual>
+        <extent height="48" width="69" x="540" y="198"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.cnn.com/2008/WORLD/meast/04/18/carter.hamas/index.html?eref=rss_topstories" history_num="9">
+      <text_element bias="1.0" face_index="1" font_color="75000000" stroke_color="b272fd89">
+        <text_chunk font_size="11" non_stop_index="0.36363637">
+          <cf_text_token delims_before="" string="&quot;Any"/>
+          <cf_text_token delims_before=" " string="democratic"/>
+          <cf_text_token delims_before=" " string="government"/>
+          <cf_text_token delims_before=" " string="finds"/>
+          <cf_text_token delims_before=" " string="it"/>
+          <cf_text_token delims_before=" " string="very,"/>
+          <cf_text_token delims_before=" " string="very"/>
+          <cf_text_token delims_before=" " string="hard"/>
+          <cf_text_token delims_before=" " string="to"/>
+          <cf_text_token delims_before=" " string="talk"/>
+          <cf_text_token delims_before=" " string="to"/>
+        </text_chunk>
+        <participant/>
+        <text>
+          <context>Text</context>
+        </text>
+      </text_element>
+      <visual>
+        <extent height="60" width="119" x="510" y="330"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.cnn.com/2008/WORLD/asiapcf/04/18/afghanistan.ap/index.html?eref=rss_world" history_num="2">
+      <image_element bias="1.0" has_transparency="true" purl="http://i.l.cnn.net/cnn/2008/WORLD/asiapcf/04/18/afghanistan.ap/art.peter.ap.jpg">
+        <participant/>
+        <image><location>http://i.l.cnn.net/cnn/2008/WORLD/asiapcf/04/18/afghanistan.ap/art.peter.ap.jpg</location></image>
+      </image_element>
+      <visual>
+        <extent height="45" width="60" x="450" y="66"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.cnn.com/2008/WORLD/europe/04/18/spain.drought/index.html?eref=rss_world" history_num="4">
+      <image_element bias="1.0" has_transparency="true" purl="http://i.l.cnn.net/cnn/2008/WORLD/europe/04/18/spain.drought/art.reservoir.afp.gi.jpg">
+        <participant/>
+        <image><location>http://i.l.cnn.net/cnn/2008/WORLD/europe/04/18/spain.drought/art.reservoir.afp.gi.jpg</location></image>
+      </image_element>
+      <visual>
+        <extent height="67" width="90" x="50" y="207"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.cnn.com/2008/WORLD/americas/04/18/argentina.fires/index.html?eref=rss_world" history_num="6">
+      <image_element bias="1.0" has_transparency="true" purl="http://i.l.cnn.net/cnn/2008/WORLD/americas/04/18/argentina.fires/art.smoke.afp.gi.jpg">
+        <participant/>
+        <image><location>http://i.l.cnn.net/cnn/2008/WORLD/americas/04/18/argentina.fires/art.smoke.afp.gi.jpg</location></image>
+      </image_element>
+      <visual>
+        <extent height="112" width="150" x="480" y="198"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.cnn.com/2008/WORLD/meast/04/18/iraq.attacks/index.html?eref=rss_topstories" history_num="8">
+      <image_element bias="1.0" has_transparency="true" purl="http://i.l.cnn.net/cnn/2008/WORLD/meast/04/18/iraq.attacks/art.boy.gi.jpg">
+        <participant/>
+        <image><location>http://i.l.cnn.net/cnn/2008/WORLD/meast/04/18/iraq.attacks/art.boy.gi.jpg</location></image>
+      </image_element>
+      <visual>
+        <extent height="67" width="90" x="480" y="363"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.nytimes.com/idg/IDG_852573C4006938800025742F0061AAFF.html" history_num="7">
+      <image_element bias="1.0" has_transparency="true" href="http://www.nytimes.com/2008/04/18/opinion/l18pope.html" purl="http://graphics8.nytimes.com/images/2008/04/17/opinion/18moth_letter.jpg">
+        <participant/>
+        <image><caption>Letters: As the Pope Comes to New York</caption><location>http://graphics8.nytimes.com/images/2008/04/17/opinion/18moth_letter.jpg</location></image>
+      </image_element>
+      <visual>
+        <extent height="151" width="151" x="480"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.cnn.com/2008/US/04/18/church.victims/index.html?eref=rss_topstories" history_num="10">
+      <image_element bias="1.0" has_transparency="true" purl="http://i.l.cnn.net/cnn/2008/US/04/18/church.victims/art.clergy.victims.cnn.jpg">
+        <participant/>
+        <image><location>http://i.l.cnn.net/cnn/2008/US/04/18/church.victims/art.clergy.victims.cnn.jpg</location></image>
+      </image_element>
+      <visual>
+        <extent height="135" width="180" x="25" y="39"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://bits.blogs.nytimes.com/2008/04/17/three-certain-things-death-taxes-and-the-shift-to-the-web/index.html" history_num="11">
+      <image_element bias="1.0" has_transparency="true" purl="http://graphics8.nytimes.com/images/2008/04/17/technology/taxform75.jpg">
+        <participant/>
+        <image><caption>taxform</caption><location>http://graphics8.nytimes.com/images/2008/04/17/technology/taxform75.jpg</location></image>
+      </image_element>
+      <visual>
+        <extent height="75" width="75" x="390"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.cnn.com/2008/US/04/18/pope.fri/index.html?eref=rss_world" history_num="12">
+      <image_element bias="1.0" has_transparency="true" href="http://www.cnn.com/video/" purl="http://i2.cdn.turner.com/cnn/video/us/2008/04/18/quake.on.air.wfie.60x45.jpg">
+        <participant/>
+        <image><caption>TV station on air during quake</caption><location>http://i2.cdn.turner.com/cnn/video/us/2008/04/18/quake.on.air.wfie.60x45.jpg</location></image>
+      </image_element>
+      <visual>
+        <extent height="45" width="60" x="570" y="165"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.cnn.com/2008/US/04/18/church.victims/index.html?eref=rss_topstories" history_num="13">
+      <text_element bias="1.0" face_index="1" font_color="93000000" stroke_color="eb72fd89">
+        <text_chunk font_size="11" non_stop_index="0.22222222">
+          <cf_text_token delims_before="" string="&quot;This"/>
+          <cf_text_token delims_before=" " string="is"/>
+          <cf_text_token delims_before=" " string="a"/>
+          <cf_text_token delims_before=" " string="small,"/>
+          <cf_text_token delims_before=" " string="long"/>
+          <cf_text_token delims_before=" " string="overdue"/>
+          <cf_text_token delims_before=" " string="step"/>
+          <cf_text_token delims_before=" " string="forward"/>
+          <cf_text_token delims_before=" " string="on"/>
+        </text_chunk>
+        <participant/>
+        <text>
+          <context>Text</context>
+        </text>
+      </text_element>
+      <visual>
+        <extent height="60" width="87" x="540" y="165"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.cnn.com/2008/WORLD/asiapcf/04/18/thailand.torch/index.html?eref=rss_world" history_num="14">
+      <image_element bias="1.0" has_transparency="true" purl="http://i.l.cnn.net/cnn/2008/WORLD/asiapcf/04/18/thailand.torch/art.nagano.ap.jpg">
+        <participant/>
+        <image><location>http://i.l.cnn.net/cnn/2008/WORLD/asiapcf/04/18/thailand.torch/art.nagano.ap.jpg</location></image>
+      </image_element>
+      <visual>
+        <extent height="135" width="180" x="450" y="396"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.cnn.com/2008/WORLD/europe/04/18/putin.denial.ap/index.html?eref=rss_world" history_num="15">
+      <image_element bias="1.0" has_transparency="true" purl="http://i.l.cnn.net/cnn/2008/WORLD/europe/04/18/putin.denial.ap/art.putin.afp.gi.jpg">
+        <participant/>
+        <image><location>http://i.l.cnn.net/cnn/2008/WORLD/europe/04/18/putin.denial.ap/art.putin.afp.gi.jpg</location></image>
+      </image_element>
+      <visual>
+        <extent height="90" width="120" x="16" y="346"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://thelede.blogs.nytimes.com/2008/04/18/an-earthquake-rattles-the-midwest/index.html" history_num="16">
+      <image_element bias="1.0" has_transparency="true" purl="http://earthquake.usgs.gov/research/hazmaps/products_data/images/nshm_us02.gif">
+        <participant/>
+        <image><location>http://earthquake.usgs.gov/research/hazmaps/products_data/images/nshm_us02.gif</location></image>
+      </image_element>
+      <visual>
+        <extent height="108" width="180" x="270" y="99"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.cnn.com/2008/WORLD/europe/04/18/putin.denial.ap/index.html?eref=rss_world" history_num="17">
+      <text_element bias="1.0" face_index="1" font_color="8c000000" stroke_color="e472fd89">
+        <text_chunk font_size="11" non_stop_index="0.71428573">
+          <cf_text_token delims_before="" string="The"/>
+          <cf_text_token delims_before=" " string="Moscow"/>
+          <cf_text_token delims_before=" " string="tabloid,"/>
+          <cf_text_token delims_before=" " string="Moskovsky"/>
+          <cf_text_token delims_before=" " string="Korrespondent,"/>
+          <cf_text_token delims_before=" " string="reported"/>
+          <cf_text_token delims_before=" " string="this"/>
+        </text_chunk>
+        <participant/>
+        <text>
+          <context>Text</context>
+        </text>
+      </text_element>
+      <visual>
+        <extent height="60" width="117" x="120" y="528"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://cityroom.blogs.nytimes.com/2008/04/18/return-of-lost-bass-proves-to-be-a-jazzy-but-thankless-effort/index.html" history_num="18">
+      <image_element bias="1.0" has_transparency="true" href="http://cityroom.blogs.nytimes.com/2008/04/18/a-new-face-on-columbus-circle/" purl="http://graphics8.nytimes.com/images/blogs/cityroom/quotes.gif">
+        <participant/>
+        <image><caption>&#8220;</caption><location>http://graphics8.nytimes.com/images/blogs/cityroom/quotes.gif</location></image>
+      </image_element>
+      <visual>
+        <extent height="32" width="41" x="360" y="66"/>
+      </visual>
+    </surrogate>
+  </surrogate_set>
+</composition>
