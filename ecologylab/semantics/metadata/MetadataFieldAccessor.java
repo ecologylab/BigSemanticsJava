@@ -41,8 +41,8 @@ public class MetadataFieldAccessor<M extends Metadata> extends FieldAccessor
 		
 	public void hwSet(Metadata context, String newValue)
 	{
-		this.set(context, newValue);
-		context.rebuildCompositeTermVector();
+//		this.set(context, newValue);
+		context.hwSet(this.getTagName(), newValue);
 	}
 	
 	public void set(Metadata context, String newValue)

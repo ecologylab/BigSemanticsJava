@@ -10,6 +10,8 @@ import ecologylab.model.ParticipantInterest;
 import ecologylab.model.text.TermVector;
 import ecologylab.model.text.WordForms;
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.library.scalar.MetadataParsedURL;
+import ecologylab.semantics.library.scalar.MetadataString;
 import ecologylab.semantics.library.scholarlyPublication.Author;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataField;
@@ -426,6 +428,31 @@ abstract public class Metadata extends ElementState
 			FieldAccessor fieldAccessor = fieldAccessors.get(tagName);
 			if(fieldAccessor != null)
 			{
+				ElementState nestedES = null;
+				try
+				{
+					nestedES	= (ElementState) fieldAccessor.getField().get(metadata);
+				} catch (IllegalArgumentException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalAccessException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				if(nestedES == null)
+				{
+					//Have to instantiate the MetadataString or MetadataParsedURL
+					if(fieldAccessor.getField().getType().equals(MetadataString.class))
+					{
+						fieldAccessor.setField(metadata, new MetadataString());
+					}
+					if(fieldAccessor.getField().getType().equals(MetadataParsedURL.class))
+					{
+						fieldAccessor.setField(metadata, new MetadataParsedURL());
+					}
+				}
 				fieldAccessor.set(metadata, value);
 			}
 			else 
@@ -452,6 +479,31 @@ abstract public class Metadata extends ElementState
 			FieldAccessor fieldAccessor = fieldAccessors.get(tagName);
 			if(fieldAccessor != null)
 			{
+				ElementState nestedES = null;
+				try
+				{
+					nestedES	= (ElementState) fieldAccessor.getField().get(metadata);
+				} catch (IllegalArgumentException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalAccessException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				if(nestedES == null)
+				{
+					//Have to instantiate the MetadataString or MetadataParsedURL
+					if(fieldAccessor.getField().getType().equals(MetadataString.class))
+					{
+						fieldAccessor.setField(metadata, new MetadataString());
+					}
+					if(fieldAccessor.getField().getType().equals(MetadataParsedURL.class))
+					{
+						fieldAccessor.setField(metadata, new MetadataParsedURL());
+					}
+				}
 				fieldAccessor.set(metadata, value);
 				rebuildCompositeTermVector();
 			}
