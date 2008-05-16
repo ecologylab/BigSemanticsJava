@@ -3,6 +3,7 @@ package testcases;
 import java.io.File;
 import java.io.IOException;
 
+import ecologylab.semantics.library.Image;
 import ecologylab.semantics.metametadata.MetaMetadataTranslationScope;
 import ecologylab.xml.TranslationScope;
 import ecologylab.xml.XMLTranslationException;
@@ -20,12 +21,14 @@ public class translate2xml
 		testDocument.setContext("Sample Context");
 		testDocument.getTitle().setValue("Sample Title");
 		testDocument.setValue("Sample scalarText Value");
-		
-		File file = new File("./testcases/file1.xml");
+	
+		File file = new File("./testcases/file3.xml");
 		try
 		{
-			TestDocument testDocumentfromXML = (TestDocument) TestDocument.translateFromXML(file, TS);
-			testDocumentfromXML.translateToXML(System.out);
+			Image image = (Image) Image.translateFromXML(file, TS);
+			image.translateToXML(System.out);
+//			TestDocument testDocumentfromXML = (TestDocument) TestDocument.translateFromXMLSAX(file, TS);
+//			testDocumentfromXML.translateToXML(System.out);
 		} catch (XMLTranslationException e)
 		{
 			// TODO Auto-generated catch block
