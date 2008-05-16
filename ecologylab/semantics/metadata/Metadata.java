@@ -35,7 +35,9 @@ abstract public class Metadata extends ElementState
 	MetaMetadata 			metaMetadata;
 	
 	/**
-	 * Helps in the user annotation.
+	 * Allows combining sinstantiated Metadata subclass declarations without hierarchy.
+	 * 
+	 * Could help, for example, to support user annotation.
 	 */
 	@xml_nested	ArrayListState<Metadata>	mixins = new ArrayListState<Metadata>();
 	
