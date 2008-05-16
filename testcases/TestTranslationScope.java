@@ -7,13 +7,13 @@ import ecologylab.xml.TranslationScope;
 
 public class TestTranslationScope extends Debug
 {
-	public static final String NAME = "metaMetadata";
-	public static final String PACKAGE_NAME = "metaMetadata";
+	public static final String NAME = "testTranslationScope";
+	public static final String PACKAGE_NAME = "testTranslationScope";
 	
 	protected static final Class TRANSLATIONS[] = 
 	{
 		TestDocument.class,
-		MetadataString.class,
+		MetadataString.class
 	};
 		
 	public static TranslationScope get()
