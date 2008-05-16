@@ -22,6 +22,8 @@ import ecologylab.generic.ReflectionTools;
 import ecologylab.net.PURLConnection;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.library.scholarlyPublication.AcmPortal;
+import ecologylab.semantics.library.scholarlyPublication.Author;
+import ecologylab.semantics.library.scholarlyPublication.Reference;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataField;
@@ -150,15 +152,22 @@ public class HtmlDomExtractor<M extends Metadata> extends Debug
 									evaluation = null;
 							}
 							// println(mdElement.getName() + ":\t" + evaluation);
-							if(mmdElementName.equals("full_text"))
+							if((mmdElementName.equals("full_text") /*|| mmdElementName.equals("img_purl") */|| 
+									mmdElementName.equals("table_of_contents") || mmdElementName.equals("archive") ||
+									mmdElementName.equals("results_page")) && evaluation != null &&
+									evaluation != "null" && (evaluation.length() != 0))
 							{
 								//the url base is different form the domain so creating a constant.
 								evaluation = ACMPORTAL_DOMAIN + evaluation;
 							}
-							if(mmdElementName.equals("img_purl") || mmdElementName.equals("heading")||mmdElementName.equals("archive"))
+							
+							if(mmdElementName.equals("isbn"))
 							{
-								
-								println("");
+								println("debug");
+							}
+							if(metadata == null)
+							{
+								println("debug");
 							}
 							metadata.set(mmdElementName, evaluation);
 //							metadataMap.put(mmdElementName, evaluation);
@@ -192,8 +201,23 @@ public class HtmlDomExtractor<M extends Metadata> extends Debug
 					//Have to return the nested object for the field.
 					FieldAccessor fieldAccessor = metadata.getMetadataFieldAccessor(mmdElementName);
 					Field field 				= fieldAccessor.getField();
-					nestedMetadata 				= (M) ReflectionTools.getFieldValue(metadata , field);
 					
+					/**
+					 * We can use either of the below methods to get the nestedMetadata.
+					 */
+					//nestedMetadata 				= (M) ReflectionTools.getFieldValue(metadata , field);
+					try
+					{
+						nestedMetadata 				= (M) field.get(metadata);
+					} catch (IllegalArgumentException e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IllegalAccessException e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 					debug("");
 					/*M nestedMetadata = metadata.getObject(mmdElementName);
 					M nestedMetadata = metadata.mmdElementName;*/
@@ -210,12 +234,23 @@ public class HtmlDomExtractor<M extends Metadata> extends Debug
 					debug("");
 					FieldAccessor fieldAccessor = metadata.getMetadataFieldAccessor(mmdElementName);
 					Field field = fieldAccessor.getField();
-					HashMapArrayList<?, Metadata> mappedMetadata;
-					nestedMetadata = (M) ReflectionTools.getFieldValue(metadata , field);
+					HashMapArrayList<Object, Metadata> mappedMetadata;
+//					nestedMetadata = (M) ReflectionTools.getFieldValue(metadata , field);
 					
-//					mappedMetadata = (HashMapArrayList<?, Metadata>) ReflectionTools.getFieldValue(metadata , field);
+					
+					mappedMetadata = (HashMapArrayList<Object, Metadata>) ReflectionTools.getFieldValue(metadata , field);
 //					Class <?> thatClass = ReflectionTools.
 //					ReflectionTools.getInstance(thatClass);
+					
+					/**
+					 * If possible we have to replace this with generic code.
+					 */
+//					Metadata mapV = null; 
+//					if(mmdElementName.equals("author"))
+//					{
+//						mapV = new Author();
+//					}
+					
 					
 					
 					///
@@ -255,7 +290,20 @@ public class HtmlDomExtractor<M extends Metadata> extends Debug
 						{
 							nodeValue = ACMPORTAL_DOMAIN + nodeValue;
 						}
-						nestedMetadata.add(nodeValue);
+//						nestedMetadata.add(nodeValue);
+						
+						if(mmdElementName.equals("author"))
+						{
+							mappedMetadata.put(nodeValue, new Author());
+							Metadata mapVElement = mappedMetadata.get(nodeValue);
+							mapVElement.set(key, nodeValue);
+						}
+						if(mmdElementName.equals("references") || mmdElementName.equals("citations"))
+						{
+							mappedMetadata.put(nodeValue, new Reference());
+							Metadata mapVElement = mappedMetadata.get(nodeValue);
+							mapVElement.set(key, nodeValue);
+						}
 					}
 					
 					//Populating the other attributes in the map
@@ -276,13 +324,20 @@ public class HtmlDomExtractor<M extends Metadata> extends Debug
 							}
 							values = new ArrayList<String>();
 							int attributes = nodes.getLength();
-							for (int l = 0; l < nodes.getLength() && l < keys; l++)
+							int size2 = mappedMetadata.size();
+							
+							if(keys != attributes)
+							{
+								println("debug");
+							}
+							for (int l = 0; l < nodes.getLength() && l < keys && l < mappedMetadata.size(); l++)
 							{
 								String nodeValue = nodes.item(l).getNodeValue();
 								println("Attribute Name: "+mmdElementNameChild + "Attribute value: "+nodeValue);
 								println("No of Keys: "+keys + "index:  "+l);
 								
-								Metadata author = nestedMetadata.get(l);
+//								Metadata author = nestedMetadata.get(l);
+								Metadata mapVElement = mappedMetadata.get(l);
 								if(mmdChildElement.getScalarType() instanceof ParsedURLType)
 								{
 									nodeValue = ACMPORTAL_DOMAIN + nodeValue;
@@ -291,13 +346,14 @@ public class HtmlDomExtractor<M extends Metadata> extends Debug
 								{
 									debug("");
 								}
-								if(author != null)
+								if(mapVElement != null)
 								{
-									author.set(mmdElementNameChild, nodeValue);
+									mapVElement.set(mmdElementNameChild, nodeValue);
 								}
 							}
 						}
-					}
+					}//for
+					println("debug");
 					
 					
 					///
