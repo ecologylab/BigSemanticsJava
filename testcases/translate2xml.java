@@ -17,7 +17,7 @@ public class translate2xml
 		testDocument.setValue("Sample scalarText Value");
 		try
 		{
-			System.out.println(testDocument.translateToXML().toString());
+			testDocument.translateToXML(System.out);
 		} catch (XMLTranslationException e)
 		{
 			// TODO Auto-generated catch block

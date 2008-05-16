@@ -8,8 +8,8 @@ import ecologylab.xml.ElementState.xml_text;
 public class TestDocument extends ElementState
 {
 	@xml_attribute	String 			context;
-	@xml_nested MetadataString		title;
-	@xml_text	String		value;
+	@xml_nested 	MetadataString	title;
+	@xml_text		String			aValue;
 	
 	MetadataString title()
 	{
@@ -55,13 +55,13 @@ public class TestDocument extends ElementState
 	 */
 	public String getValue()
 	{
-		return value;
+		return aValue;
 	}
 	/**
 	 * @param value the value to set
 	 */
 	public void setValue(String value)
 	{
-		this.value = value;
+		this.aValue = value;
 	}
 }
