@@ -32,23 +32,23 @@ import ecologylab.xml.types.element.ArrayListState;
  */
 abstract public class Metadata extends MetadataBase
 {
-	MetaMetadata 			metaMetadata;
+	MetaMetadata 							metaMetadata;
 	
 	/**
 	 * Allows combining sinstantiated Metadata subclass declarations without hierarchy.
 	 * 
 	 * Could help, for example, to support user annotation.
 	 */
-	@xml_nested	ArrayListState<Metadata>	mixins = new ArrayListState<Metadata>();
+	@xml_nested	ArrayListState<Metadata>	mixins;
 	
-	final static int		INITIAL_SIZE		= 5;
+	final static int						INITIAL_SIZE				= 5;
 
 	/**
 	 * Set to true if this cFMetadata object was restored from a saved collage.
 	 * This is necessary to prevent cFMetadata from being added again and hence
 	 * overwritting edited cFMetadata when the elements are recrawled on a restore.
 	 */
-	private boolean loadedFromPreviousSession 	= false;
+	private boolean 						loadedFromPreviousSession 	= false;
 	
 	public Metadata()
 	{
@@ -66,6 +66,19 @@ abstract public class Metadata extends MetadataBase
 //		if(createTermVector)
 //			compositeTermVector = new TermVector();
 //	}
+	/**
+	 * 
+	 */
+	ArrayListState<Metadata> mixins()
+	{
+		ArrayListState<Metadata> result = this.mixins;
+		if(result == null)
+		{
+			result = new ArrayListState<Metadata>();
+			this.mixins = result;
+		}
+		return result;
+	}
 	
 	public TermVector termVector()
 	{
@@ -92,7 +105,7 @@ abstract public class Metadata extends MetadataBase
 	{
 		if(mixin != null)
 		{
-			mixins.add(mixin);
+			mixins().add(mixin);
 		}
 	}
 	
@@ -235,9 +248,9 @@ abstract public class Metadata extends MetadataBase
 		}
 		
 		//Supporting Mixins
-		if(mixins != null && mixins.size() > 0)
+		if(mixins() != null && mixins().size() > 0)
 		{
-			Iterator<Metadata> metadataIterator = mixins.iterator();
+			Iterator<Metadata> metadataIterator = mixins().iterator();
 			while(metadataIterator.hasNext())
 			{
 				Metadata metadata = metadataIterator.next();
@@ -284,9 +297,9 @@ abstract public class Metadata extends MetadataBase
 		}
 		
 		//Supporting Mixins -- Not used as yet but these are working fine.
-		if(mixins != null && mixins.size() > 0)
+		if(mixins() != null && mixins().size() > 0)
 		{
-			Iterator<Metadata> metadataIterator = mixins.iterator();
+			Iterator<Metadata> metadataIterator = mixins().iterator();
 			while(metadataIterator.hasNext())
 			{
 				Metadata metadata = metadataIterator.next();
@@ -344,9 +357,9 @@ abstract public class Metadata extends MetadataBase
 
 
 		//Supporting Mixins
-		if(mixins != null && mixins.size() > 0)
+		if(mixins() != null && mixins().size() > 0)
 		{
-			Iterator<Metadata> metadataIterator = mixins.iterator();
+			Iterator<Metadata> metadataIterator = mixins().iterator();
 			while(metadataIterator.hasNext())
 			{
 				Metadata metadata = metadataIterator.next();
@@ -524,9 +537,9 @@ abstract public class Metadata extends MetadataBase
 			return this;
 		}
 		//The field may be in mixin
-		if(mixins != null && mixins.size() > 0)
+		if(mixins() != null && mixins().size() > 0)
 		{
-			for (Metadata mixinMetadata : mixins)
+			for (Metadata mixinMetadata : mixins())
 			{
 				fieldAccessors 	= mixinMetadata.metadataFieldAccessors();
 				FieldAccessor mixinFieldAccessor 	= fieldAccessors.get(tagName);
@@ -621,7 +634,7 @@ abstract public class Metadata extends MetadataBase
 	 */
 	public ArrayListState<Metadata> getMixins()
 	{
-		return mixins;
+		return mixins();
 	}
 
 	/**
@@ -671,4 +684,9 @@ abstract public class Metadata extends MetadataBase
 	{
 		return null;
 	}
+	public TermVector getCompositeTermVector()
+	{
+		return super.getCompositeTermVector();
+	}
+	
 }

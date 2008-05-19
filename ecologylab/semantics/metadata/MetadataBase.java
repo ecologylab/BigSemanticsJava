@@ -17,8 +17,8 @@ import ecologylab.xml.ElementState;
  */
 public class MetadataBase extends ElementState
 {
-	//FIXME -- not public!
-	public TermVector 				compositeTermVector;
+	
+	protected TermVector 				compositeTermVector;
 	
 	/**
 	 * Represents interest in this field as a whole
@@ -37,6 +37,42 @@ public class MetadataBase extends ElementState
 	public MetadataBase()
 	{
 		// TODO Auto-generated constructor stub
+	}
+
+
+	/**
+	 * @return the compositeTermVector
+	 */
+	public TermVector getCompositeTermVector()
+	{
+		return compositeTermVector;
+	}
+
+
+	/**
+	 * @param compositeTermVector the compositeTermVector to set
+	 */
+	public void setCompositeTermVector(TermVector compositeTermVector)
+	{
+		this.compositeTermVector = compositeTermVector;
+	}
+
+
+	/**
+	 * @return the participantInterest
+	 */
+	public ParticipantInterest getParticipantInterest()
+	{
+		return participantInterest;
+	}
+
+
+	/**
+	 * @param participantInterest the participantInterest to set
+	 */
+	public void setParticipantInterest(ParticipantInterest participantInterest)
+	{
+		this.participantInterest = participantInterest;
 	}
 
 }
