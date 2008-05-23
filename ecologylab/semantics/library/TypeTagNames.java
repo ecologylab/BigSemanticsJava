@@ -12,7 +12,7 @@ public interface TypeTagNames
 
 	public static final String	ICDL_TAG		= "icdl";
 	
-	public static final String	ICDLIMAGE_TAG	= "icdlimage";
+	public static final String	ICDLIMAGE_TAG	= "icdl_image";
 
 	public static final String	DLMS_TAG		= "dlms";
 
