@@ -22,9 +22,9 @@ import ecologylab.xml.types.element.ArrayListState;
 @xml_inherit
 public class Model extends ArrayListState<TopicCluster>
 {
-	static final String FILE_NAME = "c:/web/code/java/ecologylabFundamental/config/preferences/siteGuideExample_two_clusters_v2.xml";
+	static final String FILE_NAME = "c:/web/code/java/ecologylabFundamental/config/preferences/uvaSiteGuideExample_two_clusters_v2.xml";
 	
-	static final String OUT_FILE = "c:/web/code/java/ecologylabFundamental/config/preferences/siteGuideExample_parsed.xml";
+	static final String OUT_FILE = "c:/web/code/java/ecologylabFundamental/config/preferences/uvaSiteGuideExample_parsed.xml";
 
 
 	public static TranslationScope getTranslations()
