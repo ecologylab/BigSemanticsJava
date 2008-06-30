@@ -21,13 +21,16 @@ public class MetaMetadataRepository extends ElementState
 	//@xml_collection("meta_metadata") private ArrayList<MetaMetadata> stuff; 
 	@xml_map("meta_metadata") private HashMapArrayList<String, MetaMetadata> repository; 
 
-	@xml_attribute String name;
+	@xml_attribute 		String 						name;
+	
+	@xml_attribute 		String						packageName;
+	
 	/**
 	 * Metadata Transition: TODO
 	 * Have to create the prefix collection of the url_bases and have to access from here. 
 	 * For now we are using the domain as the key.
 	 */
-	private HashMapArrayList<String, MetaMetadata> purlMapRepository = new HashMapArrayList<String, MetaMetadata>(); 
+	private HashMapArrayList<String, MetaMetadata>	purlMapRepository = new HashMapArrayList<String, MetaMetadata>(); 
 	
 	/**
 	 * 

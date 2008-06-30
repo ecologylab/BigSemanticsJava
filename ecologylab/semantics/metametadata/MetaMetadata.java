@@ -4,23 +4,15 @@
 package ecologylab.semantics.metametadata;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
 
 import ecologylab.generic.ReflectionTools;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.library.DefaultMetadataTranslationSpace;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.xml.ElementState;
-import ecologylab.xml.FieldToXMLOptimizations;
-import ecologylab.xml.Optimizations;
 import ecologylab.xml.TranslationScope;
-import ecologylab.xml.XMLTools;
 import ecologylab.xml.XMLTranslationException;
-import ecologylab.xml.xml_inherit;
 
 /**
  * @author damaraju
@@ -28,15 +20,15 @@ import ecologylab.xml.xml_inherit;
  */
 public class MetaMetadata extends MetaMetadataField
 {
-	@xml_attribute ParsedURL 	 		urlBase;
-	
-//	@xml_attribute private 	String 		urlBase;
-	
-	TranslationScope 					translationScope;
-	
-	boolean								doNotTranslateToJava;
+	@xml_attribute ParsedURL 	 						urlBase;
 	
 	@xml_collection("mixins")  ArrayList<String> 		mixins;
+
+	
+	TranslationScope 									translationScope;
+	
+	boolean												doNotTranslateToJava;
+	
 	
 	public MetaMetadata()
 	{

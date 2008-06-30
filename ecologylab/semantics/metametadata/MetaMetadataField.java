@@ -29,37 +29,45 @@ import ecologylab.xml.types.scalar.ScalarType;
 @xml_inherit
 public class MetaMetadataField extends ElementState implements Mappable<String>
 {
-	@xml_attribute protected String	name;
-	@xml_attribute private String xpath;
-	
-	// no idea what this is for....added while parsing for acmportal
-	@xml_attribute private String stringPrefix; 
-	
-	//@xml_attribute @xml_tag("scalar_type") private ScalarType metadataType;
-	@xml_attribute private ScalarType scalarType;
-	
-	@xml_map("meta_metadata_field") private HashMapArrayList<String, MetaMetadataField>	childMetaMetadata;
+	@xml_attribute protected 			String			packageName;
 
 	/**
-	 * For adding @xml_other_tag translations to a Metadata definition, for backwards compatability.
+	 * The element name style spelling of the field name for this Metadata scalar value or nested element.
+	 * <p/>
+	 * Also, for true nested elements, the element name style spelling of the class of this Metadata.
 	 */
-	@xml_collection("other_tag")		ArrayList<String>		otherTags;
-	
-//	@xml_collection("mixin")		ArrayList<String>		mixin;
-	
-	//For acmportal
-	@xml_attribute private boolean 			isLink;
-	@xml_attribute private boolean 			isList;
-	@xml_attribute private boolean 			isFacet;
-	
-	@xml_attribute private boolean 			isNested;
-	@xml_attribute private String 			key;
-	@xml_attribute private boolean			isMap;
+	@xml_attribute protected 			String			name;
 
 	/**
 	 * This is used for generation of Metadata class declaration.
 	 */
-	@xml_attribute @xml_tag("extends") String extendsClass;
+	@xml_attribute @xml_tag("extends")	String			extendsClass;
+
+	@xml_attribute private 				String 			xpath;
+	
+	//FIXME -- talk to bharat, eliminate this declaration
+	// no idea what this is for....added while parsing for acmportal
+	@xml_attribute private				String 			stringPrefix; 
+	
+	//@xml_attribute @xml_tag("scalar_type") private ScalarType metadataType;
+	@xml_attribute private 				ScalarType	 	scalarType;
+	
+	@xml_map("meta_metadata_field") 
+	private HashMapArrayList<String, MetaMetadataField>	childMetaMetadata;
+
+
+	@xml_attribute private 				boolean 		isLink;
+	@xml_attribute private 				boolean 		isList;
+	@xml_attribute private 				boolean			isMap;
+	@xml_attribute private 				boolean 		isFacet;
+	
+	/**
+	 * true if this field should not be displayed in interactive in-context metadata
+	 */
+	@xml_attribute private 				boolean 		hide;
+	
+	@xml_attribute private 				boolean 		isNested;
+	@xml_attribute private 				String 			key;
 	
 
 	public MetaMetadataField()
@@ -272,5 +280,10 @@ public class MetaMetadataField extends ElementState implements Mappable<String>
 	public ScalarType getScalarType()
 	{
 		return scalarType;
+	}
+
+	public boolean isHide()
+	{
+		return hide;
 	}
 }
