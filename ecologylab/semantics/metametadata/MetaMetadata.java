@@ -3,13 +3,23 @@
  */
 package ecologylab.semantics.metametadata;
 
+import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
 
 import ecologylab.generic.ReflectionTools;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.library.DefaultMetadataTranslationSpace;
 import ecologylab.semantics.metadata.Metadata;
+import ecologylab.xml.ElementState;
+import ecologylab.xml.FieldToXMLOptimizations;
+import ecologylab.xml.Optimizations;
 import ecologylab.xml.TranslationScope;
+import ecologylab.xml.XMLTools;
+import ecologylab.xml.XMLTranslationException;
 import ecologylab.xml.xml_inherit;
 
 /**
@@ -27,12 +37,6 @@ public class MetaMetadata extends MetaMetadataField
 	boolean								doNotTranslateToJava;
 	
 	@xml_collection("mixins")  ArrayList<String> 		mixins;
-	
-	/**
-	 * Just for debugging
-	 * This is used for generation of Metadata classes. Currently not used. 
-	 */
-	@xml_attribute @xml_tag("extends") String parent;
 	
 	public MetaMetadata()
 	{
@@ -111,5 +115,38 @@ public class MetaMetadata extends MetaMetadataField
 		return result;
 	}
 
+	public void translateToMetadataClass(Appendable appendable) 
+	throws XMLTranslationException
+	{
+		if (appendable == null)
+	        throw new XMLTranslationException("Appendable is null");
+	
+		try
+		{
+			super.translateToMetadataClass(appendable);
+		} catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public static void main(String args[]) throws XMLTranslationException
+	{
+		final TranslationScope TS = MetaMetadataTranslationScope.get();
+		String patternXMLFilepath = "../cf/config/semantics/metametadata/defaultRepository.xml";
+
+//		ElementState.setUseDOMForTranslateTo(true);
+		MetaMetadataRepository test = (MetaMetadataRepository) ElementState.translateFromXML(patternXMLFilepath, TS);
 		
+		//test.writePrettyXML(System.out);
+		
+		for (MetaMetadata metaMetadata : test.values())
+		{
+			metaMetadata.translateToMetadataClass(System.out);
+			System.out.println('\n');
+		}
+	}
+
+	
 }

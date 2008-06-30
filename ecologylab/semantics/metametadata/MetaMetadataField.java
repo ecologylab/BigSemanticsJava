@@ -1,14 +1,23 @@
 package ecologylab.semantics.metametadata;
 
+import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
 
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.xml.ElementState;
+import ecologylab.xml.Optimizations;
 import ecologylab.xml.TranslationScope;
+import ecologylab.xml.XMLTools;
 import ecologylab.xml.XMLTranslationException;
 import ecologylab.xml.xml_inherit;
 import ecologylab.xml.ElementState.xml_attribute;
 import ecologylab.xml.ElementState.xml_collection;
+import ecologylab.xml.ElementState.xml_tag;
 import ecologylab.xml.types.element.Mappable;
 import ecologylab.xml.types.scalar.ScalarType;
 
@@ -47,6 +56,12 @@ public class MetaMetadataField extends ElementState implements Mappable<String>
 	@xml_attribute private String 			key;
 	@xml_attribute private boolean			isMap;
 
+	/**
+	 * This is used for generation of Metadata class declaration.
+	 */
+	@xml_attribute @xml_tag("extends") String extendsClass;
+	
+
 	public MetaMetadataField()
 	{
 		
@@ -59,16 +74,125 @@ public class MetaMetadataField extends ElementState implements Mappable<String>
 		this.childMetaMetadata = set;
 	}
 	
+	public void translateToMetadataClass(Appendable appendable)
+	throws XMLTranslationException, IOException
+	{
+		// write package declaration
+		
+		// write import statements
+		
+		// write class declaration
+		
+		String extendsClassName	= (extendsClass == null) ? "Metadata" : XMLTools.classNameFromElementName(extendsClass);
+		appendable.append("public class " + XMLTools.classNameFromElementName(name) +"\nextends ").append(extendsClassName);
+		appendable.append('\n').append('{').append('\n');
+
+		Set<String> metaMetadataKeys	= childMetaMetadata.keySet();
+		
+		for (String key : metaMetadataKeys)
+		{
+			MetaMetadataField	mmf		= childMetaMetadata.get(key);
+			
+			if (mmf.scalarType != null)
+			{
+				// field declaration
+				mmf.appendScalarNested(appendable);
+			}
+			else if (mmf.isNested)
+			{
+				// reference to nested class
+				
+				// generate referring field in this metadata
+				mmf.appendNested(appendable);
+				
+				//TODO -- if this could be in a different package, would need forward reference to import this here.
+				
+				// generate nested class definition
+				mmf.translateToMetadataClass(appendable);
+			}
+			else if (mmf.isList)
+			{
+				// collection of nested elements
+				//TODO -- can these be scalars? if so, how can we tell?
+				
+				mmf.appendCollection(appendable);
+				
+				// generate nested class definition
+				mmf.translateToMetadataClass(appendable);
+			}
+		}
+
+		// end the class declaration
+		appendable.append('}').append('\n');
+
+	}
+
+	/**
+	 * Append an @xml_nested declaration to appendable, using the name of this to directly form both
+	 * the class name and the field name.
+	 * 
+	 * @param appendable
+	 * @throws IOException
+	 */
+	private void appendNested(Appendable appendable)
+	throws IOException
+	{
+		String elementName		= getName();
+		appendNested(appendable, "", XMLTools.classNameFromElementName(elementName), XMLTools.fieldNameFromElementName(elementName));
+	} 
+
+	
+	private void appendScalarNested(Appendable appendable)
+	throws IOException
+	{
+		String fieldTypeName = scalarType.fieldTypeName();
+		appendNested(appendable, "Metadata", fieldTypeName, XMLTools.fieldNameFromElementName(getName()));
+	} 
+
+	private void appendNested(Appendable appendable, String classNamePrefix, String className, String fieldName)
+	throws IOException
+	{
+		appendMetalanguageDecl(appendable, "@xml_nested", classNamePrefix, className, fieldName);
+	} 
+
+	private void appendCollection(Appendable appendable)
+	throws IOException
+	{
+		String elementName	= this.name;
+		String className	= XMLTools.classNameFromElementName(elementName);
+		String fieldName	= XMLTools.fieldNameFromElementName(elementName)+ "s";
+		appendMetalanguageDecl(appendable, "@xml_collection", "ArrayList<", className, ">", fieldName);
+	} 
+
+	private void appendMetalanguageDecl(Appendable appendable, String metalanguage, String classNamePrefix, String className, String fieldName)
+	throws IOException
+	{
+		appendMetalanguageDecl( appendable, metalanguage, classNamePrefix, className, "", fieldName);
+	}
+	private void appendMetalanguageDecl(Appendable appendable, String metalanguage, 
+			String classNamePrefix, String className,  String classNameSuffix, String fieldName)
+	throws IOException
+	{
+		appendable.append('\t').append(metalanguage).append(' ').append(classNamePrefix).append(className).append(classNameSuffix).append('\t');
+		appendable.append(fieldName).append(';').append('\n');
+	} 
+
+	
 	public static void main(String args[]) throws XMLTranslationException
 	{
 		final TranslationScope TS = MetaMetadataTranslationScope.get();
-		String patternXMLFilepath = "config/examplePatternFlickr.xml";
+		String patternXMLFilepath = "../cf/config/semantics/metametadata/defaultRepository.xml";
 
 //		ElementState.setUseDOMForTranslateTo(true);
 		MetaMetadataRepository test = (MetaMetadataRepository) ElementState.translateFromXML(patternXMLFilepath, TS);
 		println("Stop");
 		
 		test.writePrettyXML(System.out);
+		
+		for (MetaMetadata metaMetadata : test.values())
+		{
+			
+		}
 	}
 	
 	public int size()

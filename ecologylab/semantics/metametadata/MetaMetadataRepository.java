@@ -3,6 +3,7 @@
  */
 package ecologylab.semantics.metametadata;
 
+import java.util.Collection;
 import java.util.Iterator;
 
 import ecologylab.generic.HashMapArrayList;
@@ -60,7 +61,7 @@ public class MetaMetadataRepository extends ElementState
 	//Bharat:
 	public MetaMetadata getMetaMetaData(String docType)
 	{
-		
+
 		return repository.get(docType);
 //		MetaMetadata tempMetaMetadata;
 //		try 
@@ -99,6 +100,11 @@ public class MetaMetadataRepository extends ElementState
 //			//tempMetaMetadata.writePrettyXML(System.out);
 //		}
 //	}
+	
+	public Collection<MetaMetadata> values()
+	{
+		return (repository == null) ? null : repository.values();
+	}
 	
 	
 }
