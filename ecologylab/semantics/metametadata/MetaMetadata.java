@@ -3,9 +3,11 @@
  */
 package ecologylab.semantics.metametadata;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import ecologylab.appframework.PropertiesAndDirectories;
 import ecologylab.generic.ReflectionTools;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.library.DefaultMetadataTranslationSpace;
@@ -107,7 +109,8 @@ public class MetaMetadata extends MetaMetadataField
 		return result;
 	}
 
-	public void translateToMetadataClass(Appendable appendable) 
+	@Override
+	public void translateToMetadataClass(Appendable appendable, File outputRoot) 
 	throws XMLTranslationException
 	{
 		if (appendable == null)
@@ -115,7 +118,7 @@ public class MetaMetadata extends MetaMetadataField
 	
 		try
 		{
-			super.translateToMetadataClass(appendable);
+			super.translateToMetadataClass(appendable, outputRoot);
 		} catch (IOException e)
 		{
 			// TODO Auto-generated catch block
@@ -133,9 +136,11 @@ public class MetaMetadata extends MetaMetadataField
 		
 		//test.writePrettyXML(System.out);
 		
+		File outputRoot	= PropertiesAndDirectories.userDir();
+		
 		for (MetaMetadata metaMetadata : test.values())
 		{
-			metaMetadata.translateToMetadataClass(System.out);
+			metaMetadata.translateToMetadataClass(System.out, outputRoot);
 			System.out.println('\n');
 		}
 	}

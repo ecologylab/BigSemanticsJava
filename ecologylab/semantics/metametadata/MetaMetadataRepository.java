@@ -9,6 +9,7 @@ import java.util.Iterator;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.net.ParsedURL;
 import ecologylab.xml.ElementState;
+import ecologylab.xml.ElementState.xml_tag;
 
 /**
  * @author damaraju
@@ -16,6 +17,7 @@ import ecologylab.xml.ElementState;
  */
 
 public class MetaMetadataRepository extends ElementState
+implements PackageSpecifier
 {
 	
 	//@xml_collection("meta_metadata") private ArrayList<MetaMetadata> stuff; 
@@ -23,6 +25,7 @@ public class MetaMetadataRepository extends ElementState
 
 	@xml_attribute 		String 						name;
 	
+	@xml_tag("package") 
 	@xml_attribute 		String						packageName;
 	
 	/**
@@ -107,6 +110,11 @@ public class MetaMetadataRepository extends ElementState
 	public Collection<MetaMetadata> values()
 	{
 		return (repository == null) ? null : repository.values();
+	}
+
+	public String packageName()
+	{
+		return packageName;
 	}
 	
 	

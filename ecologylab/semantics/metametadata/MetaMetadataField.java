@@ -1,5 +1,6 @@
 package ecologylab.semantics.metametadata;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -27,8 +28,10 @@ import ecologylab.xml.types.scalar.ScalarType;
  *
  */
 @xml_inherit
-public class MetaMetadataField extends ElementState implements Mappable<String>
+public class MetaMetadataField extends ElementState 
+implements Mappable<String>, PackageSpecifier
 {
+	@xml_tag("package") 
 	@xml_attribute protected 			String			packageName;
 
 	/**
@@ -69,6 +72,8 @@ public class MetaMetadataField extends ElementState implements Mappable<String>
 	@xml_attribute private 				boolean 		isNested;
 	@xml_attribute private 				String 			key;
 	
+	HashMap<String, String>				childPackagesMap	= new HashMap<String, String>(2);
+	
 
 	public MetaMetadataField()
 	{
@@ -82,13 +87,37 @@ public class MetaMetadataField extends ElementState implements Mappable<String>
 		this.childMetaMetadata = set;
 	}
 	
-	public void translateToMetadataClass(Appendable appendable)
+	public String packageName()
+	{
+		String result	= packageName;
+		if (result != null)
+			return result;
+		ElementState parent	= parent();
+		if ((parent != null) && (parent instanceof PackageSpecifier))
+		{
+			return ((PackageSpecifier) parent).packageName();
+		}
+		else
+			return null;
+	}
+	
+	//TODO import paths
+	
+	//TODO track generated classes for TranslationScope declaration
+	
+	public void translateToMetadataClass(Appendable appendable, File outputRoot)
 	throws XMLTranslationException, IOException
 	{
+		String packageName = packageName();
+		File outFile	= new File(outputRoot, packageName.replace('.', '/'));
+		appendable.append(outFile+"").append('\n');
 		// write package declaration
+		appendable.append("package ").append(packageName).append(';').append('\n').append('\n');
 		
 		// write import statements
+		appendImport(appendable, "ecologylab.semantics.library.scalar.*");
 		
+		appendable.append('\n');
 		// write class declaration
 		
 		String extendsClassName	= (extendsClass == null) ? "Metadata" : XMLTools.classNameFromElementName(extendsClass);
@@ -116,7 +145,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>
 				//TODO -- if this could be in a different package, would need forward reference to import this here.
 				
 				// generate nested class definition
-				mmf.translateToMetadataClass(appendable);
+				mmf.translateToMetadataClass(appendable, outputRoot);
 			}
 			else if (mmf.isList)
 			{
@@ -126,13 +155,19 @@ public class MetaMetadataField extends ElementState implements Mappable<String>
 				mmf.appendCollection(appendable);
 				
 				// generate nested class definition
-				mmf.translateToMetadataClass(appendable);
+				mmf.translateToMetadataClass(appendable, outputRoot);
 			}
 		}
 
 		// end the class declaration
 		appendable.append('}').append('\n');
 
+	}
+	
+	protected void appendImport(Appendable appendable, String importDecl) 
+	throws IOException
+	{
+		appendable.append("import ").append(importDecl).append(';').append('\n');
 	}
 
 	/**
@@ -285,5 +320,17 @@ public class MetaMetadataField extends ElementState implements Mappable<String>
 	public boolean isHide()
 	{
 		return hide;
+	}
+	
+	protected Collection<String> importPackages()
+	{
+		Collection<String> result	= null;
+		if ((childMetaMetadata == null) || (childMetaMetadata.size() == 0))
+		{
+			result		= new ArrayList<String>();
+			result.add(packageName());
+		}
+		
+		return result;
 	}
 }
