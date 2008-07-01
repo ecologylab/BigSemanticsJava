@@ -6,6 +6,7 @@ package ecologylab.semantics.library;
 import ecologylab.semantics.library.scalar.MetadataString;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metametadata.MetaMetadata;
+import ecologylab.xml.xml_inherit;
 import ecologylab.xml.ElementState.xml_leaf;
 import ecologylab.xml.ElementState.xml_nested;
 
@@ -13,6 +14,7 @@ import ecologylab.xml.ElementState.xml_nested;
  * @author andruid
  *
  */
+@xml_inherit
 public class Media extends Metadata
 {
 

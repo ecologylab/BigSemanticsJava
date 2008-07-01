@@ -13,15 +13,10 @@ import ecologylab.xml.types.scalar.ScalarType;
 @xml_inherit
 public class Flickr extends Image
 {
-//	@xml_nested MetadataString tags = new MetadataString();
-//	@xml_nested MetadataString author = new MetadataString();
-	
 	@xml_nested MetadataString tags;
 	@xml_nested MetadataString author;
 	
-//	@xml_attribute String	tags;
-//	@xml_attribute String	author;
-	
+	//Lazy evaluation for efficient retrieval.
 	MetadataString tags()
 	{
 		MetadataString result = this.tags;
@@ -32,6 +27,7 @@ public class Flickr extends Image
 		}
 		return result;
 	}
+	
 	MetadataString author()
 	{
 		MetadataString result = this.author;
@@ -45,34 +41,33 @@ public class Flickr extends Image
 	
 	public String getTags()
 	{
-//		return tags;
 		return tags().getValue();
 	}
+	
 	public void hwSetTags(String tags)
 	{
-//		this.tags = tags;
 		this.tags().setValue(tags);
 		rebuildCompositeTermVector();
 	}
+	
 	public String getAuthor()
 	{
-//		return author;
 		return author().getValue();
 	}
+	
 	public void hwSetAuthor(String author)
 	{
-//		this.author = author;
 		this.author().setValue(author);
 		rebuildCompositeTermVector();
 	}
+	
 	public void setTags(String tags)
 	{
-//		this.tags = tags;
 		this.tags().setValue(tags);
 	}
+	
 	public void setAuthor(String author)
 	{
-//		this.author = author;
 		this.author().setValue(author);
 	}
 }

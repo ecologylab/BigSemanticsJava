@@ -18,21 +18,14 @@ import ecologylab.xml.ElementState.xml_tag;
 @xml_inherit
 public class Image extends Media
 {
-//	@xml_attribute	String 		caption;
-//	@xml_attribute	ParsedURL 	location;
-	
-//	@xml_nested MetadataString	caption = new MetadataString();
-//	@xml_nested MetadataParsedURL	location = new MetadataParsedURL();
-	
-	@xml_nested MetadataString	caption;
+	@xml_nested MetadataString		caption;
 	@xml_nested MetadataParsedURL	location;
-	@xml_nested MetadataParsedURL	navLocation;
 	/**
 	 * Occasionally, we want to navigate to somewhere other than the regular purl,
 	 * as in when this is an RSS feed, but there's an equivalent HTML page.
 	 */
-//	@xml_attribute	ParsedURL		navLocation;
-//	@xml_nested MetadataParsedURL	navLocation = new MetadataParsedURL();
+	@xml_nested MetadataParsedURL	navLocation;
+
 	public Image()
 	{
 		

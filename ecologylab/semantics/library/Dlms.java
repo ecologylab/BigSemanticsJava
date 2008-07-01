@@ -14,10 +14,9 @@ import ecologylab.xml.ElementState.xml_nested;
 public class Dlms extends Document
 {
 
-//	@xml_attribute 	String		subject;
-//	@xml_nested MetadataString	subject = new MetadataString();
 	@xml_nested MetadataString	subject;
 	
+	//Lazy evaluation for efficient retrieval.
 	MetadataString subject()
 	{
 		MetadataString result = this.subject;
@@ -31,20 +30,17 @@ public class Dlms extends Document
 	
 	public String getSubject()
 	{
-//		return subject;
 		return subject().getValue();
 	}
 
 	public void hwSetSubject(String subject)
 	{
-//		this.subject = subject;
 		this.subject().setValue(subject);
 		rebuildCompositeTermVector();
 	}
 	
 	public void setSubject(String subject)
 	{
-//		this.subject = subject;
 		this.subject().setValue(subject);
 	}
 }
