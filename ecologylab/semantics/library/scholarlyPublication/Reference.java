@@ -14,29 +14,23 @@ import ecologylab.xml.types.element.Mappable;
  */
 public class Reference extends Metadata implements Mappable<ParsedURL>
 {
-//	@xml_attribute ParsedURL		link;
-//	@xml_leaf String 				bibTex;
-	
-//	@xml_nested MetadataParsedURL		link 			= new MetadataParsedURL();
-//	@xml_nested MetadataString			bibTex 			= new MetadataString();
-
 	@xml_nested MetadataParsedURL		link;
 	@xml_nested MetadataString			bibTex;
 	public Reference()
 	{
-		// TODO Auto-generated constructor stub
 	}
+	
 	public Reference(ParsedURL link)
 	{
-//		this.link = link;
 		this.link.setValue(link);
 	}
+	
 	public Reference(String link)
 	{
-//		this.link = ParsedURL.getAbsolute(link);
 		this.link.setValue(ParsedURL.getAbsolute(link));
 	}
 
+	//Lazy evaluation.
 	MetadataString bibTex()
 	{
 		MetadataString result = this.bibTex;
@@ -61,7 +55,6 @@ public class Reference extends Metadata implements Mappable<ParsedURL>
 	
 	public ParsedURL key()
 	{
-//		return link;
 		return link().getValue();
 	}
 }

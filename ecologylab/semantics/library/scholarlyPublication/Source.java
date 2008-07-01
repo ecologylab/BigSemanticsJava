@@ -15,30 +15,16 @@ import ecologylab.xml.ElementState.xml_nested;
 public class Source extends Metadata
 {
 
-//	@xml_leaf String		heading;
-//	@xml_leaf ParsedURL		heading;
-//	@xml_leaf ParsedURL		tableOfContents;
-//	@xml_leaf String		pages;
-//	@xml_leaf String		yearOfPublication;
-//	@xml_leaf String		isbn;	
-//	@xml_attribute ParsedURL	imgPurl;
-	
-//	@xml_nested MetadataParsedURL		archive 			= new MetadataParsedURL();
-//	@xml_nested MetadataString		heading 			= new MetadataString();
-//	@xml_nested MetadataParsedURL	table_of_contents 	= new MetadataParsedURL();
-//	@xml_nested MetadataString		pages 				= new MetadataString();
-//	@xml_nested MetadataString		year_of_publication 	= new MetadataString();
-//	@xml_nested MetadataString		isbn 				= new MetadataString();
-//	@xml_nested MetadataParsedURL	imgPurl 			= new MetadataParsedURL();
 	
 	@xml_nested MetadataParsedURL		archive;
 	@xml_nested MetadataString			heading;
-	@xml_nested MetadataParsedURL		table_of_contents;
+	@xml_nested MetadataParsedURL		tableOfContents;
 	@xml_nested MetadataString			pages;
-	@xml_nested MetadataString			year_of_publication;
+	@xml_nested MetadataString			yearOfPublication;/*year_of_publication*/
 	@xml_nested MetadataString			isbn;
 	@xml_nested MetadataParsedURL		imgPurl; 
 	
+	//Lazy evaluationf or efficient reterival.
 	MetadataParsedURL archive()
 	{
 		MetadataParsedURL result = this.archive;
@@ -59,16 +45,18 @@ public class Source extends Metadata
 		}
 		return result;
 	}
+	
 	MetadataParsedURL table_of_contents()
 	{
-		MetadataParsedURL result = this.table_of_contents;
+		MetadataParsedURL result = this.tableOfContents;
 		if(result == null)
 		{
 			result 			= new MetadataParsedURL();
-			this.table_of_contents 	= result;
+			this.tableOfContents 	= result;
 		}
 		return result;
 	}
+	
 	MetadataString pages()
 	{
 		MetadataString result = this.pages;
@@ -79,16 +67,18 @@ public class Source extends Metadata
 		}
 		return result;
 	}
+	
 	MetadataString year_of_publication()
 	{
-		MetadataString result = this.year_of_publication;
+		MetadataString result = this.yearOfPublication;
 		if(result == null)
 		{
 			result 			= new MetadataString();
-			this.year_of_publication 	= result;
+			this.yearOfPublication 	= result;
 		}
 		return result;
 	}
+	
 	MetadataString isbn()
 	{
 		MetadataString result = this.isbn;
@@ -99,6 +89,7 @@ public class Source extends Metadata
 		}
 		return result;
 	}
+	
 	MetadataParsedURL imgPurl()
 	{
 		MetadataParsedURL result = this.imgPurl;
@@ -115,18 +106,14 @@ public class Source extends Metadata
 	 */
 	public ParsedURL getImgPurl()
 	{
-//		return imgPurl;
 		return imgPurl().getValue();
 	}
+	
 	/**
 	 * @param imgPurl the imgPurl to set
 	 */
 	public void setImgPurl(ParsedURL imgPurl)
 	{
-//		this.imgPurl = imgPurl;
 		this.imgPurl().setValue(imgPurl);
 	}
-
-	
-
 }

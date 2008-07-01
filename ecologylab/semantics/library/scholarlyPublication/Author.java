@@ -14,14 +14,6 @@ import ecologylab.xml.types.element.Mappable;
  */
 public class Author extends Metadata implements Mappable<String>
 {
-
-//	@xml_attribute String		name;
-//	@xml_leaf String			affiliation;
-//	@xml_leaf ParsedURL			resultsPage;
-	
-//	@xml_nested MetadataString			name = new MetadataString();
-//	@xml_nested MetadataString			affiliation = new MetadataString();
-//	@xml_nested MetadataParsedURL		resultsPage = new MetadataParsedURL();
 	
 	@xml_nested MetadataString			name;
 	@xml_nested MetadataString			affiliation;
@@ -29,15 +21,14 @@ public class Author extends Metadata implements Mappable<String>
 	
 	public Author()
 	{
-		// TODO Auto-generated constructor stub
 	}
 	
 	public Author(String name)
 	{
-//		this.name = name;
 		this.name().setValue(name);
 	}
 
+	//Lazy evaluation for efficient retrieval.
 	MetadataString name()
 	{
 		MetadataString result = this.name;
@@ -48,6 +39,7 @@ public class Author extends Metadata implements Mappable<String>
 		}
 		return result;
 	}
+	
 	MetadataString affiliation()
 	{
 		MetadataString result = this.affiliation;
@@ -58,7 +50,7 @@ public class Author extends Metadata implements Mappable<String>
 		}
 		return result;
 	}
-	
+
 	MetadataParsedURL resultsPage()
 	{
 		MetadataParsedURL result = this.resultsPage;
@@ -69,9 +61,9 @@ public class Author extends Metadata implements Mappable<String>
 		}
 		return result;
 	}
+
 	public String key() {
-		
-//		return name;
+
 		return name().getValue();
 	}
 
