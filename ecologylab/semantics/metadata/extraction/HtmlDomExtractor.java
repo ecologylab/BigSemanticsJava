@@ -88,14 +88,8 @@ public class HtmlDomExtractor<M extends Metadata> extends Debug
 	 * @param hdePattern
 	 * @return a HashMap of metadata (with nested HashMaps)
 	 */
-	
-
-	//Metadata Transition
 	private M recursiveExtraction(M metadata, MetaMetadataField mmdField, Document tidyDOM, ParsedURL purl)
 	{
-
-//		HashMapArrayList<String, Object> metadataMap = new HashMapArrayList<String, Object>();
-
 		HashMapArrayList<String, MetaMetadataField> mmdFieldSet = mmdField.getSet();
 		int size = mmdFieldSet.size();
 		for (int i = 0; i < mmdFieldSet.size(); i++)
@@ -110,7 +104,6 @@ public class HtmlDomExtractor<M extends Metadata> extends Debug
 
 			String xpathString 				= mmdElement.getXpath();
 			String mmdElementName 			= mmdElement.getName();
-			//If the MetaMetadataField is not nested.
 			if(mmdElementName.equals("references"))
 			{
 				debug("");
@@ -225,6 +218,8 @@ public class HtmlDomExtractor<M extends Metadata> extends Debug
 					if(nestedMetadata == null)
 					{
 						debug("");
+						nestedMetadata = (M) ReflectionTools.getInstance(field.getType());
+						ReflectionTools.setFieldValue(metadata, field, nestedMetadata);
 					}
 					recursiveExtraction(nestedMetadata, mmdElement, tidyDOM, purl);
 				}
@@ -239,18 +234,12 @@ public class HtmlDomExtractor<M extends Metadata> extends Debug
 					
 					
 					mappedMetadata = (HashMapArrayList<Object, Metadata>) ReflectionTools.getFieldValue(metadata , field);
-//					Class <?> thatClass = ReflectionTools.
-//					ReflectionTools.getInstance(thatClass);
-					
-					/**
-					 * If possible we have to replace this with generic code.
-					 */
-//					Metadata mapV = null; 
-//					if(mmdElementName.equals("author"))
-//					{
-//						mapV = new Author();
-//					}
-					
+					if(mappedMetadata == null)
+					{
+						debug("");
+						mappedMetadata = (HashMapArrayList<Object, Metadata>) ReflectionTools.getInstance(field.getType());
+						ReflectionTools.setFieldValue(metadata, field, mappedMetadata);
+					}					
 					
 					
 					///
@@ -292,7 +281,7 @@ public class HtmlDomExtractor<M extends Metadata> extends Debug
 						}
 //						nestedMetadata.add(nodeValue);
 						
-						if(mmdElementName.equals("author"))
+						if(mmdElementName.equals("authors"))
 						{
 							mappedMetadata.put(nodeValue, new Author());
 							Metadata mapVElement = mappedMetadata.get(nodeValue);
