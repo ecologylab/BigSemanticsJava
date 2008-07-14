@@ -13,7 +13,5 @@ import ecologylab.semantics.metadata.MetadataFieldAccessor;
  */
 public interface MetadataValueChangedListener
 {
-//	public void endEditHandler(String iconID, MetadataFieldAccessor metadataFieldAccessor);
-	
 	public void fieldValueChanged(MetadataFieldAccessor metadataFieldAccessor, Metadata metadata);
 }
