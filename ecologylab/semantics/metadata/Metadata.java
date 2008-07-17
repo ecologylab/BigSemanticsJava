@@ -1,23 +1,18 @@
 package ecologylab.semantics.metadata;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Iterator;
 
 import ecologylab.generic.HashMapArrayList;
-import ecologylab.generic.ReflectionTools;
-import ecologylab.model.ParticipantInterest;
 import ecologylab.model.text.TermVector;
 import ecologylab.model.text.WordForms;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.library.scalar.MetadataParsedURL;
 import ecologylab.semantics.library.scalar.MetadataString;
-import ecologylab.semantics.library.scholarlyPublication.Author;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataField;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.FieldAccessor;
-import ecologylab.xml.Optimizations;
 import ecologylab.xml.types.element.ArrayListState;
 
 /**
@@ -236,14 +231,7 @@ abstract public class Metadata extends MetadataBase
 			if(attributeName.equals(fieldAccessor.getFieldName()))
 			{
 				String valueString = fieldAccessor.getValueString(this);
-				if(valueString != null && valueString != "null")
-				{
-					return true;
-				}
-				else 
-				{
-					return false;
-				}
+				return (valueString != null && valueString != "null");
 			}
 		}
 		
@@ -426,8 +414,7 @@ abstract public class Metadata extends MetadataBase
 
 		if(metadata != null)
 		{
-			HashMapArrayList<String, FieldAccessor> fieldAccessors = metadataFieldAccessors();
-			FieldAccessor fieldAccessor = fieldAccessors.get(tagName);
+			FieldAccessor fieldAccessor = get(tagName);
 			if(fieldAccessor != null)
 			{
 				ElementState nestedES = null;
@@ -445,6 +432,7 @@ abstract public class Metadata extends MetadataBase
 				}
 				if(nestedES == null)
 				{
+					//FIXME! do not use particular classes. find a way to use the type system to get what you need.
 					//Have to instantiate the MetadataString or MetadataParsedURL
 					if(fieldAccessor.getField().getType().equals(MetadataString.class))
 					{
@@ -656,28 +644,10 @@ abstract public class Metadata extends MetadataBase
 		return (MetadataFieldAccessor) metadataFieldAccessors().get(fieldName);
 	}
 	
-	HashMapArrayList<String, FieldAccessor> metadataFieldAccessors;
-	
-	HashMapArrayList<String, FieldAccessor> metadataFieldAccessors()
-	{
-		HashMapArrayList<String, FieldAccessor> result	= this.metadataFieldAccessors;
-		if (result == null)
-		{
-			result			= Optimizations.getFieldAccessors(this.getClass(), MetadataFieldAccessor.class);
-			metadataFieldAccessors	= result;
-		}
-		return result;
-	}
-	
 	//For adding mapped attributes
 	public void add(String key)
 	{
 		
-	}
-	
-	public Metadata get(String key)
-	{
-		return null;
 	}
 	
 	public Metadata get(int index)

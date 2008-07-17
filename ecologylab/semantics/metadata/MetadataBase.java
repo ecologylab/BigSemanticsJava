@@ -3,9 +3,14 @@
  */
 package ecologylab.semantics.metadata;
 
+import java.util.Iterator;
+
+import ecologylab.generic.HashMapArrayList;
 import ecologylab.model.ParticipantInterest;
 import ecologylab.model.text.TermVector;
 import ecologylab.xml.ElementState;
+import ecologylab.xml.FieldAccessor;
+import ecologylab.xml.Optimizations;
 
 /**
  * Base class for Metadata fields that represent scalar values.
@@ -15,7 +20,7 @@ import ecologylab.xml.ElementState;
  * @author andruid
  *
  */
-public class MetadataBase extends ElementState
+public class MetadataBase extends ElementState implements Iterable<FieldAccessor>
 {
 	
 	protected TermVector 				compositeTermVector;
@@ -29,6 +34,8 @@ public class MetadataBase extends ElementState
 	 * in the context of the semantic web / digital libraries.
 	 */  
 	ParticipantInterest				participantInterest = new ParticipantInterest();
+
+	HashMapArrayList<String, FieldAccessor> metadataFieldAccessors;
 
 
 	/**
@@ -68,11 +75,48 @@ public class MetadataBase extends ElementState
 
 
 	/**
+	 * Efficiently retrieve appropriate MetadataFieldAccessor, using lazy evaluation.
+	 * 
+	 * @param fieldName
+	 * @return
+	 */
+	public MetadataFieldAccessor getMetadataFieldAccessor(String fieldName)
+	{
+		return (MetadataFieldAccessor) metadataFieldAccessors().get(fieldName);
+	}
+
+
+	/**
 	 * @param participantInterest the participantInterest to set
 	 */
 	public void setParticipantInterest(ParticipantInterest participantInterest)
 	{
 		this.participantInterest = participantInterest;
 	}
+
+
+	protected HashMapArrayList<String, FieldAccessor> metadataFieldAccessors()
+	{
+		HashMapArrayList<String, FieldAccessor> result	= this.metadataFieldAccessors;
+		if (result == null)
+		{
+			result			= Optimizations.getFieldAccessors(this.getClass(), MetadataFieldAccessor.class);
+			metadataFieldAccessors	= result;
+		}
+		return result;
+	}
+
+
+	public Iterator<FieldAccessor> iterator()
+	{
+		return metadataFieldAccessors().iterator();
+	}
+
+	public FieldAccessor get(String key)
+	{
+		HashMapArrayList<String, FieldAccessor> fieldAccessors = metadataFieldAccessors();
+		return fieldAccessors.get(key);
+	}
+	
 
 }
