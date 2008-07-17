@@ -1,6 +1,7 @@
 package ecologylab.semantics.metadata;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import ecologylab.generic.HashMapArrayList;
@@ -417,32 +418,6 @@ abstract public class Metadata extends MetadataBase
 			FieldAccessor fieldAccessor = get(tagName);
 			if(fieldAccessor != null)
 			{
-				ElementState nestedES = null;
-				try
-				{
-					nestedES	= (ElementState) fieldAccessor.getField().get(metadata);
-				} catch (IllegalArgumentException e)
-				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IllegalAccessException e)
-				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				if(nestedES == null)
-				{
-					//FIXME! do not use particular classes. find a way to use the type system to get what you need.
-					//Have to instantiate the MetadataString or MetadataParsedURL
-					if(fieldAccessor.getField().getType().equals(MetadataString.class))
-					{
-						fieldAccessor.setField(metadata, new MetadataString());
-					}
-					if(fieldAccessor.getField().getType().equals(MetadataParsedURL.class))
-					{
-						fieldAccessor.setField(metadata, new MetadataParsedURL());
-					}
-				}
 				fieldAccessor.set(metadata, value);
 			}
 			else 
@@ -465,41 +440,15 @@ abstract public class Metadata extends MetadataBase
 		
 		if(metadata != null)
 		{
-			HashMapArrayList<String, FieldAccessor> fieldAccessors = metadataFieldAccessors();
-			FieldAccessor fieldAccessor = fieldAccessors.get(tagName);
+			FieldAccessor fieldAccessor = get(tagName);
 			if(fieldAccessor != null)
 			{
-				ElementState nestedES = null;
-				try
-				{
-					nestedES	= (ElementState) fieldAccessor.getField().get(metadata);
-				} catch (IllegalArgumentException e)
-				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IllegalAccessException e)
-				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				if(nestedES == null)
-				{
-					//Have to instantiate the MetadataString or MetadataParsedURL
-					if(fieldAccessor.getField().getType().equals(MetadataString.class))
-					{
-						fieldAccessor.setField(metadata, new MetadataString());
-					}
-					if(fieldAccessor.getField().getType().equals(MetadataParsedURL.class))
-					{
-						fieldAccessor.setField(metadata, new MetadataParsedURL());
-					}
-				}
 				fieldAccessor.set(metadata, value);
 				rebuildCompositeTermVector();
 			}
 			else 
 			{
-				System.out.println("No field Accessor");
+				debug("No field Accessor");
 			}
 			//Debugging
 //			if(fieldAccessor.getFieldName() == "title")
