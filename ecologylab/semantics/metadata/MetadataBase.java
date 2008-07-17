@@ -112,6 +112,7 @@ public class MetadataBase extends ElementState implements Iterable<FieldAccessor
 		return metadataFieldAccessors().iterator();
 	}
 
+	//FIXEME:The method has to search even all the mixins for the key.
 	public FieldAccessor get(String key)
 	{
 		HashMapArrayList<String, FieldAccessor> fieldAccessors = metadataFieldAccessors();
