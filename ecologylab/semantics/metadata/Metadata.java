@@ -153,7 +153,6 @@ abstract public class Metadata extends MetadataBase
 	 */
 	public void incrementInterest(short delta)
 	{
-		//Metadata Transition --bharat
 		if(compositeTermVector != null && !compositeTermVector.isEmpty())
 		{
 			compositeTermVector.incrementParticipantInterest(delta);
@@ -186,7 +185,6 @@ abstract public class Metadata extends MetadataBase
 	 * 
 	 * @return	The HashMap Iterator.
 	 */
-	//Metadata Transition --bharat
 	public Iterator<FieldAccessor> fieldAccessorIterator()
 	{
 		return metadataFieldAccessors().iterator();
@@ -263,7 +261,6 @@ abstract public class Metadata extends MetadataBase
 		return false;
 	}
 	
-	//Metadata Transition --bharat
 	public int size() 
 	{
 		// TODO Sashikanth: Use Reflection to get the number of fields 
@@ -279,7 +276,6 @@ abstract public class Metadata extends MetadataBase
 			String valueString = fieldAccessor.getValueString(this);
 			if(valueString != null && valueString != "null")
 			{
-//				Metadata Transition: debug
 //				System.out.println("field:"+fieldAccessor.getFieldName()+ " value:"+valueString);
 				size++;
 			}
@@ -299,7 +295,6 @@ abstract public class Metadata extends MetadataBase
 					String valueString = fieldAccessor.getValueString(metadata);
 					if(valueString != null && valueString != "null")
 					{
-//						Metadata Transition: debug
 //						System.out.println("field:"+fieldAccessor.getFieldName()+ " value:"+valueString);
 						size++;
 					}
@@ -392,7 +387,6 @@ abstract public class Metadata extends MetadataBase
 		return compositeTermVector == null ? 0 : compositeTermVector.lnWeight();
 	}
 	
-	//Metadata TransitionTODO -- 
 //	public Metadata lookupChildMetadata(String tagName)
 //	{
 //		HashMapArrayList<String, FieldAccessor> fieldAccessors = Optimizations.getFieldAccessors(this.getClass());
@@ -406,7 +400,7 @@ abstract public class Metadata extends MetadataBase
 	 * @param fieldName
 	 * @param value
 	 */
-	//Metadata Transition -- TODO -- May throw exception if there is no field accessor.
+	//TODO -- May throw exception if there is no field accessor.
 	public void set(String tagName, String value)
 	{
 		tagName = tagName.toLowerCase();
@@ -432,7 +426,7 @@ abstract public class Metadata extends MetadataBase
 	 * @param fieldName
 	 * @param value
 	 */
-	//Metadata TransitionTODO -- May throw exception if there is no field accessor.
+	//TODO -- May throw exception if there is no field accessor.
 	public void hwSet(String tagName, String value)
 	{
 		tagName = tagName.toLowerCase();
@@ -489,7 +483,6 @@ abstract public class Metadata extends MetadataBase
 		return null;
 	}
 	
-	//Metadata Transition
 //	public void setMixinField(String tagName, String value)
 //	{
 //		tagName = tagName.toLowerCase();
@@ -534,7 +527,6 @@ abstract public class Metadata extends MetadataBase
 		this.metaMetadata = metaMetadata;
 	}
 	
-	//Metadata Transition --bharat
 	public void initializeMetadataCompTermVector()
 	{
 		compositeTermVector = new TermVector();

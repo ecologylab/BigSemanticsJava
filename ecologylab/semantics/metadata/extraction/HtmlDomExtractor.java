@@ -54,7 +54,6 @@ public class HtmlDomExtractor<M extends Metadata> extends Debug
 	 * @return
 	 * @throws XmlTranslationException
 	 */
-	//Metadata Transition --- For ACMPortal
 	public M populateMetadata(ParsedURL purl, M  metadata)
 	{
 		MetaMetadata metaMetadata = metadata.getMetaMetadata();

@@ -29,7 +29,7 @@ implements PackageSpecifier
 	@xml_attribute 		String						packageName;
 	
 	/**
-	 * Metadata Transition: TODO
+	 * TODO
 	 * Have to create the prefix collection of the url_bases and have to access from here. 
 	 * For now we are using the domain as the key.
 	 */
@@ -98,7 +98,7 @@ implements PackageSpecifier
 //		{
 //			final TranslationSpace TS = MetaMetadataTranslationSpace.get();
 //			System.out.println("Creating MetaMetadata for doctype: "+docType);
-//			//Metadata Transition TODO depends on the docType
+//			//TODO depends on the docType
 //			String patternXMLFilepath = "C:/web_MMData/code/java/ecologylabSemantics/examplePatternFlickr.xml";
 //			tempMetaMetadata = (MetaMetadata) ElementState.translateFromXML(patternXMLFilepath, TS);
 //			tempMetaMetadata.setTS(TS);
