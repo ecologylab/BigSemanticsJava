@@ -57,11 +57,6 @@ abstract public class Metadata extends MetadataBase
 //		setupMetadataFieldAccessors();
 	}
 	
-//	public Metadata(boolean createTermVector)
-//	{
-//		if(createTermVector)
-//			compositeTermVector = new TermVector();
-//	}
 	/**
 	 * 
 	 */
@@ -76,108 +71,12 @@ abstract public class Metadata extends MetadataBase
 		return result;
 	}
 	
-	public TermVector termVector()
-	{
-		return compositeTermVector;
-	}
-   
-   /**
-    * Increments interest in this MetadataField. 
-    * @param delta	The change in interest.
-    */
-	public void incrementParticipantInterest(short delta)
-	{
-		participantInterest.increment(delta);
-	}
-	
-	public void recycle()
-	{
-		//termVector.clear();
-		compositeTermVector 				= null;
-		participantInterest					= null;
-	}
-	
 	public void addMixin(Metadata mixin)
 	{
 		if(mixin != null)
 		{
 			mixins().add(mixin);
 		}
-	}
-	
-	/**
-    * Append the term to the field "value" as well as the term vector.
-    * 
-    * @param wf The term to add.
-    */
-	public void addTerm(WordForms wf)
-	{
-		compositeTermVector.add(wf);
-		   
-		//value = null; //force value to be updated later
-		   
-		//if (termVector.size() > 0)
-		   
-		//this concat is way cheaper than rebuilding the termvector toString().
-		//value			= value.toString() + ' ' + wf.string();
-		   
-		//this.value = termVector.toString();
-		//this.value = termVector.toString(termVector.size(), ' ');
-		//else
-		//	   this.value = "";
-		
-		compositeTermVector.combine(compositeTermVector, false);
-	}
-	   
-	/**
-	* Append terms to the field "value" as well as the term vector.
-	* 
-	* @param wfv The vector of terms to add.
-	*/
-	public void addTerm(TermVector wfv)
-	{
-		Iterator it = wfv.iterator();
-		while (it.hasNext())
-		{ 
-			WordForms wf = (WordForms) it.next();
-			compositeTermVector.add(wf);
-		}
-	}
-	
-	/**
-	 * Modifies interest by delta. This function modifies the interest
-	 * in the composite TermVector, the constituent individual TermVectors,
-	 * and the interest in actual fields themselves (for the semantic web/DLs) 
-	 * 
-	 * @param delta		The amount to modify interest
-	 */
-	public void incrementInterest(short delta)
-	{
-		if(compositeTermVector != null && !compositeTermVector.isEmpty())
-		{
-			compositeTermVector.incrementParticipantInterest(delta);
-			incrementParticipantInterest(delta);
-		}
-//		if(compositeTermVector != null && !compositeTermVector.isEmpty())
-//		{
-//			// first modify the composite TermVector
-//			compositeTermVector.incrementParticipantInterest(delta);
-//			
-//			//TODO Sashikanth: iterate on child fields
-//			Iterator it = iterator();
-//			while (it.hasNext())
-//			{
-//				
-//				// TermVectors
-//				Metadata mData = (Metadata) it.next();
-//				mData.termVector().incrementParticipantInterest(delta);
-//				
-//				// Lastly the actual fields
-//				mData.incrementParticipantInterest(delta);
-//			}
-//		}
-		
-		
 	}
 	
 	/**
@@ -195,7 +94,7 @@ abstract public class Metadata extends MetadataBase
 	 * fields (so that it can be changed) but is added to the composite term vector.
 	 * If the data termvector has already been initialized, this operation will replace
 	 * the old one and rebuild the composite term vector.
-	 * 
+	 * FIXME:Not able to move to the MetadataBase b'coz of mixins.
 	 * @param initialTermVector The initial set of terms
 	 */
 	public void initializeTermVector(TermVector initialTermVector)
@@ -307,15 +206,8 @@ abstract public class Metadata extends MetadataBase
 	}
 	
 	/**
-	 * Determine if the Metadata has any entries.
-	 * @return	True if there are Metadata entries.
-	 */
-	public boolean hasCompositeTermVector()
-	{
-		return (compositeTermVector != null);
-	}
-	/**
 	 * Rebuilds the composite TermVector from the individual TermVectors
+	 * FIXME:Not able to move to the MetadataBase b'coz of mixins.
 	 */
 	public void rebuildCompositeTermVector()
 	{
@@ -364,27 +256,6 @@ abstract public class Metadata extends MetadataBase
 //		if (dataTermVector != null)
 //			termVector.combine(dataTermVector);
 		
-	}
-	
-	
-	/**
-	 * The weight of the composite TermVector.
-	 * @return	The composite TermVector's weight.
-	 * @see ecologylab.model.text.TermVector#getWeight()
-	 */
-	public float getWeight()
-	{
-		return compositeTermVector == null ? 1 : compositeTermVector.getWeight();
-	}
-	
-	/**
-	 * The lnWeight
-	 * @return	The lnWeight() of the composite TermVector.
-	 * @see ecologylab.model.text.TermVector#lnWeight()
-	 */
-	public float lnWeight()
-	{
-		return compositeTermVector == null ? 0 : compositeTermVector.lnWeight();
 	}
 	
 //	public Metadata lookupChildMetadata(String tagName)
@@ -594,10 +465,6 @@ abstract public class Metadata extends MetadataBase
 	public Metadata get(int index)
 	{
 		return null;
-	}
-	public TermVector getCompositeTermVector()
-	{
-		return super.getCompositeTermVector();
 	}
 	
 }
