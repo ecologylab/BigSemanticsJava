@@ -241,5 +241,8 @@ public class MetadataBase extends ElementState implements Iterable<FieldAccessor
 		return fieldAccessors.get(key);
 	}
 	
+	public void contributeToTermVector(TermVector compositeTermVector)
+	{
 
+	}
 }

@@ -3,6 +3,7 @@
  */
 package ecologylab.semantics.library.scalar;
 
+import ecologylab.model.text.TermVector;
 import ecologylab.semantics.metadata.MetadataBase;
 import ecologylab.xml.xml_inherit;
 
@@ -29,4 +30,12 @@ public class MetadataString extends MetadataBase
 		this.value = value;
 	}
 
+	@Override
+	public void contributeToTermVector(TermVector compositeTermVector)
+	{
+		if(value != null && value != "null")
+		{
+			compositeTermVector.addTerms(value, false);
+		}	
+	}
 }
