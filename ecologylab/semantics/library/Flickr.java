@@ -46,7 +46,7 @@ public class Flickr extends Image
 	
 	public void hwSetTags(String tags)
 	{
-		this.tags().setValue(tags);
+		setTags(tags);
 		rebuildCompositeTermVector();
 	}
 	
@@ -57,7 +57,7 @@ public class Flickr extends Image
 	
 	public void hwSetAuthor(String author)
 	{
-		this.author().setValue(author);
+		setAuthor(author);
 		rebuildCompositeTermVector();
 	}
 	
