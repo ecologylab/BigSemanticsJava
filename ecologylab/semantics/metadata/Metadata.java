@@ -281,13 +281,13 @@ abstract public class Metadata extends MetadataBase
 		if(metadata != null)
 		{
 			FieldAccessor fieldAccessor = get(tagName);
-			if(fieldAccessor != null)
+			if(fieldAccessor != null && value != null && value.length()!=0)
 			{
 				fieldAccessor.set(metadata, value);
 			}
 			else 
 			{
-				debug("No field Accessor");
+				debug("Not Able to set the field: " + tagName);
 			}
 		}
 	}
