@@ -1,9 +1,7 @@
 package ecologylab.semantics.library;
 
-import ecologylab.model.MetadataField;
 import ecologylab.semantics.library.scalar.MetadataString;
 import ecologylab.xml.xml_inherit;
-import ecologylab.xml.types.scalar.ScalarType;
 
 /**
  * 

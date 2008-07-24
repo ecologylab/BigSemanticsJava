@@ -3,7 +3,6 @@
  */
 package ecologylab.semantics.gui;
 
-import ecologylab.model.MetadataField;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataFieldAccessor;
 

@@ -3,16 +3,9 @@
  */
 package ecologylab.semantics.metadata;
 
-import java.lang.reflect.Field;
-
-import ecologylab.generic.HashMapArrayList;
-//import ecologylab.model.MetadataEndEditListener;
-import ecologylab.model.MetadataField;
 import ecologylab.semantics.gui.MetadataValueChangedListener;
 import ecologylab.xml.FieldAccessor;
 import ecologylab.xml.FieldToXMLOptimizations;
-import ecologylab.xml.Optimizations;
-import ecologylab.xml.types.scalar.ScalarType;
 
 /**
  * @author bharat
