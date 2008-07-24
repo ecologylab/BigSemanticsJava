@@ -64,7 +64,6 @@ implements PackageSpecifier
 		return metaMetadata;
 	}
 	
-	//Bharat:
 	public MetaMetadata getMetaMetaData(String docType)
 	{
 
