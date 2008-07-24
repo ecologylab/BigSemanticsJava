@@ -42,7 +42,7 @@ import ecologylab.xml.types.scalar.ScalarType;
 public class HtmlDomExtractor<M extends Metadata> extends Debug
 {
 	
-	private String DOMAIN_STRING;
+	private String domainString;
 	static Tidy tidy;
 	static XPath xpath;
 	
@@ -65,7 +65,7 @@ public class HtmlDomExtractor<M extends Metadata> extends Debug
 	public M populateMetadata(ParsedURL purl, M  metadata, String domainString)
 	{
 		MetaMetadata metaMetadata = metadata.getMetaMetadata();
-		DOMAIN_STRING = domainString;
+		this.domainString = domainString;
 		if(metaMetadata.isSupported(purl))
 		{
 			PURLConnection purlConnection = purl.connect();
@@ -168,7 +168,7 @@ public class HtmlDomExtractor<M extends Metadata> extends Debug
 										evaluation != "null" && (evaluation.length() != 0) &&
 										ParsedURL.isMalformedURL(evaluation))
 								{
-									evaluation = DOMAIN_STRING + evaluation;
+									evaluation = this.domainString + evaluation;
 								}
 							}
 							
@@ -282,7 +282,7 @@ public class HtmlDomExtractor<M extends Metadata> extends Debug
 						{
 							if(ParsedURL.isMalformedURL(nodeValue))
 							{
-								nodeValue = DOMAIN_STRING + nodeValue;
+								nodeValue = this.domainString + nodeValue;
 							}
 //							nodeValue = ACMPORTAL_DOMAIN + nodeValue;
 						}
@@ -361,7 +361,7 @@ public class HtmlDomExtractor<M extends Metadata> extends Debug
 								{
 									if(ParsedURL.isMalformedURL(nodeValue))
 									{
-										nodeValue = DOMAIN_STRING + nodeValue;
+										nodeValue = domainString + nodeValue;
 									}
 //									nodeValue = ACMPORTAL_DOMAIN + nodeValue;
 								}
