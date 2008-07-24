@@ -31,6 +31,12 @@ import ecologylab.xml.FieldAccessor;
 import ecologylab.xml.types.scalar.ParsedURLType;
 import ecologylab.xml.types.scalar.ScalarType;
 
+/**
+ * Extracts Metadata from the AcmPortal pages using the xPath strings in the MetaMetadata.
+ * @author bharat
+ *
+ * @param <M>
+ */
 public class HtmlDomExtractor<M extends Metadata> extends Debug
 {
 	
@@ -60,11 +66,7 @@ public class HtmlDomExtractor<M extends Metadata> extends Debug
 		if(metaMetadata.isSupported(purl))
 		{
 			PURLConnection purlConnection = purl.connect();
-
-			
-//			println("Start Copy -------------/n/n/n");
 			Document tidyDOM = tidy.parseDOM(purlConnection.inputStream(), null /*System.out*/);
-//			println("/n/n/n/nEnd Copy -------------");
 			
 			M populatedMetadata = recursiveExtraction(metadata, metaMetadata, tidyDOM, purl);
 
@@ -80,44 +82,42 @@ public class HtmlDomExtractor<M extends Metadata> extends Debug
 	}
 	
 	/**
-	 * Extracts the metadata from the given pattern
-	 * @param mmdField 
-	 * 
-	 * @param purl2
-	 * @param hdePattern
-	 * @return a HashMap of metadata (with nested HashMaps)
+	 * Extracts metadata using the tidyDOM from the purl.
+	 * @param metadata
+	 * @param mmdField
+	 * @param tidyDOM
+	 * @param purl
+	 * @return
 	 */
 	private M recursiveExtraction(M metadata, MetaMetadataField mmdField, Document tidyDOM, ParsedURL purl)
 	{
+		//Gets the child metadata of the mmdField.
 		HashMapArrayList<String, MetaMetadataField> mmdFieldSet = mmdField.getSet();
-		int size = mmdFieldSet.size();
-		for (int i = 0; i < mmdFieldSet.size(); i++)
-		{
-			MetaMetadataField mmdElement 	= mmdFieldSet.get(i);
-			String mmdElementName 			= mmdElement.getName();
-			println(mmdElementName);
-		}
+		
+		/********************debug********************/
+//		for (int i = 0; i < mmdFieldSet.size(); i++)
+//		{
+//			MetaMetadataField mmdElement 	= mmdFieldSet.get(i);
+//			String mmdElementName 			= mmdElement.getName();
+//			println(mmdElementName);
+//		}
+		/*********************************************/
+		
+		//Traverses through the child metadata to populate.
 		for (int i = 0; i < mmdFieldSet.size(); i++)
 		{
 			MetaMetadataField mmdElement 	= mmdFieldSet.get(i);
 
-			String xpathString 				= mmdElement.getXpath();
+			String xpathString 				= mmdElement.getXpath(); //Used to get the field value from the web page.
 			String mmdElementName 			= mmdElement.getName();
-			if(mmdElementName.equals("references"))
-			{
-				debug("");
-			}
 			if(mmdElement.getSet() == null) 
 			{
-//				String xpathString = mmdElement.getXpath();
-//				String mmdElementName = mmdElement.getName();
 				if (xpathString != null)
 				{
 					try
 					{
 						if (mmdElement.isList())
 						{
-							
 							NodeList nodes = (NodeList) xpath.evaluate(xpathString, tidyDOM, XPathConstants.NODESET);
 							ArrayList<String> values = new ArrayList<String>();
 							for (int j = 0; j < nodes.getLength(); j++)
@@ -127,9 +127,8 @@ public class HtmlDomExtractor<M extends Metadata> extends Debug
 								metadata.set(mmdElementName, nodeValue);
 								// println(mdElement.getName() + ":\t" + nodeValue);
 							}
-//							metadataMap.put(mmdElementName, values);
-
-						} else
+						} 
+						else
 						{
 							String evaluation = xpath.evaluate(xpathString, tidyDOM);
 							String stringPrefix = mmdElement.getStringPrefix();
@@ -144,6 +143,8 @@ public class HtmlDomExtractor<M extends Metadata> extends Debug
 									evaluation = null;
 							}
 							// println(mdElement.getName() + ":\t" + evaluation);
+							
+							//Adding the URL prefix for proper formation of the URL.
 							if((mmdElementName.equals("full_text") /*|| mmdElementName.equals("img_purl") */|| 
 									mmdElementName.equals("table_of_contents") || mmdElementName.equals("archive") ||
 									mmdElementName.equals("results_page")) && evaluation != null &&
@@ -153,16 +154,17 @@ public class HtmlDomExtractor<M extends Metadata> extends Debug
 								evaluation = ACMPORTAL_DOMAIN + evaluation;
 							}
 							
-							if(mmdElementName.equals("isbn"))
-							{
-								println("debug");
-							}
-							if(metadata == null)
-							{
-								println("debug");
-							}
+							/**************debug************/
+//							if(mmdElementName.equals("isbn"))
+//							{
+//								println("debug");
+//							}
+//							if(metadata == null)
+//							{
+//								println("debug");
+//							}
+							/********************************/
 							metadata.set(mmdElementName, evaluation);
-//							metadataMap.put(mmdElementName, evaluation);
 						}
 					} catch (XPathExpressionException e)
 					{
@@ -172,81 +174,68 @@ public class HtmlDomExtractor<M extends Metadata> extends Debug
 					}
 				}
 			}
-			else // If the meta_metadatafield is nested				
+			else // If the meta_metadatafield is nested	or mapped		
 			{
-				//Get the corresponding Metadata Field which is nested.
-				//Now call recursion on the nested Metadata Field.
+				//Gets the corresponding Metadata Field which is nested.
+				//Call recursively on the nested or mapped Metadata Field.
+				
+				/***************clean up***************/
 //				M nestedMetadata = (M) metadata.getMetadataWhichContainsField(mmdElementName);
 //				mmdField.lookupChild(mmdElementName);
 //				nestedMetadata = recursiveExtraction(nestedMetadata, tidyDOM, purl);
 //				HashMap<String, Object> innerMap = recursiveExtraction(metadata, mmdElement, tidyDOM, purl);
 //				metadataMap.put(mmdElementName, innerMap);
+				/**************************************/
+				
+				/************clean up************/
+//				if(mmdElementName.equals("source"))
+//				{
+//					println("debug");
+//				}
+				/*****************************/
 				
 				M nestedMetadata = null;
-				if(mmdElementName.equals("source"))
-				{
-					println("debug");
-				}
-				//For all the nested classes
+				
+				//If the field is nested
 				if(mmdElement.isNested())
 				{
 					//Have to return the nested object for the field.
 					FieldAccessor fieldAccessor = metadata.getMetadataFieldAccessor(mmdElementName);
 					Field field 				= fieldAccessor.getField();
 					
-					/**
-					 * We can use either of the below methods to get the nestedMetadata.
-					 */
-					//nestedMetadata 				= (M) ReflectionTools.getFieldValue(metadata , field);
 					try
 					{
 						nestedMetadata 				= (M) field.get(metadata);
 					} catch (IllegalArgumentException e)
 					{
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					} catch (IllegalAccessException e)
 					{
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					debug("");
-					/*M nestedMetadata = metadata.getObject(mmdElementName);
-					M nestedMetadata = metadata.mmdElementName;*/
 					
 					if(nestedMetadata == null)
 					{
-						debug("");
 						nestedMetadata = (M) ReflectionTools.getInstance(field.getType());
 						ReflectionTools.setFieldValue(metadata, field, nestedMetadata);
 					}
 					recursiveExtraction(nestedMetadata, mmdElement, tidyDOM, purl);
 				}
-				
+				//If the field is mapped.
 				else if(mmdElement.isMap())
 				{
-					debug("");
 					FieldAccessor fieldAccessor = metadata.getMetadataFieldAccessor(mmdElementName);
 					Field field = fieldAccessor.getField();
 					HashMapArrayList<Object, Metadata> mappedMetadata;
-//					nestedMetadata = (M) ReflectionTools.getFieldValue(metadata , field);
-					
 					
 					mappedMetadata = (HashMapArrayList<Object, Metadata>) ReflectionTools.getFieldValue(metadata , field);
 					if(mappedMetadata == null)
 					{
-						debug("");
+						//mappedMetadata is not initialized.
 						mappedMetadata = (HashMapArrayList<Object, Metadata>) ReflectionTools.getInstance(field.getType());
 						ReflectionTools.setFieldValue(metadata, field, mappedMetadata);
 					}					
-					
-					
-					///
-//					ReflectionTools.getFieldValue(metadata , field);
-					///
-//					mmdElement = author
-//					mmdFieldSetChild = name,affiliation,results_page
-					
+
 					HashMapArrayList<String, MetaMetadataField> mmdFieldSetChild = mmdElement.getSet();//author
 					
 					//Populating the key data.
@@ -262,30 +251,27 @@ public class HtmlDomExtractor<M extends Metadata> extends Debug
 						nodes = (NodeList) xpath.evaluate(xpathStringChild, tidyDOM, XPathConstants.NODESET);
 					} catch (XPathExpressionException e)
 					{
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 					ArrayList<String> values = new ArrayList<String>();
 					int keys = nodes.getLength();
-					if(keys == 2)
-					{
-						debug("");
-					}
-					for (int j = 0; j < nodes.getLength(); j++)
+					
+					for (int j = 0; j < keys; j++)
 					{
 						String nodeValue = nodes.item(j).getNodeValue();
+						//Adding the ACMPORTAL URL prefix for proper formation of the URL.
 						if(mmdChildElement.getScalarType() instanceof ParsedURLType)
 						{
 							nodeValue = ACMPORTAL_DOMAIN + nodeValue;
 						}
-//						nestedMetadata.add(nodeValue);
-						
+						//Populating one author at a time into the HashMapArrayList.
 						if(mmdElementName.equals("authors"))
 						{
 							mappedMetadata.put(nodeValue, new Author());
 							Metadata mapVElement = mappedMetadata.get(nodeValue);
 							mapVElement.set(key, nodeValue);
 						}
+						//Populating one reference/citaiton at a time into the HashMapArrayList.
 						if(mmdElementName.equals("references") || mmdElementName.equals("citations"))
 						{
 							mappedMetadata.put(nodeValue, new Reference());
@@ -307,32 +293,26 @@ public class HtmlDomExtractor<M extends Metadata> extends Debug
 								nodes = (NodeList) xpath.evaluate(xpathStringChild, tidyDOM, XPathConstants.NODESET);
 							} catch (XPathExpressionException e)
 							{
-								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
 							values = new ArrayList<String>();
-							int attributes = nodes.getLength();
-							int size2 = mappedMetadata.size();
+							//debug
+//							int attributes = nodes.getLength();
+//							int size2 = mappedMetadata.size();
 							
-							if(keys != attributes)
-							{
-								println("debug");
-							}
 							for (int l = 0; l < nodes.getLength() && l < keys && l < mappedMetadata.size(); l++)
 							{
 								String nodeValue = nodes.item(l).getNodeValue();
-								println("Attribute Name: "+mmdElementNameChild + "Attribute value: "+nodeValue);
-								println("No of Keys: "+keys + "index:  "+l);
 								
-//								Metadata author = nestedMetadata.get(l);
+								//debug
+//								println("Attribute Name: "+mmdElementNameChild + "Attribute value: "+nodeValue);
+//								println("No of Keys: "+keys + "index:  "+l);
+								
 								Metadata mapVElement = mappedMetadata.get(l);
+								//Adding the ACMPORTAL URL prefix for proper formation of the URL.
 								if(mmdChildElement.getScalarType() instanceof ParsedURLType)
 								{
 									nodeValue = ACMPORTAL_DOMAIN + nodeValue;
-								}
-								if(mmdElementNameChild.equals("bit_tex"))
-								{
-									debug("");
 								}
 								if(mapVElement != null)
 								{
@@ -341,23 +321,9 @@ public class HtmlDomExtractor<M extends Metadata> extends Debug
 							}
 						}
 					}//for
-					println("debug");
-					
-					
-					///
-					
-				
 				}
-
-				
-				
 			}
 		}
-
 		return metadata;
-
 	}
-	
-	
-
 }
