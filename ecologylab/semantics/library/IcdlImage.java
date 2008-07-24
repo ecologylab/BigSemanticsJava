@@ -36,7 +36,7 @@ public class IcdlImage extends Image
 
 	public void hwSetLanguages(String languages)
 	{
-		this.languages().setValue(languages);
+		this.setLanguages(languages);
 		rebuildCompositeTermVector();
 	}
 	

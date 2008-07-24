@@ -136,7 +136,7 @@ public class Pdf extends Document
 	 */
 	public void hwSetAuthor(String author)
 	{
-		this.author().setValue(author);
+		this.setAuthor(author);
 		rebuildCompositeTermVector();
 	}
 	
@@ -161,7 +161,7 @@ public class Pdf extends Document
 	 */
 	public void hwSetSummary(String summary)
 	{
-		this.summary().setValue(summary);
+		this.setSummary(summary);
 		rebuildCompositeTermVector();
 	}
 	
@@ -186,7 +186,7 @@ public class Pdf extends Document
 	 */
 	public void hwSetKeywords(String keywords)
 	{
-		this.keywords().setValue(keywords);
+		this.setKeywords(keywords);
 		rebuildCompositeTermVector();
 	}
 	
@@ -211,7 +211,7 @@ public class Pdf extends Document
 	 */
 	public void hwSetSubject(String subject)
 	{
-		this.subject().setValue(subject);
+		this.setSubject(subject);
 		rebuildCompositeTermVector();
 	}
 	
@@ -236,7 +236,7 @@ public class Pdf extends Document
 	 */
 	public void hwSetTrapped(String trapped)
 	{
-		this.trapped().setValue(trapped);
+		this.setTrapped(trapped);
 		rebuildCompositeTermVector();
 	}
 	

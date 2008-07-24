@@ -63,7 +63,7 @@ public class Media extends Metadata
 	public void hwSetContext(String context)
 	{
 //		this.context = context;
-		this.context().setValue(context);
+		this.setContext(context);
 		rebuildCompositeTermVector();
 	}
 

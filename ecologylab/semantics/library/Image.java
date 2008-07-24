@@ -83,7 +83,7 @@ public class Image extends Media
 	public void hwSetCaption(String caption)
 	{
 //		this.caption = caption;
-		this.caption().setValue(caption);
+		this.setCaption(caption);
 		rebuildCompositeTermVector();
 	}
 
@@ -91,7 +91,7 @@ public class Image extends Media
 	public void hwSetLocation(ParsedURL location)
 	{
 //		this.location = location;
-		this.location().setValue(location);
+		this.setLocation(location);
 		rebuildCompositeTermVector();
 	}
 	
@@ -130,7 +130,7 @@ public class Image extends Media
 	public void hwSetNavLocation(ParsedURL navLocation)
 	{
 //		this.navLocation = navLocation;
-		this.navLocation().setValue(navLocation);
+		this.setNavLocation(navLocation);
 		rebuildCompositeTermVector();
 	}
 }

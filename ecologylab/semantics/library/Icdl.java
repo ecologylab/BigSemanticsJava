@@ -33,7 +33,7 @@ public class Icdl extends Document
 
 	public void hwSetLanguages(String languages)
 	{
-		this.languages().setValue(languages);
+		this.setLanguages(languages);
 		rebuildCompositeTermVector();
 	}
 	

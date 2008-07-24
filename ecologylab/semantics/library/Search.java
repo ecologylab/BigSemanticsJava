@@ -45,7 +45,7 @@ public class Search extends Document
 	
 	public void hwSetQuery(String query)
 	{
-		this.query().setValue(query);
+		this.setQuery(query);
 		rebuildCompositeTermVector();
 	}
 	
@@ -56,7 +56,7 @@ public class Search extends Document
 	
 	public void hwSetSnippet(String snippet)
 	{
-		this.snippet().setValue(snippet);
+		this.setSnippet(snippet);
 		rebuildCompositeTermVector();
 	}
 	

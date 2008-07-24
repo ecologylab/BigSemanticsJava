@@ -33,7 +33,7 @@ public class Rss extends Document
 
 	public void hwSetSubject(String subject)
 	{
-		this.subject().setValue(subject);
+		this.setSubject(subject);
 		rebuildCompositeTermVector();
 	}
 	

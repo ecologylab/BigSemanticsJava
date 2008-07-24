@@ -121,27 +121,27 @@ public class Document extends Metadata
 	
 	public void hwSetTitle(String title)
 	{
-		this.title().setValue(title);
+		this.setTitle(title);
 		rebuildCompositeTermVector();
 	}
 
 	public void hwSetDescription(String description)
 	{
-		this.description().setValue(description);
+		this.setDescription(description);
 		rebuildCompositeTermVector();
 	}
 
 	@Override
 	public void hwSetLocation(ParsedURL location)
 	{
-		this.location().setValue(location);
+		this.setLocation(location);
 		rebuildCompositeTermVector();
 	}
 	
 	@Override
 	public void hwSetNavLocation(ParsedURL navLocation)
 	{
-		this.navLocation().setValue(navLocation);
+		this.setNavLocation(navLocation);
 		rebuildCompositeTermVector();
 	}
 	
