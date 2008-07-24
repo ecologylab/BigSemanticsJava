@@ -3,6 +3,8 @@ package ecologylab.semantics.metadata.extraction;
 
 
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -40,7 +42,7 @@ import ecologylab.xml.types.scalar.ScalarType;
 public class HtmlDomExtractor<M extends Metadata> extends Debug
 {
 	
-	private static final String ACMPORTAL_DOMAIN = "http://portal.acm.org/";
+	private String DOMAIN_STRING;
 	static Tidy tidy;
 	static XPath xpath;
 	
@@ -60,9 +62,10 @@ public class HtmlDomExtractor<M extends Metadata> extends Debug
 	 * @return
 	 * @throws XmlTranslationException
 	 */
-	public M populateMetadata(ParsedURL purl, M  metadata)
+	public M populateMetadata(ParsedURL purl, M  metadata, String domainString)
 	{
 		MetaMetadata metaMetadata = metadata.getMetaMetadata();
+		DOMAIN_STRING = domainString;
 		if(metaMetadata.isSupported(purl))
 		{
 			PURLConnection purlConnection = purl.connect();
@@ -95,12 +98,12 @@ public class HtmlDomExtractor<M extends Metadata> extends Debug
 		HashMapArrayList<String, MetaMetadataField> mmdFieldSet = mmdField.getSet();
 		
 		/********************debug********************/
-//		for (int i = 0; i < mmdFieldSet.size(); i++)
-//		{
-//			MetaMetadataField mmdElement 	= mmdFieldSet.get(i);
-//			String mmdElementName 			= mmdElement.getName();
-//			println(mmdElementName);
-//		}
+		for (int i = 0; i < mmdFieldSet.size(); i++)
+		{
+			MetaMetadataField mmdElement 	= mmdFieldSet.get(i);
+			String mmdElementName 			= mmdElement.getName();
+			println(mmdElementName);
+		}
 		/*********************************************/
 		
 		//Traverses through the child metadata to populate.
@@ -144,14 +147,29 @@ public class HtmlDomExtractor<M extends Metadata> extends Debug
 							}
 							// println(mdElement.getName() + ":\t" + evaluation);
 							
+							/***************************clean up****************************/
 							//Adding the URL prefix for proper formation of the URL.
-							if((mmdElementName.equals("full_text") /*|| mmdElementName.equals("img_purl") */|| 
-									mmdElementName.equals("table_of_contents") || mmdElementName.equals("archive") ||
-									mmdElementName.equals("results_page")) && evaluation != null &&
-									evaluation != "null" && (evaluation.length() != 0))
+//							if((mmdElementName.equals("full_text") /*|| mmdElementName.equals("img_purl") */|| 
+//									mmdElementName.equals("table_of_contents") || mmdElementName.equals("archive") ||
+//									mmdElementName.equals("results_page")) && evaluation != null &&
+//									evaluation != "null" && (evaluation.length() != 0))
+//							{
+//								if(ParsedURL.isMalformedURL(evaluation))
+//								{
+//									evaluation = DOMAIN_STRING + evaluation;
+//								}
+//								//the url base is different form the domain so creating a constant.
+////								evaluation = ACMPORTAL_DOMAIN + evaluation;
+//							}
+							/****************************************************************/
+							if(mmdElement.getScalarType() instanceof ParsedURLType)
 							{
-								//the url base is different form the domain so creating a constant.
-								evaluation = ACMPORTAL_DOMAIN + evaluation;
+								if(evaluation != null &&
+										evaluation != "null" && (evaluation.length() != 0) &&
+										ParsedURL.isMalformedURL(evaluation))
+								{
+									evaluation = DOMAIN_STRING + evaluation;
+								}
 							}
 							
 							/**************debug************/
@@ -259,25 +277,54 @@ public class HtmlDomExtractor<M extends Metadata> extends Debug
 					for (int j = 0; j < keys; j++)
 					{
 						String nodeValue = nodes.item(j).getNodeValue();
-						//Adding the ACMPORTAL URL prefix for proper formation of the URL.
+						//Adding the URL prefix for proper formation of the URL.
 						if(mmdChildElement.getScalarType() instanceof ParsedURLType)
 						{
-							nodeValue = ACMPORTAL_DOMAIN + nodeValue;
+							if(ParsedURL.isMalformedURL(nodeValue))
+							{
+								nodeValue = DOMAIN_STRING + nodeValue;
+							}
+//							nodeValue = ACMPORTAL_DOMAIN + nodeValue;
 						}
+						
+						/****************Generic access of Element Type**************/
+//						Type mapVElementType = null;
+//						Type type = field.getGenericType();
+//						if (type instanceof ParameterizedType) {
+//				            ParameterizedType pt = (ParameterizedType) type;
+//				            System.out.println("raw type: " + pt.getRawType());
+//				            System.out.println("owner type: " + pt.getOwnerType());
+//				            System.out.println("actual type args:");
+//				            mapVElementType = pt.getActualTypeArguments()[1];
+//				            for (Type t : pt.getActualTypeArguments()) {
+//				                System.out.println("    " + t);
+//				            }
+//				        }
+						
+						Type[] typeArgs = ReflectionTools.getParameterizedTypeTokens(field);
+						Type mapVElementType = typeArgs[1];
+						Class mapVElementClass = (Class) mapVElementType;
+						mappedMetadata.put(nodeValue, (Metadata) ReflectionTools.getInstance(mapVElementClass));
+						Metadata mapVElement = mappedMetadata.get(nodeValue);
+						mapVElement.set(key, nodeValue);
+						
+						/***********************************************************/
+						
 						//Populating one author at a time into the HashMapArrayList.
-						if(mmdElementName.equals("authors"))
-						{
-							mappedMetadata.put(nodeValue, new Author());
-							Metadata mapVElement = mappedMetadata.get(nodeValue);
-							mapVElement.set(key, nodeValue);
-						}
-						//Populating one reference/citaiton at a time into the HashMapArrayList.
-						if(mmdElementName.equals("references") || mmdElementName.equals("citations"))
-						{
-							mappedMetadata.put(nodeValue, new Reference());
-							Metadata mapVElement = mappedMetadata.get(nodeValue);
-							mapVElement.set(key, nodeValue);
-						}
+//						if(mmdElementName.equals("authors"))
+//						{	
+//							
+//							mappedMetadata.put(nodeValue, new Author());
+//							Metadata mapVElement = mappedMetadata.get(nodeValue);
+//							mapVElement.set(key, nodeValue);
+//						}
+//						//Populating one reference/citaiton at a time into the HashMapArrayList.
+//						if(mmdElementName.equals("references") || mmdElementName.equals("citations"))
+//						{
+//							mappedMetadata.put(nodeValue, new Reference());
+//							Metadata mapVElement = mappedMetadata.get(nodeValue);
+//							mapVElement.set(key, nodeValue);
+//						}
 					}
 					
 					//Populating the other attributes in the map
@@ -309,10 +356,14 @@ public class HtmlDomExtractor<M extends Metadata> extends Debug
 //								println("No of Keys: "+keys + "index:  "+l);
 								
 								Metadata mapVElement = mappedMetadata.get(l);
-								//Adding the ACMPORTAL URL prefix for proper formation of the URL.
+								//Adding the URL prefix for proper formation of the URL.
 								if(mmdChildElement.getScalarType() instanceof ParsedURLType)
 								{
-									nodeValue = ACMPORTAL_DOMAIN + nodeValue;
+									if(ParsedURL.isMalformedURL(nodeValue))
+									{
+										nodeValue = DOMAIN_STRING + nodeValue;
+									}
+//									nodeValue = ACMPORTAL_DOMAIN + nodeValue;
 								}
 								if(mapVElement != null)
 								{
