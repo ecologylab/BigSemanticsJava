@@ -5,6 +5,8 @@ package ecologylab.semantics.metadata.extraction;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -30,6 +32,7 @@ import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataField;
 import ecologylab.xml.FieldAccessor;
+import ecologylab.xml.XMLTools;
 import ecologylab.xml.types.scalar.ParsedURLType;
 import ecologylab.xml.types.scalar.ScalarType;
 
@@ -127,6 +130,9 @@ public class HtmlDomExtractor<M extends Metadata> extends Debug
 							{
 								String nodeValue = nodes.item(j).getNodeValue();
 								values.add(nodeValue);
+								//Removing the unwanted html chars.
+								nodeValue = XMLTools.unescapeXML(nodeValue);
+								nodeValue = nodeValue.trim();
 								metadata.set(mmdElementName, nodeValue);
 								// println(mdElement.getName() + ":\t" + nodeValue);
 							}
@@ -161,27 +167,49 @@ public class HtmlDomExtractor<M extends Metadata> extends Debug
 //								//the url base is different form the domain so creating a constant.
 ////								evaluation = ACMPORTAL_DOMAIN + evaluation;
 //							}
+//							if(mmdElement.getScalarType() instanceof ParsedURLType)
+//							{
+//								if(evaluation != null &&
+//										evaluation != "null" && (evaluation.length() != 0) &&
+//										ParsedURL.isMalformedURL(evaluation))
+//								{
+//									evaluation = this.domainString + evaluation;
+//								}
+//							}
 							/****************************************************************/
+
 							if(mmdElement.getScalarType() instanceof ParsedURLType)
 							{
-								if(evaluation != null &&
-										evaluation != "null" && (evaluation.length() != 0) &&
-										ParsedURL.isMalformedURL(evaluation))
+								ParsedURL parsedURL = null;
+								try
 								{
-									evaluation = this.domainString + evaluation;
+									if(evaluation != "null" && (evaluation.length() != 0))
+									{
+										parsedURL = ParsedURL.getRelative(new URL(domainString),evaluation, "");
+										evaluation = parsedURL.toString();
+									}
+								} catch (MalformedURLException e)
+								{
+									//Should not come here b'coz the domainString has to be properly formed all the time.
+									e.printStackTrace();
 								}
 							}
 							
 							/**************debug************/
-//							if(mmdElementName.equals("isbn"))
-//							{
-//								println("debug");
-//							}
+							if(mmdElementName.equals("year_of_publication"))
+							{
+								println("debug");
+//								evaluation = XMLTools.unescapeXML(evaluation);
+//								evaluation = evaluation.trim();
+//								evaluation = "2006";
+							}
 //							if(metadata == null)
 //							{
 //								println("debug");
 //							}
 							/********************************/
+							evaluation = XMLTools.unescapeXML(evaluation);
+							evaluation = evaluation.trim();
 							metadata.set(mmdElementName, evaluation);
 						}
 					} catch (XPathExpressionException e)
@@ -196,21 +224,6 @@ public class HtmlDomExtractor<M extends Metadata> extends Debug
 			{
 				//Gets the corresponding Metadata Field which is nested.
 				//Call recursively on the nested or mapped Metadata Field.
-				
-				/***************clean up***************/
-//				M nestedMetadata = (M) metadata.getMetadataWhichContainsField(mmdElementName);
-//				mmdField.lookupChild(mmdElementName);
-//				nestedMetadata = recursiveExtraction(nestedMetadata, tidyDOM, purl);
-//				HashMap<String, Object> innerMap = recursiveExtraction(metadata, mmdElement, tidyDOM, purl);
-//				metadataMap.put(mmdElementName, innerMap);
-				/**************************************/
-				
-				/************clean up************/
-//				if(mmdElementName.equals("source"))
-//				{
-//					println("debug");
-//				}
-				/*****************************/
 				
 				M nestedMetadata = null;
 				
@@ -277,30 +290,25 @@ public class HtmlDomExtractor<M extends Metadata> extends Debug
 					for (int j = 0; j < keys; j++)
 					{
 						String nodeValue = nodes.item(j).getNodeValue();
-						//Adding the URL prefix for proper formation of the URL.
+						//Forming proper ParsedURL from the relative Path.
 						if(mmdChildElement.getScalarType() instanceof ParsedURLType)
 						{
-							if(ParsedURL.isMalformedURL(nodeValue))
+							ParsedURL parsedURL = null;
+							try
 							{
-								nodeValue = this.domainString + nodeValue;
+								if(nodeValue != "null" && (nodeValue.length() != 0))
+								{
+									parsedURL = ParsedURL.getRelative(new URL(domainString),nodeValue, "");
+									nodeValue = parsedURL.toString();
+								}
+							} catch (MalformedURLException e)
+							{
+								//Should not come here b'coz the domainString has to be properly formed all the time.
+								e.printStackTrace();
 							}
-//							nodeValue = ACMPORTAL_DOMAIN + nodeValue;
 						}
 						
-						/****************Generic access of Element Type**************/
-//						Type mapVElementType = null;
-//						Type type = field.getGenericType();
-//						if (type instanceof ParameterizedType) {
-//				            ParameterizedType pt = (ParameterizedType) type;
-//				            System.out.println("raw type: " + pt.getRawType());
-//				            System.out.println("owner type: " + pt.getOwnerType());
-//				            System.out.println("actual type args:");
-//				            mapVElementType = pt.getActualTypeArguments()[1];
-//				            for (Type t : pt.getActualTypeArguments()) {
-//				                System.out.println("    " + t);
-//				            }
-//				        }
-						
+						//Generic access of Element Type
 						Type[] typeArgs = ReflectionTools.getParameterizedTypeTokens(field);
 						Type mapVElementType = typeArgs[1];
 						Class mapVElementClass = (Class) mapVElementType;
@@ -308,8 +316,8 @@ public class HtmlDomExtractor<M extends Metadata> extends Debug
 						Metadata mapVElement = mappedMetadata.get(nodeValue);
 						mapVElement.set(key, nodeValue);
 						
-						/***********************************************************/
 						
+						/***************clean up*****************/
 						//Populating one author at a time into the HashMapArrayList.
 //						if(mmdElementName.equals("authors"))
 //						{	
@@ -325,6 +333,7 @@ public class HtmlDomExtractor<M extends Metadata> extends Debug
 //							Metadata mapVElement = mappedMetadata.get(nodeValue);
 //							mapVElement.set(key, nodeValue);
 //						}
+						/******************************************/
 					}
 					
 					//Populating the other attributes in the map
@@ -356,17 +365,27 @@ public class HtmlDomExtractor<M extends Metadata> extends Debug
 //								println("No of Keys: "+keys + "index:  "+l);
 								
 								Metadata mapVElement = mappedMetadata.get(l);
-								//Adding the URL prefix for proper formation of the URL.
+								//Forming proper ParsedURL from the relative Path.
 								if(mmdChildElement.getScalarType() instanceof ParsedURLType)
 								{
-									if(ParsedURL.isMalformedURL(nodeValue))
+									ParsedURL parsedURL = null;
+									try
 									{
-										nodeValue = domainString + nodeValue;
+										if(nodeValue != "null" && (nodeValue.length() != 0))
+										{
+											parsedURL = ParsedURL.getRelative(new URL(domainString),nodeValue, "");
+											nodeValue = parsedURL.toString();
+										}
+									} catch (MalformedURLException e)
+									{
+										//Should not come here b'coz the domainString has to be properly formed all the time.
+										e.printStackTrace();
 									}
-//									nodeValue = ACMPORTAL_DOMAIN + nodeValue;
 								}
 								if(mapVElement != null)
 								{
+									nodeValue = XMLTools.unescapeXML(nodeValue);
+									nodeValue = nodeValue.trim();
 									mapVElement.set(mmdElementNameChild, nodeValue);
 								}
 							}
