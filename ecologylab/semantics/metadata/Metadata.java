@@ -159,11 +159,13 @@ abstract public class Metadata extends MetadataBase
 		
 		return false;
 	}
-	
+
+	/**
+	 * @return the number of non-Null fields within this metadata
+	 */
 	public int size() 
 	{
-		// TODO Sashikanth: Use Reflection to get the number of fields 
-		//of the instantiated metadata object
+
 		int size = 0;
 		
 		
@@ -224,13 +226,30 @@ abstract public class Metadata extends MetadataBase
 		while(fieldIterator.hasNext())
 		{
 			FieldAccessor fieldAccessor = fieldIterator.next();
-			String valueString = fieldAccessor.getValueString(this);
-			if(valueString != null && valueString != "null")
+			try
 			{
-				compositeTermVector.addTerms(valueString, false);
+				Field field = fieldAccessor.getField();
+				if(!("mixins".equals(field.getName())))
+				{
+					MetadataBase metadataScalar = (MetadataBase) field.get(this);
+					if(metadataScalar != null)
+					{
+						if("anchorText".equals(field.getName()) && fieldAccessor.getValueString(this) != null)
+							metadataScalar.contributeToTermVector(compositeTermVector);
+						else
+							metadataScalar.contributeToTermVector(compositeTermVector);	
+					}
+						
+				}
+				
+			} catch (IllegalArgumentException e)
+			{
+				e.printStackTrace();
+			} catch (IllegalAccessException e)
+			{
+				e.printStackTrace();
 			}
 		}
-
 
 		//Supporting Mixins
 		if(mixins() != null && mixins().size() > 0)
@@ -243,15 +262,23 @@ abstract public class Metadata extends MetadataBase
 				while(fieldIterator.hasNext())
 				{
 					FieldAccessor fieldAccessor = fieldIterator.next();
-					String valueString = fieldAccessor.getValueString(metadata);
-					if(valueString != null && valueString != "null")
+					try
 					{
-						compositeTermVector.addTerms(valueString, false);
+						MetadataBase metadataScalar = (MetadataBase) fieldAccessor.getField().get(this);
+						if(metadataScalar != null)
+							metadataScalar.contributeToTermVector(compositeTermVector);
+					} catch (IllegalArgumentException e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IllegalAccessException e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
 				}
 			}
 		}
-		
 		//add any actual data terms to the composite term vector
 //		if (dataTermVector != null)
 //			termVector.combine(dataTermVector);

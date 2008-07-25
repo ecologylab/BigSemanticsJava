@@ -4,6 +4,7 @@ import ecologylab.model.TextChunkBase;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.library.scalar.MetadataParsedURL;
 import ecologylab.semantics.library.scalar.MetadataString;
+import ecologylab.semantics.library.scalar.MetadataStringBuilder;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.xml.xml_inherit;
@@ -24,7 +25,9 @@ public class Document extends Metadata
 	@xml_nested MetadataString		description;
 	@xml_nested MetadataParsedURL	location;
 	
-	@xml_nested MetadataString		context;
+	@xml_nested MetadataStringBuilder 	anchorText;
+	@xml_nested MetadataStringBuilder 	anchorContextString;
+	@xml_nested MetadataString			context;
 	
 	/**
 	 * Occasionally, we want to navigate to somewhere other than the regular purl,
@@ -93,6 +96,28 @@ public class Document extends Metadata
 		{
 			result = new MetadataParsedURL();
 			this.navLocation = result;
+		}
+		return result;
+	}
+	
+	MetadataStringBuilder anchorText()
+	{
+		MetadataStringBuilder result = this.anchorText;
+		if(result == null)
+		{
+			result = new MetadataStringBuilder();
+			this.anchorText = result;
+		}
+		return result;
+	}
+
+	MetadataStringBuilder anchorContextString()
+	{
+		MetadataStringBuilder result = this.anchorContextString;
+		if(result == null)
+		{
+			result = new MetadataStringBuilder();
+			this.anchorContextString = result;
 		}
 		return result;
 	}
@@ -167,6 +192,35 @@ public class Document extends Metadata
 		this.navLocation().setValue(navLocation);
 	}
 
+	public void setAnchorText(StringBuilder anchorText)
+	{
+		this.anchorText().setValue(anchorText);
+	}
+
+	public void hwSetAnchorText(StringBuilder anchorText)
+	{
+		this.anchorText().setValue(anchorText);
+		rebuildCompositeTermVector();
+	}
+	
+	public void appendAnchorText(String anchorText)
+	{
+		this.anchorText().setValue(anchorText);
+	}
+
+	public void hwAppendAnchorText(String anchorText)
+	{
+		this.anchorText().setValue(anchorText);
+		rebuildCompositeTermVector();
+	}
+	public void hwAppendAnchorContextString(String anchorContextString)
+	{
+		this.anchorContextString().setValue(anchorContextString);
+		rebuildCompositeTermVector();
+	
+	}
+	
+	
 }
 
 // Caption Images
