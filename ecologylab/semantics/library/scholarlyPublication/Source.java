@@ -1,6 +1,7 @@
 package ecologylab.semantics.library.scholarlyPublication;
 
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.library.scalar.MetadataInteger;
 import ecologylab.semantics.library.scalar.MetadataParsedURL;
 import ecologylab.semantics.library.scalar.MetadataString;
 import ecologylab.semantics.metadata.Metadata;
@@ -20,7 +21,8 @@ public class Source extends Metadata
 	@xml_nested MetadataString			heading;
 	@xml_nested MetadataParsedURL		tableOfContents;
 	@xml_nested MetadataString			pages;
-	@xml_nested MetadataString			yearOfPublication;/*year_of_publication*/
+//	@xml_nested MetadataString			yearOfPublication;/*year_of_publication*/
+	@xml_nested MetadataInteger			yearOfPublication;
 	@xml_nested MetadataString			isbn;
 	@xml_nested MetadataParsedURL		imgPurl; 
 	
@@ -68,12 +70,12 @@ public class Source extends Metadata
 		return result;
 	}
 	
-	MetadataString year_of_publication()
+	MetadataInteger year_of_publication()
 	{
-		MetadataString result = this.yearOfPublication;
+		MetadataInteger result = this.yearOfPublication;
 		if(result == null)
 		{
-			result 			= new MetadataString();
+			result 			= new MetadataInteger();
 			this.yearOfPublication 	= result;
 		}
 		return result;
