@@ -168,43 +168,21 @@ abstract public class Metadata extends MetadataBase
 
 		int size = 0;
 		
-		
-
-		Iterator<FieldAccessor> fieldIterator = fieldAccessorIterator();
-		while(fieldIterator.hasNext())
+		RecursiveIterator<FieldAccessor, Metadata>  fullIterator	= recursiveIteratorWithMixins();
+		while (fullIterator.hasNext())
 		{
-			FieldAccessor fieldAccessor = fieldIterator.next();
-			String valueString = fieldAccessor.getValueString(this);
-			if(valueString != null && valueString != "null")
+			FieldAccessor fieldAccessor	= fullIterator.next();
+			Metadata currentMetadata	= fullIterator.currentObject();
+			//When the iterator enters the metadata in the mixins "this" in getValueString has to be
+			// the corresponding metadata in mixin.
+			String valueString = fieldAccessor.getValueString(currentMetadata);
+			//"null" happens with mixins fieldAccessor b'coz getValueString() returns "null".
+			if (valueString != null && !"null".equals(valueString))
 			{
-//				System.out.println("field:"+fieldAccessor.getFieldName()+ " value:"+valueString);
 				size++;
 			}
 		}
-		
-		//Supporting Mixins -- Not used as yet but these are working fine.
-		if(mixins() != null && mixins().size() > 0)
-		{
-			Iterator<Metadata> metadataIterator = mixins().iterator();
-			while(metadataIterator.hasNext())
-			{
-				Metadata metadata = metadataIterator.next();
-				fieldIterator = metadata.fieldAccessorIterator();
-				while(fieldIterator.hasNext())
-				{
-					FieldAccessor fieldAccessor = fieldIterator.next();
-					String valueString = fieldAccessor.getValueString(metadata);
-					if(valueString != null && valueString != "null")
-					{
-//						System.out.println("field:"+fieldAccessor.getFieldName()+ " value:"+valueString);
-						size++;
-					}
-				}
-			}
-		}
-		
 		return size;
-
 	}
 	
 	/**
@@ -220,12 +198,11 @@ abstract public class Metadata extends MetadataBase
 			compositeTermVector.clear();
 		else
 			compositeTermVector	= new TermVector();
-//		termVector.clear();
 
-		Iterator<FieldAccessor> fieldIterator = fieldAccessorIterator();
-		while(fieldIterator.hasNext())
+		RecursiveIterator<FieldAccessor, Metadata>  fullIterator	= recursiveIteratorWithMixins();
+		while (fullIterator.hasNext())
 		{
-			FieldAccessor fieldAccessor = fieldIterator.next();
+			FieldAccessor fieldAccessor	= fullIterator.next();
 			try
 			{
 				Field field = fieldAccessor.getField();
@@ -234,10 +211,7 @@ abstract public class Metadata extends MetadataBase
 					MetadataBase metadataScalar = (MetadataBase) field.get(this);
 					if(metadataScalar != null)
 					{
-						if("anchorText".equals(field.getName()) && fieldAccessor.getValueString(this) != null)
-							metadataScalar.contributeToTermVector(compositeTermVector);
-						else
-							metadataScalar.contributeToTermVector(compositeTermVector);	
+						metadataScalar.contributeToTermVector(compositeTermVector);	
 					}
 						
 				}
@@ -250,48 +224,17 @@ abstract public class Metadata extends MetadataBase
 				e.printStackTrace();
 			}
 		}
-
-		//Supporting Mixins
-		if(mixins() != null && mixins().size() > 0)
+/*
+		for (FieldAccessor fieldAccessor : this)
 		{
-			Iterator<Metadata> metadataIterator = mixins().iterator();
-			while(metadataIterator.hasNext())
+			String valueString = fieldAccessor.getValueString(this);
+			if (valueString != null && !"null".equals(valueString))
 			{
-				Metadata metadata = metadataIterator.next();
-				fieldIterator = metadata.fieldAccessorIterator();
-				while(fieldIterator.hasNext())
-				{
-					FieldAccessor fieldAccessor = fieldIterator.next();
-					try
-					{
-						MetadataBase metadataScalar = (MetadataBase) fieldAccessor.getField().get(this);
-						if(metadataScalar != null)
-							metadataScalar.contributeToTermVector(compositeTermVector);
-					} catch (IllegalArgumentException e)
-					{
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (IllegalAccessException e)
-					{
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
+				compositeTermVector.addTerms(valueString, false);
 			}
 		}
-		//add any actual data terms to the composite term vector
-//		if (dataTermVector != null)
-//			termVector.combine(dataTermVector);
-		
+*/
 	}
-	
-//	public Metadata lookupChildMetadata(String tagName)
-//	{
-//		HashMapArrayList<String, FieldAccessor> fieldAccessors = Optimizations.getFieldAccessors(this.getClass());
-//		FieldAccessor fieldAccessor = fieldAccessors.get(tagName);
-//		Metadata metadata = fieldAccessor.getField();
-//		return metadata;
-//	}
 	
 	/**
 	 * Sets the field to the specified value and wont rebuild composteTermVector
@@ -494,4 +437,71 @@ abstract public class Metadata extends MetadataBase
 		return null;
 	}
 	
+	public RecursiveIterator<FieldAccessor, Metadata> recursiveIteratorWithMixins()
+	{
+		return new RecursiveIterator<FieldAccessor, Metadata>(this, 
+				(mixins == null) ? null : mixins.iterator());
+	}
+
+	
+	public static class RecursiveIterator<I, O extends Iterable<I>>
+	implements Iterator<I>
+	{
+		private Iterator<I> firstIterator;
+		private Iterator<O> collection;
+		
+		private O			currentObject;
+		
+		private Iterator<I>	currentIterator;
+		
+		public RecursiveIterator(O firstObject, Iterator<O> iterableCollection)
+		{
+			this.firstIterator	= firstObject.iterator();
+			this.currentObject	= firstObject;
+			this.collection	= iterableCollection;
+		}
+		
+		private boolean collectionHasNext()
+		{
+			return collection != null && (collection.hasNext() || currentHasNext());
+		}
+
+		private boolean currentHasNext() 
+		{
+			return (currentIterator != null) && currentIterator.hasNext();
+		}
+		
+		public boolean hasNext()
+		{
+			return firstIterator.hasNext() || collectionHasNext();
+		}
+
+		public I next() 
+		{
+			if (firstIterator.hasNext())
+				return firstIterator.next();
+			// else
+			if (currentHasNext())
+				return currentIterator.next();
+			// else
+			if (collectionHasNext())
+			{
+				currentObject		= collection.next();
+				currentIterator		= currentObject.iterator();
+				return currentIterator.next();
+			}
+			return null;
+		}
+		
+		public O currentObject()
+		{
+			return currentObject;
+		}
+
+		public void remove() 
+		{
+			throw new UnsupportedOperationException();
+		}
+		
+	}
 }
