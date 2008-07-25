@@ -147,6 +147,7 @@ public class HtmlDomExtractor<M extends Metadata> extends Debug
 								if (evaluation.startsWith(stringPrefix))
 								{
 									evaluation = evaluation.substring(stringPrefix.length());
+									evaluation = XMLTools.unescapeXML(evaluation);
 									evaluation = evaluation.trim();
 								} else
 									evaluation = null;
@@ -208,8 +209,6 @@ public class HtmlDomExtractor<M extends Metadata> extends Debug
 //								println("debug");
 //							}
 							/********************************/
-							evaluation = XMLTools.unescapeXML(evaluation);
-							evaluation = evaluation.trim();
 							metadata.set(mmdElementName, evaluation);
 						}
 					} catch (XPathExpressionException e)
