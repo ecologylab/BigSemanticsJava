@@ -65,6 +65,12 @@ implements Mappable<String>, PackageSpecifier
 	@xml_attribute private 				boolean 		isFacet;
 	
 	/**
+	 * Enables hand coding a few Metadata classes, but still providing MetaMetadata to
+	 * control operations on them.
+	 */
+	@xml_attribute private				boolean		dontCompile;
+	
+	/**
 	 * true if this field should not be displayed in interactive in-context metadata
 	 */
 	@xml_attribute private 				boolean 		hide;

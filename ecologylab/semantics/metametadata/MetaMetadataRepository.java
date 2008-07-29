@@ -62,6 +62,7 @@ implements PackageSpecifier
 		{
 			result = (MetaMetadataRepository) ElementState.translateFromXML(file, TS);
 			result.populatePurlMapRepository();
+			result.populateInheritedValues();
 			//For debug
 			//this.metaMetaDataRepository.writePrettyXML(System.out);
 		} catch (XMLTranslationException e)
@@ -71,6 +72,20 @@ implements PackageSpecifier
 		return result;
 	}
 	
+	private void populateInheritedValues()
+	{
+		for (MetaMetadata mm: repository.values())
+		{
+			String superClassName	= mm.extendsClass;
+			if (superClassName != null)
+			{
+				MetaMetadata superInstance	= repository.get(superClassName);
+				if (superInstance != null)
+					propagateInheritedValues(superInstance);
+			}
+		}
+	}
+
 	protected void populatePurlMapRepository()
 	{
 		Iterator<MetaMetadata> iterator = repository.iterator();
