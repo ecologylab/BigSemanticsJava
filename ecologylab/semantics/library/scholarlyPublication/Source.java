@@ -4,7 +4,7 @@ import ecologylab.net.ParsedURL;
 import ecologylab.semantics.library.scalar.MetadataInteger;
 import ecologylab.semantics.library.scalar.MetadataParsedURL;
 import ecologylab.semantics.library.scalar.MetadataString;
-import ecologylab.semantics.metadata.Metadata;
+import ecologylab.semantics.metadata.MetadataBase;
 import ecologylab.xml.ElementState.xml_nested;
 
 
@@ -13,10 +13,8 @@ import ecologylab.xml.ElementState.xml_nested;
  * @author damaraju
  *
  */
-public class Source extends Metadata
+public class Source extends MetadataBase
 {
-
-	
 	@xml_nested MetadataParsedURL		archive;
 	@xml_nested MetadataString			heading;
 	@xml_nested MetadataParsedURL		tableOfContents;
