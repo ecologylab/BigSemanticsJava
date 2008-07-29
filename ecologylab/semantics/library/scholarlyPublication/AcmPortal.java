@@ -31,8 +31,10 @@ public class AcmPortal extends Pdf
 {
 	@xml_nested MetadataParsedURL						fullText;
 	@xml_nested	Source									source;
+	
 	@xml_map("authors") 
-	public 	HashMapArrayList<String, Author>			authorNames;
+	private HashMapArrayList<String, Author>			authorNames;
+	
 	@xml_tag("abstract")
 	@xml_nested MetadataString							abst;
 	@xml_map("references") 
