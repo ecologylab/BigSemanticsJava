@@ -3,12 +3,15 @@
  */
 package ecologylab.semantics.metametadata;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.Iterator;
 
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.net.ParsedURL;
 import ecologylab.xml.ElementState;
+import ecologylab.xml.TranslationScope;
+import ecologylab.xml.XMLTranslationException;
 import ecologylab.xml.ElementState.xml_tag;
 
 /**
@@ -28,6 +31,8 @@ implements PackageSpecifier
 	@xml_tag("package") 
 	@xml_attribute 		String						packageName;
 	
+	static final TranslationScope TS = MetaMetadataTranslationScope.get();
+
 	/**
 	 * TODO
 	 * Have to create the prefix collection of the url_bases and have to access from here. 
@@ -43,7 +48,23 @@ implements PackageSpecifier
 		
 	}
 	
-	public void populatePurlMapRepository()
+	public static MetaMetadataRepository load(File file)
+	{
+		MetaMetadataRepository result	= null;
+		try
+		{
+			result = (MetaMetadataRepository) ElementState.translateFromXML(file, TS);
+			result.populatePurlMapRepository();
+			//For debug
+			//this.metaMetaDataRepository.writePrettyXML(System.out);
+		} catch (XMLTranslationException e)
+		{
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+	protected void populatePurlMapRepository()
 	{
 		Iterator<MetaMetadata> iterator = repository.iterator();
 		while(iterator.hasNext())
