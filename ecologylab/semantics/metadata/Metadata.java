@@ -121,42 +121,19 @@ abstract public class Metadata extends MetadataBase
 	public boolean isFilled(String attributeName)
 	{
 		attributeName = attributeName.toLowerCase();
-		Iterator<FieldAccessor> fieldIterator = fieldAccessorIterator();
-		while(fieldIterator.hasNext())
+		
+		RecursiveIterator<FieldAccessor, Metadata>  fullIterator	= recursiveIteratorWithMixins();
+		while (fullIterator.hasNext())
 		{
-			FieldAccessor fieldAccessor = fieldIterator.next();
+			FieldAccessor fieldAccessor	= fullIterator.next();
+			Metadata currentMetadata	= fullIterator.currentObject();
 			// getFieldName() or getTagName()??? attributeName is from TypeTagNames.java
 			if(attributeName.equals(fieldAccessor.getFieldName()))
 			{
-				String valueString = fieldAccessor.getValueString(this);
+				String valueString = fieldAccessor.getValueString(currentMetadata);
 				return (valueString != null && valueString != "null");
 			}
 		}
-		
-		//Supporting Mixins
-		if(mixins() != null && mixins().size() > 0)
-		{
-			Iterator<Metadata> metadataIterator = mixins().iterator();
-			while(metadataIterator.hasNext())
-			{
-				Metadata metadata = metadataIterator.next();
-				fieldIterator = metadata.fieldAccessorIterator();
-				while(fieldIterator.hasNext())
-				{
-					FieldAccessor fieldAccessor = fieldIterator.next();
-					String valueString = fieldAccessor.getValueString(metadata);
-					if(valueString != null && valueString != "null")
-					{
-						return true;
-					}
-					else
-					{
-						return false;
-					}
-				}
-			}
-		}
-		
 		return false;
 	}
 
