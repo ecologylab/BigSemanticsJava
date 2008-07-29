@@ -26,6 +26,7 @@ import ecologylab.net.ParsedURL;
 import ecologylab.semantics.library.scholarlyPublication.Author;
 import ecologylab.semantics.library.scholarlyPublication.Reference;
 import ecologylab.semantics.metadata.Metadata;
+import ecologylab.semantics.metadata.MetadataBase;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataField;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
@@ -39,7 +40,7 @@ import ecologylab.xml.types.scalar.ParsedURLType;
  *
  * @param <M>
  */
-public class HtmlDomExtractor<M extends Metadata> extends Debug
+public class HtmlDomExtractor<M extends MetadataBase> extends Debug
 {
 	
 	private String domainString;
