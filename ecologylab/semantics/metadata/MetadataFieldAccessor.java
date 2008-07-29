@@ -50,7 +50,7 @@ public class MetadataFieldAccessor<M extends Metadata> extends FieldAccessor
 		return isMixin;
 	}
 
-	public void editValue(Metadata context, String newValue)
+	public void editValue(MetadataBase context, String newValue)
 	{
 		if (metadataValueChangedListener != null)
 			metadataValueChangedListener.fieldValueChanged(this, context);
@@ -58,7 +58,7 @@ public class MetadataFieldAccessor<M extends Metadata> extends FieldAccessor
 		this.hwSet(context, newValue);
 	}
 		
-	public void hwSet(Metadata context, String newValue)
+	public void hwSet(MetadataBase context, String newValue)
 	{
 //		this.set(context, newValue);
 		context.hwSet(this.getTagName(), newValue);
