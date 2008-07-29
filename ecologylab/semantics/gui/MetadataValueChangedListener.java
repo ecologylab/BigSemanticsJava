@@ -4,6 +4,7 @@
 package ecologylab.semantics.gui;
 
 import ecologylab.semantics.metadata.Metadata;
+import ecologylab.semantics.metadata.MetadataBase;
 import ecologylab.semantics.metadata.MetadataFieldAccessor;
 
 /**
@@ -12,5 +13,5 @@ import ecologylab.semantics.metadata.MetadataFieldAccessor;
  */
 public interface MetadataValueChangedListener
 {
-	public void fieldValueChanged(MetadataFieldAccessor metadataFieldAccessor, Metadata metadata);
+	public void fieldValueChanged(MetadataFieldAccessor metadataFieldAccessor, MetadataBase metadata);
 }
