@@ -3,6 +3,7 @@ package ecologylab.semantics.library;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.library.scalar.MetadataParsedURL;
 import ecologylab.semantics.library.scalar.MetadataString;
+import ecologylab.semantics.metadata.Media;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.xml.xml_inherit;

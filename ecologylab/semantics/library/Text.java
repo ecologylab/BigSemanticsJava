@@ -1,6 +1,7 @@
 package ecologylab.semantics.library;
 
 import ecologylab.model.TextChunkBase;
+import ecologylab.semantics.metadata.Media;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.xml.xml_inherit;
 import ecologylab.xml.ElementState.xml_nested;

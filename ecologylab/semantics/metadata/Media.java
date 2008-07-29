@@ -1,10 +1,9 @@
 /**
  * 
  */
-package ecologylab.semantics.library;
+package ecologylab.semantics.metadata;
 
 import ecologylab.semantics.library.scalar.MetadataString;
-import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.xml.xml_inherit;
 import ecologylab.xml.ElementState.xml_leaf;
