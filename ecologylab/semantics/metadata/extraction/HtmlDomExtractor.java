@@ -8,8 +8,6 @@ import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
@@ -25,16 +23,15 @@ import ecologylab.generic.HashMapArrayList;
 import ecologylab.generic.ReflectionTools;
 import ecologylab.net.PURLConnection;
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.library.scholarlyPublication.AcmPortal;
 import ecologylab.semantics.library.scholarlyPublication.Author;
 import ecologylab.semantics.library.scholarlyPublication.Reference;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataField;
+import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.xml.FieldAccessor;
 import ecologylab.xml.XMLTools;
 import ecologylab.xml.types.scalar.ParsedURLType;
-import ecologylab.xml.types.scalar.ScalarType;
 
 /**
  * Extracts Metadata from the AcmPortal pages using the xPath strings in the MetaMetadata.
@@ -71,10 +68,10 @@ public class HtmlDomExtractor<M extends Metadata> extends Debug
 		this.domainString = domainString;
 		if(metaMetadata.isSupported(purl))
 		{
-			PURLConnection purlConnection = purl.connect();
-			Document tidyDOM = tidy.parseDOM(purlConnection.inputStream(), null /*System.out*/);
+			PURLConnection purlConnection 	= purl.connect(metaMetadata.getUserAgentString());
+			Document tidyDOM 				= tidy.parseDOM(purlConnection.inputStream(), null /*System.out*/);
 			
-			M populatedMetadata = recursiveExtraction(metadata, metaMetadata, tidyDOM, purl);
+			M populatedMetadata 			= recursiveExtraction(metadata, metaMetadata, tidyDOM, purl);
 
 			return populatedMetadata;
 		} else
