@@ -14,9 +14,11 @@ import ecologylab.generic.HashMapArrayList;
 import ecologylab.model.ParticipantInterest;
 import ecologylab.model.text.TermVector;
 import ecologylab.model.text.WordForms;
+import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.FieldAccessor;
 import ecologylab.xml.Optimizations;
+import ecologylab.xml.types.element.ArrayListState;
 
 /**
  * Base class for Metadata fields that represent scalar values.
@@ -245,6 +247,14 @@ public class MetadataBase extends ElementState implements Iterable<FieldAccessor
 		return fieldAccessors.get(key);
 	}
 	
+	public void set(String tagName, String value)
+	{
+		
+	}
+	public void hwSet(String tagName, String value)
+	{
+		
+	}
 	public void contributeToTermVector(TermVector compositeTermVector)
 	{
 
@@ -257,4 +267,14 @@ public class MetadataBase extends ElementState implements Iterable<FieldAccessor
     {
 
     }
+    
+    public MetaMetadata getMetaMetadata()
+	{
+		return null;
+	}
+    
+    public ArrayListState<Metadata> getMixins()
+	{
+		return null;
+	}
 }
