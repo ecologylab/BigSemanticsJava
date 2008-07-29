@@ -4,16 +4,21 @@
 package ecologylab.semantics.metadata;
 
 import ecologylab.semantics.gui.MetadataValueChangedListener;
+import ecologylab.xml.ElementState;
 import ecologylab.xml.FieldAccessor;
 import ecologylab.xml.FieldToXMLOptimizations;
+import ecologylab.xml.xml_inherit;
 
 /**
- * @author bharat
+ * @author andruid
  *
  */
 public class MetadataFieldAccessor<M extends Metadata> extends FieldAccessor
 {
-
+	final private boolean		isPseudoScalar;
+	
+	final private boolean		isMixin;
+	
 	public static final String NULL = "null";
 	
 	private MetadataValueChangedListener	metadataValueChangedListener;
@@ -21,8 +26,30 @@ public class MetadataFieldAccessor<M extends Metadata> extends FieldAccessor
 	public MetadataFieldAccessor(FieldToXMLOptimizations f2XO)
 	{
 		super(f2XO);
+		if (field != null)
+		{
+			isMixin			= field.isAnnotationPresent(MetadataBase.semantics_mixin.class);
+
+			Class<?> thatClass	= field.getType();
+			isPseudoScalar	= thatClass.isAnnotationPresent(semantics_pseudo_scalar.class);
+		}
+		else
+		{
+			isMixin			= false;
+			isPseudoScalar	= false;		
+		}
 	}
 	
+	public boolean isPseudoScalar() 
+	{
+		return isPseudoScalar;
+	}
+
+	public boolean isMixin() 
+	{
+		return isMixin;
+	}
+
 	public void editValue(Metadata context, String newValue)
 	{
 		if (metadataValueChangedListener != null)
@@ -30,7 +57,6 @@ public class MetadataFieldAccessor<M extends Metadata> extends FieldAccessor
 		
 		this.hwSet(context, newValue);
 	}
-	
 		
 	public void hwSet(Metadata context, String newValue)
 	{
@@ -69,6 +95,4 @@ public class MetadataFieldAccessor<M extends Metadata> extends FieldAccessor
 	{
 		this.metadataValueChangedListener = metadataValueChangedListener;
 	}
-
-	
 }

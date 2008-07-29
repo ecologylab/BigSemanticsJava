@@ -3,6 +3,11 @@
  */
 package ecologylab.semantics.metadata;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.Iterator;
 
 import ecologylab.generic.HashMapArrayList;
@@ -23,8 +28,7 @@ import ecologylab.xml.Optimizations;
  */
 public class MetadataBase extends ElementState implements Iterable<FieldAccessor>
 {
-	
-	protected TermVector 				compositeTermVector;
+	protected TermVector 					compositeTermVector;
 	
 	/**
 	 * Represents interest in this field as a whole
@@ -34,7 +38,7 @@ public class MetadataBase extends ElementState implements Iterable<FieldAccessor
 	 * retrieval model (IR), this is what enables the model to function
 	 * in the context of the semantic web / digital libraries.
 	 */  
-	ParticipantInterest				participantInterest = new ParticipantInterest();
+	ParticipantInterest						participantInterest = new ParticipantInterest();
 
 	HashMapArrayList<String, FieldAccessor> metadataFieldAccessors;
 
@@ -245,4 +249,12 @@ public class MetadataBase extends ElementState implements Iterable<FieldAccessor
 	{
 
 	}
+	
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.FIELD)
+    @Inherited
+    public @interface semantics_mixin
+    {
+
+    }
 }
