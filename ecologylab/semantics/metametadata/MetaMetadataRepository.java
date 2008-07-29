@@ -7,12 +7,15 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Iterator;
 
+import ecologylab.appframework.PropertiesAndDirectories;
+import ecologylab.generic.Debug;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.net.ParsedURL;
+import ecologylab.net.UserAgent;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.TranslationScope;
 import ecologylab.xml.XMLTranslationException;
-import ecologylab.xml.ElementState.xml_tag;
+import ecologylab.xml.types.element.HashMapState;
 
 /**
  * @author damaraju
@@ -33,6 +36,10 @@ implements PackageSpecifier
 	
 	static final TranslationScope TS = MetaMetadataTranslationScope.get();
 
+	@xml_tag("user_agents") @xml_map("user_agent") private HashMapState<String, UserAgent> userAgentCollection;
+	
+	private String  defaultUserAgentString;
+	
 	/**
 	 * TODO
 	 * Have to create the prefix collection of the url_bases and have to access from here. 
@@ -137,5 +144,35 @@ implements PackageSpecifier
 		return packageName;
 	}
 	
+	public HashMapState<String, UserAgent> userAgents()
+	{
+		if (userAgentCollection == null)
+			userAgentCollection = new HashMapState<String, UserAgent>();
+		
+		return userAgentCollection;
+		
+	}
+	
+	public String getUserAgentString(String name)
+	{
+		return userAgents().get(name).userAgentString();
+	}
+
+	public String getDefaultUserAgentString()
+	{
+		if (defaultUserAgentString == null)
+		{
+			for(UserAgent userAgent : userAgents().values())
+			{
+				if (userAgent.isDefaultAgent())
+				{
+					defaultUserAgentString = userAgent.userAgentString();
+					break;
+				}
+			}
+		}
+		
+		return defaultUserAgentString;
+	}
 	
 }

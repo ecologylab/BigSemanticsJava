@@ -26,11 +26,13 @@ public class MetaMetadata extends MetaMetadataField
 	
 	@xml_collection("mixins")  ArrayList<String> 		mixins;
 
+	@xml_attribute String								userAgentName;
+	
+	@xml_attribute String								userAgentString;
 	
 	TranslationScope 									translationScope;
 	
 	boolean												doNotTranslateToJava;
-	
 	
 	public MetaMetadata()
 	{
@@ -40,6 +42,11 @@ public class MetaMetadata extends MetaMetadataField
 	public boolean isSupported(ParsedURL purl)
 	{
 		return purl.toString().startsWith(urlBase.toString());
+	}
+	
+	public String getUserAgent()
+	{
+		return userAgentName;
 	}
 
 	public ParsedURL getUrlBase() {
@@ -126,6 +133,22 @@ public class MetaMetadata extends MetaMetadataField
 		}
 	}
 	
+	public MetaMetadataRepository repository()
+	{
+		return (MetaMetadataRepository) parent();
+	}
+	
+	public String getUserAgentString()
+	{
+		if (userAgentString == null)
+		{
+			userAgentString = (userAgentName == null) ? repository().getDefaultUserAgentString() :
+				repository().getUserAgentString(userAgentName);
+		}
+		
+		return userAgentString;
+	}
+	
 	public static void main(String args[]) throws XMLTranslationException
 	{
 		final TranslationScope TS = MetaMetadataTranslationScope.get();
@@ -144,6 +167,5 @@ public class MetaMetadata extends MetaMetadataField
 			System.out.println('\n');
 		}
 	}
-
 	
 }
