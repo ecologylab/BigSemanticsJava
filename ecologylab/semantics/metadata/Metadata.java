@@ -202,16 +202,13 @@ abstract public class Metadata extends MetadataBase
 		RecursiveIterator<FieldAccessor, Metadata>  fullIterator	= recursiveIteratorWithMixins();
 		while (fullIterator.hasNext())
 		{
-			FieldAccessor fieldAccessor	= fullIterator.next();
+			MetadataFieldAccessor<?> metadataFieldAccessor	= (MetadataFieldAccessor<?>) fullIterator.next();
 //			fieldAccessor.isScalar();
 			try
 			{
-				Field field = fieldAccessor.getField();
+				Field field = metadataFieldAccessor.getField();
 				Object object = field.get(fullIterator.currentObject());
-//				if((object instanceof ArrayList || object instanceof ArrayListState))
-				if(!(fieldAccessor.getTagName().equals("mixins") || fieldAccessor.getTagName().equals("authors") ||
-						fieldAccessor.getTagName().equals("references") ||
-						fieldAccessor.getTagName().equals("citations")))
+				if(metadataFieldAccessor.isPseudoScalar())
 				{
 					MetadataBase metadataScalar = (MetadataBase) object;
 					if(metadataScalar != null)
@@ -230,16 +227,6 @@ abstract public class Metadata extends MetadataBase
 				e.printStackTrace();
 			}
 		}
-/*
-		for (FieldAccessor fieldAccessor : this)
-		{
-			String valueString = fieldAccessor.getValueString(this);
-			if (valueString != null && !"null".equals(valueString))
-			{
-				compositeTermVector.addTerms(valueString, false);
-			}
-		}
-*/
 	}
 	
 	/**
