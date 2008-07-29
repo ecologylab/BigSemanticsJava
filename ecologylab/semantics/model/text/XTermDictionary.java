@@ -6,7 +6,7 @@ import java.io.FileReader;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import org.jvyaml.YAML;
+//import org.jvyaml.YAML;
 
 public class XTermDictionary {
 
@@ -89,7 +89,7 @@ public class XTermDictionary {
 	
 	@SuppressWarnings("unchecked")
 	private static void loadFromYaml(File yamlTermFrequency) throws FileNotFoundException {
-		frequencyList = (HashMap)YAML.load(new FileReader(yamlTermFrequency));
+		//frequencyList = (HashMap)YAML.load(new FileReader(yamlTermFrequency));
 		for(String stem : frequencyList.keySet()) {
 			
 			double freq = (double)frequencyList.get(stem);
