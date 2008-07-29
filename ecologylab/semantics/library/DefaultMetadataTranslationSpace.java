@@ -10,6 +10,7 @@ import ecologylab.semantics.library.scholarlyPublication.Author;
 import ecologylab.semantics.library.scholarlyPublication.Reference;
 import ecologylab.semantics.library.scholarlyPublication.AcmPortal;
 import ecologylab.semantics.library.scholarlyPublication.Source;
+import ecologylab.semantics.metadata.Media;
 import ecologylab.xml.TranslationScope;
 
 /**
