@@ -209,7 +209,9 @@ abstract public class Metadata extends MetadataBase
 				Field field = fieldAccessor.getField();
 				Object object = field.get(fullIterator.currentObject());
 //				if((object instanceof ArrayList || object instanceof ArrayListState))
-				if(!fieldAccessor.getTagName().equals("mixins"))
+				if(!(fieldAccessor.getTagName().equals("mixins") || fieldAccessor.getTagName().equals("authors") ||
+						fieldAccessor.getTagName().equals("references") ||
+						fieldAccessor.getTagName().equals("citations")))
 				{
 					MetadataBase metadataScalar = (MetadataBase) object;
 					if(metadataScalar != null)
