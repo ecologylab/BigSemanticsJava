@@ -1,12 +1,15 @@
 /**
  * 
  */
-package ecologylab.semantics.metametadata;
+package ecologylab.semantics.tools;
 
 import java.io.File;
 
 import ecologylab.appframework.ApplicationEnvironment;
 import ecologylab.appframework.PropertiesAndDirectories;
+import ecologylab.semantics.metametadata.MetaMetadata;
+import ecologylab.semantics.metametadata.MetaMetadataRepository;
+import ecologylab.semantics.metametadata.MetaMetadataTranslationScope;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.TranslationScope;
 import ecologylab.xml.XMLTranslationException;
