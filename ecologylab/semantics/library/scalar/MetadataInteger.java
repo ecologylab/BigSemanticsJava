@@ -2,9 +2,11 @@ package ecologylab.semantics.library.scalar;
 
 import ecologylab.model.text.TermVector;
 import ecologylab.semantics.metadata.MetadataBase;
+import ecologylab.semantics.metadata.semantics_pseudo_scalar;
 import ecologylab.xml.ElementState.xml_text;
 
 
+@semantics_pseudo_scalar
 public class MetadataInteger extends MetadataBase
 {
 	@xml_text	int		value;
