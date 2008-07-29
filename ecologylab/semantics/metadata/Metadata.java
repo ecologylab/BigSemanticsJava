@@ -203,18 +203,22 @@ abstract public class Metadata extends MetadataBase
 		while (fullIterator.hasNext())
 		{
 			FieldAccessor fieldAccessor	= fullIterator.next();
+//			fieldAccessor.isScalar();
 			try
 			{
 				Field field = fieldAccessor.getField();
-				if(!("mixins".equals(field.getName())))
+				Object object = field.get(fullIterator.currentObject());
+//				if((object instanceof ArrayList || object instanceof ArrayListState))
+				if(!fieldAccessor.getTagName().equals("mixins"))
 				{
-					MetadataBase metadataScalar = (MetadataBase) field.get(this);
+					MetadataBase metadataScalar = (MetadataBase) object;
 					if(metadataScalar != null)
 					{
 						metadataScalar.contributeToTermVector(compositeTermVector);	
-					}
-						
+					}	
 				}
+//				else
+//					debug("Iterator passing Collections");
 				
 			} catch (IllegalArgumentException e)
 			{
