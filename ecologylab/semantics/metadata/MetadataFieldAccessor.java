@@ -19,8 +19,6 @@ public class MetadataFieldAccessor<M extends Metadata> extends FieldAccessor
 	
 	final private boolean		isMixin;
 	
-	public static final String NULL = "null";
-	
 	private MetadataValueChangedListener	metadataValueChangedListener;
 	
 	public MetadataFieldAccessor(FieldToXMLOptimizations f2XO)
