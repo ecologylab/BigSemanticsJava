@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import ecologylab.generic.HashMapArrayList;
+import ecologylab.generic.OneLevelNestingIterator;
 import ecologylab.model.text.TermVector;
 import ecologylab.model.text.WordForms;
 import ecologylab.net.ParsedURL;
@@ -78,16 +79,6 @@ abstract public class Metadata extends MetadataBase
 			mixins().add(mixin);
 		}
 	}
-	
-	/**
-	 * This is going to return a Iterator of <code>FieldAccessor</code>. Uses lazy evaluation :-)
-	 * 
-	 * @return	The HashMap Iterator.
-	 */
-	public Iterator<FieldAccessor> fieldAccessorIterator()
-	{
-		return metadataFieldAccessors().iterator();
-	}
 		
 	/**
 	 * Initializes the data termvector structure. This is not added to the individual
@@ -113,20 +104,17 @@ abstract public class Metadata extends MetadataBase
 		{
 			compositeTermVector = initialTermVector;
 		}
-		
-		// change from vikram's semantic branch
-		//unscrapedTermVector.addAll(termVector);
 	}
 
 	public boolean isFilled(String attributeName)
 	{
 		attributeName = attributeName.toLowerCase();
 		
-		RecursiveIterator<FieldAccessor, Metadata>  fullIterator	= recursiveIteratorWithMixins();
+		OneLevelNestingIterator<FieldAccessor, ? extends MetadataBase>  fullIterator	= fullNonRecursiveIterator();
 		while (fullIterator.hasNext())
 		{
 			FieldAccessor fieldAccessor	= fullIterator.next();
-			Metadata currentMetadata	= fullIterator.currentObject();
+			MetadataBase currentMetadata	= fullIterator.currentObject();
 			// getFieldName() or getTagName()??? attributeName is from TypeTagNames.java
 			if(attributeName.equals(fieldAccessor.getFieldName()))
 			{
@@ -145,11 +133,11 @@ abstract public class Metadata extends MetadataBase
 
 		int size = 0;
 		
-		RecursiveIterator<FieldAccessor, Metadata>  fullIterator	= recursiveIteratorWithMixins();
+		OneLevelNestingIterator<FieldAccessor,  ? extends MetadataBase>  fullIterator	= fullNonRecursiveIterator();
 		while (fullIterator.hasNext())
 		{
 			FieldAccessor fieldAccessor	= fullIterator.next();
-			Metadata currentMetadata	= fullIterator.currentObject();
+			MetadataBase currentMetadata	= fullIterator.currentObject();
 			//When the iterator enters the metadata in the mixins "this" in getValueString has to be
 			// the corresponding metadata in mixin.
 			String valueString = fieldAccessor.getValueString(currentMetadata);
@@ -176,32 +164,38 @@ abstract public class Metadata extends MetadataBase
 		else
 			compositeTermVector	= new TermVector();
 
-		RecursiveIterator<FieldAccessor, Metadata>  fullIterator	= recursiveIteratorWithMixins();
+		OneLevelNestingIterator<FieldAccessor, ? extends MetadataBase>  fullIterator	= fullNonRecursiveIterator();
 		while (fullIterator.hasNext())
 		{
 			MetadataFieldAccessor<?> metadataFieldAccessor	= (MetadataFieldAccessor<?>) fullIterator.next();
-//			fieldAccessor.isScalar();
-			try
+			MetadataBase currentMetadataBase	= fullIterator.currentObject();
+			MetaMetadata groupMetaMetadata	= currentMetadataBase.getMetaMetadata();
+			MetaMetadataField fieldMetaMetadata		= (groupMetaMetadata == null) ? null :
+				groupMetaMetadata.lookupChild(metadataFieldAccessor);
+			if ((fieldMetaMetadata == null) || !fieldMetaMetadata.isIgnoreInTermVector())
 			{
-				Field field = metadataFieldAccessor.getField();
-				Object object = field.get(fullIterator.currentObject());
-				if(metadataFieldAccessor.isPseudoScalar())
+				try
 				{
-					MetadataBase metadataScalar = (MetadataBase) object;
-					if(metadataScalar != null)
+					Field field = metadataFieldAccessor.getField();
+					Object object = field.get(currentMetadataBase);
+					if(metadataFieldAccessor.isPseudoScalar())
 					{
-						metadataScalar.contributeToTermVector(compositeTermVector);	
-					}	
+						MetadataBase metadataScalar = (MetadataBase) object;
+						if(metadataScalar != null)
+						{
+							metadataScalar.contributeToTermVector(compositeTermVector);	
+						}	
+					}
+					//				else
+					//					debug("Iterator passing Collections");
+
+				} catch (IllegalArgumentException e)
+				{
+					e.printStackTrace();
+				} catch (IllegalAccessException e)
+				{
+					e.printStackTrace();
 				}
-//				else
-//					debug("Iterator passing Collections");
-				
-			} catch (IllegalArgumentException e)
-			{
-				e.printStackTrace();
-			} catch (IllegalAccessException e)
-			{
-				e.printStackTrace();
 			}
 		}
 	}
@@ -269,6 +263,7 @@ abstract public class Metadata extends MetadataBase
 	 * @param tagName
 	 * @return
 	 */
+	//FIXME -- use fullNonRecursiveIterator
 	public Metadata getMetadataWhichContainsField(String tagName)
 	{
 		HashMapArrayList<String, FieldAccessor> fieldAccessors = metadataFieldAccessors();
@@ -407,71 +402,28 @@ abstract public class Metadata extends MetadataBase
 		return null;
 	}
 	
-	public RecursiveIterator<FieldAccessor, Metadata> recursiveIteratorWithMixins()
+	/**
+	 * Take the mixins out of the collection, because they do not really provide
+	 * direct access to the mixin fields.
+	 * Instead, one uses fullNonRecursiveIterator() when that is desired.
+	 */
+	@Override
+	protected HashMapArrayList<String, FieldAccessor> computeFieldAccessors()
 	{
-		return new RecursiveIterator<FieldAccessor, Metadata>(this, 
+		HashMapArrayList<String, FieldAccessor> result	= super.computeFieldAccessors();
+		result.remove("mixins");
+		return result;
+	}
+	
+	/**
+	 * Provides MetadataFieldAccessors for each of the ecologylab.xml annotated fields in this
+	 * (probably a subclass), plus
+	 * all the ecologylab.xml annotated fields in the mixins of this, if there are any.
+	 */
+	public OneLevelNestingIterator<FieldAccessor, ? extends MetadataBase> fullNonRecursiveIterator()
+	{
+		return new OneLevelNestingIterator<FieldAccessor, Metadata>(this,
 				(mixins == null) ? null : mixins.iterator());
 	}
 
-	
-	public static class RecursiveIterator<I, O extends Iterable<I>>
-	implements Iterator<I>
-	{
-		private Iterator<I> firstIterator;
-		private Iterator<O> collection;
-		
-		private O			currentObject;
-		
-		private Iterator<I>	currentIterator;
-		
-		public RecursiveIterator(O firstObject, Iterator<O> iterableCollection)
-		{
-			this.firstIterator	= firstObject.iterator();
-			this.currentObject	= firstObject;
-			this.collection	= iterableCollection;
-		}
-		
-		private boolean collectionHasNext()
-		{
-			return collection != null && (collection.hasNext() || currentHasNext());
-		}
-
-		private boolean currentHasNext() 
-		{
-			return (currentIterator != null) && currentIterator.hasNext();
-		}
-		
-		public boolean hasNext()
-		{
-			return firstIterator.hasNext() || collectionHasNext();
-		}
-
-		public I next() 
-		{
-			if (firstIterator.hasNext())
-				return firstIterator.next();
-			// else
-			if (currentHasNext())
-				return currentIterator.next();
-			// else
-			if (collectionHasNext())
-			{
-				currentObject		= collection.next();
-				currentIterator		= currentObject.iterator();
-				return currentIterator.next();
-			}
-			return null;
-		}
-		
-		public O currentObject()
-		{
-			return currentObject;
-		}
-
-		public void remove() 
-		{
-			throw new UnsupportedOperationException();
-		}
-		
-	}
 }

@@ -11,6 +11,7 @@ import java.lang.annotation.Target;
 import java.util.Iterator;
 
 import ecologylab.generic.HashMapArrayList;
+import ecologylab.generic.OneLevelNestingIterator;
 import ecologylab.model.ParticipantInterest;
 import ecologylab.model.text.TermVector;
 import ecologylab.model.text.WordForms;
@@ -228,10 +229,16 @@ public class MetadataBase extends ElementState implements Iterable<FieldAccessor
 		HashMapArrayList<String, FieldAccessor> result	= this.metadataFieldAccessors;
 		if (result == null)
 		{
-			result			= Optimizations.getFieldAccessors(this.getClass(), MetadataFieldAccessor.class);
+			result			= computeFieldAccessors();
 			metadataFieldAccessors	= result;
 		}
 		return result;
+	}
+
+
+	protected HashMapArrayList<String, FieldAccessor> computeFieldAccessors()
+	{
+		return Optimizations.getFieldAccessors(this.getClass(), MetadataFieldAccessor.class);
 	}
 
 
@@ -240,6 +247,7 @@ public class MetadataBase extends ElementState implements Iterable<FieldAccessor
 		return metadataFieldAccessors().iterator();
 	}
 
+	
 	//FIXEME:The method has to search even all the mixins for the key.
 	public FieldAccessor get(String key)
 	{
@@ -269,12 +277,22 @@ public class MetadataBase extends ElementState implements Iterable<FieldAccessor
     }
     
     public MetaMetadata getMetaMetadata()
-	{
-		return null;
-	}
-    
+    {
+   	 return null;
+    }
+
     public ArrayListState<Metadata> getMixins()
+    {
+   	 return null;
+    }
+    
+ 	/**
+ 	 * Provides MetadataFieldAccessors for each of the ecologylab.xml annotated fields in this
+ 	 * (probably a subclass).
+ 	 */
+ 	public OneLevelNestingIterator<FieldAccessor, ? extends MetadataBase> fullNonRecursiveIterator()
 	{
-		return null;
+		return new OneLevelNestingIterator<FieldAccessor, MetadataBase>(this, null);
 	}
+
 }
