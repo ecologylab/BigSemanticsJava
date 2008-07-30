@@ -11,6 +11,7 @@ import java.util.Set;
 
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.xml.ElementState;
+import ecologylab.xml.FieldAccessor;
 import ecologylab.xml.Optimizations;
 import ecologylab.xml.TranslationScope;
 import ecologylab.xml.XMLTools;
@@ -64,6 +65,8 @@ implements Mappable<String>, PackageSpecifier
 	@xml_attribute private 				boolean			isMap;
 	@xml_attribute private 				boolean 		isFacet;
 	
+	@xml_attribute private 				boolean 		ignoreInTermVector;
+
 	/**
 	 * Enables hand coding a few Metadata classes, but still providing MetaMetadata to
 	 * control operations on them.
@@ -75,6 +78,13 @@ implements Mappable<String>, PackageSpecifier
 	 */
 	@xml_attribute private 				boolean 		hide;
 	
+	@xml_attribute private				boolean		alwaysShow;
+	
+	public boolean isAlwaysShow()
+	{
+		return alwaysShow;
+	}
+
 	@xml_attribute private 				boolean 		isNested;
 	@xml_attribute private 				String 			key;
 	
@@ -274,6 +284,11 @@ implements Mappable<String>, PackageSpecifier
 		return childMetaMetadata.get(name);
 	}
 	
+	public MetaMetadataField lookupChild(FieldAccessor fieldAccessor)
+	{
+		return childMetaMetadata.get(fieldAccessor.getTagName());
+	}
+	
 	public String getXpath()
 	{
 		return xpath;
@@ -339,4 +354,10 @@ implements Mappable<String>, PackageSpecifier
 		
 		return result;
 	}
+	
+	public boolean isIgnoreInTermVector()
+	{
+		return ignoreInTermVector;
+	}
+
 }
