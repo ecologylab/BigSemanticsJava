@@ -257,11 +257,68 @@ public class MetadataBase extends ElementState implements Iterable<FieldAccessor
 	
 	public void set(String tagName, String value)
 	{
-		
+		tagName = tagName.toLowerCase();
+		//Taking care of mixins
+		MetadataBase metadata = getMetadataWhichContainsField(tagName);
+
+		if(metadata != null)
+		{
+			FieldAccessor fieldAccessor = get(tagName);
+			if(fieldAccessor != null && value != null && value.length()!=0)
+			{
+				fieldAccessor.set(metadata, value);
+			}
+			else 
+			{
+				debug("Not Able to set the field: " + tagName);
+			}
+		}
 	}
+	
+	public MetadataBase getMetadataWhichContainsField(String tagName)
+	{
+		HashMapArrayList<String, FieldAccessor> fieldAccessors = metadataFieldAccessors();
+		
+		FieldAccessor metadataFieldAccessor = fieldAccessors.get(tagName);
+		if (metadataFieldAccessor != null)
+		{
+			return this;
+		}
+		//No mixins in MetadataBase.
+//		if(mixins() != null && mixins().size() > 0)
+//		{
+//			for (Metadata mixinMetadata : mixins())
+//			{
+//				fieldAccessors 	= mixinMetadata.metadataFieldAccessors();
+//				FieldAccessor mixinFieldAccessor 	= fieldAccessors.get(tagName);
+//				if(mixinFieldAccessor != null)
+//				{
+//					return mixinMetadata;
+//				}
+//			}
+//		}
+		return null;
+	}
+	
 	public void hwSet(String tagName, String value)
 	{
-		
+		tagName = tagName.toLowerCase();
+		//Taking care of mixins
+		MetadataBase metadata = getMetadataWhichContainsField(tagName);
+
+		if(metadata != null)
+		{
+			FieldAccessor fieldAccessor = get(tagName);
+			if(fieldAccessor != null && value != null && value.length()!=0)
+			{
+				fieldAccessor.set(metadata, value);
+				//FIXME:Have to rebuildComposite termVector!!
+			}
+			else 
+			{
+				debug("Not Able to set the field: " + tagName);
+			}
+		}
 	}
 	public void contributeToTermVector(TermVector compositeTermVector)
 	{
