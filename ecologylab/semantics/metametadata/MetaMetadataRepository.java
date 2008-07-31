@@ -12,6 +12,7 @@ import ecologylab.generic.Debug;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.net.ParsedURL;
 import ecologylab.net.UserAgent;
+import ecologylab.semantics.library.TypeTagNames;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.TranslationScope;
 import ecologylab.xml.XMLTranslationException;
@@ -23,7 +24,7 @@ import ecologylab.xml.types.element.HashMapState;
  */
 
 public class MetaMetadataRepository extends ElementState
-implements PackageSpecifier
+implements PackageSpecifier, TypeTagNames
 {
 	
 	//@xml_collection("meta_metadata") private ArrayList<MetaMetadata> stuff; 
@@ -188,6 +189,11 @@ implements PackageSpecifier
 		}
 		
 		return defaultUserAgentString;
+	}
+	
+	public static String documentTag()
+	{
+		return DOCUMENT_TAG;
 	}
 	
 }
