@@ -255,24 +255,30 @@ public class MetadataBase extends ElementState implements Iterable<FieldAccessor
 		return fieldAccessors.get(key);
 	}
 	
-	public void set(String tagName, String value)
+	public boolean set(String tagName, String value)
 	{
 		tagName = tagName.toLowerCase();
 		//Taking care of mixins
 		MetadataBase metadata = getMetadataWhichContainsField(tagName);
 
-		if(metadata != null)
+		if(value != null && value.length()!=0)
 		{
-			FieldAccessor fieldAccessor = get(tagName);
-			if(fieldAccessor != null && value != null && value.length()!=0)
+			if(metadata != null)
 			{
-				fieldAccessor.set(metadata, value);
-			}
-			else 
-			{
-				debug("Not Able to set the field: " + tagName);
+				FieldAccessor fieldAccessor = get(tagName);
+				if(fieldAccessor != null && value != null && value.length()!=0)
+				{
+					fieldAccessor.set(metadata, value);
+					return true;
+				}
+				else 
+				{
+					debug("Not Able to set the field: " + tagName);
+					return false;
+				}
 			}
 		}
+		return false;
 	}
 	
 	public MetadataBase getMetadataWhichContainsField(String tagName)
@@ -302,22 +308,10 @@ public class MetadataBase extends ElementState implements Iterable<FieldAccessor
 	
 	public void hwSet(String tagName, String value)
 	{
-		tagName = tagName.toLowerCase();
-		//Taking care of mixins
-		MetadataBase metadata = getMetadataWhichContainsField(tagName);
-
-		if(metadata != null)
+		if(set(tagName, value))
 		{
-			FieldAccessor fieldAccessor = get(tagName);
-			if(fieldAccessor != null && value != null && value.length()!=0)
-			{
-				fieldAccessor.set(metadata, value);
-				//FIXME:Have to rebuildComposite termVector!!
-			}
-			else 
-			{
-				debug("Not Able to set the field: " + tagName);
-			}
+			//value is properly set.
+			//FIXME!!rebuildCompositeTermVector()
 		}
 	}
 	public void contributeToTermVector(TermVector compositeTermVector)

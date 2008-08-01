@@ -214,57 +214,41 @@ abstract public class Metadata extends MetadataBase
 	 * @param value
 	 */
 	//TODO -- May throw exception if there is no field accessor.
-	public void set(String tagName, String value)
+	public boolean set(String tagName, String value)
 	{
 		tagName = tagName.toLowerCase();
 		//Taking care of mixins
-		Metadata metadata = getMetadataWhichContainsField(tagName);
+		MetadataBase metadata = getMetadataWhichContainsField(tagName);
 
-		if(metadata != null)
+		if(value != null && value.length()!=0)
 		{
-			FieldAccessor fieldAccessor = get(tagName);
-			if(fieldAccessor != null && value != null && value.length()!=0)
+			if(metadata != null)
 			{
-				fieldAccessor.set(metadata, value);
+				FieldAccessor fieldAccessor = get(tagName);
+				if(fieldAccessor != null && value != null && value.length()!=0)
+				{
+					fieldAccessor.set(metadata, value);
+					return true;
+				}
+				else 
+				{
+					debug("Not Able to set the field: " + tagName);
+					return false;
+				}
 			}
-			else 
-			{
-				debug("Not Able to set the field: " + tagName);
-			}
+		}
+		return false;
+	}
+	
+	public void hwSet(String tagName, String value)
+	{
+		if(set(tagName, value))
+		{
+			//value is properly set.
+			rebuildCompositeTermVector();
 		}
 	}
 	
-	/**
-	 * Setting the field to the specified value and rebuilds the composteTermVector.
-	 * @param fieldName
-	 * @param value
-	 */
-	//TODO -- May throw exception if there is no field accessor.
-	public void hwSet(String tagName, String value)
-	{
-		tagName = tagName.toLowerCase();
-		Metadata metadata = getMetadataWhichContainsField(tagName);
-		
-		if(metadata != null)
-		{
-			FieldAccessor fieldAccessor = get(tagName);
-			if(fieldAccessor != null)
-			{
-				fieldAccessor.set(metadata, value);
-				rebuildCompositeTermVector();
-			}
-			else 
-			{
-				debug("No field Accessor");
-			}
-			//Debugging
-//			if(fieldAccessor.getFieldName() == "title")
-//			{
-//			String valuestring = fieldAccessor.getValueString(this);
-//			System.out.println("location:"+fieldAccessor.getValueString(this));
-//			}
-		}
-	}
 	/**
 	 * Returns the metadata class if it contains a Field with name
 	 * NOTE: Currently should be used ONLY for mixins
