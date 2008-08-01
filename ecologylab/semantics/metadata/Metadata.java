@@ -79,6 +79,14 @@ abstract public class Metadata extends MetadataBase
 			mixins().add(mixin);
 		}
 	}
+	
+	public void removeMixin(Metadata mixin)
+	{
+		if (mixin != null)
+		{
+			mixins().remove(mixin);
+		}
+	}
 		
 	/**
 	 * Initializes the data termvector structure. This is not added to the individual

@@ -4,12 +4,15 @@
 package ecologylab.semantics.library;
 
 import ecologylab.generic.Debug;
+import ecologylab.semantics.library.scalar.MetadataInteger;
 import ecologylab.semantics.library.scalar.MetadataParsedURL;
 import ecologylab.semantics.library.scalar.MetadataString;
+import ecologylab.semantics.library.scalar.MetadataStringBuilder;
 import ecologylab.semantics.library.scholarlyPublication.Author;
 import ecologylab.semantics.library.scholarlyPublication.Reference;
 import ecologylab.semantics.library.scholarlyPublication.AcmPortal;
 import ecologylab.semantics.library.scholarlyPublication.Source;
+import ecologylab.semantics.metadata.DebugMetadata;
 import ecologylab.semantics.metadata.Media;
 import ecologylab.xml.TranslationScope;
 
@@ -27,7 +30,10 @@ public class DefaultMetadataTranslationSpace extends Debug
 	protected static final Class TRANSLATIONS[] = 
 	{
 		MetadataString.class,
+		MetadataStringBuilder.class,
 		MetadataParsedURL.class,
+		MetadataInteger.class,
+		DebugMetadata.class,
 		DcDocument.class,
 		Document.class,
 		Media.class,

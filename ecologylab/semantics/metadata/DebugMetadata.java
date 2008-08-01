@@ -24,6 +24,12 @@ public class DebugMetadata extends Metadata
 	public DebugMetadata()
 	{
 	}
+	
+	public DebugMetadata(MetadataStringBuilder termVector, MetadataStringBuilder termWeights)
+	{
+		this.termVector 	= termVector;
+		this.termWeights 	= termWeights;
+	}
 
 	/**
 	 * @param metaMetadata
