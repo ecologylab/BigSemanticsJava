@@ -5,10 +5,7 @@ package ecologylab.semantics.metametadata;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.Iterator;
 
-import ecologylab.appframework.PropertiesAndDirectories;
-import ecologylab.generic.Debug;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.net.ParsedURL;
 import ecologylab.net.UserAgent;
@@ -89,19 +86,23 @@ implements PackageSpecifier, TypeTagNames
 
 	protected void populatePurlMapRepository()
 	{
-		Iterator<MetaMetadata> iterator = repository.iterator();
-		while(iterator.hasNext())
+		for (MetaMetadata metaMetadata: repository)
 		{
-			MetaMetadata metaMetadata = iterator.next();
 			ParsedURL purl = metaMetadata.getUrlBase();
 			if(purl != null)
-				purlMapRepository.put(purl.domain(), metaMetadata);
+				purlMapRepository.put(purl.host(), metaMetadata);
 		}
 	}
 	
+	/**
+	 * Find the best matching MetaMetadata for the ParsedURL -- if there is a match.
+	 * 
+	 * @param parsedURL
+	 * @return		appropriate MetaMetadata, or null.
+	 */
 	public MetaMetadata getMetaMetaData(ParsedURL parsedURL)
 	{
-		MetaMetadata metaMetadata = purlMapRepository.get(parsedURL.domain());
+		MetaMetadata metaMetadata = purlMapRepository.get(parsedURL.host());
 		/**
 		 * returns null if there is no url_base.
 		 */
