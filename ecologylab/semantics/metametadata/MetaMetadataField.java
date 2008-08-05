@@ -80,6 +80,8 @@ implements Mappable<String>, PackageSpecifier
 	
 	@xml_attribute private				boolean		alwaysShow;
 	
+	@xml_attribute private 				boolean		addValueListener;
+	
 	public boolean isAlwaysShow()
 	{
 		return alwaysShow;
@@ -358,6 +360,31 @@ implements Mappable<String>, PackageSpecifier
 	public boolean isIgnoreInTermVector()
 	{
 		return ignoreInTermVector;
+	}
+
+	/**
+	 * @return the addValueListener
+	 */
+	public boolean isAddValueListener()
+	{
+		return addValueListener;
+	}
+
+	/**
+	 * @return the childMetaMetadata
+	 */
+	public HashMapArrayList<String, MetaMetadataField> getChildMetaMetadata()
+	{
+		return childMetaMetadata;
+	}
+
+	/**
+	 * @param childMetaMetadata the childMetaMetadata to set
+	 */
+	public void setChildMetaMetadata(
+			HashMapArrayList<String, MetaMetadataField> childMetaMetadata)
+	{
+		this.childMetaMetadata = childMetaMetadata;
 	}
 
 }
