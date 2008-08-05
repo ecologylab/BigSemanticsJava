@@ -79,11 +79,53 @@ implements PackageSpecifier, TypeTagNames
 			{
 				MetaMetadata superInstance	= repository.get(superClassName);
 				if (superInstance != null)
+				{
 					propagateInheritedValues(superInstance);
+//					String className = mm.getName();
+//					metaMetadataPopulate(className,superClassName);
+				}
 			}
 		}
 	}
 
+	/**
+	 * 
+	 * @param thisClassName
+	 * @param superClassName
+	 */
+	protected void metaMetadataPopulate(String thisClassName, String superClassName)
+	{
+		MetaMetadata metaMetadata = this.repository.get(thisClassName);
+		MetaMetadata superMetaMetadata = this.repository.get(superClassName);
+		if(metaMetadata != null && superMetaMetadata != null)
+			recursivePopulate(metaMetadata, superMetaMetadata);
+	}
+	
+	/**
+	 * Copying MetadataFields from srcMetaMetadata to destMetaMetadata.
+	 * @param destMetaMetadata
+	 * @param srcMetaMetadata
+	 */
+	protected void recursivePopulate(MetaMetadata destMetaMetadata, MetaMetadata srcMetaMetadata)
+	{
+		if(destMetaMetadata == null || srcMetaMetadata == null)
+		{
+			return;
+		}
+		for(MetaMetadataField metaMetadataField : srcMetaMetadata.getChildMetaMetadata())
+		{
+			destMetaMetadata.getChildMetaMetadata().put(metaMetadataField.getName(), metaMetadataField);
+		}
+		String superClassName	= srcMetaMetadata.extendsClass;
+		if(superClassName == null || METADATA_TAG.equals(superClassName))
+		{
+			return;
+		}
+		
+		MetaMetadata superInstance	= repository.get(superClassName);
+		recursivePopulate(destMetaMetadata, superInstance);		
+	}
+	
 	protected void populatePurlMapRepository()
 	{
 		for (MetaMetadata metaMetadata: repository)
