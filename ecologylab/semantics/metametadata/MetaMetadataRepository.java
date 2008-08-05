@@ -89,14 +89,14 @@ implements PackageSpecifier, TypeTagNames
 	}
 
 	/**
-	 * Forms the MetaMetadatas and calls the recursive method for populating metametadata
+	 * Form MetaMetadatas and calls the recursive method for populating metametadata
 	 * fields from the ancestors.
-	 * @param thisClassName
+	 * @param className
 	 * @param superClassName
 	 */
-	protected void metaMetadataPopulate(String thisClassName, String superClassName)
+	protected void metaMetadataPopulate(String className, String superClassName)
 	{
-		MetaMetadata metaMetadata 		= this.repository.get(thisClassName);
+		MetaMetadata metaMetadata 		= this.repository.get(className);
 		MetaMetadata superMetaMetadata 	= this.repository.get(superClassName);
 		if(metaMetadata != null && superMetaMetadata != null)
 			recursivePopulate(metaMetadata, superMetaMetadata);
