@@ -6,6 +6,7 @@ package ecologylab.semantics.metametadata;
 import java.io.File;
 import java.util.Collection;
 
+import ecologylab.appframework.PropertiesAndDirectories;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.net.ParsedURL;
 import ecologylab.net.UserAgent;
@@ -38,6 +39,9 @@ implements PackageSpecifier, TypeTagNames
 	
 	private String  defaultUserAgentString;
 	
+	//for debugging
+	protected static File	REPOSITORY_FILE;
+	
 	/**
 	 * TODO
 	 * Have to create the prefix collection of the url_bases and have to access from here. 
@@ -51,6 +55,12 @@ implements PackageSpecifier, TypeTagNames
 	public MetaMetadataRepository()
 	{
 		
+	}
+	
+	public static void main(String args[])
+	{
+		REPOSITORY_FILE = new File(PropertiesAndDirectories.thisApplicationDir(), "semantics/metametadata/debugRepository.xml");
+		MetaMetadataRepository 		metaMetaDataRepository = load(REPOSITORY_FILE);
 	}
 	
 	public static MetaMetadataRepository load(File file)
