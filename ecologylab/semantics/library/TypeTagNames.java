@@ -2,6 +2,8 @@ package ecologylab.semantics.library;
 
 public interface TypeTagNames
 {
+	public static final String	METADATA_TAG	= "metadata";
+	
 	public static final String	DOCUMENT_TAG	= "document";
 	
 	public static final String	IMAGE_TAG		= "image";
