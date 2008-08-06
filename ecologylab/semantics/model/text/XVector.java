@@ -49,7 +49,9 @@ public class XVector<T> extends Observable implements VectorType<T>
 	 */
 	public void multiply(VectorType<T> v)
 	{
-		HashMap<T, Double> other = v.map();
+		HashMap<T,Double> other = v.map();
+		if (other == null)
+			return;
 		this.values.keySet().retainAll(other.keySet());
 		for (T term : this.values.keySet())
 			this.values.put(term, other.get(term) * this.values.get(term));
@@ -80,7 +82,9 @@ public class XVector<T> extends Observable implements VectorType<T>
 	 */
 	public void add(double c, VectorType<T> v)
 	{
-		HashMap<T, Double> other = v.map();
+		HashMap<T,Double> other = v.map();
+		if (other == null)
+			return;
 		for (T term : other.keySet())
 			if (this.values.containsKey(term))
 				this.values.put(term, c * other.get(term) + this.values.get(term));
@@ -90,13 +94,13 @@ public class XVector<T> extends Observable implements VectorType<T>
 
 	/**
 	 * Adds another Vector to this Vector, in-place.
-	 * 
-	 * @param v
-	 *            Vector to add to this
-	 */
+	 * @param v Vector to add to this
+	 */	
 	public void add(VectorType<T> v)
 	{
-		HashMap<T, Double> other = v.map();
+		HashMap<T,Double> other = v.map();
+		if (other == null)
+			return;
 		for (T term : other.keySet())
 			if (this.values.containsKey(term))
 				this.values.put(term, other.get(term) + this.values.get(term));
@@ -106,13 +110,13 @@ public class XVector<T> extends Observable implements VectorType<T>
 
 	/**
 	 * Calculates the dot product of this Vector with another Vector
-	 * 
-	 * @param v
-	 *            Vector to dot this Vector with.
-	 */
+	 * @param v Vector to dot this Vector with.
+	 */	
 	public double dot(VectorType<T> v)
 	{
-		HashMap<T, Double> other = v.map();
+		HashMap<T,Double> other = v.map();
+		if (other == null)
+			return 0;
 		double dot = 0;
 		for (T term : this.values.keySet())
 			if (other.containsKey(term))
