@@ -79,8 +79,6 @@ implements Mappable<String>, PackageSpecifier, Iterable<MetaMetadataField>
 	
 	@xml_attribute private				boolean		alwaysShow;
 	
-	@xml_attribute private 				boolean		addValueListener;
-
 	@xml_attribute private 				boolean 		isNested;
 	@xml_attribute private 				String 			key;
 	
@@ -358,14 +356,6 @@ implements Mappable<String>, PackageSpecifier, Iterable<MetaMetadataField>
 	public boolean isIgnoreInTermVector()
 	{
 		return ignoreInTermVector;
-	}
-
-	/**
-	 * @return the addValueListener
-	 */
-	public boolean isAddValueListener()
-	{
-		return addValueListener;
 	}
 
 	void addChild(MetaMetadataField mmf)
