@@ -3,7 +3,13 @@
  */
 package ecologylab.semantics.metadata;
 
-import ecologylab.semantics.gui.MetadataValueChangedListener;
+import java.util.ArrayList;
+
+import ecologylab.gui.text.ExtentChangedEvent;
+import ecologylab.gui.text.ExtentChangedListener;
+import ecologylab.semantics.gui.EditValueEvent;
+import ecologylab.semantics.gui.EditValueListener;
+import ecologylab.semantics.gui.EditValueNotifier;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.FieldAccessor;
 import ecologylab.xml.FieldToXMLOptimizations;
@@ -13,13 +19,13 @@ import ecologylab.xml.xml_inherit;
  * @author andruid
  *
  */
-public class MetadataFieldAccessor<M extends Metadata> extends FieldAccessor
+public class MetadataFieldAccessor<M extends Metadata> extends FieldAccessor implements EditValueNotifier
 {
 	final private boolean		isPseudoScalar;
 	
 	final private boolean		isMixin;
 	
-	private MetadataValueChangedListener	metadataValueChangedListener;
+	private ArrayList<EditValueListener> editValueListeners = new ArrayList<EditValueListener>();
 	
 	public MetadataFieldAccessor(FieldToXMLOptimizations f2XO)
 	{
@@ -48,18 +54,18 @@ public class MetadataFieldAccessor<M extends Metadata> extends FieldAccessor
 		return isMixin;
 	}
 
-	public void editValue(MetadataBase context, String newValue)
-	{
-		if (metadataValueChangedListener != null)
-			metadataValueChangedListener.fieldValueChanged(this, context);
+//	public void editValue(MetadataBase context, String newValue)
+//	{
+//		if (metadataValueChangedListener != null)
+//			metadataValueChangedListener.fieldValueChanged(this, context);
+//		
+//		this.hwSet(context, newValue);
+//	}
 		
-		this.hwSet(context, newValue);
-	}
-		
-	public void hwSet(MetadataBase context, String newValue)
+	public boolean hwSet(MetadataBase context, String newValue)
 	{
 //		this.set(context, newValue);
-		context.hwSet(this.getTagName(), newValue);
+		return context.hwSet(this.getTagName(), newValue);
 	}
 	
 	public void set(Metadata context, String newValue)
@@ -77,20 +83,27 @@ public class MetadataFieldAccessor<M extends Metadata> extends FieldAccessor
 //		listener.endEditHandler(iconID, this);
 //  	}
 
-	/**
-	 * @return the metadataValueChangedListener
-	 */
-	public MetadataValueChangedListener getMetadataValueChangedListener()
+	public void addEditValueListener(EditValueListener listener)
 	{
-		return metadataValueChangedListener;
+		editValueListeners.add(listener);
 	}
-
-	/**
-	 * @param metadataValueChangedListener the metadataValueChangedListener to set
-	 */
-	public void setMetadataValueChangedListener(
-			MetadataValueChangedListener metadataValueChangedListener)
+	
+	public void fireEditValue(MetadataBase metadata, String fieldValueString)
 	{
-		this.metadataValueChangedListener = metadataValueChangedListener;
+		if(this.hwSet(metadata, fieldValueString))
+		{
+			//Call the listeners only after the field is properly set.
+			EditValueEvent event = new EditValueEvent(this, metadata);
+
+			for(EditValueListener listener : editValueListeners)
+			{
+				listener.editValue(event);
+			}
+		}
+	}
+	
+	public void removeEditValueListener(EditValueListener listener)
+	{
+		editValueListeners.remove(listener);
 	}
 }

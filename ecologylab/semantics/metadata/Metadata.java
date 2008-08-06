@@ -241,13 +241,15 @@ abstract public class Metadata extends MetadataBase
 		return false;
 	}
 	
-	public void hwSet(String tagName, String value)
+	public boolean hwSet(String tagName, String value)
 	{
 		if(set(tagName, value))
 		{
 			//value is properly set.
 			rebuildCompositeTermVector();
+			return true;
 		}
+		return false;
 	}
 	
 	/**

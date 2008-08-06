@@ -306,13 +306,15 @@ public class MetadataBase extends ElementState implements Iterable<FieldAccessor
 		return null;
 	}
 	
-	public void hwSet(String tagName, String value)
+	public boolean hwSet(String tagName, String value)
 	{
 		if(set(tagName, value))
 		{
 			//value is properly set.
 			//FIXME!!rebuildCompositeTermVector()
+			return true;
 		}
+		return false;
 	}
 	public void contributeToTermVector(TermVector compositeTermVector)
 	{
