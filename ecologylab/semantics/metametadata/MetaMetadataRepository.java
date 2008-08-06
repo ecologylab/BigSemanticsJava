@@ -59,7 +59,7 @@ implements PackageSpecifier, TypeTagNames
 	
 	public static void main(String args[])
 	{
-		REPOSITORY_FILE = new File(PropertiesAndDirectories.thisApplicationDir(), "semantics/metametadata/debugRepository.xml");
+		REPOSITORY_FILE = new File(/*PropertiesAndDirectories.thisApplicationDir(), */ "c:/web/code/java/cf/config/semantics/metametadata/debugRepository.xml");
 		MetaMetadataRepository 		metaMetaDataRepository = load(REPOSITORY_FILE);
 	}
 	
@@ -84,57 +84,37 @@ implements PackageSpecifier, TypeTagNames
 	{
 		for (MetaMetadata mm: repository.values())
 		{
-			String superClassName	= mm.extendsClass;
-			if (superClassName != null)
-			{
-				MetaMetadata superInstance	= repository.get(superClassName);
-				if (superInstance != null)
-				{
-					propagateInheritedValues(superInstance);
-//					String className = mm.getName();
-//					metaMetadataPopulate(className,superClassName);
-				}
-			}
+			if (mm != null)
+				recursivePopulate(mm);
 		}
 	}
 
-	/**
-	 * Form MetaMetadatas and calls the recursive method for populating metametadata
-	 * fields from the ancestors.
-	 * @param className
-	 * @param superClassName
-	 */
-	protected void metaMetadataPopulate(String className, String superClassName)
-	{
-		MetaMetadata metaMetadata 		= this.repository.get(className);
-		MetaMetadata superMetaMetadata 	= this.repository.get(superClassName);
-		if(metaMetadata != null && superMetaMetadata != null)
-			recursivePopulate(metaMetadata, superMetaMetadata);
-	}
-	
 	/**
 	 * Recursively Copying MetadataFields from srcMetaMetadata to destMetaMetadata.
 	 * @param destMetaMetadata
 	 * @param srcMetaMetadata
 	 */
-	protected void recursivePopulate(MetaMetadata destMetaMetadata, MetaMetadata srcMetaMetadata)
+	protected void recursivePopulate(MetaMetadata destMetaMetadata)
 	{
-		if(destMetaMetadata == null || srcMetaMetadata == null)
-		{
+		recursivePopulate(destMetaMetadata, destMetaMetadata.extendsClass);		
+	}
+
+	private void recursivePopulate(MetaMetadata destMetaMetadata,
+			String superClassName)
+	{
+		if (superClassName == null || METADATA_TAG.equals(superClassName))
 			return;
-		}
-		for(MetaMetadataField metaMetadataField : srcMetaMetadata.getChildMetaMetadata())
-		{
-			destMetaMetadata.getChildMetaMetadata().put(metaMetadataField.getName(), metaMetadataField);
-		}
-		String superClassName	= srcMetaMetadata.extendsClass;
-		if(superClassName == null || METADATA_TAG.equals(superClassName))
-		{
+		
+		MetaMetadata superMetaMetadata	= repository.get(superClassName);
+		if (superMetaMetadata == null)
 			return;
+
+		for (MetaMetadataField superChildMetaMetadataField : superMetaMetadata)
+		{
+			destMetaMetadata.addChild(superChildMetaMetadataField);
 		}
 		
-		MetaMetadata superInstance	= repository.get(superClassName);
-		recursivePopulate(destMetaMetadata, superInstance);		
+		recursivePopulate(destMetaMetadata, superMetaMetadata.extendsClass);
 	}
 	
 	protected void populatePurlMapRepository()

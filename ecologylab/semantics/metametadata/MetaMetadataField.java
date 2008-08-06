@@ -30,7 +30,7 @@ import ecologylab.xml.types.scalar.ScalarType;
  */
 @xml_inherit
 public class MetaMetadataField extends ElementState 
-implements Mappable<String>, PackageSpecifier
+implements Mappable<String>, PackageSpecifier, Iterable<MetaMetadataField>
 {
 	@xml_tag("package") 
 	@xml_attribute protected 			String			packageName;
@@ -91,6 +91,10 @@ implements Mappable<String>, PackageSpecifier
 	@xml_attribute private 				String 			key;
 	
 	HashMap<String, String>				childPackagesMap	= new HashMap<String, String>(2);
+	
+	private static ArrayList<MetaMetadataField> EMPTY_COLLECTION	= new ArrayList<MetaMetadataField>(0);
+	
+	public static Iterator<MetaMetadataField> EMPTY_ITERATOR			= EMPTY_COLLECTION.iterator();
 	
 
 	public MetaMetadataField()
@@ -370,12 +374,9 @@ implements Mappable<String>, PackageSpecifier
 		return addValueListener;
 	}
 
-	/**
-	 * @return the childMetaMetadata
-	 */
-	public HashMapArrayList<String, MetaMetadataField> getChildMetaMetadata()
+	void addChild(MetaMetadataField mmf)
 	{
-		return childMetaMetadata;
+		childMetaMetadata.put(mmf.getName(), mmf);
 	}
 
 	/**
@@ -385,6 +386,11 @@ implements Mappable<String>, PackageSpecifier
 			HashMapArrayList<String, MetaMetadataField> childMetaMetadata)
 	{
 		this.childMetaMetadata = childMetaMetadata;
+	}
+
+	public Iterator<MetaMetadataField> iterator()
+	{
+		return (childMetaMetadata != null) ? childMetaMetadata.iterator() : EMPTY_ITERATOR;
 	}
 
 }
