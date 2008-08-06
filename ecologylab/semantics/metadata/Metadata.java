@@ -36,6 +36,7 @@ abstract public class Metadata extends MetadataBase
 	 * 
 	 * Could help, for example, to support user annotation.
 	 */
+	@semantics_mixin
 	@xml_nested	ArrayListState<Metadata>	mixins;
 	
 	final static int						INITIAL_SIZE				= 5;
