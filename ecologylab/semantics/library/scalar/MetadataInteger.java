@@ -1,13 +1,11 @@
 package ecologylab.semantics.library.scalar;
 
-import ecologylab.model.text.TermVector;
 import ecologylab.semantics.metadata.MetadataBase;
 import ecologylab.semantics.metadata.semantics_pseudo_scalar;
-import ecologylab.xml.ElementState.xml_text;
 
 
 @semantics_pseudo_scalar
-public class MetadataInteger extends MetadataBase
+public class MetadataInteger extends MetadataScalarBase
 {
 	@xml_text	int		value;
 	
@@ -29,13 +27,4 @@ public class MetadataInteger extends MetadataBase
 //		this.value = new Integer(value);
 //	}
 	
-	//FIXME:Integer Contributing to termVector??!!!
-//	@Override
-//	public void contributeToTermVector(TermVector compositeTermVector)
-//	{
-//		if(value != null && value != "null")
-//		{
-//			compositeTermVector.addTerms(value, false);
-//		}	
-//	}
 }

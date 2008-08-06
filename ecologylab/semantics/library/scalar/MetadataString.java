@@ -4,7 +4,6 @@
 package ecologylab.semantics.library.scalar;
 
 import ecologylab.model.text.TermVector;
-import ecologylab.semantics.metadata.MetadataBase;
 import ecologylab.semantics.metadata.semantics_pseudo_scalar;
 import ecologylab.xml.xml_inherit;
 
@@ -14,7 +13,7 @@ import ecologylab.xml.xml_inherit;
  */
 @xml_inherit
 @semantics_pseudo_scalar
-public class MetadataString extends MetadataBase
+public class MetadataString extends MetadataScalarBase
 {
 	@xml_text	String		value;
 	

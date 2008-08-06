@@ -1,11 +1,10 @@
 package ecologylab.semantics.library.scalar;
 
 import ecologylab.model.text.TermVector;
-import ecologylab.semantics.metadata.MetadataBase;
 import ecologylab.semantics.metadata.semantics_pseudo_scalar;
 
 @semantics_pseudo_scalar
-public class MetadataStringBuilder extends MetadataBase
+public class MetadataStringBuilder extends MetadataScalarBase
 {
 	@xml_text StringBuilder value;
 	

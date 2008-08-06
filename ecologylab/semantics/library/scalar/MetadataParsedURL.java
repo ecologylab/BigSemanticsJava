@@ -4,7 +4,6 @@
 package ecologylab.semantics.library.scalar;
 
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.metadata.MetadataBase;
 import ecologylab.semantics.metadata.semantics_pseudo_scalar;
 import ecologylab.xml.xml_inherit;
 
@@ -14,7 +13,7 @@ import ecologylab.xml.xml_inherit;
  */
 @xml_inherit
 @semantics_pseudo_scalar
-public class MetadataParsedURL extends MetadataBase
+public class MetadataParsedURL extends MetadataScalarBase
 {
 	@xml_text	ParsedURL		value;
 	
