@@ -15,6 +15,7 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.tidy.Tidy;
 
@@ -31,6 +32,7 @@ import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataField;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.xml.FieldAccessor;
+import ecologylab.xml.TranslationScope;
 import ecologylab.xml.XMLTools;
 import ecologylab.xml.types.scalar.ParsedURLType;
 
@@ -58,12 +60,11 @@ public class HtmlDomExtractor<M extends MetadataBase> extends Debug
 	/**
 	 * Checks to see which HtmlDomExtractionPattern can be used and calls
 	 * <code>extractMetadataWithPattern</code> using the appropriate patter
-	 * 
 	 * @param purl
 	 * @return
 	 * @throws XmlTranslationException
 	 */
-	public M populateMetadata(ParsedURL purl, M  metadata, String domainString)
+	public M populateMetadata(M  metadata, ParsedURL purl, String domainString)
 	{
 		MetaMetadata metaMetadata = metadata.getMetaMetadata();
 		this.domainString = domainString;
@@ -71,8 +72,8 @@ public class HtmlDomExtractor<M extends MetadataBase> extends Debug
 		{
 			PURLConnection purlConnection 	= purl.connect(metaMetadata.getUserAgentString());
 			Document tidyDOM 				= tidy.parseDOM(purlConnection.inputStream(), null /*System.out*/);
-			
-			M populatedMetadata 			= recursiveExtraction(metadata, metaMetadata, tidyDOM, purl);
+			TranslationScope translationScope = metaMetadata.getDefaultMetadataTranslations();
+			M populatedMetadata 			= recursiveExtraction(translationScope, metaMetadata, metadata, tidyDOM, purl);
 
 			return populatedMetadata;
 		} else
@@ -87,31 +88,28 @@ public class HtmlDomExtractor<M extends MetadataBase> extends Debug
 	
 	/**
 	 * Extracts metadata using the tidyDOM from the purl.
-	 * @param metadata
+	 * @param translationScope TODO
 	 * @param mmdField
+	 * @param metadata
 	 * @param tidyDOM
 	 * @param purl
 	 * @return
 	 */
-	private M recursiveExtraction(M metadata, MetaMetadataField mmdField, Document tidyDOM, ParsedURL purl)
+	private M recursiveExtraction(TranslationScope translationScope, MetaMetadataField mmdField, M metadata, Document tidyDOM, ParsedURL purl)
 	{
 		//Gets the child metadata of the mmdField.
 		HashMapArrayList<String, MetaMetadataField> mmdFieldSet = mmdField.getSet();
 		
 		/********************debug********************/
-		for (int i = 0; i < mmdFieldSet.size(); i++)
+		for (MetaMetadataField mmdElement : mmdFieldSet)
 		{
-			MetaMetadataField mmdElement 	= mmdFieldSet.get(i);
-			String mmdElementName 			= mmdElement.getName();
-			println(mmdElementName);
+			println(mmdElement.getName());
 		}
 		/*********************************************/
 		
 		//Traverses through the child metadata to populate.
-		for (int i = 0; i < mmdFieldSet.size(); i++)
+		for (MetaMetadataField mmdElement : mmdFieldSet)
 		{
-			MetaMetadataField mmdElement 	= mmdFieldSet.get(i);
-
 			String xpathString 				= mmdElement.getXpath(); //Used to get the field value from the web page.
 			String mmdElementName 			= mmdElement.getName();
 			if(mmdElement.getSet() == null) 
@@ -121,36 +119,42 @@ public class HtmlDomExtractor<M extends MetadataBase> extends Debug
 					try
 					{
 						if (mmdElement.isList())
-						{
+						{	// linear collection of scalar values
 							NodeList nodes = (NodeList) xpath.evaluate(xpathString, tidyDOM, XPathConstants.NODESET);
+							//FIXME -- what about other types???!!! -- not always String!
 							ArrayList<String> values = new ArrayList<String>();
 							for (int j = 0; j < nodes.getLength(); j++)
 							{
 								String nodeValue = nodes.item(j).getNodeValue();
-								values.add(nodeValue);
 								//Removing the unwanted html chars.
 								nodeValue = XMLTools.unescapeXML(nodeValue);
 								nodeValue = nodeValue.trim();
-								metadata.set(mmdElementName, nodeValue);
+								values.add(nodeValue);
 								// println(mdElement.getName() + ":\t" + nodeValue);
 							}
+							//FIXME -- we are totally hosed here.
+							// how are we supposed to set an arraylist of scalar values?!
+//							metadata.set(mmdElementName, values);
 						} 
 						else
-						{
-							String evaluation = xpath.evaluate(xpathString, tidyDOM);
-							String stringPrefix = mmdElement.getStringPrefix();
-							//
+						{	// single scalar value
+							String evaluation 	= xpath.evaluate(xpathString, tidyDOM);
+							String stringPrefix 	= mmdElement.getStringPrefix();
 							if (stringPrefix != null)
 							{
 								if (evaluation.startsWith(stringPrefix))
 								{
 									evaluation = evaluation.substring(stringPrefix.length());
-									evaluation = XMLTools.unescapeXML(evaluation);
-									evaluation = evaluation.trim();
-								} else
+								} 
+								else
 									evaluation = null;
 							}
-							// println(mdElement.getName() + ":\t" + evaluation);
+							if (evaluation != null)
+							{
+								evaluation = XMLTools.unescapeXML(evaluation);
+								evaluation = evaluation.trim();
+							}
+
 							
 							/***************************clean up****************************/
 							//Adding the URL prefix for proper formation of the URL.
@@ -176,23 +180,9 @@ public class HtmlDomExtractor<M extends MetadataBase> extends Debug
 //								}
 //							}
 							/****************************************************************/
-
-							if(mmdElement.getScalarType() instanceof ParsedURLType)
-							{
-								ParsedURL parsedURL = null;
-								try
-								{
-									if(evaluation != "null" && (evaluation.length() != 0))
-									{
-										parsedURL = ParsedURL.getRelative(new URL(domainString),evaluation, "");
-										evaluation = parsedURL.toString();
-									}
-								} catch (MalformedURLException e)
-								{
-									//Should not come here b'coz the domainString has to be properly formed all the time.
-									e.printStackTrace();
-								}
-							}
+							//FIXME -- horrible kludge to avoid dealing with semantics design issues of
+							// how domain should be propagated to the ParsedURL ScalarType
+							evaluation = parsedURLTypeKludge(mmdElement, evaluation);
 							
 							/**************debug************/
 							if(mmdElementName.equals("year_of_publication"))
@@ -229,168 +219,132 @@ public class HtmlDomExtractor<M extends MetadataBase> extends Debug
 				{
 					//Have to return the nested object for the field.
 					FieldAccessor fieldAccessor = metadata.getMetadataFieldAccessor(mmdElementName);
-					Field field 				= fieldAccessor.getField();
-					
-					try
-					{
-						nestedMetadata 				= (M) field.get(metadata);
-					} catch (IllegalArgumentException e)
-					{
-						e.printStackTrace();
-					} catch (IllegalAccessException e)
-					{
-						e.printStackTrace();
-					}
-					
-					if(nestedMetadata == null)
-					{
-						nestedMetadata = (M) ReflectionTools.getInstance(field.getType());
-						ReflectionTools.setFieldValue(metadata, field, nestedMetadata);
-					}
-					recursiveExtraction(nestedMetadata, mmdElement, tidyDOM, purl);
+					nestedMetadata				= (M) fieldAccessor.getAndPerhapsCreateNested(metadata);
+					recursiveExtraction(translationScope, mmdElement, nestedMetadata, tidyDOM, purl);
 				}
 				//If the field is mapped.
+				//TODO -- support all collection types here
 				else if(mmdElement.isMap())
 				{
 					FieldAccessor fieldAccessor = metadata.getMetadataFieldAccessor(mmdElementName);
 					Field field = fieldAccessor.getField();
-					HashMapArrayList<Object, Metadata> mappedMetadata;
+					HashMapArrayList<Object, Metadata> metadataMap	=
+						(HashMapArrayList<Object, Metadata>) ReflectionTools.getFieldValue(metadata , field);
 					
-					mappedMetadata = (HashMapArrayList<Object, Metadata>) ReflectionTools.getFieldValue(metadata , field);
-					if(mappedMetadata == null)
+					if(metadataMap == null)
 					{
-						//mappedMetadata is not initialized.
-						mappedMetadata = (HashMapArrayList<Object, Metadata>) ReflectionTools.getInstance(field.getType());
-						ReflectionTools.setFieldValue(metadata, field, mappedMetadata);
+						metadataMap = (HashMapArrayList<Object, Metadata>) ReflectionTools.getInstance(field.getType());
+						ReflectionTools.setFieldValue(metadata, field, metadataMap);
 					}					
-
-					HashMapArrayList<String, MetaMetadataField> mmdFieldSetChild = mmdElement.getSet();//author
+					HashMapArrayList<String, MetaMetadataField> mmdChildFieldSet = mmdElement.getSet();//author
 					
 					//Populating the key data.
 					String key = mmdElement.getKey();
-					MetaMetadataField mmdChildElement = mmdFieldSetChild.get(key);
+					MetaMetadataField mmdChildElement = mmdChildFieldSet.get(key);
 					
-					String xpathStringChild = mmdChildElement.getXpath();
-					String mmdElementNameChild = mmdChildElement.getName();
-					NodeList nodes = null;
-					
+					String childXPathString 			= mmdChildElement.getXpath();
+					String childElementName 			= mmdChildElement.getName();	
 					try
 					{
-						nodes = (NodeList) xpath.evaluate(xpathStringChild, tidyDOM, XPathConstants.NODESET);
+						NodeList nodes = (NodeList) xpath.evaluate(childXPathString, tidyDOM, XPathConstants.NODESET);
+						int numRows 		= nodes.getLength();
+						
+						for (int j = 0; j < numRows; j++)
+						{
+							Node keyNode = nodes.item(j);
+							String keyValue	= keyNode.getNodeValue();
+							keyValue 			= parsedURLTypeKludge(mmdChildElement, keyValue);
+							
+							//Generic access of Element Type
+							String collectionChildTag	= mmdElement.getCollectionChildType();
+							Class collectionChildClass 	= translationScope.getClassByTag(collectionChildTag);
+							Metadata collectionChildInstance = (Metadata) ReflectionTools.getInstance(collectionChildClass);
+							metadataMap.put(keyValue, collectionChildInstance);
+							if(collectionChildInstance == null)
+								println("debug");
+							collectionChildInstance.set(key, keyValue);
+							
+							/***************clean up*****************/
+							//Populating one author at a time into the HashMapArrayList.
+//							if(mmdElementName.equals("authors"))
+//							{	
+//								
+//								mappedMetadata.put(nodeValue, new Author());
+//								Metadata mapVElement = mappedMetadata.get(nodeValue);
+//								mapVElement.set(key, nodeValue);
+//							}
+//							//Populating one reference/citaiton at a time into the HashMapArrayList.
+//							if(mmdElementName.equals("references") || mmdElementName.equals("citations"))
+//							{
+//								mappedMetadata.put(nodeValue, new Reference());
+//								Metadata mapVElement = mappedMetadata.get(nodeValue);
+//								mapVElement.set(key, nodeValue);
+//							}
+							/******************************************/
+						}
+						
+						//Populating the other attributes in the map
+						for (MetaMetadataField mappedChildElement : mmdChildFieldSet)
+						{
+							childXPathString = mappedChildElement.getXpath();
+							childElementName = mappedChildElement.getName();
+							if(!key.equals(childElementName))
+							{
+								try
+								{
+									nodes = (NodeList) xpath.evaluate(childXPathString, tidyDOM, XPathConstants.NODESET);
+								} catch (XPathExpressionException e)
+								{
+									e.printStackTrace();
+								}
+								for (int l = 0; l < nodes.getLength() && l < numRows && l < metadataMap.size(); l++)
+								{
+									String nodeValue = nodes.item(l).getNodeValue();
+									
+									//debug
+//									println("Attribute Name: "+mmdElementNameChild + "Attribute value: "+nodeValue);
+//									println("No of Keys: "+keys + "index:  "+l);
+									
+									Metadata mapVElement = metadataMap.get(l);
+									nodeValue = parsedURLTypeKludge(mappedChildElement, nodeValue);
+									if(mapVElement != null)
+									{
+										nodeValue = XMLTools.unescapeXML(nodeValue);
+										nodeValue = nodeValue.trim();
+										mapVElement.set(childElementName, nodeValue);
+									}
+								}
+							}
+						}//for
+
 					} catch (XPathExpressionException e)
 					{
 						e.printStackTrace();
 					}
-					ArrayList<String> values = new ArrayList<String>();
-					int keys = nodes.getLength();
-					
-					for (int j = 0; j < keys; j++)
-					{
-						String nodeValue = nodes.item(j).getNodeValue();
-						//Forming proper ParsedURL from the relative Path.
-						if(mmdChildElement.getScalarType() instanceof ParsedURLType)
-						{
-							ParsedURL parsedURL = null;
-							try
-							{
-								if(nodeValue != "null" && (nodeValue.length() != 0))
-								{
-									parsedURL = ParsedURL.getRelative(new URL(domainString),nodeValue, "");
-									nodeValue = parsedURL.toString();
-								}
-							} catch (MalformedURLException e)
-							{
-								//Should not come here b'coz the domainString has to be properly formed all the time.
-								e.printStackTrace();
-							}
-						}
-						
-						//Generic access of Element Type
-						Type[] typeArgs = ReflectionTools.getParameterizedTypeTokens(field);
-						Type mapVElementType = typeArgs[1];
-						Class mapVElementClass = (Class) mapVElementType;
-						mappedMetadata.put(nodeValue, (Metadata) ReflectionTools.getInstance(mapVElementClass));
-						Metadata mapVElement = mappedMetadata.get(nodeValue);
-						mapVElement.set(key, nodeValue);
-						
-						
-						/***************clean up*****************/
-						//Populating one author at a time into the HashMapArrayList.
-//						if(mmdElementName.equals("authors"))
-//						{	
-//							
-//							mappedMetadata.put(nodeValue, new Author());
-//							Metadata mapVElement = mappedMetadata.get(nodeValue);
-//							mapVElement.set(key, nodeValue);
-//						}
-//						//Populating one reference/citaiton at a time into the HashMapArrayList.
-//						if(mmdElementName.equals("references") || mmdElementName.equals("citations"))
-//						{
-//							mappedMetadata.put(nodeValue, new Reference());
-//							Metadata mapVElement = mappedMetadata.get(nodeValue);
-//							mapVElement.set(key, nodeValue);
-//						}
-						/******************************************/
-					}
-					
-					//Populating the other attributes in the map
-					for (int k = 0; k < mmdFieldSetChild.size(); k++)
-					{
-						mmdChildElement = mmdFieldSetChild.get(k);
-						xpathStringChild = mmdChildElement.getXpath();
-						mmdElementNameChild = mmdChildElement.getName();
-						if(!key.equals(mmdElementNameChild))
-						{
-							try
-							{
-								nodes = (NodeList) xpath.evaluate(xpathStringChild, tidyDOM, XPathConstants.NODESET);
-							} catch (XPathExpressionException e)
-							{
-								e.printStackTrace();
-							}
-							values = new ArrayList<String>();
-							//debug
-//							int attributes = nodes.getLength();
-//							int size2 = mappedMetadata.size();
-							
-							for (int l = 0; l < nodes.getLength() && l < keys && l < mappedMetadata.size(); l++)
-							{
-								String nodeValue = nodes.item(l).getNodeValue();
-								
-								//debug
-//								println("Attribute Name: "+mmdElementNameChild + "Attribute value: "+nodeValue);
-//								println("No of Keys: "+keys + "index:  "+l);
-								
-								Metadata mapVElement = mappedMetadata.get(l);
-								//Forming proper ParsedURL from the relative Path.
-								if(mmdChildElement.getScalarType() instanceof ParsedURLType)
-								{
-									ParsedURL parsedURL = null;
-									try
-									{
-										if(nodeValue != "null" && (nodeValue.length() != 0))
-										{
-											parsedURL = ParsedURL.getRelative(new URL(domainString),nodeValue, "");
-											nodeValue = parsedURL.toString();
-										}
-									} catch (MalformedURLException e)
-									{
-										//Should not come here b'coz the domainString has to be properly formed all the time.
-										e.printStackTrace();
-									}
-								}
-								if(mapVElement != null)
-								{
-									nodeValue = XMLTools.unescapeXML(nodeValue);
-									nodeValue = nodeValue.trim();
-									mapVElement.set(mmdElementNameChild, nodeValue);
-								}
-							}
-						}
-					}//for
 				}
 			}
 		}
 		return metadata;
+	}
+	private String parsedURLTypeKludge(MetaMetadataField mmdElement,
+			String evaluation)
+	{
+		if(mmdElement.getScalarType() instanceof ParsedURLType)
+		{
+			ParsedURL parsedURL = null;
+			try
+			{
+				if(evaluation != "null" && (evaluation.length() != 0))
+				{
+					parsedURL = ParsedURL.getRelative(new URL(domainString),evaluation, "");
+					evaluation = parsedURL.toString();
+				}
+			} catch (MalformedURLException e)
+			{
+				//Should not come here b'coz the domainString has to be properly formed all the time.
+				e.printStackTrace();
+			}
+		}
+		return evaluation;
 	}
 }

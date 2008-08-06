@@ -2,7 +2,6 @@ package ecologylab.semantics.metametadata;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -12,14 +11,10 @@ import java.util.Set;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.FieldAccessor;
-import ecologylab.xml.Optimizations;
 import ecologylab.xml.TranslationScope;
 import ecologylab.xml.XMLTools;
 import ecologylab.xml.XMLTranslationException;
 import ecologylab.xml.xml_inherit;
-import ecologylab.xml.ElementState.xml_attribute;
-import ecologylab.xml.ElementState.xml_collection;
-import ecologylab.xml.ElementState.xml_tag;
 import ecologylab.xml.types.element.Mappable;
 import ecologylab.xml.types.scalar.ScalarType;
 
@@ -59,6 +54,10 @@ implements Mappable<String>, PackageSpecifier, Iterable<MetaMetadataField>
 	@xml_map("meta_metadata_field") 
 	private HashMapArrayList<String, MetaMetadataField>	childMetaMetadata;
 
+	/**
+	 * The type for collection children.
+	 */
+	@xml_attribute private				String		collectionChildType;
 
 	@xml_attribute private 				boolean 		isLink;
 	@xml_attribute private 				boolean 		isList;
@@ -81,20 +80,15 @@ implements Mappable<String>, PackageSpecifier, Iterable<MetaMetadataField>
 	@xml_attribute private				boolean		alwaysShow;
 	
 	@xml_attribute private 				boolean		addValueListener;
-	
-	public boolean isAlwaysShow()
-	{
-		return alwaysShow;
-	}
 
 	@xml_attribute private 				boolean 		isNested;
 	@xml_attribute private 				String 			key;
 	
 	HashMap<String, String>				childPackagesMap	= new HashMap<String, String>(2);
 	
-	private static ArrayList<MetaMetadataField> EMPTY_COLLECTION	= new ArrayList<MetaMetadataField>(0);
+	private static ArrayList<MetaMetadataField>	EMPTY_COLLECTION	= new ArrayList<MetaMetadataField>(0);
 	
-	public static Iterator<MetaMetadataField> EMPTY_ITERATOR			= EMPTY_COLLECTION.iterator();
+	public static Iterator<MetaMetadataField> 	EMPTY_ITERATOR		= EMPTY_COLLECTION.iterator();
 	
 
 	public MetaMetadataField()
@@ -392,5 +386,14 @@ implements Mappable<String>, PackageSpecifier, Iterable<MetaMetadataField>
 	{
 		return (childMetaMetadata != null) ? childMetaMetadata.iterator() : EMPTY_ITERATOR;
 	}
+	
+	public boolean isAlwaysShow()
+	{
+		return alwaysShow;
+	}
 
+	public String getCollectionChildType()
+	{
+		return collectionChildType;
+	}
 }

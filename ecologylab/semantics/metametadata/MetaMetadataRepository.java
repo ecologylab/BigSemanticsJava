@@ -4,6 +4,7 @@
 package ecologylab.semantics.metametadata;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import ecologylab.appframework.PropertiesAndDirectories;
@@ -39,15 +40,18 @@ implements PackageSpecifier, TypeTagNames
 	
 	private String  defaultUserAgentString;
 	
-	//for debugging
-	protected static File	REPOSITORY_FILE;
-	
 	/**
-	 * TODO
-	 * Have to create the prefix collection of the url_bases and have to access from here. 
+	 * Prefix collection of the url_bases and have to access from here. 
 	 * For now we are using the domain as the key.
 	 */
-	private HashMapArrayList<String, MetaMetadata>	purlMapRepository = new HashMapArrayList<String, MetaMetadata>(); 
+	private HashMapArrayList<String, MetaMetadata>	urlBaseMap 	= new HashMapArrayList<String, MetaMetadata>(); 
+
+	private HashMapArrayList<String, MetaMetadata>	mimeMap 		= new HashMapArrayList<String, MetaMetadata>(); 
+	
+	private HashMapArrayList<String, MetaMetadata>	suffixMap 	= new HashMapArrayList<String, MetaMetadata>(); 
+	
+	//for debugging
+	protected static File	REPOSITORY_FILE;
 	
 	/**
 	 * 
@@ -69,8 +73,11 @@ implements PackageSpecifier, TypeTagNames
 		try
 		{
 			result = (MetaMetadataRepository) ElementState.translateFromXML(file, TS);
-			result.populatePurlMapRepository();
+			result.populateURLBaseMap();
+			// necessary to get, for example, fields for document into pdf...
 			result.populateInheritedValues();
+			
+			result.populateMimeMap();
 			//For debug
 			//this.metaMetaDataRepository.writePrettyXML(System.out);
 		} catch (XMLTranslationException e)
@@ -80,6 +87,38 @@ implements PackageSpecifier, TypeTagNames
 		return result;
 	}
 	
+	private void populateMimeMap()
+	{
+		for (MetaMetadata mm: repository.values())
+		{
+			if (mm != null)
+			{
+				ArrayList<String> mimeTypes = mm.mimeTypes;
+				if (mimeTypes != null)
+				{
+					for (String mimeType : mimeTypes)
+						mimeMap.put(mimeType, mm);
+				}
+			}
+		}
+	}
+
+	private void populateSuffixMap()
+	{
+		for (MetaMetadata mm: repository.values())
+		{
+			if (mm != null)
+			{
+				ArrayList<String> suffixes = mm.suffixes;
+				if (suffixes != null)
+				{
+					for (String suffix : suffixes)
+						suffixMap.put(suffix, mm);
+				}
+			}
+		}
+	}
+
 	private void populateInheritedValues()
 	{
 		for (MetaMetadata mm: repository.values())
@@ -117,13 +156,13 @@ implements PackageSpecifier, TypeTagNames
 		recursivePopulate(destMetaMetadata, superMetaMetadata.extendsClass);
 	}
 	
-	protected void populatePurlMapRepository()
+	protected void populateURLBaseMap()
 	{
 		for (MetaMetadata metaMetadata: repository)
 		{
 			ParsedURL purl = metaMetadata.getUrlBase();
 			if(purl != null)
-				purlMapRepository.put(purl.host(), metaMetadata);
+				urlBaseMap.put(purl.host(), metaMetadata);
 		}
 	}
 	
@@ -135,7 +174,7 @@ implements PackageSpecifier, TypeTagNames
 	 */
 	public MetaMetadata getMetaMetaData(ParsedURL parsedURL)
 	{
-		MetaMetadata metaMetadata = purlMapRepository.get(parsedURL.host());
+		MetaMetadata metaMetadata = urlBaseMap.get(parsedURL.host());
 		/**
 		 * returns null if there is no url_base.
 		 */
@@ -230,4 +269,18 @@ implements PackageSpecifier, TypeTagNames
 		return DOCUMENT_TAG;
 	}
 	
+	public MetaMetadata lookupByMime(String mimeType)
+	{
+		return mimeMap.get(mimeType);
+	}
+	
+	public MetaMetadata lookupBySuffix(String suffix)
+	{
+		return suffixMap.get(suffix);
+	}
+	
+	public TranslationScope translationScope()
+	{
+		return TS;
+	}
 }

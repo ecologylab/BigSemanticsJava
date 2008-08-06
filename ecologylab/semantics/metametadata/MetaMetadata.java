@@ -30,9 +30,14 @@ public class MetaMetadata extends MetaMetadataField
 	
 	@xml_attribute String								userAgentString;
 	
-	TranslationScope 									translationScope;
+	@xml_collection("mime_type")	ArrayList<String>	mimeTypes;
+	
+	@xml_collection("suffix")		ArrayList<String>	suffixes;
 	
 	boolean												doNotTranslateToJava;
+	
+	TranslationScope DEFAULT_METADATA_TRANSLATIONS	= DefaultMetadataTranslationSpace.get();
+
 	
 	public MetaMetadata()
 	{
@@ -60,17 +65,13 @@ public class MetaMetadata extends MetaMetadataField
 	public void setUrlBase(String urlBase) {
 		this.urlBase = ParsedURL.getAbsolute(urlBase);
 	}
-
-	public TranslationScope getTS() {
-		return translationScope;
+	
+	
+	public TranslationScope getDefaultMetadataTranslations()
+	{
+		return DEFAULT_METADATA_TRANSLATIONS;
 	}
 
-	public void setTS(TranslationScope ts) {
-		translationScope = ts;
-	}
-	
-	TranslationScope DEFAULT_METADATA_TRANSLATIONS	= DefaultMetadataTranslationSpace.get();
-	
 	/**
 	 * Lookup the Metadata class object that corresponds to the tag_name in this.
 	 * @return
