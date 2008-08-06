@@ -2,6 +2,7 @@ package ecologylab.semantics.library;
 
 import ecologylab.model.TextChunkBase;
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.library.scalar.MetadataInteger;
 import ecologylab.semantics.library.scalar.MetadataParsedURL;
 import ecologylab.semantics.library.scalar.MetadataString;
 import ecologylab.semantics.library.scalar.MetadataStringBuilder;
@@ -29,6 +30,8 @@ public class Document extends Metadata
 	@xml_nested MetadataStringBuilder 	anchorContextString;
 	@xml_nested MetadataString			context;
 	
+	@xml_nested MetadataInteger			generation;
+
 	/**
 	 * Occasionally, we want to navigate to somewhere other than the regular purl,
 	 * as in when this is an RSS feed, but there's an equivalent HTML page.
@@ -38,6 +41,7 @@ public class Document extends Metadata
 	public Document()
 	{
 	}
+	
 	
 	public Document(MetaMetadata metaMetadata)
 	{
@@ -118,6 +122,17 @@ public class Document extends Metadata
 		{
 			result = new MetadataStringBuilder();
 			this.anchorContextString = result;
+		}
+		return result;
+	}
+
+	MetadataInteger generation()
+	{
+		MetadataInteger result = this.generation;
+		if(result == null)
+		{
+			result = new MetadataInteger();
+			this.generation = result;
 		}
 		return result;
 	}
@@ -219,7 +234,11 @@ public class Document extends Metadata
 		rebuildCompositeTermVector();
 	
 	}
-	
+
+	public void setGeneration(int generation)
+	{
+		this.generation().setValue(generation);
+	}
 	
 }
 
