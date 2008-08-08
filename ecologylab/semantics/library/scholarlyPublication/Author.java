@@ -67,4 +67,12 @@ public class Author extends Metadata implements Mappable<String>
 		return name().getValue();
 	}
 
+	public void setName(String name)
+	{
+		name().setValue(name);
+	}
+	public void setAffiliation(String affiliation)
+	{
+		affiliation().setValue(affiliation);
+	}
 }

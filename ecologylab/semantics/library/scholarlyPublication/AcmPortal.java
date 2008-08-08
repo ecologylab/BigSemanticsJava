@@ -126,6 +126,10 @@ public class AcmPortal extends Pdf
 		return source();
 	}
 
+	public void setAuthors(HashMapArrayList<String, Author> authors)
+	{
+		this.authorNames = authors;
+	}
 	public void setSource(Source source)
 	{
 		this.source = source;
