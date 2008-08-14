@@ -10,12 +10,10 @@ public class XCompositeTermVector extends Observable implements Observer,
 		ITermVector
 {
 
-	public XCompositeTermVector()
-	{
-	}
+	public XCompositeTermVector() {}
 
-	private XTermVector compositeTermVector;
-	private HashMap<ITermVector, Double> termVectors;
+	private XTermVector compositeTermVector = new XTermVector(); 
+	private HashMap<ITermVector, Double> termVectors = new HashMap<ITermVector, Double>();
 
 	/**
 	 * Adds a Term Vector to this Composite Term Vectors collection, multiplying
@@ -133,6 +131,15 @@ public class XCompositeTermVector extends Observable implements Observer,
 	public Set<Double> values()
 	{
 		return compositeTermVector.values();
+	}
+	
+	public String toString()
+	{
+	  StringBuilder s = new StringBuilder("[");
+	  for(ITermVector v : termVectors.keySet())
+	    s.append(v.toString() + "(" + termVectors.get(v) + "), ");
+	  s.append("]");
+	  return s.toString();
 	}
 
 }

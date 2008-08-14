@@ -96,4 +96,13 @@ public class XTermVector extends XVector<XTerm> implements ITermVector
 		setChanged();
 		notifyObservers();
 	}
+	
+	 public String toString()
+	  {
+	    StringBuilder s = new StringBuilder("{");
+	    for(XTerm t : values.keySet())
+	      s.append(t.toString() + "(" + values.get(t) + "), ");
+	    s.replace(s.length()-2, s.length(), "}");
+	    return s.toString();
+	  }
 }

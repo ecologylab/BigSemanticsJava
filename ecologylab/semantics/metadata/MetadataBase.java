@@ -16,6 +16,7 @@ import ecologylab.model.ParticipantInterest;
 import ecologylab.model.text.TermVector;
 import ecologylab.model.text.WordForms;
 import ecologylab.semantics.metametadata.MetaMetadata;
+import ecologylab.semantics.model.text.ITermVector;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.FieldAccessor;
 import ecologylab.xml.Optimizations;
@@ -31,7 +32,8 @@ import ecologylab.xml.types.element.ArrayListState;
  */
 public class MetadataBase extends ElementState implements Iterable<FieldAccessor>
 {
-	protected TermVector 					compositeTermVector;
+	protected ITermVector				termVector;
+	protected TermVector 				compositeTermVector;
 	
 	/**
 	 * Represents interest in this field as a whole
@@ -39,9 +41,10 @@ public class MetadataBase extends ElementState implements Iterable<FieldAccessor
 	 * propagated into the termVector, which represents interest in
 	 * particular Terms. While the latter is the basis of the information
 	 * retrieval model (IR), this is what enables the model to function
-	 * in the context of the semantic web / digital libraries.
+	 * in the context of the semantic web / digital 
+	 * libraries.
 	 */  
-	ParticipantInterest						participantInterest = new ParticipantInterest();
+	ParticipantInterest				participantInterest = new ParticipantInterest();
 
 	HashMapArrayList<String, FieldAccessor> metadataFieldAccessors;
 
@@ -52,6 +55,11 @@ public class MetadataBase extends ElementState implements Iterable<FieldAccessor
 	public MetadataBase()
 	{
 		// TODO Auto-generated constructor stub
+	}
+	
+	public ITermVector termVector()
+	{
+		return termVector;
 	}
 
 
