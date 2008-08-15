@@ -30,6 +30,8 @@ public class MetadataString extends MetadataScalarBase
 
 	public void setValue(String value)
 	{
+	  if (value == null)
+	    value = "";
 		this.value = value;
 		if (termVector != null)
 			termVector.reset(value);

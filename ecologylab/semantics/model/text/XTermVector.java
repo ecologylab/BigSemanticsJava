@@ -1,7 +1,12 @@
 package ecologylab.semantics.model.text;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class XTermVector extends XVector<XTerm> implements ITermVector
 {
+  
+  static Pattern WORD_REGEX = Pattern.compile("[A-z]+(-[A-z]+)*('[A-z]+){0,1}");
 
 	public XTermVector()
 	{
@@ -19,7 +24,7 @@ public class XTermVector extends XVector<XTerm> implements ITermVector
 
 	public XTermVector(String s)
 	{
-
+	  reset(s);
 	}
 
 	/**
@@ -30,7 +35,26 @@ public class XTermVector extends XVector<XTerm> implements ITermVector
 	 */
 	public void reset(String s)
 	{
-
+	  s=s.toLowerCase();
+	  PorterStemmer p = new PorterStemmer();
+	  Matcher m = WORD_REGEX.matcher(s);
+	  String stem;
+	  while (m.find()) {
+	    for (int i=m.start(); i<m.end(); i++)
+	      p.add(s.charAt(i));
+	    p.stem();
+	    stem = p.toString();
+	    addWithoutNotify(XTermDictionary.getTerm(stem),1);
+	  }
+	  setChanged();
+	  notifyObservers();
+	}
+	
+	private void addWithoutNotify(XTerm term, double val)
+	{
+	  if (term == null)
+	    return;
+	  super.add(term, val);
 	}
 
 	public void add(XTerm term, double val)
@@ -102,7 +126,7 @@ public class XTermVector extends XVector<XTerm> implements ITermVector
 	    StringBuilder s = new StringBuilder("{");
 	    for(XTerm t : values.keySet())
 	      s.append(t.toString() + "(" + values.get(t) + "), ");
-	    s.replace(s.length()-2, s.length(), "}");
+	    s.append("}");
 	    return s.toString();
 	  }
 }

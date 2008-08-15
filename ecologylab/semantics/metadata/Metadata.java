@@ -3,6 +3,7 @@ package ecologylab.semantics.metadata;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Set;
 
 import ecologylab.generic.ClassAndCollectionIterator;
 import ecologylab.generic.HashMapArrayList;
@@ -14,6 +15,7 @@ import ecologylab.semantics.library.scalar.MetadataParsedURL;
 import ecologylab.semantics.library.scalar.MetadataString;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataField;
+import ecologylab.semantics.model.text.ITermVector;
 import ecologylab.semantics.model.text.XCompositeTermVector;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.FieldAccessor;
@@ -147,12 +149,21 @@ abstract public class Metadata extends MetadataBase
 	public void rebuildCompositeTermVector()
 	{
 		//if there are no metadatafields retain the composite termvector
-		//because it might have meaningful entries
+	  //because it might have meaningful entries
 
-		if (compositeTermVector != null)
-			compositeTermVector.clear();
-		else
-			compositeTermVector	= new TermVector();
+
+	  Set<ITermVector> vectors = termVector.componentVectors();
+	  ClassAndCollectionIterator<FieldAccessor, MetadataBase> i = metadataIterator();
+	  while (i.hasNext()) {
+	    MetadataBase m = i.next();
+	    if (m != null && !vectors.contains(m.termVector()))
+	      termVector.add(m.termVector());
+	  }
+
+	  if (compositeTermVector != null)
+	    compositeTermVector.clear();
+	  else
+	    compositeTermVector	= new TermVector();
 
 		OneLevelNestingIterator<FieldAccessor, ? extends MetadataBase>  fullIterator	= fullNonRecursiveIterator();
 		while (fullIterator.hasNext())

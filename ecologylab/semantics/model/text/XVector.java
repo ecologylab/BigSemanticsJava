@@ -38,6 +38,8 @@ public class XVector<T> extends Observable implements VectorType<T>
 
 	public void add(T term, double val)
 	{
+	  if (values.containsKey(term))
+	    val += values.get(term);
 		values.put(term, val);
 	}
 
