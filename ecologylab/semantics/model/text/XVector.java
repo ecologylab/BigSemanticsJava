@@ -1,6 +1,6 @@
 package ecologylab.semantics.model.text;
 
-import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.HashSet;
 import java.util.Observable;
 import java.util.Set;
@@ -8,22 +8,22 @@ import java.util.Set;
 public class XVector<T> extends Observable implements VectorType<T>
 {
 
-	protected HashMap<T, Double> values;
+	protected Hashtable<T, Double> values;
+  private double norm;
 
 	public XVector()
 	{
-		values = new HashMap<T, Double>(20);
+		values = new Hashtable<T, Double>(20);
 	}
 
 	public XVector(int size)
 	{
-		values = new HashMap<T, Double>(size);
+		values = new Hashtable<T, Double>(size);
 	}
 
-	@SuppressWarnings("unchecked")
 	public XVector(XVector<T> copyMe)
 	{
-		values = new HashMap<T, Double>(copyMe.values);
+		values = new Hashtable<T, Double>(copyMe.values);
 	}
 
 	public XVector<T> copy()
@@ -41,6 +41,7 @@ public class XVector<T> extends Observable implements VectorType<T>
 	  if (values.containsKey(term))
 	    val += values.get(term);
 		values.put(term, val);
+		resetNorm();
 	}
 
 	/**
@@ -51,12 +52,13 @@ public class XVector<T> extends Observable implements VectorType<T>
 	 */
 	public void multiply(VectorType<T> v)
 	{
-		HashMap<T,Double> other = v.map();
+		Hashtable<T,Double> other = v.map();
 		if (other == null)
 			return;
 		this.values.keySet().retainAll(other.keySet());
 		for (T term : this.values.keySet())
 			this.values.put(term, other.get(term) * this.values.get(term));
+		resetNorm();
 	}
 
 	/**
@@ -69,6 +71,7 @@ public class XVector<T> extends Observable implements VectorType<T>
 	{
 		for (T term : this.values.keySet())
 			this.values.put(term, c * this.values.get(term));
+		resetNorm();
 	}
 
 	/**
@@ -84,7 +87,7 @@ public class XVector<T> extends Observable implements VectorType<T>
 	 */
 	public void add(double c, VectorType<T> v)
 	{
-		HashMap<T,Double> other = v.map();
+		Hashtable<T,Double> other = v.map();
 		if (other == null)
 			return;
 		for (T term : other.keySet())
@@ -92,6 +95,7 @@ public class XVector<T> extends Observable implements VectorType<T>
 				this.values.put(term, c * other.get(term) + this.values.get(term));
 			else
 				this.values.put(term, c * other.get(term));
+		resetNorm();
 	}
 
 	/**
@@ -100,7 +104,7 @@ public class XVector<T> extends Observable implements VectorType<T>
 	 */	
 	public void add(VectorType<T> v)
 	{
-		HashMap<T,Double> other = v.map();
+		Hashtable<T,Double> other = v.map();
 		if (other == null)
 			return;
 		for (T term : other.keySet())
@@ -108,6 +112,7 @@ public class XVector<T> extends Observable implements VectorType<T>
 				this.values.put(term, other.get(term) + this.values.get(term));
 			else
 				this.values.put(term, other.get(term));
+		resetNorm();
 	}
 
 	/**
@@ -116,13 +121,16 @@ public class XVector<T> extends Observable implements VectorType<T>
 	 */	
 	public double dot(VectorType<T> v)
 	{
-		HashMap<T,Double> other = v.map();
+		Hashtable<T,Double> other = v.map();
 		if (other == null)
 			return 0;
+		
 		double dot = 0;
-		for (T term : this.values.keySet())
+		Hashtable<T,Double> vector = this.values;
+		for (T term : vector.keySet())
 			if (other.containsKey(term))
-				dot += other.get(term) * this.values.get(term);
+				dot += other.get(term) * vector.get(term);
+		dot /= this.norm() * v.norm();
 		return dot;
 	}
 
@@ -136,7 +144,7 @@ public class XVector<T> extends Observable implements VectorType<T>
 		return new HashSet<Double>(values.values());
 	}
 
-	public HashMap<T, Double> map()
+	public Hashtable<T, Double> map()
 	{
 		return values;
 	}
@@ -144,5 +152,26 @@ public class XVector<T> extends Observable implements VectorType<T>
 	public int size()
 	{
 		return values.size();
+	}
+	
+	private void recalculateNorm()
+	{
+	  double norm = 0;
+	  for(double d: this.values.values())
+	  {
+	    norm += Math.pow(d, 2);
+	  }
+	  this.norm = Math.sqrt(norm);
+	}
+	
+	private void resetNorm() {
+	  norm = -1;
+	}
+	
+	public double norm()
+	{
+	  if (norm == -1)
+	    recalculateNorm();
+	  return norm;
 	}
 }

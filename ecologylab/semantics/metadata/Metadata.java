@@ -151,7 +151,6 @@ abstract public class Metadata extends MetadataBase
 		//if there are no metadatafields retain the composite termvector
 	  //because it might have meaningful entries
 
-
 	  Set<ITermVector> vectors = termVector.componentVectors();
 	  ClassAndCollectionIterator<FieldAccessor, MetadataBase> i = metadataIterator();
 	  while (i.hasNext()) {
