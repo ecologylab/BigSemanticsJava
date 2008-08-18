@@ -1,7 +1,6 @@
 package ecologylab.semantics.library;
 
 import ecologylab.model.TextChunkBase;
-import ecologylab.semantics.library.scalar.MetadataString;
 import ecologylab.semantics.metadata.Media;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.xml.xml_inherit;
@@ -15,15 +14,23 @@ import ecologylab.xml.ElementState.xml_nested;
 @xml_inherit
 public class Text extends Media
 {
-	@xml_attribute	MetadataString text;
+/*
+	@xml_attribute	TextChunkBase text;
 
-	public String getText()
+	public TextChunkBase getText()
 	{
-		return text.getValue();
+		return text;
+	}
+
+	public void hwSetText(TextChunkBase text)
+	{
+		this.text = text;
+		rebuildCompositeTermVector();
 	}
 	
-	public void setText(String text)
+	public void setText(TextChunkBase text)
 	{
-	  this.text.setValue(text);
+		this.text = text;
 	}
+	*/
 }

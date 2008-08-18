@@ -5,7 +5,6 @@ package ecologylab.semantics.library.scalar;
 
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.metadata.semantics_pseudo_scalar;
-import ecologylab.semantics.model.text.NullTermVector;
 import ecologylab.xml.xml_inherit;
 
 /**
@@ -30,10 +29,5 @@ public class MetadataParsedURL extends MetadataScalarBase
 	public void setValue(ParsedURL value)
 	{
 		this.value = value;
-	}
-	
-	public NullTermVector termVector() 
-	{
-		return NullTermVector.singleton();
 	}
 }

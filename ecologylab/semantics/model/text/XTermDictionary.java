@@ -1,166 +1,137 @@
 package ecologylab.semantics.model.text;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.Hashtable;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
+import java.util.HashMap;
+import java.util.HashSet;
 
-import ecologylab.io.Assets;
-import ecologylab.appframework.ApplicationProperties;
+//import org.jvyaml.YAML;
 
-
-public class XTermDictionary implements ApplicationProperties
+public class XTermDictionary
 {
 
-  private static Hashtable<String, Double> frequencyList = null;
-  private static Hashtable<String, XTerm> dictionary = null;
+	private static HashMap<String, Double> frequencyList = null;
+	private static HashMap<String, XTerm> dictionary = null;
 
-  public static double lowestFrequency 	= Double.MAX_VALUE;
-  public static double highestFrequency	= Double.MIN_VALUE;
-  public static double lowestIDF  			= Double.MAX_VALUE;
-  public static double highestIDF   		= Double.MIN_VALUE;
-  public static double averageIDF       = 0;
-  
-  public static double corpusSize = -1; 
+	public static double lowestFrequency 	= Double.MAX_VALUE;
+	public static double highestFrequency 	= Double.MIN_VALUE;
+	public static double lowestIDF 			= Double.MAX_VALUE;
+	public static double highestIDF 		= Double.MIN_VALUE;
 
-  static String DICTIONARY = "dictionary";
+	/**
+	 * Loads the dictionary term/frequency map from a YAML file, then generates
+	 * the IDF Mapping.
+	 * 
+	 * @param yamlTermFrequency
+	 *            file from which to load the term/frequency map
+	 * @throws FileNotFoundException
+	 */
+	public static void createDictionary(File yamlTermFrequency)
+			throws FileNotFoundException
+	{
+		loadFromYaml(yamlTermFrequency);
+		generateDictionary();
+	}
 
-  public static void download(float dictionaryAssetVersion)
-  {
-    Assets.downloadSemanticsZip(DICTIONARY, null, !USE_ASSETS_CACHE,
-        dictionaryAssetVersion);
-    try
-    {
-      createDictionary(Assets.getSemanticsFile(DICTIONARY + "/dictionary.yaml"));
-    } catch (Exception e)
-    {
-      System.err.println("Error: cannot open dictionary file.");
-    }
-  }
-  
-  
-  /**
-   * Loads the dictionary term/frequency map from a YAML file, then generates
-   * the IDF Mapping.
-   * 
-   * @param yamlTermFrequency
-   *            file from which to load the term/frequency map
-   * @throws FileNotFoundException
-   */
-  public static void createDictionary(File dictionary)
-  throws Exception
-  {
-    readFromDictionaryFile(Assets.getSemanticsFile("dictionary" + "/Dic.txt"));
-    generateDictionary();
-  }
-  
-  
-  public static XTerm getTerm(String stem) {
-    if (contains(stem))
-      return dictionary.get(stem);
-    else
-      return newTerm(stem);
-  }
+	/**
+	 * Modifies the passed in Vector by pair-wise multiplying it with the
+	 * inverse document frequency vector
+	 * 
+	 * @param v
+	 *            The Vector to change to tf*IDF weighting.
+	 */
 
-  /**
-   * Tests if the dictionary has an entry for a certain stem.
-   * @param stem
-   * @return
-   */
-  public static boolean contains(String stem)
-  {
-    return dictionary.containsKey(stem);
-  }
-  
-  /**
-   * Creates a new term using the given stem and assigning it an idf of averageIDF.
-   * @param stem
-   */
-  public static XTerm newTerm(String stem) {
-    if (stem.length() < 4)
-      return null;
-    XTerm newTerm = new XTerm(stem, averageIDF);
-    dictionary.put(stem, newTerm);
-    return newTerm;
-  }
-  
-  public static int numTerms() {
-    return frequencyList.size();
-  }
+	public static boolean contains(String stem)
+	{
+		return dictionary.containsKey(stem);
+	}
 
-  private static void readFromDictionaryFile(File inputDictionaryFile) throws Exception
-  {
-    String thisTerm; 
-    InputStream in    = null;
-    String fileName   = inputDictionaryFile.getName();
-    char fileType   = fileName.charAt(fileName.length()-3);
-    switch (fileType)
-    {
-    case 't':
-      in = new FileInputStream(inputDictionaryFile);
-      break;
-    case 'z':
-      in = new FileInputStream(inputDictionaryFile);
-      ZipInputStream source = new ZipInputStream(in);
-      ZipEntry anEntry = source.getNextEntry(); 
-      long decompressedSize = anEntry.getSize();
-      byte[]  uncompressedBuf = new byte[(int)decompressedSize];  
-      int   readLength=0;
-      int   chunk=0;
-      while (((int)decompressedSize - readLength) > 0) 
-      {
-        chunk=source.read(uncompressedBuf,readLength,(int)decompressedSize - readLength);
-        if (chunk==-1) {
-          break;
-        }
-        readLength+=chunk;
-      }
-      in  = new ByteArrayInputStream (uncompressedBuf);            
-      break;
-    }
-    BufferedReader myInput = new BufferedReader(new InputStreamReader(in));
-    Hashtable<String,Double> frequencies = new Hashtable<String, Double>();
-    while ((thisTerm = myInput.readLine()) != null) 
-    {              
-      String[] term     = thisTerm.split("\t");
-      String stem = term[0];
-      double freq = Double.parseDouble(term[1]);
-      if (freq < lowestFrequency)
-        lowestFrequency = freq;
-      else if (freq > highestFrequency)
-        highestFrequency = freq;
-      frequencies.put(stem, freq);      
-    }
-    frequencyList = frequencies;
-    myInput.close();
-    myInput   = null;
-  }
+	public static void main(String[] arg) throws Exception
+	{
+		createDictionary(new File("/Users/jmole/frequency.yaml"));
+		// for (String stem : frequencyList.keySet())
+		// System.out.println(stem + ": " + frequencyList.get(stem));
+		// for (String stem : inverseDocumentFrequency.indexSet())
+		// System.out.println(stem + ": " + inverseDocumentFrequency.get(stem));
+		//		
+		java.util.ArrayList<String> stems = new java.util.ArrayList<String>();
+		for (String s : frequencyList.keySet())
+			stems.add(s);
 
+		XVector<String>[] vectors = new XVector[10000];
+		for (int i = 0; i < vectors.length; i++)
+		{
+			vectors[i] = new XVector<String>();
+			for (int j = 0; j < 20; j++)
+			{
+				int rand = (int) Math.rint(Math.random() * (stems.size() - 1));
+				vectors[i].add(stems.get(rand), Math.random());
+			}
+		}
+		System.out.println("Vector length = 20");
+		long time = System.nanoTime();
+		for (XVector v : vectors)
+		{
+			int rand = (int) Math.rint(Math.random() * (vectors.length - 1));
+			v.dot(vectors[rand]);
+		}
+		time = System.nanoTime() - time;
+		System.out.println("Time for 10000 random dot product calculations: "
+				+ time / 1000 / 1000.0 + "ms.");
 
-  private static void generateDictionary()
-  {
-    dictionary = new Hashtable<String, XTerm>(frequencyList.size());
-    corpusSize = highestFrequency;
-    double avgIDF = 0;
-    for (String stem : frequencyList.keySet())
-    {
-      double idf = Math.log(corpusSize / frequencyList.get(stem));
-      dictionary.put(stem, new XTerm(stem, idf));
-      if (idf < lowestIDF)
-        lowestIDF = idf;
-      else if (idf > highestIDF)
-        highestIDF = idf;
-      avgIDF += idf;
-    }
-    avgIDF /= frequencyList.size();
-  }
+		time = System.nanoTime();
+		for (XVector v : vectors)
+		{
+			int rand = (int) Math.rint(Math.random() * (vectors.length - 1));
+			v.add(vectors[rand]);
+		}
+		time = System.nanoTime() - time;
+		System.out.println("Time for 10000 random add calculations: " + time
+				/ 1000 / 1000.0 + "ms.");
+
+		time = System.nanoTime();
+		for (XVector v : vectors)
+		{
+			int rand = (int) Math.rint(Math.random() * (vectors.length - 1));
+			v.multiply(vectors[rand]);
+		}
+		time = System.nanoTime() - time;
+		System.out.println("Time for 10000 random multiply calculations: "
+				+ time / 1000 / 1000.0 + "ms.");
+
+	}
+
+	@SuppressWarnings("unchecked")
+	private static void loadFromYaml(File yamlTermFrequency)
+			throws FileNotFoundException
+	{
+		// frequencyList = (HashMap)YAML.load(new
+		// FileReader(yamlTermFrequency));
+		for (String stem : frequencyList.keySet())
+		{
+
+			double freq = (double) frequencyList.get(stem);
+			if (freq < lowestFrequency)
+				lowestFrequency = freq;
+			else if (freq > highestFrequency)
+				highestFrequency = freq;
+		}
+	}
+
+	private static void generateDictionary()
+	{
+		dictionary = new HashMap<String, XTerm>(frequencyList.size());
+		int corpusSize = frequencyList.size();
+		for (String stem : frequencyList.keySet())
+		{
+			double idf = Math.log(highestFrequency / frequencyList.get(stem));
+			dictionary.put(stem, new XTerm(stem, idf));
+			if (idf < lowestIDF)
+				lowestIDF = idf;
+			else if (idf > highestIDF)
+				highestIDF = idf;
+		}
+	}
 
 }

@@ -18,8 +18,6 @@ public class DebugMetadata extends Metadata
 	
 	@xml_nested MetadataStringBuilder	termWeights;
 	
-	@xml_nested MetadataStringBuilder newTermVector;
-	
 	/**
 	 * 
 	 */
@@ -27,11 +25,10 @@ public class DebugMetadata extends Metadata
 	{
 	}
 	
-	public DebugMetadata(MetadataStringBuilder termVector, MetadataStringBuilder termWeights, MetadataStringBuilder newTermVector)
+	public DebugMetadata(MetadataStringBuilder termVector, MetadataStringBuilder termWeights)
 	{
 		this.termVector 	= termVector;
 		this.termWeights 	= termWeights;
-		this.newTermVector = newTermVector;
 	}
 
 	/**

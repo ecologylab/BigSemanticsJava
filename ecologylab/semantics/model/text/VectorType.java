@@ -1,6 +1,6 @@
 package ecologylab.semantics.model.text;
 
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Set;
 
 public interface VectorType<T> {
@@ -12,13 +12,11 @@ public interface VectorType<T> {
 	 * @param v Vector to dot this Vector with.
 	 */
 	public double dot(VectorType<T> v);
-	
-	public double norm();
 
 	public Set<T> elements();
 
 	public Set<Double> values();
 	
-	public Hashtable<T,Double> map();
+	public HashMap<T,Double> map();
 
 }

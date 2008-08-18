@@ -6,16 +6,16 @@ import java.util.Observable;
 import java.util.Set;
 import java.util.Observer;
 
-import ecologylab.model.text.TermVector;
-
 public class XCompositeTermVector extends Observable implements Observer,
 		ITermVector
 {
 
-	public XCompositeTermVector() {}
+	public XCompositeTermVector()
+	{
+	}
 
-	private XTermVector compositeTermVector = new XTermVector(); 
-	private HashMap<ITermVector, Double> termVectors = new HashMap<ITermVector, Double>();
+	private XTermVector compositeTermVector;
+	private HashMap<ITermVector, Double> termVectors;
 
 	/**
 	 * Adds a Term Vector to this Composite Term Vectors collection, multiplying
@@ -78,6 +78,11 @@ public class XCompositeTermVector extends Observable implements Observer,
 	// instead of rebuilding the whole thing each time.
 	public void update(Observable o, Object arg)
 	{
+		if ((String) arg == "delete")
+		{
+			ITermVector tv = (ITermVector) o;
+			remove(tv);
+		}
 		rebuildCompositeTermVector();
 		setChanged();
 		notifyObservers();
@@ -128,20 +133,6 @@ public class XCompositeTermVector extends Observable implements Observer,
 	public Set<Double> values()
 	{
 		return compositeTermVector.values();
-	}
-	
-	public Set<ITermVector> componentVectors()
-	{
-	  return termVectors.keySet();
-	}
-	
-	public String toString()
-	{
-	  StringBuilder s = new StringBuilder("[");
-	  for(ITermVector v : termVectors.keySet())
-	    s.append(v.toString() + "(" + termVectors.get(v) + "), ");
-	  s.append("]");
-	  return s.toString();
 	}
 
 }

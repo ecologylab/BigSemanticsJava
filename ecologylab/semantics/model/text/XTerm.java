@@ -41,10 +41,5 @@ public class XTerm
 			super(man);
 		}
 	}
-	
-	public String toString()
-	{
-	  return stem + "(" + idf + ")";
-	}
 
 }
