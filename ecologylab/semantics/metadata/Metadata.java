@@ -145,13 +145,14 @@ abstract public class Metadata extends MetadataBase
 		OneLevelNestingIterator<FieldAccessor,  ? extends MetadataBase>  fullIterator	= fullNonRecursiveIterator();
 		while (fullIterator.hasNext())
 		{
-			FieldAccessor fieldAccessor	= fullIterator.next();
+			FieldAccessor fieldAccessor		= fullIterator.next();
 			MetadataBase currentMetadata	= fullIterator.currentObject();
+			MetaMetadata metaMetadata 		= currentMetadata.getMetaMetadata();
 			//When the iterator enters the metadata in the mixins "this" in getValueString has to be
 			// the corresponding metadata in mixin.
-			String valueString = fieldAccessor.getValueString(currentMetadata);
+			String valueString 				= fieldAccessor.getValueString(currentMetadata);
 			//"null" happens with mixins fieldAccessor b'coz getValueString() returns "null".
-			if (valueString != null && !"null".equals(valueString))
+			if ((metaMetadata != null && metaMetadata.isAlwaysShow()) || (valueString != null && !"null".equals(valueString) && valueString.length() != 0))
 			{
 				size++;
 			}
@@ -318,6 +319,7 @@ abstract public class Metadata extends MetadataBase
 		return metaMetadata == null ? null : metaMetadata.lookupChild(name);
 	}
 
+	@Override
 	public MetaMetadata getMetaMetadata()
 	{
 		return metaMetadata;
