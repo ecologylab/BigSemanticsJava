@@ -45,17 +45,22 @@ import ecologylab.xml.types.scalar.ParsedURLType;
 public class HtmlDomExtractor<M extends MetadataBase> extends Debug
 {
 	
-	private String domainString;
-	static Tidy tidy;
-	static XPath xpath;
+	private	String 						domainString;
+	
+	private	MetaMetadataRepository 	metaMetaDataRepository;
+	
+	static 	Tidy 							tidy;
+	static 	XPath 						xpath;
 	
 
-	public HtmlDomExtractor()
+	public HtmlDomExtractor(MetaMetadataRepository metaMetaDataRepository)
 	{
-		tidy = new Tidy();
+		tidy 									= new Tidy();
 		tidy.setQuiet(true);
 		tidy.setShowWarnings(false);
-		xpath = XPathFactory.newInstance().newXPath();
+		xpath 								= XPathFactory.newInstance().newXPath();
+		
+		this.metaMetaDataRepository	= metaMetaDataRepository;
 	}
 	/**
 	 * Checks to see which HtmlDomExtractionPattern can be used and calls
@@ -220,6 +225,10 @@ public class HtmlDomExtractor<M extends MetadataBase> extends Debug
 					//Have to return the nested object for the field.
 					FieldAccessor fieldAccessor = metadata.getMetadataFieldAccessor(mmdElementName);
 					nestedMetadata				= (M) fieldAccessor.getAndPerhapsCreateNested(metadata);
+					
+					//FIXME use current MetaMetadataField and repository to find child MetaMetadata
+					// and set here
+					
 					recursiveExtraction(translationScope, mmdElement, nestedMetadata, tidyDOM, purl);
 				}
 				//If the field is mapped.
@@ -259,6 +268,11 @@ public class HtmlDomExtractor<M extends MetadataBase> extends Debug
 							String collectionChildTag	= mmdElement.getCollectionChildType();
 							Class collectionChildClass 	= translationScope.getClassByTag(collectionChildTag);
 							Metadata collectionChildInstance = (Metadata) ReflectionTools.getInstance(collectionChildClass);
+							//FIXME use current MetaMetadataField and repository to find child MetaMetadata
+							// and set here
+							
+
+							
 							metadataMap.put(keyValue, collectionChildInstance);
 							if(collectionChildInstance == null)
 								println("debug");
