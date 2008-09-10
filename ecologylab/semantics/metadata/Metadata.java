@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import ecologylab.generic.ClassAndCollectionIterator;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.generic.OneLevelNestingIterator;
 import ecologylab.model.text.TermVector;
@@ -13,6 +14,7 @@ import ecologylab.semantics.library.scalar.MetadataParsedURL;
 import ecologylab.semantics.library.scalar.MetadataString;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataField;
+import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.FieldAccessor;
 import ecologylab.xml.types.element.ArrayListState;
@@ -139,7 +141,11 @@ abstract public class Metadata extends MetadataBase
 	 */
 	public int size() 
 	{
-
+		return numberOfVisibleFields(null);
+	}
+	
+	public int numberOfVisibleFields(MetaMetadataField metaMetadataField)
+	{
 		int size = 0;
 		
 		OneLevelNestingIterator<FieldAccessor,  ? extends MetadataBase>  fullIterator	= fullNonRecursiveIterator();
@@ -147,12 +153,15 @@ abstract public class Metadata extends MetadataBase
 		{
 			FieldAccessor fieldAccessor		= fullIterator.next();
 			MetadataBase currentMetadata	= fullIterator.currentObject();
-			MetaMetadata metaMetadata 		= currentMetadata.getMetaMetadata();
+			MetaMetadataField metaMetadata 	= (metaMetadataField != null) ? metaMetadataField.lookupChild(fieldAccessor) : currentMetadata.getMetaMetadata();
+			
 			//When the iterator enters the metadata in the mixins "this" in getValueString has to be
 			// the corresponding metadata in mixin.
 			String valueString 				= fieldAccessor.getValueString(currentMetadata);
 			//"null" happens with mixins fieldAccessor b'coz getValueString() returns "null".
-			if ((metaMetadata != null && metaMetadata.isAlwaysShow()) || (valueString != null && !"null".equals(valueString) && valueString.length() != 0))
+			boolean isAlwaysShowAndNotHide 	= metaMetadata == null || (metaMetadata.isAlwaysShow() || !metaMetadata.isHide());
+			boolean nullValue 				= valueString != null && !"null".equals(valueString) && valueString.length() != 0;
+			if (isAlwaysShowAndNotHide && nullValue)
 			{
 				size++;
 			}
