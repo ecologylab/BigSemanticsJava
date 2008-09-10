@@ -358,9 +358,18 @@ implements Mappable<String>, PackageSpecifier, Iterable<MetaMetadataField>
 		return ignoreInTermVector;
 	}
 
-	void addChild(MetaMetadataField mmf)
+	/**
+	 * Add a child field from a super class into the representation for this.
+	 * Unless it should be shadowed, in which case ignore.
+	 * 
+	 * @param childMetaMetadataField
+	 */
+	void addChild(MetaMetadataField childMetaMetadataField)
 	{
-		childMetaMetadata.put(mmf.getName(), mmf);
+		String fieldName	= childMetaMetadataField.getName();
+		// *do not* override fields in here with fields from super classes.
+		if (!childMetaMetadata.containsKey(fieldName))
+			childMetaMetadata.put(fieldName, childMetaMetadataField);
 	}
 
 	/**
