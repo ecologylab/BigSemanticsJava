@@ -12,6 +12,7 @@ import ecologylab.generic.HashMapArrayList;
 import ecologylab.net.ParsedURL;
 import ecologylab.net.UserAgent;
 import ecologylab.semantics.library.TypeTagNames;
+import ecologylab.semantics.metadata.Metadata;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.TranslationScope;
 import ecologylab.xml.XMLTranslationException;
@@ -26,8 +27,11 @@ public class MetaMetadataRepository extends ElementState
 implements PackageSpecifier, TypeTagNames
 {
 	
-	//@xml_collection("meta_metadata") private ArrayList<MetaMetadata> stuff; 
-	@xml_map("meta_metadata") private HashMapArrayList<String, MetaMetadata> repository; 
+	//@xml_collection("meta_metadata") private ArrayList<MetaMetadata> stuff;
+	/**
+	 * The keys for this hashmap are the values within TypeTagNames.
+	 */
+	@xml_map("meta_metadata") private HashMapArrayList<String, MetaMetadata> repositoryByTagName; 
 
 	@xml_attribute 		String 						name;
 	
@@ -49,6 +53,8 @@ implements PackageSpecifier, TypeTagNames
 	private HashMapArrayList<String, MetaMetadata>	mimeMap 		= new HashMapArrayList<String, MetaMetadata>(); 
 	
 	private HashMapArrayList<String, MetaMetadata>	suffixMap 	= new HashMapArrayList<String, MetaMetadata>(); 
+	
+	private TranslationScope						metadataTScope;
 	
 	//for debugging
 	protected static File	REPOSITORY_FILE;
@@ -73,11 +79,11 @@ implements PackageSpecifier, TypeTagNames
 		try
 		{
 			result = (MetaMetadataRepository) ElementState.translateFromXML(file, TS);
-			result.populateURLBaseMap();
-			// necessary to get, for example, fields for document into pdf...
-			result.populateInheritedValues();
-			
-			result.populateMimeMap();
+//			result.populateURLBaseMap();
+//			// necessary to get, for example, fields for document into pdf...
+//			result.populateInheritedValues();
+//			
+//			result.populateMimeMap();
 			//For debug
 			//this.metaMetaDataRepository.writePrettyXML(System.out);
 		} catch (XMLTranslationException e)
@@ -89,7 +95,7 @@ implements PackageSpecifier, TypeTagNames
 	
 	private void populateMimeMap()
 	{
-		for (MetaMetadata mm: repository.values())
+		for (MetaMetadata mm: repositoryByTagName.values())
 		{
 			if (mm != null)
 			{
@@ -105,7 +111,7 @@ implements PackageSpecifier, TypeTagNames
 
 	private void populateSuffixMap()
 	{
-		for (MetaMetadata mm: repository.values())
+		for (MetaMetadata mm: repositoryByTagName.values())
 		{
 			if (mm != null)
 			{
@@ -121,7 +127,7 @@ implements PackageSpecifier, TypeTagNames
 
 	private void populateInheritedValues()
 	{
-		for (MetaMetadata mm: repository.values())
+		for (MetaMetadata mm: repositoryByTagName.values())
 		{
 			if (mm != null)
 				recursivePopulate(mm);
@@ -144,7 +150,7 @@ implements PackageSpecifier, TypeTagNames
 		if (superClassName == null || METADATA_TAG.equals(superClassName))
 			return;
 		
-		MetaMetadata superMetaMetadata	= repository.get(superClassName);
+		MetaMetadata superMetaMetadata	= repositoryByTagName.get(superClassName);
 		if (superMetaMetadata == null)
 			return;
 
@@ -158,7 +164,7 @@ implements PackageSpecifier, TypeTagNames
 	
 	protected void populateURLBaseMap()
 	{
-		for (MetaMetadata metaMetadata: repository)
+		for (MetaMetadata metaMetadata: repositoryByTagName)
 		{
 			ParsedURL purl = metaMetadata.getUrlBase();
 			if(purl != null)
@@ -167,24 +173,34 @@ implements PackageSpecifier, TypeTagNames
 	}
 	
 	/**
+	 * Get MetaMetadata by ParsedURL if possible.
+	 * If that lookup fails, then lookup by tag name, to acquire some default.
+	 * 
+	 * @param purl
+	 * @param tagName
+	 * @return
+	 */
+	public MetaMetadata get(ParsedURL purl, String tagName)
+	{
+		MetaMetadata result	= getByPURL(purl);
+		return (result != null) ? result : getByTagName(tagName);
+	}
+	
+	/**
 	 * Find the best matching MetaMetadata for the ParsedURL -- if there is a match.
 	 * 
 	 * @param parsedURL
 	 * @return		appropriate MetaMetadata, or null.
 	 */
-	public MetaMetadata getMetaMetaData(ParsedURL parsedURL)
+	public MetaMetadata getByPURL(ParsedURL parsedURL)
 	{
-		MetaMetadata metaMetadata = urlBaseMap.get(parsedURL.host());
-		/**
-		 * returns null if there is no url_base.
-		 */
-		return metaMetadata;
+		return (parsedURL == null) ? null : urlBaseMap.get(parsedURL.host());
 	}
 	
-	public MetaMetadata getMetaMetaData(String docType)
+	public MetaMetadata getByTagName(String tagName)
 	{
 
-		return repository.get(docType);
+		return (tagName == null) ? null : repositoryByTagName.get(tagName);
 //		MetaMetadata tempMetaMetadata;
 //		try 
 //		{
@@ -225,7 +241,7 @@ implements PackageSpecifier, TypeTagNames
 	
 	public Collection<MetaMetadata> values()
 	{
-		return (repository == null) ? null : repository.values();
+		return (repositoryByTagName == null) ? null : repositoryByTagName.values();
 	}
 
 	public String packageName()
@@ -264,9 +280,37 @@ implements PackageSpecifier, TypeTagNames
 		return defaultUserAgentString;
 	}
 	
+	@Override
+    protected void postTranslationProcessingHook()
+    {
+		populateURLBaseMap();
+		// necessary to get, for example, fields for document into pdf...
+		populateInheritedValues();
+		
+		populateMimeMap();
+
+    }
+
 	public static String documentTag()
 	{
 		return DOCUMENT_TAG;
+	}
+	
+	public MetaMetadata getByClass(Class<? extends Metadata> thatClass)
+	{
+		String tag	= metadataTScope.lookupTag(thatClass);
+		
+		return (tag == null) ? null : repositoryByTagName.get(tag);
+	}
+	
+	public MetaMetadata getByMetadata(Metadata metadata)
+	{
+		ParsedURL purl	= metadata.getLocation();
+	
+		MetaMetadata result	= getByPURL(purl);
+		if (result == null)
+			result 	= getByClass(metadata.getClass());
+		return result;
 	}
 	
 	public MetaMetadata lookupByMime(String mimeType)
@@ -282,5 +326,10 @@ implements PackageSpecifier, TypeTagNames
 	public TranslationScope translationScope()
 	{
 		return TS;
+	}
+
+	public void setMetadataTranslationScope(TranslationScope metadataTScope)
+	{
+		this.metadataTScope = metadataTScope;
 	}
 }
