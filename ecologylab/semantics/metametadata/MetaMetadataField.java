@@ -15,6 +15,7 @@ import ecologylab.xml.TranslationScope;
 import ecologylab.xml.XMLTools;
 import ecologylab.xml.XMLTranslationException;
 import ecologylab.xml.xml_inherit;
+import ecologylab.xml.ElementState.xml_attribute;
 import ecologylab.xml.types.element.Mappable;
 import ecologylab.xml.types.scalar.ScalarType;
 
@@ -57,7 +58,7 @@ implements Mappable<String>, PackageSpecifier, Iterable<MetaMetadataField>
 	/**
 	 * The type for collection children.
 	 */
-	@xml_attribute private				String		collectionChildType;
+	@xml_attribute private				String			collectionChildType;
 
 	@xml_attribute private 				boolean 		isLink;
 	@xml_attribute private 				boolean 		isList;
@@ -70,19 +71,29 @@ implements Mappable<String>, PackageSpecifier, Iterable<MetaMetadataField>
 	 * Enables hand coding a few Metadata classes, but still providing MetaMetadata to
 	 * control operations on them.
 	 */
-	@xml_attribute private				boolean		dontCompile;
+	@xml_attribute private				boolean			dontCompile;
 	
 	/**
 	 * true if this field should not be displayed in interactive in-context metadata
 	 */
 	@xml_attribute private 				boolean 		hide;
 	
-	@xml_attribute private				boolean		alwaysShow;
+	@xml_attribute private				boolean			alwaysShow;
 	
 	@xml_attribute private 				boolean 		isNested;
 	@xml_attribute private 				String 			key;
 	
-	HashMap<String, String>				childPackagesMap	= new HashMap<String, String>(2);
+	/**
+	 * This MetaMetadataField shadows another field, so it is to be displayed instead of the other.
+	 */
+	@xml_attribute private				String			shadows;
+	
+	/**
+	 * Another field name that this field navigates to (e.g. from a label in in-context metadata)
+	 */
+	@xml_attribute private				String			navigatesTo;
+	
+	HashMap<String, String>				childPackagesMap			= new HashMap<String, String>(2);
 	
 	private static ArrayList<MetaMetadataField>	EMPTY_COLLECTION	= new ArrayList<MetaMetadataField>(0);
 	
@@ -394,5 +405,15 @@ implements Mappable<String>, PackageSpecifier, Iterable<MetaMetadataField>
 	public String getCollectionChildType()
 	{
 		return collectionChildType;
+	}
+	
+	public String shadows()
+	{
+		return shadows;
+	}
+
+	public String getNavigatesTo()
+	{
+		return navigatesTo;
 	}
 }
