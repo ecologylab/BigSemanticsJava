@@ -3,10 +3,12 @@ package ecologylab.semantics.metadata;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Set;
 
 import ecologylab.generic.ClassAndCollectionIterator;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.generic.OneLevelNestingIterator;
+import ecologylab.generic.VectorType;
 import ecologylab.model.text.TermVector;
 import ecologylab.model.text.WordForms;
 import ecologylab.net.ParsedURL;
@@ -15,6 +17,8 @@ import ecologylab.semantics.library.scalar.MetadataString;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataField;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
+import ecologylab.semantics.model.text.XCompositeTermVector;
+import ecologylab.semantics.model.text.XTerm;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.FieldAccessor;
 import ecologylab.xml.types.element.ArrayListState;
@@ -33,8 +37,10 @@ abstract public class Metadata extends MetadataBase
 {
 	MetaMetadata 							metaMetadata;
 	
+	XCompositeTermVector					termVector = new XCompositeTermVector();
+	
 	/**
-	 * Allows combining sinstantiated Metadata subclass declarations without hierarchy.
+	 * Allows combining instantiated Metadata subclass declarations without hierarchy.
 	 * 
 	 * Could help, for example, to support user annotation.
 	 */
@@ -80,6 +86,8 @@ abstract public class Metadata extends MetadataBase
 		if(mixin != null)
 		{
 			mixins().add(mixin);
+			if (mixin.termVector != null)
+			  termVector.add(mixin.termVector);
 		}
 	}
 	
@@ -87,10 +95,11 @@ abstract public class Metadata extends MetadataBase
 	{
 		if (mixin != null)
 		{
-			mixins().remove(mixin);
+			if(mixins().remove(mixin) && mixin.termVector != null)
+			  termVector.remove(mixin.termVector);
 		}
 	}
-		
+	
 	/**
 	 * Initializes the data termvector structure. This is not added to the individual
 	 * fields (so that it can be changed) but is added to the composite term vector.
@@ -176,12 +185,20 @@ abstract public class Metadata extends MetadataBase
 	public void rebuildCompositeTermVector()
 	{
 		//if there are no metadatafields retain the composite termvector
-		//because it might have meaningful entries
+	  //because it might have meaningful entries
 
-		if (compositeTermVector != null)
-			compositeTermVector.clear();
-		else
-			compositeTermVector	= new TermVector();
+	  Set<VectorType<XTerm>> vectors = termVector.componentVectors();
+	  ClassAndCollectionIterator<FieldAccessor, MetadataBase> i = metadataIterator();
+	  while (i.hasNext()) {
+	    MetadataBase m = i.next();
+	    if (m != null && !vectors.contains(m.termVector()))
+	      termVector.add(m.termVector());
+	  }
+
+	  if (compositeTermVector != null)
+	    compositeTermVector.clear();
+	  else
+	    compositeTermVector	= new TermVector();
 
 		OneLevelNestingIterator<FieldAccessor, ? extends MetadataBase>  fullIterator	= fullNonRecursiveIterator();
 		while (fullIterator.hasNext())
@@ -339,8 +356,23 @@ abstract public class Metadata extends MetadataBase
 		this.metaMetadata = metaMetadata;
 	}
 	
+	public XCompositeTermVector termVector()
+	{
+	  if (termVector == null)
+	    initializeMetadataCompTermVector();
+	  return termVector;
+	}
+	
 	public void initializeMetadataCompTermVector()
 	{
+		termVector = new XCompositeTermVector();
+		ClassAndCollectionIterator<FieldAccessor, MetadataBase> i = metadataIterator();
+		while(i.hasNext())
+		{
+		  MetadataBase m = i.next();
+		  if (m != null)
+		    termVector.add(m.termVector());
+		}
 		compositeTermVector = new TermVector();
 	}
 	
@@ -408,6 +440,11 @@ abstract public class Metadata extends MetadataBase
 		return null;
 	}
 	
+	public void recycle() {
+		super.recycle();
+		termVector.recycle();
+	}
+	
 	/**
 	 * Take the mixins out of the collection, because they do not really provide
 	 * direct access to the mixin fields.
@@ -430,6 +467,10 @@ abstract public class Metadata extends MetadataBase
 	{
 		return new OneLevelNestingIterator<FieldAccessor, Metadata>(this,
 				(mixins == null) ? null : mixins.iterator());
+	}
+	
+	public ClassAndCollectionIterator<FieldAccessor, MetadataBase> metadataIterator() {
+	  return new ClassAndCollectionIterator<FieldAccessor, MetadataBase>(this);
 	}
 
 }

@@ -11,7 +11,12 @@ public class XTerm
 	public HashSet<ReferringElement> referringElements;
 	private double idf;
 
-	protected XTerm(String stem, double idf)
+	public double idf()
+  {
+    return idf;
+  }
+
+  protected XTerm(String stem, double idf)
 	{
 		this.stem = stem;
 		this.idf = idf;
@@ -40,6 +45,11 @@ public class XTerm
 		{
 			super(man);
 		}
+	}
+	
+	public String toString()
+	{
+	  return stem + "(" + idf + ")";
 	}
 
 }

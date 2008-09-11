@@ -1,21 +1,21 @@
 package ecologylab.semantics.model.text;
 
-import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.HashSet;
 import java.util.Observable;
 import java.util.Set;
 import java.util.Observer;
 
-public class XCompositeTermVector extends Observable implements Observer,
-		ITermVector
+import ecologylab.generic.VectorType;
+import ecologylab.model.text.TermVector;
+
+public class XCompositeTermVector extends VectorType<XTerm> implements Observer
 {
 
-	public XCompositeTermVector()
-	{
-	}
+	public XCompositeTermVector() {}
 
-	private XTermVector compositeTermVector;
-	private HashMap<ITermVector, Double> termVectors;
+	private XTermVector compositeTermVector = new XTermVector(); 
+	private Hashtable<VectorType<XTerm>, Double> termVectors = new Hashtable<VectorType<XTerm>, Double>();
 
 	/**
 	 * Adds a Term Vector to this Composite Term Vectors collection, multiplying
@@ -26,9 +26,9 @@ public class XCompositeTermVector extends Observable implements Observer,
 	 * @param multiplier
 	 *          The scalar multiple.
 	 */
-	public void add(double multiplier, ITermVector tv)
+	public void add(double multiplier, VectorType<XTerm> tv)
 	{
-		HashMap<ITermVector, Double> v;
+		Hashtable<VectorType<XTerm>, Double> v;
 		v = termVectors;
 		synchronized (v)
 		{
@@ -50,9 +50,10 @@ public class XCompositeTermVector extends Observable implements Observer,
 	 * @param tv
 	 *          The term vector you wish to add.
 	 */
-	public void add(ITermVector tv)
+	public void add(VectorType<XTerm> tv)
 	{
-		add(1, tv);
+		if(tv != null)
+			add(1, tv);
 	}
 
 	/**
@@ -61,7 +62,7 @@ public class XCompositeTermVector extends Observable implements Observer,
 	 * @param tv
 	 *          The Term Vector you wish to remove.
 	 */
-	public void remove(ITermVector tv)
+	public void remove(VectorType<XTerm> tv)
 	{
 		Double multiple = termVectors.remove(tv);
 		if (multiple != null)
@@ -78,11 +79,6 @@ public class XCompositeTermVector extends Observable implements Observer,
 	// instead of rebuilding the whole thing each time.
 	public void update(Observable o, Object arg)
 	{
-		if ((String) arg == "delete")
-		{
-			ITermVector tv = (ITermVector) o;
-			remove(tv);
-		}
 		rebuildCompositeTermVector();
 		setChanged();
 		notifyObservers();
@@ -90,20 +86,20 @@ public class XCompositeTermVector extends Observable implements Observer,
 
 	public void recycle()
 	{
-		HashMap<ITermVector, Double> v;
+		Hashtable<VectorType<XTerm>, Double> v;
 		v = termVectors;
 		if (v != null)
-			for (ITermVector tv : v.keySet())
+			for (VectorType<XTerm> tv : v.keySet())
 				tv.deleteObserver(this);
 	}
 
 	private synchronized void rebuildCompositeTermVector()
 	{
-		HashMap<ITermVector, Double> v;
+		Hashtable<VectorType<XTerm>, Double> v;
 		XTermVector c = compositeTermVector;
 		c = new XTermVector(c.size());
 		v = termVectors;
-		for (ITermVector t : v.keySet())
+		for (VectorType<XTerm> t : v.keySet())
 		{
 			c.add(v.get(t), t);
 		}
@@ -111,7 +107,7 @@ public class XCompositeTermVector extends Observable implements Observer,
 	}
 
 	public double dot(VectorType<XTerm> v)
-	{
+	{	  
 		return compositeTermVector.dot(v);
 	}
 
@@ -125,7 +121,7 @@ public class XCompositeTermVector extends Observable implements Observer,
 		return compositeTermVector.get(term);
 	}
 
-	public HashMap<XTerm, Double> map()
+	public Hashtable<XTerm, Double> map()
 	{
 		return compositeTermVector.map();
 	}
@@ -134,5 +130,30 @@ public class XCompositeTermVector extends Observable implements Observer,
 	{
 		return compositeTermVector.values();
 	}
+	
+	public Set<VectorType<XTerm>> componentVectors()
+	{
+	  return termVectors.keySet();
+	}
+	
+	public String toString()
+	{
+	  StringBuilder s = new StringBuilder("[");
+	  for(VectorType<XTerm> v : termVectors.keySet())
+	    s.append(v.toString() + "(" + termVectors.get(v) + "), ");
+	  s.append("]");
+	  return s.toString();
+	}
+	
+	public double norm() 
+	{
+	  return compositeTermVector.norm();
+	}
+
+  @Override
+  public double idfDot(VectorType<XTerm> v)
+  {
+    return compositeTermVector.idfDot(v);
+  }
 
 }
