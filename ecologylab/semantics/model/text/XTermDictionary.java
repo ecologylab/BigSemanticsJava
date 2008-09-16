@@ -112,7 +112,7 @@ public class XTermDictionary implements ApplicationProperties
         dictionaryAssetVersion);
     try
     {
-      createDictionary(Assets.getSemanticsFile(DICTIONARY + "/dictionary.yaml"));
+      createDictionary(Assets.getSemanticsFile("dictionary" + "/Dic.txt"));
     } catch (Exception e)
     {
       System.err.println("Error: cannot open dictionary file.");
@@ -131,7 +131,7 @@ public class XTermDictionary implements ApplicationProperties
   public static void createDictionary(File dictionary)
   throws Exception
   {
-    readFromDictionaryFile(Assets.getSemanticsFile("dictionary" + "/Dic.txt"));
+    readFromDictionaryFile(dictionary);
     generateDictionary();
   }
   

@@ -47,7 +47,8 @@ public class XTermVector extends XVector<XTerm>
         p.add(s.charAt(i));
       p.stem();
       stem = p.toString();
-      addWithoutNotify(XTermDictionary.getTerm(stem),1);
+      if (stem != null)
+    	  addWithoutNotify(XTermDictionary.getTerm(stem),1);
     }
     setChanged();
     notifyObservers();
