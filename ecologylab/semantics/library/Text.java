@@ -15,7 +15,7 @@ import ecologylab.xml.ElementState.xml_nested;
 @xml_inherit
 public class Text extends Media
 {
-	@xml_attribute	MetadataString text;
+	@xml_nested	MetadataString text;
 
 	public String getText()
 	{
