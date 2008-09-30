@@ -18,8 +18,8 @@ public class Topic extends Document
 	@xml_attribute MetadataInteger id;
 	
 	@xml_collection("content_keywords") ArrayList<String> contentKeys;
-	@xml_collection("content_keywords") ArrayList<String> anchorKeys;
-	@xml_collection("content_keywords") ArrayList<String> titleKeys;
-	@xml_collection("content_keywords") ArrayList<String> urlKeys;
+	@xml_collection("anchor_keywords") ArrayList<String> anchorKeys;
+	@xml_collection("title_keywords") ArrayList<String> titleKeys;
+	@xml_collection("url_keywords") ArrayList<String> urlKeys;
 	
 }
