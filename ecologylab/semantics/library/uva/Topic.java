@@ -6,16 +6,20 @@ package ecologylab.semantics.library.uva;
 import java.util.ArrayList;
 
 import ecologylab.generic.HashMapArrayList;
+import ecologylab.semantics.library.Document;
 import ecologylab.semantics.library.scalar.MetadataInteger;
-import ecologylab.semantics.metadata.Metadata;
 
 /**
  * @author vdeboer
  *
  */
-public class Topic extends Metadata
+public class Topic extends Document
 {
 	@xml_attribute MetadataInteger id;
 	
-	@xml_map("keyword_set") HashMapArrayList<String, ArrayList<String>> keywordSet; 
+	@xml_collection("content_keywords") ArrayList<String> contentKeys;
+	@xml_collection("content_keywords") ArrayList<String> anchorKeys;
+	@xml_collection("content_keywords") ArrayList<String> titleKeys;
+	@xml_collection("content_keywords") ArrayList<String> urlKeys;
+	
 }
