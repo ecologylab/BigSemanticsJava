@@ -48,4 +48,10 @@ public class MetadataStringBuilder extends MetadataScalarBase
 			compositeTermVector.addTerms(value.toString(), false);
 		}	
 	}
+	
+	@Override
+	public String toString()
+	{
+		return value == null ? "" : value.toString();
+	}
 }

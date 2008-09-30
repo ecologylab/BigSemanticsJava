@@ -12,6 +12,7 @@ import ecologylab.semantics.library.scholarlyPublication.Author;
 import ecologylab.semantics.library.scholarlyPublication.Reference;
 import ecologylab.semantics.library.scholarlyPublication.AcmPortal;
 import ecologylab.semantics.library.scholarlyPublication.Source;
+import ecologylab.semantics.library.uva.Topic;
 import ecologylab.semantics.metadata.DebugMetadata;
 import ecologylab.semantics.metadata.Media;
 import ecologylab.xml.TranslationScope;
@@ -47,7 +48,11 @@ public class DefaultMetadataTranslationSpace extends Debug
 		Author.class,
 		Reference.class,
 		Source.class,
-		AcmPortal.class
+		AcmPortal.class,
+		
+		Topic.class,
+		
+		
 	};
 
 	public static TranslationScope get()

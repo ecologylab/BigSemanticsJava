@@ -57,4 +57,24 @@ public class KeywordSet extends ElementState
 		return null;
 	}
 
+	public String getType()
+	{
+		return type;
+	}
+
+	public void setType(String type)
+	{
+		this.type = type;
+	}
+
+	public ArrayList<String> getKeywords()
+	{
+		return keywords;
+	}
+
+	public void setKeywords(ArrayList<String> keywords)
+	{
+		this.keywords = keywords;
+	}
+
 }

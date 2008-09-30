@@ -24,7 +24,7 @@ public class TopicCluster extends ElementState
 	@xml_nested		DocumentSet				documentSet;
 	
 	@xml_collection("keyword_set")		
-					ArrayList<KeywordSet>	keywordSet;
+					ArrayList<KeywordSet>	keywordSets;
 	
 	/**
 	 * 
@@ -64,14 +64,14 @@ public class TopicCluster extends ElementState
 		this.documentSet = documentSet;
 	}
 
-	public ArrayList<KeywordSet> getKeywordSet()
+	public ArrayList<KeywordSet> getKeywordSets()
 	{
-		return keywordSet;
+		return keywordSets;
 	}
 
-	public void setKeywordSet(ArrayList<KeywordSet> keywordSet)
+	public void setKeywordSets(ArrayList<KeywordSet> keywordSet)
 	{
-		this.keywordSet = keywordSet;
+		this.keywordSets = keywordSet;
 	}
 
 	
