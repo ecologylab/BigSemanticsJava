@@ -34,4 +34,45 @@ public class TopicCluster extends ElementState
 		// TODO Auto-generated constructor stub
 	}
 
+	public int getId()
+	{
+		return id;
+	}
+
+	public void setId(int id)
+	{
+		this.id = id;
+	}
+
+	public Rectangle2DDoubleState getRectangle()
+	{
+		return rectangle;
+	}
+
+	public void setRectangle(Rectangle2DDoubleState rectangle)
+	{
+		this.rectangle = rectangle;
+	}
+
+	public DocumentSet getDocumentSet()
+	{
+		return documentSet;
+	}
+
+	public void setDocumentSet(DocumentSet documentSet)
+	{
+		this.documentSet = documentSet;
+	}
+
+	public ArrayList<KeywordSet> getKeywordSet()
+	{
+		return keywordSet;
+	}
+
+	public void setKeywordSet(ArrayList<KeywordSet> keywordSet)
+	{
+		this.keywordSet = keywordSet;
+	}
+
+	
 }
