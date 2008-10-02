@@ -6,11 +6,11 @@
               as the first entry and export the buildfile again. -->
 <project basedir="." default="build" name="ecologylabSemantics">
     <property environment="env"/>
-    <property name="cf.location" value="../../../cf/trunk/cf"/>
     <property name="ECLIPSE_HOME" value="../../../../../../../../Applications/Programming/eclipse"/>
     <property name="ecologylabFundamental.location" value="../ecologylabFundamental"/>
     <property name="jtidy.location" value="../jtidy"/>
     <property name="ecologylabInteractive.location" value="../ecologylabInteractive"/>
+    <property name="ecologylabSemantics.location" value="../ecologylabSemantics"/>
     <property name="debuglevel" value="source,lines,vars"/>
     <property name="target" value="1.5"/>
     <property name="source" value="1.5"/>
@@ -72,8 +72,38 @@
         </javac>
     </target>
     <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects">
+        <ant antfile="${ClMS.location}/build.xml" inheritAll="false" target="clean"/>
+        <ant antfile="${ClMS.location}/build.xml" inheritAll="false" target="build">
+            <propertyset>
+                <propertyref name="build.compiler"/>
+            </propertyset>
+        </ant>
+        <ant antfile="${DLMS Layer 1.location}/build.xml" inheritAll="false" target="clean"/>
+        <ant antfile="${DLMS Layer 1.location}/build.xml" inheritAll="false" target="build">
+            <propertyset>
+                <propertyref name="build.compiler"/>
+            </propertyset>
+        </ant>
+        <ant antfile="${DLMS Layer 2.location}/build.xml" inheritAll="false" target="clean"/>
+        <ant antfile="${DLMS Layer 2.location}/build.xml" inheritAll="false" target="build">
+            <propertyset>
+                <propertyref name="build.compiler"/>
+            </propertyset>
+        </ant>
+        <ant antfile="${MiddlewareServices.location}/build.xml" inheritAll="false" target="clean"/>
+        <ant antfile="${MiddlewareServices.location}/build.xml" inheritAll="false" target="build">
+            <propertyset>
+                <propertyref name="build.compiler"/>
+            </propertyset>
+        </ant>
         <ant antfile="${cf.location}/build.xml" inheritAll="false" target="clean"/>
         <ant antfile="${cf.location}/build.xml" inheritAll="false" target="build">
+            <propertyset>
+                <propertyref name="build.compiler"/>
+            </propertyset>
+        </ant>
+        <ant antfile="${ecologylabInteractiveSemantics.location}/build.xml" inheritAll="false" target="clean"/>
+        <ant antfile="${ecologylabInteractiveSemantics.location}/build.xml" inheritAll="false" target="build">
             <propertyset>
                 <propertyref name="build.compiler"/>
             </propertyset>
