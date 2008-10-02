@@ -2,13 +2,12 @@ package ecologylab.semantics.model.text;
 
 import java.util.HashSet;
 
-import ecologylab.model.text.ReferringElement;
 
 public class XTerm
 {
 
 	public String stem;
-	public HashSet<ReferringElement> referringElements;
+	public HashSet<XReferringElement> referringElements;
 	private double idf;
 
 	public double idf()
@@ -22,7 +21,7 @@ public class XTerm
 		this.idf = idf;
 	}
 
-	protected void addReference(ReferringElement r)
+	protected void addReference(XReferringElement r)
 			throws ReferringElementException
 	{
 		if (referringElements.contains(r))
@@ -30,7 +29,7 @@ public class XTerm
 		referringElements.add(r);
 	}
 
-	protected void removeReference(ReferringElement r)
+	protected void removeReference(XReferringElement r)
 			throws ReferringElementException
 	{
 		if (!referringElements.contains(r))
