@@ -20,7 +20,7 @@ public class XTermDictionary implements ApplicationProperties
 {
 
   private static Hashtable<String, Double> frequencyList = null;
-  private static Hashtable<String, XTerm> dictionary = null;
+  private static Hashtable<String, XTerm> dictionary = new Hashtable<String, XTerm>();
 
   public static double lowestFrequency 	= Double.MAX_VALUE;
   public static double highestFrequency	= Double.MIN_VALUE;
