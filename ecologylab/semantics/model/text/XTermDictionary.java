@@ -13,6 +13,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import ecologylab.io.Assets;
+import ecologylab.model.text.Term;
 import ecologylab.appframework.ApplicationProperties;
 
 
@@ -20,6 +21,9 @@ public class XTermDictionary implements ApplicationProperties
 {
 
   private static Hashtable<String, Double> frequencyList = null;
+  /**
+   * Maintains a map of a <code>String</code> stem term to it's {@link XTerm}
+   */
   private static Hashtable<String, XTerm> dictionary = new Hashtable<String, XTerm>();
 
   public static double lowestFrequency 	= Double.MAX_VALUE;
@@ -238,6 +242,8 @@ public class XTermDictionary implements ApplicationProperties
     }
     avgIDF /= frequencyList.size();
     averageIDF = avgIDF;
+    
+    Term.setAverageTermWeight((float) averageIDF);
   }
   
   private static void stemStopWords()
