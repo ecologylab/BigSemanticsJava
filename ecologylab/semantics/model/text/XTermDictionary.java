@@ -242,8 +242,6 @@ public class XTermDictionary implements ApplicationProperties
     }
     avgIDF /= frequencyList.size();
     averageIDF = avgIDF;
-    
-    Term.setAverageTermWeight((float) averageIDF);
   }
   
   private static void stemStopWords()
