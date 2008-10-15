@@ -1,6 +1,6 @@
 # current working directory
 
-INTERACTIVE_DIRS = library library/scholarlyPublication gui library/scalar metametadata metadata metadata/extraction 
+INTERACTIVE_DIRS = library library/scholarlyPublication gui library/scalar metametadata metadata metadata/extraction model/text library/uva
 DIRS = $(INTERACTIVE_DIRS)
 JAR_DIRS = $(INTERACTIVE_DIRS:%=ecologylab/semantics/%)
 
