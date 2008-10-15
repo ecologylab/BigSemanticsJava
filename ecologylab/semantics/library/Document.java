@@ -28,7 +28,6 @@ public class Document extends Metadata
 	
 	@xml_nested MetadataStringBuilder 	anchorText;
 	@xml_nested MetadataStringBuilder 	anchorContextString;
-	@xml_nested MetadataString			context;
 	
 	@xml_nested MetadataInteger			generation;
 
@@ -78,17 +77,6 @@ public class Document extends Metadata
 		{
 			result = new MetadataParsedURL();
 			this.location = result;
-		}
-		return result;
-	}
-	
-	MetadataString context()
-	{
-		MetadataString result = this.context;
-		if(result == null)
-		{
-			result = new MetadataString();
-			this.context = result;
 		}
 		return result;
 	}
@@ -222,7 +210,12 @@ public class Document extends Metadata
 	{
 		this.anchorText().setValue(anchorText);
 	}
-
+	
+	public void appendAnchorContextString(String anchorContextString)
+	{
+		this.anchorContextString().setValue(anchorContextString);
+	
+	}
 	public void hwAppendAnchorText(String anchorText)
 	{
 		this.anchorText().setValue(anchorText);
@@ -239,6 +232,9 @@ public class Document extends Metadata
 	{
 		this.generation().setValue(generation);
 	}
+
+
+
 	
 }
 
