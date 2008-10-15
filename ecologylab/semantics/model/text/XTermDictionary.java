@@ -27,13 +27,9 @@ public class XTermDictionary implements ApplicationProperties
    */
   private static HashMap<String, XTerm> dictionary = new HashMap<String, XTerm>();
 
-  public static double lowestFrequency 	= Double.MAX_VALUE;
-  public static double highestFrequency	= Double.MIN_VALUE;
-  public static double lowestIDF  			= Double.MAX_VALUE;
-  public static double highestIDF   		= Double.MIN_VALUE;
   public static double averageIDF       = 0;
   
-  public static double corpusSize = -1; 
+  public static double corpusSize = Double.MAX_VALUE; 
 
   static String DICTIONARY = "dictionary";
   
@@ -136,11 +132,16 @@ public class XTermDictionary implements ApplicationProperties
   synchronized public static void createDictionary(File dictionary)
   throws Exception
   {
+  	stemStopWords();
     readFromDictionaryFile(dictionary);
-    generateDictionary();
   }
   
-  
+  /**
+   * Checks if the given stem is in the dictionary.  If so, returns the XTerm associated with that term.
+   * If not, creates a new XTerm from the given stem, adds it to the dictionary, and returns it.
+   * @param stem 
+   * @return
+   */
   synchronized public static XTerm getTerm(String stem) {
     if (dictionary.containsKey(stem))
       return dictionary.get(stem);
@@ -201,45 +202,31 @@ public class XTermDictionary implements ApplicationProperties
       break;
     }
     BufferedReader myInput = new BufferedReader(new InputStreamReader(in));
+    
     HashMap<String,Double> frequencies = new HashMap<String, Double>();
+    HashMap<String, XTerm> dictionary = new HashMap<String, XTerm>();
+    double avgIDF = 0;
+    corpusSize = Double.parseDouble(myInput.readLine());
     while ((thisTerm = myInput.readLine()) != null) 
     {              
       String[] term     = thisTerm.split("\t");
       String stem = term[0];
+      if (stopWordTerms.contains(stem))
+        continue;
       double freq = Double.parseDouble(term[1]);
-      if (freq < lowestFrequency)
-        lowestFrequency = freq;
-      else if (freq > highestFrequency)
-        highestFrequency = freq;
-      frequencies.put(stem, freq);      
+      frequencies.put(stem, freq);    
+      double idf = Math.log(corpusSize / freq);
+      dictionary.put(stem, new XTerm(stem, idf));
+      avgIDF += idf;
     }
+    avgIDF /= frequencies.size();
+    averageIDF = avgIDF;
+    XTermDictionary.dictionary = dictionary;
     frequencyList = frequencies;
     myInput.close();
     myInput   = null;
   }
-
-
-  private static void generateDictionary()
-  {
-    stemStopWords();
-    dictionary = new HashMap<String, XTerm>(frequencyList.size());
-    corpusSize = highestFrequency;
-    double avgIDF = 0;
-    for (String stem : frequencyList.keySet())
-    {
-      if (stopWordTerms.contains(stem))
-        continue;
-      double idf = Math.log(corpusSize / frequencyList.get(stem));
-      dictionary.put(stem, new XTerm(stem, idf));
-      if (idf < lowestIDF)
-        lowestIDF = idf;
-      else if (idf > highestIDF)
-        highestIDF = idf;
-      avgIDF += idf;
-    }
-    avgIDF /= frequencyList.size();
-    averageIDF = avgIDF;
-  }
+  
   
   private static void stemStopWords()
   {
