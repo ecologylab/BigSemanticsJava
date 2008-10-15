@@ -8,6 +8,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -20,11 +21,11 @@ import ecologylab.appframework.ApplicationProperties;
 public class XTermDictionary implements ApplicationProperties
 {
 
-  private static Hashtable<String, Double> frequencyList = null;
+  private static HashMap<String, Double> frequencyList = null;
   /**
    * Maintains a map of a <code>String</code> stem term to it's {@link XTerm}
    */
-  private static Hashtable<String, XTerm> dictionary = new Hashtable<String, XTerm>();
+  private static HashMap<String, XTerm> dictionary = new HashMap<String, XTerm>();
 
   public static double lowestFrequency 	= Double.MAX_VALUE;
   public static double highestFrequency	= Double.MIN_VALUE;
@@ -108,7 +109,7 @@ public class XTermDictionary implements ApplicationProperties
   "gallery", "galleries", "archive", "archives","photo","photos",
   "photogallery"
   };
-  public static ArrayList<String> stopWordTerms = new ArrayList<String>(stopWordStrings.length);
+  public final static ArrayList<String> stopWordTerms = new ArrayList<String>(stopWordStrings.length);
 
   public static void download(float dictionaryAssetVersion)
   {
@@ -132,7 +133,7 @@ public class XTermDictionary implements ApplicationProperties
    *            file from which to load the term/frequency map
    * @throws FileNotFoundException
    */
-  public static void createDictionary(File dictionary)
+  synchronized public static void createDictionary(File dictionary)
   throws Exception
   {
     readFromDictionaryFile(dictionary);
@@ -140,8 +141,8 @@ public class XTermDictionary implements ApplicationProperties
   }
   
   
-  public static XTerm getTerm(String stem) {
-    if (contains(stem))
+  synchronized public static XTerm getTerm(String stem) {
+    if (dictionary.containsKey(stem))
       return dictionary.get(stem);
     else
       return newTerm(stem);
@@ -152,7 +153,7 @@ public class XTermDictionary implements ApplicationProperties
    * @param stem
    * @return
    */
-  public static boolean contains(String stem)
+  synchronized public static boolean contains(String stem)
   {
     return dictionary.containsKey(stem);
   }
@@ -161,16 +162,12 @@ public class XTermDictionary implements ApplicationProperties
    * Creates a new term using the given stem and assigning it an idf of averageIDF.
    * @param stem
    */
-  public static XTerm newTerm(String stem) {
+  private static XTerm newTerm(String stem) {
     if (stem.length() < 4 || stopWordTerms.contains(stem))
       return null;
     XTerm newTerm = new XTerm(stem, averageIDF);
     dictionary.put(stem, newTerm);
     return newTerm;
-  }
-  
-  public static int numTerms() {
-    return frequencyList.size();
   }
 
   private static void readFromDictionaryFile(File inputDictionaryFile) throws Exception
@@ -204,7 +201,7 @@ public class XTermDictionary implements ApplicationProperties
       break;
     }
     BufferedReader myInput = new BufferedReader(new InputStreamReader(in));
-    Hashtable<String,Double> frequencies = new Hashtable<String, Double>();
+    HashMap<String,Double> frequencies = new HashMap<String, Double>();
     while ((thisTerm = myInput.readLine()) != null) 
     {              
       String[] term     = thisTerm.split("\t");
@@ -225,7 +222,7 @@ public class XTermDictionary implements ApplicationProperties
   private static void generateDictionary()
   {
     stemStopWords();
-    dictionary = new Hashtable<String, XTerm>(frequencyList.size());
+    dictionary = new HashMap<String, XTerm>(frequencyList.size());
     corpusSize = highestFrequency;
     double avgIDF = 0;
     for (String stem : frequencyList.keySet())
