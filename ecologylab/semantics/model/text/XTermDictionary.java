@@ -136,17 +136,27 @@ public class XTermDictionary implements ApplicationProperties
     readFromDictionaryFile(dictionary);
   }
   
+  private static final Object LOCK	= new Object();
+  
   /**
    * Checks if the given stem is in the dictionary.  If so, returns the XTerm associated with that term.
    * If not, creates a new XTerm from the given stem, adds it to the dictionary, and returns it.
    * @param stem 
    * @return
    */
-  synchronized public static XTerm getTerm(String stem) {
+  public static XTerm getTerm(String stem) 
+  {
     if (dictionary.containsKey(stem))
       return dictionary.get(stem);
     else
-      return newTerm(stem);
+    {
+        if (dictionary.containsKey(stem))
+            return dictionary.get(stem);
+        synchronized (LOCK)
+    	{
+    		return newTerm(stem);
+    	}
+    }
   }
 
   /**
