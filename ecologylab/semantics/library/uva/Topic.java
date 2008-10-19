@@ -18,9 +18,10 @@ public class Topic extends Document
 {
 	@xml_attribute MetadataInteger	id;
 	
-	MetadataStringBuilder			contentKeywords;
-	MetadataStringBuilder			anchorKeywords;
-	MetadataStringBuilder			titleKeywords;
+	@xml_nested MetadataStringBuilder			contentKeywords;
+	@xml_nested MetadataStringBuilder			anchorKeywords;
+	@xml_nested MetadataStringBuilder			titleKeywords;
+	
 	public MetadataInteger getId()
 	{
 		return id;
