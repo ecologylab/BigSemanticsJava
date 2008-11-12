@@ -4,19 +4,23 @@
 package ecologylab.semantics.tools;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
 
 import ecologylab.appframework.ApplicationEnvironment;
-import ecologylab.appframework.PropertiesAndDirectories;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.metametadata.MetaMetadataTranslationScope;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.TranslationScope;
+import ecologylab.xml.XMLTools;
 import ecologylab.xml.XMLTranslationException;
 
 /**
  * @author andruid
- *
+ * 
  */
 public class MetadataCompiler extends ApplicationEnvironment
 {
@@ -25,8 +29,7 @@ public class MetadataCompiler extends ApplicationEnvironment
 	 * @param applicationName
 	 * @throws XMLTranslationException
 	 */
-	public MetadataCompiler(String applicationName)
-			throws XMLTranslationException
+	public MetadataCompiler(String applicationName) throws XMLTranslationException
 	{
 		super(applicationName);
 		// TODO Auto-generated constructor stub
@@ -39,44 +42,52 @@ public class MetadataCompiler extends ApplicationEnvironment
 	 * @param prefsAssetVersion
 	 * @throws XMLTranslationException
 	 */
-	public MetadataCompiler(String applicationName,
-			TranslationScope translationSpace, String[] args,
+	public MetadataCompiler(String applicationName, TranslationScope translationSpace, String[] args,
 			float prefsAssetVersion) throws XMLTranslationException
 	{
 		super(applicationName, translationSpace, args, prefsAssetVersion);
 		// TODO Auto-generated constructor stub
 	}
 
-	static final TranslationScope META_METADATA_TRANSLATIONS = MetaMetadataTranslationScope.get();
+	static final TranslationScope	META_METADATA_TRANSLATIONS	= MetaMetadataTranslationScope.get();
 
 	/**
 	 * @param applicationName
 	 * @param args
 	 * @throws XMLTranslationException
 	 */
-	public MetadataCompiler(String[] args)
-			throws XMLTranslationException
+	public MetadataCompiler(String[] args) throws XMLTranslationException
 	{
-		super("MetadataCompiler", META_METADATA_TRANSLATIONS, args, 1.0F);  
+		super("MetadataCompiler", META_METADATA_TRANSLATIONS, args, 1.0F);
 
 		String patternXMLFilepath = "../cf/config/semantics/metametadata/defaultRepository.xml";
 
-//		ElementState.setUseDOMForTranslateTo(true);
+		// ElementState.setUseDOMForTranslateTo(true);
 		MetaMetadataRepository test;
 		try
 		{
-			test = (MetaMetadataRepository) ElementState.translateFromXML(patternXMLFilepath, META_METADATA_TRANSLATIONS);
-
-			String userDirProperty	= System.getProperty("user.dir");
-			File outputRoot			= new File(userDirProperty);
-			
+			test = (MetaMetadataRepository) ElementState.translateFromXML(patternXMLFilepath,
+					META_METADATA_TRANSLATIONS);
+			// test.translateToXML(System.out);
+			// for each meta-metadata in the repository
 			for (MetaMetadata metaMetadata : test.values())
 			{
-				metaMetadata.translateToMetadataClass(System.out, outputRoot);
-				System.out.println('\n');
+				// if a metadataclass has to be generated
+				if (metaMetadata.isGenerateClass())
+				{
+					// translate it into a meta data class.
+					metaMetadata.translateToMetadataClass(test.getPackageName());
+					System.out.println('\n');
+				}
 			}
-		} catch (XMLTranslationException e)
+		}
+		catch (XMLTranslationException e)
 		{
+			e.printStackTrace();
+		}
+		catch (IOException e)
+		{
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -88,8 +99,8 @@ public class MetadataCompiler extends ApplicationEnvironment
 	 * @param args
 	 * @throws XMLTranslationException
 	 */
-	public MetadataCompiler(Class baseClass, String applicationName,
-			String[] args) throws XMLTranslationException
+	public MetadataCompiler(Class baseClass, String applicationName, String[] args)
+			throws XMLTranslationException
 	{
 		super(baseClass, applicationName, args);
 		// TODO Auto-generated constructor stub
@@ -104,11 +115,10 @@ public class MetadataCompiler extends ApplicationEnvironment
 	 * @throws XMLTranslationException
 	 */
 	public MetadataCompiler(Class baseClass, String applicationName,
-			TranslationScope translationSpace, String[] args,
-			float prefsAssetVersion) throws XMLTranslationException
+			TranslationScope translationSpace, String[] args, float prefsAssetVersion)
+			throws XMLTranslationException
 	{
-		super(baseClass, applicationName, translationSpace, args,
-				prefsAssetVersion);
+		super(baseClass, applicationName, translationSpace, args, prefsAssetVersion);
 		// TODO Auto-generated constructor stub
 	}
 
@@ -120,12 +130,13 @@ public class MetadataCompiler extends ApplicationEnvironment
 		try
 		{
 			new MetadataCompiler(args);
-		} catch (XMLTranslationException e)
+		}
+		catch (XMLTranslationException e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
 
 }
