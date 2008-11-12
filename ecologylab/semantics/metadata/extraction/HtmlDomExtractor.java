@@ -220,7 +220,7 @@ public class HtmlDomExtractor<M extends MetadataBase> extends Debug
 				M nestedMetadata = null;
 				
 				//If the field is nested
-				if(mmdElement.isNested())
+				if(mmdElement.getChildMetaMetadata()!=null)
 				{
 					//Have to return the nested object for the field.
 					FieldAccessor fieldAccessor = metadata.getMetadataFieldAccessor(mmdElementName);
