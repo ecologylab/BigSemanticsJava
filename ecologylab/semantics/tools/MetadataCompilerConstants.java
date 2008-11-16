@@ -23,12 +23,12 @@ public class MetadataCompilerConstants
 
 	public static String				PACKAGE_NAME				= "package ecologylab.semantic.generated.library;\n";
 
-	public static String				START_JAVA_DOC			= "/**\n";
+	public static String				START_JAVA_DOC			= "\n/**\n";
 
 	public static String				END_JAVA_DOC				= "\n**/ \n\n";
 
 	public static String				COMMENT							= START_JAVA_DOC
-																											+ "This is a generated code. Please do not edit or modify it.\n @author MetadataCompiler \n"
+																											+ "This is a generated code. DO NOT edit or modify it.\n @author MetadataCompiler \n"
 																											+ END_JAVA_DOC;
 
 	public static String				IMPORTS							= "\n import ecologylab.semantics.library.scalar.*; \nimport ecologylab.semantics.metadata.*;\n  import java.util.*;\n import ecologylab.semantics.metametadata.MetaMetadata;\n  import ecologylab.net.ParsedURL;\n import ecologylab.generic.HashMapArrayList;\n import ecologylab.semantics.generated.library.*;\n";
