@@ -96,6 +96,10 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	@xml_attribute
 	private boolean																			isMap;
 
+	// This attribute is used only for HTML DOM Extractor.
+	@xml_attribute
+	private boolean																			isNested;
+
 	@xml_attribute
 	private boolean																			isFacet;
 
@@ -480,7 +484,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 		String className = XMLTools.classNameFromElementName(elementName);
 
 		// getting the field name.
-		String fieldName = XMLTools.fieldNameFromElementName(name) + "s";
+		String fieldName = XMLTools.fieldNameFromElementName(name);
 
 		// appending the declaration.
 		String mapDecl = childMetaMetadata.get(key).getScalarType().fieldTypeName() + " , " + className;
@@ -689,4 +693,20 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 		return childMetaMetadata;
 	}
 
+	/**
+	 * @return the isNested
+	 */
+	public boolean isNested()
+	{
+		return isNested;
+	}
+
+	/**
+	 * @param isNested
+	 *          the isNested to set
+	 */
+	public void setNested(boolean isNested)
+	{
+		this.isNested = isNested;
+	}
 }
