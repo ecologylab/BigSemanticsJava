@@ -1,5 +1,7 @@
 package ecologylab.semantics.model.text;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Observer;
 import java.util.Set;
@@ -31,7 +33,7 @@ public class NullTermVector extends VectorType<XTerm> {
 
 	public Set<XTerm> elements() {
 		// TODO Auto-generated method stub
-		return null;
+		return new HashSet<XTerm>();
 	}
 
 	public double get(XTerm term) {
@@ -39,14 +41,14 @@ public class NullTermVector extends VectorType<XTerm> {
 		return 0;
 	}
 
-	public Hashtable<XTerm, Double> map() {
+	public HashMap<XTerm, Double> map() {
 		// TODO Auto-generated method stub
-		return null;
+		return new HashMap();
 	}
 
 	public Set<Double> values() {
 		// TODO Auto-generated method stub
-		return null;
+		return new HashSet<Double>();
 	}
 	
 	public double norm() {

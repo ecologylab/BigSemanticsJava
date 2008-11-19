@@ -48,7 +48,7 @@ public class XTerm
 	
 	public String toString()
 	{
-	  return stem + "(" + idf + ")";
+	  return stem + "(" + idf + "){PI:" + InterestModel.getTermInterest(this) + "}";
 	}
 
 }

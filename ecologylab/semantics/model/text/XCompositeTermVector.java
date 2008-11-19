@@ -1,5 +1,6 @@
 package ecologylab.semantics.model.text;
 
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.HashSet;
 import java.util.Observable;
@@ -121,7 +122,7 @@ public class XCompositeTermVector extends VectorType<XTerm> implements Observer
 		return compositeTermVector.get(term);
 	}
 
-	public Hashtable<XTerm, Double> map()
+	public HashMap<XTerm, Double> map()
 	{
 		return compositeTermVector.map();
 	}
