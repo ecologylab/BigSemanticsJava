@@ -5,22 +5,12 @@ package ecologylab.semantics.library.scholarlyPublication;
 
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.library.Document;
-import ecologylab.semantics.library.Image;
 import ecologylab.semantics.library.Pdf;
 import ecologylab.semantics.library.scalar.MetadataParsedURL;
 import ecologylab.semantics.library.scalar.MetadataString;
-import ecologylab.semantics.metadata.Media;
-import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metametadata.MetaMetadata;
-import ecologylab.semantics.metametadata.MetaMetadataField;
+import ecologylab.xml.XMLTranslationException;
 import ecologylab.xml.xml_inherit;
-import ecologylab.xml.ElementState.xml_attribute;
-import ecologylab.xml.ElementState.xml_collection;
-import ecologylab.xml.ElementState.xml_leaf;
-import ecologylab.xml.ElementState.xml_map;
-import ecologylab.xml.ElementState.xml_nested;
-import ecologylab.xml.ElementState.xml_tag;
 
 /**
  * 
@@ -42,7 +32,31 @@ public class AcmPortal extends Pdf
 	@xml_map("citations") 
 	private HashMapArrayList<ParsedURL, Reference>		citations;
 
-	
+	public static void main(String[] args)
+	{
+		AcmPortal portal = new AcmPortal();
+		Reference ref 	 = new Reference();
+		Reference cit		 = new Reference();
+		ref.bibTex = new MetadataString();
+		ref.bibTex.setValue("Ref 1");
+		portal.references = new HashMapArrayList<ParsedURL, Reference>();
+		portal.references.put(ParsedURL.getAbsolute("http://www.portal.com"), ref);
+		cit.bibTex = new MetadataString();
+		cit.bibTex.setValue("Cit 1");
+		portal.citations = new HashMapArrayList<ParsedURL, Reference>();
+		portal.citations.put(ParsedURL.getAbsolute("http://www.portalCitation.com"), cit);
+		
+		try
+		{
+			portal.translateToXML(System.out);
+		}
+		catch (XMLTranslationException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
 	
 	public AcmPortal()
 	{
