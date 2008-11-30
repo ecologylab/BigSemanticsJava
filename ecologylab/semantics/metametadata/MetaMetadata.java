@@ -105,24 +105,19 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 		this.urlBase = ParsedURL.getAbsolute(urlBase);
 	}
 
-	public TranslationScope getDefaultMetadataTranslations()
-	{
-		return DefaultMetadataTranslationSpace.get();
-	}
-
 	/**
 	 * Lookup the Metadata class object that corresponds to the tag_name in this.
 	 * 
 	 * @return
 	 */
-	public Class<? extends Metadata> getMetadataClass()
+	public Class<? extends Metadata> getMetadataClass(TranslationScope ts)
 	{
-		return getMetadataClass(name);
+		return getMetadataClass(name,ts);
 	}
 
-	public Class<? extends Metadata> getMetadataClass(String name)
+	private Class<? extends Metadata> getMetadataClass(String name,TranslationScope ts)
 	{
-		return (Class<? extends Metadata>) DefaultMetadataTranslationSpace.get().getClassByTag(name);
+		return (Class<? extends Metadata>) ts.getClassByTag(name);
 	}
 
 	/**
@@ -132,10 +127,10 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 	 * @return An instance of the Metadata subclass that corresponds to this, or null, if there is
 	 *         none.
 	 */
-	public Metadata constructMetadata()
+	public Metadata constructMetadata(TranslationScope ts)
 	{
 		Metadata result = null;
-		Class<? extends Metadata> metadataClass = getMetadataClass();
+		Class<? extends Metadata> metadataClass = getMetadataClass(ts);
 
 		if (metadataClass != null)
 		{
@@ -145,7 +140,7 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 			{
 				for (String mixinName : mixins)
 				{
-					Class<? extends Metadata> mixinClass = getMetadataClass(mixinName);
+					Class<? extends Metadata> mixinClass = getMetadataClass(mixinName,ts);
 					if (mixinClass != null)
 					{
 						result.addMixin(ReflectionTools.getInstance(mixinClass));
@@ -177,6 +172,8 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 		File file = new File(directoryPath, XMLTools.classNameFromElementName(name) + ".java");
 		FileWriter fileWriter = new FileWriter(file);
 		PrintWriter p = new PrintWriter(fileWriter);
+		
+		//update the translation class.
 
 		// Write the package
 		p.println(MetadataCompilerConstants.PACKAGE + " " + packageName + ";");
@@ -190,6 +187,9 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 		// Write java-doc comments
 		MetadataCompilerConstants.writeJavaDocComment(comment, fileWriter);
 
+		//write @xml_inherit
+		p.println("@xml_inherit");
+		
 		// Write class declaration
 		String className = XMLTools.classNameFromElementName(name);
 		p.println("public class  " + className + "\nextends  "
