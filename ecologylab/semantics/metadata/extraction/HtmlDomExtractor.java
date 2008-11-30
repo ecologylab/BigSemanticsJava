@@ -24,8 +24,7 @@ import ecologylab.generic.HashMapArrayList;
 import ecologylab.generic.ReflectionTools;
 import ecologylab.net.PURLConnection;
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.library.scholarlyPublication.Author;
-import ecologylab.semantics.library.scholarlyPublication.Reference;
+
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataBase;
 import ecologylab.semantics.metametadata.MetaMetadata;
@@ -69,7 +68,7 @@ public class HtmlDomExtractor<M extends MetadataBase> extends Debug
 	 * @return
 	 * @throws XmlTranslationException
 	 */
-	public M populateMetadata(M  metadata, ParsedURL purl, String domainString)
+	public M populateMetadata(M  metadata, ParsedURL purl, String domainString,TranslationScope translationScope)
 	{
 		MetaMetadata metaMetadata = metadata.getMetaMetadata();
 		this.domainString = domainString;
@@ -77,7 +76,6 @@ public class HtmlDomExtractor<M extends MetadataBase> extends Debug
 		{
 			PURLConnection purlConnection 	= purl.connect(metaMetadata.getUserAgentString());
 			Document tidyDOM 				= tidy.parseDOM(purlConnection.inputStream(), null /*System.out*/);
-			TranslationScope translationScope = metaMetadata.getDefaultMetadataTranslations();
 			M populatedMetadata 			= recursiveExtraction(translationScope, metaMetadata, metadata, tidyDOM, purl);
 
 			return populatedMetadata;
