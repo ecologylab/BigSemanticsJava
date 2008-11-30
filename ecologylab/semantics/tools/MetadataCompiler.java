@@ -3,11 +3,8 @@
  */
 package ecologylab.semantics.tools;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
+import java.io.PrintWriter;
 
 import ecologylab.appframework.ApplicationEnvironment;
 import ecologylab.semantics.metametadata.MetaMetadata;
@@ -69,6 +66,11 @@ public class MetadataCompiler extends ApplicationEnvironment
 			test = (MetaMetadataRepository) ElementState.translateFromXML(patternXMLFilepath,
 					META_METADATA_TRANSLATIONS);
 			// test.translateToXML(System.out);
+
+			// Writer for the translation scope for generated class.
+			MetadataCompilerConstants.createTranslationScopeClass(MetadataCompilerConstants
+					.getGenerationPath(test.getPackageName()));
+
 			// for each meta-metadata in the repository
 			for (MetaMetadata metaMetadata : test.values())
 			{
@@ -77,9 +79,15 @@ public class MetadataCompiler extends ApplicationEnvironment
 				{
 					// translate it into a meta data class.
 					metaMetadata.translateToMetadataClass(test.getPackageName());
+					MetadataCompilerConstants.appendToTranslationScope(XMLTools
+							.classNameFromElementName(metaMetadata.getName())
+							+ ".class,\n");
 					System.out.println('\n');
 				}
 			}
+
+			// end the translationScope class
+			MetadataCompilerConstants.endTranslationScopeClass();
 		}
 		catch (XMLTranslationException e)
 		{
