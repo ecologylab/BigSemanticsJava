@@ -172,6 +172,10 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 			// Non Null scalar type means we have a nested attribute.
 			appendScalarNested(appendable);
 		}
+		if(isNested)
+		{
+			appenedNestedMetadataField(appendable);
+		}
 		// check if it is a collection
 		if (isList || isMap)
 		{
@@ -195,6 +199,24 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 				// we will generate a class of the name collectionChildType.
 				javaClassName = collectionChildType;
 			}
+			
+			// if this class implements any Interface it will contain that.
+			String implementDecl="";
+			
+		  //if meta-metadata field is of type map we need to implement Mappable interface
+			if(isMap)
+			{
+				// find the key type by iterating over all the child metadata field.
+				ScalarType type=this.childMetaMetadata.get(this.key).scalarType;
+				String fieldTypeName = type.fieldTypeName();
+				if (fieldTypeName.equals("int"))
+				{
+					// HACK FOR METADATAINTEGER
+					fieldTypeName = "Integer";
+				}
+				implementDecl=implementDecl+"\timplements Mappable<"+fieldTypeName+">\n";
+		
+			}
 
 			// file writer.
 			File directoryPath = PropertiesAndDirectories.createDirsAsNeeded(new File(generationPath));
@@ -208,9 +230,12 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 			// writing the imports
 			p.println(MetadataCompilerConstants.IMPORTS);
 
+			//write xml_inherit
+			p.println("@xml_inherit");
+			
 			// start of class definition
 			p.println("public class " + XMLTools.classNameFromElementName(javaClassName)
-					+ " extends Metadata{\n");
+					+ " extends Metadata"+implementDecl+"{\n");
 
 			// write the constructors
 			MetadataCompilerConstants.appendBlankConstructor(p, XMLTools
@@ -224,14 +249,49 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 				// translate the each meta-metadata field into class.
 				childMetaMetadata.get(i).translateToMetadataClass(packageName, p);
 			}
-
+			
+			//if this is a Map we have to implement the key() method.
+			if(isMap)
+			{
+				appendKeyMethod(p);
+			}
 			// ending the class.
 			p.println("}");
 			p.flush();
-
+			
+			//append this class to generated translation scope
+			MetadataCompilerConstants.appendToTranslationScope(XMLTools.classNameFromElementName(javaClassName)+".class,\n");
 		}
 	}
 
+	/**
+	 *  This function appends the key() method for the classes implementing the Mappable interface.
+	 * @throws IOException 
+	 */
+	private void appendKeyMethod(Appendable appendable) throws IOException
+	{
+		String keyType = childMetaMetadata.get(key).scalarType.fieldTypeName();
+		String comment = "\nThis mehtod returns the key.\n";
+		String keyName=childMetaMetadata.get(key).name;
+		MetadataCompilerConstants.writeJavaDocComment(comment, appendable);
+		appendable.append("public\t"+keyType+" key(){\n");
+		appendable.append("return "+keyName+"().getValue();\n}\n");
+	}
+	/**
+	 * Append method for Is_nested=true fields
+	 * @param appendable
+	 * @throws IOException
+	 */
+	private void appenedNestedMetadataField(Appendable appendable) throws IOException
+	{
+		String fieldType=XMLTools.classNameFromElementName(name);
+		appendable.append("\nprivate @xml_nested "+XMLTools.classNameFromElementName(name)+"\t"+name+";");
+		appendLazyEvaluationMethod(appendable, name, XMLTools.classNameFromElementName(name));
+		appendSetterForCollection(appendable, name, fieldType);
+	}
+	
+	
+	
 	protected void appendImport(Appendable appendable, String importDecl) throws IOException
 	{
 		appendable.append("import ").append(importDecl).append(';').append('\n');
@@ -488,7 +548,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 
 		// appending the declaration.
 		String mapDecl = childMetaMetadata.get(key).getScalarType().fieldTypeName() + " , " + className;
-		appendMetalanguageDecl(appendable, "@xml_collection", "HashMapArrayList<", mapDecl, ">",
+		appendMetalanguageDecl(appendable, "@xml_map", "private HashMapArrayList<", mapDecl, ">",
 				fieldName);
 		appendLazyEvaluationMethod(appendable, fieldName, "HashMapArrayList<" + mapDecl + ">");
 		appendSetterForCollection(appendable, fieldName, "HashMapArrayList<" + mapDecl + ">");
