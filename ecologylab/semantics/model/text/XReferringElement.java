@@ -11,7 +11,7 @@ package ecologylab.semantics.model.text;
  */
 public interface XReferringElement
 {
-	public XTermVector termVector();
+	public XVector<XTerm> termVector();
 	
 	/**
 	 * @return	true if this should not be recycled, because the user may need it.

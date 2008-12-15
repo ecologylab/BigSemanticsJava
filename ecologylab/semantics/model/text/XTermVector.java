@@ -5,6 +5,7 @@ import java.util.Hashtable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import ecologylab.generic.MathTools;
 import ecologylab.generic.VectorType;
 
 public class XTermVector extends XVector<XTerm>
@@ -139,47 +140,39 @@ public class XTermVector extends XVector<XTerm>
 	public double idfDot(VectorType<XTerm> v)
 	{
 		HashMap<XTerm,Double> other = v.map();
-		if (other == null || this.norm() == 0)
+		if (other == null || this.norm() == 0 || v.norm() == 0)
 			return 0;
 
 		double dot = 0;
 		HashMap<XTerm, Double> vector = this.values;
 		synchronized(values) {
 			for (XTerm term : vector.keySet()) {
-				double d = vector.get(term) * term.idf();
-				if (other.containsKey(term))
-					d *= magicalScalingFactor(other.get(term));
-				dot += d;
-
+				if (other.containsKey(term)) {
+					dot += vector.get(term) * term.idf() * v.get(term);
+				}
 			}
-
-			dot /= this.norm();
+			dot /= this.norm() * v.norm();
 		}
 		return dot;
 	}
 
 	private double magicalScalingFactor(double d)
 	{
-		return Math.signum(d) * Math.pow(d, 2);
+		return Math.exp(d);
 	}
-
+	
 	public void clamp(double clampTo)
 	{
-		double max = 0;
-		synchronized (values)
-		{
-			for (Double d : values.values())
-			{
-				double d2 = Math.abs(d);
-				if (d2 > max)
-					max = d2;
-			}
-			if (max == 0)
-				return;
-			double multiplier = clampTo/max;  
-			multiply(multiplier);
-		}
-		
+		super.clamp(clampTo);
+		setChanged();
+		notifyObservers();
+	}
+	
+	public void clampExp(double clampTo)
+	{
+		super.clampExp(clampTo);
+		setChanged();
+		notifyObservers();
 	}
 	
 }

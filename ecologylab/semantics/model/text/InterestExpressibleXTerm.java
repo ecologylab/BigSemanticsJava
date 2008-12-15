@@ -27,8 +27,9 @@ public class InterestExpressibleXTerm implements ScaledValueObserver
 	{
 		if (arg instanceof Short)
 		{
-			short intensity = ((Short) arg).shortValue();
-			InterestModel.expressInterest(term, intensity);
+			short newValue = ((Short) arg).shortValue();	// the value from the slider!
+			short magnitude = (short) (newValue - getScaledValue());
+			InterestModel.expressInterest(term, magnitude);
 		}
 
 	}

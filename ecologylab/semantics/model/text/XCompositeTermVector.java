@@ -15,7 +15,7 @@ public class XCompositeTermVector extends VectorType<XTerm> implements Observer
 
 	public XCompositeTermVector() {}
 
-	private XTermVector compositeTermVector = new XTermVector(); 
+	private XVector<XTerm> compositeTermVector = new XTermVector(); 
 	private Hashtable<VectorType<XTerm>, Double> termVectors = new Hashtable<VectorType<XTerm>, Double>();
 
 	/**
@@ -97,7 +97,7 @@ public class XCompositeTermVector extends VectorType<XTerm> implements Observer
 	private synchronized void rebuildCompositeTermVector()
 	{
 		Hashtable<VectorType<XTerm>, Double> v;
-		XTermVector c = compositeTermVector;
+		XVector<XTerm> c = compositeTermVector;
 		c = new XTermVector(c.size());
 		v = termVectors;
 		for (VectorType<XTerm> t : v.keySet())

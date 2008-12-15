@@ -16,38 +16,40 @@ public class InterestModel
 {
 	// participant interest vector
 
-	private static XTermVector				participantInterest	= new XTermVector();
+	private static XVector<XTerm>				participantInterest	= new XTermVector();
 	private static HashMap<XTerm, Short>	termInterest = new HashMap<XTerm, Short>();
 
 	public static void expressInterest(VectorType<XTerm> interestingTermVector, short magnitude)
 	{
 		
-		//participantInterest.add(magnitude, interestingTermVector);
-		HashMap<XTerm, Double> values = interestingTermVector.map();
-		synchronized(values)
-		{
-			for (XTerm term : values.keySet())
-			{
-				if ( termInterest.containsKey(term) )
-					values.remove(term);
-			}
-		}
 		participantInterest.add(magnitude, interestingTermVector);
+//		HashMap<XTerm, Double> values = interestingTermVector.map();
+//		synchronized(values)
+//		{
+//			for (XTerm term : values.keySet())
+//			{
+//				if ( termInterest.containsKey(term) )
+//					values.remove(term);
+//			}
+//		}
+//		participantInterest.add(magnitude, interestingTermVector);
+		fixInterest();
 	}
 
 	public static void expressInterest(XTerm term, short magnitude)
 	{
-		magnitude *= 2;
-		//participantInterest.add(term, magnitude);
+		magnitude /= 2;
+//		participantInterest.add(term, magnitude);
 		participantInterest.set(term, magnitude);
-		termInterest.put(term, magnitude);
+//		termInterest.put(term, magnitude);
+		fixInterest();
 	}
 	
 	private static void fixInterest() {
 		participantInterest.clamp(5);
 	}
 
-	public static XTermVector getPIV()
+	public static XVector<XTerm> getPIV()
 	{
 		return participantInterest;
 	}

@@ -6,17 +6,17 @@ import ecologylab.net.ParsedURL;
 public class XTermVectorFactory {
 	
 	
-	public static XTermVector create(String string) {
+	public static XVector<XTerm> create(String string) {
 		return new XTermVector();
 	}
 	
 	//TODO TV: Move to CFTermVectorFactory
-	public static XTermVector create(ParsedURL purl) {
+	public static XVector<XTerm> create(ParsedURL purl) {
 		return new XTermVector();
 	}
 	
 	//TODO TV: Move to CFTermVectorFactory
-	public static XTermVector create(TextChunkBase textChunk) {
+	public static XVector<XTerm> create(TextChunkBase textChunk) {
 		return new XTermVector();
 	}
 

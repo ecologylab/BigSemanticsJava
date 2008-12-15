@@ -1,5 +1,6 @@
 package ecologylab.semantics.model.text;
 
+import java.text.DecimalFormat;
 import java.util.HashSet;
 
 
@@ -9,20 +10,21 @@ public class XTerm
 	public String stem;
 	public HashSet<XReferringElement> referringElements;
 	private double idf;
+	private static DecimalFormat df = new DecimalFormat("#0.0");
 
 	public double idf()
-  {
-    return idf;
-  }
+	{
+		return idf;
+	}
 
-  protected XTerm(String stem, double idf)
+	protected XTerm(String stem, double idf)
 	{
 		this.stem = stem;
 		this.idf = idf;
 	}
 
 	protected void addReference(XReferringElement r)
-			throws ReferringElementException
+	throws ReferringElementException
 	{
 		if (referringElements.contains(r))
 			throw new ReferringElementException("Referring Element " + r + " already exists in term: " + this);
@@ -30,7 +32,7 @@ public class XTerm
 	}
 
 	protected void removeReference(XReferringElement r)
-			throws ReferringElementException
+	throws ReferringElementException
 	{
 		if (!referringElements.contains(r))
 			throw new ReferringElementException("Referring Element " + r + " doesn't exist in term: " + this);
@@ -45,10 +47,11 @@ public class XTerm
 			super(man);
 		}
 	}
-	
+
 	public String toString()
 	{
-	  return stem + "(" + idf + "){PI:" + InterestModel.getTermInterest(this) + "}";
+		
+		return stem + "(" + df.format(idf) + "){PI:" + InterestModel.getTermInterest(this) + "}";
 	}
 
 }

@@ -27,8 +27,9 @@ public class InterestExpressibleTermVector extends XTermVector implements Scaled
 	{
 		if (arg instanceof Short)
 		{
-			short intensity = ((Short) arg).shortValue();
-			InterestModel.expressInterest(this, intensity);
+			short newValue = ((Short) arg).shortValue();	// the value from the slider!
+			short magnitude = (short) (newValue - getScaledValue());
+			InterestModel.expressInterest(this, magnitude);
 		}
 		
 	}

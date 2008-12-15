@@ -1,5 +1,6 @@
 package ecologylab.semantics.model.text;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.HashSet;
@@ -90,8 +91,17 @@ public class XVector<T> extends VectorType<T>
 	public void multiply(double c)
 	{
 		synchronized(values) {
+			ArrayList<T> terms_to_delete = new ArrayList<T>();
 			for (T term : this.values.keySet())
-				this.values.put(term, c * this.values.get(term));
+			{
+				double new_val = c * this.values.get(term);
+				if (Math.abs(new_val) < 0.001)
+					terms_to_delete.add(term);
+				else
+					this.values.put(term, new_val);
+			}
+			for (T t : terms_to_delete)
+				values.remove(t);
 		}
 		resetNorm();
 	}
@@ -200,14 +210,76 @@ public class XVector<T> extends VectorType<T>
 	}
 
 	@Override
-	public void addObserver(Observer o) {}
-
-	@Override
-	public void deleteObserver(Observer o) {}
-
-	@Override
 	public double idfDot(VectorType<T> v)
 	{
 		return dot(v);
+	}
+
+	public void clamp(double clampTo)
+	{
+		double max = 0;
+		synchronized (values)
+		{
+			for (Double d : values.values())
+			{
+				double d2 = Math.abs(d);
+				if (d2 > max)
+					max = d2;
+			}
+			if ( ! (max > clampTo) )
+				return;
+			//double multiplier = clampTo/max;  
+			//multiply(multiplier);
+			synchronized(values) {
+				ArrayList<T> terms_to_delete = new ArrayList<T>();
+				for (T term : this.values.keySet())
+				{
+					double old_value = this.values.get(term);
+					double new_value = Math.pow(clampTo+1, Math.abs(old_value)/max)-1;
+					new_value *= Math.signum(old_value);
+					if (Math.abs(new_value) < 0.001)
+						terms_to_delete.add(term);
+					else
+						this.values.put(term, new_value);
+				}
+				for (T t : terms_to_delete)
+					values.remove(t);
+			}
+			resetNorm();
+		}
+	}
+	
+	public void clampExp(double clampTo)
+	{
+		double max = 0;
+		synchronized (values)
+		{
+			for (Double d : values.values())
+			{
+				double d2 = Math.abs(d);
+				if (d2 > max)
+					max = d2;
+			}
+			if (max == 0)
+				return;
+			//double multiplier = clampTo/max;  
+			//multiply(multiplier);
+			synchronized(values) {
+				ArrayList<T> terms_to_delete = new ArrayList<T>();
+				for (T term : this.values.keySet())
+				{
+					double old_value = this.values.get(term);
+					double new_value = clampTo*Math.log10(  ((Math.abs(old_value)/max)+1/10) * 9);
+					new_value *= Math.signum(old_value);
+					if (Math.abs(new_value) < 0.001)
+						terms_to_delete.add(term);
+					else
+						this.values.put(term, new_value);
+				}
+				for (T t : terms_to_delete)
+					values.remove(t);
+			}
+			resetNorm();
+		}
 	}
 }
