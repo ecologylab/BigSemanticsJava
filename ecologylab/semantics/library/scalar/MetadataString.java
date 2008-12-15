@@ -5,7 +5,9 @@ package ecologylab.semantics.library.scalar;
 
 import ecologylab.model.text.TermVector;
 import ecologylab.semantics.metadata.semantics_pseudo_scalar;
+import ecologylab.semantics.model.text.XTerm;
 import ecologylab.semantics.model.text.XTermVector;
+import ecologylab.semantics.model.text.XVector;
 import ecologylab.xml.xml_inherit;
 
 /**
@@ -39,7 +41,7 @@ public class MetadataString extends MetadataScalarBase
 			termVector = new XTermVector(value);
 	}
 	
-	public XTermVector termVector()
+	public XVector<XTerm> termVector()
 	{
 		if (termVector == null)
 			termVector = new XTermVector();
