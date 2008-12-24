@@ -4,18 +4,16 @@
 package ecologylab.semantics.metametadata;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.net.ParsedURL;
-import ecologylab.net.UserAgent;
 import ecologylab.semantics.library.TypeTagNames;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.TranslationScope;
 import ecologylab.xml.XMLTranslationException;
-import ecologylab.xml.types.element.HashMapState;
 
 /**
  * @author damaraju
@@ -48,11 +46,16 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 
 	static final TranslationScope										TS	= MetaMetadataTranslationScope.get();
 
+	private static HashMap purlMetadataMap = new HashMap();
+	
 	private TranslationScope												metadataTScope;
 
 	// for debugging
 	protected static File														REPOSITORY_FILE;
 
+	static{
+		purlMetadataMap.put("http://portal.acm.org/citations","acm_portal");
+	}
 	public static void main(String args[])
 	{
 		REPOSITORY_FILE = new File(
@@ -117,12 +120,18 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 
 	/**
 	 * Find the best matching MetaMetadata for the ParsedURL -- if there is a match.
-	 * 
+	 * TODO implement a better URL pattern matcher here
 	 * @param parsedURL
 	 * @return appropriate MetaMetadata, or null.
 	 */
 	public MetaMetadata getByPURL(ParsedURL parsedURL)
 	{
+		String purlString = parsedURL.toString();
+		System.out.println(purlString+"     $$$$$$$$$$$$$$$$$$$$$$$$$$$");
+		if(purlString.indexOf("http://portal.acm.org/citation.cfm?")!=-1)
+		{
+			return repositoryByTagName.get("acm_portal");
+		}
 		return null;
 	}
 
