@@ -327,6 +327,17 @@ abstract public class DocumentType<AC extends AbstractContainer, IP extends Info
 			container		= null;
 			infoCollector	= null;
 		}
+		/**
+		 * This method enables the default behavior of showing the user a
+		 * message on the console, "Downloading http://..." to be overriden in
+		 * the case of particular DocumentTypes that display their own custom messages.
+		 *
+		 * @return		true -- the default implementation.
+		 */
+		public boolean downloadingMessageOnConnect()
+		{
+			return true;
+		}
 
 	/*
 	 * This method is an odd out for File-based instances of DocumentType, that
