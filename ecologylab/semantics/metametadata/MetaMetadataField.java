@@ -34,46 +34,46 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	 * Name of the metadata field.
 	 */
 	@xml_attribute
-	private String																			name;
+	private String															name;
 
 	/**
 	 * The type of the field
 	 */
 	@xml_tag("scalar_type")
 	@xml_attribute
-	private ScalarType																	scalarType;													;
+	private ScalarType													scalarType;																					;
 
 	/**
 	 * true if this field should not be displayed in interactive in-context metadata
 	 */
 	@xml_attribute
-	private boolean																			hide;
+	private boolean															hide;
 
 	/**
 	 * If true the field is shown even if its null or empty.
 	 */
 	@xml_tag("always_show")
 	@xml_attribute
-	private boolean																			alwaysShow;
+	private boolean															alwaysShow;
 
 	/**
 	 * XPath expression used to extract this field.
 	 */
 	@xml_attribute
-	private String																			xpath;
+	private String															xpath;
 
 	/**
 	 * Another field name that this field navigates to (e.g. from a label in in-context metadata)
 	 */
 	@xml_attribute
-	private String																			navigatesTo;
+	private String															navigatesTo;
 
 	/**
 	 * This MetaMetadataField shadows another field, so it is to be displayed instead of the other.It
 	 * is kind of over-riding a field.
 	 */
 	@xml_attribute
-	private String																			shadows;
+	private String															shadows;
 
 	// FIXME -- talk to bharat, eliminate this declaration
 	// no idea what this is for....added while parsing for acmportal
@@ -82,54 +82,59 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	 */
 	@xml_tag("string_prefix")
 	@xml_attribute
-	private String																			stringPrefix;
+	private String															stringPrefix;
 
 	/**
 	 * The type for collection children.
 	 */
 	@xml_attribute
-	private String																			collectionChildType;
+	private String															collectionChildType;
 
-	@xml_attribute
-	private boolean																			isList;
+	/*
+	 * @xml_attribute private boolean isList;
+	 */
 
-	@xml_attribute
-	private boolean																			isMap;
-
+	/*
+	 * @xml_attribute private boolean isMap;
+	 */
 	// This attribute is used only for HTML DOM Extractor.
 	@xml_attribute
-	private boolean																			isNested;
+	private boolean															isNested;
 
 	@xml_attribute
-	private boolean																			isFacet;
+	private boolean															isFacet;
 
 	@xml_attribute
-	private boolean																			ignoreInTermVector;
+	private boolean															ignoreInTermVector;
+
+	/**
+	 * Specifies the kind of collection for this field.
+	 */
+	@xml_attribute
+	private String															collection;
 
 	@xml_attribute
-	private String																			comment;
+	private String															comment;
 
 	/**
 	 * Enables hand coding a few Metadata classes, but still providing MetaMetadata to control
 	 * operations on them.
 	 */
 	@xml_attribute
-	private boolean																			dontCompile;
+	private boolean															dontCompile;
 
 	@xml_attribute
-	private String																			key;
+	private String															key;
 
 	@xml_map("meta_metadata_field")
 	private HashMapArrayList<String, MetaMetadataField>	childMetaMetadata;
 
-	HashMap<String, String>															childPackagesMap	= new HashMap<String, String>(
-																																						2);
+	HashMap<String, String>											childPackagesMap	= new HashMap<String, String>(2);
 
-	private static ArrayList<MetaMetadataField>					EMPTY_COLLECTION	= new ArrayList<MetaMetadataField>(
-																																						0);
+	private static ArrayList<MetaMetadataField>	EMPTY_COLLECTION	= new ArrayList<MetaMetadataField>(
+																																		0);
 
-	public static Iterator<MetaMetadataField>						EMPTY_ITERATOR		= EMPTY_COLLECTION
-																																						.iterator();
+	public static Iterator<MetaMetadataField>		EMPTY_ITERATOR		= EMPTY_COLLECTION.iterator();
 
 	public MetaMetadataField()
 	{
@@ -143,6 +148,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 		// this.metadataType = metadataType;
 		this.childMetaMetadata = set;
 	}
+
 
 	public String packageName()
 	{
@@ -172,12 +178,12 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 			// Non Null scalar type means we have a nested attribute.
 			appendScalarNested(appendable);
 		}
-		if(isNested)
+		if (isNested)
 		{
 			appenedNestedMetadataField(appendable);
 		}
 		// check if it is a collection
-		if (isList || isMap)
+		if (collection != null)
 		{
 			// collection of nested elements
 			// TODO -- can these be scalars? if so, how can we tell?
@@ -194,29 +200,25 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 			String javaClassName = name;
 
 			// if the meta-metadata field is of type list or map
-			if (isList || isMap)
+			if (collection != null)
 			{
 				// we will generate a class of the name collectionChildType.
 				javaClassName = collectionChildType;
 			}
-			
+
 			// if this class implements any Interface it will contain that.
-			String implementDecl="";
-			
-		  //if meta-metadata field is of type map we need to implement Mappable interface
-			if(isMap)
-			{
-				// find the key type by iterating over all the child metadata field.
-				ScalarType type=this.childMetaMetadata.get(this.key).scalarType;
-				String fieldTypeName = type.fieldTypeName();
-				if (fieldTypeName.equals("int"))
-				{
-					// HACK FOR METADATAINTEGER
-					fieldTypeName = "Integer";
-				}
-				implementDecl=implementDecl+"\timplements Mappable<"+fieldTypeName+">\n";
-		
-			}
+			String implementDecl = "";
+
+			// if meta-metadata field is of type map we need to implement Mappable interface
+			/*
+			 * if(isMap) { // find the key type by iterating over all the child metadata field. ScalarType
+			 * type=this.childMetaMetadata.get(this.key).scalarType; String fieldTypeName =
+			 * type.fieldTypeName(); if (fieldTypeName.equals("int")) { // HACK FOR METADATAINTEGER
+			 * fieldTypeName = "Integer"; }
+			 * implementDecl=implementDecl+"\timplements Mappable<"+fieldTypeName+">\n";
+			 * 
+			 * }
+			 */
 
 			// file writer.
 			File directoryPath = PropertiesAndDirectories.createDirsAsNeeded(new File(generationPath));
@@ -230,12 +232,12 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 			// writing the imports
 			p.println(MetadataCompilerConstants.IMPORTS);
 
-			//write xml_inherit
+			// write xml_inherit
 			p.println("@xml_inherit");
-			
+
 			// start of class definition
 			p.println("public class " + XMLTools.classNameFromElementName(javaClassName)
-					+ " extends Metadata"+implementDecl+"{\n");
+					+ " extends Metadata" + implementDecl + "{\n");
 
 			// write the constructors
 			MetadataCompilerConstants.appendBlankConstructor(p, XMLTools
@@ -249,49 +251,50 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 				// translate the each meta-metadata field into class.
 				childMetaMetadata.get(i).translateToMetadataClass(packageName, p);
 			}
-			
-			//if this is a Map we have to implement the key() method.
-			if(isMap)
-			{
-				appendKeyMethod(p);
-			}
+
+			// if this is a Map we have to implement the key() method.
+			/*
+			 * if(isMap) { appendKeyMethod(p); }
+			 */
 			// ending the class.
 			p.println("}");
 			p.flush();
-			
-			//append this class to generated translation scope
-			MetadataCompilerConstants.appendToTranslationScope(XMLTools.classNameFromElementName(javaClassName)+".class,\n");
+
+			// append this class to generated translation scope
+			MetadataCompilerConstants.appendToTranslationScope(XMLTools
+					.classNameFromElementName(javaClassName)
+					+ ".class,\n");
 		}
 	}
 
 	/**
-	 *  This function appends the key() method for the classes implementing the Mappable interface.
-	 * @throws IOException 
+	 * This function appends the key() method for the classes implementing the Mappable interface.
+	 * 
+	 * @throws IOException
 	 */
-	private void appendKeyMethod(Appendable appendable) throws IOException
-	{
-		String keyType = childMetaMetadata.get(key).scalarType.fieldTypeName();
-		String comment = "\nThis mehtod returns the key.\n";
-		String keyName=childMetaMetadata.get(key).name;
-		MetadataCompilerConstants.writeJavaDocComment(comment, appendable);
-		appendable.append("public\t"+keyType+" key(){\n");
-		appendable.append("return "+keyName+"().getValue();\n}\n");
-	}
+	/*
+	 * private void appendKeyMethod(Appendable appendable) throws IOException { String keyType =
+	 * childMetaMetadata.get(key).scalarType.fieldTypeName(); String comment =
+	 * "\nThis mehtod returns the key.\n"; String keyName=childMetaMetadata.get(key).name;
+	 * MetadataCompilerConstants.writeJavaDocComment(comment, appendable);
+	 * appendable.append("public\t"+keyType+" key(){\n");
+	 * appendable.append("return "+keyName+"().getValue();\n}\n"); }
+	 */
 	/**
 	 * Append method for Is_nested=true fields
+	 * 
 	 * @param appendable
 	 * @throws IOException
 	 */
 	private void appenedNestedMetadataField(Appendable appendable) throws IOException
 	{
-		String fieldType=XMLTools.classNameFromElementName(name);
-		appendable.append("\nprivate @xml_nested "+XMLTools.classNameFromElementName(name)+"\t"+name+";");
+		String fieldType = XMLTools.classNameFromElementName(name);
+		appendable.append("\nprivate @xml_nested " + XMLTools.classNameFromElementName(name) + "\t"
+				+ name + ";");
 		appendLazyEvaluationMethod(appendable, name, XMLTools.classNameFromElementName(name));
 		appendSetterForCollection(appendable, name, fieldType);
 	}
-	
-	
-	
+
 	protected void appendImport(Appendable appendable, String importDecl) throws IOException
 	{
 		appendable.append("import ").append(importDecl).append(';').append('\n');
@@ -547,11 +550,12 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 		String fieldName = XMLTools.fieldNameFromElementName(name);
 
 		// appending the declaration.
-		String mapDecl = childMetaMetadata.get(key).getScalarType().fieldTypeName() + " , " + className;
-		appendMetalanguageDecl(appendable, "@xml_map", "private HashMapArrayList<", mapDecl, ">",
+		// String mapDecl = childMetaMetadata.get(key).getScalarType().fieldTypeName() + " , " +
+		// className;
+		appendMetalanguageDecl(appendable, "@xml_collection", "private ArrayList<", className, ">",
 				fieldName);
-		appendLazyEvaluationMethod(appendable, fieldName, "HashMapArrayList<" + mapDecl + ">");
-		appendSetterForCollection(appendable, fieldName, "HashMapArrayList<" + mapDecl + ">");
+		appendLazyEvaluationMethod(appendable, fieldName, "ArrayList<" + className + ">");
+		appendSetterForCollection(appendable, fieldName, "ArrayList<" + className + ">");
 	}
 
 	/**
@@ -620,31 +624,25 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 		return scalarType;
 	}
 
-	public MetaMetadataField lookupChild(String name)
+		public MetaMetadataField lookupChild(String name)
 	{
 		return childMetaMetadata.get(name);
 	}
 
-	public MetaMetadataField lookupChild(FieldAccessor fieldAccessor)
+		public MetaMetadataField lookupChild(FieldAccessor fieldAccessor)
 	{
 		return childMetaMetadata.get(fieldAccessor.getTagName());
 	}
-
 	public String getXpath()
 	{
 		return xpath;
 	}
 
-	public boolean isList()
-	{
-		return isList;
-	}
-
-	public boolean isMap()
-	{
-		return isMap;
-	}
-
+	/*
+	 * public boolean isList() { return isList; }
+	 * 
+	 * public boolean isMap() { return isMap; }
+	 */
 	public String getStringPrefix()
 	{
 		return stringPrefix;
@@ -748,7 +746,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	/**
 	 * @return the childMetaMetadata
 	 */
-	public HashMapArrayList<String, MetaMetadataField> getChildMetaMetadata()
+public HashMapArrayList<String, MetaMetadataField> getChildMetaMetadata()
 	{
 		return childMetaMetadata;
 	}
@@ -769,4 +767,10 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	{
 		this.isNested = isNested;
 	}
+
+	public String collection()
+	{
+		return collection;
+	}
+
 }
