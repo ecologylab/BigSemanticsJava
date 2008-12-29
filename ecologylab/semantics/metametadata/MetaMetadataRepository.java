@@ -127,7 +127,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	public MetaMetadata getByPURL(ParsedURL parsedURL)
 	{
 		String purlString = parsedURL.toString();
-		System.out.println(purlString+"     $$$$$$$$$$$$$$$$$$$$$$$$$$$");
+//		System.out.println(purlString+"     $$$$$$$$$$$$$$$$$$$$$$$$$$$");
 		if(purlString.indexOf("http://portal.acm.org/citation.cfm?")!=-1)
 		{
 			return repositoryByTagName.get("acm_portal");
