@@ -10,7 +10,7 @@ public class XTerm
 	public String stem;
 	public HashSet<XReferringElement> referringElements;
 	private double idf;
-	private static DecimalFormat df = new DecimalFormat("#0.0");
+	public static DecimalFormat ONE_DECIMAL_PLACE = new DecimalFormat("#0.0");
 
 	public double idf()
 	{
@@ -50,8 +50,7 @@ public class XTerm
 
 	public String toString()
 	{
-		
-		return stem + "(" + df.format(idf) + "){PI:" + InterestModel.getTermInterest(this) + "}";
+		return stem;
 	}
 
 }

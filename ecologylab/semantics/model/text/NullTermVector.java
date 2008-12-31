@@ -8,57 +8,98 @@ import java.util.Set;
 
 import ecologylab.generic.VectorType;
 
-public class NullTermVector extends VectorType<XTerm> {
+public class NullTermVector extends VectorType<XTerm>
+{
 
-	public static NullTermVector ntv = new NullTermVector();
-	
-	public static NullTermVector singleton() {
+	public static NullTermVector	ntv	= new NullTermVector();
+
+	public static NullTermVector singleton()
+	{
 		return ntv;
 	}
-	
-	public void addObserver(Observer o) {
+
+	public void addObserver(Observer o)
+	{
 		// TODO Auto-generated method stub
 
 	}
 
-	public void deleteObserver(Observer o) {
+	public void deleteObserver(Observer o)
+	{
 		// TODO Auto-generated method stub
 
 	}
 
-	public double dot(VectorType<XTerm> v) {
+	public double dot(VectorType<XTerm> v)
+	{
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
-	public Set<XTerm> elements() {
+	public Set<XTerm> elements()
+	{
 		// TODO Auto-generated method stub
 		return new HashSet<XTerm>();
 	}
 
-	public double get(XTerm term) {
+	public double get(XTerm term)
+	{
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
-	public HashMap<XTerm, Double> map() {
+	public HashMap<XTerm, Double> map()
+	{
 		// TODO Auto-generated method stub
 		return new HashMap();
 	}
 
-	public Set<Double> values() {
+	public Set<Double> values()
+	{
 		// TODO Auto-generated method stub
 		return new HashSet<Double>();
 	}
-	
-	public double norm() {
-	  return 0;
+
+	public double norm()
+	{
+		return 0;
 	}
 
-  @Override
-  public double idfDot(VectorType<XTerm> v)
-  {
-    return 0;
-  }
+	@Override
+	public double idfDot(VectorType<XTerm> v)
+	{
+		return 0;
+	}
+
+	public String toString()
+	{
+		return "NullTV";
+	}
+
+	@Override
+	public VectorType<XTerm> unit()
+	{
+		return this;
+	}
+	
+	@Override
+	public VectorType<XTerm> simplex()
+	{
+		return this;
+	}
+
+	@Override
+	public int commonDimensions(VectorType<XTerm> v)
+	{
+		// TODO Auto-generated method stub
+		return 1;
+	}
+
+	@Override
+	public double dotSimplex(VectorType<XTerm> v)
+	{
+		// TODO Auto-generated method stub
+		return 0;
+	}
 
 }

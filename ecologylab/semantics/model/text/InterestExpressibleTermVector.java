@@ -21,7 +21,7 @@ public class InterestExpressibleTermVector extends XTermVector implements Scaled
 	public short getScaledValue()
 	{
 		// TODO Auto-generated method stub
-		return (short)InterestModel.dotShort(this);
+		return (short)InterestModel.getInterestExpressedInTermVector(this);
 	}
 	public void update(Observable o, Object arg)
 	{

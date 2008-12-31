@@ -13,30 +13,32 @@ import ecologylab.generic.VectorType;
 public class XVector<T> extends VectorType<T>
 {
 
-	protected HashMap<T, Double> values;
-	private double norm;
+	protected HashMap<T, Double>	values;
 
-	public XVector()
+	private double					norm, max;
+
+	public XVector ()
 	{
 		values = new HashMap<T, Double>(20);
 	}
 
-	public XVector(int size)
+	public XVector ( int size )
 	{
 		values = new HashMap<T, Double>(size);
 	}
 
-	public XVector(VectorType<T> copyMe)
+	public XVector ( VectorType<T> copyMe )
 	{
 		values = new HashMap<T, Double>(copyMe.map());
+		norm = copyMe.norm();
 	}
 
-	public XVector<T> copy()
+	public XVector<T> copy ( )
 	{
 		return new XVector<T>(this);
 	}
 
-	public double get(T term)
+	public double get ( T term )
 	{
 		Double d = values.get(term);
 		if (d == null)
@@ -44,9 +46,10 @@ public class XVector<T> extends VectorType<T>
 		return d;
 	}
 
-	public void add(T term, double val)
+	public void add ( T term, double val )
 	{
-		synchronized(values) {
+		synchronized (values)
+		{
 			if (values.containsKey(term))
 				val += values.get(term);
 			values.put(term, val);
@@ -54,9 +57,9 @@ public class XVector<T> extends VectorType<T>
 		}
 	}
 
-	public void set(T term, double val)
+	public void set ( T term, double val )
 	{
-		synchronized(values)
+		synchronized (values)
 		{
 			values.put(term, val);
 			resetNorm();
@@ -69,12 +72,13 @@ public class XVector<T> extends VectorType<T>
 	 * @param v
 	 *            Vector by which to multiply
 	 */
-	public void multiply(VectorType<T> v)
+	public void multiply ( VectorType<T> v )
 	{
-		HashMap<T,Double> other = v.map();
+		HashMap<T, Double> other = v.map();
 		if (other == null)
 			return;
-		synchronized(values) {
+		synchronized (values)
+		{
 			this.values.keySet().retainAll(other.keySet());
 			for (T term : this.values.keySet())
 				this.values.put(term, other.get(term) * this.values.get(term));
@@ -88,9 +92,10 @@ public class XVector<T> extends VectorType<T>
 	 * @param c
 	 *            Constant to multiply this vector by.
 	 */
-	public void multiply(double c)
+	public void multiply ( double c )
 	{
-		synchronized(values) {
+		synchronized (values)
+		{
 			ArrayList<T> terms_to_delete = new ArrayList<T>();
 			for (T term : this.values.keySet())
 			{
@@ -107,8 +112,7 @@ public class XVector<T> extends VectorType<T>
 	}
 
 	/**
-	 * Pairwise addition of this vector by some other vector times some
-	 * constant.<br>
+	 * Pairwise addition of this vector by some other vector times some constant.<br>
 	 * i.e. this + (c*v)<br>
 	 * Vector v is not modified.
 	 * 
@@ -117,13 +121,15 @@ public class XVector<T> extends VectorType<T>
 	 * @param v
 	 *            Vector to add to this one
 	 */
-	public void add(double c, VectorType<T> v)
+	public void add ( double c, VectorType<T> v )
 	{
-		HashMap<T,Double> other = v.map();
+		HashMap<T, Double> other = v.map();
 		if (other == null)
 			return;
-		synchronized(other) {
-			synchronized(values) {
+		synchronized (other)
+		{
+			synchronized (values)
+			{
 				for (T term : other.keySet())
 					if (this.values.containsKey(term))
 						this.values.put(term, c * other.get(term) + this.values.get(term));
@@ -136,87 +142,132 @@ public class XVector<T> extends VectorType<T>
 
 	/**
 	 * Adds another Vector to this Vector, in-place.
-	 * @param v Vector to add to this
-	 */	
-	public void add(VectorType<T> v)
+	 * 
+	 * @param v
+	 *            Vector to add to this
+	 */
+	public void add ( VectorType<T> v )
 	{
-		add(1,v);
+		add(1, v);
 	}
 
 	/**
 	 * Calculates the dot product of this Vector with another Vector
-	 * @param v Vector to dot this Vector with.
-	 */	
-	public double dot(VectorType<T> v)
+	 * 
+	 * @param v
+	 *            Vector to dot this Vector with.
+	 */
+	public double dot ( VectorType<T> v )
 	{
-		HashMap<T,Double> other = v.map();
+		HashMap<T, Double> other = v.map();
 		if (other == null || v.norm() == 0 || this.norm() == 0)
 			return 0;
 
 		double dot = 0;
-		int num = 0;
-		HashMap<T,Double> vector = this.values;
-		synchronized(values) {
+		HashMap<T, Double> vector = this.values;
+		synchronized (values)
+		{
 			for (T term : vector.keySet())
-				if (other.containsKey(term)) {
+				if (other.containsKey(term))
 					dot += other.get(term) * vector.get(term);
-					num++;
-				}
-			if (num != 0)
-				dot /= num;
 		}
 		return dot;
 	}
 
-	public Set<T> elements()
+	public Set<T> elements ( )
 	{
 		return new HashSet<T>(values.keySet());
 	}
 
-	public Set<Double> values()
+	public Set<Double> values ( )
 	{
 		return new HashSet<Double>(values.values());
 	}
 
-	public HashMap<T, Double> map()
+	public HashMap<T, Double> map ( )
 	{
 		return values;
 	}
 
-	public int size()
+	public int size ( )
 	{
 		return values.size();
 	}
 
-	private void recalculateNorm()
+	private void recalculateNorm ( )
 	{
 		double norm = 0;
-		for(double d: this.values.values())
+		for (double d : this.values.values())
 		{
 			norm += Math.pow(d, 2);
 		}
 		this.norm = Math.sqrt(norm);
 	}
 
-	private void resetNorm() {
+	private void resetNorm ( )
+	{
 		norm = -1;
+		max = -1;
 	}
 
-	public double norm()
+	public double norm ( )
 	{
 		if (norm == -1)
 			recalculateNorm();
 		return norm;
 	}
 
+	public double max ( )
+	{
+		if (max == -1)
+			recalculateMax();
+		return max;
+	}
+
+	private void recalculateMax ( )
+	{
+		for (Double d : values.values())
+			if (Math.abs(d) > max)
+				max = d;
+	}
+
 	@Override
-	public double idfDot(VectorType<T> v)
+	public double idfDot ( VectorType<T> v )
 	{
 		return dot(v);
 	}
 
-	public void clamp(double clampTo)
+	public void clamp ( double clampTo )
 	{
+		double max = 0;
+		clampTo = Math.abs(clampTo);
+		synchronized (values)
+		{
+			for (Double d : values.values())
+			{
+				double d2 = Math.abs(d);
+				if (d2 > max)
+					max = d2;
+			}
+			if (!(max > clampTo))
+				return;
+
+			synchronized (values)
+			{
+				for (T term : this.values.keySet())
+				{
+					double old_value = this.values.get(term);
+					double new_value = clampTo * old_value / max;
+					this.values.put(term, new_value);
+				}
+			}
+			resetNorm();
+		}
+	}
+
+	public void clampExp ( double clampTo )
+	{
+		clampTo = Math.abs(clampTo);
 		double max = 0;
 		synchronized (values)
 		{
@@ -226,17 +277,19 @@ public class XVector<T> extends VectorType<T>
 				if (d2 > max)
 					max = d2;
 			}
-			if ( ! (max > clampTo) )
+			if (!(max > clampTo))
 				return;
-			//double multiplier = clampTo/max;  
-			//multiply(multiplier);
-			synchronized(values) {
+			// double multiplier = clampTo/max;
+			// multiply(multiplier);
+			synchronized (values)
+			{
 				ArrayList<T> terms_to_delete = new ArrayList<T>();
 				for (T term : this.values.keySet())
 				{
 					double old_value = this.values.get(term);
-					double new_value = Math.pow(clampTo+1, Math.abs(old_value)/max)-1;
-					new_value *= Math.signum(old_value);
+					double new_value = clampTo * old_value / max;
+					// double new_value = clampTo*Math.log10( ((Math.abs(old_value)/max)+1/10) * 9);
+					// new_value *= Math.signum(old_value);
 					if (Math.abs(new_value) < 0.001)
 						terms_to_delete.add(term);
 					else
@@ -248,38 +301,35 @@ public class XVector<T> extends VectorType<T>
 			resetNorm();
 		}
 	}
-	
-	public void clampExp(double clampTo)
+
+	public VectorType<T> unit ( )
 	{
-		double max = 0;
-		synchronized (values)
+		XVector<T> v = new XVector<T>(this);
+		v.clamp(1);
+		return v;
+	}
+
+	public double dotSimplex ( VectorType<T> v )
+	{
+		double dot = dot(v.simplex());
+		return dot / commonDimensions(v);
+	}
+
+	public int commonDimensions ( VectorType<T> v )
+	{
+		Set<T> v_elements = v.elements();
+		v_elements.retainAll(this.elements());
+		return v_elements.size();
+	}
+
+	@Override
+	public VectorType<T> simplex ( )
+	{
+		XVector<T> v = new XVector<T>(this);
+		for (T t : v.values.keySet())
 		{
-			for (Double d : values.values())
-			{
-				double d2 = Math.abs(d);
-				if (d2 > max)
-					max = d2;
-			}
-			if (max == 0)
-				return;
-			//double multiplier = clampTo/max;  
-			//multiply(multiplier);
-			synchronized(values) {
-				ArrayList<T> terms_to_delete = new ArrayList<T>();
-				for (T term : this.values.keySet())
-				{
-					double old_value = this.values.get(term);
-					double new_value = clampTo*Math.log10(  ((Math.abs(old_value)/max)+1/10) * 9);
-					new_value *= Math.signum(old_value);
-					if (Math.abs(new_value) < 0.001)
-						terms_to_delete.add(term);
-					else
-						this.values.put(term, new_value);
-				}
-				for (T t : terms_to_delete)
-					values.remove(t);
-			}
-			resetNorm();
+			v.values.put(t, 1.0);
 		}
+		return v;
 	}
 }

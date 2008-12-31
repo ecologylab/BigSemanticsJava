@@ -1,17 +1,17 @@
 package ecologylab.semantics.model.text;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Hashtable;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import ecologylab.generic.MathTools;
 import ecologylab.generic.VectorType;
 
 public class XTermVector extends XVector<XTerm>
 {
 
-	static Pattern WORD_REGEX = Pattern.compile("[a-z]+(-[a-z]+)*('[a-z]+){0,1}");
+	static Pattern WORD_REGEX = Pattern.compile("[a-z]+(-[a-z]+)*([a-z]+)");
 
 	public XTermVector()
 	{
@@ -151,7 +151,6 @@ public class XTermVector extends XVector<XTerm>
 					dot += vector.get(term) * term.idf() * v.get(term);
 				}
 			}
-			dot /= this.norm() * v.norm();
 		}
 		return dot;
 	}
@@ -173,6 +172,43 @@ public class XTermVector extends XVector<XTerm>
 		super.clampExp(clampTo);
 		setChanged();
 		notifyObservers();
+	}
+	
+	@Override
+	public XTermVector unit()
+	{
+		XTermVector v = new XTermVector(this);
+		v.clamp(1);
+		return v;
+	}
+	
+	@Override
+	public XTermVector simplex ( )
+	{
+		XTermVector v = new XTermVector(this);
+		for (XTerm t : v.values.keySet())
+		{
+			v.values.put(t, 1.0);
+		}
+		return v;
+	}
+	
+	public void trim(int size)
+	{
+		TreeMap<Double,XTerm> highestWeightedTerms = new TreeMap<Double,XTerm>();
+		for (XTerm t : values.keySet())
+		{
+			highestWeightedTerms.put(t.idf(), t);
+		}
+		synchronized (values)
+		{
+			for(Double d : highestWeightedTerms.keySet())
+			{
+				if (values.size() <= size)
+					break;
+				values.remove(highestWeightedTerms.get(d));
+			}			
+		}
 	}
 	
 }

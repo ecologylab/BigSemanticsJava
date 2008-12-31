@@ -20,7 +20,7 @@ public class InterestExpressibleXTerm implements ScaledValueObserver
 
 	public short getScaledValue()
 	{
-		return InterestModel.getTermInterestShort(term);
+		return InterestModel.getInterestExpressedInXTerm(term);
 	}
 
 	public void update(Observable o, Object arg)

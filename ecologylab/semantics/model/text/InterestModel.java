@@ -1,14 +1,8 @@
 package ecologylab.semantics.model.text;
 
 import java.util.HashMap;
-import java.util.Hashtable;
 
-import ecologylab.collections.VectorSetElement;
-import ecologylab.collections.VectorWeightStrategy;
-import ecologylab.collections.WeightSet;
-import ecologylab.collections.WeightingStrategy;
 import ecologylab.generic.VectorType;
-import ecologylab.semantics.model.text.XCompositeTermVector;
 import ecologylab.semantics.model.text.XTerm;
 import ecologylab.semantics.model.text.XTermVector;
 
@@ -16,69 +10,91 @@ public class InterestModel
 {
 	// participant interest vector
 
-	private static XVector<XTerm>				participantInterest	= new XTermVector();
-	private static HashMap<XTerm, Short>	termInterest = new HashMap<XTerm, Short>();
+	private static XTermVector	participantInterest		= new XTermVector();
 
-	public static void expressInterest(VectorType<XTerm> interestingTermVector, short magnitude)
+	private static XTermVector	unitParticipantInterest	= new XTermVector();
+
+	private static long			timestamp;
+
+	public static double		INTEREST_TIME_CONSTANT	= 120;
+
+	private static Object		PI_LOCK					= "";
+
+	public static void expressInterest ( VectorType<XTerm> interestingTermVector, short magnitude )
 	{
-		
-		participantInterest.add(magnitude, interestingTermVector);
-//		HashMap<XTerm, Double> values = interestingTermVector.map();
-//		synchronized(values)
-//		{
-//			for (XTerm term : values.keySet())
-//			{
-//				if ( termInterest.containsKey(term) )
-//					values.remove(term);
-//			}
-//		}
-//		participantInterest.add(magnitude, interestingTermVector);
-		fixInterest();
+		 timeScaleInterest();
+		XTermVector xtv = new XTermVector(interestingTermVector);
+		xtv.multiply(magnitude);
+		xtv.clamp(magnitude);
+		participantInterest.add(1, xtv);
+		unitize();
+
+		// HashMap<XTerm, Double> values = interestingTermVector.map();
+		// synchronized(values)
+		// {
+		// for (XTerm term : values.keySet())
+		// {
+		// if ( termInterest.containsKey(term) )
+		// values.remove(term);
+		// }
+		// }
+		// participantInterest.add(magnitude, interestingTermVector);
 	}
 
-	public static void expressInterest(XTerm term, short magnitude)
+	public static void expressInterest ( XTerm term, short magnitude )
 	{
 		magnitude /= 2;
-//		participantInterest.add(term, magnitude);
-		participantInterest.set(term, magnitude);
-//		termInterest.put(term, magnitude);
-		fixInterest();
-	}
-	
-	private static void fixInterest() {
-		participantInterest.clamp(5);
+		 timeScaleInterest();
+		participantInterest.add(term, magnitude);
+		unitize();
+		// participantInterest.add(term, magnitude);
+		// termInterest.put(term, magnitude);
 	}
 
-	public static XVector<XTerm> getPIV()
+	private static void timeScaleInterest ( )
+	{
+		long delta_t = System.nanoTime() - timestamp;
+		double delta_t_in_seconds = delta_t / 1e9;
+		participantInterest.multiply(Math.exp(-delta_t_in_seconds/INTEREST_TIME_CONSTANT));
+		timestamp = System.nanoTime();
+	}
+
+	public static XVector<XTerm> getPIV ( )
 	{
 		return participantInterest;
 	}
 
-	
-	public static short dotShort(VectorType<XTerm> termVector)
+	public static double getAbsoluteInterestOfTermVector ( VectorType<XTerm> tv )
 	{
-		short d = (short) termVector.dot(participantInterest);
-		if (d>5)  d=5;
-		if (d<-5) d=-5;
-		return d;
-	}
-	
-	public static double dot(VectorType<XTerm> tv)
-	{
-		return tv.idfDot(participantInterest);
+		return tv.idfDot(unitParticipantInterest);
 	}
 
-	public static double getTermInterest(XTerm term)
+	public static short getInterestExpressedInTermVector ( VectorType<XTerm> termVector )
 	{
-		return participantInterest.get(term);
+		return (short) (5 * unitParticipantInterest.dotSimplex(termVector));
 	}
 
-	public static short getTermInterestShort(XTerm term)
+	public static short getInterestExpressedInXTerm ( XTerm term )
 	{
-		short d = (short) getTermInterest(term);
-		if (d>5)  d=5;
-		if (d<-5) d=-5;
-		return d;
+		return (short) (5 * unitParticipantInterest.get(term));
+	}
+
+	public static void expressInterest ( InterestExpressibleElement element, short magnitude )
+	{
+		expressInterest(element.getInterestExpressionTermVector(), magnitude);
+	}
+
+	public static short getInterestExpressedInElement ( InterestExpressibleElement element )
+	{
+		return getInterestExpressedInTermVector(element.getInterestExpressionTermVector());
+	}
+
+	private static void unitize ( )
+	{
+		synchronized (PI_LOCK)
+		{
+			unitParticipantInterest = participantInterest.unit();
+		}
 	}
 
 }

@@ -13,19 +13,21 @@ import ecologylab.model.text.TermVector;
 public class XCompositeTermVector extends VectorType<XTerm> implements Observer
 {
 
-	public XCompositeTermVector() {}
+	public XCompositeTermVector()
+	{
+	}
 
-	private XVector<XTerm> compositeTermVector = new XTermVector(); 
-	private Hashtable<VectorType<XTerm>, Double> termVectors = new Hashtable<VectorType<XTerm>, Double>();
+	private XVector<XTerm>							compositeTermVector	= new XTermVector();
+
+	private Hashtable<VectorType<XTerm>, Double>	termVectors			= new Hashtable<VectorType<XTerm>, Double>();
 
 	/**
-	 * Adds a Term Vector to this Composite Term Vectors collection, multiplying
-	 * it by a scalar.
+	 * Adds a Term Vector to this Composite Term Vectors collection, multiplying it by a scalar.
 	 * 
 	 * @param tv
-	 *          The Term Vector you wish to add.
+	 *            The Term Vector you wish to add.
 	 * @param multiplier
-	 *          The scalar multiple.
+	 *            The scalar multiple.
 	 */
 	public void add(double multiplier, VectorType<XTerm> tv)
 	{
@@ -49,11 +51,11 @@ public class XCompositeTermVector extends VectorType<XTerm> implements Observer
 	 * Adds a Term Vector to this Composite Term Vector's collection
 	 * 
 	 * @param tv
-	 *          The term vector you wish to add.
+	 *            The term vector you wish to add.
 	 */
 	public void add(VectorType<XTerm> tv)
 	{
-		if(tv != null)
+		if (tv != null)
 			add(1, tv);
 	}
 
@@ -61,7 +63,7 @@ public class XCompositeTermVector extends VectorType<XTerm> implements Observer
 	 * Removes a Term Vector from this Composite Term Vectors collection.
 	 * 
 	 * @param tv
-	 *          The Term Vector you wish to remove.
+	 *            The Term Vector you wish to remove.
 	 */
 	public void remove(VectorType<XTerm> tv)
 	{
@@ -108,7 +110,7 @@ public class XCompositeTermVector extends VectorType<XTerm> implements Observer
 	}
 
 	public double dot(VectorType<XTerm> v)
-	{	  
+	{
 		return compositeTermVector.dot(v);
 	}
 
@@ -131,30 +133,57 @@ public class XCompositeTermVector extends VectorType<XTerm> implements Observer
 	{
 		return compositeTermVector.values();
 	}
-	
+
 	public Set<VectorType<XTerm>> componentVectors()
 	{
-	  return termVectors.keySet();
-	}
-	
-	public String toString()
-	{
-	  StringBuilder s = new StringBuilder("[");
-	  for(VectorType<XTerm> v : termVectors.keySet())
-	    s.append(v.toString() + "(" + termVectors.get(v) + "), ");
-	  s.append("]");
-	  return s.toString();
-	}
-	
-	public double norm() 
-	{
-	  return compositeTermVector.norm();
+		return termVectors.keySet();
 	}
 
-  @Override
-  public double idfDot(VectorType<XTerm> v)
-  {
-    return compositeTermVector.idfDot(v);
-  }
+	public String toString()
+	{
+		StringBuilder s = new StringBuilder("[");
+		for (VectorType<XTerm> v : termVectors.keySet())
+			s.append(v.toString() + "(" + termVectors.get(v).intValue() + "), ");
+		s.append("]");
+		return s.toString();
+	}
+
+	public double norm()
+	{
+		return compositeTermVector.norm();
+	}
+
+	@Override
+	public double idfDot(VectorType<XTerm> v)
+	{
+		return compositeTermVector.idfDot(v);
+	}
+
+	@Override
+	public VectorType<XTerm> unit()
+	{
+		// TODO Auto-generated method stub
+		return compositeTermVector.unit();
+	}
+
+	@Override
+	public int commonDimensions(VectorType<XTerm> v)
+	{
+		// TODO Auto-generated method stub
+		return compositeTermVector.commonDimensions(v);
+	}
+
+	@Override
+	public double dotSimplex(VectorType<XTerm> v)
+	{
+		// TODO Auto-generated method stub
+		return compositeTermVector.dotSimplex(v);
+	}
+	
+	@Override
+	public VectorType<XTerm> simplex()
+	{
+		return compositeTermVector.simplex();
+	}
 
 }
