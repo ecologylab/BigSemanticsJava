@@ -342,6 +342,11 @@ public class MetadataBase extends ElementState implements Iterable<FieldAccessor
     {
    	 return null;
     }
+    
+    public void setMetaMetadata(MetaMetadata metaMetadata)
+    {
+    	
+    }
 
     public ArrayListState<Metadata> getMixins()
     {

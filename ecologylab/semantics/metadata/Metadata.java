@@ -351,6 +351,7 @@ abstract public class Metadata extends MetadataBase
 		return metaMetadata;
 	}
 
+	@Override
 	public void setMetaMetadata(MetaMetadata metaMetadata)
 	{
 		this.metaMetadata = metaMetadata;
