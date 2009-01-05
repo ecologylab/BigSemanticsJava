@@ -22,6 +22,8 @@ import ecologylab.appframework.ApplicationProperties;
 public class XTermDictionary implements ApplicationProperties
 {
 	
+	private static PorterStemmer stemmer = new PorterStemmer();
+	
 	private static HashMap<String, Double> frequencyList = null;
 	/**
 	 * Maintains a map of a <code>String</code> stem term to it's {@link XTerm}
@@ -145,19 +147,16 @@ public class XTermDictionary implements ApplicationProperties
 	 * @param stem 
 	 * @return
 	 */
-	public static XTerm getTerm(String stem) 
+	public synchronized static XTerm getTerm(String word, String stem) 
 	{
-		if (dictionary.containsKey(stem))
-			return dictionary.get(stem);
-		else
-		{
-			if (dictionary.containsKey(stem))
-				return dictionary.get(stem);
-			synchronized (LOCK)
-			{
-				return newTerm(stem);
-			}
+		if (dictionary.containsKey(stem)) {
+			XTerm term = dictionary.get(stem);
+			if (!term.hasWord())
+				term.setWord(word);
+			return term;
 		}
+		else
+			return newTerm(word, stem);
 	}
 
 	/**
@@ -174,10 +173,11 @@ public class XTermDictionary implements ApplicationProperties
 	 * Creates a new term using the given stem and assigning it an idf of averageIDF.
 	 * @param stem
 	 */
-	private static XTerm newTerm(String stem) {
+	private static XTerm newTerm(String word, String stem) {
 		if (stem.length() < 4 || stopWordTerms.contains(stem))
 			return null;
 		XTerm newTerm = new XTerm(stem, averageIDF);
+		newTerm.setWord(word);
 		dictionary.put(stem, newTerm);
 		return newTerm;
 	}
@@ -257,11 +257,15 @@ public class XTermDictionary implements ApplicationProperties
 
 	public static XTerm getTermForWord(String s)
 	{
-		PorterStemmer p = new PorterStemmer();
-		for (int i=0; i<s.length(); i++)
-			p.add(s.charAt(i));
-		p.stem();
-		return getTerm(p.toString());
+		PorterStemmer p = stemmer;
+		synchronized(p)
+		{
+			for (int i=0; i<s.length(); i++)
+				p.add(s.charAt(i));
+			p.stem();
+			return getTerm(s,p.toString());
+		}
+		
 	}
 
 }

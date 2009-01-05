@@ -41,16 +41,10 @@ public class XTermVector extends XVector<XTerm>
 	public void reset(String s)
 	{
 		s=s.toLowerCase();
-		PorterStemmer p = new PorterStemmer();
-		Matcher m = WORD_REGEX.matcher(s);
-		String stem;
+		Matcher m 			= WORD_REGEX.matcher(s);
 		while (m.find()) {
-			for (int i=m.start(); i<m.end(); i++)
-				p.add(s.charAt(i));
-			p.stem();
-			stem = p.toString();
-			if (stem != null)
-				addWithoutNotify(XTermDictionary.getTerm(stem),1);
+			String word = s.substring(m.start(),m.end());
+			addWithoutNotify(XTermDictionary.getTermForWord(word),1);
 		}
 		setChanged();
 		notifyObservers();

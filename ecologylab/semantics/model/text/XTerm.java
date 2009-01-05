@@ -8,6 +8,8 @@ public class XTerm
 {
 
 	public String stem;
+	public String word;
+	public boolean hasWord = false;
 	public HashSet<XReferringElement> referringElements;
 	private double idf;
 	public static DecimalFormat ONE_DECIMAL_PLACE = new DecimalFormat("#0.0");
@@ -51,6 +53,24 @@ public class XTerm
 	public String toString()
 	{
 		return stem;
+	}
+
+	public void setWord ( String word )
+	{
+		hasWord = true;
+		this.word = word;
+	}
+	
+	public String getWord()
+	{
+		if (!hasWord)
+			return stem;
+		return word;
+	}
+	
+	public boolean hasWord()
+	{
+		return hasWord;
 	}
 
 }
