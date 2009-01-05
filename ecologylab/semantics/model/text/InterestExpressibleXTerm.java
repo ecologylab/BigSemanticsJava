@@ -11,6 +11,7 @@ public class InterestExpressibleXTerm implements ScaledValueObserver
 	public InterestExpressibleXTerm(String s)
 	{
 		term = XTermDictionary.getTermForWord(s);
+		term.setWord(s);
 	}
 	
 	public InterestExpressibleXTerm(XTerm t)
