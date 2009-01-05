@@ -67,6 +67,7 @@ public class MetaMetadataXPathType<M extends MetadataBase> extends DocumentType 
 		TranslationScope ts = container.getTranslationScope();
 		Class metadataClass = ts.getClassByTag("acm_portal");
 		M metadata = (M)ReflectionTools.getInstance(metadataClass);
+		metadata.setMetaMetadata(metaMetadata);
 		if(metaMetadata.isSupported(purl))
 		{
 			PURLConnection purlConnection 	= purl.connect(metaMetadata.getUserAgentString());
@@ -155,7 +156,7 @@ public class MetaMetadataXPathType<M extends MetadataBase> extends DocumentType 
                     recursiveExtraction(translationScope, mmdElement, nestedMetadata, tidyDOM, purl);
                 }
                 // If the field is list.
-                else if (mmdElement.collection().equals("ArrayList"))
+                else if ("ArrayList".equals(mmdElement.collection()))
                 {
 
                     // this is the field accessor for the collection field
