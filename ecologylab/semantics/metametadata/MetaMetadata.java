@@ -75,6 +75,8 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 
 	// TranslationScope DEFAULT_METADATA_TRANSLATIONS = DefaultMetadataTranslationSpace.get();
 
+	private boolean						inheritedMetaMetadata = false;
+	
 	public MetaMetadata()
 	{
 		super();
@@ -349,6 +351,31 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 	public String key()
 	{
 		return name;
+	}
+	
+	@Override
+	public MetaMetadataField lookupChild(String name)
+	{
+		if(!inheritedMetaMetadata)
+			inheritMetaMetadata();
+		
+		return super.lookupChild(name);
+	}
+	
+
+	private void inheritMetaMetadata()
+	{
+		if(!inheritedMetaMetadata && extendsAttribute != null)
+		{
+			MetaMetadata extendedMetaMetadata = repository().getByTagName(extendsAttribute);
+			if(extendedMetaMetadata != null)
+			{
+				extendedMetaMetadata.inheritMetaMetadata();
+				for(MetaMetadataField extendedField : extendedMetaMetadata.getChildMetaMetadata())
+					addChild(extendedField);
+			}
+		}
+		inheritedMetaMetadata = true;
 	}
 
 }

@@ -624,15 +624,17 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 		return scalarType;
 	}
 
-		public MetaMetadataField lookupChild(String name)
+	public MetaMetadataField lookupChild(String name)
 	{
 		return childMetaMetadata.get(name);
 	}
 
-		public MetaMetadataField lookupChild(FieldAccessor fieldAccessor)
+
+	public MetaMetadataField lookupChild(FieldAccessor fieldAccessor)
 	{
-		return childMetaMetadata.get(fieldAccessor.getTagName());
+		return lookupChild(fieldAccessor.getTagName());
 	}
+	
 	public String getXpath()
 	{
 		return xpath;
