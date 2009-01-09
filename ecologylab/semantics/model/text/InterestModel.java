@@ -71,12 +71,12 @@ public class InterestModel
 
 	public static short getInterestExpressedInTermVector ( VectorType<XTerm> termVector )
 	{
-		return (short) (5 * unitParticipantInterest.dotSimplex(termVector));
+		return (short) (10 * unitParticipantInterest.dotSimplex(termVector));
 	}
 
 	public static short getInterestExpressedInXTerm ( XTerm term )
 	{
-		return (short) (5 * unitParticipantInterest.get(term));
+		return (short) ( 2*participantInterest.get(term));
 	}
 
 	public static void expressInterest ( InterestExpressibleElement element, short magnitude )
@@ -95,6 +95,12 @@ public class InterestModel
 		{
 			unitParticipantInterest = participantInterest.unit();
 		}
+	}
+
+	public static void setTermInterest ( XTerm term, short newValue )
+	{
+		participantInterest.set(term, newValue);
+		unitize();
 	}
 
 }
