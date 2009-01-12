@@ -162,7 +162,9 @@ abstract public class Metadata extends MetadataBase
 		{
 			FieldAccessor fieldAccessor		= fullIterator.next();
 			MetadataBase currentMetadata	= fullIterator.currentObject();
-			MetaMetadataField metaMetadata 	= (metaMetadataField != null) ? metaMetadataField.lookupChild(fieldAccessor) : currentMetadata.getMetaMetadata();
+			MetaMetadata currentMetaMetadata = currentMetadata.getMetaMetadata();
+			MetaMetadataField metaMetadata 	= (metaMetadataField != null) ? metaMetadataField.lookupChild(fieldAccessor) : 
+				(currentMetaMetadata != null) ? currentMetaMetadata.lookupChild(fieldAccessor) : null;
 			
 			//When the iterator enters the metadata in the mixins "this" in getValueString has to be
 			// the corresponding metadata in mixin.
