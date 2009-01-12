@@ -8,12 +8,16 @@ import java.util.Collection;
 import java.util.HashMap;
 
 import ecologylab.generic.HashMapArrayList;
+import ecologylab.model.NamedStyle;
 import ecologylab.net.ParsedURL;
+import ecologylab.net.UserAgent;
 import ecologylab.semantics.library.TypeTagNames;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.TranslationScope;
 import ecologylab.xml.XMLTranslationException;
+import ecologylab.xml.ElementState.xml_map;
+import ecologylab.xml.types.element.HashMapState;
 
 /**
  * @author damaraju
@@ -22,6 +26,8 @@ import ecologylab.xml.XMLTranslationException;
 
 public class MetaMetadataRepository extends ElementState implements PackageSpecifier, TypeTagNames
 {
+	private static final String	DEFAULT_STYLE_NAME	= "default";
+
 	/**
 	 * The name of the repository.
 	 */
@@ -35,14 +41,21 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	@xml_attribute
 	private String																	packageName;
 
+	@xml_nested 
+	private HashMapState<String, UserAgent> 				userAgents; 
+	
 	@xml_nested
-	private UserAgents															userAgents;
+	private HashMapState<String, NamedStyle> 				namedStyles;
+	
+	private String																	defaultUserAgentString = null;
 
 	/**
 	 * The keys for this hashmap are the values within TypeTagNames.
 	 */
 	@xml_map("meta_metadata")
 	private HashMapArrayList<String, MetaMetadata>	repositoryByTagName;
+	
+	private HashMap<String, MetaMetadata>						repositoryByURL = null;
 
 	static final TranslationScope										TS	= MetaMetadataTranslationScope.get();
 
@@ -126,13 +139,19 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	 */
 	public MetaMetadata getByPURL(ParsedURL parsedURL)
 	{
-		String purlString = parsedURL.toString();
-//		System.out.println(purlString+"     $$$$$$$$$$$$$$$$$$$$$$$$$$$");
-		if(purlString.indexOf("http://portal.acm.org/citation.cfm?")!=-1)
+		if (repositoryByURL == null)
 		{
-			return repositoryByTagName.get("acm_portal");
+			repositoryByURL = new HashMap<String, MetaMetadata>();
+			
+			for (MetaMetadata metaMetadata : repositoryByTagName)
+			{
+				ParsedURL purl = metaMetadata.getUrlBase();
+				if (purl != null)
+					repositoryByURL.put(purl.host(), metaMetadata);
+			}
 		}
-		return null;
+		
+		return (parsedURL == null) ? null : repositoryByURL.get(parsedURL.host());
 	}
 
 	public MetaMetadata getByTagName(String tagName)
@@ -214,5 +233,46 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	public void setPackageName(String packageName)
 	{
 		this.packageName = packageName;
+	}
+	
+	public NamedStyle lookupStyle(String styleName)
+	{
+		return namedStyles.get(styleName);
+	}
+	
+	public NamedStyle getDefaultStyle()
+	{
+		return namedStyles.get(DEFAULT_STYLE_NAME);
+	}
+	
+	public HashMapState<String, UserAgent> userAgents()
+	{
+		if (userAgents == null)
+			userAgents = new HashMapState<String, UserAgent>();
+		
+		return userAgents;
+		
+	}
+	
+	public String getUserAgentString(String name)
+	{
+		return userAgents().get(name).userAgentString();
+	}
+
+	public String getDefaultUserAgentString()
+	{
+		if (defaultUserAgentString == null)
+		{
+			for(UserAgent userAgent : userAgents().values())
+			{
+				if (userAgent.isDefaultAgent())
+				{
+					defaultUserAgentString = userAgent.userAgentString();
+					break;
+				}
+			}
+		}
+		
+		return defaultUserAgentString;
 	}
 }

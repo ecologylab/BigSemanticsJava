@@ -11,6 +11,7 @@ import java.util.Iterator;
 
 import ecologylab.appframework.PropertiesAndDirectories;
 import ecologylab.generic.HashMapArrayList;
+import ecologylab.model.NamedStyle;
 import ecologylab.semantics.tools.MetadataCompilerConstants;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.FieldAccessor;
@@ -55,6 +56,9 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	@xml_tag("always_show")
 	@xml_attribute
 	private boolean															alwaysShow;
+	
+	@xml_attribute
+	private String															style;
 
 	/**
 	 * XPath expression used to extract this field.
@@ -138,7 +142,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 
 	public MetaMetadataField()
 	{
-
+		
 	}
 
 	public MetaMetadataField(String name, ScalarType metadataType,
@@ -773,6 +777,33 @@ public HashMapArrayList<String, MetaMetadataField> getChildMetaMetadata()
 	public String collection()
 	{
 		return collection;
+	}
+	
+	public MetaMetadataRepository metaMetadataRepository()
+	{
+
+		ElementState currentNode = this;
+		while (currentNode.parent() != null)
+		{
+//			if (currentNodeParent instanceof MetaMetadataRepository)
+//				return (MetaMetadataRepository) currentNodeParent;
+//			
+			currentNode = currentNode.parent();
+		}
+		try
+		{
+			return (MetaMetadataRepository) currentNode;
+		}
+		catch (ClassCastException e)
+		{
+			error("Root node of MetaMetadata Repository XML DOM is not of type MetaMetadataRepository!");
+			return null;
+		}
+	}
+	
+	public NamedStyle lookupStyle()
+	{
+		return (style != null) ? metaMetadataRepository().lookupStyle(style) : metaMetadataRepository().getDefaultStyle();
 	}
 
 }

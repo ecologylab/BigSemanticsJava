@@ -2,6 +2,7 @@ package ecologylab.semantics.metametadata;
 
 
 import ecologylab.generic.Debug;
+import ecologylab.model.NamedStyle;
 import ecologylab.net.UserAgent;
 import ecologylab.xml.TranslationScope;
 
@@ -15,7 +16,8 @@ public class MetaMetadataTranslationScope extends Debug
 		MetaMetadata.class,
 		MetaMetadataField.class,
 		MetaMetadataRepository.class,
-		UserAgent.class
+		UserAgent.class,
+		NamedStyle.class
 	};
 		
 	public static TranslationScope get()

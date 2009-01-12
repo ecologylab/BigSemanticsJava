@@ -13,7 +13,6 @@ import ecologylab.appframework.PropertiesAndDirectories;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.generic.ReflectionTools;
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.library.DefaultMetadataTranslationSpace;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.tools.MetadataCompilerConstants;
 import ecologylab.xml.ElementState;
@@ -236,7 +235,8 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 	{
 		if (userAgentString == null)
 		{
-			userAgentString = "";
+			userAgentString = (userAgentName == null) ? repository().getDefaultUserAgentString() :
+				repository().getUserAgentString(userAgentName);
 		}
 
 		return userAgentString;
@@ -378,4 +378,8 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 		inheritedMetaMetadata = true;
 	}
 
+	public boolean doesGenerateClass()
+	{
+		return generateClass;
+	}
 }
