@@ -11,7 +11,8 @@ public class InterestExpressibleXTerm implements ScaledValueObserver
 	public InterestExpressibleXTerm(String s)
 	{
 		term = XTermDictionary.getTermForWord(s);
-		term.setWord(s);
+		if (term != null) // i.e. stop word
+			term.setWord(s);
 	}
 	
 	public InterestExpressibleXTerm(XTerm t)
@@ -31,6 +32,7 @@ public class InterestExpressibleXTerm implements ScaledValueObserver
 			short newValue = ((Short) arg).shortValue();	// the value from the slider!
 			short magnitude = (short) (newValue - getScaledValue());
 			InterestModel.expressInterest(term, magnitude);
+			//InterestModel.setTermInterest(term,newValue);
 		}
 
 	}
