@@ -104,125 +104,128 @@ public class MetaMetadataXPathType<M extends MetadataBase> extends DocumentType 
         HashMapArrayList<String, MetaMetadataField> mmdFieldSet = mmdField.getSet();
 
         // Traverses through the child metadata to populate.
-        for (MetaMetadataField mmdElement : mmdFieldSet)
+        if (mmdFieldSet != null)
         {
-            String xpathString = mmdElement.getXpath(); // Used to get the field value from the web page.
-            String mmdElementName = mmdElement.getName();
-
-            if (xpathString != null)
-            {
-                // this is a simple scalar field
-
-                String evaluation = "";
-
-                try
-                {
-                    evaluation = xpath.evaluate(xpathString, tidyDOM);
-                }
-                catch (XPathExpressionException e)
-                {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-
-                String stringPrefix = mmdElement.getStringPrefix();
-                if (stringPrefix != null)
-                {
-                    if (evaluation.startsWith(stringPrefix))
-                    {
-                        evaluation = evaluation.substring(stringPrefix.length());
-                    }
-                }
-                //to remove unwanted XML characters
-                evaluation = XMLTools.unescapeXML(evaluation);
-               
-                //remove the white spaces
-                evaluation=evaluation.trim();
-                metadata.set(mmdElementName, parsedURLTypeKludge(mmdElement, evaluation));// evaluation);
-
-            }
-            else
-            {
-                // this is either a nested element or a collection element
-
-                // If the field is nested
-                if (mmdElement.isNested())
-                {
-                    M nestedMetadata = null;
-
-                    // Have to return the nested object for the field.
-                    FieldAccessor fieldAccessor = metadata.getMetadataFieldAccessor(mmdElementName);
-                    nestedMetadata = (M) fieldAccessor.getAndPerhapsCreateNested(metadata);
-                    recursiveExtraction(translationScope, mmdElement, nestedMetadata, tidyDOM, purl);
-                }
-                // If the field is list.
-                else if ("ArrayList".equals(mmdElement.collection()))
-                {
-
-                    // this is the field accessor for the collection field
-                    FieldAccessor fieldAccessor = metadata.getMetadataFieldAccessor(mmdElementName);
-
-                    // now get the collection field
-                    Field collectionField = fieldAccessor.getField();
-
-                    // get the child meta-metadata fields
-                    HashMapArrayList<String, MetaMetadataField> childFieldList = mmdElement.getSet();
-
-                    // list to hold the collectionInstances
-                    ArrayList<Metadata> collectionInstanceList = new ArrayList();
-
-                    // loop over all the child meta-metadata fields of the collection meta-metadatafield
-                    for (int i = 0; i < childFieldList.size(); i++)
-                    {
-                        // the ith child field
-                        MetaMetadataField childMetadataField = childFieldList.get(i);
-
-                        // get the xpath expression
-                        String childXPath = childMetadataField.getXpath();
-
-                        NodeList nodes = null;
-                        try
-                        {
-                            nodes = (NodeList) xpath.evaluate(childXPath, tidyDOM, XPathConstants.NODESET);
-                        }
-                        catch (XPathExpressionException e)
-                        {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        }
-                        ScalarType scalarType = childMetadataField.getScalarType();
-
-                        // get the typed list from the node list
-                        ArrayList list = getTypedListFromNodes(nodes, scalarType, childMetadataField);
-
-                        Class collectionChildClass = translationScope.getClassByTag(mmdElement
-                                .getCollectionChildType());
-
-                        // only first time we need to create a list of instances which is equal to
-                        // the number of results returned.
-                        if (i == 0)
-                        {
-                            for (int j = 0; j < list.size(); j++)
-                            {
-                                collectionInstanceList.add((Metadata) ReflectionTools
-                                        .getInstance(collectionChildClass));
-                            }
-                        }
-
-                        // now for each child-meta-metadata field set the value in the collection instance.
-                        for (int j = 0; j < list.size(); j++)
-                        {
-                            // get the child field name
-                            String childFieldName = childMetadataField.getName();
-                            collectionInstanceList.get(j).set(childFieldName, list.get(j).toString());
-                        }
-
-                    }
-                    // set the value of collection list in the meta-data
-                    ReflectionTools.setFieldValue(metadata, collectionField, collectionInstanceList);
-                }
-            }
-        }// end for of all metadatafields
+	        for (MetaMetadataField mmdElement : mmdFieldSet)
+	        {
+	            String xpathString = mmdElement.getXpath(); // Used to get the field value from the web page.
+	            String mmdElementName = mmdElement.getName();
+	
+	            if (xpathString != null)
+	            {
+	                // this is a simple scalar field
+	
+	                String evaluation = "";
+	
+	                try
+	                {
+	                    evaluation = xpath.evaluate(xpathString, tidyDOM);
+	                }
+	                catch (XPathExpressionException e)
+	                {
+	                    // TODO Auto-generated catch block
+	                    e.printStackTrace();
+	                }
+	
+	                String stringPrefix = mmdElement.getStringPrefix();
+	                if (stringPrefix != null)
+	                {
+	                    if (evaluation.startsWith(stringPrefix))
+	                    {
+	                        evaluation = evaluation.substring(stringPrefix.length());
+	                    }
+	                }
+	                //to remove unwanted XML characters
+	                evaluation = XMLTools.unescapeXML(evaluation);
+	               
+	                //remove the white spaces
+	                evaluation=evaluation.trim();
+	                metadata.set(mmdElementName, parsedURLTypeKludge(mmdElement, evaluation));// evaluation);
+	
+	            }
+	            else
+	            {
+	                // this is either a nested element or a collection element
+	
+	                // If the field is nested
+	                if (mmdElement.isNested())
+	                {
+	                    M nestedMetadata = null;
+	
+	                    // Have to return the nested object for the field.
+	                    FieldAccessor fieldAccessor = metadata.getMetadataFieldAccessor(mmdElementName);
+	                    nestedMetadata = (M) fieldAccessor.getAndPerhapsCreateNested(metadata);
+	                    recursiveExtraction(translationScope, mmdElement, nestedMetadata, tidyDOM, purl);
+	                }
+	                // If the field is list.
+	                else if ("ArrayList".equals(mmdElement.collection()))
+	                {
+	
+	                    // this is the field accessor for the collection field
+	                    FieldAccessor fieldAccessor = metadata.getMetadataFieldAccessor(mmdElementName);
+	
+	                    // now get the collection field
+	                    Field collectionField = fieldAccessor.getField();
+	
+	                    // get the child meta-metadata fields
+	                    HashMapArrayList<String, MetaMetadataField> childFieldList = mmdElement.getSet();
+	
+	                    // list to hold the collectionInstances
+	                    ArrayList<Metadata> collectionInstanceList = new ArrayList();
+	
+	                    // loop over all the child meta-metadata fields of the collection meta-metadatafield
+	                    for (int i = 0; i < childFieldList.size(); i++)
+	                    {
+	                        // the ith child field
+	                        MetaMetadataField childMetadataField = childFieldList.get(i);
+	
+	                        // get the xpath expression
+	                        String childXPath = childMetadataField.getXpath();
+	
+	                        NodeList nodes = null;
+	                        try
+	                        {
+	                            nodes = (NodeList) xpath.evaluate(childXPath, tidyDOM, XPathConstants.NODESET);
+	                        }
+	                        catch (XPathExpressionException e)
+	                        {
+	                            // TODO Auto-generated catch block
+	                            e.printStackTrace();
+	                        }
+	                        ScalarType scalarType = childMetadataField.getScalarType();
+	
+	                        // get the typed list from the node list
+	                        ArrayList list = getTypedListFromNodes(nodes, scalarType, childMetadataField);
+	
+	                        Class collectionChildClass = translationScope.getClassByTag(mmdElement
+	                                .getCollectionChildType());
+	
+	                        // only first time we need to create a list of instances which is equal to
+	                        // the number of results returned.
+	                        if (i == 0)
+	                        {
+	                            for (int j = 0; j < list.size(); j++)
+	                            {
+	                                collectionInstanceList.add((Metadata) ReflectionTools
+	                                        .getInstance(collectionChildClass));
+	                            }
+	                        }
+	
+	                        // now for each child-meta-metadata field set the value in the collection instance.
+	                        for (int j = 0; j < list.size(); j++)
+	                        {
+	                            // get the child field name
+	                            String childFieldName = childMetadataField.getName();
+	                            collectionInstanceList.get(j).set(childFieldName, list.get(j).toString());
+	                        }
+	
+	                    }
+	                    // set the value of collection list in the meta-data
+	                    ReflectionTools.setFieldValue(metadata, collectionField, collectionInstanceList);
+	                }
+	            }
+	        }// end for of all metadatafields
+        }
         return metadata;
     }
 

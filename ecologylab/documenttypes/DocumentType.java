@@ -233,7 +233,8 @@ abstract public class DocumentType<AC extends AbstractContainer, IP extends Info
 			 * 
 			 * result = lookupSpecialExtractor(purl);
 			 */
-			if (metaMetadata != null) {
+			if (metaMetadata != null && metaMetadata.doesGenerateClass()) 
+			{
 				result = new MetaMetadataXPathType(infoCollector,
 						semanticAction);
 			}
