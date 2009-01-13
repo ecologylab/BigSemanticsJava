@@ -33,6 +33,8 @@ public class XTermDictionary implements ApplicationProperties
 	public static double averageIDF       = 0;
 
 	public static double corpusSize = Double.MAX_VALUE; 
+	
+	public static XStopTerm STOP_WORD = new XStopTerm();
 
 	static String DICTIONARY = "dictionary";
 
@@ -175,7 +177,7 @@ public class XTermDictionary implements ApplicationProperties
 	 */
 	private static XTerm newTerm(String word, String stem) {
 		if (stem.length() < 4 || stopWordTerms.contains(stem))
-			return null;
+			return STOP_WORD;
 		XTerm newTerm = new XTerm(stem, averageIDF);
 		newTerm.setWord(word);
 		dictionary.put(stem, newTerm);

@@ -73,4 +73,9 @@ public class XTerm
 		return hasWord;
 	}
 
+	public boolean isStopword ( )
+	{
+		return false;
+	}
+
 }
