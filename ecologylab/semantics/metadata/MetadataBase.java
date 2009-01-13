@@ -33,7 +33,6 @@ import ecologylab.xml.types.element.ArrayListState;
  */
 public class MetadataBase extends ElementState implements Iterable<FieldAccessor>
 {
-	protected VectorType<XTerm>				termVector;
 	protected TermVector 				compositeTermVector;
 	
 	/**
@@ -58,9 +57,14 @@ public class MetadataBase extends ElementState implements Iterable<FieldAccessor
 		// TODO Auto-generated constructor stub
 	}
 	
+	/**
+	 * This is actually the real composite term vector.
+	 * 
+	 * @return	Null for scalars.
+	 */
 	public VectorType<XTerm> termVector()
 	{
-		return termVector;
+		return null;
 	}
 
 
