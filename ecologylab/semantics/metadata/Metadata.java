@@ -100,32 +100,6 @@ abstract public class Metadata extends MetadataBase
 		}
 	}
 	
-	/**
-	 * Initializes the data termvector structure. This is not added to the individual
-	 * fields (so that it can be changed) but is added to the composite term vector.
-	 * If the data termvector has already been initialized, this operation will replace
-	 * the old one and rebuild the composite term vector.
-	 * FIXME:Not able to move to the MetadataBase b'coz of mixins.
-	 * @param initialTermVector The initial set of terms
-	 */
-	public void initializeTermVector(TermVector initialTermVector)
-	{
-		//System.out.println("Initializing TermVector. size is " + this.size());
-		
-		if (compositeTermVector != null)
-		{
-//			dataTermVector = initialTermVector;
-			
-			//initialize the composite TermVector
-			rebuildCompositeTermVector();
-		}
-//		if there is no cFMetadata then add to the composite TermVector
-		else
-		{
-			compositeTermVector = initialTermVector;
-		}
-	}
-
 	public boolean isFilled(String attributeName)
 	{
 		attributeName = attributeName.toLowerCase();
