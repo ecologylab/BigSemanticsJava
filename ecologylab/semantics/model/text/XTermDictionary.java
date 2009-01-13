@@ -222,12 +222,17 @@ public class XTermDictionary implements ApplicationProperties
 
 		corpusSize = Double.parseDouble(myInput.readLine());
 		while ((thisTerm = myInput.readLine()) != null) 
-		{              
-			String[] term     = thisTerm.split("\t");
-			String stem = term[0];
+		{
+			//Regexes for the dictionary are very costly.
+			//substring methods are way cheaper
+//			String[] term     = thisTerm.split("\t");
+			
+			int indexOfTab = thisTerm.indexOf('\t');
+			String stem = thisTerm.substring(0, indexOfTab);
+			
 			if (stopWordTerms.contains(stem))
 				continue;
-			double freq = Double.parseDouble(term[1]);
+			double freq = Double.parseDouble(thisTerm.substring(indexOfTab, thisTerm.length()));
 			frequencies.put(stem, freq);    
 			double idf = Math.log(corpusSize / freq);
 			dictionary.put(stem, new XTerm(stem, idf));
