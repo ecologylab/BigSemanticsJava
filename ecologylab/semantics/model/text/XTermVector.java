@@ -144,6 +144,17 @@ public class XTermVector extends XVector<XTerm>
 		s.append("}");
 		return s.toString();
 	}
+	
+	public String termString()
+	{
+		StringBuilder s = new StringBuilder();
+		for (XTerm t : values.keySet())
+		{
+			s.append(t.word);
+			s.append(" ");
+		}
+		return s.toString();
+	}
 
 	@Override
 	public double idfDot(VectorType<XTerm> v)
@@ -218,6 +229,14 @@ public class XTermVector extends XVector<XTerm>
 				values.remove(highestWeightedTerms.get(d));
 			}			
 		}
+	}
+	
+	@Override
+	public void set ( XTerm term, double val )
+	{
+		super.set(term, val);
+		setChanged();
+		notifyObservers();
 	}
 	
 }
