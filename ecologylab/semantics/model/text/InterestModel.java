@@ -103,4 +103,10 @@ public class InterestModel
 		unitize();
 	}
 
+	public static void expressInterest ( String query, short i )
+	{
+		expressInterest(new XTermVector(query), i);
+		
+	}
+
 }
