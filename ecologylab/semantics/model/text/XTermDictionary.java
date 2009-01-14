@@ -17,6 +17,7 @@ import java.util.zip.ZipInputStream;
 import ecologylab.io.Assets;
 import ecologylab.model.text.Term;
 import ecologylab.appframework.ApplicationProperties;
+import ecologylab.collections.CollectionTools;
 
 
 public class XTermDictionary implements ApplicationProperties
@@ -37,9 +38,13 @@ public class XTermDictionary implements ApplicationProperties
 	public static XStopTerm STOP_WORD = new XStopTerm();
 
 	static String DICTIONARY = "dictionary";
+	
+	public static final String[] mostObviousStopWordStrings =
+	{ // most generic i.r. stop words
+	};
 
-	public static final String[] stopWordStrings =
-	{ // generic i.r. stop words
+	public static final String[] moreStopWordStrings =
+	{ // more aggressive i.r. stop words
 		"a", "about", "above", "across", "after", "again", "against", "all", "almost",
 		"alone", "along", "already", "also", "although", "always", "am", "a.m", "among", "an", "and",
 		"another", "any",  "anybody", "anyone", "anything", "anywhere", "are", "area",
@@ -110,7 +115,13 @@ public class XTermDictionary implements ApplicationProperties
 		"gallery", "galleries", "archive", "archives","photo","photos",
 		"photogallery", "bbc", "news"
 	};
-	public final static ArrayList<String> stopWordTerms = new ArrayList<String>(stopWordStrings.length);
+	public final static HashMap<String, String> stopWordTerms = CollectionTools.buildHashMapFromStrings(moreStopWordStrings);
+	
+	static
+	{
+		for (String key: mostObviousStopWordStrings)
+			stopWordTerms.put(key, key);
+	}
 
 	public static void download(float dictionaryAssetVersion)
 	{
@@ -176,7 +187,7 @@ public class XTermDictionary implements ApplicationProperties
 	 * @param stem
 	 */
 	private static XTerm newTerm(String word, String stem) {
-		if (stem.length() < 4 || stopWordTerms.contains(stem))
+		if (stem.length() < 4 || stopWordTerms.containsKey(stem))
 			return STOP_WORD;
 		XTerm newTerm = new XTerm(stem, averageIDF);
 		newTerm.setWord(word);
@@ -230,7 +241,7 @@ public class XTermDictionary implements ApplicationProperties
 			int indexOfTab = thisTerm.indexOf('\t');
 			String stem = thisTerm.substring(0, indexOfTab);
 			
-			if (stopWordTerms.contains(stem))
+			if (stopWordTerms.containsKey(stem))
 				continue;
 			double freq = Double.parseDouble(thisTerm.substring(indexOfTab, thisTerm.length()));
 			frequencies.put(stem, freq);    
@@ -251,13 +262,14 @@ public class XTermDictionary implements ApplicationProperties
 	{
 		String s;
 		PorterStemmer p = new PorterStemmer();
-		for(int i=0; i<stopWordStrings.length; i++)
+		for(int i=0; i<moreStopWordStrings.length; i++)
 		{
-			s = stopWordStrings[i];
+			s = moreStopWordStrings[i];
 			for (int j=0; j<s.length(); j++)
 				p.add(s.charAt(j));
 			p.stem();
-			stopWordTerms.add(p.toString());
+			String pString = p.toString();
+			stopWordTerms.put(pString, pString);
 		}
 	}
 
