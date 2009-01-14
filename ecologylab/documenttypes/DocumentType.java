@@ -233,7 +233,11 @@ abstract public class DocumentType<AC extends AbstractContainer, IP extends Info
 			 * 
 			 * result = lookupSpecialExtractor(purl);
 			 */
-			if (metaMetadata != null && metaMetadata.doesGenerateClass()) 
+			
+			/* FIXME -- Abhinav -- get rid of the third condition (startsWith hack) for the following if statement 
+			 * after creating prefix comparison for getting metaMetadata by purl.
+			 */
+			if (metaMetadata != null && metaMetadata.doesGenerateClass() && (purl.toString().startsWith("http://portal.acm.org/citation.cfm?"))) 
 			{
 				result = new MetaMetadataXPathType(infoCollector,
 						semanticAction);
