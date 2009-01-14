@@ -9,7 +9,6 @@ import ecologylab.generic.ClassAndCollectionIterator;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.generic.OneLevelNestingIterator;
 import ecologylab.generic.VectorType;
-import ecologylab.model.text.TermVector;
 import ecologylab.model.text.WordForms;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.library.scalar.MetadataParsedURL;
@@ -170,46 +169,6 @@ abstract public class Metadata extends MetadataBase
 	    if (m != null && !vectors.contains(m.termVector()))
 	      termVector.add(m.termVector());
 	  }
-
-	  if (compositeTermVector != null)
-	    compositeTermVector.clear();
-	  else
-	    compositeTermVector	= new TermVector();
-
-		OneLevelNestingIterator<FieldAccessor, ? extends MetadataBase>  fullIterator	= fullNonRecursiveIterator();
-		while (fullIterator.hasNext())
-		{
-			MetadataFieldAccessor<?> metadataFieldAccessor	= (MetadataFieldAccessor<?>) fullIterator.next();
-			MetadataBase currentMetadataBase	= fullIterator.currentObject();
-			MetaMetadata groupMetaMetadata	= currentMetadataBase.getMetaMetadata();
-			MetaMetadataField fieldMetaMetadata		= (groupMetaMetadata == null) ? null :
-				groupMetaMetadata.lookupChild(metadataFieldAccessor);
-			if ((fieldMetaMetadata == null) || !fieldMetaMetadata.isIgnoreInTermVector())
-			{
-				try
-				{
-					Field field = metadataFieldAccessor.getField();
-					Object object = field.get(currentMetadataBase);
-					if(metadataFieldAccessor.isPseudoScalar())
-					{
-						MetadataBase metadataScalar = (MetadataBase) object;
-						if(metadataScalar != null)
-						{
-							metadataScalar.contributeToTermVector(compositeTermVector);	
-						}	
-					}
-					//				else
-					//					debug("Iterator passing Collections");
-
-				} catch (IllegalArgumentException e)
-				{
-					e.printStackTrace();
-				} catch (IllegalAccessException e)
-				{
-					e.printStackTrace();
-				}
-			}
-		}
 	}
 	
 	/**
@@ -350,7 +309,6 @@ abstract public class Metadata extends MetadataBase
 		  if (m != null)
 		    termVector.add(m.termVector());
 		}
-		compositeTermVector = new TermVector();
 	}
 	
 	public boolean loadedFromPreviousSession()

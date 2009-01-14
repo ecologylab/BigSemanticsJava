@@ -1,6 +1,5 @@
 package ecologylab.semantics.library.scalar;
 
-import ecologylab.model.text.TermVector;
 import ecologylab.semantics.metadata.semantics_pseudo_scalar;
 import ecologylab.semantics.model.text.XTerm;
 import ecologylab.semantics.model.text.XTermVector;
@@ -40,15 +39,6 @@ public class MetadataStringBuilder extends MetadataScalarBase
 		if (termVector == null)
 			termVector = new XTermVector();
 		return termVector;
-	}
-
-	@Override
-	public void contributeToTermVector(TermVector compositeTermVector)
-	{
-		if(value != null && value.length() > 0 )
-		{
-			compositeTermVector.addTerms(value.toString(), false);
-		}	
 	}
 	
 	@Override

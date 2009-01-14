@@ -15,7 +15,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import ecologylab.io.Assets;
-import ecologylab.model.text.Term;
 import ecologylab.appframework.ApplicationProperties;
 import ecologylab.collections.CollectionTools;
 

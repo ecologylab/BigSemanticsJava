@@ -13,10 +13,8 @@ import java.util.Iterator;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.generic.OneLevelNestingIterator;
 import ecologylab.generic.VectorType;
-import ecologylab.model.ParticipantInterest;
-import ecologylab.model.text.TermVector;
-import ecologylab.model.text.WordForms;
 import ecologylab.semantics.metametadata.MetaMetadata;
+import ecologylab.semantics.model.text.NullTermVector;
 import ecologylab.semantics.model.text.XTerm;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.FieldAccessor;
@@ -33,18 +31,6 @@ import ecologylab.xml.types.element.ArrayListState;
  */
 public class MetadataBase extends ElementState implements Iterable<FieldAccessor>
 {
-	protected TermVector 				compositeTermVector;
-	
-	/**
-	 * Represents interest in this field as a whole
-	 * (Example: author = Ben Shneiderman), in addition to interest
-	 * propagated into the termVector, which represents interest in
-	 * particular Terms. While the latter is the basis of the information
-	 * retrieval model (IR), this is what enables the model to function
-	 * in the context of the semantic web / digital 
-	 * libraries.
-	 */  
-	ParticipantInterest				participantInterest = new ParticipantInterest();
 
 	HashMapArrayList<String, FieldAccessor> metadataFieldAccessors;
 
@@ -68,72 +54,13 @@ public class MetadataBase extends ElementState implements Iterable<FieldAccessor
 	}
 
 
-	/**
-	 * @return the compositeTermVector
-	 */
-	public TermVector compositeTermVector()
-	{
-		return compositeTermVector;
-	}
 
-
-	/**
-	 * @param compositeTermVector the compositeTermVector to set
-	 */
-	public void setCompositeTermVector(TermVector compositeTermVector)
-	{
-		this.compositeTermVector = compositeTermVector;
-	}
-
-
-	/**
-	 * @return the participantInterest
-	 */
-	public ParticipantInterest getParticipantInterest()
-	{
-		return participantInterest;
-	}
-
-
-	/**
-	 * Increments interest in this MetadataField. 
-	 * @param delta	The change in interest.
-	 */
-	public void incrementParticipantInterest(short delta)
-	{
-		participantInterest.increment(delta);
-	}
-	
 	public void recycle()
 	{
-		//termVector.clear();
-		compositeTermVector 				= null;
-		participantInterest					= null;
 	}
 	
-	/**
-	 * Append the term to the field "value" as well as the term vector.
-	 * 
-	 * @param wf The term to add.
-	 */
-	public void addTerm(WordForms wf)
-	{
-		compositeTermVector.add(wf);
 
-		//value = null; //force value to be updated later
-
-		//if (termVector.size() > 0)
-
-		//this concat is way cheaper than rebuilding the termvector toString().
-		//value			= value.toString() + ' ' + wf.string();
-
-		//this.value = termVector.toString();
-		//this.value = termVector.toString(termVector.size(), ' ');
-		//else
-		//	   this.value = "";
-
-		compositeTermVector.combine(compositeTermVector, false);
-	}
+	
 
 	/**
 	 * Determine if the Metadata has any entries.
@@ -141,27 +68,7 @@ public class MetadataBase extends ElementState implements Iterable<FieldAccessor
 	 */
 	public boolean hasCompositeTermVector()
 	{
-		return (compositeTermVector != null);
-	}
-	
-	/**
-	 * The weight of the composite TermVector.
-	 * @return	The composite TermVector's weight.
-	 * @see ecologylab.model.text.TermVector#getWeight()
-	 */
-	public float getWeight()
-	{
-		return compositeTermVector == null ? 1 : compositeTermVector.getWeight();
-	}
-	
-	/**
-	 * The lnWeight
-	 * @return	The lnWeight() of the composite TermVector.
-	 * @see ecologylab.model.text.TermVector#lnWeight()
-	 */
-	public float lnWeight()
-	{
-		return compositeTermVector == null ? 0 : compositeTermVector.lnWeight();
+		return false;
 	}
 	
 	/**
@@ -174,16 +81,6 @@ public class MetadataBase extends ElementState implements Iterable<FieldAccessor
 	{
 		return (MetadataFieldAccessor) metadataFieldAccessors().get(fieldName);
 	}
-
-
-	/**
-	 * @param participantInterest the participantInterest to set
-	 */
-	public void setParticipantInterest(ParticipantInterest participantInterest)
-	{
-		this.participantInterest = participantInterest;
-	}
-
 
 	protected HashMapArrayList<String, FieldAccessor> metadataFieldAccessors()
 	{
@@ -277,11 +174,7 @@ public class MetadataBase extends ElementState implements Iterable<FieldAccessor
 		}
 		return false;
 	}
-	public void contributeToTermVector(TermVector compositeTermVector)
-	{
-
-	}
-	
+		
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.FIELD)
     @Inherited

@@ -8,7 +8,6 @@ import java.util.Set;
 import java.util.Observer;
 
 import ecologylab.generic.VectorType;
-import ecologylab.model.text.TermVector;
 
 public class XCompositeTermVector extends VectorType<XTerm> implements Observer
 {
