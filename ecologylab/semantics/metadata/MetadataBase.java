@@ -136,21 +136,6 @@ public class MetadataBase extends ElementState implements Iterable<FieldAccessor
 	}
 
 	/**
-	 * Append terms to the field "value" as well as the term vector.
-	 * 
-	 * @param wfv The vector of terms to add.
-	 */
-	public void addTerm(TermVector wfv)
-	{
-		Iterator it = wfv.iterator();
-		while (it.hasNext())
-		{ 
-			WordForms wf = (WordForms) it.next();
-			compositeTermVector.add(wf);
-		}
-	}
-	
-	/**
 	 * Modifies interest by delta. This function modifies the interest
 	 * in the composite TermVector, the constituent individual TermVectors,
 	 * and the interest in actual fields themselves (for the semantic web/DLs) 
