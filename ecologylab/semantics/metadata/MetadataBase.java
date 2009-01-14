@@ -136,43 +136,6 @@ public class MetadataBase extends ElementState implements Iterable<FieldAccessor
 	}
 
 	/**
-	 * Modifies interest by delta. This function modifies the interest
-	 * in the composite TermVector, the constituent individual TermVectors,
-	 * and the interest in actual fields themselves (for the semantic web/DLs) 
-	 * 
-	 * @param delta		The amount to modify interest
-	 */
-	public void incrementInterest(short delta)
-	{
-		if(compositeTermVector != null && !compositeTermVector.isEmpty())
-		{
-			compositeTermVector.incrementParticipantInterest(delta);
-			incrementParticipantInterest(delta);
-		}
-//		if(compositeTermVector != null && !compositeTermVector.isEmpty())
-//		{
-//			// first modify the composite TermVector
-//			compositeTermVector.incrementParticipantInterest(delta);
-//			
-//			//TODO Sashikanth: iterate on child fields
-//			Iterator it = iterator();
-//			while (it.hasNext())
-//			{
-//				
-//				// TermVectors
-//				Metadata mData = (Metadata) it.next();
-//				mData.termVector().incrementParticipantInterest(delta);
-//				
-//				// Lastly the actual fields
-//				mData.incrementParticipantInterest(delta);
-//			}
-//		}
-		
-		
-	}
-	
-
-	/**
 	 * Determine if the Metadata has any entries.
 	 * @return	True if there are Metadata entries.
 	 */
