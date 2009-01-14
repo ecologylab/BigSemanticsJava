@@ -143,7 +143,10 @@ public class XCompositeTermVector extends VectorType<XTerm> implements Observer
 	{
 		StringBuilder s = new StringBuilder("[");
 		for (VectorType<XTerm> v : termVectors.keySet())
-			s.append(v.toString() + "(" + termVectors.get(v).intValue() + "), ");
+		{
+			s.append(v.toString());
+			s.append(", ");
+		}
 		s.append("]");
 		return s.toString();
 	}

@@ -6,11 +6,14 @@ import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import ecologylab.appframework.types.prefs.Pref;
+import ecologylab.appframework.types.prefs.PrefBoolean;
 import ecologylab.generic.VectorType;
 
 public class XTermVector extends XVector<XTerm>
 {
 
+	private static final String	SHOW_WEIGHTS_PREF	= "show_weights";
 	static Pattern WORD_REGEX = Pattern.compile("[a-z]+(-[a-z]+)*([a-z]+)");
 
 	public XTermVector()
@@ -52,16 +55,19 @@ public class XTermVector extends XVector<XTerm>
 
 	private void addWithoutNotify(XTerm term, double val)
 	{
-		if (term == null)
+		if (term == null || term.isStopword())
 			return;
 		super.add(term, val);
 	}
 
 	public void add(XTerm term, double val)
 	{
-		super.add(term, val);
-		setChanged();
-		notifyObservers();
+		if(!term.isStopword())
+		{
+			super.add(term, val);
+			setChanged();
+			notifyObservers();
+		}
 	}
 
 	/**
@@ -125,7 +131,16 @@ public class XTermVector extends XVector<XTerm>
 	{
 		StringBuilder s = new StringBuilder("{");
 		for(XTerm t : values.keySet())
-			s.append(t.toString() + "(" + values.get(t) + "), ");
+		{
+			s.append(t.toString());
+			if (Pref.usePrefBoolean(SHOW_WEIGHTS_PREF, false).value())
+			{
+				s.append("("); 
+				s.append((int)(t.idf() * 100)/100.);
+				s.append("), ");
+			}
+			
+		}
 		s.append("}");
 		return s.toString();
 	}
