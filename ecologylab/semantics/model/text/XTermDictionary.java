@@ -40,17 +40,18 @@ public class XTermDictionary implements ApplicationProperties
 	
 	public static final String[] mostObviousStopWordStrings =
 	{ // most generic i.r. stop words
+		"a", "an", "and", "but", "can", "o", "of", "the"
 	};
 
 	public static final String[] moreStopWordStrings =
 	{ // more aggressive i.r. stop words
-		"a", "about", "above", "across", "after", "again", "against", "all", "almost",
-		"alone", "along", "already", "also", "although", "always", "am", "a.m", "among", "an", "and",
+		"about", "above", "across", "after", "again", "against", "all", "almost",
+		"alone", "along", "already", "also", "although", "always", "am", "a.m", "among",
 		"another", "any",  "anybody", "anyone", "anything", "anywhere", "are", "area",
 		"areas", "around", "as", "ask", "asked", "asking", "asks", "at", "away", "b", "back",
 		"backed", "backing", "backs",  "be", "because", "become", "becomes", "became",
 		"been", "before", "began", "behind", "being", "beings", "best", "better", "between",
-		"big", "both", "but", "by", "c", "came",  "can", "cannot", "case", "cases", "certain",
+		"big", "both", "by", "c", "came", "cannot", "case", "cases", "certain",
 		"certainly", "clear", "clearly", "come", "could", "d", "did", "differ", "different",
 		"differently", "do", "does", "done", "down", "downed",  "downing", "downs", "during",
 		"e", "each", "early", "either", "end", "ended", "ending", "ends", "enough", "et", "even",
@@ -69,7 +70,7 @@ public class XTermDictionary implements ApplicationProperties
 		"members", "men", "might", "more", "most", "mostly", "mr", "mrs", "much", "must", "my",
 		"myself", "n", "necessary", "need",  "needed", "needing", "needs", "never", "new",
 		"newer", "newest", "next", "no", "non", "not", "nobody", "noone", "nothing", "now",
-		"nowhere", "number", "numbered", "numbering", "numbers", "o", "of", "off", "often",
+		"nowhere", "number", "numbered", "numbering", "numbers", "off", "often",
 		"old", "older", "oldest", "on", "once", "one", "only", "open", "opened", "opening",
 		"opens", "or", "order", "ordered", "ordering", "orders", "other", "others", "our",
 		"out", "over", "p", "page", "part", "parted", "parting", "parts", "per", "perhaps", "place",
@@ -80,7 +81,7 @@ public class XTermDictionary implements ApplicationProperties
 		"seems", "several", "shall", "she", "should", "show", "showed", "showing", "shows",
 		"side", "sides", "since", "small", "smaller", "smallest", "so", "some", "somebody",
 		"someone", "something", "somewhere", "state", "states", "stopword","still", "such", "sure", "t",
-		"take", "taken", "than", "that", "the", "their", "them", "then", "there", "therefore",
+		"take", "taken", "than", "that", "their", "them", "then", "there", "therefore",
 		"these", "they", "thing", "things", "think", "thinks", "this", "those", "though",
 		"thought", "thoughts", "three", "through", "thus", "to", "today", "together", "too",
 		"took", "toward", "turn", "turned", "turning", "turns", "two", "u", "under", "until",
@@ -114,6 +115,7 @@ public class XTermDictionary implements ApplicationProperties
 		"gallery", "galleries", "archive", "archives","photo","photos",
 		"photogallery", "bbc", "news"
 	};
+	public final static HashMap<String, String> mostObviousStopWordTerms = CollectionTools.buildHashMapFromStrings(mostObviousStopWordStrings);
 	public final static HashMap<String, String> stopWordTerms = CollectionTools.buildHashMapFromStrings(moreStopWordStrings);
 	
 	static
