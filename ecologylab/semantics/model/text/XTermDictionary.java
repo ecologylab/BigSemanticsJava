@@ -213,7 +213,7 @@ public class XTermDictionary implements ApplicationProperties
 	{
 		if (stem.length() < 4 || stopWordTerms.containsKey(stem))
 			return STOP_WORD;
-		XTerm newTerm = new XTerm(stem, averageIDF);
+		XTerm newTerm = new XTerm(stem, /* averageIDF */ STOP_WORD.idf());
 		newTerm.setWord(word);
 		dictionary.put(stem, newTerm);
 		return newTerm;
