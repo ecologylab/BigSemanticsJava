@@ -40,7 +40,7 @@ public class XTermDictionary implements ApplicationProperties
 	
 	public static final String[] mostObviousStopWordStrings =
 	{ // most generic i.r. stop words
-		"a", "an", "and", "but", "can", "o", "of", "the"
+		"a", "an", "and", "but", "can", "like", "o", "of", "the"
 	};
 
 	public static final String[] moreStopWordStrings =
@@ -65,7 +65,7 @@ public class XTermDictionary implements ApplicationProperties
 		"however", "i", "if",  "important", "in", "interest", "interested", "interesting",
 		"interests", "into", "is", "it", "its", "itself", "j", "just", "k", "keep", "keeps",
 		"kind", "knew", "know", "known",  "knows", "l", "large", "largely", "last", "later",
-		"latest", "least", "less", "let", "lets", "like", "likely", "long", "longer",
+		"latest", "least", "less", "let", "lets", "likely", "long", "longer",
 		"longest", "m", "made", "make", "making",  "man", "many", "may", "me", "member",
 		"members", "men", "might", "more", "most", "mostly", "mr", "mrs", "much", "must", "my",
 		"myself", "n", "necessary", "need",  "needed", "needing", "needs", "never", "new",
