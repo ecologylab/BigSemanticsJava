@@ -7,18 +7,18 @@ import java.util.Observable;
 import java.util.Set;
 import java.util.Observer;
 
-import ecologylab.generic.VectorType;
+import ecologylab.generic.IFeatureVector;
 
-public class CompositeTermVector extends VectorType<Term> implements Observer
+public class CompositeTermVector extends Observable implements Observer, ITermVector
 {
 
 	public CompositeTermVector()
 	{
 	}
 
-	private FeatureVector<Term>							compositeTermVector	= new TermVector();
+	private TermVector							compositeTermVector	= new TermVector();
 
-	private Hashtable<VectorType<Term>, Double>	termVectors			= new Hashtable<VectorType<Term>, Double>();
+	private Hashtable<ITermVector, Double>	termVectors			= new Hashtable<ITermVector, Double>();
 
 	/**
 	 * Adds a Term Vector to this Composite Term Vectors collection, multiplying it by a scalar.
@@ -28,9 +28,9 @@ public class CompositeTermVector extends VectorType<Term> implements Observer
 	 * @param multiplier
 	 *            The scalar multiple.
 	 */
-	public void add(double multiplier, VectorType<Term> tv)
+	public void add(double multiplier, ITermVector tv)
 	{
-		Hashtable<VectorType<Term>, Double> v;
+		Hashtable<ITermVector, Double> v;
 		v = termVectors;
 		synchronized (v)
 		{
@@ -52,7 +52,7 @@ public class CompositeTermVector extends VectorType<Term> implements Observer
 	 * @param tv
 	 *            The term vector you wish to add.
 	 */
-	public void add(VectorType<Term> tv)
+	public void add(ITermVector tv)
 	{
 		if (tv != null)
 			add(1, tv);
@@ -64,7 +64,7 @@ public class CompositeTermVector extends VectorType<Term> implements Observer
 	 * @param tv
 	 *            The Term Vector you wish to remove.
 	 */
-	public void remove(VectorType<Term> tv)
+	public void remove(ITermVector tv)
 	{
 		Double multiple = termVectors.remove(tv);
 		if (multiple != null)
@@ -88,27 +88,27 @@ public class CompositeTermVector extends VectorType<Term> implements Observer
 
 	public void recycle()
 	{
-		Hashtable<VectorType<Term>, Double> v;
+		Hashtable<ITermVector, Double> v;
 		v = termVectors;
 		if (v != null)
-			for (VectorType<Term> tv : v.keySet())
+			for (ITermVector tv : v.keySet())
 				tv.deleteObserver(this);
 	}
 
 	private synchronized void rebuildCompositeTermVector()
 	{
-		Hashtable<VectorType<Term>, Double> v;
-		FeatureVector<Term> c = compositeTermVector;
+		Hashtable<ITermVector, Double> v;
+		TermVector c = compositeTermVector;
 		c = new TermVector(c.size());
 		v = termVectors;
-		for (VectorType<Term> t : v.keySet())
+		for (IFeatureVector<Term> t : v.keySet())
 		{
 			c.add(v.get(t), t);
 		}
 		compositeTermVector = c;
 	}
 
-	public double dot(VectorType<Term> v)
+	public double dot(IFeatureVector<Term> v)
 	{
 		return compositeTermVector.dot(v);
 	}
@@ -133,7 +133,7 @@ public class CompositeTermVector extends VectorType<Term> implements Observer
 		return compositeTermVector.values();
 	}
 
-	public Set<VectorType<Term>> componentVectors()
+	public Set<ITermVector> componentVectors()
 	{
 		return termVectors.keySet();
 	}
@@ -141,7 +141,7 @@ public class CompositeTermVector extends VectorType<Term> implements Observer
 	public String toString()
 	{
 		StringBuilder s = new StringBuilder("[");
-		for (VectorType<Term> v : termVectors.keySet())
+		for (IFeatureVector<Term> v : termVectors.keySet())
 		{
 			s.append(v.toString());
 			s.append(", ");
@@ -155,41 +155,35 @@ public class CompositeTermVector extends VectorType<Term> implements Observer
 		return compositeTermVector.norm();
 	}
 
-	@Override
-	public double idfDot(VectorType<Term> v)
+	public double idfDot(IFeatureVector<Term> v)
 	{
 		return compositeTermVector.idfDot(v);
 	}
 
-	@Override
-	public VectorType<Term> unit()
+	public TermVector unit()
 	{
 		// TODO Auto-generated method stub
 		return compositeTermVector.unit();
 	}
 
-	@Override
-	public int commonDimensions(VectorType<Term> v)
+	public int commonDimensions(IFeatureVector<Term> v)
 	{
 		// TODO Auto-generated method stub
 		return compositeTermVector.commonDimensions(v);
 	}
 
-	@Override
-	public double dotSimplex(VectorType<Term> v)
+	public double dotSimplex(IFeatureVector<Term> v)
 	{
 		// TODO Auto-generated method stub
 		return compositeTermVector.dotSimplex(v);
 	}
 	
-	@Override
-	public VectorType<Term> simplex()
+	public TermVector simplex()
 	{
 		return compositeTermVector.simplex();
 	}
 
-	@Override
-	public double idfDotNoTF(VectorType<Term> v)
+	public double idfDotNoTF(IFeatureVector<Term> v)
 	{
 		return compositeTermVector.idfDotNoTF(v);
 	}

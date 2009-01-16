@@ -1,10 +1,6 @@
 package ecologylab.semantics.model.text;
 
-import java.util.HashMap;
-
-import ecologylab.generic.VectorType;
-import ecologylab.semantics.model.text.Term;
-import ecologylab.semantics.model.text.TermVector;
+import ecologylab.generic.IFeatureVector;
 
 public class InterestModel
 {
@@ -20,31 +16,20 @@ public class InterestModel
 
 	private static Object		PI_LOCK					= "";
 
-	public static void expressInterest ( VectorType<Term> interestingTermVector, short magnitude )
+	public static void expressInterest ( IFeatureVector<Term> interestingTermVector, short magnitude )
 	{
-		 timeScaleInterest();
+		timeScaleInterest();
 		TermVector xtv = new TermVector(interestingTermVector);
 		xtv.multiply(magnitude);
 		xtv.clamp(magnitude);
 		participantInterest.add(1, xtv);
 		unitize();
-
-		// HashMap<XTerm, Double> values = interestingTermVector.map();
-		// synchronized(values)
-		// {
-		// for (XTerm term : values.keySet())
-		// {
-		// if ( termInterest.containsKey(term) )
-		// values.remove(term);
-		// }
-		// }
-		// participantInterest.add(magnitude, interestingTermVector);
 	}
 
 	public static void expressInterest ( Term term, short magnitude )
 	{
 		magnitude /= 2;
-		 timeScaleInterest();
+		timeScaleInterest();
 		participantInterest.add(term, magnitude);
 		unitize();
 		// participantInterest.add(term, magnitude);
@@ -55,28 +40,28 @@ public class InterestModel
 	{
 		long delta_t = System.nanoTime() - timestamp;
 		double delta_t_in_seconds = delta_t / 1e9;
-		participantInterest.multiply(Math.exp(-delta_t_in_seconds/INTEREST_TIME_CONSTANT));
+		participantInterest.multiply(Math.exp(-delta_t_in_seconds / INTEREST_TIME_CONSTANT));
 		timestamp = System.nanoTime();
 	}
 
-	public static FeatureVector<Term> getPIV ( )
+	public static ITermVector getPIV ( )
 	{
 		return participantInterest;
 	}
 
-	public static double getAbsoluteInterestOfTermVector ( VectorType<Term> tv )
+	public static double getAbsoluteInterestOfTermVector ( ITermVector tv )
 	{
 		return tv.idfDotNoTF(unitParticipantInterest);
 	}
 
-	public static short getInterestExpressedInTermVector ( VectorType<Term> termVector )
+	public static short getInterestExpressedInTermVector ( IFeatureVector<Term> termVector )
 	{
 		return (short) (10 * unitParticipantInterest.dotSimplex(termVector));
 	}
 
 	public static short getInterestExpressedInXTerm ( Term term )
 	{
-		return (short) ( 2*participantInterest.get(term));
+		return (short) (2 * participantInterest.get(term));
 	}
 
 	public static void expressInterest ( InterestExpressibleElement element, short magnitude )
@@ -106,7 +91,7 @@ public class InterestModel
 	public static void expressInterest ( String query, short i )
 	{
 		expressInterest(new TermVector(query), i);
-		
+
 	}
 
 }

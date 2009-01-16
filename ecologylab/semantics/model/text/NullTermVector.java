@@ -6,9 +6,9 @@ import java.util.Hashtable;
 import java.util.Observer;
 import java.util.Set;
 
-import ecologylab.generic.VectorType;
+import ecologylab.generic.IFeatureVector;
 
-public class NullTermVector extends VectorType<Term>
+public class NullTermVector implements ITermVector
 {
 
 	public static NullTermVector	ntv	= new NullTermVector();
@@ -30,7 +30,7 @@ public class NullTermVector extends VectorType<Term>
 
 	}
 
-	public double dot(VectorType<Term> v)
+	public double dot(IFeatureVector<Term> v)
 	{
 		// TODO Auto-generated method stub
 		return 0;
@@ -65,8 +65,7 @@ public class NullTermVector extends VectorType<Term>
 		return 0;
 	}
 
-	@Override
-	public double idfDot(VectorType<Term> v)
+	public double idfDot(IFeatureVector<Term> v)
 	{
 		return 0;
 	}
@@ -76,34 +75,29 @@ public class NullTermVector extends VectorType<Term>
 		return "NullTV";
 	}
 
-	@Override
-	public VectorType<Term> unit()
+	public IFeatureVector<Term> unit()
 	{
 		return this;
 	}
 	
-	@Override
-	public VectorType<Term> simplex()
+	public IFeatureVector<Term> simplex()
 	{
 		return this;
 	}
 
-	@Override
-	public int commonDimensions(VectorType<Term> v)
+	public int commonDimensions(IFeatureVector<Term> v)
 	{
 		// TODO Auto-generated method stub
 		return 1;
 	}
 
-	@Override
-	public double dotSimplex(VectorType<Term> v)
+	public double dotSimplex(IFeatureVector<Term> v)
 	{
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
-	@Override
-	public double idfDotNoTF(VectorType<Term> v)
+	public double idfDotNoTF(IFeatureVector<Term> v)
 	{
 		// TODO Auto-generated method stub
 		return 0;

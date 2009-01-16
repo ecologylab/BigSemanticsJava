@@ -1,8 +1,8 @@
 package ecologylab.semantics.model.text;
 
-import ecologylab.generic.VectorType;
+import ecologylab.generic.IFeatureVector;
 
 public interface InterestExpressibleElement
 {
-	public VectorType<Term> getInterestExpressionTermVector();
+	public IFeatureVector<Term> getInterestExpressionTermVector();
 }

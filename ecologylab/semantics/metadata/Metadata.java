@@ -1,24 +1,17 @@
 package ecologylab.semantics.metadata;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Set;
 
 import ecologylab.generic.ClassAndCollectionIterator;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.generic.OneLevelNestingIterator;
-import ecologylab.generic.VectorType;
-import ecologylab.model.text.WordForms;
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.library.scalar.MetadataParsedURL;
-import ecologylab.semantics.library.scalar.MetadataString;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataField;
-import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.model.text.CompositeTermVector;
+import ecologylab.semantics.model.text.ITermVector;
 import ecologylab.semantics.model.text.Term;
-import ecologylab.xml.ElementState;
 import ecologylab.xml.FieldAccessor;
 import ecologylab.xml.types.element.ArrayListState;
 
@@ -162,7 +155,7 @@ abstract public class Metadata extends MetadataBase
 		//if there are no metadatafields retain the composite termvector
 	  //because it might have meaningful entries
 
-	  Set<VectorType<Term>> vectors = termVector.componentVectors();
+	  Set<ITermVector> vectors = termVector.componentVectors();
 	  ClassAndCollectionIterator<FieldAccessor, MetadataBase> i = metadataIterator();
 	  while (i.hasNext()) {
 	    MetadataBase m = i.next();

@@ -1,20 +1,14 @@
 package ecologylab.semantics.model.text;
 
-import java.util.Hashtable;
 import java.util.Observable;
-import java.util.Set;
 
-
-
-import ecologylab.generic.VectorType;
+import ecologylab.generic.IFeatureVector;
 import ecologylab.gui.ScaledValueObserver;
-import ecologylab.semantics.model.text.CompositeTermVector;
-import ecologylab.semantics.model.text.Term;
 
 public class InterestExpressibleTermVector extends TermVector implements ScaledValueObserver
 {	
 
-	public InterestExpressibleTermVector(VectorType<Term> tv) {
+	public InterestExpressibleTermVector(IFeatureVector<Term> tv) {
 		super(tv);
 	}
 	

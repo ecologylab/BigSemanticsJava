@@ -8,9 +8,10 @@ import java.util.regex.Pattern;
 
 import ecologylab.appframework.types.prefs.Pref;
 import ecologylab.appframework.types.prefs.PrefBoolean;
-import ecologylab.generic.VectorType;
+import ecologylab.generic.FeatureVector;
+import ecologylab.generic.IFeatureVector;
 
-public class TermVector extends FeatureVector<Term>
+public class TermVector extends FeatureVector<Term> implements ITermVector
 {
 
 	private static final String	SHOW_WEIGHTS_PREF	= "show_weights";
@@ -20,7 +21,7 @@ public class TermVector extends FeatureVector<Term>
 	{
 	}
 
-	public TermVector(VectorType<Term> tv)
+	public TermVector(IFeatureVector<Term> tv)
 	{
 		super(tv);
 	}
@@ -76,7 +77,7 @@ public class TermVector extends FeatureVector<Term>
 	 * @param v
 	 *            Vector by which to multiply
 	 */
-	public void multiply(VectorType<Term> v)
+	public void multiply(IFeatureVector<Term> v)
 	{
 		super.multiply(v);
 		setChanged();
@@ -107,7 +108,7 @@ public class TermVector extends FeatureVector<Term>
 	 * @param v
 	 *            Vector to add to this one
 	 */
-	public void add(double c, VectorType<Term> v)
+	public void add(double c, IFeatureVector<Term> v)
 	{
 		super.add(c, v);
 		setChanged();
@@ -120,7 +121,7 @@ public class TermVector extends FeatureVector<Term>
 	 * @param v
 	 *            Vector to add to this
 	 */
-	public void add(VectorType<Term> v)
+	public void add(IFeatureVector<Term> v)
 	{
 		super.add(v);
 		setChanged();
@@ -156,12 +157,17 @@ public class TermVector extends FeatureVector<Term>
 		return s.toString();
 	}
 
-	@Override
-	public double idfDot(VectorType<Term> v)
+	public double idfDot(IFeatureVector<Term> v)
 	{
 		return idfDot(v, false);
 	}
-	private double idfDot(VectorType<Term> v, boolean noTF)
+	
+	public double idfDotNoTF(IFeatureVector<Term> v)
+	{
+		return idfDot(v, true);
+	}
+	
+	private double idfDot(IFeatureVector<Term> v, boolean noTF)
 	{
 		HashMap<Term,Double> other = v.map();
 		if (other == null || this.norm() == 0 || v.norm() == 0)
@@ -181,16 +187,6 @@ public class TermVector extends FeatureVector<Term>
 			}
 		}
 		return dot;
-	}
-	
-	public double idfDotNoTF(VectorType<Term> v)
-	{
-		return idfDot(v, true);
-	}
-
-	private double magicalScalingFactor(double d)
-	{
-		return Math.exp(d);
 	}
 	
 	public void clamp(double clampTo)

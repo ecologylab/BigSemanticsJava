@@ -12,8 +12,8 @@ import java.util.Iterator;
 
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.generic.OneLevelNestingIterator;
-import ecologylab.generic.VectorType;
 import ecologylab.semantics.metametadata.MetaMetadata;
+import ecologylab.semantics.model.text.ITermVector;
 import ecologylab.semantics.model.text.NullTermVector;
 import ecologylab.semantics.model.text.Term;
 import ecologylab.xml.ElementState;
@@ -48,7 +48,7 @@ public class MetadataBase extends ElementState implements Iterable<FieldAccessor
 	 * 
 	 * @return	Null for scalars.
 	 */
-	public VectorType<Term> termVector()
+	public ITermVector termVector()
 	{
 		return null;
 	}
