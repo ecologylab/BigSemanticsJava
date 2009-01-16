@@ -4,18 +4,18 @@ import java.util.Observable;
 
 import ecologylab.gui.ScaledValueObserver;
 
-public class InterestExpressibleXTerm implements ScaledValueObserver
+public class InterestExpressibleTerm implements ScaledValueObserver
 {
-	private XTerm term;
+	private Term term;
 	
-	public InterestExpressibleXTerm(String s)
+	public InterestExpressibleTerm(String s)
 	{
-		term = XTermDictionary.getTermForWord(s);
+		term = TermDictionary.getTermForWord(s);
 		if (term != null) // i.e. stop word
 			term.setWord(s);
 	}
 	
-	public InterestExpressibleXTerm(XTerm t)
+	public InterestExpressibleTerm(Term t)
 	{
 		term = t;
 	}

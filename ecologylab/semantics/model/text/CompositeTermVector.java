@@ -9,16 +9,16 @@ import java.util.Observer;
 
 import ecologylab.generic.VectorType;
 
-public class XCompositeTermVector extends VectorType<XTerm> implements Observer
+public class CompositeTermVector extends VectorType<Term> implements Observer
 {
 
-	public XCompositeTermVector()
+	public CompositeTermVector()
 	{
 	}
 
-	private XVector<XTerm>							compositeTermVector	= new XTermVector();
+	private FeatureVector<Term>							compositeTermVector	= new TermVector();
 
-	private Hashtable<VectorType<XTerm>, Double>	termVectors			= new Hashtable<VectorType<XTerm>, Double>();
+	private Hashtable<VectorType<Term>, Double>	termVectors			= new Hashtable<VectorType<Term>, Double>();
 
 	/**
 	 * Adds a Term Vector to this Composite Term Vectors collection, multiplying it by a scalar.
@@ -28,9 +28,9 @@ public class XCompositeTermVector extends VectorType<XTerm> implements Observer
 	 * @param multiplier
 	 *            The scalar multiple.
 	 */
-	public void add(double multiplier, VectorType<XTerm> tv)
+	public void add(double multiplier, VectorType<Term> tv)
 	{
-		Hashtable<VectorType<XTerm>, Double> v;
+		Hashtable<VectorType<Term>, Double> v;
 		v = termVectors;
 		synchronized (v)
 		{
@@ -52,7 +52,7 @@ public class XCompositeTermVector extends VectorType<XTerm> implements Observer
 	 * @param tv
 	 *            The term vector you wish to add.
 	 */
-	public void add(VectorType<XTerm> tv)
+	public void add(VectorType<Term> tv)
 	{
 		if (tv != null)
 			add(1, tv);
@@ -64,7 +64,7 @@ public class XCompositeTermVector extends VectorType<XTerm> implements Observer
 	 * @param tv
 	 *            The Term Vector you wish to remove.
 	 */
-	public void remove(VectorType<XTerm> tv)
+	public void remove(VectorType<Term> tv)
 	{
 		Double multiple = termVectors.remove(tv);
 		if (multiple != null)
@@ -88,42 +88,42 @@ public class XCompositeTermVector extends VectorType<XTerm> implements Observer
 
 	public void recycle()
 	{
-		Hashtable<VectorType<XTerm>, Double> v;
+		Hashtable<VectorType<Term>, Double> v;
 		v = termVectors;
 		if (v != null)
-			for (VectorType<XTerm> tv : v.keySet())
+			for (VectorType<Term> tv : v.keySet())
 				tv.deleteObserver(this);
 	}
 
 	private synchronized void rebuildCompositeTermVector()
 	{
-		Hashtable<VectorType<XTerm>, Double> v;
-		XVector<XTerm> c = compositeTermVector;
-		c = new XTermVector(c.size());
+		Hashtable<VectorType<Term>, Double> v;
+		FeatureVector<Term> c = compositeTermVector;
+		c = new TermVector(c.size());
 		v = termVectors;
-		for (VectorType<XTerm> t : v.keySet())
+		for (VectorType<Term> t : v.keySet())
 		{
 			c.add(v.get(t), t);
 		}
 		compositeTermVector = c;
 	}
 
-	public double dot(VectorType<XTerm> v)
+	public double dot(VectorType<Term> v)
 	{
 		return compositeTermVector.dot(v);
 	}
 
-	public Set<XTerm> elements()
+	public Set<Term> elements()
 	{
 		return compositeTermVector.elements();
 	}
 
-	public double get(XTerm term)
+	public double get(Term term)
 	{
 		return compositeTermVector.get(term);
 	}
 
-	public HashMap<XTerm, Double> map()
+	public HashMap<Term, Double> map()
 	{
 		return compositeTermVector.map();
 	}
@@ -133,7 +133,7 @@ public class XCompositeTermVector extends VectorType<XTerm> implements Observer
 		return compositeTermVector.values();
 	}
 
-	public Set<VectorType<XTerm>> componentVectors()
+	public Set<VectorType<Term>> componentVectors()
 	{
 		return termVectors.keySet();
 	}
@@ -141,7 +141,7 @@ public class XCompositeTermVector extends VectorType<XTerm> implements Observer
 	public String toString()
 	{
 		StringBuilder s = new StringBuilder("[");
-		for (VectorType<XTerm> v : termVectors.keySet())
+		for (VectorType<Term> v : termVectors.keySet())
 		{
 			s.append(v.toString());
 			s.append(", ");
@@ -156,40 +156,40 @@ public class XCompositeTermVector extends VectorType<XTerm> implements Observer
 	}
 
 	@Override
-	public double idfDot(VectorType<XTerm> v)
+	public double idfDot(VectorType<Term> v)
 	{
 		return compositeTermVector.idfDot(v);
 	}
 
 	@Override
-	public VectorType<XTerm> unit()
+	public VectorType<Term> unit()
 	{
 		// TODO Auto-generated method stub
 		return compositeTermVector.unit();
 	}
 
 	@Override
-	public int commonDimensions(VectorType<XTerm> v)
+	public int commonDimensions(VectorType<Term> v)
 	{
 		// TODO Auto-generated method stub
 		return compositeTermVector.commonDimensions(v);
 	}
 
 	@Override
-	public double dotSimplex(VectorType<XTerm> v)
+	public double dotSimplex(VectorType<Term> v)
 	{
 		// TODO Auto-generated method stub
 		return compositeTermVector.dotSimplex(v);
 	}
 	
 	@Override
-	public VectorType<XTerm> simplex()
+	public VectorType<Term> simplex()
 	{
 		return compositeTermVector.simplex();
 	}
 
 	@Override
-	public double idfDotNoTF(VectorType<XTerm> v)
+	public double idfDotNoTF(VectorType<Term> v)
 	{
 		return compositeTermVector.idfDotNoTF(v);
 	}

@@ -16,8 +16,8 @@ import ecologylab.semantics.library.scalar.MetadataString;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataField;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
-import ecologylab.semantics.model.text.XCompositeTermVector;
-import ecologylab.semantics.model.text.XTerm;
+import ecologylab.semantics.model.text.CompositeTermVector;
+import ecologylab.semantics.model.text.Term;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.FieldAccessor;
 import ecologylab.xml.types.element.ArrayListState;
@@ -36,7 +36,7 @@ abstract public class Metadata extends MetadataBase
 {
 	MetaMetadata 							metaMetadata;
 	
-	XCompositeTermVector					termVector = new XCompositeTermVector();
+	CompositeTermVector					termVector = new CompositeTermVector();
 	
 	/**
 	 * Allows combining instantiated Metadata subclass declarations without hierarchy.
@@ -162,7 +162,7 @@ abstract public class Metadata extends MetadataBase
 		//if there are no metadatafields retain the composite termvector
 	  //because it might have meaningful entries
 
-	  Set<VectorType<XTerm>> vectors = termVector.componentVectors();
+	  Set<VectorType<Term>> vectors = termVector.componentVectors();
 	  ClassAndCollectionIterator<FieldAccessor, MetadataBase> i = metadataIterator();
 	  while (i.hasNext()) {
 	    MetadataBase m = i.next();
@@ -292,7 +292,7 @@ abstract public class Metadata extends MetadataBase
 		this.metaMetadata = metaMetadata;
 	}
 	
-	public XCompositeTermVector termVector()
+	public CompositeTermVector termVector()
 	{
 	  if (termVector == null)
 	    initializeMetadataCompTermVector();
@@ -301,7 +301,7 @@ abstract public class Metadata extends MetadataBase
 	
 	public void initializeMetadataCompTermVector()
 	{
-		termVector = new XCompositeTermVector();
+		termVector = new CompositeTermVector();
 		ClassAndCollectionIterator<FieldAccessor, MetadataBase> i = metadataIterator();
 		while(i.hasNext())
 		{

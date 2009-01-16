@@ -8,7 +8,7 @@ import java.util.Set;
 
 import ecologylab.generic.VectorType;
 
-public class NullTermVector extends VectorType<XTerm>
+public class NullTermVector extends VectorType<Term>
 {
 
 	public static NullTermVector	ntv	= new NullTermVector();
@@ -30,25 +30,25 @@ public class NullTermVector extends VectorType<XTerm>
 
 	}
 
-	public double dot(VectorType<XTerm> v)
+	public double dot(VectorType<Term> v)
 	{
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
-	public Set<XTerm> elements()
+	public Set<Term> elements()
 	{
 		// TODO Auto-generated method stub
-		return new HashSet<XTerm>();
+		return new HashSet<Term>();
 	}
 
-	public double get(XTerm term)
+	public double get(Term term)
 	{
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
-	public HashMap<XTerm, Double> map()
+	public HashMap<Term, Double> map()
 	{
 		// TODO Auto-generated method stub
 		return new HashMap();
@@ -66,7 +66,7 @@ public class NullTermVector extends VectorType<XTerm>
 	}
 
 	@Override
-	public double idfDot(VectorType<XTerm> v)
+	public double idfDot(VectorType<Term> v)
 	{
 		return 0;
 	}
@@ -77,33 +77,33 @@ public class NullTermVector extends VectorType<XTerm>
 	}
 
 	@Override
-	public VectorType<XTerm> unit()
+	public VectorType<Term> unit()
 	{
 		return this;
 	}
 	
 	@Override
-	public VectorType<XTerm> simplex()
+	public VectorType<Term> simplex()
 	{
 		return this;
 	}
 
 	@Override
-	public int commonDimensions(VectorType<XTerm> v)
+	public int commonDimensions(VectorType<Term> v)
 	{
 		// TODO Auto-generated method stub
 		return 1;
 	}
 
 	@Override
-	public double dotSimplex(VectorType<XTerm> v)
+	public double dotSimplex(VectorType<Term> v)
 	{
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
-	public double idfDotNoTF(VectorType<XTerm> v)
+	public double idfDotNoTF(VectorType<Term> v)
 	{
 		// TODO Auto-generated method stub
 		return 0;

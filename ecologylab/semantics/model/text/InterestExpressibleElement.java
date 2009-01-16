@@ -4,5 +4,5 @@ import ecologylab.generic.VectorType;
 
 public interface InterestExpressibleElement
 {
-	public VectorType<XTerm> getInterestExpressionTermVector();
+	public VectorType<Term> getInterestExpressionTermVector();
 }

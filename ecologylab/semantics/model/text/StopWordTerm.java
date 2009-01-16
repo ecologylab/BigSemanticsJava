@@ -1,9 +1,9 @@
 package ecologylab.semantics.model.text;
 
-public class XStopTerm extends XTerm
+public class StopWordTerm extends Term
 {
 
-	public XStopTerm() {
+	public StopWordTerm() {
 		super("STOP_WORD", 0);
 	}
 	

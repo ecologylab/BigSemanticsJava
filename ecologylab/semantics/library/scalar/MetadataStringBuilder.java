@@ -1,14 +1,14 @@
 package ecologylab.semantics.library.scalar;
 
 import ecologylab.semantics.metadata.semantics_pseudo_scalar;
-import ecologylab.semantics.model.text.XTerm;
-import ecologylab.semantics.model.text.XTermVector;
-import ecologylab.semantics.model.text.XVector;
+import ecologylab.semantics.model.text.Term;
+import ecologylab.semantics.model.text.TermVector;
+import ecologylab.semantics.model.text.FeatureVector;
 
 @semantics_pseudo_scalar
 public class MetadataStringBuilder extends MetadataScalarBase
 {
-	XTermVector termVector = null;
+	TermVector termVector = null;
 	@xml_text StringBuilder value;
 	
 	public MetadataStringBuilder()
@@ -31,13 +31,13 @@ public class MetadataStringBuilder extends MetadataScalarBase
 		if (termVector != null)
 			termVector.reset(value.toString());
 		else
-			termVector = new XTermVector(value.toString());
+			termVector = new TermVector(value.toString());
 	}
 	
-	public XVector<XTerm> termVector()
+	public FeatureVector<Term> termVector()
 	{
 		if (termVector == null)
-			termVector = new XTermVector();
+			termVector = new TermVector();
 		return termVector;
 	}
 	

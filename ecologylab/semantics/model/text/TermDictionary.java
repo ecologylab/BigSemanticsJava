@@ -18,7 +18,7 @@ import ecologylab.io.Assets;
 import ecologylab.appframework.ApplicationProperties;
 import ecologylab.collections.CollectionTools;
 
-public class XTermDictionary implements ApplicationProperties
+public class TermDictionary implements ApplicationProperties
 {
 
 	private static PorterStemmer								stemmer											= new PorterStemmer();
@@ -26,15 +26,15 @@ public class XTermDictionary implements ApplicationProperties
 	private static HashMap<String, Double>			frequencyList								= null;
 
 	/**
-	 * Maintains a map of a <code>String</code> stem term to it's {@link XTerm}
+	 * Maintains a map of a <code>String</code> stem term to it's {@link Term}
 	 */
-	private static HashMap<String, XTerm>				dictionary									= new HashMap<String, XTerm>();
+	private static HashMap<String, Term>				dictionary									= new HashMap<String, Term>();
 
 	public static double												averageIDF									= 0;
 
 	public static double												corpusSize									= Double.MAX_VALUE;
 
-	public static XStopTerm											STOP_WORD										= new XStopTerm();
+	public static StopWordTerm											STOP_WORD										= new StopWordTerm();
 
 	static String																DICTIONARY									= "dictionary";
 
@@ -180,11 +180,11 @@ public class XTermDictionary implements ApplicationProperties
 	 * @param stem
 	 * @return
 	 */
-	public synchronized static XTerm getTerm(String word, String stem)
+	public synchronized static Term getTerm(String word, String stem)
 	{
 		if (dictionary.containsKey(stem))
 		{
-			XTerm term = dictionary.get(stem);
+			Term term = dictionary.get(stem);
 			if (!term.hasWord())
 				term.setWord(word);
 			return term;
@@ -209,11 +209,11 @@ public class XTermDictionary implements ApplicationProperties
 	 * 
 	 * @param stem
 	 */
-	private static XTerm newTerm(String word, String stem)
+	private static Term newTerm(String word, String stem)
 	{
 		if (stem.length() < 4 || stopWordTerms.containsKey(stem))
 			return STOP_WORD;
-		XTerm newTerm = new XTerm(stem, /* averageIDF */ STOP_WORD.idf());
+		Term newTerm = new Term(stem, /* averageIDF */ STOP_WORD.idf());
 		newTerm.setWord(word);
 		dictionary.put(stem, newTerm);
 		return newTerm;
@@ -253,7 +253,7 @@ public class XTermDictionary implements ApplicationProperties
 		BufferedReader myInput = new BufferedReader(new InputStreamReader(in));
 
 		HashMap<String, Double> frequencies = new HashMap<String, Double>();
-		HashMap<String, XTerm> dictionary = new HashMap<String, XTerm>();
+		HashMap<String, Term> dictionary = new HashMap<String, Term>();
 		double avgIDF = 0;
 
 		corpusSize = Double.parseDouble(myInput.readLine());
@@ -271,12 +271,12 @@ public class XTermDictionary implements ApplicationProperties
 			double freq = Double.parseDouble(thisTerm.substring(indexOfTab, thisTerm.length()));
 			frequencies.put(stem, freq);
 			double idf = Math.log(corpusSize / freq);
-			dictionary.put(stem, new XTerm(stem, idf));
+			dictionary.put(stem, new Term(stem, idf));
 			avgIDF += idf;
 		}
 		avgIDF /= frequencies.size();
 		averageIDF = avgIDF;
-		XTermDictionary.dictionary = dictionary;
+		TermDictionary.dictionary = dictionary;
 		frequencyList = frequencies;
 		myInput.close();
 		myInput = null;
@@ -297,7 +297,7 @@ public class XTermDictionary implements ApplicationProperties
 		}
 	}
 
-	public static XTerm getTermForWord(String s)
+	public static Term getTermForWord(String s)
 	{
 		PorterStemmer p = stemmer;
 		synchronized (p)

@@ -14,7 +14,7 @@ import ecologylab.generic.Generic;
 import ecologylab.generic.IntSlot;
 import ecologylab.media.PixelBased;
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.model.text.XTermVector;
+import ecologylab.semantics.model.text.TermVector;
 import ecologylab.xml.XMLTools;
 
 
@@ -308,14 +308,14 @@ public class RecognizedDocumentStructure
 	        				if( (extractedCaption.trim().length()>0) || ( (altText!=null) && (altText.length()>0) ) )
 	        				{
 	        					ina.addToAttributesMap(HTMLDOMParser.extractedCaption, XMLTools.unescapeXML(extractedCaption));
-	        					XTermVector captionTV = new XTermVector(extractedCaption);
-	        					XTermVector associateTextTV = new XTermVector(textContext.toString());
+	        					TermVector captionTV = new TermVector(extractedCaption);
+	        					TermVector associateTextTV = new TermVector(textContext.toString());
 	        					
 	        					
 	        					boolean altTextSimilarity = false;
 	        					if( (altText!=null) && (altText.length()>0) )
 	        					{
-	        						XTermVector altText_tv = new XTermVector(altText);
+	        						TermVector altText_tv = new TermVector(altText);
 	        						altTextSimilarity = (altText_tv.dot(associateTextTV)>0);	        						
 	        					}
 	        					

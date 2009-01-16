@@ -10,27 +10,27 @@ import ecologylab.appframework.types.prefs.Pref;
 import ecologylab.appframework.types.prefs.PrefBoolean;
 import ecologylab.generic.VectorType;
 
-public class XTermVector extends XVector<XTerm>
+public class TermVector extends FeatureVector<Term>
 {
 
 	private static final String	SHOW_WEIGHTS_PREF	= "show_weights";
 	static Pattern WORD_REGEX = Pattern.compile("[a-z]+(-[a-z]+)*([a-z]+)");
 
-	public XTermVector()
+	public TermVector()
 	{
 	}
 
-	public XTermVector(VectorType<XTerm> tv)
+	public TermVector(VectorType<Term> tv)
 	{
 		super(tv);
 	}
 
-	public XTermVector(int size)
+	public TermVector(int size)
 	{
 		super(size); // lol
 	}
 
-	public XTermVector(String s)
+	public TermVector(String s)
 	{
 		reset(s);
 	}
@@ -47,20 +47,20 @@ public class XTermVector extends XVector<XTerm>
 		Matcher m 			= WORD_REGEX.matcher(s);
 		while (m.find()) {
 			String word = s.substring(m.start(),m.end());
-			addWithoutNotify(XTermDictionary.getTermForWord(word),1);
+			addWithoutNotify(TermDictionary.getTermForWord(word),1);
 		}
 		setChanged();
 		notifyObservers();
 	}
 
-	private void addWithoutNotify(XTerm term, double val)
+	private void addWithoutNotify(Term term, double val)
 	{
 		if (term == null || term.isStopword())
 			return;
 		super.add(term, val);
 	}
 
-	public void add(XTerm term, double val)
+	public void add(Term term, double val)
 	{
 		if(!term.isStopword())
 		{
@@ -76,7 +76,7 @@ public class XTermVector extends XVector<XTerm>
 	 * @param v
 	 *            Vector by which to multiply
 	 */
-	public void multiply(VectorType<XTerm> v)
+	public void multiply(VectorType<Term> v)
 	{
 		super.multiply(v);
 		setChanged();
@@ -107,7 +107,7 @@ public class XTermVector extends XVector<XTerm>
 	 * @param v
 	 *            Vector to add to this one
 	 */
-	public void add(double c, VectorType<XTerm> v)
+	public void add(double c, VectorType<Term> v)
 	{
 		super.add(c, v);
 		setChanged();
@@ -120,7 +120,7 @@ public class XTermVector extends XVector<XTerm>
 	 * @param v
 	 *            Vector to add to this
 	 */
-	public void add(VectorType<XTerm> v)
+	public void add(VectorType<Term> v)
 	{
 		super.add(v);
 		setChanged();
@@ -130,7 +130,7 @@ public class XTermVector extends XVector<XTerm>
 	public String toString()
 	{
 		StringBuilder s = new StringBuilder("{");
-		for(XTerm t : values.keySet())
+		for(Term t : values.keySet())
 		{
 			s.append(t.toString());
 			if (Pref.usePrefBoolean(SHOW_WEIGHTS_PREF, false).value())
@@ -148,7 +148,7 @@ public class XTermVector extends XVector<XTerm>
 	public String termString()
 	{
 		StringBuilder s = new StringBuilder();
-		for (XTerm t : values.keySet())
+		for (Term t : values.keySet())
 		{
 			s.append(t.word);
 			s.append(" ");
@@ -157,20 +157,20 @@ public class XTermVector extends XVector<XTerm>
 	}
 
 	@Override
-	public double idfDot(VectorType<XTerm> v)
+	public double idfDot(VectorType<Term> v)
 	{
 		return idfDot(v, false);
 	}
-	private double idfDot(VectorType<XTerm> v, boolean noTF)
+	private double idfDot(VectorType<Term> v, boolean noTF)
 	{
-		HashMap<XTerm,Double> other = v.map();
+		HashMap<Term,Double> other = v.map();
 		if (other == null || this.norm() == 0 || v.norm() == 0)
 			return 0;
 
 		double dot = 0;
-		HashMap<XTerm, Double> vector = this.values;
+		HashMap<Term, Double> vector = this.values;
 		synchronized(values) {
-			for (XTerm term : vector.keySet()) {
+			for (Term term : vector.keySet()) {
 				if (other.containsKey(term)) 
 				{
 					double tfIDF = term.idf();
@@ -183,7 +183,7 @@ public class XTermVector extends XVector<XTerm>
 		return dot;
 	}
 	
-	public double idfDotNoTF(VectorType<XTerm> v)
+	public double idfDotNoTF(VectorType<Term> v)
 	{
 		return idfDot(v, true);
 	}
@@ -208,18 +208,18 @@ public class XTermVector extends XVector<XTerm>
 	}
 	
 	@Override
-	public XTermVector unit()
+	public TermVector unit()
 	{
-		XTermVector v = new XTermVector(this);
+		TermVector v = new TermVector(this);
 		v.clamp(1);
 		return v;
 	}
 	
 	@Override
-	public XTermVector simplex ( )
+	public TermVector simplex ( )
 	{
-		XTermVector v = new XTermVector(this);
-		for (XTerm t : v.values.keySet())
+		TermVector v = new TermVector(this);
+		for (Term t : v.values.keySet())
 		{
 			v.values.put(t, 1.0);
 		}
@@ -228,8 +228,8 @@ public class XTermVector extends XVector<XTerm>
 	
 	public void trim(int size)
 	{
-		TreeMap<Double,XTerm> highestWeightedTerms = new TreeMap<Double,XTerm>();
-		for (XTerm t : values.keySet())
+		TreeMap<Double,Term> highestWeightedTerms = new TreeMap<Double,Term>();
+		for (Term t : values.keySet())
 		{
 			highestWeightedTerms.put(t.idf(), t);
 		}
@@ -245,7 +245,7 @@ public class XTermVector extends XVector<XTerm>
 	}
 	
 	@Override
-	public void set ( XTerm term, double val )
+	public void set ( Term term, double val )
 	{
 		super.set(term, val);
 		setChanged();

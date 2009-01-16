@@ -3,16 +3,16 @@ package ecologylab.semantics.model.text;
 import java.util.HashMap;
 
 import ecologylab.generic.VectorType;
-import ecologylab.semantics.model.text.XTerm;
-import ecologylab.semantics.model.text.XTermVector;
+import ecologylab.semantics.model.text.Term;
+import ecologylab.semantics.model.text.TermVector;
 
 public class InterestModel
 {
 	// participant interest vector
 
-	private static XTermVector	participantInterest		= new XTermVector();
+	private static TermVector	participantInterest		= new TermVector();
 
-	private static XTermVector	unitParticipantInterest	= new XTermVector();
+	private static TermVector	unitParticipantInterest	= new TermVector();
 
 	private static long			timestamp;
 
@@ -20,10 +20,10 @@ public class InterestModel
 
 	private static Object		PI_LOCK					= "";
 
-	public static void expressInterest ( VectorType<XTerm> interestingTermVector, short magnitude )
+	public static void expressInterest ( VectorType<Term> interestingTermVector, short magnitude )
 	{
 		 timeScaleInterest();
-		XTermVector xtv = new XTermVector(interestingTermVector);
+		TermVector xtv = new TermVector(interestingTermVector);
 		xtv.multiply(magnitude);
 		xtv.clamp(magnitude);
 		participantInterest.add(1, xtv);
@@ -41,7 +41,7 @@ public class InterestModel
 		// participantInterest.add(magnitude, interestingTermVector);
 	}
 
-	public static void expressInterest ( XTerm term, short magnitude )
+	public static void expressInterest ( Term term, short magnitude )
 	{
 		magnitude /= 2;
 		 timeScaleInterest();
@@ -59,22 +59,22 @@ public class InterestModel
 		timestamp = System.nanoTime();
 	}
 
-	public static XVector<XTerm> getPIV ( )
+	public static FeatureVector<Term> getPIV ( )
 	{
 		return participantInterest;
 	}
 
-	public static double getAbsoluteInterestOfTermVector ( VectorType<XTerm> tv )
+	public static double getAbsoluteInterestOfTermVector ( VectorType<Term> tv )
 	{
 		return tv.idfDotNoTF(unitParticipantInterest);
 	}
 
-	public static short getInterestExpressedInTermVector ( VectorType<XTerm> termVector )
+	public static short getInterestExpressedInTermVector ( VectorType<Term> termVector )
 	{
 		return (short) (10 * unitParticipantInterest.dotSimplex(termVector));
 	}
 
-	public static short getInterestExpressedInXTerm ( XTerm term )
+	public static short getInterestExpressedInXTerm ( Term term )
 	{
 		return (short) ( 2*participantInterest.get(term));
 	}
@@ -97,7 +97,7 @@ public class InterestModel
 		}
 	}
 
-	public static void setTermInterest ( XTerm term, short newValue )
+	public static void setTermInterest ( Term term, short newValue )
 	{
 		participantInterest.set(term, newValue);
 		unitize();
@@ -105,7 +105,7 @@ public class InterestModel
 
 	public static void expressInterest ( String query, short i )
 	{
-		expressInterest(new XTermVector(query), i);
+		expressInterest(new TermVector(query), i);
 		
 	}
 

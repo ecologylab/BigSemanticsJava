@@ -8,13 +8,13 @@ import java.util.Set;
 
 import ecologylab.generic.VectorType;
 import ecologylab.gui.ScaledValueObserver;
-import ecologylab.semantics.model.text.XCompositeTermVector;
-import ecologylab.semantics.model.text.XTerm;
+import ecologylab.semantics.model.text.CompositeTermVector;
+import ecologylab.semantics.model.text.Term;
 
-public class InterestExpressibleTermVector extends XTermVector implements ScaledValueObserver
+public class InterestExpressibleTermVector extends TermVector implements ScaledValueObserver
 {	
 
-	public InterestExpressibleTermVector(VectorType<XTerm> tv) {
+	public InterestExpressibleTermVector(VectorType<Term> tv) {
 		super(tv);
 	}
 	

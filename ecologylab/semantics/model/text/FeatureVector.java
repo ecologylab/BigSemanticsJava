@@ -7,32 +7,32 @@ import java.util.Set;
 
 import ecologylab.generic.VectorType;
 
-public class XVector<T> extends VectorType<T>
+public class FeatureVector<T> extends VectorType<T>
 {
 
 	protected HashMap<T, Double>	values;
 
 	private double					norm, max;
 
-	public XVector ()
+	public FeatureVector ()
 	{
 		values = new HashMap<T, Double>(20);
 	}
 
-	public XVector ( int size )
+	public FeatureVector ( int size )
 	{
 		values = new HashMap<T, Double>(size);
 	}
 
-	public XVector ( VectorType<T> copyMe )
+	public FeatureVector ( VectorType<T> copyMe )
 	{
 		values = new HashMap<T, Double>(copyMe.map());
 		norm = copyMe.norm();
 	}
 
-	public XVector<T> copy ( )
+	public FeatureVector<T> copy ( )
 	{
-		return new XVector<T>(this);
+		return new FeatureVector<T>(this);
 	}
 
 	public double get ( T term )
@@ -301,7 +301,7 @@ public class XVector<T> extends VectorType<T>
 
 	public VectorType<T> unit ( )
 	{
-		XVector<T> v = new XVector<T>(this);
+		FeatureVector<T> v = new FeatureVector<T>(this);
 		v.clamp(1);
 		return v;
 	}
@@ -322,7 +322,7 @@ public class XVector<T> extends VectorType<T>
 	@Override
 	public VectorType<T> simplex ( )
 	{
-		XVector<T> v = new XVector<T>(this);
+		FeatureVector<T> v = new FeatureVector<T>(this);
 		for (T t : v.values.keySet())
 		{
 			v.values.put(t, 1.0);

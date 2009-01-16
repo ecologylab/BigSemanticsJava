@@ -15,7 +15,7 @@ import ecologylab.generic.OneLevelNestingIterator;
 import ecologylab.generic.VectorType;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.model.text.NullTermVector;
-import ecologylab.semantics.model.text.XTerm;
+import ecologylab.semantics.model.text.Term;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.FieldAccessor;
 import ecologylab.xml.Optimizations;
@@ -48,7 +48,7 @@ public class MetadataBase extends ElementState implements Iterable<FieldAccessor
 	 * 
 	 * @return	Null for scalars.
 	 */
-	public VectorType<XTerm> termVector()
+	public VectorType<Term> termVector()
 	{
 		return null;
 	}
