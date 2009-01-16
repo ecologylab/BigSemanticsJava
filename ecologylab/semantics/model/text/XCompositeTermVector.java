@@ -188,4 +188,10 @@ public class XCompositeTermVector extends VectorType<XTerm> implements Observer
 		return compositeTermVector.simplex();
 	}
 
+	@Override
+	public double idfDotNoTF(VectorType<XTerm> v)
+	{
+		return compositeTermVector.idfDotNoTF(v);
+	}
+
 }

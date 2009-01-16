@@ -159,6 +159,10 @@ public class XTermVector extends XVector<XTerm>
 	@Override
 	public double idfDot(VectorType<XTerm> v)
 	{
+		return idfDot(v, false);
+	}
+	private double idfDot(VectorType<XTerm> v, boolean noTF)
+	{
 		HashMap<XTerm,Double> other = v.map();
 		if (other == null || this.norm() == 0 || v.norm() == 0)
 			return 0;
@@ -167,12 +171,21 @@ public class XTermVector extends XVector<XTerm>
 		HashMap<XTerm, Double> vector = this.values;
 		synchronized(values) {
 			for (XTerm term : vector.keySet()) {
-				if (other.containsKey(term)) {
-					dot += vector.get(term) * term.idf() * v.get(term);
+				if (other.containsKey(term)) 
+				{
+					double tfIDF = term.idf();
+					if (!noTF)
+						tfIDF			*= vector.get(term);
+					dot += v.get(term) * tfIDF;
 				}
 			}
 		}
 		return dot;
+	}
+	
+	public double idfDotNoTF(VectorType<XTerm> v)
+	{
+		return idfDot(v, true);
 	}
 
 	private double magicalScalingFactor(double d)

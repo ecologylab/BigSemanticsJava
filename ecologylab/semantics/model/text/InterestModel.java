@@ -66,7 +66,7 @@ public class InterestModel
 
 	public static double getAbsoluteInterestOfTermVector ( VectorType<XTerm> tv )
 	{
-		return tv.idfDot(unitParticipantInterest);
+		return tv.idfDotNoTF(unitParticipantInterest);
 	}
 
 	public static short getInterestExpressedInTermVector ( VectorType<XTerm> termVector )

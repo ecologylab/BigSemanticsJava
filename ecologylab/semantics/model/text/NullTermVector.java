@@ -102,4 +102,11 @@ public class NullTermVector extends VectorType<XTerm>
 		return 0;
 	}
 
+	@Override
+	public double idfDotNoTF(VectorType<XTerm> v)
+	{
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }

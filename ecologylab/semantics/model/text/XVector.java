@@ -2,10 +2,7 @@ package ecologylab.semantics.model.text;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.HashSet;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.Set;
 
 import ecologylab.generic.VectorType;
@@ -331,5 +328,11 @@ public class XVector<T> extends VectorType<T>
 			v.values.put(t, 1.0);
 		}
 		return v;
+	}
+
+	@Override
+	public double idfDotNoTF(VectorType<T> v)
+	{
+		return dot(v);
 	}
 }
