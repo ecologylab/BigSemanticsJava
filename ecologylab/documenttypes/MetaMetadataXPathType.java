@@ -214,9 +214,13 @@ public class MetaMetadataXPathType<M extends MetadataBase> extends DocumentType 
 	                        // now for each child-meta-metadata field set the value in the collection instance.
 	                        for (int j = 0; j < list.size(); j++)
 	                        {
+	                        	//FIXME -- workaround concurrency issue?! -- andruid 1/14/09
+	                        	if (j < collectionInstanceList.size())
+	                        	{
 	                            // get the child field name
 	                            String childFieldName = childMetadataField.getName();
 	                            collectionInstanceList.get(j).set(childFieldName, list.get(j).toString());
+	                        	}
 	                        }
 	
 	                    }
