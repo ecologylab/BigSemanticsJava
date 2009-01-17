@@ -8,6 +8,14 @@ import java.util.Set;
 
 import ecologylab.generic.IFeatureVector;
 
+
+/**
+ * A TermVector that has no content.  We use these as placeholders for metadata
+ * elements which do not inherently have a TermVector associated with them, such
+ * as a MetadataParsedURL
+ * @author jmole
+ *
+ */
 public class NullTermVector implements ITermVector
 {
 
@@ -97,7 +105,13 @@ public class NullTermVector implements ITermVector
 		return 0;
 	}
 
-	public double idfDotNoTF(IFeatureVector<Term> v)
+	public double idfDotSimplex(IFeatureVector<Term> v)
+	{
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public double max ( )
 	{
 		// TODO Auto-generated method stub
 		return 0;

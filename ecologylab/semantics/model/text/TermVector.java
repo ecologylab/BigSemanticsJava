@@ -11,59 +11,76 @@ import ecologylab.appframework.types.prefs.PrefBoolean;
 import ecologylab.generic.FeatureVector;
 import ecologylab.generic.IFeatureVector;
 
+/**
+ * TermVector represents a collection of Terms, each associated with a particular value. Usually
+ * this value represents the Term's frequency in a particular document, however, it may also
+ * represent the amount of interest in a Term, as is the case in InterestModel.java
+ * 
+ * @author jmole
+ * 
+ */
 public class TermVector extends FeatureVector<Term> implements ITermVector
 {
 
 	private static final String	SHOW_WEIGHTS_PREF	= "show_weights";
-	static Pattern WORD_REGEX = Pattern.compile("[a-z]+(-[a-z]+)*([a-z]+)");
 
-	public TermVector()
+	static Pattern				WORD_REGEX			= Pattern.compile("[a-z]+(-[a-z]+)*([a-z]+)");
+
+	public TermVector ()
 	{
 	}
 
-	public TermVector(IFeatureVector<Term> tv)
+	public TermVector ( IFeatureVector<Term> tv )
 	{
 		super(tv);
 	}
 
-	public TermVector(int size)
+	public TermVector ( int size )
 	{
 		super(size); // lol
 	}
 
-	public TermVector(String s)
+	/**
+	 * Creates a new TermVector from a given String, using the TermDictionary to stem and find the
+	 * Term associated with each word.
+	 * 
+	 * @param s
+	 */
+	public TermVector ( String s )
 	{
 		reset(s);
 	}
 
 	/**
-	 * Totally reconstructs this term vector based on a new string. Useful for
-	 * maintaining the observers and such while changing the actual terms.
+	 * Totally reconstructs this term vector based on a new string. Useful for maintaining the
+	 * observers and such while changing the actual terms.
 	 * 
 	 * @param s
 	 */
-	public void reset(String s)
+	public void reset ( String s )
 	{
-		s=s.toLowerCase();
-		Matcher m 			= WORD_REGEX.matcher(s);
-		while (m.find()) {
-			String word = s.substring(m.start(),m.end());
-			addWithoutNotify(TermDictionary.getTermForWord(word),1);
+		super.reset();
+		s = s.toLowerCase();
+		Matcher m = WORD_REGEX.matcher(s);
+		while (m.find())
+		{
+			String word = s.substring(m.start(), m.end());
+			addWithoutNotify(TermDictionary.getTermForWord(word), 1);
 		}
 		setChanged();
 		notifyObservers();
 	}
 
-	private void addWithoutNotify(Term term, double val)
+	private void addWithoutNotify ( Term term, double val )
 	{
 		if (term == null || term.isStopword())
 			return;
 		super.add(term, val);
 	}
 
-	public void add(Term term, double val)
+	public void add ( Term term, double val )
 	{
-		if(!term.isStopword())
+		if (!term.isStopword())
 		{
 			super.add(term, val);
 			setChanged();
@@ -77,7 +94,7 @@ public class TermVector extends FeatureVector<Term> implements ITermVector
 	 * @param v
 	 *            Vector by which to multiply
 	 */
-	public void multiply(IFeatureVector<Term> v)
+	public void multiply ( IFeatureVector<Term> v )
 	{
 		super.multiply(v);
 		setChanged();
@@ -90,7 +107,7 @@ public class TermVector extends FeatureVector<Term> implements ITermVector
 	 * @param c
 	 *            Constant to multiply this vector by.
 	 */
-	public void multiply(double c)
+	public void multiply ( double c )
 	{
 		super.multiply(c);
 		setChanged();
@@ -98,8 +115,7 @@ public class TermVector extends FeatureVector<Term> implements ITermVector
 	}
 
 	/**
-	 * Pairwise addition of this vector by some other vector times some
-	 * constant.<br>
+	 * Pairwise addition of this vector by some other vector times some constant.<br>
 	 * i.e. this + (c*v)<br>
 	 * Vector v is not modified.
 	 * 
@@ -108,7 +124,7 @@ public class TermVector extends FeatureVector<Term> implements ITermVector
 	 * @param v
 	 *            Vector to add to this one
 	 */
-	public void add(double c, IFeatureVector<Term> v)
+	public void add ( double c, IFeatureVector<Term> v )
 	{
 		super.add(c, v);
 		setChanged();
@@ -121,96 +137,104 @@ public class TermVector extends FeatureVector<Term> implements ITermVector
 	 * @param v
 	 *            Vector to add to this
 	 */
-	public void add(IFeatureVector<Term> v)
+	public void add ( IFeatureVector<Term> v )
 	{
 		super.add(v);
 		setChanged();
 		notifyObservers();
 	}
 
-	public String toString()
+	public String toString ( )
 	{
 		StringBuilder s = new StringBuilder("{");
-		for(Term t : values.keySet())
+		synchronized (values)
 		{
-			s.append(t.toString());
-			if (Pref.usePrefBoolean(SHOW_WEIGHTS_PREF, false).value())
+			for (Term t : values.keySet())
 			{
-				s.append("("); 
-				s.append((int)(t.idf() * 100)/100.);
-				s.append("), ");
+				s.append(t.toString());
+				if (Pref.usePrefBoolean(SHOW_WEIGHTS_PREF, false).value())
+				{
+					s.append("(");
+					s.append((int) (t.idf() * 100) / 100.);
+					s.append("), ");
+				}
+
 			}
-			
 		}
 		s.append("}");
 		return s.toString();
 	}
-	
-	public String termString()
+
+	public String termString ( )
 	{
 		StringBuilder s = new StringBuilder();
-		for (Term t : values.keySet())
+		synchronized (values)
 		{
-			s.append(t.word);
-			s.append(" ");
+			for (Term t : values.keySet())
+			{
+				s.append(t.word);
+				s.append(" ");
+			}
 		}
 		return s.toString();
 	}
 
-	public double idfDot(IFeatureVector<Term> v)
+	public double idfDot ( IFeatureVector<Term> v )
 	{
 		return idfDot(v, false);
 	}
-	
-	public double idfDotNoTF(IFeatureVector<Term> v)
+
+	public double idfDotSimplex ( IFeatureVector<Term> v )
 	{
 		return idfDot(v, true);
 	}
-	
-	private double idfDot(IFeatureVector<Term> v, boolean noTF)
+
+	private double idfDot ( IFeatureVector<Term> v, boolean simplex )
 	{
-		HashMap<Term,Double> other = v.map();
+		HashMap<Term, Double> other = v.map();
 		if (other == null || this.norm() == 0 || v.norm() == 0)
 			return 0;
 
 		double dot = 0;
 		HashMap<Term, Double> vector = this.values;
-		synchronized(values) {
-			for (Term term : vector.keySet()) {
-				if (other.containsKey(term)) 
+		synchronized (values)
+		{
+			for (Term term : vector.keySet())
+			{
+				if (other.containsKey(term))
 				{
-					double tfIDF = term.idf();
-					if (!noTF)
-						tfIDF			*= vector.get(term);
-					dot += v.get(term) * tfIDF;
+					double tfIDF = term.idf() * vector.get(term);
+					if (!simplex)
+						tfIDF *= other.get(term);
+					dot += tfIDF;
 				}
 			}
 		}
 		return dot;
 	}
-	
-	public void clamp(double clampTo)
+
+	public void clamp ( double clampTo )
 	{
 		super.clamp(clampTo);
 		setChanged();
 		notifyObservers();
 	}
-	
-	public void clampExp(double clampTo)
+
+	public void clampExp ( double clampTo )
 	{
 		super.clampExp(clampTo);
 		setChanged();
 		notifyObservers();
 	}
-	
+
 	@Override
-	public TermVector unit()
+	public TermVector unit ( )
 	{
 		TermVector v = new TermVector(this);
 		v.clamp(1);
 		return v;
 	}
-	
+
 	@Override
 	public TermVector simplex ( )
 	{
@@ -221,25 +245,33 @@ public class TermVector extends FeatureVector<Term> implements ITermVector
 		}
 		return v;
 	}
-	
-	public void trim(int size)
+
+	/**
+	 * Deletes lowest weighted terms until the TermVector only has "size" terms. If "size" is
+	 * greater than the number of Terms contained in this TermVector, this method does nothing.
+	 * 
+	 * @param size
+	 *            the new size (i.e. number of Terms) of the TermVector.
+	 */
+	public void trim ( int size )
 	{
-		TreeMap<Double,Term> highestWeightedTerms = new TreeMap<Double,Term>();
-		for (Term t : values.keySet())
-		{
-			highestWeightedTerms.put(t.idf(), t);
-		}
+		if (size >= this.size())
+			return;
+
+		TreeMap<Double, Term> termsFromLowestToHighest = new TreeMap<Double, Term>();
 		synchronized (values)
 		{
-			for(Double d : highestWeightedTerms.keySet())
+			for (Term t : values.keySet())
+				termsFromLowestToHighest.put(t.idf(), t);
+			for (Double d : termsFromLowestToHighest.keySet())
 			{
 				if (values.size() <= size)
 					break;
-				values.remove(highestWeightedTerms.get(d));
-			}			
+				values.remove(termsFromLowestToHighest.get(d));
+			}
 		}
 	}
-	
+
 	@Override
 	public void set ( Term term, double val )
 	{
@@ -247,5 +279,5 @@ public class TermVector extends FeatureVector<Term> implements ITermVector
 		setChanged();
 		notifyObservers();
 	}
-	
+
 }

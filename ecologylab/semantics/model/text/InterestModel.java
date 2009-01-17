@@ -14,8 +14,6 @@ public class InterestModel
 
 	public static double		INTEREST_TIME_CONSTANT	= 120;
 
-	private static Object		PI_LOCK					= "";
-
 	public static void expressInterest ( IFeatureVector<Term> interestingTermVector, short magnitude )
 	{
 		timeScaleInterest();
@@ -32,8 +30,6 @@ public class InterestModel
 		timeScaleInterest();
 		participantInterest.add(term, magnitude);
 		unitize();
-		// participantInterest.add(term, magnitude);
-		// termInterest.put(term, magnitude);
 	}
 
 	private static void timeScaleInterest ( )
@@ -44,19 +40,22 @@ public class InterestModel
 		timestamp = System.nanoTime();
 	}
 
-	public static ITermVector getPIV ( )
+	public static TermVector getPIV ( )
 	{
 		return participantInterest;
 	}
 
-	public static double getAbsoluteInterestOfTermVector ( ITermVector tv )
+	public static double getAbsoluteInterestOfTermVector ( IFeatureVector<Term> tv )
 	{
-		return tv.idfDotNoTF(unitParticipantInterest);
+		return unitParticipantInterest.idfDotSimplex(tv);
 	}
 
 	public static short getInterestExpressedInTermVector ( IFeatureVector<Term> termVector )
 	{
-		return (short) (10 * unitParticipantInterest.dotSimplex(termVector));
+		double retVal = unitParticipantInterest.dotSimplex(termVector);
+		retVal /= unitParticipantInterest.commonDimensions(termVector);
+		retVal *= 10;
+		return (short) retVal;
 	}
 
 	public static short getInterestExpressedInXTerm ( Term term )
@@ -76,10 +75,7 @@ public class InterestModel
 
 	private static void unitize ( )
 	{
-		synchronized (PI_LOCK)
-		{
-			unitParticipantInterest = participantInterest.unit();
-		}
+		unitParticipantInterest = participantInterest.unit();
 	}
 
 	public static void setTermInterest ( Term term, short newValue )
@@ -91,7 +87,6 @@ public class InterestModel
 	public static void expressInterest ( String query, short i )
 	{
 		expressInterest(new TermVector(query), i);
-
 	}
 
 }

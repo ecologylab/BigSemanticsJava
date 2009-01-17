@@ -8,17 +8,24 @@ import java.util.Set;
 import java.util.Observer;
 
 import ecologylab.generic.IFeatureVector;
-
+/**
+ * A CompositeTermVector acts like a TermVector on the outside, but on the inside
+ * it maintains a reference to each TermVector added to it.  This means that if the content
+ * of a TermVector is modified, this modification bubbles up through the CompositeTermVector
+ * which is observing all it's component term vectors.
+ * @author jmole
+ *
+ */
 public class CompositeTermVector extends Observable implements Observer, ITermVector
 {
 
-	public CompositeTermVector()
+	public CompositeTermVector ()
 	{
 	}
 
-	private TermVector							compositeTermVector	= new TermVector();
+	private TermVector						compositeTermVector	= new TermVector();
 
-	private Hashtable<ITermVector, Double>	termVectors			= new Hashtable<ITermVector, Double>();
+	private HashMap<ITermVector, Double>	termVectors			= new HashMap<ITermVector, Double>();
 
 	/**
 	 * Adds a Term Vector to this Composite Term Vectors collection, multiplying it by a scalar.
@@ -28,9 +35,9 @@ public class CompositeTermVector extends Observable implements Observer, ITermVe
 	 * @param multiplier
 	 *            The scalar multiple.
 	 */
-	public void add(double multiplier, ITermVector tv)
+	public void add ( double multiplier, ITermVector tv )
 	{
-		Hashtable<ITermVector, Double> v;
+		HashMap<ITermVector, Double> v;
 		v = termVectors;
 		synchronized (v)
 		{
@@ -52,7 +59,7 @@ public class CompositeTermVector extends Observable implements Observer, ITermVe
 	 * @param tv
 	 *            The term vector you wish to add.
 	 */
-	public void add(ITermVector tv)
+	public void add ( ITermVector tv )
 	{
 		if (tv != null)
 			add(1, tv);
@@ -64,128 +71,130 @@ public class CompositeTermVector extends Observable implements Observer, ITermVe
 	 * @param tv
 	 *            The Term Vector you wish to remove.
 	 */
-	public void remove(ITermVector tv)
+	public void remove ( ITermVector tv )
 	{
-		Double multiple = termVectors.remove(tv);
-		if (multiple != null)
+		Double removal = null;
+		synchronized (termVectors)
+		{
+			removal = termVectors.remove(tv);
+		}
+		if (removal != null)
 		{
 			tv.deleteObserver(this);
-			compositeTermVector.add(-multiple, tv);
+			compositeTermVector.add(-removal, tv);
 			setChanged();
 			notifyObservers();
 		}
 	}
 
-	// TODO: look in to sending the old value in "arg",
-	// and then subtracting it, then adding the new one
-	// instead of rebuilding the whole thing each time.
-	public void update(Observable o, Object arg)
+	public void update ( Observable o, Object arg )
 	{
 		rebuildCompositeTermVector();
 		setChanged();
 		notifyObservers();
 	}
 
-	public void recycle()
+	public void recycle ( )
 	{
-		Hashtable<ITermVector, Double> v;
-		v = termVectors;
-		if (v != null)
-			for (ITermVector tv : v.keySet())
+		if (termVectors != null)
+			for (ITermVector tv : termVectors.keySet())
 				tv.deleteObserver(this);
 	}
 
-	private synchronized void rebuildCompositeTermVector()
+	private void rebuildCompositeTermVector ( )
 	{
-		Hashtable<ITermVector, Double> v;
-		TermVector c = compositeTermVector;
-		c = new TermVector(c.size());
-		v = termVectors;
-		for (IFeatureVector<Term> t : v.keySet())
+		TermVector c = new TermVector(compositeTermVector.size());
+		synchronized (termVectors)
 		{
-			c.add(v.get(t), t);
+			for (IFeatureVector<Term> t : termVectors.keySet())
+				c.add(termVectors.get(t), t);
 		}
 		compositeTermVector = c;
 	}
 
-	public double dot(IFeatureVector<Term> v)
+	public double dot ( IFeatureVector<Term> v )
 	{
 		return compositeTermVector.dot(v);
 	}
 
-	public Set<Term> elements()
+	public Set<Term> elements ( )
 	{
 		return compositeTermVector.elements();
 	}
 
-	public double get(Term term)
+	public double get ( Term term )
 	{
 		return compositeTermVector.get(term);
 	}
 
-	public HashMap<Term, Double> map()
+	public HashMap<Term, Double> map ( )
 	{
 		return compositeTermVector.map();
 	}
 
-	public Set<Double> values()
+	public Set<Double> values ( )
 	{
 		return compositeTermVector.values();
 	}
 
-	public Set<ITermVector> componentVectors()
+	public Set<ITermVector> componentVectors ( )
 	{
 		return termVectors.keySet();
 	}
 
-	public String toString()
+	public String toString ( )
 	{
 		StringBuilder s = new StringBuilder("[");
-		for (IFeatureVector<Term> v : termVectors.keySet())
+		synchronized (termVectors)
 		{
-			s.append(v.toString());
-			s.append(", ");
+			for (IFeatureVector<Term> v : termVectors.keySet())
+			{
+				s.append(v.toString());
+				s.append(", ");
+			}
 		}
 		s.append("]");
 		return s.toString();
 	}
 
-	public double norm()
+	public double norm ( )
 	{
 		return compositeTermVector.norm();
 	}
 
-	public double idfDot(IFeatureVector<Term> v)
+	public double max ( )
+	{
+		return compositeTermVector.max();
+	}
+
+	public double idfDot ( IFeatureVector<Term> v )
 	{
 		return compositeTermVector.idfDot(v);
 	}
 
-	public TermVector unit()
+	public TermVector unit ( )
 	{
-		// TODO Auto-generated method stub
 		return compositeTermVector.unit();
 	}
 
-	public int commonDimensions(IFeatureVector<Term> v)
+	public int commonDimensions ( IFeatureVector<Term> v )
 	{
-		// TODO Auto-generated method stub
 		return compositeTermVector.commonDimensions(v);
 	}
 
-	public double dotSimplex(IFeatureVector<Term> v)
+	public double dotSimplex ( IFeatureVector<Term> v )
 	{
-		// TODO Auto-generated method stub
 		return compositeTermVector.dotSimplex(v);
 	}
-	
-	public TermVector simplex()
+
+	public TermVector simplex ( )
 	{
 		return compositeTermVector.simplex();
 	}
 
-	public double idfDotNoTF(IFeatureVector<Term> v)
+	public double idfDotSimplex ( IFeatureVector<Term> v )
 	{
-		return compositeTermVector.idfDotNoTF(v);
+		return compositeTermVector.idfDotSimplex(v);
 	}
 
 }
