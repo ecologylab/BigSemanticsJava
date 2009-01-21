@@ -10,9 +10,8 @@ public class InterestExpressibleTerm implements ScaledValueObserver
 	
 	public InterestExpressibleTerm(String s)
 	{
-		term = TermDictionary.getTermForWord(s);
-		if (term != null) // i.e. stop word
-			term.setWord(s);
+		term = TermDictionary.getTermForUnsafeWord(s);
+		term.setWord(s);
 	}
 	
 	public InterestExpressibleTerm(Term t)
