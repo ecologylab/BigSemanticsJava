@@ -1,8 +1,9 @@
 # current working directory
 
-INTERACTIVE_DIRS = actions library library/scalar gui metametadata metadata metadata/extraction model/text 
-DIRS = $(INTERACTIVE_DIRS)
-JAR_DIRS = $(INTERACTIVE_DIRS:%=ecologylab/semantics/%) ecologylab/documenttypes
+SEMANTICS_DIRS = actions library library/scalar gui metametadata metadata metadata/extraction model/text 
+MEDIA_DIRS = media/html media/html/dom media/html/dom/documentstructure documenttypes 
+DIRS = $(SEMANTICS_DIRS)
+JAR_DIRS = $(SEMANTICS_DIRS:%=ecologylab/semantics/%) $(MEDIA_DIRS:%=ecologylab/%)
 
 EXTRA = ../ecologylabFundamental; ../ecologylabGeneratedSemantics
 
