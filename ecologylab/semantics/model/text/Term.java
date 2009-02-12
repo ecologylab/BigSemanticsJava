@@ -1,7 +1,6 @@
 package ecologylab.semantics.model.text;
 
 import java.text.DecimalFormat;
-import java.util.HashSet;
 
 
 public class Term

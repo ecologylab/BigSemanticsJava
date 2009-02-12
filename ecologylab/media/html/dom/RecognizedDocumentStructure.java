@@ -59,7 +59,8 @@ public class RecognizedDocumentStructure
 	protected void generateSurrogates(TdNode articleMain, ArrayList<ImgNodewithAttr> imgNodes, int totalTxtLeng, 
 			TreeMap<Integer, ParagraphText> paraTexts, TidyInterface htmlType)
 	{
-        recognizeImgSurrogateForOtherPages( imgNodes, totalTxtLeng, htmlType );	
+        recognizeImgSurrogateForOtherPages( imgNodes, totalTxtLeng, htmlType );
+        htmlType.setIndexPage();
 	}
    
     /**

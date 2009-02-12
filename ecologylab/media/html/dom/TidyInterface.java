@@ -47,6 +47,10 @@ public interface TidyInterface
 	 * @param anchorHref
 	 */
 	public void newAnchorImgTxt(HashMap attributesMap, ParsedURL anchorHref);
+
+	public void setIndexPage ( );
+
+	public void setContent ( );
 	
 //	public void setDocument(org.w3c.dom.Document node);
 }

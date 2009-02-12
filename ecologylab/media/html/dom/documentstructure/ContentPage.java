@@ -39,7 +39,7 @@ public class ContentPage extends RecognizedDocumentStructure
        		findImgsInContentBodySubTree(articleMain.parent());
         	findHrefsAndContext(articleMain, htmlType);
        		associateImageTextSurrogate(htmlType, articleMain, paraTexts);
-
+       		htmlType.setContent();
         }
 	}
 
