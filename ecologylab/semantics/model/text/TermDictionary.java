@@ -329,7 +329,7 @@ public class TermDictionary implements ApplicationProperties
 	 */
 	public static Term getTermForUnsafeWord ( String s )
 	{
-		return getTermForWord(NO_PUNC_REGEX.matcher(s).replaceAll(""));
+		return getTermForWord(NO_PUNC_REGEX.matcher(s.toLowerCase()).replaceAll(""));
 	}
 
 }
