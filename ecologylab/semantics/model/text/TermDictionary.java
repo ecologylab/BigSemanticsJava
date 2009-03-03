@@ -306,6 +306,14 @@ public class TermDictionary implements ApplicationProperties
 		}
 	}
 
+	/**
+	 * Stems and returns a term for a given string.  
+	 * Use getTermForUnsafeWord if the string contains 
+	 * punctuation or spaces to ensure correct use
+	 * of the term model. 
+	 * @param s shouldn't have punctuation or spaces
+	 * @return Term representing that string
+	 */
 	public static Term getTermForWord ( String s )
 	{
 		PorterStemmer p = stemmer;
