@@ -3,7 +3,7 @@ package ecologylab.semantics.model.text;
 import java.text.DecimalFormat;
 
 
-public class Term
+public class Term implements Comparable<Term>
 {
 
 	public String stem;
@@ -49,6 +49,18 @@ public class Term
 	public boolean isStopword ( )
 	{
 		return false;
+	}
+
+	public int compareTo(Term o) 
+	{
+		double difference = this.idf() - o.idf();
+		
+		if (difference == 0)
+			return this.getWord().compareTo(o.getWord());
+		else if (difference > 0)
+			return 1;
+		else 
+			return -1;
 	}
 
 }

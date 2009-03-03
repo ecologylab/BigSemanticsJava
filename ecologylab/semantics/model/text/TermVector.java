@@ -255,19 +255,18 @@ public class TermVector extends FeatureVector<Term> implements ITermVector
 	 */
 	public void trim ( int size )
 	{
-		if (size >= this.size())
+		if (size >= values.size())
 			return;
 
-		TreeMap<Double, Term> termsFromLowestToHighest = new TreeMap<Double, Term>();
 		synchronized (values)
-		{
-			for (Term t : values.keySet())
-				termsFromLowestToHighest.put(t.idf(), t);
-			for (Double d : termsFromLowestToHighest.keySet())
+		{			
+			TreeMap<Term, Double> sortedTerms = new TreeMap<Term, Double>(values);
+			for (Term t : sortedTerms.keySet())
 			{
-				if (values.size() <= size)
+				if (values.size() == size)
 					break;
-				values.remove(termsFromLowestToHighest.get(d));
+				
+				values.remove(t);
 			}
 		}
 	}
