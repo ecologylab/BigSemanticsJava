@@ -261,12 +261,13 @@ public class TermVector extends FeatureVector<Term> implements ITermVector
 		synchronized (values)
 		{			
 			TreeMap<Term, Double> sortedTerms = new TreeMap<Term, Double>(values);
+			values.clear();
 			for (Term t : sortedTerms.keySet())
 			{
 				if (values.size() == size)
 					break;
 				
-				values.remove(t);
+				values.put(t, sortedTerms.get(t));
 			}
 		}
 	}

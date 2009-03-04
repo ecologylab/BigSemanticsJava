@@ -54,13 +54,10 @@ public class Term implements Comparable<Term>
 	public int compareTo(Term o) 
 	{
 		double difference = this.idf() - o.idf();
-		
-		if (difference == 0)
-			return this.getWord().compareTo(o.getWord());
-		else if (difference > 0)
-			return 1;
-		else 
+		if (difference > 0)
 			return -1;
+		else 
+			return 1;
 	}
 
 }
