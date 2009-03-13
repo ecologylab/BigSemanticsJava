@@ -209,6 +209,7 @@ public class TermVector extends FeatureVector<Term> implements ITermVector
 					dot += tfIDF;
 				}
 			}
+			dot /= values.size();
 		}
 		return dot;
 	}

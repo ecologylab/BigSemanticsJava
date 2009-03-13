@@ -47,11 +47,15 @@ public class InterestModel
 
 	public static double getAbsoluteInterestOfTermVector ( IFeatureVector<Term> tv )
 	{
+		if (tv == null)
+			return 0;
 		return unitParticipantInterest.idfDotSimplex(tv);
 	}
 
 	public static short getInterestExpressedInTermVector ( IFeatureVector<Term> termVector )
 	{
+		if (termVector == null)
+			return 0;
 		double retVal = unitParticipantInterest.dotSimplex(termVector);
 		retVal /= unitParticipantInterest.commonDimensions(termVector);
 		retVal *= 10;
