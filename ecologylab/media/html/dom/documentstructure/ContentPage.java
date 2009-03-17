@@ -67,7 +67,7 @@ public class ContentPage extends RecognizedDocumentStructure
 		//        	htmlType.newAHref(attributesMap);
 //		System.out.println("recognized href Elements in contentBody: " + anchorNodeContexts.size());
 		if(htmlType != null)
-			htmlType.newAHref(anchorNodeContexts);
+			htmlType.generateContainersFromContexts(anchorNodeContexts);
 	}
 	
 
