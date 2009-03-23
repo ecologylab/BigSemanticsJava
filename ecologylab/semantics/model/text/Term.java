@@ -58,7 +58,7 @@ public class Term implements Comparable<Term>
 		if (difference > 0)
 			return -1;
 		else
-			return (difference == 0 && this.getWord().equals(o.getWord())) ? 0 : 1;
+			return (difference == 0) ? this.getWord().compareTo(o.getWord()) : 1;
 	}
 
 }
