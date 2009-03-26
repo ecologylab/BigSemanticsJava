@@ -21,7 +21,7 @@ import org.w3c.tidy.TdNode;
 import ecologylab.generic.Generic;
 import ecologylab.media.html.dom.DOMWalkInformationTagger;
 import ecologylab.media.html.dom.HTMLDOMParser;
-import ecologylab.media.html.dom.ImgNodewithAttr;
+import ecologylab.media.html.dom.HtmlNodewithAttr;
 import ecologylab.media.html.dom.RecognizedDocumentStructure;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.TranslationScope;
@@ -77,7 +77,7 @@ public class ContentBodyRecognize extends HTMLDOMParser
     {
     	for(int i=0; i<recPagetype.getImgNodesInContentBody().size(); i++ )
     	{
-    		ImgNodewithAttr ina = (ImgNodewithAttr) recPagetype.getImgNodesInContentBody().get(i);
+    		HtmlNodewithAttr ina = (HtmlNodewithAttr) recPagetype.getImgNodesInContentBody().get(i);
     		
     		String imgUrl = (String) ina.getAttributesMap().get("src");
     		int width = Generic.parseInt((String) ina.getAttributesMap().get("width"), -1);

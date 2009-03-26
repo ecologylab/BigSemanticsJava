@@ -156,9 +156,9 @@ public class TermVector extends FeatureVector<Term> implements ITermVector
 				{
 					s.append("(");
 					s.append((int) (t.idf() * 100) / 100.);
-					s.append("), ");
+					s.append("),");
 				}
-
+				s.append(" ");
 			}
 		}
 		s.append("}");

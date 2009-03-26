@@ -6,7 +6,7 @@ import java.util.TreeMap;
 import org.w3c.tidy.TdNode;
 
 import ecologylab.media.html.dom.HTMLDOMParser;
-import ecologylab.media.html.dom.ImgNodewithAttr;
+import ecologylab.media.html.dom.HtmlNodewithAttr;
 import ecologylab.media.html.dom.ParagraphText;
 import ecologylab.media.html.dom.RecognizedDocumentStructure;
 import ecologylab.media.html.dom.TidyInterface;
@@ -24,12 +24,12 @@ public class ImageCollectionPage extends RecognizedDocumentStructure
 	/**
 	 * Generate surrogates for the images inside the image-collection pages. 
 	 */
-	protected void generateSurrogates(TdNode articleMain, ArrayList<ImgNodewithAttr> imgNodes, int totalTxtLeng, 
+	protected void generateSurrogates(TdNode articleMain, ArrayList<HtmlNodewithAttr> imgNodes, int totalTxtLeng, 
 			TreeMap<Integer, ParagraphText> paraTexts, TidyInterface htmlType)
 	{
     	for(int i=0; i<imgNodes.size(); i++)
     	{
-    		ImgNodewithAttr ina = (ImgNodewithAttr)imgNodes.get(i);
+    		HtmlNodewithAttr ina = (HtmlNodewithAttr)imgNodes.get(i);
 	    	
     		ParsedURL anchorPurl = findAnchorPURLforImgNode(htmlType, ina);
     		

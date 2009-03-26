@@ -4,13 +4,16 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
+import org.w3c.dom.Document;
 import org.w3c.tidy.DOMDocumentImpl;
+import org.w3c.tidy.Lexer;
 import org.w3c.tidy.Out;
 import org.w3c.tidy.OutImpl;
 import org.w3c.tidy.StreamIn;
 import org.w3c.tidy.TdNode;
 import org.w3c.tidy.Tidy;
 
+import ecologylab.media.html.dom.documentstructure.AnchorContext;
 import ecologylab.media.html.dom.documentstructure.ContentPage;
 import ecologylab.media.html.dom.documentstructure.ImageCollectionPage;
 import ecologylab.media.html.dom.documentstructure.IndexPage;
@@ -70,7 +73,25 @@ public class HTMLDOMParser extends Tidy
 	public void parse(InputStream in, TidyInterface htmlType, String url)
 	{
 		this.url = url;
-		extractImageTextSurrogates(parseDOM(in, null), htmlType); 
+		Document parsedDoc = parseDOM(in, null);
+
+		if (!(parsedDoc instanceof DOMDocumentImpl)) 
+		{
+			//Does this ever happen anymore?
+			return;
+		}
+		
+		DOMWalkInformationTagger taggedDoc = walkAndTagDom(parsedDoc, htmlType);
+		
+		extractImageTextSurrogates(taggedDoc, htmlType);
+		
+		//Now, find hrefs, with their context and generate containers with metadata
+		ArrayList<AnchorContext> anchorContexts = findHrefsAndContext(htmlType, taggedDoc.getAllAnchorNodes());
+		
+  	if(htmlType != null)
+			htmlType.generateContainersFromContexts(anchorContexts);
+  	
+		taggedDoc.paragraphTexts.clear();
 	}
 
 	/**
@@ -78,14 +99,27 @@ public class HTMLDOMParser extends Tidy
 	 * 
 	 * historically was called as pprint() in JTidy. 
 	 */
-	public void extractImageTextSurrogates(org.w3c.dom.Document doc, TidyInterface htmlType)
+	public void extractImageTextSurrogates(DOMWalkInformationTagger taggedDoc, TidyInterface htmlType)
+	{
+
+		TdNode contentBody = RecognizedDocumentStructure.recognizeContentBody(taggedDoc);
+		//System.out.println("\n\ncontentBody = " + contentBody);       
+		ArrayList<HtmlNodewithAttr> imgNodes = taggedDoc.getAllImgNodes();
+
+		recognizeDocumentStructureToGenerateSurrogate(htmlType, taggedDoc, contentBody, imgNodes);
+	}
+
+	/**
+	 * This is the walk of the dom that calls print tree, and the parser methods such as closeHref etc.
+	 * @param doc
+	 * @param htmlType
+	 * @return
+	 */
+	private DOMWalkInformationTagger walkAndTagDom(org.w3c.dom.Document doc, TidyInterface htmlType)
 	{
 		Out jtidyPrettyOutput = new OutImpl();
 		TdNode rootTdNode;
 
-		if (!(doc instanceof DOMDocumentImpl)) {
-			return;
-		}
 		rootTdNode = ((DOMDocumentImpl)doc).adaptee;
 
 		jtidyPrettyOutput.state = StreamIn.FSM_ASCII;
@@ -101,15 +135,7 @@ public class HTMLDOMParser extends Tidy
 		domTagger.printTree(jtidyPrettyOutput, (short)0, 0, null, rootTdNode);
 
 		domTagger.flushLine(jtidyPrettyOutput, 0);
-
-		TdNode contentBody = RecognizedDocumentStructure.recognizeContentBody(domTagger);
-		//System.out.println("\n\ncontentBody = " + contentBody);       
-		ArrayList<ImgNodewithAttr> imgNodes = domTagger.getAllImgNodes();
-
-		recognizeDocumentStructureToGenerateSurrogate(htmlType, domTagger, contentBody, imgNodes);
-
-		domTagger.paragraphTexts.clear();
-
+		return domTagger;
 	}
 
 	/**
@@ -125,7 +151,7 @@ public class HTMLDOMParser extends Tidy
 	 */
 	private void recognizeDocumentStructureToGenerateSurrogate(TidyInterface htmlType,
 			DOMWalkInformationTagger pprint, TdNode contentBody,
-			ArrayList<ImgNodewithAttr> imgNodes) 
+			ArrayList<HtmlNodewithAttr> imgNodes) 
 	{
 		RecognizedDocumentStructure pageCategory = null;
 
@@ -160,8 +186,55 @@ public class HTMLDOMParser extends Tidy
 			pageCategory = new TextOnlyPage();
 			pageCategory.generateSurrogates(contentBody, imgNodes, pprint.getTotalTxtLength(), pprint.paragraphTexts, htmlType);
 		}
+
+	}
+
+	/**
+	 * @param arrayList 
+	 * @param articleMain
+	 */
+	protected ArrayList<AnchorContext> findHrefsAndContext(TidyInterface htmlType, ArrayList<HtmlNodewithAttr> anchorNodes)
+	{
+		ArrayList<AnchorContext> anchorNodeContexts = new ArrayList<AnchorContext>();
+		for(HtmlNodewithAttr anchorNode : anchorNodes)
+		{
+			TdNode node 									= anchorNode.getNode().parent();
+			String anchorContextStr 			= getTextinSubTree(node);
+			String anchorText 						= getTextinSubTree(anchorNode.getNode());
+			String href 									= (String) anchorNode.getAttributesMap().get("href");
+			if(href == null)
+				continue;
+			anchorNodeContexts.add(new AnchorContext(href,anchorText,anchorContextStr));
+
+		}
+		return anchorNodeContexts;
 	}
 
 
-
+  /**
+   * Non-recursive method to get the text for the <code>node</code>
+   * Collects the text even if the node contains other nodes in between,
+   * specifically the <code>anchor</code>. It does not however include the 
+   * text from the anchor node.
+   * @param node
+   * @param te
+   * @return
+   */
+  public String getTextinSubTree(TdNode node)
+  {
+  	TdNode childNode	= node.content();
+  	String text = new String();
+  	while( childNode != null )
+  	{
+  		if( childNode.type == TdNode.TextNode )
+  		{
+  			String tempstr = Lexer.getString(childNode.textarray(), childNode.start(), childNode.end()-childNode.start());
+  			tempstr = tempstr.trim();
+  			if(!tempstr.startsWith("<!--")) 
+  				text += " " + tempstr;	//+= allows collecting text across nodes within the current node
+  		}
+  		childNode = childNode.next();
+  	}
+  	return text;
+  }
 }
