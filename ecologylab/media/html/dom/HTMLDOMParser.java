@@ -14,6 +14,7 @@ import org.w3c.tidy.TdNode;
 import org.w3c.tidy.Tidy;
 
 import ecologylab.generic.StringBuilderPool;
+import ecologylab.generic.StringTools;
 import ecologylab.media.html.dom.documentstructure.AnchorContext;
 import ecologylab.media.html.dom.documentstructure.ContentPage;
 import ecologylab.media.html.dom.documentstructure.ImageCollectionPage;
@@ -241,7 +242,7 @@ public class HTMLDOMParser extends Tidy
   		}
   		childNode = childNode.next();
   	}
-  	String textInSubTree = buffy.toString();
+  	String textInSubTree = StringTools.toString(buffy);
   	stringBuilderPool.release(buffy);
 	
   	return textInSubTree;
