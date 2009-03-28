@@ -241,6 +241,9 @@ public class HTMLDOMParser extends Tidy
   		}
   		childNode = childNode.next();
   	}
-  	return buffy.toString();
+  	String textInSubTree = buffy.toString();
+  	stringBuilderPool.release(buffy);
+	
+  	return textInSubTree;
   }
 }
