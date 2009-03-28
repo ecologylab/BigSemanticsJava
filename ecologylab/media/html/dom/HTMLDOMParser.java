@@ -13,6 +13,7 @@ import org.w3c.tidy.StreamIn;
 import org.w3c.tidy.TdNode;
 import org.w3c.tidy.Tidy;
 
+import ecologylab.generic.StringBuilderPool;
 import ecologylab.media.html.dom.documentstructure.AnchorContext;
 import ecologylab.media.html.dom.documentstructure.ContentPage;
 import ecologylab.media.html.dom.documentstructure.ImageCollectionPage;
@@ -210,7 +211,11 @@ public class HTMLDOMParser extends Tidy
 		return anchorNodeContexts;
 	}
 
-
+	/**
+	 * string builder pool to parse link metadata
+	 */
+	protected static final StringBuilderPool stringBuilderPool = new StringBuilderPool(10, 512);
+	
   /**
    * Non-recursive method to get the text for the <code>node</code>
    * Collects the text even if the node contains other nodes in between,
@@ -223,7 +228,8 @@ public class HTMLDOMParser extends Tidy
   public String getTextinSubTree(TdNode node)
   {
   	TdNode childNode	= node.content();
-  	String text = new String();
+  	StringBuilder buffy = stringBuilderPool.acquire();
+  	
   	while( childNode != null )
   	{
   		if( childNode.type == TdNode.TextNode )
@@ -231,10 +237,10 @@ public class HTMLDOMParser extends Tidy
   			String tempstr = Lexer.getString(childNode.textarray(), childNode.start(), childNode.end()-childNode.start());
   			tempstr = tempstr.trim();
   			if(!tempstr.startsWith("<!--")) 
-  				text += " " + tempstr;	//+= allows collecting text across nodes within the current node
+  				buffy.append(" ").append(tempstr);	//+= allows collecting text across nodes within the current node
   		}
   		childNode = childNode.next();
   	}
-  	return text;
+  	return buffy.toString();
   }
 }
