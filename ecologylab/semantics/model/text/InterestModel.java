@@ -93,4 +93,9 @@ public class InterestModel
 		expressInterest(new TermVector(query), i);
 	}
 
+	public static boolean interestIsExpressed()
+	{
+		return participantInterest.size() > 0;
+	}
+
 }
