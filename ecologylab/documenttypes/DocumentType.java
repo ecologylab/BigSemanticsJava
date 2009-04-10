@@ -11,6 +11,8 @@ import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 
+import org.w3c.dom.Document;
+
 import ecologylab.collections.PrefixCollection;
 import ecologylab.collections.Scope;
 import ecologylab.generic.Debug;
@@ -39,7 +41,7 @@ import ecologylab.xml.ElementState;
  * @author andruid
  * @author eunyee
  */
-abstract public class DocumentType<AC extends AbstractContainer, IP extends InfoProcessor<AC>>
+abstract public class DocumentType<AC extends AbstractContainer, IP extends InfoProcessor<AC, IP>, ES extends ElementState>
 		extends Debug
 {
 	
@@ -49,7 +51,7 @@ abstract public class DocumentType<AC extends AbstractContainer, IP extends Info
 
 	protected AC					container;
 
-	protected IP					infoCollector;
+	protected IP					abstractInfoCollector;
 
 	protected static final String[]	IMAGE_MIME_STRINGS		= javax.imageio.ImageIO
 																	.getReaderMIMETypes();
@@ -96,11 +98,47 @@ abstract public class DocumentType<AC extends AbstractContainer, IP extends Info
 	 */
 	protected DocumentType ( IP infoCollector )
 	{
-		this.infoCollector = infoCollector;
+		this.abstractInfoCollector = infoCollector;
 	}
 
 	public abstract void parse ( ) throws IOException;
+	
+	/**
+	 * Optional parse method takes an an XML DOM represented as an ElementState as input.
+	 * 
+	 * @param es
+	 */
+	public void parse(ES es)
+	{
+		
+	}
+	/**
+	 * Call parse() and then the postParseHook().
+	 * 
+	 * @param elementState
+	 */
+	public final void performParse(ES elementState)
+	{
+		parse(elementState);
+		postParseHook();
+	}
+	/**
+	 * Called after parsing.
+	 */
+	public void postParseHook()
+	{
+	}
 
+	/**
+	 * Optional parse method takes an XML DOM represented as an org.w3c.Document as input.
+	 * @param dom
+	 */
+	public void parse(Document dom)
+	{
+		
+		
+	}
+	
 	interface DocumentTypeHelper extends ConnectionHelper
 	{
 		DocumentType getResult ( );
@@ -357,7 +395,7 @@ abstract public class DocumentType<AC extends AbstractContainer, IP extends Info
 	{
 		connectionRecycle();
 		container = null;
-		infoCollector = null;
+		abstractInfoCollector = null;
 	}
 
 	/**
@@ -441,7 +479,7 @@ abstract public class DocumentType<AC extends AbstractContainer, IP extends Info
 	 */
 	public void setInfoCollector ( IP infoCollector )
 	{
-		this.infoCollector = infoCollector;
+		this.abstractInfoCollector = infoCollector;
 	}
 
 	/**
@@ -691,6 +729,6 @@ abstract public class DocumentType<AC extends AbstractContainer, IP extends Info
 	{
 		return false;
 	}
-	
+
 	
 }
