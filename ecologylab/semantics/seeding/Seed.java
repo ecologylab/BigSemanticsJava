@@ -1,8 +1,8 @@
 package ecologylab.semantics.seeding;
 
 import ecologylab.collections.Scope;
-import ecologylab.documenttypes.AbstractContainer;
-import ecologylab.documenttypes.InfoProcessor;
+import ecologylab.documenttypes.Container;
+import ecologylab.documenttypes.InfoCollector;
 import ecologylab.generic.ReflectionTools;
 import ecologylab.semantics.connectors.CFPrefNames;
 import ecologylab.semantics.connectors.SeedPeer;
@@ -29,7 +29,7 @@ abstract public class Seed extends ecologylab.services.messages.cf.Seed implemen
 
     protected ResultDistributer            resultDistributer;
     
-    protected		InfoProcessor							infoCollector;
+    protected		InfoCollector							infoCollector;
     
     protected 	SeedPeer									seedPeer;
 
@@ -49,7 +49,7 @@ abstract public class Seed extends ecologylab.services.messages.cf.Seed implemen
      * 
      * @param infoProcessor
      */
-    protected void initialize(InfoProcessor infoProcessor)
+    protected void initialize(InfoCollector infoProcessor)
     {
     		this.infoCollector	= infoProcessor;
     		
@@ -61,7 +61,7 @@ abstract public class Seed extends ecologylab.services.messages.cf.Seed implemen
      * 
      * @param infoProcessor
      */
-    public void initialize(SeedPeer ancestor, InfoProcessor infoProcessor)
+    public void initialize(SeedPeer ancestor, InfoCollector infoProcessor)
     {
     		initialize(infoProcessor);
     		
@@ -86,7 +86,7 @@ abstract public class Seed extends ecologylab.services.messages.cf.Seed implemen
 //FIXME        this.parent = ancestor;
     }
 
-    abstract public void performInternalSeedingSteps(InfoProcessor infoCollector);
+    abstract public void performInternalSeedingSteps(InfoCollector infoCollector);
     
     /**
      * This sets the infoCollector for the seed, and then hands off the internal seeding processing to the
@@ -94,7 +94,7 @@ abstract public class Seed extends ecologylab.services.messages.cf.Seed implemen
      * 
      * @param	infoCollector	Must be non-null!
      */
-    public final void performSeedingSteps(InfoProcessor infoCollector)
+    public final void performSeedingSteps(InfoCollector infoCollector)
     {
     	// desparately seeking non-null InfoCollector
     	if (infoCollector != null)
@@ -127,7 +127,7 @@ abstract public class Seed extends ecologylab.services.messages.cf.Seed implemen
     
     abstract public boolean setValue(String value);
 
-    public void setInfoCollector(InfoProcessor infoCollector)
+    public void setInfoCollector(InfoCollector infoCollector)
     {
         this.infoCollector = infoCollector;
     }
@@ -190,7 +190,7 @@ abstract public class Seed extends ecologylab.services.messages.cf.Seed implemen
     /**
      * @return Returns the ResultDistributer.
      */
-    public ResultDistributer resultDistributer(InfoProcessor infoCollector)
+    public ResultDistributer resultDistributer(InfoCollector infoCollector)
     {
         if (resultDistributer != null)
             return resultDistributer;
@@ -227,7 +227,7 @@ abstract public class Seed extends ecologylab.services.messages.cf.Seed implemen
    * 
    * @param container
    */
-  public void bindToContainer(AbstractContainer container)
+  public void bindToContainer(Container container)
   {
       if(container == null)
       {

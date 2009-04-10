@@ -3,8 +3,8 @@ package ecologylab.semantics.seeding;
 import java.io.File;
 
 import ecologylab.collections.Scope;
-import ecologylab.documenttypes.AbstractContainer;
-import ecologylab.documenttypes.InfoProcessor;
+import ecologylab.documenttypes.Container;
+import ecologylab.documenttypes.InfoCollector;
 import ecologylab.semantics.connectors.SearchEngineNames;
 import ecologylab.semantics.connectors.SeedPeer;
 import ecologylab.xml.XMLTranslationException;
@@ -122,7 +122,7 @@ implements SemanticsPrefs, SearchEngineNames
     * @param query
     * @param engine
     */
-   public SearchState(SeedPeer ancestor, InfoProcessor infoProcessor, String query, String engine)
+   public SearchState(SeedPeer ancestor, InfoCollector infoProcessor, String query, String engine)
    {
 	   this(query, engine);
 	   //FIXME -- process ancestor
@@ -180,7 +180,7 @@ implements SemanticsPrefs, SearchEngineNames
 	 * @param infoCollector TODO
 	 */
    @Override
-   public void performInternalSeedingSteps(InfoProcessor infoCollector)
+   public void performInternalSeedingSteps(InfoCollector infoCollector)
    {
   	 infoCollector.instantiateDocumentType(SEARCH_DOCUMENT_TYPE_REGISTRY, engine, this);
    }
@@ -204,7 +204,7 @@ implements SemanticsPrefs, SearchEngineNames
 	 * 
 	 * @param container
 	 */
-	public void bindToContainer(AbstractContainer container)
+	public void bindToContainer(Container container)
 	{
 		super.bindToContainer(container);
 		//container.metadata.initializeFromSearch(query);

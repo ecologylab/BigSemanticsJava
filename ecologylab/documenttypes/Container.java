@@ -14,10 +14,10 @@ import ecologylab.xml.TranslationScope;
  * @author andruid
  *
  */
-public interface AbstractContainer
+public interface Container
 {
 
-	void redirectInlinksTo(AbstractContainer redirectedAbstractContainer);
+	void redirectInlinksTo(Container redirectedAbstractContainer);
 
 	void performDownload()
 	throws IOException

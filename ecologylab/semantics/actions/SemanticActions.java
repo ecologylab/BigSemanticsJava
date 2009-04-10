@@ -3,8 +3,8 @@
  */
 package ecologylab.semantics.actions;
 
-import ecologylab.documenttypes.AbstractContainer;
-import ecologylab.documenttypes.InfoProcessor;
+import ecologylab.documenttypes.Container;
+import ecologylab.documenttypes.InfoCollector;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.metadata.Metadata;
 
@@ -21,7 +21,7 @@ public interface SemanticActions {
 	 * @param reincarnate
 	 * @param infoCollector
 	 */
-	public void getAndPerhapsCreateConatiner(AbstractContainer ancestor, Metadata metadata,
-			boolean reincarnate, InfoProcessor infoCollector);
+	public void getAndPerhapsCreateConatiner(Container ancestor, Metadata metadata,
+			boolean reincarnate, InfoCollector infoCollector);
 
 }

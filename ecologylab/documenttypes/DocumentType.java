@@ -41,7 +41,7 @@ import ecologylab.xml.ElementState;
  * @author andruid
  * @author eunyee
  */
-abstract public class DocumentType<AC extends AbstractContainer, IP extends InfoProcessor<AC, IP>, ES extends ElementState>
+abstract public class DocumentType<AC extends Container, IP extends InfoCollector<AC, IP>, ES extends ElementState>
 		extends Debug
 {
 	
@@ -151,8 +151,8 @@ abstract public class DocumentType<AC extends AbstractContainer, IP extends Info
 	 * Create an InputStream. Using reflection (Class.newInstance()), create the appropriate
 	 * DocumentType, based on that mimeType, using the allTypes HashMap. Return it.
 	 */
-	public static DocumentType connect ( final ParsedURL purl, final AbstractContainer container,
-			final InfoProcessor infoCollector, SemanticActions semanticAction )
+	public static DocumentType connect ( final ParsedURL purl, final Container container,
+			final InfoCollector infoCollector, SemanticActions semanticAction )
 	{
 		DocumentTypeHelper helper = new DocumentTypeHelper()
 		{
@@ -188,7 +188,7 @@ abstract public class DocumentType<AC extends AbstractContainer, IP extends Info
 			public boolean processRedirect ( URL connectionURL ) throws Exception
 			{
 				ParsedURL connectionPURL = new ParsedURL(connectionURL);
-				AbstractContainer redirectedAbstractContainer = infoCollector
+				Container redirectedAbstractContainer = infoCollector
 						.lookupAbstractContainer(connectionPURL);
 				if (redirectedAbstractContainer != null)
 				{
@@ -540,7 +540,7 @@ abstract public class DocumentType<AC extends AbstractContainer, IP extends Info
 	 * 
 	 * @return an instance of the DocumentType subclass that corresponds to mimeType.
 	 */
-	public static DocumentType getInstanceByMimeType ( String mimeType, InfoProcessor infoCollector )
+	public static DocumentType getInstanceByMimeType ( String mimeType, InfoCollector infoCollector )
 	{
 		return getInstanceFromRegistry(registryByMimeType, mimeType, infoCollector);
 	}
@@ -554,7 +554,7 @@ abstract public class DocumentType<AC extends AbstractContainer, IP extends Info
 	 * 
 	 * @return an instance of the DocumentType subclass that corresponds to mimeType.
 	 */
-	public static DocumentType getInstanceBySuffix ( String suffix, InfoProcessor infoCollector )
+	public static DocumentType getInstanceBySuffix ( String suffix, InfoCollector infoCollector )
 	{
 		return ((suffix == null) || (suffix.length() == 0)) ? null : getInstanceFromRegistry(
 				registryBySuffix, suffix, infoCollector);
@@ -572,7 +572,7 @@ abstract public class DocumentType<AC extends AbstractContainer, IP extends Info
 	 * @return an instance of the DocumentType subclass that corresponds to documentTypeSimpleName.
 	 */
 	public static DocumentType getInstanceBySimpleName ( String documentTypeSimpleName,
-			InfoProcessor infoCollector )
+			InfoCollector infoCollector )
 	{
 		return getInstanceFromRegistry(registryByClassName, documentTypeSimpleName, infoCollector);
 	}
@@ -595,7 +595,7 @@ abstract public class DocumentType<AC extends AbstractContainer, IP extends Info
 	 *         specified registry.
 	 */
 	public static <DT extends DocumentType> DT getInstanceFromRegistry (
-			Scope<Class<? extends DT>> thatRegistry, String key, InfoProcessor infoCollector )
+			Scope<Class<? extends DT>> thatRegistry, String key, InfoCollector infoCollector )
 	{
 		DT result = null;
 		Class<? extends DT> documentTypeClass = thatRegistry.get(key);
@@ -679,7 +679,7 @@ abstract public class DocumentType<AC extends AbstractContainer, IP extends Info
 	}
 
 	public static DocumentType getInstanceFromMap ( ParsedURL purl,
-			HashMap<String, Class<? extends DocumentType>> thatMap, InfoProcessor infoCollector )
+			HashMap<String, Class<? extends DocumentType>> thatMap, InfoCollector infoCollector )
 	{
 		DocumentType result = null;
 		Class<? extends DocumentType> documentTypeClass = thatMap.get(purl

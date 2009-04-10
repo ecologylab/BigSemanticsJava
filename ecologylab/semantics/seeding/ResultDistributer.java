@@ -3,8 +3,8 @@ package ecologylab.semantics.seeding;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import ecologylab.documenttypes.AbstractContainer;
-import ecologylab.documenttypes.InfoProcessor;
+import ecologylab.documenttypes.Container;
+import ecologylab.documenttypes.InfoCollector;
 import ecologylab.generic.Debug;
 
 /** 
@@ -21,10 +21,10 @@ import ecologylab.generic.Debug;
  * @author andruid
  *
  */
-public class ResultDistributer<AC extends AbstractContainer>
+public class ResultDistributer<AC extends Container>
 extends Debug
 {
-	InfoProcessor			infoCollector;
+	InfoCollector			infoCollector;
    
 	/**
 	 * The number of search engine results to request, when processing
@@ -68,7 +68,7 @@ extends Debug
     
     private final Object	DOWNLOAD_RESULTS_LOCK	= new Object();
 	
-	public ResultDistributer(InfoProcessor infoCollector, int numSearches)
+	public ResultDistributer(InfoCollector infoCollector, int numSearches)
 	{
 		this.infoCollector						= infoCollector;
 		this.totalSearches						= numSearches;

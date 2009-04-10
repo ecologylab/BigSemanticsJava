@@ -4,7 +4,7 @@
 package ecologylab.semantics.seeding;
 
 import ecologylab.documenttypes.DocumentType;
-import ecologylab.documenttypes.InfoProcessor;
+import ecologylab.documenttypes.InfoCollector;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.XMLTranslationException;
 
@@ -83,7 +83,7 @@ public class InlineSeed extends Seed
 	/* (non-Javadoc)
 	 * @see cf.gui.dashboard.DashboardOperand#performInternalSeedingSteps(cf.model.InfoCollector)
 	 */
-	public void performInternalSeedingSteps(InfoProcessor infoCollector)
+	public void performInternalSeedingSteps(InfoCollector infoCollector)
 	{
 		if (content != null)
 		{

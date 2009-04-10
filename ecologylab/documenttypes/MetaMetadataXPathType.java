@@ -42,14 +42,14 @@ import ecologylab.xml.types.scalar.ScalarType;
  */
 public class MetaMetadataXPathType<M extends MetadataBase> extends DocumentType {
 
-	private InfoProcessor infoProcessor;
+	private InfoCollector infoProcessor;
 	static Tidy tidy;
 
 	static XPath xpath;
 	public static final String		DOMAIN_STRING 			= "http://portal.acm.org/";
 	SemanticActions semanticAction;
 
-	public MetaMetadataXPathType(InfoProcessor infoProcessor,SemanticActions semanticAction) {
+	public MetaMetadataXPathType(InfoCollector infoProcessor,SemanticActions semanticAction) {
 		this.infoProcessor = infoProcessor;
 		tidy = new Tidy();
 		tidy.setQuiet(true);

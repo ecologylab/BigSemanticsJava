@@ -4,7 +4,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import ecologylab.collections.Scope;
-import ecologylab.documenttypes.InfoProcessor;
+import ecologylab.documenttypes.InfoCollector;
 import ecologylab.gui.TopLevel;
 import ecologylab.semantics.connectors.SeedPeer;
 import ecologylab.semantics.connectors.SemanticsSessionObjectNames;
@@ -58,7 +58,7 @@ implements SemanticsSessionObjectNames
    	 */
    	SeedSet						parentSeedSet;
    	
-   	public ResultDistributer resultDistributer(InfoProcessor infoCollector)
+   	public ResultDistributer resultDistributer(InfoCollector infoCollector)
    	{
    		ResultDistributer result	= resultDistributer;
    		
@@ -102,7 +102,7 @@ implements SemanticsSessionObjectNames
    	 */
    	public void performSeeding(Scope scope)
    	{
-   		InfoProcessor infoCollector	= (InfoProcessor) scope.get(INFO_COLLECTOR);
+   		InfoCollector infoCollector	= (InfoCollector) scope.get(INFO_COLLECTOR);
    		
    		infoCollector.trackFirstSeedSet(this);
 
@@ -221,7 +221,7 @@ implements SemanticsSessionObjectNames
 			break;
 		case SeedCf.MULTIPLE_REQUESTSTS_REPLACE:
 			debug("handleMoreSeeds(REPLACE) " + clientConnectionScope.dump());
-			InfoProcessor infoCollector = (InfoProcessor) clientConnectionScope.get(INFO_COLLECTOR);
+			InfoCollector infoCollector = (InfoCollector) clientConnectionScope.get(INFO_COLLECTOR);
 			infoCollector.clear();
 			performSeeding(clientConnectionScope);
 			break;

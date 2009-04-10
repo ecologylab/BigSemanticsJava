@@ -6,7 +6,7 @@ package ecologylab.semantics.connectors;
 import java.util.ArrayList;
 
 import ecologylab.collections.Scope;
-import ecologylab.documenttypes.AbstractContainer;
+import ecologylab.documenttypes.Container;
 import ecologylab.generic.Debug;
 import ecologylab.services.messages.cf.Seed;
 
@@ -16,7 +16,7 @@ import ecologylab.services.messages.cf.Seed;
  * @author andruid
  *
  */
-abstract public class SeedPeer<SP extends SeedPeer, C extends AbstractContainer, I, T, S>
+abstract public class SeedPeer<SP extends SeedPeer, C extends Container, I, T, S>
 {
 	Seed						seed;
 	

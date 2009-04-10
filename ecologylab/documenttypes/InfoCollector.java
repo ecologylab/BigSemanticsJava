@@ -21,7 +21,7 @@ import ecologylab.xml.types.element.ArrayListState;
  * @author andruid
  *
  */
-public interface InfoProcessor<AC extends AbstractContainer, IC extends InfoProcessor>
+public interface InfoCollector<AC extends Container, IC extends InfoCollector>
 {
 
 	void displayStatus(String message);
