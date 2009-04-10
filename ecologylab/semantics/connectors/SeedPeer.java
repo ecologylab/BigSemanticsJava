@@ -6,7 +6,6 @@ package ecologylab.semantics.connectors;
 import java.util.ArrayList;
 
 import ecologylab.collections.Scope;
-import ecologylab.documenttypes.Container;
 import ecologylab.generic.Debug;
 import ecologylab.services.messages.cf.Seed;
 

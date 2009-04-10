@@ -1,13 +1,13 @@
 /**
  * 
  */
-package ecologylab.documenttypes;
+package ecologylab.semantics.connectors;
 
 import java.io.File;
 
 import ecologylab.collections.Scope;
+import ecologylab.documenttypes.DocumentType;
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.connectors.SeedPeer;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.seeding.SearchState;

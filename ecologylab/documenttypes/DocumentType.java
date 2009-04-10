@@ -21,6 +21,8 @@ import ecologylab.net.ConnectionHelper;
 import ecologylab.net.PURLConnection;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActions;
+import ecologylab.semantics.connectors.Container;
+import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.xml.ElementState;
 

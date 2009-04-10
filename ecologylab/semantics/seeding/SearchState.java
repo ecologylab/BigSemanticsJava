@@ -3,8 +3,8 @@ package ecologylab.semantics.seeding;
 import java.io.File;
 
 import ecologylab.collections.Scope;
-import ecologylab.documenttypes.Container;
-import ecologylab.documenttypes.InfoCollector;
+import ecologylab.semantics.connectors.Container;
+import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.connectors.SearchEngineNames;
 import ecologylab.semantics.connectors.SeedPeer;
 import ecologylab.xml.XMLTranslationException;

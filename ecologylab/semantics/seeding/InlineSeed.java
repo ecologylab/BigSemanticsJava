@@ -4,7 +4,7 @@
 package ecologylab.semantics.seeding;
 
 import ecologylab.documenttypes.DocumentType;
-import ecologylab.documenttypes.InfoCollector;
+import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.XMLTranslationException;
 

@@ -4,8 +4,8 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import ecologylab.collections.Scope;
-import ecologylab.documenttypes.InfoCollector;
 import ecologylab.gui.TopLevel;
+import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.connectors.SeedPeer;
 import ecologylab.semantics.connectors.SemanticsSessionObjectNames;
 import ecologylab.services.messages.cf.SearchState;

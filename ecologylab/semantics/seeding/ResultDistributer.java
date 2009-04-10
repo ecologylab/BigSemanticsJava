@@ -3,9 +3,9 @@ package ecologylab.semantics.seeding;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import ecologylab.documenttypes.Container;
-import ecologylab.documenttypes.InfoCollector;
 import ecologylab.generic.Debug;
+import ecologylab.semantics.connectors.Container;
+import ecologylab.semantics.connectors.InfoCollector;
 
 /** 
  * Aggregate all results across multiple searches.

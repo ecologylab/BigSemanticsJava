@@ -24,6 +24,7 @@ import ecologylab.generic.ReflectionTools;
 import ecologylab.net.PURLConnection;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActions;
+import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.library.scalar.MetadataParsedURL;
 import ecologylab.semantics.library.scalar.MetadataString;
 import ecologylab.semantics.library.scalar.MetadataStringBuilder;

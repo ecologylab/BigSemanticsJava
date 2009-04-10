@@ -1,10 +1,10 @@
 package ecologylab.semantics.seeding;
 
 import ecologylab.collections.Scope;
-import ecologylab.documenttypes.Container;
-import ecologylab.documenttypes.InfoCollector;
 import ecologylab.generic.ReflectionTools;
 import ecologylab.semantics.connectors.CFPrefNames;
+import ecologylab.semantics.connectors.Container;
+import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.connectors.SeedPeer;
 
 /**

@@ -1,10 +1,11 @@
 /**
  * 
  */
-package ecologylab.documenttypes;
+package ecologylab.semantics.connectors;
 
 import java.io.IOException;
 
+import ecologylab.documenttypes.DocumentType;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.seeding.SearchResult;
 import ecologylab.semantics.seeding.Seed;

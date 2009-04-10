@@ -3,9 +3,9 @@
  */
 package ecologylab.semantics.actions;
 
-import ecologylab.documenttypes.Container;
-import ecologylab.documenttypes.InfoCollector;
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.connectors.Container;
+import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.metadata.Metadata;
 
 /**
