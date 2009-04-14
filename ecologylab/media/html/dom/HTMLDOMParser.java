@@ -206,6 +206,7 @@ public class HTMLDOMParser extends Tidy
 			String href 									= (String) anchorNode.getAttributesMap().get("href");
 			if(href == null)
 				continue;
+			
 			anchorNodeContexts.add(new AnchorContext(href,anchorText,anchorContextStr));
 
 		}
@@ -237,8 +238,15 @@ public class HTMLDOMParser extends Tidy
   		{
   			String tempstr = Lexer.getString(childNode.textarray(), childNode.start(), childNode.end()-childNode.start());
   			tempstr = tempstr.trim();
-  			if(!tempstr.startsWith("<!--")) 
-  				buffy.append(" ").append(tempstr);	//+= allows collecting text across nodes within the current node
+  			//Filter unwanted crap from going into the metadata
+  			if(!tempstr.startsWith("<!--") && 
+  					!tempstr.equals("") && 
+  					tempstr.length() > 1 && 
+  					!tempstr.contains("nbsp") && 
+  					buffy.indexOf(tempstr) == -1) 
+  			{
+  					buffy.append(" ").append(tempstr);	//+= allows collecting text across nodes within the current node
+  			}
   		}
   		childNode = childNode.next();
   	}
