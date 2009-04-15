@@ -137,7 +137,7 @@ abstract public class Metadata extends MetadataBase
 			String valueString 				= fieldAccessor.getValueString(currentMetadata);
 			//"null" happens with mixins fieldAccessor b'coz getValueString() returns "null".
 			boolean isAlwaysShowAndNotHide 	= metaMetadata == null || (metaMetadata.isAlwaysShow() || !metaMetadata.isHide());
-			boolean nullValue 				= valueString != null && !"null".equals(valueString) && valueString.length() != 0;
+			boolean nullValue 				= valueString != null && !"null".equals(valueString) /* && valueString.length() != 0 */;
 			if (isAlwaysShowAndNotHide && nullValue)
 			{
 				size++;
@@ -150,6 +150,7 @@ abstract public class Metadata extends MetadataBase
 	 * Rebuilds the composite TermVector from the individual TermVectors
 	 * FIXME:Not able to move to the MetadataBase b'coz of mixins.
 	 */
+	@Override
 	public void rebuildCompositeTermVector()
 	{
 		//if there are no metadatafields retain the composite termvector
