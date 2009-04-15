@@ -7,6 +7,7 @@ import ecologylab.generic.ClassAndCollectionIterator;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.generic.OneLevelNestingIterator;
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.library.scalar.MetadataString;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataField;
 import ecologylab.semantics.model.text.CompositeTermVector;
@@ -105,7 +106,7 @@ abstract public class Metadata extends MetadataBase
 			if(attributeName.equals(fieldAccessor.getFieldName()))
 			{
 				String valueString = fieldAccessor.getValueString(currentMetadata);
-				return (valueString != null && valueString != "null");
+				return MetadataString.isNotNullValue(valueString);
 			}
 		}
 		return false;
@@ -137,8 +138,7 @@ abstract public class Metadata extends MetadataBase
 			String valueString 				= fieldAccessor.getValueString(currentMetadata);
 			//"null" happens with mixins fieldAccessor b'coz getValueString() returns "null".
 			boolean isAlwaysShowAndNotHide 	= metaMetadata == null || (metaMetadata.isAlwaysShow() || !metaMetadata.isHide());
-			boolean nullValue 				= valueString != null && !"null".equals(valueString) /* && valueString.length() != 0 */;
-			if (isAlwaysShowAndNotHide && nullValue)
+			if (isAlwaysShowAndNotHide && MetadataString.isNotNullValue(valueString))
 			{
 				size++;
 			}

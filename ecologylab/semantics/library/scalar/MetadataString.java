@@ -3,7 +3,10 @@
  */
 package ecologylab.semantics.library.scalar;
 
+import com.sun.corba.se.impl.oa.toa.TOA;
+
 import ecologylab.generic.FeatureVector;
+import ecologylab.semantics.metadata.MetadataFieldAccessor;
 import ecologylab.semantics.metadata.semantics_pseudo_scalar;
 import ecologylab.semantics.model.text.ITermVector;
 import ecologylab.semantics.model.text.Term;
@@ -58,5 +61,15 @@ public class MetadataString extends MetadataScalarBase
 		if (termVector == null)
 			termVector = new TermVector();
 		return termVector;
+	}
+	
+	/**
+	 * Check if a string is not null and not equal to {@code MetadataFieldAccessor.NULL}
+	 * @param valueString - string to check
+	 * @return True if not null and not equal to MetadataFieldAccessor.NULL; false otherwise.
+	 */
+	public static boolean isNotNullValue(String valueString)
+	{
+		return (valueString != null && valueString.equals(MetadataFieldAccessor.NULL) );
 	}
 }
