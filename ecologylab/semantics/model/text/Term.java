@@ -6,9 +6,9 @@ import java.text.DecimalFormat;
 public class Term implements Comparable<Term>
 {
 
-	public String stem;
-	public String word;
-	public boolean hasWord = false;
+	private String stem;
+	private String word;
+	private boolean hasWord = false;
 	private double idf;
 	public static DecimalFormat ONE_DECIMAL_PLACE = new DecimalFormat("#0.0");
 
@@ -28,7 +28,7 @@ public class Term implements Comparable<Term>
 		return stem;
 	}
 
-	public void setWord ( String word )
+	protected void setWord ( String word )
 	{
 		hasWord = true;
 		this.word = word;
@@ -39,6 +39,11 @@ public class Term implements Comparable<Term>
 		if (!hasWord)
 			return stem;
 		return word;
+	}
+	
+	public String getStem()
+	{
+		return stem;
 	}
 	
 	public boolean hasWord()

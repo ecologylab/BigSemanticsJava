@@ -172,7 +172,7 @@ public class TermVector extends FeatureVector<Term> implements ITermVector
 		{
 			for (Term t : values.keySet())
 			{
-				s.append(t.word);
+				s.append(t.getWord());
 				s.append(" ");
 			}
 		}

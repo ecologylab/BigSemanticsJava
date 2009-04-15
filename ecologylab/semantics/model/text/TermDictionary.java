@@ -207,9 +207,9 @@ public class TermDictionary implements ApplicationProperties
 	 * @param stem
 	 * @return
 	 */
-	synchronized public static boolean contains ( String stem )
+	synchronized public static boolean contains ( Term term )
 	{
-		return dictionary.containsKey(stem);
+		return dictionary.containsKey(term.getStem());
 	}
 
 	/**
