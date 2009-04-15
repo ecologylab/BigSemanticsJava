@@ -60,7 +60,14 @@ public class MetadataBase extends ElementState implements Iterable<FieldAccessor
 	}
 	
 
-	
+	/**
+	 * Rebuilds the composite TermVector from the individual TermVectors, when there is one.
+	 * This implementation, in the base class, does nothing.
+	 */
+	public void rebuildCompositeTermVector()
+	{
+		
+	}
 
 	/**
 	 * Determine if the Metadata has any entries.
@@ -124,7 +131,7 @@ public class MetadataBase extends ElementState implements Iterable<FieldAccessor
 			if(metadata != null)
 			{
 				FieldAccessor fieldAccessor = get(tagName);
-				if(fieldAccessor != null && value != null && value.length()!=0)
+				if(fieldAccessor != null /* && value != null && value.length()!=0 */)	// allow set to nothing -- andruid & andrew 4/14/09
 				{
 					fieldAccessor.set(metadata, value);
 					return true;
@@ -166,13 +173,7 @@ public class MetadataBase extends ElementState implements Iterable<FieldAccessor
 	
 	public boolean hwSet(String tagName, String value)
 	{
-		if(set(tagName, value))
-		{
-			//value is properly set.
-			//FIXME!!rebuildCompositeTermVector()
-			return true;
-		}
-		return false;
+		return set(tagName, value);
 	}
 		
     @Retention(RetentionPolicy.RUNTIME)
