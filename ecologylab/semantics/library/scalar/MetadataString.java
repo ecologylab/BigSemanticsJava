@@ -8,6 +8,7 @@ import ecologylab.semantics.metadata.semantics_pseudo_scalar;
 import ecologylab.semantics.model.text.ITermVector;
 import ecologylab.semantics.model.text.Term;
 import ecologylab.semantics.model.text.TermVector;
+import ecologylab.xml.XMLTools;
 import ecologylab.xml.xml_inherit;
 
 /**
@@ -32,13 +33,24 @@ public class MetadataString extends MetadataScalarBase
 
 	public void setValue(String value)
 	{
-	  if (value == null)
-	    value = "";
-		this.value = value;
-		if (termVector != null)
-			termVector.reset(value);
+//	  if (value == null)
+//	    value = "";
+		if ((value != null) && (value.length() > 0))
+		{
+		  	value		= XMLTools.unescapeXML(value);
+			this.value = value;
+			if (termVector != null)
+				termVector.reset(value);
+			else
+				termVector = new TermVector(value);
+		}
 		else
-			termVector = new TermVector(value);
+		{
+			this.value	= value;	// set to "" or null
+			if (termVector != null)
+				termVector.reset("");
+		}
+
 	}
 	
 	public ITermVector termVector()

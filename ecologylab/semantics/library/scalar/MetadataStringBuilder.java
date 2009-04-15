@@ -1,10 +1,12 @@
 package ecologylab.semantics.library.scalar;
 
 import ecologylab.generic.FeatureVector;
+import ecologylab.generic.StringTools;
 import ecologylab.semantics.metadata.semantics_pseudo_scalar;
 import ecologylab.semantics.model.text.ITermVector;
 import ecologylab.semantics.model.text.Term;
 import ecologylab.semantics.model.text.TermVector;
+import ecologylab.xml.XMLTools;
 
 @semantics_pseudo_scalar
 public class MetadataStringBuilder extends MetadataScalarBase
@@ -28,11 +30,37 @@ public class MetadataStringBuilder extends MetadataScalarBase
 	
 	public void setValue(String incomingValue)
 	{
-		value = (value == null) ? new StringBuilder(incomingValue) : value.append(incomingValue);
-		if (termVector != null)
-			termVector.reset(value.toString());
+		if ((incomingValue != null) && (incomingValue.length() > 0))
+		{	
+			boolean newValue	= false;
+			if (value == null)
+			{
+				value = new StringBuilder(incomingValue);
+				newValue				= true;
+			}
+			else
+				value.append(incomingValue);
+			
+			XMLTools.unescapeXML(value);
+			
+			if (termVector != null)
+				termVector.reset(value.toString());
+			else
+			{
+				termVector = new TermVector(newValue ? incomingValue : value.toString());
+			}
+		}
 		else
-			termVector = new TermVector(value.toString());
+		{
+			//FIXME -- should this be done or is it really meant to be an append in this case
+			//TODO -- how are we differentiating between accumulating data and editing?
+			if (value != null)
+				StringTools.clear(value);
+			else
+				value		= null;
+			if (termVector != null)
+				termVector.reset("");
+		}
 	}
 	
 	public ITermVector termVector()
