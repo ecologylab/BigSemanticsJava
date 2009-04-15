@@ -1,7 +1,7 @@
 package ecologylab.media.html.dom;
 
 import java.io.InputStream;
-import java.io.OutputStream;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 import org.w3c.dom.Document;
@@ -12,6 +12,8 @@ import org.w3c.tidy.OutImpl;
 import org.w3c.tidy.StreamIn;
 import org.w3c.tidy.TdNode;
 import org.w3c.tidy.Tidy;
+
+import sun.io.ByteToCharASCII;
 
 import ecologylab.generic.StringBuilderPool;
 import ecologylab.generic.StringTools;
@@ -198,6 +200,8 @@ public class HTMLDOMParser extends Tidy
 	protected ArrayList<AnchorContext> findHrefsAndContext(TidyInterface htmlType, ArrayList<HtmlNodewithAttr> anchorNodes)
 	{
 		ArrayList<AnchorContext> anchorNodeContexts = new ArrayList<AnchorContext>();
+		//System.out.println("\n\n------------Parsing " + anchorNodes.size()+"\n-----------------");
+		
 		for(HtmlNodewithAttr anchorNode : anchorNodes)
 		{
 			TdNode node 									= anchorNode.getNode().parent();
@@ -231,18 +235,17 @@ public class HTMLDOMParser extends Tidy
   {
   	TdNode childNode	= node.content();
   	StringBuilder buffy = stringBuilderPool.acquire();
-  	
   	while( childNode != null )
   	{
   		if( childNode.type == TdNode.TextNode )
   		{
   			String tempstr = Lexer.getString(childNode.textarray(), childNode.start(), childNode.end()-childNode.start());
   			tempstr = tempstr.trim();
+  			
   			//Filter unwanted crap from going into the metadata
   			if(!tempstr.startsWith("<!--") && 
   					!tempstr.equals("") && 
   					tempstr.length() > 1 && 
-  					!tempstr.contains("nbsp") && 
   					buffy.indexOf(tempstr) == -1) 
   			{
   					buffy.append(" ").append(tempstr);	//+= allows collecting text across nodes within the current node

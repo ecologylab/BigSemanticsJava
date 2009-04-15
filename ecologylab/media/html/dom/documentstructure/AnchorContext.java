@@ -8,29 +8,29 @@ package ecologylab.media.html.dom.documentstructure;
 public class AnchorContext
 {
 
-	private String href;
-	private String anchorText;
-	private String anchorContextString;
+	protected String hrefString;
+	protected 	String anchorText;
+	protected String anchorContextString;
 	
 	public AnchorContext(String href, String anchorText)
 	{
-		this.href		= href;
+		this.hrefString		= href;
 		this.anchorText = anchorText;
 	}
 	
 	public AnchorContext(String href, String anchorText, String anchorContextString)
 	{
-		this.href 					= href;
+		this.hrefString 					= href;
 		this.anchorText 			= anchorText;
 		this.anchorContextString	= anchorContextString;
 	}
-	public String getHref()
+	public String getHrefString()
 	{
-		return href;
+		return hrefString;
 	}
 	public void setHref(String href)
 	{
-		this.href = href;
+		this.hrefString = href;
 	}
 	public String getAnchorText()
 	{
@@ -51,6 +51,6 @@ public class AnchorContext
 	
 	public String toString()
 	{
-		return "[href: " + href + " ; anchorText: " + anchorText + " ; anchorContext: " + anchorContextString + "]";  
+		return "[href: " + hrefString + " ; anchorText: " + anchorText + " ; anchorContext: " + anchorContextString + "]";  
 	}
 }

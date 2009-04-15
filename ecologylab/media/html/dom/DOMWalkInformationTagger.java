@@ -27,6 +27,7 @@ import ecologylab.generic.StringTools;
  */
 public class DOMWalkInformationTagger extends PPrint
 {
+	private static final int	MAX_LINKS_PER_PAGE	= 200;
 	protected static final int PARA_TEXT_LENGTH_LIMIT = 80;
 	TidyInterface htmlType;
 	int encoding;
@@ -89,8 +90,11 @@ public class DOMWalkInformationTagger extends PPrint
 			}
 			else if( "a".equals(p) ) 
 			{
-				HtmlNodewithAttr attrNode = new HtmlNodewithAttr(node, attributesMap);
-				allAnchorNodes.add(attrNode);
+				if(allAnchorNodes.size() < MAX_LINKS_PER_PAGE)
+				{
+					HtmlNodewithAttr attrNode = new HtmlNodewithAttr(node, attributesMap);
+					allAnchorNodes.add(attrNode);	
+				}
 				//This call is performed during the second parse while generating containers and extracting metadata.
 				//htmlType.newAHref(attributesMap);
 			}
