@@ -66,10 +66,10 @@ public class MetadataString extends MetadataScalarBase
 	/**
 	 * Check if a string is not null and not equal to {@code MetadataFieldAccessor.NULL}
 	 * @param valueString - string to check
-	 * @return True if not null and not equal to MetadataFieldAccessor.NULL; false otherwise.
+	 * @return True if not null and not equal to MetadataFieldAccessor.NULL, false otherwise.
 	 */
 	public static boolean isNotNullValue(String valueString)
 	{
-		return (valueString != null && valueString.equals(MetadataFieldAccessor.NULL) );
+		return (valueString != null && !valueString.equals(MetadataFieldAccessor.NULL) );
 	}
 }
