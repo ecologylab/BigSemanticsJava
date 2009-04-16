@@ -1,32 +1,47 @@
 package ecologylab.semantics.model.text;
 
+import java.util.HashMap;
 import java.util.Map.Entry;
 
 import ecologylab.generic.IFeatureVector;
 import ecologylab.xml.ElementState;
-import ecologylab.xml.types.element.StringDoubleMap;
 
 public class InterestModel
 {
 	
-	public static class InterestModelState extends ElementState {
-		protected @xml_nested @xml_tag("terms") StringDoubleMap	values = new StringDoubleMap();
+	public static class InterestModelState extends ElementState 
+	{
+		protected @xml_map("feature") HashMap<String, InterestModelEntry>	values = new HashMap<String, InterestModelEntry>();
+		
 		public InterestModelState()
+		{
+		}
+		
+		public static InterestModelState build()
+		{
+			InterestModelState result	= new InterestModelState();
+			result.enterValues();
+			return result;
+		}
+		private void enterValues()
 		{
 			synchronized(participantInterest)
 			{
 				for (Entry<Term,Double> e : participantInterest.map().entrySet())
-					values.put(e.getKey().getWord(), e.getValue());
+				{
+					InterestModelEntry	modelEntry	= new InterestModelEntry(e);
+					values.put(modelEntry.getKey(), modelEntry);					
+				}
 			}
 		}
 		
 		public void loadInterestModelFromState()
 		{
 			TermVector tv = new TermVector();
-			for (Entry<String,Double> e : values.entrySet())
+			for (Entry<String,InterestModelEntry> e : values.entrySet())
 			{
 				Term term = TermDictionary.getTermForWord(e.getKey());
-				double val = e.getValue();
+				double val = e.getValue().getValue();
 				tv.add(term, val);
 			}
 			participantInterest.clear();
