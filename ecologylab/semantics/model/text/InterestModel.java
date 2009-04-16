@@ -3,11 +3,14 @@ package ecologylab.semantics.model.text;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+import ecologylab.appframework.types.prefs.Pref;
+import ecologylab.appframework.types.prefs.PrefBoolean;
 import ecologylab.generic.IFeatureVector;
 import ecologylab.xml.ElementState;
 
 public class InterestModel
 {
+	public static final PrefBoolean INTEREST_DECAY_PREF = (PrefBoolean) Pref.lookupPref("decay_interest");
 	
 	public static class InterestModelState extends ElementState 
 	{
@@ -79,9 +82,12 @@ public class InterestModel
 
 	private static void timeScaleInterest ( )
 	{
-		long delta_t = System.nanoTime() - timestamp;
-		double delta_t_in_seconds = delta_t / 1e9;
-		participantInterest.multiply(Math.exp(-delta_t_in_seconds / INTEREST_TIME_CONSTANT));
+		if (INTEREST_DECAY_PREF.value())
+		{
+			long delta_t = System.nanoTime() - timestamp;
+			double delta_t_in_seconds = delta_t / 1e9;
+			participantInterest.multiply(Math.exp(-delta_t_in_seconds / INTEREST_TIME_CONSTANT));
+		}
 		timestamp = System.nanoTime();
 	}
 
