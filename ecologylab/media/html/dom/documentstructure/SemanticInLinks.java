@@ -22,7 +22,6 @@ public class SemanticInLinks extends ArrayList<SemanticAnchor>
 		for(SemanticAnchor anchor : this)
 		{
 			double weight = weightStrategy.getWeight(anchor);
-			weight /= anchor.withinSite ? 2 : 1;
 			w += weight;
 		}
 		
