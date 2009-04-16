@@ -1,9 +1,39 @@
 package ecologylab.semantics.model.text;
 
+import java.util.Map.Entry;
+
 import ecologylab.generic.IFeatureVector;
+import ecologylab.xml.ElementState;
+import ecologylab.xml.types.element.StringDoubleMap;
 
 public class InterestModel
 {
+	
+	public static class InterestModelState extends ElementState {
+		protected @xml_nested @xml_tag("terms") StringDoubleMap	values = new StringDoubleMap();
+		public InterestModelState()
+		{
+			synchronized(participantInterest)
+			{
+				for (Entry<Term,Double> e : participantInterest.map().entrySet())
+					values.put(e.getKey().getWord(), e.getValue());
+			}
+		}
+		
+		public void loadInterestModelFromState()
+		{
+			TermVector tv = new TermVector();
+			for (Entry<String,Double> e : values.entrySet())
+			{
+				Term term = TermDictionary.getTermForWord(e.getKey());
+				double val = e.getValue();
+				tv.add(term, val);
+			}
+			participantInterest.clear();
+			participantInterest.add(tv);
+		}
+		
+	}
 	// participant interest vector
 
 	private static TermVector	participantInterest		= new TermVector();

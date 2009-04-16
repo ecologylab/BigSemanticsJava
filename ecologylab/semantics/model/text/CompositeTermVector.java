@@ -3,6 +3,7 @@ package ecologylab.semantics.model.text;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Set;
 import java.util.Observer;
@@ -127,7 +128,7 @@ public class CompositeTermVector extends Observable implements Observer, ITermVe
 		return compositeTermVector.get(term);
 	}
 
-	public HashMap<Term, Double> map ( )
+	public Map<Term, Double> map ( )
 	{
 		return compositeTermVector.map();
 	}
