@@ -3,13 +3,9 @@
  */
 package ecologylab.semantics.library.scalar;
 
-import com.sun.corba.se.impl.oa.toa.TOA;
-
-import ecologylab.generic.FeatureVector;
 import ecologylab.semantics.metadata.MetadataFieldAccessor;
 import ecologylab.semantics.metadata.semantics_pseudo_scalar;
 import ecologylab.semantics.model.text.ITermVector;
-import ecologylab.semantics.model.text.Term;
 import ecologylab.semantics.model.text.TermVector;
 import ecologylab.xml.XMLTools;
 import ecologylab.xml.xml_inherit;
