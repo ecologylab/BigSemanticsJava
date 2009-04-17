@@ -54,7 +54,13 @@ implements SemanticsPrefs, SearchEngineNames
    
    private int				numResults		= NUM_SEARCH_RESULTS.value();
    
-   private int				firstResult;
+   /**
+    * The result index for the first result in the current search (to be) issued for this Search seed.
+    * Initially, this is 0.
+    * Each time a subsequent search is run, it will be incremented by the number of searchResults that
+    * were requested the previous time.
+    */
+   private int				currentFirstResultIndex;
 
    private int				searchType;
    
@@ -319,17 +325,19 @@ implements SemanticsPrefs, SearchEngineNames
 	/**
 	 * @return Returns the firstResult.
 	 */
-	public int firstResult()
+	public int currentFirstResultIndex()
 	{
-		return firstResult;
+		return currentFirstResultIndex;
 	}
+
 	/**
-	 * @param firstResult The firstResult to set.
+	 * Called to specify that the next set of search results will be retrieved for this Search Seed.
 	 */
-	public void setFirstResult(int firstResult)
+	public void nextResultSet()
 	{
-		this.firstResult = firstResult;
+		currentFirstResultIndex += numResults;
 	}
+	
 	/**
 	 * @param queueInsteadOfImmediate The queueInsteadOfImmediate to set.
 	 */
