@@ -68,4 +68,7 @@ public interface InfoCollector<AC extends Container, IC extends InfoCollector>
 	Scope sessionScope();
 
 	public void setCurrentFileFromUntitled(File file);
+	
+	public void increaseNumImageReferences(); 
+	public void decreaseNumImageReferences();
 }

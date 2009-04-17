@@ -13,10 +13,15 @@ import ecologylab.semantics.model.text.Term;
 public interface AbstractImgElement extends AbstractSetElement
 {
 
-	void deliverOrDownload();
+	boolean deliverOrDownload();
 
 	IFeatureVector<Term> termVector();
 	
 	public float mediaWeight();
 
+	/**
+	 * What should be done if this image fails to be delivered or downloaded ?
+	 * @param getText 
+	 */
+	void handleDeliveryOrDownloadError(boolean getText);
 }
