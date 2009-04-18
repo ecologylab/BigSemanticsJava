@@ -71,4 +71,5 @@ public interface InfoCollector<AC extends Container, IC extends InfoCollector>
 	
 	public void increaseNumImageReferences(); 
 	public void decreaseNumImageReferences();
+	public void unpauseCrawler();
 }
