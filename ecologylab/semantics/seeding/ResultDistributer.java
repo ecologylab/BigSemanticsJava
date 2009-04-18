@@ -146,6 +146,11 @@ extends Debug
 				resultNumLevel++;
 				queueCount = 0;
 				downloadResults();
+				// if all slices have been processed unpause the crawler
+				if(checkIfAllSearchesOver())
+				{
+					infoCollector.unpauseCrawler();
+				}
 			}
 			processingDownloads		= false;
 
@@ -326,5 +331,28 @@ extends Debug
 		this.countingDone = 0;
 		this.resultSlices.clear();
 		this.resultNumOfDoneSearches.clear();
+	}
+	
+	/**
+	 * return if all the slices have been processed and downloaded.
+	 *
+	 * @return
+	 */
+	private boolean checkIfAllSearchesOver()
+	{
+		boolean returnValue = true;
+		for (int i = 0; i < resultSlices.size(); i++)
+		{
+			ArrayList<AC> currentSlice = resultSlices.get(i);
+			if (currentSlice == null || currentSlice.size() == 0)
+			{
+				returnValue = returnValue&&true;
+			}
+			else
+			{
+				returnValue = false;
+			}
+		}
+		return returnValue;
 	}
 }
