@@ -164,28 +164,30 @@ public class HTMLDOMParser extends Tidy
 			// Content Pages
 			pageCategory = new ContentPage();
 		}
-		else if( imgNodes.size()==0 ) //) && (pprint.getTotalTxtLength()<200) )
-		{
-			pageCategory = new TextOnlyPage();
-		}   	
-		else if( (imgNodes.size()>0) && ((pprint.getTotalTxtLength()/imgNodes.size())<200) )
-		{	
-			// High probability to be an image-collection page
-			pageCategory = new ImageCollectionPage();
-		}
 		else
 		{
-			// Index Pages (include index-content pages)
-			pageCategory = new IndexPage();
+			final int numImgNodes = imgNodes.size();
+			if( (numImgNodes>0) && ((pprint.getTotalTxtLength()/numImgNodes)<200) )
+			{	
+				// High probability to be an image-collection page
+				pageCategory = new ImageCollectionPage();
+			}
+			else if( numImgNodes!=0 )
+			{
+				// Index Pages (include index-content pages)
+				//FIXME -- should also look at text only pages & especially use link ratio as a feature!!!!
+				pageCategory = new IndexPage();
+			}
 		}
 
-		pageCategory.generateSurrogates(contentBody, imgNodes, pprint.getTotalTxtLength(), pprint.paragraphTexts, htmlType);
+		if (pageCategory != null)
+			pageCategory.generateSurrogates(contentBody, imgNodes, pprint.getTotalTxtLength(), pprint.paragraphTexts, htmlType);
 
 
 		// No Informative images are in this document. Form surrogate only with text.  	
 		// We cannot tell whether the images in the pages are informative or not until downloding all, thus this is the case after we 
 		// look through all the images in the page and determine no image is worth displaying.
-		if( (htmlType.numSurrogateFrom()==0) && (pprint.paragraphTexts.size()>0) )
+		if( (htmlType.numCandidatesExtractedFrom()==0) && (pprint.paragraphTexts.size()>0) )
 		{
 			pageCategory = new TextOnlyPage();
 			pageCategory.generateSurrogates(contentBody, imgNodes, pprint.getTotalTxtLength(), pprint.paragraphTexts, htmlType);
