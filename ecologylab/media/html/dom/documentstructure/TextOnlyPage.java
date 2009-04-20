@@ -33,13 +33,22 @@ public class TextOnlyPage extends RecognizedDocumentStructure
 		if( size>0 )
 		{
 	//		ParagraphText paraText		= (ParagraphText) paraTexts.values().toArray()[size-1];
-
-			ParagraphText paraText		= paraTexts.get(paraTexts.lastKey());
-			StringBuilder paraTextStr	= paraText.getPtext();
-			XMLTools.unescapeXML(paraTextStr);
 			
-			if( paraTextStr.length()>25 )
-				htmlType.newTxt( paraTextStr.toString() );//, paraTexts.node );
+			//FIXME -- loop through most all of these!
+			generateTextSurrogate(paraTexts, htmlType);
+			if (size > 3)	// if at least 4 texts were there
+				generateTextSurrogate(paraTexts, htmlType);
 		}
+	}
+
+	private void generateTextSurrogate(TreeMap<Integer, ParagraphText> paraTexts,
+			TidyInterface htmlType)
+	{
+		ParagraphText paraText		= paraTexts.remove(paraTexts.lastKey());
+		StringBuilder paraTextStr	= paraText.getPtext();
+		XMLTools.unescapeXML(paraTextStr);
+		
+		if( paraTextStr.length()>25 )
+			htmlType.newTxt( paraTextStr.toString() );//, paraTexts.node );
 	}
 }
