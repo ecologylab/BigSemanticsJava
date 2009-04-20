@@ -34,7 +34,7 @@ public interface TidyInterface
 	//TODO -- take a BtringBuilder instead of a String. and use if efficiently!!!!!!
 	public void newTxt(String surrogateText);
 	
-	public int numSurrogateFrom();
+	public int numCandidatesExtractedFrom();
 	
 	public void removeTheContainerFromCandidates(ParsedURL containerPURL);
 	
