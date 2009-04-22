@@ -19,11 +19,15 @@ public class SemanticInLinks extends ArrayList<SemanticAnchor>
 	public double getWeight()
 	{
 		double w = 0;
-		for(SemanticAnchor anchor : this)
+		synchronized (this)
 		{
-			double weight = weightStrategy.getWeight(anchor);
-			w += weight;
+			for(SemanticAnchor anchor : this)
+			{
+				double weight = weightStrategy.getWeight(anchor);
+				w += weight;
+			}	
 		}
+		
 		
 		return w;
 	}
