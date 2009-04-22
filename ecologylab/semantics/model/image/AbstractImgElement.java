@@ -23,5 +23,5 @@ public interface AbstractImgElement extends AbstractSetElement
 	 * What should be done if this image fails to be delivered or downloaded ?
 	 * @param getText 
 	 */
-	void handleDeliveryOrDownloadError(boolean getText);
+	boolean handleDeliveryOrDownloadError(boolean getText);
 }
