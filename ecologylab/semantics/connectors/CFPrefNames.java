@@ -36,7 +36,8 @@ public interface CFPrefNames
 	 */
 	public static final String 	DEFAULT_INTERFACE  		= "in_context_interface";
 
-	
+	public static final String  USERINTERFACE_PREF_NAME		= "userinterface";
+
 	public static String 		INFO_EXTRACTION_PARAM	= "info_extraction_method";
 	public static int 			OLD_UNSTRUCTURED_EXTRACTION		= 0;
 	public static int 			EUNYEE_STRUCTURED_EXTRACTION	= 1;
