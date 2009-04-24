@@ -3,6 +3,7 @@ package ecologylab.media.html.dom;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.TreeMap;
 
@@ -27,37 +28,44 @@ import ecologylab.generic.StringTools;
  */
 public class DOMWalkInformationTagger extends PPrint
 {
-	private static final int	MAX_LINKS_PER_PAGE	= 200;
-	protected static final int PARA_TEXT_LENGTH_LIMIT = 80;
+	private static final int		MAX_LINKS_PER_PAGE			= 200;
+	protected static final int PARA_TEXT_LENGTH_LIMIT 	= 80;
+	
 	TidyInterface htmlType;
-	int encoding;
-	int state;
+	
+	int 					encoding;
+	int 					state;
 
 	/**
 	 * Keep the array of the paragraph texts in the article body.
 	 * 
 	 */
-	protected TreeMap<Integer, ParagraphText>	paragraphTexts	= new TreeMap<Integer, ParagraphText>();
+	private TreeMap<Integer, ParagraphText>	paragraphTextsTMap	= new TreeMap<Integer, ParagraphText>();
+
+	protected TreeMap<Integer, ParagraphText> getParagraphTextsTMap()
+	{
+		return paragraphTextsTMap;
+	}
 
 	/**
 	 * Current DOM node that is being processed
 	 */
-	protected TdNode	currentNode		= null;
+	protected TdNode				currentNode		= null;
 
 	/**
 	 * Collection of text elements until a block level element is reached
 	 */
-	protected ParagraphText pt = new ParagraphText();
+	protected ParagraphText currentParagraphText = new ParagraphText();
 
 	/**
 	 * Keep track of the text length in this page to recognize the page type. 
 	 */
-	protected int 		totalTxtLength  = 0; 
+	protected int 					totalTxtLength  = 0; 
 
 	/**
 	 * All images in the page
 	 */
-	private ArrayList<HtmlNodewithAttr> allImgNodes			= new ArrayList<HtmlNodewithAttr>();
+	private ArrayList<HtmlNodewithAttr> 	allImgNodes			= new ArrayList<HtmlNodewithAttr>();
 
 	/**
 	 * All links in current page
@@ -76,39 +84,35 @@ public class DOMWalkInformationTagger extends PPrint
 	@Override
 	protected void printTag(Lexer lexer, Out fout, short mode, int indent, TdNode node)
 	{
-		String p = node.element;
-
-		// Check out the attributesMap later and Fix this  -- EUNYEE
-		HashMap attributesMap = new HashMap(20);
-		addAttributes(node.attributes, attributesMap);
+		String tagName = node.element;
 
 		if( htmlType != null )
 		{
-			if( "title".equals(p) ) 
+			if( "title".equals(tagName) ) 
 			{
 				htmlType.setTitle(node);
 			}
-			else if( "a".equals(p) ) 
+			else if( "a".equals(tagName) ) 
 			{
 				if(allAnchorNodes.size() < MAX_LINKS_PER_PAGE)
 				{
-					HtmlNodewithAttr attrNode = new HtmlNodewithAttr(node, attributesMap);
+					HtmlNodewithAttr attrNode = new HtmlNodewithAttr(node);
 					allAnchorNodes.add(attrNode);	
 				}
 				//This call is performed during the second parse while generating containers and extracting metadata.
 				//htmlType.newAHref(attributesMap);
 			}
-			else if( "i".equals(p) ) 
+			else if( "i".equals(tagName) ) 
 			{
 				htmlType.setItalic(true);
 			}
-			else if( "b".equals(p) )
+			else if( "b".equals(tagName) )
 			{
 				htmlType.setBold(true);
 			}	
-			else if( "img".equals(p) )
+			else if( "img".equals(tagName) )
 			{   
-				HtmlNodewithAttr ina = new HtmlNodewithAttr(node, attributesMap);
+				HtmlNodewithAttr ina = new HtmlNodewithAttr(node);
 				allImgNodes.add(ina);
 			}
 
@@ -158,7 +162,7 @@ public class DOMWalkInformationTagger extends PPrint
 	{
 		addCompletedPara();
 
-		pt = new ParagraphText();
+		currentParagraphText = new ParagraphText();
 		totalTxtLength = 0;
 	}
 
@@ -204,16 +208,25 @@ public class DOMWalkInformationTagger extends PPrint
 			}
 			else
 			{
-				StringBuilder pstr = getStringBuilder(textarray, start, end-start);
-
-				StringTools.trim(pstr);
-				if(!((pstr.length() == 4) && (pstr.charAt(0) == 'n') &&
-						(pstr.charAt(1) == 'u') && (pstr.charAt(2) == 'l') && (pstr.charAt(3) == 'l')))
+				// trim in place
+				while (Character.isWhitespace((char) textarray[start]) && (start < end))
 				{
-					// Update the total text length for this page. 
-					totalTxtLength = totalTxtLength + pt.append(pstr);
+					start++;
+				}
+				while (Character.isWhitespace((char) textarray[end - 1]) && (start < end))
+				{
+					end--;
+				}
 
-					pt.setNode(currentNode);
+				int length	= end-start;
+				if((length > 0) && !((length == 4) && (textarray[0] == 'n') &&
+						(textarray[1] == 'u') && (textarray[2] == 'l') && (textarray[3] == 'l')))
+				{
+					currentParagraphText.append(textarray, start, end);
+					// Update the total text length for this page. 
+					totalTxtLength += length;
+
+					currentParagraphText.setNode(currentNode);
 
 					flushLine(fout, indent);	
 				}
@@ -227,19 +240,19 @@ public class DOMWalkInformationTagger extends PPrint
 		 * Only keeps 10 paragraph texts. 
 		 * Thus, if there is a new paragraph text coming in and the 10 slots have been already filled, we replace with the existed one based on the length of the text.
 		 */
-		if( paragraphTexts.size() > 10 )
+		if( paragraphTextsTMap.size() > 10 )
 		{
-			Integer tkey = paragraphTexts.firstKey(); 
+			Integer tkey = paragraphTextsTMap.firstKey(); 
 			if( tkey.intValue() < totalTxtLength )
 			{
-				paragraphTexts.remove(tkey);
-				paragraphTexts.put(totalTxtLength, pt);
+				paragraphTextsTMap.remove(tkey);
+				paragraphTextsTMap.put(totalTxtLength, currentParagraphText);
 			}
 
 		}
 		// We don't put the text into the paragraphTexts structure unless the text is over certain length and not surrounded by <a> tag. 
 		else if( (totalTxtLength > PARA_TEXT_LENGTH_LIMIT) && !underAHref(currentNode) )
-			paragraphTexts.put(totalTxtLength, pt);
+			paragraphTextsTMap.put(totalTxtLength, currentParagraphText);
 	}
 
 	public boolean underAHref(TdNode node)
@@ -308,24 +321,31 @@ public class DOMWalkInformationTagger extends PPrint
 			e.printStackTrace();
 		}
 	}
-
-	/**
-	 * See what is the better way to integrate HashMap to existing attribute structure of Tidy.
-	 */
-	public static void addAttributes(AttVal attr, HashMap attrMap)
-	{
-		if (attr != null)
-		{
-			attrMap.put(attr.attribute, attr.value);
-			if (attr.next != null)
-				addAttributes(attr.next, attrMap);
-		}
-	}
-
 	
 	public ArrayList<HtmlNodewithAttr> getAllAnchorNodes()
 	{
 		return allAnchorNodes;
 	}
+	
+	public void recycle()
+	{
+		for (ParagraphText pt: paragraphTextsTMap.values())
+		{
+				pt.recycle();
+		}
+		paragraphTextsTMap.clear();
+		
+		recycle(allImgNodes);
+		allImgNodes			= null;
+		recycle(allAnchorNodes);
+		allAnchorNodes	= null;
+		
+		currentNode			= null;
+	}
 
+	private static void recycle(Collection<HtmlNodewithAttr> nodeCollection)
+	{
+		for (HtmlNodewithAttr thatNode: nodeCollection)
+			thatNode.recycle();
+	}
 }

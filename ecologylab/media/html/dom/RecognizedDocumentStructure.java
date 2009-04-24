@@ -12,6 +12,7 @@ import org.w3c.tidy.TdNode;
 
 import ecologylab.generic.Generic;
 import ecologylab.generic.IntSlot;
+import ecologylab.generic.StringTools;
 import ecologylab.media.PixelBased;
 import ecologylab.media.html.dom.documentstructure.AnchorContext;
 import ecologylab.net.ParsedURL;
@@ -91,7 +92,7 @@ public class RecognizedDocumentStructure
 				// Check whether the anchor mimetype is not an image. 
 				if( (anchorPurl!=null) && !anchorPurl.isImg() )
 				{
-					htmlType.newAnchorImgTxt(ina.getAttributesMap(), anchorPurl);
+					htmlType.newAnchorImgTxt(ina, anchorPurl);
 					htmlType.removeTheContainerFromCandidates(anchorPurl);
 				}
 
@@ -108,12 +109,13 @@ public class RecognizedDocumentStructure
 	 */
 	public boolean recognizeInformImage(HtmlNodewithAttr ina) 
 	{
-		String imgUrl = (String) ina.getAttributesMap().get("src");
-		int width = Generic.parseInt((String) ina.getAttributesMap().get("width"), -1);
-		int height = Generic.parseInt( (String)ina.getAttributesMap().get("height"), -1 );
-		float aspectRatio = (float)width / (float)height;
-		aspectRatio = (aspectRatio>1.0) ?  (float)1.0/aspectRatio : aspectRatio;
-		String altStr = (String) ina.getAttributesMap().get("alt");
+		String imgUrl = ina.getAttribute("src");
+		int width 		= ina.getAttributeAsInt("width");
+		int height 		= ina.getAttributeAsInt("height");
+		
+		float aspectRatio = (float) width / (float) height;
+		aspectRatio 	= (aspectRatio>1.0f) ?  (float)1.0f/aspectRatio : aspectRatio;
+		String altStr = ina.getAttribute("alt");
 
 		boolean informImg = true;
 
@@ -170,7 +172,7 @@ public class RecognizedDocumentStructure
 		HashMap<TdNode, IntSlot> greatGrandParentChildCounts = new HashMap<TdNode, IntSlot>();
 
 		// get linearlized from TreeMap
-		Collection<ParagraphText> paragrphTextsValues = taggedDoc.paragraphTexts.values();
+		Collection<ParagraphText> paragrphTextsValues = taggedDoc.getParagraphTextsTMap().values();
 		for(ParagraphText pt : paragrphTextsValues)
 		{
 			TdNode parent	= pt.getNode().parent();
@@ -266,8 +268,6 @@ public class RecognizedDocumentStructure
 	}
 
 
-	int paraIndex = 0;
-
 	/**
 	 * 1)	Image should be not too small (small images are usually copyrights or icons..)
 	 * 2)	Image with a link does not tend to be an article image. 
@@ -278,9 +278,6 @@ public class RecognizedDocumentStructure
 	 */
 	protected void associateImageTextSurrogate(TidyInterface htmlType, TdNode articleBody, TreeMap<Integer, ParagraphText> paraTexts)
 	{	
-		Object[] paraTextArray = paraTexts.values().toArray();
-		paraIndex = paraTextArray.length-1;
-		//System.out.println("paraIndex = " + paraIndex );		
 		for( HtmlNodewithAttr ina: imgNodesInContentBody) 
 		{  		
 			boolean articleImg = recognizeInformImage(ina);
@@ -292,13 +289,12 @@ public class RecognizedDocumentStructure
 				extractedCaption = getLongestTxtinSubTree(ina.getNode().grandParent(), extractedCaption);
 				informImgNodes.add(ina.getNode());
 
-				StringBuilder textContext = null;
-				TdNode textNode = null;
-				boolean associated = false; 			
-				while( (textContext == null) && (paraIndex>=0 ) )
+				StringBuilder textContext	 = null;
+
+				while( (textContext == null) && (paraTexts.size() > 0) )
 				{
-					ParagraphText pt = (ParagraphText) paraTextArray[paraIndex];
-					textNode = pt.getNode();
+					ParagraphText pt 	= paraTexts.remove(paraTexts.lastKey());
+					TdNode textNode 	= pt.getNode();
 					if( textNode.grandParent().equals(articleBody) || 
 							textNode.greatGrandParent().equals(articleBody) )
 					{
@@ -307,12 +303,12 @@ public class RecognizedDocumentStructure
 						// add assocateText into the newImage, so that we can author Image+Text surrogate later
 						if( textContext != null )
 						{
-							String altText = (String) ina.getAttributesMap().get("alt");
+							String altText = ina.getAttribute("alt");
 							if( (extractedCaption.trim().length()>0) || ( (altText!=null) && (altText.length()>0) ) )
 							{
 								ina.addToAttributesMap(HTMLDOMParser.extractedCaption, XMLTools.unescapeXML(extractedCaption));
 								TermVector captionTV = new TermVector(extractedCaption);
-								TermVector associateTextTV = new TermVector(textContext.toString());
+								TermVector associateTextTV = new TermVector(textContext);
 
 
 								boolean altTextSimilarity = false;
@@ -326,34 +322,23 @@ public class RecognizedDocumentStructure
 								if( (associateTextTV.dot(captionTV)>0) || altTextSimilarity)
 								{
 									XMLTools.unescapeXML(textContext);				
-									ina.addToAttributesMap(HTMLDOMParser.textContext, textContext.toString());
-									ina.addToAttributesMap(HTMLDOMParser.TextNode, textNode);
-									associated = true;
+									ina.addToAttributesMap(HTMLDOMParser.textContext, StringTools.toString(textContext));
+									// i believe this was never used -- andruid 4/17/09
+//									ina.addToAttributesMap(HTMLDOMParser.TextNode, textNode);
+//									associated = true;
 								}
-								else
-								{
-									paraIndex--;
-									continue;
-								}	        						
 							}
 							else
 							{
 								//	ina.addToAttributesMap(HTMLDOMParser.extractedCaption, XMLTools.unescapeXML(extractedCaption));
 								XMLTools.unescapeXML(textContext);				
 								ina.addToAttributesMap(HTMLDOMParser.textContext, textContext.toString());
-								ina.addToAttributesMap(HTMLDOMParser.TextNode, textNode);
-								associated = true;
+								// i believe this was never used -- andruid 4/17/09
+								//								ina.addToAttributesMap(HTMLDOMParser.TextNode, textNode);
 							}
 						}
 					}
-
-					paraIndex--;
-
-					if( paraIndex == -1 )
-					{
-						break;	
-					}
-
+					pt.recycle();
 				}
 
 				ParsedURL anchorPurl = findAnchorPURLforImgNode(htmlType, ina);
@@ -364,8 +349,9 @@ public class RecognizedDocumentStructure
 				//        		if( anchorPurl!=null )
 				//        			htmlType.removeTheContainerFromCandidates(anchorPurl);
 
-				ina.addToAttributesMap(HTMLDOMParser.ImgNode, ina.getNode());
-				htmlType.newImgTxt(ina.getAttributesMap(), anchorPurl);
+				// i believe this was never used -- andruid 4/17/09
+				//				ina.addToAttributesMap(HTMLDOMParser.ImgNode, ina.getNode());
+				htmlType.newImgTxt(ina, anchorPurl);
 
 			}
 		}
@@ -439,11 +425,7 @@ public class RecognizedDocumentStructure
 			htmlNodesInContentBody(contentNode, nodeElementString, nodesInContentBody);
 			if( contentNode.element!=null && contentNode.element.equals(nodeElementString) )
 			{
-				// Check out the attributesMap later and Fix this  -- EUNYEE
-				HashMap<String, Object> attributesMap = new HashMap<String, Object>(20);
-				DOMWalkInformationTagger.addAttributes(contentNode.attributes, attributesMap);
-
-				HtmlNodewithAttr ina = new HtmlNodewithAttr(contentNode, attributesMap);
+				HtmlNodewithAttr ina = new HtmlNodewithAttr(contentNode);
 				nodesInContentBody.add(ina);
 			}
 			contentNode = contentNode.next();

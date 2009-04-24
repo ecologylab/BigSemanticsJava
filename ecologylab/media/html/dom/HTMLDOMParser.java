@@ -3,6 +3,7 @@ package ecologylab.media.html.dom;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.TreeMap;
 
 import org.w3c.dom.Document;
 import org.w3c.tidy.DOMDocumentImpl;
@@ -95,7 +96,7 @@ public class HTMLDOMParser extends Tidy
   	if(htmlType != null)
 			htmlType.generateContainersFromContexts(anchorContexts);
   	
-		taggedDoc.paragraphTexts.clear();
+		taggedDoc.recycle();
 	}
 
 	/**
@@ -149,12 +150,12 @@ public class HTMLDOMParser extends Tidy
 	 * Based on the recognized page type, it generates surrogates.  
 	 * 
 	 * @param htmlType
-	 * @param pprint
+	 * @param domWalkInfoTagger
 	 * @param contentBody
 	 * @param imgNodes
 	 */
 	private void recognizeDocumentStructureToGenerateSurrogate(TidyInterface htmlType,
-			DOMWalkInformationTagger pprint, TdNode contentBody,
+			DOMWalkInformationTagger domWalkInfoTagger, TdNode contentBody,
 			ArrayList<HtmlNodewithAttr> imgNodes) 
 	{
 		RecognizedDocumentStructure pageCategory = null;
@@ -167,7 +168,7 @@ public class HTMLDOMParser extends Tidy
 		else
 		{
 			final int numImgNodes = imgNodes.size();
-			if( (numImgNodes>0) && ((pprint.getTotalTxtLength()/numImgNodes)<200) )
+			if( (numImgNodes>0) && ((domWalkInfoTagger.getTotalTxtLength()/numImgNodes)<200) )
 			{	
 				// High probability to be an image-collection page
 				pageCategory = new ImageCollectionPage();
@@ -179,18 +180,20 @@ public class HTMLDOMParser extends Tidy
 				pageCategory = new IndexPage();
 			}
 		}
+		TreeMap<Integer, ParagraphText> paragraphTextsTMap = domWalkInfoTagger.getParagraphTextsTMap();
 
 		if (pageCategory != null)
-			pageCategory.generateSurrogates(contentBody, imgNodes, pprint.getTotalTxtLength(), pprint.paragraphTexts, htmlType);
-
+		{
+			pageCategory.generateSurrogates(contentBody, imgNodes, domWalkInfoTagger.getTotalTxtLength(), paragraphTextsTMap, htmlType);
+		}
 
 		// No Informative images are in this document. Form surrogate only with text.  	
 		// We cannot tell whether the images in the pages are informative or not until downloding all, thus this is the case after we 
 		// look through all the images in the page and determine no image is worth displaying.
-		if( (htmlType.numCandidatesExtractedFrom()==0) && (pprint.paragraphTexts.size()>0) )
+		if( (htmlType.numCandidatesExtractedFrom()==0) && (paragraphTextsTMap.size()>0) )
 		{
 			pageCategory = new TextOnlyPage();
-			pageCategory.generateSurrogates(contentBody, imgNodes, pprint.getTotalTxtLength(), pprint.paragraphTexts, htmlType);
+			pageCategory.generateSurrogates(contentBody, imgNodes, domWalkInfoTagger.getTotalTxtLength(), paragraphTextsTMap, htmlType);
 		}
 
 	}
@@ -209,7 +212,7 @@ public class HTMLDOMParser extends Tidy
 			TdNode node 									= anchorNode.getNode().parent();
 			String anchorContextStr 			= getTextinSubTree(node);
 			String anchorText 						= getTextinSubTree(anchorNode.getNode());
-			String href 									= (String) anchorNode.getAttributesMap().get("href");
+			String href 									= anchorNode.getAttribute("href");
 			if(href == null)
 				continue;
 			

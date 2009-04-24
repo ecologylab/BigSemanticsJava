@@ -2,6 +2,8 @@ package ecologylab.media.html.dom;
 
 import org.w3c.tidy.TdNode;
 
+import ecologylab.generic.StringBuilderPool;
+
 /**
  * Keep the paragraph text in the document with the DOM Node to recognize the ArticleMain node.
  * 
@@ -10,6 +12,8 @@ import org.w3c.tidy.TdNode;
  */    
 public class ParagraphText
 {
+	static StringBuilderPool pool	= new StringBuilderPool(30, 512);
+	
 	private StringBuilder	buffy;
 	private TdNode 			node;
 	
@@ -45,14 +49,32 @@ public class ParagraphText
 		int	result	= toAppend.length();
 		if (buffy == null)
 			//TODO -- should this be built larger? how many calls are made on average?
-			buffy			= new StringBuilder(toAppend);
-		else
-		{
-			buffy.append(' ');
-			buffy.append(toAppend);
-			result++;
-		}
+			buffy			= pool.acquire();
+		
+		buffy.append(' ');
+		buffy.append(toAppend);
+		result++;
+
 		return result;
+	}
+	
+	public void append(byte[] bytes, int start, int end)
+	{
+		if (buffy == null)
+			//TODO -- should this be built larger? how many calls are made on average?
+			buffy			= pool.acquire();
+
+		while (start < end)
+		{
+			buffy.append((char) bytes[start++]);
+		}
+	}
+	
+	public void recycle()
+	{
+		if (buffy != null)
+			pool.release(buffy);
+		buffy				= null;
 	}
 }
 
