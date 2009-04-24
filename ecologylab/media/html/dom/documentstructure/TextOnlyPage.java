@@ -37,7 +37,9 @@ public class TextOnlyPage extends RecognizedDocumentStructure
 			//FIXME -- loop through most all of these!
 			generateTextSurrogate(paraTexts, htmlType);
 			if (size > 3)	// if at least 4 texts were there
+			{
 				generateTextSurrogate(paraTexts, htmlType);
+			}
 		}
 	}
 
@@ -50,5 +52,7 @@ public class TextOnlyPage extends RecognizedDocumentStructure
 		
 		if( paraTextStr.length()>25 )
 			htmlType.newTxt( paraTextStr.toString() );//, paraTexts.node );
+		
+		paraText.recycle();
 	}
 }

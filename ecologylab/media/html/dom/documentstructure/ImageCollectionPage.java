@@ -36,10 +36,10 @@ public class ImageCollectionPage extends RecognizedDocumentStructure
     		// images in the image-collection pages won't have anchors 
     		// If there is an anchor, it should be pointing to the bigger image. 
     		if(anchorPurl==null)
-    			htmlType.newImgTxt(ina.getAttributesMap(), null);
+    			htmlType.newImgTxt(ina, null);
     		else if( (anchorPurl!=null) && anchorPurl.isImg() )
     		{
-        		htmlType.newImgTxt(ina.getAttributesMap(), anchorPurl);
+        		htmlType.newImgTxt(ina, anchorPurl);
 				htmlType.removeTheContainerFromCandidates(anchorPurl);
     		}
     		else if(anchorPurl.isHTML() || anchorPurl.isPDF() || anchorPurl.isRSS())
