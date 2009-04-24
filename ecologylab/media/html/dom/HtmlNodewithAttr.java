@@ -74,8 +74,11 @@ public class HtmlNodewithAttr
 
 	public void recycle()
 	{
-		attributesMap.clear();
-		attributesMap	= null;
+		if (attributesMap != null)
+		{
+			attributesMap.clear();
+			attributesMap	= null;
+		}
 		node.recycle();
 		node					= null;
 	}
