@@ -314,7 +314,7 @@ public class TermDictionary implements ApplicationProperties
 	 * @param s shouldn't have punctuation or spaces
 	 * @return Term representing that string
 	 */
-	public static Term getTermForWord ( String s )
+	public static Term getTermForWord ( CharSequence s )
 	{
 		PorterStemmer p = stemmer;
 		synchronized (p)
@@ -322,7 +322,7 @@ public class TermDictionary implements ApplicationProperties
 			for (int i = 0; i < s.length(); i++)
 				p.add(s.charAt(i));
 			p.stem();
-			return getTerm(s, p.toString());
+			return getTerm(s.toString(), p.toString());
 		}
 
 	}

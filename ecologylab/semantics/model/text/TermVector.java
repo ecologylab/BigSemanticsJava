@@ -11,6 +11,7 @@ import ecologylab.appframework.types.prefs.Pref;
 import ecologylab.appframework.types.prefs.PrefBoolean;
 import ecologylab.generic.FeatureVector;
 import ecologylab.generic.IFeatureVector;
+import ecologylab.generic.StringTools;
 
 /**
  * TermVector represents a collection of Terms, each associated with a particular value. Usually
@@ -51,6 +52,10 @@ public class TermVector extends FeatureVector<Term> implements ITermVector
 	{
 		reset(s);
 	}
+	public TermVector ( StringBuilder s )
+	{
+		reset(s);
+	}
 
 	/**
 	 * Totally reconstructs this term vector based on a new string. Useful for maintaining the
@@ -62,6 +67,20 @@ public class TermVector extends FeatureVector<Term> implements ITermVector
 	{
 		super.reset();
 		s = s.toLowerCase();
+		Matcher m = WORD_REGEX.matcher(s);
+		while (m.find())
+		{
+			String word = s.substring(m.start(), m.end());
+			addWithoutNotify(TermDictionary.getTermForWord(word), 1);
+		}
+		setChanged();
+		notifyObservers();
+	}
+	
+	public void reset (StringBuilder s)
+	{
+		super.reset();
+		StringTools.toLowerCase(s);
 		Matcher m = WORD_REGEX.matcher(s);
 		while (m.find())
 		{
