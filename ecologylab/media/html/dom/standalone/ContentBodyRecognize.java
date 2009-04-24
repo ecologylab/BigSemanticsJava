@@ -79,14 +79,16 @@ public class ContentBodyRecognize extends HTMLDOMParser
     	{
     		HtmlNodewithAttr ina = (HtmlNodewithAttr) recPagetype.getImgNodesInContentBody().get(i);
     		
-    		String imgUrl = (String) ina.getAttributesMap().get("src");
-    		int width = Generic.parseInt((String) ina.getAttributesMap().get("width"), -1);
-    		int height = Generic.parseInt( (String)ina.getAttributesMap().get("height"), -1 );
+    		String imgUrl = ina.getAttribute("src");
+    		int width 		= ina.getAttributeAsInt("width");
+    		int height 		= ina.getAttributeAsInt("height");
+    		
     		float aspectRatio = (float)width / (float)height;
-    		aspectRatio = (aspectRatio>1.0) ?  (float)1.0/aspectRatio : aspectRatio;
-    		String altStr = (String) ina.getAttributesMap().get("alt");
-    		boolean parentHref = ina.getNode().parent().element.equals("a");  		
-    		boolean articleImg = true;
+    		aspectRatio 			= (aspectRatio>1.0) ?  (float)1.0/aspectRatio : aspectRatio;
+    		
+    		String altStr 			= ina.getAttribute("alt");
+    		boolean parentHref 	= ina.getNode().parent().element.equals("a");  		
+    		boolean articleImg 	= true;
 
     		// Advertisement Keyword in the "alt" value
     		if( altStr!=null && altStr.toLowerCase().contains("advertis") )  
