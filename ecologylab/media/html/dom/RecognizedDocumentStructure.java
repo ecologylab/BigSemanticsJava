@@ -13,8 +13,8 @@ import org.w3c.tidy.TdNode;
 import ecologylab.generic.Generic;
 import ecologylab.generic.IntSlot;
 import ecologylab.generic.StringTools;
-import ecologylab.media.PixelBased;
 import ecologylab.media.html.dom.documentstructure.AnchorContext;
+import ecologylab.media.html.dom.documentstructure.ImageFeatures;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.model.text.TermVector;
 import ecologylab.xml.XMLTools;
@@ -32,16 +32,16 @@ import ecologylab.xml.XMLTools;
  * that image. 
  * 
  * @author eunyee
- *
+ * @author andruid
  */
-public class RecognizedDocumentStructure 
+public class RecognizedDocumentStructure
+implements HTMLAttributeNames
 {
+	static final int PARAGRAPH_COUNT_MINI_ARTICLE_THRESHOLD = 2;
 
-	private static final int PARAGRAPH_COUNT_MINI_ARTICLE_THRESHOLD = 2;
+	static final int PARAGRAPH_COUNT_ARTICLE_THRESHOLD 			= 5;
 
-	private static final int PARAGRAPH_COUNT_ARTICLE_THRESHOLD = 5;
-
-	static final int CHAR_COUNT_ARTICLE_THRESHOLD = 300;
+	static final int CHAR_COUNT_ARTICLE_THRESHOLD						= 300;
 
 	public RecognizedDocumentStructure()
 	{
@@ -73,79 +73,28 @@ public class RecognizedDocumentStructure
 	 */
 	protected void recognizeImgSurrogateForOtherPages(ArrayList<HtmlNodewithAttr> imgNodes, int totalTxtLeng, TidyInterface htmlType)
 	{    	
-		for(int i=0; i<imgNodes.size(); i++)
+		for(HtmlNodewithAttr imgNode : imgNodes)
 		{
-			HtmlNodewithAttr ina = imgNodes.get(i);
-			TdNode imgNode = ina.getNode();
-			String extractedCaptionTxt = ""; 
-			extractedCaptionTxt = getLongestTxtinSubTree(imgNode.grandParent(), extractedCaptionTxt);
+			TdNode imgNodeNode					= imgNode.getNode();
+			String extractedCaptionTxt	= getLongestTxtinSubTree(imgNodeNode.grandParent(), "");
 
 			// this if condition checks whether the nearest text to the image is substantial enough to form a surrogate. 
 			// TODO needs to check parent Href and Text informativity 	
 			if( (extractedCaptionTxt.length()>10) && (!extractedCaptionTxt.contains("advertis")) )
 			{
-				// TODO!! ask whether we should add this to the associateText or not.
-				ina.addToAttributesMap(HTMLDOMParser.textContext, extractedCaptionTxt);
-
-				ParsedURL anchorPurl = findAnchorPURLforImgNode(htmlType, ina);
+				ParsedURL anchorPurl 			= findAnchorPURLforImgNode(htmlType, imgNode);
 
 				// Check whether the anchor mimetype is not an image. 
 				if( (anchorPurl!=null) && !anchorPurl.isImg() )
 				{
-					htmlType.newAnchorImgTxt(ina, anchorPurl);
+					// TODO!! ask whether we should add this to the associateText or not.
+					imgNode.setAttribute(TEXT_CONTEXT, extractedCaptionTxt);
+
+					htmlType.newAnchorImgTxt(imgNode, anchorPurl);
 					htmlType.removeTheContainerFromCandidates(anchorPurl);
 				}
-
 			}
 		}
-	}
-
-
-	/**
-	 * recognize whether the image is informative or not based on its attributes and size, aspect ratio. 
-	 * 
-	 * @param ina
-	 * @return true if it is informative otherwise false.
-	 */
-	public boolean recognizeInformImage(HtmlNodewithAttr ina) 
-	{
-		String imgUrl = ina.getAttribute("src");
-		int width 		= ina.getAttributeAsInt("width");
-		int height 		= ina.getAttributeAsInt("height");
-		
-		float aspectRatio = (float) width / (float) height;
-		aspectRatio 	= (aspectRatio>1.0f) ?  (float)1.0f/aspectRatio : aspectRatio;
-		String altStr = ina.getAttribute("alt");
-
-		boolean informImg = true;
-
-		// Advertisement Keyword in the "alt" value
-		if( altStr!=null && altStr.toLowerCase().contains("advertis") )  
-			informImg = false;
-
-		/*	We don't need this as we have an advertisement filter in the container.createImgElement(), and the filter is in cf.model.Filter.
-		 * -- Eunyee 	
-		if( imgUrl!=null )
-		{
-
-			String urlChunks[] = imgUrl.split("/");
-			for(int j=0; j<urlChunks.length; j++)
-			{
-				String temp = urlChunks[j];
-			//	System.out.println("url Chunk:" + temp);
-				if( temp.toLowerCase().equals("ad") || temp.toLowerCase().equals("adv") ||
-						temp.toLowerCase().contains("advertis") )
-					informImg = false;
-			}
-		}
-		 */		
-		if( (width!=-1 && width<PixelBased.MIN_WIDTH) || (height!=-1 && height<PixelBased.MIN_HEIGHT) )
-			informImg = false;
-
-		if( aspectRatio > 0.9 )
-			informImg = false;
-
-		return informImg;
 	}
 
 	/**
@@ -157,8 +106,8 @@ public class RecognizedDocumentStructure
 	 */
 	public static TdNode recognizeContentBody(DOMWalkInformationTagger taggedDoc) 
 	{
-		TdNode grandParent = null;
-		TdNode ggParent = null;
+		TdNode grandParent	= null;
+		TdNode ggParent 		= null;
 
 		/*
 		 * grandParent node with the count information.
@@ -199,18 +148,14 @@ public class RecognizedDocumentStructure
 				greatGrandParentChildCounts.put(ggParent, new IntSlot(1));
 
 		}
+//		Object[] paragraphTextsArray = paragrphTextsValues.toArray();
 
-		TdNode articleMainNode = null;
-
-		Object[] paragraphTextsArray = paragrphTextsValues.toArray();
-
-		articleMainNode = findArticleMainNode(taggedDoc, grandParentChildCounts, paragraphTextsArray);
+		TdNode articleMainNode = findArticleMainNode(taggedDoc, grandParentChildCounts /*, paragraphTextsArray */);
 
 		// if no common grandParent, look for common greatGrandParent. 
 		if( articleMainNode == null )
 		{
-			articleMainNode = findArticleMainNode(taggedDoc, greatGrandParentChildCounts, paragraphTextsArray);
-
+			articleMainNode = findArticleMainNode(taggedDoc, greatGrandParentChildCounts /*, paragraphTextsArray */);
 		}
 
 		return articleMainNode;
@@ -226,7 +171,7 @@ public class RecognizedDocumentStructure
 	 * @return
 	 */
 	private static TdNode findArticleMainNode(DOMWalkInformationTagger taggedDoc,
-			HashMap<TdNode, IntSlot> ancestorChildCounts, Object[] paragraphTextsArray) 
+			HashMap<TdNode, IntSlot> ancestorChildCounts /* , Object[] paragraphTextsArray */) 
 	{
 		TdNode articleMainNode = null;
 
@@ -266,8 +211,7 @@ public class RecognizedDocumentStructure
 		}
 		return articleMainNode;
 	}
-
-
+	
 	/**
 	 * 1)	Image should be not too small (small images are usually copyrights or icons..)
 	 * 2)	Image with a link does not tend to be an article image. 
@@ -276,72 +220,69 @@ public class RecognizedDocumentStructure
 	 * 4)	Textual Features: terms in URL, Alt texts, descriptions, and nearest texts in DOM. 
 	 * 
 	 */
+	//FIXME -- andruid: exactly what sorted order are the paraTexts in? why?
 	protected void associateImageTextSurrogate(TidyInterface htmlType, TdNode articleBody, TreeMap<Integer, ParagraphText> paraTexts)
 	{	
-		for( HtmlNodewithAttr ina: imgNodesInContentBody) 
+		for (HtmlNodewithAttr imageNode: imgNodesInContentBody) 
 		{  		
-			boolean articleImg = recognizeInformImage(ina);
-
-			// If articleImg is set true, it means it is informative image, so it will be image surrogate.
-			if( articleImg )
+			if (ImageFeatures.isInformativeImage(imageNode))
 			{
-				String extractedCaption = "";
-				extractedCaption = getLongestTxtinSubTree(ina.getNode().grandParent(), extractedCaption);
-				informImgNodes.add(ina.getNode());
+				final TdNode imageNodeNode = imageNode.getNode();
+				informImgNodes.add(imageNodeNode);
 
+				String extractedCaption = getLongestTxtinSubTree(imageNodeNode.grandParent(), "");	// returns "" in worst case
+
+				String altText 					= ImageFeatures.getNonBogusAlt(imageNode);
+				TermVector altTextTV		= (altText == null) ? null : new TermVector(altText);
+				
 				StringBuilder textContext	 = null;
 
-				while( (textContext == null) && (paraTexts.size() > 0) )
+				//FIXME -- this only works with the first paraText. shouldn't we actually loop if we don't bind one?
+				while ((textContext == null) && (paraTexts.size() > 0) )
 				{
 					ParagraphText pt 	= paraTexts.remove(paraTexts.lastKey());
 					TdNode textNode 	= pt.getNode();
-					if( textNode.grandParent().equals(articleBody) || 
+					if (textNode.grandParent().equals(articleBody) || 
 							textNode.greatGrandParent().equals(articleBody) )
 					{
 						textContext = pt.getPtext();
 
 						// add assocateText into the newImage, so that we can author Image+Text surrogate later
-						if( textContext != null )
+						if (textContext != null)
 						{
-							String altText = ina.getAttribute("alt");
-							if( (extractedCaption.trim().length()>0) || ( (altText!=null) && (altText.length()>0) ) )
+							if ((extractedCaption.length()>0) || (altText!=null))
 							{
-								ina.addToAttributesMap(HTMLDOMParser.extractedCaption, XMLTools.unescapeXML(extractedCaption));
-								TermVector captionTV = new TermVector(extractedCaption);
-								TermVector associateTextTV = new TermVector(textContext);
+								imageNode.setAttribute(EXTRACTED_CAPTION, XMLTools.unescapeXML(extractedCaption));
+								TermVector captionTV 					= new TermVector(extractedCaption);
+								TermVector textContextTV			= new TermVector(textContext);
+								boolean textContextSimilarity	= textContextTV.dot(captionTV) > 0;
 
-
-								boolean altTextSimilarity = false;
-								if( (altText!=null) && (altText.length()>0) )
-								{
-									TermVector altText_tv = new TermVector(altText);
-									altTextSimilarity = (altText_tv.dot(associateTextTV)>0);	        						
-								}
+								boolean altTextSimilarity			= (altText!=null) && (altTextTV.dot(textContextTV) > 0);	        						
 
 								// check for common sharp terms between associateText and captionText
-								if( (associateTextTV.dot(captionTV)>0) || altTextSimilarity)
+								if (textContextSimilarity || altTextSimilarity)
 								{
 									XMLTools.unescapeXML(textContext);				
-									ina.addToAttributesMap(HTMLDOMParser.textContext, StringTools.toString(textContext));
-									// i believe this was never used -- andruid 4/17/09
-//									ina.addToAttributesMap(HTMLDOMParser.TextNode, textNode);
-//									associated = true;
+									imageNode.setAttribute(HTMLAttributeNames.TEXT_CONTEXT, StringTools.toString(textContext));
 								}
 							}
 							else
 							{
-								//	ina.addToAttributesMap(HTMLDOMParser.extractedCaption, XMLTools.unescapeXML(extractedCaption));
+								//FIXME -- andruid: if altText == null, and perhaps even more often, why don't we set as alt in attributes map?
+								imageNode.setAttribute(EXTRACTED_CAPTION, XMLTools.unescapeXML(extractedCaption));
+								
 								XMLTools.unescapeXML(textContext);				
-								ina.addToAttributesMap(HTMLDOMParser.textContext, textContext.toString());
-								// i believe this was never used -- andruid 4/17/09
-								//								ina.addToAttributesMap(HTMLDOMParser.TextNode, textNode);
+								imageNode.setAttribute(TEXT_CONTEXT, StringTools.toString(textContext));
 							}
-						}
-					}
+							//FIXME -- andruid: if there is no alt or capction, we just match. 
+							// but if there is one, we could fail and fail again and iterate all the way through paraTexts,
+							// and NEVER assign. is this correct???
+						} // if (textContext != null
+					}   // if grandParent or greatGrandParent is articleBody
 					pt.recycle();
-				}
+				}	// end while
 
-				ParsedURL anchorPurl = findAnchorPURLforImgNode(htmlType, ina);
+				ParsedURL anchorPurl = findAnchorPURLforImgNode(htmlType, imageNode);
 
 				// removed by andruid 10/16/08
 				// 1) i dont see why we need to do this.
@@ -349,13 +290,9 @@ public class RecognizedDocumentStructure
 				//        		if( anchorPurl!=null )
 				//        			htmlType.removeTheContainerFromCandidates(anchorPurl);
 
-				// i believe this was never used -- andruid 4/17/09
-				//				ina.addToAttributesMap(HTMLDOMParser.ImgNode, ina.getNode());
-				htmlType.newImgTxt(ina, anchorPurl);
-
-			}
-		}
-
+				htmlType.newImgTxt(imageNode, anchorPurl);
+			} // if isInformImage
+		} // for each imageNode in content body
 	}
 
 	/**
@@ -437,33 +374,42 @@ public class RecognizedDocumentStructure
 	 * 
 	 * @param parent node of the image node is passed in to the parameter. 
 	 */
-	//FIXME -- use StringBuilder, not String
+	//FIXME -- use StringBuilder or CharBuffer, not String
 	public String getLongestTxtinSubTree(TdNode node, String captionTxt)
 	{
-		TdNode childNode	= node.content();
-
-		while( childNode != null )
+		for (TdNode childNode	= node.content(); childNode != null; childNode = childNode.next())
 		{
 			if( (childNode.element!=null) && (!childNode.element.equals("script")))
 			{
 				//Recursive call with the childNode
 				captionTxt = getLongestTxtinSubTree(childNode, captionTxt);
 			}	
-			if( childNode.type == TdNode.TextNode )
+			if (childNode.type == TdNode.TextNode )
 			{
-				String tempstr = Lexer.getString(childNode.textarray(), childNode.start(), childNode.end()-childNode.start());
-				tempstr = tempstr.trim();
-				if( (!tempstr.startsWith("<!--")) && (captionTxt.trim().length() <= tempstr.trim().length()) )
-					captionTxt = tempstr;
-
-				//   			Debug.println("captionTxt=" + captionTxt);
+				byte[] textarray	= childNode.textarray();
+				
+				int start				 	= childNode.start();
+				int end 					= childNode.end();
+				// trim in place				
+				while (Character.isWhitespace((char) textarray[start]) && (start < end))
+				{
+					start++;
+				}
+				while (Character.isWhitespace((char) textarray[end - 1]) && (start < end))
+				{
+					end--;
+				}
+				int length	= end-start;
+				if((length > captionTxt.length()) && !((length >= 4) && (textarray[0] == '<') &&
+						(textarray[1] == '!') && (textarray[2] == '-') && (textarray[3] == '-')))
+				{
+					//FIXME -- use CharBuffer or StringBuilder here!
+					captionTxt			= Lexer.getString(textarray, start, end-start);
+				}
 			}
-
-			childNode = childNode.next();
 		}
 		return captionTxt;
 	}
-
 
 	protected boolean checkLinkIn(TdNode parentNode, TdNode currentNode)
 	{
@@ -511,7 +457,6 @@ public class RecognizedDocumentStructure
 				temp = temp.next();
 			}
 		}
-
 	}
 
 	public ArrayList<HtmlNodewithAttr> getImgNodesInContentBody() 

@@ -96,15 +96,17 @@ public class ContentBodyRecognize extends HTMLDOMParser
     		
     		if( imgUrl!=null )
     		{
-  			
+    			//FIXME -- use compiled regex!
 	    		String urlChunks[] = imgUrl.split("/");
-	    		for(int j=0; j<urlChunks.length; j++)
+	    		for (int j=0; j<urlChunks.length; j++)
 	    		{
-	    			String temp = urlChunks[j];
+	    			String temp = urlChunks[j].toLowerCase();
 	    		//	System.out.println("url Chunk:" + temp);
-	    			if( /*temp.toLowerCase().equals("ad") ||*/ temp.toLowerCase().equals("adv") ||
-	    					temp.toLowerCase().contains("advertis") )
+	    			if (temp.equals("adv") || temp.contains("advertis") ) /*temp.toLowerCase().equals("ad") ||*/ 
+	    			{
 	    				articleImg = false;
+	    				break;
+	    			}
 	    		}
     		}
     		

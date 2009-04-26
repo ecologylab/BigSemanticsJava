@@ -35,17 +35,12 @@ import ecologylab.media.html.dom.documentstructure.TextOnlyPage;
  */
 public class HTMLDOMParser extends Tidy
 {
-
-	public static final String textContext		= "TEXT_CONTEXT";
-	public static final String TextNode			= "TextNode";
-	public static final String ImgNode			= "ImageNode";
-	public static final String extractedCaption 	= "EXTRACTED_CAPTION";
+	String url 			= "";
 
 	/**
 	 * because Tidy extends Serializable
 	 */
 	private static final long serialVersionUID = 1L;
-
 
 	public HTMLDOMParser()
 	{	
@@ -61,13 +56,8 @@ public class HTMLDOMParser extends Tidy
 	 */
 	public org.w3c.dom.Document parse(InputStream in)
 	{
-		org.w3c.dom.Document doc = parseDOM(in, null);
-
-
-		return doc;
+		return parseDOM(in, null);
 	}
-
-	String url = "";
 
 	/**
 	 * Extract Image and Text surrogates while walk through DOM 
@@ -238,29 +228,45 @@ public class HTMLDOMParser extends Tidy
    */
   public String getTextinSubTree(TdNode node)
   {
-  	TdNode childNode	= node.content();
-  	StringBuilder buffy = stringBuilderPool.acquire();
-  	while( childNode != null )
+  	
+  	StringBuilder buffy 	= stringBuilderPool.acquire();
+  	boolean first					= true;
+  	for (TdNode childNode	= node.content(); childNode != null; childNode = childNode.next())
   	{
-  		if( childNode.type == TdNode.TextNode )
+  		if (childNode.type == TdNode.TextNode )
   		{
-  			String tempstr = Lexer.getString(childNode.textarray(), childNode.start(), childNode.end()-childNode.start());
-  			tempstr = tempstr.trim();
-  			
-  			//Filter unwanted crap from going into the metadata
-  			if(!tempstr.startsWith("<!--") && 
-  					!tempstr.equals("") && 
-  					tempstr.length() > 1 && 
-  					buffy.indexOf(tempstr) == -1) 
+  			byte[] textarray	= childNode.textarray();
+
+  			int start				 	= childNode.start();
+  			int end 					= childNode.end();
+  			// trim in place				
+  			while (Character.isWhitespace((char) textarray[start]) && (start < end))
   			{
-  					buffy.append(" ").append(tempstr);	//+= allows collecting text across nodes within the current node
+  				start++;
+  			}
+  			while (Character.isWhitespace((char) textarray[end - 1]) && (start < end))
+  			{
+  				end--;
+  			}
+  			int length				= end-start;
+
+  			if((length >0) && !((length >= 4) && (textarray[0] == '<') &&
+  					(textarray[1] == '!') && (textarray[2] == '-') && (textarray[3] == '-')))
+  			{
+  				//FIXME -- use CharBuffer or StringBuilder here!
+  				String tempstr	= Lexer.getString(textarray, start, end-start);
+  				if (!first)
+  					buffy.append(' ');
+  				else
+  					first					= false;
+
+  				buffy.append(tempstr);	//+= allows collecting text across nodes within the current node
   			}
   		}
-  		childNode = childNode.next();
   	}
   	String textInSubTree = StringTools.toString(buffy);
   	stringBuilderPool.release(buffy);
-	
+
   	return textInSubTree;
   }
 }

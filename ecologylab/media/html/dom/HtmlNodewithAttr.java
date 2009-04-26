@@ -25,12 +25,18 @@ public class HtmlNodewithAttr
 		addAttributes(node.attributes);
 	}
 	
-	public void addToAttributesMap(String key, String value)
+	public void setAttribute(String key, String value)
 	{
 		if (attributesMap == null)
 			attributesMap	= new HashMap<String, String>();
 		
 		attributesMap.put(key, value);
+	}
+	
+	public void clearAttribute(String key)
+	{
+		if (attributesMap != null)
+			attributesMap.put(key, null);
 	}
 	
 	public String getAttribute(String key)
@@ -47,6 +53,12 @@ public class HtmlNodewithAttr
 	{
 		String value	= getAttribute(key);
 		return value == null ? -1 : Generic.parseInt(value, defaultValue);
+	}
+	
+	public boolean getAttributeAsBoolean(String key)
+	{
+		String value	= getAttribute(key);
+		return value != null && "true".equals(value);
 	}
 	
 	public void setNode(TdNode node) 
@@ -66,7 +78,7 @@ public class HtmlNodewithAttr
 	{
 		if (attr != null)
 		{
-			addToAttributesMap(attr.attribute, attr.value);
+			setAttribute(attr.attribute, attr.value);
 			if (attr.next != null)
 				addAttributes(attr.next);
 		}
