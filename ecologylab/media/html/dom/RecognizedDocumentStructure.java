@@ -372,9 +372,7 @@ implements HTMLAttributeNames
 			String nodeElementString,
 			ArrayList<HTMLElement> nodesInContentBody)
 	{
-		TdNode contentNode = contentBody.content();
-
-		while( contentNode != null )
+		for (TdNode contentNode = contentBody.content(); contentNode != null; contentNode = contentNode.next())
 		{
 			htmlNodesInContentBody(contentNode, nodeElementString, nodesInContentBody);
 			if( contentNode.element!=null && contentNode.element.equals(nodeElementString) )
@@ -382,7 +380,6 @@ implements HTMLAttributeNames
 				HTMLElement ina = new HTMLElement(contentNode);
 				nodesInContentBody.add(ina);
 			}
-			contentNode = contentNode.next();
 		}
 	}
 
