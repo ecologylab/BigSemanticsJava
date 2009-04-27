@@ -5,8 +5,8 @@ package ecologylab.media.html.dom.documentstructure;
 
 import ecologylab.generic.StringTools;
 import ecologylab.media.PixelBased;
-import ecologylab.media.html.dom.HTMLAttributeNames;
 import ecologylab.media.html.dom.HtmlNodewithAttr;
+import ecologylab.media.html.dom.utils.HTMLAttributeNames;
 
 /**
  * Static methods for operating on images, and recognizing features during information extraction.

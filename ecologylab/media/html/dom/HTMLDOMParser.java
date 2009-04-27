@@ -16,13 +16,13 @@ import org.w3c.tidy.Tidy;
 
 import sun.io.ByteToCharASCII;
 
-import ecologylab.generic.StringBuilderPool;
 import ecologylab.generic.StringTools;
 import ecologylab.media.html.dom.documentstructure.AnchorContext;
 import ecologylab.media.html.dom.documentstructure.ContentPage;
 import ecologylab.media.html.dom.documentstructure.ImageCollectionPage;
 import ecologylab.media.html.dom.documentstructure.IndexPage;
 import ecologylab.media.html.dom.documentstructure.TextOnlyPage;
+import ecologylab.media.html.dom.utils.StringBuilderUtils;
 
 
 /**
@@ -213,11 +213,6 @@ public class HTMLDOMParser extends Tidy
 	}
 
 	/**
-	 * string builder pool to parse link metadata
-	 */
-	protected static final StringBuilderPool stringBuilderPool = new StringBuilderPool(10, 512);
-	
-  /**
    * Non-recursive method to get the text for the <code>node</code>
    * Collects the text even if the node contains other nodes in between,
    * specifically the <code>anchor</code>. It does not however include the 
@@ -229,7 +224,7 @@ public class HTMLDOMParser extends Tidy
   public String getTextinSubTree(TdNode node)
   {
   	
-  	StringBuilder buffy 	= stringBuilderPool.acquire();
+  	StringBuilder buffy 	= StringBuilderUtils.acquire();
   	boolean first					= true;
   	for (TdNode childNode	= node.content(); childNode != null; childNode = childNode.next())
   	{
@@ -265,7 +260,7 @@ public class HTMLDOMParser extends Tidy
   		}
   	}
   	String textInSubTree = StringTools.toString(buffy);
-  	stringBuilderPool.release(buffy);
+  	StringBuilderUtils.release(buffy);
 
   	return textInSubTree;
   }

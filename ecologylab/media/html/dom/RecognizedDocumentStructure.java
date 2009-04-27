@@ -15,6 +15,8 @@ import ecologylab.generic.IntSlot;
 import ecologylab.generic.StringTools;
 import ecologylab.media.html.dom.documentstructure.AnchorContext;
 import ecologylab.media.html.dom.documentstructure.ImageFeatures;
+import ecologylab.media.html.dom.utils.HTMLAttributeNames;
+import ecologylab.media.html.dom.utils.StringBuilderUtils;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.model.text.TermVector;
 import ecologylab.xml.XMLTools;
@@ -76,23 +78,28 @@ implements HTMLAttributeNames
 		for(HtmlNodewithAttr imgNode : imgNodes)
 		{
 			TdNode imgNodeNode					= imgNode.getNode();
-			String extractedCaptionTxt	= getLongestTxtinSubTree(imgNodeNode.grandParent(), "");
+			StringBuilder extractedCaptionTxt	= getLongestTxtinSubTree(imgNodeNode.grandParent(), null);
 
 			// this if condition checks whether the nearest text to the image is substantial enough to form a surrogate. 
-			// TODO needs to check parent Href and Text informativity 	
-			if( (extractedCaptionTxt.length()>10) && (!extractedCaptionTxt.contains("advertis")) )
+			// TODO needs to check parent Href and Text informativity
+			if (extractedCaptionTxt != null)
 			{
-				ParsedURL anchorPurl 			= findAnchorPURLforImgNode(htmlType, imgNode);
-
-				// Check whether the anchor mimetype is not an image. 
-				if( (anchorPurl!=null) && !anchorPurl.isImg() )
+				if ((extractedCaptionTxt.length()>10) && (!StringTools.contains(extractedCaptionTxt, "advertis")) )
 				{
-					// TODO!! ask whether we should add this to the associateText or not.
-					imgNode.setAttribute(TEXT_CONTEXT, extractedCaptionTxt);
-
-					htmlType.newAnchorImgTxt(imgNode, anchorPurl);
-					htmlType.removeTheContainerFromCandidates(anchorPurl);
+					ParsedURL anchorPurl 			= findAnchorPURLforImgNode(htmlType, imgNode);
+	
+					// Check whether the anchor mimetype is not an image. 
+					if( (anchorPurl!=null) && !anchorPurl.isImg() )
+					{
+						// TODO!! ask whether we should add this to the associateText or not.
+						//FIXME! -- push caption text through as StringBuilder!
+						imgNode.setAttribute(TEXT_CONTEXT, StringTools.toString(extractedCaptionTxt));
+	
+						htmlType.newAnchorImgTxt(imgNode, anchorPurl);
+						htmlType.removeTheContainerFromCandidates(anchorPurl);
+					}
 				}
+				StringBuilderUtils.release(extractedCaptionTxt);
 			}
 		}
 	}
@@ -230,8 +237,10 @@ implements HTMLAttributeNames
 				final TdNode imageNodeNode = imageNode.getNode();
 				informImgNodes.add(imageNodeNode);
 
-				String extractedCaption = getLongestTxtinSubTree(imageNodeNode.grandParent(), "");	// returns "" in worst case
-
+				StringBuilder extractedCaption = getLongestTxtinSubTree(imageNodeNode.grandParent(), null);	// returns null in worst case
+				if (extractedCaption != null)
+					XMLTools.unescapeXML(extractedCaption);
+				
 				String altText 					= ImageFeatures.getNonBogusAlt(imageNode);
 				TermVector altTextTV		= (altText == null) ? null : new TermVector(altText);
 				
@@ -250,17 +259,21 @@ implements HTMLAttributeNames
 						// add assocateText into the newImage, so that we can author Image+Text surrogate later
 						if (textContext != null)
 						{
-							if ((extractedCaption.length()>0) || (altText!=null))
+							if ((extractedCaption != null) || (altText!=null))
 							{
-								imageNode.setAttribute(EXTRACTED_CAPTION, XMLTools.unescapeXML(extractedCaption));
-								TermVector captionTV 					= new TermVector(extractedCaption);
-								TermVector textContextTV			= new TermVector(textContext);
-								boolean textContextSimilarity	= textContextTV.dot(captionTV) > 0;
+								boolean extractedCaptionSimilarity= false;
+								TermVector textContextTV					= new TermVector(textContext);
+								if (extractedCaption != null)
+								{
+									imageNode.setAttribute(EXTRACTED_CAPTION, StringTools.toString(extractedCaption));
+									TermVector captionTV 						= new TermVector(extractedCaption);
+									extractedCaptionSimilarity			= textContextTV.dot(captionTV) > 0;
+								}
 
-								boolean altTextSimilarity			= (altText!=null) && (altTextTV.dot(textContextTV) > 0);	        						
+								boolean altTextSimilarity					= (altText!=null) && (altTextTV.dot(textContextTV) > 0);	        						
 
 								// check for common sharp terms between associateText and captionText
-								if (textContextSimilarity || altTextSimilarity)
+								if (extractedCaptionSimilarity || altTextSimilarity)
 								{
 									XMLTools.unescapeXML(textContext);				
 									imageNode.setAttribute(HTMLAttributeNames.TEXT_CONTEXT, StringTools.toString(textContext));
@@ -269,7 +282,8 @@ implements HTMLAttributeNames
 							else
 							{
 								//FIXME -- andruid: if altText == null, and perhaps even more often, why don't we set as alt in attributes map?
-								imageNode.setAttribute(EXTRACTED_CAPTION, XMLTools.unescapeXML(extractedCaption));
+								if (extractedCaption != null)
+									imageNode.setAttribute(EXTRACTED_CAPTION, StringTools.toString(extractedCaption));
 								
 								XMLTools.unescapeXML(textContext);				
 								imageNode.setAttribute(TEXT_CONTEXT, StringTools.toString(textContext));
@@ -281,6 +295,9 @@ implements HTMLAttributeNames
 					}   // if grandParent or greatGrandParent is articleBody
 					pt.recycle();
 				}	// end while
+				
+				if (extractedCaption != null)
+					StringBuilderUtils.release(extractedCaption);
 
 				ParsedURL anchorPurl = findAnchorPURLforImgNode(htmlType, imageNode);
 
@@ -375,40 +392,22 @@ implements HTMLAttributeNames
 	 * @param parent node of the image node is passed in to the parameter. 
 	 */
 	//FIXME -- use StringBuilder or CharBuffer, not String
-	public String getLongestTxtinSubTree(TdNode node, String captionTxt)
+	public StringBuilder getLongestTxtinSubTree(TdNode node, StringBuilder textResult)
 	{
 		for (TdNode childNode	= node.content(); childNode != null; childNode = childNode.next())
 		{
 			if( (childNode.element!=null) && (!childNode.element.equals("script")))
 			{
 				//Recursive call with the childNode
-				captionTxt = getLongestTxtinSubTree(childNode, captionTxt);
+				textResult = getLongestTxtinSubTree(childNode, textResult);
 			}	
 			if (childNode.type == TdNode.TextNode )
 			{
-				byte[] textarray	= childNode.textarray();
-				
-				int start				 	= childNode.start();
-				int end 					= childNode.end();
-				// trim in place				
-				while (Character.isWhitespace((char) textarray[start]) && (start < end))
-				{
-					start++;
-				}
-				while (Character.isWhitespace((char) textarray[end - 1]) && (start < end))
-				{
-					end--;
-				}
-				int length	= end-start;
-				if((length > captionTxt.length()) && !((length >= 4) && (textarray[0] == '<') &&
-						(textarray[1] == '!') && (textarray[2] == '-') && (textarray[3] == '-')))
-				{
-					//FIXME -- use CharBuffer or StringBuilder here!
-					captionTxt			= Lexer.getString(textarray, start, end-start);
-				}
+				int curLength	= (textResult == null) ? 0 : textResult.length();
+				textResult		= StringBuilderUtils.decodeTrimmedUTF8(textResult, childNode, curLength);
 			}
 		}
-		return captionTxt;
+		return textResult;
 	}
 
 	protected boolean checkLinkIn(TdNode parentNode, TdNode currentNode)
