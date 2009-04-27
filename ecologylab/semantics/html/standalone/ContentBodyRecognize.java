@@ -1,4 +1,4 @@
-package ecologylab.media.html.dom.standalone;
+package ecologylab.semantics.html.standalone;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -19,10 +19,10 @@ import org.w3c.tidy.StreamIn;
 import org.w3c.tidy.TdNode;
 
 import ecologylab.generic.Generic;
-import ecologylab.media.html.dom.DOMWalkInformationTagger;
-import ecologylab.media.html.dom.HTMLDOMParser;
-import ecologylab.media.html.dom.HTMLElement;
-import ecologylab.media.html.dom.RecognizedDocumentStructure;
+import ecologylab.semantics.html.DOMWalkInformationTagger;
+import ecologylab.semantics.html.HTMLDOMParser;
+import ecologylab.semantics.html.HTMLElement;
+import ecologylab.semantics.html.RecognizedDocumentStructure;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.TranslationScope;
 import ecologylab.xml.XMLTranslationException;

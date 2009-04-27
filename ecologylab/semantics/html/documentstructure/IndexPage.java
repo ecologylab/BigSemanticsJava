@@ -1,6 +1,6 @@
-package ecologylab.media.html.dom.documentstructure;
+package ecologylab.semantics.html.documentstructure;
 
-import ecologylab.media.html.dom.RecognizedDocumentStructure;
+import ecologylab.semantics.html.RecognizedDocumentStructure;
 
 
 /**

@@ -1,4 +1,4 @@
-package ecologylab.media.html.dom.documentstructure;
+package ecologylab.semantics.html.documentstructure;
 
 /**
  * Holds the anchor node with the text string surrounding it

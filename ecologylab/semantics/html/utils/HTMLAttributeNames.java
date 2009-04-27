@@ -1,7 +1,7 @@
 /**
  * 
  */
-package ecologylab.media.html.dom.utils;
+package ecologylab.semantics.html.utils;
 
 /**
  * Constants for HTML attribute maps.

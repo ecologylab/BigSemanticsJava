@@ -1,4 +1,4 @@
-package ecologylab.media.html.dom;
+package ecologylab.semantics.html;
 
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -18,14 +18,14 @@ import org.w3c.tidy.Tidy;
 import sun.io.ByteToCharASCII;
 
 import ecologylab.generic.StringTools;
-import ecologylab.media.html.dom.documentstructure.AnchorContext;
-import ecologylab.media.html.dom.documentstructure.ContentPage;
-import ecologylab.media.html.dom.documentstructure.ImageCollectionPage;
-import ecologylab.media.html.dom.documentstructure.ImageFeatures;
-import ecologylab.media.html.dom.documentstructure.IndexPage;
-import ecologylab.media.html.dom.documentstructure.TextOnlyPage;
-import ecologylab.media.html.dom.utils.HTMLAttributeNames;
-import ecologylab.media.html.dom.utils.StringBuilderUtils;
+import ecologylab.semantics.html.documentstructure.AnchorContext;
+import ecologylab.semantics.html.documentstructure.ContentPage;
+import ecologylab.semantics.html.documentstructure.ImageCollectionPage;
+import ecologylab.semantics.html.documentstructure.ImageFeatures;
+import ecologylab.semantics.html.documentstructure.IndexPage;
+import ecologylab.semantics.html.documentstructure.TextOnlyPage;
+import ecologylab.semantics.html.utils.HTMLAttributeNames;
+import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.xml.XMLTools;
 
 

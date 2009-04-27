@@ -1,4 +1,4 @@
-package ecologylab.media.html.dom;
+package ecologylab.semantics.html;
 
 import java.util.HashMap;
 
@@ -7,7 +7,7 @@ import org.w3c.tidy.TdNode;
 
 import ecologylab.generic.Generic;
 import ecologylab.generic.StringTools;
-import ecologylab.media.html.dom.utils.StringBuilderUtils;
+import ecologylab.semantics.html.utils.StringBuilderUtils;
 
 /**
  * data structure that contains the DOM node for the {@link ImgElement} and it's associate attributes. 

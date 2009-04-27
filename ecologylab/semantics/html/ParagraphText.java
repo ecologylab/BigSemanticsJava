@@ -1,9 +1,9 @@
-package ecologylab.media.html.dom;
+package ecologylab.semantics.html;
 
 import org.w3c.tidy.TdNode;
 
 import ecologylab.generic.StringBuilderPool;
-import ecologylab.media.html.dom.utils.StringBuilderUtils;
+import ecologylab.semantics.html.utils.StringBuilderUtils;
 
 /**
  * Keep the paragraph text in the document with the DOM Node to recognize the ArticleMain node.

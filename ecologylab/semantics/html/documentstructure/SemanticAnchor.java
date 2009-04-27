@@ -1,4 +1,4 @@
-package ecologylab.media.html.dom.documentstructure;
+package ecologylab.semantics.html.documentstructure;
 
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.model.text.ITermVector;

@@ -10,9 +10,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import ecologylab.generic.StringTools;
-import ecologylab.media.html.dom.utils.StringBuilderUtils;
 import ecologylab.model.NamedStyle;
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.xml.xml_inherit;
 import ecologylab.xml.types.element.ArrayListState;
 import ecologylab.xml.types.scalar.ScalarType;

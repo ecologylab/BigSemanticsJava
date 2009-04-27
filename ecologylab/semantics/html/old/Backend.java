@@ -6,7 +6,7 @@
  * Copyright 1996-9 by Andruid Kerne.  All rights reserved.
  */
 
-package ecologylab.media.html;
+package ecologylab.semantics.html.old;
 
 import java.util.HashMap;
 

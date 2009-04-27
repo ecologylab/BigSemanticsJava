@@ -1,4 +1,4 @@
-package ecologylab.media.html.dom;
+package ecologylab.semantics.html;
 
 /**
  * HTML Tags ordered by Function (http://www.w3schools.com/tags/ref_byfunc.asp)

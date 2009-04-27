@@ -1,4 +1,4 @@
-package ecologylab.media.html.dom.standalone;
+package ecologylab.semantics.html.standalone;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -16,9 +16,9 @@ import org.w3c.tidy.OutImpl;
 import org.w3c.tidy.StreamIn;
 import org.w3c.tidy.TdNode;
 
-import ecologylab.media.html.dom.DOMWalkInformationTagger;
-import ecologylab.media.html.dom.HTMLDOMParser;
-import ecologylab.media.html.dom.RecognizedDocumentStructure;
+import ecologylab.semantics.html.DOMWalkInformationTagger;
+import ecologylab.semantics.html.HTMLDOMParser;
+import ecologylab.semantics.html.RecognizedDocumentStructure;
 
 
 /**

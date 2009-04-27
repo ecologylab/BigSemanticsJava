@@ -1,16 +1,16 @@
-package ecologylab.media.html.dom.documentstructure;
+package ecologylab.semantics.html.documentstructure;
 
 import java.util.ArrayList;
 import java.util.TreeMap;
 
 import org.w3c.tidy.TdNode;
 
-import ecologylab.media.html.dom.HTMLDOMParser;
-import ecologylab.media.html.dom.HTMLElement;
-import ecologylab.media.html.dom.ParagraphText;
-import ecologylab.media.html.dom.RecognizedDocumentStructure;
-import ecologylab.media.html.dom.TidyInterface;
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.html.HTMLDOMParser;
+import ecologylab.semantics.html.HTMLElement;
+import ecologylab.semantics.html.ParagraphText;
+import ecologylab.semantics.html.RecognizedDocumentStructure;
+import ecologylab.semantics.html.TidyInterface;
 
 
 /**

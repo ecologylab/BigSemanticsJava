@@ -1,4 +1,4 @@
-package ecologylab.media.html.dom;
+package ecologylab.semantics.html;
 
 import java.io.FileOutputStream;
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package ecologylab.media.html.dom;
+package ecologylab.semantics.html;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,11 +13,11 @@ import org.w3c.tidy.TdNode;
 import ecologylab.generic.Generic;
 import ecologylab.generic.IntSlot;
 import ecologylab.generic.StringTools;
-import ecologylab.media.html.dom.documentstructure.AnchorContext;
-import ecologylab.media.html.dom.documentstructure.ImageFeatures;
-import ecologylab.media.html.dom.utils.HTMLAttributeNames;
-import ecologylab.media.html.dom.utils.StringBuilderUtils;
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.html.documentstructure.AnchorContext;
+import ecologylab.semantics.html.documentstructure.ImageFeatures;
+import ecologylab.semantics.html.utils.HTMLAttributeNames;
+import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.model.text.TermVector;
 import ecologylab.xml.XMLTools;
 

@@ -1,12 +1,12 @@
-package ecologylab.media.html.dom;
+package ecologylab.semantics.html;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.w3c.tidy.TdNode;
 
-import ecologylab.media.html.dom.documentstructure.AnchorContext;
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.html.documentstructure.AnchorContext;
 
 
 /**
