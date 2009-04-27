@@ -6,6 +6,8 @@ import org.w3c.tidy.AttVal;
 import org.w3c.tidy.TdNode;
 
 import ecologylab.generic.Generic;
+import ecologylab.generic.StringTools;
+import ecologylab.media.html.dom.utils.StringBuilderUtils;
 
 /**
  * data structure that contains the DOM node for the {@link ImgElement} and it's associate attributes. 
@@ -15,8 +17,13 @@ import ecologylab.generic.Generic;
  */    
 public class HTMLElement
 {
+	private static final int	INDEX_NOT_CALCULATED	= -1;
 	private TdNode node;
 	private HashMap<String, String> attributesMap;
+	
+	String	xPath;
+	
+	int			localXPathIndex	= INDEX_NOT_CALCULATED;
 	
 	
 	public HTMLElement(TdNode node)
@@ -47,12 +54,12 @@ public class HTMLElement
 	public int getAttributeAsInt(String key)
 	{
 		String value	= getAttribute(key);
-		return value == null ? -1 : Generic.parseInt(value, -1 );
+		return value == null ? INDEX_NOT_CALCULATED : Generic.parseInt(value, INDEX_NOT_CALCULATED );
 	}
 	public int getAttributeAsInt(String key, int defaultValue)
 	{
 		String value	= getAttribute(key);
-		return value == null ? -1 : Generic.parseInt(value, defaultValue);
+		return value == null ? INDEX_NOT_CALCULATED : Generic.parseInt(value, defaultValue);
 	}
 	
 	public boolean getAttributeAsBoolean(String key)
@@ -66,6 +73,56 @@ public class HTMLElement
 		this.node = node;
 	}
 	
+	public int localXPathIndex()
+	{
+		int result	= this.localXPathIndex;
+		if (result == INDEX_NOT_CALCULATED)
+		{
+			TdNode currentNode	= node;
+			result = localXPathIndex(currentNode);
+			this.localXPathIndex= result;
+		}
+		return result;
+	}
+
+	protected static int localXPathIndex(TdNode currentNode)
+	{
+		int result					= 0;
+		String tag					= currentNode.element;
+
+		while ((currentNode = currentNode.prev()) != null)
+		{
+			if (tag.equals(currentNode.element))
+				result++;
+		}
+		return result;
+	}
+	public String xPath()
+	{
+		String result	= this.xPath;
+		if (result == null)
+		{
+			StringBuilder buffy	= StringBuilderUtils.acquire();
+			xPath(node, buffy);
+			result							= StringTools.toString(buffy);
+			this.xPath					= result;
+		}
+		return result;
+	}
+	public static void xPath(TdNode node, StringBuilder buffy)
+	{
+		TdNode parent = node.parent();
+		if (parent != null)
+		{
+			xPath(parent, buffy);
+			buffy.append('/').append(node.element);
+			int elementIndex = localXPathIndex(node);
+			buffy.append('[').append(elementIndex).append(']');
+		}
+		else
+			buffy.append('/');
+		
+	}
 	public TdNode getNode() 
 	{
 		return node;
