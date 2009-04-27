@@ -1,6 +1,5 @@
 package ecologylab.semantics.library;
 
-import ecologylab.model.TextChunkBase;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.library.scalar.MetadataInteger;
 import ecologylab.semantics.library.scalar.MetadataParsedURL;
@@ -8,6 +7,7 @@ import ecologylab.semantics.library.scalar.MetadataString;
 import ecologylab.semantics.library.scalar.MetadataStringBuilder;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metametadata.MetaMetadata;
+import ecologylab.semantics.model.TextChunkBase;
 import ecologylab.xml.xml_inherit;
 import ecologylab.xml.ElementState.xml_attribute;
 import ecologylab.xml.ElementState.xml_leaf;
