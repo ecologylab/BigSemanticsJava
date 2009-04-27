@@ -10,6 +10,7 @@ import ecologylab.media.html.dom.HTMLElement;
 import ecologylab.media.html.dom.ParagraphText;
 import ecologylab.media.html.dom.RecognizedDocumentStructure;
 import ecologylab.media.html.dom.TidyInterface;
+import ecologylab.media.html.dom.utils.StringBuilderUtils;
 import ecologylab.xml.XMLTools;
 
 
@@ -19,40 +20,37 @@ import ecologylab.xml.XMLTools;
  * as text-only pages. 
  * 
  * @author eunyee
- *
+ * @author andruid
  */
 public class TextOnlyPage extends RecognizedDocumentStructure
 {
+	private static final int	MIN_PARA_TEXT_LENGTH	= 25;
+	public static final int			MAX_TEXT_SURROGATES	= 5;
+	
 	/**
 	 * Generate only text surrogates 
 	 */
 	protected void generateSurrogates(TdNode articleMain, ArrayList<HTMLElement> imgNodes, int totalTxtLeng, 
 			TreeMap<Integer, ParagraphText> paraTexts, TidyInterface htmlType)
 	{
-		int size = paraTexts.size();
-		if( size>0 )
+		int count	= 0;
+		while (!paraTexts.isEmpty() && count<MAX_TEXT_SURROGATES)
 		{
-	//		ParagraphText paraText		= (ParagraphText) paraTexts.values().toArray()[size-1];
-			
-			//FIXME -- loop through most all of these!
-			generateTextSurrogate(paraTexts, htmlType);
-			if (size > 3)	// if at least 4 texts were there
-			{
-				generateTextSurrogate(paraTexts, htmlType);
-			}
+			ParagraphText paraText		= paraTexts.remove(paraTexts.lastKey());
+			generateTextSurrogate(paraText, htmlType);
 		}
 	}
 
-	private void generateTextSurrogate(TreeMap<Integer, ParagraphText> paraTexts,
-			TidyInterface htmlType)
+	private void generateTextSurrogate(ParagraphText paraText, TidyInterface htmlType)
 	{
-		ParagraphText paraText		= paraTexts.remove(paraTexts.lastKey());
-		StringBuilder paraTextStr	= paraText.getPtext();
-		XMLTools.unescapeXML(paraTextStr);
+		StringBuilder paraTextBuffy	= paraText.getPtext();
 		
-		if( paraTextStr.length()>25 )
-			htmlType.newTxt( paraTextStr.toString() );//, paraTexts.node );
+		if (paraTextBuffy.length()>MIN_PARA_TEXT_LENGTH)
+		{
+			XMLTools.unescapeXML(paraTextBuffy);
+			htmlType.newTxt(paraTextBuffy);//, paraTexts.node );
+		}
 		
-		paraText.recycle();
+		paraText.recycle();	// releases to pool
 	}
 }
