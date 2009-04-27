@@ -30,7 +30,68 @@ public class StringBuilderUtils
 		stringBuilderPool.release(buffy);
 	}
 	
-  public static StringBuilder decodeTrimmedUTF8(StringBuilder result, TdNode childNode, int minLength)
+	/**
+	 * Trim whitespace off of the buffer referred to through pointers in the TdNode.
+	 * If result is not empty, then decode the resulting text into a StringBuilder.
+	 * <p/>
+	 * For the result, an existing StringBuilder will be cleared (reset), or,
+	 * if result == null on entry, a new StringBuilder is acquired from the pool.
+	 * <p/>
+	 * If there is a non-null result, it is up to the caller to call release(result) when it is no longer needed.
+	 * 
+	 * @param result			The StringBuilder we're using. Either the one passed in (and perhaps modified), if there was one,
+	 * 										or a new one, if null was passed in and there are actually chars to decode after trim.
+	 * @param childNode		TdNode of source. Supplies byte array of characters, and start and end points.
+	 * 
+	 * @return						null if no work to do because length < minLength after trim, or a buffer with the decoded result.
+	 */
+  public static StringBuilder trimAndDecodeUTF8(StringBuilder result, TdNode childNode)
+  {
+  	return trimAndDecodeUTF8(result, childNode, 0, false);
+  }
+
+	/**
+	 * Trim whitespace off of the buffer referred to through pointers in the TdNode.
+	 * If result is longer than minLength, then decode the resulting text into a StringBuilder.
+	 * <p/>
+	 * For the result, an existing StringBuilder will be cleared (reset), or,
+	 * if result == null on entry, a new StringBuilder is acquired from the pool.
+	 * <p/>
+	 * If there is a non-null result, it is up to the caller to call release(result) when it is no longer needed.
+	 * 
+	 * @param result			The StringBuilder we're using. Either the one passed in (and perhaps modified), if there was one,
+	 * 										or a new one, if null was passed in and there are actually chars to decode after trim.
+	 * @param childNode		TdNode of source. Supplies byte array of characters, and start and end points.
+	 * @param minLength		A threshold that is applied to decide if resulting chars should be decoded to result.
+	 * 										For unconditional decode, set to 0.
+	 * 
+	 * @return						null if no work to do because length < minLength after trim, or a buffer with the decoded result.
+	 */
+  public static StringBuilder trimAndDecodeUTF8(StringBuilder result, TdNode childNode, int minLength)
+  {
+  	return trimAndDecodeUTF8(result, childNode, minLength, false);
+  }
+	
+	/**
+	 * Trim whitespace off of the buffer referred to through pointers in the TdNode.
+	 * If result is longer than minLength, then decode the resulting text into a StringBuilder.
+	 * <p/>
+	 * If appendNoClear is true, then append the new text to the old StringBuilder passed in as result (concatenate).
+	 * Otherwise, an existing StringBuilder will be cleared (reset).
+	 * <p/>
+	 * If result == null on entry, a new StringBuilder is acquired from the pool.
+	 * It is up to the caller to call release(result) when it is no longer needed.
+	 * 
+	 * @param result			The StringBuilder we're using. Either the one passed in (and perhaps modified), if there was one,
+	 * 										or a new one, if null was passed in and there are actually chars to decode after trim.
+	 * @param childNode		TdNode of source. Supplies byte array of characters, and start and end points.
+	 * @param minLength		A threshold that is applied to decide if resulting chars should be decoded to result.
+	 * 										For unconditional decode, set to 0.
+	 * @param appendNoClear If true, we append to prior results without clearing them.
+	 * 
+	 * @return						null if no work to do because length < minLength after trim, or a buffer with the decoded result.
+	 */
+  public static StringBuilder trimAndDecodeUTF8(StringBuilder result, TdNode childNode, int minLength, boolean appendNoClear)
   {
 		byte[] textarray	= childNode.textarray();
 		
@@ -54,7 +115,7 @@ public class StringBuilderUtils
 			{
 				if (result == null) 
 					result			= acquire();
-				else
+				else if (!appendNoClear)
 					StringTools.clear(result);
 
 				StringTools.decodeUTF8(result, textarray, start, length);

@@ -60,7 +60,7 @@ implements HTMLAttributeNames
 	 * @param paraTexts  
 	 * @param htmlType
 	 */
-	protected void generateSurrogates(TdNode articleMain, ArrayList<HtmlNodewithAttr> imgNodes, int totalTxtLeng, 
+	protected void generateSurrogates(TdNode articleMain, ArrayList<HTMLElement> imgNodes, int totalTxtLeng, 
 			TreeMap<Integer, ParagraphText> paraTexts, TidyInterface htmlType)
 	{
 		recognizeImgSurrogateForOtherPages( imgNodes, totalTxtLeng, htmlType );
@@ -73,9 +73,9 @@ implements HTMLAttributeNames
 	 * and nearby text whether the text is informative and can be associated with the image for the image+text surrogate. 
 	 * 
 	 */
-	protected void recognizeImgSurrogateForOtherPages(ArrayList<HtmlNodewithAttr> imgNodes, int totalTxtLeng, TidyInterface htmlType)
+	protected void recognizeImgSurrogateForOtherPages(ArrayList<HTMLElement> imgNodes, int totalTxtLeng, TidyInterface htmlType)
 	{    	
-		for(HtmlNodewithAttr imgNode : imgNodes)
+		for(HTMLElement imgNode : imgNodes)
 		{
 			TdNode imgNodeNode					= imgNode.getNode();
 			StringBuilder extractedCaptionTxt	= getLongestTxtinSubTree(imgNodeNode.grandParent(), null);
@@ -230,7 +230,7 @@ implements HTMLAttributeNames
 	//FIXME -- andruid: exactly what sorted order are the paraTexts in? why?
 	protected void associateImageTextSurrogate(TidyInterface htmlType, TdNode articleBody, TreeMap<Integer, ParagraphText> paraTexts)
 	{	
-		for (HtmlNodewithAttr imageNode: imgNodesInContentBody) 
+		for (HTMLElement imageNode: imgNodesInContentBody) 
 		{  		
 			if (ImageFeatures.isInformativeImage(imageNode))
 			{
@@ -319,7 +319,7 @@ implements HTMLAttributeNames
 	 * @param ina
 	 * @return
 	 */
-	protected ParsedURL findAnchorPURLforImgNode(TidyInterface htmlType, HtmlNodewithAttr ina) 
+	protected ParsedURL findAnchorPURLforImgNode(TidyInterface htmlType, HTMLElement ina) 
 	{
 		boolean isparentHref = ina.getNode().parent().element.equals("a"); 
 		ParsedURL anchorPurl = null;
@@ -348,7 +348,7 @@ implements HTMLAttributeNames
 	/**
 	 * All the image nodes under the sub-tree of the ArticleMain node.
 	 */
-	protected ArrayList<HtmlNodewithAttr> imgNodesInContentBody = new ArrayList<HtmlNodewithAttr>();
+	protected ArrayList<HTMLElement> imgNodesInContentBody = new ArrayList<HTMLElement>();
 
 	/**
 	 * Finding image nodes under the content body. 
@@ -370,7 +370,7 @@ implements HTMLAttributeNames
 	 */
 	private void htmlNodesInContentBody(TdNode contentBody,
 			String nodeElementString,
-			ArrayList<HtmlNodewithAttr> nodesInContentBody)
+			ArrayList<HTMLElement> nodesInContentBody)
 	{
 		TdNode contentNode = contentBody.content();
 
@@ -379,7 +379,7 @@ implements HTMLAttributeNames
 			htmlNodesInContentBody(contentNode, nodeElementString, nodesInContentBody);
 			if( contentNode.element!=null && contentNode.element.equals(nodeElementString) )
 			{
-				HtmlNodewithAttr ina = new HtmlNodewithAttr(contentNode);
+				HTMLElement ina = new HTMLElement(contentNode);
 				nodesInContentBody.add(ina);
 			}
 			contentNode = contentNode.next();
@@ -401,10 +401,10 @@ implements HTMLAttributeNames
 				//Recursive call with the childNode
 				textResult = getLongestTxtinSubTree(childNode, textResult);
 			}	
-			if (childNode.type == TdNode.TextNode )
+			else if (childNode.type == TdNode.TextNode )
 			{
 				int curLength	= (textResult == null) ? 0 : textResult.length();
-				textResult		= StringBuilderUtils.decodeTrimmedUTF8(textResult, childNode, curLength);
+				textResult		= StringBuilderUtils.trimAndDecodeUTF8(textResult, childNode, curLength);
 			}
 		}
 		return textResult;
@@ -439,6 +439,8 @@ implements HTMLAttributeNames
 	 * 
 	 * @param articleMain
 	 */
+	//TODO -- get rid of this dead code
+	/*
 	protected void printArticleText( TdNode articleMain )//, String paraElement)
 	{
 		if( articleMain!=null && (articleMain.element!=null) && !articleMain.element.equals("script") )
@@ -457,8 +459,8 @@ implements HTMLAttributeNames
 			}
 		}
 	}
-
-	public ArrayList<HtmlNodewithAttr> getImgNodesInContentBody() 
+ */
+	public ArrayList<HTMLElement> getImgNodesInContentBody() 
 	{
 		return imgNodesInContentBody;
 	}

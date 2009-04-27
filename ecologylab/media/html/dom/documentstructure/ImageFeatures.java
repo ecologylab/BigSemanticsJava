@@ -5,7 +5,7 @@ package ecologylab.media.html.dom.documentstructure;
 
 import ecologylab.generic.StringTools;
 import ecologylab.media.PixelBased;
-import ecologylab.media.html.dom.HtmlNodewithAttr;
+import ecologylab.media.html.dom.HTMLElement;
 import ecologylab.media.html.dom.utils.HTMLAttributeNames;
 
 /**
@@ -24,7 +24,7 @@ implements HTMLAttributeNames
 	 * 
 	 * @return						true if image is recognized as informative otherwise false.
 	 */
-	public static boolean isInformativeImage(HtmlNodewithAttr imageNode) 
+	public static boolean isInformativeImage(HTMLElement imageNode) 
 	{
 		int width 		= imageNode.getAttributeAsInt(WIDTH, -1);
 		int height 		= imageNode.getAttributeAsInt(HEIGHT, -1);
@@ -70,7 +70,7 @@ implements HTMLAttributeNames
 	 * @param imageNode
 	 * @return		null, or a usable alt String.
 	 */
-	public static String getNonBogusAlt(HtmlNodewithAttr imageNode)
+	public static String getNonBogusAlt(HTMLElement imageNode)
 	{
 		String altText 					= imageNode.getAttribute(ALT);
 		if ((altText != null) && (ImageFeatures.altIsBogus(altText)))

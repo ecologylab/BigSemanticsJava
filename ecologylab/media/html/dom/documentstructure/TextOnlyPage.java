@@ -6,7 +6,7 @@ import java.util.TreeMap;
 
 import org.w3c.tidy.TdNode;
 
-import ecologylab.media.html.dom.HtmlNodewithAttr;
+import ecologylab.media.html.dom.HTMLElement;
 import ecologylab.media.html.dom.ParagraphText;
 import ecologylab.media.html.dom.RecognizedDocumentStructure;
 import ecologylab.media.html.dom.TidyInterface;
@@ -26,7 +26,7 @@ public class TextOnlyPage extends RecognizedDocumentStructure
 	/**
 	 * Generate only text surrogates 
 	 */
-	protected void generateSurrogates(TdNode articleMain, ArrayList<HtmlNodewithAttr> imgNodes, int totalTxtLeng, 
+	protected void generateSurrogates(TdNode articleMain, ArrayList<HTMLElement> imgNodes, int totalTxtLeng, 
 			TreeMap<Integer, ParagraphText> paraTexts, TidyInterface htmlType)
 	{
 		int size = paraTexts.size();

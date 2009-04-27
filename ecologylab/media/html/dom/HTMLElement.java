@@ -13,13 +13,13 @@ import ecologylab.generic.Generic;
  * @author eunyee
  *
  */    
-public class HtmlNodewithAttr
+public class HTMLElement
 {
 	private TdNode node;
 	private HashMap<String, String> attributesMap;
 	
 	
-	public HtmlNodewithAttr(TdNode node)
+	public HTMLElement(TdNode node)
 	{
 		this.node						= node;
 		addAttributes(node.attributes);

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.TreeMap;
 
 import org.w3c.dom.Document;
+import org.w3c.tidy.AttVal;
 import org.w3c.tidy.DOMDocumentImpl;
 import org.w3c.tidy.Lexer;
 import org.w3c.tidy.Out;
@@ -20,9 +21,12 @@ import ecologylab.generic.StringTools;
 import ecologylab.media.html.dom.documentstructure.AnchorContext;
 import ecologylab.media.html.dom.documentstructure.ContentPage;
 import ecologylab.media.html.dom.documentstructure.ImageCollectionPage;
+import ecologylab.media.html.dom.documentstructure.ImageFeatures;
 import ecologylab.media.html.dom.documentstructure.IndexPage;
 import ecologylab.media.html.dom.documentstructure.TextOnlyPage;
+import ecologylab.media.html.dom.utils.HTMLAttributeNames;
 import ecologylab.media.html.dom.utils.StringBuilderUtils;
+import ecologylab.xml.XMLTools;
 
 
 /**
@@ -34,6 +38,7 @@ import ecologylab.media.html.dom.utils.StringBuilderUtils;
  *
  */
 public class HTMLDOMParser extends Tidy
+implements HTMLAttributeNames
 {
 	String url 			= "";
 
@@ -99,7 +104,7 @@ public class HTMLDOMParser extends Tidy
 
 		TdNode contentBody = RecognizedDocumentStructure.recognizeContentBody(taggedDoc);
 		//System.out.println("\n\ncontentBody = " + contentBody);       
-		ArrayList<HtmlNodewithAttr> imgNodes = taggedDoc.getAllImgNodes();
+		ArrayList<HTMLElement> imgNodes = taggedDoc.getAllImgNodes();
 
 		recognizeDocumentStructureToGenerateSurrogate(htmlType, taggedDoc, contentBody, imgNodes);
 	}
@@ -146,7 +151,7 @@ public class HTMLDOMParser extends Tidy
 	 */
 	private void recognizeDocumentStructureToGenerateSurrogate(TidyInterface htmlType,
 			DOMWalkInformationTagger domWalkInfoTagger, TdNode contentBody,
-			ArrayList<HtmlNodewithAttr> imgNodes) 
+			ArrayList<HTMLElement> imgNodes) 
 	{
 		RecognizedDocumentStructure pageCategory = null;
 
@@ -192,25 +197,47 @@ public class HTMLDOMParser extends Tidy
 	 * @param arrayList 
 	 * @param articleMain
 	 */
-	protected ArrayList<AnchorContext> findHrefsAndContext(TidyInterface htmlType, ArrayList<HtmlNodewithAttr> anchorNodes)
+	protected ArrayList<AnchorContext> findHrefsAndContext(TidyInterface htmlType, ArrayList<HTMLElement> anchorElements)
 	{
 		ArrayList<AnchorContext> anchorNodeContexts = new ArrayList<AnchorContext>();
-		//System.out.println("\n\n------------Parsing " + anchorNodes.size()+"\n-----------------");
 		
-		for(HtmlNodewithAttr anchorNode : anchorNodes)
+		for(HTMLElement anchorElement : anchorElements)
 		{
-			TdNode node 									= anchorNode.getNode().parent();
-			String anchorContextStr 			= getTextinSubTree(node);
-			String anchorText 						= getTextinSubTree(anchorNode.getNode());
-			String href 									= anchorNode.getAttribute("href");
-			if(href == null)
-				continue;
-			
-			anchorNodeContexts.add(new AnchorContext(href,anchorText,anchorContextStr));
-
+			TdNode anchorNodeNode 				  = anchorElement.getNode();
+			String href 									  = anchorElement.getAttribute(HTMLAttributeNames.HREF);
+			if ((href != null) && !href.startsWith("javascript:"))
+			{
+				TdNode parent 							  = anchorNodeNode.parent();
+				//FIXME -- this routine drops all sorts of significant stuff because it does not concatenate across tags.
+				StringBuilder anchorContext 	= getTextInSubTree(parent, false);
+				StringBuilder anchorText 			= getTextInSubTree(anchorNodeNode, true);
+				if ((anchorContext != null) || (anchorText != null))
+				{
+					String anchorContextString	= null;
+					if (anchorContext != null)
+					{
+						XMLTools.unescapeXML(anchorContext);
+						anchorContextString				= StringTools.toString(anchorContext);
+						StringBuilderUtils.release(anchorContext);
+					}
+					String anchorTextString			= null;
+					if (anchorText != null)
+					{
+						XMLTools.unescapeXML(anchorText);
+						anchorTextString					= StringTools.toString(anchorText);
+						StringBuilderUtils.release(anchorText);
+					}
+					anchorNodeContexts.add(new AnchorContext(href, anchorTextString, anchorContextString));
+				}
+			}
 		}
 		return anchorNodeContexts;
 	}
+	
+  public StringBuilder getTextInSubTree(TdNode node, boolean recurse)
+  {
+  	return getTextinSubTree(node, recurse, null);
+  }
 
 	/**
    * Non-recursive method to get the text for the <code>node</code>
@@ -221,47 +248,46 @@ public class HTMLDOMParser extends Tidy
    * @param te
    * @return
    */
-  public String getTextinSubTree(TdNode node)
+	//FIXME -- why is text in anchor node not included?
+  public StringBuilder getTextinSubTree(TdNode node, boolean recurse, StringBuilder result)
   {
-  	
-  	StringBuilder buffy 	= StringBuilderUtils.acquire();
-  	boolean first					= true;
   	for (TdNode childNode	= node.content(); childNode != null; childNode = childNode.next())
   	{
-  		if (childNode.type == TdNode.TextNode )
+			if (recurse && (childNode.element!=null) && (!childNode.element.equals("script")))
+			{
+				//Recursive call with the childNode
+				result = getTextinSubTree(childNode, true, result);
+			}	
+			else if (childNode.type == TdNode.TextNode )
   		{
-  			byte[] textarray	= childNode.textarray();
-
-  			int start				 	= childNode.start();
-  			int end 					= childNode.end();
-  			// trim in place				
-  			while (Character.isWhitespace((char) textarray[start]) && (start < end))
+  			int length	= 0;
+				if (result != null)
+				{
+					result.append(' ');							// append space to separate text chunks
+					length		= result.length();
+				}
+  			result			= StringBuilderUtils.trimAndDecodeUTF8(result, childNode, 0, true);
+  			
+  			if ((result != null) && (length == result.length()))
+  					result.setLength(length - 1);	// take the space off if nothing was appended
+  		} 
+  		else if ("img".equals(childNode.element))
+  		{
+  			AttVal altAtt	= childNode.getAttrByName(ALT);
+  			String alt		= (altAtt != null) ? altAtt.value : null;
+  			if (!ImageFeatures.altIsBogus(alt))
   			{
-  				start++;
-  			}
-  			while (Character.isWhitespace((char) textarray[end - 1]) && (start < end))
-  			{
-  				end--;
-  			}
-  			int length				= end-start;
-
-  			if((length >0) && !((length >= 4) && (textarray[0] == '<') &&
-  					(textarray[1] == '!') && (textarray[2] == '-') && (textarray[3] == '-')))
-  			{
-  				//FIXME -- use CharBuffer or StringBuilder here!
-  				String tempstr	= Lexer.getString(textarray, start, end-start);
-  				if (!first)
-  					buffy.append(' ');
+  				if (result == null)
+  					result		= StringBuilderUtils.acquire();
   				else
-  					first					= false;
-
-  				buffy.append(tempstr);	//+= allows collecting text across nodes within the current node
+  					result.append(' ');
+  				result.append(alt);
   			}
   		}
   	}
-  	String textInSubTree = StringTools.toString(buffy);
-  	StringBuilderUtils.release(buffy);
+  	if (result != null)
+  		XMLTools.unescapeXML(result);
 
-  	return textInSubTree;
+  	return result;
   }
 }

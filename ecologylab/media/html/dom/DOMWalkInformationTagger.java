@@ -65,12 +65,12 @@ public class DOMWalkInformationTagger extends PPrint
 	/**
 	 * All images in the page
 	 */
-	private ArrayList<HtmlNodewithAttr> 	allImgNodes			= new ArrayList<HtmlNodewithAttr>();
+	private ArrayList<HTMLElement> 	allImgNodes			= new ArrayList<HTMLElement>();
 
 	/**
 	 * All links in current page
 	 */
-  protected ArrayList<HtmlNodewithAttr> allAnchorNodes = new ArrayList<HtmlNodewithAttr>();
+  protected ArrayList<HTMLElement> allAnchorNodes = new ArrayList<HTMLElement>();
 
 	public DOMWalkInformationTagger(Configuration configuration, TidyInterface htmlType) 
 	{
@@ -96,7 +96,7 @@ public class DOMWalkInformationTagger extends PPrint
 			{
 				if(allAnchorNodes.size() < MAX_LINKS_PER_PAGE)
 				{
-					HtmlNodewithAttr attrNode = new HtmlNodewithAttr(node);
+					HTMLElement attrNode = new HTMLElement(node);
 					allAnchorNodes.add(attrNode);	
 				}
 				//This call is performed during the second parse while generating containers and extracting metadata.
@@ -112,7 +112,7 @@ public class DOMWalkInformationTagger extends PPrint
 			}	
 			else if( "img".equals(tagName) )
 			{   
-				HtmlNodewithAttr ina = new HtmlNodewithAttr(node);
+				HTMLElement ina = new HTMLElement(node);
 				allImgNodes.add(ina);
 			}
 
@@ -179,7 +179,7 @@ public class DOMWalkInformationTagger extends PPrint
 		return totalTxtLength;
 	}
 
-	public ArrayList<HtmlNodewithAttr> getAllImgNodes()
+	public ArrayList<HTMLElement> getAllImgNodes()
 	{
 		return this.allImgNodes;
 	}
@@ -322,7 +322,7 @@ public class DOMWalkInformationTagger extends PPrint
 		}
 	}
 	
-	public ArrayList<HtmlNodewithAttr> getAllAnchorNodes()
+	public ArrayList<HTMLElement> getAllAnchorNodes()
 	{
 		return allAnchorNodes;
 	}
@@ -343,9 +343,9 @@ public class DOMWalkInformationTagger extends PPrint
 		currentNode			= null;
 	}
 
-	private static void recycle(Collection<HtmlNodewithAttr> nodeCollection)
+	private static void recycle(Collection<HTMLElement> nodeCollection)
 	{
-		for (HtmlNodewithAttr thatNode: nodeCollection)
+		for (HTMLElement thatNode: nodeCollection)
 			thatNode.recycle();
 	}
 }

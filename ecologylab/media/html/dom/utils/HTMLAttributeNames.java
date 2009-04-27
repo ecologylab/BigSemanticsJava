@@ -25,4 +25,6 @@ public interface HTMLAttributeNames
 
 	public static final String	SRC								= "src";
 
+	public static final String	HREF							= "href";
+
 }
