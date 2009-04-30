@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import ecologylab.generic.Debug;
+import ecologylab.generic.Generic;
 import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.InfoCollector;
 
@@ -31,6 +32,8 @@ extends Debug
 	 * a search specified during seeding.
 	 */
 	static final int 		TYPICAL_NUM_SEARCH_RESULTS	= 15;
+
+	private static final long	MIN_DELAY_BW_SEARCHES	= 1000;
 	
 	/**
 	 * Each entry is a ArrayList/Vector that holds the slice of result i's gathered
@@ -241,6 +244,7 @@ extends Debug
 	 */
 	private int queueCount = 0;
 
+	private static long lastSearchTimestamp = 0;
 	/**
 	 * Queue Search Result here to be subsequently queued to a DownloadMonitor
 	 * through the round robin across searches, as the proper slice levels are reached.
@@ -249,12 +253,28 @@ extends Debug
 	 */
 	public void queueResult(AC resultContainer)
 	{	
+		if(lastSearchTimestamp == 0)
+			lastSearchTimestamp = System.currentTimeMillis();
+
 		SearchResult searchResult	= resultContainer.searchResult();
 		int resultNum				= searchResult.resultNum();	
 		resultSlice(resultNum).add(resultContainer);
 
 		if (!this.processingDownloads)
 			downloadResults();
+		
+		waitAndProcessFurtherSearches();
+	}
+	
+	private void waitAndProcessFurtherSearches()
+	{
+		int wait = (int) (System.currentTimeMillis() - lastSearchTimestamp);
+		
+		if(wait < MIN_DELAY_BW_SEARCHES)
+		{
+				Generic.sleep((int) (MIN_DELAY_BW_SEARCHES));
+				debug("Waiting to process further searches (millis): " + MIN_DELAY_BW_SEARCHES);
+		}
 		
 		downloadNextSearchIfThereIsOne();
 	}
@@ -273,6 +293,7 @@ extends Debug
 			{
 				AC searchContainer	= searchesDelayedUntilFirstResultsCanShow.remove(waitingSize - 1);
 				searchContainer.queueDownload();
+				lastSearchTimestamp = System.currentTimeMillis();
 			}
 			return result;
 		}
