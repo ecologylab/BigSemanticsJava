@@ -243,63 +243,56 @@ implements HTMLAttributeNames
 				
 				String altText 					= ImageFeatures.getNonBogusAlt(imageNode);
 				TermVector altTextTV		= (altText == null) ? null : new TermVector(altText);
+				boolean done						= false;		// use this instead of break to make sure we get to pt.recycle()
 				
-				//FIXME -- this only works with the first paraText. shouldn't we actually loop if we don't bind one?
-				while (paraTexts.size() > 0)
+				while (!done && (paraTexts.size() > 0))
 				{
-					ParagraphText pt 	= paraTexts.remove(paraTexts.lastKey());
+					ParagraphText pt 	= paraTexts.remove(paraTexts.lastKey());	// get longest remaining paragraph
 					TdNode textNode 	= pt.getNode();
 					if (textNode.grandParent().equals(articleBody) || 
 							textNode.greatGrandParent().equals(articleBody) )
 					{
 						StringBuilder textContext = pt.getPtext();
-
-						// add assocateText into the newImage, so that we can author Image+Text surrogate later
+						
 						if (textContext != null)
 						{
 							if ((extractedCaption != null) || (altText!=null))
 							{
-								boolean extractedCaptionSimilarity= false;
 								TermVector textContextTV					= new TermVector(textContext);
 								double captionDotTextContext			= 0;
-								double altDotTextContext					= 0;
 								if (extractedCaption != null)
 								{
 //									imageNode.setAttribute(EXTRACTED_CAPTION, StringTools.toString(extractedCaption));
 									TermVector captionTV 						= new TermVector(extractedCaption);
-									double textContextDotCaption 		= textContextTV.dot(captionTV);
-									extractedCaptionSimilarity			= textContextDotCaption > 0;
+									captionDotTextContext 					= captionTV.dot(textContextTV);
 								}
 
-								boolean altTextSimilarity					= false;
+								double altDotTextContext					= 0;
 								if (altText!=null)
 								{
 									altDotTextContext								= altTextTV.dot(textContextTV);
-									altTextSimilarity								= altDotTextContext > 0;	        						
 								}
 								// check for common sharp terms between associateText and captionText
-								if (extractedCaptionSimilarity || altTextSimilarity)
+								if ((captionDotTextContext > 0) || (altDotTextContext > 0))
 								{
 									XMLTools.unescapeXML(textContext);			
 									imageNode.setAttribute(HTMLAttributeNames.TEXT_CONTEXT, StringTools.toString(textContext));
 									if (captionDotTextContext > altDotTextContext)
 										imageNode.setAttribute(ALT, StringTools.toString(extractedCaption));
-									break;
+									done															= true;
 								}
 							}
 							else
-							{
-								XMLTools.unescapeXML(textContext);				
+							{	// no alt attribute or extracted caption, so use the first (longest) text context
+								// FIXME -- should we try dot product with title?!
+								XMLTools.unescapeXML(textContext);
 								imageNode.setAttribute(TEXT_CONTEXT, StringTools.toString(textContext));
-								break;
+								done																= true;
 							}
-							//FIXME -- andruid: if there is no alt or capction, we just match. 
-							// but if there is one, we could fail and fail again and iterate all the way through paraTexts,
-							// and NEVER assign. is this correct???
 						} // if (textContext != null
 					}   // if grandParent or greatGrandParent is articleBody
 					pt.recycle();
-				}	// end while
+				}	// end while (!done && (paraTexts.size() > 0))
 				
 				if (extractedCaption != null)
 					StringBuilderUtils.release(extractedCaption);
