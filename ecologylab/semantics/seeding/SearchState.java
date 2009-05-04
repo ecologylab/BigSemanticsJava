@@ -7,6 +7,7 @@ import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.connectors.SearchEngineNames;
 import ecologylab.semantics.connectors.SeedPeer;
+import ecologylab.semantics.model.text.InterestModel;
 import ecologylab.xml.XMLTranslationException;
 import ecologylab.xml.xml_inherit;
 import ecologylab.xml.library.dc.Dc;
@@ -21,9 +22,11 @@ import ecologylab.xml.library.dc.Dc;
 public class SearchState extends Seed
 implements SemanticsPrefs, SearchEngineNames
 {
-	private static final float	NO_BIAS	= 1.0f;
-	private static final short	INITIAL_INTEREST_LEVEL	= (short) 2;
-	public static final int	NUM_IMAGE_RESULTS		= 40;
+	private static final float	NO_BIAS												= 1.0f;
+	
+	private static final short	DEFAULT_SEARCH_INTEREST_LEVEL	= (short) 2;
+	
+	public static final int			NUM_IMAGE_RESULTS							= 40;
    
 	private static long timeCreated;
    /**
@@ -75,14 +78,14 @@ implements SemanticsPrefs, SearchEngineNames
    /**
     * Initial level of interest in this seed.
     */
-   private short			initialIntensity;
+   private short			interestLevel	= DEFAULT_SEARCH_INTEREST_LEVEL;
 
    /**
     * Among the searches that were specified (as part of seeding), which one is this?
     */
    private int				searchNum;
    
-   private boolean			generatingTermDictionary;
+   private boolean		generatingTermDictionary;
 
    /**
     * Registry that maps the engine attribute in a SearchState Seed to a
@@ -98,24 +101,19 @@ implements SemanticsPrefs, SearchEngineNames
    }
    public SearchState(String query, String engine)
    {
-  	 this(query, engine, INITIAL_INTEREST_LEVEL);
+  	 this(query, engine, DEFAULT_SEARCH_INTEREST_LEVEL);
    }
    public SearchState(String query, String engine, short interestLevel)
    {
-  	 this(query, engine, interestLevel, NUM_SEARCH_RESULTS.value());
+  	 this(query, engine, interestLevel, YAHOO_IMAGE.equals(engine) ? NUM_IMAGE_RESULTS : NUM_SEARCH_RESULTS.value());
    }
    public SearchState(String query, String engine, short interestLevel, int numResults)
    {
   	 super();
 	   setQuery(query);
 	   this.engine 						= engine;
-	   this.initialIntensity	= interestLevel;
-	   if (YAHOO_IMAGE.equals(engine))
-	   {
-	  	 numResults					= NUM_IMAGE_RESULTS;
-	   }
-	   else
-	  	 this.numResults		= numResults;
+	   this.interestLevel			= interestLevel;
+	   this.numResults				= numResults;
 	   
 	   timeCreated = System.currentTimeMillis();
    }
@@ -192,6 +190,7 @@ implements SemanticsPrefs, SearchEngineNames
    @Override
    public void performInternalSeedingSteps(InfoCollector infoCollector)
    {
+  	 InterestModel.expressInterest(query, interestLevel);
   	 infoCollector.instantiateDocumentType(SEARCH_DOCUMENT_TYPE_REGISTRY, engine, this);
    }
 
@@ -265,7 +264,7 @@ implements SemanticsPrefs, SearchEngineNames
 	 */
 	public short initialIntensity()
 	{
-		return initialIntensity;
+		return interestLevel;
 	}
 	
 	/**
