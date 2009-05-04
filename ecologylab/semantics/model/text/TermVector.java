@@ -12,6 +12,7 @@ import ecologylab.appframework.types.prefs.PrefBoolean;
 import ecologylab.generic.FeatureVector;
 import ecologylab.generic.IFeatureVector;
 import ecologylab.generic.StringTools;
+import ecologylab.semantics.html.utils.StringBuilderUtils;
 
 /**
  * TermVector represents a collection of Terms, each associated with a particular value. Usually
@@ -61,32 +62,23 @@ public class TermVector extends FeatureVector<Term> implements ITermVector
 	 * Totally reconstructs this term vector based on a new string. Useful for maintaining the
 	 * observers and such while changing the actual terms.
 	 * 
-	 * @param s
+	 * @param input
 	 */
-	public void reset ( String s )
-	{
-		super.reset();
-		s = s.toLowerCase();
-		Matcher m = WORD_REGEX.matcher(s);
-		while (m.find())
-		{
-			String word = s.substring(m.start(), m.end());
-			addWithoutNotify(TermDictionary.getTermForWord(word), 1);
-		}
-		setChanged();
-		notifyObservers();
-	}
 	
-	public void reset (StringBuilder s)
+	public void reset (CharSequence input)
 	{
 		super.reset();
-		StringTools.toLowerCase(s);
-		Matcher m = WORD_REGEX.matcher(s);
+//		StringTools.toLowerCase(s);
+		Matcher m = WORD_REGEX.matcher(input);
+		StringBuilder termBuffy	= StringBuilderUtils.acquire();
 		while (m.find())
 		{
-			String word = s.substring(m.start(), m.end());
-			addWithoutNotify(TermDictionary.getTermForWord(word), 1);
+			termBuffy.append(input, m.start(), m.end());
+			StringTools.toLowerCase(termBuffy);
+			addWithoutNotify(TermDictionary.getTermForWord(termBuffy), 1);
+			StringTools.clear(termBuffy);
 		}
+		StringBuilderUtils.release(termBuffy);
 		setChanged();
 		notifyObservers();
 	}

@@ -256,6 +256,7 @@ implements HTMLAttributeNames
 						
 						if (textContext != null)
 						{
+							XMLTools.unescapeXML(textContext);			
 							if ((extractedCaption != null) || (altText!=null))
 							{
 								TermVector textContextTV					= new TermVector(textContext);
@@ -275,7 +276,6 @@ implements HTMLAttributeNames
 								// check for common sharp terms between associateText and captionText
 								if ((captionDotTextContext > 0) || (altDotTextContext > 0))
 								{
-									XMLTools.unescapeXML(textContext);			
 									imageNode.setAttribute(HTMLAttributeNames.TEXT_CONTEXT, StringTools.toString(textContext));
 									if (captionDotTextContext > altDotTextContext)
 										imageNode.setAttribute(ALT, StringTools.toString(extractedCaption));
@@ -285,7 +285,6 @@ implements HTMLAttributeNames
 							else
 							{	// no alt attribute or extracted caption, so use the first (longest) text context
 								// FIXME -- should we try dot product with title?!
-								XMLTools.unescapeXML(textContext);
 								imageNode.setAttribute(TEXT_CONTEXT, StringTools.toString(textContext));
 								done																= true;
 							}
