@@ -97,7 +97,6 @@ implements SemanticsPrefs, SearchEngineNames
    public SearchState()
    {
 	   super();
-	   timeCreated = System.currentTimeMillis();
    }
    public SearchState(String query, String engine)
    {
@@ -114,8 +113,6 @@ implements SemanticsPrefs, SearchEngineNames
 	   this.engine 						= engine;
 	   this.interestLevel			= interestLevel;
 	   this.numResults				= numResults;
-	   
-	   timeCreated = System.currentTimeMillis();
    }
    public SearchState(String query, String engine, short interestLevel, int numResults, boolean generatingTermDictionary)
    {
@@ -191,8 +188,27 @@ implements SemanticsPrefs, SearchEngineNames
    public void performInternalSeedingSteps(InfoCollector infoCollector)
    {
   	 InterestModel.expressInterest(query, interestLevel);
-  	 infoCollector.instantiateDocumentType(SEARCH_DOCUMENT_TYPE_REGISTRY, engine, this);
+  	 performCurrentSearch(infoCollector);
    }
+	public void performCurrentSearch(InfoCollector infoCollector)
+	{
+		updateTimeStamp();
+		infoCollector.instantiateDocumentType(SEARCH_DOCUMENT_TYPE_REGISTRY, engine, this);
+	}
+	
+	/**
+	 * Update parameters for next result set.
+	 * Set time stamp to now.
+	 * Perform the resulting search by using the engine as a key .
+	 * 
+	 * @param infoCollector
+	 */
+	public void performNextSearch(InfoCollector infoCollector)
+	{
+		nextResultSet();
+		
+		performCurrentSearch(infoCollector);
+	}
 
  	/**
  	 * Create an entry for the DocumentType class in the registry, for dynamic dispatch.
@@ -517,7 +533,7 @@ implements SemanticsPrefs, SearchEngineNames
 		return (System.currentTimeMillis() - timeCreated < 120000);
 	}
 	
-	public void reCreated()
+	public void updateTimeStamp()
 	{
 		timeCreated = System.currentTimeMillis();
 	}
