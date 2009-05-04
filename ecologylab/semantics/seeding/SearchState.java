@@ -25,6 +25,7 @@ implements SemanticsPrefs, SearchEngineNames
 	private static final short	INITIAL_INTEREST_LEVEL	= (short) 2;
 	public static final int	NUM_IMAGE_RESULTS		= 40;
    
+	private static long timeCreated;
    /**
     * Search engine to use. Currently supported are google, flickr, yahoo, yahoo_image, yahoo_news, yahoo_buzz, delicious.
     */
@@ -93,6 +94,7 @@ implements SemanticsPrefs, SearchEngineNames
    public SearchState()
    {
 	   super();
+	   timeCreated = System.currentTimeMillis();
    }
    public SearchState(String query, String engine)
    {
@@ -114,6 +116,8 @@ implements SemanticsPrefs, SearchEngineNames
 	   }
 	   else
 	  	 this.numResults		= numResults;
+	   
+	   timeCreated = System.currentTimeMillis();
    }
    public SearchState(String query, String engine, short interestLevel, int numResults, boolean generatingTermDictionary)
    {
@@ -507,5 +511,15 @@ implements SemanticsPrefs, SearchEngineNames
 			setSeedSet(seedSet);
 		}
 		return result;
+	}
+	
+	public boolean recentlyCreated()
+	{
+		return (System.currentTimeMillis() - timeCreated < 120000);
+	}
+	
+	public void reCreated()
+	{
+		timeCreated = System.currentTimeMillis();
 	}
 }
