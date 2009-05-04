@@ -148,7 +148,8 @@ public class HTMLElement
 			attributesMap.clear();
 			attributesMap	= null;
 		}
-		node.recycle();
+		if (node != null)
+			node.recycle();
 		node					= null;
 	}
 	

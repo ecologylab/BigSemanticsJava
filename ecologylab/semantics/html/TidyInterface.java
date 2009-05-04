@@ -52,5 +52,7 @@ public interface TidyInterface
 
 	public void setContent ( );
 	
+	public void setRecognizedDocumentStructure(Class<? extends RecognizedDocumentStructure> pageType);
+	
 //	public void setDocument(org.w3c.dom.Document node);
 }

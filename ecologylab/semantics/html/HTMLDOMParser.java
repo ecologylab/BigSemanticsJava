@@ -190,7 +190,8 @@ implements HTMLAttributeNames
 			pageCategory = new TextOnlyPage();
 			pageCategory.generateSurrogates(contentBody, imgNodes, domWalkInfoTagger.getTotalTxtLength(), paragraphTextsTMap, htmlType);
 		}
-
+		if (pageCategory != null)
+			htmlType.setRecognizedDocumentStructure(pageCategory.getClass());
 	}
 
 	/**
