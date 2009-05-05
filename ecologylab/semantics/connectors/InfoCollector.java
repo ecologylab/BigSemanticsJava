@@ -71,5 +71,13 @@ public interface InfoCollector<AC extends Container, IC extends InfoCollector>
 	
 	public void increaseNumImageReferences(); 
 	public void decreaseNumImageReferences();
-	public void unpauseCrawler();
+
+	/**
+	 * Called to inform this that seeding is beginning.
+	 */
+	void seedingBegins();
+	/**
+	 * Called to inform this that seeding is complete.
+	 */
+	public void seedingComplete();
 }
