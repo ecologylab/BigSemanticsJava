@@ -90,7 +90,7 @@ implements HTMLAttributeNames
 	 */
 	public static boolean altIsBogus(String alt)
 	{
-		boolean result	= (alt == null) || (alt.length() == 0) || "null".equals(alt) || "image".equals(alt);
+		boolean result	= (alt == null) || (alt.length() == 0) || "null".equals(alt) || "image".equals(alt) || alt.endsWith(".jpg");
 		if (!result)
 		{
 			if (!StringTools.contains(alt, ' ')) // no spaces
