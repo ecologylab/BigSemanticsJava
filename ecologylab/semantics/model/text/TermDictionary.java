@@ -39,7 +39,7 @@ public class TermDictionary implements ApplicationProperties
 
 	static String								DICTIONARY					= "dictionary";
 	
-	static Pattern				NO_PUNC_REGEX				= Pattern.compile("[^A-z]");
+	static Pattern				NO_PUNC_REGEX				= Pattern.compile("[^A-Z^a-z]");
 
 	public static final String[]				mostObviousStopWordStrings	=
 																			{ // most generic i.r.

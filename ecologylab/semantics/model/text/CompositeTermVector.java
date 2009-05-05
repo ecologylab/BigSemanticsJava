@@ -23,6 +23,12 @@ public class CompositeTermVector extends Observable implements Observer, ITermVe
 	public CompositeTermVector ()
 	{
 	}
+	
+	CompositeTermVector(CompositeTermVector original)
+	{
+		super();
+		compositeTermVector.add(original.compositeTermVector);
+	}
 
 	private TermVector						compositeTermVector	= new TermVector();
 
@@ -52,6 +58,23 @@ public class CompositeTermVector extends Observable implements Observer, ITermVe
 			setChanged();
 			notifyObservers();
 		}
+	}
+	
+	/**
+	 * 
+	 * @param other
+	 * @return	This if other is empty, else a new CompositeTermVector with terms from this and other.
+	 */
+	public CompositeTermVector union(CompositeTermVector other)
+	{
+		if (other.size() == 0)
+			return this;
+		
+		CompositeTermVector result	= new CompositeTermVector(this);
+		
+		result.add(other);
+		
+		return result;
 	}
 
 	/**
@@ -196,6 +219,11 @@ public class CompositeTermVector extends Observable implements Observer, ITermVe
 	public double idfDotSimplex ( IFeatureVector<Term> v )
 	{
 		return compositeTermVector.idfDotSimplex(v);
+	}
+	
+	public int size()
+	{
+		return compositeTermVector.size();
 	}
 
 }

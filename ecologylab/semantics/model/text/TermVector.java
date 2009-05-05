@@ -47,15 +47,11 @@ public class TermVector extends FeatureVector<Term> implements ITermVector
 	 * Creates a new TermVector from a given String, using the TermDictionary to stem and find the
 	 * Term associated with each word.
 	 * 
-	 * @param s
+	 * @param input
 	 */
-	public TermVector ( String s )
+	public TermVector ( CharSequence input )
 	{
-		reset(s);
-	}
-	public TermVector ( StringBuilder s )
-	{
-		reset(s);
+		reset(input);
 	}
 
 	/**
