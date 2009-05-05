@@ -3,6 +3,7 @@ package ecologylab.semantics.seeding;
 import java.io.File;
 
 import ecologylab.collections.Scope;
+import ecologylab.generic.Generic;
 import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.connectors.SearchEngineNames;
@@ -28,7 +29,7 @@ implements SemanticsPrefs, SearchEngineNames
 	
 	public static final int			NUM_IMAGE_RESULTS							= 40;
    
-	private static long timeCreated;
+	private static long timeCreated														= -1;
    /**
     * Search engine to use. Currently supported are google, flickr, yahoo, yahoo_image, yahoo_news, yahoo_buzz, delicious.
     */
@@ -192,8 +193,22 @@ implements SemanticsPrefs, SearchEngineNames
    }
 	public void performCurrentSearch(InfoCollector infoCollector)
 	{
-		updateTimeStamp();
-		infoCollector.instantiateDocumentType(SEARCH_DOCUMENT_TYPE_REGISTRY, engine, this);
+		synchronized (SearchState.class)
+		{
+			if (timeCreated > 0)	// go unconditionally the first time
+			{
+				long humanWait			= (long) (1500.0 + 500.0 * Math.random());
+				long now						= System.currentTimeMillis();
+				int deltaT					= (int) (humanWait - (now - timeCreated));
+				if (deltaT > 0)
+				{
+					debug("Seed sleeping for " + deltaT + " engine=" + engine + " query = "+query);
+					Generic.sleep((int) deltaT);
+				}
+			}
+			updateTimeStamp();
+		}
+		infoCollector.instantiateDocumentType(SEARCH_DOCUMENT_TYPE_REGISTRY, engine, this);		
 	}
 	
 	/**
@@ -533,8 +548,35 @@ implements SemanticsPrefs, SearchEngineNames
 		return (System.currentTimeMillis() - timeCreated < 120000);
 	}
 	
-	public void updateTimeStamp()
+	protected void updateTimeStamp()
 	{
 		timeCreated = System.currentTimeMillis();
+	}
+	protected long returnAndUpdateTimeStamp()
+	{
+		long result	= timeCreated;
+		timeCreated	= System.currentTimeMillis();
+		return result;
+	}
+	
+	String toString;
+	
+	public String toString()
+	{
+		String	result		= this.toString;
+		if (result == null)
+		{
+			if ((query != null) && engine != null)
+			{
+				StringBuilder buffy	= new StringBuilder();
+				buffy.append("SearchState[").append(engine).append(']').append(' ');
+				buffy.append(query);
+				result				= buffy.toString();
+				this.toString	= result;
+			}
+			else
+				result				= super.toString();
+		}
+		return result;
 	}
 }
