@@ -152,7 +152,7 @@ extends Debug
 				// if all slices have been processed unpause the crawler
 				if(checkIfAllSearchesOver())
 				{
-					infoCollector.unpauseCrawler();
+					infoCollector.seedingComplete();
 				}
 			}
 			processingDownloads		= false;

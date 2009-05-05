@@ -110,6 +110,7 @@ implements SemanticsSessionObjectNames
    		if (size > 0)
    	  		infoCollector.setPlayOnStart(true);
 
+   		infoCollector.seedingBegins();
    		
    		// search bookkeeping for each seed
    		for (int i=0; i < size; i++)
