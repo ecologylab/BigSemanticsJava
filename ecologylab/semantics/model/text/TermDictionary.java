@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -320,7 +321,13 @@ public class TermDictionary implements ApplicationProperties
 		synchronized (p)
 		{
 			for (int i = 0; i < s.length(); i++)
-				p.add(s.charAt(i));
+			{
+				char inputChar = s.charAt(i);
+				if (!Character.isLetter(inputChar) && (inputChar != '-'))
+					System.out.println("AWFUL! bad char =" + inputChar);
+				else
+					p.add(inputChar);
+			}
 			p.stem();
 			return getTerm(s.toString(), p.toString());
 		}
@@ -337,7 +344,9 @@ public class TermDictionary implements ApplicationProperties
 	 */
 	public static Term getTermForUnsafeWord ( String s )
 	{
-		return getTermForWord(NO_PUNC_REGEX.matcher(s.toLowerCase()).replaceAll(""));
+		//FIXME -- use a StringBuilder as input or output to avoid repeated replaces!
+		Matcher matcher = NO_PUNC_REGEX.matcher(s.toLowerCase());
+		return getTermForWord(matcher.replaceAll(""));
 	}
 
 }

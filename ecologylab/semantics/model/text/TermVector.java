@@ -27,7 +27,7 @@ public class TermVector extends FeatureVector<Term> implements ITermVector
 
 	private static final String	SHOW_WEIGHTS_PREF	= "show_weights";
 
-	static Pattern				WORD_REGEX			= Pattern.compile("[a-z]+(-[a-z]+)*([a-z]+)");
+	public static Pattern				WORD_REGEX			= Pattern.compile("[a-zA-Z]+(-[a-zA-Z]+)*([a-zA-Z]+)");
 
 	public TermVector ()
 	{
@@ -73,7 +73,8 @@ public class TermVector extends FeatureVector<Term> implements ITermVector
 		StringBuilder termBuffy	= StringBuilderUtils.acquire();
 		while (m.find())
 		{
-			termBuffy.append(input, m.start(), m.end());
+			int start = m.start();
+			termBuffy.append(input, start, m.end());
 			StringTools.toLowerCase(termBuffy);
 			addWithoutNotify(TermDictionary.getTermForWord(termBuffy), 1);
 			StringTools.clear(termBuffy);

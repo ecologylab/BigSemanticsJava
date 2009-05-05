@@ -11,7 +11,6 @@ public class InterestExpressibleTerm implements ScaledValueObserver
 	public InterestExpressibleTerm(String s)
 	{
 		term = TermDictionary.getTermForUnsafeWord(s);
-		term.setWord(s);
 	}
 	
 	public InterestExpressibleTerm(Term t)
