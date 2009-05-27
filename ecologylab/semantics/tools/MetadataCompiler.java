@@ -78,7 +78,7 @@ public class MetadataCompiler extends ApplicationEnvironment
 				if (metaMetadata.isGenerateClass())
 				{
 					// translate it into a meta data class.
-					metaMetadata.translateToMetadataClass(test.getPackageName());
+					metaMetadata.translateToMetadataClass(test.getPackageName(), test);
 					MetadataCompilerConstants.appendToTranslationScope(XMLTools
 							.classNameFromElementName(metaMetadata.getName())
 							+ ".class,\n");
