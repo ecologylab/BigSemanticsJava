@@ -179,7 +179,7 @@ public class MetaMetadataSearchType extends MetaMetadataXPathType implements CFP
 		}
 	}
 
-	@Override
+
 	public void delivery(Object o)
 	{
 		ResultDistributer aggregator = this.searchSeed.resultDistributer(abstractInfoCollector);
