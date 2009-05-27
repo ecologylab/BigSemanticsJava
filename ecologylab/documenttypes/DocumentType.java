@@ -20,7 +20,7 @@ import ecologylab.generic.ReflectionTools;
 import ecologylab.net.ConnectionHelper;
 import ecologylab.net.PURLConnection;
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.actions.SemanticActions;
+import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.metametadata.MetaMetadata;
@@ -46,7 +46,7 @@ import ecologylab.xml.ElementState;
 abstract public class DocumentType<AC extends Container, IP extends InfoCollector<AC, IP>, ES extends ElementState>
 		extends Debug
 {
-	
+
 	protected PURLConnection		purlConnection;
 
 	protected MetaMetadata			metaMetadata;
@@ -104,7 +104,7 @@ abstract public class DocumentType<AC extends Container, IP extends InfoCollecto
 	}
 
 	public abstract void parse ( ) throws IOException;
-	
+
 	/**
 	 * Optional parse method takes an an XML DOM represented as an ElementState as input.
 	 * 
@@ -114,6 +114,7 @@ abstract public class DocumentType<AC extends Container, IP extends InfoCollecto
 	{
 		
 	}
+
 	/**
 	 * Call parse() and then the postParseHook().
 	 * 
@@ -124,6 +125,7 @@ abstract public class DocumentType<AC extends Container, IP extends InfoCollecto
 		parse(elementState);
 		postParseHook();
 	}
+
 	/**
 	 * Called after parsing.
 	 */
@@ -140,45 +142,45 @@ abstract public class DocumentType<AC extends Container, IP extends InfoCollecto
 		
 		
 	}
-	
+
 	interface DocumentTypeHelper extends ConnectionHelper
 	{
 		DocumentType getResult ( );
 	}
 
 	/**
-	 * Open a connection to the URL. Read the header, but not the content. Look at if the path
-	 * exists, if there is a redirect, and the mime type. If there is a redirect, process it.
+	 * Open a connection to the URL. Read the header, but not the content. Look at if the path exists,
+	 * if there is a redirect, and the mime type. If there is a redirect, process it.
 	 * <p/>
 	 * Create an InputStream. Using reflection (Class.newInstance()), create the appropriate
 	 * DocumentType, based on that mimeType, using the allTypes HashMap. Return it.
 	 */
-	public static DocumentType connect ( final ParsedURL purl, final Container container,
-			final InfoCollector infoCollector, SemanticActions semanticAction )
+	public static DocumentType connect(final ParsedURL purl, final Container container,
+			final InfoCollector infoCollector, SemanticActionHandler semanticAction)
 	{
 		DocumentTypeHelper helper = new DocumentTypeHelper()
 		{
 			DocumentType	result;
 
-			public void handleFileDirectory ( File file )
+			public void handleFileDirectory(File file)
 			{
 				// result = new FileDirectoryType(file, container,
 				// infoCollector);
 				result = infoCollector.newFileDirectoryType(file);
 			}
 
-			public boolean parseFilesWithSuffix ( String suffix )
+			public boolean parseFilesWithSuffix(String suffix)
 			{
 				result = getInstanceBySuffix(suffix, infoCollector);
 				return (result != null);
 			}
 
-			public void displayStatus ( String message )
+			public void displayStatus(String message)
 			{
 				infoCollector.displayStatus(message);
 			}
 
-			public void badResult ( )
+			public void badResult()
 			{
 				if (result != null)
 				{
@@ -187,7 +189,7 @@ abstract public class DocumentType<AC extends Container, IP extends InfoCollecto
 				}
 			}
 
-			public boolean processRedirect ( URL connectionURL ) throws Exception
+			public boolean processRedirect(URL connectionURL) throws Exception
 			{
 				ParsedURL connectionPURL = new ParsedURL(connectionURL);
 				Container redirectedAbstractContainer = infoCollector
@@ -250,7 +252,7 @@ abstract public class DocumentType<AC extends Container, IP extends InfoCollecto
 				return false;
 			}
 
-			public DocumentType getResult ( )
+			public DocumentType getResult()
 			{
 				return result;
 			}
@@ -275,32 +277,29 @@ abstract public class DocumentType<AC extends Container, IP extends InfoCollecto
 		// mimeType.
 		if ((result == null) && (container != null))
 			result = container.documentType();
-
+	
 		if ((purlConnection != null) && (result == null))
 		{
 			/**
-			 * The acmPrefixCollection has to be general PrefixCollection where one of the prefix
-			 * has to be acm's. The getLookupPurl() method takes in the purl and returns the prefix
-			 * purl. This prefix purl has to be used in lookupSpecialExtractor() to get the desired
-			 * document type.
+			 * The acmPrefixCollection has to be general PrefixCollection where one of the prefix has to
+			 * be acm's. The getLookupPurl() method takes in the purl and returns the prefix purl. This
+			 * prefix purl has to be used in lookupSpecialExtractor() to get the desired document type.
 			 */
 			// if(acmPrefixCollection.match(purl.toString(), '?'))
 			// FIXME -- Abhinav -- get rid of this SOON. Your type will
 			// supercede it.
 			/*
-			 * ParsedURL lookupPurl = getLookupPurl(purl); result =
-			 * lookupSpecialExtractor(lookupPurl, infoCollector);
+			 * ParsedURL lookupPurl = getLookupPurl(purl); result = lookupSpecialExtractor(lookupPurl,
+			 * infoCollector);
 			 * 
 			 * result = lookupSpecialExtractor(purl);
 			 */
 
 			/*
-			 * FIXME -- Abhinav -- get rid of the third condition (startsWith hack) for the
-			 * following if statement after creating prefix comparison for getting metaMetadata by
-			 * purl.
+			 * FIXME -- Abhinav -- get rid of the third condition (startsWith hack) for the following if
+			 * statement after creating prefix comparison for getting metaMetadata by purl.
 			 */
-			if (metaMetadata != null && metaMetadata.doesGenerateClass()
-					&& (purl.toString().startsWith("http://portal.acm.org/citation.cfm?")))
+			if (metaMetadata != null)
 			{
 				result = new MetaMetadataXPathType(infoCollector, semanticAction);
 			}
@@ -726,11 +725,25 @@ abstract public class DocumentType<AC extends Container, IP extends InfoCollecto
 	{
 		return false;
 	}
-	
+
 	public boolean isContentPage ( )
 	{
 		return false;
 	}
 
-	
+	public AC getContainer()
+	{
+		return container;
+	}
+
+	public IP getInfoCollector()
+	{
+		return abstractInfoCollector;
+	}
+
+	public MetaMetadata getMetaMetadata()
+	{
+		return metaMetadata;
+	}
+
 }
