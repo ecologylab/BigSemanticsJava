@@ -7,6 +7,7 @@ import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
 
+import ecologylab.collections.PrefixCollection;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.model.NamedStyle;
 import ecologylab.net.ParsedURL;
@@ -16,7 +17,6 @@ import ecologylab.semantics.metadata.Metadata;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.TranslationScope;
 import ecologylab.xml.XMLTranslationException;
-import ecologylab.xml.ElementState.xml_map;
 import ecologylab.xml.types.element.HashMapState;
 
 /**
@@ -56,6 +56,8 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	private HashMapArrayList<String, MetaMetadata>	repositoryByTagName;
 	
 	private HashMap<String, MetaMetadata>						repositoryByURL = null;
+	
+	private PrefixCollection 												urlprefixCollection = new PrefixCollection('/');
 
 	static final TranslationScope										TS	= MetaMetadataTranslationScope.get();
 
@@ -133,12 +135,14 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 
 	/**
 	 * Find the best matching MetaMetadata for the ParsedURL -- if there is a match.
-	 * TODO implement a better URL pattern matcher here
+	 * Right now implemented a No Query YRL based pattern matcher.
+	 * TODO implement  get by domain too
 	 * @param parsedURL
 	 * @return appropriate MetaMetadata, or null.
 	 */
 	public MetaMetadata getByPURL(ParsedURL parsedURL)
 	{
+		MetaMetadata returnValue=null;
 		if (repositoryByURL == null)
 		{
 			repositoryByURL = new HashMap<String, MetaMetadata>();
@@ -147,11 +151,33 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 			{
 				ParsedURL purl = metaMetadata.getUrlBase();
 				if (purl != null)
-					repositoryByURL.put(purl.host(), metaMetadata);
+					repositoryByURL.put(purl.noAnchorNoQueryPageString(), metaMetadata);
+				ParsedURL urlPrefix = metaMetadata.getUrlPrefix();
+				if(urlPrefix != null)
+				{
+						urlprefixCollection.add(urlPrefix);
+						repositoryByURL.put(urlPrefix.toString(), metaMetadata);
+				}
+			}
+		}
+		if(parsedURL!=null)
+		{
+			returnValue = repositoryByURL.get(parsedURL.noAnchorNoQueryPageString());
+			
+			if(returnValue == null)
+			{
+				if(urlprefixCollection.match(parsedURL))
+				{
+					String protocolStrippedURL = parsedURL.toString().split("://")[1];
+					
+					String key = parsedURL.url().getProtocol()+"://"+urlprefixCollection.getMatchingPhrase(protocolStrippedURL, '/');
+					
+					returnValue = repositoryByURL.get(key);
+				}
 			}
 		}
 		
-		return (parsedURL == null) ? null : repositoryByURL.get(parsedURL.host());
+		return returnValue;
 	}
 
 	public MetaMetadata getByTagName(String tagName)
