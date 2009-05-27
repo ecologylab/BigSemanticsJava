@@ -6,23 +6,23 @@ package ecologylab.semantics.connectors;
 import java.io.IOException;
 
 import ecologylab.documenttypes.DocumentType;
+import ecologylab.generic.DispatchTarget;
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.seeding.ResultDistributer;
 import ecologylab.semantics.seeding.SearchResult;
 import ecologylab.semantics.seeding.Seed;
 import ecologylab.xml.TranslationScope;
 
 /**
  * @author andruid
- *
+ * 
  */
-public interface Container
+public interface Container <DT extends DocumentType>
 {
 
 	void redirectInlinksTo(Container redirectedAbstractContainer);
 
-	void performDownload()
-	throws IOException
-;
+	void performDownload() throws IOException;
 
 	void addAdditionalPURL(ParsedURL purl);
 
@@ -31,20 +31,32 @@ public interface Container
 	DocumentType documentType();
 
 	ParsedURL purl();
-	
+
 	public TranslationScope getTranslationScope();
 
 	void setBias(float bias);
 
 	void setAsTrueSeed(Seed seed);
 
-  boolean queueDownload();
-	
+	boolean queueDownload();
+
 	/**
 	 * Keeps state about the search process, if this Container is a search result;
 	 */
 	public SearchResult searchResult();
 
 	public void hwSetMetadataField(String query, String queryValue);
+
+	public void setJustCrawl(boolean justCrawl);
+
+	public void presetDocumentType(DocumentType documentType);
+	
+	public void setDispatchTarget(DispatchTarget documentType);
+	
+	public boolean downloadHasBeenQueued();
+
+	void setSearchResult(ResultDistributer sra, int resultsSoFar);
+	
+
 
 }

@@ -6,16 +6,18 @@ package ecologylab.semantics.connectors;
 import java.io.File;
 
 import ecologylab.collections.Scope;
+import ecologylab.concurrent.DownloadMonitor;
 import ecologylab.documenttypes.DocumentType;
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
+import ecologylab.semantics.seeding.ResultDistributer;
 import ecologylab.semantics.seeding.SearchState;
 import ecologylab.semantics.seeding.Seed;
 import ecologylab.semantics.seeding.SeedSet;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.TranslationScope;
-import ecologylab.xml.types.element.ArrayListState;
 
 /**
  * @author andruid
@@ -65,10 +67,12 @@ public interface InfoCollector<AC extends Container, IC extends InfoCollector>
 	
 	AC getContainerForSearch(AC ancestor, ParsedURL purl, Seed seed, MetaMetadata metaMetadata);
 
+	AC getContainer(AC ancestor, ParsedURL purl, boolean reincarnate,
+			boolean addToCandidatesIfNeeded, MetaMetadata metaMetadata);
+
 	Scope sessionScope();
 
 	public void setCurrentFileFromUntitled(File file);
-	
 	public void increaseNumImageReferences(); 
 	public void decreaseNumImageReferences();
 
@@ -80,4 +84,16 @@ public interface InfoCollector<AC extends Container, IC extends InfoCollector>
 	 * Called to inform this that seeding is complete.
 	 */
 	public void seedingComplete();
+
+	public SeedSet getSeedSet();
+	
+	public void pauseDownloadMonitor();
+	
+	public ResultDistributer getResultDistributer();
+
+	SemanticActionHandler createSemanticActionHandler();
+	
+	public DownloadMonitor getSeedingDownloadMonitor();
+	
+
 }

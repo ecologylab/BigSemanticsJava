@@ -1,5 +1,8 @@
 package ecologylab.semantics.connectors;
 
+import ecologylab.appframework.types.prefs.Pref;
+import ecologylab.appframework.types.prefs.PrefBoolean;
+
 /**
  * combinFormation-specific set of reusable String constants for getting properties from the environment.
  * 
@@ -48,4 +51,7 @@ public interface CFPrefNames
 	public static final String REDUCED = "reduced";
 
 	public static final String		CURATED			= "curated";
+	
+	
+	public static final PrefBoolean	IGNORE_PDF			= Pref.usePrefBoolean("ignore_pdf", false);
 }

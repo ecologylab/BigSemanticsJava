@@ -26,5 +26,25 @@ public interface SearchEngineNames
   public static final String	CITESEER	= "citeseer";
   public static final String	ACMPORTAL	= "acm_portal";
   
+  //constants for Google Search [Might be used in other searches also]
+  //--------------------------------------------------------
+	public static final int	REGULAR		= 0;
+	public static final int	RELATED		= 1;
+	public static final int	IMAGE		= 2;
+	public static final int	SITE		= 3;   
+	
+	static final String GOOGLE_NO_PDF_ARG	= "+-filetype%3Apdf";
+
+	static final String regularGoogleSearchURLString
+	= "http://www.google.com/search?q=";
+
+	static final String relatedGoogleSearchUrlString
+	= "http://www.google.com/search?q=related:";
+
+	static final String imageGoogleSearchURLString
+	= "http://images.google.com/images?safe=off&q=";
+	
+	//--------------------------------------------------------------------
+  
 
 }
