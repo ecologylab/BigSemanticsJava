@@ -56,7 +56,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	@xml_tag("always_show")
 	@xml_attribute
 	private boolean															alwaysShow;
-	
+
 	@xml_attribute
 	private String															style;
 
@@ -130,6 +130,18 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	@xml_attribute
 	private String															key;
 
+	/**
+	 * The regular expression
+	 */
+	@xml_attribute
+	private String																			regularExpression;
+
+	/**
+	 * The string used to replace the match.
+	 */
+	@xml_attribute
+	private String																			replacementString;
+
 	@xml_map("meta_metadata_field")
 	private HashMapArrayList<String, MetaMetadataField>	childMetaMetadata;
 
@@ -139,10 +151,22 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 																																		0);
 
 	public static Iterator<MetaMetadataField>		EMPTY_ITERATOR		= EMPTY_COLLECTION.iterator();
+	
+	/*************These 2 variables are needed fo inheritence implementation*********************/
+	/**
+	 * Holds the super class of the meta-metadata to which this field belongs
+	 */
+	private String extendsField;
+	
+	/**
+	 * The Meta-Metadata repository object.
+	 */
+	private MetaMetadataRepository mmdRepository;
+	/**************************************************************************************/
 
 	public MetaMetadataField()
 	{
-		
+
 	}
 
 	public MetaMetadataField(String name, ScalarType metadataType,
@@ -152,7 +176,6 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 		// this.metadataType = metadataType;
 		this.childMetaMetadata = set;
 	}
-
 
 	public String packageName()
 	{
@@ -176,18 +199,25 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 			throws XMLTranslationException, IOException
 	{
 
+		ScalarType sType = tryTofindScalarType();
+		scalarType = sType;
 		// check for scalar type.
-		if (scalarType != null)
+		if (sType != null)
 		{
 			// Non Null scalar type means we have a nested attribute.
 			appendScalarNested(appendable);
 		}
-		if (isNested)
+		boolean iNested = tryTofindNested();
+		isNested=iNested;
+		if (iNested)
 		{
 			appenedNestedMetadataField(appendable);
 		}
+		
+		String col = tryTofindCollection();
+		collection = col;
 		// check if it is a collection
-		if (collection != null)
+		if (col != null)
 		{
 			// collection of nested elements
 			// TODO -- can these be scalars? if so, how can we tell?
@@ -271,6 +301,93 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 		}
 	}
 
+	private String tryTofindCollection()
+	{
+		if(collection!=null)
+		{
+			return collection;
+		}
+	//first find the super class
+		String extendsField = getExtendsField();
+		
+		if(extendsField!=null && !extendsField.equals("metadata"))
+		{
+			// if we have not reahced the top most level
+			
+			//1 find the meta-metadata corresponding to the extends field.
+			MetaMetadata metaMetadata= getMmdRepository().getByTagName(extendsField);
+			
+			//2. find the current field in this meta-metadata
+			MetaMetadataField mmdField=metaMetadata.lookupChild(extendsField);
+			
+			//if this field does exist in super
+			if(mmdField!=null)
+			{
+				//find the scalar type of field
+				return mmdField.collection;
+			}
+		}
+		return null;
+	}
+
+	private boolean tryTofindNested()
+	{
+		if(isNested)
+		{
+			return isNested;
+		}
+		//first find the super class
+		String extendsField = getExtendsField();
+		
+		if(extendsField!=null && !extendsField.equals("metadata"))
+		{
+			// if we have not reahced the top most level
+			
+			//1 find the meta-metadata corresponding to the extends field.
+			MetaMetadata metaMetadata= getMmdRepository().getByTagName(extendsField);
+			
+			//2. find the current field in this meta-metadata
+			MetaMetadataField mmdField=metaMetadata.lookupChild(extendsField);
+			
+			//if this field does exist in super
+			if(mmdField!=null)
+			{
+				//find the scalar type of field
+				return mmdField.isNested();
+			}
+		}
+		return false;
+	}
+
+	private ScalarType tryTofindScalarType()
+	{
+		if(scalarType!=null)
+		{
+			return scalarType;
+		}
+		//first find the super class
+		String extendsField = getExtendsField();
+		
+		if(extendsField!=null && !extendsField.equals("metadata"))
+		{
+			// if we have not reahced the top most level
+			
+			//1 find the meta-metadata corresponding to the extends field.
+			MetaMetadata metaMetadata= getMmdRepository().getByTagName(extendsField);
+			
+			//2. find the current field in this meta-metadata
+			MetaMetadataField mmdField=metaMetadata.lookupChild(name);
+			
+			//if this field does exist in super
+			if(mmdField!=null)
+			{
+				//find the scalar type of field
+				return mmdField.getScalarType();
+			}
+		}
+		return null;
+	}
+
 	/**
 	 * This function appends the key() method for the classes implementing the Mappable interface.
 	 * 
@@ -297,6 +414,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 				+ name + ";");
 		appendLazyEvaluationMethod(appendable, name, XMLTools.classNameFromElementName(name));
 		appendSetterForCollection(appendable, name, fieldType);
+		appendGetterForCollection(appendable, name, fieldType);
 	}
 
 	protected void appendImport(Appendable appendable, String importDecl) throws IOException
@@ -556,10 +674,11 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 		// appending the declaration.
 		// String mapDecl = childMetaMetadata.get(key).getScalarType().fieldTypeName() + " , " +
 		// className;
-		appendMetalanguageDecl(appendable, "@xml_collection", "private ArrayList<", className, ">",
-				fieldName);
+		String annotation = "@xml_collection(\"" + fieldName + "\")";
+		appendMetalanguageDecl(appendable, annotation, "private ArrayList<", className, ">", fieldName);
 		appendLazyEvaluationMethod(appendable, fieldName, "ArrayList<" + className + ">");
 		appendSetterForCollection(appendable, fieldName, "ArrayList<" + className + ">");
+		appendGetterForCollection(appendable, fieldName, "ArrayList<" + className + ">");
 	}
 
 	/**
@@ -581,6 +700,18 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 		appendable.append("public void set" + XMLTools.javaNameFromElementName(fieldName, true) + "( "
 				+ fieldType + " " + fieldName + " )\n{\n");
 		appendable.append("this." + fieldName + " = " + fieldName + " ;\n}\n");
+	}
+
+	private void appendGetterForCollection(Appendable appendable, String fieldName, String fieldType)
+			throws IOException
+	{
+		String comment = "Get the value of field " + fieldName;
+		// write Java doc
+		MetadataCompilerConstants.writeJavaDocComment(comment, appendable);
+
+		// write first line
+		appendable.append("public "+fieldType+" get" + XMLTools.javaNameFromElementName(fieldName, true) + "(){\n");
+		appendable.append("return this." + fieldName+ ";\n}\n");
 	}
 
 	private void appendMetalanguageDecl(Appendable appendable, String metalanguage,
@@ -633,12 +764,11 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 		return childMetaMetadata.get(name);
 	}
 
-
 	public MetaMetadataField lookupChild(FieldAccessor fieldAccessor)
 	{
 		return lookupChild(fieldAccessor.getTagName());
 	}
-	
+
 	public String getXpath()
 	{
 		return xpath;
@@ -778,7 +908,7 @@ public HashMapArrayList<String, MetaMetadataField> getChildMetaMetadata()
 	{
 		return collection;
 	}
-	
+
 	public MetaMetadataRepository metaMetadataRepository()
 	{
 
@@ -800,10 +930,76 @@ public HashMapArrayList<String, MetaMetadataField> getChildMetaMetadata()
 			return null;
 		}
 	}
-	
+
 	public NamedStyle lookupStyle()
 	{
 		return (style != null) ? metaMetadataRepository().lookupStyle(style) : metaMetadataRepository().getDefaultStyle();
+	}
+
+	/**
+	 * @return the regularExpression
+	 */
+	public String getRegularExpression()
+	{
+		return regularExpression;
+	}
+
+	/**
+	 * @param regularExpression
+	 *          the regularExpression to set
+	 */
+	public void setRegularExpression(String regularExpression)
+	{
+		this.regularExpression = regularExpression;
+	}
+
+	/**
+	 * @return the replacementString
+	 */
+	public String getReplacementString()
+	{
+		return replacementString;
+	}
+
+	/**
+	 * @param replacementString
+	 *          the replacementString to set
+	 */
+	public void setReplacementString(String replacementString)
+	{
+		this.replacementString = replacementString;
+	}
+
+	/**
+	 * @return the extendsField
+	 */
+	public String getExtendsField()
+	{
+		return extendsField;
+	}
+
+	/**
+	 * @param extendsField the extendsField to set
+	 */
+	public void setExtendsField(String extendsField)
+	{
+		this.extendsField = extendsField;
+	}
+
+	/**
+	 * @return the mmdRepository
+	 */
+	public MetaMetadataRepository getMmdRepository()
+	{
+		return mmdRepository;
+	}
+
+	/**
+	 * @param mmdRepository the mmdRepository to set
+	 */
+	public void setMmdRepository(MetaMetadataRepository mmdRepository)
+	{
+		this.mmdRepository = mmdRepository;
 	}
 
 }
