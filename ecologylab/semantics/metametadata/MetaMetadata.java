@@ -13,19 +13,21 @@ import ecologylab.appframework.PropertiesAndDirectories;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.generic.ReflectionTools;
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.actions.SemanticAction;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.tools.MetadataCompilerConstants;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.TranslationScope;
 import ecologylab.xml.XMLTools;
 import ecologylab.xml.XMLTranslationException;
+import ecologylab.xml.types.element.ArrayListState;
 import ecologylab.xml.types.element.Mappable;
 
 /**
  * @author damaraju
  * 
  */
-public class MetaMetadata extends MetaMetadataField implements Mappable<String>
+public class MetaMetadata<SA extends SemanticAction> extends MetaMetadataField implements Mappable<String>
 {
 	@xml_attribute
 	private String						name;
@@ -36,6 +38,9 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 
 	@xml_attribute
 	private ParsedURL					urlBase;
+	
+	@xml_attribute
+	private ParsedURL 				urlPrefix;
 
 	@xml_attribute
 	private String						userAgentName;
@@ -72,6 +77,16 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 	@xml_collection("suffix")
 	private ArrayList<String>	suffixes;
 
+	@xml_tag("semantic_actions")
+	@xml_collection("semantic_actions")
+	private ArrayListState<SA>	semanticActions;
+
+	
+	@xml_attribute
+	private String 					collectionOf;
+	
+
+
 	// TranslationScope DEFAULT_METADATA_TRANSLATIONS = DefaultMetadataTranslationSpace.get();
 
 	private boolean						inheritedMetaMetadata = false;
@@ -81,9 +96,17 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 		super();
 	}
 
+	/**
+	 * @param purl
+	 * @return
+	 */
 	public boolean isSupported(ParsedURL purl)
 	{
-		return purl.toString().startsWith(urlBase.toString());
+		if(urlBase!=null)
+			return purl.toString().startsWith(urlBase.toString());
+		if(urlPrefix!=null)
+			return purl.toString().startsWith(urlPrefix.toString());
+		return false;
 	}
 
 	public String getUserAgent()
@@ -106,6 +129,20 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 		this.urlBase = ParsedURL.getAbsolute(urlBase);
 	}
 
+	public ParsedURL getUrlPrefix()
+	{
+		return urlPrefix;
+	}
+	
+	public void setUrlPrefix(ParsedURL urlPrefix)
+	{
+		this.urlPrefix = urlPrefix;
+	}
+	
+	public void setUrlPrefix(String urlPrefix)
+	{
+		this.urlPrefix = ParsedURL.getAbsolute(urlPrefix);
+	}
 	/**
 	 * Lookup the Metadata class object that corresponds to the tag_name in this.
 	 * 
@@ -132,7 +169,13 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 	{
 		Metadata result = null;
 		Class<? extends Metadata> metadataClass = getMetadataClass(ts);
-
+		
+		if(metadataClass ==null)
+		{
+			// there is no class for this tag we can use class of meta-metadata it extends
+			metadataClass = getMetadataClass(extendsAttribute, ts);
+		}
+		
 		if (metadataClass != null)
 		{
 			result = ReflectionTools.getInstance(metadataClass);
@@ -157,9 +200,10 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 	 * 
 	 * @param packageName
 	 *          The package in which the generated metadata class is to be placed.
+	 * @param test TODO
 	 * @throws IOException
 	 */
-	public void translateToMetadataClass(String packageName) throws IOException
+	public void translateToMetadataClass(String packageName, MetaMetadataRepository mmdRepository) throws IOException
 	{
 		// get the generation path from the package name.
 		if (this.packageAttribute != null)
@@ -193,6 +237,7 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 		
 		// Write class declaration
 		String className = XMLTools.classNameFromElementName(name);
+		System.out.println("#######################################"+name);
 		p.println("public class  " + className + "\nextends  "
 				+ XMLTools.classNameFromElementName(extendsAttribute) + "\n{\n");
 
@@ -206,6 +251,8 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 		{
 			// get the metadata field.
 			MetaMetadataField f = (MetaMetadataField) metaMetadataFieldList.get(i);
+			f.setExtendsField(extendsAttribute);
+			f.setMmdRepository(mmdRepository);
 			try
 			{
 				// translate the field into for metadata class.
@@ -251,7 +298,7 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 		MetaMetadataRepository test = (MetaMetadataRepository) ElementState.translateFromXML(
 				patternXMLFilepath, TS);
 
-		// test.writePrettyXML(System.out);
+	  test.writePrettyXML(System.out);
 
 		File outputRoot = PropertiesAndDirectories.userDir();
 
@@ -381,5 +428,29 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 	public boolean doesGenerateClass()
 	{
 		return generateClass;
+	}
+
+	/**
+	 * @return the semanticActions
+	 */
+	public ArrayListState<SA> getSemanticActions()
+	{
+		return semanticActions;
+	}
+
+	/**
+	 * @return the collectionOf
+	 */
+	public String getCollectionOf()
+	{
+		return collectionOf;
+	}
+
+	/**
+	 * @return the extendsAttribute
+	 */
+	public String getExtendsAttribute()
+	{
+		return extendsAttribute;
 	}
 }
