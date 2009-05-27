@@ -221,6 +221,8 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 		{
 			// collection of nested elements
 			// TODO -- can these be scalars? if so, how can we tell?
+			String colChildType= tryTofindCollectionChildType();
+			collectionChildType=colChildType;
 			appendCollection(appendable);
 		}
 
@@ -301,6 +303,35 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 		}
 	}
 
+	private String tryTofindCollectionChildType()
+	{
+		if(collectionChildType!=null)
+		{
+			return collectionChildType;
+		}
+	//first find the super class
+		String extendsField = getExtendsField();
+		
+		if(extendsField!=null && !extendsField.equals("metadata"))
+		{
+			// if we have not reahced the top most level
+			
+			//1 find the meta-metadata corresponding to the extends field.
+			MetaMetadata metaMetadata= getMmdRepository().getByTagName(extendsField);
+			
+			//2. find the current field in this meta-metadata
+			MetaMetadataField mmdField=metaMetadata.lookupChild(name);
+			
+			//if this field does exist in super
+			if(mmdField!=null)
+			{
+				//find the scalar type of field
+				return mmdField.collectionChildType;
+			}
+		}
+		return null;
+	}
+
 	private String tryTofindCollection()
 	{
 		if(collection!=null)
@@ -318,7 +349,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 			MetaMetadata metaMetadata= getMmdRepository().getByTagName(extendsField);
 			
 			//2. find the current field in this meta-metadata
-			MetaMetadataField mmdField=metaMetadata.lookupChild(extendsField);
+			MetaMetadataField mmdField=metaMetadata.lookupChild(name);
 			
 			//if this field does exist in super
 			if(mmdField!=null)
@@ -347,7 +378,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 			MetaMetadata metaMetadata= getMmdRepository().getByTagName(extendsField);
 			
 			//2. find the current field in this meta-metadata
-			MetaMetadataField mmdField=metaMetadata.lookupChild(extendsField);
+			MetaMetadataField mmdField=metaMetadata.lookupChild(name);
 			
 			//if this field does exist in super
 			if(mmdField!=null)
