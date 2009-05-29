@@ -88,8 +88,6 @@ public interface InfoCollector<AC extends Container, IC extends InfoCollector>
 
 	public SeedSet getSeedSet();
 	
-	public void pauseDownloadMonitor();
-	
 	public ResultDistributer getResultDistributer();
 
 	SemanticActionHandler createSemanticActionHandler();

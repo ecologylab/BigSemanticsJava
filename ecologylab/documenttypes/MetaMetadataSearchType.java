@@ -97,7 +97,7 @@ public class MetaMetadataSearchType extends MetaMetadataXPathType implements CFP
 			container.setAsTrueSeed(searchSeed);
 			queueSearchrequest();
 			// System.out.println("DEBUG::queued search request for \t"+searchSeed.getQuery());
-			infoProcessor.pauseDownloadMonitor();
+//			infoProcessor.pauseDownloadMonitor();
 		}
 	}
 
