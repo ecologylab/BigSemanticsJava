@@ -9,11 +9,11 @@ import java.util.HashMap;
 
 import ecologylab.collections.PrefixCollection;
 import ecologylab.generic.HashMapArrayList;
-import ecologylab.model.NamedStyle;
 import ecologylab.net.ParsedURL;
 import ecologylab.net.UserAgent;
 import ecologylab.semantics.library.TypeTagNames;
 import ecologylab.semantics.metadata.Metadata;
+import ecologylab.textformat.NamedStyle;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.TranslationScope;
 import ecologylab.xml.XMLTranslationException;

@@ -2,7 +2,7 @@ package ecologylab.semantics.model.text;
 
 import java.util.Observable;
 
-import ecologylab.gui.ScaledValueObserver;
+import ecologylab.textformat.ScaledValueObserver;
 
 public class InterestExpressibleTerm implements ScaledValueObserver
 {

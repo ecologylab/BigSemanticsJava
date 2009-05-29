@@ -1,7 +1,6 @@
 package ecologylab.semantics.metametadata;
 
 import ecologylab.generic.Debug;
-import ecologylab.model.NamedStyle;
 import ecologylab.net.UserAgent;
 import ecologylab.semantics.actions.CreateAndVisualizeImgSurrogateSemanticAction;
 import ecologylab.semantics.actions.CreateContainerForSearchSemanticAction;
@@ -14,6 +13,7 @@ import ecologylab.semantics.actions.ProcessSearchSemanticAction;
 import ecologylab.semantics.actions.SemanticAction;
 import ecologylab.semantics.actions.SetMetadataSemanticAction;
 import ecologylab.semantics.actions.SetterSemanticAction;
+import ecologylab.textformat.NamedStyle;
 import ecologylab.xml.TranslationScope;
 
 public class MetaMetadataTranslationScope extends Debug

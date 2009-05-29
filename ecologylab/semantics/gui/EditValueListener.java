@@ -3,7 +3,6 @@
  */
 package ecologylab.semantics.gui;
 
-import ecologylab.gui.text.ExtentChangedEvent;
 
 /**
  * @author bharat

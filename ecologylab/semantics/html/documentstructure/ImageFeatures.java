@@ -4,7 +4,7 @@
 package ecologylab.semantics.html.documentstructure;
 
 import ecologylab.generic.StringTools;
-import ecologylab.media.PixelBased;
+import ecologylab.media.ImgConstants;
 import ecologylab.semantics.html.HTMLElement;
 import ecologylab.semantics.html.utils.HTMLAttributeNames;
 
@@ -52,7 +52,7 @@ implements HTMLAttributeNames
 //	String imgUrl = imageNode.getAttribute(SRC);
 		//TODO -- should we do more advertisement filtering here?!
 		
-		if( (width!=-1 && width<PixelBased.MIN_WIDTH) || (height!=-1 && height<PixelBased.MIN_HEIGHT) )
+		if( (width!=-1 && width<ImgConstants.MIN_WIDTH) || (height!=-1 && height<ImgConstants.MIN_HEIGHT) )
 			informImg = false;
 	
 		if( aspectRatio > 0.9 )

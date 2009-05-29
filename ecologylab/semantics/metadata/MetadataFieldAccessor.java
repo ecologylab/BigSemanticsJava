@@ -6,17 +6,11 @@ package ecologylab.semantics.metadata;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
-import ecologylab.generic.ReflectionTools;
-import ecologylab.gui.text.ExtentChangedEvent;
-import ecologylab.gui.text.ExtentChangedListener;
 import ecologylab.semantics.gui.EditValueEvent;
 import ecologylab.semantics.gui.EditValueListener;
 import ecologylab.semantics.gui.EditValueNotifier;
-import ecologylab.semantics.library.scalar.MetadataScalarBase;
-import ecologylab.xml.ElementState;
 import ecologylab.xml.FieldAccessor;
 import ecologylab.xml.FieldToXMLOptimizations;
-import ecologylab.xml.xml_inherit;
 
 /**
  * @author andruid

@@ -11,8 +11,8 @@ import java.util.Iterator;
 
 import ecologylab.appframework.PropertiesAndDirectories;
 import ecologylab.generic.HashMapArrayList;
-import ecologylab.model.NamedStyle;
 import ecologylab.semantics.tools.MetadataCompilerConstants;
+import ecologylab.textformat.NamedStyle;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.FieldAccessor;
 import ecologylab.xml.XMLTools;
