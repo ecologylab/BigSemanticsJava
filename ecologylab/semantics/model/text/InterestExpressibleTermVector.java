@@ -3,7 +3,7 @@ package ecologylab.semantics.model.text;
 import java.util.Observable;
 
 import ecologylab.generic.IFeatureVector;
-import ecologylab.textformat.ScaledValueObserver;
+import ecologylab.generic.ScaledValueObserver;
 
 public class InterestExpressibleTermVector extends TermVector implements ScaledValueObserver
 {	
