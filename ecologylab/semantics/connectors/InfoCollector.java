@@ -5,8 +5,9 @@ package ecologylab.semantics.connectors;
 
 import java.io.File;
 
+import javax.swing.JFrame;
+
 import ecologylab.collections.Scope;
-import ecologylab.concurrent.DownloadMonitor;
 import ecologylab.documenttypes.DocumentType;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionHandler;
@@ -93,7 +94,6 @@ public interface InfoCollector<AC extends Container, IC extends InfoCollector>
 
 	SemanticActionHandler createSemanticActionHandler();
 	
-	public DownloadMonitor getSeedingDownloadMonitor();
+	JFrame getJFrame();
 	
-
 }

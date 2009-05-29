@@ -4,7 +4,6 @@
 package ecologylab.semantics.html.documentstructure;
 
 import ecologylab.generic.StringTools;
-import ecologylab.media.ImgConstants;
 import ecologylab.semantics.html.HTMLElement;
 import ecologylab.semantics.html.utils.HTMLAttributeNames;
 

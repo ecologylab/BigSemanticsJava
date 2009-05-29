@@ -4,13 +4,10 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import ecologylab.collections.Scope;
-import ecologylab.gui.TopLevel;
 import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.connectors.SeedPeer;
 import ecologylab.semantics.connectors.SemanticsSessionObjectNames;
-import ecologylab.services.messages.cf.SearchState;
 import ecologylab.services.messages.cf.SeedCf;
-import ecologylab.xml.XMLTranslationException;
 import ecologylab.xml.xml_inherit;
 
 /**
@@ -209,10 +206,14 @@ implements SemanticsSessionObjectNames
 			}
 			else
 			{
-				TopLevel topLevel	= (TopLevel) clientConnectionScope.get(TOP_LEVEL);
-				if (topLevel != null)
-					topLevel.toFront();
-				selectedOption	= handleMoreSeedsDialogue(topLevel);
+	   		InfoCollector infoCollector	= (InfoCollector) clientConnectionScope.get(INFO_COLLECTOR);
+	   		JFrame jframe	= infoCollector.getJFrame();
+
+				if (jframe != null)
+				{
+					jframe.toFront();
+					selectedOption	= handleMoreSeedsDialogue(jframe);
+				}
 			}
 		}
 		switch (selectedOption)
