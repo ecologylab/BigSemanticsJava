@@ -232,7 +232,7 @@ implements HTMLAttributeNames
 	{	
 		for (HTMLElement imageNode: imgNodesInContentBody) 
 		{  		
-			if (ImageFeatures.isInformativeImage(imageNode))
+			if (imageNode.isInformativeImage())
 			{
 				final TdNode imageNodeNode = imageNode.getNode();
 				informImgNodes.add(imageNodeNode);
@@ -241,7 +241,7 @@ implements HTMLAttributeNames
 				if (extractedCaption != null)
 					XMLTools.unescapeXML(extractedCaption);
 				
-				String altText 					= ImageFeatures.getNonBogusAlt(imageNode);
+				String altText 					= imageNode.getNonBogusAlt();
 				TermVector altTextTV		= (altText == null) ? null : new TermVector(altText);
 				boolean done						= false;		// use this instead of break to make sure we get to pt.recycle()
 				

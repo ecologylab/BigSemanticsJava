@@ -33,7 +33,7 @@ public class ImageCollectionPage extends RecognizedDocumentStructure
 		{
 			HTMLElement imageNode = (HTMLElement) imgNodes.get(i);
 			
-			String altText 					= ImageFeatures.getNonBogusAlt(imageNode);
+			String altText 					= imageNode.getNonBogusAlt();
 			
 			if (altText == null)
 			{

@@ -13,73 +13,8 @@ import ecologylab.semantics.html.utils.HTMLAttributeNames;
  * @author andruid 
  */
 public class ImageFeatures
-implements HTMLAttributeNames
+implements HTMLAttributeNames, ImageConstants
 {
-
-	/**
-	 * Recognize whether the image is informative or not based on its attributes and size, aspect ratio. 
-	 * 
-	 * @param imageNode		HTML node from <code>img</code> tag, with attributes.
-	 * 
-	 * @return						true if image is recognized as informative otherwise false.
-	 */
-	public static boolean isInformativeImage(HTMLElement imageNode) 
-	{
-		int width 		= imageNode.getAttributeAsInt(WIDTH, -1);
-		int height 		= imageNode.getAttributeAsInt(HEIGHT, -1);
-		String alt 		= getNonBogusAlt(imageNode);
-		
-		return isInformativeImage(width, height, alt);
-	}
-
-	/**
-	 * Recognize whether the image is informative or not based on its attributes and size, aspect ratio. 
-	 * 
-	 * @param width
-	 * @param height
-	 * @param alt
-	 * 
-	 * @return						true if image is recognized as informative otherwise false.
-	 */
-	//TODO -- Resolve with ImgElement.designRole().
-	public static boolean isInformativeImage(int width, int height, String alt)
-	{
-		float aspectRatio = (float) width / (float) height;
-		aspectRatio 			= (aspectRatio>1.0f) ?  (float)1.0f/aspectRatio : aspectRatio;
-	
-		boolean informImg = !(alt!=null && alt.toLowerCase().contains("advertis")) ;
-//	String imgUrl = imageNode.getAttribute(SRC);
-		//TODO -- should we do more advertisement filtering here?!
-		
-		if( (width!=-1 && width<ImgConstants.MIN_WIDTH) || (height!=-1 && height<ImgConstants.MIN_HEIGHT) )
-			informImg = false;
-	
-		if( aspectRatio > 0.9 )
-			informImg = false;
-	
-		return informImg;
-	}
-	
-	/**
-	 * Get the alt text attribute from the image node, if there is one.
-	 * Check to see if it is not bogus (not empty, "null", a url, contains advertis).
-	 * If it is bogus, clear the attribute in the image node.
-	 * Otherwise, return it.
-	 * 
-	 * @param imageNode
-	 * @return		null, or a usable alt String.
-	 */
-	public static String getNonBogusAlt(HTMLElement imageNode)
-	{
-		String altText 					= imageNode.getAttribute(ALT);
-		if ((altText != null) && (ImageFeatures.altIsBogus(altText)))
-		{
-			altText								= null;
-			imageNode.clearAttribute(ALT);
-		}
-		return altText;
-	}
-
 	/**
 	 * Test to see if alt attribute from HTML is garbage.
 	 * 
@@ -105,6 +40,55 @@ implements HTMLAttributeNames
 		}
 		
 		return result;
+	}
+
+	/**
+	 * Use heuristics on width & height to analyze whether this image is junk, such as a
+	 * spacer (very small), a nav element, or an advertisement.
+	 * <p/>
+	 * If width or height is set to 0, the assumption is that we have no data about size, so
+	 * we must return UNKNOWN.
+	 */
+	//FIXME -- unify with ImageFeatures.isInformativeImage()
+	public static int designRole(int width, int height, int mimeIndex, boolean isMap)
+	{
+		float aspectRatio = (float) width / (float) height;
+		if (aspectRatio > 1.0f)
+			aspectRatio 		=  (float) 1.0f/aspectRatio;
+		if (aspectRatio > 0.5f)
+			return UN_INFORMATIVE;
+		
+		//TODO -- should area be a feature? 		int area		= width * height;
+		
+		int result	= UNKNOWN;
+		if ((width > 0) && (height > 0))
+		{
+			if ((width < MIN_WIDTH) || (height < MIN_HEIGHT))
+					result	= UN_INFORMATIVE;
+			else
+			{
+				result		= INFORMATIVE;
+				if ((mimeIndex != JPG) && (mimeIndex != UNKNOWN))
+				{	/* if (mimeType == GIF, PNG) */
+					if (isMap || (aspectRatio > 0.3f))	// stricter criteria for these mime types
+						result	= UN_INFORMATIVE;
+				}
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Use heuristics on width & height to analyze whether this image is junk, such as a
+	 * spacer (very small), a nav element, or an advertisement.
+	 * <p/>
+	 * If width or height is set to 0, the assumption is that we have no data about size, so
+	 * we must return UNKNOWN.
+	 */
+	public static int designRole(int width, int height)
+	{
+		// (JPG images are most privleged
+		return designRole(width, height, JPG, false);
 	}
 
 	/*	We don't need this as we have an advertisement filter in the container.createImgElement(), and the filter is in cf.model.Filter.
