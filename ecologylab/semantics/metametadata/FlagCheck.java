@@ -11,10 +11,10 @@ import ecologylab.xml.ElementState.xml_tag;
  * TODO Flag checks can latter have nested semantic actions
  *
  */
-public @xml_tag("if")class IFclause extends ElementState
+public @xml_tag("flag_check")class FlagCheck extends ElementState
 {
 
-		public IFclause()
+		public FlagCheck()
 		{
 			super();
 		}
@@ -22,21 +22,21 @@ public @xml_tag("if")class IFclause extends ElementState
 		/**
 		 *  The name of the flags to be checked
 		 */
-		@xml_attribute private String name;
+		@xml_attribute private String value;
 
 		/**
 		 * @return the name
 		 */
-		public String getName()
+		public String getValue()
 		{
-			return name;
+			return value;
 		}
 
 		/**
 		 * @param name the name to set
 		 */
-		public void setName(String name)
+		public void setValue(String name)
 		{
-			this.name = name;
+			this.value = name;
 		}
 }

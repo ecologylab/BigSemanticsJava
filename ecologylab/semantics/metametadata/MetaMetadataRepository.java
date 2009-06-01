@@ -17,6 +17,7 @@ import ecologylab.textformat.NamedStyle;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.TranslationScope;
 import ecologylab.xml.XMLTranslationException;
+import ecologylab.xml.types.element.ArrayListState;
 import ecologylab.xml.types.element.HashMapState;
 
 /**
@@ -61,16 +62,12 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 
 	static final TranslationScope										TS	= MetaMetadataTranslationScope.get();
 
-	private static HashMap purlMetadataMap = new HashMap();
-	
 	private TranslationScope												metadataTScope;
 
 	// for debugging
 	protected static File														REPOSITORY_FILE;
 
-	static{
-		purlMetadataMap.put("http://portal.acm.org/citations","acm_portal");
-	}
+	
 	public static void main(String args[])
 	{
 		REPOSITORY_FILE = new File(
@@ -301,4 +298,6 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		
 		return defaultUserAgentString;
 	}
+
+	
 }

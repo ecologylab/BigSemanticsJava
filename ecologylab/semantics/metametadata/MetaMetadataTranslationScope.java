@@ -32,7 +32,7 @@ public class MetaMetadataTranslationScope extends Debug
 			SemanticAction.class,
 			Argument.class,
 			Check.class,
-			IFclause.class,
+			FlagCheck.class,
 			CreateAndVisualizeImgSurrogateSemanticAction.class,
 			CreateContainerForSearchSemanticAction.class,
 			CreateContainerSemanticAction.class,
@@ -42,7 +42,7 @@ public class MetaMetadataTranslationScope extends Debug
 			SetMetadataSemanticAction.class,
 			GetFieldSemanticAction.class,
 			SetterSemanticAction.class,
-			ProcessSearchSemanticAction.class,
+			ProcessSearchSemanticAction.class
 			};
 
 	public static TranslationScope get()

@@ -20,15 +20,31 @@ public class Check extends ElementState
 	/**
 	 * The name of the check
 	 */
-	@xml_attribute private String name;
+	@xml_attribute private String condition;
 
 	/**
 	 * The name of the flag which this check will set.
 	 */
-	@xml_attribute private String flagName;
+	@xml_attribute private String name;
 
 	/**
 	 * @return the name
+	 */
+	public String getCondition()
+	{
+		return condition;
+	}
+
+	/**
+	 * @param name the name to set
+	 */
+	public void setCondition(String name)
+	{
+		this.condition = name;
+	}
+
+	/**
+	 * @return the flagName
 	 */
 	public String getName()
 	{
@@ -36,26 +52,10 @@ public class Check extends ElementState
 	}
 
 	/**
-	 * @param name the name to set
-	 */
-	public void setName(String name)
-	{
-		this.name = name;
-	}
-
-	/**
-	 * @return the flagName
-	 */
-	public String getFlagName()
-	{
-		return flagName;
-	}
-
-	/**
 	 * @param flagName the flagName to set
 	 */
-	public void setFlagName(String flagName)
+	public void setName(String flagName)
 	{
-		this.flagName = flagName;
+		this.name = flagName;
 	}
 }
