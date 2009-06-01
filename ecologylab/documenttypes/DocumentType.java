@@ -259,52 +259,37 @@ abstract public class DocumentType<AC extends Container, IP extends InfoCollecto
 
 		};
 
+		// based on purl we try to find meta-metadata from reposiotry.
 		MetaMetadata metaMetadata = infoCollector.metaMetaDataRepository().getByPURL(purl);
+		
+		// then try to create a connection using the PURL
 		PURLConnection purlConnection = purl.connect(helper, (metaMetadata == null) ? null
 				: metaMetadata.getUserAgentString());
+		
+		// now we start to find the document type
 		DocumentType result = helper.getResult();
 
-		// if(purlConnection.toString().startsWith(
-		// "http://portal.acm.org/citation.cfm?id=336478"))
-		// //
-		// if(purl.toString().startsWith("http://portal.acm.org/citation.cfm"))
-		// {
-		// println("debug");
-		// }
-		// In some cases, the documentType is preset (e.g., GoogleSearch,
-		// FlickrSearch, ...).
-		// So, in this case, set the result now, instead of divining it from
-		// mimeType.
+		// if a container already existed for this PURL we can get the document type from container
 		if ((result == null) && (container != null))
 			result = container.documentType();
 	
+		// if we made PURL connection but could not find documentTYpe using container
 		if ((purlConnection != null) && (result == null))
 		{
-			/**
-			 * The acmPrefixCollection has to be general PrefixCollection where one of the prefix has to
-			 * be acm's. The getLookupPurl() method takes in the purl and returns the prefix purl. This
-			 * prefix purl has to be used in lookupSpecialExtractor() to get the desired document type.
-			 */
-			// if(acmPrefixCollection.match(purl.toString(), '?'))
-			// FIXME -- Abhinav -- get rid of this SOON. Your type will
-			// supercede it.
-			/*
-			 * ParsedURL lookupPurl = getLookupPurl(purl); result = lookupSpecialExtractor(lookupPurl,
-			 * infoCollector);
-			 * 
-			 * result = lookupSpecialExtractor(purl);
-			 */
 
-			/*
-			 * FIXME -- Abhinav -- get rid of the third condition (startsWith hack) for the following if
-			 * statement after creating prefix comparison for getting metaMetadata by purl.
-			 */
+			// if meta-metadata exists for this document type
 			if (metaMetadata != null)
 			{
+				// Then it must be XPath type only [Will be parsed using XPath expressions]
 				result = new MetaMetadataXPathType(infoCollector, semanticAction);
 			}
+			
+			// if meta-metadata does not exists
 			if (result == null)
 			{
+				// it is of some special type like html,pdf etc so we find out the document type
+				// using logic below.
+				// TODO have to ask how this can be extracted and moved to CF.
 				// it wasn't a File or an IOError or a bad redirect
 				// do more to seek the DocumentType
 
@@ -330,6 +315,7 @@ abstract public class DocumentType<AC extends Container, IP extends InfoCollecto
 		}
 		return result;
 	}
+
 
 	/**
 	 * Takes in the purl and returns the prefix purl
