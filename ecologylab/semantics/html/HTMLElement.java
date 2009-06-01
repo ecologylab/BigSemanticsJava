@@ -22,11 +22,15 @@ import ecologylab.semantics.html.utils.StringBuilderUtils;
 public class HTMLElement
 implements HTMLAttributeNames, ImageConstants
 {
-	private static final int	INDEX_NOT_CALCULATED	= -1;
+	public static final int	INDEX_NOT_CALCULATED	= -1;
 	private TdNode node;
 	private HashMap<String, String> attributesMap;
 	
 	String	xPath;
+	
+	String	cssClass;
+	
+	String	id;
 	
 	int			localXPathIndex	= INDEX_NOT_CALCULATED;
 	
@@ -136,7 +140,7 @@ implements HTMLAttributeNames, ImageConstants
 	/**
 	 * Create HashMap of attributes from tidy AttVal linked list of them.
 	 */
-	private void addAttributes(AttVal attr)
+	protected void addAttributes(AttVal attr)
 	{
 		if (attr != null)
 		{
