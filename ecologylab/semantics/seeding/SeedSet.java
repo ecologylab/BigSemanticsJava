@@ -92,12 +92,30 @@ implements SemanticsSessionObjectNames
    		this.parentSeedSet = seedSet;
    	}
    	
+  	/**
+  	 * Update parameters for next result set.
+  	 * Set time stamp to now.
+  	 * Perform the resulting search by using the engine as a key .
+  	 * 
+  	 * @param infoCollector
+  	 */
+  	public void performNextSeeding(Scope scope)
+  	{
+   		performSeeding(scope, true);
+  	}
+  	
+   	public void performSeeding(Scope scope)
+   	{
+   		performSeeding(scope, false);
+   	}
+
+   	
    	/**
    	 * Bring the seeds into the agent or directly into the compostion.
    	 * 
    	 * @param scope		Context passed between services calls.
    	 */
-   	public void performSeeding(Scope scope)
+   	public void performSeeding(Scope scope, boolean nextSearch)
    	{
    		InfoCollector infoCollector	= (InfoCollector) scope.get(INFO_COLLECTOR);
    		
@@ -113,7 +131,7 @@ implements SemanticsSessionObjectNames
    		for (int i=0; i < size; i++)
    		{
    			Seed seed	=  (Seed) get(i);
-   			if (seed.bookkeeping(this, searchNum))
+   			if (seed.initializeSeedingSteps(this, searchNum))
    				searchNum++;
    		}
    		
@@ -128,6 +146,9 @@ implements SemanticsSessionObjectNames
 
    			if (seed.validate())
    			{
+   				if (nextSearch)
+   					seed.nextResultSet();
+   				
    				seed.performSeedingSteps(infoCollector);
   				
      			SeedPeer seedPeer	= seed.getSeedPeer();

@@ -180,55 +180,37 @@ implements SemanticsPrefs, SearchEngineNames
 	   
 	   return true;
    }
-   
-	/**
-	 * Bring this seed into the agent or directly into the composition.
-	 * 
-	 * @param objectRegistry		Context passed between services calls.
-	 * @param infoCollector TODO
-	 */
+
+   /**
+    * Bring this seed into the agent or directly into the composition.
+    * 
+    * @param objectRegistry		Context passed between services calls.
+    * @param infoCollector TODO
+    */
    @Override
    public void performInternalSeedingSteps(InfoCollector infoCollector)
    {
-  	 InterestModel.expressInterest(query, interestLevel);
-  	 performCurrentSearch(infoCollector);
+  	 //  	 InterestModel.expressInterest(query, interestLevel);
+  	 synchronized (SearchState.class)
+  	 {
+  		 if (timeCreated > 0)	// go unconditionally the first time
+  		 {
+  			 long humanWait			= (long) (1500.0 + 500.0 * Math.random());
+  			 long now						= System.currentTimeMillis();
+  			 int deltaT					= (int) (humanWait - (now - timeCreated));
+  			 if (deltaT > 0)
+  			 {
+  				 debug("Seed sleeping for " + deltaT + " engine=" + engine + " query = "+query);
+  				 Generic.sleep((int) deltaT);
+  			 }
+  		 }
+  		 updateTimeStamp();
+  	 }
+  	 //infoCollector.instantiateDocumentType(SEARCH_DOCUMENT_TYPE_REGISTRY, engine, this);		
+  	 SemanticActionHandler actionHandler= infoCollector.createSemanticActionHandler();
+  	 MetaMetadataSearchType searchType= new MetaMetadataSearchType(infoCollector,actionHandler, engine, this, 0);
    }
-	public void performCurrentSearch(InfoCollector infoCollector)
-	{
-		synchronized (SearchState.class)
-		{
-			if (timeCreated > 0)	// go unconditionally the first time
-			{
-				long humanWait			= (long) (1500.0 + 500.0 * Math.random());
-				long now						= System.currentTimeMillis();
-				int deltaT					= (int) (humanWait - (now - timeCreated));
-				if (deltaT > 0)
-				{
-					debug("Seed sleeping for " + deltaT + " engine=" + engine + " query = "+query);
-					Generic.sleep((int) deltaT);
-				}
-			}
-			updateTimeStamp();
-		}
-		//infoCollector.instantiateDocumentType(SEARCH_DOCUMENT_TYPE_REGISTRY, engine, this);		
-		SemanticActionHandler actionHandler= infoCollector.createSemanticActionHandler();
-  	MetaMetadataSearchType searchType= new MetaMetadataSearchType(infoCollector,actionHandler, engine, this, 0);
-	}
 	
-	/**
-	 * Update parameters for next result set.
-	 * Set time stamp to now.
-	 * Perform the resulting search by using the engine as a key .
-	 * 
-	 * @param infoCollector
-	 */
-	public void performNextSearch(InfoCollector infoCollector)
-	{
-		nextResultSet();
-		
-		performCurrentSearch(infoCollector);
-	}
-
  	/**
  	 * Create an entry for the DocumentType class in the registry, for dynamic dispatch.
  	 * 
@@ -371,6 +353,7 @@ implements SemanticsPrefs, SearchEngineNames
 	/**
 	 * Called to specify that the next set of search results will be retrieved for this Search Seed.
 	 */
+	@Override
 	public void nextResultSet()
 	{
 		currentFirstResultIndex += numResults;
@@ -536,8 +519,10 @@ implements SemanticsPrefs, SearchEngineNames
    * @return	true if this is not an image search, and we are processing it.
    */
 	@Override
-	public boolean bookkeeping(SeedSet seedSet, int searchNum)
+	public boolean initializeSeedingSteps(SeedSet seedSet, int searchNum)
 	{
+		InterestModel.expressInterest(query, interestLevel);
+
 		boolean result = !imageSearchResults();
 		if (result)
 		{

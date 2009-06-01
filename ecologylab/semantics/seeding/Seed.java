@@ -119,6 +119,15 @@ abstract public class Seed extends ecologylab.services.messages.cf.Seed implemen
         	seedPeer.addThisToParent();
     }
     
+  	/**
+  	 * Called to specify that the next set of search results will be retrieved.
+  	 * This is relevant for search seeds, but for other seeds it does nothing.
+  	 */
+  	public void nextResultSet()
+  	{
+  	}
+
+    
     abstract public String categoryString();
 
     abstract public String detailedCategoryString();
@@ -257,7 +266,7 @@ abstract public class Seed extends ecologylab.services.messages.cf.Seed implemen
   /**
    * Processing peformed for each Seed in a SeedSet in a loop before performSeeding() will be called in a separate loop.
    */
-  public boolean bookkeeping(SeedSet seedSet, int searchNum)
+  public boolean initializeSeedingSteps(SeedSet seedSet, int searchNum)
   {
   		return false;
   }
