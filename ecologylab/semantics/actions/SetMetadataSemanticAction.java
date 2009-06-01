@@ -11,13 +11,13 @@ import ecologylab.xml.ElementState.xml_tag;
  *
  */
 @xml_inherit
-public @xml_tag("set-metadata") class SetMetadataSemanticAction extends SemanticAction
+public @xml_tag(SemanticActionStandardMethods.SET_METADATA) class SetMetadataSemanticAction extends SemanticAction implements SemanticActionStandardMethods
 {
 
 	@Override
 	public String getActionName()
 	{
-		return SemanticActionStandardMethods.SET_METADATA;
+		return SET_METADATA;
 	}
 
 }

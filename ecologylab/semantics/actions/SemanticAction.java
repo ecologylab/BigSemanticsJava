@@ -7,14 +7,25 @@ import java.util.ArrayList;
 
 import ecologylab.semantics.metametadata.Argument;
 import ecologylab.semantics.metametadata.Check;
-import ecologylab.semantics.metametadata.IFclause;
+import ecologylab.semantics.metametadata.FlagCheck;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.types.element.ArrayListState;
 
 /**
+ * This is the abstract class which defines the semantic action. All the semantic actions must
+ * extend it.
+ * To add a new semantic action following steps needed to be taken.
+ * 1) Create a class for that semantic action which extends SemanticAction class.
+ * 2) Write all the custom code for that semantic action in this new class file. [Example see <code>ForEachSemanticAction.java</code>
+ *    which implements for_each semantic action.]
+ * 3) Modify the <code>handleSemanticAction</code> method of <code>SemanticActionHandle.java</code> to add case for new semantic action.
+ * 4) Add  a new method in <code>SemanticActionHandler.java </code> to handle this action. Mostly this method should be abstract unless
+ *    the action is a flow control action like FOR LOOP.
+ * 5) For code clarity and readability define a constant for the new action name in <code>SemanticActionStandardMethods.java</code>
  * @author amathur
- * 
+ *
  */
+
 
 public abstract class SemanticAction<SA extends SemanticAction> extends ElementState
 {
@@ -42,9 +53,9 @@ public abstract class SemanticAction<SA extends SemanticAction> extends ElementS
 	/**
 	 * Flags to check before performing this action.
 	 */
-	@xml_tag("flag_checks")
-	@xml_collection("flag_check")
-	private ArrayListState<IFclause>	flagChecks;
+	@xml_tag("if")
+	@xml_collection("if")
+	private ArrayListState<FlagCheck>	flagChecks;
 
 	/**
 	 * Object on which the Action is to be taken
@@ -102,7 +113,7 @@ public abstract class SemanticAction<SA extends SemanticAction> extends ElementS
 	/**
 	 * @return the flagChecks
 	 */
-	public ArrayListState<IFclause> getFlagChecks()
+	public ArrayListState<FlagCheck> getFlagChecks()
 	{
 		return flagChecks;
 	}
@@ -161,7 +172,7 @@ public abstract class SemanticAction<SA extends SemanticAction> extends ElementS
 	 * @param flagChecks
 	 *          the flagChecks to set
 	 */
-	public void setFlagChecks(ArrayListState<IFclause> flagChecks)
+	public void setFlagChecks(ArrayListState<FlagCheck> flagChecks)
 	{
 		this.flagChecks = flagChecks;
 	}

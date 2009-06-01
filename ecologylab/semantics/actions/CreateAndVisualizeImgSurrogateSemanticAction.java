@@ -12,13 +12,13 @@ import ecologylab.xml.ElementState.xml_tag;
  *
  */
 @xml_inherit
-public @xml_tag("create_and_visualize_img_surrogate") class  CreateAndVisualizeImgSurrogateSemanticAction extends SemanticAction
+public @xml_tag(SemanticActionStandardMethods.CREATE_AND_VISUALIZE_IMG_SURROGATE) class  CreateAndVisualizeImgSurrogateSemanticAction extends SemanticAction implements SemanticActionStandardMethods
 {
 
 	@Override
 	public String getActionName()
 	{
-		return SemanticActionStandardMethods.CREATE_AND_VISUALIZE_IMG_SURROGATE;
+		return CREATE_AND_VISUALIZE_IMG_SURROGATE;
 	}
 
 }

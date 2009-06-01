@@ -9,17 +9,20 @@ import java.util.HashMap;
 import ecologylab.generic.ReflectionTools;
 import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.metametadata.Check;
-import ecologylab.semantics.metametadata.IFclause;
+import ecologylab.semantics.metametadata.FlagCheck;
 import ecologylab.xml.types.element.ArrayListState;
 
 /**
- * 
- * This is the handler for semantic actions. TODO Might want to implement lexical scoping in
- * variables.
- * 
- * @author amathur
- * 
- */
+*
+* This is the handler for semantic actions. It contains a list of abstract method for the semantic
+* action possible. It has a <code>handleSemanticAction</code> method which decides what action to
+* take when a semantic action is passed to it. If a new semantic action has to be added we must add a
+* case to handle that in this method.
+* TODO Might want to implement lexical scoping in variables.
+*
+* @author amathur
+*
+*/
 public abstract class SemanticActionHandler implements SemanticActionStandardMethods
 {
 
@@ -147,11 +150,13 @@ public abstract class SemanticActionHandler implements SemanticActionStandardMet
 	}
 
 	/**
-	 * Method which handles the semantic actions. TODO complete this method.
-	 * 
-	 * @param action
-	 * @param parameter
-	 */
+   * Method which handles the semantic actions.When you define a new semantic action it must be
+   * added here as another <code>if-else</code> clause. Also a corresponding method, mostly abstract
+   * should be declared in this class for handling the action. TODO complete this method.
+   *
+   * @param action
+   * @param parameter
+   */
 	public  void handleSemanticAction(SemanticAction action, SemanticActionParameters parameter)
 	{
 		final String actionName = action.getActionName();
@@ -231,7 +236,7 @@ public abstract class SemanticActionHandler implements SemanticActionStandardMet
 			for (int i = 0; i < checks.size(); i++)
 			{
 				// get the name of the check
-				String checkType = checks.get(i).getName();
+				String checkType = checks.get(i).getCondition();
 
 				// now see which check it is
 				if (checkType.equals(SemanticActionsKeyWords.NOT_NULL_CHECK))
@@ -242,12 +247,12 @@ public abstract class SemanticActionHandler implements SemanticActionStandardMet
 					{
 						flagValue = false;
 					}
-					semanticActionFlagMap.put(checks.get(i).getFlagName(), flagValue);
+					semanticActionFlagMap.put(checks.get(i).getName(), flagValue);
 				}
 				else if (checkType.equals(SemanticActionsKeyWords.METHOD_CHECK))
 				{
 					// This is a method check
-					semanticActionFlagMap.put(checks.get(i).getFlagName(), (Boolean) returnValue);
+					semanticActionFlagMap.put(checks.get(i).getName(), (Boolean) returnValue);
 				}
 			} // end for
 		}// end if
@@ -263,14 +268,14 @@ public abstract class SemanticActionHandler implements SemanticActionStandardMet
 	protected   boolean checkPreConditionFlagsIfAny(SemanticAction action)
 	{
 		boolean returnValue = true;
-		ArrayListState<IFclause> flagChecks = action.getFlagChecks();
+		ArrayListState<FlagCheck> flagChecks = action.getFlagChecks();
 
 		if (flagChecks != null)
 		{
 			// loop over all the flags to be checked
 			for (int i = 0; i < flagChecks.size(); i++)
 			{
-				boolean flag = semanticActionFlagMap.get(flagChecks.get(i).getName());
+				boolean flag = semanticActionFlagMap.get(flagChecks.get(i).getValue());
 				returnValue = returnValue && flag;
 			}
 		}

@@ -9,13 +9,13 @@ import ecologylab.xml.ElementState.xml_tag;
  *
  */
 @xml_inherit
-public @xml_tag("create-container") class CreateContainerSemanticAction extends SemanticAction
+public @xml_tag(SemanticActionStandardMethods.CREATE_CONATINER) class CreateContainerSemanticAction extends SemanticAction implements SemanticActionStandardMethods
 {
 
 	@Override
 	public String getActionName()
 	{
-		return SemanticActionStandardMethods.CREATE_CONATINER;
+		return CREATE_CONATINER;
 	}
 
 }

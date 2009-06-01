@@ -11,8 +11,8 @@ import ecologylab.xml.ElementState.xml_tag;
  * 
  */
 @xml_inherit
-public @xml_tag("for_each")
-class ForEachSemanticAction extends SemanticAction
+public @xml_tag(SemanticActionStandardMethods.FOR_EACH)
+class ForEachSemanticAction extends SemanticAction implements SemanticActionStandardMethods
 {
 
 	/**
@@ -31,7 +31,7 @@ class ForEachSemanticAction extends SemanticAction
 	@Override
 	public String getActionName()
 	{
-		return SemanticActionStandardMethods.FOR_EACH;
+		return FOR_EACH;
 	}
 
 	/**

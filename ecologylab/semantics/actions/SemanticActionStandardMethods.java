@@ -24,7 +24,7 @@ public interface SemanticActionStandardMethods
 	/**
 	 * Used for creating the container. TODO add more java doc here.
 	 */
-	public static String	CREATE_CONATINER										= "create-container";
+	public static String	CREATE_CONATINER										= "create_container";
 
 	/**
 	 * Creates a container for search.
@@ -39,22 +39,22 @@ public interface SemanticActionStandardMethods
 	/**
 	 * Used for setting metadata for a container/surrogate
 	 */
-	public static String	SET_METADATA												= "set-metadata";
+	public static String	SET_METADATA												= "set_metadata";
 
 	/**
 	 * process a conatiner
 	 */
-	public static String	PROCESS_DOCUMENT										= "process-document";
+	public static String	PROCESS_DOCUMENT										= "process_document";
 
 	/**
 	 * Create a new search
 	 */
-	public static String	CREATE_SEARCH												= "create-search";
+	public static String	CREATE_SEARCH												= "create_search";
 
 	/**
 	 * The action which can be called via reflection.
 	 */
-	public static String	GENERAL_ACTION											= "general-action";
+	public static String	GENERAL_ACTION											= "general_action";
 
 	/**
 	 * To get a particular field.

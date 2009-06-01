@@ -12,13 +12,13 @@ import ecologylab.xml.ElementState.xml_tag;
  *
  */
 @xml_inherit
-public @xml_tag("process-document")class ProcessDocumentSemanticAction extends SemanticAction
+public @xml_tag(SemanticActionStandardMethods.PROCESS_DOCUMENT)class ProcessDocumentSemanticAction extends SemanticAction implements SemanticActionStandardMethods
 {
 
 	@Override
 	public String getActionName()
 	{
-		return SemanticActionStandardMethods.PROCESS_DOCUMENT;
+		return PROCESS_DOCUMENT;
 	}
 
 }

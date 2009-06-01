@@ -12,7 +12,7 @@ import ecologylab.xml.ElementState.xml_tag;
  * 
  */
 @xml_inherit
-public @xml_tag("create_container_for_search")
+public @xml_tag(SemanticActionStandardMethods.CREATE_CONTAINER_FOR_SEARCH)
 class CreateContainerForSearchSemanticAction extends CreateContainerSemanticAction
 {
 	
@@ -21,7 +21,7 @@ class CreateContainerForSearchSemanticAction extends CreateContainerSemanticActi
 	@Override
 	public String getActionName()
 	{
-		return SemanticActionStandardMethods.CREATE_CONTAINER_FOR_SEARCH;
+		return CREATE_CONTAINER_FOR_SEARCH;
 	}
 
 }

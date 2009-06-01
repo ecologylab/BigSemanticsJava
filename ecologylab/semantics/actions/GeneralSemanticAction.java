@@ -13,8 +13,8 @@ import ecologylab.xml.ElementState.xml_tag;
  * 
  */
 @xml_inherit
-public @xml_tag("general-action")
-class GeneralSemanticAction extends SemanticAction
+public @xml_tag(SemanticActionStandardMethods.GENERAL_ACTION)
+class GeneralSemanticAction extends SemanticAction 
 {
 	/**
 	 * Name of the action which should be invoked via reflection

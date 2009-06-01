@@ -11,14 +11,14 @@ import ecologylab.xml.ElementState.xml_tag;
  * 
  */
 @xml_inherit
-public @xml_tag("process_search")
-class ProcessSearchSemanticAction extends SemanticAction
+public @xml_tag(SemanticActionStandardMethods.PROCESS_SEARCH)
+class ProcessSearchSemanticAction extends SemanticAction implements SemanticActionStandardMethods
 {
 
 	@Override
 	public String getActionName()
 	{
-		return SemanticActionStandardMethods.PROCESS_SEARCH;
+		return PROCESS_SEARCH;
 	}
 
 }
