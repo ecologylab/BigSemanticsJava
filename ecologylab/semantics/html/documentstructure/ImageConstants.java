@@ -12,7 +12,7 @@ extends MimeType
 
 	public static final int	MIN_WIDTH					= 30;
 
-	public static final int	MIN_HEIGHT				= 50;
+	public static final int	MIN_HEIGHT				= 25;
 
 	// +++++++++++ design roles +++++++++++ //
 	public static final int		UNKNOWN					= 0;

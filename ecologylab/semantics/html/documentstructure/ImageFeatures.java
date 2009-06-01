@@ -55,7 +55,7 @@ implements HTMLAttributeNames, ImageConstants
 		float aspectRatio = (float) width / (float) height;
 		if (aspectRatio > 1.0f)
 			aspectRatio 		=  (float) 1.0f/aspectRatio;
-		if (aspectRatio > 0.5f)
+		if (aspectRatio < 0.25f)
 			return UN_INFORMATIVE;
 		
 		//TODO -- should area be a feature? 		int area		= width * height;
@@ -75,6 +75,9 @@ implements HTMLAttributeNames, ImageConstants
 				}
 			}
 		}
+		else	// no width/height params
+			if (mimeIndex != JPG)
+				result			= UN_INFORMATIVE;	// only give benefit of doubt to jpegs
 		return result;
 	}
 
