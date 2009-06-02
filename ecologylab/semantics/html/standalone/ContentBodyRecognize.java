@@ -32,107 +32,107 @@ import ecologylab.xml.XMLTranslationException;
 public class ContentBodyRecognize extends HTMLDOMParser
 {
 	RecognizedDocumentStructure recPagetype = new RecognizedDocumentStructure();
-	
-    public TdNode pprint(org.w3c.dom.Document doc, OutputStream out, String url)
-    {
-        Out o = new OutImpl();
-        TdNode document;
 
-        if (!(doc instanceof DOMDocumentImpl)) {
-            return null;
-        }
-        document = ((DOMDocumentImpl)doc).adaptee;
+	public TdNode pprint(org.w3c.dom.Document doc, OutputStream out, String url)
+	{
+		Out o = new OutImpl();
+		TdNode document;
 
-        o.state = StreamIn.FSM_ASCII;
-        o.encoding = configuration.CharEncoding;
+		if (!(doc instanceof DOMDocumentImpl)) {
+			return null;
+		}
+		document = ((DOMDocumentImpl)doc).adaptee;
 
-  //      if (out != null)
-  //      {
-        	// Instantiate PPrint constructor that connects to combinFormation
-        DOMWalkInformationTagger pprint = new DOMWalkInformationTagger(configuration, null);
-        pprint.setState( StreamIn.FSM_ASCII );
-        pprint.setEncoding( configuration.CharEncoding );
-        
-        o.out = out;
-        if (configuration.XmlTags)
-            pprint.printXMLTree(o, (short)0, 0, null, document);
-        else
-            pprint.printTree(o, (short)0, 0, null, document);
+		o.state = StreamIn.FSM_ASCII;
+		o.encoding = configuration.CharEncoding;
 
-        pprint.flushLine(o, 0);
-        
-        TdNode articleMain = RecognizedDocumentStructure.recognizeContentBody(pprint);
-        
-        if( articleMain!=null )
-        {
-        	recPagetype.findImgsInContentBodySubTree(articleMain.parent());
-	        informativeImages();
-        }
-        
-        return articleMain;
+		//      if (out != null)
+			//      {
+			// Instantiate PPrint constructor that connects to combinFormation
+		DOMWalkInformationTagger pprint = new DOMWalkInformationTagger(configuration, purl, null);
+		pprint.setState( StreamIn.FSM_ASCII );
+		pprint.setEncoding( configuration.CharEncoding );
 
-    }
-    
-    protected void informativeImages()
-    {
-    	for(int i=0; i<recPagetype.getImgNodesInContentBody().size(); i++ )
-    	{
-    		HTMLElement ina = (HTMLElement) recPagetype.getImgNodesInContentBody().get(i);
-    		
-    		String imgUrl = ina.getAttribute("src");
-    		int width 		= ina.getAttributeAsInt("width");
-    		int height 		= ina.getAttributeAsInt("height");
-    		
-    		float aspectRatio = (float)width / (float)height;
-    		aspectRatio 			= (aspectRatio>1.0) ?  (float)1.0/aspectRatio : aspectRatio;
-    		
-    		String altStr 			= ina.getAttribute("alt");
-    		boolean parentHref 	= ina.getNode().parent().element.equals("a");  		
-    		boolean articleImg 	= true;
+		o.out = out;
+		if (configuration.XmlTags)
+			pprint.printXMLTree(o, (short)0, 0, null, document);
+		else
+			pprint.printTree(o, (short)0, 0, null, document);
 
-    		// Advertisement Keyword in the "alt" value
-    		if( altStr!=null && altStr.toLowerCase().contains("advertis") )  
-    			articleImg = false;
-    		
-    		if( imgUrl!=null )
-    		{
-    			//FIXME -- use compiled regex!
-	    		String urlChunks[] = imgUrl.split("/");
-	    		for (int j=0; j<urlChunks.length; j++)
-	    		{
-	    			String temp = urlChunks[j].toLowerCase();
-	    		//	System.out.println("url Chunk:" + temp);
-	    			if (temp.equals("adv") || temp.contains("advertis") ) /*temp.toLowerCase().equals("ad") ||*/ 
-	    			{
-	    				articleImg = false;
-	    				break;
-	    			}
-	    		}
-    		}
-    		
-    		if( (width!=-1 && width<100) || (height!=-1 && height<100) )
-    			articleImg = false;
-    		
-    		if( articleImg )
-    		{
-    			recPagetype.getImgNodesInContentBody().add(ina);
-    		}
-    		
-    	}
-    }
+		pprint.flushLine(o, 0);
 
-    
+		TdNode articleMain = RecognizedDocumentStructure.recognizeContentBody(pprint);
+
+		if( articleMain!=null )
+		{
+			recPagetype.findImgsInContentBodySubTree(articleMain.parent());
+			informativeImages();
+		}
+
+		return articleMain;
+
+	}
+
+	protected void informativeImages()
+	{
+		for(int i=0; i<recPagetype.getImgNodesInContentBody().size(); i++ )
+		{
+			HTMLElement ina = (HTMLElement) recPagetype.getImgNodesInContentBody().get(i);
+
+			String imgUrl = ina.getAttribute("src");
+			int width 		= ina.getAttributeAsInt("width");
+			int height 		= ina.getAttributeAsInt("height");
+
+			float aspectRatio = (float)width / (float)height;
+			aspectRatio 			= (aspectRatio>1.0) ?  (float)1.0/aspectRatio : aspectRatio;
+
+			String altStr 			= ina.getAttribute("alt");
+			boolean parentHref 	= ina.getNode().parent().element.equals("a");  		
+			boolean articleImg 	= true;
+
+			// Advertisement Keyword in the "alt" value
+			if( altStr!=null && altStr.toLowerCase().contains("advertis") )  
+				articleImg = false;
+
+			if( imgUrl!=null )
+			{
+				//FIXME -- use compiled regex!
+				String urlChunks[] = imgUrl.split("/");
+				for (int j=0; j<urlChunks.length; j++)
+				{
+					String temp = urlChunks[j].toLowerCase();
+					//	System.out.println("url Chunk:" + temp);
+					if (temp.equals("adv") || temp.contains("advertis") ) /*temp.toLowerCase().equals("ad") ||*/ 
+					{
+						articleImg = false;
+						break;
+					}
+				}
+			}
+
+			if( (width!=-1 && width<100) || (height!=-1 && height<100) )
+				articleImg = false;
+
+			if( articleImg )
+			{
+				recPagetype.getImgNodesInContentBody().add(ina);
+			}
+
+		}
+	}
+
+
 	protected String getContentBody(URL labelFile, String contentBodyID)
 	{
-/*		try 
+		/*		try 
 		{
 			DocumentState ds = (DocumentState) ElementState.translateFromXML(labelFile, TranslationScope.get("collectionBrowseServlet", "collectionBrowseServlet"));
 			if( ds!=null )
 			{
 				totalLabeledDocument++;
-				
+
 				PartitionState partitionState = ds.getPartitionSet().get(0);
-			
+
 				String mainPartitionTag_ID = partitionState.getTag_id();
 System.out.println("contentBody Tag_ID : " + contentBodyID + "   mainPartitionTag_ID:" + mainPartitionTag_ID);
 				if( contentBodyID.equals(mainPartitionTag_ID) )
@@ -141,8 +141,8 @@ System.out.println("contentBody Tag_ID : " + contentBodyID + "   mainPartitionTa
 					correctContentBody++;
 					return "yes";
 				}
-				
-				
+
+
 				InformTextSet informTextSet = partitionState.getInformTextSet();
 				for( int i=0; i<informTextSet.size(); i++ )
 				{
@@ -156,8 +156,8 @@ System.out.println("informTextID : " + informTextID);
 						return "yes";
 					}
 				}
-*/				
-				/*
+		 */				
+		/*
 				InformImgSet informImgSet = partitionState.getInformImgSet();
 				for( int i=0; i<informImgSet.size(); i++ )
 				{
@@ -176,46 +176,46 @@ System.out.println("informTextID : " + informTextID);
 						}
 					}
 				}
-				*/
-				
-/*			}
+		 */
+
+		/*			}
 		} 
 		catch (XMLTranslationException e) 
 		{
 			e.printStackTrace();
 		}
-		*/
+		 */
 		return "no";
 	}
-	
+
 	int totalLabeledDocument = 0;
 	int correctContentBody = 0;
 	int correctImage = 0;
-	
-///*
+
+	///*
 	public static void main(String args[])
 	{
 		ContentBodyRecognize cbr = new ContentBodyRecognize();
 		URL url;
 		try 
 		{
-			  File ff = new File( "researchSites.txt"); //"folderList.txt" )  
-			
-			  InputStream ii = new FileInputStream(ff);
-			  BufferedReader myInput 	= new BufferedReader(new InputStreamReader(ii));
+			File ff = new File( "researchSites.txt"); //"folderList.txt" )  
 
-			  String temp = null;
-			  while( (temp=myInput.readLine())!=null )
-			  {
-				
+			InputStream ii = new FileInputStream(ff);
+			BufferedReader myInput 	= new BufferedReader(new InputStreamReader(ii));
+
+			String temp = null;
+			while( (temp=myInput.readLine())!=null )
+			{
+
 				String urlString = "http://csdll.cs.tamu.edu:9080/TestCollections/websites/ResearchArticle/" + temp.trim() + "/";
 				String labelURLStr = urlString + "label.xml";
-				
+
 				url = new URL(urlString);
 				System.out.println(urlString);
 				InputStream in = url.openConnection().getInputStream();
 				TdNode contentBodyNode = cbr.pprint( cbr.parseDOM(in, null), null, urlString); 
-System.out.println("\n\n" + urlString );				
+				System.out.println("\n\n" + urlString );				
 				URL labelURL = new URL(labelURLStr);
 				try
 				{
@@ -234,14 +234,14 @@ System.out.println("\n\n" + urlString );
 				{
 					continue;
 				}
-								
+
 				System.out.println("\n");
-			  }
+			}
 
-			  System.out.println("STAT : " + cbr.totalLabeledDocument + " : " + cbr.correctContentBody
-					  + " :  images = " + cbr.correctImage );
+			System.out.println("STAT : " + cbr.totalLabeledDocument + " : " + cbr.correctContentBody
+					+ " :  images = " + cbr.correctImage );
 
-			
+
 		} 
 		catch (MalformedURLException e) 
 		{
@@ -252,15 +252,15 @@ System.out.println("\n\n" + urlString );
 			e.printStackTrace();
 		}		
 	}
-	
-//	*/
+
+	//	*/
 	/*
 	public static void main(String args[])
 	{
 		ContentBodyRecognize cbr = new ContentBodyRecognize();
 		String urlString = "http://csdll.cs.tamu.edu:9080/TestCollections/websites/Article/1204410974562/";
 		String labelURLStr = urlString + "label.xml";
-		
+
 		try{
 			URL url = new URL(urlString);
 			System.out.println(urlString);
@@ -268,7 +268,7 @@ System.out.println("\n\n" + urlString );
 			TdNode contentBodyNode = cbr.pprint( cbr.parseDOM(in, null), null, urlString); 
 	System.out.println("\n\n" + urlString );				
 			URL labelURL = new URL(labelURLStr);
-	
+
 			if( (labelURL!=null) && (labelURL.openConnection()!=null) && (labelURL.getContent()!=null) 
 					&& (contentBodyNode!=null) && (contentBodyNode.getAttrByName("tag_id")!=null) )
 			{
@@ -284,7 +284,7 @@ System.out.println("\n\n" + urlString );
 			e.printStackTrace();
 		}
 		System.out.println("\n");
-		
+
 	}
-	*/
+	 */
 }
