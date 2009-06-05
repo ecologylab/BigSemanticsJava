@@ -7,7 +7,9 @@ import java.util.TreeMap;
 import org.w3c.tidy.Lexer;
 import org.w3c.tidy.TdNode;
 
+import ecologylab.net.ParsedURL;
 import ecologylab.semantics.html.HTMLElement;
+import ecologylab.semantics.html.ImgElement;
 import ecologylab.semantics.html.ParagraphText;
 import ecologylab.semantics.html.RecognizedDocumentStructure;
 import ecologylab.semantics.html.TidyInterface;
@@ -21,11 +23,17 @@ import ecologylab.semantics.html.TidyInterface;
  */
 public class ContentPage extends RecognizedDocumentStructure
 {
+	public ContentPage(ParsedURL purl)
+	{
+		super(purl);
+	}
+
 	/**
 	 * 1. Generate surrogates for other pages (with those image surrogates in the bottom or side of the pages)
 	 * 2. Generate Image+Text surrogate inside the ArticleMain body. 
 	 */
-	protected void generateSurrogates(TdNode articleMain, ArrayList<HTMLElement> imgNodes, int totalTxtLeng, 
+	@Override
+	protected void generateSurrogates(TdNode articleMain, ArrayList<ImgElement> imgNodes, int totalTxtLeng, 
 			TreeMap<Integer, ParagraphText> paraTexts, TidyInterface htmlType)
 	{
     	// This is the case there is no article main, which means high probability to be an index page.

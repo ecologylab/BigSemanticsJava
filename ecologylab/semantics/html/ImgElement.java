@@ -8,7 +8,9 @@ import java.util.HashMap;
 import org.w3c.tidy.TdNode;
 
 import ecologylab.generic.Generic;
+import ecologylab.generic.StringTools;
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.html.documentstructure.ImageFeatures;
 
 /**
  * HTMLElement that corresponds to the img tag.
@@ -16,9 +18,11 @@ import ecologylab.net.ParsedURL;
  * @author andruid
  *
  */
-public class ImgElement extends HTMLElement
+public class ImgElement extends WithPurlElement
 {
 	ParsedURL				src;
+	
+	
 	
 	String					alt;
 	
@@ -26,22 +30,34 @@ public class ImgElement extends HTMLElement
 	int							height;
 	boolean					isMap;
 	
+	/**
+	 * Text context recognized in document.
+	 */
 	String					textContext;
+	/**
+	 * Extracted caption recognized in document.
+	 */
+	String					extractedCaption;
 	
 
 	/**
 	 * @param node
+	 * @param basePurl TODO
 	 */
-	public ImgElement(TdNode node)
+	public ImgElement(TdNode node, ParsedURL basePurl)
 	{
-		super(node);
+		super(node, basePurl);
+		int i = 0;
+		int j = i + 1;
 	}
 
 	@Override
-	public void setAttribute(String key, String value)
+	protected void setAttribute(String key, String value)
 	{
 		if (SRC.equals(key))
-			src = null;	//FIXME
+		{
+			src 		= ((value != null) && value.startsWith("data:")) ? null : (basePurl == null) ? ParsedURL.getAbsolute(value) : basePurl.createFromHTML(value);
+		}
 		else if (ALT.equals(key))
 			alt			= value;
 		else if (WIDTH.equals(key))
@@ -63,11 +79,8 @@ public class ImgElement extends HTMLElement
 	{
 		this.src = src;
 	}
+	
 
-	public String getAlt()
-	{
-		return alt;
-	}
 
 	public void setAlt(String alt)
 	{
@@ -114,4 +127,80 @@ public class ImgElement extends HTMLElement
 		this.textContext = textContext;
 	}
 
+	public void setTextContext(StringBuilder buffy)
+	{
+		this.textContext = StringTools.toString(buffy);
+	}
+
+	public String getExtractedCaption()
+	{
+		return extractedCaption;
+	}
+
+	public void setExtractedCaption(String extractedCaption)
+	{
+		this.extractedCaption = extractedCaption;
+	}
+
+
+	public String getAlt()
+	{
+		return alt;
+	}
+	
+	/**
+	 * Get the alt text attribute from the image node, if there is one.
+	 * Check to see if it is not bogus (not empty, "null", a url, contains advertis).
+	 * If it is bogus, clear the attribute in the image node.
+	 * Otherwise, return it.
+	 * 
+	 * @param imageNode
+	 * @return		null, or a usable alt String.
+	 */
+	public String getNonBogusAlt()
+	{
+		String altText 					= this.getAlt();
+		if ((altText != null) && (ImageFeatures.altIsBogus(altText)))
+		{
+			altText								= null;
+			alt										= null;
+		}
+		return altText;
+	}
+
+	
+	/**
+	 * Recognize whether the image is informative or not based on its attributes and size, aspect ratio. 
+	 * 
+	 * @param imageNode		HTML node from <code>img</code> tag, with attributes.
+	 * 
+	 * @return						true if image is recognized as informative otherwise false.
+	 */
+	public boolean isInformativeImage() 
+	{
+		if (src == null)
+			return false;
+		
+		String alt 		= getNonBogusAlt();
+		
+		boolean informImg = !(alt!=null && alt.toLowerCase().contains("advertis")) ;
+//	String imgUrl = imageNode.getAttribute(SRC);
+		//TODO -- should we do more advertisement filtering here?!
+		
+		//TODO -- should we use an encompassing hyperlink and its destination as features ???!
+		
+		if (informImg)
+		{
+			int mimeIndex		= src.mimeIndex();;
+			int designRole	= ImageFeatures.designRole(width, height, mimeIndex, isMap);
+			informImg				= (designRole == INFORMATIVE) || (designRole == UNKNOWN);
+		}
+		return informImg;
+	}
+
+	public String toString()
+	{
+		String location	= src == null ? "" : src.toString();
+		return "ImgElement[" + width+","+height+"] " + location;
+	}
 }

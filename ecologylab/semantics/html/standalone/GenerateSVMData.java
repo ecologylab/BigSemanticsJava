@@ -19,6 +19,7 @@ import org.w3c.tidy.OutImpl;
 import org.w3c.tidy.StreamIn;
 import org.w3c.tidy.TdNode;
 
+import ecologylab.net.ParsedURL;
 import ecologylab.semantics.html.DOMWalkInformationTagger;
 import ecologylab.semantics.html.HTMLDOMParser;
 import ecologylab.xml.ElementState;
@@ -33,7 +34,7 @@ import ecologylab.xml.XMLTranslationException;
  */
 public class GenerateSVMData extends HTMLDOMParser
 {
-    public void pprint(org.w3c.dom.Document doc, OutputStream out, String url, String mainPartitionID)
+    public void pprint(org.w3c.dom.Document doc, OutputStream out, ParsedURL purl, String mainPartitionID)
     {
         Out o = new OutImpl();
         TdNode document;
@@ -49,7 +50,7 @@ public class GenerateSVMData extends HTMLDOMParser
   //      if (out != null)
   //      {
         	// Instantiate PPrint constructor that connects to combinFormation
-        DOMWalkInformationTagger pprint = new DOMWalkInformationTagger(configuration, null);
+        DOMWalkInformationTagger pprint = new DOMWalkInformationTagger(configuration, purl, null);
         pprint.setState( StreamIn.FSM_ASCII );
         pprint.setEncoding( configuration.CharEncoding );
         

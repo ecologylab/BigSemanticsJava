@@ -55,7 +55,7 @@ implements HTMLAttributeNames, ImageConstants
 		float aspectRatio = (float) width / (float) height;
 		if (aspectRatio > 1.0f)
 			aspectRatio 		=  (float) 1.0f/aspectRatio;
-		if (aspectRatio < 0.25f)
+		if (aspectRatio < 0.35f)
 			return UN_INFORMATIVE;
 		
 		//TODO -- should area be a feature? 		int area		= width * height;

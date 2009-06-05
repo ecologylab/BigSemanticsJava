@@ -31,9 +31,19 @@ public class ParagraphText
 		this.node = node;
 	}
 
-	public StringBuilder getPtext() 
+	public StringBuilder getBuffy() 
 	{
 		return buffy;
+	}
+	
+	public int length()
+	{
+		return buffy == null ? 0 : buffy.length();
+	}
+	
+	public void setBuffy(StringBuilder buffy)
+	{
+		this.buffy	= buffy;
 	}
 	
 	/**
@@ -77,5 +87,20 @@ public class ParagraphText
 			StringBuilderUtils.release(buffy);
 		buffy				= null;
 	}
+	
+	public TdNode getElementNode()
+	{
+		for (TdNode thisNode = node; thisNode != null; thisNode = thisNode.parent())
+		{
+			switch (thisNode.type)
+			{
+			case TdNode.StartTag:
+			case TdNode.StartEndTag:
+				return thisNode;
+			}
+		}
+		return null;
+	}
+
 }
 

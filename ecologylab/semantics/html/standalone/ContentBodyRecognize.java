@@ -19,9 +19,12 @@ import org.w3c.tidy.StreamIn;
 import org.w3c.tidy.TdNode;
 
 import ecologylab.generic.Generic;
+import ecologylab.net.PURLConnection;
+import ecologylab.net.ParsedURL;
 import ecologylab.semantics.html.DOMWalkInformationTagger;
 import ecologylab.semantics.html.HTMLDOMParser;
 import ecologylab.semantics.html.HTMLElement;
+import ecologylab.semantics.html.ImgElement;
 import ecologylab.semantics.html.RecognizedDocumentStructure;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.TranslationScope;
@@ -31,9 +34,16 @@ import ecologylab.xml.XMLTranslationException;
 
 public class ContentBodyRecognize extends HTMLDOMParser
 {
-	RecognizedDocumentStructure recPagetype = new RecognizedDocumentStructure();
+	RecognizedDocumentStructure recPageType;
+	
+	@Override
+	public org.w3c.dom.Document parse(PURLConnection purlConnection)
+	{
+		recPageType	= new RecognizedDocumentStructure(purlConnection.getPurl());
+		return super.parse(purlConnection);
+	}
 
-	public TdNode pprint(org.w3c.dom.Document doc, OutputStream out, String url)
+	public TdNode pprint(org.w3c.dom.Document doc, OutputStream out, ParsedURL purl)
 	{
 		Out o = new OutImpl();
 		TdNode document;
@@ -65,7 +75,7 @@ public class ContentBodyRecognize extends HTMLDOMParser
 
 		if( articleMain!=null )
 		{
-			recPagetype.findImgsInContentBodySubTree(articleMain.parent());
+			recPageType.findImgsInContentBodySubTree(articleMain.parent());
 			informativeImages();
 		}
 
@@ -75,25 +85,27 @@ public class ContentBodyRecognize extends HTMLDOMParser
 
 	protected void informativeImages()
 	{
-		for(int i=0; i<recPagetype.getImgNodesInContentBody().size(); i++ )
+		for(int i=0; i<recPageType.getImgNodesInContentBody().size(); i++ )
 		{
-			HTMLElement ina = (HTMLElement) recPagetype.getImgNodesInContentBody().get(i);
+			ImgElement imgElement = recPageType.getImgNodesInContentBody().get(i);
 
-			String imgUrl = ina.getAttribute("src");
-			int width 		= ina.getAttributeAsInt("width");
-			int height 		= ina.getAttributeAsInt("height");
+			ParsedURL imgPurl 			= imgElement.getSrc();
+			int width 					= imgElement.getWidth();
+			int height 					= imgElement.getHeight();
 
-			float aspectRatio = (float)width / (float)height;
-			aspectRatio 			= (aspectRatio>1.0) ?  (float)1.0/aspectRatio : aspectRatio;
+			float aspectRatio 	= (float)width / (float)height;
+			aspectRatio 				= (aspectRatio>1.0) ?  (float)1.0/aspectRatio : aspectRatio;
 
-			String altStr 			= ina.getAttribute("alt");
-			boolean parentHref 	= ina.getNode().parent().element.equals("a");  		
+			String altStr 			= imgElement.getAlt();
+			boolean parentHref 	= imgElement.getNode().parent().element.equals("a");  		
 			boolean articleImg 	= true;
 
 			// Advertisement Keyword in the "alt" value
 			if( altStr!=null && altStr.toLowerCase().contains("advertis") )  
 				articleImg = false;
 
+			//FIXME -- andruid -- restore this!!!
+			/*
 			if( imgUrl!=null )
 			{
 				//FIXME -- use compiled regex!
@@ -102,27 +114,28 @@ public class ContentBodyRecognize extends HTMLDOMParser
 				{
 					String temp = urlChunks[j].toLowerCase();
 					//	System.out.println("url Chunk:" + temp);
-					if (temp.equals("adv") || temp.contains("advertis") ) /*temp.toLowerCase().equals("ad") ||*/ 
+					if (temp.equals("adv") || temp.contains("advertis") ) // || temp.equals("ad")
 					{
 						articleImg = false;
 						break;
 					}
 				}
 			}
+	*/
 
 			if( (width!=-1 && width<100) || (height!=-1 && height<100) )
 				articleImg = false;
 
 			if( articleImg )
 			{
-				recPagetype.getImgNodesInContentBody().add(ina);
+				recPageType.getImgNodesInContentBody().add(imgElement);
 			}
 
 		}
 	}
 
 
-	protected String getContentBody(URL labelFile, String contentBodyID)
+	protected String getContentBody(ParsedURL labelFilePurl, String contentBodyID)
 	{
 		/*		try 
 		{
@@ -191,12 +204,13 @@ System.out.println("informTextID : " + informTextID);
 	int totalLabeledDocument = 0;
 	int correctContentBody = 0;
 	int correctImage = 0;
+	
+	static final ParsedURL TEST_COLLECITON_BASE	= ParsedURL.getAbsolute("http://csdll.cs.tamu.edu:9080/TestCollections/websites/ResearchArticle/");;
 
 	///*
 	public static void main(String args[])
 	{
 		ContentBodyRecognize cbr = new ContentBodyRecognize();
-		URL url;
 		try 
 		{
 			File ff = new File( "researchSites.txt"); //"folderList.txt" )  
@@ -207,24 +221,20 @@ System.out.println("informTextID : " + informTextID);
 			String temp = null;
 			while( (temp=myInput.readLine())!=null )
 			{
-
-				String urlString = "http://csdll.cs.tamu.edu:9080/TestCollections/websites/ResearchArticle/" + temp.trim() + "/";
-				String labelURLStr = urlString + "label.xml";
-
-				url = new URL(urlString);
-				System.out.println(urlString);
-				InputStream in = url.openConnection().getInputStream();
-				TdNode contentBodyNode = cbr.pprint( cbr.parseDOM(in, null), null, urlString); 
-				System.out.println("\n\n" + urlString );				
-				URL labelURL = new URL(labelURLStr);
+				ParsedURL	purl			= TEST_COLLECITON_BASE.getRelative(temp.trim() + "/");
+				ParsedURL labelPurl	= purl.getRelative("label.xml");
+				System.out.println(purl.toString());
+				PURLConnection purlConnection	= purl.connect();
+				TdNode contentBodyNode = cbr.pprint( cbr.parseDOM(purlConnection.inputStream(), null), null, purl); 
+				PURLConnection labelConnection	= labelPurl.connect();
 				try
 				{
-					if( (labelURL!=null) && (labelURL.openConnection()!=null) && (labelURL.getContent()!=null) 
+					if ((labelConnection != null) && (labelConnection.urlConnection().getContent()!=null) 
 							&& (contentBodyNode!=null) && (contentBodyNode.getAttrByName("tag_id")!=null) )
 					{
-						String returnVal=cbr.getContentBody(labelURL, contentBodyNode.getAttrByName("tag_id").value);
+						String returnVal=cbr.getContentBody(labelPurl, contentBodyNode.getAttrByName("tag_id").value);
 						if( returnVal.equals("no") )
-							System.out.println("WHY NOT THIS!!!!!!!!!!! " + urlString);
+							System.out.println("WHY NOT THIS!!!!!!!!!!! " + purl);
 					}
 					else 
 						System.out.println("NO LABE for this document");
@@ -233,6 +243,12 @@ System.out.println("informTextID : " + informTextID);
 				catch(FileNotFoundException e)
 				{
 					continue;
+				}
+				finally
+				{
+					purlConnection.recycle();
+					if (labelConnection != null)
+						labelConnection.recycle();
 				}
 
 				System.out.println("\n");

@@ -12,17 +12,33 @@ import ecologylab.net.ParsedURL;
  * 
  * @author andruid
  */
-public class AElement extends HTMLElement
+public class AElement extends WithPurlElement
 {
 	ParsedURL			href;
 	
 	/**
 	 * @param node
+	 * @param purl TODO
 	 */
-	public AElement(TdNode node)
+	public AElement(TdNode node, ParsedURL purl)
 	{
-		super(node);
-		// TODO Auto-generated constructor stub
+		super(node, purl);
+	}
+
+	@Override
+	protected void setAttribute(String key, String value)
+	{
+		if (HREF.equals(key))
+			href 		= (basePurl == null) ? ParsedURL.getAbsolute(value) : basePurl.createFromHTML(value);
+	}
+	
+	public ParsedURL getHref()
+	{
+		return href;
+	}
+	public void setHref(ParsedURL href)
+	{
+		this.href = href;
 	}
 
 }

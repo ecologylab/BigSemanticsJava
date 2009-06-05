@@ -18,6 +18,8 @@ import org.w3c.tidy.Tidy;
 import sun.io.ByteToCharASCII;
 
 import ecologylab.generic.StringTools;
+import ecologylab.net.PURLConnection;
+import ecologylab.net.ParsedURL;
 import ecologylab.semantics.html.documentstructure.AnchorContext;
 import ecologylab.semantics.html.documentstructure.ContentPage;
 import ecologylab.semantics.html.documentstructure.ImageCollectionPage;
@@ -40,7 +42,7 @@ import ecologylab.xml.XMLTools;
 public class HTMLDOMParser extends Tidy
 implements HTMLAttributeNames
 {
-	String url 			= "";
+	PURLConnection purlConnection;
 
 	/**
 	 * because Tidy extends Serializable
@@ -56,12 +58,14 @@ implements HTMLAttributeNames
 	 * Parse HTML Document, and return the root DOM node
 	 * 
 	 * @param in
+	 * @param purl TODO
 	 * @param out
 	 * @param htmlType
 	 */
-	public org.w3c.dom.Document parse(InputStream in)
+	public org.w3c.dom.Document parse(PURLConnection purlConnection)
 	{
-		return parseDOM(in, null);
+		this.purlConnection		= purlConnection;
+		return parseDOM(purlConnection.inputStream(), null);
 	}
 
 	/**
@@ -70,10 +74,9 @@ implements HTMLAttributeNames
 	 * @param in
 	 * @param htmlType
 	 */
-	public void parse(InputStream in, TidyInterface htmlType, String url)
+	public void parse(PURLConnection purlConnection, TidyInterface htmlType)
 	{
-		this.url = url;
-		Document parsedDoc = parseDOM(in, null);
+		Document parsedDoc = parse(purlConnection);
 
 		if (!(parsedDoc instanceof DOMDocumentImpl)) 
 		{
@@ -104,7 +107,7 @@ implements HTMLAttributeNames
 
 		TdNode contentBody = RecognizedDocumentStructure.recognizeContentBody(taggedDoc);
 		//System.out.println("\n\ncontentBody = " + contentBody);       
-		ArrayList<HTMLElement> imgNodes = taggedDoc.getAllImgNodes();
+		ArrayList<ImgElement> imgNodes = taggedDoc.getAllImgNodes();
 
 		recognizeDocumentStructureToGenerateSurrogate(htmlType, taggedDoc, contentBody, imgNodes);
 	}
@@ -125,7 +128,7 @@ implements HTMLAttributeNames
 		jtidyPrettyOutput.state = StreamIn.FSM_ASCII;
 		jtidyPrettyOutput.encoding = configuration.CharEncoding;
 
-		DOMWalkInformationTagger domTagger = new DOMWalkInformationTagger(configuration, htmlType);
+		DOMWalkInformationTagger domTagger = new DOMWalkInformationTagger(configuration, purlConnection.getPurl(), htmlType);
 		domTagger.state = StreamIn.FSM_ASCII;
 		domTagger.encoding = configuration.CharEncoding;
 
@@ -151,14 +154,14 @@ implements HTMLAttributeNames
 	 */
 	private void recognizeDocumentStructureToGenerateSurrogate(TidyInterface htmlType,
 			DOMWalkInformationTagger domWalkInfoTagger, TdNode contentBody,
-			ArrayList<HTMLElement> imgNodes) 
+			ArrayList<ImgElement> imgNodes) 
 	{
 		RecognizedDocumentStructure pageCategory = null;
 
 		if( contentBody!=null )
 		{
 			// Content Pages
-			pageCategory = new ContentPage();
+			pageCategory = new ContentPage(purl());
 		}
 		else
 		{
@@ -166,13 +169,13 @@ implements HTMLAttributeNames
 			if( (numImgNodes>0) && ((domWalkInfoTagger.getTotalTxtLength()/numImgNodes)<200) )
 			{	
 				// High probability to be an image-collection page
-				pageCategory = new ImageCollectionPage();
+				pageCategory = new ImageCollectionPage(purl());
 			}
 			else if( numImgNodes!=0 )
 			{
 				// Index Pages (include index-content pages)
 				//FIXME -- should also look at text only pages & especially use link ratio as a feature!!!!
-				pageCategory = new IndexPage();
+				pageCategory = new IndexPage(purl());
 			}
 		}
 		TreeMap<Integer, ParagraphText> paragraphTextsTMap = domWalkInfoTagger.getParagraphTextsTMap();
@@ -187,7 +190,7 @@ implements HTMLAttributeNames
 		// look through all the images in the page and determine no image is worth displaying.
 		if( (htmlType.numCandidatesExtractedFrom()==0) && (paragraphTextsTMap.size()>0) )
 		{
-			pageCategory = new TextOnlyPage();
+			pageCategory = new TextOnlyPage(purl());
 			pageCategory.generateSurrogates(contentBody, imgNodes, domWalkInfoTagger.getTotalTxtLength(), paragraphTextsTMap, htmlType);
 		}
 		if (pageCategory != null)
@@ -198,15 +201,15 @@ implements HTMLAttributeNames
 	 * @param arrayList 
 	 * @param articleMain
 	 */
-	protected ArrayList<AnchorContext> findHrefsAndContext(TidyInterface htmlType, ArrayList<HTMLElement> anchorElements)
+	protected ArrayList<AnchorContext> findHrefsAndContext(TidyInterface htmlType, ArrayList<AElement> anchorElements)
 	{
 		ArrayList<AnchorContext> anchorNodeContexts = new ArrayList<AnchorContext>();
 		
-		for(HTMLElement anchorElement : anchorElements)
+		for (AElement aElement : anchorElements)
 		{
-			TdNode anchorNodeNode 				  = anchorElement.getNode();
-			String href 									  = anchorElement.getAttribute(HTMLAttributeNames.HREF);
-			if ((href != null) && !href.startsWith("javascript:"))
+			TdNode anchorNodeNode 				  = aElement.getNode();
+			ParsedURL href 									= aElement.getHref();
+			if (href != null)
 			{
 				TdNode parent 							  = anchorNodeNode.parent();
 				//FIXME -- this routine drops all sorts of significant stuff because it does not concatenate across tags.
@@ -290,5 +293,10 @@ implements HTMLAttributeNames
   		XMLTools.unescapeXML(result);
 
   	return result;
+  }
+  
+  ParsedURL purl()
+  {
+  	return purlConnection.getPurl();
   }
 }

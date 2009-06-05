@@ -6,7 +6,9 @@ import java.util.TreeMap;
 
 import org.w3c.tidy.TdNode;
 
+import ecologylab.net.ParsedURL;
 import ecologylab.semantics.html.HTMLElement;
+import ecologylab.semantics.html.ImgElement;
 import ecologylab.semantics.html.ParagraphText;
 import ecologylab.semantics.html.RecognizedDocumentStructure;
 import ecologylab.semantics.html.TidyInterface;
@@ -24,13 +26,19 @@ import ecologylab.xml.XMLTools;
  */
 public class TextOnlyPage extends RecognizedDocumentStructure
 {
+	public TextOnlyPage(ParsedURL purl)
+	{
+		super(purl);
+	}
+
 	private static final int	MIN_PARA_TEXT_LENGTH	= 25;
 	public static final int			MAX_TEXT_SURROGATES	= 5;
 	
 	/**
 	 * Generate only text surrogates 
 	 */
-	protected void generateSurrogates(TdNode articleMain, ArrayList<HTMLElement> imgNodes, int totalTxtLeng, 
+	@Override
+	protected void generateSurrogates(TdNode articleMain, ArrayList<ImgElement> imgNodes, int totalTxtLeng, 
 			TreeMap<Integer, ParagraphText> paraTexts, TidyInterface htmlType)
 	{
 		int count	= 0;
@@ -43,7 +51,7 @@ public class TextOnlyPage extends RecognizedDocumentStructure
 
 	private void generateTextSurrogate(ParagraphText paraText, TidyInterface htmlType)
 	{
-		StringBuilder paraTextBuffy	= paraText.getPtext();
+		StringBuilder paraTextBuffy	= paraText.getBuffy();
 		
 		if (paraTextBuffy.length()>MIN_PARA_TEXT_LENGTH)
 		{

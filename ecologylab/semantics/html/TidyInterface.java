@@ -29,7 +29,7 @@ public interface TidyInterface
 	
 	public void closeHref();
 	
-	public void newImgTxt(HTMLElement htmlNode, ParsedURL anchorHref);
+	public void newImgTxt(ImgElement imgNode, ParsedURL anchorHref);
 	
 	//TODO -- take a BtringBuilder instead of a String. and use if efficiently!!!!!!
 	public void newTxt(StringBuilder surrogateText);
@@ -46,7 +46,7 @@ public interface TidyInterface
 	 * @param attributesMap
 	 * @param anchorHref
 	 */
-	public void newAnchorImgTxt(HTMLElement htmlNode, ParsedURL anchorHref);
+	public void newAnchorImgTxt(ImgElement imgNode, ParsedURL anchorHref);
 
 	public void setIndexPage ( );
 

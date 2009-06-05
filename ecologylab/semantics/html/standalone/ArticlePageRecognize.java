@@ -16,6 +16,8 @@ import org.w3c.tidy.OutImpl;
 import org.w3c.tidy.StreamIn;
 import org.w3c.tidy.TdNode;
 
+import ecologylab.net.PURLConnection;
+import ecologylab.net.ParsedURL;
 import ecologylab.semantics.html.DOMWalkInformationTagger;
 import ecologylab.semantics.html.HTMLDOMParser;
 import ecologylab.semantics.html.RecognizedDocumentStructure;
@@ -27,11 +29,13 @@ import ecologylab.semantics.html.RecognizedDocumentStructure;
  */
 public class ArticlePageRecognize extends HTMLDOMParser
 {
-    /**
+    private static final String	PORTAL_PURL	= "http://portal.acm.org/browse_dl.cfm?coll=ACM&dl=ACM&idx=J961&linked=1&part=transaction";
+
+		/**
      * Pretty-prints a DOM Document.
      * Extract Image and Text Surrogates while walk through DOM
      */
-    public void pprint(org.w3c.dom.Document doc, OutputStream out, String url)
+    public void pprint(org.w3c.dom.Document doc, OutputStream out, ParsedURL purl)
     {
         Out o = new OutImpl();
         TdNode document;
@@ -47,7 +51,7 @@ public class ArticlePageRecognize extends HTMLDOMParser
   //      if (out != null)
   //      {
         	// Instantiate PPrint constructor that connects to combinFormation
-        DOMWalkInformationTagger pprint = new DOMWalkInformationTagger(configuration, null);
+        DOMWalkInformationTagger pprint = new DOMWalkInformationTagger(configuration, purl, null);
         pprint.setState( StreamIn.FSM_ASCII );
         pprint.setEncoding( configuration.CharEncoding );
         
@@ -118,9 +122,12 @@ System.out.println("\n\n" + urlString );
 			  System.out.println("NonArticlePage: " + (double)apr.nonArticlePage/sum);
 				*/
 				
-			url = new URL("http://portal.acm.org/browse_dl.cfm?coll=ACM&dl=ACM&idx=J961&linked=1&part=transaction");
-			InputStream in = url.openConnection().getInputStream();
-			apr.pprint( apr.parseDOM(in, null), null, url.toString()); 
+			ParsedURL purl 								= ParsedURL.getAbsolute(PORTAL_PURL);
+			PURLConnection purlConnection	= purl.connect();
+			InputStream in 								= purlConnection.inputStream();
+			apr.pprint( apr.parseDOM(in, null), null, purl);
+			
+			in.close();
 			
 		} 
 		catch (MalformedURLException e) 

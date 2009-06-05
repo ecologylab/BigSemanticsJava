@@ -11,26 +11,17 @@ public class SemanticAnchor extends AnchorContext implements TermVectorFeature
 	 * hrefPurl of the container pointing to this container. <br>
 	 * It clears the hrefString, because at this stage, the container is created and the hrefString is no longer required.
 	 */
-	private ParsedURL hrefPurl;
-	TermVector tv;
-	boolean withinSite = false;
+	private ParsedURL inlinkPurl;
+	TermVector 				tv;
+	boolean 					withinSite = false;
 	
-	public SemanticAnchor(AnchorContext aContext, ParsedURL purl)
+	//FIXME -- look at w sashi
+	public SemanticAnchor(AnchorContext aContext, ParsedURL inlinkPurl)
 	{
-		super(aContext.getHrefString(), aContext.getAnchorText(), aContext.getAnchorContextString());
-		this.setHrefPurl(purl);
-		hrefString = null;
-		tv = new TermVector(aContext.getAnchorText() + aContext.getAnchorContextString());
-	}
-
-	public void setHrefPurl(ParsedURL hrefPurl)
-	{
-		this.hrefPurl = hrefPurl;
-	}
-
-	public ParsedURL getHrefPurl()
-	{
-		return hrefPurl;
+		super(aContext.getHref(), aContext.getAnchorText(), aContext.getAnchorContextString());
+		this.inlinkPurl			= inlinkPurl;
+		//FIXME -- huh???		hrefString = null;
+		tv 			= new TermVector(aContext.getAnchorText() + aContext.getAnchorContextString());
 	}
 
 	public ITermVector termVector()
@@ -40,7 +31,7 @@ public class SemanticAnchor extends AnchorContext implements TermVectorFeature
 	
 	public String toString()
 	{
-		return "[hrefPurl: " + hrefPurl + " ; anchorText: " + anchorText + " ; anchorContext: " + anchorContextString + "]";  
+		return "[hrefPurl: " + inlinkPurl + " ; anchorText: " + anchorText + " ; anchorContext: " + anchorContextString + "]";  
 	}
 
 	public void setWithinSite(boolean b)

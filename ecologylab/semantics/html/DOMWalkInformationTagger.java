@@ -15,6 +15,7 @@ import org.w3c.tidy.PPrint;
 import org.w3c.tidy.TdNode;
 
 import ecologylab.generic.StringTools;
+import ecologylab.net.ParsedURL;
 
 
 
@@ -29,9 +30,11 @@ import ecologylab.generic.StringTools;
 public class DOMWalkInformationTagger extends PPrint
 {
 	private static final int		MAX_LINKS_PER_PAGE			= 200;
-	protected static final int PARA_TEXT_LENGTH_LIMIT 	= 80;
+	protected static final int 	PARA_TEXT_LENGTH_LIMIT 	= 80;
 	
 	TidyInterface htmlType;
+	
+	ParsedURL			purl;
 	
 	int 					encoding;
 	int 					state;
@@ -65,16 +68,17 @@ public class DOMWalkInformationTagger extends PPrint
 	/**
 	 * All images in the page
 	 */
-	private ArrayList<HTMLElement> 	allImgNodes			= new ArrayList<HTMLElement>();
+	private ArrayList<ImgElement> 	allImgNodes			= new ArrayList<ImgElement>();
 
 	/**
 	 * All links in current page
 	 */
-  protected ArrayList<HTMLElement> allAnchorNodes = new ArrayList<HTMLElement>();
+  protected ArrayList<AElement> allAnchorNodes		= new ArrayList<AElement>();
 
-	public DOMWalkInformationTagger(Configuration configuration, TidyInterface htmlType) 
+	public DOMWalkInformationTagger(Configuration configuration, ParsedURL purl, TidyInterface htmlType) 
 	{
 		super(configuration);
+		this.purl			= purl;
 		this.htmlType = htmlType;
 	}
 
@@ -86,7 +90,21 @@ public class DOMWalkInformationTagger extends PPrint
 	{
 		String tagName = node.element;
 
-		if( htmlType != null )
+		if( "img".equals(tagName) )
+		{   
+			ImgElement imgElement = new ImgElement(node, purl);
+			//TODO confirm that we are happy only collecting images that seem informative
+			if (imgElement.isInformativeImage())
+				allImgNodes.add(imgElement);
+		}
+		else if ("base".equals(tagName))
+		{
+			AttVal baseHrefAttr = node.getAttrByName("href");
+			String baseHref			= (baseHrefAttr == null) ? null : baseHrefAttr.value;
+			if (baseHref != null)
+				purl			= (purl == null) ? ParsedURL.getAbsolute(baseHref) : purl.getRelative(baseHref);
+		}
+		else if( htmlType != null )
 		{
 			if( "title".equals(tagName) ) 
 			{
@@ -96,7 +114,7 @@ public class DOMWalkInformationTagger extends PPrint
 			{
 				if(allAnchorNodes.size() < MAX_LINKS_PER_PAGE)
 				{
-					HTMLElement attrNode = new HTMLElement(node);
+					AElement attrNode = new AElement(node, purl);
 					allAnchorNodes.add(attrNode);	
 				}
 				//This call is performed during the second parse while generating containers and extracting metadata.
@@ -109,13 +127,7 @@ public class DOMWalkInformationTagger extends PPrint
 			else if( "b".equals(tagName) )
 			{
 				htmlType.setBold(true);
-			}	
-			else if( "img".equals(tagName) )
-			{   
-				HTMLElement ina = new HTMLElement(node);
-				allImgNodes.add(ina);
 			}
-
 		}
 
 		// We need to delete a link to the file write part at the end -- EUNYEE
@@ -128,29 +140,33 @@ public class DOMWalkInformationTagger extends PPrint
 	@Override
 	protected void printEndTag(Out fout, short mode, int indent, TdNode node)
 	{
-		String p = node.element;
+		String tag = node.element;
 
 		if( htmlType != null )
 		{
-			if( p.equals("a") )
+			if( tag.equals("a") )
 			{
 				htmlType.closeHref();
 			}
-			else if( p.equals("i") )
+			else if( tag.equals("i") )
 			{
 				htmlType.setItalic(false);
 			}
-			else if( p.equals("b") )
+			else if( tag.equals("b") )
 			{
 				htmlType.setBold(false);
 			}
+//			if ("h1".equals(tag) || "p".equals(tag))
+//			{
+//				System.out.println(RecognizedDocumentStructure.getLongestTxtinSubTree(node, null));
+//			}
 			// Create a new Paragraph text based on these tags
 			// TODO add more tags that we should define as starting of a new paragraph. -- eunyee
-			if ( p.equals("p") || p.equals("br") || p.equals("td") || p.equals("div") || p.equals("li") || p.equals("a")
-					|| p.equals("tr") || p.equals("option") 
-					|| (p.length() == 2 && p.startsWith("h")))
+			if ( tag.equals("p") || tag.equals("br") || tag.equals("td") || tag.equals("div") || tag.equals("li") || tag.equals("a")
+					|| tag.equals("tr") || tag.equals("option") 
+					|| (tag.length() == 2 && tag.startsWith("h")))
 			{
-				closeBlock();
+				closeBlock(node);
 			}
 		}
 
@@ -158,9 +174,9 @@ public class DOMWalkInformationTagger extends PPrint
 		super.printEndTag(fout, mode, indent, node);	
 	}
 
-	private void closeBlock()
+	private void closeBlock(TdNode blockNode)
 	{
-		addCompletedPara();
+		addCompletedPara(blockNode);
 
 		currentParagraphText = new ParagraphText();
 		totalTxtLength = 0;
@@ -179,7 +195,7 @@ public class DOMWalkInformationTagger extends PPrint
 		return totalTxtLength;
 	}
 
-	public ArrayList<HTMLElement> getAllImgNodes()
+	public ArrayList<ImgElement> getAllImgNodes()
 	{
 		return this.allImgNodes;
 	}
@@ -234,8 +250,20 @@ public class DOMWalkInformationTagger extends PPrint
 		}
 	}
 
-	private void addCompletedPara()
+	private void addCompletedPara(TdNode blockNode)
 	{
+		TdNode node	= currentNode;
+		if (currentParagraphText.length() == 0)
+		{
+			StringBuilder longestTxtinSubTree = RecognizedDocumentStructure.getLongestTxtinSubTree(blockNode, null);
+			if ((longestTxtinSubTree != null) && longestTxtinSubTree.length() > PARA_TEXT_LENGTH_LIMIT)
+			{
+				currentParagraphText.setNode(blockNode);
+				currentParagraphText.setBuffy(longestTxtinSubTree);
+				node			= blockNode;
+			}
+		}
+		int length	= currentParagraphText.length();
 		/*
 		 * Only keeps 10 paragraph texts. 
 		 * Thus, if there is a new paragraph text coming in and the 10 slots have been already filled, we replace with the existed one based on the length of the text.
@@ -248,11 +276,13 @@ public class DOMWalkInformationTagger extends PPrint
 				paragraphTextsTMap.remove(tkey);
 				paragraphTextsTMap.put(totalTxtLength, currentParagraphText);
 			}
-
 		}
 		// We don't put the text into the paragraphTexts structure unless the text is over certain length and not surrounded by <a> tag. 
-		else if( (totalTxtLength > PARA_TEXT_LENGTH_LIMIT) && !underAHref(currentNode) )
-			paragraphTextsTMap.put(totalTxtLength, currentParagraphText);
+		else if( (length > PARA_TEXT_LENGTH_LIMIT) && !underAHref(node) )
+		{
+			//FIXME -- look out for duplicates introduced by getLongestTxtinSubTree() above
+			paragraphTextsTMap.put(length, currentParagraphText);
+		}
 	}
 
 	public boolean underAHref(TdNode node)
@@ -322,7 +352,7 @@ public class DOMWalkInformationTagger extends PPrint
 		}
 	}
 	
-	public ArrayList<HTMLElement> getAllAnchorNodes()
+	public ArrayList<AElement> getAllAnchorNodes()
 	{
 		return allAnchorNodes;
 	}
@@ -343,7 +373,7 @@ public class DOMWalkInformationTagger extends PPrint
 		currentNode			= null;
 	}
 
-	private static void recycle(Collection<HTMLElement> nodeCollection)
+	private static void recycle(Collection<? extends HTMLElement> nodeCollection)
 	{
 		for (HTMLElement thatNode: nodeCollection)
 			thatNode.recycle();

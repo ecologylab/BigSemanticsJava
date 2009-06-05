@@ -23,7 +23,7 @@ public class HTMLElement
 implements HTMLAttributeNames, ImageConstants
 {
 	public static final int	INDEX_NOT_CALCULATED	= -1;
-	private TdNode node;
+	protected	TdNode 			node;
 	private HashMap<String, String> attributesMap;
 	
 	String	xPath;
@@ -34,6 +34,10 @@ implements HTMLAttributeNames, ImageConstants
 	
 	int			localXPathIndex	= INDEX_NOT_CALCULATED;
 	
+	public HTMLElement()
+	{
+		
+	}
 	
 	public HTMLElement(TdNode node)
 	{
@@ -41,12 +45,20 @@ implements HTMLAttributeNames, ImageConstants
 		addAttributes(node.attributes);
 	}
 	
-	public void setAttribute(String key, String value)
+	protected void setAttribute(String key, String value)
 	{
-		if (attributesMap == null)
-			attributesMap	= new HashMap<String, String>();
-		
-		attributesMap.put(key, value);
+		if ("id".equals(key))
+			id								= value;
+		else if ("class".equals(key))
+			cssClass					= value;
+		else
+		{
+			//FIXME -- get rid of this old code!
+			if (attributesMap == null)
+				attributesMap	= new HashMap<String, String>();
+			
+			attributesMap.put(key, value);
+		}
 	}
 	
 	public void clearAttribute(String key)
@@ -142,11 +154,10 @@ implements HTMLAttributeNames, ImageConstants
 	 */
 	protected void addAttributes(AttVal attr)
 	{
-		if (attr != null)
+		while (attr != null)
 		{
 			setAttribute(attr.attribute, attr.value);
-			if (attr.next != null)
-				addAttributes(attr.next);
+			attr					= attr.next;
 		}
 	}
 
@@ -160,56 +171,6 @@ implements HTMLAttributeNames, ImageConstants
 		if (node != null)
 			node.recycle();
 		node					= null;
-	}
-	
-	/**
-	 * Get the alt text attribute from the image node, if there is one.
-	 * Check to see if it is not bogus (not empty, "null", a url, contains advertis).
-	 * If it is bogus, clear the attribute in the image node.
-	 * Otherwise, return it.
-	 * 
-	 * @param imageNode
-	 * @return		null, or a usable alt String.
-	 */
-	public String getNonBogusAlt()
-	{
-		String altText 					= this.getAttribute(ALT);
-		if ((altText != null) && (ImageFeatures.altIsBogus(altText)))
-		{
-			altText								= null;
-			this.clearAttribute(ALT);
-		}
-		return altText;
-	}
-
-	/**
-	 * Recognize whether the image is informative or not based on its attributes and size, aspect ratio. 
-	 * 
-	 * @param imageNode		HTML node from <code>img</code> tag, with attributes.
-	 * 
-	 * @return						true if image is recognized as informative otherwise false.
-	 */
-	public boolean isInformativeImage() 
-	{
-		int width 		= this.getAttributeAsInt(WIDTH, 0);
-		int height 		= getAttributeAsInt(HEIGHT, 0);
-		boolean isMap	= getAttributeAsBoolean(ISMAP);
-		String alt 		= getNonBogusAlt();
-		String src		= this.getAttribute(SRC);
-		
-		boolean informImg = !(alt!=null && alt.toLowerCase().contains("advertis")) ;
-//	String imgUrl = imageNode.getAttribute(SRC);
-		//TODO -- should we do more advertisement filtering here?!
-		
-		//TODO -- should we use an encompassing hyperlink and its destination as features ???!
-		
-		if (informImg)
-		{
-			int mimeIndex		= ParsedURL.mimeIndex(src);
-			int designRole	= ImageFeatures.designRole(width, height, mimeIndex, isMap);
-			informImg	= (designRole == INFORMATIVE) || (designRole == UNKNOWN);
-		}
-		return informImg;
 	}
 
 

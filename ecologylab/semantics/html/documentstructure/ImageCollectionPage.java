@@ -1,6 +1,7 @@
 package ecologylab.semantics.html.documentstructure;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.TreeMap;
 
 import org.w3c.tidy.TdNode;
@@ -9,6 +10,7 @@ import ecologylab.generic.StringTools;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.html.HTMLDOMParser;
 import ecologylab.semantics.html.HTMLElement;
+import ecologylab.semantics.html.ImgElement;
 import ecologylab.semantics.html.ParagraphText;
 import ecologylab.semantics.html.RecognizedDocumentStructure;
 import ecologylab.semantics.html.TidyInterface;
@@ -23,21 +25,30 @@ import ecologylab.xml.XMLTools;
  */
 public class ImageCollectionPage extends RecognizedDocumentStructure
 {
+	public ImageCollectionPage(ParsedURL purl)
+	{
+		super(purl);
+	}
+
 	/**
 	 * Generate surrogates for the images inside the image-collection pages.
 	 */
-	protected void generateSurrogates(TdNode articleMain, ArrayList<HTMLElement> imgNodes,
-			int totalTxtLeng, TreeMap<Integer, ParagraphText> paraTexts, TidyInterface htmlType)
+	@Override
+	protected void generateSurrogates(TdNode articleMain, ArrayList<ImgElement> imgElements, int totalTxtLeng, 
+			TreeMap<Integer, ParagraphText> paraTextMap, TidyInterface htmlType)
 	{
-		for (int i = 0; i < imgNodes.size(); i++)
+		Collection<ParagraphText> paraTextsC	= paraTextMap.values();
+		ParagraphText[] paraTexts	= new ParagraphText[paraTextsC.size()];
+		paraTextsC.toArray(paraTexts);
+		for (int i = 0; i < imgElements.size(); i++)
 		{
-			HTMLElement imageNode = (HTMLElement) imgNodes.get(i);
+			ImgElement imgElement 				= imgElements.get(i);
 			
-			String altText 					= imageNode.getNonBogusAlt();
+			String altText 								= imgElement.getNonBogusAlt();
 			
 			if (altText == null)
 			{
-				final TdNode imageNodeNode = imageNode.getNode();
+				final TdNode imageNodeNode 	= imgElement.getNode();
 				StringBuilder extractedCaption = getLongestTxtinSubTree(imageNodeNode.grandParent(), null);	// returns null in worst case
 				if (extractedCaption == null)
 					extractedCaption = getLongestTxtinSubTree(imageNodeNode.greatGrandParent(), null);	// returns null in worst case
@@ -45,28 +56,55 @@ public class ImageCollectionPage extends RecognizedDocumentStructure
 				if (extractedCaption != null)
 				{
 					XMLTools.unescapeXML(extractedCaption);
-					imageNode.setAttribute(ALT, StringTools.toString(extractedCaption));
+					imgElement.setAlt(StringTools.toString(extractedCaption));
 					
 					StringBuilderUtils.release(extractedCaption);
 				}
 			}
 
-			ParsedURL anchorPurl = findAnchorPURLforImgNode(htmlType, imageNode);
+			ParsedURL anchorPurl = findAnchorPURLforImgNode(htmlType, imgElement);
 
 			// images in the image-collection pages won't have anchors
 			// If there is an anchor, it should be pointing to the bigger image.
 			if (anchorPurl == null)
-				htmlType.newImgTxt(imageNode, null);
+				htmlType.newImgTxt(imgElement, null);
 			else if ((anchorPurl != null) && anchorPurl.isImg())
 			{
-				htmlType.newImgTxt(imageNode, anchorPurl);
+				htmlType.newImgTxt(imgElement, anchorPurl);
 				htmlType.removeTheContainerFromCandidates(anchorPurl);
 			}
-			else if (anchorPurl.isHTML() || anchorPurl.isPDF() || anchorPurl.isRSS())
+			else // if (anchorPurl.isHTML() || anchorPurl.isPDF() || anchorPurl.isRSS())
 			{
 				// TODO find the anchorContext for this purl
+				TdNode parent		= imgElement.getNode().parent();
+				TdNode gParent	= parent.parent();
+				TdNode ggParent	= gParent.parent();
+				for (ParagraphText paraText : paraTexts)
+				{
+					TdNode paraTextNode	= paraText.getElementNode();
+					TdNode contextNode	= null;
+					if (paraTextNode == parent)
+						contextNode				= parent;
+					else if (paraTextNode == gParent)
+						contextNode				= gParent;
+					else if (paraTextNode == ggParent)
+						contextNode				= ggParent;
+					else for (TdNode childNode	= paraTextNode.content(); childNode != null; childNode = childNode.next())
+					{
+						if (paraTextNode == childNode)
+						{
+							contextNode			= childNode;
+						}
+					}
+					if (contextNode != null)
+					{
+						imgElement.setTextContext(paraText.getBuffy());
+						break;
+					}
+				}
+				htmlType.newImgTxt(imgElement, anchorPurl);
 			}
-			imageNode.recycle();
+			imgElement.recycle();
 		}
 	}
 }

@@ -1,5 +1,6 @@
 package ecologylab.semantics.html.documentstructure;
 
+import ecologylab.net.ParsedURL;
 import ecologylab.semantics.html.RecognizedDocumentStructure;
 
 
@@ -12,5 +13,8 @@ import ecologylab.semantics.html.RecognizedDocumentStructure;
  */
 public class IndexPage extends RecognizedDocumentStructure
 {
-	
+	public IndexPage(ParsedURL purl)
+	{
+		super(purl);
+	}
 }

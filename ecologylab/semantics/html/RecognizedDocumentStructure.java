@@ -44,10 +44,12 @@ implements HTMLAttributeNames
 	static final int PARAGRAPH_COUNT_ARTICLE_THRESHOLD 			= 5;
 
 	static final int CHAR_COUNT_ARTICLE_THRESHOLD						= 300;
+	
+	ParsedURL				 purl;
 
-	public RecognizedDocumentStructure()
+	public RecognizedDocumentStructure(ParsedURL purl)
 	{
-
+		this.purl			= purl;
 	}
 
 	/**
@@ -60,7 +62,7 @@ implements HTMLAttributeNames
 	 * @param paraTexts  
 	 * @param htmlType
 	 */
-	protected void generateSurrogates(TdNode articleMain, ArrayList<HTMLElement> imgNodes, int totalTxtLeng, 
+	protected void generateSurrogates(TdNode articleMain, ArrayList<ImgElement> imgNodes, int totalTxtLeng, 
 			TreeMap<Integer, ParagraphText> paraTexts, TidyInterface htmlType)
 	{
 		recognizeImgSurrogateForOtherPages( imgNodes, totalTxtLeng, htmlType );
@@ -73,11 +75,11 @@ implements HTMLAttributeNames
 	 * and nearby text whether the text is informative and can be associated with the image for the image+text surrogate. 
 	 * 
 	 */
-	protected void recognizeImgSurrogateForOtherPages(ArrayList<HTMLElement> imgNodes, int totalTxtLeng, TidyInterface htmlType)
+	protected void recognizeImgSurrogateForOtherPages(ArrayList<ImgElement> imgNodes, int totalTxtLeng, TidyInterface htmlType)
 	{    	
-		for(HTMLElement imgNode : imgNodes)
+		for(ImgElement imgElement : imgNodes)
 		{
-			TdNode imgNodeNode					= imgNode.getNode();
+			TdNode imgNodeNode					= imgElement.getNode();
 			StringBuilder extractedCaptionTxt	= getLongestTxtinSubTree(imgNodeNode.grandParent(), null);
 
 			// this if condition checks whether the nearest text to the image is substantial enough to form a surrogate. 
@@ -86,16 +88,16 @@ implements HTMLAttributeNames
 			{
 				if ((extractedCaptionTxt.length()>10) && (!StringTools.contains(extractedCaptionTxt, "advertis")) )
 				{
-					ParsedURL anchorPurl 			= findAnchorPURLforImgNode(htmlType, imgNode);
+					ParsedURL anchorPurl 			= findAnchorPURLforImgNode(htmlType, imgElement);
 	
 					// Check whether the anchor mimetype is not an image. 
 					if( (anchorPurl!=null) && !anchorPurl.isImg() )
 					{
 						// TODO!! ask whether we should add this to the associateText or not.
 						//FIXME! -- push caption text through as StringBuilder!
-						imgNode.setAttribute(TEXT_CONTEXT, StringTools.toString(extractedCaptionTxt));
+						imgElement.setTextContext(extractedCaptionTxt);
 	
-						htmlType.newAnchorImgTxt(imgNode, anchorPurl);
+						htmlType.newAnchorImgTxt(imgElement, anchorPurl);
 						htmlType.removeTheContainerFromCandidates(anchorPurl);
 					}
 				}
@@ -230,18 +232,18 @@ implements HTMLAttributeNames
 	//FIXME -- andruid: exactly what sorted order are the paraTexts in? why?
 	protected void associateImageTextSurrogate(TidyInterface htmlType, TdNode articleBody, TreeMap<Integer, ParagraphText> paraTexts)
 	{	
-		for (HTMLElement imageNode: imgNodesInContentBody) 
+		for (ImgElement imgElement: imgNodesInContentBody) 
 		{  		
-			if (imageNode.isInformativeImage())
+			if (imgElement.isInformativeImage())
 			{
-				final TdNode imageNodeNode = imageNode.getNode();
+				final TdNode imageNodeNode = imgElement.getNode();
 				informImgNodes.add(imageNodeNode);
 
 				StringBuilder extractedCaption = getLongestTxtinSubTree(imageNodeNode.grandParent(), null);	// returns null in worst case
 				if (extractedCaption != null)
 					XMLTools.unescapeXML(extractedCaption);
 				
-				String altText 					= imageNode.getNonBogusAlt();
+				String altText 					= imgElement.getNonBogusAlt();
 				TermVector altTextTV		= (altText == null) ? null : new TermVector(altText);
 				boolean done						= false;		// use this instead of break to make sure we get to pt.recycle()
 				
@@ -252,11 +254,12 @@ implements HTMLAttributeNames
 					if (textNode.grandParent().equals(articleBody) || 
 							textNode.greatGrandParent().equals(articleBody) )
 					{
-						StringBuilder textContext = pt.getPtext();
+						StringBuilder textContext = pt.getBuffy();
 						
 						if (textContext != null)
 						{
 							XMLTools.unescapeXML(textContext);			
+							boolean setAltToCaption							= false;
 							if ((extractedCaption != null) || (altText!=null))
 							{
 								TermVector textContextTV					= new TermVector(textContext);
@@ -276,18 +279,24 @@ implements HTMLAttributeNames
 								// check for common sharp terms between associateText and captionText
 								if ((captionDotTextContext > 0) || (altDotTextContext > 0))
 								{
-									imageNode.setAttribute(HTMLAttributeNames.TEXT_CONTEXT, StringTools.toString(textContext));
+									imgElement.setTextContext(textContext);
 									if (captionDotTextContext > altDotTextContext)
-										imageNode.setAttribute(ALT, StringTools.toString(extractedCaption));
+									{
+										imgElement.setAlt(StringTools.toString(extractedCaption));
+										setAltToCaption									= true;
+									}
 									done															= true;
 								}
 							}
 							else
 							{	// no alt attribute or extracted caption, so use the first (longest) text context
 								// FIXME -- should we try dot product with title?!
-								imageNode.setAttribute(TEXT_CONTEXT, StringTools.toString(textContext));
+								imgElement.setTextContext(textContext);
 								done																= true;
 							}
+							if (!setAltToCaption && (extractedCaption != null))
+								imgElement.setExtractedCaption(StringTools.toString(extractedCaption));
+								
 						} // if (textContext != null
 					}   // if grandParent or greatGrandParent is articleBody
 					pt.recycle();
@@ -296,7 +305,7 @@ implements HTMLAttributeNames
 				if (extractedCaption != null)
 					StringBuilderUtils.release(extractedCaption);
 
-				ParsedURL anchorPurl = findAnchorPURLforImgNode(htmlType, imageNode);
+				ParsedURL anchorPurl = findAnchorPURLforImgNode(htmlType, imgElement);
 
 				// removed by andruid 10/16/08
 				// 1) i dont see why we need to do this.
@@ -304,7 +313,7 @@ implements HTMLAttributeNames
 				//        		if( anchorPurl!=null )
 				//        			htmlType.removeTheContainerFromCandidates(anchorPurl);
 
-				htmlType.newImgTxt(imageNode, anchorPurl);
+				htmlType.newImgTxt(imgElement, anchorPurl);
 			} // if isInformImage
 		} // for each imageNode in content body
 	}
@@ -345,7 +354,7 @@ implements HTMLAttributeNames
 	/**
 	 * All the image nodes under the sub-tree of the ArticleMain node.
 	 */
-	protected ArrayList<HTMLElement> imgNodesInContentBody = new ArrayList<HTMLElement>();
+	protected ArrayList<ImgElement> imgNodesInContentBody = new ArrayList<ImgElement>();
 
 	/**
 	 * Finding image nodes under the content body. 
@@ -367,14 +376,14 @@ implements HTMLAttributeNames
 	 */
 	private void htmlNodesInContentBody(TdNode contentBody,
 			String nodeElementString,
-			ArrayList<HTMLElement> nodesInContentBody)
+			ArrayList<ImgElement> nodesInContentBody)
 	{
 		for (TdNode contentNode = contentBody.content(); contentNode != null; contentNode = contentNode.next())
 		{
 			htmlNodesInContentBody(contentNode, nodeElementString, nodesInContentBody);
 			if( contentNode.element!=null && contentNode.element.equals(nodeElementString) )
 			{
-				HTMLElement ina = new HTMLElement(contentNode);
+				ImgElement ina = new ImgElement(contentNode, purl);
 				nodesInContentBody.add(ina);
 			}
 		}
@@ -385,8 +394,7 @@ implements HTMLAttributeNames
 	 * 
 	 * @param parent node of the image node is passed in to the parameter. 
 	 */
-	//FIXME -- use StringBuilder or CharBuffer, not String
-	public StringBuilder getLongestTxtinSubTree(TdNode node, StringBuilder textResult)
+	public static StringBuilder getLongestTxtinSubTree(TdNode node, StringBuilder textResult)
 	{
 		for (TdNode childNode	= node.content(); childNode != null; childNode = childNode.next())
 		{
@@ -454,7 +462,7 @@ implements HTMLAttributeNames
 		}
 	}
  */
-	public ArrayList<HTMLElement> getImgNodesInContentBody() 
+	public ArrayList<ImgElement> getImgNodesInContentBody() 
 	{
 		return imgNodesInContentBody;
 	}

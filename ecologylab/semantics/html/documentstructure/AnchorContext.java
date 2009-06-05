@@ -1,5 +1,7 @@
 package ecologylab.semantics.html.documentstructure;
 
+import ecologylab.net.ParsedURL;
+
 /**
  * Holds the anchor node with the text string surrounding it
  * @author damaraju
@@ -7,31 +9,34 @@ package ecologylab.semantics.html.documentstructure;
  */
 public class AnchorContext
 {
-
-	protected String hrefString;
-	protected 	String anchorText;
-	protected String anchorContextString;
+	protected ParsedURL 	href;
+	protected String 			anchorText;
+	protected String 			anchorContextString;
 	
-	public AnchorContext(String href, String anchorText)
+	public AnchorContext(ParsedURL href, String anchorText)
 	{
-		this.hrefString		= href;
+		this.href				= href;
 		this.anchorText = anchorText;
 	}
 	
-	public AnchorContext(String href, String anchorText, String anchorContextString)
+	public AnchorContext(ParsedURL href, String anchorText, String anchorContextString)
 	{
-		this.hrefString 					= href;
-		this.anchorText 			= anchorText;
+		this.href									= href;
+		this.anchorText 					= anchorText;
 		this.anchorContextString	= anchorContextString;
 	}
-	public String getHrefString()
+ 
+	
+	public ParsedURL getHref()
 	{
-		return hrefString;
+		return href;
 	}
-	public void setHref(String href)
+
+	public void setHref(ParsedURL href)
 	{
-		this.hrefString = href;
+		this.href = href;
 	}
+
 	public String getAnchorText()
 	{
 		return anchorText;
@@ -51,6 +56,6 @@ public class AnchorContext
 	
 	public String toString()
 	{
-		return "[href: " + hrefString + " ; anchorText: " + anchorText + " ; anchorContext: " + anchorContextString + "]";  
+		return "[href: " + href + " ; anchorText: " + anchorText + " ; anchorContext: " + anchorContextString + "]";  
 	}
 }
