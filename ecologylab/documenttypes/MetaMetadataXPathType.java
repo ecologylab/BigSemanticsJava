@@ -123,7 +123,8 @@ public class MetaMetadataXPathType<M extends MetadataBase, SA extends SemanticAc
 		if (metaMetadata.isSupported(purl))
 		{
 			PURLConnection purlConnection = purl.connect(metaMetadata.getUserAgentString());
-			Document tidyDOM = tidy.parseDOM(purlConnection.inputStream(), null /* System.out */);
+			Document tidyDOM = tidy.parseDOM(purlConnection.inputStream(), /* System.out */ null);
+			
 			populatedMetadata = recursiveExtraction(ts, metaMetadata, metadata, tidyDOM, purl);
 			try
 			{

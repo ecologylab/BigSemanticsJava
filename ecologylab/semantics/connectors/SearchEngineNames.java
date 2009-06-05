@@ -36,13 +36,13 @@ public interface SearchEngineNames
 	static final String GOOGLE_NO_PDF_ARG	= "+-filetype%3Apdf";
 
 	static final String regularGoogleSearchURLString
-	= "http://www.google.com/search?q=";
+	= "http://www.google.com/search?oe=us-ascii&q=";
 
 	static final String relatedGoogleSearchUrlString
-	= "http://www.google.com/search?q=related:";
+	= "http://www.google.com/search?oe=us-ascii&q=related:";
 
 	static final String imageGoogleSearchURLString
-	= "http://images.google.com/images?safe=off&q=";
+	= "http://images.google.com/images?oe=us-ascii&safe=off&q=";
 	
 	//--------------------------------------------------------------------
   

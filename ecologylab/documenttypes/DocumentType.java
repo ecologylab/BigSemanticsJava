@@ -446,7 +446,7 @@ abstract public class DocumentType<AC extends Container, IP extends InfoCollecto
 	public void setPURLConnection ( InputStream inputStream )
 	{
 		// this.inputStream = inputStream;
-		purlConnection = new PURLConnection(null, inputStream);
+		purlConnection = new PURLConnection(purl(), null, inputStream);
 	}
 
 	/**

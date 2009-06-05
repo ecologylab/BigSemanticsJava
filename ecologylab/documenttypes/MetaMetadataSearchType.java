@@ -65,24 +65,23 @@ public class MetaMetadataSearchType extends MetaMetadataXPathType implements CFP
 
 	public MetaMetadataSearchType(SearchState searchSeed, InfoCollector infoCollector, String engine)
 	{
-		this(infoCollector, null, engine, searchSeed, 0);
+		this(infoCollector, null, engine, searchSeed);
 	}
 
 	/**
 	 * @param infoProcessor
+	 * @param engine
 	 * @param semanticAction
 	 * @param searchURL
-	 * @param engine
 	 */
 	public MetaMetadataSearchType(InfoCollector infoProcessor,
-			SemanticActionHandler semanticActionHandler, String engine, SearchState searchSeed,
-			int firstResultIndex)
+			SemanticActionHandler semanticActionHandler, String engine, SearchState searchSeed)
 	{
 		super(infoProcessor);
 		this.engine = engine;
 		this.searchSeed = searchSeed;
 		this.semanticActionHandler = semanticActionHandler;
-		formSearchUrlBasedOnEngine(firstResultIndex);
+		formSearchUrlBasedOnEngine(searchSeed.currentFirstResultIndex());
 
 		// if search PURL is not null for a container.
 		if (searchURL != null)
@@ -116,16 +115,6 @@ public class MetaMetadataSearchType extends MetaMetadataXPathType implements CFP
 		}
 		container.queueDownload();
 		// System.out.println("DEBUG::queued container\t"+container+"\t for download");
-	}
-
-	@Override
-	public void parse() throws IOException
-	{
-		Metadata populatedMetadata = (Metadata) buildMetadataObject();
-
-		takeSemanticActions(populatedMetadata);
-		// now here we know that it is of type Search and so we need to set query.
-		// since the search class is in generated semantics project will reflection:-)
 	}
 
 	/**
@@ -184,7 +173,7 @@ public class MetaMetadataSearchType extends MetaMetadataXPathType implements CFP
 	{
 		ResultDistributer aggregator = this.searchSeed.resultDistributer(abstractInfoCollector);
 		if (aggregator != null)
-			aggregator.doneQueueing(searchSeed.searchNum(), resultsSoFar, null);
+			aggregator.doneQueueing(searchSeed.searchNum(), resultsSoFar);
 		if (this.searchSeed != null)
 			this.searchSeed.incrementNumResultsBy(searchSeed.numResults());
 
@@ -206,6 +195,16 @@ public class MetaMetadataSearchType extends MetaMetadataXPathType implements CFP
 	public int getResultSoFar()
 	{
 		return this.resultsSoFar;
+	}
+	
+	public int getResultNum()
+	{
+		return resultsSoFar + searchSeed.currentFirstResultIndex();
+	}
+	
+	public ParsedURL purl()
+	{
+		return searchURL;
 	}
 
 }

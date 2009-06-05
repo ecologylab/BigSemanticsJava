@@ -80,11 +80,11 @@ public interface InfoCollector<AC extends Container, IC extends InfoCollector>
 	/**
 	 * Called to inform this that seeding is beginning.
 	 */
-	void seedingBegins();
+	void beginSeeding();
 	/**
 	 * Called to inform this that seeding is complete.
 	 */
-	public void seedingComplete();
+	public void endSeeding();
 
 	public SeedSet getSeedSet();
 	
