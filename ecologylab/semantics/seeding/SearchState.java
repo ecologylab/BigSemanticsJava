@@ -208,7 +208,7 @@ implements SemanticsPrefs, SearchEngineNames
   	 }
   	 //infoCollector.instantiateDocumentType(SEARCH_DOCUMENT_TYPE_REGISTRY, engine, this);		
   	 SemanticActionHandler actionHandler= infoCollector.createSemanticActionHandler();
-  	 MetaMetadataSearchType searchType= new MetaMetadataSearchType(infoCollector,actionHandler, engine, this, 0);
+  	 MetaMetadataSearchType searchType= new MetaMetadataSearchType(infoCollector,actionHandler, engine, this);
    }
 	
  	/**

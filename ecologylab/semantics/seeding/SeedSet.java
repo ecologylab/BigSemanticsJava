@@ -42,7 +42,7 @@ implements SemanticsSessionObjectNames
 	/**
 	 * Number of SearchState seeds specified in this.
 	 */
-	private int 					searchNum		= 0;
+	private int 					numSearches		= 0;
 
     /**
      * Coordinate downloading of search results for seeding searches.
@@ -61,10 +61,13 @@ implements SemanticsSessionObjectNames
    		
    		if (result == null)
    		{
-   			if( parentSeedSet != null )
-   				result = parentSeedSet.resultDistributer(infoCollector);
+   			if( parentSeedSet != null )	// recurse to get from parent
+   			{
+   				result 		= parentSeedSet.resultDistributer(infoCollector);
+   				result.moreSearches(numSearches);
+   			}
    			else
-   				result		= new ResultDistributer(infoCollector, searchNum);
+   				result		= new ResultDistributer(infoCollector, numSearches);
    			this.resultDistributer	= result;
    		}
    		return result;
@@ -101,6 +104,7 @@ implements SemanticsSessionObjectNames
   	 */
   	public void performNextSeeding(Scope scope)
   	{
+  		resultDistributer	= null;
    		performSeeding(scope, true);
   	}
   	
@@ -108,7 +112,6 @@ implements SemanticsSessionObjectNames
    	{
    		performSeeding(scope, false);
    	}
-
    	
    	/**
    	 * Bring the seeds into the agent or directly into the compostion.
@@ -125,14 +128,19 @@ implements SemanticsSessionObjectNames
    		if (size > 0)
    	  		infoCollector.setPlayOnStart(true);
 
-   		infoCollector.seedingBegins();
+   		infoCollector.beginSeeding();
    		
    		// search bookkeeping for each seed
    		for (int i=0; i < size; i++)
    		{
    			Seed seed	=  (Seed) get(i);
-   			if (seed.initializeSeedingSteps(this, searchNum))
-   				searchNum++;
+   			if (nextSearch)
+   			{
+   				seed.resultDistributer	= null;
+ 					seed.nextResultSet();
+   			}
+   			else if (seed.initializeSeedingSteps(this, numSearches))
+   				numSearches++;
    		}
    		
    		// We need the same two for loops (above and below), because 
@@ -145,10 +153,7 @@ implements SemanticsSessionObjectNames
    			seed.fixNumResults();
 
    			if (seed.validate())
-   			{
-   				if (nextSearch)
-   					seed.nextResultSet();
-   				
+   			{  				
    				seed.performSeedingSteps(infoCollector);
   				
      			SeedPeer seedPeer	= seed.getSeedPeer();
@@ -156,16 +161,6 @@ implements SemanticsSessionObjectNames
      				seedPeer.notifyInterface(scope, SEARCH_DASH_BOARD);
    			}
    		}
-
-   		// seed set post processing
-        if (resultDistributer(infoCollector) != null)
-        {    	
-        	if( parentSeedSet != null )
-        	{   		
-        		searchNum = searchNum + resultDistributer.totalSearches() - 1;       		
-        	}
-        	resultDistributer.setTotalSearches(searchNum);
-        }
    	}
    	
    	public String toString()
