@@ -334,7 +334,11 @@ implements HTMLAttributeNames
 			AttVal parentHref = ina.getNode().parent().getAttrByName("href");
 			if( parentHref!=null )
 			{
-				anchorPurl = htmlType.getAnchorParsedURL(parentHref.value);
+				String parentHrefValue = parentHref.value;
+				//FIXME some idiot seems to have performed escape XML on these values :-(
+				// so unescape it here :-( :-( :-(
+				parentHrefValue				= XMLTools.unescapeXML(parentHrefValue);
+				anchorPurl = purl.createFromHTML(parentHrefValue);
 			}
 			else
 			{

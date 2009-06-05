@@ -38,8 +38,6 @@ public interface TidyInterface
 	
 	public void removeTheContainerFromCandidates(ParsedURL containerPURL);
 	
-	public ParsedURL getAnchorParsedURL(String anchorURL);
-	
 	/**
 	 * a surrogate for the other container.
 	 * 
