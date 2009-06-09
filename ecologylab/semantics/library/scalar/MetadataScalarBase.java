@@ -4,7 +4,8 @@ import ecologylab.generic.FeatureVector;
 import ecologylab.semantics.metadata.MetadataBase;
 import ecologylab.semantics.model.text.Term;
 
-public class MetadataScalarBase extends MetadataBase
+abstract
+public class MetadataScalarBase<T> extends MetadataBase
 {
 
 	protected FeatureVector<Term> termVector;
@@ -14,4 +15,13 @@ public class MetadataScalarBase extends MetadataBase
 		super();
 	}
 
+	abstract public T getValue();
+	
+	public String toString()
+	{
+		T value				= getValue();
+		return (value == null) ?
+				super.toString() + "[null]" :
+				super.toString() + "[" + value.toString() + "]";
+	}
 }

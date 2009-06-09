@@ -16,7 +16,7 @@ import ecologylab.xml.xml_inherit;
  */
 @xml_inherit
 @semantics_pseudo_scalar
-public class MetadataString extends MetadataScalarBase
+public class MetadataString extends MetadataScalarBase<String>
 {
 	TermVector termVector = null;
 	@xml_text	String		value;

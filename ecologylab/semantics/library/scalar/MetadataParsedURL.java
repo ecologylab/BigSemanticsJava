@@ -14,7 +14,7 @@ import ecologylab.xml.xml_inherit;
  */
 @xml_inherit
 @semantics_pseudo_scalar
-public class MetadataParsedURL extends MetadataScalarBase
+public class MetadataParsedURL extends MetadataScalarBase<ParsedURL>
 {
 	@xml_text	ParsedURL		value;
 	

@@ -9,7 +9,7 @@ import ecologylab.semantics.model.text.TermVector;
 import ecologylab.xml.XMLTools;
 
 @semantics_pseudo_scalar
-public class MetadataStringBuilder extends MetadataScalarBase
+public class MetadataStringBuilder extends MetadataScalarBase<StringBuilder>
 {
 	TermVector termVector = null;
 	@xml_text StringBuilder value;

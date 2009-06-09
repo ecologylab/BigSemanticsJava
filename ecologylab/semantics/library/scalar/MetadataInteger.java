@@ -6,7 +6,7 @@ import ecologylab.semantics.model.text.NullTermVector;
 
 
 @semantics_pseudo_scalar
-public class MetadataInteger extends MetadataScalarBase
+public class MetadataInteger extends MetadataScalarBase<Integer>
 {
 	@xml_text	int		value;
 	
