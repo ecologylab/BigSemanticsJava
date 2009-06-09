@@ -47,10 +47,21 @@ abstract public class DocumentType<AC extends Container, IP extends InfoCollecto
 		extends Debug
 {
 
+	/**
+	 * All information about the connection. Filled out by the connect() method.
+	 */
 	protected PURLConnection		purlConnection;
 
+	/**
+	 * Associated MetaMetadata object, which drives extraction and interaction.
+	 * Filled out by the connect() method.
+	 */
 	protected MetaMetadata			metaMetadata;
 
+	/**
+	 * Associated Container object.
+	 * Filled out by the connect() method.
+	 */
 	protected AC					container;
 
 	protected IP					abstractInfoCollector;
