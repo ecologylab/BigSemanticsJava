@@ -273,7 +273,8 @@ public class DOMWalkInformationTagger extends PPrint
 			Integer tkey = paragraphTextsTMap.firstKey(); 
 			if( tkey.intValue() < totalTxtLength )
 			{
-				paragraphTextsTMap.remove(tkey);
+				ParagraphText removed = paragraphTextsTMap.remove(tkey);
+				removed.recycle();
 				paragraphTextsTMap.put(totalTxtLength, currentParagraphText);
 			}
 		}
