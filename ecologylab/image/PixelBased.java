@@ -136,17 +136,24 @@ extends Debug
 	public PixelBased(BufferedImage bufferedImage, Dimension maxDimension)
 	{
 		Rendering rendering	= new Rendering(this, bufferedImage, null, null);
-		int width = rendering.width;
-		int height = rendering.height;
-		this.maxDimension = maxDimension;
+		this.maxDimension		= maxDimension;
 
-		rendering = scaleRenderingUnderMaxDimension(rendering, width, height);
+		rendering = scaleRenderingUnderMaxDimension(rendering, rendering.width, rendering.height);
 
-		dimension	= new Dimension(rendering.width, rendering.height);
-		this.basisRendering		= rendering;
-		this.setCurrentRendering(rendering);
+		initializeRenderings(rendering);
+ 
 		constructedCount++;
 	}
+	
+	protected void initializeRenderings(Rendering rendering)
+	{
+		dimension					= new Dimension(rendering.width, rendering.height);
+		basisRendering		= rendering;;
+		currentRendering	= rendering;
+	  downloadStarted	= true;	 
+		downloadDone			= true;
+	}
+
 
 	protected Rendering scaleRenderingUnderMaxDimension(Rendering rendering,
 			int width, int height) 
@@ -820,9 +827,9 @@ extends Debug
 		/* if originalDimension exists, we scaled the picture down when first downloading it.
 		 so if the user wants to make it bigger than the basisRendering, 
 		 we should re-download it and not scale it down */
-		return (originalDimension != null 
-				&& dimension.width > basisRendering.width 
-				|| dimension.height > basisRendering.height);
+		return (/* originalDimension != null && */
+				dimension.width > basisRendering.width ||
+				dimension.height > basisRendering.height);
 	}
 	
 	/**

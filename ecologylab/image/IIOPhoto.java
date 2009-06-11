@@ -178,16 +178,7 @@ implements Downloadable, DispatchTarget<IIOPhoto>
 				{
 					return; //Normal pathway for errors during image read
 				}
-				if (dimension == null)
-				{
-					debug("performDownload() dimension == NULL!!!??");
-					dimension	= new Dimension();
-				}
-				basisRendering		= initialState;
-				currentRendering	= initialState;
-				dimension.width		= initialState.width;
-				dimension.height	= initialState.height;
-				downloadDone		= true;
+				initializeRenderings(initialState);
 			}
 			else
 			{
@@ -235,10 +226,12 @@ implements Downloadable, DispatchTarget<IIOPhoto>
 
 	protected Rendering imageIORead(PURLConnection purlConnection)
 	{
-		Rendering		result					= null;
-		BufferedImage	bufferedImage			= null;
-
-		InputStream		inputStream				= purlConnection.inputStream();
+		return imageIORead(purlConnection.inputStream());
+	}
+	protected Rendering imageIORead(InputStream		inputStream)
+	{
+		Rendering		result						= null;
+		BufferedImage	bufferedImage		= null;
 		try
 		{
 			imageInputStream	= ImageIO.createImageInputStream(inputStream);
@@ -523,7 +516,8 @@ implements Downloadable, DispatchTarget<IIOPhoto>
 	{
 		//FIXME need to make sure zip has been downloaded here
 		// if not, initiate download & wait for it!
-		ParsedURL cachedImagePURL	= new ParsedURL(Assets.getCachedInterfaceFile(imagePath));
+		File cachedInterfaceFile = Assets.getCachedInterfaceFile(imagePath);
+		ParsedURL cachedImagePURL	= new ParsedURL(cachedInterfaceFile);
 		IIOPhoto result = new IIOPhoto(cachedImagePURL, dispatchTarget, graphicsConfiguration);
 		//		result.downloadWithHighPriority();
 		result.useHighPriorityDownloadMonitor();

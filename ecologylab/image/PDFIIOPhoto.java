@@ -3,7 +3,6 @@
  */
 package ecologylab.image;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GraphicsConfiguration;
 import java.awt.color.ColorSpace;
@@ -15,11 +14,12 @@ import java.net.MalformedURLException;
 import multivalent.std.adaptor.pdf.Dict;
 import multivalent.std.adaptor.pdf.Images;
 import multivalent.std.adaptor.pdf.PDFReader;
-
 import ecologylab.generic.DispatchTarget;
 import ecologylab.io.BasicSite;
 import ecologylab.net.PURLConnection;
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.html.documentstructure.ImageConstants;
+import ecologylab.semantics.html.documentstructure.ImageFeatures;
 
 /**
  * @author andruid
@@ -83,65 +83,58 @@ public class PDFIIOPhoto extends IIOPhoto
 		// TODO Auto-generated constructor stub
 	}
 
-	public PDFIIOPhoto(ParsedURL purl, Dict imgdict, InputStream in, PDFReader pdfReader, DispatchTarget<PixelBased> dispatchTarget, GraphicsConfiguration graphicsConfiguration,
+	public PDFIIOPhoto(ParsedURL purl, Dict imgXobj, InputStream in, PDFReader pdfReader, GraphicsConfiguration graphicsConfiguration,
 			Dimension maxDimension)
+	throws IOException
 	{
-		super(purl, dispatchTarget, graphicsConfiguration);
+		super(purl, null, graphicsConfiguration);
+		this.maxDimension = maxDimension;
+
+		Rendering rendering	= createImage(imgXobj, in, pdfReader);
+		rendering = scaleRenderingUnderMaxDimension(rendering, rendering.width, rendering.height);
+
+		initializeRenderings(rendering);
 	}
 	
-	public BufferedImage createImage(Dict imgdict, InputStream in,
-			Color fillcolor, PDFReader pdfr) throws IOException
+	public Rendering createImage(Dict imgXobj, InputStream in, PDFReader pdfr) 
+	throws IOException
 	{
-		assert imgdict != null
-				&& in != null
-				&& ("Image".equals(imgdict.get("Subtype")) || null == imgdict
-						.get("Subtype")/* inline */);
-
-		BufferedImage img	= null;
-		int width		= pdfr.getObjInt(imgdict.get("Width"));
-		int height	= pdfr.getObjInt(imgdict.get("Height"));
-
-		String filter = Images.getFilter(imgdict, pdfr);
-		if ("DCTDecode".equals(filter))
+		String filter = Images.getFilter(imgXobj, pdfr);
+		BufferedImage bImg	= null;
+		if ("DCTDecode".equals(filter) || "JPEG2000".equals(filter))
 		{
-//			img = createJPEG(imgdict, in, pdfr);
-			ColorSpace cs = pdfr.getColorSpace(imgdict.get("ColorSpace"), null, null);
+//			img = createJPEG(imgXobj, in, pdfr);
+			ColorSpace cs = pdfr.getColorSpace(imgXobj.get("ColorSpace"), null, null);
 			int nComp 		= cs.getNumComponents();
 			if (nComp == 4)
 			{
-				error("JPEG with 4 components not yet supported: " + cs);
+				bImg = Images.createImage(imgXobj, in, null, pdfr);			
+//		  throw new IOException("JPEG with 4 components not yet supported: " + cs);
 			}
 			else
 			{	// 3 component JPEG
-				
+				return this.imageIORead(in);
 			}
 		}
 		else 
 		{
-			error("Filter not yet supported: " + filter);
-			/*
-			if ("JPXDecode".equals(filter))
-				img = createJPEG2000(imgdict, in);
-			else if ("CCITTFaxDecode".equals(filter))
-				img = createFAX(imgdict, in, fillcolor, pdfr);
-			else if ("JBIG2Decode".equals(filter))
-				img = createJBIG2(imgdict, in);
-			else
-			{
-				img = createRaw(imgdict, w, h, in, fillcolor, pdfr);
-			} // raw samples, including most inline images
-			*/
+//			if ("JPXDecode".equals(filter))
+//				bImg = Images.createImage(imgXobj, in, null, pdfr);
+//			else if ("CCITTFaxDecode".equals(filter))
+//				bImg = Images.createImage(imgXobj, in, null, pdfr);
+//			else if ("JBIG2Decode".equals(filter))
+//				bImg = Images.createImage(imgXobj, in, null, pdfr);
+//			else
+//			{// raw samples, including most inline images
+				bImg = Images.createImage(imgXobj, in, null, pdfr);
+//			} 
 		}
-		if (img == null)
-			return null; // IOException, JBIG2, or problem with samples
-			// long end = System.currentTimeMillis();
-			// System.out.println("time = "+(end-start));
-		// assert w==img.getWidth(): "width="+img.getWidth()+" vs param "+w; //
-		// possible that parameters are wrong
-		// X assert h==img.getHeight(): "height="+img.getHeight()+" vs param "+h;
-		// => if short of data, shrink height
+		if (bImg != null)
+		{
+			return new Rendering(this, bImg, null, null);
 
-		return img;
+		}
+		throw new IOException("Filter not yet supported: " + filter);
 	}
 
 }

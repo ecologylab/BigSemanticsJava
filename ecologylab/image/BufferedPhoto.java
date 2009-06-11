@@ -23,10 +23,6 @@ extends PixelBased
    public BufferedPhoto(BufferedImage bufferedImage, Dimension maxDimension)
    {
 	  super(bufferedImage, maxDimension);
-
-	 downloadStarted	= true;
-	 
-	 downloadDone		= true;
    }
    public boolean download()
    {
