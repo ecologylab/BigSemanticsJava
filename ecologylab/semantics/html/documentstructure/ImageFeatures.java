@@ -3,6 +3,8 @@
  */
 package ecologylab.semantics.html.documentstructure;
 
+import java.util.regex.Pattern;
+
 import ecologylab.generic.StringTools;
 import ecologylab.semantics.html.HTMLElement;
 import ecologylab.semantics.html.utils.HTMLAttributeNames;
@@ -22,9 +24,10 @@ implements HTMLAttributeNames, ImageConstants
 	 * 
 	 * @return	true if its null, empty string, "null", or looks like a filename.
 	 */
+	static Pattern BOGUS_ALT_MATCHER = Pattern.compile("^([[:alpha:]]+_*)+$");
 	public static boolean altIsBogus(String alt)
 	{
-		boolean result	= (alt == null) || (alt.length() == 0) || "null".equals(alt) || "image".equals(alt) || alt.endsWith(".jpg");
+		boolean result	= (alt == null) || (alt.length() == 0) || "null".equals(alt) || "image".equals(alt) || alt.endsWith(".jpg") || BOGUS_ALT_MATCHER.matcher(alt).matches();
 		if (!result)
 		{
 			if (!StringTools.contains(alt, ' ')) // no spaces
