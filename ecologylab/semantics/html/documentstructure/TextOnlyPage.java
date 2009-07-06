@@ -46,6 +46,7 @@ public class TextOnlyPage extends RecognizedDocumentStructure
 		{
 			ParagraphText paraText		= paraTexts.remove(paraTexts.lastKey());
 			generateTextSurrogate(paraText, htmlType);
+			paraText.recycle();	// releases to pool
 		}
 	}
 
@@ -58,7 +59,5 @@ public class TextOnlyPage extends RecognizedDocumentStructure
 			XMLTools.unescapeXML(paraTextBuffy);
 			htmlType.newTxt(paraTextBuffy);//, paraTexts.node );
 		}
-		
-		paraText.recycle();	// releases to pool
 	}
 }
