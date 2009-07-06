@@ -53,18 +53,15 @@ public class ParagraphText
 	 * @param toAppend
 	 * @return	The number of characters added.
 	 */
-	public int append(CharSequence toAppend) 
+	public void append(CharSequence toAppend) 
 	{
-		int	result	= toAppend.length();
 		if (buffy == null)
 			//TODO -- should this be built larger? how many calls are made on average?
 			buffy			= StringBuilderUtils.acquire();
+		else
+			buffy.append(' ');
 		
-		buffy.append(' ');
 		buffy.append(toAppend);
-		result++;
-
-		return result;
 	}
 	
 	public void append(byte[] bytes, int start, int end)
