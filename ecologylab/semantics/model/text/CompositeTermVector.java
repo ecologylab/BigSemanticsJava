@@ -19,6 +19,10 @@ import ecologylab.generic.IFeatureVector;
  */
 public class CompositeTermVector extends Observable implements Observer, ITermVector
 {
+	private TermVector						compositeTermVector	= new TermVector();
+
+	private HashMap<ITermVector, Double>	termVectors			= new HashMap<ITermVector, Double>();
+
 
 	public CompositeTermVector ()
 	{
@@ -29,10 +33,6 @@ public class CompositeTermVector extends Observable implements Observer, ITermVe
 		super();
 		compositeTermVector.add(original.compositeTermVector);
 	}
-
-	private TermVector						compositeTermVector	= new TermVector();
-
-	private HashMap<ITermVector, Double>	termVectors			= new HashMap<ITermVector, Double>();
 
 	/**
 	 * Adds a Term Vector to this Composite Term Vectors collection, multiplying it by a scalar.
@@ -121,8 +121,17 @@ public class CompositeTermVector extends Observable implements Observer, ITermVe
 	public void recycle ( )
 	{
 		if (termVectors != null)
+		{
 			for (ITermVector tv : termVectors.keySet())
+			{
+				tv.recycle();
 				tv.deleteObserver(this);
+			}
+			termVectors.clear();
+			termVectors				= null;
+		}
+		compositeTermVector.recycle();
+		compositeTermVector	= null;
 	}
 
 	private void rebuildCompositeTermVector ( )

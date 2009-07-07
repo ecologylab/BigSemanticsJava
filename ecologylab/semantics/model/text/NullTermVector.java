@@ -117,4 +117,10 @@ public class NullTermVector implements ITermVector
 		return 0;
 	}
 
+	public void recycle()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
 }
