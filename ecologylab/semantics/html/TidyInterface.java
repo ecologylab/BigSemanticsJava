@@ -32,7 +32,7 @@ public interface TidyInterface
 	public void newImgTxt(ImgElement imgNode, ParsedURL anchorHref);
 	
 	//TODO -- take a BtringBuilder instead of a String. and use if efficiently!!!!!!
-	public void newTxt(StringBuilder surrogateText);
+	public void newTxt(ParagraphText paraText);
 	
 	public int numCandidatesExtractedFrom();
 	

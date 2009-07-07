@@ -129,7 +129,7 @@ public class ImgElement extends WithPurlElement
 
 	public void setTextContext(StringBuilder buffy)
 	{
-		this.textContext = StringTools.toString(buffy);
+		this.textContext = buffy.toString();
 	}
 
 	public String getExtractedCaption()

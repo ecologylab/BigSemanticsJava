@@ -98,7 +98,7 @@ public class ImageCollectionPage extends RecognizedDocumentStructure
 					}
 					if (contextNode != null)
 					{
-						imgElement.setTextContext(paraText.getBuffy());
+						paraText.setImgElementTextContext(imgElement);
 						break;
 					}
 				}

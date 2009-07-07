@@ -254,15 +254,13 @@ implements HTMLAttributeNames
 					if (textNode.grandParent().equals(articleBody) || 
 							textNode.greatGrandParent().equals(articleBody) )
 					{
-						StringBuilder textContext = pt.getBuffy();
-						
-						if (textContext != null)
+						if (pt.hasText())
 						{
-							XMLTools.unescapeXML(textContext);			
+							pt.unescapeXML();			
 							boolean setAltToCaption							= false;
 							if ((extractedCaption != null) || (altText!=null))
 							{
-								TermVector textContextTV					= new TermVector(textContext);
+								TermVector textContextTV					= pt.termVector();
 								double captionDotTextContext			= 0;
 								if (extractedCaption != null)
 								{
@@ -279,7 +277,7 @@ implements HTMLAttributeNames
 								// check for common sharp terms between associateText and captionText
 								if ((captionDotTextContext > 0) || (altDotTextContext > 0))
 								{
-									imgElement.setTextContext(textContext);
+									pt.setImgElementTextContext(imgElement);
 									if (captionDotTextContext > altDotTextContext)
 									{
 										imgElement.setAlt(StringTools.toString(extractedCaption));
@@ -291,7 +289,7 @@ implements HTMLAttributeNames
 							else
 							{	// no alt attribute or extracted caption, so use the first (longest) text context
 								// FIXME -- should we try dot product with title?!
-								imgElement.setTextContext(textContext);
+								pt.setImgElementTextContext(imgElement);
 								done																= true;
 							}
 							if (!setAltToCaption && (extractedCaption != null))

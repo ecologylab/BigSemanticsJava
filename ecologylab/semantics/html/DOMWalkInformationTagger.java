@@ -250,6 +250,14 @@ public class DOMWalkInformationTagger extends PPrint
 		}
 	}
 
+	/**
+	 * Associate an actual paragraph text with the current node if one wasn't already.
+	 * If appropriate, add the currentParagraphText to the paragraphTextsMap.
+	 * (For example, if there aren't too many already or if this one looks longer than those collected.)
+	 * Otherwise, recycle the currentParagraphText.
+	 * 
+	 * @param blockNode
+	 */
 	private void addCompletedPara(TdNode blockNode)
 	{
 		TdNode node	= currentNode;
@@ -284,6 +292,8 @@ public class DOMWalkInformationTagger extends PPrint
 			//FIXME -- look out for duplicates introduced by getLongestTxtinSubTree() above
 			paragraphTextsTMap.put(length, currentParagraphText);
 		}
+		else
+			currentParagraphText.recycle();
 	}
 
 	public boolean underAHref(TdNode node)

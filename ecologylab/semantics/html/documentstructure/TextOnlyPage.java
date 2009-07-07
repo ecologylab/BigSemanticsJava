@@ -42,7 +42,7 @@ public class TextOnlyPage extends RecognizedDocumentStructure
 			TreeMap<Integer, ParagraphText> paraTexts, TidyInterface htmlType)
 	{
 		int count	= 0;
-		while (!paraTexts.isEmpty() && count<MAX_TEXT_SURROGATES)
+		while (!paraTexts.isEmpty() && count++<MAX_TEXT_SURROGATES)
 		{
 			ParagraphText paraText		= paraTexts.remove(paraTexts.lastKey());
 			generateTextSurrogate(paraText, htmlType);
@@ -52,12 +52,11 @@ public class TextOnlyPage extends RecognizedDocumentStructure
 
 	private void generateTextSurrogate(ParagraphText paraText, TidyInterface htmlType)
 	{
-		StringBuilder paraTextBuffy	= paraText.getBuffy();
-		
-		if (paraTextBuffy.length()>MIN_PARA_TEXT_LENGTH)
+		if (paraText.length()>MIN_PARA_TEXT_LENGTH)
 		{
-			XMLTools.unescapeXML(paraTextBuffy);
-			htmlType.newTxt(paraTextBuffy);//, paraTexts.node );
+			paraText.unescapeXML();
+			// Creates a TextElement using the buffy in paraText
+			htmlType.newTxt(paraText);//, paraTexts.node );
 		}
 	}
 }

@@ -4,6 +4,8 @@ import org.w3c.tidy.TdNode;
 
 import ecologylab.generic.StringBuilderPool;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
+import ecologylab.semantics.model.text.TermVector;
+import ecologylab.xml.XMLTools;
 
 /**
  * Keep the paragraph text in the document with the DOM Node to recognize the ArticleMain node.
@@ -31,6 +33,8 @@ public class ParagraphText
 		this.node = node;
 	}
 
+//TODO -- get rid of this visibility, because it is prone to creating memory leaks.
+// Anyway, higher level passing of this is better, because it carries context with it.
 	public StringBuilder getBuffy() 
 	{
 		return buffy;
@@ -43,6 +47,9 @@ public class ParagraphText
 	
 	public void setBuffy(StringBuilder buffy)
 	{
+		if (this.buffy != null)
+			StringBuilderUtils.release(this.buffy);
+
 		this.buffy	= buffy;
 	}
 	
@@ -98,6 +105,30 @@ public class ParagraphText
 		}
 		return null;
 	}
+	
+	public boolean hasText()
+	{
+		return buffy != null && buffy.length() > 0;
+	}
 
+	public void unescapeXML()
+	{
+		XMLTools.unescapeXML(buffy);
+	}
+	
+	TermVector termVector()
+	{
+		return new TermVector(buffy);
+	}
+	
+	/**
+	 * Set the textContext for the ImgElement (HTMLElement) to the buffy of this.
+	 * 
+	 * @param imgElement
+	 */
+	public void setImgElementTextContext(ImgElement imgElement)
+	{
+		imgElement.setTextContext(buffy);
+	}
 }
 
