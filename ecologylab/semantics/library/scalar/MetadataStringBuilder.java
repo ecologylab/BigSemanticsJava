@@ -62,14 +62,23 @@ public class MetadataStringBuilder extends MetadataScalarBase<StringBuilder>
 				termVector.reset("");
 		}
 	}
-	
+	@Override
 	public ITermVector termVector()
 	{
 		if (termVector == null)
 			termVector = new TermVector();
 		return termVector;
 	}
-	
+	@Override
+	public void recycle()
+	{
+		if (termVector != null)
+		{
+			termVector.recycle();
+			termVector	= null;
+		}
+	}
+
 	@Override
 	public String toString()
 	{

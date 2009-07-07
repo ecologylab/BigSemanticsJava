@@ -51,7 +51,7 @@ public class MetadataString extends MetadataScalarBase<String>
 		}
 
 	}
-	
+	@Override
 	public ITermVector termVector()
 	{
 		if (termVector == null)
@@ -67,5 +67,14 @@ public class MetadataString extends MetadataScalarBase<String>
 	public static boolean isNotNullValue(String valueString)
 	{
 		return (valueString != null && !valueString.equals(MetadataFieldAccessor.NULL) );
+	}
+	@Override
+	public void recycle()
+	{
+		if (termVector != null)
+		{
+			termVector.recycle();
+			termVector	= null;
+		}
 	}
 }
