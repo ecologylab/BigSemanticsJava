@@ -111,6 +111,15 @@ public class ParagraphText
 		return buffy != null && buffy.length() > 0;
 	}
 
+	public boolean isEmpty()
+	{
+		return buffy == null || buffy.length() == 0;
+	}
+
+	public int indexOf(String s)
+	{
+		return (buffy == null) ? -1 : buffy.indexOf(s);
+	}
 	public void unescapeXML()
 	{
 		XMLTools.unescapeXML(buffy);
