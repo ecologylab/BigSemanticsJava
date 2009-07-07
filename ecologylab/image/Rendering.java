@@ -4,12 +4,24 @@
  */
 package ecologylab.image;
 
-import java.awt.*;
-import java.awt.image.*;
-import java.awt.geom.*;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
+import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.DataBuffer;
+import java.awt.image.DataBufferInt;
+import java.awt.image.Raster;
+import java.awt.image.SampleModel;
+import java.awt.image.SinglePixelPackedSampleModel;
+import java.awt.image.WritableRaster;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 
-import ecologylab.generic.*;
+import ecologylab.generic.Colors;
+import ecologylab.generic.Debug;
+import ecologylab.generic.ImageTools;
 
 /**
  * The basic unit of an image processing rendering pipeline;
@@ -162,7 +174,7 @@ implements Colors
 	private void flush(BufferedImage bImage) 
 	{
 		bImage.flush();
-		new WeakReference(bImage, null);
+		new WeakReference<BufferedImage>(bImage, null);
 		flushCount++;
 	}
 	/**
@@ -335,6 +347,7 @@ implements Colors
 			{
 				flush(oldImage);
 				oldImage	= null;
+				this.bufferedImage = null;
 			}
 			
 			BufferedImage newImage		= createNewBufferedImage(dataBuffer, width, height);
@@ -601,8 +614,19 @@ implements Colors
 		this.dataBuffer				= null;
 		this.pixels					= null;
 		this.pixelBased				= null;
-		this.previousRendering		= null;
-		this.nextRendering			= null;
+		
+		previousRendering = null;
+		nextRendering = null;
+	}
+	
+	void recycleRenderingChain()
+	{
+		Rendering temp = null;
+		for (Rendering prev = lastInChain(); (prev != null); prev = temp)
+		{
+			temp = prev.previousRendering;
+			prev.recycle();
+		}
 	}
 	
 	/**

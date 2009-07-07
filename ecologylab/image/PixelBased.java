@@ -148,7 +148,7 @@ extends Debug
 	protected void initializeRenderings(Rendering rendering)
 	{
 		dimension					= new Dimension(rendering.width, rendering.height);
-		basisRendering		= rendering;;
+		basisRendering		= rendering;
 		currentRendering	= rendering;
 	  downloadStarted	= true;	 
 		downloadDone			= true;
@@ -333,7 +333,8 @@ extends Debug
 		{
 			// create new Rendering using the same pixels, DataBufferInt, BufferedImage
 			// this is efficient!
-			unprocessedRendering	= new Rendering(basisRendering);
+			if (unprocessedRendering == null)
+				unprocessedRendering	= new Rendering(basisRendering);
 			this.setCurrentRendering(unprocessedRendering);
 		}
 	}
@@ -598,8 +599,6 @@ extends Debug
 			{
 				//debug("recycle()");
 				recycled			= true;
-				currentRendering	= null;
-				firstDynamic		= null;
 				timeBased		= false;	   // stop updates
 
 				purl				= null;
@@ -607,18 +606,32 @@ extends Debug
 				downloadMonitor	= null;
 				dimension		= null;
 				graphicsConfiguration	= null;
+				
+				if (unprocessedRendering != null)
+				{
+					unprocessedRendering.recycleRenderingChain();
+					unprocessedRendering.recycle(); // also calls chain of Renderings
+					unprocessedRendering		= null;
+				}
 
+				if (currentRendering != null)
+				{
+					currentRendering.recycle();
+					currentRendering	= null;
+				}
+				
+				if (firstDynamic != null)
+				{
+					firstDynamic.recycle();
+					firstDynamic		= null;
+				}
+				
 				if (basisRendering != null)
 				{
 					basisRendering.recycle();
 					basisRendering	= null;
 				}
 
-				if (unprocessedRendering != null)
-				{
-					unprocessedRendering.recycle(); // also calls chain of Renderings
-					unprocessedRendering		= null;
-				}
 				if (this.alphaGradientRendering != null)
 				{
 					alphaGradientRendering.recycle();
