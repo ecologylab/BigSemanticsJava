@@ -37,4 +37,33 @@ public class SemanticInLinks extends ArrayList<SemanticAnchor>
 	{
 		return super.add(e);
 	}
+	
+	public synchronized void recycle()
+	{
+		int index	= size();
+		while (--index >= 0)
+		{
+			SemanticAnchor semanticAnchor		= remove(index);
+			semanticAnchor.recycle();
+		}
+	}
+	
+	public synchronized boolean addIfUnique(SemanticAnchor newAnchor)
+	{
+		String newAnchorText = newAnchor.getAnchorText();
+		if(newAnchorText != null)
+		{
+			for(SemanticAnchor oldAnchor : this)
+			{
+				String anchorText = oldAnchor != null ? oldAnchor.getAnchorText() : null;
+				if(anchorText != null && anchorText.equalsIgnoreCase(newAnchorText))
+				{
+					//This is one case we know we want to ignore this new anchor.
+					return false;
+				}
+			}
+			return add(newAnchor);
+		}
+		return false;
+	}
 }

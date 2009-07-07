@@ -38,4 +38,18 @@ public class SemanticAnchor extends AnchorContext implements TermVectorFeature
 	{
 		withinSite = b;
 	}
+	
+	public void recycle()
+	{
+		if (tv != null)
+		{
+			tv.recycle();
+			tv					= null;
+		}
+		if (inlinkPurl != null)
+		{
+			inlinkPurl.recycle();
+			inlinkPurl	= null;
+		}
+	}
 }
