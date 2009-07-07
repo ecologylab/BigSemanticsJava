@@ -97,6 +97,11 @@ public class CompositeTermVector extends Observable implements Observer, ITermVe
 	 */
 	public void remove ( ITermVector tv )
 	{
+		//FIXME this is a bandaid for a race condition elsewhere, in which still in use term vectors
+		// are getting recycled. where is this happening? why?
+		if (termVectors == null)
+			return;
+		
 		Double removal = null;
 		synchronized (termVectors)
 		{
