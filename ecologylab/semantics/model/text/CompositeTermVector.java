@@ -210,7 +210,7 @@ public class CompositeTermVector extends Observable implements Observer, ITermVe
 
 	public double idfDot ( IFeatureVector<Term> v )
 	{
-		return compositeTermVector.idfDot(v);
+		return (compositeTermVector != null) ? compositeTermVector.idfDot(v) : Double.MIN_VALUE;
 	}
 
 	public TermVector unit ( )
