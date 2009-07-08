@@ -135,8 +135,11 @@ public class CompositeTermVector extends Observable implements Observer, ITermVe
 			termVectors.clear();
 			termVectors				= null;
 		}
-		compositeTermVector.recycle();
-		compositeTermVector	= null;
+		if (compositeTermVector != null)
+		{
+			compositeTermVector.recycle();
+			compositeTermVector	= null;
+		}
 	}
 
 	private void rebuildCompositeTermVector ( )
