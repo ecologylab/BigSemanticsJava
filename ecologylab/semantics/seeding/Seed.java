@@ -123,8 +123,9 @@ abstract public class Seed extends ecologylab.services.messages.cf.Seed implemen
   	 * Called to specify that the next set of search results will be retrieved.
   	 * This is relevant for search seeds, but for other seeds it does nothing.
   	 */
-  	public void nextResultSet()
+  	public int nextResultSet()
   	{
+  		return 0;
   	}
 
     

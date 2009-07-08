@@ -354,9 +354,10 @@ implements SemanticsPrefs, SearchEngineNames
 	 * Called to specify that the next set of search results will be retrieved for this Search Seed.
 	 */
 	@Override
-	public void nextResultSet()
+	public int nextResultSet()
 	{
-		currentFirstResultIndex += numResults;
+		 currentFirstResultIndex += numResults;
+		 return currentFirstResultIndex;
 	}
 	
 	/**

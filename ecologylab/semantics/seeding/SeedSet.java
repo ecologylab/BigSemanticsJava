@@ -113,7 +113,14 @@ implements SemanticsSessionObjectNames
    		performSeeding(scope, false);
    	}
    	
-   	/**
+   	int startingResultNum;
+   	
+   	public int getStartingResultNum()
+		{
+			return startingResultNum;
+		}
+
+		/**
    	 * Bring the seeds into the agent or directly into the compostion.
    	 * 
    	 * @param scope		Context passed between services calls.
@@ -137,7 +144,9 @@ implements SemanticsSessionObjectNames
    			if (nextSearch)
    			{
    				seed.resultDistributer	= null;
- 					seed.nextResultSet();
+ 					int thisStartingResultNum	= seed.nextResultSet();
+ 					if (thisStartingResultNum > startingResultNum)
+ 						startingResultNum	= thisStartingResultNum;
    			}
    			else if (seed.initializeSeedingSteps(this, numSearches))
    				numSearches++;
