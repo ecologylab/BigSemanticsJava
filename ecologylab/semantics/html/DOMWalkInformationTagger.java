@@ -16,6 +16,7 @@ import org.w3c.tidy.TdNode;
 
 import ecologylab.generic.StringTools;
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.html.utils.StringBuilderUtils;
 
 
 
@@ -264,11 +265,16 @@ public class DOMWalkInformationTagger extends PPrint
 		if (currentParagraphText.length() == 0)
 		{
 			StringBuilder longestTxtinSubTree = RecognizedDocumentStructure.getLongestTxtinSubTree(blockNode, null);
-			if ((longestTxtinSubTree != null) && longestTxtinSubTree.length() > PARA_TEXT_LENGTH_LIMIT)
+			if (longestTxtinSubTree != null)
 			{
-				currentParagraphText.setNode(blockNode);
-				currentParagraphText.setBuffy(longestTxtinSubTree);
-				node			= blockNode;
+				if (longestTxtinSubTree.length() > PARA_TEXT_LENGTH_LIMIT)
+				{
+					currentParagraphText.setNode(blockNode);
+					currentParagraphText.setBuffy(longestTxtinSubTree);
+					node			= blockNode;
+				}
+				else
+					StringBuilderUtils.release(longestTxtinSubTree);
 			}
 		}
 		int length	= currentParagraphText.length();
