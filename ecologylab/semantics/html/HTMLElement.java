@@ -127,6 +127,7 @@ implements HTMLAttributeNames, ImageConstants
 			xPath(node, buffy);
 			result							= StringTools.toString(buffy);
 			this.xPath					= result;
+			StringBuilderUtils.release(buffy);
 		}
 		return result;
 	}
