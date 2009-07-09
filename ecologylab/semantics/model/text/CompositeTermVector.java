@@ -115,7 +115,6 @@ public class CompositeTermVector extends Observable implements Observer, ITermVe
 			notifyObservers();
 		}
 	}
-
 	public void update ( Observable o, Object arg )
 	{
 		rebuildCompositeTermVector();
@@ -123,7 +122,7 @@ public class CompositeTermVector extends Observable implements Observer, ITermVe
 		notifyObservers();
 	}
 
-	public void recycle ( )
+	public synchronized void recycle ( )
 	{
 		if (termVectors != null)
 		{
@@ -141,6 +140,11 @@ public class CompositeTermVector extends Observable implements Observer, ITermVe
 			compositeTermVector	= null;
 		}
 	}
+	
+	public boolean isRecycled()
+	{
+		return compositeTermVector == null;
+	}
 
 	private void rebuildCompositeTermVector ( )
 	{
@@ -151,6 +155,13 @@ public class CompositeTermVector extends Observable implements Observer, ITermVe
 				c.add(termVectors.get(t), t);
 		}
 		compositeTermVector = c;
+	}
+
+	public void reinitialize()
+	{
+		compositeTermVector	= new TermVector();
+		termVectors			= new HashMap<ITermVector, Double>();
+//		rebuildCompositeTermVector();
 	}
 
 	public double dot ( IFeatureVector<Term> v )
