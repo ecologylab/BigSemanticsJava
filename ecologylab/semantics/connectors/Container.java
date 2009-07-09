@@ -8,6 +8,7 @@ import java.io.IOException;
 import ecologylab.documenttypes.DocumentType;
 import ecologylab.generic.DispatchTarget;
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.library.Document;
 import ecologylab.semantics.seeding.ResultDistributer;
 import ecologylab.semantics.seeding.SearchResult;
 import ecologylab.semantics.seeding.Seed;
@@ -17,7 +18,7 @@ import ecologylab.xml.TranslationScope;
  * @author andruid
  * 
  */
-public interface Container <DT extends DocumentType>
+public interface Container
 {
 
 	void redirectInlinksTo(Container redirectedAbstractContainer);
@@ -45,8 +46,6 @@ public interface Container <DT extends DocumentType>
 	 */
 	public SearchResult searchResult();
 
-	public void hwSetMetadataField(String query, String queryValue);
-
 	public void setJustCrawl(boolean justCrawl);
 
 	public void presetDocumentType(DocumentType documentType);
@@ -57,6 +56,8 @@ public interface Container <DT extends DocumentType>
 
 	void setSearchResult(ResultDistributer sra, int resultsSoFar);
 	
-
+	void setQuery(String query);
+	
+	void delete();
 
 }
