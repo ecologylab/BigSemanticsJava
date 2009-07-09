@@ -237,8 +237,7 @@ implements SemanticsPrefs, SearchEngineNames
 		if(query != null)
 		{
 			String queryValue			= query.replace('+', ' ');
-			//Change either MetdataTypeNames.java or create a new names file.
-			container.hwSetMetadataField(QUERY, queryValue);
+			container.setQuery(queryValue);
 		}
 //		container.setMetadataField("query", queryValue);
 //		queryField.incrementParticipantInterest(initialIntensity);
