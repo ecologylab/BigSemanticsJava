@@ -203,6 +203,7 @@ abstract public class DocumentType<AC extends Container, IP extends InfoCollecto
 			public boolean processRedirect(URL connectionURL) throws Exception
 			{
 				ParsedURL connectionPURL = new ParsedURL(connectionURL);
+				System.out.println("DocumentType.processRedirect("+ purl + " > " + connectionURL);
 				Container redirectedAbstractContainer = infoCollector
 						.lookupAbstractContainer(connectionPURL);
 				if (redirectedAbstractContainer != null)
@@ -724,6 +725,17 @@ abstract public class DocumentType<AC extends Container, IP extends InfoCollecto
 	}
 
 	public boolean isContentPage ( )
+	{
+		return false;
+	}
+	
+	/**
+	 * Differentiates referential documents, like HTML from composite documents, like PDF.
+	 * 
+	 * @return 	true if images referred to by this document are stored within the document itself.
+	 * 					The default implementation, here returns false.
+	 */
+	public boolean isCompositeDocument()
 	{
 		return false;
 	}
