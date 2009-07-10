@@ -28,12 +28,6 @@ public class CompositeTermVector extends Observable implements Observer, ITermVe
 	{
 	}
 	
-	CompositeTermVector(CompositeTermVector original)
-	{
-		super();
-		compositeTermVector.add(original.compositeTermVector);
-	}
-
 	/**
 	 * Adds a Term Vector to this Composite Term Vectors collection, multiplying it by a scalar.
 	 * 
@@ -60,23 +54,6 @@ public class CompositeTermVector extends Observable implements Observer, ITermVe
 		}
 	}
 	
-	/**
-	 * 
-	 * @param other
-	 * @return	This if other is empty, else a new CompositeTermVector with terms from this and other.
-	 */
-	public CompositeTermVector union(CompositeTermVector other)
-	{
-		if (other.size() == 0)
-			return this;
-		
-		CompositeTermVector result	= new CompositeTermVector(this);
-		
-		result.add(other);
-		
-		return result;
-	}
-
 	/**
 	 * Adds a Term Vector to this Composite Term Vector's collection
 	 * 
@@ -124,20 +101,24 @@ public class CompositeTermVector extends Observable implements Observer, ITermVe
 
 	public synchronized void recycle ( )
 	{
-		if (termVectors != null)
+		if (!hasObservers())
 		{
-			for (ITermVector tv : termVectors.keySet())
+			if (termVectors != null)
 			{
-				tv.recycle();
-				tv.deleteObserver(this);
+				for (ITermVector tv : termVectors.keySet())
+				{
+					tv.deleteObserver(this);
+					if (!tv.hasObservers())
+						tv.recycle();
+				}
+				termVectors.clear();
+				termVectors				= null;
 			}
-			termVectors.clear();
-			termVectors				= null;
-		}
-		if (compositeTermVector != null)
-		{
-			compositeTermVector.recycle();
-			compositeTermVector	= null;
+			if (compositeTermVector != null)
+			{
+				compositeTermVector.recycle();
+				compositeTermVector	= null;
+			}
 		}
 	}
 	
@@ -252,6 +233,11 @@ public class CompositeTermVector extends Observable implements Observer, ITermVe
 	public int size()
 	{
 		return compositeTermVector.size();
+	}
+
+	public boolean hasObservers()
+	{
+		return countObservers() > 0;
 	}
 
 }
