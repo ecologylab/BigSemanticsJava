@@ -23,6 +23,7 @@ public class MetadataInteger extends MetadataScalarBase<Integer>
 		this.value = value;
 	}
 	
+	@Override
 	public NullTermVector termVector() 
 	{
 		return NullTermVector.singleton();

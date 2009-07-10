@@ -7,9 +7,6 @@ import ecologylab.semantics.model.text.Term;
 abstract
 public class MetadataScalarBase<T> extends MetadataBase
 {
-
-	protected FeatureVector<Term> termVector;
-
 	public MetadataScalarBase()
 	{
 		super();

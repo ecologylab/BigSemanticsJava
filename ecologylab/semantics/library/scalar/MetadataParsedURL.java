@@ -31,7 +31,7 @@ public class MetadataParsedURL extends MetadataScalarBase<ParsedURL>
 	{
 		this.value = value;
 	}
-	
+	@Override
 	public NullTermVector termVector() 
 	{
 		return NullTermVector.singleton();
