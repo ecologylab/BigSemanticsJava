@@ -297,6 +297,7 @@ abstract public class Metadata extends MetadataBase
 		this.metaMetadata = metaMetadata;
 	}
 
+	@Override
 	public CompositeTermVector termVector()
 	{
 		if (termVector == null)
@@ -425,4 +426,8 @@ abstract public class Metadata extends MetadataBase
 		return new ClassAndCollectionIterator<FieldAccessor, MetadataBase>(this);
 	}
 
+	public boolean hasObservers()
+	{
+		return termVector != null && termVector.countObservers() > 0;
+	}
 }
