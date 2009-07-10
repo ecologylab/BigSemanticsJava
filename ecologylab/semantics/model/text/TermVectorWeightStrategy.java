@@ -43,7 +43,7 @@ public class TermVectorWeightStrategy<E extends TermVectorFeature> extends Weigh
 
 	public void insert ( E e )
 	{
-		if (e.termVector() != null)
+		if (e != null && e.termVector() != null)
 			e.termVector().addObserver(this);
 		super.insert(e);
 	}
