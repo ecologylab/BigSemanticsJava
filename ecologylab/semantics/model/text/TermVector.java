@@ -289,5 +289,12 @@ public class TermVector extends FeatureVector<Term> implements ITermVector
 		setChanged();
 		notifyObservers();
 	}
+	
+
+	public boolean hasObservers()
+	{
+		return countObservers() > 0;
+	}
+
 
 }

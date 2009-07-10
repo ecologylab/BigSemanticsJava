@@ -122,5 +122,9 @@ public class NullTermVector implements ITermVector
 		// TODO Auto-generated method stub
 		
 	}
-
+	
+	public boolean hasObservers()
+	{
+		return true;
+	}
 }

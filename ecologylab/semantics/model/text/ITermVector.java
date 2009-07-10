@@ -29,4 +29,6 @@ public interface ITermVector extends IFeatureVector<Term>
 	public void deleteObserver(Observer observer);
 	
 	public void recycle();
+
+	public boolean hasObservers();
 }
