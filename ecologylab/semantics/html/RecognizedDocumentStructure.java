@@ -267,6 +267,7 @@ implements HTMLAttributeNames
 //									imageNode.setAttribute(EXTRACTED_CAPTION, StringTools.toString(extractedCaption));
 									TermVector captionTV 						= new TermVector(extractedCaption);
 									captionDotTextContext 					= captionTV.dot(textContextTV);
+									captionTV.clear();
 								}
 
 								double altDotTextContext					= 0;
@@ -285,6 +286,7 @@ implements HTMLAttributeNames
 									}
 									done															= true;
 								}
+								textContextTV.clear();
 							}
 							else
 							{	// no alt attribute or extracted caption, so use the first (longest) text context
@@ -302,6 +304,9 @@ implements HTMLAttributeNames
 				
 				if (extractedCaption != null)
 					StringBuilderUtils.release(extractedCaption);
+				
+				if (altTextTV != null)
+					altTextTV.clear();
 
 				ParsedURL anchorPurl = findAnchorPURLforImgNode(htmlType, imgElement);
 
