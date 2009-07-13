@@ -4,6 +4,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import ecologylab.collections.Scope;
+import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.connectors.SeedPeer;
 import ecologylab.semantics.connectors.SemanticsSessionObjectNames;
@@ -55,9 +56,9 @@ implements SemanticsSessionObjectNames
    	 */
    	SeedSet						parentSeedSet;
    	
-   	public ResultDistributer resultDistributer(InfoCollector infoCollector)
+   	public<C extends Container> ResultDistributer<C> resultDistributer(InfoCollector infoCollector)
    	{
-   		ResultDistributer result	= resultDistributer;
+   		ResultDistributer<C> result	= resultDistributer;
    		
    		if (result == null)
    		{
@@ -67,7 +68,7 @@ implements SemanticsSessionObjectNames
    				result.moreSearches(numSearches);
    			}
    			else
-   				result		= new ResultDistributer(infoCollector, numSearches);
+   				result		= new ResultDistributer<C>(infoCollector, numSearches);
    			this.resultDistributer	= result;
    		}
    		return result;
@@ -119,7 +120,7 @@ implements SemanticsSessionObjectNames
 		{
 			return startingResultNum;
 		}
-
+		
 		/**
    	 * Bring the seeds into the agent or directly into the compostion.
    	 * 

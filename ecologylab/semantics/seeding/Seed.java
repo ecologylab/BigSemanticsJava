@@ -200,7 +200,7 @@ abstract public class Seed extends ecologylab.services.messages.cf.Seed implemen
     /**
      * @return Returns the ResultDistributer.
      */
-    public ResultDistributer resultDistributer(InfoCollector infoCollector)
+    public <C extends Container> ResultDistributer<C> resultDistributer(InfoCollector infoCollector)
     {
         if (resultDistributer != null)
             return resultDistributer;
@@ -208,7 +208,7 @@ abstract public class Seed extends ecologylab.services.messages.cf.Seed implemen
         if (noAggregator())
             return null;
 
-        ResultDistributer result = seedSet().resultDistributer(infoCollector);
+        ResultDistributer<C> result = seedSet().resultDistributer(infoCollector);
         this.resultDistributer = result;
         return result;
     }
