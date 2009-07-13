@@ -21,4 +21,11 @@ public @xml_tag(SemanticActionStandardMethods.SETTER_ACTION) class SetterSemanti
 		return SETTER_ACTION;
 	}
 
+	@Override
+	public void handleError()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
 }

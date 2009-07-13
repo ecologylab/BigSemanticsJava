@@ -28,4 +28,11 @@ class GeneralSemanticAction extends SemanticAction
 		return  actionName;
 	}
 
+	@Override
+	public void handleError()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
 }

@@ -21,5 +21,12 @@ public @xml_tag(SemanticActionStandardMethods.GET_FIELD_ACTION) class GetFieldSe
 		return GET_FIELD_ACTION;
 	}
 
+	@Override
+	public void handleError()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
 	
 }

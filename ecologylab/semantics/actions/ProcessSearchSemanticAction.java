@@ -21,4 +21,10 @@ class ProcessSearchSemanticAction extends SemanticAction implements SemanticActi
 		return PROCESS_SEARCH;
 	}
 
+	@Override
+	public void handleError()
+	{
+
+	}
+
 }

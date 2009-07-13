@@ -21,4 +21,11 @@ public @xml_tag(SemanticActionStandardMethods.PROCESS_DOCUMENT)class ProcessDocu
 		return PROCESS_DOCUMENT;
 	}
 
+	@Override
+	public void handleError()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
 }

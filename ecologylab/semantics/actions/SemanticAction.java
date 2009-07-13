@@ -13,19 +13,19 @@ import ecologylab.xml.types.element.ArrayListState;
 
 /**
  * This is the abstract class which defines the semantic action. All the semantic actions must
- * extend it.
- * To add a new semantic action following steps needed to be taken.
- * 1) Create a class for that semantic action which extends SemanticAction class.
- * 2) Write all the custom code for that semantic action in this new class file. [Example see <code>ForEachSemanticAction.java</code>
- *    which implements for_each semantic action.]
- * 3) Modify the <code>handleSemanticAction</code> method of <code>SemanticActionHandle.java</code> to add case for new semantic action.
- * 4) Add  a new method in <code>SemanticActionHandler.java </code> to handle this action. Mostly this method should be abstract unless
- *    the action is a flow control action like FOR LOOP.
- * 5) For code clarity and readability define a constant for the new action name in <code>SemanticActionStandardMethods.java</code>
+ * extend it. To add a new semantic action following steps needed to be taken. 1) Create a class for
+ * that semantic action which extends SemanticAction class. 2) Write all the custom code for that
+ * semantic action in this new class file. [Example see <code>ForEachSemanticAction.java</code>
+ * which implements for_each semantic action.] 3) Modify the <code>handleSemanticAction</code>
+ * method of <code>SemanticActionHandle.java</code> to add case for new semantic action. 4) Add a
+ * new method in <code>SemanticActionHandler.java </code> to handle this action. Mostly this method
+ * should be abstract unless the action is a flow control action like FOR LOOP. 5) For code clarity
+ * and readability define a constant for the new action name in
+ * <code>SemanticActionStandardMethods.java</code>
+ * 
  * @author amathur
- *
+ * 
  */
-
 
 public abstract class SemanticAction<SA extends SemanticAction> extends ElementState
 {
@@ -76,6 +76,12 @@ public abstract class SemanticAction<SA extends SemanticAction> extends ElementS
 	private String										name;
 
 	/**
+	 * Error string for this action
+	 */
+	@xml_attribute
+	private String										error;
+	
+	/**
 	 * The list of arguments for this semantic action.
 	 */
 	@xml_tag("args")
@@ -101,6 +107,11 @@ public abstract class SemanticAction<SA extends SemanticAction> extends ElementS
 	 * @return
 	 */
 	public abstract String getActionName();
+	
+	/**
+	 * Handles the error for the action
+	 */
+	public abstract void handleError();
 
 	/**
 	 * @return the checks
@@ -211,6 +222,22 @@ public abstract class SemanticAction<SA extends SemanticAction> extends ElementS
 	public void setArguments(ArrayListState<Argument> arguments)
 	{
 		this.args = arguments;
+	}
+
+	/**
+	 * @return the error
+	 */
+	public final String getError()
+	{
+		return error;
+	}
+
+	/**
+	 * @param error the error to set
+	 */
+	public final void setError(String error)
+	{
+		this.error = error;
 	}
 
 }

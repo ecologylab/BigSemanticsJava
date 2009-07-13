@@ -21,4 +21,11 @@ public @xml_tag(SemanticActionStandardMethods.CREATE_AND_VISUALIZE_IMG_SURROGATE
 		return CREATE_AND_VISUALIZE_IMG_SURROGATE;
 	}
 
+	@Override
+	public void handleError()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
 }

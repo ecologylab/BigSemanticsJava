@@ -66,6 +66,13 @@ class ForEachSemanticAction extends SemanticAction implements SemanticActionStan
 		this.as = as;
 	}
 
+	@Override
+	public void handleError()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
 
 
 }

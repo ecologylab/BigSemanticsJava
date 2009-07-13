@@ -18,4 +18,11 @@ public @xml_tag(SemanticActionStandardMethods.CREATE_CONATINER) class CreateCont
 		return CREATE_CONATINER;
 	}
 
+	@Override
+	public void handleError()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
 }

@@ -20,4 +20,11 @@ public @xml_tag(SemanticActionStandardMethods.SET_METADATA) class SetMetadataSem
 		return SET_METADATA;
 	}
 
+	@Override
+	public void handleError()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
 }

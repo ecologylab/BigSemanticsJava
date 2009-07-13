@@ -18,4 +18,11 @@ public @xml_tag(SemanticActionStandardMethods.CREATE_SEARCH) class CreateSearchS
 		return CREATE_SEARCH;
 	}
 
+	@Override
+	public void handleError()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
 }

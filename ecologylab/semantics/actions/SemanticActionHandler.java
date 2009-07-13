@@ -4,12 +4,15 @@
 package ecologylab.semantics.actions;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Iterator;
 
-import ecologylab.generic.ReflectionTools;
+import ecologylab.collections.Scope;
+import ecologylab.documenttypes.DocumentType;
 import ecologylab.semantics.connectors.Container;
+import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.metametadata.Check;
 import ecologylab.semantics.metametadata.FlagCheck;
+import ecologylab.xml.ElementState;
 import ecologylab.xml.types.element.ArrayListState;
 
 /**
@@ -23,7 +26,7 @@ import ecologylab.xml.types.element.ArrayListState;
 * @author amathur
 *
 */
-public abstract class SemanticActionHandler implements SemanticActionStandardMethods
+public abstract class SemanticActionHandler<SA extends SemanticAction,C extends Container,E extends ElementState> implements SemanticActionStandardMethods
 {
 
 	/**
@@ -31,17 +34,22 @@ public abstract class SemanticActionHandler implements SemanticActionStandardMet
 	 * of the semantic action.
 	 * TODO remane this also to some thing like objectMap or variableMap.
 	 */
-	protected HashMap<String, Object>		semanticActionReturnValueMap;
+	protected Scope<Object>		semanticActionReturnValueMap;
 
 	/**
 	 * Map of various flags used and set during the semantic actions
 	 */
-	protected HashMap<String, Boolean>	semanticActionFlagMap;
+	protected Scope<Boolean>	semanticActionFlagMap;
 
 	/**
 	 * Stores the number of items in the collection for loops
 	 */
 	private int													numberOfCollection;
+	
+	/**
+	 * Error handler for the semantic actions.
+	 */
+	protected SemanticActionErrorHandler 							errorHandler;
 
 	
 	/**
@@ -49,7 +57,7 @@ public abstract class SemanticActionHandler implements SemanticActionStandardMet
 	 * @param action
 	 * @param paramter
 	 */
-	public abstract void createAndVisualizeImgSurrogate(SemanticAction action, SemanticActionParameters paramter);
+	public abstract void createAndVisualizeImgSurrogate(SA action, SemanticActionParameters paramter,DocumentType<C,?,?> docType,InfoCollector infoCollector);
 
 	/**
 	 * 
@@ -57,21 +65,21 @@ public abstract class SemanticActionHandler implements SemanticActionStandardMet
 	 * @param paramter
 	 * @return
 	 */
-	public abstract Container createContainer(SemanticAction action, SemanticActionParameters parameter);
+	public abstract C createContainer(SA action, SemanticActionParameters parameter,DocumentType<C,?,?> docType,InfoCollector infoCollector);
 
 	/**
 	 * 
 	 * @param action
 	 * @param parameter
 	 */
-	public abstract void processDocument(SemanticAction action, SemanticActionParameters parameter);
+	public abstract void processDocument(SA action, SemanticActionParameters parameter,DocumentType docType,InfoCollector infoCollector);
 
 	/**
 	 * 
 	 * @param action
 	 * @param parameter
 	 */
-	public abstract void setMetadata(SemanticAction action, SemanticActionParameters parameter);
+	public abstract void setMetadata(SA action, SemanticActionParameters parameter,DocumentType docType,InfoCollector infoCollector);
 
 	/**
 	 * 
@@ -79,61 +87,63 @@ public abstract class SemanticActionHandler implements SemanticActionStandardMet
 	 * @param parameter
 	 * @return
 	 */
-	public abstract Container createContainerForSearch(SemanticAction action, SemanticActionParameters parameter);
+	public abstract C createContainerForSearch(SA action, SemanticActionParameters parameter,DocumentType<C,?,?> docType,InfoCollector<C,?> infoCollector);
 
 	/**
 	 * 
 	 * @param action
 	 * @param parameter
 	 */
-	public abstract void handleGeneralAction(SemanticAction action, SemanticActionParameters parameter);
+	public abstract void handleGeneralAction(SA action, SemanticActionParameters parameter);
 
 	/**
 	 * 
 	 * @param action
 	 * @param parameter
 	 */
-	public abstract void setValueAction(SemanticAction action, SemanticActionParameters parameter);
+	public abstract void setValueAction(SA action, SemanticActionParameters parameter,DocumentType docType,InfoCollector infoCollector);
 
 	/**
 	 * 
 	 * @param action
 	 * @param parameter
 	 */
-	public abstract void getValueAction(SemanticAction action, SemanticActionParameters parameter);
+	public abstract void getValueAction(SA action, SemanticActionParameters parameter,DocumentType docType,InfoCollector infoCollector);
 	
 	/**
 	 * 
 	 * @param action
 	 * @param parameter
 	 */
-	public abstract void processSearch(ProcessSearchSemanticAction action, SemanticActionParameters parameter);
+	public abstract void processSearch(SA action, SemanticActionParameters parameter,DocumentType docType,InfoCollector infoCollector);
 
 	
 	/**
 	 * Implementation of for loop.
-	 * 
-	 * @param semanticAction
 	 * @param parameter
+	 * @param documentType TODO
+	 * @param infoCollector TODO
+	 * @param semanticAction
 	 */
-	public void handleForLoop(ForEachSemanticAction action, SemanticActionParameters parameter)
+	public synchronized void  handleForLoop(ForEachSemanticAction action, SemanticActionParameters parameter, DocumentType documentType, InfoCollector infoCollector)
 	{
 		// get all the action which have to be performed in loop
-		ArrayList<? extends SemanticAction> nestedSemanticActions = action.getNestedSemanticActionList();
+		ArrayList<SA> nestedSemanticActions = action.getNestedSemanticActionList();
 		
 		// get the collection object name on which we have to loop
 		String collectionObject = action.getCollection(); 
 		
 		//get the actual collection object
-		ArrayList collection = (ArrayList)getObjectFromKeyName(collectionObject, parameter);
+		Iterable<E> collection = (Iterable<E>) getObjectFromKeyName(collectionObject, parameter);
 		
-		int collectionSize = collection.size();
+		Iterator<E> itr = collection.iterator();
+		
 		// start the loop over each object
-		for (int k = 0; k < collectionSize; k++)
+		while(itr.hasNext())
 		{
 			// get the kth item
-			Object item = collection.get(k);
-			
+			Object item = itr.next();
+									
 			//put it in semantic action return value map
 			semanticActionReturnValueMap.put(action.getAs(), item);
 			
@@ -141,10 +151,10 @@ public abstract class SemanticActionHandler implements SemanticActionStandardMet
 			for (int j = 0; j < nestedSemanticActions.size(); j++)
 			{
 				// get the jth action inside the loop
-				SemanticAction nestedSemanticAction = nestedSemanticActions.get(j);
+				SA nestedSemanticAction = nestedSemanticActions.get(j);
 
 				// perform the jth action
-				handleSemanticAction(nestedSemanticAction, parameter);
+				handleSemanticAction(nestedSemanticAction, parameter, documentType, infoCollector);
 			}
 		}
 	}
@@ -155,34 +165,36 @@ public abstract class SemanticActionHandler implements SemanticActionStandardMet
    * should be declared in this class for handling the action. TODO complete this method.
    *
    * @param action
-   * @param parameter
+	 * @param parameter
+	 * @param documentType TODO
+	 * @param infoCollector TODO
    */
-	public  void handleSemanticAction(SemanticAction action, SemanticActionParameters parameter)
+	public  void handleSemanticAction(SA action, SemanticActionParameters parameter, DocumentType documentType, InfoCollector infoCollector)
 	{
 		final String actionName = action.getActionName();
 		if (SemanticActionStandardMethods.FOR_EACH.equals(actionName))
 		{
-			handleForLoop((ForEachSemanticAction)action, parameter);
+			handleForLoop((ForEachSemanticAction)action, parameter, documentType, infoCollector);
 		}
 		else if (SemanticActionStandardMethods.CREATE_AND_VISUALIZE_IMG_SURROGATE.equals(actionName))
 		{
-			createAndVisualizeImgSurrogate(action, parameter);
+			createAndVisualizeImgSurrogate(action, parameter,documentType,infoCollector);
 		}
 		else if (SemanticActionStandardMethods.CREATE_CONATINER.equals(actionName))
 		{
-			createContainer(action, parameter);
+			createContainer(action, parameter,documentType,infoCollector);
 		}
 		else if (SemanticActionStandardMethods.PROCESS_DOCUMENT.equals(actionName))
 		{
-			processDocument(action, parameter);
+			processDocument(action, parameter,documentType,infoCollector);
 		}
 		else if (SemanticActionStandardMethods.SET_METADATA.equals(actionName))
 		{
-			setMetadata(action, parameter);
+			setMetadata(action, parameter,documentType,infoCollector);
 		}
 		else if (SemanticActionStandardMethods.CREATE_CONTAINER_FOR_SEARCH.equals(actionName))
 		{
-			createContainerForSearch(action, parameter);
+			createContainerForSearch(action, parameter,documentType,infoCollector);
 		}
 		else if (SemanticActionStandardMethods.CREATE_SEARCH.equals(actionName))
 		{
@@ -190,15 +202,15 @@ public abstract class SemanticActionHandler implements SemanticActionStandardMet
 		}
 		else if (SemanticActionStandardMethods.GET_FIELD_ACTION.equals(actionName))
 		{
-			getValueAction(action, parameter);
+			getValueAction(action, parameter,documentType,infoCollector);
 		}
 		else if (SemanticActionStandardMethods.SETTER_ACTION.equals(actionName))
 		{
-			setValueAction(action, parameter);
+			setValueAction(action, parameter,documentType,infoCollector);
 		}
 		else if(SemanticActionStandardMethods.PROCESS_SEARCH.equals(actionName))
 		{
-			processSearch((ProcessSearchSemanticAction)action,parameter);
+			processSearch(action,parameter,documentType,infoCollector);
 		}
 		else
 		{
@@ -224,7 +236,7 @@ public abstract class SemanticActionHandler implements SemanticActionStandardMet
 	 * @param action
 	 * @param returnValue
 	 */
-	protected  void setFlagIfAny(SemanticAction action, Object returnValue)
+	protected  void setFlagIfAny(SA action, Object returnValue)
 	{
 		// get the checks for this action
 		ArrayListState<Check> checks = action.getChecks();
@@ -259,13 +271,13 @@ public abstract class SemanticActionHandler implements SemanticActionStandardMet
 	}
 
 	/**
-	 * This function checks for the precondtion flag values for this action and returns the "anded"
+	 * This function checks for the pre-condition flag values for this action and returns the "anded"
 	 * result.
 	 * 
 	 * @param action
 	 * @return
 	 */
-	protected   boolean checkPreConditionFlagsIfAny(SemanticAction action)
+	protected   boolean checkPreConditionFlagsIfAny(SA action)
 	{
 		boolean returnValue = true;
 		ArrayListState<FlagCheck> flagChecks = action.getFlagChecks();
