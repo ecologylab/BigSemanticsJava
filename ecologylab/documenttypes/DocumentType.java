@@ -288,12 +288,19 @@ abstract public class DocumentType<AC extends Container, IP extends InfoCollecto
 		// if we made PURL connection but could not find documentTYpe using container
 		if ((purlConnection != null) && (result == null))
 		{
-
 			// if meta-metadata exists for this document type
 			if (metaMetadata != null)
 			{
-				// Then it must be XPath type only [Will be parsed using XPath expressions]
-				result = new MetaMetadataXPathType(infoCollector, semanticAction);
+				// either it a direct binding type
+				if(metaMetadata.directBindingType())
+				{
+					result = new MetaMetadataDirectBindingType(semanticAction, infoCollector);
+				}
+				else
+				{
+					//else it must be XPath type only [Will be parsed using XPath expressions]
+					result = new MetaMetadataXPathType(semanticAction,infoCollector);
+				}
 			}
 			
 			// if meta-metadata does not exists
@@ -728,7 +735,7 @@ abstract public class DocumentType<AC extends Container, IP extends InfoCollecto
 	{
 		return false;
 	}
-	
+
 	/**
 	 * Differentiates referential documents, like HTML from composite documents, like PDF.
 	 * 
@@ -739,7 +746,7 @@ abstract public class DocumentType<AC extends Container, IP extends InfoCollecto
 	{
 		return false;
 	}
-
+	
 	public AC getContainer()
 	{
 		return container;

@@ -3,10 +3,20 @@
  */
 package ecologylab.documenttypes;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathFactory;
+
+import org.w3c.dom.Document;
+import org.w3c.tidy.Tidy;
 
 import ecologylab.generic.DispatchTarget;
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.actions.SemanticAction;
 import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.connectors.CFPrefNames;
 import ecologylab.semantics.connectors.Container;
@@ -14,36 +24,39 @@ import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.connectors.SearchEngineNames;
 import ecologylab.semantics.connectors.SearchEngineUtilities;
 import ecologylab.semantics.library.TypeTagNames;
-import ecologylab.semantics.metadata.Metadata;
+import ecologylab.semantics.metadata.MetadataBase;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.model.text.InterestModel;
 import ecologylab.semantics.seeding.ResultDistributer;
 import ecologylab.semantics.seeding.SearchState;
+import ecologylab.xml.ElementState;
+import ecologylab.xml.XMLTranslationException;
 
 /**
  * @author amathur
  * 
  */
-public class MetaMetadataSearchType extends MetaMetadataXPathType implements CFPrefNames,
-		DispatchTarget
+public class MetaMetadataSearchType<M extends MetadataBase,C extends Container,SA extends SemanticAction<SA>> extends MetaMetadataDocumentTypeBase<M,SA,C>
+		implements CFPrefNames, DispatchTarget
 {
 
 	/**
 	 * The Serach query URL
 	 */
-	private ParsedURL		searchURL;
+	private ParsedURL							searchURL;
 
 	/**
 	 * Name of the Search engine;
 	 */
-	private String			engine;
+	private String								engine;
 
 	/**
 	 * 
 	 */
-	private SearchState	searchSeed;
+	private SearchState						searchSeed;
 
-	private int					resultsSoFar	= 0;
+	private int										resultsSoFar	= 0;
+
 
 	/**
 	 * 
@@ -51,9 +64,10 @@ public class MetaMetadataSearchType extends MetaMetadataXPathType implements CFP
 	 * @param semanticActionHandler
 	 */
 	public MetaMetadataSearchType(InfoCollector infoProcessor,
-			SemanticActionHandler semanticActionHandler)
+			SemanticActionHandler<SA,C,?> semanticActionHandler)
 	{
-		super(infoProcessor, semanticActionHandler);
+		super(infoProcessor,semanticActionHandler);
+	
 
 	}
 
@@ -75,13 +89,12 @@ public class MetaMetadataSearchType extends MetaMetadataXPathType implements CFP
 	 * @param searchURL
 	 */
 	public MetaMetadataSearchType(InfoCollector infoProcessor,
-			SemanticActionHandler semanticActionHandler, String engine, SearchState searchSeed)
+			SemanticActionHandler<SA,C,?> semanticActionHandler, String engine, SearchState searchSeed)
 	{
-		super(infoProcessor);
+		super(infoProcessor,semanticActionHandler);
 		this.engine = engine;
 		this.searchSeed = searchSeed;
-		this.semanticActionHandler = semanticActionHandler;
-		formSearchUrlBasedOnEngine(searchSeed.currentFirstResultIndex());
+		formSearchUrlBasedOnEngine(searchSeed.currentFirstResultIndex(), infoProcessor);
 
 		// if search PURL is not null for a container.
 		if (searchURL != null)
@@ -96,7 +109,7 @@ public class MetaMetadataSearchType extends MetaMetadataXPathType implements CFP
 			container.setAsTrueSeed(searchSeed);
 			queueSearchrequest();
 			// System.out.println("DEBUG::queued search request for \t"+searchSeed.getQuery());
-//			infoProcessor.pauseDownloadMonitor();
+			// infoProcessor.pauseDownloadMonitor();
 		}
 	}
 
@@ -143,7 +156,7 @@ public class MetaMetadataSearchType extends MetaMetadataXPathType implements CFP
 	/**
 	 * 
 	 */
-	private void formSearchUrlBasedOnEngine(int firstResultIndex)
+	private void formSearchUrlBasedOnEngine(int firstResultIndex,InfoCollector infoProcessor)
 	{
 		if (engine.equals(SearchEngineNames.GOOGLE))
 		{
@@ -162,12 +175,17 @@ public class MetaMetadataSearchType extends MetaMetadataXPathType implements CFP
 									+ "&num="
 									+ searchSeed.numResults() + "&start=" + firstResultIndex, "broken Google URL");
 		}
-		else if(engine.equals(SearchEngineNames.FLICKR))
+		else if (engine.equals(SearchEngineNames.FLICKR))
 		{
-			searchURL=ParsedURL.getAbsolute("http://www.flickr.com/search/?q="+searchSeed.getQuery());
+			searchURL = ParsedURL.getAbsolute("http://www.flickr.com/search/?q=" + searchSeed.getQuery());
 		}
+		else if(engine.equals(SearchEngineNames.YAHOO))
+		{
+			searchURL= ParsedURL.getAbsolute("http://api.search.yahoo.com/WebSearchService/V1/webSearch?appid=yahoosearchwebrss&query="+searchSeed.getQuery());
+		}
+		
+	//	searchURL = ParsedURL.getAbsolute(infoProcessor.metaMetaDataRepository().getSearchURL(engine)+searchSeed.getQuery());
 	}
-
 
 	public void delivery(Object o)
 	{
@@ -196,15 +214,83 @@ public class MetaMetadataSearchType extends MetaMetadataXPathType implements CFP
 	{
 		return this.resultsSoFar;
 	}
-	
+
 	public int getResultNum()
 	{
 		return resultsSoFar + searchSeed.currentFirstResultIndex();
 	}
-	
+
 	public ParsedURL purl()
 	{
 		return searchURL;
 	}
 
+	@Override
+	public M buildMetadataObject()
+	{
+		M populatedMetadata = null;
+		initailizeMetadataObjectBuilding();
+		if (metaMetadata.isSupported(container.purl()))
+		{
+			if (metaMetadata.directBindingType())
+			{
+				try
+				{
+					populatedMetadata =(M) ElementState.translateFromXML(inputStream(),
+							getMetadataTranslationScope());
+				}
+				catch (XMLTranslationException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			else
+			{
+				Tidy tidy;
+				tidy = new Tidy();
+				tidy.setQuiet(true);
+				tidy.setShowWarnings(false);
+				XPath xpath = XPathFactory.newInstance().newXPath();
+				/*final InputStream in= inputStream();
+				System.out.println(convertStreamToString(in));*/
+				Document tidyDOM = tidy.parseDOM(inputStream(), null);
+				populatedMetadata = (M) recursiveExtraction(getMetadataTranslationScope(), metaMetadata,
+						(M) getMetadata(), tidyDOM, xpath);
+			}
+		}
+		try
+		{
+			populatedMetadata.translateToXML(System.out);
+		}
+		catch (XMLTranslationException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return populatedMetadata;
+	}
+
+	public String convertStreamToString(InputStream is) {
+	        /*
+		29.         * To convert the InputStream to String we use the BufferedReader.readLine()
+		30.         * method. We iterate until the BufferedReader return null which means
+		31.         * there's no more data to read. Each line will appended to a StringBuilder
+		32.         * and returned as String.
+		33.         */
+		        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+		        StringBuilder sb = new StringBuilder();
+		 
+		       String line = null;
+		       try {
+		           while ((line = reader.readLine()) != null) {
+		               sb.append(line + "\n");
+		            }
+		        } catch (IOException e) {
+		           e.printStackTrace();
+		        } finally {
+		        }
+		 
+		        return sb.toString();
+		    }
 }
