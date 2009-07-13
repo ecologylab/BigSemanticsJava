@@ -42,7 +42,9 @@ public class MetaMetadataTranslationScope extends Debug
 			SetMetadataSemanticAction.class,
 			GetFieldSemanticAction.class,
 			SetterSemanticAction.class,
-			ProcessSearchSemanticAction.class
+			ProcessSearchSemanticAction.class,
+			SearchEngines.class,
+			SearchEngine.class
 			};
 
 	public static TranslationScope get()

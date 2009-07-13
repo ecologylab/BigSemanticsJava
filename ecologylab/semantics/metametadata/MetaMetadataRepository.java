@@ -46,6 +46,9 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	private HashMapState<String, UserAgent> 				userAgents; 
 	
 	@xml_nested
+	private HashMapState<String,SearchEngine>				searchEngines;
+	
+	@xml_nested
 	private HashMapState<String, NamedStyle> 				namedStyles;
 	
 	private String																	defaultUserAgentString = null;
@@ -299,5 +302,12 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		return defaultUserAgentString;
 	}
 
-	
+	public String getSearchURL(String searchEngine)
+	{
+		if(searchEngines!=null)
+		{
+			return searchEngines.get(searchEngine).getUrl();
+		}
+		return null;
+	}
 }

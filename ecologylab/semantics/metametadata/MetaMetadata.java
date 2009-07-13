@@ -31,7 +31,13 @@ public class MetaMetadata<SA extends SemanticAction> extends MetaMetadataField i
 {
 	@xml_attribute
 	private String						name;
-
+	
+	/**
+	 * The type/class of metadata object.
+	 */
+	@xml_attribute
+	private String						type;
+	
 	@xml_tag("extends")
 	@xml_attribute
 	private String						extendsAttribute;
@@ -58,6 +64,8 @@ public class MetaMetadata<SA extends SemanticAction> extends MetaMetadataField i
 	@xml_attribute
 	private String						userAgentString;
 
+	@xml_attribute
+	private boolean						directBinding=false;
 	/*
 	 * @xml_collection("meta_metadata_field") private ArrayList<MetaMetadataField>
 	 * metaMetadataFieldList;
@@ -234,6 +242,7 @@ public class MetaMetadata<SA extends SemanticAction> extends MetaMetadataField i
 
 		//write @xml_inherit
 		p.println("@xml_inherit");
+		p.println("@xml_tag(\""+name+"\")");
 		
 		// Write class declaration
 		String className = XMLTools.classNameFromElementName(name);
@@ -452,5 +461,19 @@ public class MetaMetadata<SA extends SemanticAction> extends MetaMetadataField i
 	public String getExtendsAttribute()
 	{
 		return extendsAttribute;
+	}
+
+	public boolean directBindingType()
+	{
+		// TODO Auto-generated method stub
+		return directBinding;
+	}
+
+	public String getType()
+	{
+		if(type!=null)
+			return type;
+		else 
+			return name;
 	}
 }

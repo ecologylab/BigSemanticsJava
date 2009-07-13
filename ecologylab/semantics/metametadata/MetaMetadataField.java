@@ -270,6 +270,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 
 			// write xml_inherit
 			p.println("@xml_inherit");
+			p.println("@xml_tag(\""+collectionChildType+"\")");
 
 			// start of class definition
 			p.println("public class " + XMLTools.classNameFromElementName(javaClassName)
@@ -871,6 +872,10 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	void addChild(MetaMetadataField childMetaMetadataField)
 	{
 		String fieldName = childMetaMetadataField.getName();
+		// this is for the case when meta_metadata has no meta_metadata fields of its own. It just inherits from super class.
+		if (childMetaMetadata == null)
+			childMetaMetadata = new HashMapArrayList<String, MetaMetadataField>();
+		
 		// *do not* override fields in here with fields from super classes.
 		if (!childMetaMetadata.containsKey(fieldName))
 			childMetaMetadata.put(fieldName, childMetaMetadataField);
