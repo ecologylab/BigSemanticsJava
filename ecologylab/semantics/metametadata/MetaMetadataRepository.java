@@ -166,7 +166,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 			
 			if(returnValue == null)
 			{
-				if(urlprefixCollection.match(parsedURL))
+				//if(urlprefixCollection.match(parsedURL))
 				{
 					String protocolStrippedURL = parsedURL.toString().split("://")[1];
 					

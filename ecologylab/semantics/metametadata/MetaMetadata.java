@@ -8,6 +8,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import ecologylab.appframework.PropertiesAndDirectories;
 import ecologylab.generic.HashMapArrayList;
@@ -113,7 +115,16 @@ public class MetaMetadata<SA extends SemanticAction> extends MetaMetadataField i
 		if(urlBase!=null)
 			return purl.toString().startsWith(urlBase.toString());
 		if(urlPrefix!=null)
-			return purl.toString().startsWith(urlPrefix.toString());
+		{
+			Pattern pattern = Pattern.compile(urlPrefix.toString());
+		
+			// create a matcher based on input string
+			Matcher matcher = pattern.matcher(purl.toString());
+			
+			boolean result = matcher.find();
+			System.out.println(result);
+			return result;
+		}
 		return false;
 	}
 
