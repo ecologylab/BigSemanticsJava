@@ -25,6 +25,7 @@ public interface SearchEngineNames
   public static final String	NSDL		= "nsdl";
   public static final String	CITESEER	= "citeseer";
   public static final String	ACMPORTAL	= "acm_portal";
+  public static final String FLICK_AUTHOR="flickr_author";
   
   //constants for Google Search [Might be used in other searches also]
   //--------------------------------------------------------
