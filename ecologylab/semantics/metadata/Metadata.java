@@ -430,4 +430,9 @@ abstract public class Metadata extends MetadataBase
 	{
 		return termVector != null && termVector.countObservers() > 0;
 	}
+	
+	public boolean hasTermVector()
+	{
+		return termVector != null;
+	}
 }
