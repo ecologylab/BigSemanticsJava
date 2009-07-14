@@ -27,7 +27,7 @@ public class CompositeTermVector extends Observable implements Observer, ITermVe
 	public CompositeTermVector ()
 	{
 	}
-	
+
 	/**
 	 * Adds a Term Vector to this Composite Term Vectors collection, multiplying it by a scalar.
 	 * 
@@ -239,5 +239,6 @@ public class CompositeTermVector extends Observable implements Observer, ITermVe
 	{
 		return countObservers() > 0;
 	}
+
 
 }

@@ -31,4 +31,25 @@ public interface ITermVector extends IFeatureVector<Term>
 	public void recycle();
 
 	public boolean hasObservers();
+
+	/**
+	 * Pairwise addition of this vector by some other vector times some constant.<br>
+	 * i.e. this + (c*v)<br>
+	 * Vector v is not modified.
+	 * 
+	 * @param c
+	 *            Constant which Vector v is multiplied by.
+	 * @param v
+	 *            Vector to add to this one
+	 */
+	public void add ( double c, ITermVector v );
+	
+	/**
+	 * Adds another Vector to this Vector, in-place.
+	 * 
+	 * @param v
+	 *            Vector to add to this
+	 */
+	public void add (ITermVector v );
+
 }

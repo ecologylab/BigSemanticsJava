@@ -127,4 +127,16 @@ public class NullTermVector implements ITermVector
 	{
 		return true;
 	}
+
+	public void add(double c, ITermVector v)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void add(ITermVector v)
+	{
+		// TODO Auto-generated method stub
+		
+	}
 }
