@@ -8,6 +8,7 @@ import java.util.Iterator;
 
 import ecologylab.collections.Scope;
 import ecologylab.documenttypes.DocumentType;
+import ecologylab.generic.Debug;
 import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.metametadata.Check;
@@ -26,7 +27,9 @@ import ecologylab.xml.types.element.ArrayListState;
 * @author amathur
 *
 */
-public abstract class SemanticActionHandler<SA extends SemanticAction,C extends Container,E extends ElementState> implements SemanticActionStandardMethods
+public abstract class SemanticActionHandler<SA extends SemanticAction,C extends Container,E extends ElementState> 
+extends Debug
+implements SemanticActionStandardMethods
 {
 
 	/**
