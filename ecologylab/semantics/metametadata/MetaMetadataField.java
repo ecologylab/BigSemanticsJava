@@ -634,7 +634,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 		MetadataCompilerConstants.writeJavaDocComment(comment, appendable);
 
 		// first line . Start of method name
-		appendable.append(returnType).append("\t").append(fieldName).append("()\n{\n");
+		appendable.append("public ").append(returnType).append("\t").append(fieldName).append("()\n{\n");
 
 		// second line. Declaration of result variable.
 		appendable.append(returnType).append("\t").append("result\t=this.").append(fieldName).append(
