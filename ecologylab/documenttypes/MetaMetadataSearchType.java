@@ -103,7 +103,8 @@ public class MetaMetadataSearchType<M extends MetadataBase,C extends Container,S
 					TypeTagNames.SEARCH_TAG);
 			Container container = infoProcessor.getContainer(null, searchURL, false, false, metaMetadata);
 			setContainer(container);
-			// setQuery();
+			searchSeed.eliminatePlusesFromQuery();
+			setQuery(searchSeed);
 			container.presetDocumentType(this);
 			container.setDispatchTarget(this);
 			container.setAsTrueSeed(searchSeed);
@@ -133,10 +134,9 @@ public class MetaMetadataSearchType<M extends MetadataBase,C extends Container,S
 	/**
 	 * TODO implement this. This method set the query using reflecrtion on search class.
 	 */
-	private void setQuery()
+	private void setQuery(SearchState searchSeed)
 	{
-		// TODO Auto-generated method stub
-
+		container.setQuery(searchSeed.getQuery());
 	}
 
 	/**
