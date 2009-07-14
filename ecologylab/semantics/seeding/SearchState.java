@@ -181,6 +181,13 @@ implements SemanticsPrefs, SearchEngineNames
 	   return true;
    }
 
+   public void eliminatePlusesFromQuery()
+   {
+  	 if (query != null && query.contains("+"))
+  	 {
+  		 query			= query.replace('+', ' ');
+  	 }
+   }
    /**
     * Bring this seed into the agent or directly into the composition.
     * 
@@ -230,21 +237,21 @@ implements SemanticsPrefs, SearchEngineNames
 	 * 
 	 * @param container
 	 */
-	public void bindToContainer(Container container)
-	{
-		super.bindToContainer(container);
-		//container.metadata.initializeFromSearch(query);
-		if(query != null)
-		{
-			String queryValue			= query.replace('+', ' ');
-			container.setQuery(queryValue);
-		}
-//		container.setMetadataField("query", queryValue);
-//		queryField.incrementParticipantInterest(initialIntensity);
-//		container.incrementTermVectorInterest((short) initialIntensity);
-		
-		//container.setIntensity(this.initialIntensity);
-	}
+//	public void bindToContainer(Container container)
+//	{
+//		super.bindToContainer(container);
+//		//container.metadata.initializeFromSearch(query);
+//		if(query != null)
+//		{
+//			String queryValue			= query.replace('+', ' ');
+//			container.setQuery(queryValue);
+//		}
+////		container.setMetadataField("query", queryValue);
+////		queryField.incrementParticipantInterest(initialIntensity);
+////		container.incrementTermVectorInterest((short) initialIntensity);
+//		
+//		//container.setIntensity(this.initialIntensity);
+//	}
 	
 	/**
 	 * The String the dashboard needs to show.
