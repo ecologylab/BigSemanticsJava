@@ -183,8 +183,12 @@ public class MetaMetadataSearchType<M extends MetadataBase,C extends Container,S
 		{
 			searchURL= ParsedURL.getAbsolute("http://api.search.yahoo.com/WebSearchService/V1/webSearch?appid=yahoosearchwebrss&query="+searchSeed.getQuery());
 		}
+		else if(engine.equals(SearchEngineNames.FLICK_AUTHOR))
+		{
+			searchURL = ParsedURL.getAbsolute("http://www.flickr.com/photos/"+searchSeed.getQuery()+"/");
+		}
 		
-	//	searchURL = ParsedURL.getAbsolute(infoProcessor.metaMetaDataRepository().getSearchURL(engine)+searchSeed.getQuery());
+		//searchURL = ParsedURL.getAbsolute(infoProcessor.metaMetaDataRepository().getSearchURL(engine)+searchSeed.getQuery());
 	}
 
 	public void delivery(Object o)
