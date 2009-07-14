@@ -291,6 +291,8 @@ public class DOMWalkInformationTagger extends PPrint
 				removed.recycle();
 				paragraphTextsTMap.put(totalTxtLength, currentParagraphText);
 			}
+			else
+				currentParagraphText.recycle();
 		}
 		// We don't put the text into the paragraphTexts structure unless the text is over certain length and not surrounded by <a> tag. 
 		else if( (length > PARA_TEXT_LENGTH_LIMIT) && !underAHref(node) )
