@@ -54,7 +54,7 @@ public class SearchEngine extends ElementState implements Mappable<String>
 		this.urlPrefix = urlPrefix;
 	}
 
-	@Override
+
 	public String key()
 	{
 		// TODO Auto-generated method stub
