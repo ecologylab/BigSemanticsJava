@@ -454,11 +454,11 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase,SA ext
 		case Node.TEXT_NODE:
 		case Node.CDATA_SECTION_NODE:
 		case Node.ATTRIBUTE_NODE: // some times we have some xpaths which refer to attribute of nodes [example google result link]
-			returnValue += node.getNodeValue();
+				returnValue += node.getNodeValue();
 			break;
-		case Node.PROCESSING_INSTRUCTION_NODE:
 		case Node.COMMENT_NODE:
-			break;
+		case Node.PROCESSING_INSTRUCTION_NODE:
+					break;
 		default:
 			NodeList cList = node.getChildNodes();
 			if (cList != null)
