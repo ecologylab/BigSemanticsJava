@@ -5,15 +5,18 @@ package ecologylab.semantics.actions;
 
 import java.util.HashMap;
 
+import ecologylab.collections.Scope;
+
 /**
+ * Optional class that exposes the Java application instances to XML
  * @author amathur
  * 
  */
 public class SemanticActionParameters {
 
-	private HashMap<String,Object> standardObjectInstanceMap;
+	private Scope standardObjectInstanceMap;
 	
-	public SemanticActionParameters(HashMap<String,Object> standardObjectInstanceMap)
+	public SemanticActionParameters(Scope standardObjectInstanceMap)
 	{
 		this.standardObjectInstanceMap=standardObjectInstanceMap;
 	}

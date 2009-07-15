@@ -15,6 +15,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import ecologylab.collections.Scope;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.generic.ReflectionTools;
 import ecologylab.semantics.actions.SemanticAction;
@@ -83,7 +84,7 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase,SA ext
 		ArrayListState<SA> semanticActions = metaMetadata.getSemanticActions();
 
 		// build the standardObjectInstanceMap
-		HashMap<String, Object> standardObjectInstanceMap = buildStandardObjectInstanceMap(populatedMetadata);
+		Scope standardObjectInstanceMap = buildStandardObjectInstanceMap(populatedMetadata);
 
 		// build the semantic action parameter
 		SemanticActionParameters parameter = new SemanticActionParameters(standardObjectInstanceMap);
@@ -102,9 +103,10 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase,SA ext
 	 * @param populatedMetadata
 	 * @return
 	 */
-	private HashMap<String, Object> buildStandardObjectInstanceMap(M populatedMetadata)
+	@SuppressWarnings("unchecked")
+	private Scope buildStandardObjectInstanceMap(M populatedMetadata)
 	{
-		HashMap<String, Object> standardObjectInstanceMap = new HashMap();
+		Scope standardObjectInstanceMap = new Scope();
 		standardObjectInstanceMap.put("documentType", this);
 		standardObjectInstanceMap.put("metadata", populatedMetadata);
 		standardObjectInstanceMap.put("false", false);
@@ -276,7 +278,7 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase,SA ext
 		HashMapArrayList<String, MetaMetadataField> childFieldList = mmdElement.getSet();
 
 		// list to hold the collectionInstances
-		ArrayList<Metadata> collectionInstanceList = new ArrayList();
+		ArrayList<Metadata> collectionInstanceList = new ArrayList<Metadata>();
 
 		// loop over all the child meta-metadata fields of
 		// the collection meta-metadatafield
@@ -301,10 +303,9 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase,SA ext
 			ScalarType scalarType = childMetadataField.getScalarType();
 
 			// get the typed list from the node list
-			ArrayList list = getTypedListFromNodes(nodes, scalarType, childMetadataField);
+			ArrayList<String> list = getTypedListFromNodes(nodes, scalarType, childMetadataField);
 
-			Class collectionChildClass = translationScope.getClassByTag(mmdElement
-					.getCollectionChildType());
+			Class collectionChildClass = translationScope.getClassByTag(mmdElement.getCollectionChildType());
 
 			// only first time we need to create a list of
 			// instances which is equal to
@@ -328,7 +329,7 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase,SA ext
 				{
 					// get the child field name
 					String childFieldName = childMetadataField.getName();
-					collectionInstanceList.get(j).set(childFieldName, list.get(j).toString());
+					collectionInstanceList.get(j).set(childFieldName, list.get(j));
 				}
 			}
 		}
@@ -397,16 +398,17 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase,SA ext
 	}
 
 	/**
-	 * 
+	 * Takes a list of dom nodes and returns a list of corresponding text within them.
+	 * Applies a regular expression to each such text if appropriate.
 	 * @param nodeList
 	 * @param scalarType
 	 * @param mmdElement
 	 * @return
 	 */
-	private ArrayList getTypedListFromNodes(NodeList nodeList, ScalarType scalarType,
+	private ArrayList<String> getTypedListFromNodes(NodeList nodeList, ScalarType scalarType,
 			MetaMetadataField mmdElement)
 	{
-		ArrayList list = new ArrayList();
+		ArrayList<String> list = new ArrayList<String>();
 		for (int i = 0; i < nodeList.getLength(); i++)
 		{
 			Node node = nodeList.item(i);
@@ -438,7 +440,7 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase,SA ext
 	 * This method get all the text from the subtree rooted at a node.The reason for this
 	 * implementation is that when we write a xpath we might get node of any type. Now if the node has
 	 * some text inside it we would like to get it. And so this method get all the text in the subtree
-	 * rooted at that node.
+	 * rooted at that node. Eliminates all formatting tags.
 	 * 
 	 * @param node
 	 * @return
@@ -446,14 +448,18 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase,SA ext
 	private String getAllTextFromNode(Node node)
 	{
 		String returnValue = "";
-		if (node.getNodeType() == Node.ATTRIBUTE_NODE || node.getNodeType() == Node.TEXT_NODE
-				|| node.getNodeType() == Node.CDATA_SECTION_NODE || node.getNodeType() == Node.COMMENT_NODE
-				|| node.getNodeType() == Node.PROCESSING_INSTRUCTION_NODE)
+		short nodeType = node.getNodeType();
+		switch(nodeType)
 		{
+		case Node.TEXT_NODE:
+		case Node.CDATA_SECTION_NODE:
 			returnValue += node.getNodeValue();
-		}
-		else
-		{
+			break;
+		case Node.ATTRIBUTE_NODE:
+		case Node.PROCESSING_INSTRUCTION_NODE:
+		case Node.COMMENT_NODE:
+			break;
+		default:
 			NodeList cList = node.getChildNodes();
 			if (cList != null)
 			{
@@ -462,6 +468,7 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase,SA ext
 					returnValue += getAllTextFromNode(cList.item(k));
 				}
 			}
+			break;
 		}
 		return returnValue;
 	}

@@ -22,6 +22,7 @@ import ecologylab.xml.types.element.ArrayListState;
 * action possible. It has a <code>handleSemanticAction</code> method which decides what action to
 * take when a semantic action is passed to it. If a new semantic action has to be added we must add a
 * case to handle that in this method.
+* There is one SemanticActionHandler created for each DocumentType.connect
 * TODO Might want to implement lexical scoping in variables.
 *
 * @author amathur
@@ -134,31 +135,19 @@ implements SemanticActionStandardMethods
 		ArrayList<SA> nestedSemanticActions = action.getNestedSemanticActionList();
 		
 		// get the collection object name on which we have to loop
-		String collectionObject = action.getCollection(); 
+		String collectionObjectName = action.getCollection(); 
 		
 		//get the actual collection object
-		Iterable<E> collection = (Iterable<E>) getObjectFromKeyName(collectionObject, parameter);
-		
-		Iterator<E> itr = collection.iterator();
+		Iterable<E> collectionObject = (Iterable<E>) getObjectFromKeyName(collectionObjectName, parameter);
 		
 		// start the loop over each object
-		while(itr.hasNext())
-		{
-			// get the kth item
-			Object item = itr.next();
-									
+		for(Object item : collectionObject)
+		{		
 			//put it in semantic action return value map
 			semanticActionReturnValueMap.put(action.getAs(), item);
 			
-			// kth iteration of loop
-			for (int j = 0; j < nestedSemanticActions.size(); j++)
-			{
-				// get the jth action inside the loop
-				SA nestedSemanticAction = nestedSemanticActions.get(j);
-
-				// perform the jth action
+			for (SA nestedSemanticAction  : nestedSemanticActions)
 				handleSemanticAction(nestedSemanticAction, parameter, documentType, infoCollector);
-			}
 		}
 	}
 
@@ -288,9 +277,9 @@ implements SemanticActionStandardMethods
 		if (flagChecks != null)
 		{
 			// loop over all the flags to be checked
-			for (int i = 0; i < flagChecks.size(); i++)
+			for (FlagCheck flagCheck : flagChecks)
 			{
-				boolean flag = semanticActionFlagMap.get(flagChecks.get(i).getValue());
+				boolean flag = semanticActionFlagMap.get(flagCheck.getValue());
 				returnValue = returnValue && flag;
 			}
 		}

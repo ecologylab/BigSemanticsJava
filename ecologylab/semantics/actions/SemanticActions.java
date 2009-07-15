@@ -23,5 +23,4 @@ public interface SemanticActions {
 	 */
 	public void getAndPerhapsCreateConatiner(Container ancestor, Metadata metadata,
 			boolean reincarnate, InfoCollector infoCollector);
-
 }
