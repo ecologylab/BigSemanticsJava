@@ -22,10 +22,10 @@ import ecologylab.semantics.connectors.CFPrefNames;
 import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.connectors.SearchEngineNames;
-import ecologylab.semantics.connectors.SearchEngineUtilities;
 import ecologylab.semantics.library.TypeTagNames;
 import ecologylab.semantics.metadata.MetadataBase;
 import ecologylab.semantics.metametadata.MetaMetadata;
+import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.model.text.InterestModel;
 import ecologylab.semantics.seeding.ResultDistributer;
 import ecologylab.semantics.seeding.SearchState;
@@ -158,7 +158,7 @@ public class MetaMetadataSearchType<M extends MetadataBase,C extends Container,S
 	 */
 	private void formSearchUrlBasedOnEngine(int firstResultIndex,InfoCollector infoProcessor)
 	{
-		if (engine.equals(SearchEngineNames.GOOGLE))
+/*		if (engine.equals(SearchEngineNames.GOOGLE))
 		{
 			searchURL = ParsedURL
 					.getAbsolute(
@@ -186,8 +186,15 @@ public class MetaMetadataSearchType<M extends MetadataBase,C extends Container,S
 		else if(engine.equals(SearchEngineNames.FLICK_AUTHOR))
 		{
 			searchURL = ParsedURL.getAbsolute("http://www.flickr.com/photos/"+searchSeed.getQuery()+"/");
-		}
-		
+		}*/
+
+		MetaMetadataRepository mmdRepo= infoProcessor.metaMetaDataRepository();
+		String urlPrefix= mmdRepo.getSearchURL(engine);
+		String query = searchSeed.getQuery();
+		// we replace all white spaces by +
+		query = query.replace(' ', '+'); 
+		String urlSuffix= mmdRepo.getSearchURLSufix(engine);
+		searchURL = ParsedURL.getAbsolute(urlPrefix+query+urlSuffix);
 		//searchURL = ParsedURL.getAbsolute(infoProcessor.metaMetaDataRepository().getSearchURL(engine)+searchSeed.getQuery());
 	}
 
