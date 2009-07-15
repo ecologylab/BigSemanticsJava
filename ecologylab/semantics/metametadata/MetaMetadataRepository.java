@@ -306,8 +306,18 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	{
 		if(searchEngines!=null)
 		{
-			return searchEngines.get(searchEngine).getUrl();
+			return searchEngines.get(searchEngine).getUrlPrefix();
 		}
 		return null;
+	}
+	
+	public String getSearchURLSufix(String searchEngine)
+	{
+		String returnVal="";
+		if(searchEngines!=null)
+		{
+			return searchEngines.get(searchEngine).getUrlSuffix();
+		}
+		return returnVal;
 	}
 }

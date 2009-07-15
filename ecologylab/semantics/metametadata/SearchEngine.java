@@ -16,7 +16,9 @@ public class SearchEngine extends ElementState implements Mappable<String>
 
 	@xml_attribute private String name;
 	
-	@xml_attribute private String url;
+	@xml_attribute private String urlPrefix;
+	
+	@xml_attribute private String urlSuffix;
 	
 	public SearchEngine() {}
 
@@ -39,24 +41,40 @@ public class SearchEngine extends ElementState implements Mappable<String>
 	/**
 	 * @return the url
 	 */
-	public final String getUrl()
+	public final String getUrlPrefix()
 	{
-		return url;
+		return urlPrefix;
 	}
 
 	/**
 	 * @param url the url to set
 	 */
-	public final void setUrl(String url)
+	public final void setUrlPrefix(String urlPrefix)
 	{
-		this.url = url;
+		this.urlPrefix = urlPrefix;
 	}
 
-
+	@Override
 	public String key()
 	{
 		// TODO Auto-generated method stub
 		return name;
+	}
+
+	/**
+	 * @return the urlSuffix
+	 */
+	public final String getUrlSuffix()
+	{
+		return urlSuffix;
+	}
+
+	/**
+	 * @param urlSuffix the urlSuffix to set
+	 */
+	public final void setUrlSuffix(String urlSuffix)
+	{
+		this.urlSuffix = urlSuffix;
 	}
 	
 }
