@@ -65,10 +65,9 @@ public class InterestModel
 	public static void expressInterest ( IFeatureVector<Term> interestingTermVector, short magnitude )
 	{
 		timeScaleInterest();
-		TermVector xtv = new TermVector(interestingTermVector);
-		xtv.multiply(magnitude);
-		xtv.clamp(magnitude);
-		participantInterest.add(1, xtv);
+		double max			= interestingTermVector.max();
+		double factor		= max * magnitude < magnitude ? (double) magnitude : ((double) magnitude) / max;
+		participantInterest.add(factor, interestingTermVector);
 		unitize();
 	}
 
