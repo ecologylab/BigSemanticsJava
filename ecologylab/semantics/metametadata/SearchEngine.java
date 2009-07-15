@@ -66,7 +66,10 @@ public class SearchEngine extends ElementState implements Mappable<String>
 	 */
 	public final String getUrlSuffix()
 	{
-		return urlSuffix;
+		if(urlSuffix!=null)
+			return urlSuffix;
+		else
+			return "";
 	}
 
 	/**
