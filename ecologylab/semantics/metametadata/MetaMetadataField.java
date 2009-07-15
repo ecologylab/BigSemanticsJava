@@ -498,7 +498,8 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 		appendGetter(appendable, fieldName, fieldTypeName);
 		appendSetter(appendable, fieldName, fieldTypeName);
 		appendHWSetter(appendable, fieldName, fieldTypeName);
-
+		appendDirectSetMethod(appendable,fieldName,"Metadata" + fieldTypeName);
+    appendDirectHWSetMethod(appendable,fieldName,"Metadata" + fieldTypeName);
 		if (fieldTypeName.equals("StringBuilder"))
 		{
 			// appendAppendMethod(appendable,fieldName,"StringBuilder");
@@ -506,6 +507,68 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 			appendHWAppendMethod(appendable, fieldName, "StringBuilder");
 			appendHWAppendMethod(appendable, fieldName, "String");
 		}
+	}
+
+	/**
+	 * 
+	 * public void hwSetQueryMetadata(MetadataString query)
+{
+    if (this.query != null && this.query.getValue() != null && hasTermVector())
+        termVector().remove(this.query.termVector());
+    this.query    = query;
+    rebuildCompositeTermVector();
+}
+	 * @param appendable
+	 * @param fieldName
+	 * @param string
+	 * @throws IOException 
+	 */
+	private void appendDirectHWSetMethod(Appendable appendable, String fieldName, String fieldTypeName) throws IOException
+	{
+		String comment = "Heavy Weight Direct setter method for "+fieldName;
+		
+	// write the java doc comment
+		MetadataCompilerConstants.writeJavaDocComment(comment, appendable);
+		
+		// first line
+		 appendable.append("public void hwSet"+ XMLTools.javaNameFromElementName(fieldName, true)+"Metadata("+fieldTypeName+" "+fieldName+")\n{");
+		 
+		 // second line
+		 appendable.append("\t if(this."+fieldName+"!=null && this."+fieldName+".getValue()!=null && hasTermVector())\n");
+		 
+		 //third line
+		 appendable.append("\t\t termVector().remove(this."+fieldName+".termVector());\n");
+		 
+		 //fourth line
+		 appendable.append("\t this."+fieldName+" = "+fieldName+";\n");
+		 
+		 //last line
+		 appendable.append("\trebuildCompositeTermVector();\n}");
+	}
+
+	/**
+	 * public void setQueryMetadata(MetadataString query)
+{
+    this.query    = query;
+}
+	 * @param appendable
+	 * @param fieldName
+	 * @param fieldTypeName
+	 * @throws IOException 
+	 */
+	private void appendDirectSetMethod(Appendable appendable, String fieldName, String fieldTypeName) throws IOException
+	{
+		String comment =" Sets the "+fieldName+" directly";
+		
+		// write the java doc comment
+		MetadataCompilerConstants.writeJavaDocComment(comment, appendable);
+		
+		// first line
+		appendable.append("public void set"+ XMLTools.javaNameFromElementName(fieldName, true)+"Metadata("+fieldTypeName+" "+fieldName+")\n{");
+		
+		// second line
+		appendable.append("\tthis."+fieldName+" = "+fieldName+";\n}");
+		
 	}
 
 	/**
