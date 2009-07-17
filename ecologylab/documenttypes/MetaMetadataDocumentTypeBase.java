@@ -23,6 +23,7 @@ import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.actions.SemanticActionParameters;
 import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.InfoCollector;
+import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataBase;
 import ecologylab.semantics.metametadata.MetaMetadataField;
@@ -414,7 +415,8 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase,SA ext
 			Node node = nodeList.item(i);
 
 			// get the value
-			String value = getAllTextFromNode(node);
+			String value = node.getNodeType() == Node.ATTRIBUTE_NODE ? 
+					node.getNodeValue() : getAllTextFromNode(node);
 
 			// we might need to apply some regular expressions on the value
 			value = applyPrefixAndRegExOnEvaluation(value, mmdElement);
@@ -435,7 +437,14 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase,SA ext
 		}
 		return list;
 	}
-
+	private String getAllTextFromNode(Node node)
+	{
+		StringBuilder buffy	= StringBuilderUtils.acquire();
+		getAllTextFromNode(node, buffy);
+		String result	= buffy.toString();
+		StringBuilderUtils.release(buffy);
+		return result;
+	}
 	/**
 	 * This method get all the text from the subtree rooted at a node.The reason for this
 	 * implementation is that when we write a xpath we might get node of any type. Now if the node has
@@ -445,32 +454,30 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase,SA ext
 	 * @param node
 	 * @return
 	 */
-	private String getAllTextFromNode(Node node)
+	private void getAllTextFromNode(Node node, StringBuilder buffy)
 	{
-		String returnValue = "";
 		short nodeType = node.getNodeType();
 		switch(nodeType)
 		{
 		case Node.TEXT_NODE:
 		case Node.CDATA_SECTION_NODE:
-		case Node.ATTRIBUTE_NODE: // some times we have some xpaths which refer to attribute of nodes [example google result link]
-				returnValue += node.getNodeValue();
+			buffy.append(node.getNodeValue());
 			break;
+		case Node.ATTRIBUTE_NODE:
 		case Node.COMMENT_NODE:
 		case Node.PROCESSING_INSTRUCTION_NODE:
-					break;
+			break;
 		default:
 			NodeList cList = node.getChildNodes();
 			if (cList != null)
 			{
 				for (int k = 0; k < cList.getLength(); k++)
 				{
-					returnValue += getAllTextFromNode(cList.item(k));
+					buffy.append(getAllTextFromNode(cList.item(k)));
 				}
 			}
 			break;
 		}
-		return returnValue;
 	}
 	/**
 	 * TODO remove this some how. Have to think what it does and how to remove it. Bascially depending
