@@ -194,7 +194,10 @@ public class MetaMetadataSearchType<M extends MetadataBase,C extends Container,S
 		// we replace all white spaces by +
 		query = query.replace(' ', '+'); 
 		String urlSuffix= mmdRepo.getSearchURLSufix(engine);
-		searchURL = ParsedURL.getAbsolute(urlPrefix+query+urlSuffix);
+		String numResultString=mmdRepo.getNumResultString(engine);
+		String startString = mmdRepo.getStartString(engine);
+		
+		searchURL = ParsedURL.getAbsolute(urlPrefix+query+numResultString+searchSeed.numResults()+startString+firstResultIndex+urlSuffix);
 		//searchURL = ParsedURL.getAbsolute(infoProcessor.metaMetaDataRepository().getSearchURL(engine)+searchSeed.getQuery());
 	}
 

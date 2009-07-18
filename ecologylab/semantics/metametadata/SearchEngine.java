@@ -20,6 +20,10 @@ public class SearchEngine extends ElementState implements Mappable<String>
 	
 	@xml_attribute private String urlSuffix;
 	
+	@xml_attribute private String numResultString;
+	
+	@xml_attribute private String startString;
+	
 	public SearchEngine() {}
 
 	/**
@@ -78,6 +82,44 @@ public class SearchEngine extends ElementState implements Mappable<String>
 	public final void setUrlSuffix(String urlSuffix)
 	{
 		this.urlSuffix = urlSuffix;
+	}
+
+	/**
+	 * @return the numResultString
+	 */
+	public final String getNumResultString()
+	{
+		if(numResultString!=null)
+			return numResultString;
+		else
+			return "";
+	}
+
+	/**
+	 * @param numResultString the numResultString to set
+	 */
+	public final void setNumResultString(String numResultString)
+	{
+		this.numResultString = numResultString;
+	}
+
+	/**
+	 * @return the startString
+	 */
+	public final String getStartString()
+	{
+		if(startString!=null)
+			return startString;
+		else
+			return "";
+	}
+
+	/**
+	 * @param startString the startString to set
+	 */
+	public final void setStartString(String startString)
+	{
+		this.startString = startString;
 	}
 	
 }

@@ -320,4 +320,20 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		}
 		return returnVal;
 	}
+	
+	public String getNumResultString(String searchEngine)
+	{
+		String returnVal="";
+		if(searchEngine!=null)
+			return searchEngines.get(searchEngine).getNumResultString();
+		return returnVal;
+	}
+	
+	public String getStartString(String searchEngine)
+	{
+		String returnVal="";
+		if(searchEngine!=null)
+			return searchEngines.get(searchEngine).getStartString();
+		return returnVal;
+	}
 }
