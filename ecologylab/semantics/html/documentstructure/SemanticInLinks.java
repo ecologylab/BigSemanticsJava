@@ -11,6 +11,10 @@ public class SemanticInLinks extends ArrayList<SemanticAnchor>
 
 	TermVectorWeightStrategy<SemanticAnchor> weightStrategy;
 	
+	boolean invalid	= true;
+	
+	double cachedWeight;
+	
 	public SemanticInLinks(TermVectorWeightStrategy<SemanticAnchor> termVectorWeightStrategy)
 	{
 		weightStrategy = termVectorWeightStrategy;
@@ -18,24 +22,29 @@ public class SemanticInLinks extends ArrayList<SemanticAnchor>
 
 	public double getWeight()
 	{
-		double w = 0;
-		synchronized (this)
+		double w;
+		if (invalid)
 		{
-			for(SemanticAnchor anchor : this)
+			w = 0;
+			synchronized (this)
 			{
-				double weight = weightStrategy.getWeight(anchor);
-				w += weight;
-			}	
+				for(SemanticAnchor anchor : this)
+				{
+					double weight = weightStrategy.getWeight(anchor);
+					w += weight;
+				}
+			}
+			cachedWeight	= w;
 		}
-		
-		
+		else
+			w	= cachedWeight;
 		return w;
 	}
 	
 	@Override
 	public boolean add(SemanticAnchor e)
 	{
-		return super.add(e);
+		return addIfUnique(e);
 	}
 	
 	public synchronized void recycle()
@@ -56,13 +65,15 @@ public class SemanticInLinks extends ArrayList<SemanticAnchor>
 			for(SemanticAnchor oldAnchor : this)
 			{
 				String anchorText = oldAnchor != null ? oldAnchor.getAnchorText() : null;
-				if(anchorText != null && anchorText.equalsIgnoreCase(newAnchorText))
+				if(anchorText != null && anchorText.equals(newAnchorText))	// guaranteed to be lower case already
 				{
 					//This is one case we know we want to ignore this new anchor.
 					return false;
 				}
 			}
-			return add(newAnchor);
+			invalid	= true;
+			super.add(newAnchor);
+			return true;
 		}
 		return false;
 	}

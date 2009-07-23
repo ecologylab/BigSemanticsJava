@@ -94,6 +94,7 @@ implements HTMLAttributeNames
   	if(htmlType != null)
 			htmlType.generateContainersFromContexts(anchorContexts);
   	
+  	anchorContexts.clear();
 		taggedDoc.recycle();
 	}
 
@@ -221,6 +222,7 @@ implements HTMLAttributeNames
 					if (anchorContext != null)
 					{
 						XMLTools.unescapeXML(anchorContext);
+						StringTools.toLowerCase(anchorContext);
 						anchorContextString				= StringTools.toString(anchorContext);
 						StringBuilderUtils.release(anchorContext);
 					}
@@ -228,6 +230,7 @@ implements HTMLAttributeNames
 					if (anchorText != null)
 					{
 						XMLTools.unescapeXML(anchorText);
+						StringTools.toLowerCase(anchorText);
 						anchorTextString					= StringTools.toString(anchorText);
 						StringBuilderUtils.release(anchorText);
 					}

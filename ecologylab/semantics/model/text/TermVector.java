@@ -65,6 +65,14 @@ public class TermVector extends FeatureVector<Term> implements ITermVector
 	{
 		super.reset();
 //		StringTools.toLowerCase(s);
+		add(input);
+	}
+
+	/**
+	 * @param input
+	 */
+	public void add(CharSequence input)
+	{
 		Matcher m = WORD_REGEX.matcher(input);
 		StringBuilder termBuffy	= StringBuilderUtils.acquire();
 		while (m.find())
