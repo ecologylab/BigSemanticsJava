@@ -11,6 +11,7 @@ import java.util.HashMap;
 
 import ecologylab.appframework.PropertiesAndDirectories;
 import ecologylab.appframework.types.prefs.PrefString;
+import ecologylab.io.Files;
 import ecologylab.semantics.library.DefaultMetadataTranslationSpace;
 import ecologylab.xml.TranslationScope;
 import ecologylab.xml.XMLTools;
@@ -23,6 +24,8 @@ import ecologylab.xml.XMLTools;
  */
 public class MetadataCompilerConstants
 {
+
+	private static final String DEFAULT_GENERATED_SEMANTICS_LOCATION = ".." + Files.sep + "ecologylabGeneratedSemantics";
 
 	public static String				PACKAGE_NAME				= "package ecologylab.semantics.generated.library;\n";
 
@@ -71,9 +74,9 @@ public class MetadataCompilerConstants
 	public static String getGenerationPath(String packageName)
 	{
 		PrefString relativePath = PrefString.usePrefString("metadata_generated_relative_path",
-				"..\\ecologylabGeneratedSemantics");
+				DEFAULT_GENERATED_SEMANTICS_LOCATION);
 		// String userDirProperty = System.getProperty("user.dir");
-		String generationPath = relativePath.value() + "\\" + packageName.replace('.', '\\') + "\\";
+		String generationPath = relativePath.value() + Files.sep + packageName.replace('.', Files.sep) + Files.sep;
 		return generationPath;
 	}
 
