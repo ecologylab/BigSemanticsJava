@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path=""/>
+	<classpathentry excluding="ecologylab/semantics/library/Document.java|ecologylab/semantics/library/Search.java|ecologylab/semantics/library/Rss.java|ecologylab/semantics/library/Pdf.java|ecologylab/semantics/library/Icdl.java|ecologylab/semantics/library/Nsdl.java|ecologylab/semantics/library/Dlms.java|ecologylab/semantics/library/DcDocument.java" kind="src" path=""/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/ecologylabFundamental"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jtidy"/>
