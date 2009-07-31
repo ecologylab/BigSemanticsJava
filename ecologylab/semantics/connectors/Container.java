@@ -8,7 +8,7 @@ import java.io.IOException;
 import ecologylab.documenttypes.DocumentType;
 import ecologylab.generic.DispatchTarget;
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.library.Document;
+import ecologylab.semantics.metadata.Document;
 import ecologylab.semantics.seeding.ResultDistributer;
 import ecologylab.semantics.seeding.SearchResult;
 import ecologylab.semantics.seeding.Seed;
