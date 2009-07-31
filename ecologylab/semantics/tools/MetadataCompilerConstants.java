@@ -37,7 +37,7 @@ public class MetadataCompilerConstants
 																											+ "This is a generated code. DO NOT edit or modify it.\n @author MetadataCompiler \n"
 																											+ END_JAVA_DOC;
 
-	public static String				IMPORTS							= "\n import ecologylab.semantics.library.scalar.*; \nimport ecologylab.semantics.metadata.*;\n  import java.util.*;\n import ecologylab.semantics.metametadata.MetaMetadata;\n  import ecologylab.net.ParsedURL;\n import ecologylab.generic.HashMapArrayList;\n import ecologylab.semantics.generated.library.*;\nimport ecologylab.xml.xml_inherit;\nimport ecologylab.xml.types.element.Mappable;\nimport ecologylab.semantics.library.DefaultMetadataTranslationSpace;\n import ecologylab.semantics.library.scholarlyPublication.*;\nimport ecologylab.semantics.library.uva.*;\nimport ecologylab.xml.TranslationScope;\nimport ecologylab.xml.ElementState.xml_tag;\n";
+	public static String				IMPORTS							= "\n import ecologylab.semantics.library.scalar.*; \nimport ecologylab.semantics.metadata.*;\n  import java.util.*;\n import ecologylab.semantics.metametadata.MetaMetadata;\n  import ecologylab.net.ParsedURL;\n import ecologylab.generic.HashMapArrayList;\n import ecologylab.semantics.generated.library.*;\nimport ecologylab.xml.xml_inherit;\nimport ecologylab.xml.types.element.Mappable;\nimport ecologylab.semantics.library.DefaultMetadataTranslationSpace;\n import ecologylab.semantics.library.scholarlyPublication.*;\nimport ecologylab.semantics.library.uva.*;\nimport ecologylab.xml.TranslationScope;\nimport ecologylab.xml.ElementState.xml_tag;\n import ecologylab.semantics.metadata.Document;\n";
 
 	public static String				PACKAGE							= "package";
 
@@ -160,7 +160,7 @@ public class MetadataCompilerConstants
 		MetadataCompilerConstants.genreatedTranslationScope
 				.print("public class GeneratedMetadataTranslationScope extends  DefaultMetadataTranslationSpace\n{");
 		MetadataCompilerConstants.genreatedTranslationScope
-				.print("protected static final Class TRANSLATIONS[]=\n\t{\n");
+				.print("protected static final Class TRANSLATIONS[]=\n\t{\nDocument.class,\n");
 
 	}
 
