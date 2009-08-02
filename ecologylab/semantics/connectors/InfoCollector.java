@@ -26,7 +26,6 @@ import ecologylab.xml.TranslationScope;
  */
 public interface InfoCollector<AC extends Container, IC extends InfoCollector>
 {
-
 	void displayStatus(String message);
 	
 	AC lookupAbstractContainer(ParsedURL connectionPURL);
@@ -39,6 +38,8 @@ public interface InfoCollector<AC extends Container, IC extends InfoCollector>
 
 	MetaMetadataRepository metaMetaDataRepository();
 
+	public MetaMetadata getMetaMetadata(ParsedURL purl);
+	
 	DocumentType<AC, ? extends IC, ?> newFileDirectoryType(File file);
 	
 	Class<IC>[] getInfoProcessorClassArg();

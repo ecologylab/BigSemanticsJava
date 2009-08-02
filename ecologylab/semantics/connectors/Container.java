@@ -9,6 +9,7 @@ import ecologylab.documenttypes.DocumentType;
 import ecologylab.generic.DispatchTarget;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.metadata.Document;
+import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.seeding.ResultDistributer;
 import ecologylab.semantics.seeding.SearchResult;
 import ecologylab.semantics.seeding.Seed;
@@ -18,7 +19,7 @@ import ecologylab.xml.TranslationScope;
  * @author andruid
  * 
  */
-public interface Container
+public interface Container<D extends Document>
 {
 
 	void redirectInlinksTo(Container redirectedAbstractContainer);
@@ -59,5 +60,10 @@ public interface Container
 	void setQuery(String query);
 	
 	void delete();
+	
+	D metadata();
 
+	public D constructMetadata(MetaMetadata metaMetadata);
+	
+	public D constructAndSetMetadata(MetaMetadata metaMetadata);
 }
