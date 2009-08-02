@@ -11,8 +11,6 @@ import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 
-import org.w3c.dom.Document;
-
 import ecologylab.collections.PrefixCollection;
 import ecologylab.collections.Scope;
 import ecologylab.generic.Debug;
@@ -23,6 +21,7 @@ import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.InfoCollector;
+import ecologylab.semantics.metadata.Document;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.xml.ElementState;
 
@@ -148,7 +147,7 @@ abstract public class DocumentType<AC extends Container, IP extends InfoCollecto
 	 * Optional parse method takes an XML DOM represented as an org.w3c.Document as input.
 	 * @param dom
 	 */
-	public void parse(Document dom)
+	public void parse(org.w3c.dom.Document dom)
 	{
 		
 		
@@ -249,6 +248,15 @@ abstract public class DocumentType<AC extends Container, IP extends InfoCollecto
 							if ("acm.org".equals(domain) && "pdf".equals(connPURLSuffix))
 							{
 								return true;
+							}
+							else
+							{
+								// get new MetaMetadata & metadata
+								Document oldMetadata	= container.metadata();
+								MetaMetadata newMetaMetadata	= infoCollector.getMetaMetadata(connectionPURL);
+								Document newMetadata	= container.constructAndSetMetadata(newMetaMetadata);
+								newMetadata.setLocation(oldMetadata.getLocation());
+								newMetadata.setQuery(oldMetadata.getQuery());
 							}
 							infoCollector.mapContainerToPURL(purl, container);
 							// redirect the AbstractContainer object
