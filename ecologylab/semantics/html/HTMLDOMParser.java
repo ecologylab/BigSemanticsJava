@@ -241,7 +241,7 @@ implements HTMLAttributeNames
 		return anchorNodeContexts;
 	}
 	
-  public StringBuilder getTextInSubTree(TdNode node, boolean recurse)
+  public static StringBuilder getTextInSubTree(TdNode node, boolean recurse)
   {
   	return getTextinSubTree(node, recurse, null);
   }
@@ -256,7 +256,7 @@ implements HTMLAttributeNames
    * @return
    */
 	//FIXME -- why is text in anchor node not included?
-  public StringBuilder getTextinSubTree(TdNode node, boolean recurse, StringBuilder result)
+  public static StringBuilder getTextinSubTree(TdNode node, boolean recurse, StringBuilder result)
   {
   	for (TdNode childNode	= node.content(); childNode != null; childNode = childNode.next())
   	{
