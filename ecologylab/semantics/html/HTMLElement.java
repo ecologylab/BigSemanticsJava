@@ -24,6 +24,8 @@ implements HTMLAttributeNames, ImageConstants
 {
 	public static final int	INDEX_NOT_CALCULATED	= -1;
 	protected	TdNode 			node;
+	
+	//FIXME -- get rid of this inefficient beast!
 	private HashMap<String, String> attributesMap;
 	
 	String	xPath;
