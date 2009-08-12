@@ -255,7 +255,7 @@ abstract public class DocumentType<C extends Container, IP extends InfoCollector
 								Document oldMetadata	= container.metadata();
 								MetaMetadata newMetaMetadata	= infoCollector.getMetaMetadata(connectionPURL);
 								Document newMetadata	= container.constructAndSetMetadata(newMetaMetadata);
-								newMetadata.setLocation(oldMetadata.getLocation());
+//			done by resetPURL()					newMetadata.setLocation(oldMetadata.getLocation());
 								newMetadata.setQuery(oldMetadata.getQuery());
 							}
 							infoCollector.mapContainerToPURL(purl, container);
