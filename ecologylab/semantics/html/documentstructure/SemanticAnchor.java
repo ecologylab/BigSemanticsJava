@@ -1,5 +1,6 @@
 package ecologylab.semantics.html.documentstructure;
 
+import ecologylab.net.ParsedURL;
 import ecologylab.semantics.model.text.ITermVector;
 import ecologylab.semantics.model.text.TermVector;
 import ecologylab.semantics.model.text.TermVectorFeature;
@@ -14,19 +15,20 @@ public class SemanticAnchor extends AnchorContext implements TermVectorFeature
 	TermVector 				tv;
 	boolean 					withinSite = false;
 	
-	//FIXME -- look at w sashi
-	public SemanticAnchor(AnchorContext aContext /*, ParsedURL inlinkPurl */)
-	{
-		super(aContext.getHref(), aContext.getAnchorText(), aContext.getAnchorContextString());
-//		this.inlinkPurl			= inlinkPurl;
+	public static final double TEXT_OVER_CONTEXT_EMPHASIS_FACTOR	= 3;
 	
+	public SemanticAnchor(ParsedURL href, String anchorText, String anchorContextString)
+	{
+		super(href, anchorText, anchorContextString);
 		tv 									= new TermVector();
-		String anchorText		= aContext.anchorText;
 		if (anchorText != null && anchorText.length() > 0)
-			tv.add(anchorText);
-		String anchorContextString		= aContext.anchorContextString;
+			tv.add(anchorText, TEXT_OVER_CONTEXT_EMPHASIS_FACTOR);
 		if (anchorContextString != null && anchorContextString.length() > 0)
 			tv.add(anchorContextString);
+	}
+	public SemanticAnchor(AnchorContext aContext /*, ParsedURL inlinkPurl */)
+	{
+		this(aContext.getHref(), aContext.getAnchorText(), aContext.getAnchorContextString());
 	}
 
 	public ITermVector termVector()
