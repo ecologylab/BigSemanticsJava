@@ -24,15 +24,15 @@ import ecologylab.xml.TranslationScope;
  * @author andruid
  *
  */
-public interface InfoCollector<AC extends Container, IC extends InfoCollector>
+public interface InfoCollector<C extends Container, IC extends InfoCollector>
 {
 	void displayStatus(String message);
 	
-	AC lookupAbstractContainer(ParsedURL connectionPURL);
+	C lookupAbstractContainer(ParsedURL connectionPURL);
 
 	Object globalCollectionContainersLock();
 	
-	void mapContainerToPURL(ParsedURL purl, AC container);
+	void mapContainerToPURL(ParsedURL purl, C container);
 
 	boolean accept(ParsedURL connectionPURL);
 
@@ -40,7 +40,7 @@ public interface InfoCollector<AC extends Container, IC extends InfoCollector>
 
 	public MetaMetadata getMetaMetadata(ParsedURL purl);
 	
-	DocumentType<AC, ? extends IC, ?> newFileDirectoryType(File file);
+	DocumentType<C, ? extends IC, ?> newFileDirectoryType(File file);
 	
 	Class<IC>[] getInfoProcessorClassArg();
 
@@ -60,16 +60,16 @@ public interface InfoCollector<AC extends Container, IC extends InfoCollector>
 
 	void untraversable(ParsedURL url);
 
-	DocumentType<AC, ? extends IC, ?> constructDocumentType(ElementState inlineDoc);
+	DocumentType<C, ? extends IC, ?> constructDocumentType(ElementState inlineDoc);
 
 	TranslationScope inlineDocumentTranslations();
 	
 	
-	AC getContainerForSearch(AC ancestor, ParsedURL purl, Seed seed);
+	C getContainerForSearch(C ancestor, ParsedURL purl, Seed seed);
 	
-	AC getContainerForSearch(AC ancestor, ParsedURL purl, Seed seed, MetaMetadata metaMetadata);
+	C getContainerForSearch(C ancestor, ParsedURL purl, Seed seed, MetaMetadata metaMetadata);
 
-	AC getContainer(AC ancestor, ParsedURL purl, boolean reincarnate,
+	C getContainer(C ancestor, ParsedURL purl, boolean reincarnate,
 			boolean addToCandidatesIfNeeded, MetaMetadata metaMetadata);
 
 	Scope sessionScope();

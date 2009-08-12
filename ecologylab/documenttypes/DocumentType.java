@@ -42,7 +42,7 @@ import ecologylab.xml.ElementState;
  * @author andruid
  * @author eunyee
  */
-abstract public class DocumentType<AC extends Container, IP extends InfoCollector<AC, IP>, ES extends ElementState>
+abstract public class DocumentType<C extends Container, IP extends InfoCollector<C, IP>, ES extends ElementState>
 		extends Debug
 {
 
@@ -61,7 +61,7 @@ abstract public class DocumentType<AC extends Container, IP extends InfoCollecto
 	 * Associated Container object.
 	 * Filled out by the connect() method.
 	 */
-	protected AC					container;
+	protected C					container;
 
 	protected IP					abstractInfoCollector;
 
@@ -368,7 +368,7 @@ abstract public class DocumentType<AC extends Container, IP extends InfoCollecto
 	 * @param container
 	 * @param infoCollector
 	 */
-	protected void fillValues ( PURLConnection purlConnection, AC container, IP infoCollector )
+	protected void fillValues ( PURLConnection purlConnection, C container, IP infoCollector )
 	{
 		this.purlConnection = purlConnection;
 		setContainer(container);
@@ -481,7 +481,7 @@ abstract public class DocumentType<AC extends Container, IP extends InfoCollecto
 	 * 
 	 * @param container
 	 */
-	public void setContainer ( AC container )
+	public void setContainer ( C container )
 	{
 		this.container = container;
 	}
@@ -755,7 +755,7 @@ abstract public class DocumentType<AC extends Container, IP extends InfoCollecto
 		return false;
 	}
 	
-	public AC getContainer()
+	public C getContainer()
 	{
 		return container;
 	}

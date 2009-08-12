@@ -29,7 +29,7 @@ import ecologylab.xml.types.element.Mappable;
  * @author damaraju
  * 
  */
-public class MetaMetadata<SA extends SemanticAction> extends MetaMetadataField implements Mappable<String>
+public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 {
 	@xml_attribute
 	private String						name;
@@ -89,7 +89,7 @@ public class MetaMetadata<SA extends SemanticAction> extends MetaMetadataField i
 
 	@xml_tag("semantic_actions")
 	@xml_collection("semantic_actions")
-	private ArrayListState<SA>	semanticActions;
+	private ArrayListState<? extends SemanticAction>	semanticActions;
 
 	
 	@xml_attribute
@@ -453,7 +453,7 @@ public class MetaMetadata<SA extends SemanticAction> extends MetaMetadataField i
 	/**
 	 * @return the semanticActions
 	 */
-	public ArrayListState<SA> getSemanticActions()
+	public ArrayListState<? extends SemanticAction> getSemanticActions()
 	{
 		return semanticActions;
 	}

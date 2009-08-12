@@ -36,7 +36,7 @@ import ecologylab.xml.XMLTranslationException;
  * @author amathur
  * 
  */
-public class MetaMetadataSearchType<M extends MetadataBase,C extends Container,SA extends SemanticAction<SA>> extends MetaMetadataDocumentTypeBase<M,SA,C>
+public class MetaMetadataSearchType<M extends MetadataBase,C extends Container, IC extends InfoCollector<C, IC>, E extends ElementState> extends MetaMetadataDocumentTypeBase<M,C, IC, E>
 		implements CFPrefNames, DispatchTarget
 {
 
@@ -60,48 +60,48 @@ public class MetaMetadataSearchType<M extends MetadataBase,C extends Container,S
 
 	/**
 	 * 
-	 * @param infoProcessor
+	 * @param infoCollector
 	 * @param semanticActionHandler
 	 */
-	public MetaMetadataSearchType(InfoCollector infoProcessor,
-			SemanticActionHandler<SA,C,?> semanticActionHandler)
+	public MetaMetadataSearchType(IC infoCollector,
+			SemanticActionHandler<C, IC> semanticActionHandler)
 	{
-		super(infoProcessor,semanticActionHandler);
+		super(infoCollector,semanticActionHandler);
 	
 
 	}
 
-	public MetaMetadataSearchType(InfoCollector infoCollector, String query, float bias,
+	public MetaMetadataSearchType(IC infoCollector, String query, float bias,
 			int numResults, String engine)
 	{
 		this(new SearchState(query, engine, (short) 0, numResults, true), infoCollector, engine);
 	}
 
-	public MetaMetadataSearchType(SearchState searchSeed, InfoCollector infoCollector, String engine)
+	public MetaMetadataSearchType(SearchState searchSeed, IC infoCollector, String engine)
 	{
 		this(infoCollector, null, engine, searchSeed);
 	}
 
 	/**
-	 * @param infoProcessor
+	 * @param infoCollector
 	 * @param engine
 	 * @param semanticAction
 	 * @param searchURL
 	 */
-	public MetaMetadataSearchType(InfoCollector infoProcessor,
-			SemanticActionHandler<SA,C,?> semanticActionHandler, String engine, SearchState searchSeed)
+	public MetaMetadataSearchType(IC infoCollector,
+			SemanticActionHandler<C, IC> semanticActionHandler, String engine, SearchState searchSeed)
 	{
-		super(infoProcessor,semanticActionHandler);
+		super(infoCollector, semanticActionHandler);
 		this.engine = engine;
 		this.searchSeed = searchSeed;
-		formSearchUrlBasedOnEngine(searchSeed.currentFirstResultIndex(), infoProcessor);
+		formSearchUrlBasedOnEngine(searchSeed.currentFirstResultIndex(), infoCollector);
 
 		// if search PURL is not null for a container.
 		if (searchURL != null)
 		{
-			MetaMetadata metaMetadata = infoProcessor.metaMetaDataRepository().getByTagName(
+			MetaMetadata metaMetadata = infoCollector.metaMetaDataRepository().getByTagName(
 					TypeTagNames.SEARCH_TAG);
-			Container container = infoProcessor.getContainer(null, searchURL, false, false, metaMetadata);
+			C container = infoCollector.getContainer(null, searchURL, false, false, metaMetadata);
 			setContainer(container);
 			searchSeed.eliminatePlusesFromQuery();
 			setQuery(searchSeed);

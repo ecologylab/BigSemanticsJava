@@ -40,10 +40,10 @@ import ecologylab.xml.types.scalar.ScalarType;
  * @author amathur
  * 
  */
-public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase,SA extends SemanticAction,C  extends Container> extends DocumentType
+public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C extends Container, IC extends InfoCollector<C, IC>, E extends ElementState> extends DocumentType<C, IC, E>
 {
 
-	private SemanticActionHandler<SA,C,?>	semanticActionHandler;
+	private SemanticActionHandler<C, IC>	semanticActionHandler;
 
 	/**
 	 * Translation scope of the metadata classes, generated during compile time.
@@ -60,13 +60,13 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase,SA ext
 	 * 
 	 * @param infoCollector
 	 */
-	public MetaMetadataDocumentTypeBase(InfoCollector infoCollector)
+	public MetaMetadataDocumentTypeBase(IC infoCollector)
 	{
 		super(infoCollector);
 	}
 
-	public MetaMetadataDocumentTypeBase(InfoCollector infoCollector,
-			SemanticActionHandler<SA,C,?> semanticActionHandler)
+	public MetaMetadataDocumentTypeBase(IC infoCollector,
+			SemanticActionHandler<C,IC> semanticActionHandler)
 	{
 		super(infoCollector);
 		this.semanticActionHandler = semanticActionHandler;
@@ -82,7 +82,7 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase,SA ext
 	protected void takeSemanticActions(M populatedMetadata)
 	{
 		// get the semantic actions
-		ArrayListState<SA> semanticActions = metaMetadata.getSemanticActions();
+		ArrayListState<? extends SemanticAction> semanticActions = metaMetadata.getSemanticActions();
 
 		// build the standardObjectInstanceMap
 		Scope standardObjectInstanceMap = buildStandardObjectInstanceMap(populatedMetadata);
@@ -93,7 +93,7 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase,SA ext
 		// handle the semantic actions sequentially
 		for (int i = 0; i < semanticActions.size(); i++)
 		{
-			SA action = semanticActions.get(i);
+			SemanticAction action = semanticActions.get(i);
 			semanticActionHandler.handleSemanticAction(action, parameter, this, abstractInfoCollector);
 		}
 	}
