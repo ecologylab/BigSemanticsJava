@@ -68,10 +68,14 @@ public class TermVector extends FeatureVector<Term> implements ITermVector
 		add(input);
 	}
 
+	public void add(CharSequence input)
+	{
+		add(input, 1);
+	}	
 	/**
 	 * @param input
 	 */
-	public void add(CharSequence input)
+	public void add(CharSequence input, double weight)
 	{
 		Matcher m = WORD_REGEX.matcher(input);
 		StringBuilder termBuffy	= StringBuilderUtils.acquire();
@@ -80,7 +84,7 @@ public class TermVector extends FeatureVector<Term> implements ITermVector
 			int start = m.start();
 			termBuffy.append(input, start, m.end());
 			StringTools.toLowerCase(termBuffy);
-			addWithoutNotify(TermDictionary.getTermForWord(termBuffy), 1);
+			addWithoutNotify(TermDictionary.getTermForWord(termBuffy), weight);
 			StringTools.clear(termBuffy);
 		}
 		StringBuilderUtils.release(termBuffy);
