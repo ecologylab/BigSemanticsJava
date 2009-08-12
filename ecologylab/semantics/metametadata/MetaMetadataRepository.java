@@ -61,6 +61,8 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	
 	private HashMap<String, MetaMetadata>						repositoryByURL = null;
 	
+	private HashMap<String,MetaMetadata>						imageRepositoryByURL=null;
+	
 	private PrefixCollection 												urlprefixCollection = new PrefixCollection('/');
 
 	static final TranslationScope										TS	= MetaMetadataTranslationScope.get();
@@ -143,23 +145,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	public MetaMetadata getByPURL(ParsedURL parsedURL)
 	{
 		MetaMetadata returnValue=null;
-		if (repositoryByURL == null)
-		{
-			repositoryByURL = new HashMap<String, MetaMetadata>();
-			
-			for (MetaMetadata metaMetadata : repositoryByTagName)
-			{
-				ParsedURL purl = metaMetadata.getUrlBase();
-				if (purl != null)
-					repositoryByURL.put(purl.noAnchorNoQueryPageString(), metaMetadata);
-				ParsedURL urlPrefix = metaMetadata.getUrlPrefix();
-				if(urlPrefix != null)
-				{
-						urlprefixCollection.add(urlPrefix);
-						repositoryByURL.put(urlPrefix.toString(), metaMetadata);
-				}
-			}
-		}
+		repositoryByURL = initializeRpository(repositoryByURL);
 		if(parsedURL!=null)
 		{
 			returnValue = repositoryByURL.get(parsedURL.noAnchorNoQueryPageString());
@@ -180,6 +166,52 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		return returnValue;
 	}
 
+	public MetaMetadata getMediaMetaMetadata(ParsedURL parsedURL)
+	{
+		MetaMetadata returnValue=null;
+		imageRepositoryByURL = initializeRpository(imageRepositoryByURL);
+		if(parsedURL!=null)
+		{
+			returnValue = imageRepositoryByURL.get(parsedURL.noAnchorNoQueryPageString());
+			
+			if(returnValue == null)
+			{
+				//if(urlprefixCollection.match(parsedURL))
+				{
+					String protocolStrippedURL = parsedURL.toString().split("://")[1];
+					
+					String key = parsedURL.url().getProtocol()+"://"+urlprefixCollection.getMatchingPhrase(protocolStrippedURL, '/');
+					
+					returnValue = imageRepositoryByURL.get(key);
+				}
+			}
+		}
+		
+		return returnValue;
+	}
+	
+	
+	private HashMap<String, MetaMetadata> initializeRpository(HashMap<String, MetaMetadata>	repository)
+	{
+		if (repository == null)
+		{
+			repository = new HashMap<String, MetaMetadata>();
+			
+			for (MetaMetadata metaMetadata : repositoryByTagName)
+			{
+				ParsedURL purl = metaMetadata.getUrlBase();
+				if (purl != null)
+					repository.put(purl.noAnchorNoQueryPageString(), metaMetadata);
+				ParsedURL urlPrefix = metaMetadata.getUrlPrefix();
+				if(urlPrefix != null)
+				{
+						urlprefixCollection.add(urlPrefix);
+						repository.put(urlPrefix.toString(), metaMetadata);
+				}
+			}
+		}
+		return repository;
+	}
 	public MetaMetadata getByTagName(String tagName)
 	{
 
