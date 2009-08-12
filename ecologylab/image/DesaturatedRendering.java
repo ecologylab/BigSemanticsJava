@@ -1,5 +1,7 @@
 package ecologylab.image;
 
+import ecologylab.generic.ImageTools;
+
 /**
  * Rendering that applies a desaturating filter to the pixels chained in.
  */
@@ -12,12 +14,11 @@ public class DesaturatedRendering extends Rendering
 	/**
 	 * Constructor for DesaturatedRendering.
 	 * 
-	 * @param pixelBased
 	 * @param suppliedPixels
 	 * @param previousRendering
 	 * @param active
 	 */
-	public DesaturatedRendering(PixelBased pixelBased, Rendering previousRendering, boolean active)
+	public DesaturatedRendering(Rendering previousRendering, boolean active)
 	{
 		super(previousRendering, active);
 		isDynamic = true;
@@ -60,7 +61,8 @@ public class DesaturatedRendering extends Rendering
 
 	public void compute(Rendering inputRendering, Rendering outputRendering)
 	{
-		int[] inPixels = inputRendering.pixels();
+		ImageTools.copyImage(inputRendering.bufferedImage, outputRendering.bufferedImage);
+		
 		int[] outPixels = outputRendering.pixels();
 
 		int pixelIndex = 0;
@@ -69,7 +71,7 @@ public class DesaturatedRendering extends Rendering
 		{
 			for (int i = 0; i < width; i++)
 			{
-				int thisPixel = inPixels[pixelIndex];
+				int thisPixel = outPixels[pixelIndex];
 				int r = (thisPixel & R) >> 16;
 				int g = (thisPixel & G) >> 8;
 				int b = thisPixel & B;
@@ -82,9 +84,8 @@ public class DesaturatedRendering extends Rendering
 				r = (int) (gray + oneMinusDegree * r);
 				g = (int) (gray + oneMinusDegree * g);
 				b = (int) (gray + oneMinusDegree * b);
-				int alpha = inPixels[pixelIndex] & ALPHA;
+				int alpha = thisPixel & ALPHA;
 				outPixels[pixelIndex++] = alpha + (r << 16) + (g << 8) + b;
-				// pixelIndex++;
 			}
 		}
 	}

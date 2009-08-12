@@ -483,14 +483,14 @@ extends Debug
 				if (blurredRendering == null)
 				{
 					desaturatedRendering
-					= new DesaturatedRendering(this, lastStatic(), true);
+					= new DesaturatedRendering(lastStatic(), true);
 					//		  = new DesaturateState(this, alphaGradientState, true);
 					firstDynamic= desaturatedRendering;
 				}
 				else
 				{
 					desaturatedRendering
-					= new DesaturatedRendering(this, blurredRendering, true);
+					= new DesaturatedRendering(blurredRendering, true);
 				}
 			}
 			if ((blurredRendering != null) && (blurredRendering.previousRendering == null))
