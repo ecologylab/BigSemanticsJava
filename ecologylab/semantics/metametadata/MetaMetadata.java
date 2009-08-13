@@ -67,7 +67,7 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 	private String						userAgentString;
 
 	@xml_attribute
-	private boolean						directBinding=false;
+	private String						binding="default";
 	/*
 	 * @xml_collection("meta_metadata_field") private ArrayList<MetaMetadataField>
 	 * metaMetadataFieldList;
@@ -474,10 +474,10 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 		return extendsAttribute;
 	}
 
-	public boolean directBindingType()
+	public String getBinding()
 	{
 		// TODO Auto-generated method stub
-		return directBinding;
+		return binding;
 	}
 
 	public String getType()

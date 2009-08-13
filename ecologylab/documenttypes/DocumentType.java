@@ -280,7 +280,7 @@ abstract public class DocumentType<C extends Container, IP extends InfoCollector
 		};
 
 		// based on purl we try to find meta-metadata from reposiotry.
-		MetaMetadata metaMetadata = infoCollector.metaMetaDataRepository().getByPURL(purl);
+		MetaMetadata metaMetadata = infoCollector.metaMetaDataRepository().getDocumentMetadataByPURL(purl);
 		
 		// then try to create a connection using the PURL
 		PURLConnection purlConnection = purl.connect(helper, (metaMetadata == null) ? null
@@ -300,19 +300,20 @@ abstract public class DocumentType<C extends Container, IP extends InfoCollector
 			if (metaMetadata != null)
 			{
 				// either it a direct binding type
-				if(metaMetadata.directBindingType())
+				if("direct".equals(metaMetadata.getBinding()))
 				{
 					result = new MetaMetadataDirectBindingType(semanticAction, infoCollector);
 				}
-				else
+				//else it must be XPath type only [Will be parsed using XPath expressions]
+				else if("xpath".equals(metaMetadata.getBinding()))
 				{
-					//else it must be XPath type only [Will be parsed using XPath expressions]
-					result = new MetaMetadataXPathType(semanticAction,infoCollector);
+						result = new MetaMetadataXPathType(semanticAction,infoCollector);
 				}
+				// Add logic for any new binding type here
 			}
 			
-			// if meta-metadata does not exists
-			if (result == null)
+			// if meta-metadata does not exists or the binding type is default
+			if (result == null || "default".equals(metaMetadata.getBinding()))
 			{
 				// it is of some special type like html,pdf etc so we find out the document type
 				// using logic below.

@@ -246,7 +246,7 @@ public class MetaMetadataSearchType<M extends MetadataBase,C extends Container, 
 		initailizeMetadataObjectBuilding();
 		if (metaMetadata.isSupported(container.purl()))
 		{
-			if (metaMetadata.directBindingType())
+			if ("direct".equals(metaMetadata.getBinding()))
 			{
 				try
 				{
@@ -259,7 +259,7 @@ public class MetaMetadataSearchType<M extends MetadataBase,C extends Container, 
 					e.printStackTrace();
 				}
 			}
-			else
+			else if("xpath".equals(metaMetadata.getBinding()))
 			{
 				Tidy tidy;
 				tidy = new Tidy();
