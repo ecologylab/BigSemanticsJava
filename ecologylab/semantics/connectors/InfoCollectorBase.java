@@ -270,7 +270,7 @@ public abstract class InfoCollectorBase<AC extends Container, IC extends InfoCol
 
 	public MetaMetadata getMetaMetadata(ParsedURL purl)
 	{
-		return metaMetadataRepository.getByPURL(purl);
+		return metaMetadataRepository.getDocumentMetadataByPURL(purl);
 	}
 
 	public MetaMetadata getMetaMetadata(ParsedURL purl, String tagName)
@@ -386,6 +386,7 @@ public abstract class InfoCollectorBase<AC extends Container, IC extends InfoCol
 		debug("beginSeeding() pause crawler");
 		duringSeeding = true;
 		crawlerDownloadMonitor.pause();
+		pause();
 	}
 
 	/**
@@ -396,7 +397,7 @@ public abstract class InfoCollectorBase<AC extends Container, IC extends InfoCol
 		duringSeeding = false;
 		debug("endSeeding() unpause crawler");
 		crawlerDownloadMonitor.unpause();
-		start();
+		start();	// start thread *or* unpause()
 	}
 
 	public DownloadMonitor getCrawlerDownloadMonitor()
@@ -528,5 +529,6 @@ public abstract class InfoCollectorBase<AC extends Container, IC extends InfoCol
 	}
 	
 	abstract public void start();
+	abstract public void pause();
 
 }
