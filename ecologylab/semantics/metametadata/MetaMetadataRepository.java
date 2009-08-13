@@ -131,7 +131,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	 */
 	public MetaMetadata get(ParsedURL purl, String tagName)
 	{
-		MetaMetadata result = getByPURL(purl);
+		MetaMetadata result = getDocumentMetadataByPURL(purl);
 		return (result != null) ? result : getByTagName(tagName);
 	}
 
@@ -142,7 +142,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	 * @param parsedURL
 	 * @return appropriate MetaMetadata, or null.
 	 */
-	public MetaMetadata getByPURL(ParsedURL parsedURL)
+	public MetaMetadata getDocumentMetadataByPURL(ParsedURL parsedURL)
 	{
 		MetaMetadata returnValue=null;
 		repositoryByURL = initializeRpository(repositoryByURL);
@@ -162,7 +162,11 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 				}
 			}
 		}
-		
+		if(returnValue==null)
+		{
+			// return document metadata
+			return getByTagName(DOCUMENT_TAG);
+		}
 		return returnValue;
 	}
 
@@ -186,7 +190,10 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 				}
 			}
 		}
-		
+		if(returnValue==null)
+		{
+			// Have to do some thing
+		}
 		return returnValue;
 	}
 	
@@ -250,7 +257,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	{
 		ParsedURL purl = metadata.getLocation();
 
-		MetaMetadata result = getByPURL(purl);
+		MetaMetadata result = getDocumentMetadataByPURL(purl);
 		if (result == null)
 			result = getByClass(metadata.getClass());
 		return result;
