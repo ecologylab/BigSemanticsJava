@@ -478,4 +478,17 @@ public class Document extends Metadata
 		this.query = query;
 		rebuildCompositeTermVector();
 	}
+	/**
+	 * Insert the queryMetadata into the composite term vector FOR THE FIRST TIME.
+	 * Use a coefficient to control its emphasis, in order to avoid overpowering
+	 * the weighting with a weak (distantly crawled) relationship to the original search.
+	 * 
+	 * @param query
+	 * @param weight		Factor to affect the impact of the search query on the composite term vector weights.
+	 */
+	public void hwInitializeQueryMetadata(MetadataString query, double weight)
+	{
+		this.query = query;
+		termVector.add(weight, query.termVector());
+	}
 }
