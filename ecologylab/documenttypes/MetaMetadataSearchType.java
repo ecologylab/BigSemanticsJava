@@ -261,6 +261,7 @@ public class MetaMetadataSearchType<M extends MetadataBase,C extends Container, 
 			}
 			else if("xpath".equals(metaMetadata.getBinding()))
 			{
+				//FIXME -- consolidate reduntant code in one method, w XPathType
 				Tidy tidy;
 				tidy = new Tidy();
 				tidy.setQuiet(true);

@@ -57,6 +57,7 @@ public class MetaMetadataXPathType<M extends MetadataBase,SA extends SemanticAct
 	public MetaMetadataXPathType(InfoCollector infoCollector)
 	{
 		super(infoCollector);
+		//FIXME -- consolidate reduntant code in one method, w MMSearchType
 		tidy = new Tidy();
 		tidy.setQuiet(true);
 		tidy.setShowWarnings(false);

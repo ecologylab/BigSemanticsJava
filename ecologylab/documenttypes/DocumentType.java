@@ -21,6 +21,7 @@ import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.InfoCollector;
+import ecologylab.semantics.library.TypeTagNames;
 import ecologylab.semantics.metadata.Document;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.xml.ElementState;
@@ -253,7 +254,7 @@ abstract public class DocumentType<C extends Container, IP extends InfoCollector
 							{
 								// get new MetaMetadata & metadata
 								Document oldMetadata	= container.metadata();
-								MetaMetadata newMetaMetadata	= infoCollector.getMetaMetadata(connectionPURL);
+								MetaMetadata newMetaMetadata	= infoCollector.getDocumentMM(connectionPURL);
 								Document newMetadata	= container.constructAndSetMetadata(newMetaMetadata);
 //			done by resetPURL()					newMetadata.setLocation(oldMetadata.getLocation());
 								newMetadata.setQuery(oldMetadata.getQuery());
@@ -280,7 +281,7 @@ abstract public class DocumentType<C extends Container, IP extends InfoCollector
 		};
 
 		// based on purl we try to find meta-metadata from reposiotry.
-		MetaMetadata metaMetadata = infoCollector.metaMetaDataRepository().getDocumentMetadataByPURL(purl);
+		MetaMetadata metaMetadata = infoCollector.metaMetaDataRepository().getDocumentMM(purl);
 		
 		// then try to create a connection using the PURL
 		PURLConnection purlConnection = purl.connect(helper, (metaMetadata == null) ? null

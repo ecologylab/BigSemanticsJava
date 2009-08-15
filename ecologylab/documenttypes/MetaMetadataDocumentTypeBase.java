@@ -116,9 +116,10 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 		return standardObjectInstanceMap;
 	}
 
+	//FIXME -- consolidate redundant code with MetaMetadata.constructMetadata()
 	public void initailizeMetadataObjectBuilding()
 	{
-		metadataTranslationScope = container.getTranslationScope();
+		metadataTranslationScope = container.getGeneratedMetadataTranslationScope();
 		Class metadataClass = metadataTranslationScope.getClassByTag(metaMetadata.getType());
 		metadata = (M) ReflectionTools.getInstance(metadataClass);
 		metadata.setMetaMetadata(metaMetadata);
