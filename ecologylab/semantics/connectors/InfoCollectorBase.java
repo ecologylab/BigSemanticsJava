@@ -23,6 +23,9 @@ import ecologylab.generic.HashMapWriteSynch;
 import ecologylab.generic.StringTools;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.library.DefaultMetadataTranslationSpace;
+import ecologylab.semantics.library.Image;
+import ecologylab.semantics.metadata.Document;
+import ecologylab.semantics.metadata.Media;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
@@ -30,6 +33,7 @@ import ecologylab.semantics.seeding.ResultDistributer;
 import ecologylab.semantics.seeding.SeedSet;
 import ecologylab.semantics.seeding.SemanticsPrefs;
 import ecologylab.services.distributed.common.SessionObjects;
+import ecologylab.xml.TranslationScope;
 
 /**
  * @author amathur
@@ -247,47 +251,95 @@ public abstract class InfoCollectorBase<AC extends Container, IC extends InfoCol
 		return sessionScope;
 	}
 
-	/**
-	 * Populates a new MetaMetadataRepository This method should be called only once per session
-	 * 
-	 * @param repositoryFilePath
-	 */
-	public void createMetaMetadataRepository()
-	{
-		metaMetadataRepository = MetaMetadataRepository.load(METAMETADATA_REPOSITORY_FILE);
-		metaMetadataRepository.setMetadataTranslationScope(DefaultMetadataTranslationSpace.get());
-	}
-
 	public MetaMetadataRepository metaMetaDataRepository()
 	{
 		return metaMetadataRepository;
 	}
 
-	public MetaMetadata getMetaMetadata(String tagName)
+	/**
+	 * Populates a new MetaMetadataRepository This method should be called only once per session
+	 * 
+	 * @param repositoryFilePath
+	 */
+	public void createMetaMetadataRepository(TranslationScope metadataTScope)
+	{
+		metaMetadataRepository = MetaMetadataRepository.load(METAMETADATA_REPOSITORY_FILE, metadataTScope);
+	}
+
+	/**
+	 * Lookup MetaMetadata using a String for the XML tag name.
+	 * This can be performed generally both for media and for document meta-metadata.
+	 * 
+	 * @param tagName
+	 * @return
+	 */
+	public MetaMetadata getMM(String tagName)
 	{
 		return metaMetadataRepository.getByTagName(tagName);
 	}
 
-	public MetaMetadata getMetaMetadata(ParsedURL purl)
+	/**
+	 * Lookup MetaMetadata using a class object.
+	 * This can be performed generally both for media and for document meta-metadata.
+	 * 
+	 * @param metadataClass
+	 * @return
+	 */
+	public MetaMetadata getMM(Class<? extends Metadata> metadataClass)
 	{
-		return metaMetadataRepository.getDocumentMetadataByPURL(purl);
+		return metaMetadataRepository.getMM(metadataClass);
 	}
 
-	public MetaMetadata getMetaMetadata(ParsedURL purl, String tagName)
+	/**
+	 * Lookup Document MetaMetadata, first using the purl to seek something specific, and otherwise,
+	 * 
+	 */
+	public MetaMetadata getDocumentMM(ParsedURL purl, String tagName)
 	{
-		return metaMetadataRepository.get(purl, tagName);
+		return metaMetadataRepository.getDocumentMM(purl, tagName);
+	}
+	public MetaMetadata getDocumentMM(ParsedURL purl)
+	{
+		return metaMetadataRepository.getDocumentMM(purl);
 	}
 
-	public MetaMetadata getMetaMetadata(Class<? extends Metadata> metadataClass)
+	/**
+	 * Uses the location in the metadata, and then its type, to resolve MetaMetadata.
+	 * 
+	 * @param metadata
+	 * @return
+	 */
+	public MetaMetadata getDocumentMM(Document metadata)
 	{
-		return metaMetadataRepository.getByClass(metadataClass);
+		return metaMetadataRepository.getDocumentMM(metadata);
 	}
 
-	public MetaMetadata getMetaMetadata(Metadata metadata)
+	/**
+	 * Uses the location passed in, and then the metadata's type, to resolve MetaMetadata.
+	 * 
+	 * @param metadata
+	 * @return
+	 */
+	public MetaMetadata getImageMM(ParsedURL purl)
 	{
-		return metaMetadataRepository.getByMetadata(metadata);
+		return metaMetadataRepository.getImageMM(purl);
 	}
 
+	
+	/**
+	 * Look-up MetaMetadata for this purl.
+	 * If there is no special MetaMetadata, use Document.
+	 * Construct Metadata of the correct subtype, base on the MetaMetadata.
+	 * Set its location field to purl.
+	 * 
+	 * @param purl
+	 * @return
+	 */
+	public Document constructDocument(ParsedURL purl)
+	{
+		return metaMetadataRepository.constructDocument(purl);
+	}
+	
 	public JFrame getJFrame()
 	{
 		return (JFrame) sessionScope().get(SessionObjects.TOP_LEVEL);

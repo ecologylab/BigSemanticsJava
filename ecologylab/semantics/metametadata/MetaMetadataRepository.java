@@ -12,6 +12,8 @@ import ecologylab.generic.HashMapArrayList;
 import ecologylab.net.ParsedURL;
 import ecologylab.net.UserAgent;
 import ecologylab.semantics.library.TypeTagNames;
+import ecologylab.semantics.metadata.Document;
+import ecologylab.semantics.metadata.Media;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.textformat.NamedStyle;
 import ecologylab.xml.ElementState;
@@ -61,11 +63,11 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	
 	private HashMap<String, MetaMetadata>						repositoryByURL = null;
 	
-	private HashMap<String,MetaMetadata>						imageRepositoryByURL=null;
+	private HashMap<String,MetaMetadata>						mediaRepositoryByURL=null;
 	
 	private PrefixCollection 												urlprefixCollection = new PrefixCollection('/');
 
-	static final TranslationScope										TS	= MetaMetadataTranslationScope.get();
+	static final TranslationScope										META_METADATA_TSCOPE	= MetaMetadataTranslationScope.get();
 
 	private TranslationScope												metadataTScope;
 
@@ -77,7 +79,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	{
 		REPOSITORY_FILE = new File(
 				/* PropertiesAndDirectories.thisApplicationDir(), */"H:\\web\\code\\java\\cf\\config\\semantics\\metametadata\\defaultRepository.xml");
-		MetaMetadataRepository metaMetaDataRepository = load(REPOSITORY_FILE);
+		MetaMetadataRepository metaMetaDataRepository = load(REPOSITORY_FILE, null);
 		try
 		{
 			metaMetaDataRepository.writePrettyXML(System.out);
@@ -89,12 +91,12 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		}
 	}
 
-	public static MetaMetadataRepository load(File file)
+	public static MetaMetadataRepository load(File file, TranslationScope metadataTScope)
 	{
 		MetaMetadataRepository result = null;
 		try
 		{
-			result = (MetaMetadataRepository) ElementState.translateFromXML(file, TS);
+			result = (MetaMetadataRepository) ElementState.translateFromXML(file, META_METADATA_TSCOPE);
 			// result.populateURLBaseMap();
 			// // necessary to get, for example, fields for document into pdf...
 			// result.populateInheritedValues();
@@ -107,6 +109,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		{
 			e.printStackTrace();
 		}
+		result.metadataTScope	= metadataTScope;
 		return result;
 	}
 
@@ -121,6 +124,14 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		// recursivePopulate(destMetaMetadata, destMetaMetadata.getExtendsClass());
 	}
 
+
+	public MetaMetadata getMM(Class<? extends Metadata> thatClass)
+	{
+		String tag = metadataTScope.lookupTag(thatClass);
+
+		return (tag == null) ? null : repositoryByTagName.get(tag);
+	}
+
 	/**
 	 * Get MetaMetadata by ParsedURL if possible. If that lookup fails, then lookup by tag name, to
 	 * acquire some default.
@@ -129,76 +140,119 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	 * @param tagName
 	 * @return
 	 */
-	public MetaMetadata get(ParsedURL purl, String tagName)
+	public MetaMetadata getDocumentMM(ParsedURL purl, String tagName)
 	{
-		MetaMetadata result = getDocumentMetadataByPURL(purl);
+		MetaMetadata result = null;
+		repositoryByURL = initializeRepository(repositoryByURL);
+		if(purl!=null)
+		{
+			result = repositoryByURL.get(purl.noAnchorNoQueryPageString());
+			
+			if(result == null)
+			{
+				String protocolStrippedURL = purl.toString().split("://")[1];					
+				String matchingPhrase = urlprefixCollection.getMatchingPhrase(protocolStrippedURL, '/');
+				//FIXME -- andruid needs abhinav to explain this code better and make more clear!!!
+				if(matchingPhrase != null)
+				{
+					String key = purl.url().getProtocol()+"://"+matchingPhrase;
+					
+					result = repositoryByURL.get(key);
+				}
+			}
+		}
 		return (result != null) ? result : getByTagName(tagName);
 	}
-
+//TODO implement  get by domain too
 	/**
 	 * Find the best matching MetaMetadata for the ParsedURL -- if there is a match.
 	 * Right now implemented a No Query YRL based pattern matcher.
-	 * TODO implement  get by domain too
-	 * @param parsedURL
+	 * <p/>
+	 * Usually, the preferred method to use is the one that takes a tagName as the 2nd argument,
+	 * in case the lookup fails.
+	 * 
+	 * @param purl
 	 * @return appropriate MetaMetadata, or null.
 	 */
-	public MetaMetadata getDocumentMetadataByPURL(ParsedURL parsedURL)
+	public MetaMetadata getDocumentMM(ParsedURL purl)
 	{
-		MetaMetadata returnValue=null;
-		repositoryByURL = initializeRpository(repositoryByURL);
-		if(parsedURL!=null)
-		{
-			returnValue = repositoryByURL.get(parsedURL.noAnchorNoQueryPageString());
-			
-			if(returnValue == null)
-			{
-				//if(urlprefixCollection.match(parsedURL))
-				{
-					String protocolStrippedURL = parsedURL.toString().split("://")[1];
-					
-					String key = parsedURL.url().getProtocol()+"://"+urlprefixCollection.getMatchingPhrase(protocolStrippedURL, '/');
-					
-					returnValue = repositoryByURL.get(key);
-				}
-			}
-		}
-		if(returnValue==null)
-		{
-			// return document metadata
-			return getByTagName(DOCUMENT_TAG);
-		}
-		return returnValue;
+		return getDocumentMM(purl, DOCUMENT_TAG);
 	}
 
-	public MetaMetadata getMediaMetaMetadata(ParsedURL parsedURL)
+	public MetaMetadata getDocumentMM(Document metadata)
 	{
-		MetaMetadata returnValue=null;
-		imageRepositoryByURL = initializeRpository(imageRepositoryByURL);
-		if(parsedURL!=null)
+		return getDocumentMM(metadata.getLocation(), metadataTScope.lookupTag(metadata.getClass()));
+	}
+
+	public MetaMetadata getImageMM(ParsedURL purl)
+	{
+		return getMediaMM(purl, IMAGE_TAG);
+	}
+	public MetaMetadata getMediaMM(ParsedURL purl, String tagName)
+	{
+		MetaMetadata result		= null;
+		mediaRepositoryByURL 	= initializeRepository(mediaRepositoryByURL);
+		if(purl!=null)
 		{
-			returnValue = imageRepositoryByURL.get(parsedURL.noAnchorNoQueryPageString());
+			result = mediaRepositoryByURL.get(purl.noAnchorNoQueryPageString());
 			
-			if(returnValue == null)
+			if(result == null)
 			{
 				//if(urlprefixCollection.match(parsedURL))
 				{
-					String protocolStrippedURL = parsedURL.toString().split("://")[1];
+					String protocolStrippedURL = purl.toString().split("://")[1];
 					
-					String key = parsedURL.url().getProtocol()+"://"+urlprefixCollection.getMatchingPhrase(protocolStrippedURL, '/');
+					String key = purl.url().getProtocol()+"://"+urlprefixCollection.getMatchingPhrase(protocolStrippedURL, '/');
 					
-					returnValue = imageRepositoryByURL.get(key);
+					result = mediaRepositoryByURL.get(key);
 				}
 			}
 		}
-		if(returnValue==null)
-		{
-			// Have to do some thing
-		}
-		return returnValue;
+		return (result != null) ? result : getByTagName(tagName);
 	}
 	
+	/**
+	 * Look-up MetaMetadata for this purl.
+	 * If there is no special MetaMetadata, use Image.
+	 * Construct Metadata of the correct subtype, base on the MetaMetadata.
+	 * 
+	 * @param purl
+	 * @return		A Metadata object, either of type Image, or a subclass.
+	 * 						Never null!
+	 */
+	public Media constructImage(ParsedURL purl)
+	{
+		MetaMetadata metaMetadata	= getImageMM(purl);
+		Media result							= null;
+		if (metaMetadata != null)
+		{
+			result									= (Media) metaMetadata.constructMetadata(metadataTScope);
+		}
+		return result;
+	}
 	
-	private HashMap<String, MetaMetadata> initializeRpository(HashMap<String, MetaMetadata>	repository)
+	/**
+	 * Look-up MetaMetadata for this purl.
+	 * If there is no special MetaMetadata, use Document.
+	 * Construct Metadata of the correct subtype, base on the MetaMetadata.
+	 * Set its location field to purl.
+	 * 
+	 * @param purl
+	 * @return
+	 */
+	public Document constructDocument(ParsedURL purl)
+	{
+		MetaMetadata metaMetadata	= getDocumentMM(purl);
+		Document result							= null;
+		if (metaMetadata != null)
+		{
+			result									= (Document) metaMetadata.constructMetadata(metadataTScope);
+			result.setLocation(purl);
+		}
+		return result;
+	}
+	
+	private HashMap<String, MetaMetadata> initializeRepository(HashMap<String, MetaMetadata>	repository)
 	{
 		if (repository == null)
 		{
@@ -246,23 +300,6 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		return DOCUMENT_TAG;
 	}
 
-	public MetaMetadata getByClass(Class<? extends Metadata> thatClass)
-	{
-		String tag = metadataTScope.lookupTag(thatClass);
-
-		return (tag == null) ? null : repositoryByTagName.get(tag);
-	}
-
-	public MetaMetadata getByMetadata(Metadata metadata)
-	{
-		ParsedURL purl = metadata.getLocation();
-
-		MetaMetadata result = getDocumentMetadataByPURL(purl);
-		if (result == null)
-			result = getByClass(metadata.getClass());
-		return result;
-	}
-
 	public MetaMetadata lookupByMime(String mimeType)
 	{
 		return null;
@@ -275,7 +312,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 
 	public TranslationScope translationScope()
 	{
-		return TS;
+		return META_METADATA_TSCOPE;
 	}
 
 	public void setMetadataTranslationScope(TranslationScope metadataTScope)

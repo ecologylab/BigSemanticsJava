@@ -19,6 +19,7 @@ import ecologylab.xml.TranslationScope;
  * @author andruid
  * 
  */
+//FIXME -- get rid of D -- just make it Document!
 public interface Container<D extends Document>
 {
 
@@ -34,7 +35,7 @@ public interface Container<D extends Document>
 
 	ParsedURL purl();
 
-	public TranslationScope getTranslationScope();
+	public TranslationScope getGeneratedMetadataTranslationScope();
 
 	void setBias(float bias);
 

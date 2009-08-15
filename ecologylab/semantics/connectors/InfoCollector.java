@@ -11,6 +11,8 @@ import ecologylab.collections.Scope;
 import ecologylab.documenttypes.DocumentType;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionHandler;
+import ecologylab.semantics.library.Image;
+import ecologylab.semantics.metadata.Document;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.seeding.ResultDistributer;
@@ -38,8 +40,24 @@ public interface InfoCollector<C extends Container, IC extends InfoCollector>
 
 	MetaMetadataRepository metaMetaDataRepository();
 
-	public MetaMetadata getMetaMetadata(ParsedURL purl);
+	public MetaMetadata getDocumentMM(ParsedURL purl, String tagName);
 	
+	public MetaMetadata getDocumentMM(ParsedURL purl);
+	
+	public MetaMetadata getImageMM(ParsedURL purl);
+	
+	/**
+	 * Look-up MetaMetadata for this purl.
+	 * If there is no special MetaMetadata, use Document.
+	 * Construct Metadata of the correct subtype, base on the MetaMetadata.
+	 * Set its location field to purl.
+	 * 
+	 * @param purl
+	 * @return
+	 */
+	public Document constructDocument(ParsedURL purl);
+
+
 	DocumentType<C, ? extends IC, ?> newFileDirectoryType(File file);
 	
 	Class<IC>[] getInfoProcessorClassArg();

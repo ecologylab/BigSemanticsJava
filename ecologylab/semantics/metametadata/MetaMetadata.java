@@ -169,7 +169,13 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 	 */
 	public Class<? extends Metadata> getMetadataClass(TranslationScope ts)
 	{
-		return getMetadataClass(name,ts);
+		Class<? extends Metadata> result = getMetadataClass(name,ts);
+		if(result ==null)
+		{
+			// there is no class for this tag we can use class of meta-metadata it extends
+			result = getMetadataClass(extendsAttribute, ts);
+		}
+		return result;
 	}
 
 	private Class<? extends Metadata> getMetadataClass(String name,TranslationScope ts)
@@ -188,12 +194,6 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 	{
 		Metadata result = null;
 		Class<? extends Metadata> metadataClass = getMetadataClass(ts);
-		
-		if(metadataClass ==null)
-		{
-			// there is no class for this tag we can use class of meta-metadata it extends
-			metadataClass = getMetadataClass(extendsAttribute, ts);
-		}
 		
 		if (metadataClass != null)
 		{
