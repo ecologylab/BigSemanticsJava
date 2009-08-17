@@ -308,4 +308,20 @@ public class MetaMetadataSearchType<M extends MetadataBase,C extends Container, 
 		 
 		        return sb.toString();
 		    }
+	public  boolean shouldUnpauseCrawler()
+	{
+		ResultDistributer aggregator = this.searchSeed.resultDistributer(abstractInfoCollector);
+		return aggregator.checkIfAllSearchesOver();
+	}
+	
+	public void takeSemanticActions(M populatedMetadata)
+	{
+		super.takeSemanticActions(populatedMetadata);
+		if(shouldUnpauseCrawler())
+		{
+			System.out.println("Ended Seeding");
+			abstractInfoCollector.endSeeding();
+		}
+		
+	}
 }

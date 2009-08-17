@@ -109,7 +109,7 @@ extends Debug
 	}
 
 	private boolean		processingDownloads;
-	private boolean 	done;
+	//private boolean 	done;
 
 	/**
 	 * Download results from the array.
@@ -121,7 +121,7 @@ extends Debug
 	{
 		synchronized (DOWNLOAD_RESULTS_LOCK)
 		{
-			if (!done)
+			//if (!done)
 			{
 				processingDownloads		= true; // imperfect but useful mechanism of scheduling
 				
@@ -152,12 +152,12 @@ extends Debug
 				if ((expectedNumSearchesInCurrentLevel > 0) 	// lookout for no more searches -- end boundary condition
 						&& queueCount >= expectedNumSearchesInCurrentLevel)
 				{
-					if(checkIfAllSearchesOver())
+					/*if(checkIfAllSearchesOver())
 					{	// if all slices have been processed unpause the crawler
 						done			= true;
 						infoCollector.endSeeding();
 					}
-					else
+					else*/
 					{
 						resultNumLevel++;
 						queueCount = 0;
@@ -174,7 +174,7 @@ extends Debug
 	 *
 	 * @return
 	 */
-	private boolean checkIfAllSearchesOver()
+	public boolean checkIfAllSearchesOver()
 	{
 		for (ArrayList<AC> slice : resultSlices)
 		{
