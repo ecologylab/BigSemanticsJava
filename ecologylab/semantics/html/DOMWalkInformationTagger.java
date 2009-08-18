@@ -262,7 +262,7 @@ public class DOMWalkInformationTagger extends PPrint
 	private void addCompletedPara(TdNode blockNode)
 	{
 		TdNode node	= currentNode;
-		if (currentParagraphText.length() == 0)
+		if (!currentParagraphText.hasText())
 		{
 			StringBuilder longestTxtinSubTree = RecognizedDocumentStructure.getLongestTxtinSubTree(blockNode, null);
 			if (longestTxtinSubTree != null)
@@ -277,28 +277,33 @@ public class DOMWalkInformationTagger extends PPrint
 					StringBuilderUtils.release(longestTxtinSubTree);
 			}
 		}
-		int length	= currentParagraphText.length();
-		/*
-		 * Only keeps 10 paragraph texts. 
-		 * Thus, if there is a new paragraph text coming in and the 10 slots have been already filled, we replace with the existed one based on the length of the text.
-		 */
-		if( paragraphTextsTMap.size() > 10 )
+		if (currentParagraphText.hasText())	// lookout for degenerate cases -- andruid 8/09
 		{
-			Integer tkey = paragraphTextsTMap.firstKey(); 
-			if( tkey.intValue() < totalTxtLength )
+			int length	= currentParagraphText.length();
+			/*
+			 * Only keeps 10 paragraph texts. 
+			 * Thus, if there is a new paragraph text coming in and the 10 slots have been already filled, we replace with the existed one based on the length of the text.
+			 */
+			if( paragraphTextsTMap.size() > 10 )
 			{
-				ParagraphText removed = paragraphTextsTMap.remove(tkey);
-				removed.recycle();
-				paragraphTextsTMap.put(totalTxtLength, currentParagraphText);
+				Integer tkey = paragraphTextsTMap.firstKey(); 
+				if( tkey.intValue() < totalTxtLength )
+				{
+					ParagraphText removed = paragraphTextsTMap.remove(tkey);
+					removed.recycle();
+					paragraphTextsTMap.put(totalTxtLength, currentParagraphText);
+				}
+				else
+					currentParagraphText.recycle();
+			}
+			// We don't put the text into the paragraphTexts structure unless the text is over certain length and not surrounded by <a> tag. 
+			else if( (length > PARA_TEXT_LENGTH_LIMIT) && !underAHref(node) )
+			{
+				//FIXME -- look out for duplicates introduced by getLongestTxtinSubTree() above
+				paragraphTextsTMap.put(length, currentParagraphText);
 			}
 			else
 				currentParagraphText.recycle();
-		}
-		// We don't put the text into the paragraphTexts structure unless the text is over certain length and not surrounded by <a> tag. 
-		else if( (length > PARA_TEXT_LENGTH_LIMIT) && !underAHref(node) )
-		{
-			//FIXME -- look out for duplicates introduced by getLongestTxtinSubTree() above
-			paragraphTextsTMap.put(length, currentParagraphText);
 		}
 		else
 			currentParagraphText.recycle();
