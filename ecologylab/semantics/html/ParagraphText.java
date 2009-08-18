@@ -88,8 +88,15 @@ public class ParagraphText
 	public void recycle()
 	{
 		if (buffy != null)
+		{
 			StringBuilderUtils.release(buffy);
-		buffy				= null;
+			buffy				= null;
+		}
+		if (termVector != null)
+		{
+			termVector.clear();
+			termVector	= null;
+		}
 	}
 	
 	public TdNode getElementNode()
@@ -124,10 +131,16 @@ public class ParagraphText
 	{
 		XMLTools.unescapeXML(buffy);
 	}
-	
+	TermVector termVector;
 	TermVector termVector()
 	{
-		return new TermVector(buffy);
+		TermVector result = this.termVector;
+		if (result == null)
+		{
+			result					= new TermVector(buffy);
+			this.termVector	= result;
+		}
+		return result;
 	}
 	
 	/**
