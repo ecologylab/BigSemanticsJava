@@ -240,9 +240,12 @@ implements HTMLAttributeNames
 				informImgNodes.add(imageNodeNode);
 
 				StringBuilder extractedCaption = getLongestTxtinSubTree(imageNodeNode.grandParent(), null);	// returns null in worst case
+				TermVector captionTV 		= null;
 				if (extractedCaption != null)
+				{
 					XMLTools.unescapeXML(extractedCaption);
-				
+					captionTV 						= new TermVector(extractedCaption);
+				}
 				String altText 					= imgElement.getNonBogusAlt();
 				TermVector altTextTV		= (altText == null) ? null : new TermVector(altText);
 				boolean done						= false;		// use this instead of break to make sure we get to pt.recycle()
@@ -254,57 +257,57 @@ implements HTMLAttributeNames
 					if (textNode.grandParent().equals(articleBody) || 
 							textNode.greatGrandParent().equals(articleBody) )
 					{
-						if (pt.hasText())
+//						if (pt.hasText()) // should be no longer necessary -- andruid 8/09
+//						{
+						pt.unescapeXML();			
+						boolean setAltToCaption							= false;
+						if ((captionTV != null) || (altText!=null))
 						{
-							pt.unescapeXML();			
-							boolean setAltToCaption							= false;
-							if ((extractedCaption != null) || (altText!=null))
+							TermVector ptTV					= pt.termVector();	// this is a candidate text context
+							double captionDotTextContext			= 0;
+							if (captionTV != null)
 							{
-								TermVector textContextTV					= pt.termVector();
-								double captionDotTextContext			= 0;
-								if (extractedCaption != null)
-								{
-//									imageNode.setAttribute(EXTRACTED_CAPTION, StringTools.toString(extractedCaption));
-									TermVector captionTV 						= new TermVector(extractedCaption);
-									captionDotTextContext 					= captionTV.dot(textContextTV);
-									captionTV.clear();
-								}
+								//									imageNode.setAttribute(EXTRACTED_CAPTION, StringTools.toString(extractedCaption));
+								captionDotTextContext 					= captionTV.dot(ptTV);
+							}
 
-								double altDotTextContext					= 0;
-								if (altText!=null)
-								{
-									altDotTextContext								= altTextTV.dot(textContextTV);
-								}
-								// check for common sharp terms between associateText and captionText
-								if ((captionDotTextContext > 0) || (altDotTextContext > 0))
-								{
-									pt.setImgElementTextContext(imgElement);
-									if (captionDotTextContext > altDotTextContext)
-									{
-										imgElement.setAlt(StringTools.toString(extractedCaption));
-										setAltToCaption									= true;
-									}
-									done															= true;
-								}
-								textContextTV.clear();
+							double altDotTextContext					= 0;
+							if (altText!=null)
+							{
+								altDotTextContext								= altTextTV.dot(ptTV);
 							}
-							else
-							{	// no alt attribute or extracted caption, so use the first (longest) text context
-								// FIXME -- should we try dot product with title?!
+							// check for common sharp terms between associateText and captionText
+							if ((captionDotTextContext > 0) || (altDotTextContext > 0))
+							{
 								pt.setImgElementTextContext(imgElement);
-								done																= true;
+								if (captionDotTextContext > altDotTextContext)
+								{
+									imgElement.setAlt(StringTools.toString(extractedCaption));
+									setAltToCaption									= true;
+								}
+								done															= true;
 							}
-							if (!setAltToCaption && (extractedCaption != null))
-								imgElement.setExtractedCaption(StringTools.toString(extractedCaption));
+							ptTV.clear();
+						}
+						else
+						{	// no alt attribute or extracted caption, so use the first (longest) text context
+							// FIXME -- should we try dot product with title?!
+							pt.setImgElementTextContext(imgElement);
+							done																= true;
+						}
+						if (!setAltToCaption && (extractedCaption != null))
+							imgElement.setExtractedCaption(StringTools.toString(extractedCaption));
 								
-						} // if (textContext != null
+//						} // if pt.hasText
 					}   // if grandParent or greatGrandParent is articleBody
 					pt.recycle();
 				}	// end while (!done && (paraTexts.size() > 0))
 				
 				if (extractedCaption != null)
+				{
 					StringBuilderUtils.release(extractedCaption);
-				
+					captionTV.clear();
+				}
 				if (altTextTV != null)
 					altTextTV.clear();
 
