@@ -112,19 +112,19 @@ implements HTMLAttributeNames
 
 		recognizeDocumentStructureToGenerateSurrogate(htmlType, taggedDoc, contentBody, imgNodes);
 	}
-
+	public DOMWalkInformationTagger walkAndTagDom(org.w3c.dom.Document doc, TidyInterface htmlType)
+	{
+		return walkAndTagDom(((DOMDocumentImpl)doc).adaptee, htmlType);
+	}
 	/**
 	 * This is the walk of the dom that calls print tree, and the parser methods such as closeHref etc.
 	 * @param doc
 	 * @param htmlType
 	 * @return
 	 */
-	private DOMWalkInformationTagger walkAndTagDom(org.w3c.dom.Document doc, TidyInterface htmlType)
+	public DOMWalkInformationTagger walkAndTagDom(TdNode rootTdNode, TidyInterface htmlType)
 	{
 		Out jtidyPrettyOutput = new OutImpl();
-		TdNode rootTdNode;
-
-		rootTdNode = ((DOMDocumentImpl)doc).adaptee;
 
 		jtidyPrettyOutput.state = StreamIn.FSM_ASCII;
 		jtidyPrettyOutput.encoding = configuration.CharEncoding;
