@@ -144,7 +144,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	{
 		MetaMetadata result = null;
 		repositoryByURL = initializeRepository(repositoryByURL);
-		if(purl!=null)
+		if(purl!=null && !purl.isFile())
 		{
 			result = repositoryByURL.get(purl.noAnchorNoQueryPageString());
 			
@@ -192,7 +192,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	{
 		MetaMetadata result		= null;
 		mediaRepositoryByURL 	= initializeRepository(mediaRepositoryByURL);
-		if(purl!=null)
+		if(purl!=null && !purl.isFile())
 		{
 			result = mediaRepositoryByURL.get(purl.noAnchorNoQueryPageString());
 			
