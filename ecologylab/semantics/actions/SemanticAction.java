@@ -40,7 +40,9 @@ public abstract class SemanticAction<SA extends SemanticAction> extends ElementS
 			ForEachSemanticAction.class, GeneralSemanticAction.class,
 			ProcessDocumentSemanticAction.class, ProcessSearchSemanticAction.class,
 			SetMetadataSemanticAction.class, SetterSemanticAction.class,
-			CreateSearchSemanticAction.class, GetFieldSemanticAction.class, })
+			CreateSearchSemanticAction.class, GetFieldSemanticAction.class,
+			CreateSemanticAnchorSemanticAction.class, QueueDocumentDownloadSemanticAction.class,
+			ApplyXPathSemanticAction.class })
 	private ArrayList<SA>							nestedSemanticActionList;
 
 	/**
@@ -80,7 +82,7 @@ public abstract class SemanticAction<SA extends SemanticAction> extends ElementS
 	 */
 	@xml_attribute
 	private String										error;
-	
+
 	/**
 	 * The list of arguments for this semantic action.
 	 */
@@ -107,7 +109,7 @@ public abstract class SemanticAction<SA extends SemanticAction> extends ElementS
 	 * @return
 	 */
 	public abstract String getActionName();
-	
+
 	/**
 	 * Handles the error for the action
 	 */

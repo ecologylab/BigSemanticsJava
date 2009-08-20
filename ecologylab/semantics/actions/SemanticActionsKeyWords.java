@@ -10,7 +10,7 @@ package ecologylab.semantics.actions;
  * @author amathur
  * 
  */
-public class SemanticActionsKeyWords
+public interface SemanticActionsKeyWords
 {
 
 	public static String	DOCUMENT_TYPE							= "documentType";
@@ -41,5 +41,11 @@ public class SemanticActionsKeyWords
 	 */
 	public static String	CURRENT_COLLECTION_INDEX	= "current-collection-index";
 
+	public static String	NODE_SET									= "node_set";
+
+	/**
+	 * Root Node of  the document
+	 */
+	public static String	DOCUMENT_ROOT_NODE				= "DocumentRootNode";
 
 }

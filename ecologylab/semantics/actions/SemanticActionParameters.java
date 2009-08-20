@@ -14,7 +14,7 @@ import ecologylab.collections.Scope;
  */
 public class SemanticActionParameters {
 
-	private Scope standardObjectInstanceMap;
+	private Scope<Object> standardObjectInstanceMap;
 	
 	public SemanticActionParameters(Scope standardObjectInstanceMap)
 	{
@@ -31,5 +31,23 @@ public class SemanticActionParameters {
 		return standardObjectInstanceMap.get(key);
 	}
 	
-			
+	/**
+	 * Adds a new parameter
+	 * @param key
+	 * @param value
+	 */
+	public void addParameter(String key,Object value)
+	{
+		standardObjectInstanceMap.put(key, value);
+	}
+	
+	/**
+	 * returns true if parameter has the given key.
+	 * @param key
+	 * @return
+	 */
+	public boolean contains(Object key)
+	{
+		return standardObjectInstanceMap.containsKey(key);
+	}
 }

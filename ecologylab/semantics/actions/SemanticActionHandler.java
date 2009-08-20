@@ -4,16 +4,26 @@
 package ecologylab.semantics.actions;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
+
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.w3c.tidy.TdNode;
 
 import ecologylab.collections.Scope;
 import ecologylab.documenttypes.DocumentType;
 import ecologylab.generic.Debug;
 import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.InfoCollector;
+import ecologylab.semantics.metametadata.Argument;
 import ecologylab.semantics.metametadata.Check;
 import ecologylab.semantics.metametadata.FlagCheck;
-import ecologylab.xml.ElementState;
+import ecologylab.semantics.tools.GenericIterable;
 import ecologylab.xml.types.element.ArrayListState;
 
 /**
@@ -30,9 +40,15 @@ import ecologylab.xml.types.element.ArrayListState;
 */
 public abstract class SemanticActionHandler<C extends Container, IC extends InfoCollector<C, IC>> 
 extends Debug
-implements SemanticActionStandardMethods
+implements SemanticActionStandardMethods,SemanticActionsKeyWords
 {
 
+	/**
+	 * TODO move this also to super class This is the Map of StandadObject on which we might call some
+	 * methods.
+	 */
+	//FIXME -- andruid > abhinav: this Scope is currently never initialized. what is the use case to keep it?
+	protected Scope<Object>	standardObjectMap	= new Scope<Object>();
 	/**
 	 * This is a map of return value and objects from semantic action. The key being the return_value
 	 * of the semantic action.
@@ -46,15 +62,19 @@ implements SemanticActionStandardMethods
 	protected Scope<Boolean>	semanticActionFlagMap;
 
 	/**
-	 * Stores the number of items in the collection for loops
-	 */
-	private int													numberOfCollection;
-	
-	/**
 	 * Error handler for the semantic actions.
 	 */
 	protected SemanticActionErrorHandler 							errorHandler;
+	
+	/**
+	 * Parameters
+	 */
+	protected SemanticActionParameters parameter; 
 
+	public SemanticActionHandler()
+	{
+		parameter = new SemanticActionParameters(standardObjectMap);
+	}
 	
 	/**
 	 * 
@@ -121,6 +141,23 @@ implements SemanticActionStandardMethods
 	 */
 	public abstract void processSearch(SemanticAction action, SemanticActionParameters parameter,DocumentType docType, IC infoCollector);
 
+	/**
+	 * 
+	 * @param action
+	 * @param parameter
+	 * @param documentType
+	 * @param infoCollector
+	 */
+	public abstract void createSemanticAnchor(SemanticAction action, SemanticActionParameters parameter,DocumentType<C,?,?> documentType, IC infoCollector);
+	
+	/**
+	 * 
+	 * @param action
+	 * @param parameter
+	 * @param documentType
+	 * @param infoCollector
+	 */
+	public abstract void queueDocumentForDownload(SemanticAction action, SemanticActionParameters parameter,DocumentType documentType, IC infoCollector);
 	
 	/**
 	 * Implementation of for loop.
@@ -138,30 +175,91 @@ implements SemanticActionStandardMethods
 		String collectionObjectName = action.getCollection(); 
 		
 		//get the actual collection object
-		Iterable<ElementState> collectionObject = (Iterable<ElementState>) getObjectFromKeyName(collectionObjectName, parameter);
-		
+		Object collectionObject =  getObjectFromKeyName(collectionObjectName, parameter);
+		GenericIterable gItr = new GenericIterable(collectionObject);
+		System.out.println(documentType.purl());
+		Iterator itr = gItr.iterator();
 		// start the loop over each object
-		for(ElementState item : collectionObject)
-		{		
+		while(itr.hasNext())
+		{	
+			Object item = itr.next();
 			//put it in semantic action return value map
 			semanticActionReturnValueMap.put(action.getAs(), item);
-			
 			for (SemanticAction nestedSemanticAction  : nestedSemanticActions)
-				handleSemanticAction(nestedSemanticAction, parameter, documentType, infoCollector);
+				handleSemanticAction(nestedSemanticAction, documentType, infoCollector);
 		}
 	}
 
+	/**
+	 *  Implementation of apply xpath
+	 * @param action
+	 * @param parameter2
+	 * @param documentType
+	 * @param infoCollector
+	 */
+	public void applyXPath(ApplyXPathSemanticAction action, SemanticActionParameters parameters,
+			DocumentType documentType, IC infoCollector)
+	{
+		try
+		{
+			if(checkPreConditionFlagsIfAny(action))
+			{
+					// get the XPath object
+					XPath xpath = XPathFactory.newInstance().newXPath();
+				
+					Node node =null;
+					
+					// if no node is specified, we will apply XPaths by deafult on document root.
+					if(action.getNode()==null)
+					{
+							node =(Node) parameters.getObjectInstance(DOCUMENT_ROOT_NODE);
+					}
+					else
+					{
+						// get the node on which XPAth needs to be applied
+						node = (Node)getObjectFromKeyName(action.getNode(), parameters);
+					}
+					
+					final String xpathExpression = action.getXpath();
+					
+					//if return object is not null [Right now its gonna be NodeList only TODO; For other cases]
+					if(action.getReturnObject()!=null)
+					{
+						  // apply xpath and get the node list
+							NodeList nList =(NodeList) xpath.evaluate(xpathExpression, node, action.getReturnObject());
+							
+							// put the value in the map
+							semanticActionReturnValueMap.put(action.getReturnValue(), nList);
+					}
+					else
+					{
+							// its gonna be a simple string evaluation
+							String evaluation = xpath.evaluate(xpathExpression, node);
+							
+							// put it into returnValueMap
+							semanticActionReturnValueMap.put(action.getReturnValue(), evaluation);
+					}
+					
+			}
+		}
+		catch (XPathExpressionException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	
 	/**
    * Method which handles the semantic actions.When you define a new semantic action it must be
    * added here as another <code>if-else</code> clause. Also a corresponding method, mostly abstract
    * should be declared in this class for handling the action. TODO complete this method.
    *
    * @param action
-	 * @param parameter
 	 * @param documentType TODO
 	 * @param infoCollector TODO
    */
-	public  void handleSemanticAction(SemanticAction action, SemanticActionParameters parameter, DocumentType documentType,  IC infoCollector)
+	public  void handleSemanticAction(SemanticAction action, DocumentType documentType, IC infoCollector)
 	{
 		final String actionName = action.getActionName();
 		if (SemanticActionStandardMethods.FOR_EACH.equals(actionName))
@@ -204,21 +302,24 @@ implements SemanticActionStandardMethods
 		{
 			processSearch(action,parameter,documentType,infoCollector);
 		}
+		else if(SemanticActionStandardMethods.CREATE_SEMANTIC_ANCHOR.equals(actionName))
+		{
+			createSemanticAnchor((CreateSemanticAnchorSemanticAction)action,parameter,documentType,infoCollector);
+		}
+		else if(SemanticActionStandardMethods.QUEUE_DOCUMENT_DOWNLOAD.equals(actionName))
+		{
+			queueDocumentForDownload(action, parameter, documentType, infoCollector);
+		}
+		else if(SemanticActionStandardMethods.APPLY_XPATH.equals(actionName))
+		{
+			applyXPath((ApplyXPathSemanticAction)action, parameter, documentType, infoCollector);
+		}
 		else
 		{
 			handleGeneralAction(action, parameter);
 		}
 	}
-
 	
-	/**
-	 * @param numberOfCollection
-	 *          the numberOfCollection to set
-	 */
-	public void setNumberOfCollection(int numberOfCollection)
-	{
-		this.numberOfCollection = numberOfCollection;
-	}
 
 	/**
 	 * Sets the flag if any based on the checks in the action TODO right now 2 types of checks are
@@ -303,4 +404,68 @@ implements SemanticActionStandardMethods
 		return returnValue;
 	}
 
+	/**
+	 * This function replaces the old value of a variable by new value. 
+	 * This is right now used only in case of redirected containers.
+	 * @param oldValue
+	 * @param newValue
+	 */
+	public void replaceVariableValue(Object oldValue,Object newValue)
+	{
+		 // get the set of all the values stored in the return value map
+		 Collection<Object> valueSet=semanticActionReturnValueMap.values();
+		 
+		 // get the set of all the keys
+		 Collection<String> keySet= semanticActionReturnValueMap.keySet();
+		 
+		 // get an iterator over it
+		 Iterator<Object> valueItr=valueSet.iterator();
+		 
+		 // get an iterator for the keys
+		 Iterator<String> keyItr = keySet.iterator();
+		 
+		 // iterate over the values
+		 while(valueItr.hasNext())
+		 {
+			 Object obj = valueItr.next();
+			 String key = keyItr.next();
+			 
+			 // if the current value equals old value
+			 if(obj.equals(oldValue))
+			 {
+				  //replace currentvalue with old value.
+				 	semanticActionReturnValueMap.put(key, newValue);
+				 	break;
+			 }
+		 }
+	}
+
+	/**
+	 * @return the parameter
+	 */
+	public final SemanticActionParameters getParameter()
+	{
+		return parameter;
+	}
+
+	/**
+	 * @param parameter the parameter to set
+	 */
+	public final void setParameter(SemanticActionParameters parameter)
+	{
+		this.parameter = parameter;
+	}
+	
+	/**
+	 * 
+	 * @param action
+	 * @param i
+	 * @return
+	 */
+	protected Argument getArgument(SemanticAction action, int i)
+	{
+		ArrayListState<Argument> arguments = action.getArguments();
+		Argument argument = arguments.get(i);
+		return argument;
+	}
 }

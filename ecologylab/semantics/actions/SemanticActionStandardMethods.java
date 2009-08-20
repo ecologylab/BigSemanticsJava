@@ -71,6 +71,19 @@ public interface SemanticActionStandardMethods
 	 */
 	public static String	PROCESS_SEARCH								= "process_search";
 
-
-
+	/**
+	 * 
+	 */
+	public static String CREATE_SEMANTIC_ANCHOR					= "create_semantic_anchor";
+	
+	/**
+	 * 
+	 */
+	public static String QUEUE_DOCUMENT_DOWNLOAD				= "queue_document_download";
+	
+	/**
+	 * Applies XPath on a DOM Node
+	 */
+	public static String APPLY_XPATH										= "get_xpath_node";
+	
 }
