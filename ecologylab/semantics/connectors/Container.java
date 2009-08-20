@@ -19,8 +19,7 @@ import ecologylab.xml.TranslationScope;
  * @author andruid
  * 
  */
-//FIXME -- get rid of D -- just make it Document!
-public interface Container<D extends Document>
+public interface Container
 {
 
 	void redirectInlinksTo(Container redirectedAbstractContainer);
@@ -62,11 +61,11 @@ public interface Container<D extends Document>
 	
 	void delete();
 	
-	D metadata();
+	Document metadata();
 
-	public D constructMetadata(MetaMetadata metaMetadata);
+	public Document constructMetadata(MetaMetadata metaMetadata);
 	
-	public D constructAndSetMetadata(MetaMetadata metaMetadata);
+	public Document constructAndSetMetadata(MetaMetadata metaMetadata);
 
 	void setContainerMetadata(Document populatedMetadata);
 }
