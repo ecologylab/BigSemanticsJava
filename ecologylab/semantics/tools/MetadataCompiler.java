@@ -57,7 +57,7 @@ public class MetadataCompiler extends ApplicationEnvironment
 	{
 		super("MetadataCompiler", META_METADATA_TRANSLATIONS, args, 1.0F);
 
-		String patternXMLFilepath = "../cf/config/semantics/metametadata/defaultRepository.xml";
+		String patternXMLFilepath = "../cf/config/semantics/metametadata/metaMetadataRepository.xml";
 
 		// ElementState.setUseDOMForTranslateTo(true);
 		MetaMetadataRepository test;
