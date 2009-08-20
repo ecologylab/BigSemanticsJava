@@ -8,6 +8,7 @@ import java.util.TreeMap;
 import org.w3c.dom.Document;
 import org.w3c.tidy.AttVal;
 import org.w3c.tidy.DOMDocumentImpl;
+import org.w3c.tidy.DOMNodeImpl;
 import org.w3c.tidy.Lexer;
 import org.w3c.tidy.Out;
 import org.w3c.tidy.OutImpl;
@@ -112,9 +113,9 @@ implements HTMLAttributeNames
 
 		recognizeDocumentStructureToGenerateSurrogate(htmlType, taggedDoc, contentBody, imgNodes);
 	}
-	public DOMWalkInformationTagger walkAndTagDom(org.w3c.dom.Document doc, TidyInterface htmlType)
+	public DOMWalkInformationTagger walkAndTagDom(org.w3c.dom.Node doc, TidyInterface htmlType)
 	{
-		return walkAndTagDom(((DOMDocumentImpl)doc).adaptee, htmlType);
+		return walkAndTagDom(((DOMNodeImpl)doc).adaptee, htmlType);
 	}
 	/**
 	 * This is the walk of the dom that calls print tree, and the parser methods such as closeHref etc.
@@ -202,43 +203,56 @@ implements HTMLAttributeNames
 	 * @param arrayList 
 	 * @param articleMain
 	 */
-	protected ArrayList<AnchorContext> findHrefsAndContext(TidyInterface htmlType, ArrayList<AElement> anchorElements)
+	public ArrayList<AnchorContext> findHrefsAndContext(TidyInterface htmlType, ArrayList<AElement> anchorElements)
 	{
 		ArrayList<AnchorContext> anchorNodeContexts = new ArrayList<AnchorContext>();
 		
 		for (AElement aElement : anchorElements)
 		{
-			TdNode anchorNodeNode 				  = aElement.getNode();
-			ParsedURL href 									= aElement.getHref();
-			if (href != null)
+			AnchorContext aContext= findHrefsAndContext(htmlType, aElement);
+			if(aContext!=null)
 			{
-				TdNode parent 							  = anchorNodeNode.parent();
-				//FIXME -- this routine drops all sorts of significant stuff because it does not concatenate across tags.
-				StringBuilder anchorContext 	= getTextInSubTree(parent, false);
-				StringBuilder anchorText 			= getTextInSubTree(anchorNodeNode, true);
-				if ((anchorContext != null) || (anchorText != null))
-				{
-					String anchorContextString	= null;
-					if (anchorContext != null)
-					{
-						XMLTools.unescapeXML(anchorContext);
-						StringTools.toLowerCase(anchorContext);
-						anchorContextString				= StringTools.toString(anchorContext);
-						StringBuilderUtils.release(anchorContext);
-					}
-					String anchorTextString			= null;
-					if (anchorText != null)
-					{
-						XMLTools.unescapeXML(anchorText);
-						StringTools.toLowerCase(anchorText);
-						anchorTextString					= StringTools.toString(anchorText);
-						StringBuilderUtils.release(anchorText);
-					}
-					anchorNodeContexts.add(new AnchorContext(href, anchorTextString, anchorContextString));
-				}
+					anchorNodeContexts.add(aContext);
 			}
+				
 		}
 		return anchorNodeContexts;
+	}
+	
+	public AnchorContext findHrefsAndContext(TidyInterface htmlType,AElement aElement)
+	{
+		TdNode anchorNodeNode 				  = aElement.getNode();
+		ParsedURL href 									= aElement.getHref();
+		if (href != null)
+		{
+			TdNode parent 							  = anchorNodeNode.parent();
+			//FIXME -- this routine drops all sorts of significant stuff because it does not concatenate across tags.
+			StringBuilder anchorContext 	= getTextInSubTree(parent, false);
+			
+			//TODO: provide abilty to specify alternate anchorContext
+			StringBuilder anchorText 			= getTextInSubTree(anchorNodeNode, true);
+			if ((anchorContext != null) || (anchorText != null))
+			{
+				String anchorContextString	= null;
+				if (anchorContext != null)
+				{
+					XMLTools.unescapeXML(anchorContext);
+					StringTools.toLowerCase(anchorContext);
+					anchorContextString				= StringTools.toString(anchorContext);
+					StringBuilderUtils.release(anchorContext);
+				}
+				String anchorTextString			= null;
+				if (anchorText != null)
+				{
+					XMLTools.unescapeXML(anchorText);
+					StringTools.toLowerCase(anchorText);
+					anchorTextString					= StringTools.toString(anchorText);
+					StringBuilderUtils.release(anchorText);
+				}
+				return new AnchorContext(href, anchorTextString, anchorContextString);
+			}
+		}
+		return null;
 	}
 	
   public static StringBuilder getTextInSubTree(TdNode node, boolean recurse)
