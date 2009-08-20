@@ -286,7 +286,10 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 			for (int i = 0; i < childMetaMetadata.size(); i++)
 			{
 				// translate the each meta-metadata field into class.
-				childMetaMetadata.get(i).translateToMetadataClass(packageName, p);
+				MetaMetadataField cField = childMetaMetadata.get(i);
+				cField.setExtendsField(extendsField);
+				cField.setMmdRepository(mmdRepository);
+				cField.translateToMetadataClass(packageName, p);
 			}
 
 			// if this is a Map we have to implement the key() method.
