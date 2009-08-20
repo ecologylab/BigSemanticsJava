@@ -67,5 +67,5 @@ public interface Container
 	
 	public Document constructAndSetMetadata(MetaMetadata metaMetadata);
 
-	void setContainerMetadata(Document populatedMetadata);
+	void setMetadata(Document populatedMetadata);
 }

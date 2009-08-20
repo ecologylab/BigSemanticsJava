@@ -42,7 +42,7 @@ public class MetaMetadataXPathType<M extends MetadataBase, SA extends SemanticAc
 		{
 			populatedMetadata = (M) recursiveExtraction(getMetadataTranslationScope(), metaMetadata,
 					(M) getMetadata(), xpath, semanticActionHandler.getParameter());
-			container.setContainerMetadata((ecologylab.semantics.metadata.Document) populatedMetadata);
+			container.setMetadata((ecologylab.semantics.metadata.Document) populatedMetadata);
 		}
 		return populatedMetadata;
 	}
