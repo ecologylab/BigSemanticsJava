@@ -90,6 +90,10 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 	@xml_tag("semantic_actions")
 	@xml_collection("semantic_actions")
 	private ArrayListState<? extends SemanticAction>	semanticActions;
+	
+	@xml_tag("def_vars")
+	@xml_collection("def_vars")
+	private ArrayListState<DefVar> defVars;
 
 	
 	@xml_attribute
@@ -486,5 +490,13 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 			return type;
 		else 
 			return name;
+	}
+
+	/**
+	 * @return the defVars
+	 */
+	public final ArrayListState<DefVar> getDefVars()
+	{
+		return defVars;
 	}
 }

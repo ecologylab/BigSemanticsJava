@@ -3,29 +3,34 @@ package ecologylab.documenttypes;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.xml.namespace.QName;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.tidy.Tidy;
 
-import ecologylab.collections.Scope;
+import com.sun.org.apache.xml.internal.dtm.ref.DTMNodeList;
+
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.generic.ReflectionTools;
 import ecologylab.semantics.actions.SemanticAction;
 import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.actions.SemanticActionParameters;
+import ecologylab.semantics.actions.SemanticActionsKeyWords;
 import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataBase;
+import ecologylab.semantics.metametadata.DefVar;
 import ecologylab.semantics.metametadata.MetaMetadataField;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.FieldAccessor;
@@ -51,9 +56,12 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 	private TranslationScope			metadataTranslationScope;
 
 	private M											metadata;
+	
+	protected XPath	xpath;
 
 	public MetaMetadataDocumentTypeBase()
 	{
+		xpath = XPathFactory.newInstance().newXPath();
 	}
 
 	/**
@@ -63,6 +71,7 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 	public MetaMetadataDocumentTypeBase(IC infoCollector)
 	{
 		super(infoCollector);
+		xpath = XPathFactory.newInstance().newXPath();
 	}
 
 	public MetaMetadataDocumentTypeBase(IC infoCollector,
@@ -70,6 +79,7 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 	{
 		super(infoCollector);
 		this.semanticActionHandler = semanticActionHandler;
+		xpath = XPathFactory.newInstance().newXPath();
 	}
 
 	public abstract M buildMetadataObject();
@@ -139,10 +149,96 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 	@Override
 	public void parse() throws IOException
 	{
+		instantiateVariables();
 		M populatedMetadata = buildMetadataObject();
 		if (populatedMetadata != null)
 			takeSemanticActions(populatedMetadata);
 		// TODO recycle the hash maps
+	}
+	
+	/**
+	 * Parses and intializes the DOM
+	 */
+	protected void initializeDOM()
+	{
+		Tidy tidy;
+		tidy = new Tidy();
+		tidy.setQuiet(true);
+		tidy.setShowWarnings(false);
+		Document tidyDOM = tidy.parseDOM(inputStream(),/* System.out*/null);
+		// store this document root as standard object
+		semanticActionHandler.getParameter().addParameter(SemanticActionsKeyWords.DOCUMENT_ROOT_NODE, tidyDOM);
+		}
+
+	/**
+	 * This method instantiates the varibles declared using def_vars
+	 */
+	private void instantiateVariables()
+	{
+			initializeDOM();
+			
+			// get the list of all variable defintions
+			ArrayListState<DefVar> defVars=metaMetadata.getDefVars();
+			
+			// get the parameters
+			SemanticActionParameters parameters=semanticActionHandler.getParameter();
+			if(defVars!=null)
+			{
+				for(DefVar defVar : defVars)
+				{
+					try
+					{
+						String xpathExpression = defVar.getXpath();
+						String node = defVar.getNode();
+						String name  = defVar.getName();
+						Object returnNodes = null;
+						Node contextNode = null;
+						if(node==null)
+						{
+							// apply the XPath on the document root.
+							contextNode= (Node)parameters.getObjectInstance(SemanticActionsKeyWords.DOCUMENT_ROOT_NODE);
+						}
+						else
+						{
+							// get the context node from parameters
+							contextNode = (Node)parameters.getObjectInstance(node);
+						}
+						QName type= defVar.getType();
+						if(type!=null)
+						{
+							  // apply xpath and get the node list
+								if(type == XPathConstants.NODESET)
+								{
+									NodeList nList =(NodeList) xpath.evaluate(xpathExpression, contextNode, type);
+								
+									// put the value in the parametrers
+									parameters.addParameter(name, nList);
+								}
+								else if(type == XPathConstants.NODE)
+								{
+									Node n = (Node)xpath.evaluate(xpathExpression, contextNode, type);
+									
+									// put the value in the parametrers
+									parameters.addParameter(name, n);
+								}
+						}
+						else
+						{
+								// its gonna be a simple string evaluation
+								String evaluation = xpath.evaluate(xpathExpression, contextNode);
+								
+								// put it into returnValueMap
+								parameters.addParameter(name, evaluation);
+						}
+					}
+					catch (XPathExpressionException e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				
+				}
+			}
 	}
 
 	/**
@@ -162,11 +258,12 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 	 *          The metadata object in which the information will be filled
 	 * @param tidyDOM
 	 *          The dom on which the extraction expressions[xPath and reg ex will be applied]
+	 * @param param TODO
 	 * @param purl
 	 * @return
 	 */
 	protected M recursiveExtraction(TranslationScope translationScope, MetaMetadataField mmdField,
-			M metadata, final Document tidyDOM, XPath xpath)
+			M metadata, XPath xpath, SemanticActionParameters param)
 	{
 
 		// Gets the child metadata of the mmdField.
@@ -179,7 +276,17 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 			{
 				for (MetaMetadataField mmdElement : mmdFieldSet)
 				{
-
+					Node contextNode = null;
+					// get the context Node
+					if(mmdElement.getContextNode()!=null)
+					{
+						 contextNode=(Node)param.getObjectInstance(mmdElement.getContextNode());
+					}
+					else
+					{
+						contextNode = (Node)param.getObjectInstance(SemanticActionsKeyWords.DOCUMENT_ROOT_NODE);
+					}
+					
 					// Used to get the field value from the web page.
 					String xpathString = mmdElement.getXpath();
 					// xpathString="/html/body[@id='gsr']/div[@id='res']/div[1]/ol/li[@*]/h3/a";
@@ -196,7 +303,7 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 
 						try
 						{
-							evaluation = xpath.evaluate(xpathString, tidyDOM);
+							evaluation = xpath.evaluate(xpathString, contextNode);
 							System.out.println("DEBUG::evaluation from DOM=\t" + evaluation);
 						}
 						catch (XPathExpressionException e)
@@ -221,13 +328,13 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 						// If the field is nested
 						if (mmdElement.isNested())
 						{
-							extractNested(translationScope, metadata, tidyDOM, mmdElement, mmdElementName, xpath);
+							extractNested(translationScope, metadata, mmdElement, mmdElementName, xpath,param);
 						}
 						// If the field is list.
 						else if ("ArrayList".equals(mmdElement.collection()))
 						{
-							extractArrayList(translationScope, metadata, tidyDOM, mmdElement, mmdElementName,
-									xpath);
+							extractArrayList(translationScope, metadata, contextNode, mmdElement, mmdElementName,
+									xpath,param);
 						}
 					}
 				}// end for of all metadatafields
@@ -240,31 +347,30 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 	/**
 	 * @param translationScope
 	 * @param metadata
-	 * @param tidyDOM
-	 * @param purl
 	 * @param mmdElement
 	 * @param mmdElementName
+	 * @param purl
 	 */
-	private void extractNested(TranslationScope translationScope, M metadata, final Document tidyDOM,
-			MetaMetadataField mmdElement, String mmdElementName, XPath xpath)
+	private void extractNested(TranslationScope translationScope, M metadata, MetaMetadataField mmdElement,
+			String mmdElementName, XPath xpath,SemanticActionParameters param)
 	{
 		M nestedMetadata = null;
 
 		// Have to return the nested object for the field.
 		FieldAccessor fieldAccessor = metadata.getMetadataFieldAccessor(mmdElementName);
 		nestedMetadata = (M) fieldAccessor.getAndPerhapsCreateNested(metadata);
-		recursiveExtraction(translationScope, mmdElement, nestedMetadata, tidyDOM, xpath);
+		recursiveExtraction(translationScope, mmdElement, nestedMetadata, xpath, param);
 	}
 
 	/**
 	 * @param translationScope
 	 * @param metadata
-	 * @param tidyDOM
+	 * @param contextNode
 	 * @param mmdElement
 	 * @param mmdElementName
 	 */
 	private void extractArrayList(TranslationScope translationScope, M metadata,
-			final Document tidyDOM, MetaMetadataField mmdElement, String mmdElementName, XPath xpath)
+		 Node contextNode, MetaMetadataField mmdElement, String mmdElementName, XPath xpath,SemanticActionParameters param)
 	{
 		// this is the field accessor for the collection field
 		FieldAccessor fieldAccessor = metadata.getMetadataFieldAccessor(mmdElementName);
@@ -287,11 +393,15 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 
 			// get the xpath expression
 			String childXPath = childMetadataField.getXpath();
+			if(childMetadataField.getContextNode()!=null)
+			{
+				contextNode =  (Node) (param.getObjectInstance(childMetadataField.getContextNode()));
+			}
 
 			NodeList nodes = null;
 			try
 			{
-				nodes = (NodeList) xpath.evaluate(childXPath, tidyDOM, XPathConstants.NODESET);
+				nodes = (NodeList) xpath.evaluate(childXPath, contextNode, XPathConstants.NODESET);
 			}
 			catch (XPathExpressionException e)
 			{

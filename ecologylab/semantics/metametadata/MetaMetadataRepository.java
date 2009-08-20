@@ -78,7 +78,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	public static void main(String args[])
 	{
 		REPOSITORY_FILE = new File(
-				/* PropertiesAndDirectories.thisApplicationDir(), */"H:\\web\\code\\java\\cf\\config\\semantics\\metametadata\\defaultRepository.xml");
+				/* PropertiesAndDirectories.thisApplicationDir(), */"C:\\abhinavCode\\cf\\config\\semantics\\metametadata\\metaMetadataRepository.xml");
 		MetaMetadataRepository metaMetaDataRepository = load(REPOSITORY_FILE, null);
 		try
 		{

@@ -141,6 +141,13 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	 */
 	@xml_attribute
 	private String																			replacementString;
+	
+	/**
+	 * Context node for xpath based extarction rules for this field.
+	 * Default value is document root.
+	 */
+	@xml_attribute
+	private String																			contextNode;
 
 	@xml_map("meta_metadata_field")
 	private HashMapArrayList<String, MetaMetadataField>	childMetaMetadata;
@@ -1102,6 +1109,14 @@ public HashMapArrayList<String, MetaMetadataField> getChildMetaMetadata()
 	public void setMmdRepository(MetaMetadataRepository mmdRepository)
 	{
 		this.mmdRepository = mmdRepository;
+	}
+
+	/**
+	 * @return the contextNode
+	 */
+	public final String getContextNode()
+	{
+		return contextNode;
 	}
 
 }

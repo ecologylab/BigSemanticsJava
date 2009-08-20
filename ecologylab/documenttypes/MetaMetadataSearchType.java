@@ -12,12 +12,11 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
-import org.w3c.tidy.Tidy;
 
 import ecologylab.generic.DispatchTarget;
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.actions.SemanticAction;
 import ecologylab.semantics.actions.SemanticActionHandler;
+import ecologylab.semantics.actions.SemanticActionsKeyWords;
 import ecologylab.semantics.connectors.CFPrefNames;
 import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.InfoCollector;
@@ -37,7 +36,7 @@ import ecologylab.xml.XMLTranslationException;
  * 
  */
 public class MetaMetadataSearchType<M extends MetadataBase,C extends Container, IC extends InfoCollector<C, IC>, E extends ElementState> extends MetaMetadataDocumentTypeBase<M,C, IC, E>
-		implements CFPrefNames, DispatchTarget
+		implements CFPrefNames, DispatchTarget,SemanticActionsKeyWords
 {
 
 	/**
@@ -264,17 +263,8 @@ public class MetaMetadataSearchType<M extends MetadataBase,C extends Container, 
 			}
 			else if("xpath".equals(metaMetadata.getBinding()))
 			{
-				//FIXME -- consolidate reduntant code in one method, w XPathType
-				Tidy tidy;
-				tidy = new Tidy();
-				tidy.setQuiet(true);
-				tidy.setShowWarnings(false);
-				XPath xpath = XPathFactory.newInstance().newXPath();
-				/*final InputStream in= inputStream();
-				System.out.println(convertStreamToString(in));*/
-				Document tidyDOM = tidy.parseDOM(inputStream(), null);
 				populatedMetadata = (M) recursiveExtraction(getMetadataTranslationScope(), metaMetadata,
-						(M) getMetadata(), tidyDOM, xpath);
+						(M) getMetadata(), xpath, semanticActionHandler.getParameter());
 			}
 		}
 		try

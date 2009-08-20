@@ -48,4 +48,6 @@ public interface SemanticActionsKeyWords
 	 */
 	public static String	DOCUMENT_ROOT_NODE				= "DocumentRootNode";
 
+	public static String	NODE											= "node";
+
 }

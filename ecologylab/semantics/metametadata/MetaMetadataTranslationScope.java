@@ -50,7 +50,8 @@ public class MetaMetadataTranslationScope extends Debug
 			SearchEngine.class,
 			CreateSemanticAnchorSemanticAction.class,
 			QueueDocumentDownloadSemanticAction.class,
-			ApplyXPathSemanticAction.class
+			ApplyXPathSemanticAction.class,
+			DefVar.class
 			};
 
 	public static TranslationScope get()
