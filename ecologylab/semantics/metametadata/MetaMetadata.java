@@ -312,7 +312,7 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 	public static void main(String args[]) throws XMLTranslationException
 	{
 		final TranslationScope TS = MetaMetadataTranslationScope.get();
-		String patternXMLFilepath = "../cf/config/semantics/metametadata/defaultRepository.xml";
+		String patternXMLFilepath = "../cf/config/semantics/metametadata/metaMetadataRepository.xml";
 
 		// ElementState.setUseDOMForTranslateTo(true);
 		MetaMetadataRepository test = (MetaMetadataRepository) ElementState.translateFromXML(
