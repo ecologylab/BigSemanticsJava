@@ -43,7 +43,7 @@ import ecologylab.xml.types.scalar.ScalarType;
 public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C extends Container, IC extends InfoCollector<C, IC>, E extends ElementState> extends DocumentType<C, IC, E>
 {
 
-	private SemanticActionHandler<C, IC>	semanticActionHandler;
+	protected SemanticActionHandler<C, IC>	semanticActionHandler;
 
 	/**
 	 * Translation scope of the metadata classes, generated during compile time.
@@ -84,17 +84,13 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 		// get the semantic actions
 		ArrayListState<? extends SemanticAction> semanticActions = metaMetadata.getSemanticActions();
 
-		// build the standardObjectInstanceMap
-		Scope standardObjectInstanceMap = buildStandardObjectInstanceMap(populatedMetadata);
-
-		// build the semantic action parameter
-		SemanticActionParameters parameter = new SemanticActionParameters(standardObjectInstanceMap);
-
+		addAdditionalParameters(populatedMetadata);
+				
 		// handle the semantic actions sequentially
 		for (int i = 0; i < semanticActions.size(); i++)
 		{
-			SemanticAction action = semanticActions.get(i);
-			semanticActionHandler.handleSemanticAction(action, parameter, this, abstractInfoCollector);
+		  SemanticAction action = semanticActions.get(i);
+			semanticActionHandler.handleSemanticAction(action, this, abstractInfoCollector);
 		}
 	}
 
@@ -105,15 +101,14 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private Scope buildStandardObjectInstanceMap(M populatedMetadata)
+	private void addAdditionalParameters(M populatedMetadata)
 	{
-		Scope standardObjectInstanceMap = new Scope();
-		standardObjectInstanceMap.put("documentType", this);
-		standardObjectInstanceMap.put("metadata", populatedMetadata);
-		standardObjectInstanceMap.put("false", false);
-		standardObjectInstanceMap.put("true", true);
-		standardObjectInstanceMap.put("null", null);
-		return standardObjectInstanceMap;
+		SemanticActionParameters param =	semanticActionHandler.getParameter();
+		param.addParameter("documentType", this);
+		param.addParameter("metadata", populatedMetadata);
+		param.addParameter("false", false);
+		param.addParameter("true", true);
+		param.addParameter("null", null);
 	}
 
 	//FIXME -- consolidate redundant code with MetaMetadata.constructMetadata()
@@ -147,6 +142,7 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 		M populatedMetadata = buildMetadataObject();
 		if (populatedMetadata != null)
 			takeSemanticActions(populatedMetadata);
+		// TODO recycle the hash maps
 	}
 
 	/**
@@ -479,6 +475,12 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 			}
 			break;
 		}
+	}
+	
+	@Override
+	public boolean isContainer ( )
+	{
+		return true;
 	}
 	/**
 	 * TODO remove this some how. Have to think what it does and how to remove it. Bascially depending

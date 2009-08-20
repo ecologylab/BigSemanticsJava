@@ -196,9 +196,12 @@ public class MetaMetadataSearchType<M extends MetadataBase,C extends Container, 
 		String urlSuffix= mmdRepo.getSearchURLSufix(engine);
 		String numResultString=mmdRepo.getNumResultString(engine);
 		String startString = mmdRepo.getStartString(engine);
-		
-		searchURL = ParsedURL.getAbsolute(urlPrefix+query+numResultString+searchSeed.numResults()+startString+firstResultIndex+urlSuffix);
-		//searchURL = ParsedURL.getAbsolute(infoProcessor.metaMetaDataRepository().getSearchURL(engine)+searchSeed.getQuery());
+		if(!startString.equals("") && !numResultString.equals(""))
+			searchURL = ParsedURL.getAbsolute(urlPrefix+query+numResultString+searchSeed.numResults()+startString+firstResultIndex+urlSuffix);
+		else if(!startString.equals(""))
+			searchURL = ParsedURL.getAbsolute(urlPrefix+query+startString+firstResultIndex+urlSuffix);
+		else
+				searchURL = ParsedURL.getAbsolute(infoProcessor.metaMetaDataRepository().getSearchURL(engine)+query+urlSuffix);
 	}
 
 	public void delivery(Object o)
@@ -308,6 +311,7 @@ public class MetaMetadataSearchType<M extends MetadataBase,C extends Container, 
 		 
 		        return sb.toString();
 		    }
+	
 	public  boolean shouldUnpauseCrawler()
 	{
 		ResultDistributer aggregator = this.searchSeed.resultDistributer(abstractInfoCollector);
