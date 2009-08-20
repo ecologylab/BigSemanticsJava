@@ -23,7 +23,7 @@ public class GenericIterable implements Iterable
 	}
 
 
-	@Override
+
 	public Iterator iterator()
 	{
 		// if this is an instance of NodeList

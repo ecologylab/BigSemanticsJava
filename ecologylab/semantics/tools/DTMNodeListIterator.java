@@ -23,7 +23,7 @@ public class DTMNodeListIterator implements Iterator
 		this.count=0;
 	}
 
-	@Override
+
 	public boolean hasNext()
 	{
 		if(nodeList.getLength()>0)
@@ -33,7 +33,7 @@ public class DTMNodeListIterator implements Iterator
 		return false;
 	}
 	
-	@Override
+
 	public Object next()
 	{
 		Object returnValue= nodeList.item(count);
@@ -41,7 +41,7 @@ public class DTMNodeListIterator implements Iterator
 		return returnValue;
 	}
 
-	@Override
+
 	public void remove()
 	{
 	 // TODO implement me
