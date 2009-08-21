@@ -1,26 +1,23 @@
-package ecologylab.semantics.html;
+package ecologylab.documenttypes;
 
-import java.io.InputStream;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.TreeMap;
 
-import org.w3c.dom.Document;
 import org.w3c.tidy.AttVal;
-import org.w3c.tidy.DOMDocumentImpl;
-import org.w3c.tidy.DOMNodeImpl;
-import org.w3c.tidy.Lexer;
 import org.w3c.tidy.Out;
 import org.w3c.tidy.OutImpl;
-import org.w3c.tidy.StreamIn;
 import org.w3c.tidy.TdNode;
-import org.w3c.tidy.Tidy;
-
-import sun.io.ByteToCharASCII;
 
 import ecologylab.generic.StringTools;
-import ecologylab.net.PURLConnection;
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.connectors.Container;
+import ecologylab.semantics.connectors.InfoCollector;
+import ecologylab.semantics.html.AElement;
+import ecologylab.semantics.html.DOMWalkInformationTagger;
+import ecologylab.semantics.html.ImgElement;
+import ecologylab.semantics.html.ParagraphText;
+import ecologylab.semantics.html.RecognizedDocumentStructure;
+import ecologylab.semantics.html.TidyInterface;
 import ecologylab.semantics.html.documentstructure.AnchorContext;
 import ecologylab.semantics.html.documentstructure.ContentPage;
 import ecologylab.semantics.html.documentstructure.ImageCollectionPage;
@@ -29,84 +26,61 @@ import ecologylab.semantics.html.documentstructure.IndexPage;
 import ecologylab.semantics.html.documentstructure.TextOnlyPage;
 import ecologylab.semantics.html.utils.HTMLAttributeNames;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
+import ecologylab.xml.ElementState;
 import ecologylab.xml.XMLTools;
 
 
 /**
- * WARNING: This code is deprecated in cF and ecologylabSemantics.
- * It remains only for the purpose of maintaining some standalone classes, which Andruid
- * imagines are for algorithm verification (and thus, useful.)
- * <p/>
- * 
- * Connect to JTidy parser to parse HTML pages for standalone algorithm measurement.
- * This parsing code integrates with the Image-Text Surrogate extractor code.
+ * Parse HTML, create DOM, and author Image and Text surrogates from DOM
  * 
  * @author eunyee
  *
  */
-public class HTMLDOMParser extends Tidy
-implements HTMLAttributeNames
+public class HTMLDOMImageText<C extends Container>
+extends HTMLDOMType<C, InfoCollector<C>, ElementState>
+implements TidyInterface, HTMLAttributeNames
 {
-	PURLConnection purlConnection;
-
-	/**
-	 * because Tidy extends Serializable
-	 */
-	private static final long serialVersionUID = 1L;
-
-	public HTMLDOMParser()
-	{	
-		super();
+	public HTMLDOMImageText(InfoCollector infoCollector)	// this is of type In
+	{
+		super(infoCollector);
 	}
 
-	/**
-	 * Parse HTML Document, and return the root DOM node
-	 * 
-	 * @param in
-	 * @param purl TODO
-	 * @param out
-	 * @param tidyInterface
-	 */
-	public org.w3c.dom.Document parse(PURLConnection purlConnection)
-	{
-		this.purlConnection		= purlConnection;
-		return parseDOM(purlConnection.inputStream(), null);
-	}
+	boolean indexPage = false;
+	boolean contentPage = false;
 
-	/**
-	 * Extract Image and Text surrogates while walk through DOM 
-	 * 
-	 * @param in
-	 * @param htmlType
-	 */
-	public void parse(PURLConnection purlConnection, TidyInterface htmlType)
+//	@Override
+//	public void parse() 
+//	{   	
+//		HTMLDOMParser parser		= new HTMLDOMParser();
+//		try
+//		{  
+//			// Call HTML DOM Parser that creates pretty DOM and extracts Image and Text surrogates
+//			parser.parse(purlConnection(), this);
+//		} 
+//		catch (Exception e) 
+//		{
+//			debug("ERROR: while reading - " + e.getMessage());
+//			e.printStackTrace();
+//		}	
+//	}
+	@Override
+	protected void postParse()
 	{
-		Document parsedDoc = parse(purlConnection);
-
-		if (!(parsedDoc instanceof DOMDocumentImpl)) 
-		{
-			//Does this ever happen anymore?
-			return;
-		}
+		DOMWalkInformationTagger taggedDoc = new DOMWalkInformationTagger(tidy.getConfiguration(), purlConnection.getPurl(), this);
+		taggedDoc.generateCollections(document);
 		
-		DOMWalkInformationTagger taggedDoc = walkAndTagDom(parsedDoc, htmlType);
-		
-		extractImageTextSurrogates(taggedDoc, htmlType);
+		extractImageTextSurrogates(taggedDoc);
 		
 		//Now, find hrefs, with their context and generate containers with metadata
 		ArrayList<AnchorContext> anchorContexts = buildAnchorContexts(taggedDoc.getAllAnchorNodes());
 		
-  	if(htmlType != null)
-			htmlType.generateCandidateContainersFromContexts(anchorContexts);
+  	generateCandidateContainersFromContexts(anchorContexts);
   	
   	anchorContexts.clear();
 		taggedDoc.recycle();
 	}
 
-	public DOMWalkInformationTagger walkAndTagDom(org.w3c.dom.Node doc, TidyInterface htmlType)
-	{
-		return walkAndTagDom(((DOMNodeImpl)doc).adaptee, htmlType);
-	}
+	
 	/**
 	 * This is the walk of the dom that calls print tree, and the parser methods such as closeHref etc.
 	 * @param doc
@@ -117,11 +91,8 @@ implements HTMLAttributeNames
 	{
 		Out jtidyPrettyOutput = new OutImpl();
 
-		jtidyPrettyOutput.state = StreamIn.FSM_ASCII;
-		jtidyPrettyOutput.encoding = configuration.CharEncoding;
-
-		DOMWalkInformationTagger domTagger = new DOMWalkInformationTagger(configuration, purlConnection.getPurl(), htmlType);
-
+		DOMWalkInformationTagger domTagger = new DOMWalkInformationTagger(tidy.getConfiguration(), purlConnection.getPurl(), htmlType);
+		domTagger.generateCollections(document);
 		// walk through the HTML document object.
 		// gather all paragraphText and image objects in the data structure.
 		//FIXME -- get rid of this call and object!
@@ -136,14 +107,14 @@ implements HTMLAttributeNames
 	 * 
 	 * historically was called as pprint() in JTidy. 
 	 */
-	public void extractImageTextSurrogates(DOMWalkInformationTagger taggedDoc, TidyInterface htmlType)
+	public void extractImageTextSurrogates(DOMWalkInformationTagger taggedDoc)
 	{
 
 		TdNode contentBody = RecognizedDocumentStructure.recognizeContentBody(taggedDoc);
 		//System.out.println("\n\ncontentBody = " + contentBody);       
 		ArrayList<ImgElement> imgNodes = taggedDoc.getAllImgNodes();
 
-		recognizeDocumentStructureToGenerateSurrogate(htmlType, taggedDoc, contentBody, imgNodes);
+		recognizeDocumentStructureToGenerateSurrogate(taggedDoc, contentBody, imgNodes);
 	}
 	
 	/**
@@ -151,15 +122,12 @@ implements HTMLAttributeNames
 	 * text length in the whole page, and whether the informative images reside in the page. 
 	 * 
 	 * Based on the recognized page type, it generates surrogates.  
-	 * 
-	 * @param htmlType
 	 * @param domWalkInfoTagger
 	 * @param contentBody
 	 * @param imgNodes
 	 */
-	private void recognizeDocumentStructureToGenerateSurrogate(TidyInterface htmlType,
-			DOMWalkInformationTagger domWalkInfoTagger, TdNode contentBody,
-			ArrayList<ImgElement> imgNodes) 
+	private void recognizeDocumentStructureToGenerateSurrogate(DOMWalkInformationTagger domWalkInfoTagger,
+			TdNode contentBody, ArrayList<ImgElement> imgNodes) 
 	{
 		RecognizedDocumentStructure pageCategory = null;
 
@@ -187,19 +155,19 @@ implements HTMLAttributeNames
 
 		if (pageCategory != null)
 		{
-			pageCategory.generateSurrogates(contentBody, imgNodes, domWalkInfoTagger.getTotalTxtLength(), paragraphTextsTMap, htmlType);
+			pageCategory.generateSurrogates(contentBody, imgNodes, domWalkInfoTagger.getTotalTxtLength(), paragraphTextsTMap, this);
 		}
 
 		// No Informative images are in this document. Form surrogate only with text.  	
 		// We cannot tell whether the images in the pages are informative or not until downloding all, thus this is the case after we 
 		// look through all the images in the page and determine no image is worth displaying.
-		if( (htmlType.numCandidatesExtractedFrom()==0) && (paragraphTextsTMap.size()>0) )
+		if( (numCandidatesExtractedFrom()==0) && (paragraphTextsTMap.size()>0) )
 		{
 			pageCategory = new TextOnlyPage(purl());
-			pageCategory.generateSurrogates(contentBody, imgNodes, domWalkInfoTagger.getTotalTxtLength(), paragraphTextsTMap, htmlType);
+			pageCategory.generateSurrogates(contentBody, imgNodes, domWalkInfoTagger.getTotalTxtLength(), paragraphTextsTMap, this);
 		}
 		if (pageCategory != null)
-			htmlType.setRecognizedDocumentStructure(pageCategory.getClass());
+			setRecognizedDocumentStructure(pageCategory.getClass());
 	}
 
 
@@ -331,8 +299,26 @@ implements HTMLAttributeNames
   	return result;
   }
   
-  ParsedURL purl()
-  {
-  	return purlConnection.getPurl();
-  }
+	public void setContent ( )
+	{
+		contentPage = true;		
+	}
+
+	public void setIndexPage ( )
+	{
+		indexPage = true;
+	}
+
+	@Override
+	public boolean isIndexPage ( )
+	{
+		return indexPage;
+	}
+
+	@Override
+	public boolean isContentPage ( )
+	{
+		return contentPage;
+	}
+	
 }

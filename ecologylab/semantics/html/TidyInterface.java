@@ -25,7 +25,7 @@ public interface TidyInterface
 	
 	public void newAHref(HashMap<String, String> attributesMap);
 
-	public void generateContainersFromContexts(ArrayList<AnchorContext> anchorContexts);
+	public void generateCandidateContainersFromContexts(ArrayList<AnchorContext> anchorContexts);
 	
 	public void closeHref();
 	

@@ -43,7 +43,7 @@ import ecologylab.xml.ElementState;
  * @author andruid
  * @author eunyee
  */
-abstract public class DocumentType<C extends Container, IP extends InfoCollector<C, IP>, ES extends ElementState>
+abstract public class DocumentType<C extends Container, IC extends InfoCollector<C>, ES extends ElementState>
 		extends Debug
 {
 
@@ -62,14 +62,14 @@ abstract public class DocumentType<C extends Container, IP extends InfoCollector
 	 * Associated Container object.
 	 * Filled out by the connect() method.
 	 */
-	protected C					container;
+	protected C						container;
 
-	protected IP					abstractInfoCollector;
+	protected IC					infoCollector;
 
-	protected static final String[]	IMAGE_MIME_STRINGS		= javax.imageio.ImageIO
+	public static final String[]	IMAGE_MIME_STRINGS		= javax.imageio.ImageIO
 																	.getReaderMIMETypes();
 
-	protected static final String[]	IMAGE_SUFFIX_STRINGS	= ImageIO.getReaderFormatNames();
+	public static final String[]	IMAGE_SUFFIX_STRINGS	= ImageIO.getReaderFormatNames();
 
 	protected static final class DocumentTypeRegistry extends Scope<DocumentType>
 	{
@@ -109,9 +109,9 @@ abstract public class DocumentType<C extends Container, IP extends InfoCollector
 	 * 
 	 * @param infoCollector
 	 */
-	protected DocumentType ( IP infoCollector )
+	protected DocumentType ( IC infoCollector )
 	{
-		this.abstractInfoCollector = infoCollector;
+		this.infoCollector = infoCollector;
 	}
 
 	public abstract void parse ( ) throws IOException;
@@ -370,7 +370,7 @@ abstract public class DocumentType<C extends Container, IP extends InfoCollector
 	 * @param container
 	 * @param infoCollector
 	 */
-	protected void fillValues ( PURLConnection purlConnection, C container, IP infoCollector )
+	protected void fillValues ( PURLConnection purlConnection, C container, IC infoCollector )
 	{
 		this.purlConnection = purlConnection;
 		setContainer(container);
@@ -411,7 +411,7 @@ abstract public class DocumentType<C extends Container, IP extends InfoCollector
 	{
 		connectionRecycle();
 		container = null;
-		abstractInfoCollector = null;
+		infoCollector = null;
 	}
 
 	/**
@@ -493,9 +493,9 @@ abstract public class DocumentType<C extends Container, IP extends InfoCollector
 	 * 
 	 * @param infoCollector
 	 */
-	public void setInfoCollector ( IP infoCollector )
+	public void setInfoCollector ( IC infoCollector )
 	{
-		this.abstractInfoCollector = infoCollector;
+		this.infoCollector = infoCollector;
 	}
 
 	/**
@@ -521,7 +521,7 @@ abstract public class DocumentType<C extends Container, IP extends InfoCollector
 	/**
 	 * Create a mapping from MimeType to the class object for a DocumentType.
 	 */
-	protected static void registerMime ( String mimeType,
+	public static void registerMime ( String mimeType,
 			Class<? extends DocumentType> documentTypeClass )
 	{
 		registryByMimeType.put(mimeType, documentTypeClass);
@@ -538,7 +538,7 @@ abstract public class DocumentType<C extends Container, IP extends InfoCollector
 	 * Create a mapping from filename suffix to the class object for a DocumentType. Actually create
 	 * two mappings, one lower case, and one upper case.
 	 */
-	protected static void registerSuffix ( String suffix,
+	public static void registerSuffix ( String suffix,
 			Class<? extends DocumentType> documentTypeClass )
 	{
 		String lc = suffix.toLowerCase();
@@ -598,6 +598,7 @@ abstract public class DocumentType<C extends Container, IP extends InfoCollector
 		return registryByMimeType.containsKey(mimeType);
 	}
 
+	static final Class[]	DEFAULT_INFO_COLLECTOR_CLASS_ARG	= {InfoCollector.class, };
 	/**
 	 * Given one of our registries, and a key, do a lookup in the registry to obtain the Class
 	 * object for the DocumentType subclass corresponding to the key -- in that registry.
@@ -619,8 +620,11 @@ abstract public class DocumentType<C extends Container, IP extends InfoCollector
 		Object[] constructorArgs = new Object[1];
 		constructorArgs[0] = infoCollector;
 
-		result = ReflectionTools.getInstance(documentTypeClass, infoCollector
-				.getInfoProcessorClassArg(), constructorArgs);
+		result = ReflectionTools.getInstance(documentTypeClass, infoCollector.getMyClassArg(), constructorArgs);
+		if (result == null)
+			result = ReflectionTools.getInstance(documentTypeClass, DEFAULT_INFO_COLLECTOR_CLASS_ARG, constructorArgs);
+//		if (result == null)
+//			throw new RuntimeException("Registry lookup worked, but constructor matching failed :-( :-( :-(");
 		return result;
 	}
 
@@ -705,7 +709,7 @@ abstract public class DocumentType<C extends Container, IP extends InfoCollector
 		constructorArgs[0] = infoCollector;
 
 		result = ReflectionTools.getInstance(documentTypeClass, infoCollector
-				.getInfoProcessorClassArg(), constructorArgs);
+				.getMyClassArg(), constructorArgs);
 		return result;
 	}
 
@@ -762,9 +766,9 @@ abstract public class DocumentType<C extends Container, IP extends InfoCollector
 		return container;
 	}
 
-	public IP getInfoCollector()
+	public IC getInfoCollector()
 	{
-		return abstractInfoCollector;
+		return infoCollector;
 	}
 
 	public MetaMetadata getMetaMetadata()

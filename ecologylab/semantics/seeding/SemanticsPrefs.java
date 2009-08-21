@@ -15,6 +15,7 @@ public interface SemanticsPrefs
 	 * Corresponds to the stay close / allow wandering interactive runtime option.
 	 */
 	public static final PrefBoolean	LIMIT_TRAVERSAL	= Pref.usePrefBoolean("limit_traversal", true);
+	public static final PrefBoolean	FILTER_OUT_ADS		= Pref.usePrefBoolean("ads_bias", true);
 	
 
 }

@@ -33,7 +33,7 @@ public class ContentPage extends RecognizedDocumentStructure
 	 * 2. Generate Image+Text surrogate inside the ArticleMain body. 
 	 */
 	@Override
-	protected void generateSurrogates(TdNode articleMain, ArrayList<ImgElement> imgNodes, int totalTxtLeng, 
+	public void generateSurrogates(TdNode articleMain, ArrayList<ImgElement> imgNodes, int totalTxtLeng, 
 			TreeMap<Integer, ParagraphText> paraTexts, TidyInterface htmlType)
 	{
     	// This is the case there is no article main, which means high probability to be an index page.

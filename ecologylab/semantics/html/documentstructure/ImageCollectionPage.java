@@ -34,7 +34,7 @@ public class ImageCollectionPage extends RecognizedDocumentStructure
 	 * Generate surrogates for the images inside the image-collection pages.
 	 */
 	@Override
-	protected void generateSurrogates(TdNode articleMain, ArrayList<ImgElement> imgElements, int totalTxtLeng, 
+	public void generateSurrogates(TdNode articleMain, ArrayList<ImgElement> imgElements, int totalTxtLeng, 
 			TreeMap<Integer, ParagraphText> paraTextMap, TidyInterface htmlType)
 	{
 		Collection<ParagraphText> paraTextsC	= paraTextMap.values();

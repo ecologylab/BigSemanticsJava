@@ -38,7 +38,7 @@ public class TextOnlyPage extends RecognizedDocumentStructure
 	 * Generate only text surrogates 
 	 */
 	@Override
-	protected void generateSurrogates(TdNode articleMain, ArrayList<ImgElement> imgNodes, int totalTxtLeng, 
+	public void generateSurrogates(TdNode articleMain, ArrayList<ImgElement> imgNodes, int totalTxtLeng, 
 			TreeMap<Integer, ParagraphText> paraTexts, TidyInterface htmlType)
 	{
 		int count	= 0;

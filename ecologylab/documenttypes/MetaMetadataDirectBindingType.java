@@ -45,6 +45,7 @@ public class MetaMetadataDirectBindingType<M extends MetadataBase, SA extends Se
 		{
 			try
 			{
+				// if no xpath variables, then do this directly.
 				populatedMetadata = (M) ElementState.translateFromXML(inputStream(),
 						getMetadataTranslationScope());
 			}
@@ -57,5 +58,20 @@ public class MetaMetadataDirectBindingType<M extends MetadataBase, SA extends Se
 		return populatedMetadata;
 	}
 
-	
+	void createDOMandParse(ParsedURL purl)
+	{
+		org.w3c.dom.Document document	= ElementState.buildDOM(purl);
+		
+		try
+		{
+			// if no xpath variables, then do this directly.
+			ElementState.translateFromXMLDOM(document, getMetadataTranslationScope());
+		}
+		catch (XMLTranslationException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
 }

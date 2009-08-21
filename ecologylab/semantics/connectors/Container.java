@@ -8,6 +8,8 @@ import java.io.IOException;
 import ecologylab.documenttypes.DocumentType;
 import ecologylab.generic.DispatchTarget;
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.html.ParagraphText;
+import ecologylab.semantics.html.documentstructure.SemanticAnchor;
 import ecologylab.semantics.metadata.Document;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.seeding.ResultDistributer;
@@ -68,4 +70,30 @@ public interface Container
 	public Document constructAndSetMetadata(MetaMetadata metaMetadata);
 
 	void setMetadata(Document populatedMetadata);
+	
+	public void addToCandidateLocalImages(AbstractImgElement imgElement);
+	
+	public void createImageElementAndAddToPools(ParsedURL imagePurl, String alt, 
+			int width, int height, boolean isMap, ParsedURL hrefPurl);
+
+	public void allocLocalCollections();
+	
+	public boolean crawlLinks();
+	
+	public void hwSetTitle(String newTitle);
+	
+	public void createTextElementAndAddToCollections(ParagraphText paraText);
+	
+	public int numLocalCandidates();
+	
+	public boolean addSemanticInLink(SemanticAnchor newAnchor, Container srcContainer);
+	
+	public void addCandidateContainer (Container newContainer );
+	
+	boolean isSeed();
+	
+	public void setInArticleBody(boolean value);
+	
+	public AbstractImgElement createImageElement(ParsedURL parsedImgUrl, String alt, 
+			int width, int height, boolean isMap, ParsedURL hrefPurl);
 }

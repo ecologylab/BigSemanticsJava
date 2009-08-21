@@ -62,7 +62,7 @@ implements HTMLAttributeNames
 	 * @param paraTexts  
 	 * @param htmlType
 	 */
-	protected void generateSurrogates(TdNode articleMain, ArrayList<ImgElement> imgNodes, int totalTxtLeng, 
+	public void generateSurrogates(TdNode articleMain, ArrayList<ImgElement> imgNodes, int totalTxtLeng, 
 			TreeMap<Integer, ParagraphText> paraTexts, TidyInterface htmlType)
 	{
 		recognizeImgSurrogateForOtherPages( imgNodes, totalTxtLeng, htmlType );

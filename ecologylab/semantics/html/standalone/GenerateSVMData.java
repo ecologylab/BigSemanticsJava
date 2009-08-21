@@ -51,8 +51,6 @@ public class GenerateSVMData extends HTMLDOMParser
   //      {
         	// Instantiate PPrint constructor that connects to combinFormation
         DOMWalkInformationTagger pprint = new DOMWalkInformationTagger(configuration, purl, null);
-        pprint.setState( StreamIn.FSM_ASCII );
-        pprint.setEncoding( configuration.CharEncoding );
         
         // To generate SVM data 
         pprint.setPartitionID(mainPartitionID);

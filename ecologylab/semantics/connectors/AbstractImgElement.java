@@ -1,4 +1,4 @@
-package ecologylab.semantics.model.image;
+package ecologylab.semantics.connectors;
 
 import ecologylab.collections.AbstractSetElement;
 import ecologylab.generic.IFeatureVector;
@@ -24,4 +24,19 @@ public interface AbstractImgElement extends AbstractSetElement
 	 * @param getText 
 	 */
 	void handleDeliveryOrDownloadError(boolean getText);
+	
+	/**
+	 * Operational for regular ImageElements, but a no-op for AbstractPDFImgElements.
+	 * A convenience enabling putting more HTML processing code into ecologylab.semantics.
+	 * 
+	 * @param context
+	 */
+	public void hwSetContext(String context);
+	
+	/**
+	 * Operational for regular ImageElements, but a no-op for AbstractPDFImgElements.
+	 * A convenience enabling putting more HTML processing code into ecologylab.semantics.
+	 * @return
+	 */
+	public String caption();
 }

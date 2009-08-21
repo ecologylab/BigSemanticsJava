@@ -39,8 +39,8 @@ import ecologylab.xml.TranslationScope;
  * @author amathur
  * 
  */
-public abstract class InfoCollectorBase<AC extends Container, IC extends InfoCollector> extends
-		Debug implements InfoCollector<AC, IC>, SemanticsPrefs
+public abstract class InfoCollectorBase<AC extends Container> extends
+		Debug implements InfoCollector<AC>, SemanticsPrefs
 {
 
 	/**

@@ -22,10 +22,7 @@ public class ImgElement extends WithPurlElement
 {
 	ParsedURL				src;
 	
-	
-	
-	String					alt;
-	
+	String					alt;	
 	int							width;
 	int							height;
 	boolean					isMap;

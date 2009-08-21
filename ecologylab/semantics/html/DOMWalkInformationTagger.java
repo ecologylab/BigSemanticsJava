@@ -9,9 +9,12 @@ import java.util.TreeMap;
 
 import org.w3c.tidy.AttVal;
 import org.w3c.tidy.Configuration;
+import org.w3c.tidy.DOMNodeImpl;
 import org.w3c.tidy.Lexer;
 import org.w3c.tidy.Out;
+import org.w3c.tidy.OutImpl;
 import org.w3c.tidy.PPrint;
+import org.w3c.tidy.StreamIn;
 import org.w3c.tidy.TdNode;
 
 import ecologylab.generic.StringTools;
@@ -33,7 +36,7 @@ public class DOMWalkInformationTagger extends PPrint
 	private static final int		MAX_LINKS_PER_PAGE			= 200;
 	protected static final int 	PARA_TEXT_LENGTH_LIMIT 	= 80;
 	
-	TidyInterface htmlType;
+	TidyInterface tidyInterface;
 	
 	ParsedURL			purl;
 	
@@ -41,25 +44,9 @@ public class DOMWalkInformationTagger extends PPrint
 	int 					state;
 
 	/**
-	 * Keep the array of the paragraph texts in the article body.
-	 * 
-	 */
-	private TreeMap<Integer, ParagraphText>	paragraphTextsTMap	= new TreeMap<Integer, ParagraphText>();
-
-	protected TreeMap<Integer, ParagraphText> getParagraphTextsTMap()
-	{
-		return paragraphTextsTMap;
-	}
-
-	/**
 	 * Current DOM node that is being processed
 	 */
 	protected TdNode				currentNode		= null;
-
-	/**
-	 * Collection of text elements until a block level element is reached
-	 */
-	protected ParagraphText currentParagraphText = new ParagraphText();
 
 	/**
 	 * Keep track of the text length in this page to recognize the page type. 
@@ -67,20 +54,48 @@ public class DOMWalkInformationTagger extends PPrint
 	protected int 					totalTxtLength  = 0; 
 
 	/**
+	 * Collection of text elements until a block level element is reached
+	 */
+	protected ParagraphText currentParagraphText = new ParagraphText();
+
+	
+	/**
+	 * Keep the array of the paragraph texts in the article body.
+	 * 
+	 */
+	private TreeMap<Integer, ParagraphText>	paragraphTextsTMap	= new TreeMap<Integer, ParagraphText>();
+
+	/**
 	 * All images in the page
 	 */
-	private ArrayList<ImgElement> 	allImgNodes			= new ArrayList<ImgElement>();
+	private ArrayList<ImgElement> 					allImgNodes					= new ArrayList<ImgElement>();
 
 	/**
 	 * All links in current page
 	 */
-  protected ArrayList<AElement> allAnchorNodes		= new ArrayList<AElement>();
+  protected ArrayList<AElement> 					allAnchorNodes			= new ArrayList<AElement>();
 
-	public DOMWalkInformationTagger(Configuration configuration, ParsedURL purl, TidyInterface htmlType) 
+  
+	public DOMWalkInformationTagger(Configuration configuration, ParsedURL purl, TidyInterface tidyInterface) 
 	{
 		super(configuration);
-		this.purl			= purl;
-		this.htmlType = htmlType;
+		this.purl						= purl;
+		this.tidyInterface 	= tidyInterface;
+		state 							= StreamIn.FSM_ASCII;
+		encoding 						= configuration.CharEncoding;
+	}
+	public void generateCollections(org.w3c.dom.Document doc)
+	{
+		generateCollections(((DOMNodeImpl)doc).adaptee);
+	}
+	public void generateCollections(TdNode rootTdNode)
+	{
+		Out jtidyPrettyOutput 			= new OutImpl();
+		jtidyPrettyOutput.state 		= StreamIn.FSM_ASCII;
+		jtidyPrettyOutput.encoding	= configuration.CharEncoding;
+
+		printTree(jtidyPrettyOutput, (short)0, 0, null, rootTdNode);
+		flushLine(jtidyPrettyOutput, 0);	
 	}
 
 	/**
@@ -105,11 +120,11 @@ public class DOMWalkInformationTagger extends PPrint
 			if (baseHref != null)
 				purl			= (purl == null) ? ParsedURL.getAbsolute(baseHref) : purl.getRelative(baseHref);
 		}
-		else if( htmlType != null )
+		else if( tidyInterface != null )
 		{
 			if( "title".equals(tagName) ) 
 			{
-				htmlType.setTitle(node);
+				tidyInterface.setTitle(node);
 			}
 			else if( "a".equals(tagName) ) 
 			{
@@ -123,11 +138,11 @@ public class DOMWalkInformationTagger extends PPrint
 			}
 			else if( "i".equals(tagName) ) 
 			{
-				htmlType.setItalic(true);
+				tidyInterface.setItalic(true);
 			}
 			else if( "b".equals(tagName) )
 			{
-				htmlType.setBold(true);
+				tidyInterface.setBold(true);
 			}
 		}
 
@@ -143,19 +158,19 @@ public class DOMWalkInformationTagger extends PPrint
 	{
 		String tag = node.element;
 
-		if( htmlType != null )
+		if( tidyInterface != null )
 		{
 			if( tag.equals("a") )
 			{
-				htmlType.closeHref();
+				tidyInterface.closeHref();
 			}
 			else if( tag.equals("i") )
 			{
-				htmlType.setItalic(false);
+				tidyInterface.setItalic(false);
 			}
 			else if( tag.equals("b") )
 			{
-				htmlType.setBold(false);
+				tidyInterface.setBold(false);
 			}
 //			if ("h1".equals(tag) || "p".equals(tag))
 //			{
@@ -336,16 +351,6 @@ public class DOMWalkInformationTagger extends PPrint
 		return sID;
 	}
 
-	public void setState(int s)
-	{
-		this.state = s;
-	}
-
-	public void setEncoding(int enc)
-	{
-		this.encoding = enc;
-	}
-
 	int endID(String idValue)
 	{
 		String endID = idValue.substring(idValue.indexOf('_')+1);
@@ -402,4 +407,10 @@ public class DOMWalkInformationTagger extends PPrint
 		for (HTMLElement thatNode: nodeCollection)
 			thatNode.recycle();
 	}
+
+	public TreeMap<Integer, ParagraphText> getParagraphTextsTMap()
+	{
+		return paragraphTextsTMap;
+	}
+
 }

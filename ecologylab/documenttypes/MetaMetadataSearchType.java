@@ -35,7 +35,7 @@ import ecologylab.xml.XMLTranslationException;
  * @author amathur
  * 
  */
-public class MetaMetadataSearchType<M extends MetadataBase,C extends Container, IC extends InfoCollector<C, IC>, E extends ElementState> extends MetaMetadataDocumentTypeBase<M,C, IC, E>
+public class MetaMetadataSearchType<M extends MetadataBase,C extends Container, IC extends InfoCollector<C>, E extends ElementState> extends MetaMetadataDocumentTypeBase<M,C, IC, E>
 		implements CFPrefNames, DispatchTarget,SemanticActionsKeyWords
 {
 
@@ -118,7 +118,7 @@ public class MetaMetadataSearchType<M extends MetadataBase,C extends Container, 
 		if (this.searchSeed != null)
 		{
 			ResultDistributer resultDistributer = this.searchSeed
-					.resultDistributer(abstractInfoCollector);
+					.resultDistributer(infoCollector);
 			if (resultDistributer != null)
 			{
 				resultDistributer.queueSearchRequest(container);
@@ -148,7 +148,7 @@ public class MetaMetadataSearchType<M extends MetadataBase,C extends Container, 
 			container.setJustCrawl(true);
 			String query = searchSeed.valueString();
 			InterestModel.expressInterest(query, (short) 2);
-			abstractInfoCollector.displayStatus("Processing google search page: " + query);
+			infoCollector.displayStatus("Processing google search page: " + query);
 		}
 	}
 
@@ -205,7 +205,7 @@ public class MetaMetadataSearchType<M extends MetadataBase,C extends Container, 
 
 	public void delivery(Object o)
 	{
-		ResultDistributer aggregator = this.searchSeed.resultDistributer(abstractInfoCollector);
+		ResultDistributer aggregator = this.searchSeed.resultDistributer(infoCollector);
 		if (aggregator != null)
 			aggregator.doneQueueing(searchSeed.searchNum(), resultsSoFar);
 		if (this.searchSeed != null)
@@ -304,7 +304,7 @@ public class MetaMetadataSearchType<M extends MetadataBase,C extends Container, 
 	
 	public  boolean shouldUnpauseCrawler()
 	{
-		ResultDistributer aggregator = this.searchSeed.resultDistributer(abstractInfoCollector);
+		ResultDistributer aggregator = this.searchSeed.resultDistributer(infoCollector);
 		return aggregator.checkIfAllSearchesOver();
 	}
 	
@@ -314,7 +314,7 @@ public class MetaMetadataSearchType<M extends MetadataBase,C extends Container, 
 		if(shouldUnpauseCrawler())
 		{
 			System.out.println("Ended Seeding");
-			abstractInfoCollector.endSeeding();
+			infoCollector.endSeeding();
 		}
 		
 	}

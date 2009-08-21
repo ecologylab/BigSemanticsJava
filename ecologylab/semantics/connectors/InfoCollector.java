@@ -11,7 +11,6 @@ import ecologylab.collections.Scope;
 import ecologylab.documenttypes.DocumentType;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionHandler;
-import ecologylab.semantics.library.Image;
 import ecologylab.semantics.metadata.Document;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
@@ -26,7 +25,7 @@ import ecologylab.xml.TranslationScope;
  * @author andruid
  *
  */
-public interface InfoCollector<C extends Container, IC extends InfoCollector>
+public interface InfoCollector<C extends Container>
 {
 	void displayStatus(String message);
 	
@@ -58,9 +57,9 @@ public interface InfoCollector<C extends Container, IC extends InfoCollector>
 	public Document constructDocument(ParsedURL purl);
 
 
-	DocumentType<C, ? extends IC, ?> newFileDirectoryType(File file);
+	DocumentType<C, ? extends InfoCollector, ?> newFileDirectoryType(File file);
 	
-	Class<IC>[] getInfoProcessorClassArg();
+	Class<? extends InfoCollector>[] getMyClassArg();
 
 	SeedPeer constructSeedPeer(Seed seed);
 	
@@ -78,7 +77,7 @@ public interface InfoCollector<C extends Container, IC extends InfoCollector>
 
 	void untraversable(ParsedURL url);
 
-	DocumentType<C, ? extends IC, ?> constructDocumentType(ElementState inlineDoc);
+	DocumentType<C, ? extends InfoCollector, ?> constructDocumentType(ElementState inlineDoc);
 
 	TranslationScope inlineDocumentTranslations();
 	
@@ -89,6 +88,8 @@ public interface InfoCollector<C extends Container, IC extends InfoCollector>
 
 	C getContainer(C ancestor, ParsedURL purl, boolean reincarnate,
 			boolean addToCandidatesIfNeeded, MetaMetadata metaMetadata);
+	
+	public void removeCandidateContainer(C candidate);
 
 	Scope sessionScope();
 

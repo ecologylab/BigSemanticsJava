@@ -45,7 +45,7 @@ import ecologylab.xml.types.scalar.ScalarType;
  * @author amathur
  * 
  */
-public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C extends Container, IC extends InfoCollector<C, IC>, E extends ElementState> extends DocumentType<C, IC, E>
+public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C extends Container, IC extends InfoCollector<C>, E extends ElementState> extends DocumentType<C, IC, E>
 {
 
 	protected SemanticActionHandler<C, IC>	semanticActionHandler;
@@ -100,7 +100,7 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 		for (int i = 0; i < semanticActions.size(); i++)
 		{
 		  SemanticAction action = semanticActions.get(i);
-			semanticActionHandler.handleSemanticAction(action, this, abstractInfoCollector);
+			semanticActionHandler.handleSemanticAction(action, this, infoCollector);
 		}
 	}
 
@@ -149,6 +149,8 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 	@Override
 	public void parse() throws IOException
 	{
+		buildTidyDOM();	//only do this for HTML
+		
 		instantiateVariables();
 		M populatedMetadata = buildMetadataObject();
 		if (populatedMetadata != null)
@@ -159,7 +161,7 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 	/**
 	 * Parses and intializes the DOM
 	 */
-	protected void initializeDOM()
+	protected void buildTidyDOM()
 	{
 		Tidy tidy;
 		tidy = new Tidy();
@@ -175,8 +177,6 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 	 */
 	private void instantiateVariables()
 	{
-			initializeDOM();
-			
 			// get the list of all variable defintions
 			ArrayListState<DefVar> defVars=metaMetadata.getDefVars();
 			

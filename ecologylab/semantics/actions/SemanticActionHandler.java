@@ -38,7 +38,7 @@ import ecologylab.xml.types.element.ArrayListState;
 * @author amathur
 *
 */
-public abstract class SemanticActionHandler<C extends Container, IC extends InfoCollector<C, IC>> 
+public abstract class SemanticActionHandler<C extends Container, IC extends InfoCollector<C>> 
 extends Debug
 implements SemanticActionStandardMethods,SemanticActionsKeyWords
 {
