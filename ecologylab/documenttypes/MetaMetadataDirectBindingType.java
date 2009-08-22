@@ -12,6 +12,7 @@ import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticAction;
 import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.actions.SemanticActionParameters;
+import ecologylab.semantics.actions.SemanticActionsKeyWords;
 import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.metadata.MetadataBase;
 import ecologylab.xml.ElementState;
@@ -45,9 +46,7 @@ public class MetaMetadataDirectBindingType<M extends MetadataBase, SA extends Se
 		{
 			try
 			{
-				// if no xpath variables, then do this directly.
-				populatedMetadata = (M) ElementState.translateFromXML(inputStream(),
-						getMetadataTranslationScope());
+				populatedMetadata = (M) ElementState.translateFromXMLDOM((org.w3c.dom.Document)semanticActionHandler.getParameter().getObjectInstance(SemanticActionsKeyWords.DOCUMENT_ROOT_NODE), getMetadataTranslationScope());
 			}
 			catch (XMLTranslationException e)
 			{
@@ -58,20 +57,14 @@ public class MetaMetadataDirectBindingType<M extends MetadataBase, SA extends Se
 		return populatedMetadata;
 	}
 
-	void createDOMandParse(ParsedURL purl)
+	
+	/**
+	 * This method is called for dierct binding only if it has some variables as it is expensive
+	 * @param purl
+	 */
+	protected void createDOMandParse(ParsedURL purl)
 	{
 		org.w3c.dom.Document document	= ElementState.buildDOM(purl);
-		
-		try
-		{
-			// if no xpath variables, then do this directly.
-			ElementState.translateFromXMLDOM(document, getMetadataTranslationScope());
-		}
-		catch (XMLTranslationException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
+		semanticActionHandler.getParameter().addParameter(SemanticActionsKeyWords.DOCUMENT_ROOT_NODE, document);
 	}
 }

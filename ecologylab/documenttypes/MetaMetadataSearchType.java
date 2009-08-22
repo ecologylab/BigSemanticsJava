@@ -35,8 +35,9 @@ import ecologylab.xml.XMLTranslationException;
  * @author amathur
  * 
  */
-public class MetaMetadataSearchType<M extends MetadataBase,C extends Container, IC extends InfoCollector<C>, E extends ElementState> extends MetaMetadataDocumentTypeBase<M,C, IC, E>
-		implements CFPrefNames, DispatchTarget,SemanticActionsKeyWords
+public class MetaMetadataSearchType<M extends MetadataBase, C extends Container, IC extends InfoCollector<C>, E extends ElementState>
+		extends MetaMetadataDocumentTypeBase<M, C, IC, E> implements CFPrefNames, DispatchTarget,
+		SemanticActionsKeyWords
 {
 
 	/**
@@ -55,7 +56,6 @@ public class MetaMetadataSearchType<M extends MetadataBase,C extends Container, 
 	private SearchState						searchSeed;
 
 	private int										resultsSoFar	= 0;
-
 
 	/**
 	 * 
@@ -117,8 +117,7 @@ public class MetaMetadataSearchType<M extends MetadataBase,C extends Container, 
 	{
 		if (this.searchSeed != null)
 		{
-			ResultDistributer resultDistributer = this.searchSeed
-					.resultDistributer(infoCollector);
+			ResultDistributer resultDistributer = this.searchSeed.resultDistributer(infoCollector);
 			if (resultDistributer != null)
 			{
 				resultDistributer.queueSearchRequest(container);
@@ -155,52 +154,47 @@ public class MetaMetadataSearchType<M extends MetadataBase,C extends Container, 
 	/**
 	 * 
 	 */
-	private void formSearchUrlBasedOnEngine(int firstResultIndex,InfoCollector infoProcessor)
+	private void formSearchUrlBasedOnEngine(int firstResultIndex, InfoCollector infoProcessor)
 	{
-/*		if (engine.equals(SearchEngineNames.GOOGLE))
-		{
-			searchURL = ParsedURL
-					.getAbsolute(
-							((searchSeed.searchType() == SearchEngineNames.REGULAR) ? SearchEngineNames.regularGoogleSearchURLString
-									:
+		/*
+		 * if (engine.equals(SearchEngineNames.GOOGLE)) { searchURL = ParsedURL .getAbsolute(
+		 * ((searchSeed.searchType() == SearchEngineNames.REGULAR) ?
+		 * SearchEngineNames.regularGoogleSearchURLString :
+		 * 
+		 * (searchSeed.searchType() == SearchEngineNames.IMAGE) ?
+		 * SearchEngineNames.imageGoogleSearchURLString : (searchSeed.searchType() ==
+		 * SearchEngineNames.SITE) ? SearchEngineUtilities
+		 * .siteGoogleLimitSearchURLString(searchSeed.siteString()) :
+		 * SearchEngineNames.relatedGoogleSearchUrlString) + (searchSeed.valueString().replace(' ',
+		 * '+')).replace("&quot;", "%22")
+		 * 
+		 * + (IGNORE_PDF.value() ? SearchEngineNames.GOOGLE_NO_PDF_ARG : "") + "&num=" +
+		 * searchSeed.numResults() + "&start=" + firstResultIndex, "broken Google URL"); } else if
+		 * (engine.equals(SearchEngineNames.FLICKR)) { searchURL =
+		 * ParsedURL.getAbsolute("http://www.flickr.com/search/?q=" + searchSeed.getQuery()); } else
+		 * if(engine.equals(SearchEngineNames.YAHOO)) { searchURL=ParsedURL.getAbsolute(
+		 * "http://api.search.yahoo.com/WebSearchService/V1/webSearch?appid=yahoosearchwebrss&query="
+		 * +searchSeed.getQuery()); } else if(engine.equals(SearchEngineNames.FLICK_AUTHOR)) { searchURL
+		 * = ParsedURL.getAbsolute("http://www.flickr.com/photos/"+searchSeed.getQuery()+"/"); }
+		 */
 
-									(searchSeed.searchType() == SearchEngineNames.IMAGE) ? SearchEngineNames.imageGoogleSearchURLString
-											: (searchSeed.searchType() == SearchEngineNames.SITE) ? SearchEngineUtilities
-													.siteGoogleLimitSearchURLString(searchSeed.siteString())
-													: SearchEngineNames.relatedGoogleSearchUrlString)
-									+ (searchSeed.valueString().replace(' ', '+')).replace("&quot;", "%22")
-
-									+ (IGNORE_PDF.value() ? SearchEngineNames.GOOGLE_NO_PDF_ARG : "")
-									+ "&num="
-									+ searchSeed.numResults() + "&start=" + firstResultIndex, "broken Google URL");
-		}
-		else if (engine.equals(SearchEngineNames.FLICKR))
-		{
-			searchURL = ParsedURL.getAbsolute("http://www.flickr.com/search/?q=" + searchSeed.getQuery());
-		}
-		else if(engine.equals(SearchEngineNames.YAHOO))
-		{
-			searchURL= ParsedURL.getAbsolute("http://api.search.yahoo.com/WebSearchService/V1/webSearch?appid=yahoosearchwebrss&query="+searchSeed.getQuery());
-		}
-		else if(engine.equals(SearchEngineNames.FLICK_AUTHOR))
-		{
-			searchURL = ParsedURL.getAbsolute("http://www.flickr.com/photos/"+searchSeed.getQuery()+"/");
-		}*/
-
-		MetaMetadataRepository mmdRepo= infoProcessor.metaMetaDataRepository();
-		String urlPrefix= mmdRepo.getSearchURL(engine);
+		MetaMetadataRepository mmdRepo = infoProcessor.metaMetaDataRepository();
+		String urlPrefix = mmdRepo.getSearchURL(engine);
 		String query = searchSeed.getQuery();
 		// we replace all white spaces by +
-		query = query.replace(' ', '+'); 
-		String urlSuffix= mmdRepo.getSearchURLSufix(engine);
-		String numResultString=mmdRepo.getNumResultString(engine);
+		query = query.replace(' ', '+');
+		String urlSuffix = mmdRepo.getSearchURLSufix(engine);
+		String numResultString = mmdRepo.getNumResultString(engine);
 		String startString = mmdRepo.getStartString(engine);
-		if(!startString.equals("") && !numResultString.equals(""))
-			searchURL = ParsedURL.getAbsolute(urlPrefix+query+numResultString+searchSeed.numResults()+startString+firstResultIndex+urlSuffix);
-		else if(!startString.equals(""))
-			searchURL = ParsedURL.getAbsolute(urlPrefix+query+startString+firstResultIndex+urlSuffix);
+		if (!startString.equals("") && !numResultString.equals(""))
+			searchURL = ParsedURL.getAbsolute(urlPrefix + query + numResultString
+					+ searchSeed.numResults() + startString + firstResultIndex + urlSuffix);
+		else if (!startString.equals(""))
+			searchURL = ParsedURL.getAbsolute(urlPrefix + query + startString + firstResultIndex
+					+ urlSuffix);
 		else
-				searchURL = ParsedURL.getAbsolute(infoProcessor.metaMetaDataRepository().getSearchURL(engine)+query+urlSuffix);
+			searchURL = ParsedURL.getAbsolute(infoProcessor.metaMetaDataRepository().getSearchURL(engine)
+					+ query + urlSuffix);
 	}
 
 	public void delivery(Object o)
@@ -252,8 +246,9 @@ public class MetaMetadataSearchType<M extends MetadataBase,C extends Container, 
 			{
 				try
 				{
-					populatedMetadata =(M) ElementState.translateFromXML(inputStream(),
-							getMetadataTranslationScope());
+					populatedMetadata = (M) ElementState.translateFromXMLDOM(
+							(org.w3c.dom.Document) semanticActionHandler.getParameter().getObjectInstance(
+									SemanticActionsKeyWords.DOCUMENT_ROOT_NODE), getMetadataTranslationScope());
 				}
 				catch (XMLTranslationException e)
 				{
@@ -261,7 +256,7 @@ public class MetaMetadataSearchType<M extends MetadataBase,C extends Container, 
 					e.printStackTrace();
 				}
 			}
-			else if("xpath".equals(metaMetadata.getBinding()))
+			else if ("xpath".equals(metaMetadata.getBinding()))
 			{
 				populatedMetadata = (M) recursiveExtraction(getMetadataTranslationScope(), metaMetadata,
 						(M) getMetadata(), xpath, semanticActionHandler.getParameter());
@@ -279,43 +274,31 @@ public class MetaMetadataSearchType<M extends MetadataBase,C extends Container, 
 		return populatedMetadata;
 	}
 
-	public String convertStreamToString(InputStream is) {
-	        /*
-		29.         * To convert the InputStream to String we use the BufferedReader.readLine()
-		30.         * method. We iterate until the BufferedReader return null which means
-		31.         * there's no more data to read. Each line will appended to a StringBuilder
-		32.         * and returned as String.
-		33.         */
-		        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-		        StringBuilder sb = new StringBuilder();
-		 
-		       String line = null;
-		       try {
-		           while ((line = reader.readLine()) != null) {
-		               sb.append(line + "\n");
-		            }
-		        } catch (IOException e) {
-		           e.printStackTrace();
-		        } finally {
-		        }
-		 
-		        return sb.toString();
-		    }
-	
-	public  boolean shouldUnpauseCrawler()
+	protected void createDOMandParse(ParsedURL purl)
+	{
+		if ("direct".equals(metaMetadata.getBinding()))
+		{
+			// only in the case of direct binding we need to find the DOM as tidy DOM is useless
+			org.w3c.dom.Document document = ElementState.buildDOM(purl);
+			semanticActionHandler.getParameter().addParameter(SemanticActionsKeyWords.DOCUMENT_ROOT_NODE,
+					document);
+		}
+	}
+
+	public boolean shouldUnpauseCrawler()
 	{
 		ResultDistributer aggregator = this.searchSeed.resultDistributer(infoCollector);
 		return aggregator.checkIfAllSearchesOver();
 	}
-	
+
 	public void takeSemanticActions(M populatedMetadata)
 	{
 		super.takeSemanticActions(populatedMetadata);
-		if(shouldUnpauseCrawler())
+		if (shouldUnpauseCrawler())
 		{
 			System.out.println("Ended Seeding");
 			infoCollector.endSeeding();
 		}
-		
+
 	}
 }

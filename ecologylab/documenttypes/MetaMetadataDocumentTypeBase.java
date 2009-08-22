@@ -21,6 +21,7 @@ import com.sun.org.apache.xml.internal.dtm.ref.DTMNodeList;
 
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.generic.ReflectionTools;
+import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticAction;
 import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.actions.SemanticActionParameters;
@@ -45,10 +46,8 @@ import ecologylab.xml.types.scalar.ScalarType;
  * @author amathur
  * 
  */
-public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C extends Container, IC extends InfoCollector<C>, E extends ElementState> extends DocumentType<C, IC, E>
+public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C extends Container, IC extends InfoCollector<C>, E extends ElementState> extends HTMLDOMType
 {
-
-	protected SemanticActionHandler<C, IC>	semanticActionHandler;
 
 	/**
 	 * Translation scope of the metadata classes, generated during compile time.
@@ -58,12 +57,7 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 	private M											metadata;
 	
 	protected XPath	xpath;
-
-	public MetaMetadataDocumentTypeBase()
-	{
-		xpath = XPathFactory.newInstance().newXPath();
-	}
-
+	
 	/**
 	 * 
 	 * @param infoCollector
@@ -77,8 +71,7 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 	public MetaMetadataDocumentTypeBase(IC infoCollector,
 			SemanticActionHandler<C,IC> semanticActionHandler)
 	{
-		super(infoCollector);
-		this.semanticActionHandler = semanticActionHandler;
+		super(infoCollector,semanticActionHandler);
 		xpath = XPathFactory.newInstance().newXPath();
 	}
 
@@ -100,8 +93,21 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 		for (int i = 0; i < semanticActions.size(); i++)
 		{
 		  SemanticAction action = semanticActions.get(i);
-			semanticActionHandler.handleSemanticAction(action, this, infoCollector);
+			semanticActionHandler.handleSemanticAction(action, this, (IC) infoCollector);
 		}
+	}
+	
+	protected void postParse()
+	{
+		super.postParse();
+		instantiateVariables();
+		
+		// build the metadata object
+		M populatedMetadata=buildMetadataObject();
+		
+		if (populatedMetadata != null)
+			takeSemanticActions(populatedMetadata);
+		
 	}
 
 	/**
@@ -128,6 +134,7 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 		Class metadataClass = metadataTranslationScope.getClassByTag(metaMetadata.getType());
 		metadata = (M) ReflectionTools.getInstance(metadataClass);
 		metadata.setMetaMetadata(metaMetadata);
+		
 	}
 
 	/**
@@ -146,34 +153,15 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 		return metadata;
 	}
 
-	@Override
-	public void parse() throws IOException
+	protected void createDOMandParse(ParsedURL purl)
 	{
-		buildTidyDOM();	//only do this for HTML
 		
-		instantiateVariables();
-		M populatedMetadata = buildMetadataObject();
-		if (populatedMetadata != null)
-			takeSemanticActions(populatedMetadata);
-		// TODO recycle the hash maps
 	}
 	
+	
 	/**
-	 * Parses and intializes the DOM
-	 */
-	protected void buildTidyDOM()
-	{
-		Tidy tidy;
-		tidy = new Tidy();
-		tidy.setQuiet(true);
-		tidy.setShowWarnings(false);
-		Document tidyDOM = tidy.parseDOM(inputStream(),/* System.out*/null);
-		// store this document root as standard object
-		semanticActionHandler.getParameter().addParameter(SemanticActionsKeyWords.DOCUMENT_ROOT_NODE, tidyDOM);
-		}
-
-	/**
-	 * This method instantiates the varibles declared using def_vars
+	 * 
+	 * @param document The root of the document
 	 */
 	private void instantiateVariables()
 	{
@@ -184,6 +172,8 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 			SemanticActionParameters parameters=semanticActionHandler.getParameter();
 			if(defVars!=null)
 			{
+				// only if some variables are there we create a DOM[for diect binidng types for others DOM is already there]
+				createDOMandParse(container.purl());
 				for(DefVar defVar : defVars)
 				{
 					try
@@ -191,7 +181,7 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 						String xpathExpression = defVar.getXpath();
 						String node = defVar.getNode();
 						String name  = defVar.getName();
-						Object returnNodes = null;
+						
 						Node contextNode = null;
 						if(node==null)
 						{
@@ -284,7 +274,8 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 					}
 					else
 					{
-						contextNode = (Node)param.getObjectInstance(SemanticActionsKeyWords.DOCUMENT_ROOT_NODE);
+						// its the document root.
+						contextNode = document;
 					}
 					
 					// Used to get the field value from the web page.
@@ -393,6 +384,8 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 
 			// get the xpath expression
 			String childXPath = childMetadataField.getXpath();
+			
+			// if some context node is specified find it.
 			if(childMetadataField.getContextNode()!=null)
 			{
 				contextNode =  (Node) (param.getObjectInstance(childMetadataField.getContextNode()));

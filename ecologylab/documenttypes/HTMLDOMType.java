@@ -9,6 +9,8 @@ import org.w3c.tidy.Tidy;
 import ecologylab.appframework.types.prefs.PrefBoolean;
 import ecologylab.generic.StringTools;
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.actions.SemanticActionHandler;
+import ecologylab.semantics.actions.SemanticActionsKeyWords;
 import ecologylab.semantics.connectors.AbstractImgElement;
 import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.InfoCollector;
@@ -33,18 +35,28 @@ public class HTMLDOMType<C extends Container, IC extends InfoCollector<C>, ES ex
 extends HTMLCommon<C, IC, ES>
 {
 
-	public HTMLDOMType(IC infoCollector)
-	{
-		super(infoCollector);
-		tidy.setQuiet(true);
-		tidy.setShowWarnings(false);
-	}
+	protected SemanticActionHandler<C, IC>	semanticActionHandler;
+	
 	/**
 	 * Root DOM node of the current HTML document
 	 */
 	protected org.w3c.dom.Document	document	= null;
 	
 	protected	Tidy 									tidy 			= new Tidy();
+	
+	public HTMLDOMType(IC infoCollector,SemanticActionHandler<C,IC> semanticActionHandler)
+	{
+		super(infoCollector);
+		this.semanticActionHandler = semanticActionHandler;
+		tidy.setQuiet(true);
+		tidy.setShowWarnings(false);
+	}
+	public HTMLDOMType(IC infoCollector)
+	{
+		super(infoCollector);
+		tidy.setQuiet(true);
+		tidy.setShowWarnings(false);
+	}
 	
 	/**
 	 * Andruid says: NEVER override this method when you parse HTML. 
@@ -67,7 +79,7 @@ extends HTMLCommon<C, IC, ES>
 
 	protected void postParse()
 	{
-		
+		semanticActionHandler.getParameter().addParameter(SemanticActionsKeyWords.DOCUMENT_ROOT_NODE, document);
 	}
 	/**
 	 * Root DOM node of the current HTML document
