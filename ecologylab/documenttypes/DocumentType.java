@@ -253,7 +253,7 @@ abstract public class DocumentType<C extends Container, IC extends InfoCollector
 							else
 							{
 								// get new MetaMetadata & metadata
-								Document oldMetadata	= container.metadata();
+								Document oldMetadata	=(Document) container.metadata();
 								MetaMetadata newMetaMetadata	= infoCollector.getDocumentMM(connectionPURL);
 								Document newMetadata	= container.constructAndSetMetadata(newMetaMetadata);
 //			done by resetPURL()					newMetadata.setLocation(oldMetadata.getLocation());

@@ -46,7 +46,8 @@ import ecologylab.xml.types.scalar.ScalarType;
  * @author amathur
  * 
  */
-public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C extends Container, IC extends InfoCollector<C>, E extends ElementState> extends HTMLDOMType
+public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C extends Container, IC extends InfoCollector<C>, E extends ElementState>
+		extends HTMLDOMType
 {
 
 	/**
@@ -55,9 +56,9 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 	private TranslationScope			metadataTranslationScope;
 
 	private M											metadata;
-	
+
 	protected XPath	xpath;
-	
+
 	/**
 	 * 
 	 * @param infoCollector
@@ -88,26 +89,26 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 		ArrayListState<? extends SemanticAction> semanticActions = metaMetadata.getSemanticActions();
 
 		addAdditionalParameters(populatedMetadata);
-				
+
 		// handle the semantic actions sequentially
 		for (int i = 0; i < semanticActions.size(); i++)
 		{
-		  SemanticAction action = semanticActions.get(i);
+			SemanticAction action = semanticActions.get(i);
 			semanticActionHandler.handleSemanticAction(action, this, (IC) infoCollector);
 		}
 	}
-	
+
 	protected void postParse()
 	{
 		super.postParse();
 		instantiateVariables();
-		
+
 		// build the metadata object
-		M populatedMetadata=buildMetadataObject();
-		
+		M populatedMetadata = buildMetadataObject();
+
 		if (populatedMetadata != null)
 			takeSemanticActions(populatedMetadata);
-		
+
 	}
 
 	/**
@@ -119,7 +120,7 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 	@SuppressWarnings("unchecked")
 	private void addAdditionalParameters(M populatedMetadata)
 	{
-		SemanticActionParameters param =	semanticActionHandler.getParameter();
+		SemanticActionParameters param = semanticActionHandler.getParameter();
 		param.addParameter("documentType", this);
 		param.addParameter("metadata", populatedMetadata);
 		param.addParameter("false", false);
@@ -127,14 +128,17 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 		param.addParameter("null", null);
 	}
 
-	//FIXME -- consolidate redundant code with MetaMetadata.constructMetadata()
+	// FIXME -- consolidate redundant code with MetaMetadata.constructMetadata()
 	public void initailizeMetadataObjectBuilding()
 	{
 		metadataTranslationScope = container.getGeneratedMetadataTranslationScope();
 		Class metadataClass = metadataTranslationScope.getClassByTag(metaMetadata.getType());
-		metadata = (M) ReflectionTools.getInstance(metadataClass);
+		if (metadata == null)
+			metadata = (M) ReflectionTools.getInstance(metadataClass);
+		else
+			System.out.println(" ----------$$$$$$$$$################ Metadata Instance Exists ! ");
 		metadata.setMetaMetadata(metaMetadata);
-		
+
 	}
 
 	/**
@@ -155,80 +159,82 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 
 	protected void createDOMandParse(ParsedURL purl)
 	{
-		
+
 	}
-	
-	
+
 	/**
 	 * 
-	 * @param document The root of the document
+	 * @param document
+	 *          The root of the document
 	 */
 	private void instantiateVariables()
 	{
-			// get the list of all variable defintions
-			ArrayListState<DefVar> defVars=metaMetadata.getDefVars();
-			
-			// get the parameters
-			SemanticActionParameters parameters=semanticActionHandler.getParameter();
-			if(defVars!=null)
+		// get the list of all variable defintions
+		ArrayListState<DefVar> defVars = metaMetadata.getDefVars();
+
+		// get the parameters
+		SemanticActionParameters parameters = semanticActionHandler.getParameter();
+		if (defVars != null)
+		{
+			// only if some variables are there we create a DOM[for diect binidng types for others DOM is
+			// already there]
+			createDOMandParse(container.purl());
+			for (DefVar defVar : defVars)
 			{
-				// only if some variables are there we create a DOM[for diect binidng types for others DOM is already there]
-				createDOMandParse(container.purl());
-				for(DefVar defVar : defVars)
+				try
 				{
-					try
+					String xpathExpression = defVar.getXpath();
+					String node = defVar.getNode();
+					String name = defVar.getName();
+
+					Node contextNode = null;
+					if (node == null)
 					{
-						String xpathExpression = defVar.getXpath();
-						String node = defVar.getNode();
-						String name  = defVar.getName();
-						
-						Node contextNode = null;
-						if(node==null)
+						// apply the XPath on the document root.
+						contextNode = (Node) parameters
+								.getObjectInstance(SemanticActionsKeyWords.DOCUMENT_ROOT_NODE);
+					}
+					else
+					{
+						// get the context node from parameters
+						contextNode = (Node) parameters.getObjectInstance(node);
+					}
+					QName type = defVar.getType();
+					if (type != null)
+					{
+						// apply xpath and get the node list
+						if (type == XPathConstants.NODESET)
 						{
-							// apply the XPath on the document root.
-							contextNode= (Node)parameters.getObjectInstance(SemanticActionsKeyWords.DOCUMENT_ROOT_NODE);
+							NodeList nList = (NodeList) xpath.evaluate(xpathExpression, contextNode, type);
+
+							// put the value in the parametrers
+							parameters.addParameter(name, nList);
 						}
-						else
+						else if (type == XPathConstants.NODE)
 						{
-							// get the context node from parameters
-							contextNode = (Node)parameters.getObjectInstance(node);
-						}
-						QName type= defVar.getType();
-						if(type!=null)
-						{
-							  // apply xpath and get the node list
-								if(type == XPathConstants.NODESET)
-								{
-									NodeList nList =(NodeList) xpath.evaluate(xpathExpression, contextNode, type);
-								
-									// put the value in the parametrers
-									parameters.addParameter(name, nList);
-								}
-								else if(type == XPathConstants.NODE)
-								{
-									Node n = (Node)xpath.evaluate(xpathExpression, contextNode, type);
-									
-									// put the value in the parametrers
-									parameters.addParameter(name, n);
-								}
-						}
-						else
-						{
-								// its gonna be a simple string evaluation
-								String evaluation = xpath.evaluate(xpathExpression, contextNode);
-								
-								// put it into returnValueMap
-								parameters.addParameter(name, evaluation);
+							Node n = (Node) xpath.evaluate(xpathExpression, contextNode, type);
+
+							// put the value in the parametrers
+							parameters.addParameter(name, n);
 						}
 					}
-					catch (XPathExpressionException e)
+					else
 					{
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						// its gonna be a simple string evaluation
+						String evaluation = xpath.evaluate(xpathExpression, contextNode);
+
+						// put it into returnValueMap
+						parameters.addParameter(name, evaluation);
 					}
-				
 				}
+				catch (XPathExpressionException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
 			}
+		}
 	}
 
 	/**
@@ -248,7 +254,8 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 	 *          The metadata object in which the information will be filled
 	 * @param tidyDOM
 	 *          The dom on which the extraction expressions[xPath and reg ex will be applied]
-	 * @param param TODO
+	 * @param param
+	 *          TODO
 	 * @param purl
 	 * @return
 	 */
@@ -268,16 +275,16 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 				{
 					Node contextNode = null;
 					// get the context Node
-					if(mmdElement.getContextNode()!=null)
+					if (mmdElement.getContextNode() != null)
 					{
-						 contextNode=(Node)param.getObjectInstance(mmdElement.getContextNode());
+						contextNode = (Node) param.getObjectInstance(mmdElement.getContextNode());
 					}
 					else
 					{
 						// its the document root.
 						contextNode = document;
 					}
-					
+
 					// Used to get the field value from the web page.
 					String xpathString = mmdElement.getXpath();
 					// xpathString="/html/body[@id='gsr']/div[@id='res']/div[1]/ol/li[@*]/h3/a";
@@ -319,13 +326,13 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 						// If the field is nested
 						if (mmdElement.isNested())
 						{
-							extractNested(translationScope, metadata, mmdElement, mmdElementName, xpath,param);
+							extractNested(translationScope, metadata, mmdElement, mmdElementName, xpath, param);
 						}
 						// If the field is list.
 						else if ("ArrayList".equals(mmdElement.collection()))
 						{
 							extractArrayList(translationScope, metadata, contextNode, mmdElement, mmdElementName,
-									xpath,param);
+									xpath, param);
 						}
 					}
 				}// end for of all metadatafields
@@ -342,8 +349,9 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 	 * @param mmdElementName
 	 * @param purl
 	 */
-	private void extractNested(TranslationScope translationScope, M metadata, MetaMetadataField mmdElement,
-			String mmdElementName, XPath xpath,SemanticActionParameters param)
+	private void extractNested(TranslationScope translationScope, M metadata,
+			MetaMetadataField mmdElement, String mmdElementName, XPath xpath,
+			SemanticActionParameters param)
 	{
 		M nestedMetadata = null;
 
@@ -360,82 +368,113 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 	 * @param mmdElement
 	 * @param mmdElementName
 	 */
-	private void extractArrayList(TranslationScope translationScope, M metadata,
-		 Node contextNode, MetaMetadataField mmdElement, String mmdElementName, XPath xpath,SemanticActionParameters param)
+	private void extractArrayList(TranslationScope translationScope, M metadata, Node contextNode,
+			MetaMetadataField mmdElement, String mmdElementName, XPath xpath,
+			SemanticActionParameters param)
 	{
 		// this is the field accessor for the collection field
 		FieldAccessor fieldAccessor = metadata.getMetadataFieldAccessor(mmdElementName);
 
-		// now get the collection field
-		Field collectionField = fieldAccessor.getField();
-
-		// get the child meta-metadata fields
-		HashMapArrayList<String, MetaMetadataField> childFieldList = mmdElement.getSet();
-
-		// list to hold the collectionInstances
-		ArrayList<Metadata> collectionInstanceList = new ArrayList<Metadata>();
-
-		// loop over all the child meta-metadata fields of
-		// the collection meta-metadatafield
-		for (int i = 0; i < childFieldList.size(); i++)
+		if (fieldAccessor != null)
 		{
-			// the ith child field
-			MetaMetadataField childMetadataField = childFieldList.get(i);
+			// now get the collection field
+			Field collectionField = fieldAccessor.getField();
 
-			// get the xpath expression
-			String childXPath = childMetadataField.getXpath();
-			
-			// if some context node is specified find it.
-			if(childMetadataField.getContextNode()!=null)
+			// get the child meta-metadata fields
+			HashMapArrayList<String, MetaMetadataField> childFieldList = mmdElement.getSet();
+
+			// list to hold the collectionInstances
+			ArrayList<Metadata> collectionInstanceList = new ArrayList<Metadata>();
+
+			// get class of the collection
+			Class collectionChildClass = translationScope.getClassByTag(mmdElement
+					.getCollectionChildType());
+
+			// get all the declared fields
+			Field[] fields = collectionChildClass.getDeclaredFields();
+
+			// loop over all the child meta-metadata fields of
+			// the collection meta-metadatafield
+			for (int i = 0; i < fields.length; i++)
 			{
-				contextNode =  (Node) (param.getObjectInstance(childMetadataField.getContextNode()));
-			}
+				// get the field from childField list which has the same name as this field
+				Field f = fields[i]; // ith field
+				String fName = f.getName(); // name of ith field.
 
-			NodeList nodes = null;
-			try
-			{
-				nodes = (NodeList) xpath.evaluate(childXPath, contextNode, XPathConstants.NODESET);
-			}
-			catch (XPathExpressionException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			ScalarType scalarType = childMetadataField.getScalarType();
-
-			// get the typed list from the node list
-			ArrayList<String> list = getTypedListFromNodes(nodes, scalarType, childMetadataField);
-
-			Class collectionChildClass = translationScope.getClassByTag(mmdElement.getCollectionChildType());
-
-			// only first time we need to create a list of
-			// instances which is equal to
-			// the number of results returned.
-			if (i == 0)
-			{
-				for (int j = 0; j < list.size(); j++)
+				// if this field exists in childField list this means there are some extratcion rules for it
+				// and so get the values
+				MetaMetadataField childMetadataField = childFieldList.get(fName);
+				if (childMetadataField != null)
 				{
-					collectionInstanceList.add((Metadata) ReflectionTools.getInstance(collectionChildClass));
+
+					// get the xpath expression
+					String childXPath = childMetadataField.getXpath();
+
+					// if some context node is specified find it.
+					if (childMetadataField.getContextNode() != null)
+					{
+						contextNode = (Node) (param.getObjectInstance(childMetadataField.getContextNode()));
+					}
+
+					NodeList nodes = null;
+					try
+					{
+						nodes = (NodeList) xpath.evaluate(childXPath, contextNode, XPathConstants.NODESET);
+					}
+					catch (XPathExpressionException e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					ScalarType scalarType = childMetadataField.getScalarType();
+
+					// get the typed list from the node list
+					ArrayList<String> list = getTypedListFromNodes(nodes, scalarType, childMetadataField);
+
+					System.out.println(collectionChildClass);
+					// only first time we need to create a list of
+					// instances which is equal to
+					// the number of results returned.
+					if (i == 0)
+					{
+						for (int j = 0; j < list.size(); j++)
+						{
+							collectionInstanceList.add((Metadata) ReflectionTools
+									.getInstance(collectionChildClass));
+						}
+					}
+					// System.out.println("$$$$$"+collectionInstanceList.size());
+
+					// now for each child-meta-metadata field set
+					// the value in the collection instance.
+					for (int j = 0; j < list.size(); j++)
+					{
+						// FIXME -- workaround concurrency issue?!
+						// --
+						// andruid 1/14/09
+						if (j < collectionInstanceList.size())
+						{
+							// get the child field name
+							String childFieldName = childMetadataField.getName();
+							collectionInstanceList.get(j).set(childFieldName, list.get(j));
+						}
+					}
+				}// end xpath
+				else
+				{
+					// else there are no extarction rules , just create an empty field
+					for (int k = 0; k < collectionInstanceList.size(); k++)
+					{
+						 System.out.println("######################    "+fName);
+						collectionInstanceList.get(k).set(XMLTools.attrNameFromField(f, false), "");
+					}
 				}
+
 			}
 
-			// now for each child-meta-metadata field set
-			// the value in the collection instance.
-			for (int j = 0; j < list.size(); j++)
-			{
-				// FIXME -- workaround concurrency issue?!
-				// --
-				// andruid 1/14/09
-				if (j < collectionInstanceList.size())
-				{
-					// get the child field name
-					String childFieldName = childMetadataField.getName();
-					collectionInstanceList.get(j).set(childFieldName, list.get(j));
-				}
-			}
+			// set the value of collection list in the meta-data
+			ReflectionTools.setFieldValue(metadata, collectionField, collectionInstanceList);
 		}
-		// set the value of collection list in the meta-data
-		ReflectionTools.setFieldValue(metadata, collectionField, collectionInstanceList);
 	}
 
 	/**
@@ -499,27 +538,41 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 	}
 
 	/**
-	 * Takes a list of dom nodes and returns a list of corresponding text within them.
-	 * Applies a regular expression to each such text if appropriate.
+	 * Takes a list of dom nodes and returns a list of corresponding text within them. Applies a
+	 * regular expression to each such text if appropriate.
+	 * 
 	 * @param nodeList
 	 * @param scalarType
 	 * @param mmdElement
 	 * @return
 	 */
-	private ArrayList<String> getTypedListFromNodes(NodeList nodeList, ScalarType scalarType,
+	private ArrayList<String> getTypedListFromNodes(final NodeList nodeList, ScalarType scalarType,
 			MetaMetadataField mmdElement)
 	{
 		ArrayList<String> list = new ArrayList<String>();
 		for (int i = 0; i < nodeList.getLength(); i++)
 		{
+			list.add("defaultItem\t" + i);
+		}
+
+		boolean flag = true;
+		for (int i = 0; i < nodeList.getLength(); i++)
+		{
+			if (flag)
+			{
+				list.clear();
+				flag = false;
+			}
+
 			Node node = nodeList.item(i);
 
 			// get the value
-			String value = node.getNodeType() == Node.ATTRIBUTE_NODE ? 
-					node.getNodeValue() : getAllTextFromNode(node);
+			String value = node.getNodeType() == Node.ATTRIBUTE_NODE ? node.getNodeValue()
+					: getAllTextFromNode(node);
 
 			// we might need to apply some regular expressions on the value
 			value = applyPrefixAndRegExOnEvaluation(value, mmdElement);
+
 			// System.out.println("DEBUG::value after applyPrefixAndRegExOnEvaluation=\t" + value);
 			list.add(value);
 			/*
@@ -537,14 +590,16 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 		}
 		return list;
 	}
+
 	private String getAllTextFromNode(Node node)
 	{
-		StringBuilder buffy	= StringBuilderUtils.acquire();
+		StringBuilder buffy = StringBuilderUtils.acquire();
 		getAllTextFromNode(node, buffy);
-		String result	= buffy.toString();
+		String result = buffy.toString();
 		StringBuilderUtils.release(buffy);
 		return result;
 	}
+
 	/**
 	 * This method get all the text from the subtree rooted at a node.The reason for this
 	 * implementation is that when we write a xpath we might get node of any type. Now if the node has
@@ -557,7 +612,7 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 	private void getAllTextFromNode(Node node, StringBuilder buffy)
 	{
 		short nodeType = node.getNodeType();
-		switch(nodeType)
+		switch (nodeType)
 		{
 		case Node.TEXT_NODE:
 		case Node.CDATA_SECTION_NODE:
@@ -579,9 +634,9 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 			break;
 		}
 	}
-	
+
 	@Override
-	public boolean isContainer ( )
+	public boolean isContainer()
 	{
 		return true;
 	}

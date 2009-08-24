@@ -238,8 +238,9 @@ public class MetaMetadataSearchType<M extends MetadataBase, C extends Container,
 	@Override
 	public M buildMetadataObject()
 	{
-		M populatedMetadata = null;
 		initailizeMetadataObjectBuilding();
+		M populatedMetadata = getMetadata();
+		
 		if (metaMetadata.isSupported(container.purl()))
 		{
 			if ("direct".equals(metaMetadata.getBinding()))
@@ -258,8 +259,8 @@ public class MetaMetadataSearchType<M extends MetadataBase, C extends Container,
 			}
 			else if ("xpath".equals(metaMetadata.getBinding()))
 			{
-				populatedMetadata = (M) recursiveExtraction(getMetadataTranslationScope(), metaMetadata,
-						(M) getMetadata(), xpath, semanticActionHandler.getParameter());
+				recursiveExtraction(getMetadataTranslationScope(), metaMetadata,
+						populatedMetadata, xpath, semanticActionHandler.getParameter());
 			}
 		}
 		try

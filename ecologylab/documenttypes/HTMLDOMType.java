@@ -275,7 +275,7 @@ extends HTMLCommon<C, IC, ES>
 	{
 		if (SHOW_PAGE_STRUCTURE_PREF.value())
 		{
-			Document metadata	= container.metadata();
+			Document metadata	=(Document) container.metadata();
 			if (metadata != null)
 				metadata.setPageStructure(pageType.getSimpleName());
 			else
