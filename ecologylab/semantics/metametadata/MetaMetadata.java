@@ -60,8 +60,7 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 	@xml_attribute
 	private String						comment;
 
-	@xml_attribute
-	private boolean						generateClass	= true;
+
 
 	@xml_attribute
 	private String						userAgentString;
@@ -384,14 +383,7 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 		return comment;
 	}
 
-	/**
-	 * @param generateClass
-	 *          the generateClass to set
-	 */
-	public void setGenerateClass(boolean generateClass)
-	{
-		this.generateClass = generateClass;
-	}
+
 
 	/**
 	 * @return the name
@@ -410,13 +402,7 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 		this.name = name;
 	}
 
-	/**
-	 * @return the generateClass
-	 */
-	public boolean isGenerateClass()
-	{
-		return generateClass;
-	}
+
 
 	@Override
 	public String key()
@@ -449,10 +435,7 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 		inheritedMetaMetadata = true;
 	}
 
-	public boolean doesGenerateClass()
-	{
-		return generateClass;
-	}
+
 
 	/**
 	 * @return the semanticActions

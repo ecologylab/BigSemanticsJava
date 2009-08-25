@@ -1,5 +1,7 @@
 package ecologylab.documenttypes;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
@@ -11,8 +13,10 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.tidy.Tidy;
 
 import com.sun.org.apache.xml.internal.dtm.ref.DTMNodeList;
 
@@ -30,9 +34,9 @@ import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataBase;
 import ecologylab.semantics.metametadata.DefVar;
 import ecologylab.semantics.metametadata.MetaMetadataField;
-import ecologylab.semantics.tools.DTMNodeListIterator;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.FieldAccessor;
+import ecologylab.xml.ScalarUnmarshallingContext;
 import ecologylab.xml.TranslationScope;
 import ecologylab.xml.XMLTools;
 import ecologylab.xml.types.element.ArrayListState;
@@ -46,6 +50,7 @@ import ecologylab.xml.types.scalar.ScalarType;
  */
 public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C extends Container, IC extends InfoCollector<C>, E extends ElementState>
 		extends HTMLDOMType
+		implements ScalarUnmarshallingContext
 {
 
 	/**
@@ -327,7 +332,7 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 						 * evaluation);
 						 */
 
-						metadata.set(mmdElementName, evaluation);// evaluation);
+						metadata.set(mmdElementName, evaluation,this);// evaluation);
 					}
 				}// end for of all metadatafields
 			}
@@ -354,7 +359,6 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 		nestedMetadata = (M) fieldAccessor.getAndPerhapsCreateNested(metadata);
 		recursiveExtraction(translationScope, mmdElement, nestedMetadata, xpath, param);
 	}
-
 
 	/**
 	 * @param translationScope
@@ -451,7 +455,7 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 							}
 								// get the child field name
 								String childFieldName = childMetadataField.getName();
-								collectionInstanceList.get(m).set(childFieldName, evaluation);
+								collectionInstanceList.get(m).set(childFieldName, evaluation,this);
 							}
 						}// end xpath
 					else
@@ -489,6 +493,7 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 	 * @param mmdElement
 	 * @return
 	 */
+	//FIXME -- make this operate directly on a StringBuilder (which will also change the return type to void
 	private String applyPrefixAndRegExOnEvaluation(String evaluation, MetaMetadataField mmdElement)
 	{
 		// get the regular expression
@@ -663,4 +668,15 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 	 * Should not come here b'coz the domainString has to be // properly formed all the time.
 	 * e.printStackTrace(); } } return evaluation; }
 	 */
+	
+	public ParsedURL purlContext()
+	{
+		return purl();
+	}
+	
+	public File fileContext()
+	{
+		return null;
+	}
+
 }

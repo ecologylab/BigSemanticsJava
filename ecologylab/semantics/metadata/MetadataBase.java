@@ -19,6 +19,7 @@ import ecologylab.semantics.model.text.Term;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.FieldAccessor;
 import ecologylab.xml.Optimizations;
+import ecologylab.xml.ScalarUnmarshallingContext;
 import ecologylab.xml.types.element.ArrayListState;
 
 /**
@@ -119,8 +120,11 @@ public class MetadataBase extends ElementState implements Iterable<FieldAccessor
 		HashMapArrayList<String, FieldAccessor> fieldAccessors = metadataFieldAccessors();
 		return fieldAccessors.get(key);
 	}
-	
 	public boolean set(String tagName, String value)
+	{
+		return set(tagName, value, null);
+	}
+	public boolean set(String tagName, String value, ScalarUnmarshallingContext scalarUnMarshallingContext)
 	{
 		tagName = tagName.toLowerCase();
 		//Taking care of mixins
@@ -133,7 +137,7 @@ public class MetadataBase extends ElementState implements Iterable<FieldAccessor
 				FieldAccessor fieldAccessor = get(tagName);
 				if(fieldAccessor != null /* && value != null && value.length()!=0 */)	// allow set to nothing -- andruid & andrew 4/14/09
 				{
-					fieldAccessor.set(metadata, value);
+					fieldAccessor.set(metadata, value, scalarUnMarshallingContext);
 					return true;
 				}
 				else 

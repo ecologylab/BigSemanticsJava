@@ -18,6 +18,7 @@ import ecologylab.xml.FieldAccessor;
 import ecologylab.xml.XMLTools;
 import ecologylab.xml.XMLTranslationException;
 import ecologylab.xml.xml_inherit;
+import ecologylab.xml.ElementState.xml_attribute;
 import ecologylab.xml.types.element.Mappable;
 import ecologylab.xml.types.scalar.ScalarType;
 
@@ -88,6 +89,8 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	@xml_attribute
 	private String															stringPrefix;
 
+	@xml_attribute
+	private boolean						generateClass	= true;
 	/**
 	 * The type for collection children.
 	 */
@@ -234,7 +237,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 		}
 
 		// new java class has to be written
-		if (childMetaMetadata != null)
+		if (childMetaMetadata != null && isGenerateClass())
 		{
 			// getting the generation path for the java class.
 			String generationPath = MetadataCompilerConstants.getGenerationPath(packageName);
@@ -1117,6 +1120,28 @@ public HashMapArrayList<String, MetaMetadataField> getChildMetaMetadata()
 	public final String getContextNode()
 	{
 		return contextNode;
+	}
+	
+	/**
+	 * @return the generateClass
+	 */
+	public boolean isGenerateClass()
+	{
+		return generateClass;
+	}
+	
+	/**
+	 * @param generateClass
+	 *          the generateClass to set
+	 */
+	public void setGenerateClass(boolean generateClass)
+	{
+		this.generateClass = generateClass;
+	}
+	
+	public boolean doesGenerateClass()
+	{
+		return generateClass;
 	}
 
 }
