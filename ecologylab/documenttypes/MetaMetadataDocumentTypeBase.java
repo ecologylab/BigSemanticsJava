@@ -244,19 +244,13 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 	 * Extracts metadata using the tidyDOM from the purl.
 	 * 
 	 * @param translationScope
-	 *          TODO Add the ability to have some regular expressions also to be applied to extarcted
-	 *          data.This is needed in many cases when we need to get only some of the information or
-	 *          we need to preprocess the extracted information.
-	 * 
-	 *          TODO suppport for Maps to be added[It was there orginially. Just have to verify and
+	 *                 TODO suppport for Maps to be added[It was there orginially. Just have to verify and
 	 *          understand it and put it back.]
 	 * @param mmdField
 	 *          The MetaMetadata field from which we will read the extraction information about the
 	 *          metadadta
 	 * @param metadata
 	 *          The metadata object in which the information will be filled
-	 * @param tidyDOM
-	 *          The dom on which the extraction expressions[xPath and reg ex will be applied]
 	 * @param param
 	 *          TODO
 	 * @param purl
@@ -291,11 +285,11 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 					// Used to get the field value from the web page.
 					String xpathString = mmdElement.getXpath();
 					// xpathString="/html/body[@id='gsr']/div[@id='res']/div[1]/ol/li[@*]/h3/a";
-					System.out.println("DEBUG::xPathString=\t" + xpathString);
+				//	System.out.println("DEBUG::xPathString=\t" + xpathString);
 
 					// name of the metaMetadata element.
 					String mmdElementName = mmdElement.getName();
-					System.out.println("DEBUG::mmdElementName= \t" + mmdElementName);
+					//System.out.println("DEBUG::mmdElementName= \t" + mmdElementName);
 
 					// if it is nested
 					if (mmdElement.isNested())
@@ -309,29 +303,10 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 								extractArrayList(translationScope, metadata, contextNode, mmdElement, mmdElementName,
 								xpath, param,xpathString);
 					}
-					else{
-						// this is a simple scalar field
-						String evaluation = "";
-
-						try
-						{
-							evaluation = xpath.evaluate(xpathString, contextNode);
-							System.out.println("DEBUG::evaluation from DOM=\t" + evaluation);
-						}
-						catch (XPathExpressionException e)
-						{
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-
-						// after we have evaluated the expression we might need
-						// to modify it.
-						evaluation = applyPrefixAndRegExOnEvaluation(evaluation, mmdElement);
-						/*
-						 * System.out.println("DEBUG::evaluation after applyPrefixAndRegExOnEvaluation=\t" +
-						 * evaluation);
-						 */
-
+					else
+					{
+						// its a scalar
+						String evaluation = extractScalar(xpath, mmdElement, contextNode, xpathString);
 						metadata.set(mmdElementName, evaluation,this);// evaluation);
 					}
 				}// end for of all metadatafields
@@ -339,6 +314,44 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 
 		}
 		return metadata;
+	}
+
+	/**
+	 * @param xpath
+	 * @param mmdElement
+	 * @param contextNode
+	 * @param xpathString
+	 * @return
+	 */
+	private String extractScalar(XPath xpath, MetaMetadataField mmdElement, Node contextNode,
+			String xpathString)
+	{
+		// this is a simple scalar field
+		String evaluation = "";
+
+		try
+		{
+			if(xpathString!=null)
+			{
+				// evaluate only if some extraction rule is there
+				evaluation = xpath.evaluate(xpathString, contextNode);
+				//System.out.println("DEBUG::evaluation from DOM=\t" + evaluation);
+			}
+		}
+		catch (XPathExpressionException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		// after we have evaluated the expression we might need
+		// to modify it.
+		evaluation = applyPrefixAndRegExOnEvaluation(evaluation, mmdElement);
+		/*
+		 * System.out.println("DEBUG::evaluation after applyPrefixAndRegExOnEvaluation=\t" +
+		 * evaluation);
+		 */
+		return evaluation;
 	}
 
 	/**
@@ -360,12 +373,17 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 		recursiveExtraction(translationScope, mmdElement, nestedMetadata, xpath, param);
 	}
 
+
 	/**
+	 * 
 	 * @param translationScope
-	 * @param metadata
-	 * @param contextNode
-	 * @param mmdElement
-	 * @param mmdElementName
+	 * @param metadata The metadata object representing the collection field
+	 * @param contextNode The node on which the xpaths need to be applies
+	 * @param mmdElement The collection meta-metadata field
+	 * @param mmdElementName The name of the collection meta-metadata field
+	 * @param xpath XPath object
+	 * @param param Semantic Action Parameters
+	 * @param parentXPathString The xpath string of the collection meta-metadata field
 	 */
 	private void extractArrayList(TranslationScope translationScope, M metadata, Node contextNode,
 			MetaMetadataField mmdElement, String mmdElementName, XPath xpath,
@@ -385,7 +403,7 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 				HashMapArrayList<String, MetaMetadataField> childFieldList = mmdElement.getSet();
 
 				// list to hold the collectionInstances
-				ArrayList<Metadata> collectionInstanceList = new ArrayList<Metadata>();
+				ArrayList<M> collectionInstanceList = new ArrayList<M>();
 
 				// get class of the collection
 				Class collectionChildClass = translationScope.getClassByTag(mmdElement
@@ -409,7 +427,6 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 					
 					if (childMetadataField != null)
 					{
-						
 						//so there are some extraction rules
 						//get the parent node list only of its null for efficiency
 						if(parentNodeList ==null)
@@ -423,7 +440,7 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 							 //we need to create a list of instances which is equal to the number of results returned.
 							for(int j=0;j<parentNodeListLength;j++)
 							{
-								collectionInstanceList.add((Metadata) ReflectionTools
+								collectionInstanceList.add((M) ReflectionTools
 										.getInstance(collectionChildClass));
 							}
 						}
@@ -433,7 +450,7 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 							
 							// get the xpath expression
 							String childXPath = childMetadataField.getXpath();
-							System.out.println("DEBUG:: child node xpath  "+childXPath);
+							//System.out.println("DEBUG:: child node xpath  "+childXPath);
 							
 							// apply xpaths on m th parent node
 							contextNode = parentNodeList.item(m);
@@ -444,8 +461,21 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 								contextNode = (Node) (param.getObjectInstance(childMetadataField.getContextNode()));
 							}
 							
-						
-							String evaluation =  xpath.evaluate(childXPath, contextNode);
+							if("ArrayList".equals(childMetadataField.collection()))
+							{
+									extractArrayList(translationScope, collectionInstanceList.get(m), contextNode, childMetadataField, childMetadataField.getName(), xpath, param, childMetadataField.getXpath());
+							}
+							if(childMetadataField.isNested())
+							{
+								// TODO implement me
+							}
+							else
+							{
+								// its a simple scalar field
+								String evaluation = extractScalar(xpath, childMetadataField, contextNode, childMetadataField.getXpath());
+								collectionInstanceList.get(m).set(childMetadataField.getName(), evaluation,this);
+							}
+							/*String evaluation =  xpath.evaluate(childXPath, contextNode);
 							System.out.println("DEBUG:: evaluation from DOM::  "+evaluation);
 							
 							evaluation = applyPrefixAndRegExOnEvaluation(evaluation, childMetadataField);
@@ -455,7 +485,7 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 							}
 								// get the child field name
 								String childFieldName = childMetadataField.getName();
-								collectionInstanceList.get(m).set(childFieldName, evaluation,this);
+								collectionInstanceList.get(m).set(childFieldName, evaluation,this);*/
 							}
 						}// end xpath
 					else
