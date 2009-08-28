@@ -68,7 +68,9 @@ extends HTMLCommon<C, IC, ES>
 //	   HTMLDOMParser domParser	= new HTMLDOMParser();
 	   try
 	   {
-		   document 							= tidy.parseDOM(inputStream(),/* System.out*/null);
+	  	 // we dont build a tidy for for direct biniding
+	  	 if(!metaMetadata.getBinding().equals("direct"))
+	  		 		document 							= tidy.parseDOM(inputStream(),/* System.out*/null);
 		   postParse();
 	   } catch (Exception e) 
 	   {
