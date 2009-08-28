@@ -46,7 +46,7 @@ public class MetaMetadataDirectBindingType<M extends MetadataBase, SA extends Se
 		{
 			try
 			{
-				populatedMetadata = (M) ElementState.translateFromXMLDOM((org.w3c.dom.Document)semanticActionHandler.getParameter().getObjectInstance(SemanticActionsKeyWords.DOCUMENT_ROOT_NODE), getMetadataTranslationScope());
+				populatedMetadata = (M) ElementState.translateFromXML(inputStream(), getMetadataTranslationScope());
 			}
 			catch (XMLTranslationException e)
 			{

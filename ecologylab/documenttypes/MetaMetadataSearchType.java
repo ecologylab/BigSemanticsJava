@@ -241,15 +241,14 @@ public class MetaMetadataSearchType<M extends MetadataBase, C extends Container,
 		initailizeMetadataObjectBuilding();
 		M populatedMetadata = getMetadata();
 		
-		if (metaMetadata.isSupported(container.purl()))
+		ParsedURL purl = container.purl();
+		if (metaMetadata.isSupported(purl))
 		{
 			if ("direct".equals(metaMetadata.getBinding()))
 			{
 				try
 				{
-					populatedMetadata = (M) ElementState.translateFromXMLDOM(
-							(org.w3c.dom.Document) semanticActionHandler.getParameter().getObjectInstance(
-									SemanticActionsKeyWords.DOCUMENT_ROOT_NODE), getMetadataTranslationScope());
+						populatedMetadata = (M) ElementState.translateFromXML(inputStream(), getMetadataTranslationScope());
 				}
 				catch (XMLTranslationException e)
 				{
@@ -275,7 +274,7 @@ public class MetaMetadataSearchType<M extends MetadataBase, C extends Container,
 		return populatedMetadata;
 	}
 
-	protected void createDOMandParse(ParsedURL purl)
+/*	protected void createDOMandParse(ParsedURL purl)
 	{
 		if ("direct".equals(metaMetadata.getBinding()))
 		{
@@ -284,7 +283,7 @@ public class MetaMetadataSearchType<M extends MetadataBase, C extends Container,
 			semanticActionHandler.getParameter().addParameter(SemanticActionsKeyWords.DOCUMENT_ROOT_NODE,
 					document);
 		}
-	}
+	}*/
 
 	public boolean shouldUnpauseCrawler()
 	{
