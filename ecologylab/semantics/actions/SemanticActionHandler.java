@@ -22,7 +22,6 @@ import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.metametadata.Argument;
 import ecologylab.semantics.metametadata.Check;
-import ecologylab.semantics.metametadata.FlagCheck;
 import ecologylab.semantics.tools.GenericIterable;
 import ecologylab.xml.types.element.ArrayListState;
 
@@ -173,18 +172,41 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords
 		
 		// get the collection object name on which we have to loop
 		String collectionObjectName = action.getCollection(); 
+		//if(checkPreConditionFlagsIfAny(action))
+		{
+			//get the actual collection object
+			Object collectionObject =  getObjectFromKeyName(collectionObjectName, parameter);
+			GenericIterable gItr = new GenericIterable(collectionObject);
+			System.out.println(documentType.purl());
+			Iterator itr = gItr.iterator();
+			// start the loop over each object
+			while(itr.hasNext())
+			{	
+				Object item = itr.next();
+				//put it in semantic action return value map
+				semanticActionReturnValueMap.put(action.getAs(), item);
+				for (SemanticAction nestedSemanticAction  : nestedSemanticActions)
+					handleSemanticAction(nestedSemanticAction, documentType, infoCollector);
+			}
+		}
+	}
+	
+	/**
+	 * Handles the IF statement
+	 * @param action
+	 * @param parameter2
+	 * @param documentType
+	 * @param infoCollector
+	 */
+	public void handleIf(IfSemanticAction action, SemanticActionParameters parameter2,
+			DocumentType documentType, IC infoCollector)
+	{
+		ArrayList<SemanticAction> nestedSemanticActions = action.getNestedSemanticActionList();
 		
-		//get the actual collection object
-		Object collectionObject =  getObjectFromKeyName(collectionObjectName, parameter);
-		GenericIterable gItr = new GenericIterable(collectionObject);
-		System.out.println(documentType.purl());
-		Iterator itr = gItr.iterator();
-		// start the loop over each object
-		while(itr.hasNext())
-		{	
-			Object item = itr.next();
-			//put it in semantic action return value map
-			semanticActionReturnValueMap.put(action.getAs(), item);
+		// check if all the flags are true
+		if(checkPreConditionFlagsIfAny(action))
+		{
+			// handle each of the nested action
 			for (SemanticAction nestedSemanticAction  : nestedSemanticActions)
 				handleSemanticAction(nestedSemanticAction, documentType, infoCollector);
 		}
@@ -202,7 +224,7 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords
 	{
 		try
 		{
-			if(checkPreConditionFlagsIfAny(action))
+			//if(checkPreConditionFlagsIfAny(action))
 			{
 					// get the XPath object
 					XPath xpath = XPathFactory.newInstance().newXPath();
@@ -314,11 +336,17 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords
 		{
 			applyXPath((ApplyXPathSemanticAction)action, parameter, documentType, infoCollector);
 		}
+		else if(SemanticActionStandardMethods.IF.equals(actionName))
+		{
+			handleIf((IfSemanticAction)action,parameter,documentType,infoCollector);
+		}
 		else
 		{
 			handleGeneralAction(action, parameter);
 		}
 	}
+	
+
 	
 
 	/**
@@ -370,10 +398,10 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords
 	 * @param action
 	 * @return
 	 */
-	protected   boolean checkPreConditionFlagsIfAny(SemanticAction action)
+	protected boolean checkPreConditionFlagsIfAny(IfSemanticAction action)
 	{
 		boolean returnValue = true;
-		ArrayListState<FlagCheck> flagChecks = action.getFlagChecks();
+		ArrayListState<FlagCheck> flagChecks = action.getFlagCheck();
 
 		if (flagChecks != null)
 		{

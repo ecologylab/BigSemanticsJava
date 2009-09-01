@@ -7,7 +7,6 @@ import java.util.ArrayList;
 
 import ecologylab.semantics.metametadata.Argument;
 import ecologylab.semantics.metametadata.Check;
-import ecologylab.semantics.metametadata.FlagCheck;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.types.element.ArrayListState;
 
@@ -15,7 +14,8 @@ import ecologylab.xml.types.element.ArrayListState;
  * This is the abstract class which defines the semantic action. All the semantic actions must
  * extend it. To add a new semantic action following steps needed to be taken. 1) Create a class for
  * that semantic action which extends SemanticAction class. 2) Write all the custom code for that
- * semantic action in this new class file. [Example see <code>ForEachSemanticAction.java</code>
+ * semantic action in this new class file. [Example see <code>ForEachSemanticAction.java</code> 
+ * or<code>IfSemanticAction</code>
  * which implements for_each semantic action.] 3) Modify the <code>handleSemanticAction</code>
  * method of <code>SemanticActionHandle.java</code> to add case for new semantic action. 4) Add a
  * new method in <code>SemanticActionHandler.java </code> to handle this action. Mostly this method
@@ -27,23 +27,8 @@ import ecologylab.xml.types.element.ArrayListState;
  * 
  */
 
-public abstract class SemanticAction<SA extends SemanticAction> extends ElementState
+public abstract class SemanticAction extends ElementState
 {
-
-	/**
-	 * List of nested semantic actions.
-	 */
-	@xml_collection()
-	@xml_classes(
-	{ CreateAndVisualizeImgSurrogateSemanticAction.class,
-			CreateContainerForSearchSemanticAction.class, CreateContainerSemanticAction.class,
-			ForEachSemanticAction.class, GeneralSemanticAction.class,
-			ProcessDocumentSemanticAction.class, ProcessSearchSemanticAction.class,
-			SetMetadataSemanticAction.class, SetterSemanticAction.class,
-			CreateSearchSemanticAction.class, GetFieldSemanticAction.class,
-			CreateSemanticAnchorSemanticAction.class, QueueDocumentDownloadSemanticAction.class,
-			ApplyXPathSemanticAction.class })
-	private ArrayList<SA>							nestedSemanticActionList;
 
 	/**
 	 * Checks if any for this action. Any action can have 0 to any number of checks
@@ -51,13 +36,6 @@ public abstract class SemanticAction<SA extends SemanticAction> extends ElementS
 	@xml_tag("checks")
 	@xml_collection("checks")
 	private ArrayListState<Check>			checks;
-
-	/**
-	 * Flags to check before performing this action.
-	 */
-	@xml_tag("if")
-	@xml_collection("if")
-	private ArrayListState<FlagCheck>	flagChecks;
 
 	/**
 	 * Object on which the Action is to be taken
@@ -95,14 +73,7 @@ public abstract class SemanticAction<SA extends SemanticAction> extends ElementS
 
 	}
 
-	/**
-	 * @return the nestedSemanticActionList
-	 */
-	public ArrayList<SA> getNestedSemanticActionList()
-	{
-		return nestedSemanticActionList;
-	}
-
+	
 	/**
 	 * returns the name of the action.
 	 * 
@@ -123,14 +94,7 @@ public abstract class SemanticAction<SA extends SemanticAction> extends ElementS
 		return checks;
 	}
 
-	/**
-	 * @return the flagChecks
-	 */
-	public ArrayListState<FlagCheck> getFlagChecks()
-	{
-		return flagChecks;
-	}
-
+	
 	/**
 	 * @return the object
 	 */
@@ -163,14 +127,7 @@ public abstract class SemanticAction<SA extends SemanticAction> extends ElementS
 		return args;
 	}
 
-	/**
-	 * @param nestedSemanticActionList
-	 *          the nestedSemanticActionList to set
-	 */
-	public void setNestedSemanticActionList(ArrayList<SA> nestedSemanticActionList)
-	{
-		this.nestedSemanticActionList = nestedSemanticActionList;
-	}
+	
 
 	/**
 	 * @param checks
@@ -181,15 +138,7 @@ public abstract class SemanticAction<SA extends SemanticAction> extends ElementS
 		this.checks = checks;
 	}
 
-	/**
-	 * @param flagChecks
-	 *          the flagChecks to set
-	 */
-	public void setFlagChecks(ArrayListState<FlagCheck> flagChecks)
-	{
-		this.flagChecks = flagChecks;
-	}
-
+	
 	/**
 	 * @param object
 	 *          the object to set

@@ -12,7 +12,7 @@ import ecologylab.xml.ElementState.xml_tag;
  */
 @xml_inherit
 public @xml_tag(SemanticActionStandardMethods.FOR_EACH)
-class ForEachSemanticAction extends SemanticAction implements SemanticActionStandardMethods
+class ForEachSemanticAction extends NestedSemanticAction implements SemanticActionStandardMethods
 {
 
 	/**

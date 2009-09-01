@@ -86,4 +86,9 @@ public interface SemanticActionStandardMethods
 	 */
 	public static String APPLY_XPATH										= "get_xpath_node";
 	
+	/**
+	 * If semantic action
+	 */
+	public static String IF															="if";
+	
 }

@@ -7,9 +7,11 @@ import ecologylab.semantics.actions.CreateAndVisualizeImgSurrogateSemanticAction
 import ecologylab.semantics.actions.CreateContainerForSearchSemanticAction;
 import ecologylab.semantics.actions.CreateContainerSemanticAction;
 import ecologylab.semantics.actions.CreateSemanticAnchorSemanticAction;
+import ecologylab.semantics.actions.FlagCheck;
 import ecologylab.semantics.actions.ForEachSemanticAction;
 import ecologylab.semantics.actions.GeneralSemanticAction;
 import ecologylab.semantics.actions.GetFieldSemanticAction;
+import ecologylab.semantics.actions.IfSemanticAction;
 import ecologylab.semantics.actions.ProcessDocumentSemanticAction;
 import ecologylab.semantics.actions.ProcessSearchSemanticAction;
 import ecologylab.semantics.actions.QueueDocumentDownloadSemanticAction;
@@ -51,7 +53,8 @@ public class MetaMetadataTranslationScope extends Debug
 			CreateSemanticAnchorSemanticAction.class,
 			QueueDocumentDownloadSemanticAction.class,
 			ApplyXPathSemanticAction.class,
-			DefVar.class
+			DefVar.class,
+			IfSemanticAction.class
 			};
 
 	public static TranslationScope get()
