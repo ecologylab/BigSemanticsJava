@@ -68,6 +68,10 @@ public abstract class SemanticAction extends ElementState
 	@xml_collection("args")
 	private ArrayListState<Argument>	args;
 
+	//FIXME -- just a syntax example for abhinav
+	@xml_collection("arg")
+	private ArrayList<String>	args1;
+
 	public SemanticAction()
 	{
 

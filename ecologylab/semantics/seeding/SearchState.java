@@ -323,7 +323,7 @@ implements SemanticsPrefs, SearchEngineNames
 	
 	public boolean imageSearchResults()
 	{
-		return FLICKR.equals(engine) || YAHOO_IMAGE.equals(engine); // || DELICIOUS.equals(engine);
+		return /*FLICKR.equals(engine) ||*/ YAHOO_IMAGE.equals(engine); // || DELICIOUS.equals(engine);
 	}
 	/**
 	 * @return Returns the siteString.

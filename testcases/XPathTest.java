@@ -3,6 +3,7 @@ package testcases;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
@@ -22,6 +23,26 @@ import ecologylab.semantics.html.utils.StringBuilderUtils;
 public class XPathTest
 {
 
+	private static final String	ACM_CHILD_XPATH	= "./child::text()";
+	private static final String	ACM_CITATION	= "http://portal.acm.org/citation.cfm?id=1460563.1460642&amp;coll=GUIDE&amp;dl=GUIDE&amp;CFID=48444641&amp;CFTOKEN=72936343";
+	private static final String	CITATION_XPATH	= ".//a[@name='references']/../following-sibling::table//a[@href[starts-with(.,'citation')]]";
+
+	private static final String	WIKIPEDIA	= "http://en.wikipedia.org/wiki/Harbor_Seal";
+	private static final String	WIKIPEDIA_XPATH	= "//*[starts-with(@class,'infobox')]//img[1]";
+	private static final String	WIKIPEDIA_CHILD_XPATH	= "./@height";
+//	private static final String	XPATH	= CITATION_XPATH;
+//	private static final String	LOCATION	= ACM_CITATION;
+//	private static final String	XPATH	= CITATION_XPATH;
+	
+	
+	private static final String	XPATH				= WIKIPEDIA_XPATH;
+	private static final String	CHILD_XPATH	= WIKIPEDIA_CHILD_XPATH;
+	
+	private static final String	LOCATION		= WIKIPEDIA;
+	
+	private static final ParsedURL PURL = ParsedURL.getAbsolute(LOCATION);
+
+
 	/**
 	 * @param args
 	 */
@@ -30,15 +51,16 @@ public class XPathTest
 		Tidy 									tidy 			= new Tidy();
 		tidy.setQuiet(true);
 		tidy.setShowWarnings(false);
-		ParsedURL purl = ParsedURL.getAbsolute("http://portal.acm.org/citation.cfm?id=1460563.1460642&amp;coll=GUIDE&amp;dl=GUIDE&amp;CFID=48444641&amp;CFTOKEN=72936343");
 		XPath xpath = XPathFactory.newInstance().newXPath();
 		try
 		{
-			Document contextNode = tidy.parseDOM(new FileInputStream(new File("C:\\abhinavCode\\ecologylabSemantics\\testcases\\file2.xml")), System.out);
-			String parentXPathString=".//a[@name='references']/../following-sibling::table//a[@href[starts-with(.,'citation')]]";
+//		InputStream inStream = new FileInputStream(new File("C:\\abhinavCode\\ecologylabSemantics\\testcases\\file2.xml"));
+			InputStream inStream = PURL.connect().inputStream();
+			Document contextNode = tidy.parseDOM(inStream, System.out);
+			String parentXPathString=XPATH;
 			
 				DTMNodeList parentNodeList =(DTMNodeList) xpath.evaluate(parentXPathString, contextNode, XPathConstants.NODESET);
-				String childXPath = "./child::text()";
+				String childXPath = CHILD_XPATH;
 				for(int i=0;i<parentNodeList.getLength();i++)
 				{
 					Node node = parentNodeList.item(i);
@@ -47,17 +69,11 @@ public class XPathTest
 					System.out.println("Result "+i+" =\t"+pNode);
 				}
 		}
-		catch (XPathExpressionException e)
+		catch (Exception e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-		catch (FileNotFoundException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
+		}		
 
 	}
 	

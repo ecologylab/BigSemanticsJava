@@ -331,7 +331,7 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 
 		try
 		{
-			if(xpathString!=null)
+			if(xpathString!=null && contextNode!=null)
 			{
 				// evaluate only if some extraction rule is there
 				evaluation = xpath.evaluate(xpathString, contextNode);
@@ -342,6 +342,7 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			System.out.println("Xpath  =  "+xpathString+"\t contextNode =  "+contextNode);
 		}
 
 		// after we have evaluated the expression we might need
@@ -511,6 +512,7 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			System.out.println(" contextNode =  "+contextNode);
 		}
 	}
 

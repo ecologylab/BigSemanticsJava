@@ -493,7 +493,7 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords
 	protected Argument getArgument(SemanticAction action, int i)
 	{
 		ArrayListState<Argument> arguments = action.getArguments();
-		Argument argument = arguments.get(i);
+		Argument argument = (i < arguments.size()) ? arguments.get(i) : null;
 		return argument;
 	}
 }
