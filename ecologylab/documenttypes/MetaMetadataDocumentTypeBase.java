@@ -32,10 +32,12 @@ import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataBase;
+import ecologylab.semantics.metadata.MetadataFieldAccessor;
 import ecologylab.semantics.metametadata.DefVar;
 import ecologylab.semantics.metametadata.MetaMetadataField;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.FieldAccessor;
+import ecologylab.xml.Optimizations;
 import ecologylab.xml.ScalarUnmarshallingContext;
 import ecologylab.xml.TranslationScope;
 import ecologylab.xml.XMLTools;
@@ -397,34 +399,38 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 
 			if (fieldAccessor != null)
 			{
+				// get class of the collection
+				final Class collectionChildClass = translationScope.getClassByTag(mmdElement
+						.getCollectionChildType());
+
+				HashMapArrayList<String, FieldAccessor> collectionElementAccessors	= metadata.getChildFieldAccessors(collectionChildClass, MetadataFieldAccessor.class);
+				
 				// now get the collection field
 				Field collectionField = fieldAccessor.getField();
 
 				// get the child meta-metadata fields with extraction rules
-				HashMapArrayList<String, MetaMetadataField> childFieldList = mmdElement.getSet();
+				HashMapArrayList<String, MetaMetadataField> childMMdFieldList = mmdElement.getSet();
 
 				// list to hold the collectionInstances
 				ArrayList<M> collectionInstanceList = new ArrayList<M>();
 
-				// get class of the collection
-				Class collectionChildClass = translationScope.getClassByTag(mmdElement
-						.getCollectionChildType());
-
 				// get all the declared child fields for this collection
-				Field[] fields = collectionChildClass.getDeclaredFields();
+				//FIXME -- optimize by caching these!!!
+				
+//				Field[] fields = collectionChildClass.getDeclaredFields();
 				
 				DTMNodeList parentNodeList =null;
 				// loop over all the child meta-metadata fields of
 				// the collection meta-metadatafield
-				for (int i = 0; i < fields.length; i++)
+				boolean	collectionInstanceListInitialized	= false;
+				for (int i = 0; i < collectionElementAccessors.size(); i++)
 				{
 					// get the field from childField list which has the same name as this field
-					Field f = fields[i]; // ith field
-					String fName = f.getName(); // name of ith field.
+					MetadataFieldAccessor mfa = (MetadataFieldAccessor) collectionElementAccessors.get(i); // ith field
 
 					// if this field exists in childField list this means there are some extratcion rules for it
 					// and so get the values
-					MetaMetadataField childMetadataField = childFieldList.get(XMLTools.attrNameFromField(f, false));
+					MetaMetadataField childMetadataField = childMMdFieldList.get(mfa.getTagName());
 					
 					if (childMetadataField != null)
 					{
@@ -436,7 +442,7 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 						final int parentNodeListLength = parentNodeList.getLength();
 						//only first time we need to add the instances
 						
-						if(i==0)
+						if(!collectionInstanceListInitialized)
 						{
 							 //we need to create a list of instances which is equal to the number of results returned.
 							for(int j=0;j<parentNodeListLength;j++)
@@ -444,6 +450,7 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 								collectionInstanceList.add((M) ReflectionTools
 										.getInstance(collectionChildClass));
 							}
+							collectionInstanceListInitialized	= true;
 						}
 						// now we fill each  instance
 						for(int m=0;m<parentNodeListLength;m++)
@@ -491,10 +498,11 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 						}// end xpath
 					else
 					{
-						// else there are no extraction rules , just create an empty field
+						// else there are no extraction rules , just create a blank field
 						for (int k = 0; k < collectionInstanceList.size(); k++)
 						{
-								collectionInstanceList.get(k).set(XMLTools.attrNameFromField(f, false), "");
+							//FIXME -- andruid believes this line can be removed! 9/2/09
+								collectionInstanceList.get(k).set(mfa.getTagName(), "");
 						}
 					}
 				}
@@ -540,9 +548,9 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 		{
 			// create a pattern based on regular expression
 			Pattern pattern = Pattern.compile(regularExpression);
-
+			StringBuilder eval = new StringBuilder(evaluation);
 			// create a matcher based on input string
-			Matcher matcher = pattern.matcher(evaluation);
+			Matcher matcher = pattern.matcher(eval);
 
 			// TODO right now we r using regular expressions just to replace the
 			// matching string we might use them for more better uses.
@@ -551,15 +559,13 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 			if (replacementString != null)
 			{
 				// create string buffer
-				StringBuffer stringBuffer = new StringBuffer();
+			
 				boolean result = matcher.find();
 				if (result)
 				{
-					matcher.appendReplacement(stringBuffer, replacementString);
-					result = matcher.find();
+					eval.replace(matcher.start(), matcher.end(), replacementString);
 				}
-				matcher.appendTail(stringBuffer);
-				evaluation = stringBuffer.toString();
+				evaluation = eval.toString();
 			}
 		}
 
