@@ -11,10 +11,12 @@ import java.util.Iterator;
 
 import ecologylab.appframework.PropertiesAndDirectories;
 import ecologylab.generic.HashMapArrayList;
+import ecologylab.semantics.metadata.MetadataFieldAccessor;
 import ecologylab.semantics.tools.MetadataCompilerConstants;
 import ecologylab.textformat.NamedStyle;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.FieldAccessor;
+import ecologylab.xml.Optimizations;
 import ecologylab.xml.XMLTools;
 import ecologylab.xml.XMLTranslationException;
 import ecologylab.xml.xml_inherit;

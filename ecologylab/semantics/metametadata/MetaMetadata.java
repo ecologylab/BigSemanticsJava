@@ -50,6 +50,19 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 	@xml_attribute
 	private ParsedURL 				urlPrefix;
 
+	/**
+	 * Regular expression. Must be paired with domain.
+	 * This is the least efficient form of matcher, so it should be used only when url_base & url_prefix cannot be used.
+	 */
+	@xml_attribute
+	private Pattern						urlPattern;
+	
+	/**
+	 * This key is *required* for urlPatterns, so that we can organize them efficiently.
+	 */
+	@xml_attribute
+	private String						domain;
+	
 	@xml_attribute
 	private String						userAgentName;
 
@@ -481,5 +494,37 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 	public final ArrayListState<DefVar> getDefVars()
 	{
 		return defVars;
+	}
+
+	/**
+	 * @return the urlPattern
+	 */
+	public Pattern getUrlPattern()
+	{
+		return urlPattern;
+	}
+
+	/**
+	 * @param urlPattern the urlPattern to set
+	 */
+	public void setUrlPattern(Pattern urlPattern)
+	{
+		this.urlPattern = urlPattern;
+	}
+
+	/**
+	 * @return the domain
+	 */
+	public String getDomain()
+	{
+		return domain;
+	}
+
+	/**
+	 * @param domain the domain to set
+	 */
+	public void setDomain(String domain)
+	{
+		this.domain = domain;
 	}
 }

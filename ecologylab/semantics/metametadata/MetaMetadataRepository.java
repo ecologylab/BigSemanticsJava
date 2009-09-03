@@ -4,17 +4,26 @@
 package ecologylab.semantics.metametadata;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import ecologylab.collections.PrefixCollection;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.net.ParsedURL;
 import ecologylab.net.UserAgent;
-import ecologylab.semantics.library.TypeTagNames;
-import ecologylab.semantics.metadata.Document;
-import ecologylab.semantics.metadata.Media;
+import ecologylab.semantics.metadata.DebugMetadata;
 import ecologylab.semantics.metadata.Metadata;
+import ecologylab.semantics.metadata.TypeTagNames;
+import ecologylab.semantics.metadata.builtins.Document;
+import ecologylab.semantics.metadata.builtins.Image;
+import ecologylab.semantics.metadata.builtins.Media;
+import ecologylab.semantics.metadata.scalar.MetadataInteger;
+import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
+import ecologylab.semantics.metadata.scalar.MetadataString;
+import ecologylab.semantics.metadata.scalar.MetadataStringBuilder;
 import ecologylab.textformat.NamedStyle;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.TranslationScope;
@@ -61,9 +70,19 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	@xml_map("meta_metadata")
 	private HashMapArrayList<String, MetaMetadata>	repositoryByTagName;
 	
-	private HashMap<String, MetaMetadata>						repositoryByURL = null;
+	/**
+	 * Repository for Document and its subclasses.
+	 */
+	private HashMap<String, MetaMetadata>						documentRepositoryByURL 		= new HashMap<String, MetaMetadata>();
+	/**
+	 * Repository for Media and its subclasses.
+	 */
+	private HashMap<String,MetaMetadata>						mediaRepositoryByURL				= new HashMap<String, MetaMetadata>();
 	
-	private HashMap<String,MetaMetadata>						mediaRepositoryByURL=null;
+	private HashMap<String, ArrayList<RepositoryPatternEntry>> documentRepositoryByPattern	= new HashMap<String, ArrayList<RepositoryPatternEntry>>();
+	
+	private HashMap<String, ArrayList<RepositoryPatternEntry>> mediaRepositoryByPattern			= new HashMap<String, ArrayList<RepositoryPatternEntry>>();
+	
 	
 	private PrefixCollection 												urlprefixCollection = new PrefixCollection('/');
 
@@ -110,7 +129,16 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 			e.printStackTrace();
 		}
 		result.metadataTScope	= metadataTScope;
+		
+		result.initializeRepository();
+		
 		return result;
+	}
+	
+	private void initializeRepository()
+	{
+		initializeRepository(this.documentRepositoryByURL, documentRepositoryByPattern);
+		initializeRepository(this.mediaRepositoryByURL, mediaRepositoryByPattern);
 	}
 
 	/**
@@ -133,8 +161,12 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	}
 
 	/**
-	 * Get MetaMetadata by ParsedURL if possible. If that lookup fails, then lookup by tag name, to
-	 * acquire some default.
+	 * Get MetaMetadata.
+	 * First, try matching by url_base.
+	 * If this fails, including if the attribute is null, then try by url_prefix.
+	 * If this fails, including if the attribute is null, then try by url_pattern (regular expression).
+	 * <p/>
+	 * If that lookup fails, then lookup by tag name, to acquire the default.
 	 * 
 	 * @param purl
 	 * @param tagName
@@ -143,10 +175,9 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	public MetaMetadata getDocumentMM(ParsedURL purl, String tagName)
 	{
 		MetaMetadata result = null;
-		repositoryByURL = initializeRepository(repositoryByURL);
 		if(purl!=null && !purl.isFile())
 		{
-			result = repositoryByURL.get(purl.noAnchorNoQueryPageString());
+			result = documentRepositoryByURL.get(purl.noAnchorNoQueryPageString());
 			
 			if(result == null)
 			{
@@ -157,7 +188,27 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 				{
 					String key = purl.url().getProtocol()+"://"+matchingPhrase;
 					
-					result = repositoryByURL.get(key);
+					result = documentRepositoryByURL.get(key);
+				}
+			}
+
+			if (result == null)
+			{
+				String domain = purl.domain();
+				if (domain != null)
+				{
+					ArrayList<RepositoryPatternEntry>	entries	= mediaRepositoryByPattern.get(domain);
+					if (entries != null)
+					{
+						for (RepositoryPatternEntry entry : entries)
+						{
+							Matcher matcher = entry.getPattern().matcher(purl.toString());
+							if (matcher.find())
+							{
+								result				= entry.getMetaMetadata();
+							}
+						}
+					}
 				}
 			}
 		}
@@ -191,20 +242,36 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	public MetaMetadata getMediaMM(ParsedURL purl, String tagName)
 	{
 		MetaMetadata result		= null;
-		mediaRepositoryByURL 	= initializeRepository(mediaRepositoryByURL);
-		if(purl!=null && !purl.isFile())
+		if (purl!=null && !purl.isFile())
 		{
 			result = mediaRepositoryByURL.get(purl.noAnchorNoQueryPageString());
 			
-			if(result == null)
+			if (result == null)
 			{
-				//if(urlprefixCollection.match(parsedURL))
+				String protocolStrippedURL = purl.toString().split("://")[1];
+
+				String key = purl.url().getProtocol()+"://"+urlprefixCollection.getMatchingPhrase(protocolStrippedURL, '/');
+
+				result = mediaRepositoryByURL.get(key);
+
+				if (result == null)
 				{
-					String protocolStrippedURL = purl.toString().split("://")[1];
-					
-					String key = purl.url().getProtocol()+"://"+urlprefixCollection.getMatchingPhrase(protocolStrippedURL, '/');
-					
-					result = mediaRepositoryByURL.get(key);
+					String domain = purl.domain();
+					if (domain != null)
+					{
+						ArrayList<RepositoryPatternEntry>	entries	= mediaRepositoryByPattern.get(domain);
+						if (entries != null)
+						{
+							for (RepositoryPatternEntry entry : entries)
+							{
+								Matcher matcher = entry.getPattern().matcher(purl.toString());
+								if (matcher.find())
+								{
+									result				= entry.getMetaMetadata();
+								}
+							}
+						}
+					}
 				}
 			}
 		}
@@ -252,26 +319,38 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		return result;
 	}
 	
-	private HashMap<String, MetaMetadata> initializeRepository(HashMap<String, MetaMetadata>	repository)
+	private void initializeRepository(HashMap<String, MetaMetadata>	repositoryByPURL, HashMap<String, ArrayList<RepositoryPatternEntry>> repositoryByPattern)
 	{
-		if (repository == null)
+		for (MetaMetadata metaMetadata : repositoryByTagName)
 		{
-			repository = new HashMap<String, MetaMetadata>();
-			
-			for (MetaMetadata metaMetadata : repositoryByTagName)
+			ParsedURL purl = metaMetadata.getUrlBase();
+			if (purl != null)
+				repositoryByPURL.put(purl.noAnchorNoQueryPageString(), metaMetadata);
+			else
 			{
-				ParsedURL purl = metaMetadata.getUrlBase();
-				if (purl != null)
-					repository.put(purl.noAnchorNoQueryPageString(), metaMetadata);
 				ParsedURL urlPrefix = metaMetadata.getUrlPrefix();
 				if(urlPrefix != null)
 				{
-						urlprefixCollection.add(urlPrefix);
-						repository.put(urlPrefix.toString(), metaMetadata);
+					urlprefixCollection.add(urlPrefix);
+					repositoryByPURL.put(urlPrefix.toString(), metaMetadata);
+				}
+				else
+				{
+					String domain				= metaMetadata.getDomain();
+					Pattern urlPattern	= metaMetadata.getUrlPattern();
+					if (domain != null && urlPattern != null)
+					{
+						ArrayList<RepositoryPatternEntry> bucket	= repositoryByPattern.get(domain);
+						if (bucket == null)
+						{
+							bucket					= new ArrayList<RepositoryPatternEntry>(2);
+							repositoryByPattern.put(domain, bucket);
+						}
+						bucket.add(new RepositoryPatternEntry(urlPattern, metaMetadata));
+					}
 				}
 			}
 		}
-		return repository;
 	}
 	public MetaMetadata getByTagName(String tagName)
 	{
@@ -412,4 +491,16 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 			return searchEngines.get(searchEngine).getStartString();
 		return returnVal;
 	}
+	
+	public static TranslationScope scalarMetadataTranslations()
+	{
+		return TranslationScope.get("scalar_metadata", DebugMetadata.class, MetadataString.class, MetadataStringBuilder.class,
+				MetadataParsedURL.class, MetadataInteger.class);
+	}
+	
+	public static TranslationScope builtinMetadataTranslations()
+	{
+		return TranslationScope.get("builtin_metadata", scalarMetadataTranslations(), Metadata.class, Document.class, Media.class, Image.class);
+	}
+
 }
