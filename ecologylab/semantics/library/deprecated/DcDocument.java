@@ -4,8 +4,8 @@
 package ecologylab.semantics.library;
 
 import ecologylab.semantics.library.scalar.MetadataString;
+import ecologylab.semantics.metadata.Document;
 import ecologylab.xml.xml_inherit;
-import ecologylab.xml.ElementState.xml_attribute;
 import ecologylab.xml.ElementState.xml_nested;
 
 /**
@@ -13,35 +13,35 @@ import ecologylab.xml.ElementState.xml_nested;
  *
  */
 @xml_inherit
-public class IcdlImage extends Image
+public class DcDocument extends Document
 {
-	@xml_nested MetadataString	languages;
+	@xml_nested MetadataString	subject;
 	
 	//Efficient retrieval through lazy evaluation.
-	MetadataString languages()
+	MetadataString subject()
 	{
-		MetadataString result = this.languages;
+		MetadataString result = this.subject;
 		if(result == null)
 		{
 			result 			= new MetadataString();
-			this.languages 	= result;
+			this.subject 	= result;
 		}
 		return result;
 	}
 	
-	public String getLanguages()
+	public String getSubject()
 	{
-		return languages().getValue();
+		return subject().getValue();
 	}
 
-	public void hwSetLanguages(String languages)
+	public void hwSetSubject(String subject)
 	{
-		this.setLanguages(languages);
+		this.setSubject(subject);
 		rebuildCompositeTermVector();
 	}
 	
-	public void setLanguages(String languages)
+	public void setSubject(String subject)
 	{
-		this.languages().setValue(languages);
+		this.subject().setValue(subject);
 	}
 }

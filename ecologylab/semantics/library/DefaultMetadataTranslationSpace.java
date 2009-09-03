@@ -4,11 +4,11 @@
 package ecologylab.semantics.library;
 
 import ecologylab.generic.Debug;
-import ecologylab.semantics.library.scalar.MetadataInteger;
-import ecologylab.semantics.library.scalar.MetadataParsedURL;
-import ecologylab.semantics.library.scalar.MetadataString;
-import ecologylab.semantics.library.scalar.MetadataStringBuilder;
 import ecologylab.semantics.metadata.DebugMetadata;
+import ecologylab.semantics.metadata.scalar.MetadataInteger;
+import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
+import ecologylab.semantics.metadata.scalar.MetadataString;
+import ecologylab.semantics.metadata.scalar.MetadataStringBuilder;
 import ecologylab.xml.TranslationScope;
 
 /**

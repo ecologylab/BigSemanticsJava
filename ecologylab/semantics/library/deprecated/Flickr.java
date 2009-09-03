@@ -1,5 +1,6 @@
-package ecologylab.semantics.library;
+package ecologylab.semantics.library.deprecated;
 
+import ecologylab.semantics.library.Image;
 import ecologylab.semantics.library.scalar.MetadataString;
 import ecologylab.xml.xml_inherit;
 
