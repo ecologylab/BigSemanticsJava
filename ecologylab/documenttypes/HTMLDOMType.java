@@ -20,7 +20,7 @@ import ecologylab.semantics.html.RecognizedDocumentStructure;
 import ecologylab.semantics.html.documentstructure.AnchorContext;
 import ecologylab.semantics.html.documentstructure.SemanticAnchor;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
-import ecologylab.semantics.metadata.Document;
+import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.xml.ElementState;

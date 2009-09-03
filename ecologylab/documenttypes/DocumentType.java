@@ -21,8 +21,8 @@ import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.InfoCollector;
-import ecologylab.semantics.library.TypeTagNames;
-import ecologylab.semantics.metadata.Document;
+import ecologylab.semantics.metadata.TypeTagNames;
+import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.xml.ElementState;
 
