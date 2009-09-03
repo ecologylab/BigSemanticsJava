@@ -3,7 +3,7 @@ package testcases;
 import java.io.File;
 import java.io.IOException;
 
-import ecologylab.semantics.library.Image;
+import ecologylab.semantics.metadata.builtins.Image;
 import ecologylab.semantics.metametadata.MetaMetadataTranslationScope;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.TranslationScope;

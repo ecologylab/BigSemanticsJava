@@ -1,6 +1,6 @@
 package testcases;
 
-import ecologylab.semantics.library.scalar.MetadataString;
+import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.ElementState.xml_nested;
 import ecologylab.xml.ElementState.xml_text;

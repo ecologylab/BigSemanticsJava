@@ -2,8 +2,8 @@ package testcases;
 
 
 import ecologylab.generic.Debug;
-import ecologylab.semantics.library.Image;
-import ecologylab.semantics.library.scalar.MetadataString;
+import ecologylab.semantics.metadata.builtins.Image;
+import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.xml.TranslationScope;
 
 public class TestTranslationScope extends Debug
