@@ -7,7 +7,7 @@ import ecologylab.generic.ClassAndCollectionIterator;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.generic.OneLevelNestingIterator;
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.library.scalar.MetadataString;
+import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataField;
 import ecologylab.semantics.model.text.CompositeTermVector;
@@ -29,7 +29,7 @@ abstract public class Metadata extends MetadataBase
 {
 	MetaMetadata							metaMetadata;
 
-	CompositeTermVector				termVector								= new CompositeTermVector();
+	protected CompositeTermVector				termVector								= new CompositeTermVector();
 
 	/**
 	 * Allows combining instantiated Metadata subclass declarations without hierarchy.

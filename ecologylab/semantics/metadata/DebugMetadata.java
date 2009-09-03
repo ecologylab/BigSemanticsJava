@@ -3,7 +3,7 @@
  */
 package ecologylab.semantics.metadata;
 
-import ecologylab.semantics.library.scalar.MetadataStringBuilder;
+import ecologylab.semantics.metadata.scalar.MetadataStringBuilder;
 import ecologylab.semantics.metametadata.MetaMetadata;
 
 /**

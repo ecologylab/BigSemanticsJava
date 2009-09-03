@@ -1,4 +1,4 @@
-package ecologylab.semantics.metadata;
+package ecologylab.semantics.metadata.builtins;
 
 /**
  * This is a generated code. DO NOT edit or modify it.
@@ -8,6 +8,8 @@ package ecologylab.semantics.metadata;
 
 import ecologylab.semantics.library.scalar.*;
 import ecologylab.semantics.metadata.*;
+import ecologylab.semantics.metadata.scalar.MetadataString;
+
 import java.util.*;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.net.ParsedURL;

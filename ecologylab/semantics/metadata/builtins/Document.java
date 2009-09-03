@@ -1,4 +1,4 @@
-package ecologylab.semantics.metadata;
+package ecologylab.semantics.metadata.builtins;
 
 /**
  * This is a generated code. DO NOT edit or modify it.
@@ -8,6 +8,10 @@ package ecologylab.semantics.metadata;
 
 import ecologylab.semantics.library.scalar.*;
 import ecologylab.semantics.metadata.*;
+import ecologylab.semantics.metadata.scalar.MetadataInteger;
+import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
+import ecologylab.semantics.metadata.scalar.MetadataString;
+
 import java.util.*;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.net.ParsedURL;
@@ -18,6 +22,7 @@ import ecologylab.semantics.library.DefaultMetadataTranslationSpace;
 import ecologylab.semantics.library.scholarlyPublication.*;
 import ecologylab.semantics.library.uva.*;
 import ecologylab.xml.TranslationScope;
+import ecologylab.xml.ElementState.xml_nested;
 import ecologylab.xml.ElementState.xml_tag;
 
 /**
@@ -28,7 +33,21 @@ import ecologylab.xml.ElementState.xml_tag;
 @xml_tag("document")
 public class Document extends Metadata
 {
+	@xml_nested MetadataString		title;
+	@xml_nested MetadataString		description;
+	@xml_nested MetadataParsedURL	location;
+	
+//	@xml_nested MetadataStringBuilder 	anchorText;
+//	@xml_nested MetadataStringBuilder 	anchorContextString;
+	
+	@xml_nested MetadataInteger			generation;
 
+	/**
+	 * Occasionally, we want to navigate to somewhere other than the regular purl,
+	 * as in when this is an RSS feed, but there's an equivalent HTML page.
+	 */
+//	@xml_nested MetadataParsedURL	navLocation;
+	
 	/**
 	 * Constructor
 	 **/
@@ -46,14 +65,6 @@ public class Document extends Metadata
 	{
 		super(metaMetadata);
 	}
-
-	/**
-	 * The Title of the Document
-	 **/
-
-	@xml_tag("title")
-	@xml_nested
-	private MetadataString	title;
 
 	/**
 	 * Lazy Evaluation for title
@@ -119,13 +130,6 @@ public class Document extends Metadata
 		rebuildCompositeTermVector();
 	}
 
-	/**
-	
-**/
-
-	@xml_tag("description")
-	@xml_nested
-	private MetadataString	description;
 
 	/**
 	 * Lazy Evaluation for description
@@ -191,13 +195,6 @@ public class Document extends Metadata
 		rebuildCompositeTermVector();
 	}
 
-	/**
-	 * The document's actual location.
-	 **/
-
-	@xml_tag("location")
-	@xml_nested
-	private MetadataParsedURL	location;
 
 	/**
 	 * Lazy Evaluation for location
@@ -263,13 +260,6 @@ public class Document extends Metadata
 		rebuildCompositeTermVector();
 	}
 
-	/**
-	
-**/
-
-	@xml_tag("generation")
-	@xml_nested
-	private MetadataInteger	generation;
 
 	/**
 	 * Lazy Evaluation for generation
