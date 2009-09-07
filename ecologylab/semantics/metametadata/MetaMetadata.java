@@ -527,4 +527,12 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 	{
 		this.domain = domain;
 	}
+
+	/**
+	 * @return the packageAttribute
+	 */
+	public final String getPackageAttribute()
+	{
+		return packageAttribute;
+	}
 }

@@ -67,6 +67,16 @@ public class MetadataCompiler extends ApplicationEnvironment
 					META_METADATA_TRANSLATIONS);
 			// test.translateToXML(System.out);
 
+			// for each metadata first find the list of packages in which they have to
+			// be generated.
+			for (MetaMetadata metaMetadata : test.values())
+			{
+				if(metaMetadata.getPackageAttribute()!=null)
+				{
+					MetadataCompilerConstants.IMPORTS = MetadataCompilerConstants.IMPORTS+"import "+metaMetadata.getPackageAttribute()+".*;\n";
+				}
+			}
+			
 			// Writer for the translation scope for generated class.
 			MetadataCompilerConstants.createTranslationScopeClass(MetadataCompilerConstants
 					.getGenerationPath(test.getPackageName()));
