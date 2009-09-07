@@ -54,4 +54,6 @@ public interface CFPrefNames
 	
 	
 	public static final PrefBoolean	IGNORE_PDF			= Pref.usePrefBoolean("ignore_pdf", false);
+	
+	public static final String	STUDY_COMPOSITION_SAVE_LOCATION	= "study_composition_save_location";
 }
