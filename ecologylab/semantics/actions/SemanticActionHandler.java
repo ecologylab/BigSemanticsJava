@@ -3,21 +3,24 @@
  */
 package ecologylab.semantics.actions;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
 import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.w3c.tidy.TdNode;
 
 import ecologylab.collections.Scope;
 import ecologylab.documenttypes.DocumentType;
 import ecologylab.generic.Debug;
+import ecologylab.semantics.actions.exceptions.ApplyXPathException;
+import ecologylab.semantics.actions.exceptions.ForLoopException;
+import ecologylab.semantics.actions.exceptions.NestedActionException;
+import ecologylab.semantics.actions.exceptions.SemanticActionExecutionException;
 import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.metametadata.Argument;
@@ -72,6 +75,8 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords
 
 	public SemanticActionHandler()
 	{
+		semanticActionReturnValueMap = new Scope<Object>();
+		semanticActionFlagMap = new Scope<Boolean>();
 		parameter = new SemanticActionParameters(standardObjectMap);
 	}
 	
@@ -116,15 +121,21 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords
 	 * 
 	 * @param action
 	 * @param parameter
+	 * @throws InvocationTargetException 
+	 * @throws IllegalAccessException 
+	 * @throws IllegalArgumentException 
 	 */
-	public abstract void handleGeneralAction(SemanticAction action, SemanticActionParameters parameter);
+	public abstract void handleGeneralAction(SemanticAction action, SemanticActionParameters parameter) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException;
 
 	/**
 	 * 
 	 * @param action
 	 * @param parameter
+	 * @throws InvocationTargetException 
+	 * @throws IllegalAccessException 
+	 * @throws IllegalArgumentException 
 	 */
-	public abstract void setValueAction(SemanticAction action, SemanticActionParameters parameter,DocumentType docType, IC infoCollector);
+	public abstract void setValueAction(SemanticAction action, SemanticActionParameters parameter,DocumentType docType, IC infoCollector) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException;
 
 	/**
 	 * 
@@ -167,27 +178,34 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords
 	 */
 	public synchronized void  handleForLoop(ForEachSemanticAction action, SemanticActionParameters parameter, DocumentType documentType,  IC infoCollector)
 	{
-		// get all the action which have to be performed in loop
-		ArrayList<SemanticAction> nestedSemanticActions = action.getNestedSemanticActionList();
-		
-		// get the collection object name on which we have to loop
-		String collectionObjectName = action.getCollection(); 
-		//if(checkPreConditionFlagsIfAny(action))
+		try
 		{
-			//get the actual collection object
-			Object collectionObject =  getObjectFromKeyName(collectionObjectName, parameter);
-			GenericIterable gItr = new GenericIterable(collectionObject);
-			System.out.println(documentType.purl());
-			Iterator itr = gItr.iterator();
-			// start the loop over each object
-			while(itr.hasNext())
-			{	
-				Object item = itr.next();
-				//put it in semantic action return value map
-				semanticActionReturnValueMap.put(action.getAs(), item);
-				for (SemanticAction nestedSemanticAction  : nestedSemanticActions)
-					handleSemanticAction(nestedSemanticAction, documentType, infoCollector);
+			// get all the action which have to be performed in loop
+			ArrayList<SemanticAction> nestedSemanticActions = action.getNestedSemanticActionList();
+			
+			// get the collection object name on which we have to loop
+			String collectionObjectName = action.getCollection(); 
+			//if(checkPreConditionFlagsIfAny(action))
+			{
+				//get the actual collection object
+				Object collectionObject =  getObjectFromKeyName(collectionObjectName, parameter);
+				GenericIterable gItr = new GenericIterable(collectionObject);
+				System.out.println(documentType.purl());
+				Iterator itr = gItr.iterator();
+				// start the loop over each object
+				while(itr.hasNext())
+				{	
+					Object item = itr.next();
+					//put it in semantic action return value map
+					semanticActionReturnValueMap.put(action.getAs(), item);
+					for (SemanticAction nestedSemanticAction  : nestedSemanticActions)
+						handleSemanticAction(nestedSemanticAction, documentType, infoCollector);
+				}
 			}
+		}
+		catch(Exception e)
+		{
+			throw new ForLoopException(e,action,semanticActionReturnValueMap);
 		}
 	}
 	
@@ -201,14 +219,21 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords
 	public void handleIf(IfSemanticAction action, SemanticActionParameters parameter2,
 			DocumentType documentType, IC infoCollector)
 	{
-		ArrayList<SemanticAction> nestedSemanticActions = action.getNestedSemanticActionList();
-		
-		// check if all the flags are true
-		if(checkPreConditionFlagsIfAny(action))
+		try
 		{
-			// handle each of the nested action
-			for (SemanticAction nestedSemanticAction  : nestedSemanticActions)
-				handleSemanticAction(nestedSemanticAction, documentType, infoCollector);
+			ArrayList<SemanticAction> nestedSemanticActions = action.getNestedSemanticActionList();
+			
+			// check if all the flags are true
+			if(checkPreConditionFlagsIfAny(action))
+			{
+				// handle each of the nested action
+				for (SemanticAction nestedSemanticAction  : nestedSemanticActions)
+					handleSemanticAction(nestedSemanticAction, documentType, infoCollector);
+			}
+		}
+		catch(Exception e)
+		{
+			throw new NestedActionException(e,action,semanticActionReturnValueMap);
 		}
 	}
 
@@ -222,9 +247,7 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords
 	public void applyXPath(ApplyXPathSemanticAction action, SemanticActionParameters parameters,
 			DocumentType documentType, IC infoCollector)
 	{
-		try
-		{
-			//if(checkPreConditionFlagsIfAny(action))
+			try
 			{
 					// get the XPath object
 					XPath xpath = XPathFactory.newInstance().newXPath();
@@ -263,12 +286,11 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords
 					}
 					
 			}
-		}
-		catch (XPathExpressionException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+			catch(Exception e)
+			{
+				throw new ApplyXPathException(e,action,semanticActionReturnValueMap);
+			}
+		
 	}
 	
 	
@@ -284,65 +306,72 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords
 	public  void handleSemanticAction(SemanticAction action, DocumentType documentType, IC infoCollector)
 	{
 		final String actionName = action.getActionName();
-		if (SemanticActionStandardMethods.FOR_EACH.equals(actionName))
+		try
 		{
-			handleForLoop((ForEachSemanticAction)action, parameter, documentType, infoCollector);
+			if (SemanticActionStandardMethods.FOR_EACH.equals(actionName))
+			{
+				handleForLoop((ForEachSemanticAction)action, parameter, documentType, infoCollector);
+			}
+			else if (SemanticActionStandardMethods.CREATE_AND_VISUALIZE_IMG_SURROGATE.equals(actionName))
+			{
+				createAndVisualizeImgSurrogate(action, parameter,documentType,infoCollector);
+			}
+			else if (SemanticActionStandardMethods.CREATE_CONATINER.equals(actionName))
+			{
+				createContainer(action, parameter,documentType,infoCollector);
+			}
+			else if (SemanticActionStandardMethods.PROCESS_DOCUMENT.equals(actionName))
+			{
+				processDocument(action, parameter,documentType,infoCollector);
+			}
+			else if (SemanticActionStandardMethods.SET_METADATA.equals(actionName))
+			{
+				setMetadata(action, parameter,documentType,infoCollector);
+			}
+			else if (SemanticActionStandardMethods.CREATE_CONTAINER_FOR_SEARCH.equals(actionName))
+			{
+				createContainerForSearch(action, parameter,documentType,infoCollector);
+			}
+			else if (SemanticActionStandardMethods.CREATE_SEARCH.equals(actionName))
+			{
+				// TODO dont know what this action means
+			}
+			else if (SemanticActionStandardMethods.GET_FIELD_ACTION.equals(actionName))
+			{
+				getValueAction(action, parameter,documentType,infoCollector);
+			}
+			else if (SemanticActionStandardMethods.SETTER_ACTION.equals(actionName))
+			{
+				setValueAction(action, parameter,documentType,infoCollector);
+			}
+			else if(SemanticActionStandardMethods.PROCESS_SEARCH.equals(actionName))
+			{
+				processSearch(action,parameter,documentType,infoCollector);
+			}
+			else if(SemanticActionStandardMethods.CREATE_SEMANTIC_ANCHOR.equals(actionName))
+			{
+				createSemanticAnchor((CreateSemanticAnchorSemanticAction)action,parameter,documentType,infoCollector);
+			}
+			else if(SemanticActionStandardMethods.QUEUE_DOCUMENT_DOWNLOAD.equals(actionName))
+			{
+				queueDocumentForDownload(action, parameter, documentType, infoCollector);
+			}
+			else if(SemanticActionStandardMethods.APPLY_XPATH.equals(actionName))
+			{
+				applyXPath((ApplyXPathSemanticAction)action, parameter, documentType, infoCollector);
+			}
+			else if(SemanticActionStandardMethods.IF.equals(actionName))
+			{
+				handleIf((IfSemanticAction)action,parameter,documentType,infoCollector);
+			}
+			else
+			{
+				handleGeneralAction(action, parameter);
+			}
 		}
-		else if (SemanticActionStandardMethods.CREATE_AND_VISUALIZE_IMG_SURROGATE.equals(actionName))
+		catch(Exception e)
 		{
-			createAndVisualizeImgSurrogate(action, parameter,documentType,infoCollector);
-		}
-		else if (SemanticActionStandardMethods.CREATE_CONATINER.equals(actionName))
-		{
-			createContainer(action, parameter,documentType,infoCollector);
-		}
-		else if (SemanticActionStandardMethods.PROCESS_DOCUMENT.equals(actionName))
-		{
-			processDocument(action, parameter,documentType,infoCollector);
-		}
-		else if (SemanticActionStandardMethods.SET_METADATA.equals(actionName))
-		{
-			setMetadata(action, parameter,documentType,infoCollector);
-		}
-		else if (SemanticActionStandardMethods.CREATE_CONTAINER_FOR_SEARCH.equals(actionName))
-		{
-			createContainerForSearch(action, parameter,documentType,infoCollector);
-		}
-		else if (SemanticActionStandardMethods.CREATE_SEARCH.equals(actionName))
-		{
-			// TODO dont know what this action means
-		}
-		else if (SemanticActionStandardMethods.GET_FIELD_ACTION.equals(actionName))
-		{
-			getValueAction(action, parameter,documentType,infoCollector);
-		}
-		else if (SemanticActionStandardMethods.SETTER_ACTION.equals(actionName))
-		{
-			setValueAction(action, parameter,documentType,infoCollector);
-		}
-		else if(SemanticActionStandardMethods.PROCESS_SEARCH.equals(actionName))
-		{
-			processSearch(action,parameter,documentType,infoCollector);
-		}
-		else if(SemanticActionStandardMethods.CREATE_SEMANTIC_ANCHOR.equals(actionName))
-		{
-			createSemanticAnchor((CreateSemanticAnchorSemanticAction)action,parameter,documentType,infoCollector);
-		}
-		else if(SemanticActionStandardMethods.QUEUE_DOCUMENT_DOWNLOAD.equals(actionName))
-		{
-			queueDocumentForDownload(action, parameter, documentType, infoCollector);
-		}
-		else if(SemanticActionStandardMethods.APPLY_XPATH.equals(actionName))
-		{
-			applyXPath((ApplyXPathSemanticAction)action, parameter, documentType, infoCollector);
-		}
-		else if(SemanticActionStandardMethods.IF.equals(actionName))
-		{
-			handleIf((IfSemanticAction)action,parameter,documentType,infoCollector);
-		}
-		else
-		{
-			handleGeneralAction(action, parameter);
+			System.out.println("The action "+actionName+" could not be executed. Please see the stack trace for errors.");
 		}
 	}
 	
@@ -495,5 +524,10 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords
 		ArrayListState<Argument> arguments = action.getArguments();
 		Argument argument = (i < arguments.size()) ? arguments.get(i) : null;
 		return argument;
+	}
+	
+	public void free()
+	{
+		parameter.free();
 	}
 }

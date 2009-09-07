@@ -50,4 +50,10 @@ public class SemanticActionParameters {
 	{
 		return standardObjectInstanceMap.containsKey(key);
 	}
+	
+	public void free()
+	{
+		standardObjectInstanceMap.clear();
+		standardObjectInstanceMap=null;
+	}
 }
