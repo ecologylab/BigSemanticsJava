@@ -27,7 +27,7 @@ public class DefVar  extends ElementState
 	/**
 	 * Node on which this XPath has to be applied
 	 */
-	@xml_attribute private String node;
+	@xml_attribute private String contextNode;
 	
 	/**
 	 * comment for this variable
@@ -111,7 +111,7 @@ public class DefVar  extends ElementState
 	 */
 	public final String getNode()
 	{
-		return node;
+		return contextNode;
 	}
 
 	/**
@@ -119,7 +119,7 @@ public class DefVar  extends ElementState
 	 */
 	public final void setNode(String node)
 	{
-		this.node = node;
+		this.contextNode = node;
 	}
 	
 }
