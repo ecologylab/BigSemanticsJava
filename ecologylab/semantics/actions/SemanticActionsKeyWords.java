@@ -41,7 +41,7 @@ public interface SemanticActionsKeyWords
 	 */
 	public static String	CURRENT_COLLECTION_INDEX	= "current-collection-index";
 
-	public static String	NODE_SET									= "node_set";
+	public static String	NODE_SET									= "node_list";
 
 	/**
 	 * Root Node of  the document
