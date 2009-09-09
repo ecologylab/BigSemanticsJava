@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 
 import ecologylab.generic.Debug;
 import ecologylab.generic.StringBuilderPool;
@@ -171,7 +172,16 @@ implements ecologylab.xml.CharacterConstants
    public Scan(InputStream stream)
    {
       //bufferedStream	= new BufferedInputStream(streamArg, BUFFER_SIZE)
-      bufferedReader = new BufferedReader(new InputStreamReader(stream));
+      try
+			{
+				bufferedReader = new BufferedReader(new InputStreamReader(stream, "unicode"));
+			}
+			catch (UnsupportedEncodingException e)
+			{
+				// TODO Auto-generated catch block
+				error("uh oh! unsupported enconding. this means dnd is broken :(");
+				e.printStackTrace();
+			}
    }
    
    char	prevChar;
@@ -680,4 +690,9 @@ implements ecologylab.xml.CharacterConstants
 
 		 } while (true);
 	  }
+   
+   public BufferedReader bufferedReader()
+   {
+  	 return bufferedReader;
+   }
 }
