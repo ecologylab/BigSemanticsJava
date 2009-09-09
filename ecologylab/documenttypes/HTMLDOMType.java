@@ -74,8 +74,8 @@ extends HTMLCommon<C, IC, ES>
 		   postParse();
 	   } catch (Exception e) 
 	   {
-		   debug("ERROR: while parsing the document - " + getContainer().purl());
-		   //e.printStackTrace();
+		   debug("ERROR: while parsing document - " + getContainer().purl());
+		   e.printStackTrace();
 	   }	
 	}
 
