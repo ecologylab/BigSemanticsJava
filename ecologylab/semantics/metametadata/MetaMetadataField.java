@@ -784,7 +784,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 		// appending the declaration.
 		// String mapDecl = childMetaMetadata.get(key).getScalarType().fieldTypeName() + " , " +
 		// className;
-		String annotation = "@xml_collection(\"" + fieldName + "\")";
+		String annotation = "@xml_collection(\"" + name + "\")";
 		appendMetalanguageDecl(appendable, annotation, "private ArrayList<", className, ">", fieldName);
 		appendLazyEvaluationMethod(appendable, fieldName, "ArrayList<" + className + ">");
 		appendSetterForCollection(appendable, fieldName, "ArrayList<" + className + ">");

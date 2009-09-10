@@ -62,6 +62,9 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	@xml_nested
 	private HashMapState<String, NamedStyle> 				namedStyles;
 	
+	@xml_attribute
+	private String																	defaultUserAgentName;
+	
 	private String																	defaultUserAgentString = null;
 
 	/**
@@ -137,6 +140,8 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	
 	private void initializeRepository()
 	{
+		this.defaultUserAgentString	= (defaultUserAgentName == null) ? null : userAgents.get(defaultUserAgentName).userAgentString();
+		
 		initializeRepository(this.documentRepositoryByURL, documentRepositoryByPattern);
 		initializeRepository(this.mediaRepositoryByURL, mediaRepositoryByPattern);
 	}
