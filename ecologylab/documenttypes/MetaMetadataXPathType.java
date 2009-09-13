@@ -8,6 +8,7 @@ import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
 
+import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticAction;
 import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.actions.SemanticActionsKeyWords;
@@ -34,16 +35,18 @@ public class MetaMetadataXPathType<M extends MetadataBase, SA extends SemanticAc
 	{
 		super(infoCollector, semanticActionHandler);
 	}
-
+	
+	
 	@Override
 	public M buildMetadataObject()
 	{
 		initailizeMetadataObjectBuilding();
 		M populatedMetadata = (M) getMetadata();
-		if (metaMetadata.isSupported(container.purl()))
+		truePURL 						= container.purl();
+		if (metaMetadata.isSupported(truePURL))
 		{
 			recursiveExtraction(getMetadataTranslationScope(), metaMetadata,
-					populatedMetadata, xpath, semanticActionHandler.getParameter());
+					populatedMetadata, xpath, semanticActionHandler.getParameter(),document);
 			container.setMetadata((ecologylab.semantics.metadata.builtins.Document) populatedMetadata);
 		}
 		try

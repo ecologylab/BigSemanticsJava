@@ -62,6 +62,11 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 	private M											metadata;
 
 	protected XPath	xpath;
+	
+	/**
+	 * True PURL for container
+	 */
+	ParsedURL truePURL;;
 
 	/**
 	 * 
@@ -130,6 +135,7 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 		param.addParameter("false", false);
 		param.addParameter("true", true);
 		param.addParameter("null", null);
+		param.addParameter("TRUE_PURL", truePURL);
 	}
 
 	// FIXME -- consolidate redundant code with MetaMetadata.constructMetadata()
@@ -269,7 +275,7 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 	 * @return
 	 */
 	protected M recursiveExtraction(TranslationScope translationScope, MetaMetadataField mmdField,
-			M metadata, XPath xpath, SemanticActionParameters param)
+			M metadata, XPath xpath, SemanticActionParameters param,Node contextNode)
 	{
 
 		// Gets the child metadata of the mmdField.
@@ -282,18 +288,12 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 			{
 				for (MetaMetadataField mmdElement : mmdFieldSet)
 				{
-					Node contextNode = null;
 					// get the context Node
 					if (mmdElement.getContextNode() != null)
 					{
 						contextNode = (Node) param.getObjectInstance(mmdElement.getContextNode());
 					}
-					else
-					{
-						// its the document root.
-						contextNode = document;
-					}
-
+					
 					// Used to get the field value from the web page.
 					String xpathString = mmdElement.getXpath();
 					// xpathString="/html/body[@id='gsr']/div[@id='res']/div[1]/ol/li[@*]/h3/a";
@@ -306,7 +306,7 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 					// if it is nested
 					if (mmdElement.isNested())
 					{
-						extractNested(translationScope, metadata, mmdElement, mmdElementName, xpath, param);
+						extractNested(translationScope, metadata,contextNode, mmdElement, mmdElementName, xpath, param,xpathString);
 					}
 
 					// if its is a array list
@@ -378,16 +378,33 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 	 * @param mmdElementName
 	 * @param purl
 	 */
-	private void extractNested(TranslationScope translationScope, M metadata,
+	private void extractNested(TranslationScope translationScope, M metadata,Node contextNode,
 			MetaMetadataField mmdElement, String mmdElementName, XPath xpath,
-			SemanticActionParameters param)
+			SemanticActionParameters param,String xPathString)
 	{
-		M nestedMetadata = null;
-
-		// Have to return the nested object for the field.
-		FieldAccessor fieldAccessor = metadata.getMetadataFieldAccessor(mmdElementName);
-		nestedMetadata = (M) fieldAccessor.getAndPerhapsCreateNested(metadata);
-		recursiveExtraction(translationScope, mmdElement, nestedMetadata, xpath, param);
+		try
+		{
+			M nestedMetadata = null;
+			// for nested objects xPath on context node will give only one node.
+			Node parentNode = (Node)xpath.evaluate(xPathString, contextNode,
+										XPathConstants.NODE);
+			
+			// Have to return the nested object for the field.
+			FieldAccessor fieldAccessor = metadata.getMetadataFieldAccessor(mmdElementName);
+			nestedMetadata = (M) fieldAccessor.getAndPerhapsCreateNested(metadata);
+			recursiveExtraction(translationScope,mmdElement, nestedMetadata, xpath, param,parentNode);
+		}
+		catch (Exception e)
+		{
+			StringBuilder buffy = StringBuilderUtils.acquire();
+			buffy
+					.append("################# ERROR IN EVALUATION OF A NESTED FIELD "+mmdElementName+" ########################\n");
+			buffy.append("Field Name::\t").append(mmdElement.getName()).append("\n");
+			buffy.append("ContextNode::\t").append(contextNode.getNodeValue()).append("\n");
+			buffy.append("XPath Expression::\t").append(xPathString).append("\n");
+			System.out.println(buffy);
+			StringBuilderUtils.release(buffy);
+		}
 	}
 
 	/**
@@ -505,7 +522,8 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 						}
 						if (childMetadataField.isNested())
 						{
-							// TODO implement me
+							 extractNested(translationScope, metadata, contextNode,childMetadataField, childMetadataField.getName(), xpath, param,
+										childMetadataField.getXpath());
 						}
 						else
 						{

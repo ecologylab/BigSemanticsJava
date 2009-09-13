@@ -64,7 +64,7 @@ public interface SemanticActionStandardMethods
 	/**
 	 * to set a paticular field
 	 */
-	public static String	SETTER_ACTION												= "set";
+	public static String	SETTER_ACTION												= "set_field";
 
 	/**
 	 * to queue a search request. It may be same as create search action. Have to verify it.

@@ -259,7 +259,7 @@ public class MetaMetadataSearchType<M extends MetadataBase, C extends Container,
 			else if ("xpath".equals(metaMetadata.getBinding()))
 			{
 				recursiveExtraction(getMetadataTranslationScope(), metaMetadata,
-						populatedMetadata, xpath, semanticActionHandler.getParameter());
+						populatedMetadata, xpath, semanticActionHandler.getParameter(),document);
 			}
 		}
 		try
