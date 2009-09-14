@@ -10,6 +10,7 @@ import ecologylab.generic.DispatchTarget;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.html.ParagraphText;
 import ecologylab.semantics.html.documentstructure.SemanticAnchor;
+import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.seeding.ResultDistributer;
@@ -21,79 +22,81 @@ import ecologylab.xml.TranslationScope;
  * @author andruid
  * 
  */
-public interface Container
+public abstract class Container<M extends Metadata> extends ContentElement<Document>
 {
 
-	void redirectInlinksTo(Container redirectedAbstractContainer);
+	public Container(ContentElement progenitor)
+	{
+		super(progenitor);
+		
+	}
 
-	void performDownload() throws IOException;
+	public abstract void  redirectInlinksTo(Container redirectedAbstractContainer);
 
-	void addAdditionalPURL(ParsedURL purl);
+	public abstract void performDownload() throws IOException;
 
-	void resetPURL(ParsedURL connectionPURL);
+	public abstract void addAdditionalPURL(ParsedURL purl);
 
-	DocumentType documentType();
+	public abstract void resetPURL(ParsedURL connectionPURL);
 
-	ParsedURL purl();
+	public abstract DocumentType documentType();
 
-	public TranslationScope getGeneratedMetadataTranslationScope();
+	public abstract ParsedURL purl();
 
-	void setBias(float bias);
+	abstract public TranslationScope getGeneratedMetadataTranslationScope();
 
-	void setAsTrueSeed(Seed seed);
 
-	boolean queueDownload();
+	public abstract void setAsTrueSeed(Seed seed);
+
+	public abstract boolean queueDownload();
 
 	/**
 	 * Keeps state about the search process, if this Container is a search result;
 	 */
-	public SearchResult searchResult();
+	abstract public SearchResult searchResult();
 
-	public void setJustCrawl(boolean justCrawl);
+	abstract public void setJustCrawl(boolean justCrawl);
 
-	public void presetDocumentType(DocumentType documentType);
+	abstract public void presetDocumentType(DocumentType documentType);
 	
-	public void setDispatchTarget(DispatchTarget documentType);
+	abstract public void setDispatchTarget(DispatchTarget documentType);
 	
-	public boolean downloadHasBeenQueued();
+	abstract public boolean downloadHasBeenQueued();
 
-	void setSearchResult(ResultDistributer sra, int resultsSoFar);
+	public abstract void setSearchResult(ResultDistributer sra, int resultsSoFar);
 	
-	void setQuery(String query);
+	public abstract void setQuery(String query);
 	
-	void delete();
-	
-	Document metadata();
 
-	public Document constructMetadata(MetaMetadata metaMetadata);
-	
-	public Document constructAndSetMetadata(MetaMetadata metaMetadata);
 
-	void setMetadata(Document populatedMetadata);
+	abstract public Document constructMetadata(MetaMetadata metaMetadata);
 	
-	public void addToCandidateLocalImages(AbstractImgElement imgElement);
+	abstract public Document constructAndSetMetadata(MetaMetadata metaMetadata);
+
 	
-	public void createImageElementAndAddToPools(ParsedURL imagePurl, String alt, 
+	abstract public void addToCandidateLocalImages(AbstractImgElement imgElement);
+	
+	abstract public void createImageElementAndAddToPools(ParsedURL imagePurl, String alt, 
 			int width, int height, boolean isMap, ParsedURL hrefPurl);
 
-	public void allocLocalCollections();
+	abstract public void allocLocalCollections();
 	
-	public boolean crawlLinks();
+	abstract public boolean crawlLinks();
 	
-	public void hwSetTitle(String newTitle);
+	abstract public void hwSetTitle(String newTitle);
 	
-	public void createTextElementAndAddToCollections(ParagraphText paraText);
+	abstract public void createTextElementAndAddToCollections(ParagraphText paraText);
 	
-	public int numLocalCandidates();
+	abstract public int numLocalCandidates();
 	
-	public boolean addSemanticInLink(SemanticAnchor newAnchor, Container srcContainer);
+	abstract public boolean addSemanticInLink(SemanticAnchor newAnchor, Container srcContainer);
 	
-	public void addCandidateContainer (Container newContainer );
+	abstract public void addCandidateContainer (Container newContainer );
 	
-	boolean isSeed();
+	public abstract boolean isSeed();
 	
-	public void setInArticleBody(boolean value);
+	abstract public void setInArticleBody(boolean value);
 	
-	public AbstractImgElement createImageElement(ParsedURL parsedImgUrl, String alt, 
+	abstract public AbstractImgElement createImageElement(ParsedURL parsedImgUrl, String alt, 
 			int width, int height, boolean isMap, ParsedURL hrefPurl);
 }
