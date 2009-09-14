@@ -129,7 +129,7 @@ public abstract class MetaMetadataDocumentTypeBase<M extends Metadata, C extends
 		if (populatedMetadata!= null)
 			takeSemanticActions(populatedMetadata);
 
-	//	semanticActionHandler.free();
+		semanticActionHandler.free();
 	}
 
 	/**
