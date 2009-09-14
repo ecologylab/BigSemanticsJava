@@ -29,7 +29,7 @@ public abstract class NestedSemanticAction<SA extends SemanticAction> extends Se
 			SetMetadataSemanticAction.class, SetterSemanticAction.class,
 			CreateSearchSemanticAction.class, GetFieldSemanticAction.class,
 			CreateSemanticAnchorSemanticAction.class, QueueDocumentDownloadSemanticAction.class,
-			ApplyXPathSemanticAction.class, IfSemanticAction.class })
+			ApplyXPathSemanticAction.class, IfSemanticAction.class,CreateAndQueueTextSurrogateSemanticAction.class})
 	private ArrayList<SA>	nestedSemanticActionList;
 
 	/**
