@@ -185,7 +185,7 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 	 */
 	public Class<? extends Metadata> getMetadataClass(TranslationScope ts)
 	{
-		Class<? extends Metadata> result = getMetadataClass(name,ts);
+		Class<? extends Metadata> result = getMetadataClass(getType(),ts);
 		if(result ==null)
 		{
 			// there is no class for this tag we can use class of meta-metadata it extends

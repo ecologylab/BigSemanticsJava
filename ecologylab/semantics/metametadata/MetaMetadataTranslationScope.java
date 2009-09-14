@@ -3,6 +3,7 @@ package ecologylab.semantics.metametadata;
 import ecologylab.generic.Debug;
 import ecologylab.net.UserAgent;
 import ecologylab.semantics.actions.ApplyXPathSemanticAction;
+import ecologylab.semantics.actions.CreateAndQueueTextSurrogateSemanticAction;
 import ecologylab.semantics.actions.CreateAndVisualizeImgSurrogateSemanticAction;
 import ecologylab.semantics.actions.CreateContainerForSearchSemanticAction;
 import ecologylab.semantics.actions.CreateContainerSemanticAction;
@@ -54,7 +55,8 @@ public class MetaMetadataTranslationScope extends Debug
 			QueueDocumentDownloadSemanticAction.class,
 			ApplyXPathSemanticAction.class,
 			DefVar.class,
-			IfSemanticAction.class
+			IfSemanticAction.class,
+			CreateAndQueueTextSurrogateSemanticAction.class
 			};
 
 	public static TranslationScope get()
