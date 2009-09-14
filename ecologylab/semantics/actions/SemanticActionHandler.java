@@ -537,12 +537,12 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords
 		return argument;
 	}
 	
-	public void free()
+	public void recycle()
 	{
-		parameter.free();
+		parameter.recycle();
 		semanticActionFlagMap.clear();
-		semanticActionFlagMap =null;
+		semanticActionFlagMap = null;
 		semanticActionReturnValueMap.clear();
-		semanticActionReturnValueMap =null;
+		semanticActionReturnValueMap = null;
 	}
 }

@@ -129,7 +129,8 @@ public abstract class MetaMetadataDocumentTypeBase<M extends Metadata, C extends
 		if (populatedMetadata!= null)
 			takeSemanticActions(populatedMetadata);
 
-		semanticActionHandler.free();
+		semanticActionHandler.recycle();
+		semanticActionHandler = null;
 	}
 
 	/**
@@ -394,7 +395,7 @@ public abstract class MetaMetadataDocumentTypeBase<M extends Metadata, C extends
 			buffy
 					.append("################# ERROR IN EVALUATION OF A NESTED FIELD "+mmdElementName+" ########################\n");
 			buffy.append("Field Name::\t").append(mmdElement.getName()).append("\n");
-			buffy.append("ContextNode::\t").append(contextNode.getNodeValue()).append("\n");
+			buffy.append("ContextNode::\t").append(contextNode).append("\n");
 			buffy.append("XPath Expression::\t").append(xPathString).append("\n");
 			System.out.println(buffy);
 			StringBuilderUtils.release(buffy);

@@ -51,7 +51,7 @@ public class SemanticActionParameters {
 		return standardObjectInstanceMap.containsKey(key);
 	}
 	
-	public void free()
+	public void recycle()
 	{
 		standardObjectInstanceMap.clear();
 		standardObjectInstanceMap=null;
