@@ -3,16 +3,6 @@
  */
 package ecologylab.documenttypes;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathFactory;
-
-import org.w3c.dom.Document;
-
 import ecologylab.generic.DispatchTarget;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionHandler;
@@ -21,7 +11,7 @@ import ecologylab.semantics.connectors.CFPrefNames;
 import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.connectors.SearchEngineNames;
-import ecologylab.semantics.metadata.MetadataBase;
+import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.TypeTagNames;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
@@ -35,7 +25,7 @@ import ecologylab.xml.XMLTranslationException;
  * @author amathur
  * 
  */
-public class MetaMetadataSearchType<M extends MetadataBase, C extends Container, IC extends InfoCollector<C>, E extends ElementState>
+public class MetaMetadataSearchType<M extends Metadata, C extends Container, IC extends InfoCollector<C>, E extends ElementState>
 		extends MetaMetadataDocumentTypeBase<M, C, IC, E> implements CFPrefNames, DispatchTarget,
 		SemanticActionsKeyWords
 {
@@ -98,7 +88,12 @@ public class MetaMetadataSearchType<M extends MetadataBase, C extends Container,
 		// if search PURL is not null for a container.
 		if (searchURL != null)
 		{
-			MetaMetadata metaMetadata = infoCollector.metaMetaDataRepository().getByTagName(
+			// first try to find the search meta-metadata using the purl
+			MetaMetadata metaMetadata = infoCollector.metaMetaDataRepository().getDocumentMM(searchURL);
+			
+			// if this fails assign the default metadata of search
+			if(metaMetadata ==null)
+				metaMetadata = infoCollector.metaMetaDataRepository().getByTagName(
 					TypeTagNames.SEARCH_TAG);
 			C container = infoCollector.getContainer(null, searchURL, false, false, metaMetadata);
 			setContainer(container);
@@ -238,8 +233,7 @@ public class MetaMetadataSearchType<M extends MetadataBase, C extends Container,
 	@Override
 	public M buildMetadataObject()
 	{
-		initailizeMetadataObjectBuilding();
-		M populatedMetadata = getMetadata();
+		M populatedMetadata = (M)container.metadata();
 		
 		ParsedURL purl = container.purl();
 		if (metaMetadata.isSupported(purl))
@@ -260,6 +254,7 @@ public class MetaMetadataSearchType<M extends MetadataBase, C extends Container,
 			{
 				recursiveExtraction(getMetadataTranslationScope(), metaMetadata,
 						populatedMetadata, xpath, semanticActionHandler.getParameter(),document);
+				container.setMetadata(populatedMetadata);
 			}
 		}
 		try

@@ -41,6 +41,7 @@ import ecologylab.xml.Optimizations;
 import ecologylab.xml.ScalarUnmarshallingContext;
 import ecologylab.xml.TranslationScope;
 import ecologylab.xml.XMLTools;
+import ecologylab.xml.XMLTranslationException;
 import ecologylab.xml.types.element.ArrayListState;
 import ecologylab.xml.types.scalar.ScalarType;
 
@@ -50,7 +51,7 @@ import ecologylab.xml.types.scalar.ScalarType;
  * @author amathur
  * 
  */
-public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C extends Container, IC extends InfoCollector<C>, E extends ElementState>
+public abstract class MetaMetadataDocumentTypeBase<M extends Metadata, C extends Container, IC extends InfoCollector<C>, E extends ElementState>
 		extends HTMLDOMType implements ScalarUnmarshallingContext
 {
 
@@ -59,8 +60,7 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 	 */
 	private TranslationScope			metadataTranslationScope;
 
-	private M											metadata;
-
+	
 	protected XPath	xpath;
 	
 	/**
@@ -113,11 +113,23 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 		instantiateVariables();
 
 		// build the metadata object
-		M populatedMetadata = buildMetadataObject();
-
-		if (populatedMetadata != null)
+		M populatedMetadata =buildMetadataObject();
+		
+		try
+		{
+			populatedMetadata.translateToXML(System.out);
+		}
+		
+		catch (XMLTranslationException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		if (populatedMetadata!= null)
 			takeSemanticActions(populatedMetadata);
 
+	//	semanticActionHandler.free();
 	}
 
 	/**
@@ -138,34 +150,16 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 		param.addParameter("TRUE_PURL", truePURL);
 	}
 
-	// FIXME -- consolidate redundant code with MetaMetadata.constructMetadata()
-	public void initailizeMetadataObjectBuilding()
-	{
-		metadataTranslationScope = container.getGeneratedMetadataTranslationScope();
-		Class metadataClass = metadataTranslationScope.getClassByTag(metaMetadata.getType());
-		if (metadata == null)
-			metadata = (M) ReflectionTools.getInstance(metadataClass);
-		else
-			System.out.println(" ----------$$$$$$$$$################ Metadata Instance Exists ! ");
-		metadata.setMetaMetadata(metaMetadata);
-
-	}
 
 	/**
 	 * @return the metadataTranslationScope
 	 */
 	public final TranslationScope getMetadataTranslationScope()
 	{
-		return metadataTranslationScope;
+		return container.getGeneratedMetadataTranslationScope();
 	}
 
-	/**
-	 * @return the metadata
-	 */
-	public final M getMetadata()
-	{
-		return metadata;
-	}
+
 
 	protected void createDOMandParse(ParsedURL purl)
 	{
@@ -479,10 +473,11 @@ public abstract class MetaMetadataDocumentTypeBase<M extends MetadataBase, C ext
 						buffy
 								.append("################# ERROR IN EVALUATION OF A COLLECTION FIELD ########################\n");
 						buffy.append("Field Name::\t").append(mmdElement.getName()).append("\n");
-						buffy.append("ContextNode::\t").append(contextNode.getNodeValue()).append("\n");
+						buffy.append("ContextNode::\t").append(contextNode).append("\n");
 						buffy.append("XPath Expression::\t").append(parentXPathString).append("\n");
 						System.out.println(buffy);
 						StringBuilderUtils.release(buffy);
+						return;
 					}
 					final int parentNodeListLength = parentNodeList.getLength();
 					// only first time we need to add the instances

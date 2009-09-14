@@ -3,22 +3,14 @@
  */
 package ecologylab.documenttypes;
 
-import java.io.IOException;
-import java.util.HashMap;
-
-import ecologylab.generic.ReflectionTools;
-import ecologylab.net.PURLConnection;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticAction;
 import ecologylab.semantics.actions.SemanticActionHandler;
-import ecologylab.semantics.actions.SemanticActionParameters;
 import ecologylab.semantics.actions.SemanticActionsKeyWords;
 import ecologylab.semantics.connectors.InfoCollector;
-import ecologylab.semantics.metadata.MetadataBase;
+import ecologylab.semantics.metadata.Metadata;
 import ecologylab.xml.ElementState;
-import ecologylab.xml.TranslationScope;
 import ecologylab.xml.XMLTranslationException;
-import ecologylab.xml.types.element.ArrayListState;
 
 /**
  * This class is used for directly biniding the XML document with metadata classes to build metadata
@@ -27,7 +19,7 @@ import ecologylab.xml.types.element.ArrayListState;
  * @author amathur
  * 
  */
-public class MetaMetadataDirectBindingType<M extends MetadataBase, SA extends SemanticAction>
+public class MetaMetadataDirectBindingType<M extends Metadata, SA extends SemanticAction>
 		extends MetaMetadataDocumentTypeBase
 {
 
@@ -41,7 +33,7 @@ public class MetaMetadataDirectBindingType<M extends MetadataBase, SA extends Se
 	public M buildMetadataObject()
 	{
 		M populatedMetadata = null;
-		initailizeMetadataObjectBuilding();
+
 		if (metaMetadata.isSupported(container.purl()))
 		{
 			try
