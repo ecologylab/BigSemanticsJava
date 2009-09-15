@@ -212,7 +212,13 @@ public abstract class InfoCollectorBase<AC extends Container> extends
 
 	public SeedSet getSeedSet()
 	{
-		return this.seedSet;
+		SeedSet result = this.seedSet;
+		if (result == null)
+		{
+			result = new SeedSet();
+			this.seedSet = result;
+		}
+		return result;
 	}
 
 	public void setSeedSet(SeedSet seedSet)
