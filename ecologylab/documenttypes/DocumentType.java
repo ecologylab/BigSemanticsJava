@@ -204,9 +204,8 @@ abstract public class DocumentType<C extends Container, IC extends InfoCollector
 			{
 				ParsedURL connectionPURL = new ParsedURL(connectionURL);
 				System.out.println("DocumentType.processRedirect("+ purl + " > " + connectionURL);
-				Container redirectedAbstractContainer = infoCollector
-						.lookupAbstractContainer(connectionPURL);
-				if (redirectedAbstractContainer != null)
+				Container redirectedAbstractContainer = infoCollector.lookupAbstractContainer(connectionPURL);
+				if (redirectedAbstractContainer != null)	// existing container
 				{
 					// the redirected url has been visited already.
 					// add this url into the redirected AbstractContainers's
@@ -214,12 +213,8 @@ abstract public class DocumentType<C extends Container, IC extends InfoCollector
 					if (container != null)
 						container.redirectInlinksTo(redirectedAbstractContainer);
 
-					synchronized (infoCollector.globalCollectionContainersLock())
-					{
-						redirectedAbstractContainer.addAdditionalPURL(purl);
-						infoCollector.mapContainerToPURL(purl, redirectedAbstractContainer);
-					}
-
+					redirectedAbstractContainer.addAdditionalPURL(purl);
+					
 					redirectedAbstractContainer.performDownload();
 
 					// we dont need the new container object that was passed in
@@ -259,7 +254,6 @@ abstract public class DocumentType<C extends Container, IC extends InfoCollector
 //			done by resetPURL()					newMetadata.setLocation(oldMetadata.getLocation());
 								newMetadata.setQuery(oldMetadata.getQuery());
 							}
-							infoCollector.mapContainerToPURL(purl, container);
 							// redirect the AbstractContainer object
 							container.resetPURL(connectionPURL);
 						}

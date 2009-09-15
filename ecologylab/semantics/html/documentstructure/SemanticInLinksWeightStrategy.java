@@ -17,15 +17,13 @@ public class SemanticInLinksWeightStrategy extends TermVectorWeightStrategy<Sema
 	public SemanticInLinksWeightStrategy(ITermVector v)
 	{
 		super(v);
-		// TODO Auto-generated constructor stub
 	}
 
 
 	@Override
 	public double getWeight(SemanticAnchor anchor)
 	{
-		double siteFactor = anchor.withinSite ? 2 : 1;
-		return super.getWeight(anchor) / siteFactor;
+		return super.getWeight(anchor) * anchor.signficance;
 	}
 
 }

@@ -248,7 +248,7 @@ extends HTMLCommon<C, IC, ES>
 				C hrefContainer 					= infoCollector.getContainer(container, hrefPurl, false, false, metaMetadata);
 				if (hrefContainer != null)
 				{
-					SemanticAnchor semAnchor 					= new SemanticAnchor(anchorContext /*, container.purl() */);
+					SemanticAnchor semAnchor 					= new SemanticAnchor(container.purl(), anchorContext);
 					hrefContainer.addSemanticInLink(semAnchor, container);
 	
 					// this is not being performed because we create weights through SemanticInlinks
