@@ -77,6 +77,10 @@ extends HTMLCommon<C, IC, ES>
 		   debug("ERROR: while parsing document - " + getContainer().purl());
 		   e.printStackTrace();
 	   }	
+	   finally
+	   {
+	  	 recycle();
+	   }
 	}
 
 	protected void postParse()
@@ -95,7 +99,13 @@ extends HTMLCommon<C, IC, ES>
 	
 	public void recycle()
 	{
-		document = null;
+		document 	= null;
+		tidy 			= null;
+		if (semanticActionHandler != null)
+		{
+			semanticActionHandler.recycle();
+			semanticActionHandler = null;
+		}
 		super.recycle();
 	}
 

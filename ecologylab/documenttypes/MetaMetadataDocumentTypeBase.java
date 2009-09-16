@@ -334,7 +334,7 @@ public abstract class MetaMetadataDocumentTypeBase<M extends Metadata, C extends
 			String xpathString)
 	{
 		// this is a simple scalar field
-		String evaluation = "";
+		String evaluation = null;
 
 		try
 		{
