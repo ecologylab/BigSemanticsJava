@@ -52,7 +52,7 @@ import ecologylab.xml.types.scalar.ScalarType;
  * 
  */
 public abstract class MetaMetadataDocumentTypeBase<M extends Metadata, C extends Container, IC extends InfoCollector<C>, E extends ElementState>
-		extends HTMLDOMType implements ScalarUnmarshallingContext
+		extends HTMLDOMType implements ScalarUnmarshallingContext,SemanticActionsKeyWords
 {
 
 	/**
@@ -143,12 +143,12 @@ public abstract class MetaMetadataDocumentTypeBase<M extends Metadata, C extends
 	private void addAdditionalParameters(M populatedMetadata)
 	{
 		SemanticActionParameters param = semanticActionHandler.getParameter();
-		param.addParameter("documentType", this);
-		param.addParameter("metadata", populatedMetadata);
-		param.addParameter("false", false);
-		param.addParameter("true", true);
-		param.addParameter("null", null);
-		param.addParameter("TRUE_PURL", truePURL);
+		param.addParameter(DOCUMENT_TYPE, this);
+		param.addParameter(METADATA, populatedMetadata);
+		param.addParameter(FALSE, false);
+		param.addParameter(TRUE, true);
+		param.addParameter(NULL, null);
+		param.addParameter(TRUE_PURL, truePURL);
 	}
 
 
