@@ -92,6 +92,6 @@ public interface SemanticActionStandardMethods
 	/**
 	 * 
 	 */
-	public static String	CREATE_AND_QUEUE_TEXT_SURROGATE			=  "create_and_queue_text_surrogate";
+	public static String	CREATE_AND_VISUALIZE_TEXT_SURROGATE			=  "create_and_visualize_text_surrogate";
 
 }

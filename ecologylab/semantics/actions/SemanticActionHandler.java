@@ -170,7 +170,7 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords
 	public abstract void queueDocumentForDownload(SemanticAction action, SemanticActionParameters parameter,DocumentType documentType, IC infoCollector);
 	
 	
-	public abstract void handleCreateAndQueueTextSurrogateSemanticAction(SemanticAction action,
+	public abstract void handleCreateAndVisualizeTextSurrogateSemanticAction(SemanticAction action,
 			SemanticActionParameters parameter2, DocumentType documentType, IC infoCollector);
 	
 	
@@ -369,9 +369,9 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords
 			{
 				handleIf((IfSemanticAction)action,parameter,documentType,infoCollector);
 			}
-			else if(SemanticActionStandardMethods.CREATE_AND_QUEUE_TEXT_SURROGATE.equals(actionName))
+			else if(SemanticActionStandardMethods.CREATE_AND_VISUALIZE_TEXT_SURROGATE.equals(actionName))
 			{
-				handleCreateAndQueueTextSurrogateSemanticAction(action,parameter,documentType,infoCollector);
+				handleCreateAndVisualizeTextSurrogateSemanticAction(action,parameter,documentType,infoCollector);
 			}
 			else
 			{
