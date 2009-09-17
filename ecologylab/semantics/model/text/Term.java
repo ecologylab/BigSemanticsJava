@@ -1,11 +1,14 @@
 package ecologylab.semantics.model.text;
 
 import java.text.DecimalFormat;
+import java.util.Hashtable;
 
 
 public class Term implements Comparable<Term>
 {
 
+	private static final Hashtable<String, String> uniqueStemObjectMap = new Hashtable<String, String>();
+	
 	private String stem;
 	private String word;
 	private boolean hasWord = false;
@@ -19,7 +22,7 @@ public class Term implements Comparable<Term>
 
 	protected Term(String stem, double idf)
 	{
-		this.stem = stem;
+		this.stem = getUniqueStem(stem);
 		this.idf = idf;
 	}
 	
@@ -66,4 +69,19 @@ public class Term implements Comparable<Term>
 			return (difference == 0) ? this.getWord().compareTo(o.getWord()) : 1;
 	}
 
+	/**
+	 * Ensure that only one unique memory location is used for each stem for any term.
+	 * @param stem
+	 * @return
+	 */
+	public static String getUniqueStem(String stem)
+	{
+		String result = uniqueStemObjectMap.get(stem);
+		if(result == null)
+		{
+			uniqueStemObjectMap.put(stem, stem);
+			result = stem;
+		}
+		return result;
+	}
 }

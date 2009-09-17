@@ -224,7 +224,7 @@ public class TermDictionary implements ApplicationProperties
 			return STOP_WORD;
 		Term newTerm = new Term(stem, /* averageIDF */STOP_WORD.idf());
 		newTerm.setWord(word);
-		dictionary.put(stem, newTerm);
+		dictionary.put(newTerm.getStem(), newTerm);
 		return newTerm;
 	}
 
@@ -274,7 +274,7 @@ public class TermDictionary implements ApplicationProperties
 			// String[] term = thisTerm.split("\t");
 
 			int indexOfTab = thisTerm.indexOf('\t');
-			String stem = thisTerm.substring(0, indexOfTab);
+			String stem = Term.getUniqueStem(thisTerm.substring(0, indexOfTab));
 
 			if (stopWordTerms.containsKey(stem))
 				continue;
