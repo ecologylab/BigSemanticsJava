@@ -2,43 +2,27 @@ package ecologylab.semantics.html.documentstructure;
 
 import java.util.ArrayList;
 
+import ecologylab.semantics.model.text.CompositeTermVector;
+import ecologylab.semantics.model.text.ITermVector;
 import ecologylab.semantics.model.text.TermVectorWeightStrategy;
 
 
 @SuppressWarnings("serial")
 public class SemanticInLinks extends ArrayList<SemanticAnchor>
 {
+	CompositeTermVector semanticInlinkCollection = new CompositeTermVector();
 
 	TermVectorWeightStrategy<SemanticAnchor> weightStrategy;
 	
 	boolean invalid	= true;
 	
-	double cachedWeight;
-	
-	public SemanticInLinks(TermVectorWeightStrategy<SemanticAnchor> termVectorWeightStrategy)
+	public SemanticInLinks()
 	{
-		weightStrategy = termVectorWeightStrategy;
 	}
-
-	public double getWeight()
+	
+	public ITermVector termVector()
 	{
-		double w;
-		if (invalid)
-		{
-			w = 0;
-			synchronized (this)
-			{
-				for(SemanticAnchor anchor : this)
-				{
-					double weight = weightStrategy.getWeight(anchor);
-					w += weight;
-				}
-			}
-			cachedWeight	= w;
-		}
-		else
-			w	= cachedWeight;
-		return w;
+		return semanticInlinkCollection;
 	}
 	
 	@Override
@@ -73,6 +57,7 @@ public class SemanticInLinks extends ArrayList<SemanticAnchor>
 			}
 			invalid	= true;
 			super.add(newAnchor);
+			semanticInlinkCollection.add(newAnchor.termVector());
 			return true;
 		}
 		return false;

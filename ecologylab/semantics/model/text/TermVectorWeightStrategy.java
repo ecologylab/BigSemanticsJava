@@ -19,10 +19,9 @@ public class TermVectorWeightStrategy<E extends TermVectorFeature> extends Weigh
 		referenceVector = v;
 		v.addObserver(this);
 	}
-
-	public double getWeight ( E e )
+	
+	public double getWeight ( ITermVector termVector )
 	{
-		ITermVector termVector = e.termVector();
 		double weight = -1;
 		if (termVector != null)
 		{
@@ -39,6 +38,12 @@ public class TermVectorWeightStrategy<E extends TermVectorFeature> extends Weigh
 			}
 		}
 		return weight;
+	}
+
+	public double getWeight ( E e )
+	{
+		return getWeight(e.termVector());
+		
 	}
 
 	public void insert ( E e )
