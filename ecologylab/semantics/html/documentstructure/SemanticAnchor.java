@@ -27,7 +27,7 @@ public class SemanticAnchor extends AnchorContext implements TermVectorFeature
 	
 	final int					signficance;
 	
-	public static final double TEXT_OVER_CONTEXT_EMPHASIS_FACTOR	= 3;
+	public static final Double TEXT_OVER_CONTEXT_EMPHASIS_FACTOR	= 3.0;
 	
 	public SemanticAnchor(ParsedURL containerPURL, ParsedURL href, String anchorText, String anchorContextString, boolean citationSignificance)
 	{
