@@ -25,6 +25,8 @@ import ecologylab.semantics.html.utils.StringBuilderUtils;
 public class TermVector extends FeatureVector<Term> implements ITermVector
 {
 
+	private static final Double	DEFAULT_WEIGHT	= 1.0;
+
 	private static final String	SHOW_WEIGHTS_PREF	= "show_weights";
 
 	public static Pattern				WORD_REGEX			= Pattern.compile("[a-zA-Z]+(-[a-zA-Z]+)*([a-zA-Z]+)");
@@ -70,12 +72,12 @@ public class TermVector extends FeatureVector<Term> implements ITermVector
 
 	public void add(CharSequence input)
 	{
-		add(input, 1);
+		add(input, DEFAULT_WEIGHT);
 	}	
 	/**
 	 * @param input
 	 */
-	public void add(CharSequence input, double weight)
+	public void add(CharSequence input, Double weight)
 	{
 		Matcher m = WORD_REGEX.matcher(input);
 		StringBuilder termBuffy	= StringBuilderUtils.acquire();
@@ -92,14 +94,14 @@ public class TermVector extends FeatureVector<Term> implements ITermVector
 		notifyObservers();
 	}
 
-	private void addWithoutNotify ( Term term, double val )
+	private void addWithoutNotify ( Term term, Double val )
 	{
 		if (term == null || term.isStopword())
 			return;
 		super.add(term, val);
 	}
 
-	public void add ( Term term, double val )
+	public void add ( Term term, Double val )
 	{
 		if (!term.isStopword())
 		{
@@ -321,7 +323,7 @@ public class TermVector extends FeatureVector<Term> implements ITermVector
 	}
 
 	@Override
-	public void set ( Term term, double val )
+	public void set ( Term term, Double val )
 	{
 		super.set(term, val);
 		setChanged();

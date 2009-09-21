@@ -75,7 +75,7 @@ public class InterestModel
 	{
 		magnitude /= 2;
 		timeScaleInterest();
-		participantInterest.add(term, magnitude);
+		participantInterest.add(term, new Double(magnitude));
 		unitize();
 	}
 
@@ -134,7 +134,7 @@ public class InterestModel
 
 	public static void setTermInterest ( Term term, short newValue )
 	{
-		participantInterest.set(term, newValue);
+		participantInterest.set(term, new Double(newValue));
 		unitize();
 	}
 
