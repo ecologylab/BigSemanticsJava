@@ -173,6 +173,9 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords
 	public abstract void handleCreateAndVisualizeTextSurrogateSemanticAction(SemanticAction action,
 			SemanticActionParameters parameter2, DocumentType documentType, IC infoCollector);
 	
+	public abstract void syncNestedMetadataSemanticAction(SemanticAction action,	SemanticActionParameters parameter, DocumentType documentType, IC infoCollector);
+	
+	
 	
 	/**
 	 * Implementation of for loop.
@@ -373,6 +376,10 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords
 			{
 				handleCreateAndVisualizeTextSurrogateSemanticAction(action,parameter,documentType,infoCollector);
 			}
+			else if(SemanticActionStandardMethods.TRY_SYNC_NESTED_METADATA.equals(actionName))
+			{
+				syncNestedMetadataSemanticAction(action,parameter,documentType,infoCollector);
+			}
 			else
 			{
 				handleGeneralAction(action, parameter);
@@ -388,6 +395,8 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords
 	
 
 
+
+	
 
 	/**
 	 * Sets the flag if any based on the checks in the action TODO right now 2 types of checks are

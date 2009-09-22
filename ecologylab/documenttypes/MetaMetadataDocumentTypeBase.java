@@ -1,22 +1,19 @@
 package ecologylab.documenttypes;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.xml.namespace.QName;
+import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.w3c.tidy.Tidy;
 
 import com.sun.org.apache.xml.internal.dtm.ref.DTMNodeList;
 
@@ -31,13 +28,11 @@ import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.Metadata;
-import ecologylab.semantics.metadata.MetadataBase;
 import ecologylab.semantics.metadata.MetadataFieldAccessor;
 import ecologylab.semantics.metametadata.DefVar;
 import ecologylab.semantics.metametadata.MetaMetadataField;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.FieldAccessor;
-import ecologylab.xml.Optimizations;
 import ecologylab.xml.ScalarUnmarshallingContext;
 import ecologylab.xml.TranslationScope;
 import ecologylab.xml.XMLTools;
@@ -100,6 +95,13 @@ public abstract class MetaMetadataDocumentTypeBase<M extends Metadata, C extends
 		addAdditionalParameters(populatedMetadata);
 
 		// handle the semantic actions sequentially
+		//FIXME: Throw semantic warning when no semantic actions exist
+		if(semanticActions == null)
+		{
+			System.out.println("warning: no semantic actions exist");
+			return;
+		}
+		
 		for (int i = 0; i < semanticActions.size(); i++)
 		{
 			SemanticAction action = semanticActions.get(i);
@@ -117,7 +119,9 @@ public abstract class MetaMetadataDocumentTypeBase<M extends Metadata, C extends
 		
 		try
 		{
+			System.out.println("Metadata parsed from: " + container.purl());
 			populatedMetadata.translateToXML(System.out);
+			
 		}
 		
 		catch (XMLTranslationException e)
@@ -273,6 +277,7 @@ public abstract class MetaMetadataDocumentTypeBase<M extends Metadata, C extends
 			M metadata, XPath xpath, SemanticActionParameters param,Node contextNode)
 	{
 
+		Node rootNode = contextNode;
 		// Gets the child metadata of the mmdField.
 		HashMapArrayList<String, MetaMetadataField> mmdFieldSet = mmdField.getSet();
 
@@ -283,12 +288,20 @@ public abstract class MetaMetadataDocumentTypeBase<M extends Metadata, C extends
 			{
 				for (MetaMetadataField mmdElement : mmdFieldSet)
 				{
-					// get the context Node
-					if (mmdElement.getContextNode() != null)
+					contextNode = rootNode; //Reset the contextNode to the rootNode for this level of recursion.
+					try{
+						// get the context Node
+						String contextNodeName = mmdElement.getContextNode();
+						if (contextNodeName != null)
+						{
+							contextNode = (Node) param.getObjectInstance(contextNodeName);
+						
+						}
+					}catch(Exception e)
 					{
-						contextNode = (Node) param.getObjectInstance(mmdElement.getContextNode());
+						e.printStackTrace();
+						//FIXME: Tell whoever wrote the metametadata that context node should only be a node, not a node set !!!
 					}
-					
 					// Used to get the field value from the web page.
 					String xpathString = mmdElement.getXpath();
 					// xpathString="/html/body[@id='gsr']/div[@id='res']/div[1]/ol/li[@*]/h3/a";
@@ -330,7 +343,7 @@ public abstract class MetaMetadataDocumentTypeBase<M extends Metadata, C extends
 	 * @param xpathString
 	 * @return
 	 */
-	private String extractScalar(XPath xpath, MetaMetadataField mmdElement, Node contextNode,
+	private String extractScalar(XPath xpath, MetaMetadataField mmdElement, final Node contextNode,
 			String xpathString)
 	{
 		// this is a simple scalar field
@@ -391,6 +404,7 @@ public abstract class MetaMetadataDocumentTypeBase<M extends Metadata, C extends
 		}
 		catch (Exception e)
 		{
+			e.printStackTrace();
 			StringBuilder buffy = StringBuilderUtils.acquire();
 			buffy
 					.append("################# ERROR IN EVALUATION OF A NESTED FIELD "+mmdElementName+" ########################\n");
@@ -417,7 +431,7 @@ public abstract class MetaMetadataDocumentTypeBase<M extends Metadata, C extends
 			MetaMetadataField mmdElement, String mmdElementName, XPath xpath,
 			SemanticActionParameters param,String parentXPathString)
 	{
-
+		Node originalNode = contextNode;
 		// this is the field accessor for the collection field
 		FieldAccessor fieldAccessor = metadata.getMetadataFieldAccessor(mmdElementName);
 
@@ -470,13 +484,22 @@ public abstract class MetaMetadataDocumentTypeBase<M extends Metadata, C extends
 					}
 					catch (Exception e)
 					{
+						try{
+							TransformerException t = (TransformerException) e;
+							System.out.println("Transform Exception::: \n" + t.getMessageAndLocation());
+						}
+						catch(ClassCastException c){}
 						StringBuilder buffy = StringBuilderUtils.acquire();
+						
 						buffy
 								.append("################# ERROR IN EVALUATION OF A COLLECTION FIELD ########################\n");
 						buffy.append("Field Name::\t").append(mmdElement.getName()).append("\n");
 						buffy.append("ContextNode::\t").append(contextNode).append("\n");
 						buffy.append("XPath Expression::\t").append(parentXPathString).append("\n");
+						buffy.append("Container Purl::\t").append(container.purl()).append("\n");
 						System.out.println(buffy);
+						e.printStackTrace();
+
 						StringBuilderUtils.release(buffy);
 						return;
 					}
@@ -490,6 +513,7 @@ public abstract class MetaMetadataDocumentTypeBase<M extends Metadata, C extends
 						for (int j = 0; j < parentNodeListLength; j++)
 						{
 							collectionInstanceList.add((M) ReflectionTools.getInstance(collectionChildClass));
+							((M)collectionInstanceList.get(j)).setMetaMetadata(metaMetadata);
 						}
 						collectionInstanceListInitialized = true;
 					}
@@ -518,7 +542,7 @@ public abstract class MetaMetadataDocumentTypeBase<M extends Metadata, C extends
 						}
 						if (childMetadataField.isNested())
 						{
-							 extractNested(translationScope, metadata, contextNode,childMetadataField, childMetadataField.getName(), xpath, param,
+							 extractNested(translationScope, collectionInstanceList.get(m), contextNode,childMetadataField, childMetadataField.getName(), xpath, param,
 										childMetadataField.getXpath());
 						}
 						else

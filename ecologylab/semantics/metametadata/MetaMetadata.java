@@ -22,6 +22,7 @@ import ecologylab.xml.ElementState;
 import ecologylab.xml.TranslationScope;
 import ecologylab.xml.XMLTools;
 import ecologylab.xml.XMLTranslationException;
+import ecologylab.xml.ElementState.xml_attribute;
 import ecologylab.xml.types.element.ArrayListState;
 import ecologylab.xml.types.element.Mappable;
 
@@ -31,14 +32,9 @@ import ecologylab.xml.types.element.Mappable;
  */
 public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 {
-	@xml_attribute
-	private String						name;
 	
-	/**
-	 * The type/class of metadata object.
-	 */
-	@xml_attribute
-	private String						type;
+
+
 	
 	@xml_tag("extends")
 	@xml_attribute
@@ -249,7 +245,7 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 
 		// create a file writer to write the JAVA files.
 		File directoryPath = PropertiesAndDirectories.createDirsAsNeeded(new File(generationPath));
-		File file = new File(directoryPath, XMLTools.classNameFromElementName(name) + ".java");
+		File file = new File(directoryPath, XMLTools.classNameFromElementName(getName()) + ".java");
 		FileWriter fileWriter = new FileWriter(file);
 		PrintWriter p = new PrintWriter(fileWriter);
 		
@@ -269,11 +265,11 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 
 		//write @xml_inherit
 		p.println("@xml_inherit");
-		p.println("@xml_tag(\""+name+"\")");
+		p.println("@xml_tag(\""+getName()+"\")");
 		
 		// Write class declaration
-		String className = XMLTools.classNameFromElementName(name);
-		System.out.println("#######################################"+name);
+		String className = XMLTools.classNameFromElementName(getName());
+		System.out.println("#######################################"+getName());
 		p.println("public class  " + className + "\nextends  "
 				+ XMLTools.classNameFromElementName(extendsAttribute) + "\n{\n");
 
@@ -397,30 +393,10 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 	}
 
 
-
-	/**
-	 * @return the name
-	 */
-	public String getName()
-	{
-		return name;
-	}
-
-	/**
-	 * @param name
-	 *          the name to set
-	 */
-	public void setName(String name)
-	{
-		this.name = name;
-	}
-
-
-
 	@Override
 	public String key()
 	{
-		return name;
+		return getName();
 	}
 	
 	@Override
@@ -480,14 +456,6 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 		return binding;
 	}
 
-	public String getType()
-	{
-		if(type!=null)
-			return type;
-		else 
-			return name;
-	}
-
 	/**
 	 * @return the defVars
 	 */
@@ -535,4 +503,6 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 	{
 		return packageAttribute;
 	}
+	
+
 }

@@ -11,16 +11,15 @@ import java.util.Iterator;
 
 import ecologylab.appframework.PropertiesAndDirectories;
 import ecologylab.generic.HashMapArrayList;
-import ecologylab.semantics.metadata.MetadataFieldAccessor;
 import ecologylab.semantics.tools.MetadataCompilerConstants;
 import ecologylab.textformat.NamedStyle;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.FieldAccessor;
-import ecologylab.xml.Optimizations;
 import ecologylab.xml.XMLTools;
 import ecologylab.xml.XMLTranslationException;
 import ecologylab.xml.xml_inherit;
-import ecologylab.xml.ElementState.xml_attribute;
+import ecologylab.xml.ElementState.xml_other_tags;
+import ecologylab.xml.ElementState.xml_tag;
 import ecologylab.xml.types.element.Mappable;
 import ecologylab.xml.types.scalar.ScalarType;
 
@@ -34,6 +33,12 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 		Iterable<MetaMetadataField>
 {
 
+	/**
+	 * The type/class of metadata object.
+	 */
+	@xml_attribute
+	private String						type;
+	
 	/**
 	 * Name of the metadata field.
 	 */
@@ -245,7 +250,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 			String generationPath = MetadataCompilerConstants.getGenerationPath(packageName);
 
 			// the name of the java class.
-			String javaClassName = name;
+			String javaClassName = getType();
 
 			// if the meta-metadata field is of type list or map
 			if (collection != null)
@@ -336,7 +341,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 			MetaMetadata metaMetadata= getMmdRepository().getByTagName(extendsField);
 			
 			//2. find the current field in this meta-metadata
-			MetaMetadataField mmdField=metaMetadata.lookupChild(name);
+			MetaMetadataField mmdField=metaMetadata.lookupChild(getType());
 			
 			//if this field does exist in super
 			if(mmdField!=null)
@@ -365,7 +370,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 			MetaMetadata metaMetadata= getMmdRepository().getByTagName(extendsField);
 			
 			//2. find the current field in this meta-metadata
-			MetaMetadataField mmdField=metaMetadata.lookupChild(name);
+			MetaMetadataField mmdField=metaMetadata.lookupChild(getType());
 			
 			//if this field does exist in super
 			if(mmdField!=null)
@@ -394,7 +399,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 			MetaMetadata metaMetadata= getMmdRepository().getByTagName(extendsField);
 			
 			//2. find the current field in this meta-metadata
-			MetaMetadataField mmdField=metaMetadata.lookupChild(name);
+			MetaMetadataField mmdField=metaMetadata.lookupChild(getType());
 			
 			//if this field does exist in super
 			if(mmdField!=null)
@@ -423,7 +428,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 			MetaMetadata metaMetadata= getMmdRepository().getByTagName(extendsField);
 			
 			//2. find the current field in this meta-metadata
-			MetaMetadataField mmdField=metaMetadata.lookupChild(name);
+			MetaMetadataField mmdField=metaMetadata.lookupChild(getType());
 			
 			//if this field does exist in super
 			if(mmdField!=null)
@@ -456,12 +461,12 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	 */
 	private void appenedNestedMetadataField(Appendable appendable) throws IOException
 	{
-		String fieldType = XMLTools.classNameFromElementName(name);
-		appendable.append("\nprivate @xml_nested " + XMLTools.classNameFromElementName(name) + "\t"
+		String fieldType = XMLTools.classNameFromElementName(getType());
+		appendable.append("\nprivate @xml_tag(\""+getName()+"\") @xml_nested " + XMLTools.classNameFromElementName(getType()) + "\t"
 				+ name + ";");
-		appendLazyEvaluationMethod(appendable, name, XMLTools.classNameFromElementName(name));
-		appendSetterForCollection(appendable, name, fieldType);
-		appendGetterForCollection(appendable, name, fieldType);
+		appendLazyEvaluationMethod(appendable, getName(), fieldType);
+		appendSetterForCollection(appendable, getName(), fieldType);
+		appendGetterForCollection(appendable, getName(), fieldType);
 	}
 
 	protected void appendImport(Appendable appendable, String importDecl) throws IOException
@@ -1145,5 +1150,17 @@ public HashMapArrayList<String, MetaMetadataField> getChildMetaMetadata()
 	{
 		return generateClass;
 	}
+	
+	public String getType()
+	{
+		if(type!=null)
+			return type;
+		else 
+			return getName();
+	}
 
+	public String toString()
+	{
+		return "MetaMetadataField: " + name;
+	}
 }

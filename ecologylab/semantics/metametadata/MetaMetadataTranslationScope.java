@@ -19,6 +19,7 @@ import ecologylab.semantics.actions.QueueDocumentDownloadSemanticAction;
 import ecologylab.semantics.actions.SemanticAction;
 import ecologylab.semantics.actions.SetMetadataSemanticAction;
 import ecologylab.semantics.actions.SetterSemanticAction;
+import ecologylab.semantics.actions.TrySyncNestedMetadata;
 import ecologylab.textformat.NamedStyle;
 import ecologylab.xml.TranslationScope;
 
@@ -56,7 +57,8 @@ public class MetaMetadataTranslationScope extends Debug
 			ApplyXPathSemanticAction.class,
 			DefVar.class,
 			IfSemanticAction.class,
-			CreateAndVisualizeTextSurrogateSemanticAction.class
+			CreateAndVisualizeTextSurrogateSemanticAction.class,
+			TrySyncNestedMetadata.class
 			};
 
 	public static TranslationScope get()

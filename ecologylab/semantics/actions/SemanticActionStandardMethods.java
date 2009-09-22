@@ -93,5 +93,9 @@ public interface SemanticActionStandardMethods
 	 * 
 	 */
 	public static String	CREATE_AND_VISUALIZE_TEXT_SURROGATE			=  "create_and_visualize_text_surrogate";
-
+	
+	/**
+	 * 
+	 */
+  public static String TRY_SYNC_NESTED_METADATA                  ="try_sync_nested_metadata";
 }
