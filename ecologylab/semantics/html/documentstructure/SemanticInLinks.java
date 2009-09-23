@@ -10,7 +10,7 @@ import ecologylab.semantics.model.text.TermVectorWeightStrategy;
 @SuppressWarnings("serial")
 public class SemanticInLinks extends ArrayList<SemanticAnchor>
 {
-	CompositeTermVector semanticInlinkCollection = new CompositeTermVector();
+	CompositeTermVector semanticInlinkCollection;
 
 	TermVectorWeightStrategy<SemanticAnchor> weightStrategy;
 	
@@ -22,7 +22,7 @@ public class SemanticInLinks extends ArrayList<SemanticAnchor>
 	
 	public ITermVector termVector()
 	{
-		return semanticInlinkCollection;
+		return semanticInlinkCollection();
 	}
 	
 	@Override
@@ -41,6 +41,18 @@ public class SemanticInLinks extends ArrayList<SemanticAnchor>
 		}
 	}
 	
+	public CompositeTermVector semanticInlinkCollection()
+	{
+		CompositeTermVector result = semanticInlinkCollection;
+		if (result == null)
+		{
+			semanticInlinkCollection = new CompositeTermVector();
+			result = semanticInlinkCollection;
+		}
+		
+		return result;
+	}
+	
 	public synchronized boolean addIfUnique(SemanticAnchor newAnchor)
 	{
 		String newAnchorText = newAnchor.getAnchorText();
@@ -57,7 +69,7 @@ public class SemanticInLinks extends ArrayList<SemanticAnchor>
 			}
 			invalid	= true;
 			super.add(newAnchor);
-			semanticInlinkCollection.add(newAnchor.termVector());
+			semanticInlinkCollection().add(newAnchor.termVector());
 			return true;
 		}
 		return false;
