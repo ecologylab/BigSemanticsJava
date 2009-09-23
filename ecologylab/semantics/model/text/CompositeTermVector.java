@@ -21,7 +21,7 @@ public class CompositeTermVector extends Observable implements Observer, ITermVe
 {
 	private TermVector						compositeTermVector	= new TermVector();
 
-	private HashMap<ITermVector, Double>	termVectors	= (HashMap<ITermVector, Double>) HASH_MAP_POOL.acquire();
+	private HashMap<ITermVector, Double>	termVectors	= new HashMap<ITermVector, Double>();
 
 	public CompositeTermVector ()
 	{
@@ -111,7 +111,6 @@ public class CompositeTermVector extends Observable implements Observer, ITermVe
 						tv.recycle();
 				}
 				termVectors.clear();
-				HASH_MAP_POOL.release(termVectors);
 				termVectors				= null;
 			}
 			if (compositeTermVector != null)
