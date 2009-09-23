@@ -391,30 +391,6 @@ abstract public class Metadata extends MetadataBase
 	{
 		super.recycle();
 		termVector.recycle();
-		OneLevelNestingIterator<FieldAccessor, Metadata> fieldIterator = (OneLevelNestingIterator<FieldAccessor, Metadata>) fullNonRecursiveIterator();
-		
-		while (fieldIterator.hasNext())
-		{
-			MetadataFieldAccessor fieldAccessor = (MetadataFieldAccessor) fieldIterator.next();
-			Metadata currentMetadata 						= fieldIterator.currentObject();
-			MetadataBase fieldMetadata;
-			try
-			{
-				fieldMetadata = (MetadataBase) fieldAccessor.getField().get(currentMetadata);
-				if (fieldMetadata != null)
-					fieldMetadata.recycle();
-			}
-			catch (IllegalArgumentException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			catch (IllegalAccessException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
 	}
 	
 	public boolean isRecycled()
