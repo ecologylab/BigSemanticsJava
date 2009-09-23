@@ -328,6 +328,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	{
 		for (MetaMetadata metaMetadata : repositoryByTagName)
 		{
+			metaMetadata.inheritMetaMetadata();
 			ParsedURL purl = metaMetadata.getUrlBase();
 			if (purl != null)
 				repositoryByPURL.put(purl.noAnchorNoQueryPageString(), metaMetadata);

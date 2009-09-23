@@ -399,32 +399,23 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 		return getName();
 	}
 	
-	@Override
-	public MetaMetadataField lookupChild(String name)
+	public void inheritMetaMetadata()
 	{
 		if(!inheritedMetaMetadata)
-			inheritMetaMetadata();
-		
-		return super.lookupChild(name);
-	}
-	
-
-	private void inheritMetaMetadata()
-	{
-		if(!inheritedMetaMetadata && extendsAttribute != null)
 		{
-			MetaMetadata extendedMetaMetadata = repository().getByTagName(extendsAttribute);
+			String tagName = (extendsAttribute != null) ? extendsAttribute : getTypeAttribute();
+			MetaMetadata extendedMetaMetadata =  repository().getByTagName(tagName);
+			//MetaMetadata extendedMetaMetadata = repository().getByTagName(extendsAttribute);
 			if(extendedMetaMetadata != null)
 			{
 				extendedMetaMetadata.inheritMetaMetadata();
 				for(MetaMetadataField extendedField : extendedMetaMetadata.getChildMetaMetadata())
 					addChild(extendedField);
 			}
+			
+			inheritedMetaMetadata = true;
 		}
-		inheritedMetaMetadata = true;
 	}
-
-
 
 	/**
 	 * @return the semanticActions

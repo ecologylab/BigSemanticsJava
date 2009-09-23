@@ -67,6 +67,12 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 
 	@xml_attribute
 	private String															style;
+	
+	/**
+	 * Specifies the order in which a field is displayed in relation to other fields.
+	 */
+	@xml_attribute
+	private int																	layer;
 
 	/**
 	 * XPath expression used to extract this field.
@@ -962,6 +968,37 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 		// *do not* override fields in here with fields from super classes.
 		if (!childMetaMetadata.containsKey(fieldName))
 			childMetaMetadata.put(fieldName, childMetaMetadataField);
+		else
+			childMetaMetadata.get(fieldName).inheritNonDefaultAttributes(childMetaMetadataField);
+			
+	}
+
+	private void inheritNonDefaultAttributes(MetaMetadataField inheritFrom)
+	{
+		HashMapArrayList<String, FieldAccessor> fieldAccessors = this.getFieldAccessors(FieldAccessor.class);
+		for (FieldAccessor fieldAccessor : fieldAccessors.values())
+		{
+			ScalarType scalarType = fieldAccessor.getScalarType();
+			try
+			{
+				if(scalarType != null && scalarType.isDefaultValue(fieldAccessor.getField(), this) && !scalarType.isDefaultValue(fieldAccessor.getField(), inheritFrom))
+				{
+					Object value = fieldAccessor.getField().get(inheritFrom);
+					fieldAccessor.setField(this, value);
+					debug("override " + this.getName() + "." + fieldAccessor.getFieldName() + " with " + value);
+				}
+			}
+			catch (IllegalArgumentException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			catch (IllegalAccessException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 
 	/**
@@ -1158,9 +1195,14 @@ public HashMapArrayList<String, MetaMetadataField> getChildMetaMetadata()
 		else 
 			return getName();
 	}
+	
+	public String getTypeAttribute()
+	{
+		return type;
+	}
 
 	public String toString()
 	{
-		return "MetaMetadataField: " + name;
+		return parent().toString() + "." + name;
 	}
 }
