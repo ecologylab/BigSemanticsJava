@@ -53,7 +53,9 @@ public interface CFPrefNames
 	public static final String		CURATED			= "curated";
 	
 	
-	public static final PrefBoolean	IGNORE_PDF			= Pref.usePrefBoolean("ignore_pdf", false);
+	public static final String 	IGNORE_PDF			= "ignore_pdf";
 	
 	public static final String	STUDY_COMPOSITION_SAVE_LOCATION	= "study_composition_save_location";
+	
+	public static final String	DECAY_INTEREST  = "decay_interest";
 }

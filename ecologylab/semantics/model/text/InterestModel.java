@@ -6,11 +6,12 @@ import java.util.Map.Entry;
 import ecologylab.appframework.types.prefs.Pref;
 import ecologylab.appframework.types.prefs.PrefBoolean;
 import ecologylab.generic.IFeatureVector;
+import ecologylab.semantics.connectors.CFPrefNames;
+import ecologylab.semantics.seeding.SemanticsPrefs;
 import ecologylab.xml.ElementState;
 
-public class InterestModel
+public class InterestModel implements SemanticsPrefs
 {
-	public static final PrefBoolean INTEREST_DECAY_PREF = (PrefBoolean) Pref.lookupPref("decay_interest");
 	
 	public static class InterestModelState extends ElementState 
 	{

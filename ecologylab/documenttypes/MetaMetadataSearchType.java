@@ -83,7 +83,7 @@ public class MetaMetadataSearchType<M extends Metadata, C extends Container, IC 
 		super(infoCollector, semanticActionHandler);
 		this.engine = engine;
 		this.searchSeed = searchSeed;
-		formSearchUrlBasedOnEngine(searchSeed.currentFirstResultIndex(), infoCollector);
+		this.searchURL = formSearchUrlBasedOnEngine(searchSeed.currentFirstResultIndex(), infoCollector, engine, searchSeed);
 
 		// if search PURL is not null for a container.
 		if (searchURL != null)
@@ -120,7 +120,7 @@ public class MetaMetadataSearchType<M extends Metadata, C extends Container, IC 
 				return;
 			}
 		}
-		container.queueDownload();
+		container.queueDownload(); //FIXME: Unconditional queueing of searches ???
 		// System.out.println("DEBUG::queued container\t"+container+"\t for download");
 	}
 
@@ -149,7 +149,7 @@ public class MetaMetadataSearchType<M extends Metadata, C extends Container, IC 
 	/**
 	 * 
 	 */
-	private void formSearchUrlBasedOnEngine(int firstResultIndex, InfoCollector infoProcessor)
+	public static ParsedURL formSearchUrlBasedOnEngine(int firstResultIndex, InfoCollector infoProcessor, String engine, final SearchState searchSeed)
 	{
 		/*
 		 * if (engine.equals(SearchEngineNames.GOOGLE)) { searchURL = ParsedURL .getAbsolute(
@@ -172,7 +172,7 @@ public class MetaMetadataSearchType<M extends Metadata, C extends Container, IC 
 		 * +searchSeed.getQuery()); } else if(engine.equals(SearchEngineNames.FLICK_AUTHOR)) { searchURL
 		 * = ParsedURL.getAbsolute("http://www.flickr.com/photos/"+searchSeed.getQuery()+"/"); }
 		 */
-
+		ParsedURL resultURL; 
 		MetaMetadataRepository mmdRepo = infoProcessor.metaMetaDataRepository();
 		String urlPrefix = mmdRepo.getSearchURL(engine);
 		String query = searchSeed.getQuery();
@@ -182,14 +182,16 @@ public class MetaMetadataSearchType<M extends Metadata, C extends Container, IC 
 		String numResultString = mmdRepo.getNumResultString(engine);
 		String startString = mmdRepo.getStartString(engine);
 		if (!startString.equals("") && !numResultString.equals(""))
-			searchURL = ParsedURL.getAbsolute(urlPrefix + query + numResultString
+			resultURL = ParsedURL.getAbsolute(urlPrefix + query + numResultString
 					+ searchSeed.numResults() + startString + firstResultIndex + urlSuffix);
 		else if (!startString.equals(""))
-			searchURL = ParsedURL.getAbsolute(urlPrefix + query + startString + firstResultIndex
+			resultURL = ParsedURL.getAbsolute(urlPrefix + query + startString + firstResultIndex
 					+ urlSuffix);
 		else
-			searchURL = ParsedURL.getAbsolute(infoProcessor.metaMetaDataRepository().getSearchURL(engine)
+			resultURL = ParsedURL.getAbsolute(infoProcessor.metaMetaDataRepository().getSearchURL(engine)
 					+ query + urlSuffix);
+		return resultURL;
+		
 	}
 
 	public void delivery(Object o)
