@@ -13,7 +13,8 @@ import ecologylab.xml.ElementState.xml_nested;
 
 /**
  * This class represents a linked nested object in a metadata reference graph.
- * The object will be referred to later.
+ * The object will be resolved for presentation to the user as a linked entity,
+ * such as in InContextMetadata.
  * 
  * @author andruid
  */
