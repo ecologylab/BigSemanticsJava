@@ -12,7 +12,7 @@ import ecologylab.semantics.connectors.SeedPeer;
  * 
  * @author andruid, robinson
  */
-abstract public class Seed extends ecologylab.services.messages.cf.Seed implements CFPrefNames
+abstract public class Seed<AC extends Container> extends ecologylab.services.messages.cf.Seed implements CFPrefNames
 {
     public static final String          TRAVERSABLE                  = "traversable";
     public static final String          UNTRAVERSABLE                = "untraversable";
@@ -271,4 +271,21 @@ abstract public class Seed extends ecologylab.services.messages.cf.Seed implemen
   {
   		return false;
   }
+  
+	public void queueSearchrequest(AC container)
+	{
+		//if (this.searchSeed != null)
+		{
+			ResultDistributer resultDistributer = resultDistributer(infoCollector);
+			if (resultDistributer != null)
+			{
+				resultDistributer.queueSearchRequest(container);
+				// System.out.println("DEBUG::queued search request for\t"+container+"\tusing rd=\t"+resultDistributer);
+				return;
+			}
+		}
+		container.queueDownload();
+		// System.out.println("DEBUG::queued container\t"+container+"\t for download");
+	}
+  
 }
