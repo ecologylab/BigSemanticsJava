@@ -2,9 +2,12 @@ package ecologylab.semantics.seeding;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 
 import ecologylab.generic.Debug;
+import ecologylab.generic.DispatchTarget;
 import ecologylab.generic.Generic;
+import ecologylab.net.ParsedURL;
 import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.InfoCollector;
 
@@ -23,7 +26,7 @@ import ecologylab.semantics.connectors.InfoCollector;
  *
  */
 public class ResultDistributer<AC extends Container>
-extends Debug
+extends Debug implements DispatchTarget<Container>
 {
 	InfoCollector			infoCollector;
    
@@ -70,6 +73,41 @@ extends Debug
 //    private	ArrayList		numSearchesPerSlice		= new ArrayList(TYPICAL_NUM_SEARCH_RESULTS);
     
     private final Object	DOWNLOAD_RESULTS_LOCK	= new Object();
+    
+  	/**
+  	 * Counts how many searches are queued to the DownloadMonitor. 
+  	 * This is to control queuing the search and result pages in balanced manner to the DownloadMonitor.
+  	 * 
+  	 * This searchCount will be set to 0 when the non-search page become processed. 
+  	 */
+  	private int searchCount = 0;
+  	
+  	/**
+  	 * Limit the search pages to be queued to three at a time. 
+  	 */
+  	private final static int NUM_SEARCHES_BEFORE_1ST_RESULT_DOWNLOAD = 3; 
+  	
+  	/**
+  	 * We dont want to queue too many search pages to the DownloadMonitor initially, because
+  	 * then we will not be able to show any surrogates to the user until all searches have run.
+  	 * Thus, we hold some later search Containers here while processing initial searches and
+  	 * one result Container from each.
+  	 * <p/>
+  	 * When the search pages have been queued to the DownloadMonitor up to a threshold (initially 3), 
+  	 * the next search page should not go straight to the DownloadMonitor.
+  	 * Instead, the first result pages from ResultSlice 1 are prioritized.
+  	 * The searches will stay here in the searchesDelayedUntilFirstResultsCanShow queue
+  	 * until a non-search result page has been processed. 
+  	 */
+  	ArrayList<AC> searchesDelayedUntilFirstResultsCanShow = new ArrayList<AC>();
+  	
+  	/**
+  	 * This data structure keeps track both of 
+  	 * 		(1) searches that we queue and parse, AND also of
+  	 * 		(2) search result containers that we queue and parse.
+  	 */
+  	HashSet<ParsedURL> queuedContainainerMap	= new HashSet<ParsedURL>();
+  	
 	
 	public ResultDistributer(InfoCollector infoCollector, int numSearches)
 	{
@@ -138,7 +176,10 @@ extends Debug
 							+ " SearchNum:" + result.searchNum() + " ResultNum:"+ resultNumLevel + 
 							" Result PURL " + result.purl());
 						 */
-						result.queueDownload();
+						result.setDispatchTarget(this);
+						if (result.queueDownload())
+								queuedContainainerMap.add(result.purl());
+						
 						queueCount ++;
 
 						// reset the searchCount to 0 when the non-search page has been queued. 
@@ -200,33 +241,6 @@ extends Debug
 	}
 	
 	/**
-	 * Counts how many searches are queued to the DownloadMonitor. 
-	 * This is to control queuing the search and result pages in balanced manner to the DownloadMonitor.
-	 * 
-	 * This searchCount will be set to 0 when the non-search page become processed. 
-	 */
-	private int searchCount = 0;
-	
-	/**
-	 * Limit the search pages to be queued to three at a time. 
-	 */
-	private final static int NUM_SEARCHES_BEFORE_1ST_RESULT_DOWNLOAD = 3; 
-	
-	/**
-	 * We dont want to queue too many search pages to the DownloadMonitor initially, because
-	 * then we will not be able to show any surrogates to the user until all searches have run.
-	 * Thus, we hold some later search Containers here while processing initial searches and
-	 * one result Container from each.
-	 * <p/>
-	 * When the search pages have been queued to the DownloadMonitor up to a threshold (initially 3), 
-	 * the next search page should not go straight to the DownloadMonitor.
-	 * Instead, the first result pages from ResultSlice 1 are prioritized.
-	 * The searches will stay here in the searchesDelayedUntilFirstResultsCanShow queue
-	 * until a non-search result page has been processed. 
-	 */
-	ArrayList<AC> searchesDelayedUntilFirstResultsCanShow = new ArrayList<AC>();
-	
-	/**
 	 * Queue search pages to DownloadMonitor if the search count is less than the limit number. 
 	 * If it is larger than the limit number, add the search page to the waitingPipeToDownloadMonitor, 
 	 * which will be stayed until the non-search page to be processed. 
@@ -242,7 +256,8 @@ extends Debug
 				searchesDelayedUntilFirstResultsCanShow.add(searchContainer);
 			else	// If there is nothing waiting, just queue search container to DownloadMonitor.
 			{
-				searchContainer.queueDownload();
+				if (searchContainer.queueDownload())	// look out for previous downloads of searchContainer!
+					queuedContainainerMap.add(searchContainer.purl());
 			}
 			
 			// Increment searchCount that is counting search containers queued to DownloadMonitor. 
@@ -326,12 +341,25 @@ extends Debug
 	
 	private int countingDone = 0;
 	
-	public void doneQueueing(int searchNum, int numResults)
+	public void doneQueueing(Container container, int searchNum, int numResults)
 	{
 		// Keep the number of results generated by each search.
 		resultNumOfDoneSearches.add(new Integer(numResults));
 		countingDone++;
 		downloadResults();		// download more if there is any more to download
+		
+		unMapContainerAndCheckForEndSeeding(container);
+	}
+	/**
+	 * @param container
+	 */
+	private synchronized void unMapContainerAndCheckForEndSeeding(Container container)
+	{
+		this.queuedContainainerMap.remove(container.purl());
+		if (queuedContainainerMap.isEmpty() && this.checkIfAllSearchesOver())
+		{
+			infoCollector.endSeeding();
+		}
 	}
 
 	/** 
@@ -367,5 +395,10 @@ extends Debug
 		this.countingDone = 0;
 		this.resultSlices.clear();
 		this.resultNumOfDoneSearches.clear();
+	}
+
+	public void delivery(Container container)
+	{
+		unMapContainerAndCheckForEndSeeding(container);
 	}
 }
