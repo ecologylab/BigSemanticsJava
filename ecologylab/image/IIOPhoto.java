@@ -505,7 +505,7 @@ implements Downloadable, DispatchTarget<IIOPhoto>
 	 * Notify us when a cachable image has been downloaded and should
 	 * then be cached to disk.
 	 */
-	public void delivery(IIOPhoto o)
+	public void delivery(IIOPhoto iioPhoto)
 	{
 		BufferedImage bufferedImage	= basisRendering.bufferedImage;
 		if (bufferedImage != null)

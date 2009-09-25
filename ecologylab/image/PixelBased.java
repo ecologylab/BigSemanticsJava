@@ -34,10 +34,10 @@ extends Debug
 	static final int			NUM_DOWNLOAD_THREADS	= 2;
 
 	public static final DownloadMonitor	pixelBasedDownloadMonitor		=
-		new DownloadMonitor("IIOPhoto", NUM_DOWNLOAD_THREADS, 1);
+		new DownloadMonitor<IIOPhoto>("IIOPhoto", NUM_DOWNLOAD_THREADS, 1);
 
 	public static final DownloadMonitor	highPriorityDownloadMonitor		=
-		new DownloadMonitor("IIOPhoto", NUM_DOWNLOAD_THREADS, 3);
+		new DownloadMonitor<IIOPhoto>("IIOPhoto", NUM_DOWNLOAD_THREADS, 3);
 
 	/**
 	 * Net location of the whatever might get downloaded.
