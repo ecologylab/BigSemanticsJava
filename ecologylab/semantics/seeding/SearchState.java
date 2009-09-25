@@ -5,11 +5,13 @@ import java.io.File;
 import ecologylab.collections.Scope;
 import ecologylab.documenttypes.MetaMetadataSearchType;
 import ecologylab.generic.Generic;
+import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.connectors.SearchEngineNames;
 import ecologylab.semantics.connectors.SeedPeer;
+import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.model.text.InterestModel;
 import ecologylab.xml.XMLTranslationException;
 import ecologylab.xml.xml_inherit;
@@ -574,5 +576,52 @@ implements SemanticsPrefs, SearchEngineNames
 				result				= super.toString();
 		}
 		return result;
+	}
+	
+	/**
+	 * Form the url for the particular query, engine and resultIndex
+	 */
+	public ParsedURL formSearchUrlBasedOnEngine()
+	{
+		/*
+		 * if (engine.equals(SearchEngineNames.GOOGLE)) { searchURL = ParsedURL .getAbsolute(
+		 * ((searchSeed.searchType() == SearchEngineNames.REGULAR) ?
+		 * SearchEngineNames.regularGoogleSearchURLString :
+		 * 
+		 * (searchSeed.searchType() == SearchEngineNames.IMAGE) ?
+		 * SearchEngineNames.imageGoogleSearchURLString : (searchSeed.searchType() ==
+		 * SearchEngineNames.SITE) ? SearchEngineUtilities
+		 * .siteGoogleLimitSearchURLString(searchSeed.siteString()) :
+		 * SearchEngineNames.relatedGoogleSearchUrlString) + (searchSeed.valueString().replace(' ',
+		 * '+')).replace("&quot;", "%22")
+		 * 
+		 * + (IGNORE_PDF.value() ? SearchEngineNames.GOOGLE_NO_PDF_ARG : "") + "&num=" +
+		 * searchSeed.numResults() + "&start=" + firstResultIndex, "broken Google URL"); } else if
+		 * (engine.equals(SearchEngineNames.FLICKR)) { searchURL =
+		 * ParsedURL.getAbsolute("http://www.flickr.com/search/?q=" + searchSeed.getQuery()); } else
+		 * if(engine.equals(SearchEngineNames.YAHOO)) { searchURL=ParsedURL.getAbsolute(
+		 * "http://api.search.yahoo.com/WebSearchService/V1/webSearch?appid=yahoosearchwebrss&query="
+		 * +searchSeed.getQuery()); } else if(engine.equals(SearchEngineNames.FLICK_AUTHOR)) { searchURL
+		 * = ParsedURL.getAbsolute("http://www.flickr.com/photos/"+searchSeed.getQuery()+"/"); }
+		 */
+		
+		ParsedURL resultURL; 
+		MetaMetadataRepository mmdRepo = infoCollector.metaMetaDataRepository();
+		String urlPrefix = mmdRepo.getSearchURL(engine);
+		String query = getQuery();
+		// we replace all white spaces by +
+		query = query.replace(' ', '+');
+		String urlSuffix = mmdRepo.getSearchURLSufix(engine);
+		String numResultString = mmdRepo.getNumResultString(engine);
+		String startString = mmdRepo.getStartString(engine);
+		
+		if (!startString.equals("") && !numResultString.equals(""))
+			resultURL = ParsedURL.getAbsolute(urlPrefix + query + numResultString + numResults() + startString +  currentFirstResultIndex);
+		else if (!startString.equals(""))
+			resultURL = ParsedURL.getAbsolute(urlPrefix + query + startString + currentFirstResultIndex + urlSuffix);
+		else
+			resultURL = ParsedURL.getAbsolute(mmdRepo.getSearchURL(engine) + query + urlSuffix);
+		return resultURL;
+		
 	}
 }

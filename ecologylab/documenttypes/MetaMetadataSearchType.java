@@ -83,7 +83,7 @@ public class MetaMetadataSearchType<M extends Metadata, C extends Container, IC 
 		super(infoCollector, semanticActionHandler);
 		this.engine = engine;
 		this.searchSeed = searchSeed;
-		this.searchURL = formSearchUrlBasedOnEngine(searchSeed.currentFirstResultIndex(), infoCollector, engine, searchSeed);
+		this.searchURL = searchSeed.formSearchUrlBasedOnEngine();
 
 		// if search PURL is not null for a container.
 		if (searchURL != null)
@@ -146,53 +146,7 @@ public class MetaMetadataSearchType<M extends Metadata, C extends Container, IC 
 		}
 	}
 
-	/**
-	 * 
-	 */
-	public static ParsedURL formSearchUrlBasedOnEngine(int firstResultIndex, InfoCollector infoProcessor, String engine, final SearchState searchSeed)
-	{
-		/*
-		 * if (engine.equals(SearchEngineNames.GOOGLE)) { searchURL = ParsedURL .getAbsolute(
-		 * ((searchSeed.searchType() == SearchEngineNames.REGULAR) ?
-		 * SearchEngineNames.regularGoogleSearchURLString :
-		 * 
-		 * (searchSeed.searchType() == SearchEngineNames.IMAGE) ?
-		 * SearchEngineNames.imageGoogleSearchURLString : (searchSeed.searchType() ==
-		 * SearchEngineNames.SITE) ? SearchEngineUtilities
-		 * .siteGoogleLimitSearchURLString(searchSeed.siteString()) :
-		 * SearchEngineNames.relatedGoogleSearchUrlString) + (searchSeed.valueString().replace(' ',
-		 * '+')).replace("&quot;", "%22")
-		 * 
-		 * + (IGNORE_PDF.value() ? SearchEngineNames.GOOGLE_NO_PDF_ARG : "") + "&num=" +
-		 * searchSeed.numResults() + "&start=" + firstResultIndex, "broken Google URL"); } else if
-		 * (engine.equals(SearchEngineNames.FLICKR)) { searchURL =
-		 * ParsedURL.getAbsolute("http://www.flickr.com/search/?q=" + searchSeed.getQuery()); } else
-		 * if(engine.equals(SearchEngineNames.YAHOO)) { searchURL=ParsedURL.getAbsolute(
-		 * "http://api.search.yahoo.com/WebSearchService/V1/webSearch?appid=yahoosearchwebrss&query="
-		 * +searchSeed.getQuery()); } else if(engine.equals(SearchEngineNames.FLICK_AUTHOR)) { searchURL
-		 * = ParsedURL.getAbsolute("http://www.flickr.com/photos/"+searchSeed.getQuery()+"/"); }
-		 */
-		ParsedURL resultURL; 
-		MetaMetadataRepository mmdRepo = infoProcessor.metaMetaDataRepository();
-		String urlPrefix = mmdRepo.getSearchURL(engine);
-		String query = searchSeed.getQuery();
-		// we replace all white spaces by +
-		query = query.replace(' ', '+');
-		String urlSuffix = mmdRepo.getSearchURLSufix(engine);
-		String numResultString = mmdRepo.getNumResultString(engine);
-		String startString = mmdRepo.getStartString(engine);
-		if (!startString.equals("") && !numResultString.equals(""))
-			resultURL = ParsedURL.getAbsolute(urlPrefix + query + numResultString
-					+ searchSeed.numResults() + startString + firstResultIndex + urlSuffix);
-		else if (!startString.equals(""))
-			resultURL = ParsedURL.getAbsolute(urlPrefix + query + startString + firstResultIndex
-					+ urlSuffix);
-		else
-			resultURL = ParsedURL.getAbsolute(infoProcessor.metaMetaDataRepository().getSearchURL(engine)
-					+ query + urlSuffix);
-		return resultURL;
-		
-	}
+	
 
 	public void delivery(Object o)
 	{
