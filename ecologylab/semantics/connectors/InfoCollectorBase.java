@@ -165,7 +165,7 @@ public abstract class InfoCollectorBase<AC extends Container> extends
 	 * 
 	 * It sometimes gets paused by GoogleSearch to promote downloading of search results.
 	 */
-	protected static final DownloadMonitor			crawlerDownloadMonitor				= new DownloadMonitor(
+	protected static final DownloadMonitor			crawlerDownloadMonitor				= new DownloadMonitor<Container>(
 																																								"WebCrawler",
 																																								NUM_CRAWLER_DOWNLOAD_THREADS,
 																																								0);
@@ -176,7 +176,7 @@ public abstract class InfoCollectorBase<AC extends Container> extends
 	 * This is the <code>DownloadMonitor</code> used by to process drag and drop operations. It gets
 	 * especially high priority, in order to provide rapid response to the user.
 	 */
-	protected static final DownloadMonitor			dndDownloadMonitor						= new DownloadMonitor(
+	protected static final DownloadMonitor			dndDownloadMonitor						= new DownloadMonitor<Container>(
 																																								"Dnd",
 																																								InfoCollectorBase.NUM_SEEDING_DOWNLOAD_THREADS,
 																																								6);
@@ -184,7 +184,7 @@ public abstract class InfoCollectorBase<AC extends Container> extends
 	/**
 	 * This is the <code>DownloadMonitor</code> used by seeds. It never gets paused.
 	 */
-	protected static final DownloadMonitor			seedingDownloadMonitor				= new DownloadMonitor(
+	protected static final DownloadMonitor			seedingDownloadMonitor				= new DownloadMonitor<Container>(
 																																								"Seeding",
 																																								InfoCollectorBase.NUM_SEEDING_DOWNLOAD_THREADS,
 																																								1);

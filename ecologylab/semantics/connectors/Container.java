@@ -7,6 +7,7 @@ import java.io.IOException;
 
 import ecologylab.documenttypes.DocumentType;
 import ecologylab.generic.DispatchTarget;
+import ecologylab.io.Downloadable;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.html.ParagraphText;
 import ecologylab.semantics.html.documentstructure.SemanticAnchor;
@@ -23,6 +24,7 @@ import ecologylab.xml.TranslationScope;
  * 
  */
 public abstract class Container<M extends Metadata> extends ContentElement<Document>
+implements Downloadable
 {
 
 	public Container(ContentElement progenitor)
