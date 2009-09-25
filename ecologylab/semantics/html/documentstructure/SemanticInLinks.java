@@ -74,4 +74,13 @@ public class SemanticInLinks extends ArrayList<SemanticAnchor>
 		}
 		return false;
 	}
+
+	/**
+	 * Returns a weight for this collection of semantic inlinks, giving a reference ITermVector to weigh against. Usually this is the participant interest TermVector.
+	 * @param weightingVector ITermVector to weigh the semantic inlinks with.
+	 */
+	public double getWeight(ITermVector weightingVector)
+	{
+		return this.termVector().idfDot(weightingVector);
+	}
 }

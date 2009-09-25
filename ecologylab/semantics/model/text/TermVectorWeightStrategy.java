@@ -72,5 +72,10 @@ public class TermVectorWeightStrategy<E extends TermVectorFeature> extends Weigh
 		}
 		setChanged();
 	}
+	
+	public ITermVector referenceVector()
+	{
+		return referenceVector;
+	}
 
 }
