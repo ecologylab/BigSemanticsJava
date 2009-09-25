@@ -4,6 +4,7 @@
 package ecologylab.documenttypes;
 
 import ecologylab.generic.DispatchTarget;
+import ecologylab.io.Downloadable;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.actions.SemanticActionsKeyWords;
@@ -26,7 +27,7 @@ import ecologylab.xml.XMLTranslationException;
  * 
  */
 public class MetaMetadataSearchType<M extends Metadata, C extends Container, IC extends InfoCollector<C>, E extends ElementState>
-		extends MetaMetadataDocumentTypeBase<M, C, IC, E> implements CFPrefNames, DispatchTarget,
+		extends MetaMetadataDocumentTypeBase<M, C, IC, E> implements CFPrefNames, DispatchTarget<Container>,
 		SemanticActionsKeyWords
 {
 
@@ -102,27 +103,12 @@ public class MetaMetadataSearchType<M extends Metadata, C extends Container, IC 
 			container.presetDocumentType(this);
 			container.setDispatchTarget(this);
 			container.setAsTrueSeed(searchSeed);
-			queueSearchrequest();
+			searchSeed.queueSearchrequest(container);
 			// System.out.println("DEBUG::queued search request for \t"+searchSeed.getQuery());
 			// infoProcessor.pauseDownloadMonitor();
 		}
 	}
 
-	public void queueSearchrequest()
-	{
-		if (this.searchSeed != null)
-		{
-			ResultDistributer resultDistributer = this.searchSeed.resultDistributer(infoCollector);
-			if (resultDistributer != null)
-			{
-				resultDistributer.queueSearchRequest(container);
-				// System.out.println("DEBUG::queued search request for\t"+container+"\tusing rd=\t"+resultDistributer);
-				return;
-			}
-		}
-		container.queueDownload(); //FIXME: Unconditional queueing of searches ???
-		// System.out.println("DEBUG::queued container\t"+container+"\t for download");
-	}
 
 	/**
 	 * TODO implement this. This method set the query using reflecrtion on search class.
@@ -148,11 +134,14 @@ public class MetaMetadataSearchType<M extends Metadata, C extends Container, IC 
 
 	
 
-	public void delivery(Object o)
+	/**
+	 * 
+	 */
+	public void delivery(Container downloadedContainer)
 	{
 		ResultDistributer aggregator = this.searchSeed.resultDistributer(infoCollector);
 		if (aggregator != null)
-			aggregator.doneQueueing(searchSeed.searchNum(), resultsSoFar);
+			aggregator.doneQueueing(downloadedContainer, searchSeed.searchNum(), resultsSoFar);
 		if (this.searchSeed != null)
 			this.searchSeed.incrementNumResultsBy(searchSeed.numResults());
 
@@ -236,7 +225,7 @@ public class MetaMetadataSearchType<M extends Metadata, C extends Container, IC 
 		}
 	}*/
 
-	public boolean shouldUnpauseCrawler()
+	/*public boolean shouldUnpauseCrawler()
 	{
 		ResultDistributer aggregator = this.searchSeed.resultDistributer(infoCollector);
 		return aggregator.checkIfAllSearchesOver();
@@ -245,11 +234,6 @@ public class MetaMetadataSearchType<M extends Metadata, C extends Container, IC 
 	public void takeSemanticActions(M populatedMetadata)
 	{
 		super.takeSemanticActions(populatedMetadata);
-		if (shouldUnpauseCrawler())
-		{
-			System.out.println("Ended Seeding");
-			infoCollector.endSeeding();
 		}
-
+*/
 	}
-}
