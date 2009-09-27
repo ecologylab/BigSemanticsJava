@@ -142,6 +142,9 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	 */
 	@xml_attribute
 	private boolean															dontCompile;
+	
+	@xml_attribute 
+	private boolean															entity=false;
 
 	@xml_attribute
 	private String															key;
@@ -795,11 +798,19 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 		// appending the declaration.
 		// String mapDecl = childMetaMetadata.get(key).getScalarType().fieldTypeName() + " , " +
 		// className;
+		
+		String variableTypeStart =" ArrayList<";
+		String variableTypeEnd =">";
+		if(entity)
+		{
+			variableTypeStart = " ArrayList<Entity<";
+			variableTypeEnd=">>";
+		}
 		String annotation = "@xml_collection(\"" + name + "\")";
-		appendMetalanguageDecl(appendable, annotation, "private ArrayList<", className, ">", fieldName);
-		appendLazyEvaluationMethod(appendable, fieldName, "ArrayList<" + className + ">");
-		appendSetterForCollection(appendable, fieldName, "ArrayList<" + className + ">");
-		appendGetterForCollection(appendable, fieldName, "ArrayList<" + className + ">");
+		appendMetalanguageDecl(appendable, annotation,"private" +variableTypeStart , className,variableTypeEnd , fieldName);
+		appendLazyEvaluationMethod(appendable, fieldName, variableTypeStart + className + variableTypeEnd);
+		appendSetterForCollection(appendable, fieldName, variableTypeStart + className + variableTypeEnd);
+		appendGetterForCollection(appendable, fieldName, variableTypeStart + className + variableTypeEnd);
 	}
 
 	/**

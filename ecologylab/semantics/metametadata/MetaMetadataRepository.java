@@ -18,6 +18,7 @@ import ecologylab.semantics.metadata.DebugMetadata;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.TypeTagNames;
 import ecologylab.semantics.metadata.builtins.Document;
+import ecologylab.semantics.metadata.builtins.Entity;
 import ecologylab.semantics.metadata.builtins.Image;
 import ecologylab.semantics.metadata.builtins.Media;
 import ecologylab.semantics.metadata.scalar.MetadataInteger;
@@ -28,7 +29,6 @@ import ecologylab.textformat.NamedStyle;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.TranslationScope;
 import ecologylab.xml.XMLTranslationException;
-import ecologylab.xml.types.element.ArrayListState;
 import ecologylab.xml.types.element.HashMapState;
 
 /**
@@ -506,7 +506,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	
 	public static TranslationScope builtinMetadataTranslations()
 	{
-		return TranslationScope.get("builtin_metadata", scalarMetadataTranslations(), Metadata.class, Document.class, Media.class, Image.class);
+		return TranslationScope.get("builtin_metadata", scalarMetadataTranslations(), Metadata.class, Document.class, Media.class, Image.class,Entity.class);
 	}
 
 }
