@@ -3,6 +3,7 @@
  */
 package ecologylab.semantics.metadata.builtins;
 
+import ecologylab.net.ParsedURL;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
 import ecologylab.semantics.metadata.scalar.MetadataString;
@@ -19,7 +20,7 @@ import ecologylab.xml.types.element.Mappable;
  */
 @xml_inherit
 public class Entity<D extends Document> extends Metadata
-implements Mappable
+implements Mappable<ParsedURL>
 {
 	@xml_nested MetadataString		gist;
 	@xml_nested MetadataParsedURL	location;
@@ -44,9 +45,9 @@ implements Mappable
 		// TODO Auto-generated constructor stub
 	}
 
-	public Object key()
+	public ParsedURL key()
 	{
-		return location;
+		return location.getValue();
 	}
 
 	/**
