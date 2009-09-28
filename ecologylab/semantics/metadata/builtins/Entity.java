@@ -49,4 +49,12 @@ implements Mappable
 		return location;
 	}
 
+	/**
+	 * @return the linkedDocument
+	 */
+	public D getLinkedDocument()
+	{
+		return linkedDocument;
+	}
+
 }

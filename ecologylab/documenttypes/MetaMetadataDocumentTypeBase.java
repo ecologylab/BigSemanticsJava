@@ -437,10 +437,18 @@ public abstract class MetaMetadataDocumentTypeBase<M extends Metadata, C extends
 
 		if (fieldAccessor != null)
 		{
+			
 			// get class of the collection
-			final Class collectionChildClass = translationScope.getClassByTag(mmdElement
+			Class collectionChildClass = null;
+			if(mmdElement.isEntity())
+			{
+				collectionChildClass=translationScope.getClassByTag("entity");
+			}
+			else
+			{
+				collectionChildClass =translationScope.getClassByTag(mmdElement
 					.getCollectionChildType());
-
+			}
 			HashMapArrayList<String, FieldAccessor> collectionElementAccessors = metadata
 					.getChildFieldAccessors(collectionChildClass, MetadataFieldAccessor.class);
 
@@ -468,10 +476,12 @@ public abstract class MetaMetadataDocumentTypeBase<M extends Metadata, C extends
 				MetadataFieldAccessor mfa = (MetadataFieldAccessor) collectionElementAccessors.get(i); // ith
 																																																// field
 
-				// if this field exists in childField list this means there are some extratcion rules for it
+				// if this field exists in childField list this means there are some extraction rules for it
 				// and so get the values
 				MetaMetadataField childMetadataField = childMMdFieldList.get(mfa.getTagName());
-
+			
+				
+				
 				if (childMetadataField != null)
 				{
 					// so there are some extraction rules

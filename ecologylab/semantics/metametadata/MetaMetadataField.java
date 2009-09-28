@@ -801,7 +801,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 		
 		String variableTypeStart =" ArrayList<";
 		String variableTypeEnd =">";
-		if(entity)
+		if(isEntity())
 		{
 			variableTypeStart = " ArrayList<Entity<";
 			variableTypeEnd=">>";
@@ -1215,5 +1215,10 @@ public HashMapArrayList<String, MetaMetadataField> getChildMetaMetadata()
 	public String toString()
 	{
 		return parent().toString() + "." + name;
+	}
+
+	public boolean isEntity()
+	{
+		return entity;
 	}
 }
