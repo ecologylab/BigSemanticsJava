@@ -18,13 +18,13 @@ import ecologylab.xml.types.element.Mappable;
  * @author andruid
  */
 @xml_inherit
-public class Entity<M extends Metadata> extends Metadata
+public class Entity<D extends Document> extends Metadata
 implements Mappable
 {
 	@xml_nested MetadataString		gist;
 	@xml_nested MetadataParsedURL	location;
 	
-	M															entity;
+	D															linkedDocument;
 	
 	
 	/**

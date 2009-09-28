@@ -996,7 +996,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 				{
 					Object value = fieldAccessor.getField().get(inheritFrom);
 					fieldAccessor.setField(this, value);
-					debug("override " + this.getName() + "." + fieldAccessor.getFieldName() + " with " + value);
+					debug("inherit\t" + this.getName() + "." + fieldAccessor.getFieldName() + "\t= " + value);
 				}
 			}
 			catch (IllegalArgumentException e)
