@@ -17,6 +17,8 @@ import ecologylab.generic.ReflectionTools;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticAction;
 import ecologylab.semantics.metadata.Metadata;
+import ecologylab.semantics.metadata.TypeTagNames;
+import ecologylab.semantics.tools.MetadataCompiler;
 import ecologylab.semantics.tools.MetadataCompilerConstants;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.TranslationScope;
@@ -258,7 +260,7 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 		p.println(MetadataCompilerConstants.COMMENT);
 
 		// Write the import statements
-		p.println(MetadataCompilerConstants.IMPORTS);
+		p.println(MetadataCompiler.getImportStatement());
 
 		// Write java-doc comments
 		MetadataCompilerConstants.writeJavaDocComment(comment, fileWriter);
@@ -399,6 +401,9 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 		return getName();
 	}
 	
+	/**
+	 * Bind field declarations through the extends and type keywords.
+	 */
 	public void inheritMetaMetadata()
 	{
 		if(!inheritedMetaMetadata)
@@ -417,6 +422,38 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 		}
 	}
 
+	/**
+	 * Bind nested child and collection meta-metadata.
+	 */
+	public void bindNonScalarChildren()
+	{
+		if (childMetaMetadata == null)
+			return;
+		
+		final MetaMetadataRepository repository	= repository();
+		
+		for (MetaMetadataField childField : childMetaMetadata)
+		{
+			if (childField.getScalarType() == null && childField.childMetaMetadata == null)
+			{
+				if (isNested())
+				{
+					repository.bindChildren(childField, childField.getName());
+				}
+				else if (childField.getCollectionChildType() != null)
+				{
+					if (childField.isEntity())
+					{
+						repository.bindChildren(childField, TypeTagNames.ENTITY);
+					}
+					else
+					{
+						repository.bindChildren(childField, childField.getCollectionChildType());
+					}
+				}
+			}
+		}
+	}
 	/**
 	 * @return the semanticActions
 	 */

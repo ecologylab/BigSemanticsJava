@@ -326,6 +326,12 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	
 	private void initializeRepository(HashMap<String, MetaMetadata>	repositoryByPURL, HashMap<String, ArrayList<RepositoryPatternEntry>> repositoryByPattern)
 	{
+		// 1st pass -- resolve nested and collection types as needed -- fill in all child metadata fields
+		for (MetaMetadata metaMetadata : repositoryByTagName)
+		{
+			metaMetadata.bindNonScalarChildren();
+		}
+
 		for (MetaMetadata metaMetadata : repositoryByTagName)
 		{
 			metaMetadata.inheritMetaMetadata();
@@ -509,4 +515,9 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		return TranslationScope.get("builtin_metadata", scalarMetadataTranslations(), Metadata.class, Document.class, Media.class, Image.class,Entity.class);
 	}
 
+	void bindChildren(MetaMetadataField childField, String tag)
+	{
+		MetaMetadata newChildMM	= getByTagName(tag);
+		childField.bindChildren(newChildMM);
+	}
 }

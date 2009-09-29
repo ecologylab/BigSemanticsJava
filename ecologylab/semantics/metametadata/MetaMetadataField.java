@@ -11,7 +11,7 @@ import java.util.Iterator;
 
 import ecologylab.appframework.PropertiesAndDirectories;
 import ecologylab.generic.HashMapArrayList;
-import ecologylab.semantics.metadata.MetadataFieldAccessor;
+import ecologylab.semantics.tools.MetadataCompiler;
 import ecologylab.semantics.tools.MetadataCompilerConstants;
 import ecologylab.textformat.NamedStyle;
 import ecologylab.xml.ElementState;
@@ -168,12 +168,12 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	 */
 	@xml_attribute
 	private String																			contextNode;
-	
+
 	@xml_attribute
 	private String																			childTag;
 
 	@xml_map("meta_metadata_field")
-	private HashMapArrayList<String, MetaMetadataField>	childMetaMetadata;
+	protected HashMapArrayList<String, MetaMetadataField>	childMetaMetadata;
 
 	HashMap<String, String>											childPackagesMap	= new HashMap<String, String>(2);
 
@@ -296,7 +296,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 			p.println(MetadataCompilerConstants.PACKAGE + " " + packageName + ";");
 
 			// writing the imports
-			p.println(MetadataCompilerConstants.IMPORTS);
+			p.println(MetadataCompiler.getImportStatement());
 
 			// write xml_inherit
 			p.println("@xml_inherit");
@@ -1240,5 +1240,14 @@ public HashMapArrayList<String, MetaMetadataField> getChildMetaMetadata()
 			return name;
 		}
 			
+	}	
+	protected void bindChildren(MetaMetadata childMM)
+	{
+		if (childMM != null)
+		{
+			childMetaMetadata	= childMM.childMetaMetadata;
+		}
+
 	}
+
 }
