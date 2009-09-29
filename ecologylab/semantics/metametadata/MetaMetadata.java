@@ -512,6 +512,6 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 	@Override
 	protected String getMetaMetadataTagToInheritFrom()
 	{
-		return (extendsAttribute != null) ? extendsAttribute : getTypeAttribute();
+		return (extendsAttribute != null) ? extendsAttribute : super.getMetaMetadataTagToInheritFrom();
 	}
 }

@@ -1013,8 +1013,12 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 			return  TypeTagNames.ENTITY;
 		else if (collectionChildType != null)
 			return collectionChildType;
+		else if (type != null)
+			return type;
+		else if (isNested)
+			return name;
 		else
-			return getTypeAttribute();
+			return null;
 	}
 
 	/**
