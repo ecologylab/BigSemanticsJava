@@ -4,7 +4,6 @@
 package ecologylab.semantics.tools;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 
 import ecologylab.appframework.ApplicationEnvironment;
 import ecologylab.semantics.metametadata.MetaMetadata;
@@ -21,7 +20,8 @@ import ecologylab.xml.XMLTranslationException;
  */
 public class MetadataCompiler extends ApplicationEnvironment
 {
-
+	private static String importStatement;
+	
 	/**
 	 * @param applicationName
 	 * @throws XMLTranslationException
@@ -69,17 +69,17 @@ public class MetadataCompiler extends ApplicationEnvironment
 
 			// for each metadata first find the list of packages in which they have to
 			// be generated.
+			importStatement = MetadataCompilerConstants.IMPORTS;
 			for (MetaMetadata metaMetadata : test.values())
 			{
 				if(metaMetadata.getPackageAttribute()!=null)
 				{
-					MetadataCompilerConstants.IMPORTS = MetadataCompilerConstants.IMPORTS+"import "+metaMetadata.getPackageAttribute()+".*;\n";
+					importStatement += "import "+metaMetadata.getPackageAttribute()+".*;\n";
 				}
 			}
 			
 			// Writer for the translation scope for generated class.
-			MetadataCompilerConstants.createTranslationScopeClass(MetadataCompilerConstants
-					.getGenerationPath(test.getPackageName()));
+			MetadataCompilerConstants.createTranslationScopeClass(MetadataCompilerConstants.getGenerationPath(test.getPackageName()));
 
 			// for each meta-metadata in the repository
 			for (MetaMetadata metaMetadata : test.values())
@@ -155,6 +155,14 @@ public class MetadataCompiler extends ApplicationEnvironment
 			e.printStackTrace();
 		}
 
+	}
+
+	/**
+	 * @return the importStatement
+	 */
+	public static String getImportStatement()
+	{
+		return importStatement;
 	}
 
 }
