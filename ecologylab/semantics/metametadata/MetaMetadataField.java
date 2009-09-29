@@ -1234,10 +1234,6 @@ public HashMapArrayList<String, MetaMetadataField> getChildMetaMetadata()
 		{
 			return childTag;
 		}
-		else if(collection!=null)
-		{
-			return collectionChildType;
-		}
 		else 
 		{
 			// TODO implement other cases

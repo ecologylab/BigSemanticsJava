@@ -519,7 +519,7 @@ public abstract class MetaMetadataDocumentTypeBase<M extends Metadata, C extends
 						for (int j = 0; j < parentNodeListLength; j++)
 						{
 							collectionInstanceList.add((M) ReflectionTools.getInstance(collectionChildClass));
-						//	((M)collectionInstanceList.get(j)).setMetaMetadata(metaMetadata);
+							((M)collectionInstanceList.get(j)).setMetaMetadata(infoCollector.metaMetaDataRepository().getMM(collectionChildClass));
 						}
 						collectionInstanceListInitialized = true;
 					}
