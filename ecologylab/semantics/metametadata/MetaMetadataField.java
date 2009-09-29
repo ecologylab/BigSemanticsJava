@@ -11,6 +11,7 @@ import java.util.Iterator;
 
 import ecologylab.appframework.PropertiesAndDirectories;
 import ecologylab.generic.HashMapArrayList;
+import ecologylab.semantics.metadata.MetadataFieldAccessor;
 import ecologylab.semantics.tools.MetadataCompilerConstants;
 import ecologylab.textformat.NamedStyle;
 import ecologylab.xml.ElementState;
@@ -167,6 +168,9 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	 */
 	@xml_attribute
 	private String																			contextNode;
+	
+	@xml_attribute
+	private String																			childTag;
 
 	@xml_map("meta_metadata_field")
 	private HashMapArrayList<String, MetaMetadataField>	childMetaMetadata;
@@ -225,30 +229,30 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 			throws XMLTranslationException, IOException
 	{
 
-		ScalarType sType = tryTofindScalarType();
-		scalarType = sType;
+		//ScalarType sType = tryTofindScalarType();
+		//scalarType = sType;
 		// check for scalar type.
-		if (sType != null)
+		if (scalarType != null)
 		{
 			// Non Null scalar type means we have a nested attribute.
 			appendScalarNested(appendable);
 		}
-		boolean iNested = tryTofindNested();
-		isNested=iNested;
-		if (iNested)
+		//boolean iNested = tryTofindNested();
+		//isNested=iNested;
+		if (isNested)
 		{
 			appenedNestedMetadataField(appendable);
 		}
 		
-		String col = tryTofindCollection();
-		collection = col;
+		//String col = tryTofindCollection();
+		//collection = col;
 		// check if it is a collection
-		if (col != null)
+		if (collection != null)
 		{
 			// collection of nested elements
 			// TODO -- can these be scalars? if so, how can we tell?
-			String colChildType= tryTofindCollectionChildType();
-			collectionChildType=colChildType;
+			//String colChildType= tryTofindCollectionChildType();
+			//collectionChildType=colChildType;
 			appendCollection(appendable);
 		}
 
@@ -806,7 +810,9 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 			variableTypeStart = " ArrayList<Entity<";
 			variableTypeEnd=">>";
 		}
-		String annotation = "@xml_collection(\"" + name + "\")";
+		String tag =getChildTag();
+			
+		String annotation = "@xml_collection(\"" + tag + "\")";
 		appendMetalanguageDecl(appendable, annotation,"private" +variableTypeStart , className,variableTypeEnd , fieldName);
 		appendLazyEvaluationMethod(appendable, fieldName, variableTypeStart + className + variableTypeEnd);
 		appendSetterForCollection(appendable, fieldName, variableTypeStart + className + variableTypeEnd);
@@ -898,7 +904,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 
 	public MetaMetadataField lookupChild(FieldAccessor fieldAccessor)
 	{
-		return lookupChild(fieldAccessor.getTagName());
+		return lookupChild(fieldAccessor.getFieldName());
 	}
 
 	public String getXpath()
@@ -1220,5 +1226,23 @@ public HashMapArrayList<String, MetaMetadataField> getChildMetaMetadata()
 	public boolean isEntity()
 	{
 		return entity;
+	}
+	
+	public String getChildTag()
+	{
+		if(childTag!=null)
+		{
+			return childTag;
+		}
+		else if(collection!=null)
+		{
+			return collectionChildType;
+		}
+		else 
+		{
+			// TODO implement other cases
+			return name;
+		}
+			
 	}
 }
