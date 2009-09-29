@@ -915,7 +915,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 
 	public MetaMetadataField lookupChild(FieldAccessor fieldAccessor)
 	{
-		return lookupChild(fieldAccessor.getTagName());
+		return lookupChild(XMLTools.getXmlTagName(fieldAccessor.getFieldName(), null));
 	}
 
 	public String getXpath()
@@ -1000,7 +1000,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 			{
 				inheritedMetaMetadata.inheritMetaMetadata(repository);
 				for(MetaMetadataField inheritedField : inheritedMetaMetadata.getChildMetaMetadata())
-					inheritForChildField(inheritedField);
+					inheritForField(inheritedField);
 			}
 			
 			inheritMetaMetadataFinished = true;
@@ -1025,20 +1025,34 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	 * Add a child field from a super class into the representation for this. Unless it should be
 	 * shadowed, in which case ignore.
 	 * 
-	 * @param childMetaMetadataField
+	 * @param fieldToInheritFrom
 	 */
-	void inheritForChildField(MetaMetadataField childMetaMetadataField)
+	void inheritForField(MetaMetadataField fieldToInheritFrom)
 	{
-		String fieldName = childMetaMetadataField.getName();
+		String fieldName = fieldToInheritFrom.getName();
 		// this is for the case when meta_metadata has no meta_metadata fields of its own. It just inherits from super class.
 		if (childMetaMetadata == null)
 			childMetaMetadata = new HashMapArrayList<String, MetaMetadataField>();
 		
 		// *do not* override fields in here with fields from super classes.
-		if (!childMetaMetadata.containsKey(fieldName))
-			childMetaMetadata.put(fieldName, childMetaMetadataField);
+		MetaMetadataField fieldToInheritTo = childMetaMetadata.get(fieldName);
+		if (fieldToInheritTo == null)
+		{
+			childMetaMetadata.put(fieldName, fieldToInheritFrom);
+			fieldToInheritTo = fieldToInheritFrom;
+		}
 		else
-			childMetaMetadata.get(fieldName).inheritNonDefaultAttributes(childMetaMetadataField);
+		{
+			fieldToInheritTo.inheritNonDefaultAttributes(fieldToInheritFrom);
+		}
+		
+		if (fieldToInheritFrom.childMetaMetadata != null)
+		{
+			for(MetaMetadataField grandChildMetaMetadataField : fieldToInheritFrom.childMetaMetadata)
+			{
+				fieldToInheritTo.inheritForField(grandChildMetaMetadataField);
+			}
+		}
 			
 	}
 

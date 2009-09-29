@@ -136,11 +136,19 @@ abstract public class Metadata extends MetadataBase
 
 			// When the iterator enters the metadata in the mixins "this" in getValueString has to be
 			// the corresponding metadata in mixin.
-			String valueString = fieldAccessor.getValueString(currentMetadata);
+			boolean hasVisibleNonNullField = false;
+
+			if (fieldAccessor.isPseudoScalar())
+				hasVisibleNonNullField = MetadataString.isNotNullValue(fieldAccessor.getValueString(currentMetadata));
+			else if (fieldAccessor.isNested())
+				hasVisibleNonNullField = (((Metadata) fieldAccessor.getNested(currentMetadata)).numberOfVisibleFields(metaMetadata) > 0);
+			else
+				hasVisibleNonNullField = (fieldAccessor.getCollection(currentMetadata)).size() > 0;
+
 			// "null" happens with mixins fieldAccessor b'coz getValueString() returns "null".
 			boolean isAlwaysShowAndNotHide = metaMetadata == null
 					|| (metaMetadata.isAlwaysShow() || !metaMetadata.isHide());
-			if (isAlwaysShowAndNotHide && MetadataString.isNotNullValue(valueString))
+			if (isAlwaysShowAndNotHide && hasVisibleNonNullField)
 			{
 				size++;
 			}
