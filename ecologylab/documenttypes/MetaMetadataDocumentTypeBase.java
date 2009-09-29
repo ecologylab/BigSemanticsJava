@@ -398,13 +398,13 @@ public abstract class MetaMetadataDocumentTypeBase<M extends Metadata, C extends
 										XPathConstants.NODE);
 			
 			// Have to return the nested object for the field.
-			FieldAccessor fieldAccessor = metadata.getMetadataFieldAccessor(mmdElementName);
+			FieldAccessor fieldAccessor = metadata.getMetadataFieldAccessor(mmdElement.getChildTag());
 			nestedMetadata = (M) fieldAccessor.getAndPerhapsCreateNested(metadata);
+			nestedMetadata.setMetaMetadata(infoCollector.metaMetaDataRepository().getMM(nestedMetadata.getClass()));
 			recursiveExtraction(translationScope,mmdElement, nestedMetadata, xpath, param,parentNode);
 		}
 		catch (Exception e)
 		{
-			e.printStackTrace();
 			StringBuilder buffy = StringBuilderUtils.acquire();
 			buffy
 					.append("################# ERROR IN EVALUATION OF A NESTED FIELD "+mmdElementName+" ########################\n");
@@ -433,7 +433,7 @@ public abstract class MetaMetadataDocumentTypeBase<M extends Metadata, C extends
 	{
 		Node originalNode = contextNode;
 		// this is the field accessor for the collection field
-		FieldAccessor fieldAccessor = metadata.getMetadataFieldAccessor(mmdElementName);
+		FieldAccessor fieldAccessor = metadata.getMetadataFieldAccessor(mmdElement.getChildTag());
 
 		if (fieldAccessor != null)
 		{
@@ -494,11 +494,7 @@ public abstract class MetaMetadataDocumentTypeBase<M extends Metadata, C extends
 					}
 					catch (Exception e)
 					{
-						try{
-							TransformerException t = (TransformerException) e;
-							System.out.println("Transform Exception::: \n" + t.getMessageAndLocation());
-						}
-						catch(ClassCastException c){}
+						
 						StringBuilder buffy = StringBuilderUtils.acquire();
 						
 						buffy
@@ -508,7 +504,7 @@ public abstract class MetaMetadataDocumentTypeBase<M extends Metadata, C extends
 						buffy.append("XPath Expression::\t").append(parentXPathString).append("\n");
 						buffy.append("Container Purl::\t").append(container.purl()).append("\n");
 						System.out.println(buffy);
-						e.printStackTrace();
+					
 
 						StringBuilderUtils.release(buffy);
 						return;
@@ -523,7 +519,7 @@ public abstract class MetaMetadataDocumentTypeBase<M extends Metadata, C extends
 						for (int j = 0; j < parentNodeListLength; j++)
 						{
 							collectionInstanceList.add((M) ReflectionTools.getInstance(collectionChildClass));
-							((M)collectionInstanceList.get(j)).setMetaMetadata(metaMetadata);
+						//	((M)collectionInstanceList.get(j)).setMetaMetadata(metaMetadata);
 						}
 						collectionInstanceListInitialized = true;
 					}
