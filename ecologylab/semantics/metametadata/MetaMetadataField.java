@@ -474,8 +474,15 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	 */
 	private void appenedNestedMetadataField(Appendable appendable) throws IOException
 	{
+		String variableType="\") @xml_nested "+XMLTools.classNameFromElementName(getType());
 		String fieldType = XMLTools.classNameFromElementName(getType());
-		appendable.append("\nprivate @xml_tag(\""+getName()+"\") @xml_nested " + XMLTools.classNameFromElementName(getType()) + "\t"
+		if(isEntity())
+		{
+			variableType = "\") @xml_nested Entity<"+XMLTools.classNameFromElementName(getType())+">";
+			fieldType = "Entity<"+XMLTools.classNameFromElementName(getType())+">";
+		}
+		
+		appendable.append("\nprivate @xml_tag(\""+getName()+variableType + "\t"
 				+ name + ";");
 		appendLazyEvaluationMethod(appendable, getName(), fieldType);
 		appendSetterForCollection(appendable, getName(), fieldType);
