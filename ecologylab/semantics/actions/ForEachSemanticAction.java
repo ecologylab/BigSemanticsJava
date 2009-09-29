@@ -25,6 +25,16 @@ class ForEachSemanticAction extends NestedSemanticAction implements SemanticActi
 	 */
 	@xml_attribute private String as;
 	
+	/**
+	 * Starting index
+	 */
+	@xml_attribute private String start;
+	
+	/**
+	 * end index
+	 */
+	@xml_attribute private String end;
+	
 	
 
 	
@@ -71,6 +81,22 @@ class ForEachSemanticAction extends NestedSemanticAction implements SemanticActi
 	{
 		// TODO Auto-generated method stub
 		
+	}
+
+	/**
+	 * @return the start
+	 */
+	public String getStart()
+	{
+		return start;
+	}
+
+	/**
+	 * @return the end
+	 */
+	public String getEnd()
+	{
+		return end;
 	}
 
 

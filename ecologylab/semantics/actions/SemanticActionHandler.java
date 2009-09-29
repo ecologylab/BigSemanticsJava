@@ -200,10 +200,22 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords
 				GenericIterable gItr = new GenericIterable(collectionObject);
 				System.out.println(documentType.purl());
 				Iterator itr = gItr.iterator();
+				int collectionSize=gItr.size();
+				int start =0;
+				int end =collectionSize;
+				if(action.getStart()!=null)
+				{
+					start =Integer.parseInt(action.getStart());
+				}
+				if(action.getEnd()!=null)
+				{
+					end = Integer.parseInt(action.getEnd());
+				}
+				
 				// start the loop over each object
-				while(itr.hasNext())
+				for(int i=start;i<end;i++)
 				{	
-					Object item = itr.next();
+					Object item = gItr.get(i);
 					//put it in semantic action return value map
 					semanticActionReturnValueMap.put(action.getAs(), item);
 					for (SemanticAction nestedSemanticAction  : nestedSemanticActions)

@@ -49,7 +49,17 @@ public class GenericIterable implements Iterable
 				return ((ArrayList)collectionObject).size();
 		}
 			
-	}
+	 public Object get(int i)
+	 {
+		 if(collectionObject instanceof DTMNodeList)
+			{
+				return ((DTMNodeList)collectionObject).item(i);
+			}
+			else
+				return ((ArrayList)collectionObject).get(i);
+		}
+	 }
+
 
 	
 	
