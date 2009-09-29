@@ -6,6 +6,8 @@ public interface TypeTagNames
 	
 	public static final String	DOCUMENT_TAG	= "document";
 	
+	public static final String	ENTITY				= "entity";
+	
 	public static final String	IMAGE_TAG			= "image";
 
 	public static final String	TEXT_TAG			= "text";
