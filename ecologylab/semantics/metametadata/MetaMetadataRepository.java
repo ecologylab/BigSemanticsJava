@@ -327,14 +327,14 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	private void initializeRepository(HashMap<String, MetaMetadata>	repositoryByPURL, HashMap<String, ArrayList<RepositoryPatternEntry>> repositoryByPattern)
 	{
 		// 1st pass -- resolve nested and collection types as needed -- fill in all child metadata fields
-		for (MetaMetadata metaMetadata : repositoryByTagName)
+		/*for (MetaMetadata metaMetadata : repositoryByTagName)
 		{
 			metaMetadata.bindNonScalarChildren();
-		}
+		}*/
 
 		for (MetaMetadata metaMetadata : repositoryByTagName)
 		{
-			metaMetadata.inheritMetaMetadata();
+			metaMetadata.inheritMetaMetadata(this);
 			ParsedURL purl = metaMetadata.getUrlBase();
 			if (purl != null)
 				repositoryByPURL.put(purl.noAnchorNoQueryPageString(), metaMetadata);

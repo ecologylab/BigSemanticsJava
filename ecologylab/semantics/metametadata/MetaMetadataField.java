@@ -11,6 +11,7 @@ import java.util.Iterator;
 
 import ecologylab.appframework.PropertiesAndDirectories;
 import ecologylab.generic.HashMapArrayList;
+import ecologylab.semantics.metadata.TypeTagNames;
 import ecologylab.semantics.tools.MetadataCompiler;
 import ecologylab.semantics.tools.MetadataCompilerConstants;
 import ecologylab.textformat.NamedStyle;
@@ -192,6 +193,9 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	 * The Meta-Metadata repository object.
 	 */
 	private MetaMetadataRepository mmdRepository;
+	
+
+	private boolean						inheritMetaMetadataFinished = false;
 	/**************************************************************************************/
 
 	public MetaMetadataField()
@@ -911,7 +915,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 
 	public MetaMetadataField lookupChild(FieldAccessor fieldAccessor)
 	{
-		return lookupChild(fieldAccessor.getFieldName());
+		return lookupChild(fieldAccessor.getTagName());
 	}
 
 	public String getXpath()
@@ -975,6 +979,43 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	{
 		return ignoreInTermVector;
 	}
+	
+	/**
+	 * Bind field declarations through the extends and type keywords.
+	 */
+	public void inheritMetaMetadata(MetaMetadataRepository repository)
+	{
+		if(!inheritMetaMetadataFinished)
+		{
+			if (childMetaMetadata != null)
+			{
+				for(MetaMetadataField childField : childMetaMetadata)
+				{
+					childField.inheritMetaMetadata(repository);
+				}
+			}
+			String tagName = getMetaMetadataTagToInheritFrom();
+			MetaMetadata inheritedMetaMetadata =  repository.getByTagName(tagName);
+			if(inheritedMetaMetadata != null)
+			{
+				inheritedMetaMetadata.inheritMetaMetadata(repository);
+				for(MetaMetadataField inheritedField : inheritedMetaMetadata.getChildMetaMetadata())
+					inheritForChildField(inheritedField);
+			}
+			
+			inheritMetaMetadataFinished = true;
+		}
+	}
+
+	protected String getMetaMetadataTagToInheritFrom()
+	{
+		if (isEntity())
+			return  TypeTagNames.ENTITY;
+		else if (collectionChildType != null)
+			return collectionChildType;
+		else
+			return getTypeAttribute();
+	}
 
 	/**
 	 * Add a child field from a super class into the representation for this. Unless it should be
@@ -982,7 +1023,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	 * 
 	 * @param childMetaMetadataField
 	 */
-	void addChild(MetaMetadataField childMetaMetadataField)
+	void inheritForChildField(MetaMetadataField childMetaMetadataField)
 	{
 		String fieldName = childMetaMetadataField.getName();
 		// this is for the case when meta_metadata has no meta_metadata fields of its own. It just inherits from super class.

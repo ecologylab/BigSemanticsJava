@@ -112,8 +112,6 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 
 
 	// TranslationScope DEFAULT_METADATA_TRANSLATIONS = DefaultMetadataTranslationSpace.get();
-
-	private boolean						inheritedMetaMetadata = false;
 	
 	public MetaMetadata()
 	{
@@ -400,27 +398,6 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 	{
 		return getName();
 	}
-	
-	/**
-	 * Bind field declarations through the extends and type keywords.
-	 */
-	public void inheritMetaMetadata()
-	{
-		if(!inheritedMetaMetadata)
-		{
-			String tagName = (extendsAttribute != null) ? extendsAttribute : getTypeAttribute();
-			MetaMetadata extendedMetaMetadata =  repository().getByTagName(tagName);
-			//MetaMetadata extendedMetaMetadata = repository().getByTagName(extendsAttribute);
-			if(extendedMetaMetadata != null)
-			{
-				extendedMetaMetadata.inheritMetaMetadata();
-				for(MetaMetadataField extendedField : extendedMetaMetadata.getChildMetaMetadata())
-					addChild(extendedField);
-			}
-			
-			inheritedMetaMetadata = true;
-		}
-	}
 
 	/**
 	 * Bind nested child and collection meta-metadata.
@@ -532,5 +509,9 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 		return packageAttribute;
 	}
 	
-
+	@Override
+	protected String getMetaMetadataTagToInheritFrom()
+	{
+		return (extendsAttribute != null) ? extendsAttribute : getTypeAttribute();
+	}
 }
