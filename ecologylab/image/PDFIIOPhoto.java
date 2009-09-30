@@ -18,8 +18,6 @@ import ecologylab.generic.DispatchTarget;
 import ecologylab.io.BasicSite;
 import ecologylab.net.PURLConnection;
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.html.documentstructure.ImageConstants;
-import ecologylab.semantics.html.documentstructure.ImageFeatures;
 
 /**
  * @author andruid
