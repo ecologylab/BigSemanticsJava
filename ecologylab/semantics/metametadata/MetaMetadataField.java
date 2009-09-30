@@ -999,6 +999,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 			if(inheritedMetaMetadata != null)
 			{
 				inheritedMetaMetadata.inheritMetaMetadata(repository);
+				inheritNonDefaultAttributes(inheritedMetaMetadata);
 				for(MetaMetadataField inheritedField : inheritedMetaMetadata.getChildMetaMetadata())
 					inheritForField(inheritedField);
 			}
@@ -1254,6 +1255,11 @@ public HashMapArrayList<String, MetaMetadataField> getChildMetaMetadata()
 	 */
 	public boolean isGenerateClass()
 	{
+		// we r not using getType as by default getType will give meta-metadata name
+		if(type!=null)
+		{
+			return false;
+		}
 		return generateClass;
 	}
 	
@@ -1266,10 +1272,6 @@ public HashMapArrayList<String, MetaMetadataField> getChildMetaMetadata()
 		this.generateClass = generateClass;
 	}
 	
-	public boolean doesGenerateClass()
-	{
-		return generateClass;
-	}
 	
 	public String getType()
 	{
