@@ -611,9 +611,9 @@ public abstract class MetaMetadataDocumentTypeBase<M extends Metadata, C extends
 		{
 			// create a pattern based on regular expression
 			Pattern pattern = Pattern.compile(regularExpression);
-			StringBuilder eval = new StringBuilder(evaluation);
+//			StringBuilder eval = new StringBuilder(evaluation);
 			// create a matcher based on input string
-			Matcher matcher = pattern.matcher(eval);
+			Matcher matcher = pattern.matcher(evaluation);
 
 			// TODO right now we r using regular expressions just to replace the
 			// matching string we might use them for more better uses.
@@ -621,14 +621,8 @@ public abstract class MetaMetadataDocumentTypeBase<M extends Metadata, C extends
 			String replacementString = mmdElement.getReplacementString();
 			if (replacementString != null)
 			{
-				// create string buffer
-			
-				boolean result = matcher.find();
-				if (result)
-				{
-					eval.replace(matcher.start(), matcher.end(), replacementString);
-				}
-				evaluation = eval.toString();
+				//Consecutively check for further matches. Replacing all with the replacementString
+				evaluation = matcher.replaceAll(replacementString);
 			}
 		}
 
