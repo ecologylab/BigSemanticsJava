@@ -77,7 +77,7 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 	private String						userAgentString;
 
 	@xml_attribute
-	private String						binding="default";
+	private String						binding=null;
 	/*
 	 * @xml_collection("meta_metadata_field") private ArrayList<MetaMetadataField>
 	 * metaMetadataFieldList;
