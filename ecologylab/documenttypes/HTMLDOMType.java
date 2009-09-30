@@ -240,18 +240,18 @@ extends HTMLCommon<C, IC, ES>
 		C	container	= this.container();
 		for(AnchorContext anchorContext : anchorContexts)
 		{
-				generateCanidateContainerFromContext(anchorContext,container);
+				generateCanidateContainerFromContext(anchorContext,container, false);
 		}
 	}
 	
-	public void generateCanidateContainerFromContext(AnchorContext anchorContext, C container)
+	public void generateCanidateContainerFromContext(AnchorContext anchorContext, C container, boolean shouldTraverse)
 	{
 		ParsedURL hrefPurl 			= anchorContext.getHref();
 		if(hrefPurl !=null && !hrefPurl.isNull())
 		{	
 			newAHref(hrefPurl);
 	
-			if (!hrefPurl.isImg() && infoCollector.accept(hrefPurl))
+			if (!hrefPurl.isImg() && (infoCollector.accept(hrefPurl)||shouldTraverse))
 			{
 				MetaMetadataRepository mmdRepository= infoCollector.metaMetaDataRepository();
 				MetaMetadata metaMetadata 					= mmdRepository.getDocumentMM(hrefPurl);

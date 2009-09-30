@@ -184,7 +184,7 @@ extends ContainerType<C, IC, ES> implements SemanticsPrefs
 			else 
 			{
 				//FIXME -- abhinav -- how do we look up MetaMetadata here?!
-				MetaMetadata metaMetadata	= null;
+				MetaMetadata metaMetadata	=infoCollector.metaMetaDataRepository().getDocumentMM(hrefPurl);
 
 //				CfContainer newContainer = abstractInfoCollector.getContainerWithoutQueuing(container, hrefPurl);
 //				if (newContainer != null)
