@@ -63,8 +63,8 @@ public class SemanticInLinks extends ArrayList<SemanticAnchor>
 					return false;
 				}
 			}
-			super.add(newAnchor.signficance,newAnchor);
-			semanticInlinkCollection().add(newAnchor.termVector());
+			super.add(newAnchor);
+			semanticInlinkCollection().add(newAnchor.signficance,newAnchor.termVector());
 			return true;
 		}
 		return false;
