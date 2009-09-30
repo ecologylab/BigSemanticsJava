@@ -11,10 +11,6 @@ import ecologylab.semantics.model.text.TermVectorWeightStrategy;
 public class SemanticInLinks extends ArrayList<SemanticAnchor>
 {
 	CompositeTermVector semanticInlinkCollection;
-
-	TermVectorWeightStrategy<SemanticAnchor> weightStrategy;
-	
-	boolean invalid	= true;
 	
 	public SemanticInLinks()
 	{
@@ -67,8 +63,7 @@ public class SemanticInLinks extends ArrayList<SemanticAnchor>
 					return false;
 				}
 			}
-			invalid	= true;
-			super.add(newAnchor);
+			super.add(newAnchor.signficance,newAnchor);
 			semanticInlinkCollection().add(newAnchor.termVector());
 			return true;
 		}
