@@ -308,7 +308,7 @@ abstract public class DocumentType<C extends Container, IC extends InfoCollector
 			}
 			
 			// if meta-metadata does not exists or the binding type is default
-			if (result == null || "default".equals(metaMetadata.getBinding()))
+			if (result == null || metaMetadata.getBinding()==null)
 			{
 				// it is of some special type like html,pdf etc so we find out the document type
 				// using logic below.

@@ -69,7 +69,7 @@ extends HTMLCommon<C, IC, ES>
 	   try
 	   {
 	  	 // we dont build a tidy for for direct biniding
-	  	 if(!metaMetadata.getBinding().equals("direct"))
+	  	 if(!"direct".equals(metaMetadata.getBinding()))
 	  		 		document 							= tidy.parseDOM(inputStream(),/* System.out*/null);
 		   postParse();
 	   } catch (Exception e) 
