@@ -170,7 +170,7 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords
 	public abstract void queueDocumentForDownload(SemanticAction action, SemanticActionParameters parameter,DocumentType documentType, IC infoCollector);
 	
 	
-	public abstract void handleCreateAndVisualizeTextSurrogateSemanticAction(SemanticAction action,
+	public abstract void createAndVisualizeTextSurrogateSemanticAction(SemanticAction action,
 			SemanticActionParameters parameter2, DocumentType documentType, IC infoCollector);
 	
 	public abstract void syncNestedMetadataSemanticAction(SemanticAction action,	SemanticActionParameters parameter, DocumentType documentType, IC infoCollector);
@@ -386,7 +386,7 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords
 			}
 			else if(SemanticActionStandardMethods.CREATE_AND_VISUALIZE_TEXT_SURROGATE.equals(actionName))
 			{
-				handleCreateAndVisualizeTextSurrogateSemanticAction(action,parameter,documentType,infoCollector);
+				createAndVisualizeTextSurrogateSemanticAction(action,parameter,documentType,infoCollector);
 			}
 			else if(SemanticActionStandardMethods.TRY_SYNC_NESTED_METADATA.equals(actionName))
 			{
