@@ -186,14 +186,18 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 			
 			if(result == null)
 			{
-				String protocolStrippedURL = purl.toString().split("://")[1];					
-				String matchingPhrase = urlprefixCollection.getMatchingPhrase(protocolStrippedURL, '/');
-				//FIXME -- andruid needs abhinav to explain this code better and make more clear!!!
-				if(matchingPhrase != null)
+				String[] split = purl.toString().split("://");
+				if(split.length > 1)
 				{
-					String key = purl.url().getProtocol()+"://"+matchingPhrase;
-					
-					result = documentRepositoryByURL.get(key);
+					String protocolStrippedURL = split[1];					
+					String matchingPhrase = urlprefixCollection.getMatchingPhrase(protocolStrippedURL, '/');
+					//FIXME -- andruid needs abhinav to explain this code better and make more clear!!!
+					if(matchingPhrase != null)
+					{
+						String key = purl.url().getProtocol()+"://"+matchingPhrase;
+						
+						result = documentRepositoryByURL.get(key);
+					}
 				}
 			}
 
