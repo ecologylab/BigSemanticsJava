@@ -176,6 +176,9 @@ public class CompositeTermVector extends Observable implements Observer, ITermVe
 
 	public String toString ( )
 	{
+		if (termVectors == null)
+			return "";
+			
 		StringBuilder s = new StringBuilder("[");
 		synchronized (termVectors)
 		{
