@@ -320,13 +320,9 @@ implements SemanticsPrefs, SearchEngineNames
 	
 	protected boolean noAggregator()
 	{
-		return this.noAggregator || (seedSet() == null) || imageSearchResults();
+		return this.noAggregator || (seedSet() == null);
 	}
 	
-	public boolean imageSearchResults()
-	{
-		return /*FLICKR.equals(engine) ||*/ YAHOO_IMAGE.equals(engine); // || DELICIOUS.equals(engine);
-	}
 	/**
 	 * @return Returns the siteString.
 	 */
@@ -532,13 +528,10 @@ implements SemanticsPrefs, SearchEngineNames
 	{
 		InterestModel.expressInterest(query, interestLevel);
 
-		boolean result = !imageSearchResults();
-		if (result)
-		{
-			setSearchNum(searchNum);
-			setSeedSet(seedSet);
-		}
-		return result;
+		setSearchNum(searchNum);
+		setSeedSet(seedSet);
+
+		return true;
 	}
 	
 	public boolean recentlyCreated()
