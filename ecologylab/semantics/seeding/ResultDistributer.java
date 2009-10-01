@@ -3,6 +3,7 @@ package ecologylab.semantics.seeding;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Hashtable;
 
 import ecologylab.generic.Debug;
 import ecologylab.generic.DispatchTarget;
@@ -107,7 +108,7 @@ extends Debug implements DispatchTarget<QandDownloadable>
   	 * 		(1) searches that we queue and parse, AND also of
   	 * 		(2) search result containers that we queue and parse.
   	 */
-  	HashSet<ParsedURL> queuedDownloadablesMap	= new HashSet<ParsedURL>();
+  	Hashtable<ParsedURL, ParsedURL> queuedDownloadablesMap	= new Hashtable<ParsedURL, ParsedURL>();
   	
 	
 	public ResultDistributer(InfoCollector infoCollector, int numSearches)
@@ -179,8 +180,9 @@ extends Debug implements DispatchTarget<QandDownloadable>
 						 */
 						result.setDispatchTarget(this);
 						if (result.queueDownload())
-								queuedDownloadablesMap.add(result.getInitialPURL());
-						
+						{
+							putQueuedDownloadable(result);
+						}
 						queueCount ++;
 
 						// reset the searchCount to 0 when the non-search page has been queued. 
@@ -258,7 +260,9 @@ extends Debug implements DispatchTarget<QandDownloadable>
 			else	// If there is nothing waiting, just queue search container to DownloadMonitor.
 			{
 				if (searchContainer.queueDownload())	// look out for previous downloads of searchContainer!
-					queuedDownloadablesMap.add(searchContainer.getInitialPURL());
+				{
+					putQueuedDownloadable(searchContainer);
+				}
 			}
 			
 			// Increment searchCount that is counting search containers queued to DownloadMonitor. 
@@ -277,6 +281,17 @@ extends Debug implements DispatchTarget<QandDownloadable>
 			searchesDelayedUntilFirstResultsCanShow.add(searchContainer);
 		}
 		
+	}
+	/**
+	 * @param searchContainer
+	 */
+	private void putQueuedDownloadable(QandDownloadable searchContainer)
+	{
+		synchronized (queuedDownloadablesMap)
+		{
+			final ParsedURL initialPURL = searchContainer.getInitialPURL();
+			queuedDownloadablesMap.put(initialPURL, initialPURL);
+		}
 	}
 	
 	/**
@@ -366,8 +381,13 @@ extends Debug implements DispatchTarget<QandDownloadable>
 	 */
 	private synchronized void unMapContainerAndCheckForEndSeeding(QandDownloadable container)
 	{
-		this.queuedDownloadablesMap.remove(container.getInitialPURL());
-		if (queuedDownloadablesMap.isEmpty() && this.checkIfAllSearchesOver())
+		boolean endSeeding;
+		synchronized (queuedDownloadablesMap)
+		{
+			this.queuedDownloadablesMap.remove(container.getInitialPURL());
+			endSeeding = queuedDownloadablesMap.isEmpty() && this.checkIfAllSearchesOver();
+		}
+		if (endSeeding)
 		{
 			infoCollector.endSeeding();
 		}

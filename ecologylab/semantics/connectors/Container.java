@@ -48,7 +48,8 @@ implements QandDownloadable
 
 	abstract public TranslationScope getGeneratedMetadataTranslationScope();
 
-
+	public abstract ParsedURL getInitialPURL();
+	
 	public abstract void setAsTrueSeed(Seed seed);
 
 	public abstract boolean queueDownload();
