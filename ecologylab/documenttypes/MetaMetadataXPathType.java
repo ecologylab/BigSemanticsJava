@@ -38,7 +38,6 @@ public class MetaMetadataXPathType<M extends Metadata, SA extends SemanticAction
 	@Override
 	public M buildMetadataObject()
 	{
-		truePURL 						= container.purl();
 		if (metaMetadata.isSupported(truePURL))
 		{
 			recursiveExtraction(getMetadataTranslationScope(), metaMetadata,

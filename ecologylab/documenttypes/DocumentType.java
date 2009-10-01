@@ -770,4 +770,8 @@ abstract public class DocumentType<C extends Container, IC extends InfoCollector
 		return metaMetadata;
 	}
 
+	public ParsedURL getTruePURL()
+	{
+		return container.purl();
+	}
 }

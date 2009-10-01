@@ -114,6 +114,7 @@ public abstract class MetaMetadataDocumentTypeBase<M extends Metadata, C extends
 		super.postParse();
 		instantiateVariables();
 
+		truePURL 						= container.purl();
 		// build the metadata object
 		M populatedMetadata =buildMetadataObject();
 		
@@ -773,6 +774,11 @@ public abstract class MetaMetadataDocumentTypeBase<M extends Metadata, C extends
 	public File fileContext()
 	{
 		return null;
+	}
+	@Override
+	public ParsedURL getTruePURL()
+	{
+		return (truePURL != null) ? truePURL : super.getTruePURL();
 	}
 
 }
