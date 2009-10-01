@@ -1,6 +1,7 @@
 package ecologylab.semantics.metadata;
 
 import java.lang.reflect.Field;
+import java.util.Collection;
 import java.util.Set;
 
 import ecologylab.generic.ClassAndCollectionIterator;
@@ -141,9 +142,15 @@ abstract public class Metadata extends MetadataBase
 			if (fieldAccessor.isPseudoScalar())
 				hasVisibleNonNullField 	= MetadataString.isNotNullAndEmptyValue(fieldAccessor.getValueString(currentMetadata));
 			else if (fieldAccessor.isNested())
-				hasVisibleNonNullField 	= (((Metadata) fieldAccessor.getNested(currentMetadata)).numberOfVisibleFields(metaMetadata) > 0);
+			{
+				Metadata nestedMetadata = (Metadata) fieldAccessor.getNested(currentMetadata);
+				hasVisibleNonNullField 	= (nestedMetadata != null) ? (nestedMetadata.numberOfVisibleFields(metaMetadata) > 0) : false;
+			}
 			else
-				hasVisibleNonNullField 	= (fieldAccessor.getCollection(currentMetadata)).size() > 0;
+			{
+				Collection collection 	= fieldAccessor.getCollection(currentMetadata);
+				hasVisibleNonNullField 	= (collection != null) ? (collection.size() > 0) : false;
+			}
 
 			// "null" happens with mixins fieldAccessor b'coz getValueString() returns "null".
 			boolean isAlwaysShowAndNotHide = metaMetadata == null
