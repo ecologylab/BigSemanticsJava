@@ -9,6 +9,7 @@ import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.net.URL;
 
 import ecologylab.concurrent.DownloadMonitor;
@@ -16,6 +17,7 @@ import ecologylab.generic.ConsoleUtils;
 import ecologylab.generic.Debug;
 import ecologylab.generic.DispatchTarget;
 import ecologylab.io.BasicSite;
+import ecologylab.io.Downloadable;
 import ecologylab.net.ParsedURL;
 
 /**
@@ -26,6 +28,7 @@ import ecologylab.net.ParsedURL;
  */
 public class PixelBased
 extends Debug
+implements Downloadable
 {
 	///////////////////////////// image transform state ////////////////////////
 	public static final int	NO_ALPHA_RADIUS		= -1;
@@ -862,5 +865,32 @@ extends Debug
 	public BufferedImage bufferedImage()
 	{
 		return (currentRendering != null) ? currentRendering.bufferedImage : null;
+	}
+
+	/**
+	 * Do nothing, but implement Downloadable.
+	 */
+	public void handleIoError()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	/**
+	 * Do nothing, but implement Downloadable.
+	 */
+	public boolean isRecycled()
+	{
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	/**
+	 * Do nothing, but implement Downloadable.
+	 */
+	public void performDownload() throws IOException
+	{
+		// TODO Auto-generated method stub
+		
 	}
 }
