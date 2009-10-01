@@ -139,11 +139,11 @@ abstract public class Metadata extends MetadataBase
 			boolean hasVisibleNonNullField = false;
 
 			if (fieldAccessor.isPseudoScalar())
-				hasVisibleNonNullField = MetadataString.isNotNullValue(fieldAccessor.getValueString(currentMetadata));
+				hasVisibleNonNullField 	= MetadataString.isNotNullAndEmptyValue(fieldAccessor.getValueString(currentMetadata));
 			else if (fieldAccessor.isNested())
-				hasVisibleNonNullField = (((Metadata) fieldAccessor.getNested(currentMetadata)).numberOfVisibleFields(metaMetadata) > 0);
+				hasVisibleNonNullField 	= (((Metadata) fieldAccessor.getNested(currentMetadata)).numberOfVisibleFields(metaMetadata) > 0);
 			else
-				hasVisibleNonNullField = (fieldAccessor.getCollection(currentMetadata)).size() > 0;
+				hasVisibleNonNullField 	= (fieldAccessor.getCollection(currentMetadata)).size() > 0;
 
 			// "null" happens with mixins fieldAccessor b'coz getValueString() returns "null".
 			boolean isAlwaysShowAndNotHide = metaMetadata == null

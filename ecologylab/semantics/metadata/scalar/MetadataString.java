@@ -68,6 +68,12 @@ public class MetadataString extends MetadataScalarBase<String>
 	{
 		return (valueString != null && !valueString.equals(MetadataFieldAccessor.NULL) );
 	}
+	
+	public static boolean isNotNullAndEmptyValue(String valueString)
+	{
+		return isNotNullValue(valueString) && !"".equals(valueString.trim());
+	}
+	
 	@Override
 	public void recycle()
 	{
