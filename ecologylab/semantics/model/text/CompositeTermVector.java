@@ -161,7 +161,7 @@ public class CompositeTermVector extends Observable implements Observer, ITermVe
 
 	public Map<Term, Double> map ( )
 	{
-		return compositeTermVector.map();
+		return compositeTermVector != null ? compositeTermVector.map() : null;
 	}
 
 	public Set<Double> values ( )
