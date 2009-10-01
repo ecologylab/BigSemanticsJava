@@ -14,6 +14,7 @@ import ecologylab.semantics.html.documentstructure.SemanticAnchor;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.MetaMetadata;
+import ecologylab.semantics.seeding.QandDownloadable;
 import ecologylab.semantics.seeding.ResultDistributer;
 import ecologylab.semantics.seeding.SearchResult;
 import ecologylab.semantics.seeding.Seed;
@@ -24,7 +25,7 @@ import ecologylab.xml.TranslationScope;
  * 
  */
 public abstract class Container<M extends Metadata> extends ContentElement<Document>
-implements Downloadable
+implements QandDownloadable
 {
 
 	public Container(ContentElement progenitor)
