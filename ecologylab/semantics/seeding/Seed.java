@@ -208,8 +208,13 @@ abstract public class Seed<AC extends Container> extends ecologylab.services.mes
         if (noAggregator())
             return null;
 
-        ResultDistributer<C> result = seedSet().resultDistributer(infoCollector);
-        this.resultDistributer = result;
+        SeedSet seedSet 						= seedSet();
+				ResultDistributer<C> result	= null;
+				if (seedSet != null)
+				{
+					result										= seedSet.resultDistributer(infoCollector);
+	        this.resultDistributer		= result;
+				}
         return result;
     }
 
