@@ -25,11 +25,11 @@ public class SemanticAnchor extends AnchorContext implements TermVectorFeature
 //	private ParsedURL inlinkPurl;
 	TermVector 				tv;
 	
-	final int					signficance;
+	final float					signficance;
 	
 	public static final Double TEXT_OVER_CONTEXT_EMPHASIS_FACTOR	= 3.0;
 	
-	public SemanticAnchor(ParsedURL containerPURL, ParsedURL href, String anchorText, String anchorContextString, boolean citationSignificance)
+	public SemanticAnchor(ParsedURL containerPURL, ParsedURL href, String anchorText, String anchorContextString, boolean citationSignificance, float significanceVal)
 	{
 		super(href, anchorText, anchorContextString);
 		tv 									= new TermVector();
@@ -38,7 +38,7 @@ public class SemanticAnchor extends AnchorContext implements TermVectorFeature
 		if (anchorContextString != null && anchorContextString.length() > 0)
 			tv.add(anchorContextString);
 		if (citationSignificance)
-			this.signficance	= CITATION_SIGNIFICANCE;
+			this.signficance	= CITATION_SIGNIFICANCE*significanceVal;
 		else if (containerPURL != null && containerPURL.domain().equals(href.domain()))
 			this.signficance	= SAME_DOMAIN_SIGNIFICANCE;
 		else
@@ -47,7 +47,7 @@ public class SemanticAnchor extends AnchorContext implements TermVectorFeature
 	}
 	public SemanticAnchor(ParsedURL containerPURL, AnchorContext aContext /*, ParsedURL inlinkPurl */)
 	{
-		this(containerPURL, aContext.getHref(), aContext.getAnchorText(), aContext.getAnchorContextString(), false);
+		this(containerPURL, aContext.getHref(), aContext.getAnchorText(), aContext.getAnchorContextString(), false, 1);
 	}
 
 	public ITermVector termVector()

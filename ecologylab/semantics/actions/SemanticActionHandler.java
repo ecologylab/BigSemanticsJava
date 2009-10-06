@@ -20,11 +20,11 @@ import ecologylab.generic.Debug;
 import ecologylab.semantics.actions.exceptions.ApplyXPathException;
 import ecologylab.semantics.actions.exceptions.ForLoopException;
 import ecologylab.semantics.actions.exceptions.NestedActionException;
-import ecologylab.semantics.actions.exceptions.SemanticActionExecutionException;
 import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.metametadata.Argument;
 import ecologylab.semantics.metametadata.Check;
+import ecologylab.semantics.metametadata.DefVar;
 import ecologylab.semantics.tools.GenericIterable;
 import ecologylab.xml.types.element.ArrayListState;
 
@@ -169,10 +169,23 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords
 	 */
 	public abstract void queueDocumentForDownload(SemanticAction action, SemanticActionParameters parameter,DocumentType documentType, IC infoCollector);
 	
-	
+	/**
+	 * 
+	 * @param action
+	 * @param parameter2
+	 * @param documentType
+	 * @param infoCollector
+	 */
 	public abstract void createAndVisualizeTextSurrogateSemanticAction(SemanticAction action,
 			SemanticActionParameters parameter2, DocumentType documentType, IC infoCollector);
 	
+	/**
+	 * 
+	 * @param action
+	 * @param parameter
+	 * @param documentType
+	 * @param infoCollector
+	 */
 	public abstract void syncNestedMetadataSemanticAction(SemanticAction action,	SemanticActionParameters parameter, DocumentType documentType, IC infoCollector);
 	
 	
@@ -201,8 +214,17 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords
 				System.out.println(documentType.purl());
 				Iterator itr = gItr.iterator();
 				int collectionSize=gItr.size();
+				
+				// set the size of collection in the for loop action.
+				if(action.getSize()!=null)
+				{
+					// we have the size value. so we add it in parameters
+					parameter.addParameter(action.getSize(), collectionSize);
+				}
+				
 				int start =0;
 				int end =collectionSize;
+				
 				if(action.getStart()!=null)
 				{
 					start =Integer.parseInt(action.getStart());
@@ -218,6 +240,15 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords
 					Object item = gItr.get(i);
 					//put it in semantic action return value map
 					semanticActionReturnValueMap.put(action.getAs(), item);
+					
+					// see if current index is needed
+					if(action.getCurIndex()!=null)
+					{
+						// set the value of this variable in parameters
+						parameter.addParameter(action.getCurIndex(), i);
+					}
+					
+					//now take all the actions nested inside for loop
 					for (SemanticAction nestedSemanticAction  : nestedSemanticActions)
 						handleSemanticAction(nestedSemanticAction, documentType, infoCollector);
 				}
@@ -313,6 +344,57 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords
 		
 	}
 	
+
+		
+	/**
+	 *  Function which evaluates rank weight
+	 * @param action
+	 * @param parameter
+	 * @param documentType
+	 * @param infoCollector
+	 * @return
+	 */
+	public float evaluateRankWeight(SemanticAction action, SemanticActionParameters parameters,
+			DocumentType documentType, IC infoCollector)
+	{
+		Argument indexA = getArgument(action, 0);
+		int index = (Integer)getObjectFromKeyName(indexA.getValue(), parameters);
+		
+		Argument sizeA =getArgument(action, 1);
+		int size = (Integer)getObjectFromKeyName(sizeA.getValue(), parameters);
+		
+		float result = (size-index)/size;
+		
+		semanticActionReturnValueMap.put(action.getReturnValue(), result);
+		
+		return result;
+	}
+	
+	/**
+	 * This function evaluates  any local variables which are decalred inside the semantic action
+	 * and sets them in semantic action return value map.
+	 * Right now we assume that only numerical constants will be passed to as variables.
+	 * TODO implement a generic evaluate variables for local and global variables
+	 * @param action
+	 * @param documentType
+	 * @param infoCollector
+	 */
+	protected void evalauateVaiablesIfAny(SemanticAction action, DocumentType documentType, IC infoCollector)
+	{
+		ArrayListState<DefVar> defVars = action.getDefVars();
+		if(defVars!=null)
+		{
+			// proceed only if some variables are defined.
+			for(DefVar defVar :	defVars)
+			{
+				 // get value[TODO have to change if any thing apart from numerical value can be defined as local variable]
+				 float value = Float.parseFloat(defVar.getValue());
+				 parameter.addParameter(defVar.getName(), value);
+			}
+		}
+	}
+	
+	
 	
 	/**
    * Method which handles the semantic actions.When you define a new semantic action it must be
@@ -326,8 +408,12 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords
 	public  void handleSemanticAction(SemanticAction action, DocumentType documentType, IC infoCollector)
 	{
 		final String actionName = action.getActionName();
+		
 		try
 		{
+			// evaluate local variables
+			evalauateVaiablesIfAny(action,documentType,infoCollector);
+			
 			if (SemanticActionStandardMethods.FOR_EACH.equals(actionName))
 			{
 				handleForLoop((ForEachSemanticAction)action, parameter, documentType, infoCollector);
@@ -392,6 +478,10 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords
 			{
 				syncNestedMetadataSemanticAction(action,parameter,documentType,infoCollector);
 			}
+			else if(SemanticActionStandardMethods.EVALUATE_RANK_WEIGHT.equals(actionName))
+			{
+				evaluateRankWeight(action,parameter,documentType,infoCollector);
+			}
 			else
 			{
 				handleGeneralAction(action, parameter);
@@ -402,12 +492,6 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords
 			System.out.println("The action "+actionName+" could not be executed. Please see the stack trace for errors.");
 		}
 	}
-	
-
-	
-
-
-
 	
 
 	/**
@@ -475,6 +559,7 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords
 		}
 		return returnValue;
 	}
+
 
 	protected  Object getObjectFromKeyName(String key, SemanticActionParameters parameters)
 	{

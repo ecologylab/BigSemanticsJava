@@ -5,6 +5,9 @@ import javax.xml.xpath.XPathConstants;
 
 import ecologylab.semantics.actions.SemanticActionsKeyWords;
 import ecologylab.xml.ElementState;
+import ecologylab.xml.ElementState.xml_attribute;
+import ecologylab.xml.ElementState.xml_tag;
+import ecologylab.xml.types.scalar.ScalarType;
 
 public class DefVar  extends ElementState
 {
@@ -28,6 +31,17 @@ public class DefVar  extends ElementState
 	 * Node on which this XPath has to be applied
 	 */
 	@xml_attribute private String contextNode;
+	
+	
+	/**
+	 * scalar type of variable
+	 */
+	@xml_attribute	private ScalarType													scalarType;			
+	
+	/**
+	 *  Value of variable
+	 */
+	@xml_attribute private String 						value;
 	
 	/**
 	 * comment for this variable
@@ -120,6 +134,30 @@ public class DefVar  extends ElementState
 	public final void setNode(String node)
 	{
 		this.contextNode = node;
+	}
+
+	/**
+	 * @return the scalarType
+	 */
+	public ScalarType getScalarType()
+	{
+		return scalarType;
+	}
+
+	/**
+	 * @param scalarType the scalarType to set
+	 */
+	public void setScalarType(ScalarType scalarType)
+	{
+		this.scalarType = scalarType;
+	}
+
+	/**
+	 * @return the value
+	 */
+	public String getValue()
+	{
+		return value;
 	}
 	
 }

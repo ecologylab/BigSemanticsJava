@@ -35,8 +35,16 @@ class ForEachSemanticAction extends NestedSemanticAction implements SemanticActi
 	 */
 	@xml_attribute private String end;
 	
+	/**
+	 * current index of  loop
+	 */
+	@xml_attribute private String currentIndex;
 	
-
+	
+	/**
+	 *  variable to store collection size.
+	 */
+ @xml_attribute private String  size;
 	
 	@Override
 	public String getActionName()
@@ -97,6 +105,38 @@ class ForEachSemanticAction extends NestedSemanticAction implements SemanticActi
 	public String getEnd()
 	{
 		return end;
+	}
+
+	/**
+	 * @return the curIndex
+	 */
+	public String getCurIndex()
+	{
+		return currentIndex;
+	}
+
+	/**
+	 * @param curIndex the curIndex to set
+	 */
+	public void setCurIndex(String curIndex)
+	{
+		this.currentIndex = curIndex;
+	}
+
+	/**
+	 * @return the size
+	 */
+	public String getSize()
+	{
+		return size;
+	}
+
+	/**
+	 * @param size the size to set
+	 */
+	public void setSize(String size)
+	{
+		this.size = size;
 	}
 
 

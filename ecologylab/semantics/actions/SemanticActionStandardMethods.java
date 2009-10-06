@@ -57,7 +57,7 @@ public interface SemanticActionStandardMethods
 	/**
 	 * To get a particular field.
 	 */
-	public static String	GET_FIELD_ACTION												= "get_field";
+	public static String	GET_FIELD_ACTION										= "get_field";
 
 	/**
 	 * to set a paticular field
@@ -67,35 +67,40 @@ public interface SemanticActionStandardMethods
 	/**
 	 * to queue a search request. It may be same as create search action. Have to verify it.
 	 */
-	public static String	PROCESS_SEARCH								= "process_search";
+	public static String	PROCESS_SEARCH											= "process_search";
 
 	/**
 	 * 
 	 */
-	public static String CREATE_SEMANTIC_ANCHOR					= "create_semantic_anchor";
+	public static String	CREATE_SEMANTIC_ANCHOR							= "create_semantic_anchor";
 
 	/**
 	 * 
 	 */
-	public static String QUEUE_DOCUMENT_DOWNLOAD				= "queue_document_download";
+	public static String	QUEUE_DOCUMENT_DOWNLOAD							= "queue_document_download";
 
 	/**
 	 * Applies XPath on a DOM Node
 	 */
-	public static String APPLY_XPATH										= "get_xpath_node";
+	public static String	APPLY_XPATH													= "get_xpath_node";
 
 	/**
 	 * If semantic action
 	 */
-	public static String IF															="if";
+	public static String	IF																	= "if";
 
 	/**
 	 * 
 	 */
-	public static String	CREATE_AND_VISUALIZE_TEXT_SURROGATE			=  "create_and_visualize_text_surrogate";
+	public static String	CREATE_AND_VISUALIZE_TEXT_SURROGATE	= "create_and_visualize_text_surrogate";
+
+	/**
+	 * 
+	 */
+	public static String	TRY_SYNC_NESTED_METADATA						= "try_sync_nested_metadata";
 	
 	/**
 	 * 
 	 */
-  public static String TRY_SYNC_NESTED_METADATA                  ="try_sync_nested_metadata";
+	public static String EVALUATE_RANK_WEIGHT									=  "eval_rank_wt";
 }

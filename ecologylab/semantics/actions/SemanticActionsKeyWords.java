@@ -44,18 +44,18 @@ public interface SemanticActionsKeyWords
 	public static String	NODE_SET									= "node_list";
 
 	/**
-	 * Root Node of  the document
+	 * Root Node of the document
 	 */
 	public static String	DOCUMENT_ROOT_NODE				= "DocumentRootNode";
 
 	public static String	NODE											= "node";
-	
-	public static String TRUE 											= "true";
-	
-	public static String FALSE 											= "false";
-	
-	public static String NULL 											= "null";
-	
-	public static String TRUE_PURL									= "TRUE_PURL";
+
+	public static String	TRUE											= "true";
+
+	public static String	FALSE											= "false";
+
+	public static String	NULL											= "null";
+
+	public static String	TRUE_PURL									= "TRUE_PURL";
 
 }

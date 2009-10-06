@@ -8,6 +8,7 @@ import ecologylab.semantics.actions.CreateAndVisualizeTextSurrogateSemanticActio
 import ecologylab.semantics.actions.CreateContainerForSearchSemanticAction;
 import ecologylab.semantics.actions.CreateContainerSemanticAction;
 import ecologylab.semantics.actions.CreateSemanticAnchorSemanticAction;
+import ecologylab.semantics.actions.EvaluateRankWeight;
 import ecologylab.semantics.actions.FlagCheck;
 import ecologylab.semantics.actions.ForEachSemanticAction;
 import ecologylab.semantics.actions.GeneralSemanticAction;
@@ -58,7 +59,8 @@ public class MetaMetadataTranslationScope extends Debug
 			DefVar.class,
 			IfSemanticAction.class,
 			CreateAndVisualizeTextSurrogateSemanticAction.class,
-			TrySyncNestedMetadata.class
+			TrySyncNestedMetadata.class,
+			EvaluateRankWeight.class,
 			};
 
 	public static TranslationScope get()

@@ -48,6 +48,10 @@ public class MetadataCompilerConstants
 	public static PrintWriter		generatedTranslationScope;
 
 	public static final HashMap	JAVA_KEY_WORDS_MAP	= new HashMap();
+	
+	public static int		GENERATE_FIELDS_PASS					=        0;
+	
+	public static int   GENERATE_METHODS_PASS				  =        1;
 
 	static
 	{

@@ -7,7 +7,10 @@ import java.util.ArrayList;
 
 import ecologylab.semantics.metametadata.Argument;
 import ecologylab.semantics.metametadata.Check;
+import ecologylab.semantics.metametadata.DefVar;
 import ecologylab.xml.ElementState;
+import ecologylab.xml.ElementState.xml_collection;
+import ecologylab.xml.ElementState.xml_tag;
 import ecologylab.xml.types.element.ArrayListState;
 
 /**
@@ -68,6 +71,15 @@ public abstract class SemanticAction extends ElementState
 	@xml_collection("args")
 	private ArrayListState<Argument>	args;
 
+	/**
+	 * List of variables which can be used inside this action
+	 */
+	@xml_tag("def_vars")
+	@xml_collection("def_vars")
+	private ArrayListState<DefVar> defVars;
+	
+	
+	
 	//FIXME -- just a syntax example for abhinav
 	@xml_collection("arg")
 	private ArrayList<String>	args1;
@@ -194,5 +206,16 @@ public abstract class SemanticAction extends ElementState
 	{
 		this.error = error;
 	}
+
+
+	/**
+	 * @return the defVars
+	 */
+	public ArrayListState<DefVar> getDefVars()
+	{
+		return defVars;
+	}
+	
+	
 
 }
