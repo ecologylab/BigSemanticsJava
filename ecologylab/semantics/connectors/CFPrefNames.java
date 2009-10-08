@@ -58,4 +58,6 @@ public interface CFPrefNames
 	public static final String	STUDY_COMPOSITION_SAVE_LOCATION	= "study_composition_save_location";
 	
 	public static final String	DECAY_INTEREST  = "decay_interest";
+	
+	public static final String ONE_CONTAINER_DOWNLOAD_PER_SITE = "one_container_download_per_site";
 }
