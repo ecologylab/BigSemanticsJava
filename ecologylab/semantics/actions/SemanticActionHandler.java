@@ -363,7 +363,7 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords
 		Argument sizeA =getArgument(action, 1);
 		int size = (Integer)getObjectFromKeyName(sizeA.getValue(), parameters);
 		
-		float result = (size-index)/size;
+		float result = ((float)size-index)/size;
 		
 		semanticActionReturnValueMap.put(action.getReturnValue(), result);
 		
