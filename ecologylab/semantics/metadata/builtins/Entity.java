@@ -57,5 +57,20 @@ implements Mappable<ParsedURL>
 	{
 		return linkedDocument;
 	}
+	
+	public String getGist()
+	{
+		return gist == null ? null : gist.getValue();
+	}
+
+	public void setGist(MetadataString gist)
+	{
+		this.gist = gist;
+	}
+
+	public MetadataParsedURL getEntityLocation()
+	{
+		return location;
+	}
 
 }
