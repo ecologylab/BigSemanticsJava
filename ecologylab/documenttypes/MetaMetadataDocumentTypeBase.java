@@ -29,6 +29,7 @@ import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataFieldAccessor;
+import ecologylab.semantics.metadata.TypeTagNames;
 import ecologylab.semantics.metametadata.DefVar;
 import ecologylab.semantics.metametadata.MetaMetadataField;
 import ecologylab.xml.ElementState;
@@ -443,7 +444,7 @@ public abstract class MetaMetadataDocumentTypeBase<M extends Metadata, C extends
 			Class collectionChildClass = null;
 			if(mmdElement.isEntity())
 			{
-				collectionChildClass=translationScope.getClassByTag("entity");
+				collectionChildClass=translationScope.getClassByTag(TypeTagNames.ENTITY);
 			}
 			else
 			{
