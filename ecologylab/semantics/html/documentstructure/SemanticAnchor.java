@@ -69,4 +69,9 @@ public class SemanticAnchor extends AnchorContext implements TermVectorFeature
 		}
 //		inlinkPurl	= null;
 	}
+	
+	public float getSignificance()
+	{
+		return signficance;
+	}
 }

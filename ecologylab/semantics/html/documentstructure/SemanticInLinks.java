@@ -76,6 +76,10 @@ public class SemanticInLinks extends ArrayList<SemanticAnchor>
 	 */
 	public double getWeight(ITermVector weightingVector)
 	{
-		return this.termVector().idfDot(weightingVector);
+		double idfDot = this.termVector().idfDot(weightingVector);
+		for(SemanticAnchor anchor : this)
+			idfDot += anchor.getSignificance();
+		
+		return idfDot;
 	}
 }
