@@ -589,4 +589,13 @@ public abstract class InfoCollectorBase<AC extends Container> extends
 	abstract public void start();
 	abstract public void pause();
 
+	/**
+	 * Check the Global Metadata collection to see if there is a resolved metadata object for the given purl.
+	 * @param purl
+	 * @return the metadata of the resolved entity
+	 */
+	public Metadata resolveEntity(ParsedURL purl)
+	{
+		return null;
+	}
 }
