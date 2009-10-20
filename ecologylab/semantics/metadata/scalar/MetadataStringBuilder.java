@@ -44,10 +44,10 @@ public class MetadataStringBuilder extends MetadataScalarBase<StringBuilder>
 			XMLTools.unescapeXML(value);
 			
 			if (termVector != null)
-				termVector.reset(value.toString());
+				termVector.reset(value);
 			else
 			{
-				termVector = new TermVector(newValue ? incomingValue : value.toString());
+				termVector = new TermVector(newValue ? incomingValue : value);
 			}
 		}
 		else
