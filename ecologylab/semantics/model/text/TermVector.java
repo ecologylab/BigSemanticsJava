@@ -195,6 +195,8 @@ public class TermVector extends FeatureVector<Term> implements ITermVector
 
 	public String toString ( )
 	{
+		if (values == null)
+			return "{}";
 		StringBuilder s = new StringBuilder("{");
 		synchronized (values)
 		{
@@ -216,6 +218,8 @@ public class TermVector extends FeatureVector<Term> implements ITermVector
 
 	public String termString ( )
 	{
+		if (values == null)
+			return "";
 		StringBuilder s = new StringBuilder();
 		synchronized (values)
 		{
@@ -241,7 +245,7 @@ public class TermVector extends FeatureVector<Term> implements ITermVector
 	private double idfDot ( IFeatureVector<Term> v, boolean simplex )
 	{
 		Map<Term, Double> other = v.map();
-		if (other == null || this.norm() == 0 || v.norm() == 0)
+		if (other == null || this.values == null || this.norm() == 0 || v.norm() == 0)
 			return 0;
 
 		double dot = 0;
@@ -305,6 +309,9 @@ public class TermVector extends FeatureVector<Term> implements ITermVector
 	 */
 	public void trim ( int size )
 	{
+		if (values == null)
+			return;
+		
 		if (size >= values.size())
 			return;
 
