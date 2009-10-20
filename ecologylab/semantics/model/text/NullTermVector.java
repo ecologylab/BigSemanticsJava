@@ -56,12 +56,14 @@ public class NullTermVector implements ITermVector
 		return 0;
 	}
 
+	//FIXME -- this is wasteful crap code -- sez andruid
 	public HashMap<Term, Double> map()
 	{
 		// TODO Auto-generated method stub
 		return new HashMap();
 	}
 
+	//FIXME -- this is wasteful crap code -- sez andruid
 	public Set<Double> values()
 	{
 		// TODO Auto-generated method stub
