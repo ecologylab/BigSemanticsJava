@@ -127,6 +127,7 @@ public abstract class InfoCollectorBase<AC extends Container> extends
 	private final Scope													sessionScope;
 
 	protected static File												METAMETADATA_REPOSITORY_FILE;
+	protected static File												METAMETADATA_SITES_FILE;
 
 	protected ArrayList<DownloadMonitor>				downloadMonitors							= new ArrayList<DownloadMonitor>();
 
@@ -165,10 +166,7 @@ public abstract class InfoCollectorBase<AC extends Container> extends
 	 * 
 	 * It sometimes gets paused by GoogleSearch to promote downloading of search results.
 	 */
-	protected static final DownloadMonitor			crawlerDownloadMonitor				= new DownloadMonitor<Container>(
-																																								"WebCrawler",
-																																								NUM_CRAWLER_DOWNLOAD_THREADS,
-																																								0);
+	protected static final DownloadMonitor			crawlerDownloadMonitor				= new DownloadMonitor<Container>("WebCrawler", NUM_CRAWLER_DOWNLOAD_THREADS, 0);
 
 	static final int														NUM_SEEDING_DOWNLOAD_THREADS	= 4;
 
@@ -176,18 +174,12 @@ public abstract class InfoCollectorBase<AC extends Container> extends
 	 * This is the <code>DownloadMonitor</code> used by to process drag and drop operations. It gets
 	 * especially high priority, in order to provide rapid response to the user.
 	 */
-	protected static final DownloadMonitor			dndDownloadMonitor						= new DownloadMonitor<Container>(
-																																								"Dnd",
-																																								InfoCollectorBase.NUM_SEEDING_DOWNLOAD_THREADS,
-																																								6);
+	protected static final DownloadMonitor			dndDownloadMonitor						= new DownloadMonitor<Container>("Dnd", InfoCollectorBase.NUM_SEEDING_DOWNLOAD_THREADS, 6);
 
 	/**
 	 * This is the <code>DownloadMonitor</code> used by seeds. It never gets paused.
 	 */
-	protected static final DownloadMonitor			seedingDownloadMonitor				= new DownloadMonitor<Container>(
-																																								"Seeding",
-																																								InfoCollectorBase.NUM_SEEDING_DOWNLOAD_THREADS,
-																																								1);
+	protected static final DownloadMonitor			seedingDownloadMonitor				= new DownloadMonitor<Container>("Seeding", InfoCollectorBase.NUM_SEEDING_DOWNLOAD_THREADS, 1);
 
 	//
 
