@@ -16,6 +16,7 @@ import ecologylab.net.ParsedURL;
 import ecologylab.net.UserAgent;
 import ecologylab.semantics.metadata.DebugMetadata;
 import ecologylab.semantics.metadata.Metadata;
+import ecologylab.semantics.metadata.MetadataBase;
 import ecologylab.semantics.metadata.TypeTagNames;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.Entity;
@@ -28,6 +29,7 @@ import ecologylab.semantics.metadata.scalar.MetadataStringBuilder;
 import ecologylab.textformat.NamedStyle;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.TranslationScope;
+import ecologylab.xml.XMLTools;
 import ecologylab.xml.XMLTranslationException;
 import ecologylab.xml.types.element.HashMapState;
 
@@ -69,6 +71,8 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 
 	/**
 	 * The keys for this hashmap are the values within TypeTagNames.
+	 * This map is filled out automatically, by translateFromXML(). 
+	 * It contains all bindings, for both Document and Media subtypes.
 	 */
 	@xml_map("meta_metadata")
 	private HashMapArrayList<String, MetaMetadata>	repositoryByTagName;
@@ -135,6 +139,8 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		
 		result.initializeRepository();
 		
+		MetadataBase.setRepository(result);
+		
 		return result;
 	}
 	
@@ -160,7 +166,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 
 	public MetaMetadata getMM(Class<? extends Metadata> thatClass)
 	{
-		String tag = metadataTScope.lookupTag(thatClass);
+		String tag = metadataTScope.getTag(thatClass);
 
 		return (tag == null) ? null : repositoryByTagName.get(tag);
 	}
@@ -186,13 +192,13 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 			
 			if(result == null)
 			{
-				String[] split = purl.toString().split("://");
-				String matchingPhrase = urlprefixCollection.getMatchingPhrase(split[1], '/');
+				String protocolStrippedURL = purl.toString().split("://")[1];					
+				String matchingPhrase = urlprefixCollection.getMatchingPhrase(protocolStrippedURL, '/');
 				//FIXME -- andruid needs abhinav to explain this code better and make more clear!!!
 				if(matchingPhrase != null)
 				{
 					String key = purl.url().getProtocol()+"://"+matchingPhrase;
-
+					
 					result = documentRepositoryByURL.get(key);
 				}
 			}
@@ -237,7 +243,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 
 	public MetaMetadata getDocumentMM(Document metadata)
 	{
-		return getDocumentMM(metadata.getLocation(), metadataTScope.lookupTag(metadata.getClass()));
+		return getDocumentMM(metadata.getLocation(), metadataTScope.getTag(metadata.getClass()));
 	}
 
 	public MetaMetadata getImageMM(ParsedURL purl)
@@ -366,8 +372,15 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	}
 	public MetaMetadata getByTagName(String tagName)
 	{
-
-		return (tagName == null) ? null : repositoryByTagName.get(tagName);
+		if (tagName == null)
+			return null;
+		return  repositoryByTagName.get(tagName);
+	}
+	public MetaMetadata getByClass(Class<? extends Metadata> metadataClass)
+	{
+		if (metadataClass == null)
+			return null;
+		return  repositoryByTagName.get(metadataTScope.getTag(metadataClass));
 	}
 
 	public Collection<MetaMetadata> values()
