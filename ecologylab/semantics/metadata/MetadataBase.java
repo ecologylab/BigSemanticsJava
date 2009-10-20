@@ -13,6 +13,8 @@ import java.util.Iterator;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.generic.OneLevelNestingIterator;
 import ecologylab.semantics.metametadata.MetaMetadata;
+import ecologylab.semantics.metametadata.MetaMetadataField;
+import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.model.text.ITermVector;
 import ecologylab.semantics.model.text.NullTermVector;
 import ecologylab.semantics.model.text.Term;
@@ -30,11 +32,19 @@ import ecologylab.xml.types.element.ArrayListState;
  * @author andruid
  *
  */
-public class MetadataBase extends ElementState implements Iterable<FieldAccessor>
+public class MetadataBase<MM extends MetaMetadataField> extends ElementState implements Iterable<FieldAccessor>
 {
 
 	HashMapArrayList<String, FieldAccessor> metadataFieldAccessors;
 
+	/**
+	 * Hidden reference to the MetaMetadataRepository. DO NOT access this field directly.
+	 * DO NOT create a static public accessor.
+	 * -- andruid 10/7/09.
+	 */
+	private static MetaMetadataRepository		repository;
+
+	MM							metaMetadata;
 
 	/**
 	 * 
@@ -44,6 +54,20 @@ public class MetadataBase extends ElementState implements Iterable<FieldAccessor
 		// TODO Auto-generated constructor stub
 	}
 	
+	public static void setRepository(MetaMetadataRepository repo)
+	{
+		repository	= repo;
+	}
+	
+	/**
+	 * Only use this accessor, in order to maintain future code compatability.
+	 * 
+	 * @return
+	 */
+	public MetaMetadataRepository repository()
+	{
+		return repository;
+	}
 	/**
 	 * This is actually the real composite term vector.
 	 * 
@@ -96,6 +120,7 @@ public class MetadataBase extends ElementState implements Iterable<FieldAccessor
 		if (result == null)
 		{
 			result			= computeFieldAccessors();
+			result			= 
 			metadataFieldAccessors	= result;
 		}
 		return result;
@@ -107,13 +132,16 @@ public class MetadataBase extends ElementState implements Iterable<FieldAccessor
 		return Optimizations.getFieldAccessors(this.getClass(), MetadataFieldAccessor.class);
 	}
 
-
+	public MetaMetadataField metadataField()
+	{
+		Metadata parent	= (Metadata) this.parent();
+		return (parent == null) ? null : parent.metadataField();
+	}
 	public Iterator<FieldAccessor> iterator()
 	{
 		return metadataFieldAccessors().iterator();
 	}
 
-	
 	//FIXEME:The method has to search even all the mixins for the key.
 	public FieldAccessor get(String key)
 	{
@@ -209,7 +237,7 @@ public class MetadataBase extends ElementState implements Iterable<FieldAccessor
  	 */
  	public OneLevelNestingIterator<FieldAccessor, ? extends MetadataBase> fullNonRecursiveIterator()
 	{
-		return new OneLevelNestingIterator<FieldAccessor, MetadataBase>(this, null);
+		return new OneLevelNestingIterator<FieldAccessor, MetadataBase<?>>(this, null);
 	}
 
 }

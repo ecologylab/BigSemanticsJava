@@ -26,10 +26,8 @@ import ecologylab.xml.types.element.ArrayListState;
  * @author sashikanth
  * 
  */
-abstract public class Metadata extends MetadataBase
+abstract public class Metadata extends MetadataBase<MetaMetadata>
 {
-	MetaMetadata							metaMetadata;
-
 	protected CompositeTermVector				termVector								= new CompositeTermVector();
 
 	/**
@@ -60,7 +58,13 @@ abstract public class Metadata extends MetadataBase
 		this.metaMetadata = metaMetadata;
 		// setupMetadataFieldAccessors();
 	}
-
+	@Override
+	public MetaMetadata metadataField()
+	{
+		if (metaMetadata == null && repository() != null)
+			metaMetadata		= repository().getByClass(getClass());
+		return metaMetadata;
+	}
 	/**
 	 * 
 	 */
@@ -181,15 +185,24 @@ abstract public class Metadata extends MetadataBase
 
 		Set<ITermVector> vectors = termVector.componentVectors();
 		
-		ClassAndCollectionIterator<FieldAccessor, MetadataBase> i = metadataIterator();
+		ClassAndCollectionIterator<FieldAccessor, MetadataBase<?>> i = metadataIterator();
 		while (i.hasNext())
 		{
 			MetadataBase m = i.next();
-			if (m != null && !vectors.contains(m.termVector()))
-				termVector.add(m.termVector());
+			if (m != null)
+			{
+				ITermVector mTermVector = m.termVector();
+				if (m != null && !vectors.contains(mTermVector))
+					termVector.add(mTermVector);
+			}
 		}
 	}
 
+	@Override
+	protected void postTranslationProcessingHook()
+	{
+		rebuildCompositeTermVector();
+	}
 	/**
 	 * Sets the field to the specified value and wont rebuild composteTermVector
 	 * 
@@ -323,7 +336,7 @@ abstract public class Metadata extends MetadataBase
 	public void initializeMetadataCompTermVector()
 	{
 		termVector = new CompositeTermVector();
-		ClassAndCollectionIterator<FieldAccessor, MetadataBase> i = metadataIterator();
+		ClassAndCollectionIterator<FieldAccessor, MetadataBase<?>> i = metadataIterator();
 		while (i.hasNext())
 		{
 			MetadataBase m = i.next();
@@ -436,9 +449,9 @@ abstract public class Metadata extends MetadataBase
 				: mixins.iterator());
 	}
 
-	public ClassAndCollectionIterator<FieldAccessor, MetadataBase> metadataIterator()
+	public ClassAndCollectionIterator<FieldAccessor, MetadataBase<?>> metadataIterator()
 	{
-		return new ClassAndCollectionIterator<FieldAccessor, MetadataBase>(this);
+		return new ClassAndCollectionIterator<FieldAccessor, MetadataBase<?>>(this);
 	}
 
 	public boolean hasObservers()

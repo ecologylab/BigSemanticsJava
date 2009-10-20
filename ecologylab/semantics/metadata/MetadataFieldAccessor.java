@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import ecologylab.semantics.gui.EditValueEvent;
 import ecologylab.semantics.gui.EditValueListener;
 import ecologylab.semantics.gui.EditValueNotifier;
+import ecologylab.semantics.metametadata.MetaMetadataField;
 import ecologylab.xml.FieldAccessor;
 import ecologylab.xml.FieldToXMLOptimizations;
 
@@ -23,6 +24,8 @@ public class MetadataFieldAccessor<M extends Metadata> extends FieldAccessor imp
 	final private boolean		isMixin;
 	
 	Method									hwSetMethod;
+	
+	MetaMetadataField				metaMetadataField;
 
 	private ArrayList<EditValueListener> editValueListeners = new ArrayList<EditValueListener>();
 	
