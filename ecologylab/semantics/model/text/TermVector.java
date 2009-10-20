@@ -245,7 +245,7 @@ public class TermVector extends FeatureVector<Term> implements ITermVector
 	private double idfDot ( IFeatureVector<Term> v, boolean simplex )
 	{
 		Map<Term, Double> other = v.map();
-		if (other == null || this.values == null || this.norm() == 0 || v.norm() == 0)
+		if (other == null || other.size() == 0 || this.values == null || this.norm() == 0 || v.norm() == 0)
 			return 0;
 
 		double dot = 0;
