@@ -21,10 +21,10 @@ import ecologylab.xml.types.element.HashMapState;
  *
  */
 @xml_inherit
-public class SemanticSite extends BasicSite
+public class SemanticsSite extends BasicSite
 {
 
-	static HashMapWriteSynch2Args<String, SemanticSite, InfoCollector>	allSites	= new HashMapWriteSynch2Args<String, SemanticSite, InfoCollector>(50);
+	static HashMapWriteSynch2Args<String, SemanticsSite, InfoCollector>	allSites	= new HashMapWriteSynch2Args<String, SemanticsSite, InfoCollector>(50);
 
 	/**
 	 * true if any Container from this Site is a Seed.
@@ -79,7 +79,7 @@ public class SemanticSite extends BasicSite
 	 * 
 	 * @param domain
 	 */
-	public SemanticSite(String domain)
+	public SemanticsSite(String domain)
 	{
 		this.domain = domain;
 	}
@@ -87,7 +87,7 @@ public class SemanticSite extends BasicSite
 	/**
 	 * DO NOT USE. meant only for XML Exception
 	 */
-	public SemanticSite()
+	public SemanticsSite()
 	{
 		// TODO Auto-generated constructor stub
 	}
@@ -105,16 +105,16 @@ public class SemanticSite extends BasicSite
 //	};
 	
 	
-	public static SemanticSite getSite(ParsedURL purl, InfoCollector infoCollector)
+	public static SemanticsSite getSite(ParsedURL purl, InfoCollector infoCollector)
 	{
 		return getSite(purl.domain(), infoCollector);
 	}
 
-	public static SemanticSite getSite(Container container, InfoCollector infoCollector)
+	public static SemanticsSite getSite(Container container, InfoCollector infoCollector)
 	{
 		ParsedURL parsedURL	= container.purl();
 
-		SemanticSite result	= null;
+		SemanticsSite result	= null;
 
 		if (parsedURL != null)
 		{
@@ -151,7 +151,7 @@ public class SemanticSite extends BasicSite
 	 * @return a <code>Site</code>, either a new one, or a matching
 	 *    existing one.
 	 */
-	public static SemanticSite getSite(String domain, InfoCollector infoCollector)
+	public static SemanticsSite getSite(String domain, InfoCollector infoCollector)
 	{
 		if (domain == null)
 		{
@@ -160,7 +160,7 @@ public class SemanticSite extends BasicSite
 		}
 		else
 		{
-			SemanticSite result	= allSites.getOrCreateAndPutIfNew(domain, infoCollector, siteValueFactory);
+			SemanticsSite result	= allSites.getOrCreateAndPutIfNew(domain, infoCollector, siteValueFactory);
 			return result;
 		}
 	}
@@ -171,9 +171,9 @@ public class SemanticSite extends BasicSite
 	 * 
 	 * @param siteValueFactory
 	 */
-	public static void setSiteValueFactory(ValueFactory2<String, ? extends SemanticSite, InfoCollector> siteValueFactory)
+	public static void setSiteValueFactory(ValueFactory2<String, ? extends SemanticsSite, InfoCollector> siteValueFactory)
 	{
-		SemanticSite.siteValueFactory = siteValueFactory;
+		SemanticsSite.siteValueFactory = siteValueFactory;
 	}
 	
 	public void enteringComposition()
@@ -298,7 +298,11 @@ public class SemanticSite extends BasicSite
 		downloadsInProgress--;
 	}
 
-	public synchronized boolean isDownloading()
+	/**
+	 *  
+	 * @return true when this site has downloadables in the download monitor
+	 */
+	public synchronized boolean hasQueuedDownloadables()
 	{
 		return downloadsInProgress > 0;
 	}
@@ -331,7 +335,7 @@ public class SemanticSite extends BasicSite
 		return numText;
 	}
 	
-	public static void addMapToSites(HashMapState<String, ? extends SemanticSite> map)
+	public static void addMapToSites(HashMapState<String, ? extends SemanticsSite> map)
 	{
 		allSites.putAll(map);
 	}
