@@ -25,6 +25,7 @@ import ecologylab.xml.TranslationScope;
 import ecologylab.xml.XMLTools;
 import ecologylab.xml.XMLTranslationException;
 import ecologylab.xml.ElementState.xml_attribute;
+import ecologylab.xml.ElementState.xml_nowrap;
 import ecologylab.xml.types.element.ArrayListState;
 import ecologylab.xml.types.element.Mappable;
 
@@ -89,20 +90,25 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 	 * which is missing in java.
 	 */
 	@xml_collection("mixins")
+	@xml_nowrap 
 	private ArrayList<String>	mixins;
 
 	@xml_collection("mime_type")
+	@xml_nowrap 
 	private ArrayList<String>	mimeTypes;
 
 	@xml_collection("suffix")
+	@xml_nowrap 
 	private ArrayList<String>	suffixes;
 
 	@xml_tag("semantic_actions")
 	@xml_collection("semantic_actions")
+	@xml_nowrap 
 	private ArrayListState<? extends SemanticAction>	semanticActions;
 	
 	@xml_tag("def_vars")
 	@xml_collection("def_vars")
+	@xml_nowrap 
 	private ArrayListState<DefVar> defVars;
 
 	
