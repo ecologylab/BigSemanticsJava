@@ -288,7 +288,7 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 			try
 			{
 				// translate the field into for metadata class.
-				f.translateToMetadataClass(packageName, p);
+				f.translateToMetadataClass(packageName, p,MetadataCompilerConstants.GENERATE_FIELDS_PASS,false);
 			}
 			catch (XMLTranslationException e)
 			{
@@ -299,7 +299,26 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 				e.printStackTrace();
 			}
 		}
-
+		for (int i = 0; i < metaMetadataFieldList.size(); i++)
+		{
+			// get the metadata field.
+			MetaMetadataField f = (MetaMetadataField) metaMetadataFieldList.get(i);
+			f.setExtendsField(extendsAttribute);
+			f.setMmdRepository(mmdRepository);
+			try
+			{
+				// translate the field into for metadata class.
+				f.translateToMetadataClass(packageName, p,MetadataCompilerConstants.GENERATE_METHODS_PASS,true);
+			}
+			catch (XMLTranslationException e)
+			{
+				e.printStackTrace();
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+		}
 		// end the class declaration
 		p.println("\n}\n");
 		p.flush();

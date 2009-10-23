@@ -229,7 +229,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 
 	// TODO track generated classes for TranslationScope declaration
 
-	public void translateToMetadataClass(String packageName, Appendable appendable)
+	public void translateToMetadataClass(String packageName, Appendable appendable,int pass,boolean appendedToTranslastionScope)
 			throws XMLTranslationException, IOException
 	{
 
@@ -239,13 +239,13 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 		if (scalarType != null)
 		{
 			// Non Null scalar type means we have a nested attribute.
-			appendScalarNested(appendable);
+			appendScalarNested(appendable,pass);
 		}
 		//boolean iNested = tryTofindNested();
 		//isNested=iNested;
 		if (isNested)
 		{
-			appenedNestedMetadataField(appendable);
+			appenedNestedMetadataField(appendable,pass);
 		}
 		
 		//String col = tryTofindCollection();
@@ -257,7 +257,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 			// TODO -- can these be scalars? if so, how can we tell?
 			//String colChildType= tryTofindCollectionChildType();
 			//collectionChildType=colChildType;
-			appendCollection(appendable);
+			appendCollection(appendable,pass);
 		}
 
 		// new java class has to be written
@@ -323,7 +323,15 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 				MetaMetadataField cField = childMetaMetadata.get(i);
 				cField.setExtendsField(extendsField);
 				cField.setMmdRepository(mmdRepository);
-				cField.translateToMetadataClass(packageName, p);
+				cField.translateToMetadataClass(packageName, p,MetadataCompilerConstants.GENERATE_FIELDS_PASS,false);
+			}
+			for (int i = 0; i < childMetaMetadata.size(); i++)
+			{
+				// translate the each meta-metadata field into class.
+				MetaMetadataField cField = childMetaMetadata.get(i);
+				cField.setExtendsField(extendsField);
+				cField.setMmdRepository(mmdRepository);
+				cField.translateToMetadataClass(packageName, p,MetadataCompilerConstants.GENERATE_METHODS_PASS,true);
 			}
 
 			// if this is a Map we have to implement the key() method.
@@ -333,11 +341,14 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 			// ending the class.
 			p.println("}");
 			p.flush();
-
-			// append this class to generated translation scope
-			MetadataCompilerConstants.appendToTranslationScope(XMLTools
-					.classNameFromElementName(javaClassName)
-					+ ".class,\n");
+						
+			if(!appendedToTranslastionScope)
+			{
+				// append this class to generated translation scope
+				MetadataCompilerConstants.appendToTranslationScope(XMLTools
+						.classNameFromElementName(javaClassName)
+						+ ".class,\n");
+			}	
 		}
 	}
 
@@ -476,7 +487,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	 * @param appendable
 	 * @throws IOException
 	 */
-	private void appenedNestedMetadataField(Appendable appendable) throws IOException
+	private void appenedNestedMetadataField(Appendable appendable,int pass) throws IOException
 	{
 		String variableType="\") @xml_nested "+XMLTools.classNameFromElementName(getType());
 		String fieldType = XMLTools.classNameFromElementName(getType());
@@ -485,12 +496,17 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 			variableType = "\") @xml_nested Entity<"+XMLTools.classNameFromElementName(getType())+">";
 			fieldType = "Entity<"+XMLTools.classNameFromElementName(getType())+">";
 		}
-		
-		appendable.append("\nprivate @xml_tag(\""+getName()+variableType + "\t"
-				+ name + ";");
-		appendLazyEvaluationMethod(appendable, getName(), fieldType);
-		appendSetterForCollection(appendable, getName(), fieldType);
-		appendGetterForCollection(appendable, getName(), fieldType);
+		if(pass == MetadataCompilerConstants.GENERATE_FIELDS_PASS)
+		{
+			appendable.append("\nprivate @xml_tag(\""+getName()+variableType + "\t"
+					+ name + ";");
+		}
+		else if(pass == MetadataCompilerConstants.GENERATE_METHODS_PASS)
+		{
+			appendLazyEvaluationMethod(appendable, getName(), fieldType);
+			appendSetterForCollection(appendable, getName(), fieldType);
+			appendGetterForCollection(appendable, getName(), fieldType);
+		}
 	}
 
 	protected void appendImport(Appendable appendable, String importDecl) throws IOException
@@ -520,12 +536,8 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	 *          The appendable in which this declaration has to be appended.
 	 * @throws IOException
 	 */
-	private void appendScalarNested(Appendable appendable) throws IOException
+	private void appendScalarNested(Appendable appendable,int pass) throws IOException
 	{
-		// write the java doc comment for this field
-		MetadataCompilerConstants.writeJavaDocComment(comment, appendable);
-
-		// append the Nested field.
 		String fieldName = XMLTools.fieldNameFromElementName(getName());
 		fieldName = MetadataCompilerConstants.handleJavaKeyWord(fieldName);
 		String fieldTypeName = scalarType.fieldTypeName();
@@ -534,22 +546,31 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 			// HACK FOR METADATAINTEGER
 			fieldTypeName = "Integer";
 		}
-		appendNested(appendable, "private Metadata", scalarType.fieldTypeName(), fieldName);
-
-		// append the getter and setter methods
-
-		appendLazyEvaluationMethod(appendable, fieldName, "Metadata" + fieldTypeName);
-		appendGetter(appendable, fieldName, fieldTypeName);
-		appendSetter(appendable, fieldName, fieldTypeName);
-		appendHWSetter(appendable, fieldName, fieldTypeName);
-		appendDirectSetMethod(appendable,fieldName,"Metadata" + fieldTypeName);
-    appendDirectHWSetMethod(appendable,fieldName,"Metadata" + fieldTypeName);
-		if (fieldTypeName.equals("StringBuilder"))
+		
+		if(pass == MetadataCompilerConstants.GENERATE_FIELDS_PASS)
 		{
-			// appendAppendMethod(appendable,fieldName,"StringBuilder");
-			appendAppendMethod(appendable, fieldName, "String");
-			appendHWAppendMethod(appendable, fieldName, "StringBuilder");
-			appendHWAppendMethod(appendable, fieldName, "String");
+			// write the java doc comment for this field
+			MetadataCompilerConstants.writeJavaDocComment(comment, appendable);
+	
+			// append the Nested field.
+			appendNested(appendable, "private Metadata", scalarType.fieldTypeName(), fieldName);
+		}
+		else if(pass == MetadataCompilerConstants.GENERATE_METHODS_PASS)
+		{
+			// append the getter and setter methods
+			appendLazyEvaluationMethod(appendable, fieldName, "Metadata" + fieldTypeName);
+			appendGetter(appendable, fieldName, fieldTypeName);
+			appendSetter(appendable, fieldName, fieldTypeName);
+			appendHWSetter(appendable, fieldName, fieldTypeName);
+			appendDirectSetMethod(appendable,fieldName,"Metadata" + fieldTypeName);
+	    appendDirectHWSetMethod(appendable,fieldName,"Metadata" + fieldTypeName);
+			if (fieldTypeName.equals("StringBuilder"))
+			{
+				// appendAppendMethod(appendable,fieldName,"StringBuilder");
+				appendAppendMethod(appendable, fieldName, "String");
+				appendHWAppendMethod(appendable, fieldName, "StringBuilder");
+				appendHWAppendMethod(appendable, fieldName, "String");
+			}
 		}
 	}
 
@@ -793,7 +814,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	 *          The appendable to append to.
 	 * @throws IOException
 	 */
-	private void appendCollection(Appendable appendable) throws IOException
+	private void appendCollection(Appendable appendable,int pass) throws IOException
 	{
 		// name of the element.
 		String elementName = this.name;
@@ -824,10 +845,17 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 		String tag =getChildTag();
 			
 		String annotation = "@xml_collection(\"" + tag + "\")";
-		appendMetalanguageDecl(appendable, annotation,"private" +variableTypeStart , className,variableTypeEnd , fieldName);
-		appendLazyEvaluationMethod(appendable, fieldName, variableTypeStart + className + variableTypeEnd);
-		appendSetterForCollection(appendable, fieldName, variableTypeStart + className + variableTypeEnd);
-		appendGetterForCollection(appendable, fieldName, variableTypeStart + className + variableTypeEnd);
+		
+		if(pass == MetadataCompilerConstants.GENERATE_FIELDS_PASS)
+		{
+			appendMetalanguageDecl(appendable, annotation,"private" +variableTypeStart , className,variableTypeEnd , fieldName);
+		}
+		else if(pass == MetadataCompilerConstants.GENERATE_METHODS_PASS)
+		{
+			appendLazyEvaluationMethod(appendable, fieldName, variableTypeStart + className + variableTypeEnd);
+			appendSetterForCollection(appendable, fieldName, variableTypeStart + className + variableTypeEnd);
+			appendGetterForCollection(appendable, fieldName, variableTypeStart + className + variableTypeEnd);
+		}
 	}
 
 	/**
