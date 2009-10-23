@@ -10,6 +10,7 @@ import ecologylab.semantics.metametadata.Check;
 import ecologylab.semantics.metametadata.DefVar;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.ElementState.xml_collection;
+import ecologylab.xml.ElementState.xml_nowrap;
 import ecologylab.xml.ElementState.xml_tag;
 import ecologylab.xml.types.element.ArrayListState;
 
@@ -37,6 +38,7 @@ public abstract class SemanticAction extends ElementState
 	 * Checks if any for this action. Any action can have 0 to any number of checks
 	 */
 	@xml_tag("checks")
+	@xml_nowrap 
 	@xml_collection("checks")
 	private ArrayListState<Check>			checks;
 

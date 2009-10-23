@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import ecologylab.xml.ElementState;
 import ecologylab.xml.xml_inherit;
+import ecologylab.xml.ElementState.xml_nowrap;
 import ecologylab.xml.types.element.ArrayListState;
 
 /**
@@ -19,6 +20,7 @@ public class KeywordSet extends ElementState
 {
 	@xml_attribute	String	type;
 	
+	@xml_nowrap 
 	@xml_collection("keyword")	ArrayList<String>	keywords;
 	
 	

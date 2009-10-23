@@ -5,6 +5,8 @@ package ecologylab.semantics.actions;
 
 import java.util.ArrayList;
 
+import ecologylab.xml.ElementState.xml_nowrap;
+
 /**
  * This class is the base class for semantic actions which can have nested semantic actions inside
  * them. Right now only FOREACH and IF semantic actions can have other semantic actions nested
@@ -20,6 +22,7 @@ public abstract class NestedSemanticAction<SA extends SemanticAction> extends Se
 	/**
 	 * List of nested semantic actions.
 	 */
+	@xml_nowrap 
 	@xml_collection()
 	@xml_classes(
 	{ CreateAndVisualizeImgSurrogateSemanticAction.class,

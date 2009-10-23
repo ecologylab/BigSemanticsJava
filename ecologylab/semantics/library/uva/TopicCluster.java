@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import ecologylab.xml.ElementState;
 import ecologylab.xml.ElementState.xml_nested;
+import ecologylab.xml.ElementState.xml_nowrap;
 import ecologylab.xml.library.geom.Rectangle2DDoubleState;
 import ecologylab.xml.library.geom.RectangularShape;
 
@@ -23,6 +24,7 @@ public class TopicCluster extends ElementState
 	
 	@xml_nested		DocumentSet				documentSet;
 	
+	@xml_nowrap 
 	@xml_collection("keyword_set")		
 					ArrayList<KeywordSet>	keywordSets;
 	
