@@ -28,7 +28,7 @@ import ecologylab.xml.types.element.ArrayListState;
  */
 abstract public class Metadata extends MetadataBase<MetaMetadata>
 {
-	protected CompositeTermVector				termVector								= new CompositeTermVector();
+	protected CompositeTermVector				termVector								= null;
 
 	/**
 	 * Allows combining instantiated Metadata subclass declarations without hierarchy.
@@ -84,8 +84,8 @@ abstract public class Metadata extends MetadataBase<MetaMetadata>
 		if (mixin != null)
 		{
 			mixins().add(mixin);
-			if (mixin.termVector != null)
-				termVector.add(mixin.termVector);
+			if (mixin.termVector() != null)
+				termVector().add(mixin.termVector());
 		}
 	}
 
@@ -94,7 +94,7 @@ abstract public class Metadata extends MetadataBase<MetaMetadata>
 		if (mixin != null)
 		{
 			if (mixins().remove(mixin) && mixin.termVector != null)
-				termVector.remove(mixin.termVector);
+				termVector().remove(mixin.termVector);
 		}
 	}
 
@@ -169,7 +169,8 @@ abstract public class Metadata extends MetadataBase<MetaMetadata>
 
 	public void rebuildTotally()
 	{
-		termVector.reinitialize();
+		if (termVector != null)
+			termVector.reinitialize();
 		rebuildCompositeTermVector();
 	}
 
@@ -182,6 +183,11 @@ abstract public class Metadata extends MetadataBase<MetaMetadata>
 	{
 		// if there are no metadatafields retain the composite termvector
 		// because it might have meaningful entries
+		if (termVector == null)
+		{
+			initializeMetadataCompTermVector();
+			return;
+		}
 
 		Set<ITermVector> vectors = termVector.componentVectors();
 		
@@ -201,7 +207,7 @@ abstract public class Metadata extends MetadataBase<MetaMetadata>
 	@Override
 	protected void postTranslationProcessingHook()
 	{
-		rebuildCompositeTermVector();
+		initializeMetadataCompTermVector();
 	}
 	/**
 	 * Sets the field to the specified value and wont rebuild composteTermVector
@@ -329,20 +335,24 @@ abstract public class Metadata extends MetadataBase<MetaMetadata>
 	public CompositeTermVector termVector()
 	{
 		if (termVector == null)
-			initializeMetadataCompTermVector();
+			return initializeMetadataCompTermVector();
 		return termVector;
 	}
 
-	public void initializeMetadataCompTermVector()
+	// could get called twice if termVector() is called from different threads & termVector is null.
+	public synchronized CompositeTermVector initializeMetadataCompTermVector()
 	{
-		termVector = new CompositeTermVector();
+		if (termVector != null)
+			return termVector;
+		CompositeTermVector tv = new CompositeTermVector();
 		ClassAndCollectionIterator<FieldAccessor, MetadataBase<?>> i = metadataIterator();
 		while (i.hasNext())
 		{
 			MetadataBase m = i.next();
 			if (m != null)
-				termVector.add(m.termVector());
+				tv.add(m.termVector());
 		}
+		return (termVector = tv);
 	}
 
 	public boolean loadedFromPreviousSession()
@@ -423,7 +433,7 @@ abstract public class Metadata extends MetadataBase<MetaMetadata>
 	
 	public boolean isRecycled()
 	{
-		return termVector.isRecycled();
+		return (termVector != null && termVector.isRecycled());
 	}
 
 	/**

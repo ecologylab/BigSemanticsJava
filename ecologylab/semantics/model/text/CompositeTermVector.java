@@ -141,7 +141,6 @@ public class CompositeTermVector extends Observable implements Observer, ITermVe
 	{
 		compositeTermVector	= new TermVector();
 		termVectors			= new HashMap<ITermVector, Double>();
-//		rebuildCompositeTermVector();
 	}
 
 	public double dot ( IFeatureVector<Term> v )

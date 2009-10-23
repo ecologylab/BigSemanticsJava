@@ -117,6 +117,7 @@ public abstract class MetaMetadataDocumentTypeBase<M extends Metadata, C extends
 
 		truePURL 						= container.purl();
 		// build the metadata object
+
 		M populatedMetadata =buildMetadataObject();
 		
 		try
@@ -131,6 +132,10 @@ public abstract class MetaMetadataDocumentTypeBase<M extends Metadata, C extends
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		// make sure termVector is built here
+		
+		populatedMetadata.rebuildCompositeTermVector();
 		
 		if (populatedMetadata!= null)
 			takeSemanticActions(populatedMetadata);

@@ -479,6 +479,6 @@ public class Document extends Metadata
 	public void hwInitializeQueryMetadata(MetadataString query, double weight)
 	{
 		this.query = query;
-		termVector.add(weight, query.termVector());
+		termVector().add(weight, query.termVector());
 	}
 }
