@@ -71,7 +71,7 @@ implements HTMLAttributeNames, ImageConstants
 			else
 			{
 				result		= INFORMATIVE;
-				if ((mimeIndex != JPG) && (mimeIndex != UNKNOWN))
+				if ((mimeIndex != JPG) && (mimeIndex != UNKNOWN_MIME))
 				{	/* if (mimeType == GIF, PNG) */
 					if (isMap || (aspectRatio > 0.3f))	// stricter criteria for these mime types
 						result	= UN_INFORMATIVE;
