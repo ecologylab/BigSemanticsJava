@@ -360,7 +360,8 @@ public abstract class InfoCollectorBase<AC extends Container> extends
 		// prefixPhrase.toStringBuilder(buffy, traversablePrefixes.separator());
 		// buffy.append(" --");
 		// println(buffy);
-		if (this.isNotReject(purl))
+		if (this.isNotReject(purl) &&
+				!traversablePrefixes.match(purl)) //If this purl already exists in traversablePrefixes, don't add/
 			recordPrefix(traversablePrefixes, purl, "-- allow downloads that start with ");
 	}
 
