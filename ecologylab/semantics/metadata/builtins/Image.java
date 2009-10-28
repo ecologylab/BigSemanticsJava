@@ -16,6 +16,7 @@ import ecologylab.xml.ElementState.xml_tag;
  * 
  */
 @xml_inherit
+@xml_tag("image")
 public class Image extends Media
 {
 	@xml_nested
