@@ -47,7 +47,7 @@ implements Mappable<ParsedURL>
 
 	public ParsedURL key()
 	{
-		return location.getValue();
+		return location != null ? location.getValue() : null;
 	}
 
 	/**
