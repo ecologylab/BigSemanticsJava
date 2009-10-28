@@ -132,15 +132,19 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 	{
 		if(urlBase!=null)
 			return purl.toString().startsWith(urlBase.toString());
+		Pattern pattern = null;
 		if(urlPrefix!=null)
-		{
-			Pattern pattern = Pattern.compile(urlPrefix.toString());
+			 pattern = Pattern.compile(urlPrefix.toString());
+		if(urlPattern!=null)
+			pattern = Pattern.compile(urlPattern.toString());
 		
+		if(pattern != null)
+		{
 			// create a matcher based on input string
 			Matcher matcher = pattern.matcher(purl.toString());
 			
 			boolean result = matcher.find();
-			System.out.println(result);
+			//System.out.println(result);
 			return result;
 		}
 		return false;
