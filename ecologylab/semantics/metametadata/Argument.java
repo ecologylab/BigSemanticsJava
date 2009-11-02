@@ -25,10 +25,10 @@ public @xml_tag("arg") class Argument extends ElementState {
 	private String value;
 
 	/**
-	 * The data type of the argument
+	 * The name of the argument
 	 */
 	@xml_attribute
-	private String type;
+	private String name;
 
 	/**
 	 * The check to be performed for this argument.
@@ -60,8 +60,8 @@ public @xml_tag("arg") class Argument extends ElementState {
 	/**
 	 * @return the type
 	 */
-	public String getType() {
-		return type;
+	public String getName() {
+		return name;
 	}
 
 	/**
@@ -69,7 +69,7 @@ public @xml_tag("arg") class Argument extends ElementState {
 	 *            the type to set
 	 */
 	public void setType(String type) {
-		this.type = type;
+		this.name = type;
 	}
 
 	/**

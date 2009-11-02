@@ -42,7 +42,7 @@ import ecologylab.xml.types.element.ArrayListState;
 */
 public abstract class SemanticActionHandler<C extends Container, IC extends InfoCollector<C>> 
 extends Debug
-implements SemanticActionStandardMethods,SemanticActionsKeyWords
+implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionNamedArguments
 {
 
 	/**
@@ -357,10 +357,10 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords
 	public float evaluateRankWeight(SemanticAction action, SemanticActionParameters parameters,
 			DocumentType documentType, IC infoCollector)
 	{
-		Argument indexA = getArgument(action, 0);
+		Argument indexA = getNamedArgument(action, INDEX);
 		int index = (Integer)getObjectFromKeyName(indexA.getValue(), parameters);
 		
-		Argument sizeA =getArgument(action, 1);
+		Argument sizeA =getNamedArgument(action, SIZE);
 		int size = (Integer)getObjectFromKeyName(sizeA.getValue(), parameters);
 		
 		float result = ((float)size-index)/size;
@@ -630,17 +630,16 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords
 		this.parameter = parameter;
 	}
 	
-	/**
-	 * 
-	 * @param action
-	 * @param i
-	 * @return
-	 */
-	protected Argument getArgument(SemanticAction action, int i)
+		
+	protected Argument getNamedArgument(SemanticAction action, String name)
 	{
 		ArrayListState<Argument> arguments = action.getArguments();
-		Argument argument = (i < arguments.size()) ? arguments.get(i) : null;
-		return argument;
+		for(Argument argument: arguments)
+		{
+			if(name.equals(argument.getName()))
+				return argument;
+		}
+		return null;
 	}
 	
 	public void recycle()
