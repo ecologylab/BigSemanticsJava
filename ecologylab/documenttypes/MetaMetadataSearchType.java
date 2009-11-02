@@ -135,7 +135,7 @@ public class MetaMetadataSearchType<M extends Metadata, C extends Container, IC 
 	
 
 	/**
-	 * 
+	 * Called by ... ?
 	 */
 	public void delivery(Container downloadedContainer)
 	{
