@@ -15,7 +15,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import ecologylab.collections.Scope;
-import ecologylab.documenttypes.DocumentType;
+import ecologylab.documenttypes.DocumentParser;
 import ecologylab.generic.Debug;
 import ecologylab.semantics.actions.exceptions.ApplyXPathException;
 import ecologylab.semantics.actions.exceptions.ForLoopException;
@@ -85,7 +85,7 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 	 * @param action
 	 * @param paramter
 	 */
-	public abstract void createAndVisualizeImgSurrogate(SemanticAction action, SemanticActionParameters paramter,DocumentType<C,?,?> docType, IC infoCollector);
+	public abstract void createAndVisualizeImgSurrogate(SemanticAction action, SemanticActionParameters paramter,DocumentParser<C,?,?> docType, IC infoCollector);
 
 	/**
 	 * 
@@ -93,21 +93,21 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 	 * @param paramter
 	 * @return
 	 */
-	public abstract C createContainer(SemanticAction action, SemanticActionParameters parameter,DocumentType<C,?,?> docType, IC infoCollector);
+	public abstract C createContainer(SemanticAction action, SemanticActionParameters parameter,DocumentParser<C,?,?> docType, IC infoCollector);
 
 	/**
 	 * 
 	 * @param action
 	 * @param parameter
 	 */
-	public abstract void processDocument(SemanticAction action, SemanticActionParameters parameter,DocumentType docType, IC infoCollector);
+	public abstract void processDocument(SemanticAction action, SemanticActionParameters parameter,DocumentParser docType, IC infoCollector);
 
 	/**
 	 * 
 	 * @param action
 	 * @param parameter
 	 */
-	public abstract void setMetadata(SemanticAction action, SemanticActionParameters parameter,DocumentType docType, IC infoCollector);
+	public abstract void setMetadata(SemanticAction action, SemanticActionParameters parameter,DocumentParser docType, IC infoCollector);
 
 	/**
 	 * 
@@ -115,7 +115,7 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 	 * @param parameter
 	 * @return
 	 */
-	public abstract C createContainerForSearch(SemanticAction action, SemanticActionParameters parameter,DocumentType<C,?,?> docType, IC infoCollector);
+	public abstract C createContainerForSearch(SemanticAction action, SemanticActionParameters parameter,DocumentParser<C,?,?> docType, IC infoCollector);
 
 	/**
 	 * 
@@ -135,21 +135,21 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 	 * @throws IllegalAccessException 
 	 * @throws IllegalArgumentException 
 	 */
-	public abstract void setValueAction(SemanticAction action, SemanticActionParameters parameter,DocumentType docType, IC infoCollector) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException;
+	public abstract void setValueAction(SemanticAction action, SemanticActionParameters parameter,DocumentParser docType, IC infoCollector) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException;
 
 	/**
 	 * 
 	 * @param action
 	 * @param parameter
 	 */
-	public abstract void getValueAction(SemanticAction action, SemanticActionParameters parameter,DocumentType docType, IC infoCollector);
+	public abstract void getValueAction(SemanticAction action, SemanticActionParameters parameter,DocumentParser docType, IC infoCollector);
 	
 	/**
 	 * 
 	 * @param action
 	 * @param parameter
 	 */
-	public abstract void processSearch(SemanticAction action, SemanticActionParameters parameter,DocumentType docType, IC infoCollector);
+	public abstract void processSearch(SemanticAction action, SemanticActionParameters parameter,DocumentParser docType, IC infoCollector);
 
 	/**
 	 * 
@@ -158,7 +158,7 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 	 * @param documentType
 	 * @param infoCollector
 	 */
-	public abstract void createSemanticAnchor(SemanticAction action, SemanticActionParameters parameter,DocumentType<C,?,?> documentType, IC infoCollector);
+	public abstract void createSemanticAnchor(SemanticAction action, SemanticActionParameters parameter,DocumentParser<C,?,?> documentType, IC infoCollector);
 	
 	/**
 	 * 
@@ -167,7 +167,7 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 	 * @param documentType
 	 * @param infoCollector
 	 */
-	public abstract void queueDocumentForDownload(SemanticAction action, SemanticActionParameters parameter,DocumentType documentType, IC infoCollector);
+	public abstract void queueDocumentForDownload(SemanticAction action, SemanticActionParameters parameter,DocumentParser documentType, IC infoCollector);
 	
 	/**
 	 * 
@@ -177,7 +177,7 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 	 * @param infoCollector
 	 */
 	public abstract void createAndVisualizeTextSurrogateSemanticAction(SemanticAction action,
-			SemanticActionParameters parameter2, DocumentType documentType, IC infoCollector);
+			SemanticActionParameters parameter2, DocumentParser documentType, IC infoCollector);
 	
 	/**
 	 * 
@@ -186,7 +186,7 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 	 * @param documentType
 	 * @param infoCollector
 	 */
-	public abstract void syncNestedMetadataSemanticAction(SemanticAction action,	SemanticActionParameters parameter, DocumentType documentType, IC infoCollector);
+	public abstract void syncNestedMetadataSemanticAction(SemanticAction action,	SemanticActionParameters parameter, DocumentParser documentType, IC infoCollector);
 	
 	
 	
@@ -197,7 +197,7 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 	 * @param infoCollector TODO
 	 * @param semanticAction
 	 */
-	public synchronized void  handleForLoop(ForEachSemanticAction action, SemanticActionParameters parameter, DocumentType documentType,  IC infoCollector)
+	public synchronized void  handleForLoop(ForEachSemanticAction action, SemanticActionParameters parameter, DocumentParser documentType,  IC infoCollector)
 	{
 		try
 		{
@@ -268,7 +268,7 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 	 * @param infoCollector
 	 */
 	public void handleIf(IfSemanticAction action, SemanticActionParameters parameter2,
-			DocumentType documentType, IC infoCollector)
+			DocumentParser documentType, IC infoCollector)
 	{
 		try
 		{
@@ -296,7 +296,7 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 	 * @param infoCollector
 	 */
 	public void applyXPath(ApplyXPathSemanticAction action, SemanticActionParameters parameters,
-			DocumentType documentType, IC infoCollector)
+			DocumentParser documentType, IC infoCollector)
 	{
 			try
 			{
@@ -355,7 +355,7 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 	 * @return
 	 */
 	public float evaluateRankWeight(SemanticAction action, SemanticActionParameters parameters,
-			DocumentType documentType, IC infoCollector)
+			DocumentParser documentType, IC infoCollector)
 	{
 		Argument indexA = getNamedArgument(action, INDEX);
 		int index = (Integer)getObjectFromKeyName(indexA.getValue(), parameters);
@@ -379,7 +379,7 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 	 * @param documentType
 	 * @param infoCollector
 	 */
-	protected void evalauateVaiablesIfAny(SemanticAction action, DocumentType documentType, IC infoCollector)
+	protected void evalauateVaiablesIfAny(SemanticAction action, DocumentParser documentType, IC infoCollector)
 	{
 		ArrayListState<DefVar> defVars = action.getDefVars();
 		if(defVars!=null)
@@ -405,7 +405,7 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 	 * @param documentType TODO
 	 * @param infoCollector TODO
    */
-	public  void handleSemanticAction(SemanticAction action, DocumentType documentType, IC infoCollector)
+	public  void handleSemanticAction(SemanticAction action, DocumentParser documentType, IC infoCollector)
 	{
 		final String actionName = action.getActionName();
 		

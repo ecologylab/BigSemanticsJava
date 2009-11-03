@@ -132,10 +132,10 @@ public class MetadataBase<MM extends MetaMetadataField> extends ElementState imp
 		return Optimizations.getFieldAccessors(this.getClass(), MetadataFieldAccessor.class);
 	}
 
-	public MetaMetadataField metadataField()
+	public MetaMetadataField metaMetadataField()
 	{
 		Metadata parent	= (Metadata) this.parent();
-		return (parent == null) ? null : parent.metadataField();
+		return (parent == null) ? null : parent.metaMetadataField();
 	}
 	public Iterator<FieldAccessor> iterator()
 	{

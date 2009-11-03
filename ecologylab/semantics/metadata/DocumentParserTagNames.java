@@ -1,6 +1,6 @@
 package ecologylab.semantics.metadata;
 
-public interface TypeTagNames
+public interface DocumentParserTagNames
 {
 	public static final String	METADATA_TAG	= "metadata";
 	

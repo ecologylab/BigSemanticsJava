@@ -3,7 +3,7 @@ package ecologylab.semantics.seeding;
 import java.io.File;
 
 import ecologylab.collections.Scope;
-import ecologylab.documenttypes.MetaMetadataSearchType;
+import ecologylab.documenttypes.MetaMetadataSearchParser;
 import ecologylab.generic.Generic;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionHandler;
@@ -217,7 +217,7 @@ implements SemanticsPrefs, SearchEngineNames
   	 }
   	 //infoCollector.instantiateDocumentType(SEARCH_DOCUMENT_TYPE_REGISTRY, engine, this);		
   	 SemanticActionHandler actionHandler= infoCollector.createSemanticActionHandler();
-  	 MetaMetadataSearchType searchType= new MetaMetadataSearchType(infoCollector,actionHandler, engine, this);
+  	 MetaMetadataSearchParser searchType= new MetaMetadataSearchParser(infoCollector,actionHandler, engine, this);
    }
 	
  	/**

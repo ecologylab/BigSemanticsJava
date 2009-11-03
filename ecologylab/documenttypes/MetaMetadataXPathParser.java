@@ -20,16 +20,16 @@ import ecologylab.xml.XMLTranslationException;
  * @author amathur
  * 
  */
-public class MetaMetadataXPathType<M extends Metadata, SA extends SemanticAction> extends
-		MetaMetadataDocumentTypeBase implements SemanticActionsKeyWords
+public class MetaMetadataXPathParser<M extends Metadata, SA extends SemanticAction> extends
+		MetaMetadataDocumentParserBase implements SemanticActionsKeyWords
 {
 	
-	public MetaMetadataXPathType(InfoCollector infoCollector)
+	public MetaMetadataXPathParser(InfoCollector infoCollector)
 	{
 		super(infoCollector);
 	}
 
-	public MetaMetadataXPathType(SemanticActionHandler semanticActionHandler,
+	public MetaMetadataXPathParser(SemanticActionHandler semanticActionHandler,
 			InfoCollector infoCollector)
 	{
 		super(infoCollector, semanticActionHandler);

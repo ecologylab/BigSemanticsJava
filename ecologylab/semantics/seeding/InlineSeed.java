@@ -3,7 +3,7 @@
  */
 package ecologylab.semantics.seeding;
 
-import ecologylab.documenttypes.DocumentType;
+import ecologylab.documenttypes.DocumentParser;
 import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.XMLTranslationException;
@@ -90,7 +90,7 @@ public class InlineSeed extends Seed
 			try
 			{
 				ElementState inlineDoc	= ElementState.translateFromXMLCharSequence(content, infoCollector.inlineDocumentTranslations());
-				DocumentType xmlBaseType	= infoCollector.constructDocumentType(inlineDoc);
+				DocumentParser xmlBaseType	= infoCollector.constructDocumentType(inlineDoc);
 				if (xmlBaseType != null)
 					xmlBaseType.parse(inlineDoc);
 				else

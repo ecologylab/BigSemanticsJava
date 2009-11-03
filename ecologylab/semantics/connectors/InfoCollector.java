@@ -8,7 +8,7 @@ import java.io.File;
 import javax.swing.JFrame;
 
 import ecologylab.collections.Scope;
-import ecologylab.documenttypes.DocumentType;
+import ecologylab.documenttypes.DocumentParser;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.metadata.builtins.Document;
@@ -57,7 +57,7 @@ public interface InfoCollector<C extends Container>
 	public Document constructDocument(ParsedURL purl);
 
 
-	DocumentType<C, ? extends InfoCollector, ?> newFileDirectoryType(File file);
+	DocumentParser<C, ? extends InfoCollector, ?> newFileDirectoryType(File file);
 	
 	Class<? extends InfoCollector>[] getMyClassArg();
 
@@ -77,7 +77,7 @@ public interface InfoCollector<C extends Container>
 
 	void untraversable(ParsedURL url);
 
-	DocumentType<C, ? extends InfoCollector, ?> constructDocumentType(ElementState inlineDoc);
+	DocumentParser<C, ? extends InfoCollector, ?> constructDocumentType(ElementState inlineDoc);
 
 	TranslationScope inlineDocumentTranslations();
 	

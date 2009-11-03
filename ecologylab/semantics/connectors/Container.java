@@ -5,7 +5,7 @@ package ecologylab.semantics.connectors;
 
 import java.io.IOException;
 
-import ecologylab.documenttypes.DocumentType;
+import ecologylab.documenttypes.DocumentParser;
 import ecologylab.generic.DispatchTarget;
 import ecologylab.io.Downloadable;
 import ecologylab.net.ParsedURL;
@@ -42,7 +42,7 @@ implements QandDownloadable
 
 	public abstract void resetPURL(ParsedURL connectionPURL);
 
-	public abstract DocumentType documentType();
+	public abstract DocumentParser documentType();
 
 	public abstract ParsedURL purl();
 
@@ -61,7 +61,7 @@ implements QandDownloadable
 
 	abstract public void setJustCrawl(boolean justCrawl);
 
-	abstract public void presetDocumentType(DocumentType documentType);
+	abstract public void presetDocumentType(DocumentParser documentType);
 	
 	abstract public void setDispatchTarget(DispatchTarget documentType);
 	

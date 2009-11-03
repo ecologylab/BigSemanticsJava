@@ -59,7 +59,7 @@ abstract public class Metadata extends MetadataBase<MetaMetadata>
 		// setupMetadataFieldAccessors();
 	}
 	@Override
-	public MetaMetadata metadataField()
+	public MetaMetadata metaMetadataField()
 	{
 		if (metaMetadata == null && repository() != null)
 			metaMetadata		= repository().getByClass(getClass());
