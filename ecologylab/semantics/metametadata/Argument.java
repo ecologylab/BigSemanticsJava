@@ -6,13 +6,16 @@ package ecologylab.semantics.metametadata;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.xml_inherit;
 import ecologylab.xml.ElementState.xml_tag;
+import ecologylab.xml.types.element.Mappable;
 
 /**
  * @author amathur
  * 
  */
 
-public @xml_tag("arg") class Argument extends ElementState {
+public @xml_tag("arg") class Argument extends ElementState 
+implements Mappable
+{
 
 	public Argument()
 	{
@@ -114,5 +117,10 @@ public @xml_tag("arg") class Argument extends ElementState {
 	 */
 	public void setNested(boolean isNested) {
 		this.isNested = isNested;
+	}
+
+	public Object key()
+	{
+		return name;
 	}
 }

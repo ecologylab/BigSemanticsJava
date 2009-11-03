@@ -381,7 +381,7 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 	 */
 	protected void evalauateVaiablesIfAny(SemanticAction action, DocumentParser documentType, IC infoCollector)
 	{
-		ArrayListState<DefVar> defVars = action.getDefVars();
+		ArrayList<DefVar> defVars = action.getDefVars();
 		if(defVars!=null)
 		{
 			// proceed only if some variables are defined.
@@ -505,19 +505,18 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 	protected  void setFlagIfAny(SemanticAction action, Object returnValue)
 	{
 		// get the checks for this action
-		ArrayListState<Check> checks = action.getChecks();
+		ArrayList<Check> checks = action.getChecks();
 
 		// if checks are not null
 		if (checks != null)
 		{
 			// loop over all the checks
-			for (int i = 0; i < checks.size(); i++)
+			for (Check check : checks)
 			{
-				// get the name of the check
-				String checkType = checks.get(i).getCondition();
+				String checkType = check.getCondition();
 
 				// now see which check it is
-				if (checkType.equals(SemanticActionsKeyWords.NOT_NULL_CHECK))
+				if (SemanticActionsKeyWords.NOT_NULL_CHECK.equals(checkType))
 				{
 					// this is a not null check
 					boolean flagValue = true;
@@ -525,12 +524,12 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 					{
 						flagValue = false;
 					}
-					semanticActionFlagMap.put(checks.get(i).getName(), flagValue);
+					semanticActionFlagMap.put(check.getName(), flagValue);
 				}
-				else if (checkType.equals(SemanticActionsKeyWords.METHOD_CHECK))
+				else if (SemanticActionsKeyWords.METHOD_CHECK.equals(checkType))
 				{
 					// This is a method check
-					semanticActionFlagMap.put(checks.get(i).getName(), (Boolean) returnValue);
+					semanticActionFlagMap.put(check.getName(), (Boolean) returnValue);
 				}
 			} // end for
 		}// end if
@@ -546,7 +545,7 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 	protected boolean checkPreConditionFlagsIfAny(IfSemanticAction action)
 	{
 		boolean returnValue = true;
-		ArrayListState<FlagCheck> flagChecks = action.getFlagCheck();
+		ArrayList<FlagCheck> flagChecks = action.getFlagChecks();
 
 		if (flagChecks != null)
 		{
@@ -633,13 +632,7 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 		
 	protected Argument getNamedArgument(SemanticAction action, String name)
 	{
-		ArrayListState<Argument> arguments = action.getArguments();
-		for(Argument argument: arguments)
-		{
-			if(name.equals(argument.getName()))
-				return argument;
-		}
-		return null;
+		return action.getArgument(name);
 	}
 	
 	public void recycle()

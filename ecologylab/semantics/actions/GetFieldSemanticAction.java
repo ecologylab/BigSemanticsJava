@@ -11,7 +11,9 @@ import ecologylab.xml.ElementState.xml_tag;
  * 
  */
 @xml_inherit
-public @xml_tag(SemanticActionStandardMethods.GET_FIELD_ACTION) class GetFieldSemanticAction extends SemanticAction implements SemanticActionStandardMethods
+public @xml_tag(SemanticActionStandardMethods.GET_FIELD_ACTION) 
+class GetFieldSemanticAction extends SemanticAction 
+implements SemanticActionStandardMethods
 {
 
 

@@ -3,6 +3,8 @@
  */
 package ecologylab.semantics.actions;
 
+import java.util.ArrayList;
+
 import ecologylab.xml.xml_inherit;
 import ecologylab.xml.ElementState.xml_collection;
 import ecologylab.xml.ElementState.xml_nowrap;
@@ -18,10 +20,9 @@ import ecologylab.xml.types.element.ArrayListState;
 public @xml_tag(SemanticActionStandardMethods.IF)
 class IfSemanticAction  extends NestedSemanticAction implements SemanticActionStandardMethods
 {
-
 	@xml_nowrap 
-	@xml_tag("flag_checks") @xml_collection("flag_checks")
-	private ArrayListState<FlagCheck> flagCheck;
+	@xml_collection("flag_check")
+	private ArrayList<FlagCheck> flagCheck;
 		
 	@Override
 	public String getActionName()
@@ -39,19 +40,9 @@ class IfSemanticAction  extends NestedSemanticAction implements SemanticActionSt
 	/**
 	 * @return the flagCheck
 	 */
-	public final ArrayListState<FlagCheck> getFlagCheck()
+	public final ArrayList<FlagCheck> getFlagChecks()
 	{
 		return flagCheck;
 	}
-
-	/**
-	 * @param flagCheck the flagCheck to set
-	 */
-	public final void setFlagCheck(ArrayListState<FlagCheck> flagCheck)
-	{
-		this.flagCheck = flagCheck;
-	}
-
-	
 
 }

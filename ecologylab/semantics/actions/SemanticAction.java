@@ -4,6 +4,8 @@
 package ecologylab.semantics.actions;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 
 import ecologylab.semantics.metametadata.Argument;
 import ecologylab.semantics.metametadata.Check;
@@ -37,10 +39,24 @@ public abstract class SemanticAction extends ElementState
 	/**
 	 * Checks if any for this action. Any action can have 0 to any number of checks
 	 */
-	@xml_tag("checks")
 	@xml_nowrap 
-	@xml_collection("checks")
-	private ArrayListState<Check>			checks;
+	@xml_collection("check")
+	private ArrayList<Check>					checks;
+	
+	/**
+	 * The map of arguments for this semantic action.
+	 */
+	@xml_nowrap 
+	@xml_map("arg")
+	private HashMap<String, Argument>	args;
+
+	/**
+	 * List of variables which can be used inside this action
+	 */
+	@xml_nowrap 
+	@xml_collection("def_var")
+	private ArrayList<DefVar> 				defVars;
+	
 
 	/**
 	 * Object on which the Action is to be taken
@@ -66,25 +82,6 @@ public abstract class SemanticAction extends ElementState
 	@xml_attribute
 	private String										error;
 
-	/**
-	 * The list of arguments for this semantic action.
-	 */
-	@xml_tag("args")
-	@xml_collection("args")
-	private ArrayListState<Argument>	args;
-
-	/**
-	 * List of variables which can be used inside this action
-	 */
-	@xml_tag("def_vars")
-	@xml_collection("def_vars")
-	private ArrayListState<DefVar> defVars;
-	
-	
-	
-	//FIXME -- just a syntax example for abhinav
-	@xml_collection("arg")
-	private ArrayList<String>	args1;
 
 	public SemanticAction()
 	{
@@ -107,7 +104,7 @@ public abstract class SemanticAction extends ElementState
 	/**
 	 * @return the checks
 	 */
-	public ArrayListState<Check> getChecks()
+	public ArrayList<Check> getChecks()
 	{
 		return checks;
 	}
@@ -137,25 +134,19 @@ public abstract class SemanticAction extends ElementState
 		return name;
 	}
 
-	/**
-	 * @return the arguments
-	 */
-	public ArrayListState<Argument> getArguments()
+	public Argument getArgument(String name)
 	{
-		return args;
+		return (args == null) ? null : args.get(name);
 	}
-
+	public boolean hasArguments()
+	{
+		return args != null && args.size() > 0;
+	}
 	
-
-	/**
-	 * @param checks
-	 *          the checks to set
-	 */
-	public void setChecks(ArrayListState<Check> checks)
+	public Collection<Argument> getArgs()
 	{
-		this.checks = checks;
+		return args.values();
 	}
-
 	
 	/**
 	 * @param object
@@ -185,15 +176,6 @@ public abstract class SemanticAction extends ElementState
 	}
 
 	/**
-	 * @param arguments
-	 *          the arguments to set
-	 */
-	public void setArguments(ArrayListState<Argument> arguments)
-	{
-		this.args = arguments;
-	}
-
-	/**
 	 * @return the error
 	 */
 	public final String getError()
@@ -213,7 +195,7 @@ public abstract class SemanticAction extends ElementState
 	/**
 	 * @return the defVars
 	 */
-	public ArrayListState<DefVar> getDefVars()
+	public ArrayList<DefVar> getDefVars()
 	{
 		return defVars;
 	}
