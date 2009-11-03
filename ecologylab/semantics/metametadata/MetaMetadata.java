@@ -16,16 +16,14 @@ import ecologylab.generic.HashMapArrayList;
 import ecologylab.generic.ReflectionTools;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticAction;
+import ecologylab.semantics.metadata.DocumentParserTagNames;
 import ecologylab.semantics.metadata.Metadata;
-import ecologylab.semantics.metadata.TypeTagNames;
 import ecologylab.semantics.tools.MetadataCompiler;
 import ecologylab.semantics.tools.MetadataCompilerConstants;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.TranslationScope;
 import ecologylab.xml.XMLTools;
 import ecologylab.xml.XMLTranslationException;
-import ecologylab.xml.ElementState.xml_attribute;
-import ecologylab.xml.ElementState.xml_nowrap;
 import ecologylab.xml.types.element.ArrayListState;
 import ecologylab.xml.types.element.Mappable;
 
@@ -35,9 +33,10 @@ import ecologylab.xml.types.element.Mappable;
  */
 public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 {
-	
-
-
+	/**
+	 * Class of the Metadata object that corresponds to this.
+	 */
+	private Class<? extends Metadata>											metadataClass;
 	
 	@xml_tag("extends")
 	@xml_attribute
@@ -191,20 +190,25 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 	 */
 	public Class<? extends Metadata> getMetadataClass(TranslationScope ts)
 	{
-		Class<? extends Metadata> result = getMetadataClass(getType(),ts);
-		if(result ==null)
+		Class<? extends Metadata> result = this.metadataClass;
+		
+		if (result == null)
 		{
-			// there is no class for this tag we can use class of meta-metadata it extends
-			result = getMetadataClass(extendsAttribute, ts);
+			result													= (Class<? extends Metadata>) ts.getClassByTag(getType());
+			if (result ==null)
+			{
+				// there is no class for this tag we can use class of meta-metadata it extends
+				result 												= (Class<? extends Metadata>) ts.getClassByTag(extendsAttribute);
+			}
+			this.metadataClass							= result;
 		}
 		return result;
 	}
 
-	private Class<? extends Metadata> getMetadataClass(String name,TranslationScope ts)
+	public Metadata constructMetadata()
 	{
-		return (Class<? extends Metadata>) ts.getClassByTag(name);
+		return constructMetadata(this.repository().metadataTranslationScope());
 	}
-
 	/**
 	 * Lookup the Metadata class that corresponds to the (tag) name of this, using the
 	 * DefaultMetadataTranslationSpace. Assuming that is found, use reflection to instantiate it.
@@ -225,16 +229,25 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 			{
 				for (String mixinName : mixins)
 				{
-					Class<? extends Metadata> mixinClass = getMetadataClass(mixinName,ts);
-					if (mixinClass != null)
+					MetaMetadata mixinMM	= repository().getByTagName(mixinName);
+					if (mixinMM != null)
 					{
-						result.addMixin(ReflectionTools.getInstance(mixinClass));
+						Metadata mixinMetadata	= mixinMM.constructMetadata(ts);
+						if (mixinMetadata != null)
+							result.addMixin(mixinMetadata);
 					}
+					// andruid & andrew 11/2/09 changed from below to above
+//					Class<? extends Metadata> mixinClass = (Class<? extends Metadata>) ts.getClassByTag(mixinName);
+//					if (mixinClass != null)
+//					{
+//						result.addMixin(ReflectionTools.getInstance(mixinClass));
+//					}
 				}
 			}
 		}
 		return result;
 	}
+
 
 	/**
 	 * This method translates the MetaMetaDeclaration into a metadata class.
@@ -450,7 +463,7 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 				{
 					if (childField.isEntity())
 					{
-						repository.bindChildren(childField, TypeTagNames.ENTITY);
+						repository.bindChildren(childField, DocumentParserTagNames.ENTITY);
 					}
 					else
 					{

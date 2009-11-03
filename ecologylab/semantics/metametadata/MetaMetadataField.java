@@ -11,7 +11,8 @@ import java.util.Iterator;
 
 import ecologylab.appframework.PropertiesAndDirectories;
 import ecologylab.generic.HashMapArrayList;
-import ecologylab.semantics.metadata.TypeTagNames;
+import ecologylab.semantics.metadata.DocumentParserTagNames;
+import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.tools.MetadataCompiler;
 import ecologylab.semantics.tools.MetadataCompilerConstants;
 import ecologylab.textformat.NamedStyle;
@@ -48,12 +49,12 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	private String															name;
 
 	/**
-	 * The type of the field
+	 * The type of the field -- only if it is a scalar.
 	 */
 	@xml_tag("scalar_type")
 	@xml_attribute
-	private ScalarType													scalarType;																					;
-
+	private ScalarType													scalarType;		
+	
 	/**
 	 * true if this field should not be displayed in interactive in-context metadata
 	 */
@@ -1039,7 +1040,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	protected String getMetaMetadataTagToInheritFrom()
 	{
 		if (isEntity())
-			return  TypeTagNames.ENTITY;
+			return  DocumentParserTagNames.ENTITY;
 		else if (collectionChildType != null)
 			return collectionChildType;
 		else if (type != null)
