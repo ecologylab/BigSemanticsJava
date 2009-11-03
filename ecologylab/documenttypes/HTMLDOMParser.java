@@ -31,8 +31,8 @@ import ecologylab.xml.XMLTools;
  * @author eunyee
  *
  */
-public class HTMLDOMType<C extends Container, IC extends InfoCollector<C>, ES extends ElementState> 
-extends HTMLCommon<C, IC, ES>
+public class HTMLDOMParser<C extends Container, IC extends InfoCollector<C>, ES extends ElementState> 
+extends HTMLParserCommon<C, IC, ES>
 {
 
 	protected SemanticActionHandler<C, IC>	semanticActionHandler;
@@ -44,14 +44,14 @@ extends HTMLCommon<C, IC, ES>
 	
 	protected	Tidy 									tidy 			= new Tidy();
 	
-	public HTMLDOMType(IC infoCollector,SemanticActionHandler<C,IC> semanticActionHandler)
+	public HTMLDOMParser(IC infoCollector,SemanticActionHandler<C,IC> semanticActionHandler)
 	{
 		super(infoCollector);
 		this.semanticActionHandler = semanticActionHandler;
 		tidy.setQuiet(true);
 		tidy.setShowWarnings(false);
 	}
-	public HTMLDOMType(IC infoCollector)
+	public HTMLDOMParser(IC infoCollector)
 	{
 		super(infoCollector);
 		tidy.setQuiet(true);

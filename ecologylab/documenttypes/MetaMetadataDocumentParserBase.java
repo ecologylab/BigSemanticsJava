@@ -29,7 +29,7 @@ import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataFieldAccessor;
-import ecologylab.semantics.metadata.TypeTagNames;
+import ecologylab.semantics.metadata.DocumentParserTagNames;
 import ecologylab.semantics.metametadata.DefVar;
 import ecologylab.semantics.metametadata.MetaMetadataField;
 import ecologylab.xml.ElementState;
@@ -47,8 +47,8 @@ import ecologylab.xml.types.scalar.ScalarType;
  * @author amathur
  * 
  */
-public abstract class MetaMetadataDocumentTypeBase<M extends Metadata, C extends Container, IC extends InfoCollector<C>, E extends ElementState>
-		extends HTMLDOMType implements ScalarUnmarshallingContext,SemanticActionsKeyWords
+public abstract class MetaMetadataDocumentParserBase<M extends Metadata, C extends Container, IC extends InfoCollector<C>, E extends ElementState>
+		extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWords
 {
 
 	/**
@@ -68,13 +68,13 @@ public abstract class MetaMetadataDocumentTypeBase<M extends Metadata, C extends
 	 * 
 	 * @param infoCollector
 	 */
-	public MetaMetadataDocumentTypeBase(IC infoCollector)
+	public MetaMetadataDocumentParserBase(IC infoCollector)
 	{
 		super(infoCollector);
 		xpath = XPathFactory.newInstance().newXPath();
 	}
 
-	public MetaMetadataDocumentTypeBase(IC infoCollector,
+	public MetaMetadataDocumentParserBase(IC infoCollector,
 			SemanticActionHandler<C,IC> semanticActionHandler)
 	{
 		super(infoCollector,semanticActionHandler);
@@ -406,6 +406,7 @@ public abstract class MetaMetadataDocumentTypeBase<M extends Metadata, C extends
 			
 			// Have to return the nested object for the field.
 			FieldAccessor fieldAccessor = metadata.getMetadataFieldAccessor(mmdElement.getChildTag());
+			//FIXME -- need to use repository recursively!
 			nestedMetadata = (M) fieldAccessor.getAndPerhapsCreateNested(metadata);
 			nestedMetadata.setMetaMetadata(infoCollector.metaMetaDataRepository().getMM(nestedMetadata.getClass()));
 			recursiveExtraction(translationScope,mmdElement, nestedMetadata, xpath, param,parentNode);
@@ -449,7 +450,7 @@ public abstract class MetaMetadataDocumentTypeBase<M extends Metadata, C extends
 			Class collectionChildClass = null;
 			if(mmdElement.isEntity())
 			{
-				collectionChildClass=translationScope.getClassByTag(TypeTagNames.ENTITY);
+				collectionChildClass=translationScope.getClassByTag(DocumentParserTagNames.ENTITY);
 			}
 			else
 			{

@@ -36,11 +36,11 @@ import ecologylab.xml.XMLTools;
  * @author eunyee
  *
  */
-public class HTMLDOMImageText<C extends Container>
-extends HTMLDOMType<C, InfoCollector<C>, ElementState>
+public class HTMLDOMImageTextParser<C extends Container>
+extends HTMLDOMParser<C, InfoCollector<C>, ElementState>
 implements TidyInterface, HTMLAttributeNames
 {
-	public HTMLDOMImageText(InfoCollector infoCollector)	// this is of type In
+	public HTMLDOMImageTextParser(InfoCollector infoCollector)	// this is of type In
 	{
 		super(infoCollector);
 	}

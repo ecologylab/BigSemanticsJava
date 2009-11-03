@@ -21,7 +21,7 @@ import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.InfoCollector;
-import ecologylab.semantics.metadata.TypeTagNames;
+import ecologylab.semantics.metadata.DocumentParserTagNames;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.xml.ElementState;
@@ -43,7 +43,7 @@ import ecologylab.xml.ElementState;
  * @author andruid
  * @author eunyee
  */
-abstract public class DocumentType<C extends Container, IC extends InfoCollector<C>, ES extends ElementState>
+abstract public class DocumentParser<C extends Container, IC extends InfoCollector<C>, ES extends ElementState>
 		extends Debug
 {
 
@@ -71,14 +71,14 @@ abstract public class DocumentType<C extends Container, IC extends InfoCollector
 
 	public static final String[]	IMAGE_SUFFIX_STRINGS	= ImageIO.getReaderFormatNames();
 
-	protected static final class DocumentTypeRegistry extends Scope<DocumentType>
+	protected static final class DocumentTypeRegistry extends Scope<DocumentParser>
 	{
 
 	}
 
-	protected static final Scope<Class<? extends DocumentType>>	registryByMimeType	= new Scope<Class<? extends DocumentType>>();
+	protected static final Scope<Class<? extends DocumentParser>>	registryByMimeType	= new Scope<Class<? extends DocumentParser>>();
 
-	protected static final Scope<Class<? extends DocumentType>>	registryBySuffix	= new Scope<Class<? extends DocumentType>>();
+	protected static final Scope<Class<? extends DocumentParser>>	registryBySuffix	= new Scope<Class<? extends DocumentParser>>();
 
 	// private static final ClassRegistry<? extends DocumentType> rbs = new
 	// ClassRegistry<? extends DocumentType>();
@@ -94,13 +94,13 @@ abstract public class DocumentType<C extends Container, IC extends InfoCollector
 	/**
 	 * Keys are DocumentType class names without package names, returned by Class.getSimpleName().
 	 */
-	protected static final Scope<Class<? extends DocumentType>>	registryByClassName	= new Scope<Class<? extends DocumentType>>();
+	protected static final Scope<Class<? extends DocumentParser>>	registryByClassName	= new Scope<Class<? extends DocumentParser>>();
 
 	/**
 	 * DocumentType constructor
 	 * 
 	 */
-	protected DocumentType ()
+	protected DocumentParser ()
 	{
 	}
 
@@ -109,7 +109,7 @@ abstract public class DocumentType<C extends Container, IC extends InfoCollector
 	 * 
 	 * @param infoCollector
 	 */
-	protected DocumentType ( IC infoCollector )
+	protected DocumentParser ( IC infoCollector )
 	{
 		this.infoCollector = infoCollector;
 	}
@@ -156,7 +156,7 @@ abstract public class DocumentType<C extends Container, IC extends InfoCollector
 
 	interface DocumentTypeHelper extends ConnectionHelper
 	{
-		DocumentType getResult ( );
+		DocumentParser getResult ( );
 	}
 
 	/**
@@ -166,12 +166,12 @@ abstract public class DocumentType<C extends Container, IC extends InfoCollector
 	 * Create an InputStream. Using reflection (Class.newInstance()), create the appropriate
 	 * DocumentType, based on that mimeType, using the allTypes HashMap. Return it.
 	 */
-	public static DocumentType connect(final ParsedURL purl, final Container container,
+	public static DocumentParser connect(final ParsedURL purl, final Container container,
 			final InfoCollector infoCollector, SemanticActionHandler semanticAction)
 	{
 		DocumentTypeHelper helper = new DocumentTypeHelper()
 		{
-			DocumentType	result;
+			DocumentParser	result;
 
 			public void handleFileDirectory(File file)
 			{
@@ -267,7 +267,7 @@ abstract public class DocumentType<C extends Container, IC extends InfoCollector
 				return false;
 			}
 
-			public DocumentType getResult()
+			public DocumentParser getResult()
 			{
 				return result;
 			}
@@ -282,7 +282,7 @@ abstract public class DocumentType<C extends Container, IC extends InfoCollector
 				: metaMetadata.getUserAgentString());
 		
 		// now we start to find the document type
-		DocumentType result = helper.getResult();
+		DocumentParser result = helper.getResult();
 
 		// if a container already existed for this PURL we can get the document type from container
 		if ((result == null) && (container != null))
@@ -292,23 +292,24 @@ abstract public class DocumentType<C extends Container, IC extends InfoCollector
 		if ((purlConnection != null) && (result == null))
 		{
 			// if meta-metadata exists for this document type
+			final String binding = metaMetadata.getBinding();
 			if (metaMetadata != null)
 			{
 				// either it a direct binding type
-				if("direct".equals(metaMetadata.getBinding()))
+				if("direct".equals(binding))
 				{
-					result = new MetaMetadataDirectBindingType(semanticAction, infoCollector);
+					result = new MetaMetadataDirectBindingParser(semanticAction, infoCollector);
 				}
 				//else it must be XPath type only [Will be parsed using XPath expressions]
-				else if("xpath".equals(metaMetadata.getBinding()))
+				else if("xpath".equals(binding))
 				{
-						result = new MetaMetadataXPathType(semanticAction,infoCollector);
+						result = new MetaMetadataXPathParser(semanticAction,infoCollector);
 				}
 				// Add logic for any new binding type here
 			}
 			
 			// if meta-metadata does not exists or the binding type is default
-			if (result == null || metaMetadata.getBinding()==null)
+			if (result == null || binding==null)
 			{
 				// it is of some special type like html,pdf etc so we find out the document type
 				// using logic below.
@@ -516,7 +517,7 @@ abstract public class DocumentType<C extends Container, IC extends InfoCollector
 	 * Create a mapping from MimeType to the class object for a DocumentType.
 	 */
 	public static void registerMime ( String mimeType,
-			Class<? extends DocumentType> documentTypeClass )
+			Class<? extends DocumentParser> documentTypeClass )
 	{
 		registryByMimeType.put(mimeType, documentTypeClass);
 
@@ -533,7 +534,7 @@ abstract public class DocumentType<C extends Container, IC extends InfoCollector
 	 * two mappings, one lower case, and one upper case.
 	 */
 	public static void registerSuffix ( String suffix,
-			Class<? extends DocumentType> documentTypeClass )
+			Class<? extends DocumentParser> documentTypeClass )
 	{
 		String lc = suffix.toLowerCase();
 		registryBySuffix.put(lc, documentTypeClass);
@@ -550,7 +551,7 @@ abstract public class DocumentType<C extends Container, IC extends InfoCollector
 	 * 
 	 * @return an instance of the DocumentType subclass that corresponds to mimeType.
 	 */
-	public static DocumentType getInstanceByMimeType ( String mimeType, InfoCollector infoCollector )
+	public static DocumentParser getInstanceByMimeType ( String mimeType, InfoCollector infoCollector )
 	{
 		return getInstanceFromRegistry(registryByMimeType, mimeType, infoCollector);
 	}
@@ -564,7 +565,7 @@ abstract public class DocumentType<C extends Container, IC extends InfoCollector
 	 * 
 	 * @return an instance of the DocumentType subclass that corresponds to mimeType.
 	 */
-	public static DocumentType getInstanceBySuffix ( String suffix, InfoCollector infoCollector )
+	public static DocumentParser getInstanceBySuffix ( String suffix, InfoCollector infoCollector )
 	{
 		return ((suffix == null) || (suffix.length() == 0)) ? null : getInstanceFromRegistry(
 				registryBySuffix, suffix, infoCollector);
@@ -581,7 +582,7 @@ abstract public class DocumentType<C extends Container, IC extends InfoCollector
 	 * 
 	 * @return an instance of the DocumentType subclass that corresponds to documentTypeSimpleName.
 	 */
-	public static DocumentType getInstanceBySimpleName ( String documentTypeSimpleName,
+	public static DocumentParser getInstanceBySimpleName ( String documentTypeSimpleName,
 			InfoCollector infoCollector )
 	{
 		return getInstanceFromRegistry(registryByClassName, documentTypeSimpleName, infoCollector);
@@ -605,7 +606,7 @@ abstract public class DocumentType<C extends Container, IC extends InfoCollector
 	 * @return an instance of the DocumentType subclass that corresponds to the key, in the
 	 *         specified registry.
 	 */
-	public static <DT extends DocumentType> DT getInstanceFromRegistry (
+	public static <DT extends DocumentParser> DT getInstanceFromRegistry (
 			Scope<Class<? extends DT>> thatRegistry, String key, InfoCollector infoCollector )
 	{
 		DT result = null;
@@ -622,7 +623,7 @@ abstract public class DocumentType<C extends Container, IC extends InfoCollector
 		return result;
 	}
 
-	public static <DT extends DocumentType> DT getInstanceFromRegistry (
+	public static <DT extends DocumentParser> DT getInstanceFromRegistry (
 			Scope<Class<? extends DT>> thatRegistry, String key, Class<?>[] parameterTypes,
 			Object[] args )
 	{
@@ -681,22 +682,22 @@ abstract public class DocumentType<C extends Container, IC extends InfoCollector
 	 * @param thatMap
 	 * @return
 	 */
-	public static DocumentType getInstanceFromMap ( ParsedURL purl,
-			HashMap<String, Class<? extends DocumentType>> thatMap )
+	public static DocumentParser getInstanceFromMap ( ParsedURL purl,
+			HashMap<String, Class<? extends DocumentParser>> thatMap )
 	{
-		DocumentType result = null;
-		Class<? extends DocumentType> documentTypeClass = thatMap.get(purl
+		DocumentParser result = null;
+		Class<? extends DocumentParser> documentTypeClass = thatMap.get(purl
 				.noAnchorNoQueryPageString());
 
 		result = ReflectionTools.getInstance(documentTypeClass);
 		return result;
 	}
 
-	public static DocumentType getInstanceFromMap ( ParsedURL purl,
-			HashMap<String, Class<? extends DocumentType>> thatMap, InfoCollector infoCollector )
+	public static DocumentParser getInstanceFromMap ( ParsedURL purl,
+			HashMap<String, Class<? extends DocumentParser>> thatMap, InfoCollector infoCollector )
 	{
-		DocumentType result = null;
-		Class<? extends DocumentType> documentTypeClass = thatMap.get(purl
+		DocumentParser result = null;
+		Class<? extends DocumentParser> documentTypeClass = thatMap.get(purl
 				.noAnchorNoQueryPageString());
 
 		Object[] constructorArgs = new Object[1];
@@ -713,7 +714,7 @@ abstract public class DocumentType<C extends Container, IC extends InfoCollector
 	 * @param thatClass
 	 * @return
 	 */
-	public static <DT extends DocumentType> DT getInstance ( Class<? extends DT> thatClass )
+	public static <DT extends DocumentParser> DT getInstance ( Class<? extends DT> thatClass )
 	{
 		DT result = null;
 		if (thatClass != null)

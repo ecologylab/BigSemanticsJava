@@ -19,11 +19,11 @@ import ecologylab.xml.XMLTranslationException;
  * @author amathur
  * 
  */
-public class MetaMetadataDirectBindingType<M extends Metadata, SA extends SemanticAction>
-		extends MetaMetadataDocumentTypeBase
+public class MetaMetadataDirectBindingParser<M extends Metadata, SA extends SemanticAction>
+		extends MetaMetadataDocumentParserBase
 {
 
-	public MetaMetadataDirectBindingType(SemanticActionHandler semanticActionHandler,
+	public MetaMetadataDirectBindingParser(SemanticActionHandler semanticActionHandler,
 			InfoCollector infoCollector)
 	{
 		super(infoCollector, semanticActionHandler);

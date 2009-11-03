@@ -13,8 +13,8 @@ import ecologylab.xml.ElementState;
 
 
 
-public abstract class HTMLCommon<C extends Container, IC extends InfoCollector<C>, ES extends ElementState>
-extends ContainerType<C, IC, ES> implements SemanticsPrefs
+public abstract class HTMLParserCommon<C extends Container, IC extends InfoCollector<C>, ES extends ElementState>
+extends ContainerParser<C, IC, ES> implements SemanticsPrefs
 {
 
 	private	boolean 	isFile = false;
@@ -43,7 +43,7 @@ extends ContainerType<C, IC, ES> implements SemanticsPrefs
 	/** <code>Filter</code> that recognizes junk images from URL */
 	public static final Filter 		filter			= new Filter();	// url filtering
 
-	public HTMLCommon(IC infoCollector)
+	public HTMLParserCommon(IC infoCollector)
 	{
 		super(infoCollector);
 	}

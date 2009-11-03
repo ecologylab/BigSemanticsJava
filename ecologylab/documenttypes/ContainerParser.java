@@ -9,14 +9,14 @@ import ecologylab.xml.ElementState;
 
 
 /**
- * DocumentType for all Container documents, that is, those in which the resulting Document
+ * DocumentParser base class for all Container documents, that is, those in which the resulting Document
  * will be of type Container, with all of its concomitant local collections et al.
  * </p>
  * References contains fields for search, in case those will be useful.
  * 
  * @author andruid
  */
-abstract public class ContainerType<C extends Container, IC extends InfoCollector<C>, ES extends ElementState> extends DocumentType<C, IC, ES>
+abstract public class ContainerParser<C extends Container, IC extends InfoCollector<C>, ES extends ElementState> extends DocumentParser<C, IC, ES>
 {
 	/**
 	 * Number of search results that we've processed so far, from the search engine.
@@ -28,7 +28,7 @@ abstract public class ContainerType<C extends Container, IC extends InfoCollecto
 	 */
 	protected SearchState 				searchSeed;
 
-	public ContainerType(IC infoCollector)
+	public ContainerParser(IC infoCollector)
 	{
 		super(infoCollector);
 	}
@@ -38,7 +38,7 @@ abstract public class ContainerType<C extends Container, IC extends InfoCollecto
 	 * @param searchSeed TODO
 	 * @param infoCollector
 	 */
-	public ContainerType(SearchState searchSeed, IC infoCollector)
+	public ContainerParser(SearchState searchSeed, IC infoCollector)
 	{   
 		  super(infoCollector);
 		  this.searchSeed			= searchSeed;
