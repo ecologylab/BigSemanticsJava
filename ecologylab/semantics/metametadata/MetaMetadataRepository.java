@@ -17,7 +17,7 @@ import ecologylab.net.UserAgent;
 import ecologylab.semantics.metadata.DebugMetadata;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataBase;
-import ecologylab.semantics.metadata.TypeTagNames;
+import ecologylab.semantics.metadata.DocumentParserTagNames;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.Entity;
 import ecologylab.semantics.metadata.builtins.Image;
@@ -38,7 +38,7 @@ import ecologylab.xml.types.element.HashMapState;
  * 
  */
 
-public class MetaMetadataRepository extends ElementState implements PackageSpecifier, TypeTagNames
+public class MetaMetadataRepository extends ElementState implements PackageSpecifier, DocumentParserTagNames
 {
 	private static final String	DEFAULT_STYLE_NAME	= "default";
 
@@ -148,8 +148,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	{
 		this.defaultUserAgentString	= (defaultUserAgentName == null) ? null : userAgents.get(defaultUserAgentName).userAgentString();
 		
-		initializeRepository(this.documentRepositoryByURL, documentRepositoryByPattern);
-		initializeRepository(this.mediaRepositoryByURL, mediaRepositoryByPattern);
+		initializeLocationBasedMaps();
 	}
 
 	/**
@@ -330,17 +329,44 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		return result;
 	}
 	
-	private void initializeRepository(HashMap<String, MetaMetadata>	repositoryByPURL, HashMap<String, ArrayList<RepositoryPatternEntry>> repositoryByPattern)
+	/**
+	 * Initializes HashMaps for MetaMetadata selectors by URL or pattern.
+	 * Uses the Media and Document base classes to ensure that maps are only filled with appropriate matching MetaMetadata.
+	 */
+	private void initializeLocationBasedMaps()
 	{
 		// 1st pass -- resolve nested and collection types as needed -- fill in all child metadata fields
 		/*for (MetaMetadata metaMetadata : repositoryByTagName)
 		{
 			metaMetadata.bindNonScalarChildren();
 		}*/
-
+		
 		for (MetaMetadata metaMetadata : repositoryByTagName)
 		{
 			metaMetadata.inheritMetaMetadata(this);
+			Class<? extends Metadata>	metadataClass	= metaMetadata.getMetadataClass(metadataTScope);
+			if (metadataClass == null)
+			{
+				error(metaMetadata + "\tCan't resolve in TranslationScope " + metadataTScope);
+				continue;
+			}
+			
+			HashMap<String, MetaMetadata>	repositoryByPURL;
+			HashMap<String, ArrayList<RepositoryPatternEntry>> repositoryByPattern;
+
+			if (Media.class.isAssignableFrom(metadataClass))
+			{
+				repositoryByPURL		= mediaRepositoryByURL;
+				repositoryByPattern	= mediaRepositoryByPattern;
+			}
+			else if (Document.class.isAssignableFrom(metadataClass))
+			{
+				repositoryByPURL		= documentRepositoryByURL;
+				repositoryByPattern	= documentRepositoryByPattern;
+			}
+			else
+				continue;
+
 			ParsedURL purl = metaMetadata.getUrlBase();
 			if (purl != null)
 				repositoryByPURL.put(purl.noAnchorNoQueryPageString(), metaMetadata);
@@ -414,14 +440,14 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		return null;
 	}
 
-	public TranslationScope translationScope()
+	public TranslationScope metaMetadataTranslationScope()
 	{
 		return META_METADATA_TSCOPE;
 	}
 
-	public void setMetadataTranslationScope(TranslationScope metadataTScope)
+	public TranslationScope metadataTranslationScope()
 	{
-		this.metadataTScope = metadataTScope;
+		return metadataTScope;
 	}
 
 	/**
