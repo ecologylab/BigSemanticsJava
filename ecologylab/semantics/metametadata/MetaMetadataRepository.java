@@ -207,7 +207,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 				String domain = purl.domain();
 				if (domain != null)
 				{
-					ArrayList<RepositoryPatternEntry>	entries	= mediaRepositoryByPattern.get(domain);
+					ArrayList<RepositoryPatternEntry>	entries	= documentRepositoryByPattern.get(domain);
 					if (entries != null)
 					{
 						for (RepositoryPatternEntry entry : entries)
