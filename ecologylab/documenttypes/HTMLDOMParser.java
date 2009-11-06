@@ -31,8 +31,8 @@ import ecologylab.xml.XMLTools;
  * @author eunyee
  *
  */
-public class HTMLDOMParser<C extends Container, IC extends InfoCollector<C>, ES extends ElementState> 
-extends HTMLParserCommon<C, IC, ES>
+public class HTMLDOMParser<C extends Container, IC extends InfoCollector<C>> 
+extends HTMLParserCommon<C, IC>
 {
 
 	protected SemanticActionHandler<C, IC>	semanticActionHandler;

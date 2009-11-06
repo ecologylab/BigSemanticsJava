@@ -105,7 +105,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	{
 		REPOSITORY_FILE = new File(
 				/* PropertiesAndDirectories.thisApplicationDir(), */"C:\\abhinavThesisCode\\cf\\config\\semantics\\metametadata\\metaMetadataRepository.xml");
-		MetaMetadataRepository metaMetaDataRepository = load(REPOSITORY_FILE, null);
+		MetaMetadataRepository metaMetaDataRepository = load(REPOSITORY_FILE);
 		try
 		{
 			metaMetaDataRepository.writePrettyXML(System.out);
@@ -117,7 +117,15 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		}
 	}
 
-	public static MetaMetadataRepository load(File file, TranslationScope metadataTScope)
+	/**
+	 * Load MetaMetadata from repository file(s). 
+	 * Does not build repository maps, because this requires a Metadata TranslationScope, which comes from ecologylabGeneratedSemantics.
+	 * 
+	 * @param file
+	 * @param metadataTScope
+	 * @return
+	 */
+	public static MetaMetadataRepository load(File file)
 	{
 		MetaMetadataRepository result = null;
 		try
@@ -135,20 +143,24 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		{
 			e.printStackTrace();
 		}
-		result.metadataTScope	= metadataTScope;
-		
-		result.initializeRepository();
-		
 		MetadataBase.setRepository(result);
 		
 		return result;
 	}
 	
-	private void initializeRepository()
+	/**
+	 * Initialize repository maps using the TranslationScope to find out if classes are Document or Media.
+	 * 
+	 * @param metadataTScope
+	 */
+	public void initializeRepository(TranslationScope metadataTScope)
 	{
+		this.metadataTScope					= metadataTScope;
+		
 		this.defaultUserAgentString	= (defaultUserAgentName == null) ? null : userAgents.get(defaultUserAgentName).userAgentString();
 		
 		initializeLocationBasedMaps();
+		System.out.println();
 	}
 
 	/**

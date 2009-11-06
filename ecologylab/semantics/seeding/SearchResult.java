@@ -11,9 +11,9 @@ extends Debug
 	 */
 	int						resultNum;
 
-	ResultDistributer	resultDistributer;
+	SeedDistributor	resultDistributer;
 	
-	public SearchResult(ResultDistributer resultDistributer, int resultNum)
+	public SearchResult(SeedDistributor resultDistributer, int resultNum)
 	{
 		this.resultDistributer	= resultDistributer;
 		this.resultNum				= resultNum;
@@ -31,7 +31,7 @@ extends Debug
 	/**
 	 * @return Returns the ResultDistributer.
 	 */
-	public ResultDistributer resultDistributer()
+	public SeedDistributor resultDistributer()
 	{
 		return resultDistributer;
 	}

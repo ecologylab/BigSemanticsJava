@@ -37,7 +37,7 @@ import ecologylab.xml.XMLTools;
  *
  */
 public class HTMLDOMImageTextParser<C extends Container>
-extends HTMLDOMParser<C, InfoCollector<C>, ElementState>
+extends HTMLDOMParser<C, InfoCollector<C>>
 implements TidyInterface, HTMLAttributeNames
 {
 	public HTMLDOMImageTextParser(InfoCollector infoCollector)	// this is of type In

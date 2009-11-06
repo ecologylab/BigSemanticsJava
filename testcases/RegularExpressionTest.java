@@ -11,10 +11,11 @@ public class RegularExpressionTest
 	 */
 	public static void main(String[] args)
 	{
-		String regularExpression="/photos/(\\w+)/s*";
+		String regularExpression="by \\w*";
+//		String regularExpression="/photos/(\\w+)/s*";
 		//String regularExpression="Pages ";
 	//	StringBuilder evaluation= new StringBuilder("Pages 33-37");
-		StringBuilder evaluation= new StringBuilder("/photos/dcdead/tags/wheat/");
+		StringBuilder evaluation= new StringBuilder("My est bee by Studyjunki");
 	// create a pattern based on regular expression
 		Pattern pattern = Pattern.compile(regularExpression);
 
@@ -24,7 +25,7 @@ public class RegularExpressionTest
 		// TODO right now we r using regular expressions just to replace the
 		// matching string we might use them for more better uses.
 		// get the replacement thing.
-		String replacementString = "/photos/";
+		String replacementString = "";
 		if (replacementString != null)
 		{
 			// create string buffer

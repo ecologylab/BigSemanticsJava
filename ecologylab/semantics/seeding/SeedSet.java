@@ -19,7 +19,7 @@ import ecologylab.xml.xml_inherit;
  * @author andruid
  */
 @xml_inherit
-public class SeedSet extends ecologylab.services.messages.cf.SeedSet
+public class SeedSet extends ecologylab.services.messages.cf.SeedSet<Seed>
 implements SemanticsSessionObjectNames
 {	
 	public SeedSet()
@@ -48,7 +48,7 @@ implements SemanticsSessionObjectNames
     /**
      * Coordinate downloading of search results for seeding searches.
      */   	
-   	ResultDistributer			resultDistributer;
+   	SeedDistributor			resultDistributer;
    	
    	/**
    	 * Some of seeds such as YahooBuzzType have a starting seed(a buzz page) from an initial SeedSet and 
@@ -56,21 +56,22 @@ implements SemanticsSessionObjectNames
    	 */
    	SeedSet						parentSeedSet;
    	
-   	public<C extends Container> ResultDistributer<C> resultDistributer(InfoCollector infoCollector)
+   	public<C extends Container> SeedDistributor<C> seedDistributer(InfoCollector infoCollector)
    	{
-   		ResultDistributer<C> result	= resultDistributer;
+   		SeedDistributor<C> result	= resultDistributer;
    		
    		if (result == null)
    		{
    			if( parentSeedSet != null )	// recurse to get from parent
    			{
-   				result 		= parentSeedSet.resultDistributer(infoCollector);
+   				result 		= parentSeedSet.seedDistributer(infoCollector);
    				result.moreSearches(numSearches);
    			}
    			else
-   				result		= new ResultDistributer<C>(infoCollector, numSearches);
+   				result		= new SeedDistributor<C>(infoCollector, numSearches);
    			this.resultDistributer	= result;
    		}
+   			
    		return result;
    	}
    	
@@ -89,7 +90,7 @@ implements SemanticsSessionObjectNames
    	
    	/**
    	 * Set the reference of the parent SeedSet. 
-   	 * @param resultDistributer
+   	 * @param seedDistributer
    	 */
    	public void setParentSeedSet(SeedSet seedSet)
    	{
@@ -105,7 +106,9 @@ implements SemanticsSessionObjectNames
   	 */
   	public void performNextSeeding(Scope scope)
   	{
-  		resultDistributer	= null;
+//  		resultDistributer	= null;
+  		resetResultDistributer();
+
    		performSeeding(scope, true);
   	}
   	
@@ -128,23 +131,24 @@ implements SemanticsSessionObjectNames
    	 */
    	public void performSeeding(Scope scope, boolean nextSearch)
    	{
+   		if (size() == 0)
+   			return;
+   		
    		InfoCollector infoCollector	= (InfoCollector) scope.get(INFO_COLLECTOR);
    		
    		infoCollector.trackFirstSeedSet(this);
-
-   		int size	= size();
-   		if (size > 0)
-   	  		infoCollector.setPlayOnStart(true);
+   		infoCollector.setPlayOnStart(true);
 
    		infoCollector.beginSeeding();
    		
+   		numSearches	= 0;	// reset each time performSeeding is called
+   		
    		// search bookkeeping for each seed
-   		for (int i=0; i < size; i++)
+   		for (Seed seed : this)
    		{
-   			Seed seed	=  (Seed) get(i);
    			if (nextSearch)
    			{
-   				seed.resultDistributer	= null;
+   				seed.seedDistributer	= null;
  					int thisStartingResultNum	= seed.nextResultSet();
  					if (thisStartingResultNum > startingResultNum)
  						startingResultNum	= thisStartingResultNum;
@@ -156,21 +160,25 @@ implements SemanticsSessionObjectNames
    		// We need the same two for loops (above and below), because 
    		// it requires to have total searchNum before it starts performSeeding.
    		// Do not try to aggregate these two for loops unless you have better structure.
-
-   		for (int i=0; i < size; i++)
+   		boolean aSeedingIsPerformed	= false;
+   		for (Seed seed : this)
    		{
-   			Seed seed	= (Seed) get(i);
    			seed.fixNumResults();
 
-   			if (seed.validate())
+   			if (seed.isActive())	// false if inactive
    			{  				
    				seed.performSeedingSteps(infoCollector);
-  				
+   				aSeedingIsPerformed	= true;
+   				
      			SeedPeer seedPeer	= seed.getSeedPeer();
      			if (seedPeer != null)
      				seedPeer.notifyInterface(scope, SEARCH_DASH_BOARD);
+     			
+     			seed.setActive(false);	// does not affect SearchState or Feed
    			}
    		}
+   		if (!aSeedingIsPerformed)
+   			infoCollector.endSeeding();
    	}
    	
    	public String toString()

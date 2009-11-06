@@ -30,6 +30,7 @@ import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataFieldAccessor;
 import ecologylab.semantics.metadata.DocumentParserTagNames;
+import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.DefVar;
 import ecologylab.semantics.metametadata.MetaMetadataField;
 import ecologylab.xml.ElementState;
@@ -47,8 +48,8 @@ import ecologylab.xml.types.scalar.ScalarType;
  * @author amathur
  * 
  */
-public abstract class MetaMetadataDocumentParserBase<M extends Metadata, C extends Container, IC extends InfoCollector<C>, E extends ElementState>
-		extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWords
+public abstract class MetaMetadataParserBase
+extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWords
 {
 
 	/**
@@ -68,27 +69,27 @@ public abstract class MetaMetadataDocumentParserBase<M extends Metadata, C exten
 	 * 
 	 * @param infoCollector
 	 */
-	public MetaMetadataDocumentParserBase(IC infoCollector)
+	public MetaMetadataParserBase(InfoCollector infoCollector)
 	{
 		super(infoCollector);
 		xpath = XPathFactory.newInstance().newXPath();
 	}
 
-	public MetaMetadataDocumentParserBase(IC infoCollector,
-			SemanticActionHandler<C,IC> semanticActionHandler)
+	public MetaMetadataParserBase(InfoCollector infoCollector,
+			SemanticActionHandler semanticActionHandler)
 	{
 		super(infoCollector,semanticActionHandler);
 		xpath = XPathFactory.newInstance().newXPath();
 	}
 
-	public abstract M buildMetadataObject();
+	public abstract Metadata buildMetadataObject();
 
 	/**
 	 * Main method in which we take semantic actions
 	 * 
 	 * @param populatedMetadata
 	 */
-	protected void takeSemanticActions(M populatedMetadata)
+	protected void takeSemanticActions(Metadata populatedMetadata)
 	{
 		// get the semantic actions
 		ArrayListState<? extends SemanticAction> semanticActions = metaMetadata.getSemanticActions();
@@ -106,7 +107,7 @@ public abstract class MetaMetadataDocumentParserBase<M extends Metadata, C exten
 		for (int i = 0; i < semanticActions.size(); i++)
 		{
 			SemanticAction action = semanticActions.get(i);
-			semanticActionHandler.handleSemanticAction(action, this, (IC) infoCollector);
+			semanticActionHandler.handleSemanticAction(action, this, infoCollector);
 		}
 	}
 
@@ -118,7 +119,7 @@ public abstract class MetaMetadataDocumentParserBase<M extends Metadata, C exten
 		truePURL 						= container.purl();
 		// build the metadata object
 
-		M populatedMetadata =buildMetadataObject();
+		Metadata populatedMetadata =buildMetadataObject();
 		
 		try
 		{
@@ -151,7 +152,7 @@ public abstract class MetaMetadataDocumentParserBase<M extends Metadata, C exten
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private void addAdditionalParameters(M populatedMetadata)
+	private void addAdditionalParameters(Metadata populatedMetadata)
 	{
 		SemanticActionParameters param = semanticActionHandler.getParameter();
 		param.addParameter(DOCUMENT_TYPE, this);
@@ -280,8 +281,8 @@ public abstract class MetaMetadataDocumentParserBase<M extends Metadata, C exten
 	 * @param purl
 	 * @return
 	 */
-	protected M recursiveExtraction(TranslationScope translationScope, MetaMetadataField mmdField,
-			M metadata, XPath xpath, SemanticActionParameters param,Node contextNode)
+	protected Metadata recursiveExtraction(TranslationScope translationScope, MetaMetadataField mmdField,
+			Metadata metadata, XPath xpath, SemanticActionParameters param,Node contextNode)
 	{
 
 		Node rootNode = contextNode;
@@ -393,21 +394,21 @@ public abstract class MetaMetadataDocumentParserBase<M extends Metadata, C exten
 	 * @param mmdElementName
 	 * @param purl
 	 */
-	private void extractNested(TranslationScope translationScope, M metadata,Node contextNode,
+	private void extractNested(TranslationScope translationScope, Metadata metadata,Node contextNode,
 			MetaMetadataField mmdElement, String mmdElementName, XPath xpath,
 			SemanticActionParameters param,String xPathString)
 	{
 		try
 		{
-			M nestedMetadata = null;
+			Metadata nestedMetadata = null;
 			// for nested objects xPath on context node will give only one node.
 			Node parentNode = (Node)xpath.evaluate(xPathString, contextNode,
 										XPathConstants.NODE);
 			
 			// Have to return the nested object for the field.
-			FieldAccessor fieldAccessor = metadata.getMetadataFieldAccessor(mmdElement.getChildTag());
+			MetadataFieldAccessor fieldAccessor = metadata.getMetadataFieldAccessor(mmdElement.getChildTag());
 			//FIXME -- need to use repository recursively!
-			nestedMetadata = (M) fieldAccessor.getAndPerhapsCreateNested(metadata);
+			nestedMetadata = (Metadata) fieldAccessor.getAndPerhapsCreateNested(metadata);
 			nestedMetadata.setMetaMetadata(infoCollector.metaMetaDataRepository().getMM(nestedMetadata.getClass()));
 			recursiveExtraction(translationScope,mmdElement, nestedMetadata, xpath, param,parentNode);
 		}
@@ -435,7 +436,7 @@ public abstract class MetaMetadataDocumentParserBase<M extends Metadata, C exten
 	 * @param param Semantic Action Parameters
 	 * @param parentXPathString The xpath string of the collection meta-metadata field
 	 */
-	private void extractArrayList(TranslationScope translationScope, M metadata, Node contextNode,
+	private void extractArrayList(TranslationScope translationScope, Metadata metadata, Node contextNode,
 			MetaMetadataField mmdElement, String mmdElementName, XPath xpath,
 			SemanticActionParameters param,String parentXPathString)
 	{
@@ -467,7 +468,7 @@ public abstract class MetaMetadataDocumentParserBase<M extends Metadata, C exten
 			HashMapArrayList<String, MetaMetadataField> childMMdFieldList = mmdElement.getSet();
 
 			// list to hold the collectionInstances
-			ArrayList<M> collectionInstanceList = new ArrayList<M>();
+			ArrayList<Metadata> collectionInstanceList = new ArrayList<Metadata>();
 
 			// get all the declared child fields for this collection
 			// FIXME -- optimize by caching these!!!
@@ -526,8 +527,8 @@ public abstract class MetaMetadataDocumentParserBase<M extends Metadata, C exten
 						// returned.
 						for (int j = 0; j < parentNodeListLength; j++)
 						{
-							collectionInstanceList.add((M) ReflectionTools.getInstance(collectionChildClass));
-							((M)collectionInstanceList.get(j)).setMetaMetadata(infoCollector.metaMetaDataRepository().getMM(collectionChildClass));
+							collectionInstanceList.add((Metadata) ReflectionTools.getInstance(collectionChildClass));
+							(collectionInstanceList.get(j)).setMetaMetadata(infoCollector.metaMetaDataRepository().getMM(collectionChildClass));
 						}
 						collectionInstanceListInitialized = true;
 					}

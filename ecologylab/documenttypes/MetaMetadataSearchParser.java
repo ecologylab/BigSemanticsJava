@@ -14,10 +14,12 @@ import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.connectors.SearchEngineNames;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.DocumentParserTagNames;
+import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.model.text.InterestModel;
-import ecologylab.semantics.seeding.ResultDistributer;
+import ecologylab.semantics.seeding.Seed;
+import ecologylab.semantics.seeding.SeedDistributor;
 import ecologylab.semantics.seeding.SearchState;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.XMLTranslationException;
@@ -26,8 +28,8 @@ import ecologylab.xml.XMLTranslationException;
  * @author amathur
  * 
  */
-public class MetaMetadataSearchParser<M extends Metadata, C extends Container, IC extends InfoCollector<C>, E extends ElementState>
-		extends MetaMetadataDocumentParserBase<M, C, IC, E> implements CFPrefNames, DispatchTarget<Container>,
+public class MetaMetadataSearchParser
+		extends MetaMetadataLinksetParser implements CFPrefNames, DispatchTarget<Container>,
 		SemanticActionsKeyWords
 {
 
@@ -41,11 +43,6 @@ public class MetaMetadataSearchParser<M extends Metadata, C extends Container, I
 	 */
 	private String								engine;
 
-	/**
-	 * 
-	 */
-	private SearchState						searchSeed;
-
 	private int										resultsSoFar	= 0;
 
 	/**
@@ -53,21 +50,21 @@ public class MetaMetadataSearchParser<M extends Metadata, C extends Container, I
 	 * @param infoCollector
 	 * @param semanticActionHandler
 	 */
-	public MetaMetadataSearchParser(IC infoCollector,
-			SemanticActionHandler<C, IC> semanticActionHandler)
+	public MetaMetadataSearchParser(InfoCollector infoCollector,
+			SemanticActionHandler semanticActionHandler)
 	{
 		super(infoCollector,semanticActionHandler);
 	
 
 	}
 
-	public MetaMetadataSearchParser(IC infoCollector, String query, float bias,
+	public MetaMetadataSearchParser(InfoCollector infoCollector, String query, float bias,
 			int numResults, String engine)
 	{
 		this(new SearchState(query, engine, (short) 0, numResults, true), infoCollector, engine);
 	}
 
-	public MetaMetadataSearchParser(SearchState searchSeed, IC infoCollector, String engine)
+	public MetaMetadataSearchParser(SearchState searchSeed, InfoCollector infoCollector, String engine)
 	{
 		this(infoCollector, null, engine, searchSeed);
 	}
@@ -78,8 +75,8 @@ public class MetaMetadataSearchParser<M extends Metadata, C extends Container, I
 	 * @param semanticAction
 	 * @param searchURL
 	 */
-	public MetaMetadataSearchParser(IC infoCollector,
-			SemanticActionHandler<C, IC> semanticActionHandler, String engine, SearchState searchSeed)
+	public MetaMetadataSearchParser(InfoCollector infoCollector,
+			SemanticActionHandler semanticActionHandler, String engine, SearchState searchSeed)
 	{
 		super(infoCollector, semanticActionHandler);
 		this.engine = engine;
@@ -89,25 +86,15 @@ public class MetaMetadataSearchParser<M extends Metadata, C extends Container, I
 		// if search PURL is not null for a container.
 		if (searchURL != null)
 		{
-			// first try to find the search meta-metadata using the purl
-			MetaMetadata metaMetadata = infoCollector.metaMetaDataRepository().getDocumentMM(searchURL);
-			
-			// if this fails assign the default metadata of search
-			if(metaMetadata ==null)
-				metaMetadata = infoCollector.metaMetaDataRepository().getByTagName(
-					DocumentParserTagNames.SEARCH_TAG);
-			C container = infoCollector.getContainer(null, searchURL, false, false, metaMetadata);
-			setContainer(container);
 			searchSeed.eliminatePlusesFromQuery();
+
+			getMetaMetadataAndContainerAndQueue(infoCollector, searchURL, searchSeed, DocumentParserTagNames.SEARCH_TAG);
+
 			setQuery(searchSeed);
-			container.presetDocumentType(this);
-			container.setDispatchTarget(this);
-			container.setAsTrueSeed(searchSeed);
-			searchSeed.queueSearchrequest(container);
-			// System.out.println("DEBUG::queued search request for \t"+searchSeed.getQuery());
-			// infoProcessor.pauseDownloadMonitor();
 		}
 	}
+
+
 
 
 	/**
@@ -132,53 +119,16 @@ public class MetaMetadataSearchParser<M extends Metadata, C extends Container, I
 		}
 	}
 
-	
-
-	/**
-	 * 
-	 */
-	public void delivery(Container downloadedContainer)
-	{
-		ResultDistributer aggregator = this.searchSeed.resultDistributer(infoCollector);
-		if (aggregator != null)
-			aggregator.doneQueueing(downloadedContainer, searchSeed.searchNum(), resultsSoFar);
-		if (this.searchSeed != null)
-			this.searchSeed.incrementNumResultsBy(searchSeed.numResults());
-
-	}
-
-	/**
-	 * @return the searchSeed
-	 */
-	public SearchState getSearchSeed()
-	{
-		return searchSeed;
-	}
-
-	public void incrementResultSoFar()
-	{
-		this.resultsSoFar++;
-	}
-
-	public int getResultSoFar()
-	{
-		return this.resultsSoFar;
-	}
-
-	public int getResultNum()
-	{
-		return resultsSoFar + searchSeed.currentFirstResultIndex();
-	}
-
+		
 	public ParsedURL purl()
 	{
 		return searchURL;
 	}
 
 	@Override
-	public M buildMetadataObject()
+	public Metadata buildMetadataObject()
 	{
-		M populatedMetadata = (M)container.metadata();
+		Metadata populatedMetadata = container.metadata();
 		
 		ParsedURL purl = container.purl();
 		if (metaMetadata.isSupported(purl))
@@ -187,7 +137,7 @@ public class MetaMetadataSearchParser<M extends Metadata, C extends Container, I
 			{
 				try
 				{
-						populatedMetadata = (M) ElementState.translateFromXML(inputStream(), getMetadataTranslationScope());
+						populatedMetadata = (Metadata) ElementState.translateFromXML(inputStream(), getMetadataTranslationScope());
 				}
 				catch (XMLTranslationException e)
 				{
@@ -202,15 +152,7 @@ public class MetaMetadataSearchParser<M extends Metadata, C extends Container, I
 				container.setMetadata(populatedMetadata);
 			}
 		}
-		try
-		{
-			populatedMetadata.translateToXML(System.out);
-		}
-		catch (XMLTranslationException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
 		return populatedMetadata;
 	}
 

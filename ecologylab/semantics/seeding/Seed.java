@@ -16,22 +16,24 @@ abstract public class Seed<AC extends Container> extends ecologylab.services.mes
 {
     public static final String          TRAVERSABLE                  = "traversable";
     public static final String          UNTRAVERSABLE                = "untraversable";
-    public static final String    	      REJECT                       = "reject";
+    public static final String    	    REJECT                       = "reject";
 
     /**
      * When set, indicates that the seed should be processed without using a
-     * {@link ResultDistributer ResultDistributer}.
+     * {@link SeedDistributor ResultDistributer}.
      */
-    protected boolean                      noAggregator;
+    protected boolean                     noAggregator;
 
-    protected boolean                      queueInsteadOfImmediate;
+    protected boolean                     queueInsteadOfImmediate;
 
 
-    protected ResultDistributer            resultDistributer;
+    protected SeedDistributor            	seedDistributer;
     
     protected		InfoCollector							infoCollector;
     
     protected 	SeedPeer									seedPeer;
+    
+    private			boolean										active	= true;
 
     public SeedPeer getSeedPeer()
 		{
@@ -141,13 +143,12 @@ abstract public class Seed<AC extends Container> extends ecologylab.services.mes
     {
         this.infoCollector = infoCollector;
     }
-    
-    public boolean validate()
+
+    protected boolean useDistributor()
     {
-        return true;
+    	return false;
     }
-
-
+    
     /**
      * A hack for search seeds. Base class implementation is a no-op.
      */
@@ -200,27 +201,27 @@ abstract public class Seed<AC extends Container> extends ecologylab.services.mes
     /**
      * @return Returns the ResultDistributer.
      */
-    public <C extends Container> ResultDistributer<C> resultDistributer(InfoCollector infoCollector)
+    public <C extends Container> SeedDistributor<C> seedDistributer(InfoCollector infoCollector)
     {
-        if (resultDistributer != null)
-            return resultDistributer;
+    	if (seedDistributer != null)
+    		return seedDistributer;
 
-        if (noAggregator())
-            return null;
+    	if (noAggregator())
+    		return null;
 
-        SeedSet seedSet 						= seedSet();
-				ResultDistributer<C> result	= null;
-				if (seedSet != null)
-				{
-					result										= seedSet.resultDistributer(infoCollector);
-	        this.resultDistributer		= result;
-				}
-        return result;
+    	SeedSet seedSet 						= seedSet();
+    	SeedDistributor<C> result	= null;
+    	if (seedSet != null)
+    	{
+    		result										= seedSet.seedDistributer(infoCollector);
+    		this.seedDistributer		= result;
+    	}
+    	return result;
     }
 
-    public void setResultDistributer(ResultDistributer resultDistributer)
+    public void setResultDistributer(SeedDistributor resultDistributer)
     {
-        this.resultDistributer = resultDistributer;
+        this.seedDistributer = resultDistributer;
     }
 
     abstract 	public boolean isEditable();
@@ -277,20 +278,38 @@ abstract public class Seed<AC extends Container> extends ecologylab.services.mes
   		return false;
   }
   
-	public void queueSearchrequest(AC container)
+  /**
+   * Use the SeedDistributor to queue/parse this container if appropriate, or just queue it directly.
+   * 
+   * @param container
+   */
+	public void queueSeedOrRegularContainer(AC container)
 	{
-		//if (this.searchSeed != null)
+		SeedDistributor seedDistributer = seedDistributer(infoCollector);
+		if (seedDistributer != null)
 		{
-			ResultDistributer resultDistributer = resultDistributer(infoCollector);
-			if (resultDistributer != null)
-			{
-				resultDistributer.queueSearchRequest(container);
-				// System.out.println("DEBUG::queued search request for\t"+container+"\tusing rd=\t"+resultDistributer);
-				return;
-			}
+			seedDistributer.queueSearchRequest(container);
 		}
-		container.queueDownload();
-		// System.out.println("DEBUG::queued container\t"+container+"\t for download");
+		else
+			container.queueDownload();
+	}
+
+	/**
+	 * @return the inActive
+	 */
+	public boolean isActive()
+	{
+		return active;
+	}
+
+	/**
+	 * Called after a seed is parsed to prevent it being parsed again later during re-seeding.
+	 * 
+	 * @param inActive the inActive to set
+	 */
+	public void setActive(boolean active)
+	{
+		this.active = active;
 	}
   
 }

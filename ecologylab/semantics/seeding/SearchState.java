@@ -33,7 +33,6 @@ implements SemanticsPrefs, SearchEngineNames
 	
 	public static final int			NUM_IMAGE_RESULTS							= 40;
    
-	private static long timeCreated														= -1;
    /**
     * Search engine to use. Currently supported are google, flickr, yahoo, yahoo_image, yahoo_news, yahoo_buzz, delicious.
     */
@@ -69,6 +68,7 @@ implements SemanticsPrefs, SearchEngineNames
     * Each time a subsequent search is run, it will be incremented by the number of searchResults that
     * were requested the previous time.
     */
+   @xml_attribute
    private int				currentFirstResultIndex;
 
    private int				searchType;
@@ -161,7 +161,7 @@ implements SemanticsPrefs, SearchEngineNames
 	/**
 	 * Check the validity of this seed.
 	 */
-   public boolean validate()
+   public boolean isActive()
    {
 	   if (engine == null)
 	   {
@@ -200,24 +200,9 @@ implements SemanticsPrefs, SearchEngineNames
    public void performInternalSeedingSteps(InfoCollector infoCollector)
    {
   	 //  	 InterestModel.expressInterest(query, interestLevel);
-  	 synchronized (SearchState.class)
-  	 {
-  		 if (timeCreated > 0)	// go unconditionally the first time
-  		 {
-  			 long humanWait			= (long) (1500.0 + 500.0 * Math.random());
-  			 long now						= System.currentTimeMillis();
-  			 int deltaT					= (int) (humanWait - (now - timeCreated));
-  			 if (deltaT > 0)
-  			 {
-  				 debug("Seed sleeping for " + deltaT + " engine=" + engine + " query = "+query);
-  				 Generic.sleep((int) deltaT);
-  			 }
-  		 }
-  		 updateTimeStamp();
-  	 }
   	 //infoCollector.instantiateDocumentType(SEARCH_DOCUMENT_TYPE_REGISTRY, engine, this);		
   	 SemanticActionHandler actionHandler= infoCollector.createSemanticActionHandler();
-  	 MetaMetadataSearchParser searchType= new MetaMetadataSearchParser(infoCollector,actionHandler, engine, this);
+  	 new MetaMetadataSearchParser(infoCollector,actionHandler, engine, this);
    }
 	
  	/**
@@ -534,22 +519,6 @@ implements SemanticsPrefs, SearchEngineNames
 		return true;
 	}
 	
-	public boolean recentlyCreated()
-	{
-		return (System.currentTimeMillis() - timeCreated < 120000);
-	}
-	
-	protected void updateTimeStamp()
-	{
-		timeCreated = System.currentTimeMillis();
-	}
-	protected long returnAndUpdateTimeStamp()
-	{
-		long result	= timeCreated;
-		timeCreated	= System.currentTimeMillis();
-		return result;
-	}
-	
 	String toString;
 	
 	public String toString()
@@ -569,6 +538,18 @@ implements SemanticsPrefs, SearchEngineNames
 				result				= super.toString();
 		}
 		return result;
+	}
+	
+	/**
+	 * Called after a seed is parsed to prevent it being parsed again later during re-seeding.
+	 * This override does nothing, because Search seeds should remain active.
+	 * 
+	 * @param inActive the inActive to set
+	 */
+	@Override
+	public void setActive(boolean value)
+	{
+		
 	}
 	
 	/**
@@ -617,4 +598,9 @@ implements SemanticsPrefs, SearchEngineNames
 		return resultURL;
 		
 	}
+
+  protected boolean useDistributor()
+  {
+  	return true;
+  }
 }

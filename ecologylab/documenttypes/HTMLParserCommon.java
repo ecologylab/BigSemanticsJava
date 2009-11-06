@@ -13,8 +13,8 @@ import ecologylab.xml.ElementState;
 
 
 
-public abstract class HTMLParserCommon<C extends Container, IC extends InfoCollector<C>, ES extends ElementState>
-extends ContainerParser<C, IC, ES> implements SemanticsPrefs
+public abstract class HTMLParserCommon<C extends Container, IC extends InfoCollector<C>>
+extends ContainerParser<C, IC, ElementState> implements SemanticsPrefs
 {
 
 	private	boolean 	isFile = false;

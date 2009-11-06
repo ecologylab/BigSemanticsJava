@@ -15,7 +15,7 @@ import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.seeding.QandDownloadable;
-import ecologylab.semantics.seeding.ResultDistributer;
+import ecologylab.semantics.seeding.SeedDistributor;
 import ecologylab.semantics.seeding.SearchResult;
 import ecologylab.semantics.seeding.Seed;
 import ecologylab.xml.TranslationScope;
@@ -67,7 +67,7 @@ implements QandDownloadable
 	
 	abstract public boolean downloadHasBeenQueued();
 
-	public abstract void setSearchResult(ResultDistributer sra, int resultsSoFar);
+	public abstract void setSearchResult(SeedDistributor sra, int resultsSoFar);
 	
 	public abstract void setQuery(String query);
 	

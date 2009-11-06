@@ -135,14 +135,14 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 	 * @throws IllegalAccessException 
 	 * @throws IllegalArgumentException 
 	 */
-	public abstract void setValueAction(SemanticAction action, SemanticActionParameters parameter,DocumentParser docType, IC infoCollector) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException;
+	public abstract void setFieldAction(SemanticAction action, SemanticActionParameters parameter,DocumentParser docType, IC infoCollector) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException;
 
 	/**
 	 * 
 	 * @param action
 	 * @param parameter
 	 */
-	public abstract void getValueAction(SemanticAction action, SemanticActionParameters parameter,DocumentParser docType, IC infoCollector);
+	public abstract void getFieldAction(SemanticAction action, SemanticActionParameters parameter,DocumentParser docType, IC infoCollector);
 	
 	/**
 	 * 
@@ -444,11 +444,11 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 			}
 			else if (SemanticActionStandardMethods.GET_FIELD_ACTION.equals(actionName))
 			{
-				getValueAction(action, parameter,documentType,infoCollector);
+				getFieldAction(action, parameter,documentType,infoCollector);
 			}
-			else if (SemanticActionStandardMethods.SETTER_ACTION.equals(actionName))
+			else if (SemanticActionStandardMethods.SET_FIELD_ACTION.equals(actionName))
 			{
-				setValueAction(action, parameter,documentType,infoCollector);
+				setFieldAction(action, parameter,documentType,infoCollector);
 			}
 			else if(SemanticActionStandardMethods.PROCESS_SEARCH.equals(actionName))
 			{

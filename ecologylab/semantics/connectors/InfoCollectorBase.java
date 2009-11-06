@@ -10,37 +10,36 @@ import java.util.Vector;
 
 import javax.swing.JFrame;
 
-import ecologylab.appframework.Memory;
-import ecologylab.appframework.OutOfMemoryErrorHandler;
+import ecologylab.appframework.ApplicationProperties;
+import ecologylab.appframework.types.prefs.Pref;
 import ecologylab.appframework.types.prefs.PrefBoolean;
+import ecologylab.appframework.types.prefs.PrefString;
 import ecologylab.collections.PrefixCollection;
 import ecologylab.collections.PrefixPhrase;
 import ecologylab.collections.Scope;
 import ecologylab.concurrent.DownloadMonitor;
 import ecologylab.generic.Debug;
-import ecologylab.generic.Generic;
 import ecologylab.generic.HashMapWriteSynch;
 import ecologylab.generic.StringTools;
+import ecologylab.io.Assets;
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.library.DefaultMetadataTranslationSpace;
+import ecologylab.semantics.metadata.DocumentParserTagNames;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.builtins.Document;
-import ecologylab.semantics.metadata.builtins.Image;
-import ecologylab.semantics.metadata.builtins.Media;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
-import ecologylab.semantics.seeding.ResultDistributer;
+import ecologylab.semantics.seeding.Seed;
+import ecologylab.semantics.seeding.SeedDistributor;
 import ecologylab.semantics.seeding.SeedSet;
 import ecologylab.semantics.seeding.SemanticsPrefs;
 import ecologylab.services.distributed.common.SessionObjects;
-import ecologylab.xml.TranslationScope;
 
 /**
  * @author amathur
  * 
  */
-public abstract class InfoCollectorBase<AC extends Container> extends
-		Debug implements InfoCollector<AC>, SemanticsPrefs
+public abstract class InfoCollectorBase<AC extends Container> extends	Debug 
+implements InfoCollector<AC>, SemanticsPrefs, ApplicationProperties, DocumentParserTagNames
 {
 
 	/**
@@ -122,7 +121,7 @@ public abstract class InfoCollectorBase<AC extends Container> extends
 	// Vector<String> untraversableURLStrings = new Vector<String>();
 	protected PrefixCollection									untraversablePrefixes					= new PrefixCollection();
 
-	private SeedSet															seedSet												= null;
+	protected SeedSet															seedSet												= null;
 
 	private final Scope													sessionScope;
 
@@ -151,13 +150,6 @@ public abstract class InfoCollectorBase<AC extends Container> extends
 	 */
 	protected final int													longSleep;
 
-	/**
-	 * 
-	 * The repository has the metaMetadatas of the document types. The repository is populated as the
-	 * documents are processed.
-	 */
-	MetaMetadataRepository											metaMetadataRepository				= new MetaMetadataRepository();
-
 	static final int														NUM_CRAWLER_DOWNLOAD_THREADS	= 2;
 
 	/**
@@ -185,6 +177,58 @@ public abstract class InfoCollectorBase<AC extends Container> extends
 
 	protected boolean														duringSeeding;
 
+	// ++++++++++++++++++++++++++++++++++++++++ //
+	
+	static final String	LOCAL_CF_ROOT									= PrefString.lookupString(LOCAL_CF_ROOT_PREF_NAME);
+	static final String	LOCAL_META_METADATA_DIR				= LOCAL_CF_ROOT + "/config/semantics/";
+	
+	static final String	META_METADATA_REPOSITORY_XML	= "metametadata/metaMetadataRepository.xml";
+	static final String	METAMETADATA_SITES_XML				= "metametadata/sites.xml";
+
+	/**
+	 * This is the xml file defining ALL the metaMetadata required
+	 * It resides in the ecologylabSemantics project.
+	 */
+	public static final String	METAMETADATA				= "metametadata";
+
+	/**
+	 * 
+	 * The repository has the metaMetadatas of the document types. The repository is populated as the
+	 * documents are processed.
+	 */
+	protected static final MetaMetadataRepository		META_METADATA_REPOSITORY;
+	
+	public static final MetaMetadata								DOCUMENT_META_METADATA;
+	public static final MetaMetadata								PDF_META_METADATA;
+	public static final MetaMetadata								SEARCH_META_METADATA;
+	public static final MetaMetadata								IMAGE_META_METADATA;
+
+	static
+	{
+		// MetaMetadata repository file has all the metametadata needed for metadata collection, 
+		// retrieval and incontextMetadata display.
+		Assets.downloadSemanticsZip(METAMETADATA, null, !USE_ASSETS_CACHE, SemanticsAssetVersions.METAMETADATA_ASSET_VERSION);
+
+		if(Pref.lookupBoolean(USE_LOCAL_CF_PREF_NAME)) //default is set to false in the metaprefs.
+		{
+			println("\t\t-- Reading meta_metadata from : " + LOCAL_META_METADATA_DIR);
+			METAMETADATA_REPOSITORY_FILE 		= new File(LOCAL_META_METADATA_DIR, META_METADATA_REPOSITORY_XML);
+			METAMETADATA_SITES_FILE 				= new File(LOCAL_META_METADATA_DIR, METAMETADATA_SITES_XML);	
+		}
+		else
+		{
+			println("\t\t-- Reading meta_metadata from zip");
+			METAMETADATA_REPOSITORY_FILE = Assets.getSemanticsFile(META_METADATA_REPOSITORY_XML);
+			METAMETADATA_SITES_FILE 			= Assets.getSemanticsFile(METAMETADATA_SITES_XML);
+		}
+		META_METADATA_REPOSITORY = MetaMetadataRepository.load(METAMETADATA_REPOSITORY_FILE);
+		
+		DOCUMENT_META_METADATA						= META_METADATA_REPOSITORY.getByTagName(DOCUMENT_TAG);
+		PDF_META_METADATA									= META_METADATA_REPOSITORY.getByTagName(PDF_TAG);
+		SEARCH_META_METADATA								= META_METADATA_REPOSITORY.getByTagName(SEARCH_TAG);
+		IMAGE_META_METADATA								= META_METADATA_REPOSITORY.getByTagName(IMAGE_TAG);
+	}
+
 	public InfoCollectorBase(Scope sessionScope)
 	{
 		super();
@@ -197,9 +241,9 @@ public abstract class InfoCollectorBase<AC extends Container> extends
 		println("");
 	}
 
-	public ResultDistributer getResultDistributer()
+	public SeedDistributor getResultDistributer()
 	{
-		return seedSet.resultDistributer(this);
+		return seedSet.seedDistributer(this);
 	}
 
 	public SeedSet getSeedSet()
@@ -213,10 +257,17 @@ public abstract class InfoCollectorBase<AC extends Container> extends
 		return result;
 	}
 
-	public void setSeedSet(SeedSet seedSet)
+	public void addSeeds(SeedSet newSeeds)
 	{
-		this.seedSet = seedSet;
-
+		if (this.seedSet == null)
+			this.seedSet = newSeeds;
+		else
+		{
+			for (Seed seed: newSeeds)
+			{
+				this.seedSet.add(seed);
+			}
+		}
 	}
 
 	public void getMoreSeedResults()
@@ -251,17 +302,7 @@ public abstract class InfoCollectorBase<AC extends Container> extends
 
 	public MetaMetadataRepository metaMetaDataRepository()
 	{
-		return metaMetadataRepository;
-	}
-
-	/**
-	 * Populates a new MetaMetadataRepository This method should be called only once per session
-	 * 
-	 * @param repositoryFilePath
-	 */
-	public void createMetaMetadataRepository(TranslationScope metadataTScope)
-	{
-		metaMetadataRepository = MetaMetadataRepository.load(METAMETADATA_REPOSITORY_FILE, metadataTScope);
+		return META_METADATA_REPOSITORY;
 	}
 
 	/**
@@ -273,7 +314,7 @@ public abstract class InfoCollectorBase<AC extends Container> extends
 	 */
 	public MetaMetadata getMM(String tagName)
 	{
-		return metaMetadataRepository.getByTagName(tagName);
+		return META_METADATA_REPOSITORY.getByTagName(tagName);
 	}
 
 	/**
@@ -285,7 +326,7 @@ public abstract class InfoCollectorBase<AC extends Container> extends
 	 */
 	public MetaMetadata getMM(Class<? extends Metadata> metadataClass)
 	{
-		return metaMetadataRepository.getMM(metadataClass);
+		return META_METADATA_REPOSITORY.getMM(metadataClass);
 	}
 
 	/**
@@ -294,11 +335,11 @@ public abstract class InfoCollectorBase<AC extends Container> extends
 	 */
 	public MetaMetadata getDocumentMM(ParsedURL purl, String tagName)
 	{
-		return metaMetadataRepository.getDocumentMM(purl, tagName);
+		return META_METADATA_REPOSITORY.getDocumentMM(purl, tagName);
 	}
 	public MetaMetadata getDocumentMM(ParsedURL purl)
 	{
-		return metaMetadataRepository.getDocumentMM(purl);
+		return META_METADATA_REPOSITORY.getDocumentMM(purl);
 	}
 
 	/**
@@ -309,7 +350,7 @@ public abstract class InfoCollectorBase<AC extends Container> extends
 	 */
 	public MetaMetadata getDocumentMM(Document metadata)
 	{
-		return metaMetadataRepository.getDocumentMM(metadata);
+		return META_METADATA_REPOSITORY.getDocumentMM(metadata);
 	}
 
 	/**
@@ -320,7 +361,7 @@ public abstract class InfoCollectorBase<AC extends Container> extends
 	 */
 	public MetaMetadata getImageMM(ParsedURL purl)
 	{
-		return metaMetadataRepository.getImageMM(purl);
+		return META_METADATA_REPOSITORY.getImageMM(purl);
 	}
 
 	
@@ -335,7 +376,7 @@ public abstract class InfoCollectorBase<AC extends Container> extends
 	 */
 	public Document constructDocument(ParsedURL purl)
 	{
-		return metaMetadataRepository.constructDocument(purl);
+		return META_METADATA_REPOSITORY.constructDocument(purl);
 	}
 	
 	public JFrame getJFrame()
@@ -385,13 +426,14 @@ public abstract class InfoCollectorBase<AC extends Container> extends
 		if (result)
 		{
 			result = rejectDomains.get(domain) == null;
-			// if (!result)
-			// debug("Rejecting navigation to " + parsedCandidate);
 		}
 		if (result)
 		{
 			result = !purl.isUnsupported();
 		}
+		if (!result)
+			warning("Rejecting navigation to " + purl);
+
 		return result;
 	}
 
@@ -591,4 +633,5 @@ public abstract class InfoCollectorBase<AC extends Container> extends
 	{
 		return null;
 	}
+
 }

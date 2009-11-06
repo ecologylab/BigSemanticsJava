@@ -14,10 +14,10 @@ import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.InfoCollector;
 
 /** 
- * Aggregate all results across multiple searches.
- * Then, make a arraylist structure with GoogleResult objects with Google ranking
+ * Aggregate all results across multiple searches and feeds.
+ * Interleave the results from each Seed.
+ * Round-robin the scheduling of parsing each.
  * <p/>
- * 
  * We want to keep track of:
  * 	number of searches that will report to us.
  *  has each search (s1) started?
@@ -25,9 +25,8 @@ import ecologylab.semantics.connectors.InfoCollector;
  *  
  * @author eunyee
  * @author andruid
- *
  */
-public class ResultDistributer<AC extends Container>
+public class SeedDistributor<AC extends Container>
 extends Debug implements DispatchTarget<QandDownloadable>
 {
 	InfoCollector			infoCollector;
@@ -111,7 +110,7 @@ extends Debug implements DispatchTarget<QandDownloadable>
   	Hashtable<ParsedURL, ParsedURL> queuedDownloadablesMap	= new Hashtable<ParsedURL, ParsedURL>();
   	
 	
-	public ResultDistributer(InfoCollector infoCollector, int numSearches)
+	public SeedDistributor(InfoCollector infoCollector, int numSearches)
 	{
 		this.infoCollector						= infoCollector;
 		this.totalSearches						= numSearches;
@@ -430,6 +429,11 @@ extends Debug implements DispatchTarget<QandDownloadable>
 		this.countingDone = 0;
 		this.resultSlices.clear();
 		this.resultNumOfDoneSearches.clear();
+		
+		// added 11/3/09 - andruid
+		this.searchCount	= 0;
+		// this may be wrong. it also may need to be increased
+		this.expectedNumSearchesInCurrentLevel	= 0;
 	}
 
 	/**

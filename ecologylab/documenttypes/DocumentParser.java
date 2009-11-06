@@ -24,6 +24,7 @@ import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.metadata.DocumentParserTagNames;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.MetaMetadata;
+import ecologylab.semantics.seeding.Seed;
 import ecologylab.xml.ElementState;
 
 /**
@@ -775,4 +776,16 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 	{
 		return container.purl();
 	}
+	
+	/**
+	 * Connects to a SeedDistributor, when appropriate.
+	 * 
+	 * @return 	null always for the default base class.
+	 */
+	public Seed getSeed()
+	{
+		return null;
+	}
+
+
 }

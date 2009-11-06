@@ -14,9 +14,9 @@ import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
-import ecologylab.semantics.seeding.ResultDistributer;
 import ecologylab.semantics.seeding.SearchState;
 import ecologylab.semantics.seeding.Seed;
+import ecologylab.semantics.seeding.SeedDistributor;
 import ecologylab.semantics.seeding.SeedSet;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.TranslationScope;
@@ -108,10 +108,13 @@ public interface InfoCollector<C extends Container>
 
 	public SeedSet getSeedSet();
 	
-	public ResultDistributer getResultDistributer();
+	public SeedDistributor getResultDistributer();
 
 	SemanticActionHandler createSemanticActionHandler();
 	
 	JFrame getJFrame();
 	
+	C getContainerDownloadIfNeeded(C ancestor, ParsedURL purl, 
+			Seed seed, boolean dnd,
+			boolean justCrawl, boolean justMedia);
 }

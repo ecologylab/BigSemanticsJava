@@ -3,7 +3,7 @@ package ecologylab.documenttypes;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.InfoCollector;
-import ecologylab.semantics.seeding.ResultDistributer;
+import ecologylab.semantics.seeding.SeedDistributor;
 import ecologylab.semantics.seeding.SearchState;
 import ecologylab.xml.ElementState;
 
@@ -77,7 +77,7 @@ abstract public class ContainerParser<C extends Container, IC extends InfoCollec
 			
 			final String msg 				= "Queueing search result "+ resultNum + ": " + resultPURL;
 			infoCollector.displayStatus(msg);
-			ResultDistributer sra		= this.searchSeed.resultDistributer(infoCollector);
+			SeedDistributor sra		= this.searchSeed.seedDistributer(infoCollector);
 			if (sra != null)
 			{
 				resultContainer.setSearchResult(sra, resultsSoFar);
@@ -97,8 +97,8 @@ abstract public class ContainerParser<C extends Container, IC extends InfoCollec
 	    
 	    if( this.searchSeed != null)
 		{
-			ResultDistributer resultDistributer	= 
-				this.searchSeed.resultDistributer(infoCollector);
+			SeedDistributor resultDistributer	= 
+				this.searchSeed.seedDistributer(infoCollector);
 			if (resultDistributer != null)
 			{
 				resultDistributer.queueSearchRequest(searchContainer);
