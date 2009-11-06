@@ -10,14 +10,14 @@ import ecologylab.semantics.gui.EditValueEvent;
 import ecologylab.semantics.gui.EditValueListener;
 import ecologylab.semantics.gui.EditValueNotifier;
 import ecologylab.semantics.metametadata.MetaMetadataField;
-import ecologylab.xml.FieldAccessor;
+import ecologylab.xml.FieldDescriptor;
 import ecologylab.xml.FieldToXMLOptimizations;
 
 /**
  * @author andruid
  *
  */
-public class MetadataFieldAccessor<M extends Metadata> extends FieldAccessor implements EditValueNotifier
+public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor implements EditValueNotifier
 {
 	final private boolean		isPseudoScalar;
 	
@@ -29,7 +29,7 @@ public class MetadataFieldAccessor<M extends Metadata> extends FieldAccessor imp
 
 	private ArrayList<EditValueListener> editValueListeners = new ArrayList<EditValueListener>();
 	
-	public MetadataFieldAccessor(FieldToXMLOptimizations f2XO)
+	public MetadataFieldDescriptor(FieldToXMLOptimizations f2XO)
 	{
 		super(f2XO);
 		if (field != null)

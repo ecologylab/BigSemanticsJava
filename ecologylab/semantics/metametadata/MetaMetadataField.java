@@ -17,7 +17,7 @@ import ecologylab.semantics.tools.MetadataCompiler;
 import ecologylab.semantics.tools.MetadataCompilerConstants;
 import ecologylab.textformat.NamedStyle;
 import ecologylab.xml.ElementState;
-import ecologylab.xml.FieldAccessor;
+import ecologylab.xml.FieldDescriptor;
 import ecologylab.xml.XMLTools;
 import ecologylab.xml.XMLTranslationException;
 import ecologylab.xml.xml_inherit;
@@ -942,7 +942,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 		return childMetaMetadata.get(name);
 	}
 
-	public MetaMetadataField lookupChild(FieldAccessor fieldAccessor)
+	public MetaMetadataField lookupChild(FieldDescriptor fieldAccessor)
 	{
 		return lookupChild(XMLTools.getXmlTagName(fieldAccessor.getFieldName(), null));
 	}
@@ -1088,8 +1088,8 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 
 	private void inheritNonDefaultAttributes(MetaMetadataField inheritFrom)
 	{
-		HashMapArrayList<String, FieldAccessor> fieldAccessors = this.getFieldAccessors(FieldAccessor.class);
-		for (FieldAccessor fieldAccessor : fieldAccessors.values())
+		HashMapArrayList<String, FieldDescriptor> fieldAccessors = this.getFieldDescriptors(FieldDescriptor.class);
+		for (FieldDescriptor fieldAccessor : fieldAccessors.values())
 		{
 			ScalarType scalarType = fieldAccessor.getScalarType();
 			try

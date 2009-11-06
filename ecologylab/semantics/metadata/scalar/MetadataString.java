@@ -3,7 +3,7 @@
  */
 package ecologylab.semantics.metadata.scalar;
 
-import ecologylab.semantics.metadata.MetadataFieldAccessor;
+import ecologylab.semantics.metadata.MetadataFieldDescriptor;
 import ecologylab.semantics.metadata.semantics_pseudo_scalar;
 import ecologylab.semantics.model.text.ITermVector;
 import ecologylab.semantics.model.text.TermVector;
@@ -66,7 +66,7 @@ public class MetadataString extends MetadataScalarBase<String>
 	 */
 	public static boolean isNotNullValue(String valueString)
 	{
-		return (valueString != null && !valueString.equals(MetadataFieldAccessor.NULL) );
+		return (valueString != null && !valueString.equals(MetadataFieldDescriptor.NULL) );
 	}
 	
 	public static boolean isNotNullAndEmptyValue(String valueString)

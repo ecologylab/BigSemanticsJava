@@ -1,7 +1,7 @@
 package ecologylab.semantics.gui;
 
 import ecologylab.semantics.metadata.MetadataBase;
-import ecologylab.semantics.metadata.MetadataFieldAccessor;
+import ecologylab.semantics.metadata.MetadataFieldDescriptor;
 
 /**
  * Passed to the listener of the value edit in incontext Metadata.
@@ -9,10 +9,10 @@ import ecologylab.semantics.metadata.MetadataFieldAccessor;
  */
 public class EditValueEvent
 {
-	MetadataFieldAccessor metadataFieldAccessor;
+	MetadataFieldDescriptor metadataFieldAccessor;
 	MetadataBase metadata;
 	
-	public EditValueEvent(MetadataFieldAccessor metadataFieldAccessor, MetadataBase metadata)
+	public EditValueEvent(MetadataFieldDescriptor metadataFieldAccessor, MetadataBase metadata)
 	{
 		this.metadataFieldAccessor  = metadataFieldAccessor;
 		this.metadata 				= metadata;
@@ -20,14 +20,14 @@ public class EditValueEvent
 	/**
 	 * @return the metadataFieldAccessor
 	 */
-	public MetadataFieldAccessor getMetadataFieldAccessor()
+	public MetadataFieldDescriptor getMetadataFieldAccessor()
 	{
 		return metadataFieldAccessor;
 	}
 	/**
 	 * @param metadataFieldAccessor the metadataFieldAccessor to set
 	 */
-	public void setMetadataFieldAccessor(MetadataFieldAccessor metadataFieldAccessor)
+	public void setMetadataFieldAccessor(MetadataFieldDescriptor metadataFieldAccessor)
 	{
 		this.metadataFieldAccessor = metadataFieldAccessor;
 	}

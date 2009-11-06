@@ -17,7 +17,7 @@ import ecologylab.semantics.model.text.ITermVector;
 import ecologylab.semantics.model.text.Term;
 import ecologylab.semantics.seeding.SearchState;
 import ecologylab.semantics.seeding.Seed;
-import ecologylab.xml.FieldAccessor;
+import ecologylab.xml.FieldDescriptor;
 import ecologylab.xml.types.element.ArrayListState;
 
 /**
@@ -120,10 +120,10 @@ abstract public class Metadata extends MetadataBase<MetaMetadata>
 	{
 		attributeName = attributeName.toLowerCase();
 
-		OneLevelNestingIterator<FieldAccessor, ? extends MetadataBase> fullIterator = fullNonRecursiveIterator();
+		OneLevelNestingIterator<FieldDescriptor, ? extends MetadataBase> fullIterator = fullNonRecursiveIterator();
 		while (fullIterator.hasNext())
 		{
-			FieldAccessor fieldAccessor = fullIterator.next();
+			FieldDescriptor fieldAccessor = fullIterator.next();
 			MetadataBase currentMetadata = fullIterator.currentObject();
 			// getFieldName() or getTagName()??? attributeName is from TypeTagNames.java
 			if (attributeName.equals(fieldAccessor.getFieldName()))
@@ -147,10 +147,10 @@ abstract public class Metadata extends MetadataBase<MetaMetadata>
 	{
 		int size = 0;
 
-		OneLevelNestingIterator<FieldAccessor, ? extends MetadataBase> fullIterator = fullNonRecursiveIterator();
+		OneLevelNestingIterator<FieldDescriptor, ? extends MetadataBase> fullIterator = fullNonRecursiveIterator();
 		while (fullIterator.hasNext())
 		{
-			FieldAccessor fieldAccessor = fullIterator.next();
+			FieldDescriptor fieldAccessor = fullIterator.next();
 			MetadataBase currentMetadata = fullIterator.currentObject();
 			MetaMetadata currentMetaMetadata = currentMetadata.getMetaMetadata();
 			MetaMetadataField metaMetadata = (metaMetadataField != null) ? metaMetadataField
@@ -209,7 +209,7 @@ abstract public class Metadata extends MetadataBase<MetaMetadata>
 
 		Set<ITermVector> vectors = termVector.componentVectors();
 		
-		ClassAndCollectionIterator<FieldAccessor, MetadataBase<?>> i = metadataIterator();
+		ClassAndCollectionIterator<FieldDescriptor, MetadataBase<?>> i = metadataIterator();
 		while (i.hasNext())
 		{
 			MetadataBase m = i.next();
@@ -244,7 +244,7 @@ abstract public class Metadata extends MetadataBase<MetaMetadata>
 		{
 			if (metadata != null)
 			{
-				FieldAccessor fieldAccessor = get(tagName);
+				FieldDescriptor fieldAccessor = get(tagName);
 				if (fieldAccessor != null && value != null && value.length() != 0)
 				{
 					fieldAccessor.set(metadata, value);
@@ -281,9 +281,9 @@ abstract public class Metadata extends MetadataBase<MetaMetadata>
 	// FIXME -- use fullNonRecursiveIterator
 	public Metadata getMetadataWhichContainsField(String tagName)
 	{
-		HashMapArrayList<String, FieldAccessor> fieldAccessors = metadataFieldAccessors();
+		HashMapArrayList<String, FieldDescriptor> fieldAccessors = metadataFieldDescriptors();
 
-		FieldAccessor metadataFieldAccessor = fieldAccessors.get(tagName);
+		FieldDescriptor metadataFieldAccessor = fieldAccessors.get(tagName);
 		if (metadataFieldAccessor != null)
 		{
 			return this;
@@ -293,8 +293,8 @@ abstract public class Metadata extends MetadataBase<MetaMetadata>
 		{
 			for (Metadata mixinMetadata : mixins())
 			{
-				fieldAccessors = mixinMetadata.metadataFieldAccessors();
-				FieldAccessor mixinFieldAccessor = fieldAccessors.get(tagName);
+				fieldAccessors = mixinMetadata.metadataFieldDescriptors();
+				FieldDescriptor mixinFieldAccessor = fieldAccessors.get(tagName);
 				if (mixinFieldAccessor != null)
 				{
 					return mixinMetadata;
@@ -363,7 +363,7 @@ abstract public class Metadata extends MetadataBase<MetaMetadata>
 		if (termVector != null)
 			return termVector;
 		CompositeTermVector tv = new CompositeTermVector();
-		ClassAndCollectionIterator<FieldAccessor, MetadataBase<?>> i = metadataIterator();
+		ClassAndCollectionIterator<FieldDescriptor, MetadataBase<?>> i = metadataIterator();
 		while (i.hasNext())
 		{
 			MetadataBase m = i.next();
@@ -427,9 +427,9 @@ abstract public class Metadata extends MetadataBase<MetaMetadata>
 	 * @param fieldName
 	 * @return
 	 */
-	public MetadataFieldAccessor getMetadataFieldAccessor(String fieldName)
+	public MetadataFieldDescriptor getMetadataFieldDescriptor(String fieldName)
 	{
-		return (MetadataFieldAccessor) metadataFieldAccessors().get(fieldName);
+		return (MetadataFieldDescriptor) metadataFieldDescriptors().get(fieldName);
 	}
 
 	// For adding mapped attributes
@@ -459,9 +459,9 @@ abstract public class Metadata extends MetadataBase<MetaMetadata>
 	 * mixin fields. Instead, one uses fullNonRecursiveIterator() when that is desired.
 	 */
 	@Override
-	protected HashMapArrayList<String, FieldAccessor> computeFieldAccessors()
+	protected HashMapArrayList<String, FieldDescriptor> computeFieldDescriptors()
 	{
-		HashMapArrayList<String, FieldAccessor> result = super.computeFieldAccessors();
+		HashMapArrayList<String, FieldDescriptor> result = super.computeFieldDescriptors();
 		result.remove("mixins");
 		return result;
 	}
@@ -471,15 +471,15 @@ abstract public class Metadata extends MetadataBase<MetaMetadata>
 	 * (probably a subclass), plus all the ecologylab.xml annotated fields in the mixins of this, if
 	 * there are any.
 	 */
-	public OneLevelNestingIterator<FieldAccessor, ? extends MetadataBase> fullNonRecursiveIterator()
+	public OneLevelNestingIterator<FieldDescriptor, ? extends MetadataBase> fullNonRecursiveIterator()
 	{
-		return new OneLevelNestingIterator<FieldAccessor, Metadata>(this, (mixins == null) ? null
+		return new OneLevelNestingIterator<FieldDescriptor, Metadata>(this, (mixins == null) ? null
 				: mixins.iterator());
 	}
 
-	public ClassAndCollectionIterator<FieldAccessor, MetadataBase<?>> metadataIterator()
+	public ClassAndCollectionIterator<FieldDescriptor, MetadataBase<?>> metadataIterator()
 	{
-		return new ClassAndCollectionIterator<FieldAccessor, MetadataBase<?>>(this);
+		return new ClassAndCollectionIterator<FieldDescriptor, MetadataBase<?>>(this);
 	}
 
 	public boolean hasObservers()

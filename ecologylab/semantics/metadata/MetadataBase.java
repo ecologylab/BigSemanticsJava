@@ -19,8 +19,8 @@ import ecologylab.semantics.model.text.ITermVector;
 import ecologylab.semantics.model.text.NullTermVector;
 import ecologylab.semantics.model.text.Term;
 import ecologylab.xml.ElementState;
-import ecologylab.xml.FieldAccessor;
-import ecologylab.xml.Optimizations;
+import ecologylab.xml.FieldDescriptor;
+import ecologylab.xml.ClassDescriptor;
 import ecologylab.xml.ScalarUnmarshallingContext;
 import ecologylab.xml.types.element.ArrayListState;
 
@@ -32,10 +32,10 @@ import ecologylab.xml.types.element.ArrayListState;
  * @author andruid
  *
  */
-public class MetadataBase<MM extends MetaMetadataField> extends ElementState implements Iterable<FieldAccessor>
+public class MetadataBase<MM extends MetaMetadataField> extends ElementState implements Iterable<FieldDescriptor>
 {
 
-	HashMapArrayList<String, FieldAccessor> metadataFieldAccessors;
+	HashMapArrayList<String, FieldDescriptor> metadataFieldDescriptors;
 
 	/**
 	 * Hidden reference to the MetaMetadataRepository. DO NOT access this field directly.
@@ -104,32 +104,32 @@ public class MetadataBase<MM extends MetaMetadataField> extends ElementState imp
 	}
 	
 	/**
-	 * Efficiently retrieve appropriate MetadataFieldAccessor, using lazy evaluation.
+	 * Efficiently retrieve appropriate MetadataFieldDescriptor, using lazy evaluation.
 	 * 
 	 * @param fieldName
 	 * @return
 	 */
-	public MetadataFieldAccessor getMetadataFieldAccessor(String fieldName)
+	public MetadataFieldDescriptor getMetadataFieldDescriptor(String fieldName)
 	{
-		return (MetadataFieldAccessor) metadataFieldAccessors().get(fieldName);
+		return (MetadataFieldDescriptor) metadataFieldDescriptors().get(fieldName);
 	}
 
-	protected HashMapArrayList<String, FieldAccessor> metadataFieldAccessors()
+	protected HashMapArrayList<String, FieldDescriptor> metadataFieldDescriptors()
 	{
-		HashMapArrayList<String, FieldAccessor> result	= this.metadataFieldAccessors;
+		HashMapArrayList<String, FieldDescriptor> result	= this.metadataFieldDescriptors;
 		if (result == null)
 		{
-			result			= computeFieldAccessors();
+			result			= computeFieldDescriptors();
 			result			= 
-			metadataFieldAccessors	= result;
+			metadataFieldDescriptors	= result;
 		}
 		return result;
 	}
 
 
-	protected HashMapArrayList<String, FieldAccessor> computeFieldAccessors()
+	protected HashMapArrayList<String, FieldDescriptor> computeFieldDescriptors()
 	{
-		return Optimizations.getFieldAccessors(this.getClass(), MetadataFieldAccessor.class);
+		return ClassDescriptor.getFieldDescriptors(this.getClass(), MetadataFieldDescriptor.class);
 	}
 
 	public MetaMetadataField metaMetadataField()
@@ -137,16 +137,16 @@ public class MetadataBase<MM extends MetaMetadataField> extends ElementState imp
 		Metadata parent	= (Metadata) this.parent();
 		return (parent == null) ? null : parent.metaMetadataField();
 	}
-	public Iterator<FieldAccessor> iterator()
+	public Iterator<FieldDescriptor> iterator()
 	{
-		return metadataFieldAccessors().iterator();
+		return metadataFieldDescriptors().iterator();
 	}
 
 	//FIXEME:The method has to search even all the mixins for the key.
-	public FieldAccessor get(String key)
+	public FieldDescriptor get(String key)
 	{
-		HashMapArrayList<String, FieldAccessor> fieldAccessors = metadataFieldAccessors();
-		return fieldAccessors.get(key);
+		HashMapArrayList<String, FieldDescriptor> fieldDescriptors = metadataFieldDescriptors();
+		return fieldDescriptors.get(key);
 	}
 	public boolean set(String tagName, String value)
 	{
@@ -162,10 +162,10 @@ public class MetadataBase<MM extends MetaMetadataField> extends ElementState imp
 		{
 			if(metadata != null)
 			{
-				FieldAccessor fieldAccessor = get(tagName);
-				if(fieldAccessor != null /* && value != null && value.length()!=0 */)	// allow set to nothing -- andruid & andrew 4/14/09
+				FieldDescriptor fieldDescriptor = get(tagName);
+				if(fieldDescriptor != null /* && value != null && value.length()!=0 */)	// allow set to nothing -- andruid & andrew 4/14/09
 				{
-					fieldAccessor.set(metadata, value, scalarUnMarshallingContext);
+					fieldDescriptor.set(metadata, value, scalarUnMarshallingContext);
 					return true;
 				}
 				else 
@@ -180,10 +180,10 @@ public class MetadataBase<MM extends MetaMetadataField> extends ElementState imp
 	
 	public MetadataBase getMetadataWhichContainsField(String tagName)
 	{
-		HashMapArrayList<String, FieldAccessor> fieldAccessors = metadataFieldAccessors();
+		HashMapArrayList<String, FieldDescriptor> fieldDescriptors = metadataFieldDescriptors();
 		
-		FieldAccessor metadataFieldAccessor = fieldAccessors.get(tagName);
-		if (metadataFieldAccessor != null)
+		FieldDescriptor metadataFieldDescriptor = fieldDescriptors.get(tagName);
+		if (metadataFieldDescriptor != null)
 		{
 			return this;
 		}
@@ -232,12 +232,12 @@ public class MetadataBase<MM extends MetaMetadataField> extends ElementState imp
     }
     
  	/**
- 	 * Provides MetadataFieldAccessors for each of the ecologylab.xml annotated fields in this
+ 	 * Provides MetadataFieldDescriptors for each of the ecologylab.xml annotated fields in this
  	 * (probably a subclass).
  	 */
- 	public OneLevelNestingIterator<FieldAccessor, ? extends MetadataBase> fullNonRecursiveIterator()
+ 	public OneLevelNestingIterator<FieldDescriptor, ? extends MetadataBase> fullNonRecursiveIterator()
 	{
-		return new OneLevelNestingIterator<FieldAccessor, MetadataBase<?>>(this, null);
+		return new OneLevelNestingIterator<FieldDescriptor, MetadataBase<?>>(this, null);
 	}
 
 }

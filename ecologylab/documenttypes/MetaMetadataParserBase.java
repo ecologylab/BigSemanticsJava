@@ -28,13 +28,13 @@ import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.Metadata;
-import ecologylab.semantics.metadata.MetadataFieldAccessor;
+import ecologylab.semantics.metadata.MetadataFieldDescriptor;
 import ecologylab.semantics.metadata.DocumentParserTagNames;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.DefVar;
 import ecologylab.semantics.metametadata.MetaMetadataField;
 import ecologylab.xml.ElementState;
-import ecologylab.xml.FieldAccessor;
+import ecologylab.xml.FieldDescriptor;
 import ecologylab.xml.ScalarUnmarshallingContext;
 import ecologylab.xml.TranslationScope;
 import ecologylab.xml.XMLTools;
@@ -406,7 +406,7 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 										XPathConstants.NODE);
 			
 			// Have to return the nested object for the field.
-			MetadataFieldAccessor fieldAccessor = metadata.getMetadataFieldAccessor(mmdElement.getChildTag());
+			MetadataFieldDescriptor fieldAccessor = metadata.getMetadataFieldDescriptor(mmdElement.getChildTag());
 			//FIXME -- need to use repository recursively!
 			nestedMetadata = (Metadata) fieldAccessor.getAndPerhapsCreateNested(metadata);
 			nestedMetadata.setMetaMetadata(infoCollector.metaMetaDataRepository().getMM(nestedMetadata.getClass()));
@@ -442,7 +442,7 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 	{
 		Node originalNode = contextNode;
 		// this is the field accessor for the collection field
-		FieldAccessor fieldAccessor = metadata.getMetadataFieldAccessor(mmdElement.getChildTag());
+		FieldDescriptor fieldAccessor = metadata.getMetadataFieldDescriptor(mmdElement.getChildTag());
 
 		if (fieldAccessor != null)
 		{
@@ -458,8 +458,8 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 				collectionChildClass =translationScope.getClassByTag(mmdElement
 					.getCollectionChildType());
 			}
-			HashMapArrayList<String, FieldAccessor> collectionElementAccessors = metadata
-					.getChildFieldAccessors(collectionChildClass, MetadataFieldAccessor.class);
+			HashMapArrayList<String, FieldDescriptor> collectionElementAccessors = metadata
+					.getChildFieldAccessors(collectionChildClass, MetadataFieldDescriptor.class);
 
 			// now get the collection field
 			Field collectionField = fieldAccessor.getField();
@@ -482,7 +482,7 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 			for (int i = 0; i < collectionElementAccessors.size(); i++)
 			{
 				// get the field from childField list which has the same name as this field
-				MetadataFieldAccessor mfa = (MetadataFieldAccessor) collectionElementAccessors.get(i); // ith
+				MetadataFieldDescriptor mfa = (MetadataFieldDescriptor) collectionElementAccessors.get(i); // ith
 																																																// field
 
 				// if this field exists in childField list this means there are some extraction rules for it
