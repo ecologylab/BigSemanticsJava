@@ -103,4 +103,6 @@ public interface SemanticActionStandardMethods
 	 * 
 	 */
 	public static String EVALUATE_RANK_WEIGHT									=  "eval_rank_wt";
+	
+	public static String BACK_OFF_FROM_SITE										= "back_off_from_site";
 }

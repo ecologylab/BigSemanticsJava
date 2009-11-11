@@ -3,6 +3,7 @@ package ecologylab.semantics.metametadata;
 import ecologylab.generic.Debug;
 import ecologylab.net.UserAgent;
 import ecologylab.semantics.actions.ApplyXPathSemanticAction;
+import ecologylab.semantics.actions.BackOffFromSite;
 import ecologylab.semantics.actions.CreateAndVisualizeImgSurrogateSemanticAction;
 import ecologylab.semantics.actions.CreateAndVisualizeTextSurrogateSemanticAction;
 import ecologylab.semantics.actions.CreateContainerForSearchSemanticAction;
@@ -61,6 +62,7 @@ public class MetaMetadataTranslationScope extends Debug
 			CreateAndVisualizeTextSurrogateSemanticAction.class,
 			TrySyncNestedMetadata.class,
 			EvaluateRankWeight.class,
+			BackOffFromSite.class
 			};
 
 	public static TranslationScope get()

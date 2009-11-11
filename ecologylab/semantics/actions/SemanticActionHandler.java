@@ -160,6 +160,8 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 	 */
 	public abstract void createSemanticAnchor(SemanticAction action, SemanticActionParameters parameter,DocumentParser<C,?,?> documentType, IC infoCollector);
 	
+	
+	public abstract void backOffFromSite(SemanticAction action, SemanticActionParameters parameters, DocumentParser <C, ?, ?> documentType, IC infoCollector);
 	/**
 	 * 
 	 * @param action

@@ -34,7 +34,9 @@ public abstract class NestedSemanticAction<SA extends SemanticAction> extends Se
 			CreateSemanticAnchorSemanticAction.class, QueueDocumentDownloadSemanticAction.class,
 			ApplyXPathSemanticAction.class, IfSemanticAction.class,
 			CreateAndVisualizeTextSurrogateSemanticAction.class, TrySyncNestedMetadata.class,
-			EvaluateRankWeight.class })
+			EvaluateRankWeight.class,
+			BackOffFromSite.class
+	})
 	private ArrayList<SA>	nestedSemanticActionList;
 
 	/**
