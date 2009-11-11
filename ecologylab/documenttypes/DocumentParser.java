@@ -308,6 +308,20 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 				}
 				// Add logic for any new binding type here
 			}
+			else // url based look up failed
+			{
+				//Try based on  suffix
+				metaMetadata = infoCollector.metaMetaDataRepository().getDocumentMMBySuffix(purl.suffix());
+				if(metaMetadata ==null)
+				{
+						// try based on mimetype
+						metaMetadata = infoCollector.metaMetaDataRepository().getDocumentMMByMime(purlConnection.mimeType());
+				}
+				if(metaMetadata!=null)
+				{
+						result = new MetaMetadataXPathParser(semanticAction,infoCollector);
+				}
+			}
 			
 			// if meta-metadata does not exists or the binding type is default
 			if (result == null || binding==null)

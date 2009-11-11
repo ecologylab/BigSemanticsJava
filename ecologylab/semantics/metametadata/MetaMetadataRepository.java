@@ -15,9 +15,9 @@ import ecologylab.generic.HashMapArrayList;
 import ecologylab.net.ParsedURL;
 import ecologylab.net.UserAgent;
 import ecologylab.semantics.metadata.DebugMetadata;
+import ecologylab.semantics.metadata.DocumentParserTagNames;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataBase;
-import ecologylab.semantics.metadata.DocumentParserTagNames;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.Entity;
 import ecologylab.semantics.metadata.builtins.Image;
@@ -29,7 +29,6 @@ import ecologylab.semantics.metadata.scalar.MetadataStringBuilder;
 import ecologylab.textformat.NamedStyle;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.TranslationScope;
-import ecologylab.xml.XMLTools;
 import ecologylab.xml.XMLTranslationException;
 import ecologylab.xml.types.element.HashMapState;
 
@@ -90,6 +89,12 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	
 	private HashMap<String, ArrayList<RepositoryPatternEntry>> mediaRepositoryByPattern			= new HashMap<String, ArrayList<RepositoryPatternEntry>>();
 	
+	/**
+	 * We have only documents as direct binding will be used only in case of feeds and XML
+	 */
+	private HashMap<String,MetaMetadata> documentRepositoryByMime    											=  new HashMap<String,MetaMetadata>();
+	
+	private HashMap<String,MetaMetadata> documentRepositoryBySuffix    										=  new HashMap<String,MetaMetadata>();
 	
 	private PrefixCollection 												urlprefixCollection = new PrefixCollection('/');
 
@@ -160,6 +165,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		this.defaultUserAgentString	= (defaultUserAgentName == null) ? null : userAgents.get(defaultUserAgentName).userAgentString();
 		
 		initializeLocationBasedMaps();
+		initializeSuffixAndMimeBasedMaps();
 		System.out.println();
 	}
 
@@ -252,6 +258,16 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		return getDocumentMM(purl, DOCUMENT_TAG);
 	}
 
+	public MetaMetadata getDocumentMMBySuffix (String suffix)
+	{
+		return documentRepositoryBySuffix.get(suffix);
+	}
+	
+	public MetaMetadata getDocumentMMByMime(String mimeType)
+	{
+		return documentRepositoryByMime.get(mimeType);
+	}
+	
 	public MetaMetadata getDocumentMM(Document metadata)
 	{
 		return getDocumentMM(metadata.getLocation(), metadataTScope.getTag(metadata.getClass()));
@@ -406,6 +422,42 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 					}
 				}
 			}
+		}
+	}
+	
+	/**
+	 * This initalizes the map based on mime type and suffix.
+   */
+	private void initializeSuffixAndMimeBasedMaps()
+	{
+		for (MetaMetadata metaMetadata : repositoryByTagName)
+		{
+			metaMetadata.inheritMetaMetadata(this);
+			Class<? extends Metadata>	metadataClass	= metaMetadata.getMetadataClass(metadataTScope);
+			if (metadataClass == null)
+			{
+				error(metaMetadata + "\tCan't resolve in TranslationScope " + metadataTScope);
+				continue;
+			}
+			
+			ArrayList<String> suffixes = metaMetadata.getSuffixes();
+			if(suffixes!=null)
+			{
+				for(String suffix: suffixes)
+				{
+					documentRepositoryBySuffix.put(suffix, metaMetadata);
+				}
+			}
+			
+			ArrayList<String> mimeTypes = metaMetadata.getMimeTypes();
+			if(mimeTypes!=null)
+			{
+				for(String mimeType: mimeTypes)
+				{
+					documentRepositoryByMime.put(mimeType,metaMetadata);
+				}
+			}
+			
 		}
 	}
 	public MetaMetadata getByTagName(String tagName)
