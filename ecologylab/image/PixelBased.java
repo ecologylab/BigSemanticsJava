@@ -762,7 +762,7 @@ implements Downloadable
 	 * Call to notify the object that its download is completed;
 	 *
 	 */
-	synchronized public void downloadDone()
+	synchronized public void downloadAndParseDone()
 	{
 		notifyAll();
 	}
