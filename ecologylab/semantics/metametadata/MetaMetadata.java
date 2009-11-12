@@ -300,46 +300,49 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 		MetadataCompilerConstants.appendBlankConstructor(p, className);
 		MetadataCompilerConstants.appendConstructor(p, className);
 
-		// loop to write the class defination
+		// loop to write the class definition
 		HashMapArrayList metaMetadataFieldList = getChildMetaMetadata();
-		for (int i = 0; i < metaMetadataFieldList.size(); i++)
+		if(metaMetadataFieldList != null)
 		{
-			// get the metadata field.
-			MetaMetadataField f = (MetaMetadataField) metaMetadataFieldList.get(i);
-			f.setExtendsField(extendsAttribute);
-			f.setMmdRepository(mmdRepository);
-			try
+			for (int i = 0; i < metaMetadataFieldList.size(); i++)
 			{
-				// translate the field into for metadata class.
-				f.translateToMetadataClass(packageName, p,MetadataCompilerConstants.GENERATE_FIELDS_PASS,false);
+				// get the metadata field.
+				MetaMetadataField f = (MetaMetadataField) metaMetadataFieldList.get(i);
+				f.setExtendsField(extendsAttribute);
+				f.setMmdRepository(mmdRepository);
+				try
+				{
+					// translate the field into for metadata class.
+					f.translateToMetadataClass(packageName, p,MetadataCompilerConstants.GENERATE_FIELDS_PASS,false);
+				}
+				catch (XMLTranslationException e)
+				{
+					e.printStackTrace();
+				}
+				catch (IOException e)
+				{
+					e.printStackTrace();
+				}
 			}
-			catch (XMLTranslationException e)
+			for (int i = 0; i < metaMetadataFieldList.size(); i++)
 			{
-				e.printStackTrace();
-			}
-			catch (IOException e)
-			{
-				e.printStackTrace();
-			}
-		}
-		for (int i = 0; i < metaMetadataFieldList.size(); i++)
-		{
-			// get the metadata field.
-			MetaMetadataField f = (MetaMetadataField) metaMetadataFieldList.get(i);
-			f.setExtendsField(extendsAttribute);
-			f.setMmdRepository(mmdRepository);
-			try
-			{
-				// translate the field into for metadata class.
-				f.translateToMetadataClass(packageName, p,MetadataCompilerConstants.GENERATE_METHODS_PASS,true);
-			}
-			catch (XMLTranslationException e)
-			{
-				e.printStackTrace();
-			}
-			catch (IOException e)
-			{
-				e.printStackTrace();
+				// get the metadata field.
+				MetaMetadataField f = (MetaMetadataField) metaMetadataFieldList.get(i);
+				f.setExtendsField(extendsAttribute);
+				f.setMmdRepository(mmdRepository);
+				try
+				{
+					// translate the field into for metadata class.
+					f.translateToMetadataClass(packageName, p,MetadataCompilerConstants.GENERATE_METHODS_PASS,true);
+				}
+				catch (XMLTranslationException e)
+				{
+					e.printStackTrace();
+				}
+				catch (IOException e)
+				{
+					e.printStackTrace();
+				}
 			}
 		}
 		// end the class declaration
