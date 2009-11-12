@@ -18,12 +18,6 @@ public interface AbstractImgElement extends AbstractSetElement
 	IFeatureVector<Term> termVector();
 	
 	public float mediaWeight();
-
-	/**
-	 * What should be done if this image fails to be delivered or downloaded ?
-	 * @param getText 
-	 */
-	void handleDeliveryOrDownloadError(boolean getText);
 	
 	/**
 	 * Operational for regular ImageElements, but a no-op for AbstractPDFImgElements.
