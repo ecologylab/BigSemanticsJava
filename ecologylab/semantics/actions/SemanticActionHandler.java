@@ -484,6 +484,10 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 			{
 				evaluateRankWeight(action,parameter,documentType,infoCollector);
 			}
+			else if(SemanticActionStandardMethods.BACK_OFF_FROM_SITE.equals(actionName))
+			{
+				backOffFromSite(action,parameter,documentType,infoCollector);
+			}
 			else
 			{
 				handleGeneralAction(action, parameter);
@@ -491,6 +495,7 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 		}
 		catch(Exception e)
 		{
+			//e.printStackTrace();
 			System.out.println("The action "+actionName+" could not be executed. Please see the stack trace for errors.");
 		}
 	}
