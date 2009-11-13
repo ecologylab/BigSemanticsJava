@@ -80,7 +80,9 @@ public interface SemanticActionNamedArguments
 	/**
 	 *  CreateVisualizeTextSurrogate
 	 */
-	public static final String TEXT										="text";
+	public static final  String TEXT									= "text";
+	
+	public static final String SEMANTIC_TEXT					= "semantic_text";
 	
 	public static final String DOMAIN									= "domain";
 
