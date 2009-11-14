@@ -148,7 +148,7 @@ public class MetaMetadataSearchParser
 			else if ("xpath".equals(metaMetadata.getBinding()))
 			{
 				recursiveExtraction(getMetadataTranslationScope(), metaMetadata,
-						populatedMetadata, xpath, semanticActionHandler.getParameter(),document);
+						populatedMetadata, xpath, semanticActionHandler.getSemanticActionReturnValueMap(),document);
 				container.setMetadata(populatedMetadata);
 			}
 		}

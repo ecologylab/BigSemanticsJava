@@ -319,7 +319,7 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 				}
 				if(metaMetadata!=null)
 				{
-						result = new MetaMetadataXPathParser(semanticAction,infoCollector);
+						result = new MetaMetadataDirectBindingParser(semanticAction,infoCollector);
 				}
 			}
 			

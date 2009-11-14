@@ -41,7 +41,7 @@ public class MetaMetadataXPathParser<M extends Metadata, SA extends SemanticActi
 		if (metaMetadata.isSupported(truePURL))
 		{
 			recursiveExtraction(getMetadataTranslationScope(), metaMetadata,
-					container.metadata(), xpath, semanticActionHandler.getParameter(),document);
+					container.metadata(), xpath, semanticActionHandler.getSemanticActionReturnValueMap(),document);
 			//container.setMetadata(populatedMetadata);
 		}
 		

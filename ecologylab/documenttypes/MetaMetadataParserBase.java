@@ -17,6 +17,7 @@ import org.w3c.dom.NodeList;
 
 import com.sun.org.apache.xml.internal.dtm.ref.DTMNodeList;
 
+import ecologylab.collections.Scope;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.generic.ReflectionTools;
 import ecologylab.net.ParsedURL;
@@ -154,13 +155,13 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 	@SuppressWarnings("unchecked")
 	private void addAdditionalParameters(Metadata populatedMetadata)
 	{
-		SemanticActionParameters param = semanticActionHandler.getParameter();
-		param.addParameter(DOCUMENT_TYPE, this);
-		param.addParameter(METADATA, populatedMetadata);
-		param.addParameter(FALSE, false);
-		param.addParameter(TRUE, true);
-		param.addParameter(NULL, null);
-		param.addParameter(TRUE_PURL, truePURL);
+		Scope<Object> param = semanticActionHandler.getSemanticActionReturnValueMap();
+		param.put(DOCUMENT_TYPE, this);
+		param.put(METADATA, populatedMetadata);
+		param.put(FALSE, false);
+		param.put(TRUE, true);
+		param.put(NULL, null);
+		param.put(TRUE_PURL, truePURL);
 	}
 
 
@@ -190,7 +191,7 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 		ArrayListState<DefVar> defVars = metaMetadata.getDefVars();
 
 		// get the parameters
-		SemanticActionParameters parameters = semanticActionHandler.getParameter();
+		Scope<Object> parameters = semanticActionHandler.getSemanticActionReturnValueMap();
 		if (defVars != null)
 		{
 			// only if some variables are there we create a DOM[for diect binidng types for others DOM is
@@ -210,12 +211,12 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 					{
 						// apply the XPath on the document root.
 						contextNode = (Node) parameters
-								.getObjectInstance(SemanticActionsKeyWords.DOCUMENT_ROOT_NODE);
+								.get(SemanticActionsKeyWords.DOCUMENT_ROOT_NODE);
 					}
 					else
 					{
 						// get the context node from parameters
-						contextNode = (Node) parameters.getObjectInstance(node);
+						contextNode = (Node) parameters.get(node);
 					}
 
 					if (type != null)
@@ -226,14 +227,14 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 							NodeList nList = (NodeList) xpath.evaluate(xpathExpression, contextNode, type);
 
 							// put the value in the parametrers
-							parameters.addParameter(name, nList);
+							parameters.put(name, nList);
 						}
 						else if (type == XPathConstants.NODE)
 						{
 							Node n = (Node) xpath.evaluate(xpathExpression, contextNode, type);
 
 							// put the value in the parametrers
-							parameters.addParameter(name, n);
+							parameters.put(name, n);
 						}
 					}
 					else
@@ -242,7 +243,7 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 						String evaluation = xpath.evaluate(xpathExpression, contextNode);
 
 						// put it into returnValueMap
-						parameters.addParameter(name, evaluation);
+						parameters.put(name, evaluation);
 					}
 				}
 				catch (Exception e)
@@ -282,7 +283,7 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 	 * @return
 	 */
 	protected Metadata recursiveExtraction(TranslationScope translationScope, MetaMetadataField mmdField,
-			Metadata metadata, XPath xpath, SemanticActionParameters param,Node contextNode)
+			Metadata metadata, XPath xpath, Scope<Object> param,Node contextNode)
 	{
 
 		Node rootNode = contextNode;
@@ -302,7 +303,7 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 						String contextNodeName = mmdElement.getContextNode();
 						if (contextNodeName != null)
 						{
-							contextNode = (Node) param.getObjectInstance(contextNodeName);
+							contextNode = (Node) param.get(contextNodeName);
 						
 						}
 					}catch(Exception e)
@@ -396,7 +397,7 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 	 */
 	private void extractNested(TranslationScope translationScope, Metadata metadata,Node contextNode,
 			MetaMetadataField mmdElement, String mmdElementName, XPath xpath,
-			SemanticActionParameters param,String xPathString)
+			Scope<Object> param,String xPathString)
 	{
 		try
 		{
@@ -438,7 +439,7 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 	 */
 	private void extractArrayList(TranslationScope translationScope, Metadata metadata, Node contextNode,
 			MetaMetadataField mmdElement, String mmdElementName, XPath xpath,
-			SemanticActionParameters param,String parentXPathString)
+			Scope<Object> param,String parentXPathString)
 	{
 		Node originalNode = contextNode;
 		// this is the field accessor for the collection field
@@ -546,7 +547,7 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 						// if some context node is specified find it.
 						if (childMetadataField.getContextNode() != null)
 						{
-							contextNode = (Node) (param.getObjectInstance(childMetadataField.getContextNode()));
+							contextNode = (Node) (param.get(childMetadataField.getContextNode()));
 						}
 
 						if ("ArrayList".equals(childMetadataField.collection()))

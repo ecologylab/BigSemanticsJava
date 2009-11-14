@@ -85,7 +85,7 @@ extends HTMLParserCommon<C, IC>
 
 	protected void postParse()
 	{
-		semanticActionHandler.getParameter().addParameter(SemanticActionsKeyWords.DOCUMENT_ROOT_NODE, document);
+		semanticActionHandler.getSemanticActionReturnValueMap().put(SemanticActionsKeyWords.DOCUMENT_ROOT_NODE, document);
 	}
 	/**
 	 * Root DOM node of the current HTML document

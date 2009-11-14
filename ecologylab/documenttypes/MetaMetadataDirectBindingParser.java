@@ -57,6 +57,6 @@ public class MetaMetadataDirectBindingParser<M extends Metadata, SA extends Sema
 	protected void createDOMandParse(ParsedURL purl)
 	{
 		org.w3c.dom.Document document	= ElementState.buildDOM(purl);
-		semanticActionHandler.getParameter().addParameter(SemanticActionsKeyWords.DOCUMENT_ROOT_NODE, document);
+		semanticActionHandler.getSemanticActionReturnValueMap().put(SemanticActionsKeyWords.DOCUMENT_ROOT_NODE, document);
 	}
 }
