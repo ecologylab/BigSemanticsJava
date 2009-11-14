@@ -173,6 +173,9 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 
 	@xml_attribute
 	private String																			childTag;
+	
+	@xml_attribute 
+	private String																			tag;
 
 	@xml_map("meta_metadata_field")
 	protected HashMapArrayList<String, MetaMetadataField>	childMetaMetadata;
@@ -311,12 +314,6 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 			p.println("public class " + XMLTools.classNameFromElementName(javaClassName)
 					+ " extends Metadata" + implementDecl + "{\n");
 
-			// write the constructors
-			MetadataCompilerConstants.appendBlankConstructor(p, XMLTools
-					.classNameFromElementName(javaClassName));
-			MetadataCompilerConstants.appendConstructor(p, XMLTools
-					.classNameFromElementName(javaClassName));
-
 			// loop to write the class definition.
 			for (int i = 0; i < childMetaMetadata.size(); i++)
 			{
@@ -326,6 +323,13 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 				cField.setMmdRepository(mmdRepository);
 				cField.translateToMetadataClass(packageName, p,MetadataCompilerConstants.GENERATE_FIELDS_PASS,false);
 			}
+			
+		// write the constructors
+			MetadataCompilerConstants.appendBlankConstructor(p, XMLTools
+					.classNameFromElementName(javaClassName));
+			MetadataCompilerConstants.appendConstructor(p, XMLTools
+					.classNameFromElementName(javaClassName));
+			
 			for (int i = 0; i < childMetaMetadata.size(); i++)
 			{
 				// translate the each meta-metadata field into class.
@@ -540,7 +544,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	private void appendScalarNested(Appendable appendable,int pass) throws IOException
 	{
 		String fieldName = XMLTools.fieldNameFromElementName(getName());
-		fieldName = MetadataCompilerConstants.handleJavaKeyWord(fieldName);
+		//fieldName = MetadataCompilerConstants.handleJavaKeyWord(fieldName);
 		String fieldTypeName = scalarType.fieldTypeName();
 		if (fieldTypeName.equals("int"))
 		{
@@ -803,7 +807,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 			// HACK FOR METADATAINTEGER
 			className = "Integer";
 		}
-		appendMetalanguageDecl(appendable, "@xml_tag(\"" + getName() + "\") @xml_nested",
+		appendMetalanguageDecl(appendable, "@xml_tag(\"" + getTag() + "\") @xml_nested",
 				classNamePrefix, className, fieldName);
 	}
 
@@ -1345,6 +1349,25 @@ public HashMapArrayList<String, MetaMetadataField> getChildMetaMetadata()
 			childMetaMetadata	= childMM.childMetaMetadata;
 		}
 
+	}
+
+	/**
+	 * @return the tag
+	 */
+	public String getTag()
+	{
+		if(tag!=null)
+			return tag;
+		else
+			return getName();
+	}
+
+	/**
+	 * @param tag the tag to set
+	 */
+	public void setTag(String tag)
+	{
+		this.tag = tag;
 	}
 
 }

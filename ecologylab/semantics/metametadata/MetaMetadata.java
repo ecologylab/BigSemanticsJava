@@ -296,10 +296,7 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 		p.println("public class  " + className + "\nextends  "
 				+ XMLTools.classNameFromElementName(extendsAttribute) + "\n{\n");
 
-		// write the constructors
-		MetadataCompilerConstants.appendBlankConstructor(p, className);
-		MetadataCompilerConstants.appendConstructor(p, className);
-
+		
 		// loop to write the class definition
 		HashMapArrayList metaMetadataFieldList = getChildMetaMetadata();
 		if(metaMetadataFieldList != null)
@@ -324,6 +321,10 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 					e.printStackTrace();
 				}
 			}
+			
+			// write the constructors
+			MetadataCompilerConstants.appendBlankConstructor(p, className);
+			MetadataCompilerConstants.appendConstructor(p, className);
 			for (int i = 0; i < metaMetadataFieldList.size(); i++)
 			{
 				// get the metadata field.
