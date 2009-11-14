@@ -27,7 +27,7 @@ public interface SemanticActionStandardMethods
 	/**
 	 * Creates a container for search.
 	 */
-	public static String	CREATE_CONTAINER_FOR_SEARCH					= "create_container_for_search";
+	//public static String	CREATE_CONTAINER_FOR_SEARCH					= "create_container_for_search";
 
 	/**
 	 * Creates and send a visual surrogate for visualization
@@ -42,7 +42,7 @@ public interface SemanticActionStandardMethods
 	/**
 	 * process a conatiner
 	 */
-	public static String	PROCESS_DOCUMENT										= "process_document";
+	public static String	DOWNLOAD_NOW										= "download_now";
 
 	/**
 	 * Create a new search
@@ -67,7 +67,7 @@ public interface SemanticActionStandardMethods
 	/**
 	 * to queue a search request. It may be same as create search action. Have to verify it.
 	 */
-	public static String	PROCESS_SEARCH											= "process_search";
+//	public static String	PROCESS_SEARCH											= "process_search";
 
 	/**
 	 * 
@@ -77,7 +77,7 @@ public interface SemanticActionStandardMethods
 	/**
 	 * 
 	 */
-	public static String	QUEUE_DOCUMENT_DOWNLOAD							= "queue_document_download";
+	public static String	DOWNLOAD_LATER							= "download_later";
 
 	/**
 	 * Applies XPath on a DOM Node

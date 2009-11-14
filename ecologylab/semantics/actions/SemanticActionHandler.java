@@ -50,7 +50,7 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 	 * methods.
 	 */
 	//FIXME -- andruid > abhinav: this Scope is currently never initialized. what is the use case to keep it?
-	protected Scope<Object>	standardObjectMap	= new Scope<Object>();
+	//protected Scope<Object>	standardObjectMap	= new Scope<Object>();
 	/**
 	 * This is a map of return value and objects from semantic action. The key being the return_value
 	 * of the semantic action.
@@ -61,7 +61,7 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 	/**
 	 * Map of various flags used and set during the semantic actions
 	 */
-	protected Scope<Boolean>	semanticActionFlagMap;
+	//protected Scope<Boolean>	semanticActionFlagMap;
 
 	/**
 	 * Error handler for the semantic actions.
@@ -71,21 +71,21 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 	/**
 	 * Parameters
 	 */
-	protected SemanticActionParameters parameter; 
+	//protected SemanticActionParameters parameter; 
 
 	public SemanticActionHandler()
 	{
 		semanticActionReturnValueMap = new Scope<Object>();
-		semanticActionFlagMap = new Scope<Boolean>();
-		parameter = new SemanticActionParameters(standardObjectMap);
+		
+	//	semanticActionFlagMap = new Scope<Boolean>();
+	//	parameter = new SemanticActionParameters(standardObjectMap);
 	}
 	
 	/**
 	 * 
 	 * @param action
-	 * @param paramter
 	 */
-	public abstract void createAndVisualizeImgSurrogate(SemanticAction action, SemanticActionParameters paramter,DocumentParser<C,?,?> docType, IC infoCollector);
+	public abstract void createAndVisualizeImgSurrogate(SemanticAction action, DocumentParser<C,?,?> docType,IC infoCollector);
 
 	/**
 	 * 
@@ -93,113 +93,96 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 	 * @param paramter
 	 * @return
 	 */
-	public abstract C createContainer(SemanticAction action, SemanticActionParameters parameter,DocumentParser<C,?,?> docType, IC infoCollector);
+	public abstract C createContainer(SemanticAction action, DocumentParser<C,?,?> docType,IC infoCollector);
 
+	
 	/**
 	 * 
 	 * @param action
-	 * @param parameter
 	 */
-	public abstract void processDocument(SemanticAction action, SemanticActionParameters parameter,DocumentParser docType, IC infoCollector);
+	public abstract void setMetadata(SemanticAction action, DocumentParser docType,IC infoCollector);
 
 	/**
 	 * 
 	 * @param action
-	 * @param parameter
-	 */
-	public abstract void setMetadata(SemanticAction action, SemanticActionParameters parameter,DocumentParser docType, IC infoCollector);
-
-	/**
-	 * 
-	 * @param action
-	 * @param parameter
 	 * @return
 	 */
-	public abstract C createContainerForSearch(SemanticAction action, SemanticActionParameters parameter,DocumentParser<C,?,?> docType, IC infoCollector);
+	//public abstract C createContainerForSearch(SemanticAction action, DocumentParser<C,?,?> docType,IC infoCollector);
 
 	/**
 	 * 
 	 * @param action
-	 * @param parameter
 	 * @throws InvocationTargetException 
 	 * @throws IllegalAccessException 
 	 * @throws IllegalArgumentException 
 	 */
-	public abstract void handleGeneralAction(SemanticAction action, SemanticActionParameters parameter) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException;
+	public abstract void handleGeneralAction(SemanticAction action) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException;
 
 	/**
 	 * 
 	 * @param action
-	 * @param parameter
 	 * @throws InvocationTargetException 
 	 * @throws IllegalAccessException 
 	 * @throws IllegalArgumentException 
 	 */
-	public abstract void setFieldAction(SemanticAction action, SemanticActionParameters parameter,DocumentParser docType, IC infoCollector) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException;
+	public abstract void setFieldAction(SemanticAction action, DocumentParser docType,IC infoCollector) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException;
 
 	/**
 	 * 
 	 * @param action
-	 * @param parameter
 	 */
-	public abstract void getFieldAction(SemanticAction action, SemanticActionParameters parameter,DocumentParser docType, IC infoCollector);
+	public abstract void getFieldAction(SemanticAction action, DocumentParser docType,IC infoCollector);
 	
 	/**
 	 * 
 	 * @param action
-	 * @param parameter
 	 */
-	public abstract void processSearch(SemanticAction action, SemanticActionParameters parameter,DocumentParser docType, IC infoCollector);
+	public abstract void downloadNow(SemanticAction action, DocumentParser docType,IC infoCollector);
 
 	/**
 	 * 
 	 * @param action
-	 * @param parameter
 	 * @param documentType
 	 * @param infoCollector
 	 */
-	public abstract void createSemanticAnchor(SemanticAction action, SemanticActionParameters parameter,DocumentParser<C,?,?> documentType, IC infoCollector);
+	public abstract void createSemanticAnchor(SemanticAction action, DocumentParser<C,?,?> documentType,IC infoCollector);
 	
 	
-	public abstract void backOffFromSite(SemanticAction action, SemanticActionParameters parameters, DocumentParser <C, ?, ?> documentType, IC infoCollector);
+	public abstract void backOffFromSite(SemanticAction action, DocumentParser <C, ?, ?> documentType, IC infoCollector);
 	/**
 	 * 
 	 * @param action
-	 * @param parameter
 	 * @param documentType
 	 * @param infoCollector
 	 */
-	public abstract void queueDocumentForDownload(SemanticAction action, SemanticActionParameters parameter,DocumentParser documentType, IC infoCollector);
+	public abstract void downloadLaterSemanticAction(SemanticAction action, DocumentParser documentType,IC infoCollector);
 	
 	/**
 	 * 
 	 * @param action
-	 * @param parameter2
 	 * @param documentType
 	 * @param infoCollector
 	 */
 	public abstract void createAndVisualizeTextSurrogateSemanticAction(SemanticAction action,
-			SemanticActionParameters parameter2, DocumentParser documentType, IC infoCollector);
+			DocumentParser documentType, IC infoCollector);
 	
 	/**
 	 * 
 	 * @param action
-	 * @param parameter
 	 * @param documentType
 	 * @param infoCollector
 	 */
-	public abstract void syncNestedMetadataSemanticAction(SemanticAction action,	SemanticActionParameters parameter, DocumentParser documentType, IC infoCollector);
+	public abstract void syncNestedMetadataSemanticAction(SemanticAction action,	DocumentParser documentType, IC infoCollector);
 	
 	
 	
 	/**
 	 * Implementation of for loop.
-	 * @param parameter
 	 * @param documentType TODO
 	 * @param infoCollector TODO
 	 * @param semanticAction
 	 */
-	public synchronized void  handleForLoop(ForEachSemanticAction action, SemanticActionParameters parameter, DocumentParser documentType,  IC infoCollector)
+	public synchronized void  handleForLoop(ForEachSemanticAction action, DocumentParser documentType, IC infoCollector)
 	{
 		try
 		{
@@ -211,7 +194,7 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 			//if(checkPreConditionFlagsIfAny(action))
 			{
 				//get the actual collection object
-				Object collectionObject =  getObjectFromKeyName(collectionObjectName, parameter);
+				Object collectionObject =  semanticActionReturnValueMap.get(collectionObjectName);
 				GenericIterable gItr = new GenericIterable(collectionObject);
 				System.out.println(documentType.purl());
 				Iterator itr = gItr.iterator();
@@ -221,7 +204,7 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 				if(action.getSize()!=null)
 				{
 					// we have the size value. so we add it in parameters
-					parameter.addParameter(action.getSize(), collectionSize);
+					semanticActionReturnValueMap.put(action.getSize(), collectionSize);
 				}
 				
 				int start =0;
@@ -247,7 +230,7 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 					if(action.getCurIndex()!=null)
 					{
 						// set the value of this variable in parameters
-						parameter.addParameter(action.getCurIndex(), i);
+						semanticActionReturnValueMap.put(action.getCurIndex(), i);
 					}
 					
 					//now take all the actions nested inside for loop
@@ -269,7 +252,7 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 	 * @param documentType
 	 * @param infoCollector
 	 */
-	public void handleIf(IfSemanticAction action, SemanticActionParameters parameter2,
+	public void handleIf(IfSemanticAction action,
 			DocumentParser documentType, IC infoCollector)
 	{
 		try
@@ -297,8 +280,7 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 	 * @param documentType
 	 * @param infoCollector
 	 */
-	public void applyXPath(ApplyXPathSemanticAction action, SemanticActionParameters parameters,
-			DocumentParser documentType, IC infoCollector)
+	public void applyXPath(ApplyXPathSemanticAction action, DocumentParser documentType, IC infoCollector)
 	{
 			try
 			{
@@ -310,12 +292,12 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 					// if no node is specified, we will apply XPaths by deafult on document root.
 					if(action.getNode()==null)
 					{
-							node =(Node) parameters.getObjectInstance(DOCUMENT_ROOT_NODE);
+							node =(Node) semanticActionReturnValueMap.get(DOCUMENT_ROOT_NODE);
 					}
 					else
 					{
 						// get the node on which XPAth needs to be applied
-						node = (Node)getObjectFromKeyName(action.getNode(), parameters);
+						node = (Node)semanticActionReturnValueMap.get(action.getNode());
 					}
 					
 					final String xpathExpression = action.getXpath();
@@ -356,14 +338,13 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 	 * @param infoCollector
 	 * @return
 	 */
-	public float evaluateRankWeight(SemanticAction action, SemanticActionParameters parameters,
-			DocumentParser documentType, IC infoCollector)
+	public float evaluateRankWeight(SemanticAction action,DocumentParser documentType, IC infoCollector)
 	{
 		Argument indexA = getNamedArgument(action, INDEX);
-		int index = (Integer)getObjectFromKeyName(indexA.getValue(), parameters);
+		int index = (Integer)semanticActionReturnValueMap.get(indexA.getValue());
 		
 		Argument sizeA =getNamedArgument(action, SIZE);
-		int size = (Integer)getObjectFromKeyName(sizeA.getValue(), parameters);
+		int size = (Integer)semanticActionReturnValueMap.get(sizeA.getValue());
 		
 		float result = ((float)size-index)/size;
 		
@@ -391,7 +372,8 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 			{
 				 // get value[TODO have to change if any thing apart from numerical value can be defined as local variable]
 				 float value = Float.parseFloat(defVar.getValue());
-				 parameter.addParameter(defVar.getName(), value);
+				 semanticActionReturnValueMap.put(defVar.getName(), value);
+				 //parameter.addParameter(defVar.getName(), value);
 			}
 		}
 	}
@@ -418,79 +400,75 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 			
 			if (SemanticActionStandardMethods.FOR_EACH.equals(actionName))
 			{
-				handleForLoop((ForEachSemanticAction)action, parameter, documentType, infoCollector);
+				handleForLoop((ForEachSemanticAction)action, documentType, infoCollector);
 			}
 			else if (SemanticActionStandardMethods.CREATE_AND_VISUALIZE_IMG_SURROGATE.equals(actionName))
 			{
-				createAndVisualizeImgSurrogate(action, parameter,documentType,infoCollector);
+				createAndVisualizeImgSurrogate(action, documentType,infoCollector);
 			}
 			else if (SemanticActionStandardMethods.CREATE_CONATINER.equals(actionName))
 			{
-				createContainer(action, parameter,documentType,infoCollector);
+				createContainer(action, documentType,infoCollector);
 			}
-			else if (SemanticActionStandardMethods.PROCESS_DOCUMENT.equals(actionName))
+			else if (SemanticActionStandardMethods.DOWNLOAD_NOW.equals(actionName))
 			{
-				processDocument(action, parameter,documentType,infoCollector);
+				downloadNow(action, documentType,infoCollector);
 			}
 			else if (SemanticActionStandardMethods.SET_METADATA.equals(actionName))
 			{
-				setMetadata(action, parameter,documentType,infoCollector);
+				setMetadata(action, documentType,infoCollector);
 			}
-			else if (SemanticActionStandardMethods.CREATE_CONTAINER_FOR_SEARCH.equals(actionName))
+			/*else if (SemanticActionStandardMethods.CREATE_CONTAINER_FOR_SEARCH.equals(actionName))
 			{
-				createContainerForSearch(action, parameter,documentType,infoCollector);
-			}
-			else if (SemanticActionStandardMethods.CREATE_SEARCH.equals(actionName))
-			{
-				// TODO dont know what this action means
-			}
+				createContainer(action, documentType,infoCollector);
+			}*/
 			else if (SemanticActionStandardMethods.GET_FIELD_ACTION.equals(actionName))
 			{
-				getFieldAction(action, parameter,documentType,infoCollector);
+				getFieldAction(action, documentType,infoCollector);
 			}
 			else if (SemanticActionStandardMethods.SET_FIELD_ACTION.equals(actionName))
 			{
-				setFieldAction(action, parameter,documentType,infoCollector);
+				setFieldAction(action, documentType,infoCollector);
 			}
-			else if(SemanticActionStandardMethods.PROCESS_SEARCH.equals(actionName))
+			/*else if(SemanticActionStandardMethods.PROCESS_SEARCH.equals(actionName))
 			{
-				processSearch(action,parameter,documentType,infoCollector);
-			}
+				processSearch(action,documentType,infoCollector);
+			}*/
 			else if(SemanticActionStandardMethods.CREATE_SEMANTIC_ANCHOR.equals(actionName))
 			{
-				createSemanticAnchor((CreateSemanticAnchorSemanticAction)action,parameter,documentType,infoCollector);
+				createSemanticAnchor((CreateSemanticAnchorSemanticAction)action,documentType,infoCollector);
 			}
-			else if(SemanticActionStandardMethods.QUEUE_DOCUMENT_DOWNLOAD.equals(actionName))
+			else if(SemanticActionStandardMethods.DOWNLOAD_LATER.equals(actionName))
 			{
-				queueDocumentForDownload(action, parameter, documentType, infoCollector);
+				downloadLaterSemanticAction(action, documentType, infoCollector);
 			}
 			else if(SemanticActionStandardMethods.APPLY_XPATH.equals(actionName))
 			{
-				applyXPath((ApplyXPathSemanticAction)action, parameter, documentType, infoCollector);
+				applyXPath((ApplyXPathSemanticAction)action, documentType, infoCollector);
 			}
 			else if(SemanticActionStandardMethods.IF.equals(actionName))
 			{
-				handleIf((IfSemanticAction)action,parameter,documentType,infoCollector);
+				handleIf((IfSemanticAction)action,documentType,infoCollector);
 			}
 			else if(SemanticActionStandardMethods.CREATE_AND_VISUALIZE_TEXT_SURROGATE.equals(actionName))
 			{
-				createAndVisualizeTextSurrogateSemanticAction(action,parameter,documentType,infoCollector);
+				createAndVisualizeTextSurrogateSemanticAction(action,documentType,infoCollector);
 			}
 			else if(SemanticActionStandardMethods.TRY_SYNC_NESTED_METADATA.equals(actionName))
 			{
-				syncNestedMetadataSemanticAction(action,parameter,documentType,infoCollector);
+				syncNestedMetadataSemanticAction(action,documentType,infoCollector);
 			}
 			else if(SemanticActionStandardMethods.EVALUATE_RANK_WEIGHT.equals(actionName))
 			{
-				evaluateRankWeight(action,parameter,documentType,infoCollector);
+				evaluateRankWeight(action,documentType,infoCollector);
 			}
 			else if(SemanticActionStandardMethods.BACK_OFF_FROM_SITE.equals(actionName))
 			{
-				backOffFromSite(action,parameter,documentType,infoCollector);
+				backOffFromSite(action,documentType,infoCollector);
 			}
 			else
 			{
-				handleGeneralAction(action, parameter);
+				handleGeneralAction(action);
 			}
 		}
 		catch(Exception e)
@@ -531,12 +509,12 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 					{
 						flagValue = false;
 					}
-					semanticActionFlagMap.put(check.getName(), flagValue);
+					semanticActionReturnValueMap.put(check.getName(), flagValue);
 				}
 				else if (SemanticActionsKeyWords.METHOD_CHECK.equals(checkType))
 				{
 					// This is a method check
-					semanticActionFlagMap.put(check.getName(), (Boolean) returnValue);
+					semanticActionReturnValueMap.put(check.getName(), (Boolean) returnValue);
 				}
 			} // end for
 		}// end if
@@ -559,7 +537,7 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 			// loop over all the flags to be checked
 			for (FlagCheck flagCheck : flagChecks)
 			{
-				boolean flag = semanticActionFlagMap.get(flagCheck.getValue());
+				boolean flag = (Boolean) semanticActionReturnValueMap.get(flagCheck.getValue());
 				returnValue = returnValue && flag;
 			}
 		}
@@ -622,19 +600,19 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 
 	/**
 	 * @return the parameter
-	 */
+	 *//*
 	public final SemanticActionParameters getParameter()
 	{
 		return parameter;
 	}
 
-	/**
+	*//**
 	 * @param parameter the parameter to set
-	 */
+	 *//*
 	public final void setParameter(SemanticActionParameters parameter)
 	{
 		this.parameter = parameter;
-	}
+	}*/
 	
 		
 	protected Argument getNamedArgument(SemanticAction action, String name)
@@ -644,10 +622,18 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 	
 	public void recycle()
 	{
-		parameter.recycle();
+		/*parameter.recycle();
 		semanticActionFlagMap.clear();
-		semanticActionFlagMap = null;
+		semanticActionFlagMap = null;*/
 		semanticActionReturnValueMap.clear();
 		semanticActionReturnValueMap = null;
+	}
+
+	/**
+	 * @return the semanticActionReturnValueMap
+	 */
+	public Scope<Object> getSemanticActionReturnValueMap()
+	{
+		return semanticActionReturnValueMap;
 	}
 }

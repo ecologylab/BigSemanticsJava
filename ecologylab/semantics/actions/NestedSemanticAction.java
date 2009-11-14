@@ -26,12 +26,12 @@ public abstract class NestedSemanticAction<SA extends SemanticAction> extends Se
 	@xml_collection()
 	@xml_classes(
 	{ CreateAndVisualizeImgSurrogateSemanticAction.class,
-			CreateContainerForSearchSemanticAction.class, CreateContainerSemanticAction.class,
+		  CreateContainerSemanticAction.class,
 			ForEachSemanticAction.class, GeneralSemanticAction.class,
-			ProcessDocumentSemanticAction.class, ProcessSearchSemanticAction.class,
+			DownloadNowSemanticAction.class,
 			SetMetadataSemanticAction.class, SetterSemanticAction.class,
-			CreateSearchSemanticAction.class, GetFieldSemanticAction.class,
-			CreateSemanticAnchorSemanticAction.class, QueueDocumentDownloadSemanticAction.class,
+		  GetFieldSemanticAction.class,
+			CreateSemanticAnchorSemanticAction.class, DownloadLaterSemanticAction.class,
 			ApplyXPathSemanticAction.class, IfSemanticAction.class,
 			CreateAndVisualizeTextSurrogateSemanticAction.class, TrySyncNestedMetadata.class,
 			EvaluateRankWeight.class,
