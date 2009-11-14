@@ -46,6 +46,8 @@ public class MetadataCompilerConstants
 	public static final	String				GENERATED_METADATA_TRANSLATIONS	= "generated_metadata_translations";
 
 	public static PrintWriter		generatedTranslationScope;
+	
+	public static PrintWriter    directBindingTranslationScope;
 
 	public static final HashMap	JAVA_KEY_WORDS_MAP	= new HashMap();
 	
@@ -53,12 +55,12 @@ public class MetadataCompilerConstants
 	
 	public static int   GENERATE_METHODS_PASS				  =        1;
 
-	static
+	/*static
 	{
 		JAVA_KEY_WORDS_MAP.put("abstract", "abstractField");
 		JAVA_KEY_WORDS_MAP.put("package", "packageField");
 	}
-
+*/
 	/**
 	 * TODO change this to write to file
 	 * 
@@ -124,7 +126,7 @@ public class MetadataCompilerConstants
 	 * @param name
 	 * @return
 	 */
-	public static String handleJavaKeyWord(String name)
+	/*public static String handleJavaKeyWord(String name)
 	{
 		if (JAVA_KEY_WORDS_MAP.containsKey(name))
 		{
@@ -132,7 +134,7 @@ public class MetadataCompilerConstants
 		}
 		else
 			return name;
-	}
+	}*/
 
 	/**
 	 * It appends the specified String to the translation scope class.
