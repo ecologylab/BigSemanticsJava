@@ -6,18 +6,16 @@ import ecologylab.semantics.actions.ApplyXPathSemanticAction;
 import ecologylab.semantics.actions.BackOffFromSite;
 import ecologylab.semantics.actions.CreateAndVisualizeImgSurrogateSemanticAction;
 import ecologylab.semantics.actions.CreateAndVisualizeTextSurrogateSemanticAction;
-import ecologylab.semantics.actions.CreateContainerForSearchSemanticAction;
 import ecologylab.semantics.actions.CreateContainerSemanticAction;
 import ecologylab.semantics.actions.CreateSemanticAnchorSemanticAction;
+import ecologylab.semantics.actions.DownloadLaterSemanticAction;
+import ecologylab.semantics.actions.DownloadNowSemanticAction;
 import ecologylab.semantics.actions.EvaluateRankWeight;
 import ecologylab.semantics.actions.FlagCheck;
 import ecologylab.semantics.actions.ForEachSemanticAction;
 import ecologylab.semantics.actions.GeneralSemanticAction;
 import ecologylab.semantics.actions.GetFieldSemanticAction;
 import ecologylab.semantics.actions.IfSemanticAction;
-import ecologylab.semantics.actions.ProcessDocumentSemanticAction;
-import ecologylab.semantics.actions.ProcessSearchSemanticAction;
-import ecologylab.semantics.actions.QueueDocumentDownloadSemanticAction;
 import ecologylab.semantics.actions.SemanticAction;
 import ecologylab.semantics.actions.SetMetadataSemanticAction;
 import ecologylab.semantics.actions.SetterSemanticAction;
@@ -43,19 +41,17 @@ public class MetaMetadataTranslationScope extends Debug
 			Check.class,
 			FlagCheck.class,
 			CreateAndVisualizeImgSurrogateSemanticAction.class,
-			CreateContainerForSearchSemanticAction.class,
 			CreateContainerSemanticAction.class,
 			ForEachSemanticAction.class,
 			GeneralSemanticAction.class,
-			ProcessDocumentSemanticAction.class, 
+			DownloadNowSemanticAction.class, 
 			SetMetadataSemanticAction.class,
 			GetFieldSemanticAction.class,
 			SetterSemanticAction.class,
-			ProcessSearchSemanticAction.class,
 			SearchEngines.class,
 			SearchEngine.class,
 			CreateSemanticAnchorSemanticAction.class,
-			QueueDocumentDownloadSemanticAction.class,
+			DownloadLaterSemanticAction.class,
 			ApplyXPathSemanticAction.class,
 			DefVar.class,
 			IfSemanticAction.class,
