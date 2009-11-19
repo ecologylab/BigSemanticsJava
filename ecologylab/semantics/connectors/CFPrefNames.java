@@ -53,4 +53,6 @@ public interface CFPrefNames
 	public static final String	USE_LOCAL_CF_PREF_NAME				= "use_local_cf";
 	
 	public static final String	STUDY_COMPOSITION_SAVE_LOCATION	= "study_composition_save_location";
+	
+	public static final String	SHOW_ZONES								= "show_zones";
 }
