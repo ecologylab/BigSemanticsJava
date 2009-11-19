@@ -44,7 +44,13 @@ public abstract class SemanticActionHandler<C extends Container, IC extends Info
 extends Debug
 implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionNamedArguments
 {
-
+	static final Scope<Object>					BUILT_IN_SCOPE	= new Scope<Object>();
+	static
+	{		
+		BUILT_IN_SCOPE.put(FALSE, false);
+		BUILT_IN_SCOPE.put(TRUE, true);
+		BUILT_IN_SCOPE.put(NULL, null);
+	}
 	/**
 	 * TODO move this also to super class This is the Map of StandadObject on which we might call some
 	 * methods.
@@ -75,7 +81,7 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 
 	public SemanticActionHandler()
 	{
-		semanticActionReturnValueMap = new Scope<Object>();
+		semanticActionReturnValueMap = new Scope<Object>(BUILT_IN_SCOPE);
 		
 	//	semanticActionFlagMap = new Scope<Boolean>();
 	//	parameter = new SemanticActionParameters(standardObjectMap);
@@ -410,7 +416,7 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 			{
 				createContainer(action, documentType,infoCollector);
 			}
-			else if (SemanticActionStandardMethods.DOWNLOAD_NOW.equals(actionName))
+			else if (SemanticActionStandardMethods.PARSE_NOW.equals(actionName))
 			{
 				downloadNow(action, documentType,infoCollector);
 			}
@@ -438,7 +444,7 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 			{
 				createSemanticAnchor((CreateSemanticAnchorSemanticAction)action,documentType,infoCollector);
 			}
-			else if(SemanticActionStandardMethods.DOWNLOAD_LATER.equals(actionName))
+			else if(SemanticActionStandardMethods.PARSE_LATER.equals(actionName))
 			{
 				downloadLaterSemanticAction(action, documentType, infoCollector);
 			}

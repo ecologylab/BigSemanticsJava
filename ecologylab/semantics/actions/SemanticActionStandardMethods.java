@@ -42,7 +42,7 @@ public interface SemanticActionStandardMethods
 	/**
 	 * process a conatiner
 	 */
-	public static String	DOWNLOAD_NOW										= "download_now";
+	public static String	PARSE_NOW										= "parse_now";
 
 	/**
 	 * Create a new search
@@ -77,7 +77,7 @@ public interface SemanticActionStandardMethods
 	/**
 	 * 
 	 */
-	public static String	DOWNLOAD_LATER							= "download_later";
+	public static String	PARSE_LATER							= "parse_later";
 
 	/**
 	 * Applies XPath on a DOM Node

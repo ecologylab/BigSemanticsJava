@@ -158,9 +158,6 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 		Scope<Object> param = semanticActionHandler.getSemanticActionReturnValueMap();
 		param.put(DOCUMENT_TYPE, this);
 		param.put(METADATA, populatedMetadata);
-		param.put(FALSE, false);
-		param.put(TRUE, true);
-		param.put(NULL, null);
 		param.put(TRUE_PURL, truePURL);
 	}
 
