@@ -195,17 +195,9 @@ extends Debug implements DispatchTarget<QandDownloadable>
 				if ((expectedNumSearchesInCurrentLevel > 0) 	// lookout for no more searches -- end boundary condition
 						&& queueCount >= expectedNumSearchesInCurrentLevel)
 				{
-					/*if(checkIfAllSearchesOver())
-					{	// if all slices have been processed unpause the crawler
-						done			= true;
-						infoCollector.endSeeding();
-					}
-					else*/
-					{
 						resultNumLevel++;
 						queueCount = 0;
 						downloadResults();	// more slices to process, so recurse to next
-					}
 				}
 				processingDownloads		= false;
 			}
