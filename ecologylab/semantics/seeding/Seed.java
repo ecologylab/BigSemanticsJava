@@ -6,6 +6,7 @@ import ecologylab.semantics.connectors.CFPrefNames;
 import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.connectors.SeedPeer;
+import ecologylab.xml.ElementState.xml_attribute;
 
 /**
  * Specification of a directive to the agent or otherwise to composition space services.
@@ -25,7 +26,10 @@ abstract public class Seed<AC extends Container> extends ecologylab.services.mes
     protected boolean                     noAggregator;
 
     protected boolean                     queueInsteadOfImmediate;
-
+    /**
+     * Query string to pass to the search engine.
+     */
+    @xml_attribute protected String			query;
 
     protected SeedDistributor            	seedDistributer;
     

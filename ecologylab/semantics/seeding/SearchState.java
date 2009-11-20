@@ -37,10 +37,7 @@ implements SemanticsPrefs, SearchEngineNames
     * Search engine to use. Currently supported are google, flickr, yahoo, yahoo_image, yahoo_news, yahoo_buzz, delicious.
     */
    @xml_attribute protected String			engine;
-   /**
-    * Query string to pass to the search engine.
-    */
-   @xml_attribute protected String			query;
+
    
    protected String							queryNoPluses;
    
