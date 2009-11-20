@@ -745,12 +745,6 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 		}
 	}
 
-	@Override
-	public boolean isContainer()
-	{
-		return true;
-	}
-
 	/**
 	 * TODO remove this some how. Have to think what it does and how to remove it. Bascially depending
 	 * upon the meta_metadata each meta_metadata_field which is of type ParsedURL we might need to

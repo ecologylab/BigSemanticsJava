@@ -42,7 +42,7 @@ implements QandDownloadable
 
 	public abstract void resetPURL(ParsedURL connectionPURL);
 
-	public abstract DocumentParser documentType();
+	public abstract DocumentParser documentParser();
 
 	public abstract ParsedURL purl();
 

@@ -287,7 +287,7 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 
 		// if a container already existed for this PURL we can get the document type from container
 		if ((result == null) && (container != null))
-			result = container.documentType();
+			result = container.documentParser();
 	
 		// if we made PURL connection but could not find documentTYpe using container
 		if ((purlConnection != null) && (result == null))
