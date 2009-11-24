@@ -146,6 +146,14 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 			//System.out.println(result);
 			return result;
 		}
+		if(suffixes!=null)
+		{
+			for(String suffix : suffixes)
+			{
+				if(purl.hasSuffix(suffix))
+					return true;
+			}				
+		}
 		return false;
 	}
 

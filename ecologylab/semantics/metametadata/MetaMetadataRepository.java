@@ -240,6 +240,15 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 				}
 			}
 		}
+		// Lastly, check for MMD by suffix
+		if(result == null)
+		{
+			String suffix = purl.suffix();					
+
+			if(suffix != null)
+					result = getDocumentMMBySuffix(suffix);
+		}
+		
 		return (result != null) ? result : getByTagName(tagName);
 	}
 //TODO implement  get by domain too
