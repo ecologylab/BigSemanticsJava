@@ -203,50 +203,53 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	public MetaMetadata getDocumentMM(ParsedURL purl, String tagName)
 	{
 		MetaMetadata result = null;
-		if(purl!=null && !purl.isFile())
+		if(purl!=null)
 		{
-			result = documentRepositoryByURL.get(purl.noAnchorNoQueryPageString());
-			
-			if(result == null)
+			if (!purl.isFile())
 			{
-				String protocolStrippedURL = purl.toString().split("://")[1];					
-				String matchingPhrase = urlprefixCollection.getMatchingPhrase(protocolStrippedURL, '/');
-				//FIXME -- andruid needs abhinav to explain this code better and make more clear!!!
-				if(matchingPhrase != null)
+				result = documentRepositoryByURL.get(purl.noAnchorNoQueryPageString());
+				
+				if(result == null)
 				{
-					String key = purl.url().getProtocol()+"://"+matchingPhrase;
-					
-					result = documentRepositoryByURL.get(key);
-				}
-			}
-
-			if (result == null)
-			{
-				String domain = purl.domain();
-				if (domain != null)
-				{
-					ArrayList<RepositoryPatternEntry>	entries	= documentRepositoryByPattern.get(domain);
-					if (entries != null)
+					String protocolStrippedURL = purl.toString().split("://")[1];					
+					String matchingPhrase = urlprefixCollection.getMatchingPhrase(protocolStrippedURL, '/');
+					//FIXME -- andruid needs abhinav to explain this code better and make more clear!!!
+					if(matchingPhrase != null)
 					{
-						for (RepositoryPatternEntry entry : entries)
+						String key = purl.url().getProtocol()+"://"+matchingPhrase;
+						
+						result = documentRepositoryByURL.get(key);
+					}
+				}
+	
+				if (result == null)
+				{
+					String domain = purl.domain();
+					if (domain != null)
+					{
+						ArrayList<RepositoryPatternEntry>	entries	= documentRepositoryByPattern.get(domain);
+						if (entries != null)
 						{
-							Matcher matcher = entry.getPattern().matcher(purl.toString());
-							if (matcher.find())
+							for (RepositoryPatternEntry entry : entries)
 							{
-								result				= entry.getMetaMetadata();
+								Matcher matcher = entry.getPattern().matcher(purl.toString());
+								if (matcher.find())
+								{
+									result				= entry.getMetaMetadata();
+								}
 							}
 						}
 					}
 				}
 			}
-		}
-		// Lastly, check for MMD by suffix
-		if(result == null)
-		{
-			String suffix = purl.suffix();					
+			// Lastly, check for MMD by suffix
+			if(result == null)
+			{
+				String suffix = purl.suffix();					
 
-			if(suffix != null)
-					result = getDocumentMMBySuffix(suffix);
+				if(suffix != null)
+						result = getDocumentMMBySuffix(suffix);
+			}
 		}
 		
 		return (result != null) ? result : getByTagName(tagName);
