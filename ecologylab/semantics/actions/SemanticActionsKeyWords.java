@@ -58,4 +58,7 @@ public interface SemanticActionsKeyWords
 
 	public static String	TRUE_PURL									= "TRUE_PURL";
 
+	public static String  DIRECT_BINDING						="direct";
+	
+	public static String  XPATH_BINDING							="xpath";
 }
