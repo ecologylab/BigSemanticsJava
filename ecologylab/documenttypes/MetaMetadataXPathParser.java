@@ -20,7 +20,7 @@ import ecologylab.xml.XMLTranslationException;
  * @author amathur
  * 
  */
-public class MetaMetadataXPathParser<M extends Metadata, SA extends SemanticAction> extends
+public class MetaMetadataXPathParser< SA extends SemanticAction> extends
 		MetaMetadataParserBase implements SemanticActionsKeyWords
 {
 	
@@ -36,7 +36,7 @@ public class MetaMetadataXPathParser<M extends Metadata, SA extends SemanticActi
 	}
 
 	@Override
-	public M buildMetadataObject()
+	public ecologylab.semantics.metadata.builtins.Document populateMetadataObject()
 	{
 		if (metaMetadata.isSupported(truePURL))
 		{
@@ -45,6 +45,6 @@ public class MetaMetadataXPathParser<M extends Metadata, SA extends SemanticActi
 			//container.setMetadata(populatedMetadata);
 		}
 		
-		return (M)container.metadata();
+		return container.metadata();
 	}
 }

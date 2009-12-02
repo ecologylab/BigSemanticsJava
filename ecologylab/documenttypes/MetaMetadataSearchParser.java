@@ -34,7 +34,7 @@ public class MetaMetadataSearchParser
 {
 
 	/**
-	 * The Serach query URL
+	 * The Search query URL
 	 */
 	private ParsedURL							searchURL;
 
@@ -110,13 +110,13 @@ public class MetaMetadataSearchParser
 	 */
 	private void customizeBasedOnEngine()
 	{
+		String query = searchSeed.valueString();
 		if (engine.equals(SearchEngineNames.GOOGLE))
 		{
 			container.setJustCrawl(true);
-			String query = searchSeed.valueString();
 			InterestModel.expressInterest(query, (short) 2);
-			infoCollector.displayStatus("Processing google search page: " + query);
 		}
+		infoCollector.displayStatus("Processing " + engine + " search page: " + query);
 	}
 
 		
@@ -126,9 +126,9 @@ public class MetaMetadataSearchParser
 	}
 
 	@Override
-	public Metadata buildMetadataObject()
+	public Document populateMetadataObject()
 	{
-		Metadata populatedMetadata = container.metadata();
+		Document populatedMetadata = container.metadata();
 		
 		ParsedURL purl = container.purl();
 		if (metaMetadata.isSupported(purl))
@@ -137,7 +137,7 @@ public class MetaMetadataSearchParser
 			{
 				try
 				{
-						populatedMetadata = (Metadata) ElementState.translateFromXML(inputStream(), getMetadataTranslationScope());
+						populatedMetadata = (Document) ElementState.translateFromXML(inputStream(), getMetadataTranslationScope());
 				}
 				catch (XMLTranslationException e)
 				{

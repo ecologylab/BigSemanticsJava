@@ -19,11 +19,13 @@ import ecologylab.net.ConnectionHelper;
 import ecologylab.net.PURLConnection;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionHandler;
+import ecologylab.semantics.actions.SemanticActionsKeyWords;
 import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.metadata.DocumentParserTagNames;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.MetaMetadata;
+import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.seeding.Seed;
 import ecologylab.xml.ElementState;
 
@@ -155,7 +157,7 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 		
 	}
 
-	interface DocumentTypeHelper extends ConnectionHelper
+	interface DocumentParserConnectHelper extends ConnectionHelper
 	{
 		DocumentParser getResult ( );
 	}
@@ -165,12 +167,18 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 	 * if there is a redirect, and the mime type. If there is a redirect, process it.
 	 * <p/>
 	 * Create an InputStream. Using reflection (Class.newInstance()), create the appropriate
-	 * DocumentType, based on that mimeType, using the allTypes HashMap. Return it.
+	 * DocumentParser, based on that mimeType, using the allTypes HashMap. Return it.
+	 * 
+	 * This method returns the parser using one of the cases:
+	 * 1) Use URL based look up and find meta-metadata and use binding if (direct or xpath)
+	 *    to find the parser.
+	 * 2) Else find meta-metadata using URL suffix and mime type and make a direct binding parser.
+	 * 3) If still parser is null and binding is also null, use in-build tables to find the parser.
 	 */
 	public static DocumentParser connect(final ParsedURL purl, final Container container,
-			final InfoCollector infoCollector, SemanticActionHandler semanticAction)
+			final InfoCollector infoCollector, SemanticActionHandler semanticActionHandler)
 	{
-		DocumentTypeHelper helper = new DocumentTypeHelper()
+		DocumentParserConnectHelper documentParserConnectHelper = new DocumentParserConnectHelper()
 		{
 			DocumentParser	result;
 
@@ -276,82 +284,77 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 		};
 
 		// based on purl we try to find meta-metadata from reposiotry.
-		MetaMetadata metaMetadata = infoCollector.metaMetaDataRepository().getDocumentMM(purl);
+		final MetaMetadataRepository metaMetaDataRepository = infoCollector.metaMetaDataRepository();
+		MetaMetadata metaMetadata = metaMetaDataRepository.getDocumentMM(purl);
 		
 		// then try to create a connection using the PURL
-		PURLConnection purlConnection = purl.connect(helper, (metaMetadata == null) ? null
+		PURLConnection purlConnection = purl.connect(documentParserConnectHelper, (metaMetadata == null) ? null
 				: metaMetadata.getUserAgentString());
 		
-		// now we start to find the document type
-		DocumentParser result = helper.getResult();
+		// check for a parser that was discovered while processing a re-direct
+		DocumentParser result = documentParserConnectHelper.getResult();
 
-		// if a container already existed for this PURL we can get the document type from container
+		// if a parser was preset for this container, use it
 		if ((result == null) && (container != null))
-			result = container.documentParser();
+			result = container.getDocumentParser();
 	
-		// if we made PURL connection but could not find documentTYpe using container
+		// if we made PURL connection but could not find parser using container
 		if ((purlConnection != null) && (result == null))
 		{
-			// if meta-metadata exists for this document type
-			final String binding = metaMetadata.getBinding();
+			// seek a binding assigned through meta-metadata
 			if (metaMetadata != null)
 			{
-				// either it a direct binding type
-				if("direct".equals(binding))
-				{
-					result = new MetaMetadataDirectBindingParser(semanticAction, infoCollector);
-				}
-				//else it must be XPath type only [Will be parsed using XPath expressions]
-				else if("xpath".equals(binding))
-				{
-						result = new MetaMetadataXPathParser(semanticAction,infoCollector);
-				}
-				// Add logic for any new binding type here
+				result = getParserFromBinding(metaMetadata, infoCollector, semanticActionHandler);
 			}
 			else // url based look up failed
 			{
 				//Try based on  suffix
-				metaMetadata = infoCollector.metaMetaDataRepository().getDocumentMMBySuffix(purl.suffix());
+				metaMetadata = metaMetaDataRepository.getDocumentMMBySuffix(purl.suffix());
 				if(metaMetadata ==null)
 				{
 						// try based on mimetype
-						metaMetadata = infoCollector.metaMetaDataRepository().getDocumentMMByMime(purlConnection.mimeType());
+						metaMetadata = metaMetaDataRepository.getDocumentMMByMime(purlConnection.mimeType());
 				}
 				if(metaMetadata!=null)
 				{
-						result = new MetaMetadataDirectBindingParser(semanticAction,infoCollector);
+						result = getParserFromBinding(metaMetadata, infoCollector, semanticActionHandler);
 				}
 			}
-			
-			// if meta-metadata does not exists or the binding type is default
-			if (result == null || binding==null)
-			{
-				// it is of some special type like html,pdf etc so we find out the document type
-				// using logic below.
-				// TODO have to ask how this can be extracted and moved to CF.
-				// it wasn't a File or an IOError or a bad redirect
-				// do more to seek the DocumentType
-
-				// TODO -- ask Blake, Eunyee for opinions about the logic here
+			if (result == null /* || binding == null */)
+			{ // Try built-in lookup tables, not those provided by meta-metadata-repository					
 				result = getInstanceBySuffix(purl.suffix(), infoCollector);
 				if (result == null)
 				{
-					// ACMPortal type document is decided based on mimeType
-					// which is text/html
-					String mimeType = purlConnection.mimeType();
-					if (mimeType != null)
-					{
-						result = getInstanceByMimeType(mimeType, infoCollector);
-					}
+					result = getInstanceByMimeType(purlConnection.mimeType(), infoCollector);
 				}
 			}
 		}
+		
 
 		if (result != null)
 		{
 			result.metaMetadata = metaMetadata;
 			result.fillValues(purlConnection, container, infoCollector);
 		}
+		return result;
+	}
+
+	private static DocumentParser getParserFromBinding(MetaMetadata metaMetadata,
+			final InfoCollector infoCollector, SemanticActionHandler semanticActionHandler)
+	{
+		DocumentParser result	= null;
+		final String binding = metaMetadata.getBinding();
+		// either it a direct binding parser
+		if(SemanticActionsKeyWords.DIRECT_BINDING.equals(binding))
+		{
+			result = new MetaMetadataDirectBindingParser(semanticActionHandler, infoCollector);
+		}
+		//else it must be XPath parser only [Will be parsed using XPath expressions]
+		else if(SemanticActionsKeyWords.XPATH_BINDING.equals(binding))
+		{
+			result = new MetaMetadataXPathParser(semanticActionHandler,infoCollector);
+		}
+		// Add logic for any new parser binding here
 		return result;
 	}
 

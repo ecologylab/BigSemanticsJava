@@ -9,6 +9,7 @@ import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.actions.SemanticActionsKeyWords;
 import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.metadata.Metadata;
+import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.XMLTranslationException;
 
@@ -19,7 +20,7 @@ import ecologylab.xml.XMLTranslationException;
  * @author amathur
  * 
  */
-public class MetaMetadataDirectBindingParser<M extends Metadata, SA extends SemanticAction>
+public class MetaMetadataDirectBindingParser<SA extends SemanticAction>
 		extends MetaMetadataParserBase
 {
 
@@ -30,15 +31,15 @@ public class MetaMetadataDirectBindingParser<M extends Metadata, SA extends Sema
 	}
 
 	@Override
-	public M buildMetadataObject()
+	public Document populateMetadataObject()
 	{
-		M populatedMetadata = null;
+		Document populatedMetadata = null;
 
 		if (metaMetadata.isSupported(container.purl()))
 		{
 			try
 			{
-				populatedMetadata = (M) ElementState.translateFromXML(inputStream(), getMetadataTranslationScope());
+				populatedMetadata = (Document) ElementState.translateFromXML(inputStream(), getMetadataTranslationScope());
 			}
 			catch (XMLTranslationException e)
 			{

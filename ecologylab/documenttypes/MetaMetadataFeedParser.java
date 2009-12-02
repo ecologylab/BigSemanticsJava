@@ -7,6 +7,7 @@ import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.metadata.Metadata;
+import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.seeding.Feed;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.XMLTranslationException;
@@ -33,16 +34,16 @@ public class MetaMetadataFeedParser
 	}
 
 	@Override
-	public Metadata buildMetadataObject()
+	public Document populateMetadataObject()
 	{
-		Metadata populatedMetadata = container.metadata();
+		Document populatedMetadata = container.metadata();
 		
 		ParsedURL purl = container.purl();
 		if(metaMetadata.isSupported(purl))
 		{
 			try
 			{
-				populatedMetadata = (Metadata) ElementState.translateFromXML(inputStream(), getMetadataTranslationScope());
+				populatedMetadata = (Document) ElementState.translateFromXML(inputStream(), getMetadataTranslationScope());
 			}
 			catch (XMLTranslationException e)
 			{

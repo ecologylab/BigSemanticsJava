@@ -83,7 +83,7 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 		xpath = XPathFactory.newInstance().newXPath();
 	}
 
-	public abstract Metadata buildMetadataObject();
+	public abstract Document populateMetadataObject();
 
 	/**
 	 * Main method in which we take semantic actions
@@ -112,15 +112,20 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 		}
 	}
 
-	protected void postParse()
+	/**
+	 * (1) Populate Metadata.
+	 * (2) Rebuild composite term vector.
+	 * (3) Take semantic actions.
+	 */
+	protected final void postParse()
 	{
 		super.postParse();
-		instantiateVariables();
+		instantiateMetaMetadataVariables();
 
 		truePURL 						= container.purl();
 		// build the metadata object
 
-		Metadata populatedMetadata =buildMetadataObject();
+		Metadata populatedMetadata =populateMetadataObject();
 		
 		try
 		{
@@ -178,11 +183,13 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 	}
 
 	/**
+	 * Instantiate MetaMetadata variables that are used during XPath information extraction, and
+	 * in semantic actions.
 	 * 
 	 * @param document
 	 *          The root of the document
 	 */
-	private void instantiateVariables()
+	private void instantiateMetaMetadataVariables()
 	{
 		// get the list of all variable defintions
 		ArrayListState<DefVar> defVars = metaMetadata.getDefVars();
