@@ -3,6 +3,7 @@
  */
 package ecologylab.semantics.tools;
 
+import java.io.File;
 import java.io.IOException;
 
 import ecologylab.appframework.ApplicationEnvironment;
@@ -60,17 +61,16 @@ public class MetadataCompiler extends ApplicationEnvironment
 		String patternXMLFilepath = "../cf/config/semantics/metametadata/metaMetadataRepository.xml";
 
 		// ElementState.setUseDOMForTranslateTo(true);
-		MetaMetadataRepository test;
+		MetaMetadataRepository metaMetadataRepository;
 		try
 		{
-			test = (MetaMetadataRepository) ElementState.translateFromXML(patternXMLFilepath,
-					META_METADATA_TRANSLATIONS);
-			// test.translateToXML(System.out);
+			metaMetadataRepository = MetaMetadataRepository.load(new File(patternXMLFilepath));
+			// metaMetadataRepository.translateToXML(System.out);
 
 			// for each metadata first find the list of packages in which they have to
 			// be generated.
-			importStatement = MetadataCompilerConstants.IMPORTS;
-			for (MetaMetadata metaMetadata : test.values())
+			importStatement = MetadataCompilerUtils.IMPORTS;
+			for (MetaMetadata metaMetadata : metaMetadataRepository.values())
 			{
 				if(metaMetadata.getPackageAttribute()!=null)
 				{
@@ -79,17 +79,17 @@ public class MetadataCompiler extends ApplicationEnvironment
 			}
 			
 			// Writer for the translation scope for generated class.
-			MetadataCompilerConstants.createTranslationScopeClass(MetadataCompilerConstants.getGenerationPath(test.getPackageName()));
+			MetadataCompilerUtils.createTranslationScopeClass(MetadataCompilerUtils.getGenerationPath(metaMetadataRepository.getPackageName()));
 
 			// for each meta-metadata in the repository
-			for (MetaMetadata metaMetadata : test.values())
+			for (MetaMetadata metaMetadata : metaMetadataRepository.values())
 			{
 				// if a metadataclass has to be generated
 				if (metaMetadata.isGenerateClass())
 				{
 					// translate it into a meta data class.
-					metaMetadata.translateToMetadataClass(test.getPackageName(), test);
-					MetadataCompilerConstants.appendToTranslationScope(XMLTools
+					metaMetadata.translateToMetadataClass(metaMetadataRepository.getPackageName(), metaMetadataRepository);
+					MetadataCompilerUtils.appendToTranslationScope(XMLTools
 							.classNameFromElementName(metaMetadata.getName())
 							+ ".class,\n");
 					System.out.println('\n');
@@ -97,11 +97,7 @@ public class MetadataCompiler extends ApplicationEnvironment
 			}
 
 			// end the translationScope class
-			MetadataCompilerConstants.endTranslationScopeClass();
-		}
-		catch (XMLTranslationException e)
-		{
-			e.printStackTrace();
+			MetadataCompilerUtils.endTranslationScopeClass();
 		}
 		catch (IOException e)
 		{
