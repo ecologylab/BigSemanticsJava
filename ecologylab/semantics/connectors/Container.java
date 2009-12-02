@@ -24,7 +24,7 @@ import ecologylab.xml.TranslationScope;
  * @author andruid
  * 
  */
-public abstract class Container<M extends Metadata> extends ContentElement<Document>
+public abstract class Container extends ContentElement<Document>
 implements QandDownloadable
 {
 
@@ -42,7 +42,7 @@ implements QandDownloadable
 
 	public abstract void resetPURL(ParsedURL connectionPURL);
 
-	public abstract DocumentParser documentParser();
+	public abstract DocumentParser getDocumentParser();
 
 	public abstract ParsedURL purl();
 
