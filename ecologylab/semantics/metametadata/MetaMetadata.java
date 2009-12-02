@@ -19,7 +19,7 @@ import ecologylab.semantics.actions.SemanticAction;
 import ecologylab.semantics.metadata.DocumentParserTagNames;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.tools.MetadataCompiler;
-import ecologylab.semantics.tools.MetadataCompilerConstants;
+import ecologylab.semantics.tools.MetadataCompilerUtils;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.TranslationScope;
 import ecologylab.xml.XMLTools;
@@ -272,7 +272,7 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 		{
 			packageName = this.packageAttribute;
 		}
-		String generationPath = MetadataCompilerConstants.getGenerationPath(packageName);
+		String generationPath = MetadataCompilerUtils.getGenerationPath(packageName);
 
 		// create a file writer to write the JAVA files.
 		File directoryPath = PropertiesAndDirectories.createDirsAsNeeded(new File(generationPath));
@@ -283,16 +283,16 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 		//update the translation class.
 
 		// Write the package
-		p.println(MetadataCompilerConstants.PACKAGE + " " + packageName + ";");
+		p.println(MetadataCompilerUtils.PACKAGE + " " + packageName + ";");
 
 		// write java doc comment
-		p.println(MetadataCompilerConstants.COMMENT);
+		p.println(MetadataCompilerUtils.COMMENT);
 
 		// Write the import statements
 		p.println(MetadataCompiler.getImportStatement());
 
 		// Write java-doc comments
-		MetadataCompilerConstants.writeJavaDocComment(comment, fileWriter);
+		MetadataCompilerUtils.writeJavaDocComment(comment, fileWriter);
 
 		//write @xml_inherit
 		p.println("@xml_inherit");
@@ -306,19 +306,17 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 
 		
 		// loop to write the class definition
-		HashMapArrayList metaMetadataFieldList = getChildMetaMetadata();
+		HashMapArrayList<String, MetaMetadataField> metaMetadataFieldList = getChildMetaMetadata();
 		if(metaMetadataFieldList != null)
 		{
-			for (int i = 0; i < metaMetadataFieldList.size(); i++)
+			for (MetaMetadataField metaMetadataField : metaMetadataFieldList)
 			{
-				// get the metadata field.
-				MetaMetadataField f = (MetaMetadataField) metaMetadataFieldList.get(i);
-				f.setExtendsField(extendsAttribute);
-				f.setMmdRepository(mmdRepository);
+				metaMetadataField.setExtendsField(extendsAttribute);
+				metaMetadataField.setMmdRepository(mmdRepository);
 				try
 				{
 					// translate the field into for metadata class.
-					f.translateToMetadataClass(packageName, p,MetadataCompilerConstants.GENERATE_FIELDS_PASS,false);
+					metaMetadataField.translateToMetadataClass(packageName, p,MetadataCompilerUtils.GENERATE_FIELDS_PASS,false);
 				}
 				catch (XMLTranslationException e)
 				{
@@ -331,8 +329,8 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 			}
 			
 			// write the constructors
-			MetadataCompilerConstants.appendBlankConstructor(p, className);
-			MetadataCompilerConstants.appendConstructor(p, className);
+			MetadataCompilerUtils.appendBlankConstructor(p, className);
+			MetadataCompilerUtils.appendConstructor(p, className);
 			for (int i = 0; i < metaMetadataFieldList.size(); i++)
 			{
 				// get the metadata field.
@@ -342,7 +340,7 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 				try
 				{
 					// translate the field into for metadata class.
-					f.translateToMetadataClass(packageName, p,MetadataCompilerConstants.GENERATE_METHODS_PASS,true);
+					f.translateToMetadataClass(packageName, p,MetadataCompilerUtils.GENERATE_METHODS_PASS,true);
 				}
 				catch (XMLTranslationException e)
 				{

@@ -14,7 +14,7 @@ import ecologylab.generic.HashMapArrayList;
 import ecologylab.semantics.metadata.DocumentParserTagNames;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.tools.MetadataCompiler;
-import ecologylab.semantics.tools.MetadataCompilerConstants;
+import ecologylab.semantics.tools.MetadataCompilerUtils;
 import ecologylab.textformat.NamedStyle;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.FieldDescriptor;
@@ -247,7 +247,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 		}
 		//boolean iNested = tryTofindNested();
 		//isNested=iNested;
-		if (isNested)
+		else if (isNested)
 		{
 			appenedNestedMetadataField(appendable,pass);
 		}
@@ -255,7 +255,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 		//String col = tryTofindCollection();
 		//collection = col;
 		// check if it is a collection
-		if (collection != null)
+		else if (collection != null)
 		{
 			// collection of nested elements
 			// TODO -- can these be scalars? if so, how can we tell?
@@ -268,7 +268,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 		if (childMetaMetadata != null && isGenerateClass())
 		{
 			// getting the generation path for the java class.
-			String generationPath = MetadataCompilerConstants.getGenerationPath(packageName);
+			String generationPath = MetadataCompilerUtils.getGenerationPath(packageName);
 
 			// the name of the java class.
 			String javaClassName = getType();
@@ -301,7 +301,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 			PrintWriter p = new PrintWriter(fileWriter);
 
 			// writing the package declaration
-			p.println(MetadataCompilerConstants.PACKAGE + " " + packageName + ";");
+			p.println(MetadataCompilerUtils.PACKAGE + " " + packageName + ";");
 
 			// writing the imports
 			p.println(MetadataCompiler.getImportStatement());
@@ -321,13 +321,13 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 				MetaMetadataField cField = childMetaMetadata.get(i);
 				cField.setExtendsField(extendsField);
 				cField.setMmdRepository(mmdRepository);
-				cField.translateToMetadataClass(packageName, p,MetadataCompilerConstants.GENERATE_FIELDS_PASS,false);
+				cField.translateToMetadataClass(packageName, p,MetadataCompilerUtils.GENERATE_FIELDS_PASS,false);
 			}
 			
 		// write the constructors
-			MetadataCompilerConstants.appendBlankConstructor(p, XMLTools
+			MetadataCompilerUtils.appendBlankConstructor(p, XMLTools
 					.classNameFromElementName(javaClassName));
-			MetadataCompilerConstants.appendConstructor(p, XMLTools
+			MetadataCompilerUtils.appendConstructor(p, XMLTools
 					.classNameFromElementName(javaClassName));
 			
 			for (int i = 0; i < childMetaMetadata.size(); i++)
@@ -336,7 +336,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 				MetaMetadataField cField = childMetaMetadata.get(i);
 				cField.setExtendsField(extendsField);
 				cField.setMmdRepository(mmdRepository);
-				cField.translateToMetadataClass(packageName, p,MetadataCompilerConstants.GENERATE_METHODS_PASS,true);
+				cField.translateToMetadataClass(packageName, p,MetadataCompilerUtils.GENERATE_METHODS_PASS,true);
 			}
 
 			// if this is a Map we have to implement the key() method.
@@ -350,7 +350,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 			if(!appendedToTranslastionScope)
 			{
 				// append this class to generated translation scope
-				MetadataCompilerConstants.appendToTranslationScope(XMLTools
+				MetadataCompilerUtils.appendToTranslationScope(XMLTools
 						.classNameFromElementName(javaClassName)
 						+ ".class,\n");
 			}	
@@ -501,12 +501,12 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 			variableType = "\") @xml_nested Entity<"+XMLTools.classNameFromElementName(getType())+">";
 			fieldType = "Entity<"+XMLTools.classNameFromElementName(getType())+">";
 		}
-		if(pass == MetadataCompilerConstants.GENERATE_FIELDS_PASS)
+		if(pass == MetadataCompilerUtils.GENERATE_FIELDS_PASS)
 		{
 			appendable.append("\nprivate @xml_tag(\""+getName()+variableType + "\t"
 					+ name + ";");
 		}
-		else if(pass == MetadataCompilerConstants.GENERATE_METHODS_PASS)
+		else if(pass == MetadataCompilerUtils.GENERATE_METHODS_PASS)
 		{
 			appendLazyEvaluationMethod(appendable, getName(), fieldType);
 			appendSetterForCollection(appendable, getName(), fieldType);
@@ -552,15 +552,15 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 			fieldTypeName = "Integer";
 		}
 		
-		if(pass == MetadataCompilerConstants.GENERATE_FIELDS_PASS)
+		if(pass == MetadataCompilerUtils.GENERATE_FIELDS_PASS)
 		{
 			// write the java doc comment for this field
-			MetadataCompilerConstants.writeJavaDocComment(comment, appendable);
+			MetadataCompilerUtils.writeJavaDocComment(comment, appendable);
 	
 			// append the Nested field.
 			appendNested(appendable, "private Metadata", scalarType.fieldTypeName(), fieldName);
 		}
-		else if(pass == MetadataCompilerConstants.GENERATE_METHODS_PASS)
+		else if(pass == MetadataCompilerUtils.GENERATE_METHODS_PASS)
 		{
 			// append the getter and setter methods
 			appendLazyEvaluationMethod(appendable, fieldName, "Metadata" + fieldTypeName);
@@ -598,7 +598,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 		String comment = "Heavy Weight Direct setter method for "+fieldName;
 		
 	// write the java doc comment
-		MetadataCompilerConstants.writeJavaDocComment(comment, appendable);
+		MetadataCompilerUtils.writeJavaDocComment(comment, appendable);
 		
 		// first line
 		 appendable.append("public void hwSet"+ XMLTools.javaNameFromElementName(fieldName, true)+"Metadata("+fieldTypeName+" "+fieldName+")\n{");
@@ -631,7 +631,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 		String comment =" Sets the "+fieldName+" directly";
 		
 		// write the java doc comment
-		MetadataCompilerConstants.writeJavaDocComment(comment, appendable);
+		MetadataCompilerUtils.writeJavaDocComment(comment, appendable);
 		
 		// first line
 		appendable.append("public void set"+ XMLTools.javaNameFromElementName(fieldName, true)+"Metadata("+fieldTypeName+" "+fieldName+")\n{");
@@ -654,7 +654,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 		String comment = " Appends the value to the field " + fieldName;
 
 		// javadoc comment
-		MetadataCompilerConstants.writeJavaDocComment(comment, appendable);
+		MetadataCompilerUtils.writeJavaDocComment(comment, appendable);
 
 		// first line
 		appendable.append("public void append" + XMLTools.javaNameFromElementName(fieldName, true)
@@ -677,7 +677,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	{
 		String comment = "The heavy weight Append method for field " + fieldName;
 		// write java doc
-		MetadataCompilerConstants.writeJavaDocComment(comment, appendable);
+		MetadataCompilerUtils.writeJavaDocComment(comment, appendable);
 
 		// first line
 		appendable.append("public void hwAppend" + XMLTools.javaNameFromElementName(fieldName, true)
@@ -699,7 +699,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	{
 		String comment = "Gets the value of the field " + fieldName;
 		// write java doc
-		MetadataCompilerConstants.writeJavaDocComment(comment, appendable);
+		MetadataCompilerUtils.writeJavaDocComment(comment, appendable);
 
 		// first line
 		appendable.append("public " + fieldType + " get"
@@ -719,7 +719,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	{
 		String comment = "Sets the value of the field " + fieldName;
 		// write java doc
-		MetadataCompilerConstants.writeJavaDocComment(comment, appendable);
+		MetadataCompilerUtils.writeJavaDocComment(comment, appendable);
 
 		// first line
 		appendable.append("public void set" + XMLTools.javaNameFromElementName(fieldName, true) + "( "
@@ -737,7 +737,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	{
 		String comment = "The heavy weight setter method for field " + fieldName;
 		// write java doc
-		MetadataCompilerConstants.writeJavaDocComment(comment, appendable);
+		MetadataCompilerUtils.writeJavaDocComment(comment, appendable);
 
 		// first line
 		appendable.append("public void hwSet" + XMLTools.javaNameFromElementName(fieldName, true)
@@ -764,7 +764,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 		String returnType = fieldType;
 
 		// write comment for this method
-		MetadataCompilerConstants.writeJavaDocComment(comment, appendable);
+		MetadataCompilerUtils.writeJavaDocComment(comment, appendable);
 
 		// first line . Start of method name
 		appendable.append("public ").append(returnType).append("\t").append(fieldName).append("()\n{\n");
@@ -840,6 +840,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 		// String mapDecl = childMetaMetadata.get(key).getScalarType().fieldTypeName() + " , " +
 		// className;
 		
+		//FIXME- New metadata collection types here!!
 		String variableTypeStart =" ArrayList<";
 		String variableTypeEnd =">";
 		if(isEntity())
@@ -851,11 +852,11 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 			
 		String annotation = "@xml_collection(\"" + tag + "\")";
 		
-		if(pass == MetadataCompilerConstants.GENERATE_FIELDS_PASS)
+		if(pass == MetadataCompilerUtils.GENERATE_FIELDS_PASS)
 		{
 			appendMetalanguageDecl(appendable, annotation,"private" +variableTypeStart , className,variableTypeEnd , fieldName);
 		}
-		else if(pass == MetadataCompilerConstants.GENERATE_METHODS_PASS)
+		else if(pass == MetadataCompilerUtils.GENERATE_METHODS_PASS)
 		{
 			appendLazyEvaluationMethod(appendable, fieldName, variableTypeStart + className + variableTypeEnd);
 			appendSetterForCollection(appendable, fieldName, variableTypeStart + className + variableTypeEnd);
@@ -876,7 +877,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	{
 		String comment = "Set the value of field " + fieldName;
 		// write Java doc
-		MetadataCompilerConstants.writeJavaDocComment(comment, appendable);
+		MetadataCompilerUtils.writeJavaDocComment(comment, appendable);
 
 		// write first line
 		appendable.append("public void set" + XMLTools.javaNameFromElementName(fieldName, true) + "( "
@@ -889,7 +890,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	{
 		String comment = "Get the value of field " + fieldName;
 		// write Java doc
-		MetadataCompilerConstants.writeJavaDocComment(comment, appendable);
+		MetadataCompilerUtils.writeJavaDocComment(comment, appendable);
 
 		// write first line
 		appendable.append("public "+fieldType+" get" + XMLTools.javaNameFromElementName(fieldName, true) + "(){\n");
