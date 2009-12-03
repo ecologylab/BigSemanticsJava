@@ -10,6 +10,7 @@ import ecologylab.semantics.actions.SemanticActionsKeyWords;
 import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.builtins.Document;
+import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.XMLTranslationException;
 
@@ -24,8 +25,7 @@ public class MetaMetadataDirectBindingParser<SA extends SemanticAction>
 		extends MetaMetadataParserBase
 {
 
-	public MetaMetadataDirectBindingParser(SemanticActionHandler semanticActionHandler,
-			InfoCollector infoCollector)
+	public MetaMetadataDirectBindingParser(InfoCollector infoCollector,SemanticActionHandler semanticActionHandler)
 	{
 		super(infoCollector, semanticActionHandler);
 	}
@@ -34,12 +34,19 @@ public class MetaMetadataDirectBindingParser<SA extends SemanticAction>
 	public Document populateMetadataObject()
 	{
 		Document populatedMetadata = null;
-
-		if (metaMetadata.isSupported(container.purl()))
+		String mimeType = (String) semanticActionHandler.getSemanticActionReturnValueMap().get(SemanticActionsKeyWords.PURLCONNECTION_MIME);
+		if (metaMetadata.isSupported(container.purl(), mimeType))
 		{
 			try
 			{
 				populatedMetadata = (Document) ElementState.translateFromXML(inputStream(), getMetadataTranslationScope());
+			  populatedMetadata.translateToXML(System.out);
+				//FIXME-- Is there an efficient way to find the root element?????
+				String tagName= populatedMetadata.translateToDOM().getDocumentElement().getTagName();
+				MetaMetadata mmd = infoCollector.metaMetaDataRepository().getByTagName(tagName);
+				if(mmd!=null)
+					metaMetadata = mmd;
+				System.out.println();
 			}
 			catch (XMLTranslationException e)
 			{

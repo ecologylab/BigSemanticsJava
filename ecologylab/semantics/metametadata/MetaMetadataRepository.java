@@ -92,9 +92,9 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	/**
 	 * We have only documents as direct binding will be used only in case of feeds and XML
 	 */
-	private HashMap<String,MetaMetadata> documentRepositoryByMime    											=  new HashMap<String,MetaMetadata>();
+	private HashMap<String,MetaMetadata> repositoryByMime    											=  new HashMap<String,MetaMetadata>();
 	
-	private HashMap<String,MetaMetadata> documentRepositoryBySuffix    										=  new HashMap<String,MetaMetadata>();
+	private HashMap<String,MetaMetadata> repositoryBySuffix    										=  new HashMap<String,MetaMetadata>();
 	
 	private PrefixCollection 												urlprefixCollection = new PrefixCollection('/');
 
@@ -248,7 +248,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 				String suffix = purl.suffix();					
 
 				if(suffix != null)
-						result = getDocumentMMBySuffix(suffix);
+						result = getMMBySuffix(suffix);
 			}
 		}
 		
@@ -270,14 +270,14 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		return getDocumentMM(purl, DOCUMENT_TAG);
 	}
 
-	public MetaMetadata getDocumentMMBySuffix (String suffix)
+	public MetaMetadata getMMBySuffix (String suffix)
 	{
-		return documentRepositoryBySuffix.get(suffix);
+		return repositoryBySuffix.get(suffix);
 	}
 	
-	public MetaMetadata getDocumentMMByMime(String mimeType)
+	public MetaMetadata getMMByMime(String mimeType)
 	{
-		return documentRepositoryByMime.get(mimeType);
+		return repositoryByMime.get(mimeType);
 	}
 	
 	public MetaMetadata getDocumentMM(Document metadata)
@@ -457,7 +457,9 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 			{
 				for(String suffix: suffixes)
 				{
-					documentRepositoryBySuffix.put(suffix, metaMetadata);
+					//FIXME-- Ask whether the suffix and mime should be inherited or not
+					if(!repositoryBySuffix.containsKey(suffix))
+						repositoryBySuffix.put(suffix, metaMetadata);
 				}
 			}
 			
@@ -466,7 +468,9 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 			{
 				for(String mimeType: mimeTypes)
 				{
-					documentRepositoryByMime.put(mimeType,metaMetadata);
+					//FIXME -- Ask whether the suffix and mime should be inherited or not
+					if(!repositoryByMime.containsKey(mimeType))
+						repositoryByMime.put(mimeType,metaMetadata);
 				}
 			}
 			

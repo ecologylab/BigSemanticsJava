@@ -131,7 +131,7 @@ public class MetaMetadataSearchParser
 		Document populatedMetadata = container.metadata();
 		
 		ParsedURL purl = container.purl();
-		if (metaMetadata.isSupported(purl))
+		if (metaMetadata.isSupported(purl, null))
 		{
 			if ("direct".equals(metaMetadata.getBinding()))
 			{

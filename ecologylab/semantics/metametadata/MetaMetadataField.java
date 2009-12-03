@@ -247,7 +247,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 		}
 		//boolean iNested = tryTofindNested();
 		//isNested=iNested;
-		else if (isNested)
+	 if (isNested)
 		{
 			appenedNestedMetadataField(appendable,pass);
 		}
@@ -255,7 +255,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 		//String col = tryTofindCollection();
 		//collection = col;
 		// check if it is a collection
-		else if (collection != null)
+	 if (collection != null)
 		{
 			// collection of nested elements
 			// TODO -- can these be scalars? if so, how can we tell?

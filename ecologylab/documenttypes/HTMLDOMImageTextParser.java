@@ -10,6 +10,7 @@ import org.w3c.tidy.TdNode;
 
 import ecologylab.generic.StringTools;
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.html.AElement;
@@ -26,7 +27,6 @@ import ecologylab.semantics.html.documentstructure.IndexPage;
 import ecologylab.semantics.html.documentstructure.TextOnlyPage;
 import ecologylab.semantics.html.utils.HTMLAttributeNames;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
-import ecologylab.xml.ElementState;
 import ecologylab.xml.XMLTools;
 
 
@@ -45,6 +45,11 @@ implements TidyInterface, HTMLAttributeNames
 		super(infoCollector);
 	}
 
+	public HTMLDOMImageTextParser(InfoCollector infoCollector,SemanticActionHandler semanticActionHandelr)	// this is of type In
+	{
+		super(infoCollector);
+	}
+	
 	boolean indexPage = false;
 	boolean contentPage = false;
 

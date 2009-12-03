@@ -39,7 +39,7 @@ public class MetaMetadataFeedParser
 		Document populatedMetadata = container.metadata();
 		
 		ParsedURL purl = container.purl();
-		if(metaMetadata.isSupported(purl))
+		if(metaMetadata.isSupported(purl, null))
 		{
 			try
 			{

@@ -125,9 +125,10 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 
 	/**
 	 * @param purl
+	 * @param mimeType TODO
 	 * @return
 	 */
-	public boolean isSupported(ParsedURL purl)
+	public boolean isSupported(ParsedURL purl, String mimeType)
 	{
 		if(urlBase!=null)
 			return purl.toString().startsWith(urlBase.toString());
@@ -153,6 +154,14 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 				if(purl.hasSuffix(suffix))
 					return true;
 			}				
+		}
+		if(mimeTypes!=null)
+		{
+			for(String mime: mimeTypes)
+			{
+				if(mime.equals(mimeType))
+					return true;
+			}
 		}
 		return false;
 	}

@@ -82,10 +82,19 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 	protected static final Scope<Class<? extends DocumentParser>>	registryByMimeType	= new Scope<Class<? extends DocumentParser>>();
 
 	protected static final Scope<Class<? extends DocumentParser>>	registryBySuffix	= new Scope<Class<? extends DocumentParser>>();
+	
+	public static final Scope<Class<? extends DocumentParser>> bindingParserMap   = new Scope<Class<? extends DocumentParser>>();
 
 	// private static final ClassRegistry<? extends DocumentType> rbs = new
 	// ClassRegistry<? extends DocumentType>();
 
+	static
+	{
+		bindingParserMap.put(SemanticActionsKeyWords.DIRECT_BINDING,MetaMetadataDirectBindingParser.class);
+		bindingParserMap.put(SemanticActionsKeyWords.XPATH_BINDING,MetaMetadataXPathParser.class);
+		bindingParserMap.put(SemanticActionsKeyWords.DEFAULT, HTMLDOMImageTextParser.class);
+		
+	}
 	/**
 	 * Prefix Collection for the documenttypes like ACMPortal type... Matches
 	 * http://portal.acm.org/citation.cfm?...
@@ -191,7 +200,9 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 
 			public boolean parseFilesWithSuffix(String suffix)
 			{
-				result = getInstanceBySuffix(suffix, infoCollector);
+				MetaMetadata mmd = infoCollector.metaMetaDataRepository().getMMBySuffix(suffix);
+				if(mmd!=null)
+					result = getParserInstanceFromBindingMap(mmd.getBinding(), infoCollector, null);
 				return (result != null);
 			}
 
@@ -285,7 +296,7 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 
 		// based on purl we try to find meta-metadata from reposiotry.
 		final MetaMetadataRepository metaMetaDataRepository = infoCollector.metaMetaDataRepository();
-		MetaMetadata metaMetadata = metaMetaDataRepository.getDocumentMM(purl);
+		MetaMetadata metaMetadata = metaMetaDataRepository.getDocumentMM(purl,null);
 		
 		// then try to create a connection using the PURL
 		PURLConnection purlConnection = purl.connect(documentParserConnectHelper, (metaMetadata == null) ? null
@@ -298,39 +309,36 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 		if ((result == null) && (container != null))
 			result = container.getDocumentParser();
 	
+		String binding = SemanticActionsKeyWords.DEFAULT;
 		// if we made PURL connection but could not find parser using container
 		if ((purlConnection != null) && (result == null))
 		{
-			// seek a binding assigned through meta-metadata
-			if (metaMetadata != null)
+			// if look up by purl fails
+			if(metaMetadata == null)
 			{
-				result = getParserFromBinding(metaMetadata, infoCollector, semanticActionHandler);
+				// look up using suffix
+				metaMetadata = metaMetaDataRepository.getMMBySuffix(purl.suffix());
+				// if look up by suffix fails
+				if(metaMetadata == null)
+				{
+					//look up using mime
+					String mimeType = purlConnection.mimeType();
+					metaMetadata = metaMetaDataRepository.getMMByMime(mimeType);
+					semanticActionHandler.getSemanticActionReturnValueMap().put(SemanticActionsKeyWords.PURLCONNECTION_MIME, mimeType);
+				}
 			}
-			else // url based look up failed
+			
+			if(metaMetadata!=null)
 			{
-				//Try based on  suffix
-				metaMetadata = metaMetaDataRepository.getDocumentMMBySuffix(purl.suffix());
-				if(metaMetadata ==null)
-				{
-						// try based on mimetype
-						metaMetadata = metaMetaDataRepository.getDocumentMMByMime(purlConnection.mimeType());
-				}
-				if(metaMetadata!=null)
-				{
-						result = getParserFromBinding(metaMetadata, infoCollector, semanticActionHandler);
-				}
+				binding = metaMetadata.getBinding();
 			}
-			if (result == null /* || binding == null */)
-			{ // Try built-in lookup tables, not those provided by meta-metadata-repository					
-				result = getInstanceBySuffix(purl.suffix(), infoCollector);
-				if (result == null)
-				{
-					result = getInstanceByMimeType(purlConnection.mimeType(), infoCollector);
-				}
+			else
+			{
+				metaMetadata = metaMetaDataRepository.getByTagName(DocumentParserTagNames.DOCUMENT_TAG);
 			}
+			result = getParserInstanceFromBindingMap(binding, infoCollector, semanticActionHandler);
 		}
 		
-
 		if (result != null)
 		{
 			result.metaMetadata = metaMetadata;
@@ -339,7 +347,23 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 		return result;
 	}
 
-	private static DocumentParser getParserFromBinding(MetaMetadata metaMetadata,
+	
+	private static <DT extends DocumentParser> DT getParserInstanceFromBindingMap(String binding,InfoCollector infoCollector,
+																						SemanticActionHandler semanticActioHandler)
+	{
+		 DT result = null;
+		 Class<? extends DT> documentTypeClass = (Class<? extends DT>) bindingParserMap.get(binding);
+
+			Object[] constructorArgs = new Object[2];
+			constructorArgs[0] = infoCollector;
+			constructorArgs[1] = semanticActioHandler;
+			
+			result = ReflectionTools.getInstance(documentTypeClass,DEFAULT_DOCUMENTPARSER_ARG,constructorArgs);
+			return result;
+		 
+	}
+	
+	/*private static DocumentParser getParserFromBinding(MetaMetadata metaMetadata,
 			final InfoCollector infoCollector, SemanticActionHandler semanticActionHandler)
 	{
 		DocumentParser result	= null;
@@ -357,7 +381,7 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 		// Add logic for any new parser binding here
 		return result;
 	}
-
+*/
 
 	/**
 	 * Takes in the purl and returns the prefix purl
@@ -534,7 +558,7 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 	/**
 	 * Create a mapping from MimeType to the class object for a DocumentType.
 	 */
-	public static void registerMime ( String mimeType,
+/*	public static void registerMime ( String mimeType,
 			Class<? extends DocumentParser> documentTypeClass )
 	{
 		registryByMimeType.put(mimeType, documentTypeClass);
@@ -545,13 +569,13 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 			println("register simple name: " + simpleName);
 			registryByClassName.put(simpleName, documentTypeClass);
 		}
-	}
+	}*/
 
 	/**
 	 * Create a mapping from filename suffix to the class object for a DocumentType. Actually create
 	 * two mappings, one lower case, and one upper case.
 	 */
-	public static void registerSuffix ( String suffix,
+/*	public static void registerSuffix ( String suffix,
 			Class<? extends DocumentParser> documentTypeClass )
 	{
 		String lc = suffix.toLowerCase();
@@ -559,7 +583,7 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 		String uc = suffix.toUpperCase();
 		registryBySuffix.put(uc, documentTypeClass);
 	}
-
+*/
 	/**
 	 * Find the DocumentType class that corresponds to the mimeType, and construct a fresh instance
 	 * of that type.
@@ -569,10 +593,10 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 	 * 
 	 * @return an instance of the DocumentType subclass that corresponds to mimeType.
 	 */
-	public static DocumentParser getInstanceByMimeType ( String mimeType, InfoCollector infoCollector )
+	/*public static DocumentParser getInstanceByMimeType ( String mimeType, InfoCollector infoCollector )
 	{
 		return getInstanceFromRegistry(registryByMimeType, mimeType, infoCollector);
-	}
+	}*/
 
 	/**
 	 * Find the DocumentType class that corresponds to the mimeType, and construct a fresh instance
@@ -583,12 +607,12 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 	 * 
 	 * @return an instance of the DocumentType subclass that corresponds to mimeType.
 	 */
-	public static DocumentParser getInstanceBySuffix ( String suffix, InfoCollector infoCollector )
+	/*public static DocumentParser getInstanceBySuffix ( String suffix, InfoCollector infoCollector )
 	{
 		return ((suffix == null) || (suffix.length() == 0)) ? null : getInstanceFromRegistry(
 				registryBySuffix, suffix, infoCollector);
 	}
-
+*/
 	/**
 	 * Find the DocumentType class that corresponds to the documentTypeSimpleName, and construct a
 	 * fresh instance of that type.
@@ -611,7 +635,9 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 		return registryByMimeType.containsKey(mimeType);
 	}
 
-	static final Class[]	DEFAULT_INFO_COLLECTOR_CLASS_ARG	= {InfoCollector.class, };
+	static final Class[]	DEFAULT_INFO_COLLECTOR_CLASS_ARG	= {InfoCollector.class};
+	
+	static final Class[]  DEFAULT_DOCUMENTPARSER_ARG         ={InfoCollector.class,SemanticActionHandler.class};
 	/**
 	 * Given one of our registries, and a key, do a lookup in the registry to obtain the Class
 	 * object for the DocumentType subclass corresponding to the key -- in that registry.
