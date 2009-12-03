@@ -221,7 +221,7 @@ implements InfoCollector<AC>, SemanticsPrefs, ApplicationProperties, DocumentPar
 			METAMETADATA_REPOSITORY_FILE = Assets.getSemanticsFile(META_METADATA_REPOSITORY_XML);
 			METAMETADATA_SITES_FILE 			= Assets.getSemanticsFile(METAMETADATA_SITES_XML);
 		}
-		META_METADATA_REPOSITORY = MetaMetadataRepository.load(new File("C:\\abhinavCode\\cf\\config\\semantics\\metametadata\\metaMetadataRepository.xml"));
+		META_METADATA_REPOSITORY = MetaMetadataRepository.load(METAMETADATA_REPOSITORY_FILE);
 		
 		DOCUMENT_META_METADATA						= META_METADATA_REPOSITORY.getByTagName(DOCUMENT_TAG);
 		PDF_META_METADATA									= META_METADATA_REPOSITORY.getByTagName(PDF_TAG);
