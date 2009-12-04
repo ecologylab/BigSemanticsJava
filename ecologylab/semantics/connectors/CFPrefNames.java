@@ -42,6 +42,10 @@ public interface CFPrefNames
 	 * The reduced interface for non-generative cF.
 	 */
 	public static final String REDUCED 										= "reduced";
+/**
+ * The reduced interface + the reset button, for final phase of the mixed-initiative condition, in studies.
+ */
+	public static final String REDUCED_PLUS 							= "reduced_plus";
 
 	public static final String		CURATED									= "curated";
 	
