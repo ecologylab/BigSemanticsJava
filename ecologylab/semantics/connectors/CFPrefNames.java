@@ -27,10 +27,14 @@ public interface CFPrefNames
 	public static final String	DASHBOARD_NAME						= "dashboard";
 	public static final String	SEED_VISIBILITY_CLOSED 		= "closed";
 
+	public static final String	IN_CONTEXT_INTERFACE			= "in_context_interface";
+	
+	public static final String	STUDY_IN_CONTEXT_INTERFACE			= "study_in_context_interface";
+	
 	/**
 	 * The name of the user interface currently in use, and its path in /config/interface.
 	 */
-	public static final String 	DEFAULT_INTERFACE  				= "in_context_interface";
+	public static final String 	DEFAULT_INTERFACE  				= IN_CONTEXT_INTERFACE;
 
 	public static final String  USERINTERFACE_PREF_NAME		= "userinterface";
 
