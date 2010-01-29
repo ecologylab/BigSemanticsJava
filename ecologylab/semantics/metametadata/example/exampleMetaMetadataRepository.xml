@@ -1,1 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<meta_metadata_repository name="example_repository" default_user_agent_name="chrome_2"
+ package="ecologylab.semantics.metametadata.example"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
+ 
+    <meta_metadata name="weather_report" extends="document" generate_class="true" binding="xpath"
+                   url_base="http://www.weather.com/weather/today/"
+                   comment="weather report from weather.com">
+        <meta_metadata_field name="city" scalar_type="String" xpath="/html/body/div/center/div[2]/div[3]/div[4]/div/div/h1" />
+        <meta_metadata_field name="weather" scalar_type="String" xpath="/html/body/div/center/div[2]/div[3]/div[4]/div/div/div/div/div/div/div[2]/p" />
+        <meta_metadata_field name="temperature" scalar_type="String" xpath="/html/body/div/center/div[2]/div[3]/div[4]/div/div/div/div/div/div[2]/div" />
+        <meta_metadata_field name="feel_like" scalar_type="String" xpath="/html/body/div/center/div[2]/div[3]/div[4]/div/div/div/div/div/div[2]/div[2]/b" />
+        <meta_metadata_field name="wind" scalar_type="String" xpath="/html/body/div/center/div[2]/div[3]/div[4]/div/div/div/div/div/div[2]/div[3]/b" />
+        <semantic_actions>
+            <get_field name="location" />
+            <create_container name="weather_report_container">
+                <arg value="location" />
+            </create_container>
+            <parse_now>
+                <arg value="weather_report_container" />
+                <arg value="location" />
+            </parse_now>
+            <get_field name="city" />
+            <get_field name="weather" />
+            <get_field name="temperature" />
+            <get_field name="feel_like" />
+            <get_field name="wind" />
+        </semantic_actions>
+    </meta_metadata>
+ 
+</meta_metadata_repository>
