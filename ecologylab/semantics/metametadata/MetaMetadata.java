@@ -77,7 +77,7 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 	private String						userAgentString;
 
 	@xml_attribute
-	private String						binding=null;
+	private String						parser=null;
 	/*
 	 * @xml_collection("meta_metadata_field") private ArrayList<MetaMetadataField>
 	 * metaMetadataFieldList;
@@ -519,7 +519,7 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 	public String getBinding()
 	{
 		// TODO Auto-generated method stub
-		return binding;
+		return parser;
 	}
 
 	/**
