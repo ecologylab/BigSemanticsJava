@@ -1,9 +1,8 @@
 package ecologylab.semantics.metadata.builtins;
 
 /**
- * This is a generated code. DO NOT edit or modify it.
- * 
- * @author MetadataCompiler
+ * This is not generated code, but a hand-authored base class in the 
+ * Metadata hierarchy. It is hand-authored in order to provide specific functionalities
  **/
 
 import ecologylab.semantics.library.scalar.*;
@@ -27,7 +26,6 @@ import ecologylab.xml.ElementState.xml_tag;
  **/
 
 @xml_inherit
-@xml_tag("media")
 public class Media extends Metadata
 {
 

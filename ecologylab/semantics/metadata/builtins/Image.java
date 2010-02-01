@@ -11,12 +11,10 @@ import ecologylab.xml.ElementState.xml_nested;
 import ecologylab.xml.ElementState.xml_tag;
 
 /**
- * 
- * @author damaraju
- * 
- */
+ * This is not generated code, but a hand-authored base class in the 
+ * Metadata hierarchy. It is hand-authored in order to provide specific functionalities
+ **/
 @xml_inherit
-@xml_tag("image")
 public class Image extends Media
 {
 	@xml_nested
