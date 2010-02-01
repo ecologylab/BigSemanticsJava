@@ -59,7 +59,6 @@ public interface CFPrefNames
 	
 	public static final String	DECAY_INTEREST  					= "decay_interest";
 	
-	public static final String	LOCAL_CF_ROOT_PREF_NAME		= "local_cf_root";
 	public static final String	USE_LOCAL_CF_PREF_NAME				= "use_local_cf";
 	
 	public static final String	STUDY_COMPOSITION_SAVE_LOCATION	= "study_composition_save_location";
