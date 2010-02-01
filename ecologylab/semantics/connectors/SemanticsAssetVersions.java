@@ -13,5 +13,5 @@ public interface SemanticsAssetVersions
 {
 	public static final float	DICTIONARY_ASSET_VERSION 	    = 2.122f;
 	
-	public static final float 	METAMETADATA_ASSET_VERSION		= 0.9993f;
+	public static final float 	METAMETADATA_ASSET_VERSION		= 0.9994f;
 }
