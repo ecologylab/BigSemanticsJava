@@ -48,17 +48,24 @@ public class MetadataCompiler extends ApplicationEnvironment
 	}
 
 	static final TranslationScope	META_METADATA_TRANSLATIONS	= MetaMetadataTranslationScope.get();
+	public static final String DEFAULT_REPOSITORY_FILEPATH = "../cf/config/semantics/metametadata/metaMetadataRepository.xml";
+	
+	public MetadataCompiler(String[] args) throws XMLTranslationException
+	{
+		this(args, DEFAULT_REPOSITORY_FILEPATH);
+	}
 
 	/**
 	 * @param applicationName
 	 * @param args
 	 * @throws XMLTranslationException
 	 */
-	public MetadataCompiler(String[] args) throws XMLTranslationException
+	public MetadataCompiler(String[] args, String repoFilepath) throws XMLTranslationException
 	{
 		super("MetadataCompiler", META_METADATA_TRANSLATIONS, args, 1.0F);
 
-		String patternXMLFilepath = "../cf/config/semantics/metametadata/metaMetadataRepository.xml";
+		// String patternXMLFilepath = "../cf/config/semantics/metametadata/metaMetadataRepository.xml";
+		String patternXMLFilepath = repoFilepath;
 
 		// ElementState.setUseDOMForTranslateTo(true);
 		MetaMetadataRepository metaMetadataRepository;
@@ -80,6 +87,7 @@ public class MetadataCompiler extends ApplicationEnvironment
 			
 			// Writer for the translation scope for generated class.
 			MetadataCompilerUtils.createTranslationScopeClass(MetadataCompilerUtils.getGenerationPath(metaMetadataRepository.getPackageName()));
+				
 
 			// for each meta-metadata in the repository
 			for (MetaMetadata metaMetadata : metaMetadataRepository.values())

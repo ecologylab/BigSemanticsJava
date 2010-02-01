@@ -34,13 +34,9 @@ public class XPathTest
 //	private static final String	LOCATION	= ACM_CITATION;
 //	private static final String	XPATH	= CITATION_XPATH;
 	
-	private static final String	WEATHER	= "http://www.wunderground.com/cgi-bin/findweather/getForecast?query=77840";
-	private static final String	WEATHER_XPATH	= "//div[@id='curcondbox']";
-	private static final String	WEATHER_CHILD_XPATH	= "//table[@class='dataTable']//tr[4]";
-	
-	private static final String	XPATH				= WEATHER_XPATH;
-	private static final String	CHILD_XPATH	= WEATHER_CHILD_XPATH;
-	private static final String	LOCATION		= WEATHER;
+	private static final String	XPATH				= WIKIPEDIA_XPATH;
+	private static final String	CHILD_XPATH	= WIKIPEDIA_CHILD_XPATH;
+	private static final String	LOCATION		= WIKIPEDIA;
 	
 	private static final ParsedURL PURL = ParsedURL.getAbsolute(LOCATION);
 
