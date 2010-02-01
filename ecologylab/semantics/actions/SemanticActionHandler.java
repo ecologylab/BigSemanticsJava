@@ -143,7 +143,7 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 	 * 
 	 * @param action
 	 */
-	public abstract void downloadNow(SemanticAction action, DocumentParser docType,IC infoCollector);
+	public abstract void parseNow(SemanticAction action, DocumentParser docType,IC infoCollector);
 
 	/**
 	 * 
@@ -161,7 +161,7 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 	 * @param documentType
 	 * @param infoCollector
 	 */
-	public abstract void downloadLaterSemanticAction(SemanticAction action, DocumentParser documentType,IC infoCollector);
+	public abstract void parseLater(SemanticAction action, DocumentParser documentType,IC infoCollector);
 	
 	/**
 	 * 
@@ -418,7 +418,11 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 			}
 			else if (SemanticActionStandardMethods.PARSE_NOW.equals(actionName))
 			{
-				downloadNow(action, documentType,infoCollector);
+				parseNow(action, documentType,infoCollector);
+			}
+			else if(SemanticActionStandardMethods.PARSE_LATER.equals(actionName))
+			{
+				parseLater(action, documentType, infoCollector);
 			}
 			else if (SemanticActionStandardMethods.SET_METADATA.equals(actionName))
 			{
@@ -443,10 +447,6 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 			else if(SemanticActionStandardMethods.CREATE_SEMANTIC_ANCHOR.equals(actionName))
 			{
 				createSemanticAnchor((CreateSemanticAnchorSemanticAction)action,documentType,infoCollector);
-			}
-			else if(SemanticActionStandardMethods.PARSE_LATER.equals(actionName))
-			{
-				downloadLaterSemanticAction(action, documentType, infoCollector);
 			}
 			else if(SemanticActionStandardMethods.APPLY_XPATH.equals(actionName))
 			{
