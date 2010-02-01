@@ -156,13 +156,13 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	 * The regular expression
 	 */
 	@xml_attribute
-	private String																			regularExpression;
+	private String																			textRegex;
 
 	/**
 	 * The string used to replace the match.
 	 */
 	@xml_attribute
-	private String																			replacementString;
+	private String																			matchReplacement;
 	
 	/**
 	 * Context node for xpath based extarction rules for this field.
@@ -1215,7 +1215,7 @@ public HashMapArrayList<String, MetaMetadataField> getChildMetaMetadata()
 	 */
 	public String getRegularExpression()
 	{
-		return regularExpression;
+		return textRegex;
 	}
 
 	/**
@@ -1224,7 +1224,7 @@ public HashMapArrayList<String, MetaMetadataField> getChildMetaMetadata()
 	 */
 	public void setRegularExpression(String regularExpression)
 	{
-		this.regularExpression = regularExpression;
+		this.textRegex = regularExpression;
 	}
 
 	/**
@@ -1232,7 +1232,7 @@ public HashMapArrayList<String, MetaMetadataField> getChildMetaMetadata()
 	 */
 	public String getReplacementString()
 	{
-		return replacementString;
+		return matchReplacement;
 	}
 
 	/**
@@ -1241,7 +1241,7 @@ public HashMapArrayList<String, MetaMetadataField> getChildMetaMetadata()
 	 */
 	public void setReplacementString(String replacementString)
 	{
-		this.replacementString = replacementString;
+		this.matchReplacement = replacementString;
 	}
 
 	/**
