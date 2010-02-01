@@ -43,17 +43,17 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 	private String						extendsAttribute;
 
 	@xml_attribute
-	private ParsedURL					urlBase;
+	private ParsedURL					urlStripped;
 	
 	@xml_attribute
-	private ParsedURL 				urlPrefix;
+	private ParsedURL 				urlPathTree;
 
 	/**
 	 * Regular expression. Must be paired with domain.
 	 * This is the least efficient form of matcher, so it should be used only when url_base & url_prefix cannot be used.
 	 */
 	@xml_attribute
-	private Pattern						urlPattern;
+	private Pattern						urlRegex;
 	
 	/**
 	 * This key is *required* for urlPatterns, so that we can organize them efficiently.
@@ -130,13 +130,13 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 	 */
 	public boolean isSupported(ParsedURL purl, String mimeType)
 	{
-		if(urlBase!=null)
-			return purl.toString().startsWith(urlBase.toString());
+		if(urlStripped!=null)
+			return purl.toString().startsWith(urlStripped.toString());
 		Pattern pattern = null;
-		if(urlPrefix!=null)
-			 pattern = Pattern.compile(urlPrefix.toString());
-		if(urlPattern!=null)
-			pattern = Pattern.compile(urlPattern.toString());
+		if(urlPathTree!=null)
+			 pattern = Pattern.compile(urlPathTree.toString());
+		if(urlRegex!=null)
+			pattern = Pattern.compile(urlRegex.toString());
 		
 		if(pattern != null)
 		{
@@ -173,32 +173,32 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 
 	public ParsedURL getUrlBase()
 	{
-		return urlBase;
+		return urlStripped;
 	}
 
 	public void setUrlBase(ParsedURL urlBase)
 	{
-		this.urlBase = urlBase;
+		this.urlStripped = urlBase;
 	}
 
 	public void setUrlBase(String urlBase)
 	{
-		this.urlBase = ParsedURL.getAbsolute(urlBase);
+		this.urlStripped = ParsedURL.getAbsolute(urlBase);
 	}
 
 	public ParsedURL getUrlPrefix()
 	{
-		return urlPrefix;
+		return urlPathTree;
 	}
 	
 	public void setUrlPrefix(ParsedURL urlPrefix)
 	{
-		this.urlPrefix = urlPrefix;
+		this.urlPathTree = urlPrefix;
 	}
 	
 	public void setUrlPrefix(String urlPrefix)
 	{
-		this.urlPrefix = ParsedURL.getAbsolute(urlPrefix);
+		this.urlPathTree = ParsedURL.getAbsolute(urlPrefix);
 	}
 	/**
 	 * Lookup the Metadata class object that corresponds to the tag_name in this.
@@ -535,7 +535,7 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 	 */
 	public Pattern getUrlPattern()
 	{
-		return urlPattern;
+		return urlRegex;
 	}
 
 	/**
@@ -543,7 +543,7 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 	 */
 	public void setUrlPattern(Pattern urlPattern)
 	{
-		this.urlPattern = urlPattern;
+		this.urlRegex = urlPattern;
 	}
 
 	/**
