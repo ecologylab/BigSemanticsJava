@@ -202,7 +202,7 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 			{
 				MetaMetadata mmd = infoCollector.metaMetaDataRepository().getMMBySuffix(suffix);
 				if(mmd!=null)
-					result = getParserInstanceFromBindingMap(mmd.getBinding(), infoCollector, null);
+					result = getParserInstanceFromBindingMap(mmd.getParser(), infoCollector, null);
 				return (result != null);
 			}
 
@@ -330,7 +330,7 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 			
 			if(metaMetadata!=null)
 			{
-				binding = metaMetadata.getBinding();
+				binding = metaMetadata.getParser();
 			}
 			else
 			{

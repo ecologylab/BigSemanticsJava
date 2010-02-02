@@ -133,7 +133,7 @@ public class MetaMetadataSearchParser
 		ParsedURL purl = container.purl();
 		if (metaMetadata.isSupported(purl, null))
 		{
-			if ("direct".equals(metaMetadata.getBinding()))
+			if ("direct".equals(metaMetadata.getParser()))
 			{
 				try
 				{
@@ -145,7 +145,7 @@ public class MetaMetadataSearchParser
 					e.printStackTrace();
 				}
 			}
-			else if ("xpath".equals(metaMetadata.getBinding()))
+			else if ("xpath".equals(metaMetadata.getParser()))
 			{
 				recursiveExtraction(getMetadataTranslationScope(), metaMetadata,
 						populatedMetadata, xpath, semanticActionHandler.getSemanticActionReturnValueMap(),document);

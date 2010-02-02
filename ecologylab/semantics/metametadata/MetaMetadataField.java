@@ -51,7 +51,6 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	/**
 	 * The type of the field -- only if it is a scalar.
 	 */
-	@xml_tag("scalar_type")
 	@xml_attribute
 	private ScalarType													scalarType;		
 	
@@ -64,7 +63,6 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	/**
 	 * If true the field is shown even if its null or empty.
 	 */
-	@xml_tag("always_show")
 	@xml_attribute
 	private boolean															alwaysShow;
 
@@ -101,7 +99,6 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	/**
 	 * This is used to specify the prefix string which is to be stripped off.
 	 */
-	@xml_tag("string_prefix")
 	@xml_attribute
 	private String															stringPrefix;
 
@@ -111,7 +108,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	 * The type for collection children.
 	 */
 	@xml_attribute
-	private String															collectionChildType;
+	private String															childType;
 
 	/*
 	 * @xml_attribute private boolean isList;
@@ -267,6 +264,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 		// new java class has to be written
 		if (childMetaMetadata != null && isGenerateClass())
 		{
+			//FIXME -- call the regular routine for generating a class declaration!!!!!!!!!!!!!! code should not be duplicated
 			// getting the generation path for the java class.
 			String generationPath = MetadataCompilerUtils.getGenerationPath(packageName);
 
@@ -277,7 +275,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 			if (collection != null)
 			{
 				// we will generate a class of the name collectionChildType.
-				javaClassName = collectionChildType;
+				javaClassName = childType;
 			}
 
 			// if this class implements any Interface it will contain that.
@@ -308,7 +306,8 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 
 			// write xml_inherit
 			p.println("@xml_inherit");
-			p.println("@xml_tag(\""+collectionChildType+"\")");
+//			p.println("@xml_tag(\""+collectionChildType+"\")");
+			p.println(getTagDecl());
 
 			// start of class definition
 			p.println("public class " + XMLTools.classNameFromElementName(javaClassName)
@@ -359,9 +358,9 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 
 	private String tryTofindCollectionChildType()
 	{
-		if(collectionChildType!=null)
+		if(childType!=null)
 		{
-			return collectionChildType;
+			return childType;
 		}
 	//first find the super class
 		String extendsField = getExtendsField();
@@ -380,7 +379,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 			if(mmdField!=null)
 			{
 				//find the scalar type of field
-				return mmdField.collectionChildType;
+				return mmdField.childType;
 			}
 		}
 		return null;
@@ -494,17 +493,16 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	 */
 	private void appenedNestedMetadataField(Appendable appendable,int pass) throws IOException
 	{
-		String variableType="\") @xml_nested "+XMLTools.classNameFromElementName(getType());
+		String variableType=" @xml_nested "+XMLTools.classNameFromElementName(getType());
 		String fieldType = XMLTools.classNameFromElementName(getType());
 		if(isEntity())
 		{
-			variableType = "\") @xml_nested Entity<"+XMLTools.classNameFromElementName(getType())+">";
+			variableType = " @xml_nested Entity<"+XMLTools.classNameFromElementName(getType())+">";
 			fieldType = "Entity<"+XMLTools.classNameFromElementName(getType())+">";
 		}
 		if(pass == MetadataCompilerUtils.GENERATE_FIELDS_PASS)
 		{
-			appendable.append("\nprivate @xml_tag(\""+getName()+variableType + "\t"
-					+ name + ";");
+			appendable.append("\nprivate " + getTagDecl() +variableType + "\t" + name + ";");
 		}
 		else if(pass == MetadataCompilerUtils.GENERATE_METHODS_PASS)
 		{
@@ -807,7 +805,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 			// HACK FOR METADATAINTEGER
 			className = "Integer";
 		}
-		appendMetalanguageDecl(appendable, "@xml_tag(\"" + getTag() + "\") @xml_nested",
+		appendMetalanguageDecl(appendable, getTagDecl() + " @xml_nested",
 				classNamePrefix, className, fieldName);
 	}
 
@@ -826,9 +824,9 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 
 		// if it belongs to a particular type we will generate a class for it so the type is set to
 		// collectionChildType.
-		if (this.collectionChildType != null)
+		if (this.childType != null)
 		{
-			elementName = this.collectionChildType;
+			elementName = this.childType;
 		}
 		// getting the class name
 		String className = XMLTools.classNameFromElementName(elementName);
@@ -1046,8 +1044,8 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	{
 		if (isEntity())
 			return  DocumentParserTagNames.ENTITY;
-		else if (collectionChildType != null)
-			return collectionChildType;
+		else if (childType != null)
+			return childType;
 		else if (type != null)
 			return type;
 		else if (isNested)
@@ -1140,7 +1138,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 
 	public String getCollectionChildType()
 	{
-		return collectionChildType;
+		return childType;
 	}
 
 	public String shadows()
@@ -1336,11 +1334,13 @@ public HashMapArrayList<String, MetaMetadataField> getChildMetaMetadata()
 		{
 			return childTag;
 		}
-		else 
+		else if (tag != null)
 		{
 			// TODO implement other cases
-			return name;
+			return tag;
 		}
+		else
+			return name;
 			
 	}	
 	protected void bindChildren(MetaMetadata childMM)
@@ -1357,12 +1357,19 @@ public HashMapArrayList<String, MetaMetadataField> getChildMetaMetadata()
 	 */
 	public String getTag()
 	{
-		if(tag!=null)
-			return tag;
-		else
-			return getName();
+		return tag;
 	}
 
+	/**
+	 * If a tag was declared, form an ecologylab.xml @xml_tag declaration with it.
+	 * 
+	 * @return	The @xml_tag declaration string, or the empty string.
+	 */
+	public String getTagDecl()
+	{
+		boolean hasTag = tag != null && tag.length() > 0;
+		return hasTag ? "@xml_tag(\""+tag+"\")" : "";
+	}
 	/**
 	 * @param tag the tag to set
 	 */

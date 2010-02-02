@@ -100,13 +100,10 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 	@xml_nowrap 
 	private ArrayList<String>	suffixes;
 
-	@xml_tag("semantic_actions")
-	@xml_collection("semantic_actions")
-	@xml_nowrap 
-	private ArrayListState<? extends SemanticAction>	semanticActions;
+	@xml_nested
+	private ArrayListState<SemanticAction>	semanticActions;
 	
-	@xml_tag("def_vars")
-	@xml_collection("def_vars")
+	@xml_nested
 	@xml_nowrap 
 	private ArrayListState<DefVar> defVars;
 
@@ -305,7 +302,10 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 
 		//write @xml_inherit
 		p.println("@xml_inherit");
-		p.println("@xml_tag(\""+getName()+"\")");
+		
+//		p.println("@xml_tag(\""+getName()+"\")");
+
+		p.println(getTagDecl());
 		
 		// Write class declaration
 		String className = XMLTools.classNameFromElementName(getName());
@@ -516,7 +516,7 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 		return extendsAttribute;
 	}
 
-	public String getBinding()
+	public String getParser()
 	{
 		// TODO Auto-generated method stub
 		return parser;
@@ -533,7 +533,7 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 	/**
 	 * @return the urlPattern
 	 */
-	public Pattern getUrlPattern()
+	public Pattern getUrlRegex()
 	{
 		return urlRegex;
 	}
@@ -541,7 +541,7 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 	/**
 	 * @param urlPattern the urlPattern to set
 	 */
-	public void setUrlPattern(Pattern urlPattern)
+	public void setUrlRegex(Pattern urlPattern)
 	{
 		this.urlRegex = urlPattern;
 	}

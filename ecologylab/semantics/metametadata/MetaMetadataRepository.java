@@ -421,7 +421,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 				else
 				{
 					String domain				= metaMetadata.getDomain();
-					Pattern urlPattern	= metaMetadata.getUrlPattern();
+					Pattern urlPattern	= metaMetadata.getUrlRegex();
 					if (domain != null && urlPattern != null)
 					{
 						ArrayList<RepositoryPatternEntry> bucket	= repositoryByPattern.get(domain);
