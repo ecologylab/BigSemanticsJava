@@ -1,0 +1,252 @@
+/**
+ * 
+ */
+package ecologylab.semantics.metametadata.example;
+
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Collection;
+
+import ecologylab.documenttypes.DocumentParser;
+import ecologylab.generic.ReflectionTools;
+import ecologylab.net.ParsedURL;
+import ecologylab.semantics.actions.SemanticAction;
+import ecologylab.semantics.actions.SemanticActionHandler;
+import ecologylab.semantics.actions.SemanticActionsKeyWords;
+import ecologylab.semantics.metadata.builtins.Document;
+import ecologylab.semantics.metametadata.Argument;
+import ecologylab.xml.XMLTools;
+import ecologylab.semantics.actions.SemanticActionNamedArguments;
+import ecologylab.semantics.generated.library.WeatherReport;
+
+/**
+ * @author quyin
+ * 
+ */
+public class MySemanticActionHandler extends SemanticActionHandler<MyContainer, MyInfoCollector>
+{
+	@Override
+	public void backOffFromSite(SemanticAction action,
+			DocumentParser<MyContainer, ?, ?> documentType, MyInfoCollector infoCollector)
+	{
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void createAndVisualizeImgSurrogate(SemanticAction action,
+			DocumentParser<MyContainer, ?, ?> docType, MyInfoCollector infoCollector)
+	{
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void createAndVisualizeTextSurrogateSemanticAction(SemanticAction action,
+			DocumentParser documentType, MyInfoCollector infoCollector)
+	{
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public MyContainer createContainer(SemanticAction action,
+			DocumentParser<MyContainer, ?, ?> docType, MyInfoCollector infoCollector)
+	{
+		return null;
+	}
+
+	@Override
+	public void createSemanticAnchor(SemanticAction action,
+			DocumentParser<MyContainer, ?, ?> documentType, MyInfoCollector infoCollector)
+	{
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void getFieldAction(SemanticAction action, DocumentParser docType,
+			MyInfoCollector infoCollector)
+	{
+		try
+		{
+			// get the method name
+			String returnValue = action.getReturnValue();
+			String actionName = "get" + XMLTools.javaNameFromElementName(returnValue, true);
+
+			// get the object name
+			String object = action.getObject();
+			if (object == null) // If no name is specified, the metadata is acted upon.
+			{
+				object = SemanticActionsKeyWords.METADATA;
+			}
+
+			// invoke it via reflection
+			handleGeneralAction(action, object, actionName);
+		}
+		catch (Exception e)
+		{
+			System.err.println("oops! get_field action failed.");
+			e.printStackTrace();
+		}
+	}
+
+	protected void handleGeneralAction(SemanticAction action, String objectName, String actionName)
+			throws IllegalArgumentException, IllegalAccessException, InvocationTargetException
+	{
+		// get the object on which the action has to be invoked
+		Object object = semanticActionReturnValueMap.get(objectName);
+		// System.out.println("DEBUG::object=\t" + object);
+
+		// when the action takes no arguments [SIMPLEST CASE :-)]
+		if (!action.hasArguments())
+		{
+			// check if all the pre-conditions are satisfied for this action
+			// if (checkPreConditionFlagsIfAny(action))
+			{
+				// get the method to be invoked on the object
+				Method method = ReflectionTools.getMethod(object.getClass(), actionName, null);
+				// System.out.println("DEBUG::methodToBeInvoked=\t" + method);
+
+				// invoke the specified method
+				Object returnValue = method.invoke(object, null);
+				// System.out.println("DEBUG::Return Value=\t" + returnValue);
+
+				// set the flags if any
+				setFlagIfAny(action, returnValue);
+
+				// put it into the semantic action return value map
+				if (action.getReturnValue() != null)
+				{
+					// check if the method is not of type void.
+					semanticActionReturnValueMap.put(action.getReturnValue(), returnValue);
+				}
+			}
+		}
+		else
+		{
+			// when action has some arguments
+			Collection<Argument> args = action.getArgs();
+			// System.out.println("DEBUG::arguments=\t" + arguments);
+
+			// array to store the data\class type of arguments
+			int numArgs = args.size();
+			Class[] argumentTypeArray = new Class[numArgs];
+
+			// array to hold the actual arguments
+			Object[] argumentsArray = new Object[numArgs];
+
+			// for finding the Method object we need to create an array of
+			// classes of the arguments.
+			// also we need to store the actual arguments.
+			int i = 0;
+			for (Argument argument : args)
+			{
+				// get the actual object
+				argumentsArray[i] = semanticActionReturnValueMap.get(argument.getValue());
+				// System.out.println("DEBUG::argumentsArray[" + i + "]=\t" + argumentsArray[i]);
+
+				// get the object type/class
+				argumentTypeArray[i] = argumentsArray[i].getClass();
+				// System.out.println("DEBUG::argumentTypeArray[" + i + "]=\t" + argumentTypeArray[i]);
+				i++;
+			}
+
+			// check if all the pre-conditions are satisfied for this action
+			// if (checkPreConditionFlagsIfAny(action))
+			{
+				// get the method to be invoked on the object
+				Method method = ReflectionTools.getMethod(object.getClass(), actionName, argumentTypeArray);
+				// System.out.println("DEBUG::methodToBeInvoked=\t" + method + "\t object class=\t"
+				// + object.getClass());
+
+				// invoke the specified method
+				Object returnValue = method.invoke(object, argumentsArray);
+				// System.out.println("DEBUG::Return Value=\t" + returnValue);
+
+				// set the flags if any
+				setFlagIfAny(action, returnValue);
+
+				// put it into the semantic action return value map
+				if (action.getReturnValue() != null)
+				{
+					// check if method is not of type void
+					semanticActionReturnValueMap.put(action.getReturnValue(), returnValue);
+				}
+			}
+		}
+	}
+
+	@Override
+	public void handleGeneralAction(SemanticAction action) throws IllegalArgumentException,
+			IllegalAccessException, InvocationTargetException
+	{
+		// get the object on which the action has to be taken
+		String objectName = action.getObject();
+
+		// get the action Name;
+		String actionName = action.getActionName();
+
+		// call handleGeneralActionMethod
+		handleGeneralAction(action, objectName, actionName);
+	}
+
+	@Override
+	public void setFieldAction(SemanticAction action, DocumentParser docType,
+			MyInfoCollector infoCollector) throws IllegalArgumentException, IllegalAccessException,
+			InvocationTargetException
+	{
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void setMetadata(SemanticAction action, DocumentParser docType,
+			MyInfoCollector infoCollector)
+	{
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void syncNestedMetadataSemanticAction(SemanticAction action, DocumentParser documentType,
+			MyInfoCollector infoCollector)
+	{
+		// TODO Auto-generated method stub
+
+	}
+
+	public void parseLater(SemanticAction action, DocumentParser documentType,
+			MyInfoCollector infoCollector)
+	{
+		// TODO Auto-generated method stub
+
+	}
+
+	public void parseNow(SemanticAction action, DocumentParser docType, MyInfoCollector infoCollector)
+	{
+		Argument purlA = action.getArgument(SemanticActionNamedArguments.CONTAINER_LINK);
+		if (purlA != null)
+		{
+			ParsedURL purl = (ParsedURL) semanticActionReturnValueMap.get(purlA.getValue());
+			MyContainer container = new MyContainer(null, infoCollector, purl);
+			try
+			{
+				container.performDownload();
+				Document metadata = container.metadata();
+				if (metadata != null && metadata instanceof WeatherReport
+						&& ((WeatherReport) metadata).city().getValue() != null)
+				{
+					ResultCollector.get().collect(container.metadata());
+				}
+			}
+			catch (IOException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
+}
