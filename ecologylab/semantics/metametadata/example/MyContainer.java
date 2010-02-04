@@ -4,6 +4,7 @@
 package ecologylab.semantics.metametadata.example;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import ecologylab.documenttypes.DocumentParser;
 import ecologylab.generic.DispatchTarget;
@@ -16,6 +17,7 @@ import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.generated.library.GeneratedMetadataTranslationScope;
 import ecologylab.semantics.html.ParagraphText;
 import ecologylab.semantics.html.documentstructure.SemanticAnchor;
+import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
@@ -29,19 +31,37 @@ import ecologylab.xml.TranslationScope;
  * @author quyin
  * 
  */
-public class MyContainer extends Container {
+public class MyContainer extends Container
+{
+	public interface MetadataCollectingListener
+	{
+		void collect(Metadata metadata);
+	}
 
-	protected InfoCollector infoCollector;
+	private ArrayList<MetadataCollectingListener>	collectingListeners;
+
+	public ArrayList<MetadataCollectingListener> getCollectingListeners()
+	{
+		return collectingListeners;
+	}
+
+	public void setCollectingListeners(ArrayList<MetadataCollectingListener> collectingListeners)
+	{
+		this.collectingListeners = collectingListeners;
+	}
+
+	protected InfoCollector	infoCollector;
+
 	/**
 	 * @param progenitor
 	 */
-	public MyContainer(ContentElement progenitor, InfoCollector infoCollector, ParsedURL purl) {
+	public MyContainer(ContentElement progenitor, InfoCollector infoCollector, ParsedURL purl)
+	{
 		super(progenitor);
 		this.infoCollector = infoCollector;
-		
+
 		// set metaMetadata
-		MetaMetadataRepository metaMetaDataRepository = infoCollector
-				.metaMetaDataRepository();
+		MetaMetadataRepository metaMetaDataRepository = infoCollector.metaMetaDataRepository();
 		MetaMetadata metaMetadata = metaMetaDataRepository.getDocumentMM(purl);
 		TranslationScope ts = GeneratedMetadataTranslationScope.get();
 		this.metadata = (Document) metaMetadata.constructMetadata(ts);
@@ -54,12 +74,11 @@ public class MyContainer extends Container {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * ecologylab.semantics.connectors.Container#addAdditionalPURL(ecologylab
-	 * .net.ParsedURL)
+	 * @see ecologylab.semantics.connectors.Container#addAdditionalPURL(ecologylab .net.ParsedURL)
 	 */
 	@Override
-	public void addAdditionalPURL(ParsedURL purl) {
+	public void addAdditionalPURL(ParsedURL purl)
+	{
 		// TODO Auto-generated method stub
 
 	}
@@ -67,12 +86,12 @@ public class MyContainer extends Container {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * ecologylab.semantics.connectors.Container#addCandidateContainer(ecologylab
+	 * @see ecologylab.semantics.connectors.Container#addCandidateContainer(ecologylab
 	 * .semantics.connectors.Container)
 	 */
 	@Override
-	public void addCandidateContainer(Container newContainer) {
+	public void addCandidateContainer(Container newContainer)
+	{
 		// TODO Auto-generated method stub
 
 	}
@@ -80,14 +99,12 @@ public class MyContainer extends Container {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * ecologylab.semantics.connectors.Container#addSemanticInLink(ecologylab
-	 * .semantics.html.documentstructure.SemanticAnchor,
-	 * ecologylab.semantics.connectors.Container)
+	 * @see ecologylab.semantics.connectors.Container#addSemanticInLink(ecologylab
+	 * .semantics.html.documentstructure.SemanticAnchor, ecologylab.semantics.connectors.Container)
 	 */
 	@Override
-	public boolean addSemanticInLink(SemanticAnchor newAnchor,
-			Container srcContainer) {
+	public boolean addSemanticInLink(SemanticAnchor newAnchor, Container srcContainer)
+	{
 		// TODO Auto-generated method stub
 		return false;
 	}
@@ -99,7 +116,8 @@ public class MyContainer extends Container {
 	 * ecologylab.semantics.connectors.AbstractImgElement)
 	 */
 	@Override
-	public void addToCandidateLocalImages(AbstractImgElement imgElement) {
+	public void addToCandidateLocalImages(AbstractImgElement imgElement)
+	{
 		// TODO Auto-generated method stub
 
 	}
@@ -110,7 +128,8 @@ public class MyContainer extends Container {
 	 * @see ecologylab.semantics.connectors.Container#allocLocalCollections()
 	 */
 	@Override
-	public void allocLocalCollections() {
+	public void allocLocalCollections()
+	{
 		// TODO Auto-generated method stub
 
 	}
@@ -118,12 +137,12 @@ public class MyContainer extends Container {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * ecologylab.semantics.connectors.Container#constructAndSetMetadata(ecologylab
+	 * @see ecologylab.semantics.connectors.Container#constructAndSetMetadata(ecologylab
 	 * .semantics.metametadata.MetaMetadata)
 	 */
 	@Override
-	public Document constructAndSetMetadata(MetaMetadata metaMetadata) {
+	public Document constructAndSetMetadata(MetaMetadata metaMetadata)
+	{
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -131,12 +150,12 @@ public class MyContainer extends Container {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * ecologylab.semantics.connectors.Container#constructMetadata(ecologylab
+	 * @see ecologylab.semantics.connectors.Container#constructMetadata(ecologylab
 	 * .semantics.metametadata.MetaMetadata)
 	 */
 	@Override
-	public Document constructMetadata(MetaMetadata metaMetadata) {
+	public Document constructMetadata(MetaMetadata metaMetadata)
+	{
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -147,7 +166,8 @@ public class MyContainer extends Container {
 	 * @see ecologylab.semantics.connectors.Container#crawlLinks()
 	 */
 	@Override
-	public boolean crawlLinks() {
+	public boolean crawlLinks()
+	{
 		// TODO Auto-generated method stub
 		return false;
 	}
@@ -155,14 +175,13 @@ public class MyContainer extends Container {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * ecologylab.semantics.connectors.Container#createImageElement(ecologylab
-	 * .net.ParsedURL, java.lang.String, int, int, boolean,
-	 * ecologylab.net.ParsedURL)
+	 * @see ecologylab.semantics.connectors.Container#createImageElement(ecologylab .net.ParsedURL,
+	 * java.lang.String, int, int, boolean, ecologylab.net.ParsedURL)
 	 */
 	@Override
-	public AbstractImgElement createImageElement(ParsedURL parsedImgUrl,
-			String alt, int width, int height, boolean isMap, ParsedURL hrefPurl) {
+	public AbstractImgElement createImageElement(ParsedURL parsedImgUrl, String alt, int width,
+			int height, boolean isMap, ParsedURL hrefPurl)
+	{
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -170,14 +189,13 @@ public class MyContainer extends Container {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * ecologylab.semantics.connectors.Container#createImageElementAndAddToPools
-	 * (ecologylab.net.ParsedURL, java.lang.String, int, int, boolean,
-	 * ecologylab.net.ParsedURL)
+	 * @see ecologylab.semantics.connectors.Container#createImageElementAndAddToPools
+	 * (ecologylab.net.ParsedURL, java.lang.String, int, int, boolean, ecologylab.net.ParsedURL)
 	 */
 	@Override
-	public void createImageElementAndAddToPools(ParsedURL imagePurl,
-			String alt, int width, int height, boolean isMap, ParsedURL hrefPurl) {
+	public void createImageElementAndAddToPools(ParsedURL imagePurl, String alt, int width,
+			int height, boolean isMap, ParsedURL hrefPurl)
+	{
 		// TODO Auto-generated method stub
 
 	}
@@ -185,12 +203,12 @@ public class MyContainer extends Container {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @seeecologylab.semantics.connectors.Container#
-	 * createTextElementAndAddToCollections
+	 * @seeecologylab.semantics.connectors.Container# createTextElementAndAddToCollections
 	 * (ecologylab.semantics.html.ParagraphText)
 	 */
 	@Override
-	public void createTextElementAndAddToCollections(ParagraphText paraText) {
+	public void createTextElementAndAddToCollections(ParagraphText paraText)
+	{
 		// TODO Auto-generated method stub
 
 	}
@@ -201,7 +219,8 @@ public class MyContainer extends Container {
 	 * @see ecologylab.semantics.connectors.Container#downloadHasBeenQueued()
 	 */
 	@Override
-	public boolean downloadHasBeenQueued() {
+	public boolean downloadHasBeenQueued()
+	{
 		// TODO Auto-generated method stub
 		return false;
 	}
@@ -212,7 +231,8 @@ public class MyContainer extends Container {
 	 * @see ecologylab.semantics.connectors.Container#getDocumentParser()
 	 */
 	@Override
-	public DocumentParser getDocumentParser() {
+	public DocumentParser getDocumentParser()
+	{
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -220,15 +240,15 @@ public class MyContainer extends Container {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @seeecologylab.semantics.connectors.Container#
-	 * getGeneratedMetadataTranslationScope()
+	 * @seeecologylab.semantics.connectors.Container# getGeneratedMetadataTranslationScope()
 	 */
 	@Override
-	public TranslationScope getGeneratedMetadataTranslationScope() {
+	public TranslationScope getGeneratedMetadataTranslationScope()
+	{
 		return GeneratedMetadataTranslationScope.get();
 	}
-	
-	protected ParsedURL initPurl;
+
+	protected ParsedURL	initPurl;
 
 	/*
 	 * (non-Javadoc)
@@ -236,7 +256,8 @@ public class MyContainer extends Container {
 	 * @see ecologylab.semantics.connectors.Container#getInitialPURL()
 	 */
 	@Override
-	public ParsedURL getInitialPURL() {
+	public ParsedURL getInitialPURL()
+	{
 		// TODO Auto-generated method stub
 		return initPurl;
 	}
@@ -244,11 +265,11 @@ public class MyContainer extends Container {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * ecologylab.semantics.connectors.Container#hwSetTitle(java.lang.String)
+	 * @see ecologylab.semantics.connectors.Container#hwSetTitle(java.lang.String)
 	 */
 	@Override
-	public void hwSetTitle(String newTitle) {
+	public void hwSetTitle(String newTitle)
+	{
 		// TODO Auto-generated method stub
 
 	}
@@ -259,7 +280,8 @@ public class MyContainer extends Container {
 	 * @see ecologylab.semantics.connectors.Container#isSeed()
 	 */
 	@Override
-	public boolean isSeed() {
+	public boolean isSeed()
+	{
 		// TODO Auto-generated method stub
 		return false;
 	}
@@ -270,7 +292,8 @@ public class MyContainer extends Container {
 	 * @see ecologylab.semantics.connectors.Container#numLocalCandidates()
 	 */
 	@Override
-	public int numLocalCandidates() {
+	public int numLocalCandidates()
+	{
 		// TODO Auto-generated method stub
 		return 0;
 	}
@@ -281,31 +304,34 @@ public class MyContainer extends Container {
 	 * @see ecologylab.semantics.connectors.Container#performDownload()
 	 */
 	@Override
-	public void performDownload() throws IOException {
-		DocumentParser parser = DocumentParser.connect(
-				purl(),
-				this,
-				infoCollector,
-				new MySemanticActionHandler()
-				);
+	public void performDownload() throws IOException
+	{
+		DocumentParser parser = DocumentParser.connect(purl(), this, infoCollector,
+				new MySemanticActionHandler());
 		parser.parse();
+		
+		for (MetadataCollectingListener listener : collectingListeners)
+		{
+			listener.collect(metadata);
+		}
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * ecologylab.semantics.connectors.Container#presetDocumentType(ecologylab
+	 * @see ecologylab.semantics.connectors.Container#presetDocumentType(ecologylab
 	 * .documenttypes.DocumentParser)
 	 */
 	@Override
-	public void presetDocumentType(DocumentParser documentType) {
+	public void presetDocumentType(DocumentParser documentType)
+	{
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public ParsedURL purl() {
+	public ParsedURL purl()
+	{
 		if (metadata() == null)
 			return null;
 		return metadata().getLocation();
@@ -317,7 +343,8 @@ public class MyContainer extends Container {
 	 * @see ecologylab.semantics.connectors.Container#queueDownload()
 	 */
 	@Override
-	public boolean queueDownload() {
+	public boolean queueDownload()
+	{
 		// TODO Auto-generated method stub
 		return false;
 	}
@@ -325,12 +352,12 @@ public class MyContainer extends Container {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * ecologylab.semantics.connectors.Container#redirectInlinksTo(ecologylab
+	 * @see ecologylab.semantics.connectors.Container#redirectInlinksTo(ecologylab
 	 * .semantics.connectors.Container)
 	 */
 	@Override
-	public void redirectInlinksTo(Container redirectedAbstractContainer) {
+	public void redirectInlinksTo(Container redirectedAbstractContainer)
+	{
 		// TODO Auto-generated method stub
 
 	}
@@ -338,12 +365,11 @@ public class MyContainer extends Container {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * ecologylab.semantics.connectors.Container#resetPURL(ecologylab.net.ParsedURL
-	 * )
+	 * @see ecologylab.semantics.connectors.Container#resetPURL(ecologylab.net.ParsedURL )
 	 */
 	@Override
-	public void resetPURL(ParsedURL connectionPURL) {
+	public void resetPURL(ParsedURL connectionPURL)
+	{
 		// TODO Auto-generated method stub
 
 	}
@@ -354,7 +380,8 @@ public class MyContainer extends Container {
 	 * @see ecologylab.semantics.connectors.Container#searchResult()
 	 */
 	@Override
-	public SearchResult searchResult() {
+	public SearchResult searchResult()
+	{
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -362,12 +389,12 @@ public class MyContainer extends Container {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * ecologylab.semantics.connectors.Container#setAsTrueSeed(ecologylab.semantics
+	 * @see ecologylab.semantics.connectors.Container#setAsTrueSeed(ecologylab.semantics
 	 * .seeding.Seed)
 	 */
 	@Override
-	public void setAsTrueSeed(Seed seed) {
+	public void setAsTrueSeed(Seed seed)
+	{
 		// TODO Auto-generated method stub
 
 	}
@@ -375,12 +402,12 @@ public class MyContainer extends Container {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * ecologylab.semantics.connectors.Container#setDispatchTarget(ecologylab
+	 * @see ecologylab.semantics.connectors.Container#setDispatchTarget(ecologylab
 	 * .generic.DispatchTarget)
 	 */
 	@Override
-	public void setDispatchTarget(DispatchTarget documentType) {
+	public void setDispatchTarget(DispatchTarget documentType)
+	{
 		// TODO Auto-generated method stub
 
 	}
@@ -391,7 +418,8 @@ public class MyContainer extends Container {
 	 * @see ecologylab.semantics.connectors.Container#setInArticleBody(boolean)
 	 */
 	@Override
-	public void setInArticleBody(boolean value) {
+	public void setInArticleBody(boolean value)
+	{
 		// TODO Auto-generated method stub
 
 	}
@@ -402,7 +430,8 @@ public class MyContainer extends Container {
 	 * @see ecologylab.semantics.connectors.Container#setJustCrawl(boolean)
 	 */
 	@Override
-	public void setJustCrawl(boolean justCrawl) {
+	public void setJustCrawl(boolean justCrawl)
+	{
 		// TODO Auto-generated method stub
 
 	}
@@ -413,7 +442,8 @@ public class MyContainer extends Container {
 	 * @see ecologylab.semantics.connectors.Container#setQuery(java.lang.String)
 	 */
 	@Override
-	public void setQuery(String query) {
+	public void setQuery(String query)
+	{
 		// TODO Auto-generated method stub
 
 	}
@@ -421,12 +451,12 @@ public class MyContainer extends Container {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * ecologylab.semantics.connectors.Container#setSearchResult(ecologylab.
+	 * @see ecologylab.semantics.connectors.Container#setSearchResult(ecologylab.
 	 * semantics.seeding.SeedDistributor, int)
 	 */
 	@Override
-	public void setSearchResult(SeedDistributor sra, int resultsSoFar) {
+	public void setSearchResult(SeedDistributor sra, int resultsSoFar)
+	{
 		// TODO Auto-generated method stub
 
 	}
@@ -437,7 +467,8 @@ public class MyContainer extends Container {
 	 * @see ecologylab.semantics.connectors.ContentElement#getMetadataClass()
 	 */
 	@Override
-	public Class getMetadataClass() {
+	public Class getMetadataClass()
+	{
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -448,7 +479,8 @@ public class MyContainer extends Container {
 	 * @see ecologylab.io.Downloadable#cancel()
 	 */
 	@Override
-	public boolean cancel() {
+	public boolean cancel()
+	{
 		// TODO Auto-generated method stub
 		return false;
 	}
@@ -459,7 +491,8 @@ public class MyContainer extends Container {
 	 * @see ecologylab.io.Downloadable#downloadAndParseDone()
 	 */
 	@Override
-	public void downloadAndParseDone() {
+	public void downloadAndParseDone()
+	{
 		// TODO Auto-generated method stub
 
 	}
@@ -470,7 +503,8 @@ public class MyContainer extends Container {
 	 * @see ecologylab.io.Downloadable#getSite()
 	 */
 	@Override
-	public BasicSite getSite() {
+	public BasicSite getSite()
+	{
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -481,7 +515,8 @@ public class MyContainer extends Container {
 	 * @see ecologylab.io.Downloadable#handleIoError()
 	 */
 	@Override
-	public void handleIoError() {
+	public void handleIoError()
+	{
 		// TODO Auto-generated method stub
 
 	}
@@ -492,7 +527,8 @@ public class MyContainer extends Container {
 	 * @see ecologylab.io.Downloadable#handleTimeout()
 	 */
 	@Override
-	public boolean handleTimeout() {
+	public boolean handleTimeout()
+	{
 		// TODO Auto-generated method stub
 		return false;
 	}
@@ -503,7 +539,8 @@ public class MyContainer extends Container {
 	 * @see ecologylab.io.Downloadable#isDownloadDone()
 	 */
 	@Override
-	public boolean isDownloadDone() {
+	public boolean isDownloadDone()
+	{
 		// TODO Auto-generated method stub
 		return false;
 	}
@@ -514,7 +551,8 @@ public class MyContainer extends Container {
 	 * @see ecologylab.io.Downloadable#isRecycled()
 	 */
 	@Override
-	public boolean isRecycled() {
+	public boolean isRecycled()
+	{
 		// TODO Auto-generated method stub
 		return false;
 	}
@@ -525,7 +563,8 @@ public class MyContainer extends Container {
 	 * @see ecologylab.io.Downloadable#message()
 	 */
 	@Override
-	public String message() {
+	public String message()
+	{
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -536,7 +575,8 @@ public class MyContainer extends Container {
 	 * @see ecologylab.semantics.model.text.TermVectorFeature#termVector()
 	 */
 	@Override
-	public ITermVector termVector() {
+	public ITermVector termVector()
+	{
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -547,7 +587,8 @@ public class MyContainer extends Container {
 	 * @see ecologylab.semantics.connectors.Hyperlink#container()
 	 */
 	@Override
-	public Container container() {
+	public Container container()
+	{
 		// TODO Auto-generated method stub
 		return null;
 	}

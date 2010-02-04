@@ -26,48 +26,56 @@ import ecologylab.xml.XMLTranslationException;
 
 /**
  * @author quyin
- *
- * This example shows how to use a search as seed to collect data from the Internet.
  * 
- * We start by a google search of weather in Texas, then parse the search result and
- * collect data with help of meta-metadata library.
+ *         This example shows how to use a search as seed to collect data from the Internet.
+ * 
+ *         We start by a google search of weather in Texas, then parse the search result and collect
+ *         data with help of meta-metadata library.
  */
-public class TestMetaMetadataRuntime {
+public class TestMetaMetadataRuntime
+{
+	public final static int COUNT_TARGETS = 9;
 	/**
 	 * @param args
-	 * @throws XMLTranslationException 
-	 * @throws IOException 
+	 * @throws XMLTranslationException
+	 * @throws IOException
+	 * @throws InterruptedException 
 	 */
-	public static void main(String[] args) throws XMLTranslationException, IOException {
+	public static void main(String[] args) throws XMLTranslationException, IOException, InterruptedException
+	{
 		// create components
 		// meta-metadata of WeatherReport have been added into the repository
 		MyInfoCollector infoCollector = new MyInfoCollector(
 				MetadataCompiler.DEFAULT_REPOSITORY_FILEPATH);
-		
+
 		// seeding and performing downloads
-		ParsedURL seedUrl = ParsedURL.getAbsolute("http://www.google.com/search?q=texas+site%3Awww.wunderground.com");
-		MyContainer container = new MyContainer(null, infoCollector, seedUrl);
-		container.performDownload();
+		ParsedURL seedUrl = ParsedURL
+				.getAbsolute("http://www.google.com/search?q=texas+site%3Awww.wunderground.com");
+		infoCollector.addListener(WeatherReportCollector.get());
+		infoCollector.getContainerDownloadIfNeeded(null, seedUrl, null, false, false, false);
+
+		// wait for finishing
+		while (WeatherReportCollector.get().list().size() < COUNT_TARGETS)
+		{
+			Thread.sleep(1000);
+		}
+		infoCollector.getDownloadMonitor().stop();
 		
 		// output collected data into a .csv file
 		OutputStream outs = new FileOutputStream("output.csv");
 		PrintWriter writer = new PrintWriter(outs);
 		writer.printf("#format:city,weather,picture_url,temperature,humidity,wind_speed\n");
-		for (Object element : ResultCollector.get().list())
+		for (WeatherReport report : WeatherReportCollector.get().list())
 		{
-			if (element instanceof WeatherReport)
-			{
-				WeatherReport report = (WeatherReport) element;
-				writer.printf(
-						"%s,%s,%s,%s,%s,%s\n",
-						report.city().getValue().split(",")[0],
-						report.weather().getValue(),
-						report.picUrl().getValue(),
-						report.temperature().getValue(),
-						report.humidity().getValue(),
-						report.wind().getValue()
-						);
-			}
+			writer.printf(
+					"%s,%s,%s,%s,%s,%s\n",
+					report.city().getValue().split(",")[0],
+					report.weather().getValue(),
+					report.picUrl().getValue(),
+					report.temperature().getValue(),
+					report.humidity().getValue(),
+					report.wind().getValue()
+					);
 		}
 		writer.flush();
 		writer.close();
