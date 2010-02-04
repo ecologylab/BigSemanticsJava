@@ -256,20 +256,17 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	}
 //TODO implement  get by domain too
 	/**
-	 * Find the best matching MetaMetadata for the ParsedURL -- if there is a match.
-	 * Right now implemented a No Query YRL based pattern matcher.
-	 * <p/>
-	 * Usually, the preferred method to use is the one that takes a tagName as the 2nd argument,
-	 * in case the lookup fails.
+	 * Find the best matching MetaMetadata for the ParsedURL.
+	 * Otherwise, return the default Document metadata.
 	 * 
 	 * @param purl
-	 * @return appropriate MetaMetadata, or null.
+	 * @return appropriate MetaMetadata.
 	 */
 	public MetaMetadata getDocumentMM(ParsedURL purl)
 	{
 		return getDocumentMM(purl, DOCUMENT_TAG);
 	}
-
+	
 	public MetaMetadata getMMBySuffix (String suffix)
 	{
 		return repositoryBySuffix.get(suffix);
@@ -360,12 +357,8 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	public Document constructDocument(ParsedURL purl)
 	{
 		MetaMetadata metaMetadata	= getDocumentMM(purl);
-		Document result							= null;
-		if (metaMetadata != null)
-		{
-			result									= (Document) metaMetadata.constructMetadata(metadataTScope);
-			result.setLocation(purl);
-		}
+		Document result							= (Document) metaMetadata.constructMetadata(metadataTScope);
+		result.setLocation(purl);
 		return result;
 	}
 	
