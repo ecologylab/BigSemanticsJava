@@ -21,7 +21,7 @@ import org.w3c.tidy.TdNode;
 
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.html.DOMWalkInformationTagger;
-import ecologylab.semantics.html.HTMLDOMParser;
+import ecologylab.semantics.html.OldHTMLDOMParser;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.TranslationScope;
 import ecologylab.xml.XMLTranslationException;
@@ -32,7 +32,7 @@ import ecologylab.xml.XMLTranslationException;
  * @author eunyee
  *
  */
-public class GenerateSVMData extends HTMLDOMParser
+public class GenerateSVMData extends OldHTMLDOMParser
 {
     public void pprint(org.w3c.dom.Document doc, OutputStream out, ParsedURL purl, String mainPartitionID)
     {

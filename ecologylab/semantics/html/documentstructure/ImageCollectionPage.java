@@ -8,8 +8,6 @@ import org.w3c.tidy.TdNode;
 
 import ecologylab.generic.StringTools;
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.html.HTMLDOMParser;
-import ecologylab.semantics.html.HTMLElement;
 import ecologylab.semantics.html.ImgElement;
 import ecologylab.semantics.html.ParagraphText;
 import ecologylab.semantics.html.RecognizedDocumentStructure;

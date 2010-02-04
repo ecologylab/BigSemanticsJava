@@ -22,7 +22,7 @@ import ecologylab.generic.Generic;
 import ecologylab.net.PURLConnection;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.html.DOMWalkInformationTagger;
-import ecologylab.semantics.html.HTMLDOMParser;
+import ecologylab.semantics.html.OldHTMLDOMParser;
 import ecologylab.semantics.html.HTMLElement;
 import ecologylab.semantics.html.ImgElement;
 import ecologylab.semantics.html.RecognizedDocumentStructure;
@@ -32,7 +32,7 @@ import ecologylab.xml.XMLTranslationException;
 
 
 
-public class ContentBodyRecognize extends HTMLDOMParser
+public class ContentBodyRecognize extends OldHTMLDOMParser
 {
 	RecognizedDocumentStructure recPageType;
 	

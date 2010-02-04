@@ -19,7 +19,7 @@ import org.w3c.tidy.TdNode;
 import ecologylab.net.PURLConnection;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.html.DOMWalkInformationTagger;
-import ecologylab.semantics.html.HTMLDOMParser;
+import ecologylab.semantics.html.OldHTMLDOMParser;
 import ecologylab.semantics.html.RecognizedDocumentStructure;
 
 
@@ -27,7 +27,7 @@ import ecologylab.semantics.html.RecognizedDocumentStructure;
  * 
  * @author eunyee
  */
-public class ArticlePageRecognize extends HTMLDOMParser
+public class ArticlePageRecognize extends OldHTMLDOMParser
 {
     private static final String	PORTAL_PURL	= "http://portal.acm.org/browse_dl.cfm?coll=ACM&dl=ACM&idx=J961&linked=1&part=transaction";
 
