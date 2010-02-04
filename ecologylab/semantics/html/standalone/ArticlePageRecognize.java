@@ -19,7 +19,6 @@ import org.w3c.tidy.TdNode;
 import ecologylab.net.PURLConnection;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.html.DOMWalkInformationTagger;
-import ecologylab.semantics.html.OldHTMLDOMParser;
 import ecologylab.semantics.html.RecognizedDocumentStructure;
 
 
