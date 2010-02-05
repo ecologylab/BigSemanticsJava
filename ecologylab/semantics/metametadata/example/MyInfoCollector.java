@@ -104,8 +104,7 @@ public class MyInfoCollector implements InfoCollector<MyContainer>
 	@Override
 	public Document constructDocument(ParsedURL purl)
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return mmdRepo.constructDocument(purl);
 	}
 
 	@Override
@@ -155,19 +154,19 @@ public class MyInfoCollector implements InfoCollector<MyContainer>
 	public MyContainer getContainer(MyContainer ancestor, ParsedURL purl, boolean reincarnate,
 			boolean addToCandidatesIfNeeded, MetaMetadata metaMetadata)
 	{
-		// TODO Auto-generated method stub
-		return null;
+		if (!accept(purl))
+			return null;
+		
+		MyContainer result = new MyContainer(ancestor, this, purl);
+		result.setCollectingListeners(collectingListeners);
+		return result;
 	}
 
 	@Override
 	public MyContainer getContainerDownloadIfNeeded(MyContainer ancestor, ParsedURL purl, Seed seed,
 			boolean dnd, boolean justCrawl, boolean justMedia)
 	{
-		if (!accept(purl))
-			return null;
-		
-		MyContainer result = new MyContainer(ancestor, this, purl);
-		result.setCollectingListeners(collectingListeners);
+		MyContainer result = getContainer(ancestor, purl, false, false, null);
 		downloadMonitor.download(result, null);
 		return result;
 	}

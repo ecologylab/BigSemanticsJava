@@ -35,11 +35,16 @@ import ecologylab.xml.XMLTranslationException;
 public class TestMetaMetadataRuntime
 {
 	public final static int COUNT_TARGETS = 9;
+	
 	/**
 	 * @param args
 	 * @throws XMLTranslationException
 	 * @throws IOException
 	 * @throws InterruptedException 
+	 * 
+	 * Before you write your own codes, make sure that use the VM arguments like this project
+	 * Or the DownloadMonitor will never start downloading due to limited available memory!
+	 * 
 	 */
 	public static void main(String[] args) throws XMLTranslationException, IOException, InterruptedException
 	{
