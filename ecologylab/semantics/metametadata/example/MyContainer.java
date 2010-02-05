@@ -28,11 +28,30 @@ import ecologylab.semantics.seeding.SeedDistributor;
 import ecologylab.xml.TranslationScope;
 
 /**
- * @author quyin
+ * This is the Container class for this example.
  * 
+ * A Container is derived from ecologylab.semantics.connectors.Container. It holds the URL pointing
+ * to an information resource, performs the downloading action through the interface Downloadable,
+ * and parse the data by calling a Parser.
+ * 
+ * We use the listener mechanism to allow users to customize their own collecting methods. Use
+ * MyInfoCollector to add a listener who implemented the interface
+ * MyContainer.MetadataCollectingListener.
+ * 
+ * This class doesn't implement all the methods in Container. You can implement them by yourself to
+ * add more functions, like finer control of the downloading process.
+ * 
+ * @author quyin
  */
 public class MyContainer extends Container
 {
+	/**
+	 * This interface enables users to customize their own collecting methods. Use MyInfoCollector to
+	 * add a listener who implemented this interface.
+	 * 
+	 * @author quyin
+	 * 
+	 */
 	public interface MetadataCollectingListener
 	{
 		void collect(Metadata metadata);
@@ -160,7 +179,7 @@ public class MyContainer extends Container
 		return GeneratedMetadataTranslationScope.get();
 	}
 
-	protected ParsedURL	initPurl;
+	private ParsedURL	initPurl;
 
 	@Override
 	public ParsedURL getInitialPURL()
@@ -190,6 +209,12 @@ public class MyContainer extends Container
 		return 0;
 	}
 
+	/**
+	 * This method performs the downloading action. It first calls the DocumentParser.connect() method
+	 * to get the appropriate parser for the URL, then downloads it and parses it. At last, it calls
+	 * the collect() method for each listener to allow the application to collect information from the
+	 * parsed metadata.
+	 */
 	@Override
 	public void performDownload() throws IOException
 	{

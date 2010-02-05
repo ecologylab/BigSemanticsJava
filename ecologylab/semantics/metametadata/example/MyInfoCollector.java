@@ -30,6 +30,19 @@ import ecologylab.xml.ElementState;
 import ecologylab.xml.TranslationScope;
 
 /**
+ * This is the InfoCollector class for this example.
+ * 
+ * An InfoCollector initiates the seeding process, holds containers and manages the downloading
+ * process (e.g. through DownloadMonitor as here). It also provides methods to add / remove
+ * listeners for the containers.
+ * 
+ * Note that we use DownloadMonitor (from ecologylabFundamental) to manage the downloading process.
+ * It provides multi-thread downloading in a easy-to-use way. However, you should remember to set
+ * the VM arguments to allocate enough memory for it, or it can't start working (you'll see console
+ * output like "Memory.reclaim...").
+ * 
+ * Also, we don't implement all the methods from the interface InfoCollector.
+ * 
  * @author quyin
  * 
  */
@@ -39,12 +52,12 @@ public class MyInfoCollector implements InfoCollector<MyContainer>
 
 	private MetaMetadataRepository	mmdRepo;
 
-	private Set<String>				rejectDomains;
+	private Set<String>							rejectDomains;
 
 	private DownloadMonitor					downloadMonitor;
-	
+
 	/**
-	 * @return the downloadMonitor
+	 * @return the downloadMonitor.
 	 */
 	public DownloadMonitor getDownloadMonitor()
 	{
@@ -53,16 +66,33 @@ public class MyInfoCollector implements InfoCollector<MyContainer>
 
 	private ArrayList<MyContainer.MetadataCollectingListener>	collectingListeners;
 
+	/**
+	 * Add a listener for all containers.
+	 * 
+	 * @param listener
+	 *          The listener you want to add.
+	 */
 	public void addListener(MyContainer.MetadataCollectingListener listener)
 	{
 		collectingListeners.add(listener);
 	}
 
+	/**
+	 * Remove a listener from all containers.
+	 * 
+	 * @param listener
+	 *          The listener you want to remove.
+	 */
 	public void removeListener(MyContainer.MetadataCollectingListener listener)
 	{
 		collectingListeners.remove(listener);
 	}
-	
+
+	/**
+	 * Get all the listeners.
+	 * 
+	 * @return An ArrayList containing all the listeners.
+	 */
 	public ArrayList<MyContainer.MetadataCollectingListener> getListeners()
 	{
 		return collectingListeners;
@@ -78,6 +108,9 @@ public class MyInfoCollector implements InfoCollector<MyContainer>
 		collectingListeners = new ArrayList<MyContainer.MetadataCollectingListener>();
 	}
 
+	/**
+	 * Test if a URL is acceptable.
+	 */
 	@Override
 	public boolean accept(ParsedURL connectionPURL)
 	{
@@ -101,6 +134,11 @@ public class MyInfoCollector implements InfoCollector<MyContainer>
 
 	}
 
+	/**
+	 * Construct the appropriate Document object from the meta-metadata repository, given a URL. It
+	 * compares the URL with URL patterns in the repository, retrieve the appropriate meta-metadata
+	 * and metadata objects.
+	 */
 	@Override
 	public Document constructDocument(ParsedURL purl)
 	{
@@ -150,18 +188,25 @@ public class MyInfoCollector implements InfoCollector<MyContainer>
 
 	}
 
+	/**
+	 * Create a MyContainer object for a given URL, and add listeners for it.
+	 */
 	@Override
 	public MyContainer getContainer(MyContainer ancestor, ParsedURL purl, boolean reincarnate,
 			boolean addToCandidatesIfNeeded, MetaMetadata metaMetadata)
 	{
 		if (!accept(purl))
 			return null;
-		
+
 		MyContainer result = new MyContainer(ancestor, this, purl);
 		result.setCollectingListeners(collectingListeners);
 		return result;
 	}
 
+	/**
+	 * Add a MyContainer object to the to-be-downloaded queue of the DownloadMonitor. The
+	 * DownloadMonitor will decide when the container will be actually downloaded and processed.
+	 */
 	@Override
 	public MyContainer getContainerDownloadIfNeeded(MyContainer ancestor, ParsedURL purl, Seed seed,
 			boolean dnd, boolean justCrawl, boolean justMedia)
@@ -291,6 +336,9 @@ public class MyInfoCollector implements InfoCollector<MyContainer>
 		return null;
 	}
 
+	/**
+	 * Reject all the URLs from a domain from now on.
+	 */
 	@Override
 	public void reject(String domain)
 	{

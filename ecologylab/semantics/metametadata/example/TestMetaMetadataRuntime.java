@@ -25,47 +25,51 @@ import ecologylab.xml.TranslationScope;
 import ecologylab.xml.XMLTranslationException;
 
 /**
+ * This example shows how to use a search as seed to collect data from the Internet.
+ * 
+ * We start by a google search of weather in Texas, then parse the search result and collect data
+ * with meta-metadata library.
+ * 
  * @author quyin
- * 
- *         This example shows how to use a search as seed to collect data from the Internet.
- * 
- *         We start by a google search of weather in Texas, then parse the search result and collect
- *         data with help of meta-metadata library.
  */
 public class TestMetaMetadataRuntime
 {
-	public final static int COUNT_TARGETS = 9;
-	
+	public final static int	COUNT_TARGETS	= 9;
+
 	/**
+	 * Before you write your own codes, make sure that use the VM arguments like this project Or the
+	 * DownloadMonitor will never start downloading due to limited available memory!
+	 * 
 	 * @param args
 	 * @throws XMLTranslationException
 	 * @throws IOException
-	 * @throws InterruptedException 
-	 * 
-	 * Before you write your own codes, make sure that use the VM arguments like this project
-	 * Or the DownloadMonitor will never start downloading due to limited available memory!
-	 * 
+	 * @throws InterruptedException
 	 */
-	public static void main(String[] args) throws XMLTranslationException, IOException, InterruptedException
+	public static void main(String[] args) throws XMLTranslationException, IOException,
+			InterruptedException
 	{
-		// create components
-		// meta-metadata of WeatherReport have been added into the repository
+		// create the infoCollector
 		MyInfoCollector infoCollector = new MyInfoCollector(
 				MetadataCompiler.DEFAULT_REPOSITORY_FILEPATH);
+		// add the WeatherReportCollector to the listener list, so that we can collect information we
+		// need from the metadata
+		infoCollector.addListener(WeatherReportCollector.get());
 
-		// seeding and performing downloads
+		// seeding
 		ParsedURL seedUrl = ParsedURL
 				.getAbsolute("http://www.google.com/search?q=texas+site%3Awww.wunderground.com");
-		infoCollector.addListener(WeatherReportCollector.get());
 		infoCollector.getContainerDownloadIfNeeded(null, seedUrl, null, false, false, false);
 
-		// wait for finishing
+		// wait for the infoCollector to finish its downloading job
+		// note that the downloadMonitor (contained in infoCollecotr) will wait for new seeds if
+		//   downloading is done. so we check the number of collected reports to determine when to finish
 		while (WeatherReportCollector.get().list().size() < COUNT_TARGETS)
 		{
 			Thread.sleep(1000);
 		}
+		// stop the downloadMonitor
 		infoCollector.getDownloadMonitor().stop();
-		
+
 		// output collected data into a .csv file
 		OutputStream outs = new FileOutputStream("output.csv");
 		PrintWriter writer = new PrintWriter(outs);
