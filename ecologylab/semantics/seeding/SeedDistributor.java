@@ -66,6 +66,11 @@ extends Debug implements DispatchTarget<QandDownloadable>
     private		int			expectedNumSearchesInCurrentLevel;
     
     /**
+     * For storing initial value for expectedNumSearchesInCurrentLevel. Used in reset to restore expectedNumSearchesInCurrentLevel.
+     */
+    private final int	intialExpectedNumSearchesInCurrentLevel;
+    
+    /**
      * Keep the number of results whenever each search is done,
      * and remove the slot when the resultNum has adjusted the expectedNumSearchesInCurrentLevel.
      */
@@ -112,9 +117,10 @@ extends Debug implements DispatchTarget<QandDownloadable>
 	
 	public SeedDistributor(InfoCollector infoCollector, int numSearches)
 	{
-		this.infoCollector						= infoCollector;
-		this.totalSearches						= numSearches;
-		this.expectedNumSearchesInCurrentLevel	= numSearches;
+		this.infoCollector														= infoCollector;
+		this.totalSearches														= numSearches;
+		this.expectedNumSearchesInCurrentLevel				= numSearches;
+		this.intialExpectedNumSearchesInCurrentLevel 	= numSearches;
 	}
 	/**
 	 * The ArrayList that corresponds to the ith result
@@ -424,8 +430,7 @@ extends Debug implements DispatchTarget<QandDownloadable>
 		
 		// added 11/3/09 - andruid
 		this.searchCount	= 0;
-		// this may be wrong. it also may need to be increased
-		this.expectedNumSearchesInCurrentLevel	= 0;
+		this.expectedNumSearchesInCurrentLevel	= this.intialExpectedNumSearchesInCurrentLevel;
 	}
 
 	/**
