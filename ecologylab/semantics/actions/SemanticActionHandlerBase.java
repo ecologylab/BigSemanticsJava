@@ -25,20 +25,28 @@ import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.xml.XMLTools;
 
 /**
- * @author quyin
+ * This is the base class for SemanticActionHandler interface. It implements the most common
+ * semantic handlers as the defaults. You start from here to write your own semantic handler. Note
+ * that you can specify the generic type C and IC to use your own content Container and
+ * InfoCollector.
  * 
+ * @author quyin
  */
-public class SemanticActionHandlerBase<C extends Container, IC extends InfoCollector<C>>
-extends SemanticActionHandler<C, IC>
+public class SemanticActionHandlerBase<C extends Container, IC extends InfoCollector<C>> extends
+		SemanticActionHandler<C, IC>
 {
 	public SemanticActionHandlerBase()
 	{
 		super();
 	}
 
+	/**
+	 * By default, this method prevent the InfoCollector from collecting information from the
+	 * specified domain, by calling the reject() method of the InfoCollector. You specify the unwanted
+	 * domain by providing the "domain" semantic argument in the meta-metadata xml codes.
+	 */
 	@Override
-	public void backOffFromSite(SemanticAction action, DocumentParser documentType,
-			IC infoCollector)
+	public void backOffFromSite(SemanticAction action, DocumentParser documentType, IC infoCollector)
 	{
 		Argument domainArgA = getNamedArgument(action, DOMAIN);
 		String domain = domainArgA.getValue();
@@ -46,6 +54,11 @@ extends SemanticActionHandler<C, IC>
 		// infoCollector.removeAllCandidateContainersFromSite(site);
 	}
 
+	/**
+	 * This is a user defined (or application specified) semantic action. It creates and visualizes an
+	 * image surrogate as its name reveals. Currently, to add your own semantic action, you need to
+	 * modify the handleSemanticAction() method and process the arguments by yourself.
+	 */
 	@Override
 	public void createAndVisualizeImgSurrogate(SemanticAction action, DocumentParser docType,
 			IC infoCollector)
@@ -54,6 +67,9 @@ extends SemanticActionHandler<C, IC>
 
 	}
 
+	/**
+	 * Another user defined semantic action.
+	 */
 	@Override
 	public void createAndVisualizeTextSurrogateSemanticAction(SemanticAction action,
 			DocumentParser documentType, IC infoCollector)
@@ -62,9 +78,16 @@ extends SemanticActionHandler<C, IC>
 
 	}
 
+	/**
+	 * Create a container for a specific link, so that you can process it (e.g. parse it). Now you
+	 * don't have to manually use this action in the meta-metadata xml codes before downloading or
+	 * parsing it; however, if you write your own semantic action, you may need to call this method
+	 * when you handle it. Parameter: container_link, the link you want to create a container for.
+	 * 
+	 * @return The appropriate container for the URL, or null if there is an error.
+	 */
 	@Override
-	public Container createContainer(SemanticAction action, DocumentParser docType,
-			IC infoCollector)
+	public Container createContainer(SemanticAction action, DocumentParser docType, IC infoCollector)
 	{
 		Argument purlA = action.getArgument(SemanticActionNamedArguments.CONTAINER_LINK);
 		if (purlA != null)
@@ -72,13 +95,16 @@ extends SemanticActionHandler<C, IC>
 			Container ancestor = docType.getContainer();
 			ParsedURL purl = (ParsedURL) semanticActionReturnValueMap.get(purlA.getValue());
 			MetaMetadata mmd = infoCollector.metaMetaDataRepository().getDocumentMM(purl);
-			Container container = infoCollector.getContainer((C)docType.getContainer(), purl, false, false,
-					mmd);
+			Container container = infoCollector.getContainer((C) docType.getContainer(), purl, false,
+					false, mmd);
 			return container;
 		}
 		return null;
 	}
 
+	/**
+	 * This is also a user defined semantic action.
+	 */
 	@Override
 	public void createSemanticAnchor(SemanticAction action, DocumentParser documentType,
 			IC infoCollector)
@@ -87,9 +113,13 @@ extends SemanticActionHandler<C, IC>
 
 	}
 
+	/**
+	 * This semantic action will retrieve a certain field from a certain object, so that you can
+	 * operate on it later, e.g. retrieve an image URL and create an image surrogate based on this
+	 * URL. Parameters: the target object and the target field.
+	 */
 	@Override
-	public void getFieldAction(SemanticAction action, DocumentParser docType,
-			IC infoCollector)
+	public void getFieldAction(SemanticAction action, DocumentParser docType, IC infoCollector)
 	{
 		try
 		{
@@ -114,6 +144,10 @@ extends SemanticActionHandler<C, IC>
 		}
 	}
 
+	/**
+	 * The entry method of handling semantic actions. Basically, this method gets names, assemble the
+	 * action and call a helper function to actually handle the action.
+	 */
 	@Override
 	public void handleGeneralAction(SemanticAction action) throws IllegalArgumentException,
 			IllegalAccessException, InvocationTargetException
@@ -128,6 +162,14 @@ extends SemanticActionHandler<C, IC>
 		handleGeneralAction(action, objectName, actionName);
 	}
 
+	/**
+	 * This is the actual function which handles semantic actions. It retrieves the object, apply the
+	 * action, and make the returned value (if any) available to following actions.
+	 * 
+	 * @throws IllegalArgumentException
+	 * @throws IllegalAccessException
+	 * @throws InvocationTargetException
+	 */
 	protected void handleGeneralAction(SemanticAction action, String objectName, String actionName)
 			throws IllegalArgumentException, IllegalAccessException, InvocationTargetException
 	{
@@ -214,6 +256,11 @@ extends SemanticActionHandler<C, IC>
 		}
 	}
 
+	/**
+	 * This action adds a URL to the to-be-downloaded list. The URL will be downloaded and parsed
+	 * later. When it will be downloaded and parsed is determined by the InfoCollector. This action is
+	 * similiar to ParseDocumentNow action.
+	 */
 	@Override
 	public void parseDocumentLater(SemanticAction action, DocumentParser documentType,
 			IC infoCollector)
@@ -221,11 +268,15 @@ extends SemanticActionHandler<C, IC>
 		Container container = createContainer(action, documentType, infoCollector);
 		if (container != null)
 		{
-			infoCollector.getContainerDownloadIfNeeded((C) documentType.getContainer(), container
-					.purl(), null, false, false, false);
+			infoCollector.getContainerDownloadIfNeeded((C) documentType.getContainer(), container.purl(),
+					null, false, false, false);
 		}
 	}
 
+	/**
+	 * This action downloads the document from a given URL, parses it with specified parsing method,
+	 * and put the results in a Container which can be used later.
+	 */
 	@Override
 	public void parseDocumentNow(SemanticAction action, DocumentParser docType, IC infoCollector)
 	{
@@ -244,10 +295,13 @@ extends SemanticActionHandler<C, IC>
 		}
 	}
 
+	/**
+	 * This action is the setter version of getFieldAction. It allows you to set the value of a
+	 * certain field of a certain object manually.
+	 */
 	@Override
-	public void setFieldAction(SemanticAction action, DocumentParser docType,
-			IC infoCollector) throws IllegalArgumentException, IllegalAccessException,
-			InvocationTargetException
+	public void setFieldAction(SemanticAction action, DocumentParser docType, IC infoCollector)
+			throws IllegalArgumentException, IllegalAccessException, InvocationTargetException
 	{
 		try
 		{
@@ -264,6 +318,9 @@ extends SemanticActionHandler<C, IC>
 		}
 	}
 
+	/**
+	 * This action allows you to specify metadata for a certain object manually.
+	 */
 	@Override
 	public void setMetadata(SemanticAction action, DocumentParser docType, IC infoCollector)
 	{
