@@ -28,12 +28,12 @@ public abstract class NestedSemanticAction<SA extends SemanticAction> extends Se
 	{ CreateAndVisualizeImgSurrogateSemanticAction.class,
 		  CreateContainerSemanticAction.class,
 			ForEachSemanticAction.class, GeneralSemanticAction.class,
-			DownloadNowSemanticAction.class,
+			ParseDocumentNowSemanticAction.class,
 			SetMetadataSemanticAction.class, SetterSemanticAction.class,
 		  GetFieldSemanticAction.class,
-			CreateSemanticAnchorSemanticAction.class, DownloadLaterSemanticAction.class,
-			ApplyXPathSemanticAction.class, IfSemanticAction.class,
-			CreateAndVisualizeTextSurrogateSemanticAction.class, TrySyncNestedMetadata.class,
+			CreateSemanticAnchorSemanticAction.class, ParseDocumentLaterSemanticAction.class,
+			GetXPathNodeSemanticAction.class, IfSemanticAction.class,
+			CreateAndVisualizeTextSurrogateSemanticAction.class,
 			EvaluateRankWeight.class,
 			BackOffFromSite.class
 	})

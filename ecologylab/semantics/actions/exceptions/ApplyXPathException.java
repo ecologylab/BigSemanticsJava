@@ -1,13 +1,13 @@
 package ecologylab.semantics.actions.exceptions;
 
 import ecologylab.collections.Scope;
-import ecologylab.semantics.actions.ApplyXPathSemanticAction;
+import ecologylab.semantics.actions.GetXPathNodeSemanticAction;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 
 public class ApplyXPathException extends SemanticActionExecutionException
 {
 
-	public ApplyXPathException(Exception e, ApplyXPathSemanticAction action,
+	public ApplyXPathException(Exception e, GetXPathNodeSemanticAction action,
 			Scope<Object> semanticActionReturnValueMap)
 	{
 		super(action);

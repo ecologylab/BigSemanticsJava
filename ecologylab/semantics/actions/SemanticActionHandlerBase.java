@@ -38,7 +38,7 @@ extends SemanticActionHandler<C, IC>
 
 	@Override
 	public void backOffFromSite(SemanticAction action, DocumentParser documentType,
-			InfoCollector infoCollector)
+			IC infoCollector)
 	{
 		Argument domainArgA = getNamedArgument(action, DOMAIN);
 		String domain = domainArgA.getValue();
@@ -48,7 +48,7 @@ extends SemanticActionHandler<C, IC>
 
 	@Override
 	public void createAndVisualizeImgSurrogate(SemanticAction action, DocumentParser docType,
-			InfoCollector infoCollector)
+			IC infoCollector)
 	{
 		// TODO Auto-generated method stub
 
@@ -56,7 +56,7 @@ extends SemanticActionHandler<C, IC>
 
 	@Override
 	public void createAndVisualizeTextSurrogateSemanticAction(SemanticAction action,
-			DocumentParser documentType, InfoCollector infoCollector)
+			DocumentParser documentType, IC infoCollector)
 	{
 		// TODO Auto-generated method stub
 
@@ -64,7 +64,7 @@ extends SemanticActionHandler<C, IC>
 
 	@Override
 	public Container createContainer(SemanticAction action, DocumentParser docType,
-			InfoCollector infoCollector)
+			IC infoCollector)
 	{
 		Argument purlA = action.getArgument(SemanticActionNamedArguments.CONTAINER_LINK);
 		if (purlA != null)
@@ -72,7 +72,7 @@ extends SemanticActionHandler<C, IC>
 			Container ancestor = docType.getContainer();
 			ParsedURL purl = (ParsedURL) semanticActionReturnValueMap.get(purlA.getValue());
 			MetaMetadata mmd = infoCollector.metaMetaDataRepository().getDocumentMM(purl);
-			Container container = infoCollector.getContainer(docType.getContainer(), purl, false, false,
+			Container container = infoCollector.getContainer((C)docType.getContainer(), purl, false, false,
 					mmd);
 			return container;
 		}
@@ -81,7 +81,7 @@ extends SemanticActionHandler<C, IC>
 
 	@Override
 	public void createSemanticAnchor(SemanticAction action, DocumentParser documentType,
-			InfoCollector infoCollector)
+			IC infoCollector)
 	{
 		// TODO Auto-generated method stub
 
@@ -89,7 +89,7 @@ extends SemanticActionHandler<C, IC>
 
 	@Override
 	public void getFieldAction(SemanticAction action, DocumentParser docType,
-			InfoCollector infoCollector)
+			IC infoCollector)
 	{
 		try
 		{
@@ -214,18 +214,20 @@ extends SemanticActionHandler<C, IC>
 		}
 	}
 
-	public void parseLater(SemanticAction action, DocumentParser documentType,
-			InfoCollector infoCollector)
+	@Override
+	public void parseDocumentLater(SemanticAction action, DocumentParser documentType,
+			IC infoCollector)
 	{
 		Container container = createContainer(action, documentType, infoCollector);
 		if (container != null)
 		{
-			infoCollector.getContainerDownloadIfNeeded((Container) documentType.getContainer(), container
+			infoCollector.getContainerDownloadIfNeeded((C) documentType.getContainer(), container
 					.purl(), null, false, false, false);
 		}
 	}
 
-	public void parseNow(SemanticAction action, DocumentParser docType, InfoCollector infoCollector)
+	@Override
+	public void parseDocumentNow(SemanticAction action, DocumentParser docType, IC infoCollector)
 	{
 		Container container = createContainer(action, docType, infoCollector);
 		if (container != null)
@@ -244,7 +246,7 @@ extends SemanticActionHandler<C, IC>
 
 	@Override
 	public void setFieldAction(SemanticAction action, DocumentParser docType,
-			InfoCollector infoCollector) throws IllegalArgumentException, IllegalAccessException,
+			IC infoCollector) throws IllegalArgumentException, IllegalAccessException,
 			InvocationTargetException
 	{
 		try
@@ -263,7 +265,7 @@ extends SemanticActionHandler<C, IC>
 	}
 
 	@Override
-	public void setMetadata(SemanticAction action, DocumentParser docType, InfoCollector infoCollector)
+	public void setMetadata(SemanticAction action, DocumentParser docType, IC infoCollector)
 	{
 		try
 		{
@@ -285,13 +287,4 @@ extends SemanticActionHandler<C, IC>
 			throw new SemanticActionExecutionException(e, action, semanticActionReturnValueMap);
 		}
 	}
-
-	@Override
-	public void syncNestedMetadataSemanticAction(SemanticAction action, DocumentParser documentType,
-			InfoCollector infoCollector)
-	{
-		// TODO Auto-generated method stub
-
-	}
-
 }

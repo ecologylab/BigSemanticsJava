@@ -143,7 +143,7 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 	 * 
 	 * @param action
 	 */
-	public abstract void parseNow(SemanticAction action, DocumentParser docType,IC infoCollector);
+	public abstract void parseDocumentNow(SemanticAction action, DocumentParser docType,IC infoCollector);
 
 	/**
 	 * 
@@ -161,7 +161,7 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 	 * @param documentType
 	 * @param infoCollector
 	 */
-	public abstract void parseLater(SemanticAction action, DocumentParser documentType,IC infoCollector);
+	public abstract void parseDocumentLater(SemanticAction action, DocumentParser documentType,IC infoCollector);
 	
 	/**
 	 * 
@@ -173,14 +173,12 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 			DocumentParser documentType, IC infoCollector);
 	
 	/**
-	 * 
+	 * (This semantic action is obsoleted, according to remarks in CfSemanticActionsHandler.java. --quyin)
 	 * @param action
 	 * @param documentType
 	 * @param infoCollector
-	 */
 	public abstract void syncNestedMetadataSemanticAction(SemanticAction action,	DocumentParser documentType, IC infoCollector);
-	
-	
+	 */
 	
 	/**
 	 * Implementation of for loop.
@@ -286,7 +284,7 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 	 * @param documentType
 	 * @param infoCollector
 	 */
-	public void applyXPath(ApplyXPathSemanticAction action, DocumentParser documentType, IC infoCollector)
+	public void getXPathNode(GetXPathNodeSemanticAction action, DocumentParser documentType, IC infoCollector)
 	{
 			try
 			{
@@ -416,13 +414,13 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 			{
 				createContainer(action, documentType,infoCollector);
 			}
-			else if (SemanticActionStandardMethods.PARSE_NOW.equals(actionName))
+			else if (SemanticActionStandardMethods.PARSE_DOCUMENT_NOW.equals(actionName))
 			{
-				parseNow(action, documentType,infoCollector);
+				parseDocumentNow(action, documentType,infoCollector);
 			}
-			else if(SemanticActionStandardMethods.PARSE_LATER.equals(actionName))
+			else if(SemanticActionStandardMethods.PARSE_DOCUMENT_LATER.equals(actionName))
 			{
-				parseLater(action, documentType, infoCollector);
+				parseDocumentLater(action, documentType, infoCollector);
 			}
 			else if (SemanticActionStandardMethods.SET_METADATA.equals(actionName))
 			{
@@ -448,9 +446,9 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 			{
 				createSemanticAnchor((CreateSemanticAnchorSemanticAction)action,documentType,infoCollector);
 			}
-			else if(SemanticActionStandardMethods.APPLY_XPATH.equals(actionName))
+			else if(SemanticActionStandardMethods.GET_XPATH_NODE.equals(actionName))
 			{
-				applyXPath((ApplyXPathSemanticAction)action, documentType, infoCollector);
+				getXPathNode((GetXPathNodeSemanticAction)action, documentType, infoCollector);
 			}
 			else if(SemanticActionStandardMethods.IF.equals(actionName))
 			{
@@ -460,10 +458,13 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 			{
 				createAndVisualizeTextSurrogateSemanticAction(action,documentType,infoCollector);
 			}
+			/*
+			 * obsoleted semantic action
 			else if(SemanticActionStandardMethods.TRY_SYNC_NESTED_METADATA.equals(actionName))
 			{
 				syncNestedMetadataSemanticAction(action,documentType,infoCollector);
 			}
+			*/
 			else if(SemanticActionStandardMethods.EVALUATE_RANK_WEIGHT.equals(actionName))
 			{
 				evaluateRankWeight(action,documentType,infoCollector);

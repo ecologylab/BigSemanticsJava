@@ -42,7 +42,7 @@ public interface SemanticActionStandardMethods
 	/**
 	 * process a conatiner
 	 */
-	public static String	PARSE_NOW										= "parse_document_now";
+	public static String	PARSE_DOCUMENT_NOW										= "parse_document_now";
 
 	/**
 	 * Create a new search
@@ -77,12 +77,12 @@ public interface SemanticActionStandardMethods
 	/**
 	 * 
 	 */
-	public static String	PARSE_LATER							= "parse_document_later";
+	public static String	PARSE_DOCUMENT_LATER							= "parse_document_later";
 
 	/**
 	 * Applies XPath on a DOM Node
 	 */
-	public static String	APPLY_XPATH													= "get_xpath_node";
+	public static String	GET_XPATH_NODE													= "get_xpath_node";
 
 	/**
 	 * If semantic action
@@ -95,9 +95,9 @@ public interface SemanticActionStandardMethods
 	public static String	CREATE_AND_VISUALIZE_TEXT_SURROGATE	= "create_and_visualize_text_surrogate";
 
 	/**
-	 * 
+	 * this semantic action seems obsoleted. -- quyin
 	 */
-	public static String	TRY_SYNC_NESTED_METADATA						= "try_sync_nested_metadata";
+	// public static String	TRY_SYNC_NESTED_METADATA						= "try_sync_nested_metadata";
 	
 	/**
 	 * 
