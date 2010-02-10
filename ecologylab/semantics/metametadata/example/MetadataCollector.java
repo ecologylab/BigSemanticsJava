@@ -5,43 +5,42 @@ package ecologylab.semantics.metametadata.example;
 
 import java.util.ArrayList;
 import ecologylab.semantics.metadata.Metadata;
-import ecologylab.semantics.generated.library.WeatherReport;
 
 /**
  * This is a listener class in order to collect weather reports.
  * 
  * @author quyin
  */
-public class WeatherReportCollector implements MyContainer.MetadataCollectingListener
+public class MetadataCollector implements MyContainer.MetadataCollectingListener
 {
 	/**
 	 * Make it a singleton.
 	 */
-	protected WeatherReportCollector()
+	protected MetadataCollector()
 	{
-		list = new ArrayList<WeatherReport>();
+		list = new ArrayList<Metadata>();
 	}
 
-	private static WeatherReportCollector	instance;
+	private static MetadataCollector	instance;
 
 	/**
 	 * Get the global singleton instance of this class.
 	 * @return The global singleton instance of WeatherReportCollector.
 	 */
-	public static WeatherReportCollector get()
+	public static MetadataCollector get()
 	{
 		if (instance == null)
-			instance = new WeatherReportCollector();
+			instance = new MetadataCollector();
 		return instance;
 	}
 
-	private ArrayList<WeatherReport>	list;
+	private ArrayList<Metadata>	list;
 
 	/**
 	 * Get the list of collected weather reports.
 	 * @return
 	 */
-	public ArrayList<WeatherReport> list()
+	public ArrayList<Metadata> list()
 	{
 		return list;
 	}
@@ -52,14 +51,9 @@ public class WeatherReportCollector implements MyContainer.MetadataCollectingLis
 	public void collect(Metadata metadata)
 	{
 		// check validity.
-		if (metadata == null || !(metadata instanceof WeatherReport))
+		if (metadata == null)
 			return;
 
-		WeatherReport weatherReport = (WeatherReport) metadata;
-		// if there is parsing error, we don't collect it.
-		if (weatherReport.city().getValue() == null)
-			return;
-
-		list.add(weatherReport);
+		list.add(metadata);
 	}
 }

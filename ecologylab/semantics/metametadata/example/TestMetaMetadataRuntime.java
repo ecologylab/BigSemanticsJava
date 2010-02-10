@@ -15,7 +15,7 @@ import java.io.Writer;
 import ecologylab.collections.Scope;
 import ecologylab.documenttypes.DocumentParser;
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.generated.library.WeatherReport;
+import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.seeding.Seed;
@@ -23,6 +23,9 @@ import ecologylab.semantics.seeding.SeedSet;
 import ecologylab.semantics.tools.MetadataCompiler;
 import ecologylab.xml.TranslationScope;
 import ecologylab.xml.XMLTranslationException;
+
+//needed
+import ecologylab.semantics.generated.library.WeatherReport;
 
 /**
  * This example shows how to use a search as seed to collect data from the Internet.
@@ -34,7 +37,8 @@ import ecologylab.xml.XMLTranslationException;
  */
 public class TestMetaMetadataRuntime
 {
-	public final static int	COUNT_TARGETS	= 9;
+	//download limiter
+	public final static int	COUNT_TARGETS	= 10;
 
 	/**
 	 * Before you write your own codes, make sure that use the VM arguments like this project Or the
@@ -48,22 +52,21 @@ public class TestMetaMetadataRuntime
 	public static void main(String[] args) throws XMLTranslationException, IOException,
 			InterruptedException
 	{
-		// create the infoCollector
-		MyInfoCollector infoCollector = new MyInfoCollector(
-				MetadataCompiler.DEFAULT_REPOSITORY_FILEPATH);
+		// create the infoCollector - specifiy the repos
+		MyInfoCollector infoCollector = new MyInfoCollector("metaMetadataRepository.xml");
 		// add the WeatherReportCollector to the listener list, so that we can collect information we
 		// need from the metadata
-		infoCollector.addListener(WeatherReportCollector.get());
+		infoCollector.addListener(MetadataCollector.get());
 
-		// seeding
+		// seeding start url
 		ParsedURL seedUrl = ParsedURL
 				.getAbsolute("http://www.google.com/search?q=texas+site%3Awww.wunderground.com");
 		infoCollector.getContainerDownloadIfNeeded(null, seedUrl, null, false, false, false);
-
+						
 		// wait for the infoCollector to finish its downloading job
 		// note that the downloadMonitor (contained in infoCollecotr) will wait for new seeds if
 		//   downloading is done. so we check the number of collected reports to determine when to finish
-		while (WeatherReportCollector.get().list().size() < COUNT_TARGETS)
+		while (MetadataCollector.get().list().size() < COUNT_TARGETS)
 		{
 			Thread.sleep(1000);
 		}
@@ -74,17 +77,27 @@ public class TestMetaMetadataRuntime
 		OutputStream outs = new FileOutputStream("output.csv");
 		PrintWriter writer = new PrintWriter(outs);
 		writer.printf("#format:city,weather,picture_url,temperature,humidity,wind_speed\n");
-		for (WeatherReport report : WeatherReportCollector.get().list())
+		
+		for (Metadata metadata : MetadataCollector.get().list())
 		{
-			writer.printf(
-					"%s,%s,%s,%s,%s,%s\n",
-					report.city().getValue().split(",")[0],
-					report.weather().getValue(),
-					report.picUrl().getValue(),
-					report.temperature().getValue(),
-					report.humidity().getValue(),
-					report.wind().getValue()
-					);
+			if(metadata instanceof WeatherReport)
+			{
+				WeatherReport report = (WeatherReport) metadata;
+				
+				//check to make sure there are no parsing error
+				if (report.city().getValue() != null)
+				{				
+					writer.printf(
+						"%s,%s,%s,%s,%s,%s\n",
+						report.city().getValue().split(",")[0],
+						report.weather().getValue(),
+						report.picUrl().getValue(),
+						report.temperature().getValue(),
+						report.humidity().getValue(),
+						report.wind().getValue()
+						);
+				}
+			}
 		}
 		writer.flush();
 		writer.close();

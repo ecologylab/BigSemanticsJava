@@ -48,10 +48,13 @@ import ecologylab.xml.TranslationScope;
  */
 public class MyInfoCollector implements InfoCollector<MyContainer>
 {
+	//how many threads for downloads - how many downloads to allow concurrently
 	public final static int					DEFAULT_COUNT_DOWNLOAD_THREAD	= 1;
 
+	//reference to mmd repso
 	private MetaMetadataRepository	mmdRepo;
 
+	//stores the infocollects list of rejected domains
 	private Set<String>							rejectDomains;
 
 	private DownloadMonitor					downloadMonitor;
@@ -63,7 +66,7 @@ public class MyInfoCollector implements InfoCollector<MyContainer>
 	{
 		return downloadMonitor;
 	}
-
+	// to change to single listener for all metadata
 	private ArrayList<MyContainer.MetadataCollectingListener>	collectingListeners;
 
 	/**
@@ -97,7 +100,8 @@ public class MyInfoCollector implements InfoCollector<MyContainer>
 	{
 		return collectingListeners;
 	}
-
+	
+	//load repository file adn stuff
 	public MyInfoCollector(String repoFilepath)
 	{
 		mmdRepo = MetaMetadataRepository.load(new File(repoFilepath));
@@ -110,6 +114,7 @@ public class MyInfoCollector implements InfoCollector<MyContainer>
 
 	/**
 	 * Test if a URL is acceptable.
+	 * 
 	 */
 	@Override
 	public boolean accept(ParsedURL connectionPURL)
@@ -322,6 +327,7 @@ public class MyInfoCollector implements InfoCollector<MyContainer>
 
 	}
 
+	// new added mmdRepo
 	@Override
 	public MetaMetadataRepository metaMetaDataRepository()
 	{
@@ -329,6 +335,7 @@ public class MyInfoCollector implements InfoCollector<MyContainer>
 		return mmdRepo;
 	}
 
+	// new add return null
 	@Override
 	public DocumentParser<MyContainer, ? extends InfoCollector, ?> newFileDirectoryType(File file)
 	{
@@ -336,7 +343,7 @@ public class MyInfoCollector implements InfoCollector<MyContainer>
 		return null;
 	}
 
-	/**
+	/** New 
 	 * Reject all the URLs from a domain from now on.
 	 */
 	@Override

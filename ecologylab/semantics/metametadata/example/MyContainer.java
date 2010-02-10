@@ -46,6 +46,7 @@ import ecologylab.xml.TranslationScope;
 public class MyContainer extends Container
 {
 	/**
+	 * New !!
 	 * This interface enables users to customize their own collecting methods. Use MyInfoCollector to
 	 * add a listener who implemented this interface.
 	 * 
@@ -56,14 +57,16 @@ public class MyContainer extends Container
 	{
 		void collect(Metadata metadata);
 	}
-
+	
+	// New!!
 	private ArrayList<MetadataCollectingListener>	collectingListeners;
 
+	// New!!
 	public ArrayList<MetadataCollectingListener> getCollectingListeners()
 	{
 		return collectingListeners;
 	}
-
+	// New!!
 	public void setCollectingListeners(ArrayList<MetadataCollectingListener> collectingListeners)
 	{
 		this.collectingListeners = collectingListeners;
@@ -71,6 +74,7 @@ public class MyContainer extends Container
 
 	protected InfoCollector	infoCollector;
 
+	// New
 	public MyContainer(ContentElement progenitor, InfoCollector infoCollector, ParsedURL purl)
 	{
 		super(progenitor);
@@ -173,12 +177,14 @@ public class MyContainer extends Container
 		return null;
 	}
 
+	// New -generated when repository is compiled
 	@Override
 	public TranslationScope getGeneratedMetadataTranslationScope()
 	{
 		return GeneratedMetadataTranslationScope.get();
 	}
 
+	// needed used in downloading process
 	private ParsedURL	initPurl;
 
 	@Override
@@ -209,7 +215,7 @@ public class MyContainer extends Container
 		return 0;
 	}
 
-	/**
+	/** NEW !!
 	 * This method performs the downloading action. It first calls the DocumentParser.connect() method
 	 * to get the appropriate parser for the URL, then downloads it and parses it. At last, it calls
 	 * the collect() method for each listener to allow the application to collect information from the
@@ -218,10 +224,14 @@ public class MyContainer extends Container
 	@Override
 	public void performDownload() throws IOException
 	{
+		//calls connect to find the right parser, then calls the infocollector to download the content
+		//also process the semantic actions
 		DocumentParser parser = DocumentParser.connect(purl(), this, infoCollector,
 				new SemanticActionHandlerBase());
+		
 		parser.parse();
 
+		//listeners again
 		for (MetadataCollectingListener listener : collectingListeners)
 		{
 			listener.collect(metadata);
@@ -235,6 +245,7 @@ public class MyContainer extends Container
 
 	}
 
+	// new
 	@Override
 	public ParsedURL purl()
 	{

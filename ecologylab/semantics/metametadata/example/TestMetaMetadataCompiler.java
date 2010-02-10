@@ -22,7 +22,8 @@ public class TestMetaMetadataCompiler
 		try
 		{
 			// use the default repository location
-			new MetadataCompiler(args);
+			// needed to provide this!!
+			new MetadataCompiler(args,"metaMetadataRepository.xml");
 		}
 		catch (XMLTranslationException e)
 		{
