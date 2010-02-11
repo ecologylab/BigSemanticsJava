@@ -445,8 +445,12 @@ abstract public class Metadata extends MetadataBase<MetaMetadata>
 
 	public void recycle()
 	{
+		ClassAndCollectionIterator<FieldDescriptor, MetadataBase<?>> iterator = metadataIterator();
+		for(MetadataBase metadata = iterator.next(); metadata != null; metadata = iterator.next())
+			metadata.recycle();
 		super.recycle();
 		termVector.recycle();
+		
 	}
 	
 	public boolean isRecycled()
