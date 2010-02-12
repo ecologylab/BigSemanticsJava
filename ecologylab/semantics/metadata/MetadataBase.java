@@ -82,6 +82,9 @@ public class MetadataBase<MM extends MetaMetadataField> extends ElementState imp
 
 	public void recycle()
 	{
+		super.recycle();
+		
+		metadataFieldDescriptors = null;
 	}
 	
 

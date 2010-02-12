@@ -450,7 +450,7 @@ abstract public class Metadata extends MetadataBase<MetaMetadata>
 			metadata.recycle();
 		super.recycle();
 		termVector.recycle();
-		
+		termVector = null;
 	}
 	
 	public boolean isRecycled()
