@@ -123,8 +123,8 @@ implements Colors
 	}
 	public Rendering(Rendering previousRendering, boolean active)
 	{
-		this.pixelBased			= previousRendering.pixelBased;
-		width					= pixelBased.dimension.width;
+		this.pixelBased	= previousRendering.pixelBased;
+		width						= pixelBased.dimension.width;
 		height					= pixelBased.dimension.height;
 		isActive				= active;
 		
@@ -226,12 +226,9 @@ implements Colors
 			// even if there's no scaling
 			ImageTools.scaleAndCopyImage(newWidth, newHeight, bufferedImage, scaledBImage);
 			
-			// Flush the original bufferedImage after scale the image element
-			bufferedImage.flush();
-			bufferedImage = null;			
-			bufferedImage = scaledBImage;
-			
 			Rendering scaledState			= new Rendering(pixelBased, scaledBImage, scaledDataBuffer, scaledPixels);
+			
+			recycle();
 
 			return scaledState;
 		}
@@ -351,7 +348,7 @@ implements Colors
 			}
 			
 			BufferedImage newImage		= createNewBufferedImage(dataBuffer, width, height);
-			bufferedImage				= newImage;
+			bufferedImage							= newImage;
 		}
 	}
 	public void fill(int pixel)

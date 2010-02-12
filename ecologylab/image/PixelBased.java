@@ -499,8 +499,9 @@ implements Downloadable
 			if ((blurredRendering != null) && (blurredRendering.previousRendering == null))
 				throw new RuntimeException(this + " changed to NULL previousRendering?????);by new DesaturatedRendering");
 
-			desaturatedRendering.compute(degree, false);
-			desaturatedRendering.goActive(immediate);
+			desaturatedRendering.compute(degree);
+			//desaturatedRendering.goActive(immediate);
+			setCurrentRendering(desaturatedRendering);
 		} 
 	}
 	public void noDesaturate()

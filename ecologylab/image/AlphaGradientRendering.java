@@ -52,10 +52,7 @@ public class AlphaGradientRendering extends Rendering
 	  // let the graphics context do the copy, so it can smartly fix alpha
 	  ImageTools.copyImage(inputRendering.bufferedImage, outputRendering.bufferedImage);
 
-	  int[] inPixels	= inputRendering.pixels;
 	  int[] outPixels	= outputRendering.pixels;
-	  
-	  boolean srcHasAlpha	= inputRendering.bufferedImage.getColorModel().hasAlpha();
 	  
       // work in red space, to avoid signed arithmetic problems;
       // shift up later
