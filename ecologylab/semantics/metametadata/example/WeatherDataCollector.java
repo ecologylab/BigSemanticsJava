@@ -35,9 +35,9 @@ import ecologylab.semantics.generated.library.WeatherReport;
  * 
  * @author quyin
  */
-public class TestMetaMetadataRuntime
+public class WeatherDataCollector
 {
-	//download limiter
+	//The number of target metadata objects to be collected
 	public final static int	COUNT_TARGETS	= 10;
 
 	/**

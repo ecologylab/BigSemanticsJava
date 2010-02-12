@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import ecologylab.semantics.metadata.Metadata;
 
 /**
- * This is a listener class in order to collect weather reports.
+ * This is a listener class in order to collect metadata.
  * 
  * @author quyin
  */

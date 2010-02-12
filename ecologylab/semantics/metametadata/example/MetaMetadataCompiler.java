@@ -10,7 +10,7 @@ import ecologylab.xml.XMLTranslationException;
  * @author quyin
  * 
  */
-public class TestMetaMetadataCompiler
+public class MetaMetadataCompiler
 {
 
 	/**

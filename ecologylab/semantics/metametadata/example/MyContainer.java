@@ -58,15 +58,13 @@ public class MyContainer extends Container
 		void collect(Metadata metadata);
 	}
 	
-	// New!!
 	private ArrayList<MetadataCollectingListener>	collectingListeners;
 
-	// New!!
 	public ArrayList<MetadataCollectingListener> getCollectingListeners()
 	{
 		return collectingListeners;
 	}
-	// New!!
+
 	public void setCollectingListeners(ArrayList<MetadataCollectingListener> collectingListeners)
 	{
 		this.collectingListeners = collectingListeners;
@@ -74,7 +72,6 @@ public class MyContainer extends Container
 
 	protected InfoCollector	infoCollector;
 
-	// New
 	public MyContainer(ContentElement progenitor, InfoCollector infoCollector, ParsedURL purl)
 	{
 		super(progenitor);
@@ -215,7 +212,7 @@ public class MyContainer extends Container
 		return 0;
 	}
 
-	/** NEW !!
+	/**
 	 * This method performs the downloading action. It first calls the DocumentParser.connect() method
 	 * to get the appropriate parser for the URL, then downloads it and parses it. At last, it calls
 	 * the collect() method for each listener to allow the application to collect information from the
