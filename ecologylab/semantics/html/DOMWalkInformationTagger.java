@@ -4,7 +4,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.TreeMap;
 
 import org.w3c.tidy.AttVal;
@@ -17,9 +16,12 @@ import org.w3c.tidy.PPrint;
 import org.w3c.tidy.StreamIn;
 import org.w3c.tidy.TdNode;
 
-import ecologylab.generic.StringTools;
+import ecologylab.documenttypes.HTMLDOMParser;
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.html.documentstructure.ImageFeatures;
+import ecologylab.semantics.html.utils.HTMLAttributeNames;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
+import ecologylab.xml.XMLTools;
 
 
 
@@ -32,8 +34,9 @@ import ecologylab.semantics.html.utils.StringBuilderUtils;
  *
  */
 public class DOMWalkInformationTagger extends PPrint
+implements HTMLAttributeNames
 {
-	private static final int		MAX_LINKS_PER_PAGE			= 200;
+	protected static final int		MAX_LINKS_PER_PAGE			= 200;
 	protected static final int 	PARA_TEXT_LENGTH_LIMIT 	= 80;
 	
 	TidyInterface tidyInterface;
@@ -68,7 +71,7 @@ public class DOMWalkInformationTagger extends PPrint
 	/**
 	 * All images in the page
 	 */
-	private ArrayList<ImgElement> 					allImgNodes					= new ArrayList<ImgElement>();
+	protected ArrayList<ImgElement> 					allImgNodes					= new ArrayList<ImgElement>();
 
 	/**
 	 * All links in current page
@@ -87,6 +90,10 @@ public class DOMWalkInformationTagger extends PPrint
 	public void generateCollections(org.w3c.dom.Document doc)
 	{
 		generateCollections(((DOMNodeImpl)doc).adaptee);
+	}
+	public void generateCollections(HTMLDOMParser htmlDomParser)
+	{
+		generateCollections(htmlDomParser.getRootNode());
 	}
 	public void generateCollections(TdNode rootTdNode)
 	{
@@ -179,7 +186,7 @@ public class DOMWalkInformationTagger extends PPrint
 			// Create a new Paragraph text based on these tags
 			// TODO add more tags that we should define as starting of a new paragraph. -- eunyee
 			if ( tag.equals("p") || tag.equals("br") || tag.equals("td") || tag.equals("div") || tag.equals("li") || tag.equals("a")
-					|| tag.equals("tr") || tag.equals("option") 
+					|| tag.equals("tr") || tag.equals("option") // andruid doesn't believe in this, but jon is arguing for it: || tag.equals("span") 
 					|| (tag.length() == 2 && tag.startsWith("h")))
 			{
 				closeBlock(node);
@@ -274,7 +281,7 @@ public class DOMWalkInformationTagger extends PPrint
 	 * 
 	 * @param blockNode
 	 */
-	private void addCompletedPara(TdNode blockNode)
+	protected void addCompletedPara(TdNode blockNode)
 	{
 		TdNode node	= currentNode;
 		if (!currentParagraphText.hasText())
@@ -411,6 +418,63 @@ public class DOMWalkInformationTagger extends PPrint
 	public TreeMap<Integer, ParagraphText> getParagraphTextsTMap()
 	{
 		return paragraphTextsTMap;
+	}
+
+	public static StringBuilder getTextInSubTree(TdNode node, boolean recurse)
+	{
+		return getTextInSubTree(node, recurse, null);
+	}
+
+	/**
+	 * Non-recursive method to get the text for the <code>node</code>
+	 * Collects the text even if the node contains other nodes in between,
+	 * specifically the <code>anchor</code>. It does not however include the 
+	 * text from the anchor node.
+	 * @param node
+	 * @param te
+	 * @return
+	 */
+	//FIXME -- why is text in anchor node not included?
+	public static StringBuilder getTextInSubTree(TdNode node, boolean recurse, StringBuilder result)
+	{
+		for (TdNode childNode	= node.content(); childNode != null; childNode = childNode.next())
+		{
+			if (recurse && (childNode.element!=null) && (!childNode.element.equals("script")))
+			{
+				//Recursive call with the childNode
+				result = getTextInSubTree(childNode, true, result);
+			}	
+			else if (childNode.type == TdNode.TextNode )
+			{
+				int length	= 0;
+				if (result != null)
+				{
+					result.append(' ');							// append space to separate text chunks
+					length		= result.length();
+				}
+				result			= StringBuilderUtils.trimAndDecodeUTF8(result, childNode, 0, true);
+
+				if ((result != null) && (length == result.length()))
+					result.setLength(length - 1);	// take the space off if nothing was appended
+			} 
+			else if ("img".equals(childNode.element))
+			{
+				AttVal altAtt	= childNode.getAttrByName(ALT);
+				String alt		= (altAtt != null) ? altAtt.value : null;
+				if (!ImageFeatures.altIsBogus(alt))
+				{
+					if (result == null)
+						result		= StringBuilderUtils.acquire();
+					else
+						result.append(' ');
+					result.append(alt);
+				}
+			}
+		}
+		if (result != null)
+			XMLTools.unescapeXML(result);
+
+		return result;
 	}
 
 }

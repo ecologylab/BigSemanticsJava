@@ -3,6 +3,7 @@ package ecologylab.documenttypes;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.w3c.tidy.DOMNodeImpl;
 import org.w3c.tidy.TdNode;
 import org.w3c.tidy.Tidy;
 
@@ -57,7 +58,14 @@ extends HTMLParserCommon<C, IC>
 		tidy.setQuiet(true);
 		tidy.setShowWarnings(false);
 	}
-	
+	/**
+	 * 
+	 * @return The root node of the document, which should be <html>.
+	 */
+	public TdNode getRootNode()
+	{
+		return ((DOMNodeImpl) document).adaptee;
+	}
 	/**
 	 * Andruid says: NEVER override this method when you parse HTML. 
 	 * Instead, override postParse().
@@ -69,7 +77,7 @@ extends HTMLParserCommon<C, IC>
 	   try
 	   {
 	  	 // we dont build a tidy for for direct biniding
-	  	 if(!"direct".equals(metaMetadata.getParser()))
+	  	 if(metaMetadata == null || !"direct".equals(metaMetadata.getParser()))
 	  		 		document 							= tidy.parseDOM(inputStream(),/* System.out*/null);
 		   postParse();
 	   } catch (Exception e) 
