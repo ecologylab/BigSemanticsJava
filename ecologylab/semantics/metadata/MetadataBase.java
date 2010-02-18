@@ -20,6 +20,7 @@ import ecologylab.xml.ClassDescriptor;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.FieldDescriptor;
 import ecologylab.xml.ScalarUnmarshallingContext;
+import ecologylab.xml.types.element.ArrayListState;
 
 /**
  * Base class for Metadata fields that represent scalar values.
