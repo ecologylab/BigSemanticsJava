@@ -11,10 +11,6 @@ import ecologylab.semantics.metametadata.Argument;
 import ecologylab.semantics.metametadata.Check;
 import ecologylab.semantics.metametadata.DefVar;
 import ecologylab.xml.ElementState;
-import ecologylab.xml.ElementState.xml_collection;
-import ecologylab.xml.ElementState.xml_nowrap;
-import ecologylab.xml.ElementState.xml_tag;
-import ecologylab.xml.types.element.ArrayListState;
 
 /**
  * This is the abstract class which defines the semantic action. All the semantic actions must

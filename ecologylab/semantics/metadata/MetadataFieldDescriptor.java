@@ -10,8 +10,8 @@ import ecologylab.semantics.gui.EditValueEvent;
 import ecologylab.semantics.gui.EditValueListener;
 import ecologylab.semantics.gui.EditValueNotifier;
 import ecologylab.semantics.metametadata.MetaMetadataField;
+import ecologylab.xml.ClassDescriptor;
 import ecologylab.xml.FieldDescriptor;
-import ecologylab.xml.FieldToXMLOptimizations;
 
 /**
  * @author andruid
@@ -29,9 +29,9 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 
 	private ArrayList<EditValueListener> editValueListeners = new ArrayList<EditValueListener>();
 	
-	public MetadataFieldDescriptor(FieldToXMLOptimizations f2XO)
+	public MetadataFieldDescriptor(ClassDescriptor classDescriptor, FieldToXMLOptimizations f2XO)
 	{
-		super(f2XO);
+		super(classDescriptor, f2XO);
 		if (field != null)
 		{
 			isMixin							= field.isAnnotationPresent(MetadataBase.semantics_mixin.class);
@@ -39,8 +39,6 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 			Class<?> thatClass	= field.getType();
 			isPseudoScalar	= thatClass.isAnnotationPresent(semantics_pseudo_scalar.class);
 			
-			//TODO -- for future expansion??? andruid 4/14/09
-//			hwSetMethod					= ReflectionTools.getMethod(thatClass, "hwSet", SET_METHOD_ARG);
 		}
 		else
 		{

@@ -16,13 +16,10 @@ import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataField;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.model.text.ITermVector;
-import ecologylab.semantics.model.text.NullTermVector;
-import ecologylab.semantics.model.text.Term;
+import ecologylab.xml.ClassDescriptor;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.FieldDescriptor;
-import ecologylab.xml.ClassDescriptor;
 import ecologylab.xml.ScalarUnmarshallingContext;
-import ecologylab.xml.types.element.ArrayListState;
 
 /**
  * Base class for Metadata fields that represent scalar values.

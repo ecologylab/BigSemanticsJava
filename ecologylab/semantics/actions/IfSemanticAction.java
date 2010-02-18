@@ -6,10 +6,7 @@ package ecologylab.semantics.actions;
 import java.util.ArrayList;
 
 import ecologylab.xml.xml_inherit;
-import ecologylab.xml.ElementState.xml_collection;
-import ecologylab.xml.ElementState.xml_nowrap;
 import ecologylab.xml.ElementState.xml_tag;
-import ecologylab.xml.types.element.ArrayListState;
 
 /**
  * THE IF statement

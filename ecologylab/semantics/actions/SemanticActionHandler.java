@@ -26,7 +26,6 @@ import ecologylab.semantics.metametadata.Argument;
 import ecologylab.semantics.metametadata.Check;
 import ecologylab.semantics.metametadata.DefVar;
 import ecologylab.semantics.tools.GenericIterable;
-import ecologylab.xml.types.element.ArrayListState;
 
 /**
 *
