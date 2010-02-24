@@ -72,17 +72,27 @@ implements TidyInterface, HTMLAttributeNames
 	protected void postParse()
 	{
 		DOMWalkInformationTagger taggedDoc = new DOMWalkInformationTagger(tidy.getConfiguration(), purlConnection.getPurl(), this);
+		// this function actually traverse the dom tree
 		taggedDoc.generateCollections(document);
 		
-		extractImageTextSurrogates(taggedDoc);
+		TdNode contentBody = getContentBody(taggedDoc);
+		DOMWalkInformationTagger taggedContentnode = walkAndTagDom(contentBody, this);
+		
+		extractImageTextSurrogates(taggedDoc, contentBody);
 		
 		//Now, find hrefs, with their context and generate containers with metadata
-		ArrayList<AnchorContext> anchorContexts = buildAnchorContexts(taggedDoc.getAllAnchorNodes());
+		ArrayList<AnchorContext> anchorContexts = null;
+		if (taggedContentnode != null)
+			anchorContexts = buildAnchorContexts(taggedContentnode.getAllAnchorNodes());
+		else
+			anchorContexts = buildAnchorContexts(taggedDoc.getAllAnchorNodes());
 		
   	generateCandidateContainersFromContexts(anchorContexts);
   	
   	anchorContexts.clear();
 		taggedDoc.recycle();
+		if (taggedContentnode != null)
+			taggedContentnode.recycle();
 	}
 
 	
@@ -92,18 +102,21 @@ implements TidyInterface, HTMLAttributeNames
 	 * @param htmlType
 	 * @return
 	 */
-	public DOMWalkInformationTagger walkAndTagDom(TdNode rootTdNode, TidyInterface htmlType)
+	public DOMWalkInformationTagger walkAndTagDom(TdNode tdNode, TidyInterface htmlType)
 	{
+		// note that content body could be null if it is not a content page
+		if (tdNode == null)
+			return null;
+		
 		Out jtidyPrettyOutput = new OutImpl();
 
 		DOMWalkInformationTagger domTagger = new DOMWalkInformationTagger(tidy.getConfiguration(), purlConnection.getPurl(), htmlType);
-		domTagger.generateCollections(document);
+		domTagger.generateCollections(tdNode);
 		// walk through the HTML document object.
 		// gather all paragraphText and image objects in the data structure.
 		//FIXME -- get rid of this call and object!
-		domTagger.printTree(jtidyPrettyOutput, (short)0, 0, null, rootTdNode);
-
-		domTagger.flushLine(jtidyPrettyOutput, 0);
+//		domTagger.printTree(jtidyPrettyOutput, (short)0, 0, null, tdNode);
+//		domTagger.flushLine(jtidyPrettyOutput, 0);
 		return domTagger;
 	}
 
@@ -112,14 +125,23 @@ implements TidyInterface, HTMLAttributeNames
 	 * 
 	 * historically was called as pprint() in JTidy. 
 	 */
-	public void extractImageTextSurrogates(DOMWalkInformationTagger taggedDoc)
+	public void extractImageTextSurrogates(DOMWalkInformationTagger taggedDoc, TdNode contentBody)
 	{
 
-		TdNode contentBody = RecognizedDocumentStructure.recognizeContentBody(taggedDoc);
 		//System.out.println("\n\ncontentBody = " + contentBody);       
 		ArrayList<ImgElement> imgNodes = taggedDoc.getAllImgNodes();
 
 		recognizeDocumentStructureToGenerateSurrogate(taggedDoc, contentBody, imgNodes);
+	}
+
+	/**
+	 * @param taggedDoc
+	 * @return
+	 */
+	private TdNode getContentBody(DOMWalkInformationTagger taggedDoc)
+	{
+		TdNode contentBody = RecognizedDocumentStructure.recognizeContentBody(taggedDoc);
+		return contentBody;
 	}
 	
 	/**

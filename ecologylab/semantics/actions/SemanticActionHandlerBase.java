@@ -95,8 +95,8 @@ public class SemanticActionHandlerBase<C extends Container, IC extends InfoColle
 			Container ancestor = docType.getContainer();
 			ParsedURL purl = (ParsedURL) semanticActionReturnValueMap.get(purlA.getValue());
 			MetaMetadata mmd = infoCollector.metaMetaDataRepository().getDocumentMM(purl);
-			Container container = infoCollector.getContainer((C) docType.getContainer(), purl, false,
-					false, mmd);
+			Container container = infoCollector.getContainer((C) ancestor, purl, false,
+					true, mmd);
 			return container;
 		}
 		return null;
