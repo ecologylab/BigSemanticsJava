@@ -13,7 +13,7 @@ import javax.swing.JFrame;
 
 import ecologylab.collections.Scope;
 import ecologylab.concurrent.DownloadMonitor;
-import ecologylab.documenttypes.DocumentParser;
+import ecologylab.documentparsers.DocumentParser;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.connectors.InfoCollector;

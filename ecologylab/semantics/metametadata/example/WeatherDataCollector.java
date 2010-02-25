@@ -13,7 +13,7 @@ import java.io.PrintWriter;
 import java.io.Writer;
 
 import ecologylab.collections.Scope;
-import ecologylab.documenttypes.DocumentParser;
+import ecologylab.documentparsers.DocumentParser;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.builtins.Document;

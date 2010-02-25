@@ -6,7 +6,7 @@ package ecologylab.semantics.metametadata.example;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import ecologylab.documenttypes.DocumentParser;
+import ecologylab.documentparsers.DocumentParser;
 import ecologylab.generic.DispatchTarget;
 import ecologylab.io.BasicSite;
 import ecologylab.net.ParsedURL;
