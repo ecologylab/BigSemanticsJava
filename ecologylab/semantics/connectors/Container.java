@@ -5,7 +5,7 @@ package ecologylab.semantics.connectors;
 
 import java.io.IOException;
 
-import ecologylab.documenttypes.DocumentParser;
+import ecologylab.documentparsers.DocumentParser;
 import ecologylab.generic.DispatchTarget;
 import ecologylab.io.Downloadable;
 import ecologylab.net.ParsedURL;

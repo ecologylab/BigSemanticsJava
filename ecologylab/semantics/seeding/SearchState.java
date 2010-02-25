@@ -3,7 +3,7 @@ package ecologylab.semantics.seeding;
 import java.io.File;
 
 import ecologylab.collections.Scope;
-import ecologylab.documenttypes.MetaMetadataSearchParser;
+import ecologylab.documentparsers.MetaMetadataSearchParser;
 import ecologylab.generic.Generic;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionHandler;

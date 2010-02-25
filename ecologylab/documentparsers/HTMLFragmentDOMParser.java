@@ -1,4 +1,4 @@
-package ecologylab.documenttypes;
+package ecologylab.documentparsers;
 
 import java.io.InputStream;
 import java.util.ArrayList;

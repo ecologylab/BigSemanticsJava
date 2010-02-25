@@ -3,7 +3,7 @@
  */
 package ecologylab.semantics.seeding;
 
-import ecologylab.documenttypes.DocumentParser;
+import ecologylab.documentparsers.DocumentParser;
 import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.XMLTranslationException;

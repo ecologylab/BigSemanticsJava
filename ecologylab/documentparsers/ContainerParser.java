@@ -1,4 +1,4 @@
-package ecologylab.documenttypes;
+package ecologylab.documentparsers;
 
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.connectors.Container;

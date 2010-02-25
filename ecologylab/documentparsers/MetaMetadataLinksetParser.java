@@ -1,7 +1,7 @@
 /**
  * 
  */
-package ecologylab.documenttypes;
+package ecologylab.documentparsers;
 
 import ecologylab.generic.DispatchTarget;
 import ecologylab.net.ParsedURL;

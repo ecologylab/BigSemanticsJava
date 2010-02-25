@@ -15,7 +15,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import ecologylab.collections.Scope;
-import ecologylab.documenttypes.DocumentParser;
+import ecologylab.documentparsers.DocumentParser;
 import ecologylab.generic.Debug;
 import ecologylab.semantics.actions.exceptions.ApplyXPathException;
 import ecologylab.semantics.actions.exceptions.ForLoopException;

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package ecologylab.documenttypes;
+package ecologylab.documentparsers;
 
 import java.io.File;
 import java.io.IOException;

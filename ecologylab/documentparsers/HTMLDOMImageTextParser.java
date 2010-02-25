@@ -1,4 +1,4 @@
-package ecologylab.documenttypes;
+package ecologylab.documentparsers;
 
 import java.util.ArrayList;
 import java.util.TreeMap;
