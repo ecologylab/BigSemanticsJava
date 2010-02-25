@@ -13,7 +13,6 @@ import java.io.PrintWriter;
 import java.io.Writer;
 
 import ecologylab.collections.Scope;
-import ecologylab.documentparsers.DocumentParser;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.builtins.Document;
@@ -25,6 +24,7 @@ import ecologylab.xml.TranslationScope;
 import ecologylab.xml.XMLTranslationException;
 
 //needed
+import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.generated.library.WeatherReport;
 
 /**

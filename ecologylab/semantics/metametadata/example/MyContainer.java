@@ -6,7 +6,6 @@ package ecologylab.semantics.metametadata.example;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import ecologylab.documentparsers.DocumentParser;
 import ecologylab.generic.DispatchTarget;
 import ecologylab.io.BasicSite;
 import ecologylab.net.ParsedURL;
@@ -15,6 +14,7 @@ import ecologylab.semantics.connectors.AbstractImgElement;
 import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.ContentElement;
 import ecologylab.semantics.connectors.InfoCollector;
+import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.generated.library.GeneratedMetadataTranslationScope;
 import ecologylab.semantics.html.ParagraphText;
 import ecologylab.semantics.html.documentstructure.SemanticAnchor;
