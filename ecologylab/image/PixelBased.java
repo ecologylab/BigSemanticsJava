@@ -297,10 +297,11 @@ implements Downloadable
 			{
 				synchronized (renderingsLock)
 				{
-					dimension.width	= newWidth;
-					dimension.height= newHeight;
-					scaled			= true;
-					unprocessedRendering		= basisRendering.getScaledRendering(newWidth, newHeight);
+					dimension.width				= newWidth;
+					dimension.height			= newHeight;
+					scaled								= true;
+					basisRendering				= basisRendering.getScaledRendering(newWidth, newHeight);
+					unprocessedRendering 	= new Rendering(basisRendering);
 				}
 			}
 			else
