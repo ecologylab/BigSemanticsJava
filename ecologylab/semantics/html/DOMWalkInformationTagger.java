@@ -16,8 +16,8 @@ import org.w3c.tidy.PPrint;
 import org.w3c.tidy.StreamIn;
 import org.w3c.tidy.TdNode;
 
-import ecologylab.documentparsers.HTMLDOMParser;
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.documentparsers.HTMLDOMParser;
 import ecologylab.semantics.html.documentstructure.ImageFeatures;
 import ecologylab.semantics.html.utils.HTMLAttributeNames;
 import ecologylab.semantics.html.utils.StringBuilderUtils;

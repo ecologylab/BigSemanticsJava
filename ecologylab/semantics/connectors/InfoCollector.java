@@ -8,9 +8,9 @@ import java.io.File;
 import javax.swing.JFrame;
 
 import ecologylab.collections.Scope;
-import ecologylab.documentparsers.DocumentParser;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionHandler;
+import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;

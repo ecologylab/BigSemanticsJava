@@ -1,7 +1,7 @@
 /**
  * 
  */
-package ecologylab.documentparsers;
+package ecologylab.semantics.documentparsers;
 
 import ecologylab.generic.DispatchTarget;
 import ecologylab.io.Downloadable;

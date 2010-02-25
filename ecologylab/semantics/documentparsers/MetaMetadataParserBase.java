@@ -1,4 +1,4 @@
-package ecologylab.documentparsers;
+package ecologylab.semantics.documentparsers;
 
 import java.io.File;
 import java.lang.reflect.Field;

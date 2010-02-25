@@ -3,7 +3,6 @@ package ecologylab.semantics.seeding;
 import java.io.File;
 
 import ecologylab.collections.Scope;
-import ecologylab.documentparsers.MetaMetadataSearchParser;
 import ecologylab.generic.Generic;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionHandler;
@@ -11,6 +10,7 @@ import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.connectors.SearchEngineNames;
 import ecologylab.semantics.connectors.SeedPeer;
+import ecologylab.semantics.documentparsers.MetaMetadataSearchParser;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.model.text.InterestModel;
 import ecologylab.xml.XMLTranslationException;

@@ -5,10 +5,10 @@ package ecologylab.semantics.connectors;
 
 import java.io.IOException;
 
-import ecologylab.documentparsers.DocumentParser;
 import ecologylab.generic.DispatchTarget;
 import ecologylab.io.Downloadable;
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.html.ParagraphText;
 import ecologylab.semantics.html.documentstructure.SemanticAnchor;
 import ecologylab.semantics.metadata.Metadata;

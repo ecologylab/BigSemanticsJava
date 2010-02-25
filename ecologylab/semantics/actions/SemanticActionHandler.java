@@ -15,13 +15,13 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import ecologylab.collections.Scope;
-import ecologylab.documentparsers.DocumentParser;
 import ecologylab.generic.Debug;
 import ecologylab.semantics.actions.exceptions.ApplyXPathException;
 import ecologylab.semantics.actions.exceptions.ForLoopException;
 import ecologylab.semantics.actions.exceptions.NestedActionException;
 import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.InfoCollector;
+import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.metametadata.Argument;
 import ecologylab.semantics.metametadata.Check;
 import ecologylab.semantics.metametadata.DefVar;

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package ecologylab.documentparsers;
+package ecologylab.semantics.documentparsers;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;

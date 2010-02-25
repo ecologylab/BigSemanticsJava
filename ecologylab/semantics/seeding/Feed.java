@@ -3,10 +3,10 @@
  */
 package ecologylab.semantics.seeding;
 
-import ecologylab.documentparsers.MetaMetadataFeedParser;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.connectors.InfoCollector;
+import ecologylab.semantics.documentparsers.MetaMetadataFeedParser;
 
 /**
  * A Feed is a Document Seed whose links are interleaved by a SeedDistributor, enabling round-robin scheduling

@@ -8,7 +8,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collection;
 
-import ecologylab.documentparsers.DocumentParser;
 import ecologylab.generic.ReflectionTools;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticAction;
@@ -19,6 +18,7 @@ import ecologylab.semantics.actions.exceptions.SemanticActionExecutionException;
 import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.ContentElement;
 import ecologylab.semantics.connectors.InfoCollector;
+import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metametadata.Argument;
 import ecologylab.semantics.metametadata.MetaMetadata;

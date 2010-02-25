@@ -1,4 +1,4 @@
-package ecologylab.documentparsers;
+package ecologylab.semantics.documentparsers;
 
 import java.util.ArrayList;
 import java.util.TreeMap;
