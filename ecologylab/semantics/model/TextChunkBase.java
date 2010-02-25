@@ -26,17 +26,12 @@ abstract public @xml_inherit
 class TextChunkBase<T extends TextToken> extends ArrayListState<T> implements
 		ScalarTypeInstanceConstants
 {
+	public static final int						DEFAULT_POINT_SIZE				= 21;
 	/**
-	 * Named Style for this text chunk if there is no name. If no name, then output to xml.
+	 * Named Style for this text chunk. Default is to an anonymous style.
 	 */
-	@xml_nested
-	protected NamedStyle							anonStyle									= new NamedStyle();
-
-	/**
-	 * Named Style for this text chunk if it does have a name. Do not output to xml because outputted
-	 * in composition state with other styles.
-	 */
-	protected NamedStyle							namedStyle								= null;
+	@xml_nested @xml_other_tags({"anon_style"})
+	protected NamedStyle							namedStyle									= new NamedStyle(DEFAULT_POINT_SIZE);
 
 	/**
 	 * Current style name. Either this or anon style will be null so that only one will be sent to
@@ -143,10 +138,10 @@ class TextChunkBase<T extends TextToken> extends ArrayListState<T> implements
 	{
 		this(doUnderline);
 		this.commonHref = commonHref;
-		style().setFontSize(size);
-		style().setFaceIndex(faceIndex);
-		style().setFontStyle(fontStyle);
-		style().setAlignment(alignment);
+		namedStyle().setFontSize(size);
+		namedStyle().setFaceIndex(faceIndex);
+		namedStyle().setFontStyle(fontStyle);
+		namedStyle().setAlignment(alignment);
 	}
 
 	/**
@@ -164,7 +159,7 @@ class TextChunkBase<T extends TextToken> extends ArrayListState<T> implements
 	 */
 	protected TextChunkBase(boolean doUnderline, ScalarType scalarType)
 	{
-		style().setUnderline(doUnderline);
+		namedStyle().setUnderline(doUnderline);
 		this.scalarType = scalarType;
 	}
 
@@ -197,7 +192,7 @@ class TextChunkBase<T extends TextToken> extends ArrayListState<T> implements
 	 */
 	protected TextChunkBase(TextChunkBase<T> copyChunk)
 	{
-		this(copyChunk.anonStyle.underline());
+		this(copyChunk.namedStyle.underline());
 		int size = copyChunk.size();
 		for (int i = 0; i < size; i++)
 		{
@@ -638,23 +633,23 @@ class TextChunkBase<T extends TextToken> extends ArrayListState<T> implements
 	{
 		if (!recycled)
 		{
-			if (anonStyle != null)
-				anonStyle.recycle();
-			anonStyle = null;
+			if (namedStyle != null)
+				namedStyle.recycle();
+			namedStyle = null;
 			recycled = true;
 			string = null;
 			super.recycle();
 		}
 	}
 
-	public NamedStyle style()
+	public NamedStyle namedStyle()
 	{
-		return (namedStyle != null) ? namedStyle : anonStyle;
+		return namedStyle;
 	}
 
-	public void setStyle(NamedStyle style)
+	public void setNamedStyle(NamedStyle style)
 	{
-		this.anonStyle = style;
+		this.namedStyle = style;
 	}
 
 	public String styleName()
@@ -665,16 +660,6 @@ class TextChunkBase<T extends TextToken> extends ArrayListState<T> implements
 	public void setStyleName(String styleName)
 	{
 		this.styleName = styleName;
-	}
-
-	public NamedStyle namedStyle()
-	{
-		return namedStyle;
-	}
-
-	public void setNamedStyle(NamedStyle namedStyle)
-	{
-		this.namedStyle = namedStyle;
 	}
 
 	static final String	TEST_STRING	= "Querying Web Metadata: Native Score\nManagement and Text Support\nin Databases\nG\n¨\nULTEKIN\n¨\nOZSOYO\n?\nGLU\nCase Western Reserve University\nISMAIL SENG\n¨\nOR ALTING\n¨\nOVDE\nBilkent Universit";
