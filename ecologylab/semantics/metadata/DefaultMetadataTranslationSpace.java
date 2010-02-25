@@ -1,10 +1,9 @@
 /**
  * 
  */
-package ecologylab.semantics.library;
+package ecologylab.semantics.metadata;
 
 import ecologylab.generic.Debug;
-import ecologylab.semantics.metadata.DebugMetadata;
 import ecologylab.semantics.metadata.scalar.MetadataInteger;
 import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
 import ecologylab.semantics.metadata.scalar.MetadataString;

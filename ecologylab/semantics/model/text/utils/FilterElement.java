@@ -2,7 +2,7 @@
  * Copyright 1996-2002 by Andruid Kerne. All rights reserved.
  * CONFIDENTIAL. Use is subject to license terms.
  */
-package ecologylab.semantics.utils;
+package ecologylab.semantics.model.text.utils;
 
 /**
  * Single pattern to be matched for {@link Filter filter}ing.

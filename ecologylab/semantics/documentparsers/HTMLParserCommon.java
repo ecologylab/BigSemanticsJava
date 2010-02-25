@@ -7,8 +7,8 @@ import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.model.TextChunkBase;
+import ecologylab.semantics.model.text.utils.Filter;
 import ecologylab.semantics.seeding.SemanticsPrefs;
-import ecologylab.semantics.utils.Filter;
 import ecologylab.xml.ElementState;
 
 

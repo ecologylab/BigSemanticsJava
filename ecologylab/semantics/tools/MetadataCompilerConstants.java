@@ -12,7 +12,7 @@ import java.util.HashMap;
 import ecologylab.appframework.PropertiesAndDirectories;
 import ecologylab.appframework.types.prefs.PrefString;
 import ecologylab.io.Files;
-import ecologylab.semantics.library.DefaultMetadataTranslationSpace;
+import ecologylab.semantics.metadata.DefaultMetadataTranslationSpace;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.xml.TranslationScope;
 import ecologylab.xml.XMLTools;
