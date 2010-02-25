@@ -15,7 +15,7 @@ public class InterestModel implements SemanticsPrefs
 	
 	public static class InterestModelState extends ElementState 
 	{
-		protected @xml_map("feature") HashMap<String, InterestModelEntry>	values = new HashMap<String, InterestModelEntry>();
+		protected @xml_map("interest_model_entry") HashMap<String, InterestModelEntry>	values = new HashMap<String, InterestModelEntry>();
 		
 		public InterestModelState()
 		{
