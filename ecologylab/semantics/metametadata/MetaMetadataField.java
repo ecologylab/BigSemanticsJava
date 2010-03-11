@@ -1034,10 +1034,20 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 				inheritNonDefaultAttributes(inheritedMetaMetadata);
 				for(MetaMetadataField inheritedField : inheritedMetaMetadata.getChildMetaMetadata())
 					inheritForField(inheritedField);
+				inheritSemanticActionsFromMM(inheritedMetaMetadata);
 			}
 			
 			inheritMetaMetadataFinished = true;
 		}
+	}
+
+	/**
+	 * Hook overrided by MetaMetadata class
+	 * @param inheritedMetaMetadata
+	 */
+	protected void inheritSemanticActionsFromMM(MetaMetadata inheritedMetaMetadata)
+	{
+		//MetaMetadataFields don't have semantic actions.
 	}
 
 	protected String getMetaMetadataTagToInheritFrom()

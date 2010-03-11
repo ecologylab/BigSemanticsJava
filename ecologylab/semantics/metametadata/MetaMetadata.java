@@ -163,40 +163,6 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 		return false;
 	}
 
-	public String getUserAgent()
-	{
-		return userAgentName;
-	}
-
-	public ParsedURL getUrlBase()
-	{
-		return urlStripped;
-	}
-
-	public void setUrlBase(ParsedURL urlBase)
-	{
-		this.urlStripped = urlBase;
-	}
-
-	public void setUrlBase(String urlBase)
-	{
-		this.urlStripped = ParsedURL.getAbsolute(urlBase);
-	}
-
-	public ParsedURL getUrlPrefix()
-	{
-		return urlPathTree;
-	}
-	
-	public void setUrlPrefix(ParsedURL urlPrefix)
-	{
-		this.urlPathTree = urlPrefix;
-	}
-	
-	public void setUrlPrefix(String urlPrefix)
-	{
-		this.urlPathTree = ParsedURL.getAbsolute(urlPrefix);
-	}
 	/**
 	 * Lookup the Metadata class object that corresponds to the tag_name in this.
 	 * 
@@ -382,84 +348,6 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 		return userAgentString;
 	}
 
-	public static void main(String args[]) throws XMLTranslationException
-	{
-		final TranslationScope TS = MetaMetadataTranslationScope.get();
-		String patternXMLFilepath = "../cf/config/semantics/metametadata/metaMetadataRepository.xml";
-
-		// ElementState.setUseDOMForTranslateTo(true);
-		MetaMetadataRepository test = (MetaMetadataRepository) ElementState.translateFromXML(
-				patternXMLFilepath, TS);
-
-	  test.writePrettyXML(System.out);
-
-		File outputRoot = PropertiesAndDirectories.userDir();
-
-		for (MetaMetadata metaMetadata : test.values())
-		{
-			// metaMetadata.translateToMetadataClass();
-			System.out.println('\n');
-		}
-	}
-
-	/**
-	 * @param mimeTypes
-	 *          the mimeTypes to set
-	 */
-	public void setMimeTypes(ArrayList<String> mimeTypes)
-	{
-		this.mimeTypes = mimeTypes;
-	}
-
-	/**
-	 * @return the mimeTypes
-	 */
-	public ArrayList<String> getMimeTypes()
-	{
-		return mimeTypes;
-	}
-
-	/**
-	 * @param suffixes
-	 *          the suffixes to set
-	 */
-	public void setSuffixes(ArrayList<String> suffixes)
-	{
-		this.suffixes = suffixes;
-	}
-
-	/**
-	 * @return the suffixes
-	 */
-	public ArrayList<String> getSuffixes()
-	{
-		return suffixes;
-	}
-
-	/**
-	 * @param comment
-	 *          the comment to set
-	 */
-	public void setComment(String comment)
-	{
-		this.comment = comment;
-	}
-
-	/**
-	 * @return the comment
-	 */
-	public String getComment()
-	{
-		return comment;
-	}
-
-
-	@Override
-	public String key()
-	{
-		return getName();
-	}
-
 	/**
 	 * Bind nested child and collection meta-metadata.
 	 */
@@ -492,10 +380,27 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 			}
 		}
 	}
+	
+	/**
+	 * 
+	 */
+	protected void inheritSemanticActionsFromMM(MetaMetadata inheritedMetaMetadata)
+	{
+		if(semanticActions == null)
+		{
+			semanticActions = inheritedMetaMetadata.getSemanticActions();
+		}
+	}
+	
+	@Override
+	protected String getMetaMetadataTagToInheritFrom()
+	{
+		return (extendsAttribute != null) ? extendsAttribute : super.getMetaMetadataTagToInheritFrom();
+	}
 	/**
 	 * @return the semanticActions
 	 */
-	public ArrayListState<? extends SemanticAction> getSemanticActions()
+	public ArrayListState<SemanticAction> getSemanticActions()
 	{
 		return semanticActions;
 	}
@@ -570,9 +475,116 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 		return packageAttribute;
 	}
 	
-	@Override
-	protected String getMetaMetadataTagToInheritFrom()
+	public String getUserAgent()
 	{
-		return (extendsAttribute != null) ? extendsAttribute : super.getMetaMetadataTagToInheritFrom();
+		return userAgentName;
+	}
+
+	public ParsedURL getUrlBase()
+	{
+		return urlStripped;
+	}
+
+	public void setUrlBase(ParsedURL urlBase)
+	{
+		this.urlStripped = urlBase;
+	}
+
+	public void setUrlBase(String urlBase)
+	{
+		this.urlStripped = ParsedURL.getAbsolute(urlBase);
+	}
+
+	public ParsedURL getUrlPrefix()
+	{
+		return urlPathTree;
+	}
+	
+	public void setUrlPrefix(ParsedURL urlPrefix)
+	{
+		this.urlPathTree = urlPrefix;
+	}
+	
+	public void setUrlPrefix(String urlPrefix)
+	{
+		this.urlPathTree = ParsedURL.getAbsolute(urlPrefix);
+	}
+	/**
+	 * @param mimeTypes
+	 *          the mimeTypes to set
+	 */
+	public void setMimeTypes(ArrayList<String> mimeTypes)
+	{
+		this.mimeTypes = mimeTypes;
+	}
+
+	/**
+	 * @return the mimeTypes
+	 */
+	public ArrayList<String> getMimeTypes()
+	{
+		return mimeTypes;
+	}
+
+	/**
+	 * @param suffixes
+	 *          the suffixes to set
+	 */
+	public void setSuffixes(ArrayList<String> suffixes)
+	{
+		this.suffixes = suffixes;
+	}
+
+	/**
+	 * @return the suffixes
+	 */
+	public ArrayList<String> getSuffixes()
+	{
+		return suffixes;
+	}
+
+	/**
+	 * @param comment
+	 *          the comment to set
+	 */
+	public void setComment(String comment)
+	{
+		this.comment = comment;
+	}
+
+	/**
+	 * @return the comment
+	 */
+	public String getComment()
+	{
+		return comment;
+	}
+
+	@Override
+	public String key()
+	{
+		return getName();
+	}
+	
+	
+
+	public static void main(String args[]) throws XMLTranslationException
+	{
+		final TranslationScope TS = MetaMetadataTranslationScope.get();
+		String patternXMLFilepath = "../cf/config/semantics/metametadata/metaMetadataRepository.xml";
+
+		// ElementState.setUseDOMForTranslateTo(true);
+		MetaMetadataRepository test = (MetaMetadataRepository) ElementState.translateFromXML(
+				patternXMLFilepath, TS);
+
+	  test.writePrettyXML(System.out);
+
+		File outputRoot = PropertiesAndDirectories.userDir();
+
+		for (MetaMetadata metaMetadata : test.values())
+		{
+			// metaMetadata.translateToMetadataClass();
+			System.out.println('\n');
+		}
 	}
 }
