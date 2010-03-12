@@ -64,4 +64,6 @@ public interface CFPrefNames
 	public static final String	STUDY_COMPOSITION_SAVE_LOCATION	= "study_composition_save_location";
 	
 	public static final String	SHOW_ZONES								= "show_zones";
+	
+	public static final String  HOTSPACE_SURROGATE_DENSITY	= "elements_per_square_inch";
 }
