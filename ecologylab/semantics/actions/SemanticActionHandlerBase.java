@@ -10,10 +10,6 @@ import java.util.Collection;
 
 import ecologylab.generic.ReflectionTools;
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.actions.SemanticAction;
-import ecologylab.semantics.actions.SemanticActionHandler;
-import ecologylab.semantics.actions.SemanticActionNamedArguments;
-import ecologylab.semantics.actions.SemanticActionsKeyWords;
 import ecologylab.semantics.actions.exceptions.SemanticActionExecutionException;
 import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.ContentElement;
@@ -95,8 +91,7 @@ public class SemanticActionHandlerBase<C extends Container, IC extends InfoColle
 			Container ancestor = docType.getContainer();
 			ParsedURL purl = (ParsedURL) semanticActionReturnValueMap.get(purlA.getValue());
 			MetaMetadata mmd = infoCollector.metaMetaDataRepository().getDocumentMM(purl);
-			Container container = infoCollector.getContainer((C) ancestor, purl, false,
-					true, mmd);
+			Container container = infoCollector.getContainer((C) ancestor, purl, false, true, mmd);
 			return container;
 		}
 		return null;
@@ -119,28 +114,26 @@ public class SemanticActionHandlerBase<C extends Container, IC extends InfoColle
 	 * URL. Parameters: the target object and the target field.
 	 */
 	@Override
+	@Deprecated
 	public void getFieldAction(SemanticAction action, DocumentParser docType, IC infoCollector)
+	{
+	}
+
+	public Object getField(Object object, SemanticAction action)
 	{
 		try
 		{
-			// get the method name
-			String returnValue = action.getReturnValue();
-			String actionName = "get" + XMLTools.javaNameFromElementName(returnValue, true);
+			String returnValueName = action.getReturnValue();
+			String getterName = "get" + XMLTools.javaNameFromElementName(returnValueName, true);
 
-			// get the object name
-			String object = action.getObject();
-			if (object == null) // If no name is specified, the metadata is acted upon.
-			{
-				object = SemanticActionsKeyWords.METADATA;
-			}
-
-			// invoke it via reflection
-			handleGeneralAction(action, object, actionName);
+			Method method = ReflectionTools.getMethod(object.getClass(), getterName, null);
+			return method.invoke(object, null);
 		}
 		catch (Exception e)
 		{
 			System.err.println("oops! get_field action failed.");
 			e.printStackTrace();
+			return null;
 		}
 	}
 
@@ -154,12 +147,15 @@ public class SemanticActionHandlerBase<C extends Container, IC extends InfoColle
 	{
 		// get the object on which the action has to be taken
 		String objectName = action.getObject();
+		if (objectName == null)
+			objectName = SemanticActionsKeyWords.METADATA;
 
 		// get the action Name;
 		String actionName = action.getActionName();
+		String properActionName = XMLTools.javaNameFromElementName(actionName, false);
 
 		// call handleGeneralActionMethod
-		handleGeneralAction(action, objectName, actionName);
+		handleGeneralAction(action, objectName, properActionName);
 	}
 
 	/**
@@ -173,85 +169,68 @@ public class SemanticActionHandlerBase<C extends Container, IC extends InfoColle
 	protected void handleGeneralAction(SemanticAction action, String objectName, String actionName)
 			throws IllegalArgumentException, IllegalAccessException, InvocationTargetException
 	{
+		// in new implementation, semantic actions will always have arguments, including the target
+		// object name and the return value name
+
 		// get the object on which the action has to be invoked
 		Object object = semanticActionReturnValueMap.get(objectName);
 		// System.out.println("DEBUG::object=\t" + object);
 
-		// when the action takes no arguments [SIMPLEST CASE :-)]
-		if (!action.hasArguments())
+		// when action has some arguments
+		Collection<Argument> args = action.getArgs();
+		// System.out.println("DEBUG::arguments=\t" + arguments);
+
+		// array to store the data\class type of arguments
+		// note that there is an implicit argument "object"
+		int numArgs = args.size();
+		Class[] argumentTypeArray = new Class[numArgs + 2];
+
+		// array to hold the actual arguments
+		Object[] argumentsArray = new Object[numArgs + 2];
+
+		// for finding the Method object we need to create an array of
+		// classes of the arguments.
+		// also we need to store the actual arguments.
+		argumentsArray[0] = object;
+		argumentTypeArray[0] = Object.class;
+		argumentsArray[1] = action;
+		argumentTypeArray[1] = SemanticAction.class;
+		int i = 2;
+		for (Argument argument : args)
 		{
-			// check if all the pre-conditions are satisfied for this action
-			// if (checkPreConditionFlagsIfAny(action))
-			{
-				// get the method to be invoked on the object
-				Method method = ReflectionTools.getMethod(object.getClass(), actionName, null);
-				// System.out.println("DEBUG::methodToBeInvoked=\t" + method);
+			// get the actual object
+			argumentsArray[i] = semanticActionReturnValueMap.get(argument.getValue());
+			// System.out.println("DEBUG::argumentsArray[" + i + "]=\t" + argumentsArray[i]);
 
-				// invoke the specified method
-				Object returnValue = method.invoke(object, null);
-				// System.out.println("DEBUG::Return Value=\t" + returnValue);
-
-				// set the flags if any
-				setFlagIfAny(action, returnValue);
-
-				// put it into the semantic action return value map
-				if (action.getReturnValue() != null)
-				{
-					// check if the method is not of type void.
-					semanticActionReturnValueMap.put(action.getReturnValue(), returnValue);
-				}
-			}
+			// get the object type/class
+			argumentTypeArray[i] = argumentsArray[i].getClass();
+			// System.out.println("DEBUG::argumentTypeArray[" + i + "]=\t" + argumentTypeArray[i]);
+			i++;
 		}
-		else
+
+		// check if all the pre-conditions are satisfied for this action
+		// if (checkPreConditionFlagsIfAny(action))
 		{
-			// when action has some arguments
-			Collection<Argument> args = action.getArgs();
-			// System.out.println("DEBUG::arguments=\t" + arguments);
+			// get the method to be invoked on the object
+			// Method method = ReflectionTools.getMethod(object.getClass(), actionName,
+			// argumentTypeArray);
+			Method method = ReflectionTools.getMethod(this.getClass(), actionName, argumentTypeArray);
+			// System.out.println("DEBUG::methodToBeInvoked=\t" + method + "\t object class=\t"
+			// + object.getClass());
 
-			// array to store the data\class type of arguments
-			int numArgs = args.size();
-			Class[] argumentTypeArray = new Class[numArgs];
+			// invoke the specified method
+			// Object returnValue = method.invoke(object, argumentsArray);
+			Object returnValue = method.invoke(this, argumentsArray);
+			// System.out.println("DEBUG::Return Value=\t" + returnValue);
 
-			// array to hold the actual arguments
-			Object[] argumentsArray = new Object[numArgs];
+			// set the flags if any
+			setFlagIfAny(action, returnValue);
 
-			// for finding the Method object we need to create an array of
-			// classes of the arguments.
-			// also we need to store the actual arguments.
-			int i = 0;
-			for (Argument argument : args)
+			// put it into the semantic action return value map
+			if (action.getReturnValue() != null)
 			{
-				// get the actual object
-				argumentsArray[i] = semanticActionReturnValueMap.get(argument.getValue());
-				// System.out.println("DEBUG::argumentsArray[" + i + "]=\t" + argumentsArray[i]);
-
-				// get the object type/class
-				argumentTypeArray[i] = argumentsArray[i].getClass();
-				// System.out.println("DEBUG::argumentTypeArray[" + i + "]=\t" + argumentTypeArray[i]);
-				i++;
-			}
-
-			// check if all the pre-conditions are satisfied for this action
-			// if (checkPreConditionFlagsIfAny(action))
-			{
-				// get the method to be invoked on the object
-				Method method = ReflectionTools.getMethod(object.getClass(), actionName, argumentTypeArray);
-				// System.out.println("DEBUG::methodToBeInvoked=\t" + method + "\t object class=\t"
-				// + object.getClass());
-
-				// invoke the specified method
-				Object returnValue = method.invoke(object, argumentsArray);
-				// System.out.println("DEBUG::Return Value=\t" + returnValue);
-
-				// set the flags if any
-				setFlagIfAny(action, returnValue);
-
-				// put it into the semantic action return value map
-				if (action.getReturnValue() != null)
-				{
-					// check if method is not of type void
-					semanticActionReturnValueMap.put(action.getReturnValue(), returnValue);
-				}
+				// check if method is not of type void
+				semanticActionReturnValueMap.put(action.getReturnValue(), returnValue);
 			}
 		}
 	}
@@ -300,23 +279,34 @@ public class SemanticActionHandlerBase<C extends Container, IC extends InfoColle
 	 * certain field of a certain object manually.
 	 */
 	@Override
+	@Deprecated
 	public void setFieldAction(SemanticAction action, DocumentParser docType, IC infoCollector)
 			throws IllegalArgumentException, IllegalAccessException, InvocationTargetException
 	{
+	}
+
+	public void setField(Object object, SemanticAction action, Object value)
+	{
 		try
 		{
-			String actionName = "set" + XMLTools.javaNameFromElementName(action.getReturnValue(), true);
-			String object = action.getObject();
-
-			// invoke it via reflection
-			handleGeneralAction(action, object, actionName);
+			String setterName = "set" + XMLTools.javaNameFromElementName(action.getReturnValue(), true);
+			Method method = ReflectionTools.getMethod(object.getClass(), setterName, new Class[]
+			{ value.getClass() });
+			method.invoke(object, value);
 		}
 		catch (Exception e)
 		{
-			// e.printStackTrace();
-			throw new SemanticActionExecutionException(e, action, semanticActionReturnValueMap);
+			System.err.println("oops! set_field action failed.");
+			e.printStackTrace();
 		}
 	}
+
+	/*
+	 * private void setField(Object object, String actionName) throws IllegalArgumentException,
+	 * IllegalAccessException, InvocationTargetException { Method method =
+	 * ReflectionTools.getMethod(object.getClass(), actionName, null); return method.invoke(object,
+	 * null); }
+	 */
 
 	/**
 	 * This action allows you to specify metadata for a certain object manually.

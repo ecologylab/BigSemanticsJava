@@ -81,7 +81,7 @@ public abstract class SemanticAction extends ElementState
 
 	public SemanticAction()
 	{
-
+		args = new HashMap<String, Argument>();
 	}
 
 	
@@ -141,7 +141,7 @@ public abstract class SemanticAction extends ElementState
 	
 	public Collection<Argument> getArgs()
 	{
-		return args.values();
+		return (args == null) ? null : args.values();
 	}
 	
 	/**

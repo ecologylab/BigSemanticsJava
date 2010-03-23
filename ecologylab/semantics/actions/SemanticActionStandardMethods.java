@@ -47,6 +47,7 @@ public interface SemanticActionStandardMethods
 	/**
 	 * Create a new search
 	 */
+	@Deprecated
 	public static String	CREATE_SEARCH												= "create_search";
 
 	/**

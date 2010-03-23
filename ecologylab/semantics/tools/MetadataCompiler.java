@@ -10,7 +10,6 @@ import ecologylab.appframework.ApplicationEnvironment;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.metametadata.MetaMetadataTranslationScope;
-import ecologylab.xml.ElementState;
 import ecologylab.xml.TranslationScope;
 import ecologylab.xml.XMLTools;
 import ecologylab.xml.XMLTranslationException;
@@ -21,57 +20,43 @@ import ecologylab.xml.XMLTranslationException;
  */
 public class MetadataCompiler extends ApplicationEnvironment
 {
-	private static String importStatement;
-	
-	/**
-	 * @param applicationName
-	 * @throws XMLTranslationException
-	 */
-	public MetadataCompiler(String applicationName) throws XMLTranslationException
-	{
-		super(applicationName);
-		// TODO Auto-generated constructor stub
-	}
-
-	/**
-	 * @param applicationName
-	 * @param translationSpace
-	 * @param args
-	 * @param prefsAssetVersion
-	 * @throws XMLTranslationException
-	 */
-	public MetadataCompiler(String applicationName, TranslationScope translationSpace, String[] args,
-			float prefsAssetVersion) throws XMLTranslationException
-	{
-		super(applicationName, translationSpace, args, prefsAssetVersion);
-		// TODO Auto-generated constructor stub
-	}
+	private static String					importStatement;
 
 	static final TranslationScope	META_METADATA_TRANSLATIONS	= MetaMetadataTranslationScope.get();
-	public static final String DEFAULT_REPOSITORY_FILEPATH = "../cf/config/semantics/metametadata/metaMetadataRepository.xml";
-	
-	public MetadataCompiler(String[] args) throws XMLTranslationException
+
+	public static final String		DEFAULT_REPOSITORY_FILEPATH	= "../cf/config/semantics/metametadata/metaMetadataRepository.xml";
+
+	public static String getImportStatement()
 	{
-		this(args, DEFAULT_REPOSITORY_FILEPATH);
+		return importStatement;
 	}
 
-	/**
-	 * @param applicationName
-	 * @param args
-	 * @throws XMLTranslationException
-	 */
-	public MetadataCompiler(String[] args, String repoFilepath) throws XMLTranslationException
+	public MetadataCompiler(String[] args) throws XMLTranslationException
 	{
 		super("MetadataCompiler", META_METADATA_TRANSLATIONS, args, 1.0F);
+	}
 
-		// String patternXMLFilepath = "../cf/config/semantics/metametadata/metaMetadataRepository.xml";
-		String patternXMLFilepath = repoFilepath;
+	public void compile()
+	{
+		compile(DEFAULT_REPOSITORY_FILEPATH, MetaMetadataRepository.META_METADATA_TSCOPE,
+				MetadataCompilerUtils.DEFAULT_GENERATED_SEMANTICS_LOCATION);
+	}
 
+	public void compile(String mmdRepoFilepath)
+	{
+		compile(mmdRepoFilepath, MetaMetadataRepository.META_METADATA_TSCOPE,
+				MetadataCompilerUtils.DEFAULT_GENERATED_SEMANTICS_LOCATION);
+	}
+
+	public void compile(String mmdRepoFilepath, TranslationScope metaMetadataTScope,
+			String generatedSemanticsLocation)
+	{
 		// ElementState.setUseDOMForTranslateTo(true);
 		MetaMetadataRepository metaMetadataRepository;
 		try
 		{
-			metaMetadataRepository = MetaMetadataRepository.load(new File(patternXMLFilepath));
+			metaMetadataRepository = MetaMetadataRepository.load(new File(mmdRepoFilepath),
+					metaMetadataTScope);
 			// metaMetadataRepository.translateToXML(System.out);
 
 			// for each metadata first find the list of packages in which they have to
@@ -79,15 +64,17 @@ public class MetadataCompiler extends ApplicationEnvironment
 			importStatement = MetadataCompilerUtils.IMPORTS;
 			for (MetaMetadata metaMetadata : metaMetadataRepository.values())
 			{
-				if(metaMetadata.getPackageAttribute()!=null)
+				if (metaMetadata.getPackageAttribute() != null)
 				{
-					importStatement += "import "+metaMetadata.getPackageAttribute()+".*;\n";
+					importStatement += "import " + metaMetadata.getPackageAttribute() + ".*;\n";
 				}
 			}
-			
+
 			// Writer for the translation scope for generated class.
-			MetadataCompilerUtils.createTranslationScopeClass(MetadataCompilerUtils.getGenerationPath(metaMetadataRepository.getPackageName()));
-				
+			String generatedSemanticsPath = MetadataCompilerUtils.getGenerationPath(
+					metaMetadataRepository.getPackageName(), generatedSemanticsLocation);
+			MetadataCompilerUtils.createTranslationScopeClass(generatedSemanticsPath,
+					metaMetadataRepository.packageName());
 
 			// for each meta-metadata in the repository
 			for (MetaMetadata metaMetadata : metaMetadataRepository.values())
@@ -96,7 +83,8 @@ public class MetadataCompiler extends ApplicationEnvironment
 				if (metaMetadata.isGenerateClass())
 				{
 					// translate it into a meta data class.
-					metaMetadata.translateToMetadataClass(metaMetadataRepository.getPackageName(), metaMetadataRepository);
+					metaMetadata.translateToMetadataClass(metaMetadataRepository.getPackageName(),
+							metaMetadataRepository);
 					MetadataCompilerUtils.appendToTranslationScope(XMLTools
 							.classNameFromElementName(metaMetadata.getName())
 							+ ".class,\n");
@@ -112,61 +100,19 @@ public class MetadataCompiler extends ApplicationEnvironment
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 	}
 
-	/**
-	 * @param baseClass
-	 * @param applicationName
-	 * @param args
-	 * @throws XMLTranslationException
-	 */
-	public MetadataCompiler(Class baseClass, String applicationName, String[] args)
-			throws XMLTranslationException
-	{
-		super(baseClass, applicationName, args);
-		// TODO Auto-generated constructor stub
-	}
-
-	/**
-	 * @param baseClass
-	 * @param applicationName
-	 * @param translationSpace
-	 * @param args
-	 * @param prefsAssetVersion
-	 * @throws XMLTranslationException
-	 */
-	public MetadataCompiler(Class baseClass, String applicationName,
-			TranslationScope translationSpace, String[] args, float prefsAssetVersion)
-			throws XMLTranslationException
-	{
-		super(baseClass, applicationName, translationSpace, args, prefsAssetVersion);
-		// TODO Auto-generated constructor stub
-	}
-
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args)
 	{
 		try
 		{
-			new MetadataCompiler(args);
+			MetadataCompiler compiler = new MetadataCompiler(args);
+			compiler.compile();
 		}
 		catch (XMLTranslationException e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 	}
-
-	/**
-	 * @return the importStatement
-	 */
-	public static String getImportStatement()
-	{
-		return importStatement;
-	}
-
 }

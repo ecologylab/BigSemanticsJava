@@ -130,12 +130,14 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 	 * @throws IllegalAccessException 
 	 * @throws IllegalArgumentException 
 	 */
+	@Deprecated
 	public abstract void setFieldAction(SemanticAction action, DocumentParser docType,IC infoCollector) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException;
 
 	/**
 	 * 
 	 * @param action
 	 */
+	@Deprecated
 	public abstract void getFieldAction(SemanticAction action, DocumentParser docType,IC infoCollector);
 	
 	/**
@@ -429,6 +431,13 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 			{
 				createContainer(action, documentType,infoCollector);
 			}*/
+			
+			/**********************************
+			 * these semantic action handlers are not used
+			 * the get_field and set_field actions are now dealt with by a more natural way:
+			 *   first, use handleGeneralAction() to setup the environment (evaluating arguments, storing returned value, etc.)
+			 *   then, call getField() and setField() to do the actual job
+			 **********************************
 			else if (SemanticActionStandardMethods.GET_FIELD_ACTION.equals(actionName))
 			{
 				getFieldAction(action, documentType,infoCollector);
@@ -437,6 +446,8 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 			{
 				setFieldAction(action, documentType,infoCollector);
 			}
+			**********************************/
+			
 			/*else if(SemanticActionStandardMethods.PROCESS_SEARCH.equals(actionName))
 			{
 				processSearch(action,documentType,infoCollector);
