@@ -5,7 +5,6 @@ package ecologylab.semantics.metametadata.example;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -101,15 +100,20 @@ public class MyInfoCollector implements InfoCollector<MyContainer>
 		return collectingListeners;
 	}
 	
-	//load repository file adn stuff
-	public MyInfoCollector(String repoFilepath)
+	//load repository file and stuff
+	public MyInfoCollector(String repoFilepath, TranslationScope metaMetadataTScope, TranslationScope metadataTScope)
 	{
-		mmdRepo = MetaMetadataRepository.load(new File(repoFilepath));
-		mmdRepo.initializeRepository(GeneratedMetadataTranslationScope.get());
+		mmdRepo = MetaMetadataRepository.load(new File(repoFilepath), metaMetadataTScope);
+		mmdRepo.initializeRepository(metadataTScope);
 		rejectDomains = new HashSet<String>();
 		downloadMonitor = new DownloadMonitor("info-collector_download-monitor",
 				DEFAULT_COUNT_DOWNLOAD_THREAD);
 		collectingListeners = new ArrayList<MyContainer.MetadataCollectingListener>();
+	}
+	
+	public MyInfoCollector(String repoFilepath)
+	{
+		this(repoFilepath, MetaMetadataRepository.META_METADATA_TSCOPE, GeneratedMetadataTranslationScope.get());
 	}
 
 	/**

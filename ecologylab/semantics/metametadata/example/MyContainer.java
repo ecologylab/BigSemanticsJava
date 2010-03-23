@@ -15,7 +15,6 @@ import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.ContentElement;
 import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.documentparsers.DocumentParser;
-import ecologylab.semantics.generated.library.GeneratedMetadataTranslationScope;
 import ecologylab.semantics.html.ParagraphText;
 import ecologylab.semantics.html.documentstructure.SemanticAnchor;
 import ecologylab.semantics.metadata.Metadata;
@@ -178,7 +177,7 @@ public class MyContainer extends Container
 	@Override
 	public TranslationScope getGeneratedMetadataTranslationScope()
 	{
-		return GeneratedMetadataTranslationScope.get();
+		return infoCollector.metaMetaDataRepository().metadataTranslationScope();
 	}
 
 	// needed used in downloading process

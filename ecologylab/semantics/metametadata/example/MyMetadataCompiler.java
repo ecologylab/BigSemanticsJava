@@ -10,7 +10,7 @@ import ecologylab.xml.XMLTranslationException;
  * @author quyin
  * 
  */
-public class MetaMetadataCompiler
+public class MyMetadataCompiler
 {
 
 	/**
@@ -23,7 +23,8 @@ public class MetaMetadataCompiler
 		{
 			// use the default repository location
 			// needed to provide this!!
-			new MetadataCompiler(args,"metaMetadataRepository.xml");
+			MetadataCompiler compiler = new MetadataCompiler(args);
+			compiler.compile("metaMetadataRepository.xml");
 		}
 		catch (XMLTranslationException e)
 		{
