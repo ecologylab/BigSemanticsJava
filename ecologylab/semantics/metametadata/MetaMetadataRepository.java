@@ -4,6 +4,7 @@
 package ecologylab.semantics.metametadata;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -11,6 +12,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import ecologylab.collections.PrefixCollection;
+import ecologylab.generic.Debug;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.net.ParsedURL;
 import ecologylab.net.UserAgent;
@@ -126,39 +128,127 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	}
 
 	/**
-	 * Load MetaMetadata from repository file(s). Does not build repository maps, because this
+	 * Load MetaMetadata from repository files. Does not build repository maps, because this
 	 * requires a Metadata TranslationScope, which comes from ecologylabGeneratedSemantics.
 	 * 
-	 * @param file
-	 * @param metadataTScope
+	 * @param file directory
 	 * @return
 	 */
 	public static MetaMetadataRepository load(File file)
 	{
 		return load(file, META_METADATA_TSCOPE);
 	}
-
-	public static MetaMetadataRepository load(File file, TranslationScope metaMetadataTScope)
+	
+	/**
+	 * Load MetaMetadata from repository files from the file directory. 
+	 * Loads the base level xml files first, then the xml files in the repositorySources
+	 * folder and lastly the files in the powerUser folder.
+	 * Does not build repository maps, because this requires a Metadata TranslationScope,
+	 * which comes from ecologylabGeneratedSemantics.
+	 * 
+	 * @param file directory
+	 * @param metadataTScope
+	 * @return
+	 */
+	public static MetaMetadataRepository load(File dir, TranslationScope metaMetadataTScope)
 	{
 		MetaMetadataRepository result = null;
-		try
+		
+		FileFilter xmlFilter = new FileFilter() {
+		    public boolean accept(File dir) {
+		        return dir.getName().endsWith(".xml");
+		    }
+		};
+				
+		File powerUserDir = new File(dir, "powerUser");
+		File repositorySources = new File(dir, "repositorySources");
+			
+		for( File file : dir.listFiles(xmlFilter))
 		{
-			result = (MetaMetadataRepository) ElementState.translateFromXML(file, metaMetadataTScope);
-			// result.populateURLBaseMap();
-			// // necessary to get, for example, fields for document into pdf...
-			// result.populateInheritedValues();
-			//			
-			// result.populateMimeMap();
-			// For debug
-			// this.metaMetaDataRepository.writePrettyXML(System.out);
+			MetaMetadataRepository repos = readRepository(file, metaMetadataTScope);
+			if(result == null)
+				result = repos;
+			else
+				result.joinRepository(repos);								
 		}
-		catch (XMLTranslationException e)
-		{
-			e.printStackTrace();
-		}
+		
+		for( File file : repositorySources.listFiles(xmlFilter))
+			result.joinRepository(readRepository(file, metaMetadataTScope));
+				
+		for( File file : powerUserDir.listFiles(xmlFilter))
+			result.joinRepository(readRepository(file, metaMetadataTScope));
+		
 		MetadataBase.setRepository(result);
 
 		return result;
+	}
+	
+	/**
+	 * Load MetaMetadataRepository from one file. 
+	 * 
+	 * @param file
+	 * @param metadataTScope
+	 * @return repository
+	 */
+	private static MetaMetadataRepository readRepository(File file, TranslationScope metaMetadataTScope)
+	{
+		MetaMetadataRepository repos	= null;
+		try 
+		{
+			repos = (MetaMetadataRepository) ElementState.translateFromXML(file, metaMetadataTScope);
+		} catch (XMLTranslationException e) 
+		{
+			Debug.error("MetaMetadataRepository", "translating repository source file " + file.getAbsolutePath());
+		}
+		return repos;
+	}
+	
+	/**
+	 * Combines the HashMaps and HashMapStates of the parameter repository to
+	 * this repository. 
+	 * 
+	 * @param repository
+	 * @return 
+	 */
+	public void joinRepository(MetaMetadataRepository repository)
+	{
+		//combine userAgents
+		if (!combineMapStates(repository.userAgents, this.userAgents))
+			this.userAgents	= repository.userAgents;
+				
+		//combine searchEngines
+		if (!combineMapStates(repository.searchEngines, this.searchEngines))
+			this.searchEngines	= repository.searchEngines;
+				
+		//combine namedStyles
+		if (!combineMapStates(repository.namedStyles, this.namedStyles))
+			this.namedStyles	= repository.namedStyles;
+				
+		//set metaMetadata to have the correct parent repository
+		for(MetaMetadata metametadata : repository.repositoryByTagName)
+			metametadata.setParent(this);
+		
+		//combine metaMetadata
+		if (!combineMaps(repository.repositoryByTagName, this.repositoryByTagName))
+			this.repositoryByTagName	= repository.repositoryByTagName;		
+	}
+
+	private boolean combineMaps(HashMap srcMap, HashMap destMap) 
+	{
+		if (destMap == null)
+			return false;
+		if (srcMap != null)
+			destMap.putAll(srcMap);
+		return true;
+	}
+	
+	private boolean combineMapStates(HashMapState srcMap, HashMapState destMap) 
+	{
+		if (destMap == null)
+			return false;
+		if (srcMap != null)
+			destMap.putAll(srcMap);
+		return true;
 	}
 
 	/**

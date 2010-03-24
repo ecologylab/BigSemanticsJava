@@ -24,7 +24,7 @@ public class MetadataCompiler extends ApplicationEnvironment
 
 	static final TranslationScope	META_METADATA_TRANSLATIONS	= MetaMetadataTranslationScope.get();
 
-	public static final String		DEFAULT_REPOSITORY_FILEPATH	= "../cf/config/semantics/metametadata/metaMetadataRepository.xml";
+	public static final String		DEFAULT_REPOSITORY_DIRECTORY	= "../cf/config/semantics/metametadata/metaMetadataRepository";
 
 	public static String getImportStatement()
 	{
@@ -38,7 +38,7 @@ public class MetadataCompiler extends ApplicationEnvironment
 
 	public void compile()
 	{
-		compile(DEFAULT_REPOSITORY_FILEPATH, MetaMetadataRepository.META_METADATA_TSCOPE,
+		compile(DEFAULT_REPOSITORY_DIRECTORY, MetaMetadataRepository.META_METADATA_TSCOPE,
 				MetadataCompilerUtils.DEFAULT_GENERATED_SEMANTICS_LOCATION);
 	}
 

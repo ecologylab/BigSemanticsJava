@@ -125,10 +125,10 @@ implements InfoCollector<AC>, SemanticsPrefs, ApplicationProperties, DocumentPar
 	protected SeedSet															seedSet												= null;
 
 	private final Scope													sessionScope;
-
-	protected static File												METAMETADATA_REPOSITORY_FILE;
+	
+	protected static File												METAMETADATA_REPOSITORY_DIR_FILE;
 	protected static File												METAMETADATA_SITES_FILE;
-
+		
 	protected ArrayList<DownloadMonitor>				downloadMonitors							= new ArrayList<DownloadMonitor>();
 
 	/**
@@ -182,8 +182,9 @@ implements InfoCollector<AC>, SemanticsPrefs, ApplicationProperties, DocumentPar
 	
 	static final File	LOCAL_META_METADATA_DIR_FILE		= new File(EnvironmentGeneric.codeBase().file(), "/config/semantics/");
 	
-	static final String	META_METADATA_REPOSITORY_XML	= "metametadata/metaMetadataRepository.xml";
+	static final String	META_METADATA_REPOSITORY_DIR		= "metametadata/metaMetadataRepository";
 	static final String	METAMETADATA_SITES_XML				= "metametadata/sites.xml";
+
 
 	/**
 	 * This is the xml file defining ALL the metaMetadata required
@@ -208,25 +209,26 @@ implements InfoCollector<AC>, SemanticsPrefs, ApplicationProperties, DocumentPar
 		// MetaMetadata repository file has all the metametadata needed for metadata collection, 
 		// retrieval and incontextMetadata display.
 		Assets.downloadSemanticsZip(METAMETADATA, null, !USE_ASSETS_CACHE, SemanticsAssetVersions.METAMETADATA_ASSET_VERSION);
-
+	
 		if(Pref.lookupBoolean(USE_LOCAL_CF_PREF_NAME)) //default is set to false in the metaprefs.
 		{
 			println("\t\t-- Reading meta_metadata from : " + LOCAL_META_METADATA_DIR_FILE);
-			METAMETADATA_REPOSITORY_FILE 		= new File(LOCAL_META_METADATA_DIR_FILE, META_METADATA_REPOSITORY_XML);
+			METAMETADATA_REPOSITORY_DIR_FILE 		= new File(LOCAL_META_METADATA_DIR_FILE, META_METADATA_REPOSITORY_DIR);			
 			METAMETADATA_SITES_FILE 				= new File(LOCAL_META_METADATA_DIR_FILE, METAMETADATA_SITES_XML);	
+			
 		}
 		else
 		{
 			println("\t\t-- Reading meta_metadata from zip");
-			METAMETADATA_REPOSITORY_FILE = Assets.getSemanticsFile(META_METADATA_REPOSITORY_XML);
+			METAMETADATA_REPOSITORY_DIR_FILE 	= Assets.getSemanticsFile(META_METADATA_REPOSITORY_DIR);
 			METAMETADATA_SITES_FILE 			= Assets.getSemanticsFile(METAMETADATA_SITES_XML);
 		}
-		META_METADATA_REPOSITORY = MetaMetadataRepository.load(METAMETADATA_REPOSITORY_FILE);
+		META_METADATA_REPOSITORY = MetaMetadataRepository.load(METAMETADATA_REPOSITORY_DIR_FILE);
 		
 		DOCUMENT_META_METADATA						= META_METADATA_REPOSITORY.getByTagName(DOCUMENT_TAG);
-		PDF_META_METADATA									= META_METADATA_REPOSITORY.getByTagName(PDF_TAG);
-		SEARCH_META_METADATA								= META_METADATA_REPOSITORY.getByTagName(SEARCH_TAG);
-		IMAGE_META_METADATA								= META_METADATA_REPOSITORY.getByTagName(IMAGE_TAG);
+		PDF_META_METADATA							= META_METADATA_REPOSITORY.getByTagName(PDF_TAG);
+		SEARCH_META_METADATA						= META_METADATA_REPOSITORY.getByTagName(SEARCH_TAG);
+		IMAGE_META_METADATA							= META_METADATA_REPOSITORY.getByTagName(IMAGE_TAG);
 	}
 
 	public InfoCollectorBase(Scope sessionScope)
