@@ -31,6 +31,8 @@ import ecologylab.xml.XMLTools;
 public class SemanticActionHandlerBase<C extends Container, IC extends InfoCollector<C>> extends
 		SemanticActionHandler<C, IC>
 {
+	public static final String handlerMethodName = "handle";
+	
 	public SemanticActionHandlerBase()
 	{
 		super();
@@ -119,24 +121,6 @@ public class SemanticActionHandlerBase<C extends Container, IC extends InfoColle
 	{
 	}
 
-	public Object getField(Object object, SemanticAction action)
-	{
-		try
-		{
-			String returnValueName = action.getReturnValue();
-			String getterName = "get" + XMLTools.javaNameFromElementName(returnValueName, true);
-
-			Method method = ReflectionTools.getMethod(object.getClass(), getterName, null);
-			return method.invoke(object, null);
-		}
-		catch (Exception e)
-		{
-			System.err.println("oops! get_field action failed.");
-			e.printStackTrace();
-			return null;
-		}
-	}
-
 	/**
 	 * The entry method of handling semantic actions. Basically, this method gets names, assemble the
 	 * action and call a helper function to actually handle the action.
@@ -183,19 +167,17 @@ public class SemanticActionHandlerBase<C extends Container, IC extends InfoColle
 		// array to store the data\class type of arguments
 		// note that there is an implicit argument "object"
 		int numArgs = args.size();
-		Class[] argumentTypeArray = new Class[numArgs + 2];
+		Class[] argumentTypeArray = new Class[numArgs + 1];
 
 		// array to hold the actual arguments
-		Object[] argumentsArray = new Object[numArgs + 2];
+		Object[] argumentsArray = new Object[numArgs + 1];
 
 		// for finding the Method object we need to create an array of
 		// classes of the arguments.
 		// also we need to store the actual arguments.
 		argumentsArray[0] = object;
 		argumentTypeArray[0] = Object.class;
-		argumentsArray[1] = action;
-		argumentTypeArray[1] = SemanticAction.class;
-		int i = 2;
+		int i = 1;
 		for (Argument argument : args)
 		{
 			// get the actual object
@@ -214,13 +196,13 @@ public class SemanticActionHandlerBase<C extends Container, IC extends InfoColle
 			// get the method to be invoked on the object
 			// Method method = ReflectionTools.getMethod(object.getClass(), actionName,
 			// argumentTypeArray);
-			Method method = ReflectionTools.getMethod(this.getClass(), actionName, argumentTypeArray);
+			Method method = ReflectionTools.getMethod(action.getClass(), handlerMethodName, argumentTypeArray);
 			// System.out.println("DEBUG::methodToBeInvoked=\t" + method + "\t object class=\t"
 			// + object.getClass());
 
 			// invoke the specified method
 			// Object returnValue = method.invoke(object, argumentsArray);
-			Object returnValue = method.invoke(this, argumentsArray);
+			Object returnValue = method.invoke(action, argumentsArray);
 			// System.out.println("DEBUG::Return Value=\t" + returnValue);
 
 			// set the flags if any
@@ -283,22 +265,6 @@ public class SemanticActionHandlerBase<C extends Container, IC extends InfoColle
 	public void setFieldAction(SemanticAction action, DocumentParser docType, IC infoCollector)
 			throws IllegalArgumentException, IllegalAccessException, InvocationTargetException
 	{
-	}
-
-	public void setField(Object object, SemanticAction action, Object value)
-	{
-		try
-		{
-			String setterName = "set" + XMLTools.javaNameFromElementName(action.getReturnValue(), true);
-			Method method = ReflectionTools.getMethod(object.getClass(), setterName, new Class[]
-			{ value.getClass() });
-			method.invoke(object, value);
-		}
-		catch (Exception e)
-		{
-			System.err.println("oops! set_field action failed.");
-			e.printStackTrace();
-		}
 	}
 
 	/*

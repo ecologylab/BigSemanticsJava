@@ -38,25 +38,22 @@ public class MetadataCompiler extends ApplicationEnvironment
 
 	public void compile()
 	{
-		compile(DEFAULT_REPOSITORY_DIRECTORY, MetaMetadataRepository.META_METADATA_TSCOPE,
-				MetadataCompilerUtils.DEFAULT_GENERATED_SEMANTICS_LOCATION);
+
+		compile(DEFAULT_REPOSITORY_DIRECTORY, MetadataCompilerUtils.DEFAULT_GENERATED_SEMANTICS_LOCATION);
 	}
 
-	public void compile(String mmdRepoFilepath)
+	public void compile(String mmdRepositoryDir)
 	{
-		compile(mmdRepoFilepath, MetaMetadataRepository.META_METADATA_TSCOPE,
-				MetadataCompilerUtils.DEFAULT_GENERATED_SEMANTICS_LOCATION);
+		compile(mmdRepositoryDir, MetadataCompilerUtils.DEFAULT_GENERATED_SEMANTICS_LOCATION);
 	}
 
-	public void compile(String mmdRepoFilepath, TranslationScope metaMetadataTScope,
-			String generatedSemanticsLocation)
+	public void compile(String mmdRepositoryDir, String generatedSemanticsLocation)
 	{
 		// ElementState.setUseDOMForTranslateTo(true);
 		MetaMetadataRepository metaMetadataRepository;
 		try
 		{
-			metaMetadataRepository = MetaMetadataRepository.load(new File(mmdRepoFilepath),
-					metaMetadataTScope);
+			metaMetadataRepository = MetaMetadataRepository.load(new File(mmdRepositoryDir));
 			// metaMetadataRepository.translateToXML(System.out);
 
 			// for each metadata first find the list of packages in which they have to

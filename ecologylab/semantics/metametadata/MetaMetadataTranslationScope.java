@@ -20,8 +20,8 @@ import ecologylab.semantics.actions.GeneralSemanticAction;
 import ecologylab.semantics.actions.GetFieldSemanticAction;
 import ecologylab.semantics.actions.IfSemanticAction;
 import ecologylab.semantics.actions.SemanticAction;
+import ecologylab.semantics.actions.SetFieldSemanticAction;
 import ecologylab.semantics.actions.SetMetadataSemanticAction;
-import ecologylab.semantics.actions.SetterSemanticAction;
 import ecologylab.textformat.NamedStyle;
 import ecologylab.xml.TranslationScope;
 
@@ -49,7 +49,7 @@ public class MetaMetadataTranslationScope extends Debug
 			ParseDocumentNowSemanticAction.class, 
 			SetMetadataSemanticAction.class,
 			GetFieldSemanticAction.class,
-			SetterSemanticAction.class,
+			SetFieldSemanticAction.class,
 			SearchEngines.class,
 			SearchEngine.class,
 			CreateSemanticAnchorSemanticAction.class,

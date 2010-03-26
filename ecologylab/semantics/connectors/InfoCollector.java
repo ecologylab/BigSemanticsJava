@@ -86,10 +86,10 @@ public interface InfoCollector<C extends Container>
 	
 	C getContainerForSearch(C ancestor, ParsedURL purl, Seed seed, MetaMetadata metaMetadata);
 
-	C getContainer(C ancestor, ParsedURL purl, boolean reincarnate,
+	Container getContainer(C ancestor, ParsedURL purl, boolean reincarnate,
 			boolean addToCandidatesIfNeeded, MetaMetadata metaMetadata);
 	
-	public void removeCandidateContainer(C candidate);
+	public void removeCandidateContainer(Container candidate);
 
 	Scope sessionScope();
 
@@ -114,7 +114,7 @@ public interface InfoCollector<C extends Container>
 	
 	JFrame getJFrame();
 	
-	C getContainerDownloadIfNeeded(C ancestor, ParsedURL purl, 
+	Container getContainerDownloadIfNeeded(C ancestor, ParsedURL purl, 
 			Seed seed, boolean dnd,
 			boolean justCrawl, boolean justMedia);
 }

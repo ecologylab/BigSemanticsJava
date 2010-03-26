@@ -23,19 +23,27 @@ public abstract class NestedSemanticAction<SA extends SemanticAction> extends Se
 	 * List of nested semantic actions.
 	 */
 	@xml_nowrap 
-	@xml_collection()
-	@xml_classes(
-	{ CreateAndVisualizeImgSurrogateSemanticAction.class,
-		  CreateContainerSemanticAction.class,
-			ForEachSemanticAction.class, GeneralSemanticAction.class,
-			ParseDocumentNowSemanticAction.class,
-			SetMetadataSemanticAction.class, SetterSemanticAction.class,
-		  GetFieldSemanticAction.class,
-			CreateSemanticAnchorSemanticAction.class, ParseDocumentLaterSemanticAction.class,
-			GetXPathNodeSemanticAction.class, IfSemanticAction.class,
-			CreateAndVisualizeTextSurrogateSemanticAction.class,
-			EvaluateRankWeight.class,
-			BackOffFromSite.class
+	@xml_collection
+	// @xml_scope(NestedSemanticActionsTranslationScope.NESTED_SEMANTIC_ACTIONS_SCOPE)
+	@xml_classes({
+		BackOffFromSite.class,
+		CreateAndVisualizeImgSurrogateSemanticAction.class,
+		CreateAndVisualizeTextSurrogateSemanticAction.class,
+	  CreateContainerSemanticAction.class,
+		CreateSemanticAnchorSemanticAction.class,
+		EvaluateRankWeight.class,
+		ForEachSemanticAction.class,
+		GeneralSemanticAction.class,
+		GetFieldSemanticAction.class,
+		GetXPathNodeSemanticAction.class,
+		IfSemanticAction.class,
+		ParseDocumentLaterSemanticAction.class,
+		ParseDocumentNowSemanticAction.class,
+		SetFieldSemanticAction.class,
+		SetMetadataSemanticAction.class,
+		
+		CreateConceptOutlinkSemanticAction.class,
+		AnalyzeParagraphSemanticAction.class
 	})
 	private ArrayList<SA>	nestedSemanticActionList;
 

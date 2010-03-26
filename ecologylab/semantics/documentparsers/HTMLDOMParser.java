@@ -219,7 +219,7 @@ extends HTMLParserCommon<C, IC>
 
 	public void removeTheContainerFromCandidates(ParsedURL containerPURL)
 	{
-		C candidate = getInfoCollector().getContainer(container, containerPURL, false, false, null);
+		Container candidate = getInfoCollector().getContainer(container, containerPURL, false, false, null);
 		getInfoCollector().removeCandidateContainer(candidate);
 	}
 
@@ -263,7 +263,7 @@ extends HTMLParserCommon<C, IC>
 			{
 				MetaMetadataRepository mmdRepository= infoCollector.metaMetaDataRepository();
 				MetaMetadata metaMetadata 					= mmdRepository.getDocumentMM(hrefPurl);
-				C hrefContainer 					= infoCollector.getContainer(container, hrefPurl, false, false, metaMetadata);
+				Container hrefContainer 					= infoCollector.getContainer(container, hrefPurl, false, false, metaMetadata);
 				if (hrefContainer != null)
 				{
 					SemanticAnchor semAnchor 					= new SemanticAnchor(container.purl(), anchorContext);

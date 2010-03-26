@@ -434,9 +434,8 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 			
 			/**********************************
 			 * these semantic action handlers are not used
-			 * the get_field and set_field actions are now dealt with by a more natural way:
-			 *   first, use handleGeneralAction() to setup the environment (evaluating arguments, storing returned value, etc.)
-			 *   then, call getField() and setField() to do the actual job
+			 * the get_field and set_field actions are now dealt with by handleGeneralAction(),
+			 * which also deals with the environment
 			 **********************************
 			else if (SemanticActionStandardMethods.GET_FIELD_ACTION.equals(actionName))
 			{
