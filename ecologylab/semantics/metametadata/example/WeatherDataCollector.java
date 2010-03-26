@@ -24,6 +24,7 @@ import ecologylab.xml.TranslationScope;
 import ecologylab.xml.XMLTranslationException;
 
 //needed
+import ecologylab.semantics.actions.NestedSemanticActionsTranslationScope;
 import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.generated.library.WeatherReport;
 
@@ -52,8 +53,12 @@ public class WeatherDataCollector
 	public static void main(String[] args) throws XMLTranslationException, IOException,
 			InterruptedException
 	{
+		TranslationScope nsats = NestedSemanticActionsTranslationScope.get();
+		
+		MetaMetadataRepository.load(new File("."));
+		
 		// create the infoCollector - specifiy the repos
-		MyInfoCollector infoCollector = new MyInfoCollector("metaMetadataRepository.xml");
+		MyInfoCollector infoCollector = new MyInfoCollector(".");
 		// add the WeatherReportCollector to the listener list, so that we can collect information we
 		// need from the metadata
 		infoCollector.addListener(MetadataCollector.get());

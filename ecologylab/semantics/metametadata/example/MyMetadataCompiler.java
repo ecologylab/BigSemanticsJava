@@ -24,7 +24,7 @@ public class MyMetadataCompiler
 			// use the default repository location
 			// needed to provide this!!
 			MetadataCompiler compiler = new MetadataCompiler(args);
-			compiler.compile("metaMetadataRepository.xml");
+			compiler.compile(".");
 		}
 		catch (XMLTranslationException e)
 		{

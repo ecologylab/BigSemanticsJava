@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import ecologylab.generic.DispatchTarget;
 import ecologylab.io.BasicSite;
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.actions.SemanticActionHandlerBase;
 import ecologylab.semantics.connectors.AbstractImgElement;
 import ecologylab.semantics.connectors.Container;
@@ -45,9 +46,8 @@ import ecologylab.xml.TranslationScope;
 public class MyContainer extends Container
 {
 	/**
-	 * New !!
-	 * This interface enables users to customize their own collecting methods. Use MyInfoCollector to
-	 * add a listener who implemented this interface.
+	 * New !! This interface enables users to customize their own collecting methods. Use
+	 * MyInfoCollector to add a listener who implemented this interface.
 	 * 
 	 * @author quyin
 	 * 
@@ -56,7 +56,7 @@ public class MyContainer extends Container
 	{
 		void collect(Metadata metadata);
 	}
-	
+
 	private ArrayList<MetadataCollectingListener>	collectingListeners;
 
 	public ArrayList<MetadataCollectingListener> getCollectingListeners()
@@ -69,12 +69,16 @@ public class MyContainer extends Container
 		this.collectingListeners = collectingListeners;
 	}
 
-	protected InfoCollector	infoCollector;
+	protected InfoCollector					infoCollector;
 
-	public MyContainer(ContentElement progenitor, InfoCollector infoCollector, ParsedURL purl)
+	protected SemanticActionHandler	semanticActionHandler;
+
+	public MyContainer(ContentElement progenitor, InfoCollector infoCollector,
+			SemanticActionHandler semanticActionHandler, ParsedURL purl)
 	{
 		super(progenitor);
 		this.infoCollector = infoCollector;
+		this.semanticActionHandler = semanticActionHandler;
 		this.metadata = (Document) infoCollector.constructDocument(purl);
 
 		initPurl = purl;
@@ -220,14 +224,14 @@ public class MyContainer extends Container
 	@Override
 	public void performDownload() throws IOException
 	{
-		//calls connect to find the right parser, then calls the infocollector to download the content
-		//also process the semantic actions
+		// calls connect to find the right parser, then calls the infocollector to download the content
+		// also process the semantic actions
 		DocumentParser parser = DocumentParser.connect(purl(), this, infoCollector,
-				new SemanticActionHandlerBase());
-		
+				semanticActionHandler);
+
 		parser.parse();
 
-		//listeners again
+		// listeners again
 		for (MetadataCollectingListener listener : collectingListeners)
 		{
 			listener.collect(metadata);
