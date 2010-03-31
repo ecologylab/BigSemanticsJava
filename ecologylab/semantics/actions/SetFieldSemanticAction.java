@@ -4,6 +4,7 @@
 package ecologylab.semantics.actions;
 
 import java.lang.reflect.Method;
+import java.util.Map;
 
 import ecologylab.generic.ReflectionTools;
 import ecologylab.xml.XMLTools;
@@ -34,17 +35,25 @@ public @xml_tag(SemanticActionStandardMethods.SET_FIELD_ACTION) class SetFieldSe
 
 	public void handle(Object object, Object value)
 	{
+	}
+
+	@Override
+	public Object handle(Object obj, Map<String, Object> args)
+	{
 		try
 		{
 			String setterName = "set" + XMLTools.javaNameFromElementName(getReturnValue(), true);
-			Method method = ReflectionTools.getMethod(object.getClass(), setterName, new Class[]
+			Object value = args.get("value");
+			
+			Method method = ReflectionTools.getMethod(obj.getClass(), setterName, new Class[]
 			{ value.getClass() });
-			method.invoke(object, value);
+			method.invoke(obj, value);
 		}
 		catch (Exception e)
 		{
-			System.err.println("oops! set_field action failed.");
 			e.printStackTrace();
+			System.err.println("oops! set_field action failed.");
 		}
+		return null;
 	}
 }

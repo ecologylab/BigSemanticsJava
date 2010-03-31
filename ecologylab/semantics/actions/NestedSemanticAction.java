@@ -42,8 +42,10 @@ public abstract class NestedSemanticAction<SA extends SemanticAction> extends Se
 		SetFieldSemanticAction.class,
 		SetMetadataSemanticAction.class,
 		
-		CreateConceptOutlinkSemanticAction.class,
-		AnalyzeParagraphSemanticAction.class
+		CreateConceptSemanticAction.class,
+		AddConceptOutlinkSemanticAction.class,
+		AddConceptCategorySemanticAction.class,
+		FinishConceptSemanticAction.class
 	})
 	private ArrayList<SA>	nestedSemanticActionList;
 

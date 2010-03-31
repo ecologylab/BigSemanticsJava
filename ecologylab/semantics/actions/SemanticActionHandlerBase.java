@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import ecologylab.generic.ReflectionTools;
 import ecologylab.net.ParsedURL;
@@ -31,8 +33,8 @@ import ecologylab.xml.XMLTools;
 public class SemanticActionHandlerBase<C extends Container, IC extends InfoCollector<C>> extends
 		SemanticActionHandler<C, IC>
 {
-	public static final String handlerMethodName = "handle";
-	
+	public static final String	handlerMethodName	= "handle";
+
 	public SemanticActionHandlerBase()
 	{
 		super();
@@ -161,33 +163,16 @@ public class SemanticActionHandlerBase<C extends Container, IC extends InfoColle
 		// System.out.println("DEBUG::object=\t" + object);
 
 		// when action has some arguments
-		Collection<Argument> args = action.getArgs();
+		Map<String, Argument> args = action.getArgs();
 		// System.out.println("DEBUG::arguments=\t" + arguments);
 
-		// array to store the data\class type of arguments
-		// note that there is an implicit argument "object"
-		int numArgs = args.size();
-		Class[] argumentTypeArray = new Class[numArgs + 1];
+		Map<String, Object> argValues = new HashMap<String, Object>();
 
-		// array to hold the actual arguments
-		Object[] argumentsArray = new Object[numArgs + 1];
-
-		// for finding the Method object we need to create an array of
-		// classes of the arguments.
-		// also we need to store the actual arguments.
-		argumentsArray[0] = object;
-		argumentTypeArray[0] = Object.class;
-		int i = 1;
-		for (Argument argument : args)
+		for (String argumentName : args.keySet())
 		{
 			// get the actual object
-			argumentsArray[i] = semanticActionReturnValueMap.get(argument.getValue());
-			// System.out.println("DEBUG::argumentsArray[" + i + "]=\t" + argumentsArray[i]);
-
-			// get the object type/class
-			argumentTypeArray[i] = argumentsArray[i].getClass();
-			// System.out.println("DEBUG::argumentTypeArray[" + i + "]=\t" + argumentTypeArray[i]);
-			i++;
+			Object value = semanticActionReturnValueMap.get(action.getArgument(argumentName).getValue());
+			argValues.put(argumentName, value);
 		}
 
 		// check if all the pre-conditions are satisfied for this action
@@ -196,13 +181,15 @@ public class SemanticActionHandlerBase<C extends Container, IC extends InfoColle
 			// get the method to be invoked on the object
 			// Method method = ReflectionTools.getMethod(object.getClass(), actionName,
 			// argumentTypeArray);
-			Method method = ReflectionTools.getMethod(action.getClass(), handlerMethodName, argumentTypeArray);
+			
+			Method method = ReflectionTools.getMethod(action.getClass(), handlerMethodName, new Class[]
+			{ Object.class, Map.class });
 			// System.out.println("DEBUG::methodToBeInvoked=\t" + method + "\t object class=\t"
 			// + object.getClass());
 
 			// invoke the specified method
 			// Object returnValue = method.invoke(object, argumentsArray);
-			Object returnValue = method.invoke(action, argumentsArray);
+			Object returnValue = method.invoke(action, object, argValues);
 			// System.out.println("DEBUG::Return Value=\t" + returnValue);
 
 			// set the flags if any

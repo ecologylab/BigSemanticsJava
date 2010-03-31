@@ -3,7 +3,9 @@
  */
 package ecologylab.semantics.actions;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Map;
 
 import ecologylab.generic.ReflectionTools;
 import ecologylab.xml.XMLTools;
@@ -15,11 +17,9 @@ import ecologylab.xml.ElementState.xml_tag;
  * 
  */
 @xml_inherit
-public @xml_tag(SemanticActionStandardMethods.GET_FIELD_ACTION) 
-class GetFieldSemanticAction extends SemanticAction 
-implements SemanticActionStandardMethods
+public @xml_tag(SemanticActionStandardMethods.GET_FIELD_ACTION)
+class GetFieldSemanticAction extends SemanticAction implements SemanticActionStandardMethods
 {
-
 
 	@Override
 	public String getActionName()
@@ -30,24 +30,24 @@ implements SemanticActionStandardMethods
 	@Override
 	public void handleError()
 	{
-		// TODO Auto-generated method stub
-		
 	}
 
-	public Object handle(Object object)
+	@Override
+	public Object handle(Object obj, Map<String, Object> args)
 	{
 		try
 		{
 			String returnValueName = getReturnValue();
 			String getterName = "get" + XMLTools.javaNameFromElementName(returnValueName, true);
 
-			Method method = ReflectionTools.getMethod(object.getClass(), getterName, null);
-			return method.invoke(object, null);
+			Method method = ReflectionTools.getMethod(obj.getClass(), getterName, null);
+			return method.invoke(obj, null);
 		}
 		catch (Exception e)
 		{
-			System.err.println("oops! get_field action failed.");
 			e.printStackTrace();
+			System.err
+					.format("The get_field semantic action cannot be handled. See the stack trace for details.");
 			return null;
 		}
 	}

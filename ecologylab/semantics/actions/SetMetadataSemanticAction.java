@@ -3,6 +3,8 @@
  */
 package ecologylab.semantics.actions;
 
+import java.util.Map;
+
 import ecologylab.xml.xml_inherit;
 import ecologylab.xml.ElementState.xml_tag;
 
@@ -25,6 +27,14 @@ public @xml_tag(SemanticActionStandardMethods.SET_METADATA) class SetMetadataSem
 	{
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public Object handle(Object obj, Map<String, Object> args)
+	{
+		// TODO Auto-generated method stub
+		System.err.format("The set_metadata semantic action is called! but it is no longer used.");
+		return null;
 	}
 
 }

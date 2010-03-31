@@ -489,7 +489,7 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 		}
 		catch(Exception e)
 		{
-			//e.printStackTrace();
+			e.printStackTrace();
 			System.out.println("The action "+actionName+" could not be executed. Please see the stack trace for errors.");
 		}
 	}

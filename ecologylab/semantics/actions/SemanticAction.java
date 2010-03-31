@@ -6,6 +6,7 @@ package ecologylab.semantics.actions;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 
 import ecologylab.semantics.metametadata.Argument;
 import ecologylab.semantics.metametadata.Check;
@@ -139,9 +140,9 @@ public abstract class SemanticAction extends ElementState
 		return args != null && args.size() > 0;
 	}
 	
-	public Collection<Argument> getArgs()
+	public Map<String, Argument> getArgs()
 	{
-		return (args == null) ? null : args.values();
+		return (args == null) ? null : args;
 	}
 	
 	/**
@@ -196,6 +197,9 @@ public abstract class SemanticAction extends ElementState
 		return defVars;
 	}
 	
-	
+	public Object handle(Object obj, Map<String, Object> args)
+	{
+		return null;
+	}
 
 }
