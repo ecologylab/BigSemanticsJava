@@ -21,6 +21,7 @@ import ecologylab.semantics.html.documentstructure.SemanticAnchor;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.MetaMetadata;
+import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.model.text.ITermVector;
 import ecologylab.semantics.seeding.SearchResult;
 import ecologylab.semantics.seeding.Seed;
@@ -122,15 +123,27 @@ public class MyContainer extends Container
 	@Override
 	public Document constructAndSetMetadata(MetaMetadata metaMetadata)
 	{
-		// TODO Auto-generated method stub
-		return null;
+		Document result = constructMetadata(metaMetadata);
+		setMetadata(result);
+		return result;
 	}
 
 	@Override
 	public Document constructMetadata(MetaMetadata metaMetadata)
 	{
-		// TODO Auto-generated method stub
-		return null;
+		if (metaMetadata == null)
+		{
+			MetaMetadataRepository metaMetaDataRepository = infoCollector.metaMetaDataRepository();
+			metaMetadata = metaMetaDataRepository.getDocumentMM((ParsedURL) null); // get document mmd
+		}
+		Document result = (Document) metaMetadata.constructMetadata();
+		if (result == null)
+		{
+			warning("Can't find Metadata class for tag " + metaMetadata.getName()
+					+ " Building default Document Metadata instead.");
+			result = new Document(metaMetadata);
+		}
+		return result;
 	}
 
 	@Override
@@ -271,8 +284,9 @@ public class MyContainer extends Container
 	@Override
 	public void resetPURL(ParsedURL connectionPURL)
 	{
-		// TODO Auto-generated method stub
-
+		if (metadata() == null)
+			return;
+		metadata().setLocation(connectionPURL);
 	}
 
 	@Override
