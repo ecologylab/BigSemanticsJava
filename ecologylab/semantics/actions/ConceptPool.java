@@ -20,7 +20,7 @@ public class ConceptPool extends ElementState
 	private Lock								lock				= new ReentrantLock();
 
 	// pool
-	public int									bufferSize	= 10;
+	public int									bufferSize	= 100;
 
 	@xml_attribute
 	private int									start				= 1;
@@ -38,6 +38,11 @@ public class ConceptPool extends ElementState
 
 	// current
 	private Concept	current	= null;
+	
+	public Concept getCurrent()
+	{
+		return current;
+	}
 
 	// operations on current
 	public void beginNewConcept(String name, ParsedURL purl)
@@ -98,6 +103,11 @@ public class ConceptPool extends ElementState
 	}
 
 	// singleton
+	private ConceptPool()
+	{
+		
+	}
+	
 	private static ConceptPool	the	= null;
 
 	public static ConceptPool get()

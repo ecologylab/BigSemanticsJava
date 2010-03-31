@@ -182,14 +182,16 @@ public class SemanticActionHandlerBase<C extends Container, IC extends InfoColle
 			// Method method = ReflectionTools.getMethod(object.getClass(), actionName,
 			// argumentTypeArray);
 			
-			Method method = ReflectionTools.getMethod(action.getClass(), handlerMethodName, new Class[]
-			{ Object.class, Map.class });
+			Object returnValue = action.handle(object, argValues);
+			
+//			Method method = ReflectionTools.getMethod(action.getClass(), handlerMethodName, new Class[]
+//			{ Object.class, Map.class });
 			// System.out.println("DEBUG::methodToBeInvoked=\t" + method + "\t object class=\t"
 			// + object.getClass());
 
 			// invoke the specified method
 			// Object returnValue = method.invoke(object, argumentsArray);
-			Object returnValue = method.invoke(action, object, argValues);
+//			Object returnValue = method.invoke(action, object, argValues);
 			// System.out.println("DEBUG::Return Value=\t" + returnValue);
 
 			// set the flags if any

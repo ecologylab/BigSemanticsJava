@@ -29,8 +29,16 @@ public class AddConceptOutlinkSemanticAction extends SemanticAction implements
 	{
 		String surface = (String) args.get("surface");
 		String targetConcept = (String) args.get("target_concept");
-		
-		ConceptPool.get().addOutlink(surface, targetConcept);
+
+		String linkS = String.format(
+				"[esc:name \"%s\"] esc:linked_by [esc:name \"%s\"]; esc:surface \"%s\" .",
+				targetConcept, ConceptPool.get().getCurrent().getName(), surface);
+		StringPool.get("inlinks.n3").addLine(linkS);
+
+		String surfaceS = String.format(
+				"[esc:words \"%s\"] esc:surface_of [esc:name \"%s\"] .", surface, targetConcept);
+		StringPool.get("surfaces.n3").addLine(surfaceS);
+
 		return null;
 	}
 }
