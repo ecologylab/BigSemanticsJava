@@ -131,14 +131,18 @@ public class MyInfoCollector<C extends MyContainer> implements InfoCollector<C>
 	 */
 	public MyInfoCollector(String repositoryDir, TranslationScope metadataTScope)
 	{
+		this(repositoryDir, metadataTScope, DEFAULT_COUNT_DOWNLOAD_THREAD);
+	}
+		
+	public MyInfoCollector(String repositoryDir, TranslationScope metadataTScope, int nDownloadThread)
+	{
 		TranslationScope mmdTS = MetaMetadataTranslationScope.get();
 		NestedSemanticActionsTranslationScope.get(); // be sure to setup the tscope
 
 		mmdRepo = MetaMetadataRepository.load(new File(repositoryDir));
 		mmdRepo.initializeRepository(metadataTScope);
 		rejectDomains = new HashSet<String>();
-		downloadMonitor = new DownloadMonitor("info-collector_download-monitor",
-				DEFAULT_COUNT_DOWNLOAD_THREAD);
+		downloadMonitor = new DownloadMonitor("info-collector_download-monitor", nDownloadThread);
 		collectingListeners = new ArrayList<C.MetadataCollectingListener>();
 	}
 
