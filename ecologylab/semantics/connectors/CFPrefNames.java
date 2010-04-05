@@ -66,4 +66,6 @@ public interface CFPrefNames
 	public static final String	SHOW_ZONES								= "show_zones";
 	
 	public static final String  HOTSPACE_SURROGATE_DENSITY	= "elements_per_square_inch";
+	
+	public static final String	DISABLE_SMOOTH_FIT					= "disable_smooth_fit";
 }
