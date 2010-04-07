@@ -27,15 +27,15 @@ public class DOMFragmentInformationTagger extends DOMWalkInformationTagger
 	protected void printTag(Lexer lexer, Out fout, short mode, int indent, TdNode node)
 	{
 		String tagName = node.element;
-
+		if (containerPurl == null)
+		{
+			AttVal container = node.getAttrByName("container");
+			if (container != null)
+				containerPurl = ParsedURL.getAbsolute(container.value);
+		}
 		if( "img".equals(tagName) )
 		{   
-			if (containerPurl == null)
-			{
-				AttVal container = node.getAttrByName("container");
-				if (container != null)
-					containerPurl = ParsedURL.getAbsolute(container.value);
-			}
+			
 			ImgElement imgElement = new ImgElement(node, purl);
 			dndImages.add(imgElement);
 		}

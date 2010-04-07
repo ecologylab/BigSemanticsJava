@@ -1,6 +1,8 @@
 package ecologylab.semantics.documentparsers;
 
+import java.io.BufferedReader;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import ecologylab.net.ParsedURL;
@@ -14,7 +16,7 @@ public class HTMLFragmentDOMParser<C extends Container> extends HTMLDOMParser<C,
 {
 
 	InputStream fragmentStream;
-	DOMFragmentInformationTagger taggedDoc;
+	public DOMFragmentInformationTagger taggedDoc;
 	
 	public HTMLFragmentDOMParser(InfoCollector<C> infoCollector, InputStream inputStream)
 	{
