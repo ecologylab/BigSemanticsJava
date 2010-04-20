@@ -1,8 +1,10 @@
 package ecologylab.semantics.model.text;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -301,6 +303,7 @@ public class TermVector extends FeatureVector<Term> implements ITermVector
 	}
 
 	/**
+	 * IDF trim (ignores tf).
 	 * Deletes lowest weighted terms until the TermVector only has "size" terms. If "size" is
 	 * greater than the number of Terms contained in this TermVector, this method does nothing.
 	 * 
@@ -317,7 +320,7 @@ public class TermVector extends FeatureVector<Term> implements ITermVector
 
 		synchronized (values)
 		{			
-			TreeMap<Term, Double> sortedTerms = new TreeMap<Term, Double>(values);
+			TreeMap<Term, Double> sortedTerms = new TreeMap<Term, Double>(values);	// idf sorted, because Term implements Comparable<Term>
 			values.clear();
 			for (Term t : sortedTerms.keySet())
 			{
@@ -328,6 +331,85 @@ public class TermVector extends FeatureVector<Term> implements ITermVector
 			}
 		}
 	}
+	
+	public Term[] tfIdfTrim(int size)
+	{
+		synchronized (values)
+		{			
+			TreeMap<Double, Term> tfIdfMap = buildTfIdfMap();
+			
+			Term[] result	= new Term[size];
+			int i					= 0;
+			for (Term term : tfIdfMap.values())
+			{
+				result[i++]	= term;
+				if (i >= size)
+					break;
+			}
+			return result;
+		}
+	}
+
+	/**
+	 * @return
+	 */
+	private TreeMap<Double, Term> buildTfIdfMap()
+	{
+		// build map ordered by tf-idf
+		TreeMap<Double, Term> tfIdfMap	= new TreeMap<Double, Term>(reverse);
+		for (Term term : values.keySet())
+		{
+			double tf		= values.get(term);
+			double idf	= term.idf();
+			tfIdfMap.put(tf*idf, term);
+		}
+		return tfIdfMap;
+	}	
+	public ArrayList<Term> tfIdfTrim(double threshold)
+	{
+		synchronized (values)
+		{			
+			TreeMap<Double, Term> tfIdfMap = buildTfIdfMap();
+			
+			ArrayList<Term> result	= new ArrayList<Term>();
+			for (Double tfIdf : tfIdfMap.keySet())
+			{
+				if (tfIdf < threshold)
+					break;
+				Term term	= tfIdfMap.get(tfIdf);
+				result.add(term);
+			}
+			return result;
+		}
+	}
+	
+	public double tfIdfMean()
+	{
+		double result	= 0;
+		Set<Term> keySet = values.keySet();
+		int n					= keySet.size();
+		for (Term term : keySet)
+		{
+			result	+= values.get(term) * term.idf();
+		}
+		return result / n;
+	}
+	
+	Comparator<Double> reverse	= new Comparator<Double>()
+	{
+
+		@Override
+		public int compare(Double d1, Double d2)
+		{
+			if (d2 > d1)
+				return 1;
+			else if (d2 == d1)
+				return 0;
+			else
+				return -1;
+		}
+		
+	};
 
 	@Override
 	public void set ( Term term, Double val )
