@@ -315,5 +315,8 @@ abstract public class Seed<AC extends Container> extends ecologylab.services.mes
 	{
 		this.active = active;
 	}
-  
+	public String getQuery() 
+	{
+		return query;
+	}
 }

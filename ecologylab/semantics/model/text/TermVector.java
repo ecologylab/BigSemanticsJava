@@ -365,7 +365,7 @@ public class TermVector extends FeatureVector<Term> implements ITermVector
 		}
 		return tfIdfMap;
 	}	
-	public ArrayList<Term> tfIdfTrim(double threshold)
+	public ArrayList<Term> tfIdfTrim(double threshold, TermVector ignoreTV)
 	{
 		synchronized (values)
 		{			
@@ -377,7 +377,8 @@ public class TermVector extends FeatureVector<Term> implements ITermVector
 				if (tfIdf < threshold)
 					break;
 				Term term	= tfIdfMap.get(tfIdf);
-				result.add(term);
+				if(ignoreTV.map().get(term) == null) //This term is not in the ignoreTV
+					result.add(term);
 			}
 			return result;
 		}
@@ -390,9 +391,14 @@ public class TermVector extends FeatureVector<Term> implements ITermVector
 		int n					= keySet.size();
 		for (Term term : keySet)
 		{
-			result	+= values.get(term) * term.idf();
+			result	+= tfIdf(term);
 		}
 		return result / n;
+	}
+
+	public double tfIdf(Term term)
+	{
+		return values.get(term) * term.idf();
 	}
 	
 	Comparator<Double> reverse	= new Comparator<Double>()

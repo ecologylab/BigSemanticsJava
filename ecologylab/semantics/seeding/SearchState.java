@@ -391,10 +391,7 @@ implements SemanticsPrefs, SearchEngineNames
 	{
 		this.searchNum	= searchNum;
 	}
-	public String getQuery() 
-	{
-		return query;
-	}
+
 	/**
 	 * Set query and queryNoPluses.
 	 * 
