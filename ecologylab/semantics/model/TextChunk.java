@@ -3,6 +3,9 @@
  */
 package ecologylab.semantics.model;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 import ecologylab.net.ParsedURL;
 import ecologylab.xml.types.scalar.ScalarType;
 
@@ -91,4 +94,12 @@ public class TextChunk extends TextChunkBase<TextToken>
 	{
 		return new TextToken(string, delims, href, style, fontSize, faceIndex);
 	}
+	public static final ArrayList<TextToken>	EMPTY_COLLECTION							= new ArrayList<TextToken>(0);
+	public static  Iterator<TextToken> 				EMPTY_ITERATOR								= EMPTY_COLLECTION.iterator();
+	
+	public Iterator<TextToken> iterator()
+	{
+		return tokens == null ? EMPTY_ITERATOR : tokens.iterator();
+	}
+
 }

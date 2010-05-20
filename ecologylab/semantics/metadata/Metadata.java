@@ -1,10 +1,11 @@
 package ecologylab.semantics.metadata;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Set;
 
-import ecologylab.concurrent.DownloadMonitor;
 import ecologylab.generic.ClassAndCollectionIterator;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.generic.OneLevelNestingIterator;
@@ -14,11 +15,9 @@ import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataField;
 import ecologylab.semantics.model.text.CompositeTermVector;
 import ecologylab.semantics.model.text.ITermVector;
-import ecologylab.semantics.model.text.Term;
 import ecologylab.semantics.seeding.SearchState;
 import ecologylab.semantics.seeding.Seed;
 import ecologylab.xml.FieldDescriptor;
-import ecologylab.xml.types.element.ArrayListState;
 
 /**
  * This is the new metadata class that is the base class for the meta-metadata system. It contains
@@ -31,6 +30,8 @@ import ecologylab.xml.types.element.ArrayListState;
  */
 abstract public class Metadata extends MetadataBase<MetaMetadata>
 {
+	private static final String	MIXINS_FIELD_NAME	= "mixins";
+
 	protected CompositeTermVector				termVector								= null;
 
 	/**
@@ -43,8 +44,8 @@ abstract public class Metadata extends MetadataBase<MetaMetadata>
 	 * Could help, for example, to support user annotation.
 	 */
 	@semantics_mixin
-	@xml_nested
-	ArrayListState<Metadata>	mixins;
+	@xml_collection("mixin")
+	ArrayList<Metadata>									mixins;
 
 	final static int					INITIAL_SIZE							= 5;
 
@@ -65,17 +66,30 @@ abstract public class Metadata extends MetadataBase<MetaMetadata>
 	 * Indicates that this Container is processed via drag and drop.
 	 */
 	private boolean			isDnd;
-
+	
 	public Metadata()
 	{
-		// setupMetadataFieldAccessors();
+		super();
 	}
 
 	public Metadata(MetaMetadata metaMetadata)
 	{
+		this();
 		this.metaMetadata = metaMetadata;
-		// setupMetadataFieldAccessors();
 	}
+	
+	/**
+	 * Don't exclude the mixins field from Metadata.
+	 * 
+	 * @param tagName
+	 * 
+	 * @return	true for the mixins field; otherwise false;
+	 */	@Override
+	public boolean excludeFieldByTag(String tagName)
+	{
+		return MIXINS_FIELD_NAME.equals(tagName);
+	}
+	
 	@Override
 	public MetaMetadata metaMetadataField()
 	{
@@ -86,12 +100,12 @@ abstract public class Metadata extends MetadataBase<MetaMetadata>
 	/**
 	 * 
 	 */
-	ArrayListState<Metadata> mixins()
+	ArrayList<Metadata> mixins()
 	{
-		ArrayListState<Metadata> result = this.mixins;
+		ArrayList<Metadata> result = this.mixins;
 		if (result == null)
 		{
-			result = new ArrayListState<Metadata>();
+			result = new ArrayList<Metadata>();
 			this.mixins = result;
 		}
 		return result;
@@ -234,7 +248,8 @@ abstract public class Metadata extends MetadataBase<MetaMetadata>
 	 * @param value
 	 */
 	// TODO -- May throw exception if there is no field accessor.
-	public boolean set(String tagName, String value)
+	// FIXME -- resolve with MetadataBase
+	public boolean setByTagName(String tagName, String value)
 	{
 		tagName = tagName.toLowerCase();
 		// Taking care of mixins
@@ -244,7 +259,7 @@ abstract public class Metadata extends MetadataBase<MetaMetadata>
 		{
 			if (metadata != null)
 			{
-				FieldDescriptor fieldAccessor = get(tagName);
+				FieldDescriptor fieldAccessor = getFieldDescriptorByTagName(tagName);
 				if (fieldAccessor != null && value != null && value.length() != 0)
 				{
 					fieldAccessor.set(metadata, value);
@@ -262,7 +277,7 @@ abstract public class Metadata extends MetadataBase<MetaMetadata>
 
 	public boolean hwSet(String tagName, String value)
 	{
-		if (set(tagName, value))
+		if (setByTagName(tagName, value))
 		{
 			// value is properly set.
 			rebuildCompositeTermVector();
@@ -279,9 +294,10 @@ abstract public class Metadata extends MetadataBase<MetaMetadata>
 	 * @return
 	 */
 	// FIXME -- use fullNonRecursiveIterator
+	// FIXME -- resolve with MetadataBase
 	public Metadata getMetadataWhichContainsField(String tagName)
 	{
-		HashMapArrayList<String, FieldDescriptor> fieldAccessors = metadataFieldDescriptors();
+		HashMapArrayList<String, FieldDescriptor> fieldAccessors = fieldDescriptorsByTagName();
 
 		FieldDescriptor metadataFieldAccessor = fieldAccessors.get(tagName);
 		if (metadataFieldAccessor != null)
@@ -293,7 +309,7 @@ abstract public class Metadata extends MetadataBase<MetaMetadata>
 		{
 			for (Metadata mixinMetadata : mixins())
 			{
-				fieldAccessors = mixinMetadata.metadataFieldDescriptors();
+				fieldAccessors = mixinMetadata.fieldDescriptorsByTagName();
 				FieldDescriptor mixinFieldAccessor = fieldAccessors.get(tagName);
 				if (mixinFieldAccessor != null)
 				{
@@ -303,28 +319,6 @@ abstract public class Metadata extends MetadataBase<MetaMetadata>
 		}
 		return null;
 	}
-
-	// public void setMixinField(String tagName, String value)
-	// {
-	// tagName = tagName.toLowerCase();
-	// Metadata metadata = getMetadataWhichhasField(tagName);
-	//		
-	// if(metadata != null)
-	// {
-	// HashMapArrayList<String, FieldAccessor> fieldAccessors =
-	// Optimizations.getFieldAccessors(metadata.getClass());
-	// FieldAccessor fieldAccessor = fieldAccessors.get(tagName);
-	// if(fieldAccessor != null)
-	// {
-	// fieldAccessor.set(metadata, value);
-	// }
-	// else
-	// {
-	// System.out.println("No field Accessor");
-	// //fieldAccessor.set(this, value);
-	// }
-	// }
-	// }
 
 	public Field getFields()
 	{
@@ -407,7 +401,8 @@ abstract public class Metadata extends MetadataBase<MetaMetadata>
 	/**
 	 * @return the mixins
 	 */
-	public ArrayListState<Metadata> getMixins()
+	@Override
+	public ArrayList<Metadata> getMixins()
 	{
 		return mixins();
 	}
@@ -416,21 +411,11 @@ abstract public class Metadata extends MetadataBase<MetaMetadata>
 	 * @param mixins
 	 *          the mixins to set
 	 */
-	public void setMixins(ArrayListState<Metadata> mixins)
+	public void setMixins(ArrayList<Metadata> mixins)
 	{
 		this.mixins = mixins;
 	}
 
-	/**
-	 * Efficiently retrieve appropriate MetadataFieldAccessor, using lazy evaluation.
-	 * 
-	 * @param fieldName
-	 * @return
-	 */
-	public MetadataFieldDescriptor getMetadataFieldDescriptor(String fieldName)
-	{
-		return (MetadataFieldDescriptor) metadataFieldDescriptors().get(fieldName);
-	}
 
 	// For adding mapped attributes
 	public void add(String key)
@@ -456,18 +441,6 @@ abstract public class Metadata extends MetadataBase<MetaMetadata>
 	public boolean isRecycled()
 	{
 		return (termVector != null && termVector.isRecycled());
-	}
-
-	/**
-	 * Take the mixins out of the collection, because they do not really provide direct access to the
-	 * mixin fields. Instead, one uses fullNonRecursiveIterator() when that is desired.
-	 */
-	@Override
-	protected HashMapArrayList<String, FieldDescriptor> computeFieldDescriptors()
-	{
-		HashMapArrayList<String, FieldDescriptor> result = super.computeFieldDescriptors();
-		result.remove("mixins");
-		return result;
 	}
 
 	/**

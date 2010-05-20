@@ -7,7 +7,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.xml.namespace.QName;
-import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
@@ -23,24 +22,20 @@ import ecologylab.generic.ReflectionTools;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticAction;
 import ecologylab.semantics.actions.SemanticActionHandler;
-import ecologylab.semantics.actions.SemanticActionParameters;
 import ecologylab.semantics.actions.SemanticActionsKeyWords;
-import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
+import ecologylab.semantics.metadata.DocumentParserTagNames;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
-import ecologylab.semantics.metadata.DocumentParserTagNames;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.DefVar;
 import ecologylab.semantics.metametadata.MetaMetadataField;
-import ecologylab.xml.ElementState;
 import ecologylab.xml.FieldDescriptor;
 import ecologylab.xml.ScalarUnmarshallingContext;
 import ecologylab.xml.TranslationScope;
 import ecologylab.xml.XMLTools;
 import ecologylab.xml.XMLTranslationException;
-import ecologylab.xml.types.element.ArrayListState;
 import ecologylab.xml.types.scalar.ScalarType;
 
 /**
@@ -93,7 +88,7 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 	protected void takeSemanticActions(Metadata populatedMetadata)
 	{
 		// get the semantic actions
-		ArrayListState<? extends SemanticAction> semanticActions = metaMetadata.getSemanticActions();
+		ArrayList<? extends SemanticAction> semanticActions = metaMetadata.getSemanticActions();
 
 		addAdditionalParameters(populatedMetadata);
 
@@ -192,7 +187,7 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 	private void instantiateMetaMetadataVariables()
 	{
 		// get the list of all variable defintions
-		ArrayListState<DefVar> defVars = metaMetadata.getDefVars();
+		ArrayList<DefVar> defVars = metaMetadata.getDefVars();
 
 		// get the parameters
 		Scope<Object> parameters = semanticActionHandler.getSemanticActionReturnValueMap();
@@ -340,7 +335,7 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 					{
 						// its a scalar
 						String evaluation = extractScalar(xpath, mmdElement, contextNode, xpathString);
-						metadata.set(mmdElementName, evaluation, this);// evaluation);
+						metadata.setByTagName(mmdElementName, evaluation, this);// evaluation);
 					}
 				}// end for of all metadatafields
 			}
@@ -411,7 +406,7 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 										XPathConstants.NODE);
 			
 			// Have to return the nested object for the field.
-			MetadataFieldDescriptor fieldAccessor = metadata.getMetadataFieldDescriptor(mmdElement.getChildTag());
+			MetadataFieldDescriptor fieldAccessor = metadata.getFieldDescriptorByTagName(mmdElement.getChildTag());
 			//FIXME -- need to use repository recursively!
 			nestedMetadata = (Metadata) fieldAccessor.getAndPerhapsCreateNested(metadata);
 			nestedMetadata.setMetaMetadata(infoCollector.metaMetaDataRepository().getMM(nestedMetadata.getClass()));
@@ -447,7 +442,7 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 	{
 		Node originalNode = contextNode;
 		// this is the field accessor for the collection field
-		FieldDescriptor fieldAccessor = metadata.getMetadataFieldDescriptor(mmdElement.getChildTag());
+		FieldDescriptor fieldAccessor = metadata.getFieldDescriptorByTagName(mmdElement.getChildTag());
 
 		if (fieldAccessor != null)
 		{
@@ -463,8 +458,7 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 				collectionChildClass =translationScope.getClassByTag(mmdElement
 					.getCollectionChildType());
 			}
-			HashMapArrayList<String, FieldDescriptor> collectionElementAccessors = metadata
-					.getChildFieldAccessors(collectionChildClass, MetadataFieldDescriptor.class);
+			HashMapArrayList<String, FieldDescriptor> collectionElementAccessors = metadata.fieldDescriptorsByTagName();
 
 			// now get the collection field
 			Field collectionField = fieldAccessor.getField();
@@ -570,7 +564,7 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 							// its a simple scalar field
 							String evaluation = extractScalar(xpath, childMetadataField, contextNode,
 									childMetadataField.getXpath());
-							collectionInstanceList.get(m).set(childMetadataField.getName(), evaluation, this);
+							collectionInstanceList.get(m).setByTagName(childMetadataField.getName(), evaluation, this);
 						}
 						/*
 						 * String evaluation = xpath.evaluate(childXPath, contextNode);
@@ -589,7 +583,7 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 					for (int k = 0; k < collectionInstanceList.size(); k++)
 					{
 						// FIXME -- andruid believes this line can be removed! 9/2/09
-						collectionInstanceList.get(k).set(mfa.getTagName(), "");
+						collectionInstanceList.get(k).setByTagName(mfa.getTagName(), "");
 					}
 				}
 			}

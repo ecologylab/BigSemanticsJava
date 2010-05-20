@@ -12,7 +12,6 @@ import ecologylab.generic.ValueFactory2;
 import ecologylab.io.BasicSite;
 import ecologylab.net.ParsedURL;
 import ecologylab.xml.xml_inherit;
-import ecologylab.xml.types.element.HashMapState;
 
 /**
  * BasicSite extended to maintain semantics 
@@ -335,7 +334,7 @@ public class SemanticsSite extends BasicSite
 		return numText;
 	}
 	
-	public static void addMapToSites(HashMapState<String, ? extends SemanticsSite> map)
+	public static void addMapToSites(HashMap<String, ? extends SemanticsSite> map)
 	{
 		allSites.putAll(map);
 	}

@@ -371,4 +371,14 @@ class TextToken extends ElementState
 		fullString = stringBufPool.releaseAndGetString(sb);
 		fullStringIsOld = false;
 	}
+	
+	/**
+	 * 
+	 * @param c
+	 * @return	true if this token has a String, and the character is contained in it.
+	 */
+	public boolean contains(char c)
+	{
+		return string == null ? false : string.indexOf(c) >= 0;
+	}
 }

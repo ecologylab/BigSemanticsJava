@@ -3,6 +3,7 @@
  */
 package ecologylab.semantics.metadata;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
@@ -10,8 +11,8 @@ import ecologylab.semantics.gui.EditValueEvent;
 import ecologylab.semantics.gui.EditValueListener;
 import ecologylab.semantics.gui.EditValueNotifier;
 import ecologylab.semantics.metametadata.MetaMetadataField;
+import ecologylab.xml.ClassDescriptor;
 import ecologylab.xml.FieldDescriptor;
-import ecologylab.xml.FieldToXMLOptimizations;
 
 /**
  * @author andruid
@@ -29,9 +30,9 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 
 	private ArrayList<EditValueListener> editValueListeners = new ArrayList<EditValueListener>();
 	
-	public MetadataFieldDescriptor(FieldToXMLOptimizations f2XO)
+	public MetadataFieldDescriptor(ClassDescriptor declaringClassDescriptor, Field field, int annotationType) // String nameSpacePrefix
 	{
-		super(f2XO);
+		super(declaringClassDescriptor, field, annotationType);
 		if (field != null)
 		{
 			isMixin							= field.isAnnotationPresent(MetadataBase.semantics_mixin.class);
@@ -81,7 +82,7 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 	//FIXME -- this looks wrong. why are we doing a lookup when we already have this?
 	public void set(Metadata context, String newValue)
 	{
-		context.set(this.getTagName(), newValue);
+		context.setByTagName(this.getTagName(), newValue);
 	}
 	
 //	public void endEditHandlerDispatch(MetadataValueChangedListener listener, String iconID)

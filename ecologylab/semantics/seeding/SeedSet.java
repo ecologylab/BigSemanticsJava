@@ -144,7 +144,7 @@ implements SemanticsSessionObjectNames
    		numSearches	= 0;	// reset each time performSeeding is called
    		
    		// search bookkeeping for each seed
-   		for (Seed seed : this)
+   		for (Seed seed : seeds)
    		{
    			if (nextSearch)
    			{
@@ -161,7 +161,7 @@ implements SemanticsSessionObjectNames
    		// it requires to have total searchNum before it starts performSeeding.
    		// Do not try to aggregate these two for loops unless you have better structure.
    		boolean aSeedingIsPerformed	= false;
-   		for (Seed seed : this)
+   		for (Seed seed : seeds)
    		{
    			seed.fixNumResults();
 

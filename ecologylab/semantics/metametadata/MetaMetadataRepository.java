@@ -32,7 +32,6 @@ import ecologylab.textformat.NamedStyle;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.TranslationScope;
 import ecologylab.xml.XMLTranslationException;
-import ecologylab.xml.types.element.HashMapState;
 
 /**
  * @author damaraju
@@ -57,14 +56,14 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	@xml_attribute
 	private String																							packageName;
 
-	@xml_nested
-	private HashMapState<String, UserAgent>											userAgents;
+	@xml_map("user_agent")
+	private HashMap<String, UserAgent>											userAgents;
 
-	@xml_nested
-	private HashMapState<String, SearchEngine>									searchEngines;
+	@xml_map("search_engine")
+	private HashMap<String, SearchEngine>									searchEngines;
 
-	@xml_nested
-	private HashMapState<String, NamedStyle>										namedStyles;
+	@xml_map("named_style")
+	private HashMap<String, NamedStyle>										namedStyles;
 
 	@xml_attribute
 	private String																							defaultUserAgentName;
@@ -249,7 +248,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		return true;
 	}
 
-	private boolean combineMapStates(HashMapState srcMap, HashMapState destMap)
+	private boolean combineMapStates(HashMap srcMap, HashMap destMap)
 	{
 		if (destMap == null)
 			return false;
@@ -653,10 +652,10 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		return namedStyles.get(DEFAULT_STYLE_NAME);
 	}
 
-	public HashMapState<String, UserAgent> userAgents()
+	public HashMap<String, UserAgent> userAgents()
 	{
 		if (userAgents == null)
-			userAgents = new HashMapState<String, UserAgent>();
+			userAgents = new HashMap<String, UserAgent>();
 
 		return userAgents;
 

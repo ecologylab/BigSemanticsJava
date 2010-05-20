@@ -16,6 +16,7 @@ import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.tools.MetadataCompiler;
 import ecologylab.semantics.tools.MetadataCompilerUtils;
 import ecologylab.textformat.NamedStyle;
+import ecologylab.xml.ClassDescriptor;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.FieldDescriptor;
 import ecologylab.xml.XMLTools;
@@ -1101,17 +1102,17 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 
 	private void inheritNonDefaultAttributes(MetaMetadataField inheritFrom)
 	{
-		HashMapArrayList<String, FieldDescriptor> fieldAccessors = this.getFieldDescriptors(FieldDescriptor.class);
-		for (FieldDescriptor fieldAccessor : fieldAccessors.values())
+		ClassDescriptor<?> classDescriptor	= classDescriptor();
+		for (FieldDescriptor fieldDescriptor : classDescriptor)
 		{
-			ScalarType scalarType = fieldAccessor.getScalarType();
+			ScalarType scalarType = fieldDescriptor.getScalarType();
 			try
 			{
-				if(scalarType != null && scalarType.isDefaultValue(fieldAccessor.getField(), this) && !scalarType.isDefaultValue(fieldAccessor.getField(), inheritFrom))
+				if(scalarType != null && scalarType.isDefaultValue(fieldDescriptor.getField(), this) && !scalarType.isDefaultValue(fieldDescriptor.getField(), inheritFrom))
 				{
-					Object value = fieldAccessor.getField().get(inheritFrom);
-					fieldAccessor.setField(this, value);
-					debug("inherit\t" + this.getName() + "." + fieldAccessor.getFieldName() + "\t= " + value);
+					Object value = fieldDescriptor.getField().get(inheritFrom);
+					fieldDescriptor.setField(this, value);
+					debug("inherit\t" + this.getName() + "." + fieldDescriptor.getFieldName() + "\t= " + value);
 				}
 			}
 			catch (IllegalArgumentException e)
@@ -1164,7 +1165,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	/**
 	 * @return the childMetaMetadata
 	 */
-public HashMapArrayList<String, MetaMetadataField> getChildMetaMetadata()
+	public HashMapArrayList<String, MetaMetadataField> getChildMetaMetadata()
 	{
 		return childMetaMetadata;
 	}

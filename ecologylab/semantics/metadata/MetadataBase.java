@@ -8,6 +8,8 @@ import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 
 import ecologylab.generic.HashMapArrayList;
@@ -20,7 +22,7 @@ import ecologylab.xml.ClassDescriptor;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.FieldDescriptor;
 import ecologylab.xml.ScalarUnmarshallingContext;
-import ecologylab.xml.types.element.ArrayListState;
+import ecologylab.xml.serial_field_descriptors;
 
 /**
  * Base class for Metadata fields that represent scalar values.
@@ -30,6 +32,7 @@ import ecologylab.xml.types.element.ArrayListState;
  * @author andruid
  *
  */
+@serial_field_descriptors(MetadataFieldDescriptor.class)
 public class MetadataBase<MM extends MetaMetadataField> extends ElementState implements Iterable<FieldDescriptor>
 {
 
@@ -43,15 +46,79 @@ public class MetadataBase<MM extends MetaMetadataField> extends ElementState imp
 	private static MetaMetadataRepository		repository;
 
 	MM							metaMetadata;
+	
+	/**
+	 * Map of MetadataFieldDescriptor maps(by tag name): for each MetadataBase subclass.
+	 */
+	static final HashMap<String, HashMapArrayList<String, FieldDescriptor>>	fieldDescriptorsByTagNameMap	= new HashMap<String, HashMapArrayList<String, FieldDescriptor>>();
+	
+	/**
+	 * MetadataFieldDescriptor map by tag name: for this MetadataBase subclass.
+	 */
+	protected final HashMapArrayList<String, FieldDescriptor> 	fieldDescriptorsByTagName;
+
 
 	/**
 	 * 
 	 */
 	public MetadataBase()
 	{
-		// TODO Auto-generated constructor stub
+		fieldDescriptorsByTagName	= lookupFieldDescriptorsByTagName();
 	}
 	
+	/**
+	 * Obtain a map of FieldDescriptors for this class, with the field names as key, but with the mixins field removed.
+	 * Use lazy evaluation, caching the result by class name.
+	 * 
+	 * @return	A map of FieldDescriptors, with the field names as key, but with the mixins field removed.
+	 */
+	private final HashMapArrayList<String, FieldDescriptor> lookupFieldDescriptorsByTagName()
+	{
+		String className	= classDescriptor().getClassName();
+		HashMapArrayList<String, FieldDescriptor> result	= fieldDescriptorsByTagNameMap.get(className);
+		if (result == null)
+		{
+			synchronized (fieldDescriptorsByTagNameMap)
+			{
+				result	= fieldDescriptorsByTagNameMap.get(className);
+				if (result == null)
+				{
+					result	= computeFieldDescriptorsByTagName();
+					fieldDescriptorsByTagNameMap.put(className, result);
+				}
+			}
+		}
+		return result;
+	}
+	/**
+	 * Compute the map of FieldDescriptors for this class, with the field names as key, but with the mixins field removed.
+	 * 
+	 * @return	A map of FieldDescriptors, with the field names as key, but with the mixins field removed.
+	 */
+	private final HashMapArrayList<String, FieldDescriptor> computeFieldDescriptorsByTagName()
+	{
+		HashMapArrayList<String, FieldDescriptor> allFieldDescriptorsByFieldName	= classDescriptor().getFieldDescriptorsByFieldName();
+		HashMapArrayList<String, FieldDescriptor> result	= new HashMapArrayList<String, FieldDescriptor>(allFieldDescriptorsByFieldName.size() - 1);
+		for (FieldDescriptor fieldDescriptor : allFieldDescriptorsByFieldName.values())
+		{
+			String tagName	= fieldDescriptor.getTagName();
+			if (!excludeFieldByTag(tagName))
+				result.put(tagName, fieldDescriptor);
+		}
+		return result;
+	}
+	
+	/**
+	 * Don't exclude any fields from MetadataBase.
+	 * 
+	 * @param tagName
+	 * 
+	 * @return	false, always.
+	 */
+	public boolean excludeFieldByTag(String tagName)
+	{
+		return false;
+	}
 	public static void setRepository(MetaMetadataRepository repo)
 	{
 		repository	= repo;
@@ -103,34 +170,10 @@ public class MetadataBase<MM extends MetaMetadataField> extends ElementState imp
 	{
 		return false;
 	}
-	
-	/**
-	 * Efficiently retrieve appropriate MetadataFieldDescriptor, using lazy evaluation.
-	 * 
-	 * @param fieldName
-	 * @return
-	 */
-	public MetadataFieldDescriptor getMetadataFieldDescriptor(String fieldName)
-	{
-		return (MetadataFieldDescriptor) metadataFieldDescriptors().get(fieldName);
-	}
 
-	protected HashMapArrayList<String, FieldDescriptor> metadataFieldDescriptors()
+	public HashMapArrayList<String, FieldDescriptor> fieldDescriptorsByTagName()
 	{
-		HashMapArrayList<String, FieldDescriptor> result	= this.metadataFieldDescriptors;
-		if (result == null)
-		{
-			result			= computeFieldDescriptors();
-			result			= 
-			metadataFieldDescriptors	= result;
-		}
-		return result;
-	}
-
-
-	protected HashMapArrayList<String, FieldDescriptor> computeFieldDescriptors()
-	{
-		return ClassDescriptor.getFieldDescriptors(this.getClass(), MetadataFieldDescriptor.class);
+		return fieldDescriptorsByTagName;
 	}
 
 	public MetaMetadataField metaMetadataField()
@@ -138,75 +181,60 @@ public class MetadataBase<MM extends MetaMetadataField> extends ElementState imp
 		Metadata parent	= (Metadata) this.parent();
 		return (parent == null) ? null : parent.metaMetadataField();
 	}
+	
 	public Iterator<FieldDescriptor> iterator()
 	{
-		return metadataFieldDescriptors().iterator();
+		return fieldDescriptorsByTagName.iterator();
 	}
 
 	//FIXEME:The method has to search even all the mixins for the key.
-	public FieldDescriptor get(String key)
+	public MetadataFieldDescriptor getFieldDescriptorByTagName(String tagName)
 	{
-		HashMapArrayList<String, FieldDescriptor> fieldDescriptors = metadataFieldDescriptors();
-		return fieldDescriptors.get(key);
+		return (MetadataFieldDescriptor) fieldDescriptorsByTagName.get(tagName);
 	}
-	public boolean set(String tagName, String value)
-	{
-		return set(tagName, value, null);
-	}
-	public boolean set(String tagName, String value, ScalarUnmarshallingContext scalarUnMarshallingContext)
-	{
-		tagName = tagName.toLowerCase();
-		//Taking care of mixins
-		MetadataBase metadata = getMetadataWhichContainsField(tagName);
+	
 
-		if(value != null && value.length()!=0)
+	public FieldDescriptor getFieldDescriptorByFieldName(String tagName)
+	{
+		return classDescriptor().getFieldDescriptorByFieldName(tagName);
+	}
+	
+	public boolean setByTagName(String tagName, String value)
+	{
+		return setByTagName(tagName, value, null);
+	}
+
+	/**
+	 * Unmarshall the valueString and set the field to 
+	 * 
+	 * @param tagName
+	 * @param marshalledValue
+	 * @param scalarUnMarshallingContext
+	 * @return
+	 */
+	public boolean setByTagName(String tagName, String marshalledValue, ScalarUnmarshallingContext scalarUnMarshallingContext)
+	{
+		//FIXME -- why is this necessary???????????????????????
+		if (marshalledValue != null && marshalledValue.length()!=0)
 		{
-			if(metadata != null)
+			tagName = tagName.toLowerCase();
+			FieldDescriptor fieldDescriptor = getFieldDescriptorByTagName(tagName);
+			if(fieldDescriptor != null /* && value != null && value.length()!=0 */)	// allow set to nothing -- andruid & andrew 4/14/09
 			{
-				FieldDescriptor fieldDescriptor = get(tagName);
-				if(fieldDescriptor != null /* && value != null && value.length()!=0 */)	// allow set to nothing -- andruid & andrew 4/14/09
-				{
-					fieldDescriptor.set(metadata, value, scalarUnMarshallingContext);
-					return true;
-				}
-				else 
-				{
-					debug("Not Able to set the field: " + tagName);
-					return false;
-				}
+				fieldDescriptor.set(this, marshalledValue, scalarUnMarshallingContext);
+				return true;
+			}
+			else 
+			{
+				debug("Not Able to set the field: " + tagName);
 			}
 		}
 		return false;
 	}
 	
-	public MetadataBase getMetadataWhichContainsField(String tagName)
-	{
-		HashMapArrayList<String, FieldDescriptor> fieldDescriptors = metadataFieldDescriptors();
-		
-		FieldDescriptor metadataFieldDescriptor = fieldDescriptors.get(tagName);
-		if (metadataFieldDescriptor != null)
-		{
-			return this;
-		}
-		//No mixins in MetadataBase.
-//		if(mixins() != null && mixins().size() > 0)
-//		{
-//			for (Metadata mixinMetadata : mixins())
-//			{
-//				fieldAccessors 	= mixinMetadata.metadataFieldAccessors();
-//				FieldAccessor mixinFieldAccessor 	= fieldAccessors.get(tagName);
-//				if(mixinFieldAccessor != null)
-//				{
-//					return mixinMetadata;
-//				}
-//			}
-//		}
-		return null;
-	}
-	
 	public boolean hwSet(String tagName, String value)
 	{
-		return set(tagName, value);
+		return setByTagName(tagName, value);
 	}
 		
     @Retention(RetentionPolicy.RUNTIME)
@@ -227,7 +255,7 @@ public class MetadataBase<MM extends MetaMetadataField> extends ElementState imp
     	
     }
 
-    public ArrayListState<Metadata> getMixins()
+    public ArrayList<Metadata> getMixins()
     {
    	 return null;
     }
@@ -240,5 +268,6 @@ public class MetadataBase<MM extends MetaMetadataField> extends ElementState imp
 	{
 		return new OneLevelNestingIterator<FieldDescriptor, MetadataBase<?>>(this, null);
 	}
+
 
 }

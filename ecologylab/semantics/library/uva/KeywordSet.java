@@ -7,8 +7,6 @@ import java.util.ArrayList;
 
 import ecologylab.xml.ElementState;
 import ecologylab.xml.xml_inherit;
-import ecologylab.xml.ElementState.xml_nowrap;
-import ecologylab.xml.types.element.ArrayListState;
 
 /**
  * 

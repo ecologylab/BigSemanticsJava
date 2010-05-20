@@ -4,8 +4,9 @@
  */
 package ecologylab.semantics.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.StringTokenizer;
+import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -13,8 +14,12 @@ import ecologylab.generic.StringTools;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.textformat.NamedStyle;
+import ecologylab.xml.ElementState;
+import ecologylab.xml.FieldDescriptor;
 import ecologylab.xml.xml_inherit;
-import ecologylab.xml.types.element.ArrayListState;
+import ecologylab.xml.ElementState.xml_attribute;
+import ecologylab.xml.ElementState.xml_nested;
+import ecologylab.xml.ElementState.xml_other_tags;
 import ecologylab.xml.types.scalar.ScalarType;
 import ecologylab.xml.types.scalar.ScalarTypeInstanceConstants;
 
@@ -23,10 +28,11 @@ import ecologylab.xml.types.scalar.ScalarTypeInstanceConstants;
  * collection of {@link TextToken TextToken}s.
  */
 abstract public @xml_inherit
-class TextChunkBase<T extends TextToken> extends ArrayListState<T> implements
-		ScalarTypeInstanceConstants
+class TextChunkBase<T extends TextToken> extends ElementState implements
+		ScalarTypeInstanceConstants,
+		Iterable<T>
 {
-	public static final int						DEFAULT_POINT_SIZE				= 21;
+	protected ArrayList<T>						tokens;
 	/**
 	 * Named Style for this text chunk. Default is to an anonymous style.
 	 */
@@ -49,6 +55,9 @@ class TextChunkBase<T extends TextToken> extends ArrayListState<T> implements
 	private boolean										recycled;
 
 	private ScalarType								scalarType								= null;
+
+	
+	public static final int						DEFAULT_POINT_SIZE				= 21;
 
 	/** Estimate used for StringBuffer allocation. */
 	public static int									CHARS_PER_TOKEN						= 12;
@@ -315,6 +324,8 @@ class TextChunkBase<T extends TextToken> extends ArrayListState<T> implements
 			addTextToken(textToken);
 		}
 	}
+	
+	
 
 	/** Should be called addTextToken(). */
 	public void add(String string, ParsedURL href)
@@ -491,11 +502,6 @@ class TextChunkBase<T extends TextToken> extends ArrayListState<T> implements
 		return result;
 	}
 
-	public boolean add(T token)
-	{
-		return super.add(token);
-	}
-
 	public T lastElement()
 	{
 		return (size() == 0) ? null : this.get(size() - 1);
@@ -503,7 +509,8 @@ class TextChunkBase<T extends TextToken> extends ArrayListState<T> implements
 
 	public void removeElementAt(int i)
 	{
-		this.remove(i);
+		if (tokens != null)
+			tokens.remove(i);
 	}
 
 	/**
@@ -664,4 +671,43 @@ class TextChunkBase<T extends TextToken> extends ArrayListState<T> implements
 
 	static final String	TEST_STRING	= "Querying Web Metadata: Native Score\nManagement and Text Support\nin Databases\nG\n¨\nULTEKIN\n¨\nOZSOYO\n?\nGLU\nCase Western Reserve University\nISMAIL SENG\n¨\nOR ALTING\n¨\nOVDE\nBilkent Universit";
 
+	
+	public T get(int i)
+	{
+		return tokens == null ? null : tokens.get(i);
+	}
+	
+	public int size()
+	{
+		return tokens == null ? 0 : tokens.size();
+	}
+	
+	public boolean add(T token)
+	{
+		return (tokens == null) ? false :	tokens.add(token);
+	}
+	
+	public void add(int index, T token)
+	{
+		if (tokens != null) 
+			tokens.add(index, token);
+	}
+	
+	abstract public Iterator<T> iterator();
+	
+	public T remove(int i)
+	{
+		return tokens == null ? null : tokens.remove(i);
+	}
+	
+	public boolean isEmpty()
+	{
+		return size() == 0;
+	}
+	
+	public void clear()
+	{
+		if (tokens != null)
+			tokens.clear();
+	}
 }

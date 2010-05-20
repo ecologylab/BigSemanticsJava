@@ -15,6 +15,7 @@ import ecologylab.appframework.PropertiesAndDirectories;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.generic.ReflectionTools;
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.actions.NestedSemanticActionsTranslationScope;
 import ecologylab.semantics.actions.SemanticAction;
 import ecologylab.semantics.metadata.DocumentParserTagNames;
 import ecologylab.semantics.metadata.Metadata;
@@ -24,7 +25,6 @@ import ecologylab.xml.ElementState;
 import ecologylab.xml.TranslationScope;
 import ecologylab.xml.XMLTools;
 import ecologylab.xml.XMLTranslationException;
-import ecologylab.xml.types.element.ArrayListState;
 import ecologylab.xml.types.element.Mappable;
 
 /**
@@ -100,12 +100,13 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 	@xml_nowrap 
 	private ArrayList<String>	suffixes;
 
-	@xml_nested
-	private ArrayListState<SemanticAction>	semanticActions;
+	@xml_collection
+	@xml_scope(NestedSemanticActionsTranslationScope.NESTED_SEMANTIC_ACTIONS_SCOPE)
+	private ArrayList<SemanticAction>	semanticActions;
 	
-	@xml_nested
+	@xml_collection("def_var")
 	@xml_nowrap 
-	private ArrayListState<DefVar> defVars;
+	private ArrayList<DefVar> defVars;
 
 	
 	@xml_attribute
@@ -400,7 +401,7 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 	/**
 	 * @return the semanticActions
 	 */
-	public ArrayListState<SemanticAction> getSemanticActions()
+	public ArrayList<SemanticAction> getSemanticActions()
 	{
 		return semanticActions;
 	}
@@ -430,7 +431,7 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 	/**
 	 * @return the defVars
 	 */
-	public final ArrayListState<DefVar> getDefVars()
+	public final ArrayList<DefVar> getDefVars()
 	{
 		return defVars;
 	}
