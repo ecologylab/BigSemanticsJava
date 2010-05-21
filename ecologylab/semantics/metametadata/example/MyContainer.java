@@ -7,21 +7,21 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import ecologylab.generic.DispatchTarget;
+import ecologylab.generic.MathTools;
 import ecologylab.io.BasicSite;
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.actions.SemanticActionHandlerBase;
 import ecologylab.semantics.connectors.AbstractImgElement;
 import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.ContentElement;
 import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.documentparsers.DocumentParser;
+import ecologylab.semantics.generated.library.GeneratedMetadataTranslationScope;
 import ecologylab.semantics.html.ParagraphText;
 import ecologylab.semantics.html.documentstructure.SemanticAnchor;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.MetaMetadata;
-import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.model.text.ITermVector;
 import ecologylab.semantics.seeding.SearchResult;
 import ecologylab.semantics.seeding.Seed;
@@ -47,8 +47,9 @@ import ecologylab.xml.TranslationScope;
 public class MyContainer extends Container
 {
 	/**
-	 * New !! This interface enables users to customize their own collecting methods. Use
-	 * MyInfoCollector to add a listener who implemented this interface.
+	 * New !!
+	 * This interface enables users to customize their own collecting methods. Use MyInfoCollector to
+	 * add a listener who implemented this interface.
 	 * 
 	 * @author quyin
 	 * 
@@ -57,7 +58,7 @@ public class MyContainer extends Container
 	{
 		void collect(Metadata metadata);
 	}
-
+	
 	private ArrayList<MetadataCollectingListener>	collectingListeners;
 
 	public ArrayList<MetadataCollectingListener> getCollectingListeners()
@@ -70,16 +71,12 @@ public class MyContainer extends Container
 		this.collectingListeners = collectingListeners;
 	}
 
-	protected InfoCollector					infoCollector;
+	protected MyInfoCollector	infoCollector;
 
-	protected SemanticActionHandler	semanticActionHandler;
-
-	public MyContainer(ContentElement progenitor, InfoCollector infoCollector,
-			SemanticActionHandler semanticActionHandler, ParsedURL purl)
+	public MyContainer(ContentElement progenitor, MyInfoCollector infoCollector, ParsedURL purl)
 	{
 		super(progenitor);
 		this.infoCollector = infoCollector;
-		this.semanticActionHandler = semanticActionHandler;
 		this.metadata = (Document) infoCollector.constructDocument(purl);
 
 		initPurl = purl;
@@ -123,27 +120,15 @@ public class MyContainer extends Container
 	@Override
 	public Document constructAndSetMetadata(MetaMetadata metaMetadata)
 	{
-		Document result = constructMetadata(metaMetadata);
-		setMetadata(result);
-		return result;
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
 	public Document constructMetadata(MetaMetadata metaMetadata)
 	{
-		if (metaMetadata == null)
-		{
-			MetaMetadataRepository metaMetaDataRepository = infoCollector.metaMetaDataRepository();
-			metaMetadata = metaMetaDataRepository.getDocumentMM((ParsedURL) null); // get document mmd
-		}
-		Document result = (Document) metaMetadata.constructMetadata();
-		if (result == null)
-		{
-			warning("Can't find Metadata class for tag " + metaMetadata.getName()
-					+ " Building default Document Metadata instead.");
-			result = new Document(metaMetadata);
-		}
-		return result;
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
@@ -194,7 +179,7 @@ public class MyContainer extends Container
 	@Override
 	public TranslationScope getGeneratedMetadataTranslationScope()
 	{
-		return infoCollector.metaMetaDataRepository().metadataTranslationScope();
+		return GeneratedMetadataTranslationScope.get();
 	}
 
 	// needed used in downloading process
@@ -237,17 +222,20 @@ public class MyContainer extends Container
 	@Override
 	public void performDownload() throws IOException
 	{
-		// calls connect to find the right parser, then calls the infocollector to download the content
-		// also process the semantic actions
-		DocumentParser parser = DocumentParser.connect(purl(), this, infoCollector,
-				semanticActionHandler);
+		//calls connect to find the right parser, then calls the infocollector to download the content
+		//also process the semantic actions
+		
+		DocumentParser parser = DocumentParser.connect(purl(), this, infoCollector, new SemanticActionHandlerBase());
+		
+		if(parser != null)
+			parser.parse();
+		
+		((MyInfoCollector)infoCollector).log(purl().toString());
 
-		parser.parse();
-
-		// listeners again
-		for (MetadataCollectingListener listener : collectingListeners)
+		if(!((MyInfoCollector)infoCollector).visited(purl().toString()))
 		{
-			listener.collect(metadata);
+			System.out.println("Downloading slow");
+			infoCollector.getDownloadMonitor().pause(500);//60000 + (MathTools.random(100)*2000));
 		}
 	}
 
@@ -284,9 +272,8 @@ public class MyContainer extends Container
 	@Override
 	public void resetPURL(ParsedURL connectionPURL)
 	{
-		if (metadata() == null)
-			return;
-		metadata().setLocation(connectionPURL);
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override

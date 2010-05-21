@@ -4,6 +4,7 @@
 package ecologylab.semantics.metametadata.example;
 
 import java.util.ArrayList;
+
 import ecologylab.semantics.metadata.Metadata;
 
 /**
@@ -44,6 +45,8 @@ public class MetadataCollector implements MyContainer.MetadataCollectingListener
 	{
 		return list;
 	}
+	
+	
 
 	/**
 	 * The actual collecting method.
@@ -53,7 +56,7 @@ public class MetadataCollector implements MyContainer.MetadataCollectingListener
 		// check validity.
 		if (metadata == null)
 			return;
-
+	
 		list.add(metadata);
 	}
 }

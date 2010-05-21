@@ -24,7 +24,6 @@ import ecologylab.xml.TranslationScope;
 import ecologylab.xml.XMLTranslationException;
 
 //needed
-import ecologylab.semantics.actions.NestedSemanticActionsTranslationScope;
 import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.generated.library.WeatherReport;
 
@@ -54,7 +53,7 @@ public class WeatherDataCollector
 			InterruptedException
 	{
 		// create the infoCollector - specifiy the repos
-		MyInfoCollector infoCollector = new MyInfoCollector(".");
+		MyInfoCollector infoCollector = new MyInfoCollector("C:\\nic\\web\\code\\java\\cf\\config\\semantics\\metametadata\\metaMetadataRepository");
 		// add the WeatherReportCollector to the listener list, so that we can collect information we
 		// need from the metadata
 		infoCollector.addListener(MetadataCollector.get());
@@ -67,7 +66,7 @@ public class WeatherDataCollector
 		// wait for the infoCollector to finish its downloading job
 		// note that the downloadMonitor (contained in infoCollecotr) will wait for new seeds if
 		//   downloading is done. so we check the number of collected reports to determine when to finish
-		while (infoCollector.getDownloadMonitor().toDownloadSize() > 0)
+		while (MetadataCollector.get().list().size() < COUNT_TARGETS)
 		{
 			Thread.sleep(1000);
 		}
