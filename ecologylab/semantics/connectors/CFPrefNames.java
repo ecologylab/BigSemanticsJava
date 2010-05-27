@@ -68,4 +68,16 @@ public interface CFPrefNames
 	public static final String  HOTSPACE_SURROGATE_DENSITY	= "elements_per_square_inch";
 	
 	public static final String	DISABLE_SMOOTH_FIT					= "disable_smooth_fit";
+	
+	public static final String	CRAWL_CAREFULLY						= "crawl_carefully";
+	
+	public static final String	MIN_WAIT_TIME						= "min_wait_time";
+	
+	public static final String	MAX_WAIT_TIME						= "max_wait_time";
+	
+	public static final String	SAVE_SURROGATES						= "save_surrogates";
+	
+	public static final String	SAVE_SURROGATES_MAX					= "save_surrogates_max";
+	
+	public static final String	SAVE_SURROGATES_LOCATION			= "save_surrogates_location";
 }
