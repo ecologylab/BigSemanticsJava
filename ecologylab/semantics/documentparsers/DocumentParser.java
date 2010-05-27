@@ -60,6 +60,8 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 	 * Filled out by the connect() method.
 	 */
 	protected MetaMetadata			metaMetadata;
+	
+	public static boolean 					cacheHit = false;
 
 	/**
 	 * Associated Container object.
@@ -73,6 +75,8 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 																	.getReaderMIMETypes();
 
 	public static final String[]	IMAGE_SUFFIX_STRINGS	= ImageIO.getReaderFormatNames();
+	
+	
 
 	protected static final class DocumentTypeRegistry extends Scope<DocumentParser>
 	{
@@ -125,7 +129,7 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 	{
 		this.infoCollector = infoCollector;
 	}
-
+	
 	public abstract void parse ( ) throws IOException;
 
 	/**
@@ -261,19 +265,24 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 							// {
 							// return true;
 							// }
+							
+							/*
+							 * Unnecessary now because of how ecocache handles the acm gateway pages
+							 * 
 							if ("acm.org".equals(domain) && "pdf".equals(connPURLSuffix))
 							{
 								return true;
 							}
 							else
 							{
+								*/
 								// get new MetaMetadata & metadata
 								Document oldMetadata	=(Document) container.metadata();
 								MetaMetadata newMetaMetadata	= infoCollector.getDocumentMM(connectionPURL);
 								Document newMetadata	= container.constructAndSetMetadata(newMetaMetadata);
 //			done by resetPURL()					newMetadata.setLocation(oldMetadata.getLocation());
 								newMetadata.setQuery(oldMetadata.getQuery());
-							}
+							//}
 							// redirect the AbstractContainer object
 							container.resetPURL(connectionPURL);
 						}
@@ -301,6 +310,10 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 		// then try to create a connection using the PURL
 		PURLConnection purlConnection = purl.connect(documentParserConnectHelper, (metaMetadata == null) ? null
 				: metaMetadata.getUserAgentString());
+		
+		String cacheValue = purlConnection.urlConnection().getHeaderField("X-Cache");
+		cacheHit = cacheValue.contains("HIT");
+		
 		
 		// check for a parser that was discovered while processing a re-direct
 		DocumentParser result = documentParserConnectHelper.getResult();
