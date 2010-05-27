@@ -93,6 +93,7 @@ public class DocumentState extends Seed
  		}
  		Container container =infoCollector.getContainerDownloadIfNeeded(parentContainer, url, this, 
  				(dropPoint != null), justcrawl, justmedia);
+ 		if(query != null)
  		container.setQuery(query);
   	}
  	
