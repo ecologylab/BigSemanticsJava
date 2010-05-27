@@ -3,16 +3,18 @@ package ecologylab.semantics.model.text;
 import java.text.DecimalFormat;
 import java.util.Hashtable;
 
+import ecologylab.xml.ElementState;
 
-public class Term implements Comparable<Term>
+
+public class Term extends ElementState implements Comparable<Term>
 {
 
 	private static final Hashtable<String, String> uniqueStemObjectMap = new Hashtable<String, String>();
 	
-	private String stem;
-	private String word;
+	@xml_attribute private String stem;
+	@xml_attribute private String word;
 	private boolean hasWord = false;
-	private double idf;
+	@xml_attribute private double idf;
 	public static DecimalFormat ONE_DECIMAL_PLACE = new DecimalFormat("#0.0");
 
 	public double idf()
@@ -20,6 +22,8 @@ public class Term implements Comparable<Term>
 		return idf;
 	}
 
+	public Term() { } 
+	
 	protected Term(String stem, double idf)
 	{
 		this.stem = getUniqueStem(stem);
