@@ -312,9 +312,6 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 		PURLConnection purlConnection = purl.connect(documentParserConnectHelper, (metaMetadata == null) ? null
 				: metaMetadata.getUserAgentString());
 		
-		String cacheValue = purlConnection.urlConnection().getHeaderField("X-Cache");
-		cacheHit = cacheValue.contains("HIT");
-		
 		
 		// check for a parser that was discovered while processing a re-direct
 		DocumentParser result = documentParserConnectHelper.getResult();
@@ -327,6 +324,9 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 		// if we made PURL connection but could not find parser using container
 		if ((purlConnection != null) && (result == null))
 		{
+			String cacheValue = purlConnection.urlConnection().getHeaderField("X-Cache");
+			cacheHit = cacheValue != null && cacheValue.contains("HIT");
+			
 			// if look up by purl fails
 			if(metaMetadata == null)
 			{

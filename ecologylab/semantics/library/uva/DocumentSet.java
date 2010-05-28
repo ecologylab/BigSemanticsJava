@@ -5,11 +5,9 @@ package ecologylab.semantics.library.uva;
 
 import java.util.ArrayList;
 
-import ecologylab.services.messages.cf.DocumentState;
+import ecologylab.semantics.seeding.DocumentState;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.xml_inherit;
-import ecologylab.xml.ElementState.xml_collection;
-import ecologylab.xml.ElementState.xml_nowrap;
 
 /**
  * 

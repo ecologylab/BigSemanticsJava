@@ -74,7 +74,8 @@ public class MetadataBase<MM extends MetaMetadataField> extends ElementState imp
 	 */
 	private final HashMapArrayList<String, FieldDescriptor> lookupFieldDescriptorsByTagName()
 	{
-		String className	= classDescriptor().getClassName();
+		ClassDescriptor classDescriptor = classDescriptor();
+		String className	= classDescriptor.getDescribedClassPackageName() + "." + classDescriptor.getDecribedClassSimpleName();
 		HashMapArrayList<String, FieldDescriptor> result	= fieldDescriptorsByTagNameMap.get(className);
 		if (result == null)
 		{

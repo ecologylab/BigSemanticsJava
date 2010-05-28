@@ -6,14 +6,14 @@ import ecologylab.semantics.connectors.CFPrefNames;
 import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.connectors.SeedPeer;
-import ecologylab.xml.ElementState.xml_attribute;
+import ecologylab.xml.ElementState;
 
 /**
  * Specification of a directive to the agent or otherwise to composition space services.
  * 
  * @author andruid, robinson
  */
-abstract public class Seed<AC extends Container> extends ecologylab.services.messages.cf.Seed implements CFPrefNames
+abstract public class Seed<AC extends Container> extends ElementState implements CFPrefNames
 {
     public static final String          TRAVERSABLE                  = "traversable";
     public static final String          UNTRAVERSABLE                = "untraversable";
@@ -29,7 +29,9 @@ abstract public class Seed<AC extends Container> extends ecologylab.services.mes
     /**
      * Query string to pass to the search engine.
      */
-    @xml_attribute protected String			query;
+    @xml_attribute protected String				query;
+    
+    @xml_attribute protected float				bias		= 1.0f;
 
     protected SeedDistributor            	seedDistributer;
     
@@ -318,5 +320,21 @@ abstract public class Seed<AC extends Container> extends ecologylab.services.mes
 	public String getQuery() 
 	{
 		return query;
+	}
+	
+	/**
+	 * @return Returns the bias.
+	 */
+	public float getBias()
+	{
+		return bias;
+	}
+
+	/**
+	 * @param bias The bias to set.
+	 */
+	public void setBias(float bias)
+	{
+		this.bias = bias;
 	}
 }

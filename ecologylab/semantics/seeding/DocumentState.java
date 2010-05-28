@@ -170,7 +170,7 @@ public class DocumentState extends Seed
 	 * 
 	 * @return
 	 */
-	public ParsedURL purl()
+	public ParsedURL getUrl()
 	{
 		return url;
 	}

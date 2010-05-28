@@ -30,7 +30,7 @@ public class MetaMetadataFeedParser
 			Feed feed)
 	{
 		super(infoCollector, semanticActionHandler);
-		getMetaMetadataAndContainerAndQueue(infoCollector,feed.purl(),feed,null);
+		getMetaMetadataAndContainerAndQueue(infoCollector,feed.getUrl(),feed,null);
 	}
 
 	@Override

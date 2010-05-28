@@ -14,7 +14,6 @@ import ecologylab.appframework.ApplicationProperties;
 import ecologylab.appframework.EnvironmentGeneric;
 import ecologylab.appframework.types.prefs.Pref;
 import ecologylab.appframework.types.prefs.PrefBoolean;
-import ecologylab.appframework.types.prefs.PrefString;
 import ecologylab.collections.PrefixCollection;
 import ecologylab.collections.PrefixPhrase;
 import ecologylab.collections.Scope;
@@ -259,7 +258,7 @@ implements InfoCollector<AC>, SemanticsPrefs, ApplicationProperties, DocumentPar
 		return result;
 	}
 
-	public void addSeeds(SeedSet newSeeds)
+	public void addSeeds(SeedSet<? extends Seed> newSeeds)
 	{
 		if (this.seedSet == null)
 			this.seedSet = newSeeds;

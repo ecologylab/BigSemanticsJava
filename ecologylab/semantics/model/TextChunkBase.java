@@ -32,6 +32,8 @@ class TextChunkBase<T extends TextToken> extends ElementState implements
 		ScalarTypeInstanceConstants,
 		Iterable<T>
 {
+	@xml_collection("text_token")
+	@xml_nowrap
 	protected ArrayList<T>						tokens;
 	/**
 	 * Named Style for this text chunk. Default is to an anonymous style.
@@ -170,6 +172,7 @@ class TextChunkBase<T extends TextToken> extends ElementState implements
 	{
 		namedStyle().setUnderline(doUnderline);
 		this.scalarType = scalarType;
+		this.tokens = new ArrayList<T>();
 	}
 
 	/**
