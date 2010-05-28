@@ -69,6 +69,8 @@ public interface CFPrefNames
 	
 	public static final String	DISABLE_SMOOTH_FIT					= "disable_smooth_fit";
 	
+	public static final String	USING_PROXY							= "using_proxy";
+	
 	public static final String	CRAWL_CAREFULLY						= "crawl_carefully";
 	
 	public static final String	MIN_WAIT_TIME						= "min_wait_time";

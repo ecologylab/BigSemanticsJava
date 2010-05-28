@@ -11,6 +11,7 @@ import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 
+import ecologylab.appframework.types.prefs.Pref;
 import ecologylab.collections.PrefixCollection;
 import ecologylab.collections.Scope;
 import ecologylab.generic.Debug;
@@ -20,6 +21,7 @@ import ecologylab.net.PURLConnection;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.actions.SemanticActionsKeyWords;
+import ecologylab.semantics.connectors.CFPrefNames;
 import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.metadata.DocumentParserTagNames;
@@ -268,21 +270,20 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 							
 							/*
 							 * Unnecessary now because of how ecocache handles the acm gateway pages
-							 * 
-							if ("acm.org".equals(domain) && "pdf".equals(connPURLSuffix))
+							 */
+							if (!Pref.lookupBoolean(CFPrefNames.USING_PROXY) && "acm.org".equals(domain) && "pdf".equals(connPURLSuffix))
 							{
 								return true;
 							}
 							else
 							{
-								*/
 								// get new MetaMetadata & metadata
 								Document oldMetadata	=(Document) container.metadata();
 								MetaMetadata newMetaMetadata	= infoCollector.getDocumentMM(connectionPURL);
 								Document newMetadata	= container.constructAndSetMetadata(newMetaMetadata);
 //			done by resetPURL()					newMetadata.setLocation(oldMetadata.getLocation());
 								newMetadata.setQuery(oldMetadata.getQuery());
-							//}
+							}
 							// redirect the AbstractContainer object
 							container.resetPURL(connectionPURL);
 						}
