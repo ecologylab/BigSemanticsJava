@@ -30,6 +30,13 @@ public class DocumentSet extends ElementState
 	{
 		// TODO Auto-generated constructor stub
 	}
+	
+	public ArrayList<DocumentState> getDocuments()
+	{
+		if (documents != null)
+			return documents;
+		return documents = new ArrayList<DocumentState>();
+	}
 
 
 }

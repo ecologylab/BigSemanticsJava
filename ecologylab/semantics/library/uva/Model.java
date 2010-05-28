@@ -30,6 +30,11 @@ public class Model extends ElementState
 	@xml_collection("topic_cluster")
 	ArrayList<TopicCluster>	topicClusters;
 
+	public ArrayList<TopicCluster> getTopicClusters() {
+		if (topicClusters != null)
+			return topicClusters;
+		return topicClusters = new ArrayList<TopicCluster>();
+	}
 	public static TranslationScope getTranslations()
 	{
 		return TranslationScope.get("uva_site_guide", Model.class, DocumentSet.class, KeywordSet.class, TopicCluster.class, DocumentState.class, RectangularShape.class);
