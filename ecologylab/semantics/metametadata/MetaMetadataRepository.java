@@ -16,6 +16,7 @@ import ecologylab.generic.Debug;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.net.ParsedURL;
 import ecologylab.net.UserAgent;
+import ecologylab.semantics.actions.NestedSemanticActionsTranslationScope;
 import ecologylab.semantics.metadata.DebugMetadata;
 import ecologylab.semantics.metadata.DocumentParserTagNames;
 import ecologylab.semantics.metadata.Metadata;
@@ -32,6 +33,7 @@ import ecologylab.textformat.NamedStyle;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.TranslationScope;
 import ecologylab.xml.XMLTranslationException;
+import ecologylab.xml.ElementState.xml_nowrap;
 
 /**
  * @author damaraju
@@ -76,6 +78,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	 * subtypes.
 	 */
 	@xml_map("meta_metadata")
+	@xml_nowrap
 	private HashMapArrayList<String, MetaMetadata>							repositoryByTagName;
 
 	/**
@@ -152,7 +155,9 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		File repositorySources = new File(dir, "repositorySources");
 
 		TranslationScope metaMetadataTScope = MetaMetadataTranslationScope.get();
-
+		// need to instantiate scope so that meta-metadata translation works properly.
+		NestedSemanticActionsTranslationScope.get();
+		
 		for (File file : dir.listFiles(xmlFilter))
 		{
 			MetaMetadataRepository repos = readRepository(file, metaMetadataTScope);

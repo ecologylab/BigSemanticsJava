@@ -176,6 +176,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	private String																			tag;
 
 	@xml_map("meta_metadata_field")
+	@xml_nowrap
 	protected HashMapArrayList<String, MetaMetadataField>	childMetaMetadata;
 
 	HashMap<String, String>											childPackagesMap	= new HashMap<String, String>(2);
