@@ -4,8 +4,11 @@
 package ecologylab.semantics.seeding;
 
 import ecologylab.appframework.types.prefs.Pref;
+import ecologylab.appframework.types.prefs.PrefElementState;
 import ecologylab.xml.xml_inherit;
+import ecologylab.xml.ElementState.xml_nested;
 import ecologylab.xml.ElementState.xml_other_tags;
+import ecologylab.xml.ElementState.xml_tag;
 
 /**
  * @author andruid
@@ -13,7 +16,7 @@ import ecologylab.xml.ElementState.xml_other_tags;
  */
 @xml_inherit
 @xml_other_tags({"pref_element"})
-public class PrefSeedSet extends Pref<SeedSet>
+public class PrefSeedSet extends PrefElementState<SeedSet>
 {
 	@xml_nested
 	@xml_tag("seed_set")
@@ -50,7 +53,7 @@ public class PrefSeedSet extends Pref<SeedSet>
 	 * @see ecologylab.appframework.types.prefs.Pref#clone()
 	 */
 	@Override
-	public Pref<SeedSet> clone()
+	public PrefElementState<SeedSet> clone()
 	{
 		PrefSeedSet result	= new PrefSeedSet(this.name);
 		result.value				= this.value;
