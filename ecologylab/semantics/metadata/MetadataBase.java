@@ -22,7 +22,7 @@ import ecologylab.xml.ClassDescriptor;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.FieldDescriptor;
 import ecologylab.xml.ScalarUnmarshallingContext;
-import ecologylab.xml.serial_field_descriptors;
+import ecologylab.xml.serial_field_descriptors_class;
 
 /**
  * Base class for Metadata fields that represent scalar values.
@@ -32,7 +32,7 @@ import ecologylab.xml.serial_field_descriptors;
  * @author andruid
  *
  */
-@serial_field_descriptors(MetadataFieldDescriptor.class)
+@serial_field_descriptors_class(MetadataFieldDescriptor.class)
 public class MetadataBase<MM extends MetaMetadataField> extends ElementState implements Iterable<FieldDescriptor>
 {
 
