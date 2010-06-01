@@ -250,7 +250,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 		if (scalarType != null)
 		{
 			// Non Null scalar type means we have a nested attribute.
-			appendScalarNested(appendable,pass);
+			appendScalarLeaf(appendable,pass);
 		}
 		//boolean iNested = tryTofindNested();
 		//isNested=iNested;
@@ -549,7 +549,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	 *          The appendable in which this declaration has to be appended.
 	 * @throws IOException
 	 */
-	private void appendScalarNested(Appendable appendable,int pass) throws IOException
+	private void appendScalarLeaf(Appendable appendable,int pass) throws IOException
 	{
 		String fieldName = XMLTools.fieldNameFromElementName(getName());
 		//fieldName = MetadataCompilerConstants.handleJavaKeyWord(fieldName);
@@ -566,7 +566,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 			MetadataCompilerUtils.writeJavaDocComment(comment, appendable);
 	
 			// append the Nested field.
-			appendNested(appendable, "private Metadata", scalarType.fieldTypeName(), fieldName);
+			appendLeaf(appendable, "private Metadata", scalarType.fieldTypeName(), fieldName);
 		}
 		else if(pass == MetadataCompilerUtils.GENERATE_METHODS_PASS)
 		{
@@ -810,12 +810,28 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	private void appendNested(Appendable appendable, String classNamePrefix, String className,
 			String fieldName) throws IOException
 	{
-		if (className.equals("int"))
+		appendMetalanguageDecl(appendable, getTagDecl() + " @xml_nested",
+				classNamePrefix, className, fieldName);
+	}
+	
+	/**
+	 * Appends scalar field with @xml_leaf annotation
+	 * 
+	 * @param appendable
+	 * @param classNamePrefix
+	 * @param className
+	 * @param fieldName
+	 * @throws IOException
+	 */
+	private void appendLeaf(Appendable appendable, String classNamePrefix, String className,
+			String fieldName) throws IOException
+	{
+		if ("int".equals(className))
 		{
 			// HACK FOR METADATAINTEGER
 			className = "Integer";
 		}
-		appendMetalanguageDecl(appendable, getTagDecl() + " @xml_nested",
+		appendMetalanguageDecl(appendable, getTagDecl() + " @xml_leaf",
 				classNamePrefix, className, fieldName);
 	}
 
