@@ -11,6 +11,7 @@ import java.util.Iterator;
 
 import ecologylab.appframework.PropertiesAndDirectories;
 import ecologylab.generic.HashMapArrayList;
+import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.DocumentParserTagNames;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.tools.MetadataCompiler;
@@ -133,6 +134,13 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	 */
 	@xml_attribute
 	private String															collection;
+	
+	/**
+	 * Specifies adding @xml_nowrap to the collection object in cases where items in the collection
+	 * are not wrapped inside a tag.
+	 */
+	@xml_attribute
+	private boolean															noWrap;
 
 	@xml_attribute
 	private String															comment;
@@ -849,12 +857,16 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 			variableTypeEnd=">>";
 		}
 		String tag =getChildTag();
-			
-		String annotation = "@xml_collection(\"" + tag + "\")";
+		
+		StringBuilder annotation = StringBuilderUtils.acquire();
+		annotation.append("@xml_collection(\"" + tag + "\")");
+		if (noWrap)
+			annotation.append(" @xml_nowrap");
+		
 		
 		if(pass == MetadataCompilerUtils.GENERATE_FIELDS_PASS)
 		{
-			appendMetalanguageDecl(appendable, annotation,"private" +variableTypeStart , className,variableTypeEnd , fieldName);
+			appendMetalanguageDecl(appendable, annotation.toString(),"private" +variableTypeStart , className,variableTypeEnd , fieldName);
 		}
 		else if(pass == MetadataCompilerUtils.GENERATE_METHODS_PASS)
 		{
@@ -1388,6 +1400,11 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	public void setTag(String tag)
 	{
 		this.tag = tag;
+	}
+
+	public boolean isNoWrap()
+	{
+		return noWrap;
 	}
 
 }
