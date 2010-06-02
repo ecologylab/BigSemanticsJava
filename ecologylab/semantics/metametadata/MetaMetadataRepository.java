@@ -731,7 +731,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 
 	public static TranslationScope builtinMetadataTranslations()
 	{
-		return TranslationScope.get("builtin_metadata", scalarMetadataTranslations(), Metadata.class,
+		return TranslationScope.get("builtin_metadata", /*scalarMetadataTranslations(),*/ Metadata.class,
 				Document.class, Media.class, Image.class, Entity.class);
 	}
 
