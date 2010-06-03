@@ -19,8 +19,11 @@ import ecologylab.semantics.actions.NestedSemanticActionsTranslationScope;
 import ecologylab.semantics.actions.SemanticAction;
 import ecologylab.semantics.metadata.DocumentParserTagNames;
 import ecologylab.semantics.metadata.Metadata;
+import ecologylab.semantics.metadata.MetadataClassDescriptor;
+import ecologylab.semantics.metadata.MetadataFieldDescriptor;
 import ecologylab.semantics.tools.MetadataCompiler;
 import ecologylab.semantics.tools.MetadataCompilerUtils;
+import ecologylab.xml.ClassDescriptor;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.TranslationScope;
 import ecologylab.xml.XMLTools;
@@ -31,7 +34,8 @@ import ecologylab.xml.types.element.Mappable;
  * @author damaraju
  * 
  */
-public class MetaMetadata extends MetaMetadataField implements Mappable<String>
+public class MetaMetadata extends MetaMetadataField 
+implements Mappable<String>
 {
 	/**
 	 * Class of the Metadata object that corresponds to this.
@@ -67,11 +71,6 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 	@xml_tag("package")
 	@xml_attribute
 	String										packageAttribute;
-
-	@xml_attribute
-	private String						comment;
-
-
 
 	@xml_attribute
 	private String						userAgentString;
@@ -262,10 +261,10 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 		p.println(MetadataCompilerUtils.COMMENT);
 
 		// Write the import statements
-		p.println(MetadataCompiler.getImportStatement());
-
+//		p.println(MetadataCompiler.getImportStatement());
+		MetadataCompiler.printImports(p);
 		// Write java-doc comments
-		MetadataCompilerUtils.writeJavaDocComment(comment, fileWriter);
+		MetadataCompilerUtils.writeJavaDocComment(getComment(), fileWriter);
 
 		//write @xml_inherit
 		p.println("@xml_inherit");
@@ -544,30 +543,80 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 		return suffixes;
 	}
 
-	/**
-	 * @param comment
-	 *          the comment to set
-	 */
-	public void setComment(String comment)
-	{
-		this.comment = comment;
-	}
-
-	/**
-	 * @return the comment
-	 */
-	public String getComment()
-	{
-		return comment;
-	}
-
 	@Override
 	public String key()
 	{
 		return getName();
 	}
 	
+	/**
+	 * MetadataFieldDescriptor map by tag name: for this MetadataBase subclass.
+	 */
+	protected HashMapArrayList<String, MetadataFieldDescriptor> 	metadataFieldDescriptorsByTagName;
 	
+	protected MetadataClassDescriptor															metadataClassDescriptor;
+
+	/**
+	 * Obtain a map of FieldDescriptors for this class, with the field names as key, but with the mixins field removed.
+	 * Use lazy evaluation, caching the result by class name.
+	 * @param metadataTScope TODO
+	 * 
+	 * @return	A map of FieldDescriptors, with the field names as key, but with the mixins field removed.
+	 */
+	final void bindClassDescriptor(Class<? extends Metadata> metadataClass, TranslationScope metadataTScope)
+	{
+		MetadataClassDescriptor metadataClassDescriptor = this.metadataClassDescriptor;
+		if (metadataClassDescriptor == null)
+		{
+			synchronized (this)
+			{
+				metadataClassDescriptor = this.metadataClassDescriptor;
+				if (metadataClassDescriptor == null)
+				{
+					metadataClassDescriptor = (MetadataClassDescriptor) ClassDescriptor.getClassDescriptor(metadataClass);
+					metadataClassDescriptor.setMetaMetadata(this);
+					bindMetadataFieldDescriptors(metadataTScope, metadataClassDescriptor);
+					this.metadataClassDescriptor	= metadataClassDescriptor;
+				}
+			}
+		}
+	}
+	/**
+	 * Compute the map of FieldDescriptors for this class, with the field names as key, but with the mixins field removed.
+	 * @param metadataTScope TODO
+	 * @param metadataClassDescriptor TODO
+	 * 
+	 * @return	A map of FieldDescriptors, with the field names as key, but with the mixins field removed.
+	 */
+	private final void bindMetadataFieldDescriptors(TranslationScope metadataTScope, MetadataClassDescriptor metadataClassDescriptor)
+	{
+		metadataFieldDescriptorsByTagName	= new HashMapArrayList<String, MetadataFieldDescriptor>(childMetaMetadata.size());
+		for (MetaMetadataField metaMetadataField : childMetaMetadata)
+		{
+			String tagName	= metaMetadataField.getChildTag(); //TODO -- is this the correct tag?
+			MetadataFieldDescriptor metadataFieldDescriptor	= (MetadataFieldDescriptor) metadataClassDescriptor.getFieldDescriptorByTag(tagName, metadataTScope);
+			if (metadataFieldDescriptor != null)
+			{
+				metadataFieldDescriptor.setMetaMetadataField(metaMetadataField);
+				metaMetadataField.setMetadataFieldDescriptor(metadataFieldDescriptor);
+				metadataFieldDescriptorsByTagName.put(tagName, metadataFieldDescriptor);
+			}
+			else
+			{
+				warning("Ignoring <" + tagName + "> because no corresponding MetadataFieldDescriptor can be found.");
+			}
+		}
+//		for (FieldDescriptor fieldDescriptor : allFieldDescriptorsByFieldName.values())
+//		{
+//			String tagName	= fieldDescriptor.getTagName();
+//			result.put(tagName, (MetadataFieldDescriptor) fieldDescriptor);
+//		}
+	}
+	
+	public MetadataFieldDescriptor getFieldDescriptorByTagName(String tagName)
+	{
+		return metadataFieldDescriptorsByTagName.get(tagName);
+	}
 
 	public static void main(String args[]) throws XMLTranslationException
 	{
@@ -588,4 +637,21 @@ public class MetaMetadata extends MetaMetadataField implements Mappable<String>
 			System.out.println('\n');
 		}
 	}
+
+	/**
+	 * @return the metadataFieldDescriptorsByTagName
+	 */
+	public HashMapArrayList<String, MetadataFieldDescriptor> getMetadataFieldDescriptorsByTagName()
+	{
+		return metadataFieldDescriptorsByTagName;
+	}
+
+	/**
+	 * @return the metadataClassDescriptor
+	 */
+	public MetadataClassDescriptor getMetadataClassDescriptor()
+	{
+		return metadataClassDescriptor;
+	}
+
 }

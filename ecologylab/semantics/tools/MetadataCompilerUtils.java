@@ -7,11 +7,13 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Arrays;
+import java.util.HashSet;
 
 import ecologylab.appframework.PropertiesAndDirectories;
 import ecologylab.appframework.types.prefs.PrefString;
 import ecologylab.io.Files;
-import ecologylab.semantics.metametadata.MetaMetadataRepository;
+import ecologylab.semantics.metadata.MetadataBuiltinsTranslationScope;
 import ecologylab.xml.XMLTools;
 
 /**
@@ -36,19 +38,32 @@ public class MetadataCompilerUtils
 	public static final String	COMMENT																= START_JAVA_DOC
 																																				+ "This is a generated code. DO NOT edit or modify it.\n @author MetadataCompiler \n"
 																																				+ END_JAVA_DOC;
-
-	// FIXME -- get rid of library hard coded entries in this string!
-	public static final String	IMPORTS																= "\n"
-																																				+ MetaMetadataRepository
-																																						.builtinMetadataTranslations()
-																																						.generateImports()
-																																				+ "\n import java.util.*;\nimport ecologylab.semantics.metametadata.MetaMetadata;\nimport ecologylab.net.ParsedURL;\nimport ecologylab.generic.HashMapArrayList;\nimport ecologylab.xml.xml_inherit;\nimport ecologylab.xml.types.element.Mappable;\nimport ecologylab.semantics.metadata.DefaultMetadataTranslationSpace;\nimport ecologylab.xml.TranslationScope;\nimport ecologylab.xml.ElementState.xml_tag;\n import ecologylab.semantics.metadata.builtins.Document;\nimport ecologylab.semantics.metadata.builtins.Media;\n import ecologylab.semantics.metadata.builtins.Image;\nimport ecologylab.semantics.metametadata.MetaMetadataRepository;\nimport ecologylab.semantics.generated.library.*;\n";
-
+	public static final HashSet<String> importTargets = new HashSet<String>(Arrays.asList
+	(
+		"java.util.*",
+		"ecologylab.semantics.metametadata.MetaMetadata",
+		"ecologylab.net.ParsedURL",
+		"ecologylab.generic.HashMapArrayList",
+		"ecologylab.xml.xml_inherit",
+		"ecologylab.xml.types.element.Mappable",
+		"ecologylab.semantics.metadata.scalar.*",
+		"ecologylab.xml.TranslationScope",
+		"ecologylab.xml.ElementState.xml_tag",
+		"ecologylab.semantics.metadata.builtins.*",
+		"ecologylab.semantics.metametadata.MetaMetadataRepository",
+		"ecologylab.semantics.generated.library.*",
+		"ecologylab.semantics.metadata.MetadataBuiltinsTranslationScope"
+	));
+	static
+	{
+		MetadataBuiltinsTranslationScope.get().addClassNamesToHashSet(importTargets);
+	}
+	
 	public static final String	PACKAGE																= "package";
 
 	public static final String	GENERATED_METADATA_TRANSLATIONS				= "generated_metadata_translations";
 
-	public static PrintWriter		generatedTranslationScope;
+	public static PrintWriter		printWriter;
 
 	public static PrintWriter		directBindingTranslationScope;
 
@@ -141,7 +156,7 @@ public class MetadataCompilerUtils
 	 */
 	public static void appendToTranslationScope(String append)
 	{
-		MetadataCompilerUtils.generatedTranslationScope.println(append);
+		MetadataCompilerUtils.printWriter.println(append);
 	}
 
 	/**
@@ -149,14 +164,14 @@ public class MetadataCompilerUtils
 	 */
 	public static void endTranslationScopeClass()
 	{
-		MetadataCompilerUtils.generatedTranslationScope.print("\n};\n \n");
-		MetadataCompilerUtils.generatedTranslationScope
+		MetadataCompilerUtils.printWriter.print("\n};\n \n");
+		MetadataCompilerUtils.printWriter
 				.print("public static TranslationScope get()\n{\n");
-		MetadataCompilerUtils.generatedTranslationScope.print("return TranslationScope.get(\""
+		MetadataCompilerUtils.printWriter.print("return TranslationScope.get(\""
 				+ GENERATED_METADATA_TRANSLATIONS
-				+ "\", MetaMetadataRepository.builtinMetadataTranslations(), TRANSLATIONS);\n}\n}");
+				+ "\", MetadataBuiltinsTranslationScope.get(), TRANSLATIONS);\n}\n}");
 
-		MetadataCompilerUtils.generatedTranslationScope.flush();
+		MetadataCompilerUtils.printWriter.flush();
 	}
 
 	/**
@@ -172,25 +187,26 @@ public class MetadataCompilerUtils
 				.classNameFromElementName("GeneratedMetadataTranslationScope")
 				+ ".java");
 		FileWriter fileWriter = new FileWriter(file);
-		generatedTranslationScope = new PrintWriter(fileWriter);
+		printWriter = new PrintWriter(fileWriter);
 
 		// Write the package
-		generatedTranslationScope.println("package " + packageName + ";");
+		printWriter.println("package " + packageName + ";");
 
 		// write java doc comment
-		generatedTranslationScope.println(COMMENT);
+		printWriter.println(COMMENT);
 
 		// Write the import statements
-		generatedTranslationScope.println(MetadataCompiler.getImportStatement());
+//		printWriter.println(MetadataCompiler.getImportStatement());
+		MetadataCompiler.printImports(printWriter);
 
 		// Write java-doc comments
 		writeJavaDocComment("\nThis is the tranlation scope class for generated files\n.",
-				generatedTranslationScope);
+				printWriter);
 
 		// begin writing the class
-		generatedTranslationScope
-				.print("public class GeneratedMetadataTranslationScope extends  DefaultMetadataTranslationSpace\n{");
-		generatedTranslationScope.print("protected static final Class TRANSLATIONS[]=\n\t{");
+		printWriter
+				.print("public class GeneratedMetadataTranslationScope\n{");
+		printWriter.print("protected static final Class TRANSLATIONS[]=\n\t{");
 
 	}
 }

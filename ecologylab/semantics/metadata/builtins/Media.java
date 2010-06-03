@@ -41,7 +41,7 @@ public class Media extends Metadata
 **/
 
 	@xml_tag("context")
-	@xml_nested
+	@xml_leaf
 	private MetadataString	context;
 
 	/**

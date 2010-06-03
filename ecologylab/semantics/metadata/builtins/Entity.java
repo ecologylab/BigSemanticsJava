@@ -22,8 +22,8 @@ import ecologylab.xml.types.element.Mappable;
 public class Entity<D extends Document> extends Metadata
 implements Mappable<ParsedURL>
 {
-	@xml_nested MetadataString		gist;
-	@xml_nested MetadataParsedURL	location;
+	@xml_leaf MetadataString		gist;
+	@xml_leaf MetadataParsedURL	location;
 	
 	D															linkedDocument;
 	

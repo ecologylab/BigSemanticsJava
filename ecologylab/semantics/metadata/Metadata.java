@@ -1,9 +1,15 @@
 package ecologylab.semantics.metadata;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Set;
 
 import ecologylab.generic.ClassAndCollectionIterator;
@@ -13,11 +19,17 @@ import ecologylab.net.ParsedURL;
 import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataField;
+import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.model.text.CompositeTermVector;
 import ecologylab.semantics.model.text.ITermVector;
 import ecologylab.semantics.seeding.SearchState;
 import ecologylab.semantics.seeding.Seed;
+import ecologylab.xml.ClassDescriptor;
+import ecologylab.xml.ElementState;
 import ecologylab.xml.FieldDescriptor;
+import ecologylab.xml.ScalarUnmarshallingContext;
+import ecologylab.xml.serial_descriptors_classes;
+import ecologylab.xml.ElementState.xml_collection;
 
 /**
  * This is the new metadata class that is the base class for the meta-metadata system. It contains
@@ -28,8 +40,17 @@ import ecologylab.xml.FieldDescriptor;
  * @author sashikanth
  * 
  */
-abstract public class Metadata extends MetadataBase<MetaMetadata>
+@serial_descriptors_classes({MetadataClassDescriptor.class, MetadataFieldDescriptor.class})
+abstract public class Metadata extends ElementState
+implements MetadataBase, Iterable<MetadataFieldDescriptor>
 {
+	/**
+	 * Hidden reference to the MetaMetadataRepository. DO NOT access this field directly.
+	 * DO NOT create a static public accessor.
+	 * -- andruid 10/7/09.
+	 */
+	private static MetaMetadataRepository		repository;
+
 	private static final String	MIXINS_FIELD_NAME	= "mixins";
 
 	protected CompositeTermVector				termVector								= null;
@@ -75,7 +96,7 @@ abstract public class Metadata extends MetadataBase<MetaMetadata>
 	public Metadata(MetaMetadata metaMetadata)
 	{
 		this();
-		this.metaMetadata = metaMetadata;
+//		this.metaMetadata = metaMetadata;
 	}
 	
 	/**
@@ -84,18 +105,20 @@ abstract public class Metadata extends MetadataBase<MetaMetadata>
 	 * @param tagName
 	 * 
 	 * @return	true for the mixins field; otherwise false;
-	 */	@Override
+	 */
 	public boolean excludeFieldByTag(String tagName)
 	{
 		return MIXINS_FIELD_NAME.equals(tagName);
 	}
-	
-	@Override
-	public MetaMetadata metaMetadataField()
+//	
+	public MetadataClassDescriptor getMetadataClassDescriptor()
 	{
-		if (metaMetadata == null && repository() != null)
-			metaMetadata		= repository().getByClass(getClass());
-		return metaMetadata;
+		return (MetadataClassDescriptor) classDescriptor();
+	}
+	
+	public MetaMetadata getMetaMetadata()
+	{
+		return getMetadataClassDescriptor().getMetaMetadata();
 	}
 	/**
 	 * 
@@ -132,17 +155,18 @@ abstract public class Metadata extends MetadataBase<MetaMetadata>
 
 	public boolean isFilled(String attributeName)
 	{
+		//FIXME -- toLowerCase() is BS!!!
 		attributeName = attributeName.toLowerCase();
 
-		OneLevelNestingIterator<FieldDescriptor, ? extends MetadataBase> fullIterator = fullNonRecursiveIterator();
+		OneLevelNestingIterator<MetadataFieldDescriptor, Metadata> fullIterator = fullNonRecursiveIterator();
 		while (fullIterator.hasNext())
 		{
-			FieldDescriptor fieldAccessor = fullIterator.next();
-			MetadataBase currentMetadata = fullIterator.currentObject();
+			MetadataFieldDescriptor metadataFieldAccessor = fullIterator.next();
+			Metadata currentMetadata = fullIterator.currentObject();
 			// getFieldName() or getTagName()??? attributeName is from TypeTagNames.java
-			if (attributeName.equals(fieldAccessor.getFieldName()))
+			if (attributeName.equals(metadataFieldAccessor.getFieldName()))
 			{
-				String valueString = fieldAccessor.getValueString(currentMetadata);
+				String valueString = metadataFieldAccessor.getValueString(currentMetadata);
 				return MetadataString.isNotNullValue(valueString);
 			}
 		}
@@ -161,30 +185,31 @@ abstract public class Metadata extends MetadataBase<MetaMetadata>
 	{
 		int size = 0;
 
-		OneLevelNestingIterator<FieldDescriptor, ? extends MetadataBase> fullIterator = fullNonRecursiveIterator();
+		OneLevelNestingIterator<MetadataFieldDescriptor, Metadata> fullIterator = fullNonRecursiveIterator();
+		// iterate over all fields in this & then in each mixin of this
 		while (fullIterator.hasNext())
 		{
-			FieldDescriptor fieldAccessor = fullIterator.next();
-			MetadataBase currentMetadata = fullIterator.currentObject();
+			MetadataFieldDescriptor metadataFieldDescriptor = fullIterator.next();
+			Metadata currentMetadata = fullIterator.currentObject();	// stays the same for until we iterate over all mfd's for it
 			MetaMetadata currentMetaMetadata = currentMetadata.getMetaMetadata();
 			MetaMetadataField metaMetadata = (metaMetadataField != null) ? metaMetadataField
-					.lookupChild(fieldAccessor) : (currentMetaMetadata != null) ? currentMetaMetadata
-					.lookupChild(fieldAccessor) : null;
+					.lookupChild(metadataFieldDescriptor) : (currentMetaMetadata != null) ? currentMetaMetadata
+					.lookupChild(metadataFieldDescriptor) : null;
 
 			// When the iterator enters the metadata in the mixins "this" in getValueString has to be
 			// the corresponding metadata in mixin.
 			boolean hasVisibleNonNullField = false;
 
-			if (fieldAccessor.isPseudoScalar())
-				hasVisibleNonNullField 	= MetadataString.isNotNullAndEmptyValue(fieldAccessor.getValueString(currentMetadata));
-			else if (fieldAccessor.isNested())
+			if (metadataFieldDescriptor.isPseudoScalar())
+				hasVisibleNonNullField 	= MetadataString.isNotNullAndEmptyValue(metadataFieldDescriptor.getValueString(currentMetadata));
+			else if (metadataFieldDescriptor.isNested())
 			{
-				Metadata nestedMetadata = (Metadata) fieldAccessor.getNested(currentMetadata);
+				Metadata nestedMetadata = (Metadata) metadataFieldDescriptor.getNested((MetadataBase) currentMetadata);
 				hasVisibleNonNullField 	= (nestedMetadata != null) ? (nestedMetadata.numberOfVisibleFields(metaMetadata) > 0) : false;
 			}
 			else
 			{
-				Collection collection 	= fieldAccessor.getCollection(currentMetadata);
+				Collection collection 	= metadataFieldDescriptor.getCollection(currentMetadata);
 				hasVisibleNonNullField 	= (collection != null) ? (collection.size() > 0) : false;
 			}
 
@@ -223,14 +248,15 @@ abstract public class Metadata extends MetadataBase<MetaMetadata>
 
 		Set<ITermVector> vectors = termVector.componentVectors();
 		
-		ClassAndCollectionIterator<FieldDescriptor, MetadataBase<?>> i = metadataIterator();
+		ClassAndCollectionIterator<MetadataFieldDescriptor, Metadata> i = metadataIterator();
 		while (i.hasNext())
 		{
-			MetadataBase m = i.next();
-			if (m != null)
+			MetadataBase mb = i.next();
+			if (mb != null)
 			{
-				ITermVector mTermVector = m.termVector();
-				if (m != null && !vectors.contains(mTermVector))
+				// if mb is a Metadata object, this call may recursively initialize its CompositeTermVector
+				ITermVector mTermVector = mb.termVector();
+				if (mb != null && !vectors.contains(mTermVector))
 					termVector.add(mTermVector);
 			}
 		}
@@ -240,39 +266,6 @@ abstract public class Metadata extends MetadataBase<MetaMetadata>
 	protected void postTranslationProcessingHook()
 	{
 		initializeMetadataCompTermVector();
-	}
-	/**
-	 * Sets the field to the specified value and wont rebuild composteTermVector
-	 * 
-	 * @param fieldName
-	 * @param value
-	 */
-	// TODO -- May throw exception if there is no field accessor.
-	// FIXME -- resolve with MetadataBase
-	public boolean setByTagName(String tagName, String value)
-	{
-		tagName = tagName.toLowerCase();
-		// Taking care of mixins
-		MetadataBase metadata = getMetadataWhichContainsField(tagName);
-
-		if (value != null && value.length() != 0)
-		{
-			if (metadata != null)
-			{
-				FieldDescriptor fieldAccessor = getFieldDescriptorByTagName(tagName);
-				if (fieldAccessor != null && value != null && value.length() != 0)
-				{
-					fieldAccessor.set(metadata, value);
-					return true;
-				}
-				else
-				{
-					debug("Not Able to set the field: " + tagName);
-					return false;
-				}
-			}
-		}
-		return false;
 	}
 
 	public boolean hwSet(String tagName, String value)
@@ -286,61 +279,16 @@ abstract public class Metadata extends MetadataBase<MetaMetadata>
 		return false;
 	}
 
-	/**
-	 * Returns the metadata class if it contains a Field with name NOTE: Currently should be used ONLY
-	 * for mixins
-	 * 
-	 * @param tagName
-	 * @return
-	 */
-	// FIXME -- use fullNonRecursiveIterator
-	// FIXME -- resolve with MetadataBase
-	public Metadata getMetadataWhichContainsField(String tagName)
-	{
-		HashMapArrayList<String, FieldDescriptor> fieldAccessors = fieldDescriptorsByTagName();
-
-		FieldDescriptor metadataFieldAccessor = fieldAccessors.get(tagName);
-		if (metadataFieldAccessor != null)
-		{
-			return this;
-		}
-		// The field may be in mixin
-		if (mixins() != null && mixins().size() > 0)
-		{
-			for (Metadata mixinMetadata : mixins())
-			{
-				fieldAccessors = mixinMetadata.fieldDescriptorsByTagName();
-				FieldDescriptor mixinFieldAccessor = fieldAccessors.get(tagName);
-				if (mixinFieldAccessor != null)
-				{
-					return mixinMetadata;
-				}
-			}
-		}
-		return null;
-	}
-
 	public Field getFields()
 	{
 
 		return null;
 	}
 
-	public MetaMetadataField childMetaMetadata(String name)
-	{
-		return metaMetadata == null ? null : metaMetadata.lookupChild(name);
-	}
-
-	@Override
-	public MetaMetadata getMetaMetadata()
-	{
-		return metaMetadata;
-	}
-
-	@Override
 	public void setMetaMetadata(MetaMetadata metaMetadata)
 	{
-		this.metaMetadata = metaMetadata;
+		//FIXME -- get rid of all call sites for this method -- andruid 6/1/10
+//		this.metaMetadata = metaMetadata;
 	}
 
 	@Override
@@ -357,12 +305,12 @@ abstract public class Metadata extends MetadataBase<MetaMetadata>
 		if (termVector != null)
 			return termVector;
 		CompositeTermVector tv = new CompositeTermVector();
-		ClassAndCollectionIterator<FieldDescriptor, MetadataBase<?>> i = metadataIterator();
+		ClassAndCollectionIterator<MetadataFieldDescriptor, Metadata> i = metadataIterator();
 		while (i.hasNext())
 		{
-			MetadataBase m = i.next();
-			if (m != null)
-				tv.add(m.termVector());
+			MetadataBase mb = i.next();
+			if (mb != null)
+				tv.add(mb.termVector());
 		}
 		return (termVector = tv);
 	}
@@ -401,7 +349,6 @@ abstract public class Metadata extends MetadataBase<MetaMetadata>
 	/**
 	 * @return the mixins
 	 */
-	@Override
 	public ArrayList<Metadata> getMixins()
 	{
 		return mixins();
@@ -430,7 +377,7 @@ abstract public class Metadata extends MetadataBase<MetaMetadata>
 
 	public void recycle()
 	{
-		ClassAndCollectionIterator<FieldDescriptor, MetadataBase<?>> iterator = metadataIterator();
+		ClassAndCollectionIterator<MetadataFieldDescriptor, Metadata> iterator = metadataIterator();
 		for(MetadataBase metadata = iterator.next(); metadata != null; metadata = iterator.next())
 			metadata.recycle();
 		super.recycle();
@@ -448,15 +395,14 @@ abstract public class Metadata extends MetadataBase<MetaMetadata>
 	 * (probably a subclass), plus all the ecologylab.xml annotated fields in the mixins of this, if
 	 * there are any.
 	 */
-	public OneLevelNestingIterator<FieldDescriptor, ? extends MetadataBase> fullNonRecursiveIterator()
+	public OneLevelNestingIterator<MetadataFieldDescriptor, Metadata> fullNonRecursiveIterator()
 	{
-		return new OneLevelNestingIterator<FieldDescriptor, Metadata>(this, (mixins == null) ? null
-				: mixins.iterator());
-	}
+		return new OneLevelNestingIterator<MetadataFieldDescriptor, Metadata>(this, (mixins == null) ? null	: mixins);
+	}	
 
-	public ClassAndCollectionIterator<FieldDescriptor, MetadataBase<?>> metadataIterator()
+	public ClassAndCollectionIterator<MetadataFieldDescriptor, Metadata> metadataIterator()
 	{
-		return new ClassAndCollectionIterator<FieldDescriptor, MetadataBase<?>>(this);
+		return new ClassAndCollectionIterator<MetadataFieldDescriptor, Metadata>(this);
 	}
 
 	public boolean hasObservers()
@@ -530,4 +476,120 @@ abstract public class Metadata extends MetadataBase<MetaMetadata>
 		return isDnd;
 	}
 	
+
+	public static void setRepository(MetaMetadataRepository repo)
+	{
+		repository	= repo;
+	}
+
+	//FIXEME:The method has to search even all the mixins for the key.
+	public MetadataFieldDescriptor getFieldDescriptorByTagName(String tagName)
+	{
+		return getMetaMetadata().getFieldDescriptorByTagName(tagName);
+	}
+	
+	/**
+	 * @return the metadataFieldDescriptorsByTagName
+	 */
+	public HashMapArrayList<String, MetadataFieldDescriptor> getMetadataFieldDescriptorsByTagName()
+	{
+		return getMetaMetadata().getMetadataFieldDescriptorsByTagName();
+	}
+	/**
+	 * Sets the field to the specified value and wont rebuild composteTermVector
+	 * 
+	 * @param fieldName
+	 * @param value
+	 */
+	// TODO -- May throw exception if there is no field accessor.
+	// FIXME -- resolve with MetadataBase
+//	public boolean setByTagName(String tagName, String value)
+//	{
+//		tagName = tagName.toLowerCase();
+//		// Taking care of mixins
+//		Metadata metadata = getMetadataWhichContainsField(tagName);
+//
+//		if (value != null && value.length() != 0)
+//		{
+//			if (metadata != null)
+//			{
+//				FieldDescriptor fieldAccessor = getFieldDescriptorByTagName(tagName);
+//				if (fieldAccessor != null && value != null && value.length() != 0)
+//				{
+//					fieldAccessor.set(metadata, value);
+//					return true;
+//				}
+//				else
+//				{
+//					debug("Not Able to set the field: " + tagName);
+//					return false;
+//				}
+//			}
+//		}
+//		return false;
+//	}
+	
+	public boolean setByTagName(String tagName, String value)
+	{
+		return setByTagName(tagName, value, null);
+	}
+
+	/**
+	 * Unmarshall the valueString and set the field to 
+	 * 
+	 * @param tagName
+	 * @param marshalledValue
+	 * @param scalarUnMarshallingContext
+	 * @return
+	 */
+	public boolean setByTagName(String tagName, String marshalledValue, ScalarUnmarshallingContext scalarUnMarshallingContext)
+	{
+		//FIXME -- why is this necessary???????????????????????
+		if (marshalledValue != null && marshalledValue.length()!=0)
+		{
+			tagName = tagName.toLowerCase();	//FIXME -- get rid of this!
+			MetadataFieldDescriptor fieldDescriptor = getFieldDescriptorByTagName(tagName);
+			if(fieldDescriptor != null /* && value != null && value.length()!=0 */)	// allow set to nothing -- andruid & andrew 4/14/09
+			{
+				//FIXME -- override this method in MetadataFieldDescriptor!!!
+				fieldDescriptor.set(this, marshalledValue, scalarUnMarshallingContext);
+				return true;
+			}
+			else 
+			{
+				debug("Not Able to set the field: " + tagName);
+			}
+		}
+		return false;
+	}
+
+		
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.FIELD)
+	@Inherited
+	public @interface semantics_mixin
+	{
+
+	}
+	
+	/**
+	 * Only use this accessor, in order to maintain future code compatability.
+	 * 
+	 * @return
+	 */
+	public MetaMetadataRepository repository()
+	{
+		return repository;
+	}
+	@Override
+	public boolean hasCompositeTermVector()
+	{
+		return termVector != null;
+	}
+	
+	public Iterator<MetadataFieldDescriptor>	iterator()
+	{
+		return getMetadataFieldDescriptorsByTagName().iterator();
+	}
+
 }

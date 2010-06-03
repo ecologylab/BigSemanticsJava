@@ -1,10 +1,8 @@
 package ecologylab.semantics.metadata.scalar;
 
-import ecologylab.generic.FeatureVector;
 import ecologylab.generic.StringTools;
 import ecologylab.semantics.metadata.semantics_pseudo_scalar;
 import ecologylab.semantics.model.text.ITermVector;
-import ecologylab.semantics.model.text.Term;
 import ecologylab.semantics.model.text.TermVector;
 import ecologylab.xml.XMLTools;
 
@@ -12,22 +10,15 @@ import ecologylab.xml.XMLTools;
 public class MetadataStringBuilder extends MetadataScalarBase<StringBuilder>
 {
 	TermVector termVector = null;
-	@xml_text StringBuilder value;
 	
 	public MetadataStringBuilder()
 	{
 		
 	}
-	public StringBuilder getValue()
+	public MetadataStringBuilder(StringBuilder stringBuilder)
 	{
-		return value;
+		super(stringBuilder);
 	}
-	
-	public void setValue(StringBuilder value)
-	{
-		this.value = value;
-	}
-	
 	public void setValue(String incomingValue)
 	{
 		if ((incomingValue != null) && (incomingValue.length() > 0))

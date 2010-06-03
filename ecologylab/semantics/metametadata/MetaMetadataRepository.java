@@ -17,23 +17,20 @@ import ecologylab.generic.HashMapArrayList;
 import ecologylab.net.ParsedURL;
 import ecologylab.net.UserAgent;
 import ecologylab.semantics.actions.NestedSemanticActionsTranslationScope;
-import ecologylab.semantics.metadata.DebugMetadata;
 import ecologylab.semantics.metadata.DocumentParserTagNames;
 import ecologylab.semantics.metadata.Metadata;
-import ecologylab.semantics.metadata.MetadataBase;
+import ecologylab.semantics.metadata.builtins.DebugMetadata;
 import ecologylab.semantics.metadata.builtins.Document;
-import ecologylab.semantics.metadata.builtins.Entity;
-import ecologylab.semantics.metadata.builtins.Image;
 import ecologylab.semantics.metadata.builtins.Media;
 import ecologylab.semantics.metadata.scalar.MetadataInteger;
 import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
 import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.semantics.metadata.scalar.MetadataStringBuilder;
+import ecologylab.semantics.metadata.scalar.types.MetadataScalarScalarType;
 import ecologylab.textformat.NamedStyle;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.TranslationScope;
 import ecologylab.xml.XMLTranslationException;
-import ecologylab.xml.ElementState.xml_nowrap;
 
 /**
  * @author damaraju
@@ -111,6 +108,12 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 
 	// for debugging
 	protected static File																				REPOSITORY_FILE;
+	
+	static
+	{
+		MetadataScalarScalarType.init();	// register metadata-specific scalar types
+		ecologylab.semantics.metadata.MetadataBuiltinsTranslationScope.get();
+	}
 
 	public static void main(String args[])
 	{
@@ -141,6 +144,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	 */
 	public static MetaMetadataRepository load(File dir)
 	{
+		println("MetaMetadataRepository directory: " + dir + "\n");
 		MetaMetadataRepository result = null;
 
 		FileFilter xmlFilter = new FileFilter()
@@ -186,7 +190,8 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 				result.joinRepository(readRepository(file, metaMetadataTScope));
 		}
 
-		MetadataBase.setRepository(result);
+		//FIXME -- get rid of this?!
+		Metadata.setRepository(result);
 
 		return result;
 	}
@@ -202,6 +207,8 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 			TranslationScope metaMetadataTScope)
 	{
 		MetaMetadataRepository repos = null;
+		println("MetaMetadataRepository:\t" + new File(file.getParent()).getName() + "/" + file.getName());
+
 		try
 		{
 			repos = (MetaMetadataRepository) ElementState.translateFromXML(file, metaMetadataTScope);
@@ -490,7 +497,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 			Class<? extends Metadata> metadataClass = metaMetadata.getMetadataClass(metadataTScope);
 			if (metadataClass == null)
 			{
-				error(metaMetadata + "\tCan't resolve in TranslationScope " + metadataTScope);
+				metadataTScope.error("Can't resolve " + metaMetadata.getTag() + " in TranslationScope ");
 				continue;
 			}
 
@@ -554,7 +561,9 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 				error(metaMetadata + "\tCan't resolve in TranslationScope " + metadataTScope);
 				continue;
 			}
-
+			//
+			metaMetadata.bindClassDescriptor(metadataClass, metadataTScope);
+			
 			ArrayList<String> suffixes = metaMetadata.getSuffixes();
 			if (suffixes != null)
 			{
@@ -727,12 +736,6 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	{
 		return TranslationScope.get("scalar_metadata", DebugMetadata.class, MetadataString.class,
 				MetadataStringBuilder.class, MetadataParsedURL.class, MetadataInteger.class);
-	}
-
-	public static TranslationScope builtinMetadataTranslations()
-	{
-		return TranslationScope.get("builtin_metadata", /*scalarMetadataTranslations(),*/ Metadata.class,
-				Document.class, Media.class, Image.class, Entity.class);
 	}
 
 	void bindChildren(MetaMetadataField childField, String tag)

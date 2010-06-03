@@ -24,24 +24,7 @@ public abstract class NestedSemanticAction<SA extends SemanticAction> extends Se
 	 */
 	@xml_nowrap 
 	@xml_collection
-	//@xml_scope(NestedSemanticActionsTranslationScope.NESTED_SEMANTIC_ACTIONS_SCOPE)
-	@xml_classes({
-		BackOffFromSite.class,
-		CreateAndVisualizeImgSurrogateSemanticAction.class,
-		CreateAndVisualizeTextSurrogateSemanticAction.class,
-	  CreateContainerSemanticAction.class,
-		CreateSemanticAnchorSemanticAction.class,
-		EvaluateRankWeight.class,
-		ForEachSemanticAction.class,
-		GeneralSemanticAction.class,
-		GetFieldSemanticAction.class,
-		GetXPathNodeSemanticAction.class,
-		IfSemanticAction.class,
-		ParseDocumentLaterSemanticAction.class,
-		ParseDocumentNowSemanticAction.class,
-		SetFieldSemanticAction.class,
-		SetMetadataSemanticAction.class,
-	})
+	@xml_scope(NestedSemanticActionsTranslationScope.NESTED_SEMANTIC_ACTIONS_SCOPE)
 	private ArrayList<SA>	nestedSemanticActionList;
 
 	/**

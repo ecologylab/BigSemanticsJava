@@ -1,5 +1,6 @@
 package ecologylab.semantics.actions;
 
+import ecologylab.semantics.metametadata.DefVar;
 import ecologylab.xml.TranslationScope;
 
 public class NestedSemanticActionsTranslationScope
@@ -21,7 +22,8 @@ public class NestedSemanticActionsTranslationScope
 		ParseDocumentLaterSemanticAction.class,
 		ParseDocumentNowSemanticAction.class,
 		SetFieldSemanticAction.class,
-		SetMetadataSemanticAction.class
+		SetMetadataSemanticAction.class,
+
 	};
 	
 	public static final TranslationScope get()

@@ -442,7 +442,7 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 	{
 		Node originalNode = contextNode;
 		// this is the field accessor for the collection field
-		FieldDescriptor fieldAccessor = metadata.getFieldDescriptorByTagName(mmdElement.getChildTag());
+		MetadataFieldDescriptor fieldAccessor = metadata.getFieldDescriptorByTagName(mmdElement.getChildTag());
 
 		if (fieldAccessor != null)
 		{
@@ -458,7 +458,7 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 				collectionChildClass =translationScope.getClassByTag(mmdElement
 					.getCollectionChildType());
 			}
-			HashMapArrayList<String, FieldDescriptor> collectionElementAccessors = metadata.fieldDescriptorsByTagName();
+			HashMapArrayList<String, MetadataFieldDescriptor> collectionElementAccessors = metadata.getMetadataFieldDescriptorsByTagName();
 
 			// now get the collection field
 			Field collectionField = fieldAccessor.getField();
@@ -478,17 +478,12 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 			// loop over all the child meta-metadata fields of
 			// the collection meta-metadatafield
 			boolean collectionInstanceListInitialized = false;
-			for (int i = 0; i < collectionElementAccessors.size(); i++)
+			// get the field from childField list which has the same name as this field
+			for (MetadataFieldDescriptor mfa : collectionElementAccessors)
 			{
-				// get the field from childField list which has the same name as this field
-				MetadataFieldDescriptor mfa = (MetadataFieldDescriptor) collectionElementAccessors.get(i); // ith
-																																																// field
-
 				// if this field exists in childField list this means there are some extraction rules for it
 				// and so get the values
 				MetaMetadataField childMetadataField = childMMdFieldList.get(mfa.getTagName());
-			
-				
 				
 				if (childMetadataField != null)
 				{

@@ -7,12 +7,15 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
+import ecologylab.generic.ReflectionTools;
 import ecologylab.semantics.gui.EditValueEvent;
 import ecologylab.semantics.gui.EditValueListener;
 import ecologylab.semantics.gui.EditValueNotifier;
 import ecologylab.semantics.metametadata.MetaMetadataField;
 import ecologylab.xml.ClassDescriptor;
+import ecologylab.xml.ElementState;
 import ecologylab.xml.FieldDescriptor;
+import ecologylab.xml.types.scalar.ScalarType;
 
 /**
  * @author andruid
@@ -35,7 +38,7 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 		super(declaringClassDescriptor, field, annotationType);
 		if (field != null)
 		{
-			isMixin							= field.isAnnotationPresent(MetadataBase.semantics_mixin.class);
+			isMixin							= field.isAnnotationPresent(Metadata.semantics_mixin.class);
 
 			Class<?> thatClass	= field.getType();
 			isPseudoScalar	= thatClass.isAnnotationPresent(semantics_pseudo_scalar.class);
@@ -50,6 +53,17 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 		}
 	}
 	
+	public MetadataFieldDescriptor(ClassDescriptor baseClassDescriptor, MetadataFieldDescriptor wrappedFD, String wrapperTag)
+	{
+		super(baseClassDescriptor, wrappedFD, wrapperTag);
+		isMixin	= false;
+		isPseudoScalar	= false;
+	}
+	
+	public boolean isNonNullReference(MetadataBase context)
+	{
+		return (getScalarType() == null) && super.isNonNullReference((ElementState) context);
+	}
 	public boolean isPseudoScalar() 
 	{
 		return isPseudoScalar;
@@ -60,58 +74,29 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 		return isMixin;
 	}
 
-//	public void editValue(MetadataBase context, String newValue)
-//	{
-//		if (metadataValueChangedListener != null)
-//			metadataValueChangedListener.fieldValueChanged(this, context);
-//		
-//		this.hwSet(context, newValue);
-//	}
-		
-	/**
-	 * 
-	 */
-	//FIXME -- this seems like a bogus idea for a scalar. it only makes sense for a composite type
-	public boolean hwSet(MetadataBase context, String newValue)
-	{
-//		this.set(context, newValue);
-		return this.hwSet(context, newValue);
-//		return context.hwSet(this.getTagName(), newValue);
-	}
-	
-	//FIXME -- this looks wrong. why are we doing a lookup when we already have this?
-	public void set(Metadata context, String newValue)
-	{
-		context.setByTagName(this.getTagName(), newValue);
-	}
-	
-//	public void endEditHandlerDispatch(MetadataValueChangedListener listener, String iconID)
-//  	{
-//  		endEditHandler(listener, iconID);
-//  	}
-//	
-//	protected void endEditHandler(MetadataValueChangedListener listener, String iconID)
-//  	{
-//		listener.endEditHandler(iconID, this);
-//  	}
-
 	public void addEditValueListener(EditValueListener listener)
 	{
 		editValueListeners.add(listener);
 	}
-	
-	public void fireEditValue(MetadataBase metadata, String fieldValueString)
-	{
-		if(this.set(metadata, fieldValueString))	// uses reflection to call a set method or access the field directly if there is not one.
-		{
-			metadata.rebuildCompositeTermVector();	// makes this as if an hwSet().
-			
-			//Call the listeners only after the field is properly set.
-			EditValueEvent event = new EditValueEvent(this, metadata);
 
-			for(EditValueListener listener : editValueListeners)
+/**
+ * Edit the value of a scalar.
+ */
+	public void fireEditValue(Metadata metadata, String fieldValueString)
+	{
+		if (isScalar())
+		{
+			if(this.set(metadata, fieldValueString))	// uses reflection to call a set method or access the field directly if there is not one.
 			{
-				listener.editValue(event);
+				metadata.rebuildCompositeTermVector();	// makes this as if an hwSet().
+				
+				//Call the listeners only after the field is properly set.
+				EditValueEvent event = new EditValueEvent(this, metadata);
+	
+				for(EditValueListener listener : editValueListeners)
+				{
+					listener.editValue(event);
+				}
 			}
 		}
 	}
@@ -120,4 +105,26 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 	{
 		editValueListeners.remove(listener);
 	}
+	
+	public ElementState getNested(MetadataBase context)
+	{
+		return isScalar() ? null : getNested((ElementState) context);
+	}
+
+	/**
+	 * @return the metaMetadataField
+	 */
+	public MetaMetadataField getMetaMetadataField()
+	{
+		return metaMetadataField;
+	}
+
+	/**
+	 * @param metaMetadataField the metaMetadataField to set
+	 */
+	public void setMetaMetadataField(MetaMetadataField metaMetadataField)
+	{
+		this.metaMetadataField = metaMetadataField;
+	}
+	
 }

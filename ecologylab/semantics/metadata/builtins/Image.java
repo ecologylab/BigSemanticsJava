@@ -1,14 +1,10 @@
 package ecologylab.semantics.metadata.builtins;
 
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
 import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.xml.xml_inherit;
-import ecologylab.xml.ElementState.xml_attribute;
-import ecologylab.xml.ElementState.xml_nested;
-import ecologylab.xml.ElementState.xml_tag;
 
 /**
  * This is not generated code, but a hand-authored base class in the 
@@ -17,13 +13,13 @@ import ecologylab.xml.ElementState.xml_tag;
 @xml_inherit
 public class Image extends Media
 {
-	@xml_nested
+	@xml_leaf
 	MetadataString					caption;
 
-	@xml_nested
+	@xml_leaf
 	MetadataParsedURL				location;
 
-	@xml_nested
+	@xml_leaf
 	private MetadataString	localLocation;
 
 	public Image()

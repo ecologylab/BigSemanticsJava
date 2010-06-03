@@ -3,7 +3,7 @@
  */
 package ecologylab.semantics.gui;
 
-import ecologylab.semantics.metadata.MetadataBase;
+import ecologylab.semantics.metadata.Metadata;
 
 
 /**
@@ -14,5 +14,5 @@ public interface EditValueNotifier
 {
 	public void addEditValueListener(EditValueListener listener);
 	public void removeEditValueListener(EditValueListener listener);
-	public void fireEditValue(MetadataBase metadata, String fieldValueString);
+	public void fireEditValue(Metadata metadata, String fieldValueString);
 }

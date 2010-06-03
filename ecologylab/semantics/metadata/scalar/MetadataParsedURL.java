@@ -16,21 +16,15 @@ import ecologylab.xml.xml_inherit;
 @semantics_pseudo_scalar
 public class MetadataParsedURL extends MetadataScalarBase<ParsedURL>
 {
-	@xml_text	ParsedURL		value;
-	
 	public MetadataParsedURL()
 	{
 	}
 
-	public ParsedURL getValue()
+	public MetadataParsedURL(ParsedURL purl)
 	{
-		return value;
+		super(purl);
 	}
 
-	public void setValue(ParsedURL value)
-	{
-		this.value = value;
-	}
 	@Override
 	public NullTermVector termVector() 
 	{

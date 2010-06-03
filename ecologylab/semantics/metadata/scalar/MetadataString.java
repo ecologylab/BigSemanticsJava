@@ -19,17 +19,19 @@ import ecologylab.xml.xml_inherit;
 public class MetadataString extends MetadataScalarBase<String>
 {
 	TermVector termVector = null;
-	@xml_text	String		value;
-	
 	
 	public MetadataString()
 	{
 	}
-	public String getValue()
-	{
-		return value;
-	}
 
+	public MetadataString(String value)
+	{
+		super(value);
+	}
+	/**
+	 * Initialize the TermVector in addition to setting the value.
+	 */
+	@Override
 	public void setValue(String value)
 	{
 //	  if (value == null)

@@ -13,7 +13,7 @@ import ecologylab.appframework.PropertiesAndDirectories;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.DocumentParserTagNames;
-import ecologylab.semantics.metadata.Metadata;
+import ecologylab.semantics.metadata.MetadataFieldDescriptor;
 import ecologylab.semantics.tools.MetadataCompiler;
 import ecologylab.semantics.tools.MetadataCompilerUtils;
 import ecologylab.textformat.NamedStyle;
@@ -23,8 +23,6 @@ import ecologylab.xml.FieldDescriptor;
 import ecologylab.xml.XMLTools;
 import ecologylab.xml.XMLTranslationException;
 import ecologylab.xml.xml_inherit;
-import ecologylab.xml.ElementState.xml_other_tags;
-import ecologylab.xml.ElementState.xml_tag;
 import ecologylab.xml.types.element.Mappable;
 import ecologylab.xml.types.scalar.ScalarType;
 
@@ -37,7 +35,8 @@ import ecologylab.xml.types.scalar.ScalarType;
 public class MetaMetadataField extends ElementState implements Mappable<String>, PackageSpecifier,
 		Iterable<MetaMetadataField>
 {
-
+	MetadataFieldDescriptor										metadataFieldDescriptor;
+	
 	/**
 	 * The type/class of metadata object.
 	 */
@@ -182,6 +181,9 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	
 	@xml_attribute 
 	private String																			tag;
+	
+	@xml_attribute
+	private boolean																			ignoreExtractionError;
 
 	@xml_map("meta_metadata_field")
 	@xml_nowrap
@@ -312,7 +314,8 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 			p.println(MetadataCompilerUtils.PACKAGE + " " + packageName + ";");
 
 			// writing the imports
-			p.println(MetadataCompiler.getImportStatement());
+//			p.println(MetadataCompiler.getImportStatement());
+			MetadataCompiler.printImports(p);
 
 			// write xml_inherit
 			p.println("@xml_inherit");
@@ -1131,7 +1134,8 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 
 	private void inheritNonDefaultAttributes(MetaMetadataField inheritFrom)
 	{
-		ClassDescriptor<?> classDescriptor	= classDescriptor();
+		ClassDescriptor<?, ? extends FieldDescriptor> classDescriptor	= classDescriptor();
+		
 		for (FieldDescriptor fieldDescriptor : classDescriptor)
 		{
 			ScalarType scalarType = fieldDescriptor.getScalarType();
@@ -1357,12 +1361,31 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	{
 		return type;
 	}
-
+	
+	public String parentString()
+	{
+		String result	= "";
+		
+		ElementState parent = parent();
+		if (parent instanceof MetaMetadataField)
+		{
+			MetaMetadataField pf	= (MetaMetadataField) parent;
+			result = "<" + pf.name + ">";
+		}
+		return result;
+	}
+	String toString;
+	
 	public String toString()
 	{
-		return parent().toString() + "." + name;
+		String result	= toString;
+		if (result == null)
+		{
+			result 		= getClassName() + parentString() + "<" + name + ">";
+			toString	= result;
+		}
+		return result;
 	}
-
 	public boolean isEntity()
 	{
 		return entity;
@@ -1418,9 +1441,40 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 		this.tag = tag;
 	}
 
+	@Override
+  protected void postTranslationProcessingHook()
+  {
+
+  }
+
+	/**
+	 * @return the metadataFieldDescriptor
+	 */
+	public MetadataFieldDescriptor getMetadataFieldDescriptor()
+	{
+		return metadataFieldDescriptor;
+	}
+
+	/**
+	 * @param metadataFieldDescriptor the metadataFieldDescriptor to set
+	 */
+	void setMetadataFieldDescriptor(MetadataFieldDescriptor metadataFieldDescriptor)
+	{
+		this.metadataFieldDescriptor = metadataFieldDescriptor;
+	}
+	
+	
 	public boolean isNoWrap()
 	{
 		return noWrap;
 	}
 
+	/**
+	 * @return the comment
+	 */
+	public String getComment()
+	{
+		return comment;
+	}
+	
 }
