@@ -287,7 +287,7 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 
 		Node rootNode = contextNode;
 		// Gets the child metadata of the mmdField.
-		HashMapArrayList<String, MetaMetadataField> mmdFieldSet = mmdField.getSet();
+		HashMapArrayList<String, MetaMetadataField> mmdFieldSet = mmdField.getChildMetaMetadata();
 
 		// Traverses through the child metadata to populate.
 		if (mmdFieldSet != null)
@@ -406,7 +406,7 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 										XPathConstants.NODE);
 			
 			// Have to return the nested object for the field.
-			MetadataFieldDescriptor metadataFieldDescriptor = metadata.getFieldDescriptorByTagName(mmdElement.getChildTag());
+			MetadataFieldDescriptor metadataFieldDescriptor = mmdElement.getMetadataFieldDescriptor();
 			//FIXME -- need to use repository recursively!
 			nestedMetadata = (Metadata) metadataFieldDescriptor.getAndPerhapsCreateNested(metadata);
 			nestedMetadata.setMetaMetadata(infoCollector.metaMetaDataRepository().getMM(nestedMetadata.getClass()));
@@ -442,8 +442,7 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 	{
 		Node originalNode = contextNode;
 		// this is the field accessor for the collection field
-		MetadataFieldDescriptor fieldDescriptor = mmdElement.getMetadataFieldDescriptor(); //metadata.getFieldDescriptorByTagName(mmdElement.getTag());
-
+		MetadataFieldDescriptor fieldDescriptor = mmdElement.getMetadataFieldDescriptor();
 		if (fieldDescriptor != null)
 		{
 			
