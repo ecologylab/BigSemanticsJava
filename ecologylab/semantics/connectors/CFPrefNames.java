@@ -82,4 +82,6 @@ public interface CFPrefNames
 	public static final String	SAVE_SURROGATES_MAX					= "save_surrogates_max";
 	
 	public static final String	SAVE_SURROGATES_LOCATION			= "save_surrogates_location";
+	
+	public static final String	SAVE_TERM_VECTORS							= "save_term_vectors";
 }
