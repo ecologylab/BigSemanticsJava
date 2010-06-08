@@ -321,39 +321,6 @@ implements Mappable<String>
 
 		return userAgentString;
 	}
-
-	/**
-	 * Bind nested child and collection meta-metadata.
-	 */
-	public void bindNonScalarChildren()
-	{
-		if (kids == null)
-			return;
-		
-		final MetaMetadataRepository repository	= repository();
-		
-		for (MetaMetadataField childField : kids)
-		{
-			if (childField.getScalarType() == null && childField.kids == null)
-			{
-				if (isNested())
-				{
-					repository.bindChildren(childField, childField.getName());
-				}
-				else if (childField.getCollectionChildType() != null)
-				{
-					if (childField.isEntity())
-					{
-						repository.bindChildren(childField, DocumentParserTagNames.ENTITY);
-					}
-					else
-					{
-						repository.bindChildren(childField, childField.getCollectionChildType());
-					}
-				}
-			}
-		}
-	}
 	
 	/**
 	 * 

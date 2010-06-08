@@ -1665,7 +1665,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	}
 	public String getTagForTranslationScope()
 	{
-		return childType != null ? childType : tag != null ? tag : name;
+		return entity == true ? DocumentParserTagNames.ENTITY : childType != null ? childType : tag != null ? tag : name;
 	}
 	
 	public File getFile()
