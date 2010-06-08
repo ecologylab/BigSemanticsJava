@@ -88,15 +88,25 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 	 */
 	private boolean			isDnd;
 	
+	private MetaMetadata			metaMetadata;
+	
+	/**
+	 * This constructor should *only* be used when marshalled Metadata is read.
+	 */
 	public Metadata()
 	{
 		super();
 	}
 
+	/**
+	 * This constructor should be used by *all* live code.
+	 * 
+	 * @param metaMetadata
+	 */
 	public Metadata(MetaMetadata metaMetadata)
 	{
 		this();
-//		this.metaMetadata = metaMetadata;
+		this.metaMetadata = metaMetadata;
 	}
 	
 	/**
@@ -118,7 +128,25 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 	
 	public MetaMetadata getMetaMetadata()
 	{
-		return getMetadataClassDescriptor().getMetaMetadata();
+//		return getMetadataClassDescriptor().getMetaMetadata();
+		MetaMetadata mm			= metaMetadata;
+		if (mm == null)
+		{
+			ParsedURL location	= getLocation();
+			if (location != null)
+			{
+				if (isImage())
+					mm							= repository.getImageMM(location);
+				else
+					mm							= repository.getDocumentMM(location);
+				
+				//TODO -- also try to resolve by mime type ???
+			}
+			if (mm == null)
+				mm								= repository.getByClass(getClass());
+			metaMetadata				= mm;
+		}
+		return mm;
 	}
 	/**
 	 * 
@@ -266,6 +294,7 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 	protected void postTranslationProcessingHook()
 	{
 		initializeMetadataCompTermVector();
+		getMetaMetadata();
 	}
 
 	public boolean hwSet(String tagName, String value)
@@ -485,16 +514,9 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 	//FIXEME:The method has to search even all the mixins for the key.
 	public MetadataFieldDescriptor getFieldDescriptorByTagName(String tagName)
 	{
-		return getMetaMetadata().getFieldDescriptorByTagName(tagName);
+		return getMetadataClassDescriptor().getFieldDescriptorByTag(tagName, repository.metadataTranslationScope());
 	}
 	
-	/**
-	 * @return the metadataFieldDescriptorsByTagName
-	 */
-	public HashMapArrayList<String, MetadataFieldDescriptor> getMetadataFieldDescriptorsByTagName()
-	{
-		return getMetaMetadata().getMetadataFieldDescriptorsByTagName();
-	}
 	/**
 	 * Sets the field to the specified value and wont rebuild composteTermVector
 	 * 
@@ -589,7 +611,20 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 	
 	public Iterator<MetadataFieldDescriptor>	iterator()
 	{
-		return getMetadataFieldDescriptorsByTagName().iterator();
+		return classDescriptor().iterator();
 	}
 
+	/**
+	 * @return
+	 */
+	public HashMapArrayList<String, MetadataFieldDescriptor> getFieldDescriptorsByFieldName()
+	{
+		return classDescriptor().getFieldDescriptorsByFieldName();
+	}
+	
+	//FIXME -- get rid of these hacks when Image extends Document
+	public boolean isImage()
+	{
+		return false;
+	}
 }

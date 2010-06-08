@@ -406,9 +406,9 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 										XPathConstants.NODE);
 			
 			// Have to return the nested object for the field.
-			MetadataFieldDescriptor fieldAccessor = metadata.getFieldDescriptorByTagName(mmdElement.getChildTag());
+			MetadataFieldDescriptor metadataFieldDescriptor = metadata.getFieldDescriptorByTagName(mmdElement.getChildTag());
 			//FIXME -- need to use repository recursively!
-			nestedMetadata = (Metadata) fieldAccessor.getAndPerhapsCreateNested(metadata);
+			nestedMetadata = (Metadata) metadataFieldDescriptor.getAndPerhapsCreateNested(metadata);
 			nestedMetadata.setMetaMetadata(infoCollector.metaMetaDataRepository().getMM(nestedMetadata.getClass()));
 			recursiveExtraction(translationScope,mmdElement, nestedMetadata, xpath, param,parentNode);
 		}
@@ -457,7 +457,7 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 			{
 				collectionChildClass =translationScope.getClassByTag(mmdElement.getChildTag());
 			}
-			HashMapArrayList<String, MetadataFieldDescriptor> collectionElementAccessors = metadata.getMetadataFieldDescriptorsByTagName();
+//			HashMapArrayList<String, MetadataFieldDescriptor> collectionElementAccessors = metadata.getMetadataFieldDescriptorsByTagName();
 
 			// now get the collection field
 			Field collectionField = fieldDescriptor.getField();

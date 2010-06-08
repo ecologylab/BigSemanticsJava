@@ -30,8 +30,6 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 	
 	Method									hwSetMethod;
 	
-	MetaMetadataField				metaMetadataField;
-
 	private ArrayList<EditValueListener> editValueListeners = new ArrayList<EditValueListener>();
 	
 	public MetadataFieldDescriptor(ClassDescriptor declaringClassDescriptor, Field field, int annotationType) // String nameSpacePrefix
@@ -110,22 +108,6 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 	public ElementState getNested(MetadataBase context)
 	{
 		return isScalar() ? null : getNested((ElementState) context);
-	}
-
-	/**
-	 * @return the metaMetadataField
-	 */
-	public MetaMetadataField getMetaMetadataField()
-	{
-		return metaMetadataField;
-	}
-
-	/**
-	 * @param metaMetadataField the metaMetadataField to set
-	 */
-	public void setMetaMetadataField(MetaMetadataField metaMetadataField)
-	{
-		this.metaMetadataField = metaMetadataField;
 	}
 	
 	@Override

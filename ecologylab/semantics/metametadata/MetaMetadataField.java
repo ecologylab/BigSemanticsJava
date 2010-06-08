@@ -13,6 +13,7 @@ import ecologylab.appframework.PropertiesAndDirectories;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.DocumentParserTagNames;
+import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
 import ecologylab.semantics.tools.MetadataCompiler;
 import ecologylab.semantics.tools.MetadataCompilerUtils;
@@ -20,6 +21,7 @@ import ecologylab.textformat.NamedStyle;
 import ecologylab.xml.ClassDescriptor;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.FieldDescriptor;
+import ecologylab.xml.TranslationScope;
 import ecologylab.xml.XMLTools;
 import ecologylab.xml.XMLTranslationException;
 import ecologylab.xml.xml_inherit;
@@ -188,6 +190,8 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	@xml_map("meta_metadata_field")
 	@xml_nowrap
 	protected HashMapArrayList<String, MetaMetadataField>	childMetaMetadata;
+	
+	File																								file;
 
 	HashMap<String, String>											childPackagesMap	= new HashMap<String, String>(2);
 
@@ -231,6 +235,12 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 		this.tag								= copy.tag;
 		this.extendsField				= copy.extendsField;
 		this.childMetaMetadata 	= copy.childMetaMetadata;
+		
+		//TODO -- do we need to propagate more fields here?
+		
+//		this.childType					= copy.childType;
+//		this.childTag						= copy.childTag;
+//		this.noWrap							= copy.noWrap;
 	}
 
 	public String packageName()
@@ -1187,6 +1197,25 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 			}
 		}
 	}
+	
+	void bindMetadataFieldDescriptor(TranslationScope metadataTScope, MetadataClassDescriptor metadataClassDescriptor)
+	{
+		String tagName	= this.resolveTag(); //TODO -- is this the correct tag?
+		MetadataFieldDescriptor metadataFieldDescriptor	= (MetadataFieldDescriptor) metadataClassDescriptor.getFieldDescriptorByTag(tagName, metadataTScope);
+		if (metadataFieldDescriptor != null)
+		{
+			// if we don't have a field, then this is a wrapped collection, so we need to get the wrapped field descriptor
+			if (metadataFieldDescriptor.getField() == null)
+				metadataFieldDescriptor = (MetadataFieldDescriptor) metadataFieldDescriptor.getWrappedFD();
+			
+			this.setMetadataFieldDescriptor(metadataFieldDescriptor);
+		}
+		else
+		{
+			warning("Ignoring <" + tagName + "> because no corresponding MetadataFieldDescriptor can be found.");
+		}
+
+	}
 
 	/**
 	 * @param childMetaMetadata
@@ -1450,7 +1479,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	/**
 	 * @return the tag
 	 */
-	public String getTag()
+	public String resolveTag()
 	{
 		return (isNoWrap()) ? ((childTag != null) ? childTag : childType) : (tag != null) ? tag : name;
 	}
@@ -1518,5 +1547,16 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	{
 		this.name = name;
 	}
+	public String getTagForTranslationScope()
+	{
+		return childType != null ? childType : tag != null ? tag : name;
+	}
 	
+	public File getFile()
+	{
+		if (file != null)
+			return file;
+		MetaMetadataField parent	= (MetaMetadataField) parent();
+		return (parent != null) ? parent.getFile() : null;
+	}
 }

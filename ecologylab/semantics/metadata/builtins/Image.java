@@ -167,4 +167,10 @@ public class Image extends Media
 		this.localLocation = localLocation;
 		rebuildCompositeTermVector();
 	}
+	
+	@Override
+	public boolean isImage()
+	{
+		return true;
+	}
 }

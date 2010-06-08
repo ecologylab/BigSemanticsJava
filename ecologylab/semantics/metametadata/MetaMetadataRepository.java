@@ -40,6 +40,8 @@ import ecologylab.xml.XMLTranslationException;
 public class MetaMetadataRepository extends ElementState implements PackageSpecifier,
 		DocumentParserTagNames
 {
+	private static final String	FIREFOX_3_6_4_AGENT_STRING	= "Mozilla/5.0 (Windows; U; Windows NT 6.1; ru; rv:1.9.2.4) Gecko/20100513 Firefox/3.6.4";
+
 	private static final String																	DEFAULT_STYLE_NAME					= "default";
 
 	/**
@@ -108,6 +110,8 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 
 	// for debugging
 	protected static File																				REPOSITORY_FILE;
+	
+	File																												file;
 	
 	static
 	{
@@ -178,13 +182,13 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 			// this.metaMetaDataRepository.writePrettyXML(System.out);
 		}
 
-		if (false && repositorySources.exists())
+		if (repositorySources.exists())
 		{
 			for (File file : repositorySources.listFiles(xmlFilter))
 				result.joinRepository(readRepository(file, metaMetadataTScope));
 		}
 
-		if (false && powerUserDir.exists())
+		if (powerUserDir.exists())
 		{
 			for (File file : powerUserDir.listFiles(xmlFilter))
 				result.joinRepository(readRepository(file, metaMetadataTScope));
@@ -212,6 +216,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		try
 		{
 			repos = (MetaMetadataRepository) ElementState.translateFromXML(file, metaMetadataTScope);
+			repos.file	= file;
 		}
 		catch (XMLTranslationException e)
 		{
@@ -247,7 +252,10 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		if (repositoryByTagName != null)
 		{
 			for (MetaMetadata metametadata : repositoryByTagName)
+			{
 				metametadata.setParent(this);
+				metametadata.file	= repository.file;
+			}
 		}
 		
 		// combine metaMetadata
@@ -282,14 +290,32 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	public void initializeRepository(TranslationScope metadataTScope)
 	{
 		this.metadataTScope = metadataTScope;
-
-		this.defaultUserAgentString = (defaultUserAgentName == null) ? null : userAgents.get(
-				defaultUserAgentName).userAgentString();
-
+		initializeDefaultUserAgent();
+		
 		findAndDeclareNestedMetaMetadata();
 		initializeLocationBasedMaps();
 		initializeSuffixAndMimeBasedMaps();
 		System.out.println();
+	}
+
+	/**
+	 * 
+	 */
+	private void initializeDefaultUserAgent()
+	{
+		if (defaultUserAgentString == null)
+		{
+			if (userAgents().size() > 0)
+			{
+				if (defaultUserAgentName == null)
+				{
+						defaultUserAgentString	= (String) userAgents().values().toArray()[0];
+				}
+				else
+					userAgents.get(defaultUserAgentName).userAgentString();
+			}
+			this.defaultUserAgentString	= FIREFOX_3_6_4_AGENT_STRING;
+		}
 	}
 
 	private void findAndDeclareNestedMetaMetadata()
@@ -303,7 +329,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		for(MetaMetadata metaMetadata : nestedDeclarations)
 		{
 			//if(!repositoryByTagName.containsKey(metaMetadata.getTag()))
-				repositoryByTagName.put(metaMetadata.getTag(), metaMetadata);
+				repositoryByTagName.put(metaMetadata.resolveTag(), metaMetadata);
 		}
 	}
 
@@ -518,7 +544,6 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 			Class<? extends Metadata> metadataClass = metaMetadata.getMetadataClass(metadataTScope);
 			if (metadataClass == null)
 			{
-				metadataTScope.error("Can't resolve " + metaMetadata.getTag() + " in TranslationScope ");
 				continue;
 			}
 
@@ -568,6 +593,13 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		}
 	}
 
+	/**
+	 * Recursively looks for nested declarations of meta-metadata by iterating over the fields of existing meta-metadata objects. 
+	 * Defines new MetaMetadata objects and adds them to the repository.
+	 *  
+	 * @param metaMetadata
+	 * @return a collection of new meta-metadata objects to add to repository
+	 */
 	private ArrayList<MetaMetadata> generateNestedDeclarations(MetaMetadata metaMetadata)
 	{
 		ArrayList<MetaMetadata> result = new ArrayList<MetaMetadata>();
@@ -575,7 +607,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		{
 			if (metaMetadataField.isNewClass())
 			{
-				String mmName 								= metaMetadataField.hasTag() ? metaMetadataField.getTag() : metaMetadataField.generateNewClassName();
+				String mmName 								= metaMetadataField.getTagForTranslationScope();
 				MetaMetadata newMetaMetadata 	= new MetaMetadata(metaMetadataField, mmName);
 				//newMetaMetadata.setName(mmName);
 				//newMetaMetadata.setChildMetaMetadata(metaMetadataField.childMetaMetadata);
@@ -601,7 +633,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 			Class<? extends Metadata> metadataClass = metaMetadata.getMetadataClass(metadataTScope);
 			if (metadataClass == null)
 			{
-				error(metaMetadata + "\tCan't resolve in TranslationScope " + metadataTScope);
+//				error(metaMetadata + "\tCan't resolve in TranslationScope " + metadataTScope);
 				continue;
 			}
 			//

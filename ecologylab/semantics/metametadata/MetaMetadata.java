@@ -173,13 +173,14 @@ implements Mappable<String>
 	 * 
 	 * @return
 	 */
-	public Class<? extends Metadata> getMetadataClass(TranslationScope ts)
+	Class<? extends Metadata> getMetadataClass(TranslationScope ts)
 	{
 		Class<? extends Metadata> result = this.metadataClass;
 		
 		if (result == null)
 		{
-			result													= (Class<? extends Metadata>) ts.getClassByTag(getTag());
+			String tagForTranslationScope 	= getTagForTranslationScope();
+			result													= (Class<? extends Metadata>) ts.getClassByTag(tagForTranslationScope);
 			if (result == null)
 			{
 				result 												= (Class<? extends Metadata>) ts.getClassByTag(getTypeOrName());
@@ -189,7 +190,10 @@ implements Mappable<String>
 					result 												= (Class<? extends Metadata>) ts.getClassByTag(extendsAttribute);
 				}
 			}
-			this.metadataClass							= result;
+			if (result != null)
+				this.metadataClass						= result;
+			else
+				ts.error("Can't resolve: " + this + " using " + tagForTranslationScope);
 		}
 		return result;
 	}
@@ -208,7 +212,7 @@ implements Mappable<String>
 	public Metadata constructMetadata(TranslationScope ts)
 	{
 		Metadata result = null;
-		Class<? extends Metadata> metadataClass = getMetadataClass(ts);
+		Class<? extends Metadata> metadataClass = getMetadataClassDescriptor().describedClass();
 		
 		if (metadataClass != null)
 		{
@@ -558,11 +562,6 @@ implements Mappable<String>
 		return getName();
 	}
 	
-	/**
-	 * MetadataFieldDescriptor map by tag name: for this MetadataBase subclass.
-	 */
-	protected HashMapArrayList<String, MetadataFieldDescriptor> 	metadataFieldDescriptorsByTagName;
-	
 	protected MetadataClassDescriptor															metadataClassDescriptor;
 
 	/**
@@ -583,7 +582,6 @@ implements Mappable<String>
 				if (metadataClassDescriptor == null)
 				{
 					metadataClassDescriptor = (MetadataClassDescriptor) ClassDescriptor.getClassDescriptor(metadataClass);
-					metadataClassDescriptor.setMetaMetadata(this);
 					bindMetadataFieldDescriptors(metadataTScope, metadataClassDescriptor);
 					this.metadataClassDescriptor	= metadataClassDescriptor;
 				}
@@ -599,25 +597,9 @@ implements Mappable<String>
 	 */
 	private final void bindMetadataFieldDescriptors(TranslationScope metadataTScope, MetadataClassDescriptor metadataClassDescriptor)
 	{
-		metadataFieldDescriptorsByTagName	= new HashMapArrayList<String, MetadataFieldDescriptor>(childMetaMetadata.size());
 		for (MetaMetadataField metaMetadataField : childMetaMetadata)
 		{
-			String tagName	= metaMetadataField.getTag(); //TODO -- is this the correct tag?
-			MetadataFieldDescriptor metadataFieldDescriptor	= (MetadataFieldDescriptor) metadataClassDescriptor.getFieldDescriptorByTag(tagName, metadataTScope);
-			if (metadataFieldDescriptor != null)
-			{
-				// if we don't have a field, then this is a wrapped collection, so we need to get the wrapped field descriptor
-				if (metadataFieldDescriptor.getField() == null)
-					metadataFieldDescriptor = (MetadataFieldDescriptor) metadataFieldDescriptor.getWrappedFD();
-				
-				metadataFieldDescriptor.setMetaMetadataField(metaMetadataField);
-				metaMetadataField.setMetadataFieldDescriptor(metadataFieldDescriptor);
-				metadataFieldDescriptorsByTagName.put(tagName, metadataFieldDescriptor);
-			}
-			else
-			{
-				warning("Ignoring <" + tagName + "> because no corresponding MetadataFieldDescriptor can be found.");
-			}
+			metaMetadataField.bindMetadataFieldDescriptor(metadataTScope, metadataClassDescriptor);
 		}
 //		for (FieldDescriptor fieldDescriptor : allFieldDescriptorsByFieldName.values())
 //		{
@@ -628,7 +610,7 @@ implements Mappable<String>
 	
 	public MetadataFieldDescriptor getFieldDescriptorByTagName(String tagName)
 	{
-		return metadataFieldDescriptorsByTagName.get(tagName);
+		return metadataClassDescriptor.getFieldDescriptorByTag(tagName, metaMetadataRepository().metadataTranslationScope());
 	}
 
 	public static void main(String args[]) throws XMLTranslationException
@@ -649,14 +631,6 @@ implements Mappable<String>
 			// metaMetadata.translateToMetadataClass();
 			System.out.println('\n');
 		}
-	}
-
-	/**
-	 * @return the metadataFieldDescriptorsByTagName
-	 */
-	public HashMapArrayList<String, MetadataFieldDescriptor> getMetadataFieldDescriptorsByTagName()
-	{
-		return metadataFieldDescriptorsByTagName;
 	}
 
 	/**

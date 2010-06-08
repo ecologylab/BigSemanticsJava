@@ -8,34 +8,25 @@ import ecologylab.xml.ClassDescriptor;
 import ecologylab.xml.xml_inherit;
 
 /**
+ * Special class descriptor for Metadata subclasses.
+ * 
  * @author andruid
  *
  */
 @xml_inherit
-public class MetadataClassDescriptor<M extends Metadata> extends ClassDescriptor<M, MetadataFieldDescriptor>
+public class MetadataClassDescriptor /* <M extends Metadata>*/ extends ClassDescriptor<Metadata, MetadataFieldDescriptor>
 {
-	private MetaMetadata	metaMetadata;
-	
 	public MetadataClassDescriptor()
 	{
 		
 	}
+	/**
+	 * Called by reflection with a Metadata subclass.
+	 * 
+	 * @param thatClass
+	 */
 	public MetadataClassDescriptor(Class thatClass)
 	{
 		super(thatClass);
-	}
-	/**
-	 * @return the metaMetadata
-	 */
-	public MetaMetadata getMetaMetadata()
-	{
-		return metaMetadata;
-	}
-	/**
-	 * @param metaMetadata the metaMetadata to set
-	 */
-	public void setMetaMetadata(MetaMetadata metaMetadata)
-	{
-		this.metaMetadata = metaMetadata;
 	}
 }
