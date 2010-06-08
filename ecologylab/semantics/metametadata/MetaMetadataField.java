@@ -13,6 +13,7 @@ import ecologylab.appframework.PropertiesAndDirectories;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.DocumentParserTagNames;
+import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
 import ecologylab.semantics.tools.MetadataCompiler;
@@ -25,6 +26,8 @@ import ecologylab.xml.TranslationScope;
 import ecologylab.xml.XMLTools;
 import ecologylab.xml.XMLTranslationException;
 import ecologylab.xml.xml_inherit;
+import ecologylab.xml.ElementState.xml_attribute;
+import ecologylab.xml.ElementState.xml_tag;
 import ecologylab.xml.types.element.Mappable;
 import ecologylab.xml.types.scalar.ScalarType;
 
@@ -45,6 +48,10 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	@xml_attribute
 	private String						type;
 	
+	@xml_tag("extends")
+	@xml_attribute
+	protected String						extendsAttribute;
+
 	/**
 	 * Name of the metadata field.
 	 */
@@ -189,7 +196,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 
 	@xml_map("meta_metadata_field")
 	@xml_nowrap
-	protected HashMapArrayList<String, MetaMetadataField>	childMetaMetadata;
+	protected HashMapArrayList<String, MetaMetadataField>	kids;
 	
 	File																								file;
 
@@ -225,7 +232,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	{
 		this.name = name;
 		// this.metadataType = metadataType;
-		this.childMetaMetadata = set;
+		this.kids = set;
 	}
 
 	protected MetaMetadataField(MetaMetadataField copy, String name)
@@ -234,7 +241,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 		this.name 							= name;
 		this.tag								= copy.tag;
 		this.extendsField				= copy.extendsField;
-		this.childMetaMetadata 	= copy.childMetaMetadata;
+		this.kids 	= copy.kids;
 		
 		//TODO -- do we need to propagate more fields here?
 		
@@ -339,10 +346,10 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 					+ " extends Metadata" + implementDecl + "{\n");
 
 			// loop to write the class definition.
-			for (int i = 0; i < childMetaMetadata.size(); i++)
+			for (int i = 0; i < kids.size(); i++)
 			{
 				// translate the each meta-metadata field into class.
-				MetaMetadataField cField = childMetaMetadata.get(i);
+				MetaMetadataField cField = kids.get(i);
 				cField.setExtendsField(extendsField);
 				cField.setMmdRepository(mmdRepository);
 				cField.translateToMetadataClass(packageName, p,MetadataCompilerUtils.GENERATE_FIELDS_PASS,false);
@@ -354,10 +361,10 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 			MetadataCompilerUtils.appendConstructor(p, XMLTools
 					.classNameFromElementName(javaClassName));
 			
-			for (int i = 0; i < childMetaMetadata.size(); i++)
+			for (int i = 0; i < kids.size(); i++)
 			{
 				// translate the each meta-metadata field into class.
-				MetaMetadataField cField = childMetaMetadata.get(i);
+				MetaMetadataField cField = kids.get(i);
 				cField.setExtendsField(extendsField);
 				cField.setMmdRepository(mmdRepository);
 				cField.translateToMetadataClass(packageName, p,MetadataCompilerUtils.GENERATE_METHODS_PASS,true);
@@ -396,7 +403,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 
 	public boolean isNewClass()
 	{
-		MetaMetadataField firstField = childMetaMetadata != null ? childMetaMetadata.get(0) : null;
+		MetaMetadataField firstField = kids != null ? kids.get(0) : null;
 		// is this an actual definition (define scalar types) or just overriding attributes (e.g. xpath) for an existing definition 
 		return firstField != null && isGenerateClass() && (firstField.getScalarType() != null || firstField.collection() != null || firstField.getType() != null);
 	}
@@ -987,12 +994,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 
 	public int size()
 	{
-		return childMetaMetadata == null ? 0 : childMetaMetadata.size();
-	}
-
-	public HashMapArrayList<String, MetaMetadataField> getSet()
-	{
-		return childMetaMetadata;
+		return kids == null ? 0 : kids.size();
 	}
 
 	public String getName()
@@ -1012,7 +1014,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 
 	public MetaMetadataField lookupChild(String name)
 	{
-		return childMetaMetadata.get(name);
+		return kids.get(name);
 	}
 
 	public MetaMetadataField lookupChild(FieldDescriptor fieldAccessor)
@@ -1068,7 +1070,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	protected Collection<String> importPackages()
 	{
 		Collection<String> result = null;
-		if ((childMetaMetadata == null) || (childMetaMetadata.size() == 0))
+		if ((kids == null) || (kids.size() == 0))
 		{
 			result = new ArrayList<String>();
 			result.add(packageName());
@@ -1083,15 +1085,143 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	}
 	
 	/**
+	 * Class of the Metadata object that corresponds to this.
+	 * Non-null for nested and collection fields.
+	 * Null for scalar fields.
+	 */
+	private Class<? extends Metadata>											metadataClass;
+	
+
+	/**
+	 * Class descriptor for the Metadata object that corresponds to this.
+	 * Non-null for nested and collection fields.
+	 * Null for scalar fields.
+	 */
+	protected MetadataClassDescriptor											metadataClassDescriptor;
+
+	boolean getClassAndBindDescriptors(TranslationScope metadataTScope)
+	{
+		Class<? extends Metadata> metadataClass = getMetadataClass(metadataTScope);
+		if (metadataClass == null)
+		{
+//			error(metaMetadata + "\tCan't resolve in TranslationScope " + metadataTScope);
+			return false;
+		}
+		//
+		bindClassDescriptor(metadataClass, metadataTScope);
+		return true;
+	}
+	
+	/**
+	 * Obtain a map of FieldDescriptors for this class, with the field names as key, but with the mixins field removed.
+	 * Use lazy evaluation, caching the result by class name.
+	 * @param metadataTScope TODO
+	 * 
+	 * @return	A map of FieldDescriptors, with the field names as key, but with the mixins field removed.
+	 */
+	final void bindClassDescriptor(Class<? extends Metadata> metadataClass, TranslationScope metadataTScope)
+	{
+		MetadataClassDescriptor metadataClassDescriptor = this.metadataClassDescriptor;
+		if (metadataClassDescriptor == null)
+		{
+			synchronized (this)
+			{
+				metadataClassDescriptor = this.metadataClassDescriptor;
+				if (metadataClassDescriptor == null)
+				{
+					metadataClassDescriptor = (MetadataClassDescriptor) ClassDescriptor.getClassDescriptor(metadataClass);
+					bindMetadataFieldDescriptors(metadataTScope, metadataClassDescriptor);
+					this.metadataClassDescriptor	= metadataClassDescriptor;
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Compute the map of FieldDescriptors for this class, with the field names as key, but with the mixins field removed.
+	 * @param metadataTScope TODO
+	 * @param metadataClassDescriptor TODO
+	 * 
+	 * @return	A map of FieldDescriptors, with the field names as key, but with the mixins field removed.
+	 */
+	protected final void bindMetadataFieldDescriptors(TranslationScope metadataTScope, MetadataClassDescriptor metadataClassDescriptor)
+	{
+		for (MetaMetadataField thatChild : kids)
+		{
+			thatChild.bindMetadataFieldDescriptor(metadataTScope, metadataClassDescriptor);
+			// recursive descent
+			if (thatChild.hasChildren())
+				thatChild.getClassAndBindDescriptors(metadataTScope);
+		}
+//		for (FieldDescriptor fieldDescriptor : allFieldDescriptorsByFieldName.values())
+//		{
+//			String tagName	= fieldDescriptor.getTagName();
+//			result.put(tagName, (MetadataFieldDescriptor) fieldDescriptor);
+//		}
+	}
+	
+	void bindMetadataFieldDescriptor(TranslationScope metadataTScope, MetadataClassDescriptor metadataClassDescriptor)
+	{
+		String tagName	= this.resolveTag(); //TODO -- is this the correct tag?
+		MetadataFieldDescriptor metadataFieldDescriptor	= (MetadataFieldDescriptor) metadataClassDescriptor.getFieldDescriptorByTag(tagName, metadataTScope);
+		if (metadataFieldDescriptor != null)
+		{
+			// if we don't have a field, then this is a wrapped collection, so we need to get the wrapped field descriptor
+			if (metadataFieldDescriptor.getField() == null)
+				metadataFieldDescriptor = (MetadataFieldDescriptor) metadataFieldDescriptor.getWrappedFD();
+			
+			this.setMetadataFieldDescriptor(metadataFieldDescriptor);
+		}
+		else
+		{
+			warning("Ignoring <" + tagName + "> because no corresponding MetadataFieldDescriptor can be found.");
+		}
+
+	}
+
+	
+	/**
+	 * Lookup the Metadata class object that corresponds to tag_name, type, or extends attribute depending on which exist.
+	 * 
+	 * @return
+	 */
+	Class<? extends Metadata> getMetadataClass(TranslationScope ts)
+	{
+		Class<? extends Metadata> result = this.metadataClass;
+		
+		if (result == null)
+		{
+			String tagForTranslationScope 	= getTagForTranslationScope();
+			result													= (Class<? extends Metadata>) ts.getClassByTag(tagForTranslationScope);
+			if (result == null)
+			{
+				result 												= (Class<? extends Metadata>) ts.getClassByTag(getTypeOrName());
+				if (result == null)
+				{
+					// there is no class for this tag we can use class of meta-metadata it extends
+					result 												= (Class<? extends Metadata>) ts.getClassByTag(extendsAttribute);
+				}
+			}
+			if (result != null)
+				this.metadataClass						= result;
+			else
+				ts.error("Can't resolve: " + this + " using " + tagForTranslationScope);
+		}
+		return result;
+	}
+
+
+	
+	/**
 	 * Bind field declarations through the extends and type keywords.
 	 */
 	public void inheritMetaMetadata(MetaMetadataRepository repository)
 	{
 		if(!inheritMetaMetadataFinished)
 		{
-			if (childMetaMetadata != null)
+			if (kids != null)
 			{
-				for(MetaMetadataField childField : childMetaMetadata)
+				for(MetaMetadataField childField : kids)
 				{
 					childField.inheritMetaMetadata(repository);
 				}
@@ -1144,14 +1274,14 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	{
 		String fieldName = fieldToInheritFrom.getName();
 		// this is for the case when meta_metadata has no meta_metadata fields of its own. It just inherits from super class.
-		if (childMetaMetadata == null)
-			childMetaMetadata = new HashMapArrayList<String, MetaMetadataField>();
+		if (kids == null)
+			kids = new HashMapArrayList<String, MetaMetadataField>();
 		
 		// *do not* override fields in here with fields from super classes.
-		MetaMetadataField fieldToInheritTo = childMetaMetadata.get(fieldName);
+		MetaMetadataField fieldToInheritTo = kids.get(fieldName);
 		if (fieldToInheritTo == null)
 		{
-			childMetaMetadata.put(fieldName, fieldToInheritFrom);
+			kids.put(fieldName, fieldToInheritFrom);
 			fieldToInheritTo = fieldToInheritFrom;
 		}
 		else
@@ -1159,9 +1289,9 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 			fieldToInheritTo.inheritNonDefaultAttributes(fieldToInheritFrom);
 		}
 		
-		if (fieldToInheritFrom.childMetaMetadata != null)
+		if (fieldToInheritFrom.kids != null)
 		{
-			for(MetaMetadataField grandChildMetaMetadataField : fieldToInheritFrom.childMetaMetadata)
+			for(MetaMetadataField grandChildMetaMetadataField : fieldToInheritFrom.kids)
 			{
 				fieldToInheritTo.inheritForField(grandChildMetaMetadataField);
 			}
@@ -1198,23 +1328,9 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 		}
 	}
 	
-	void bindMetadataFieldDescriptor(TranslationScope metadataTScope, MetadataClassDescriptor metadataClassDescriptor)
+	public boolean hasChildren()
 	{
-		String tagName	= this.resolveTag(); //TODO -- is this the correct tag?
-		MetadataFieldDescriptor metadataFieldDescriptor	= (MetadataFieldDescriptor) metadataClassDescriptor.getFieldDescriptorByTag(tagName, metadataTScope);
-		if (metadataFieldDescriptor != null)
-		{
-			// if we don't have a field, then this is a wrapped collection, so we need to get the wrapped field descriptor
-			if (metadataFieldDescriptor.getField() == null)
-				metadataFieldDescriptor = (MetadataFieldDescriptor) metadataFieldDescriptor.getWrappedFD();
-			
-			this.setMetadataFieldDescriptor(metadataFieldDescriptor);
-		}
-		else
-		{
-			warning("Ignoring <" + tagName + "> because no corresponding MetadataFieldDescriptor can be found.");
-		}
-
+		return kids != null && kids.size() > 0;
 	}
 
 	/**
@@ -1223,12 +1339,12 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	 */
 	public void setChildMetaMetadata(HashMapArrayList<String, MetaMetadataField> childMetaMetadata)
 	{
-		this.childMetaMetadata = childMetaMetadata;
+		this.kids = childMetaMetadata;
 	}
 
 	public Iterator<MetaMetadataField> iterator()
 	{
-		return (childMetaMetadata != null) ? childMetaMetadata.iterator() : EMPTY_ITERATOR;
+		return (kids != null) ? kids.iterator() : EMPTY_ITERATOR;
 	}
 
 	public boolean isAlwaysShow()
@@ -1256,7 +1372,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	 */
 	public HashMapArrayList<String, MetaMetadataField> getChildMetaMetadata()
 	{
-		return childMetaMetadata;
+		return kids;
 	}
 
 	/**
@@ -1471,7 +1587,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	{
 		if (childMM != null)
 		{
-			childMetaMetadata	= childMM.childMetaMetadata;
+			kids	= childMM.kids;
 		}
 
 	}

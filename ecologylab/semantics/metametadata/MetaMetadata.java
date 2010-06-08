@@ -37,15 +37,6 @@ import ecologylab.xml.types.element.Mappable;
 public class MetaMetadata extends MetaMetadataField 
 implements Mappable<String>
 {
-	/**
-	 * Class of the Metadata object that corresponds to this.
-	 */
-	private Class<? extends Metadata>											metadataClass;
-	
-	@xml_tag("extends")
-	@xml_attribute
-	private String						extendsAttribute;
-
 	@xml_attribute
 	private ParsedURL					urlStripped;
 	
@@ -166,36 +157,6 @@ implements Mappable<String>
 			}
 		}
 		return false;
-	}
-
-	/**
-	 * Lookup the Metadata class object that corresponds to tag_name, type, or extends attribute depending on which exist.
-	 * 
-	 * @return
-	 */
-	Class<? extends Metadata> getMetadataClass(TranslationScope ts)
-	{
-		Class<? extends Metadata> result = this.metadataClass;
-		
-		if (result == null)
-		{
-			String tagForTranslationScope 	= getTagForTranslationScope();
-			result													= (Class<? extends Metadata>) ts.getClassByTag(tagForTranslationScope);
-			if (result == null)
-			{
-				result 												= (Class<? extends Metadata>) ts.getClassByTag(getTypeOrName());
-				if (result == null)
-				{
-					// there is no class for this tag we can use class of meta-metadata it extends
-					result 												= (Class<? extends Metadata>) ts.getClassByTag(extendsAttribute);
-				}
-			}
-			if (result != null)
-				this.metadataClass						= result;
-			else
-				ts.error("Can't resolve: " + this + " using " + tagForTranslationScope);
-		}
-		return result;
 	}
 
 	public Metadata constructMetadata()
@@ -366,14 +327,14 @@ implements Mappable<String>
 	 */
 	public void bindNonScalarChildren()
 	{
-		if (childMetaMetadata == null)
+		if (kids == null)
 			return;
 		
 		final MetaMetadataRepository repository	= repository();
 		
-		for (MetaMetadataField childField : childMetaMetadata)
+		for (MetaMetadataField childField : kids)
 		{
-			if (childField.getScalarType() == null && childField.childMetaMetadata == null)
+			if (childField.getScalarType() == null && childField.kids == null)
 			{
 				if (isNested())
 				{
@@ -560,52 +521,6 @@ implements Mappable<String>
 	public String key()
 	{
 		return getName();
-	}
-	
-	protected MetadataClassDescriptor															metadataClassDescriptor;
-
-	/**
-	 * Obtain a map of FieldDescriptors for this class, with the field names as key, but with the mixins field removed.
-	 * Use lazy evaluation, caching the result by class name.
-	 * @param metadataTScope TODO
-	 * 
-	 * @return	A map of FieldDescriptors, with the field names as key, but with the mixins field removed.
-	 */
-	final void bindClassDescriptor(Class<? extends Metadata> metadataClass, TranslationScope metadataTScope)
-	{
-		MetadataClassDescriptor metadataClassDescriptor = this.metadataClassDescriptor;
-		if (metadataClassDescriptor == null)
-		{
-			synchronized (this)
-			{
-				metadataClassDescriptor = this.metadataClassDescriptor;
-				if (metadataClassDescriptor == null)
-				{
-					metadataClassDescriptor = (MetadataClassDescriptor) ClassDescriptor.getClassDescriptor(metadataClass);
-					bindMetadataFieldDescriptors(metadataTScope, metadataClassDescriptor);
-					this.metadataClassDescriptor	= metadataClassDescriptor;
-				}
-			}
-		}
-	}
-	/**
-	 * Compute the map of FieldDescriptors for this class, with the field names as key, but with the mixins field removed.
-	 * @param metadataTScope TODO
-	 * @param metadataClassDescriptor TODO
-	 * 
-	 * @return	A map of FieldDescriptors, with the field names as key, but with the mixins field removed.
-	 */
-	private final void bindMetadataFieldDescriptors(TranslationScope metadataTScope, MetadataClassDescriptor metadataClassDescriptor)
-	{
-		for (MetaMetadataField metaMetadataField : childMetaMetadata)
-		{
-			metaMetadataField.bindMetadataFieldDescriptor(metadataTScope, metadataClassDescriptor);
-		}
-//		for (FieldDescriptor fieldDescriptor : allFieldDescriptorsByFieldName.values())
-//		{
-//			String tagName	= fieldDescriptor.getTagName();
-//			result.put(tagName, (MetadataFieldDescriptor) fieldDescriptor);
-//		}
 	}
 	
 	public MetadataFieldDescriptor getFieldDescriptorByTagName(String tagName)

@@ -630,14 +630,18 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		for (MetaMetadata metaMetadata : repositoryByTagName)
 		{
 			metaMetadata.inheritMetaMetadata(this);
-			Class<? extends Metadata> metadataClass = metaMetadata.getMetadataClass(metadataTScope);
-			if (metadataClass == null)
-			{
-//				error(metaMetadata + "\tCan't resolve in TranslationScope " + metadataTScope);
+			
+			if (!metaMetadata.getClassAndBindDescriptors(metadataTScope))
 				continue;
-			}
-			//
-			metaMetadata.bindClassDescriptor(metadataClass, metadataTScope);
+			
+//			Class<? extends Metadata> metadataClass = metaMetadata.getMetadataClass(metadataTScope);
+//			if (metadataClass == null)
+//			{
+////				error(metaMetadata + "\tCan't resolve in TranslationScope " + metadataTScope);
+//				continue;
+//			}
+//			//
+//			metaMetadata.bindClassDescriptor(metadataClass, metadataTScope);
 			
 			ArrayList<String> suffixes = metaMetadata.getSuffixes();
 			if (suffixes != null)
