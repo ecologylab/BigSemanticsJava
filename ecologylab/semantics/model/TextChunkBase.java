@@ -32,7 +32,9 @@ class TextChunkBase<T extends TextToken> extends ElementState implements
 		ScalarTypeInstanceConstants,
 		Iterable<T>
 {
-	@xml_collection("text_token")
+	
+	@xml_collection
+	@xml_scope(TextTokenTranslations.TEXT_TOKEN_SCOPE_NAME)
 	@xml_nowrap
 	protected ArrayList<T>						tokens;
 	/**
