@@ -5,6 +5,7 @@ package ecologylab.semantics.metadata.scalar.types;
 
 import java.lang.reflect.Field;
 
+import ecologylab.generic.ReflectionTools;
 import ecologylab.semantics.metadata.scalar.MetadataScalarBase;
 import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.xml.ScalarUnmarshallingContext;
@@ -47,8 +48,9 @@ public abstract class MetadataScalarScalarType<M, T> extends ReferenceType<M>
 			Class metadataScalarBaseClass	= MetadataScalarBase.class;
 			try
 			{
-				Field valueField							= metadataScalarBaseClass.getField(MetadataScalarBase.VALUE_FIELD_NAME);
-				valueField.setAccessible(true);
+				result							= metadataScalarBaseClass.getField(MetadataScalarBase.VALUE_FIELD_NAME);
+				result.setAccessible(true);
+				valueField = result;
 			}
 			catch (SecurityException e)
 			{
@@ -77,7 +79,12 @@ public abstract class MetadataScalarScalarType<M, T> extends ReferenceType<M>
           if (valueObject != null)
           {
           	M metadataScalarContext	= (M) field.get(largerMetadataContext);
-          	valueField.set(metadataScalarContext, valueObject);
+          	if (metadataScalarContext == null)
+          	{
+          		metadataScalarContext = (M) ReflectionTools.getInstance(field.getType());
+          		field.set(largerMetadataContext, metadataScalarContext);
+          	}
+          	valueField().set(metadataScalarContext, valueObject);
           	result 		= true;
           }
       }
@@ -124,11 +131,16 @@ public abstract class MetadataScalarScalarType<M, T> extends ReferenceType<M>
       try
       {
       	M metadataScalarContext	= (M) field.get(largerMetadataContext);
-      	T instance = (T) valueField.get(largerMetadataContext);
-      	if (instance == null)
-      		result = DEFAULT_VALUE_STRING;
+      	if (metadataScalarContext != null)
+      	{
+	      	T instance = (T) valueField().get(metadataScalarContext);
+	      	if (instance == null)
+	      		result = DEFAULT_VALUE_STRING;
+	      	else
+	      		result = toString(instance);
+      	}
       	else
-      		result = toString(instance);
+      		result = DEFAULT_VALUE_STRING;
       }
       catch (Exception e)
       {

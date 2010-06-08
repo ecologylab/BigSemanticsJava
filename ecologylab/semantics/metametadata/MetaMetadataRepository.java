@@ -178,13 +178,13 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 			// this.metaMetaDataRepository.writePrettyXML(System.out);
 		}
 
-		if (repositorySources.exists())
+		if (false && repositorySources.exists())
 		{
 			for (File file : repositorySources.listFiles(xmlFilter))
 				result.joinRepository(readRepository(file, metaMetadataTScope));
 		}
 
-		if (powerUserDir.exists())
+		if (false && powerUserDir.exists())
 		{
 			for (File file : powerUserDir.listFiles(xmlFilter))
 				result.joinRepository(readRepository(file, metaMetadataTScope));
@@ -243,12 +243,16 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 			this.namedStyles = repository.namedStyles;
 
 		// set metaMetadata to have the correct parent repository
-		for (MetaMetadata metametadata : repository.repositoryByTagName)
-			metametadata.setParent(this);
-
+		HashMapArrayList<String, MetaMetadata> repositoryByTagName = repository.repositoryByTagName;
+		if (repositoryByTagName != null)
+		{
+			for (MetaMetadata metametadata : repositoryByTagName)
+				metametadata.setParent(this);
+		}
+		
 		// combine metaMetadata
-		if (!combineMaps(repository.repositoryByTagName, this.repositoryByTagName))
-			this.repositoryByTagName = repository.repositoryByTagName;
+		if (!combineMaps(repositoryByTagName, this.repositoryByTagName))
+			this.repositoryByTagName = repositoryByTagName;
 	}
 
 	private boolean combineMaps(HashMap srcMap, HashMap destMap)
@@ -282,9 +286,25 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		this.defaultUserAgentString = (defaultUserAgentName == null) ? null : userAgents.get(
 				defaultUserAgentName).userAgentString();
 
+		findAndDeclareNestedMetaMetadata();
 		initializeLocationBasedMaps();
 		initializeSuffixAndMimeBasedMaps();
 		System.out.println();
+	}
+
+	private void findAndDeclareNestedMetaMetadata()
+	{
+		ArrayList<MetaMetadata> nestedDeclarations = new ArrayList<MetaMetadata>();
+		for (MetaMetadata metaMetadata : repositoryByTagName)
+		{
+			nestedDeclarations.addAll(generateNestedDeclarations(metaMetadata));
+		}
+		
+		for(MetaMetadata metaMetadata : nestedDeclarations)
+		{
+			//if(!repositoryByTagName.containsKey(metaMetadata.getTag()))
+				repositoryByTagName.put(metaMetadata.getTag(), metaMetadata);
+		}
 	}
 
 	/**
@@ -494,6 +514,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		for (MetaMetadata metaMetadata : repositoryByTagName)
 		{
 			metaMetadata.inheritMetaMetadata(this);
+			
 			Class<? extends Metadata> metadataClass = metaMetadata.getMetadataClass(metadataTScope);
 			if (metadataClass == null)
 			{
@@ -545,6 +566,28 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 				}
 			}
 		}
+	}
+
+	private ArrayList<MetaMetadata> generateNestedDeclarations(MetaMetadata metaMetadata)
+	{
+		ArrayList<MetaMetadata> result = new ArrayList<MetaMetadata>();
+		for(MetaMetadataField metaMetadataField : metaMetadata)
+		{
+			if (metaMetadataField.isNewClass())
+			{
+				String mmName 								= metaMetadataField.hasTag() ? metaMetadataField.getTag() : metaMetadataField.generateNewClassName();
+				MetaMetadata newMetaMetadata 	= new MetaMetadata(metaMetadataField, mmName);
+				//newMetaMetadata.setName(mmName);
+				//newMetaMetadata.setChildMetaMetadata(metaMetadataField.childMetaMetadata);
+				//repositoryByTagName.put(className, newMetaMetadata);
+				result.add(newMetaMetadata);
+				
+				// recurse to find deeper nested declarations
+				result.addAll(generateNestedDeclarations(newMetaMetadata));
+			}
+		}
+		
+		return result;
 	}
 
 	/**
@@ -611,12 +654,6 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	public String packageName()
 	{
 		return packageName;
-	}
-
-	@Override
-	protected void postTranslationProcessingHook()
-	{
-
 	}
 
 	public static String documentTag()
@@ -743,4 +780,5 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		MetaMetadata newChildMM = getByTagName(tag);
 		childField.bindChildren(newChildMM);
 	}
+
 }

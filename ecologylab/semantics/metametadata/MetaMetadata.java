@@ -119,6 +119,11 @@ implements Mappable<String>
 	{
 		super();
 	}
+	
+	protected MetaMetadata(MetaMetadataField copy, String name)
+	{
+		super(copy, name);
+	}
 
 	/**
 	 * @param purl
@@ -164,7 +169,7 @@ implements Mappable<String>
 	}
 
 	/**
-	 * Lookup the Metadata class object that corresponds to the tag_name in this.
+	 * Lookup the Metadata class object that corresponds to tag_name, type, or extends attribute depending on which exist.
 	 * 
 	 * @return
 	 */
@@ -174,11 +179,15 @@ implements Mappable<String>
 		
 		if (result == null)
 		{
-			result													= (Class<? extends Metadata>) ts.getClassByTag(getType());
-			if (result ==null)
+			result													= (Class<? extends Metadata>) ts.getClassByTag(getTag());
+			if (result == null)
 			{
-				// there is no class for this tag we can use class of meta-metadata it extends
-				result 												= (Class<? extends Metadata>) ts.getClassByTag(extendsAttribute);
+				result 												= (Class<? extends Metadata>) ts.getClassByTag(getTypeOrName());
+				if (result == null)
+				{
+					// there is no class for this tag we can use class of meta-metadata it extends
+					result 												= (Class<? extends Metadata>) ts.getClassByTag(extendsAttribute);
+				}
 			}
 			this.metadataClass							= result;
 		}
@@ -593,10 +602,14 @@ implements Mappable<String>
 		metadataFieldDescriptorsByTagName	= new HashMapArrayList<String, MetadataFieldDescriptor>(childMetaMetadata.size());
 		for (MetaMetadataField metaMetadataField : childMetaMetadata)
 		{
-			String tagName	= metaMetadataField.getChildTag(); //TODO -- is this the correct tag?
+			String tagName	= metaMetadataField.getTag(); //TODO -- is this the correct tag?
 			MetadataFieldDescriptor metadataFieldDescriptor	= (MetadataFieldDescriptor) metadataClassDescriptor.getFieldDescriptorByTag(tagName, metadataTScope);
 			if (metadataFieldDescriptor != null)
 			{
+				// if we don't have a field, then this is a wrapped collection, so we need to get the wrapped field descriptor
+				if (metadataFieldDescriptor.getField() == null)
+					metadataFieldDescriptor = (MetadataFieldDescriptor) metadataFieldDescriptor.getWrappedFD();
+				
 				metadataFieldDescriptor.setMetaMetadataField(metaMetadataField);
 				metaMetadataField.setMetadataFieldDescriptor(metadataFieldDescriptor);
 				metadataFieldDescriptorsByTagName.put(tagName, metadataFieldDescriptor);

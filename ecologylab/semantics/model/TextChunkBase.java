@@ -127,7 +127,7 @@ class TextChunkBase<T extends TextToken> extends ElementState implements
 	 */
 	protected TextChunkBase()
 	{
-		super();
+		this(false);
 	}
 
 	/**

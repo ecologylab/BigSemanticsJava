@@ -224,6 +224,15 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 		this.childMetaMetadata = set;
 	}
 
+	protected MetaMetadataField(MetaMetadataField copy, String name)
+	{
+		this();
+		this.name 							= name;
+		this.tag								= copy.tag;
+		this.extendsField				= copy.extendsField;
+		this.childMetaMetadata 	= copy.childMetaMetadata;
+	}
+
 	public String packageName()
 	{
 		String result = "";
@@ -274,21 +283,14 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 		}
 
 		// new java class has to be written
-		if (childMetaMetadata != null && isGenerateClass())
+		if (isNewClass())
 		{
 			//FIXME -- call the regular routine for generating a class declaration!!!!!!!!!!!!!! code should not be duplicated
 			// getting the generation path for the java class.
 			String generationPath = MetadataCompilerUtils.getGenerationPath(packageName);
 
 			// the name of the java class.
-			String javaClassName = getType();
-
-			// if the meta-metadata field is of type list or map
-			if (collection != null)
-			{
-				// we will generate a class of the name collectionChildType.
-				javaClassName = childType;
-			}
+			String javaClassName = generateNewClassName();
 
 			// if this class implements any Interface it will contain that.
 			String implementDecl = "";
@@ -369,6 +371,26 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 		}
 	}
 
+	protected String generateNewClassName()
+	{
+		String javaClassName = getTypeOrName();
+
+		// if the meta-metadata field is of type list or map
+		if (collection != null)
+		{
+			// we will generate a class of the name collectionChildType.
+			javaClassName = childType;
+		}
+		return javaClassName;
+	}
+
+	public boolean isNewClass()
+	{
+		MetaMetadataField firstField = childMetaMetadata != null ? childMetaMetadata.get(0) : null;
+		// is this an actual definition (define scalar types) or just overriding attributes (e.g. xpath) for an existing definition 
+		return firstField != null && isGenerateClass() && (firstField.getScalarType() != null || firstField.collection() != null || firstField.getType() != null);
+	}
+
 	private String tryTofindCollectionChildType()
 	{
 		if(childType!=null)
@@ -386,7 +408,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 			MetaMetadata metaMetadata= getMmdRepository().getByTagName(extendsField);
 			
 			//2. find the current field in this meta-metadata
-			MetaMetadataField mmdField=metaMetadata.lookupChild(getType());
+			MetaMetadataField mmdField=metaMetadata.lookupChild(getTypeOrName());
 			
 			//if this field does exist in super
 			if(mmdField!=null)
@@ -415,7 +437,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 			MetaMetadata metaMetadata= getMmdRepository().getByTagName(extendsField);
 			
 			//2. find the current field in this meta-metadata
-			MetaMetadataField mmdField=metaMetadata.lookupChild(getType());
+			MetaMetadataField mmdField=metaMetadata.lookupChild(getTypeOrName());
 			
 			//if this field does exist in super
 			if(mmdField!=null)
@@ -444,7 +466,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 			MetaMetadata metaMetadata= getMmdRepository().getByTagName(extendsField);
 			
 			//2. find the current field in this meta-metadata
-			MetaMetadataField mmdField=metaMetadata.lookupChild(getType());
+			MetaMetadataField mmdField=metaMetadata.lookupChild(getTypeOrName());
 			
 			//if this field does exist in super
 			if(mmdField!=null)
@@ -473,7 +495,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 			MetaMetadata metaMetadata= getMmdRepository().getByTagName(extendsField);
 			
 			//2. find the current field in this meta-metadata
-			MetaMetadataField mmdField=metaMetadata.lookupChild(getType());
+			MetaMetadataField mmdField=metaMetadata.lookupChild(getTypeOrName());
 			
 			//if this field does exist in super
 			if(mmdField!=null)
@@ -506,12 +528,12 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	 */
 	private void appenedNestedMetadataField(Appendable appendable,int pass) throws IOException
 	{
-		String variableType=" @xml_nested "+XMLTools.classNameFromElementName(getType());
-		String fieldType = XMLTools.classNameFromElementName(getType());
+		String variableType=" @xml_nested "+XMLTools.classNameFromElementName(getTypeOrName());
+		String fieldType = XMLTools.classNameFromElementName(getTypeOrName());
 		if(isEntity())
 		{
-			variableType = " @xml_nested Entity<"+XMLTools.classNameFromElementName(getType())+">";
-			fieldType = "Entity<"+XMLTools.classNameFromElementName(getType())+">";
+			variableType = " @xml_nested Entity<"+XMLTools.classNameFromElementName(getTypeOrName())+">";
+			fieldType = "Entity<"+XMLTools.classNameFromElementName(getTypeOrName())+">";
 		}
 		if(pass == MetadataCompilerUtils.GENERATE_FIELDS_PASS)
 		{
@@ -875,7 +897,12 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 			variableTypeStart = " ArrayList<Entity<";
 			variableTypeEnd=">>";
 		}
-		String tag =getChildTag();
+		String tag = getChildTag();
+		if (tag == null)
+		{
+			warning("child_tag not specified in meta-metadata for collection field " + this.name);
+			return;
+		}
 		
 		StringBuilder annotation = StringBuilderUtils.acquire();
 		annotation.append("@xml_collection(\"" + tag + "\")");
@@ -1349,7 +1376,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	}
 	
 	
-	public String getType()
+	public String getTypeOrName()
 	{
 		if(type!=null)
 			return type;
@@ -1357,7 +1384,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 			return getName();
 	}
 	
-	public String getTypeAttribute()
+	public String getType()
 	{
 		return type;
 	}
@@ -1391,21 +1418,26 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 		return entity;
 	}
 	
-	public String getChildTag()
+	/*public String getChildTag()
 	{
-		if(childTag!=null)
+		if(childTag!=null && noWrap)
 		{
 			return childTag;
 		}
-		else if (tag != null)
+		else if (tag != null && collection == null)
 		{
 			// TODO implement other cases
 			return tag;
 		}
 		else
-			return name;
-			
-	}	
+			return name;	
+	}	*/
+	
+	public String getChildTag()
+	{
+		return (childTag != null) ? childTag : childType;
+	}
+	
 	protected void bindChildren(MetaMetadata childMM)
 	{
 		if (childMM != null)
@@ -1420,7 +1452,12 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	 */
 	public String getTag()
 	{
-		return tag;
+		return (isNoWrap()) ? ((childTag != null) ? childTag : childType) : (tag != null) ? tag : name;
+	}
+	
+	public boolean hasTag()
+	{
+		return (tag != null) || (childTag != null);
 	}
 
 	/**
@@ -1475,6 +1512,11 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	public String getComment()
 	{
 		return comment;
+	}
+
+	protected void setName(String name)
+	{
+		this.name = name;
 	}
 	
 }

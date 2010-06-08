@@ -201,7 +201,7 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 				//get the actual collection object
 				Object collectionObject =  semanticActionReturnValueMap.get(collectionObjectName);
 				GenericIterable gItr = new GenericIterable(collectionObject);
-				System.out.println(documentType.purl());
+				debug(documentType.purl().toString());
 				Iterator itr = gItr.iterator();
 				int collectionSize=gItr.size();
 				

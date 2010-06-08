@@ -15,6 +15,7 @@ import ecologylab.semantics.metametadata.MetaMetadataField;
 import ecologylab.xml.ClassDescriptor;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.FieldDescriptor;
+import ecologylab.xml.ScalarUnmarshallingContext;
 import ecologylab.xml.types.scalar.ScalarType;
 
 /**
@@ -53,7 +54,7 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 		}
 	}
 	
-	public MetadataFieldDescriptor(ClassDescriptor baseClassDescriptor, MetadataFieldDescriptor wrappedFD, String wrapperTag)
+	public MetadataFieldDescriptor(ClassDescriptor baseClassDescriptor, FieldDescriptor wrappedFD, String wrapperTag)
 	{
 		super(baseClassDescriptor, wrappedFD, wrapperTag);
 		isMixin	= false;
@@ -127,4 +128,10 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 		this.metaMetadataField = metaMetadataField;
 	}
 	
+	@Override
+	protected void setFieldToScalar(Object context, String value, ScalarUnmarshallingContext scalarUnmarshallingContext)
+	{
+		
+		super.setFieldToScalar(context, value, scalarUnmarshallingContext);
+	}
 }

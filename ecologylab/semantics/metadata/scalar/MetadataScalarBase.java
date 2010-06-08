@@ -12,7 +12,7 @@ import ecologylab.xml.ElementState;
 abstract
 public class MetadataScalarBase<T> implements MetadataBase
 {
-	T		value;
+	public T		value;
 	
 	public static final String	VALUE_FIELD_NAME	= "value";
 	
@@ -40,9 +40,10 @@ public class MetadataScalarBase<T> implements MetadataBase
 	public String toString()
 	{
 		T value				= getValue();
-		return (value == null) ?
-				super.toString() + "[null]" :
-				super.toString() + "[" + value.toString() + "]";
+		//return (value == null) ?
+		//		super.toString() + "[null]" :
+		//		super.toString() + "[" + value.toString() + "]";
+		return (value == null) ? "null" : value.toString();
 	}
 	
 

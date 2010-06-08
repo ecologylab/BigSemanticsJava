@@ -124,8 +124,8 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 		
 		try
 		{
-			System.out.println("Metadata parsed from: " + container.purl());
-			populatedMetadata.translateToXML(System.out);
+			debug("Metadata parsed from: " + container.purl());
+			debug(populatedMetadata.translateToXML());
 			
 		}
 		
@@ -257,7 +257,7 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 							.append("\n");
 					buffy.append("Check if the return object type of Xpath evaluation is corect::\t").append(
 							type).append("\n");
-					System.out.println(buffy);
+					debug(buffy);
 					StringBuilderUtils.release(buffy);
 				}
 
@@ -420,7 +420,7 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 			buffy.append("Field Name::\t").append(mmdElement.getName()).append("\n");
 			buffy.append("ContextNode::\t").append(contextNode).append("\n");
 			buffy.append("XPath Expression::\t").append(xPathString).append("\n");
-			System.out.println(buffy);
+			error(buffy);
 			StringBuilderUtils.release(buffy);
 		}
 	}
@@ -442,9 +442,9 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 	{
 		Node originalNode = contextNode;
 		// this is the field accessor for the collection field
-		MetadataFieldDescriptor fieldAccessor = metadata.getFieldDescriptorByTagName(mmdElement.getChildTag());
+		MetadataFieldDescriptor fieldDescriptor = mmdElement.getMetadataFieldDescriptor(); //metadata.getFieldDescriptorByTagName(mmdElement.getTag());
 
-		if (fieldAccessor != null)
+		if (fieldDescriptor != null)
 		{
 			
 			// get class of the collection
@@ -455,16 +455,15 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 			}
 			else
 			{
-				collectionChildClass =translationScope.getClassByTag(mmdElement
-					.getCollectionChildType());
+				collectionChildClass =translationScope.getClassByTag(mmdElement.getChildTag());
 			}
 			HashMapArrayList<String, MetadataFieldDescriptor> collectionElementAccessors = metadata.getMetadataFieldDescriptorsByTagName();
 
 			// now get the collection field
-			Field collectionField = fieldAccessor.getField();
+			Field collectionField = fieldDescriptor.getField();
 
 			// get the child meta-metadata fields with extraction rules
-			HashMapArrayList<String, MetaMetadataField> childMMdFieldList = mmdElement.getSet();
+			//HashMapArrayList<String, MetaMetadataField> childMMdFieldList = mmdElement.getSet();
 
 			// list to hold the collectionInstances
 			ArrayList<Metadata> collectionInstanceList = new ArrayList<Metadata>();
@@ -479,13 +478,13 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 			// the collection meta-metadatafield
 			boolean collectionInstanceListInitialized = false;
 			// get the field from childField list which has the same name as this field
-			for (MetadataFieldDescriptor mfa : collectionElementAccessors)
+			for (MetaMetadataField childMetaMetadataField : mmdElement.getChildMetaMetadata())
 			{
 				// if this field exists in childField list this means there are some extraction rules for it
 				// and so get the values
-				MetaMetadataField childMetadataField = childMMdFieldList.get(mfa.getTagName());
+				//MetaMetadataField childMetadataField = mfa.getMetaMetadataField();
 				
-				if (childMetadataField != null)
+				if (childMetaMetadataField != null)
 				{
 					// so there are some extraction rules
 					// get the parent node list only of its null for efficiency
@@ -506,7 +505,7 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 						buffy.append("ContextNode::\t").append(contextNode).append("\n");
 						buffy.append("XPath Expression::\t").append(parentXPathString).append("\n");
 						buffy.append("Container Purl::\t").append(container.purl()).append("\n");
-						System.out.println(buffy);
+						error(buffy);
 					
 
 						StringBuilderUtils.release(buffy);
@@ -521,8 +520,10 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 						// returned.
 						for (int j = 0; j < parentNodeListLength; j++)
 						{
-							collectionInstanceList.add((Metadata) ReflectionTools.getInstance(collectionChildClass));
-							(collectionInstanceList.get(j)).setMetaMetadata(infoCollector.metaMetaDataRepository().getMM(collectionChildClass));
+							Metadata metadataInstance = (Metadata) ReflectionTools.getInstance(collectionChildClass);
+							metadataInstance.setMetaMetadata(infoCollector.metaMetaDataRepository().getMM(collectionChildClass));
+							collectionInstanceList.add(metadataInstance);
+							
 						}
 						collectionInstanceListInitialized = true;
 					}
@@ -531,35 +532,35 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 					{
 
 						// get the xpath expression
-						String childXPath = childMetadataField.getXpath();
+						String childXPath = childMetaMetadataField.getXpath();
 						// System.out.println("DEBUG:: child node xpath  "+childXPath);
 
 						// apply xpaths on m th parent node
 						contextNode = parentNodeList.item(m);
 
 						// if some context node is specified find it.
-						if (childMetadataField.getContextNode() != null)
+						if (childMetaMetadataField.getContextNode() != null)
 						{
-							contextNode = (Node) (param.get(childMetadataField.getContextNode()));
+							contextNode = (Node) (param.get(childMetaMetadataField.getContextNode()));
 						}
 
-						if ("ArrayList".equals(childMetadataField.collection()))
+						if ("ArrayList".equals(childMetaMetadataField.collection()))
 						{
 							extractArrayList(translationScope, collectionInstanceList.get(m), contextNode,
-									childMetadataField, childMetadataField.getName(), xpath, param,
-									childMetadataField.getXpath());
+									childMetaMetadataField, childMetaMetadataField.getName(), xpath, param,
+									childMetaMetadataField.getXpath());
 						}
-						if (childMetadataField.isNested())
+						if (childMetaMetadataField.isNested())
 						{
-							 extractNested(translationScope, collectionInstanceList.get(m), contextNode,childMetadataField, childMetadataField.getName(), xpath, param,
-										childMetadataField.getXpath());
+							 extractNested(translationScope, collectionInstanceList.get(m), contextNode,childMetaMetadataField, childMetaMetadataField.getName(), xpath, param,
+										childMetaMetadataField.getXpath());
 						}
 						else
 						{
 							// its a simple scalar field
-							String evaluation = extractScalar(xpath, childMetadataField, contextNode,
-									childMetadataField.getXpath());
-							collectionInstanceList.get(m).setByTagName(childMetadataField.getName(), evaluation, this);
+							String evaluation = extractScalar(xpath, childMetaMetadataField, contextNode,
+									childMetaMetadataField.getXpath());
+							collectionInstanceList.get(m).setByTagName(childMetaMetadataField.getName(), evaluation, this);
 						}
 						/*
 						 * String evaluation = xpath.evaluate(childXPath, contextNode);
@@ -572,7 +573,7 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 						 */
 					}
 				}// end xpath
-				else
+				/*else
 				{
 					// else there are no extraction rules , just create a blank field
 					for (int k = 0; k < collectionInstanceList.size(); k++)
@@ -580,7 +581,7 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 						// FIXME -- andruid believes this line can be removed! 9/2/09
 						collectionInstanceList.get(k).setByTagName(mfa.getTagName(), "");
 					}
-				}
+				}*/
 			}
 
 			// set the value of collection list in the meta-data
