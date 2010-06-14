@@ -122,7 +122,7 @@ public class MyInfoCollector implements InfoCollector<MyContainer>
 		return collectingListeners;
 	}
 	
-	//load repository file adn stuff
+	//load repository file and stuff
 	public MyInfoCollector(String repoFilepath)
 	{
 		mmdRepo = MetaMetadataRepository.load(new File(repoFilepath));
