@@ -22,6 +22,7 @@ import ecologylab.semantics.connectors.SeedPeer;
 import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.generated.library.GeneratedMetadataTranslationScope;
 import ecologylab.semantics.metadata.builtins.Document;
+import ecologylab.semantics.metadata.scalar.types.MetadataScalarScalarType;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.seeding.SearchState;
@@ -66,6 +67,13 @@ public class MyInfoCollector implements InfoCollector<MyContainer>
 	public boolean		slow;
 	
 	public ArrayList<String>			visitedURLs;
+	
+	static
+	{
+		// need to register scalar types BEFORE any translation scope is set up, or some scalar types
+		//   cannot be recognized.
+		MetadataScalarScalarType.init();
+	}
 
 	/**
 	 * @return the downloadMonitor.
@@ -123,10 +131,15 @@ public class MyInfoCollector implements InfoCollector<MyContainer>
 	}
 	
 	//load repository file and stuff
-	public MyInfoCollector(String repoFilepath)
+	public MyInfoCollector(String repoDir)
 	{
-		mmdRepo = MetaMetadataRepository.load(new File(repoFilepath));
-		mmdRepo.initializeRepository(GeneratedMetadataTranslationScope.get());
+		this(repoDir, GeneratedMetadataTranslationScope.get());
+	}
+	
+	public MyInfoCollector(String repoDir, TranslationScope metadataTranslationScope)
+	{
+		mmdRepo = MetaMetadataRepository.load(new File(repoDir));
+		mmdRepo.initializeRepository(metadataTranslationScope);
 		rejectDomains = new HashSet<String>();
 		downloadMonitor = new DownloadMonitor("info-collector_download-monitor",
 				DEFAULT_COUNT_DOWNLOAD_THREAD);
