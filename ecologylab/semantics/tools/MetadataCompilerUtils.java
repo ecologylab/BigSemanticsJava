@@ -51,7 +51,7 @@ public class MetadataCompilerUtils
 		"ecologylab.xml.ElementState.xml_tag",
 		"ecologylab.semantics.metadata.builtins.*",
 		"ecologylab.semantics.metametadata.MetaMetadataRepository",
-		"ecologylab.semantics.generated.library.*",
+		// "ecologylab.semantics.generated.library.*",
 		"ecologylab.semantics.metadata.MetadataBuiltinsTranslationScope"
 	));
 	static
