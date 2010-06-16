@@ -55,7 +55,8 @@ public class TermVector extends FeatureVector<Term> implements ITermVector
 	 */
 	public TermVector ( CharSequence input )
 	{
-		reset(input);
+		if(input != null)
+			reset(input);
 	}
 
 	/**

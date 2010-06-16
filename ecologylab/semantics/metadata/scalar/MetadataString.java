@@ -57,7 +57,7 @@ public class MetadataString extends MetadataScalarBase<String>
 	public ITermVector termVector()
 	{
 		if (termVector == null)
-			termVector = new TermVector();
+			termVector = new TermVector(value); //Value may be non-null at this point. 
 		return termVector;
 	}
 	
