@@ -1,0 +1,117 @@
+<meta_metadata_repository name="search" default_user_agent_name="chrome_2"
+ package="ecologylab.semantics.metametadata.example.generated"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
+		
+<!--+++++++++++++++++++++++++++++++++ More Specific Types - Search & its Children  +++++++++++++++++++++++++++++++++-->
+	
+	<!-- Search Class -->
+	<meta_metadata name="search" extends="document" comment="">
+		<meta_metadata_field name="search_results" collection="ArrayList" child_type="search_result" no_wrap="true" />  
+	</meta_metadata>
+	
+	<meta_metadata name="search_result" extends="document" comment="">
+			<meta_metadata_field name="heading" scalar_type="String" comment="The heading of search result"/>
+			<meta_metadata_field name="snippet" scalar_type="String"  comment="The snippet of search result"/>
+ 			<meta_metadata_field name="link" scalar_type="ParsedURL" comment="The link of the search result" /> 
+	 </meta_metadata>	
+	
+	
+	 <meta_metadata name="google_search" type="search"  parser="xpath" url_stripped="http://www.google.com/search" user_agent_name="opera_9" comment="The google Search class" >
+	   <meta_metadata_field name="search_results" xpath="//div[@id='res']//div//ol/li[@*]" >
+			<meta_metadata_field name="heading" xpath="./h3/a" />
+			<meta_metadata_field name="snippet" xpath="./div[1]" />
+ 			<meta_metadata_field name="link"    xpath="./h3/a/@href" /> 
+	   </meta_metadata_field>
+	   <semantic_actions>
+	   		<get_field name="search_results"/>
+			<for_each collection="search_results" as="res">
+				<get_field name="link" object="res"/>
+				<parse_document_now>
+					<arg value="link" name="container_link"/>
+				</parse_document_now>
+			</for_each>
+		</semantic_actions>
+  </meta_metadata>
+  
+  <meta_metadata name="my_google_search" type="search"  parser="xpath" url_stripped="http://staging.cs.tamu.edu:8080/my_google/search" user_agent_name="opera_9" comment="The my_google Search class" >
+	 	<meta_metadata_field name="search_results" xpath="//div[@class='result']" >
+			<meta_metadata_field name="heading" xpath="./a/@href" />
+			<meta_metadata_field name="snippet" xpath="./p" />
+ 			<meta_metadata_field name="link"    xpath="./span" /> 
+	   </meta_metadata_field>
+	   <semantic_actions>
+	   		<get_field name="search_results"/>
+			<for_each collection="search_results" as="res">
+				<get_field name="link" object="res"/>
+				<parse_document_now>
+					<arg value="link" name="container_link"/>
+				</parse_document_now>
+			</for_each>
+		</semantic_actions>
+  </meta_metadata>
+   
+  <meta_metadata name="my_google_ecology0_search" type="search"  
+  		parser="xpath" extends="my_google_search" url_stripped="http://ecology0.csdl.tamu.edu/my_google/search" 
+  		comment="The my_google_ecology0 Search class" />
+    
+    <!-- Declaration of Yahoo search class -->
+    <meta_metadata name="yahoo_result_set" extends="search" parser="direct" tag="ResultSet" comment="Yahoo Web Search Service">
+  		<meta_metadata_field name="results" collection="ArrayList" no_wrap="true" child_type="result" child_tag="Result" comment="Collection of results for yahoo search">
+  			<meta_metadata_field name="title" tag="Title" scalar_type="String"/>
+  			<meta_metadata_field name="summary" tag="Summary" scalar_type="String"/>
+  			<meta_metadata_field name="url" tag="Url" scalar_type="ParsedURL"/>
+  			<meta_metadata_field name="referer_url" tag="RefererUrl" scalar_type="ParsedURL"/>
+  			<!-- meta_metadata_field name="display_url" tag="DisplayUrl" scalar_type="ParsedURL"/-->
+  			<meta_metadata_field name="modification_date" tag="ModificationDate" scalar_type="Int"/>
+  			<meta_metadata_field name="mime_type" tag="MimeType" scalar_type="String"/>
+		    <meta_metadata_field name="thumbnails" child_tag="Thumbnail" collection="ArrayList" no_wrap="true" child_type="thumbnail">
+		  		<meta_metadata_field name="url" tag="Url" scalar_type="ParsedURL"/>
+		    </meta_metadata_field>
+  		</meta_metadata_field>
+    </meta_metadata>
+     
+    <meta_metadata name="yahoo_web_search"  type="yahoo_result_set" url_stripped="http://api.search.yahoo.com/WebSearchService/V1/webSearch">
+   		<semantic_actions>
+    		<get_field name="results"/>
+    		<for_each collection="results" as="result">
+    			<get_field name="url" object="result"/>
+    			<get_field name="summary" object="result"/>
+    			<parse_document_now>
+					<arg value="url" name="container_link"/>
+					<arg value="summary" name="anchor_text"	/>		
+				</parse_document_now>
+    		</for_each>	
+    	</semantic_actions>
+    </meta_metadata>
+
+    <meta_metadata name="yahoo_image_search"  type="yahoo_result_set" url_stripped="http://api.search.yahoo.com/ImageSearchService/V1/imageSearch">
+   		<semantic_actions>
+    		<get_field name="results"/>
+    		<for_each collection="results" as="result">
+    			<get_field name="url" object="result"/>
+    			<get_field name="referer_url" object="result"/>
+    			<get_field name="summary" object="result"/>
+	   			<create_and_visualize_img_surrogate>
+   					<arg value="url" name="image_purl"/>
+	   				<arg value="summary" name="caption"/>
+	   				<arg value="referer_url" name="href"/>
+	   			</create_and_visualize_img_surrogate>
+    		</for_each>	
+    	</semantic_actions>
+    </meta_metadata>    
+    
+    <meta_metadata name="yahoo_news_search"  type="yahoo_result_set" url_stripped="http://api.search.yahoo.com/NewsSearchService/V1/newsSearch">
+ 	   <semantic_actions>
+    		<get_field name="results"/>
+    		<for_each collection="results" as="result">
+    			<get_field name="url" object="result"/>
+    			<get_field name="summary" object="result"/>
+				<parse_document_now>
+					<arg value="url" name="container_link"/>
+					<arg value="summary" name="anchor_text"/>
+				</parse_document_now>
+    		</for_each>	
+    	</semantic_actions>
+    </meta_metadata>   		    
+
+</meta_metadata_repository>

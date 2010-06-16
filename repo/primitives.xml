@@ -1,0 +1,55 @@
+<meta_metadata_repository name="primitives" default_user_agent_name="chrome_2"
+ package="ecologylab.semantics.generated.library"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
+		
+	<!--+++++++++++++++++++++++++++++++++ Builtin Primitive Base Types  +++++++++++++++++++++++++++++++++-->
+	
+	<!-- The Declaration of Document Class  -->
+	<meta_metadata name="document" extends="metadata" generate_class="false" comment="The Document Class" >
+		<meta_metadata_field name="title" scalar_type="String" style="h1" comment="The Title of the Document" navigates_to="location"/>
+		<meta_metadata_field name="description" scalar_type="String"/>
+		<meta_metadata_field name="location" scalar_type="ParsedURL" always_show="true" comment="The document's actual location."/>
+		<meta_metadata_field name="generation" scalar_type="Int"/>
+		<meta_metadata_field name="page_structure" scalar_type="String" comment="For debugging. Type of the structure recognized by information extraction."/>
+		<meta_metadata_field name="query" scalar_type="String" comment="The search query"/>
+	</meta_metadata>
+	
+	<!-- The Declaration of Entity Class  -->
+	<meta_metadata name="entity" extends="metadata" generate_class="false" comment="Reference to a nested document." >
+		<meta_metadata_field name="location" scalar_type="ParsedURL" hide="true" comment="The document's actual location."/>
+		<meta_metadata_field name="gist" scalar_type="String" navigates_to="location" comment="Initial text that describes the document before its downloaded."/>
+	</meta_metadata>
+	
+		<!-- PDF Class -->
+	<meta_metadata name="pdf" parser="pdf" extends="document" comment="The PDF class.">
+		<meta_metadata_field name="author" scalar_type="String" comment="The author of the pdf document"/>
+		<meta_metadata_field name="summary" scalar_type="String" comment="Summary of the pdf document"/>
+		<meta_metadata_field name="keywords" scalar_type="String" comment="Key Words of the document"/>
+		<meta_metadata_field name="subject" scalar_type="String" comment="Subject of the document"/>
+		<meta_metadata_field name="trapped" scalar_type="String" />
+		<meta_metadata_field name="modified" scalar_type="String" />
+		<meta_metadata_field name="contents" scalar_type="String" comment="Contents of the document"/>
+		<meta_metadata_field name="creationdate" scalar_type="String" comment="Creation date of the document"/>
+		<mime_type>application/pdf</mime_type>
+		<mime_type>application/x-pdf</mime_type>
+		<mime_type>image/pdf</mime_type>
+		<suffix>pdf</suffix> 
+	</meta_metadata>
+	
+	<!-- -The Declaration of Media Class -->
+	<meta_metadata name="media" generate_class ="false" extends="metadata" comment="Extend this for Image, sounds, video, etc.">
+		<meta_metadata_field name="context" scalar_type="String" />
+	</meta_metadata>
+	
+	<!-- The Declaration of Image Class -->
+	<meta_metadata name="image" extends="media" generate_class="false" comment="The Image Base Class">
+		<meta_metadata_field name="caption" style="h1" scalar_type="String" comment="The caption of the image."/>
+		<meta_metadata_field name="location" scalar_type="ParsedURL" comment="Location of the image."/>
+		<meta_metadata_field name="local_location" scalar_type="String" hide="true" comment="Relative location of local copy of image."/>
+	</meta_metadata>
+	
+	<meta_metadata name="debug_metadata" generate_class="false">
+		<meta_metadata_field name="new_term_vector" scalar_type="StringBuilder" ignore_in_term_vector="true" />
+	</meta_metadata>
+
+</meta_metadata_repository>

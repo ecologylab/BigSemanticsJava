@@ -4,22 +4,17 @@
 package ecologylab.semantics.metametadata.example;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import ecologylab.generic.DispatchTarget;
-import ecologylab.generic.MathTools;
 import ecologylab.io.BasicSite;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionHandlerBase;
 import ecologylab.semantics.connectors.AbstractImgElement;
 import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.ContentElement;
-import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.documentparsers.DocumentParser;
-import ecologylab.semantics.generated.library.GeneratedMetadataTranslationScope;
 import ecologylab.semantics.html.ParagraphText;
 import ecologylab.semantics.html.documentstructure.SemanticAnchor;
-import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.model.text.ITermVector;
@@ -46,31 +41,7 @@ import ecologylab.xml.TranslationScope;
  */
 public class MyContainer extends Container
 {
-	/**
-	 * New !!
-	 * This interface enables users to customize their own collecting methods. Use MyInfoCollector to
-	 * add a listener who implemented this interface.
-	 * 
-	 * @author quyin
-	 * 
-	 */
-	public interface MetadataCollectingListener
-	{
-		void collect(Metadata metadata);
-	}
 	
-	private ArrayList<MetadataCollectingListener>	collectingListeners;
-
-	public ArrayList<MetadataCollectingListener> getCollectingListeners()
-	{
-		return collectingListeners;
-	}
-
-	public void setCollectingListeners(ArrayList<MetadataCollectingListener> collectingListeners)
-	{
-		this.collectingListeners = collectingListeners;
-	}
-
 	protected MyInfoCollector	infoCollector;
 
 	public MyContainer(ContentElement progenitor, MyInfoCollector infoCollector, ParsedURL purl)
@@ -179,7 +150,7 @@ public class MyContainer extends Container
 	@Override
 	public TranslationScope getGeneratedMetadataTranslationScope()
 	{
-		return GeneratedMetadataTranslationScope.get();
+		return infoCollector.getMetadataTranslationScope();
 	}
 
 	// needed used in downloading process

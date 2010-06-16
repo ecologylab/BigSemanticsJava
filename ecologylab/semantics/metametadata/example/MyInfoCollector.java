@@ -20,7 +20,6 @@ import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.connectors.SeedPeer;
 import ecologylab.semantics.documentparsers.DocumentParser;
-import ecologylab.semantics.generated.library.GeneratedMetadataTranslationScope;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.scalar.types.MetadataScalarScalarType;
 import ecologylab.semantics.metametadata.MetaMetadata;
@@ -82,31 +81,7 @@ public class MyInfoCollector implements InfoCollector<MyContainer>
 	{
 		return downloadMonitor;
 	}
-	// to change to single listener for all metadata
-	private ArrayList<MyContainer.MetadataCollectingListener>	collectingListeners;
 
-	/**
-	 * Add a listener for all containers.
-	 * 
-	 * @param listener
-	 *          The listener you want to add.
-	 */
-	public void addListener(MyContainer.MetadataCollectingListener listener)
-	{
-		collectingListeners.add(listener);
-	}
-
-	/**
-	 * Remove a listener from all containers.
-	 * 
-	 * @param listener
-	 *          The listener you want to remove.
-	 */
-	public void removeListener(MyContainer.MetadataCollectingListener listener)
-	{
-		collectingListeners.remove(listener);
-	}
-	
 	public void log(String s)
 	{
 		
@@ -121,29 +96,29 @@ public class MyInfoCollector implements InfoCollector<MyContainer>
 	}
 
 	/**
-	 * Get all the listeners.
+	 * This constructor also loads and initializes the {@link MetaMetadataRepository}, given a
+	 * metadata {@link TranslationScope}. Typically this TranslationScope should have been generated
+	 * by the {@link MetadataCompiler}, named as <i>GeneratedMetadataTranslationScope</i>.
 	 * 
-	 * @return An ArrayList containing all the listeners.
+	 * @param repoDir The directory where repository files are stored.
+	 * @param metadataTranslationScope The metadata TranslationScope.
 	 */
-	public ArrayList<MyContainer.MetadataCollectingListener> getListeners()
-	{
-		return collectingListeners;
-	}
-	
-	//load repository file and stuff
-	public MyInfoCollector(String repoDir)
-	{
-		this(repoDir, GeneratedMetadataTranslationScope.get());
-	}
-	
 	public MyInfoCollector(String repoDir, TranslationScope metadataTranslationScope)
 	{
+		this.metadataTranslationScope = metadataTranslationScope;
+		
 		mmdRepo = MetaMetadataRepository.load(new File(repoDir));
 		mmdRepo.initializeRepository(metadataTranslationScope);
 		rejectDomains = new HashSet<String>();
 		downloadMonitor = new DownloadMonitor("info-collector_download-monitor",
 				DEFAULT_COUNT_DOWNLOAD_THREAD);
-		collectingListeners = new ArrayList<MyContainer.MetadataCollectingListener>();
+	}
+	
+	TranslationScope metadataTranslationScope;
+	
+	public TranslationScope getMetadataTranslationScope()
+	{
+		return metadataTranslationScope;
 	}
 
 	/**
@@ -238,7 +213,6 @@ public class MyInfoCollector implements InfoCollector<MyContainer>
 			return null;
 	
 		MyContainer result = new MyContainer(ancestor, this, purl);
-		result.setCollectingListeners(collectingListeners);
 		return result;
 	}
 	
