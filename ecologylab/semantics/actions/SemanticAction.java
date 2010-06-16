@@ -11,6 +11,7 @@ import java.util.Map;
 import ecologylab.semantics.metametadata.Argument;
 import ecologylab.semantics.metametadata.Check;
 import ecologylab.semantics.metametadata.DefVar;
+import ecologylab.semantics.metametadata.MetaMetadataTranslationScope;
 import ecologylab.xml.ElementState;
 
 /**
@@ -197,9 +198,36 @@ public abstract class SemanticAction extends ElementState
 		return defVars;
 	}
 	
+	/**
+	 * Handle this semantic action. User defined semantic actions should override this method.
+	 * 
+	 * @param obj The object the action operates on.
+	 * @param args The arguments passed to the action, in the form of name-object pair.
+	 * @return The result of this semantic action (if any), or null.
+	 */
 	public Object handle(Object obj, Map<String, Object> args)
 	{
 		return null;
 	}
 
+	/**
+	 * Register a user defined semantic action to the system, so that the reading/writing of
+	 * MetaMetadata repository works properly.
+	 * <p>
+	 * We don't distinguish nested / non-nested semantic actions here.
+	 * <p>
+	 * This method should be called before compiling or loading the MetaMetadata repository, if user
+	 * defined semantic actions are used.
+	 *  
+	 * @param semanticActionClasses Classes of user defined semantic actions.
+	 * @see {@link NestedSemanticAction}, {@link NestedSemanticActionTranslationScope}
+	 */
+	public static void register(Class<? extends SemanticAction>... semanticActionClasses)
+	{
+		for (Class<? extends SemanticAction> SAClass : semanticActionClasses)
+		{
+			MetaMetadataTranslationScope.get().addTranslation(SAClass);
+			NestedSemanticActionsTranslationScope.get().addTranslation(SAClass);
+		}
+	}
 }
