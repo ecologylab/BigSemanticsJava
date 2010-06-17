@@ -1185,7 +1185,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	 * 
 	 * @return
 	 */
-	Class<? extends Metadata> getMetadataClass(TranslationScope ts)
+	public Class<? extends Metadata> getMetadataClass(TranslationScope ts)
 	{
 		Class<? extends Metadata> result = this.metadataClass;
 		
@@ -1210,6 +1210,10 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 		return result;
 	}
 
+	public Class<? extends Metadata> getMetadataClass()
+	{
+		return metadataClass;
+	}
 
 	
 	/**
