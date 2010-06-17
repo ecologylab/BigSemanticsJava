@@ -41,9 +41,14 @@ public class MetaMetadataDirectBindingParser<SA extends SemanticAction>
 			{
 				populatedMetadata = (Document) ElementState.translateFromXML(inputStream(), getMetadataTranslationScope());
 			  populatedMetadata.translateToXML(System.out);
+			  System.out.println();
+			  /*
 				//FIXME-- Is there an efficient way to find the root element?????
-				String tagName= populatedMetadata.translateToDOM().getDocumentElement().getTagName();
-				MetaMetadata mmd = infoCollector.metaMetaDataRepository().getByTagName(tagName);
+			  org.w3c.dom.Document doc = populatedMetadata.translateToDOM();
+			  Element ele = doc.getDocumentElement();
+				String tagName= ele.getTagName();
+				*/
+			  MetaMetadata mmd = populatedMetadata.getMetaMetadata();
 				if(mmd!=null)
 					metaMetadata = mmd;
 				System.out.println();
