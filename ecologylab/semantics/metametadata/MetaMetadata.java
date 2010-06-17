@@ -177,8 +177,9 @@ implements Mappable<String>
 		
 		if (metadataClass != null)
 		{
-			result = ReflectionTools.getInstance(metadataClass);
-			result.setMetaMetadata(this);
+			Class[] argClasses 	= new Class[] { this.getClass() };
+			Object[] argObjects = new Object[] { this };
+			result = ReflectionTools.getInstance(metadataClass, argClasses, argObjects);
 			if (mixins != null && mixins.size() > 0)
 			{
 				for (String mixinName : mixins)

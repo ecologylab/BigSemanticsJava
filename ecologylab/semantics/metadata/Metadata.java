@@ -90,6 +90,8 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 	
 	private MetaMetadata			metaMetadata;
 	
+	@xml_leaf MetadataString metaMetadataName;
+	
 	/**
 	 * This constructor should *only* be used when marshalled Metadata is read.
 	 */
@@ -106,7 +108,8 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 	public Metadata(MetaMetadata metaMetadata)
 	{
 		this();
-		this.metaMetadata = metaMetadata;
+		this.metaMetadata 		= metaMetadata;
+		this.metaMetadataName = new MetadataString(metaMetadata.getName());
 	}
 	
 	/**
@@ -132,18 +135,24 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 		MetaMetadata mm			= metaMetadata;
 		if (mm == null)
 		{
-			ParsedURL location	= getLocation();
-			if (location != null)
-			{
-				if (isImage())
-					mm							= repository.getImageMM(location);
-				else
-					mm							= repository.getDocumentMM(location);
-				
-				//TODO -- also try to resolve by mime type ???
-			}
+			if (metaMetadataName != null)
+				mm									= repository.getByTagName(metaMetadataName.getValue());
+			
 			if (mm == null)
-				mm								= repository.getByClass(getClass());
+			{
+				ParsedURL location	= getLocation();
+				if (location != null)
+				{
+					if (isImage())
+						mm							= repository.getImageMM(location);
+					else
+						mm							= repository.getDocumentMM(location);
+					
+					//TODO -- also try to resolve by mime type ???
+				}
+				if (mm == null)
+					mm								= repository.getByClass(getClass());
+			}
 			metaMetadata				= mm;
 		}
 		return mm;

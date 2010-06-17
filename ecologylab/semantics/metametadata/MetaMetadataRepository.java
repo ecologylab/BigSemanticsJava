@@ -369,7 +369,8 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		{
 			if (!purl.isFile())
 			{
-				result = documentRepositoryByURL.get(purl.noAnchorNoQueryPageString());
+				String noAnchorNoQueryPageString = purl.noAnchorNoQueryPageString();
+				result = documentRepositoryByURL.get(noAnchorNoQueryPageString);
 
 				if (result == null)
 				{

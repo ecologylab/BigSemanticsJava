@@ -322,7 +322,7 @@ implements SemanticsSessionObjectNames, Iterable<S>
 	
 	public int indexOf(S that)
 	{
-		return seeds.indexOf(that);
+		return seeds != null ? seeds.indexOf(that) : -1;
 	}
 	
 	public boolean isEmpty()
