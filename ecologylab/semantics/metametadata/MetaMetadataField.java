@@ -7,6 +7,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 
 import ecologylab.appframework.PropertiesAndDirectories;
@@ -197,6 +198,8 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	@xml_map("meta_metadata_field")
 	@xml_nowrap
 	protected HashMapArrayList<String, MetaMetadataField>	kids;
+	
+	HashSet<String>																		nonDisplayedFieldNames;
 	
 	File																								file;
 
@@ -1137,6 +1140,24 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 		}
 	}
 	
+	HashSet<String>	nonDisplayedFieldNames()
+	{
+		HashSet<String>	result				= this.nonDisplayedFieldNames;
+		if (result == null)
+		{
+			result							 				= new HashSet<String>();
+			this.nonDisplayedFieldNames	= result;
+		}
+		return result;
+	}
+	public int numNonDisplayedFields()
+	{
+		return nonDisplayedFieldNames == null ? 0 : nonDisplayedFieldNames.size();
+	}
+	public boolean isChildFieldDisplayed(String childName)
+	{
+		return nonDisplayedFieldNames == null ? true : !nonDisplayedFieldNames.contains(childName);
+	}
 	/**
 	 * Compute the map of FieldDescriptors for this class, with the field names as key, but with the mixins field removed.
 	 * @param metadataTScope TODO
@@ -1149,6 +1170,13 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 		for (MetaMetadataField thatChild : kids)
 		{
 			thatChild.bindMetadataFieldDescriptor(metadataTScope, metadataClassDescriptor);
+			
+			HashSet<String> nonDisplayedFieldNames = nonDisplayedFieldNames();
+			if (thatChild.hide)
+				nonDisplayedFieldNames.add(thatChild.name);
+			if (thatChild.shadows != null)
+				nonDisplayedFieldNames.add(thatChild.shadows);
+			
 			// recursive descent
 			if (thatChild.hasChildren())
 				thatChild.getClassAndBindDescriptors(metadataTScope);
