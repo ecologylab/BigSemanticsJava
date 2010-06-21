@@ -824,4 +824,14 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		childField.bindChildren(newChildMM);
 	}
 
+	public String getName()
+	{
+		return name;
+	}
+	
+	public void setName(String name)
+	{
+		this.name = name;
+	}
+	
 }
