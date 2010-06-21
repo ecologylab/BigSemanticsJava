@@ -8,6 +8,7 @@ import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -681,6 +682,11 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		if (metadataClass == null)
 			return null;
 		return repositoryByTagName.get(metadataTScope.getTag(metadataClass));
+	}
+
+	public Set<String> keySet()
+	{
+		return (repositoryByTagName == null) ? null : repositoryByTagName.keySet();
 	}
 
 	public Collection<MetaMetadata> values()
