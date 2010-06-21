@@ -26,7 +26,7 @@ public class MetaMetadataScalarField extends MetaMetadataField
 		this.navigatesTo = mmf.navigatesTo;
 		this.shadows = mmf.shadows;
 		this.stringPrefix = mmf.stringPrefix;
-		this.generateClass = mmf.generateClass;
+		this.generateClass = false; // for scalar fields, they never generate classes.
 		this.childType = mmf.childType;
 		this.isNested = mmf.isNested;
 		this.isFacet = mmf.isFacet;
