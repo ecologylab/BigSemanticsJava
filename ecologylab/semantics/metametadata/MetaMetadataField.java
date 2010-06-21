@@ -44,66 +44,66 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	MetadataFieldDescriptor										metadataFieldDescriptor;
 	
 	/**
+	 * Name of the metadata field.
+	 */
+	@xml_attribute
+	protected String															name;
+
+	/**
 	 * The type/class of metadata object.
 	 */
 	@xml_attribute
-	private String						type;
+	protected String						type;
 	
 	@xml_tag("extends")
 	@xml_attribute
 	protected String						extendsAttribute;
 
 	/**
-	 * Name of the metadata field.
-	 */
-	@xml_attribute
-	private String															name;
-
-	/**
 	 * The type of the field -- only if it is a scalar.
 	 */
 	@xml_attribute
-	private ScalarType													scalarType;		
+	protected ScalarType													scalarType;		
 	
 	/**
 	 * true if this field should not be displayed in interactive in-context metadata
 	 */
 	@xml_attribute
-	private boolean															hide;
+	protected boolean															hide;
 
 	/**
 	 * If true the field is shown even if its null or empty.
 	 */
 	@xml_attribute
-	private boolean															alwaysShow;
+	protected boolean															alwaysShow;
 
 	@xml_attribute
-	private String															style;
+	protected String															style;
 	
 	/**
 	 * Specifies the order in which a field is displayed in relation to other fields.
 	 */
 	@xml_attribute
-	private int																	layer;
+	protected int																	layer;
 
 	/**
 	 * XPath expression used to extract this field.
 	 */
 	@xml_attribute
-	private String															xpath;
+	protected String															xpath;
 
 	/**
 	 * Another field name that this field navigates to (e.g. from a label in in-context metadata)
 	 */
 	@xml_attribute
-	private String															navigatesTo;
+	protected String															navigatesTo;
 
 	/**
 	 * This MetaMetadataField shadows another field, so it is to be displayed instead of the other.It
 	 * is kind of over-riding a field.
 	 */
 	@xml_attribute
-	private String															shadows;
+	protected String															shadows;
 
 	// FIXME -- talk to bharat, eliminate this declaration
 	// no idea what this is for....added while parsing for acmportal
@@ -111,91 +111,97 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	 * This is used to specify the prefix string which is to be stripped off.
 	 */
 	@xml_attribute
-	private String															stringPrefix;
+	protected String															stringPrefix;
 
 	@xml_attribute
-	private boolean						generateClass	= true;
+	protected boolean						generateClass	= true;
 	/**
 	 * The type for collection children.
 	 */
 	@xml_attribute
-	private String															childType;
+	protected String															childType;
 
 	/*
-	 * @xml_attribute private boolean isList;
+	 * @xml_attribute protected boolean isList;
 	 */
 
 	/*
-	 * @xml_attribute private boolean isMap;
+	 * @xml_attribute protected boolean isMap;
 	 */
 	// This attribute is used only for HTML DOM Extractor.
 	@xml_attribute
-	private boolean															isNested;
+	protected boolean															isNested;
 
 	@xml_attribute
-	private boolean															isFacet;
+	protected boolean															isFacet;
 
 	@xml_attribute
-	private boolean															ignoreInTermVector;
+	protected boolean															ignoreInTermVector;
 
 	/**
 	 * Specifies the kind of collection for this field.
 	 */
 	@xml_attribute
-	private String															collection;
+	protected String															collection;
 	
 	/**
 	 * Specifies adding @xml_nowrap to the collection object in cases where items in the collection
 	 * are not wrapped inside a tag.
 	 */
 	@xml_attribute
-	private boolean															noWrap;
+	protected boolean															noWrap;
 
 	@xml_attribute
-	private String															comment;
+	protected String															comment;
 
 	/**
 	 * Enables hand coding a few Metadata classes, but still providing MetaMetadata to control
 	 * operations on them.
 	 */
 	@xml_attribute
-	private boolean															dontCompile;
+	protected boolean															dontCompile;
 	
 	@xml_attribute 
-	private boolean															entity=false;
+	protected boolean															entity=false;
 
 	@xml_attribute
-	private String															key;
+	protected String															key;
 
 	/**
 	 * The regular expression
 	 */
 	@xml_attribute
-	private String																			textRegex;
+	protected String																			textRegex;
 
 	/**
 	 * The string used to replace the match.
 	 */
 	@xml_attribute
-	private String																			matchReplacement;
+	protected String																			matchReplacement;
 	
 	/**
 	 * Context node for xpath based extarction rules for this field.
 	 * Default value is document root.
 	 */
 	@xml_attribute
-	private String																			contextNode;
+	protected String																			contextNode;
 
 	@xml_attribute
-	private String																			childTag;
+	protected String																			childTag;
 	
 	@xml_attribute 
-	private String																			tag;
+	protected String																			tag;
 	
 	@xml_attribute
-	private boolean																			ignoreExtractionError;
+	protected boolean																			ignoreExtractionError;
 
-	@xml_map("meta_metadata_field")
+	@xml_map
+	@xml_classes({
+		MetaMetadataField.class,
+		MetaMetadataScalarField.class,
+		MetaMetadataNestedField.class,
+		MetaMetadataCollectionField.class,
+		})
 	@xml_nowrap
 	protected HashMapArrayList<String, MetaMetadataField>	kids;
 	
