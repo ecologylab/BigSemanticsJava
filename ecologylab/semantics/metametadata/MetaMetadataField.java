@@ -652,7 +652,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	 * @param string
 	 * @throws IOException 
 	 */
-	private void appendDirectHWSetMethod(Appendable appendable, String fieldName, String fieldTypeName) throws IOException
+	protected void appendDirectHWSetMethod(Appendable appendable, String fieldName, String fieldTypeName) throws IOException
 	{
 		String comment = "Heavy Weight Direct setter method for "+fieldName;
 		
@@ -685,7 +685,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	 * @param fieldTypeName
 	 * @throws IOException 
 	 */
-	private void appendDirectSetMethod(Appendable appendable, String fieldName, String fieldTypeName) throws IOException
+	protected void appendDirectSetMethod(Appendable appendable, String fieldName, String fieldTypeName) throws IOException
 	{
 		String comment =" Sets the "+fieldName+" directly";
 		
@@ -707,7 +707,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	 * @param fieldName
 	 * @throws IOException
 	 */
-	private void appendAppendMethod(Appendable appendable, String fieldName, String fieldType)
+	protected void appendAppendMethod(Appendable appendable, String fieldName, String fieldType)
 			throws IOException
 	{
 		String comment = " Appends the value to the field " + fieldName;
@@ -731,7 +731,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	 * @param fieldName
 	 * @throws IOException
 	 */
-	private void appendHWAppendMethod(Appendable appendable, String fieldName, String fieldType)
+	protected void appendHWAppendMethod(Appendable appendable, String fieldName, String fieldType)
 			throws IOException
 	{
 		String comment = "The heavy weight Append method for field " + fieldName;
@@ -753,7 +753,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	 * This method will generate the getter for the field. public String getTitle() { return
 	 * title().getValue(); }
 	 */
-	private void appendGetter(Appendable appendable, String fieldName, String fieldType)
+	protected void appendGetter(Appendable appendable, String fieldName, String fieldType)
 			throws IOException
 	{
 		String comment = "Gets the value of the field " + fieldName;
@@ -773,7 +773,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	 * This method will generate setter for the field. public void setTitle(String title) {
 	 * this.title().setValue(title); }
 	 */
-	private void appendSetter(Appendable appendable, String fieldName, String fieldType)
+	protected void appendSetter(Appendable appendable, String fieldName, String fieldType)
 			throws IOException
 	{
 		String comment = "Sets the value of the field " + fieldName;
@@ -791,7 +791,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	/**
 	 * public void hwSetTitle(String title) { this.setTitle(title); rebuildCompositeTermVector(); }
 	 */
-	private void appendHWSetter(Appendable appendable, String fieldName, String fieldType)
+	protected void appendHWSetter(Appendable appendable, String fieldName, String fieldType)
 			throws IOException
 	{
 		String comment = "The heavy weight setter method for field " + fieldName;
@@ -815,7 +815,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	 * 
 	 * @throws IOException
 	 */
-	private void appendLazyEvaluationMethod(Appendable appendable, String fieldName, String fieldType)
+	protected void appendLazyEvaluationMethod(Appendable appendable, String fieldName, String fieldType)
 			throws IOException
 	{
 		String comment = "Lazy Evaluation for " + fieldName;
@@ -874,7 +874,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	 * @param fieldName
 	 * @throws IOException
 	 */
-	private void appendLeaf(Appendable appendable, String classNamePrefix, String className,
+	protected void appendLeaf(Appendable appendable, String classNamePrefix, String className,
 			String fieldName) throws IOException
 	{
 		if ("int".equals(className))
@@ -1712,5 +1712,11 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 			return file;
 		MetaMetadataField parent	= (MetaMetadataField) parent();
 		return (parent != null) ? parent.getFile() : null;
+	}
+
+	protected void doAppending(Appendable appendable, int pass) throws IOException
+	{
+		// TODO Auto-generated method stub
+		
 	}
 }

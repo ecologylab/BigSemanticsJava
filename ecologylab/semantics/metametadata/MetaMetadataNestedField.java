@@ -4,7 +4,7 @@ import ecologylab.xml.xml_inherit;
 import ecologylab.xml.ElementState.xml_tag;
 
 @xml_inherit
-@xml_tag("mmd_nested_field")
+@xml_tag("mm_nested_field")
 public class MetaMetadataNestedField extends MetaMetadataField
 {
 

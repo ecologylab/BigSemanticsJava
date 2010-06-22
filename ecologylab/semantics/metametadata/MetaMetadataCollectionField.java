@@ -4,7 +4,7 @@ import ecologylab.xml.xml_inherit;
 import ecologylab.xml.ElementState.xml_tag;
 
 @xml_inherit
-@xml_tag("mmd_collection_field")
+@xml_tag("mm_collection_field")
 public class MetaMetadataCollectionField extends MetaMetadataField
 {
 
