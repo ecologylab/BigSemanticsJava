@@ -1,5 +1,9 @@
 package ecologylab.semantics.metametadata;
 
+import java.io.IOException;
+
+import ecologylab.semantics.tools.MetadataCompilerUtils;
+import ecologylab.xml.XMLTools;
 import ecologylab.xml.xml_inherit;
 import ecologylab.xml.ElementState.xml_tag;
 
@@ -18,7 +22,6 @@ public class MetaMetadataNestedField extends MetaMetadataField
 		this.name = mmf.name;
 		this.type = mmf.type;
 		this.extendsAttribute = mmf.extendsAttribute;
-		this.scalarType = mmf.scalarType;
 		this.hide = mmf.hide;
 		this.alwaysShow = mmf.alwaysShow;
 		this.style = mmf.style;
@@ -28,11 +31,8 @@ public class MetaMetadataNestedField extends MetaMetadataField
 		this.shadows = mmf.shadows;
 		this.stringPrefix = mmf.stringPrefix;
 		this.generateClass = mmf.generateClass;
-		this.childType = mmf.childType;
-		this.isNested = mmf.isNested;
 		this.isFacet = mmf.isFacet;
 		this.ignoreInTermVector = mmf.ignoreInTermVector;
-		this.collection = mmf.collection;
 		this.noWrap = mmf.noWrap;
 		this.comment = mmf.comment;
 		this.dontCompile = mmf.dontCompile;
@@ -41,10 +41,42 @@ public class MetaMetadataNestedField extends MetaMetadataField
 		this.textRegex = mmf.textRegex;
 		this.matchReplacement = mmf.matchReplacement;
 		this.contextNode = mmf.contextNode;
-		this.childTag = mmf.childTag;
 		this.tag = mmf.tag;
 		this.ignoreExtractionError = mmf.ignoreExtractionError;
 		this.kids = mmf.kids;
 	}
 
+	@Override
+	protected void doAppending(Appendable appendable, int pass) throws IOException
+	{
+		appenedNestedMetadataField(appendable,pass);
+	}
+
+	/**
+	 * Append method for Is_nested=true fields
+	 * 
+	 * @param appendable
+	 * @throws IOException
+	 */
+	protected void appenedNestedMetadataField(Appendable appendable,int pass) throws IOException
+	{
+		String variableType=" @xml_nested "+XMLTools.classNameFromElementName(getTypeOrName());
+		String fieldType = XMLTools.classNameFromElementName(getTypeOrName());
+		if(isEntity())
+		{
+			variableType = " @xml_nested Entity<"+XMLTools.classNameFromElementName(getTypeOrName())+">";
+			fieldType = "Entity<"+XMLTools.classNameFromElementName(getTypeOrName())+">";
+		}
+		if(pass == MetadataCompilerUtils.GENERATE_FIELDS_PASS)
+		{
+			appendable.append("\nprivate " + getTagDecl() +variableType + "\t" + name + ";");
+		}
+		else if(pass == MetadataCompilerUtils.GENERATE_METHODS_PASS)
+		{
+			appendLazyEvaluationMethod(appendable, getName(), fieldType);
+			appendSetterForCollection(appendable, getName(), fieldType);
+			appendGetterForCollection(appendable, getName(), fieldType);
+		}
+	}
+	
 }

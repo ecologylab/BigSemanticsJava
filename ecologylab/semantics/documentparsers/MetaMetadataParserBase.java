@@ -31,6 +31,8 @@ import ecologylab.semantics.metadata.MetadataFieldDescriptor;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.DefVar;
 import ecologylab.semantics.metametadata.MetaMetadataField;
+import ecologylab.semantics.metametadata.MetaMetadataNestedField;
+import ecologylab.semantics.metametadata.MetaMetadataCollectionField;
 import ecologylab.xml.FieldDescriptor;
 import ecologylab.xml.ScalarUnmarshallingContext;
 import ecologylab.xml.TranslationScope;
@@ -320,15 +322,15 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 					// System.out.println("DEBUG::mmdElementName= \t" + mmdElementName);
 
 					// if it is nested
-					if (mmdElement.isNested())
+					if (mmdElement instanceof MetaMetadataNestedField)
 					{
 						extractNested(translationScope, metadata,contextNode, mmdElement, mmdElementName, xpath, param,xpathString);
 					}
 
 					// if its is a array list
-					else if ("ArrayList".equals(mmdElement.collection()))
+					else if (mmdElement instanceof MetaMetadataCollectionField)
 					{
-						extractArrayList(translationScope, metadata, contextNode, mmdElement, mmdElementName,
+						extractArrayList(translationScope, metadata, contextNode, (MetaMetadataCollectionField)mmdElement, mmdElementName,
 								xpath, param, xpathString);
 					}
 					else
@@ -437,7 +439,7 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 	 * @param parentXPathString The xpath string of the collection meta-metadata field
 	 */
 	private void extractArrayList(TranslationScope translationScope, Metadata metadata, Node contextNode,
-			MetaMetadataField mmdElement, String mmdElementName, XPath xpath,
+			MetaMetadataCollectionField mmdElement, String mmdElementName, XPath xpath,
 			Scope<Object> param,String parentXPathString)
 	{
 		Node originalNode = contextNode;
@@ -543,13 +545,13 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 							contextNode = (Node) (param.get(childMetaMetadataField.getContextNode()));
 						}
 
-						if ("ArrayList".equals(childMetaMetadataField.collection()))
+						if (childMetaMetadataField instanceof MetaMetadataCollectionField)
 						{
 							extractArrayList(translationScope, collectionInstanceList.get(m), contextNode,
-									childMetaMetadataField, childMetaMetadataField.getName(), xpath, param,
+									(MetaMetadataCollectionField) childMetaMetadataField, childMetaMetadataField.getName(), xpath, param,
 									childMetaMetadataField.getXpath());
 						}
-						if (childMetaMetadataField.isNested())
+						if (childMetaMetadataField instanceof MetaMetadataNestedField)
 						{
 							 extractNested(translationScope, collectionInstanceList.get(m), contextNode,childMetaMetadataField, childMetaMetadataField.getName(), xpath, param,
 										childMetaMetadataField.getXpath());
