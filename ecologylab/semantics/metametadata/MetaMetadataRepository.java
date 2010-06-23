@@ -18,6 +18,7 @@ import ecologylab.generic.HashMapArrayList;
 import ecologylab.net.ParsedURL;
 import ecologylab.net.UserAgent;
 import ecologylab.semantics.actions.NestedSemanticActionsTranslationScope;
+import ecologylab.semantics.connectors.SemanticsSite;
 import ecologylab.semantics.metadata.DocumentParserTagNames;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.builtins.DebugMetadata;
@@ -113,6 +114,8 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	protected static File																				REPOSITORY_FILE;
 	
 	File																												file;
+	
+	@xml_map("site")	HashMap<String, SemanticsSite>						sites;
 	
 	static
 	{
@@ -248,6 +251,10 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		if (!combineMapStates(repository.namedStyles, this.namedStyles))
 			this.namedStyles = repository.namedStyles;
 
+		// combine sites
+		if(!combineMapStates(repository.sites, this.sites))
+			this.sites 			= repository.sites;
+		
 		// set metaMetadata to have the correct parent repository
 		HashMapArrayList<String, MetaMetadata> repositoryByTagName = repository.repositoryByTagName;
 		if (repositoryByTagName != null)
@@ -834,4 +841,9 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		this.name = name;
 	}
 	
+	public HashMap<String, SemanticsSite> getSites()
+	{
+		return sites;
+	}
+
 }

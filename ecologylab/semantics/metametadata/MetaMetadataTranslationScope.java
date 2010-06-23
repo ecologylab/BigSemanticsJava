@@ -5,6 +5,7 @@ import ecologylab.net.UserAgent;
 import ecologylab.semantics.actions.FlagCheck;
 import ecologylab.semantics.actions.NestedSemanticActionsTranslationScope;
 import ecologylab.semantics.actions.SemanticAction;
+import ecologylab.semantics.connectors.SemanticsSite;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
 import ecologylab.textformat.NamedStyle;
@@ -30,6 +31,7 @@ public class MetaMetadataTranslationScope extends Debug
 		UserAgent.class, 
 		NamedStyle.class, 
 		SemanticAction.class,
+		SemanticsSite.class,
 		Argument.class,
 		Check.class,
 		FlagCheck.class,

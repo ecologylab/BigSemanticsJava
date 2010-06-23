@@ -204,11 +204,6 @@ public class SemanticsSite extends BasicSite
 	{
 	}
 
-	public String domain()
-	{
-		return domain;
-	}
-
 	/**
 	 * For use only by cm.state for restoring saved values.
 	 */
@@ -334,8 +329,8 @@ public class SemanticsSite extends BasicSite
 		return numText;
 	}
 	
-	public static void addMapToSites(HashMap<String, ? extends SemanticsSite> map)
+	public static void addSite(SemanticsSite site)
 	{
-		allSites.putAll(map);
+		allSites.put(site.domain(), site);
 	}
 }

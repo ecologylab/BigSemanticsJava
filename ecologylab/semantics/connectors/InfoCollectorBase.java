@@ -182,7 +182,6 @@ implements InfoCollector<AC>, SemanticsPrefs, ApplicationProperties, DocumentPar
 	static final File	LOCAL_META_METADATA_DIR_FILE		= new File(EnvironmentGeneric.codeBase().file(), "/config/semantics/");
 	
 	static final String	META_METADATA_REPOSITORY_DIR		= "metametadata/metaMetadataRepository";
-	static final String	METAMETADATA_SITES_XML				= "metametadata/sites.xml";
 
 
 	/**
@@ -213,14 +212,12 @@ implements InfoCollector<AC>, SemanticsPrefs, ApplicationProperties, DocumentPar
 		{
 			println("\t\t-- Reading meta_metadata from : " + LOCAL_META_METADATA_DIR_FILE);
 			METAMETADATA_REPOSITORY_DIR_FILE 		= new File(LOCAL_META_METADATA_DIR_FILE, META_METADATA_REPOSITORY_DIR);			
-			METAMETADATA_SITES_FILE 				= new File(LOCAL_META_METADATA_DIR_FILE, METAMETADATA_SITES_XML);	
 			
 		}
 		else
 		{
 			println("\t\t-- Reading meta_metadata from zip");
 			METAMETADATA_REPOSITORY_DIR_FILE 	= Assets.getSemanticsFile(META_METADATA_REPOSITORY_DIR);
-			METAMETADATA_SITES_FILE 			= Assets.getSemanticsFile(METAMETADATA_SITES_XML);
 		}
 		META_METADATA_REPOSITORY = MetaMetadataRepository.load(METAMETADATA_REPOSITORY_DIR_FILE);
 		
