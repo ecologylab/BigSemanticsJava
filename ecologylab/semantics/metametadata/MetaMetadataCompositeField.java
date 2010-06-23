@@ -9,7 +9,7 @@ public abstract class MetaMetadataCompositeField extends MetaMetadataField
 {
 
 	@xml_attribute
-	protected boolean						generateClass	= true;
+	protected boolean						dontGenerateClass = false;
 
 	public MetaMetadataCompositeField()
 	{
@@ -71,7 +71,7 @@ public abstract class MetaMetadataCompositeField extends MetaMetadataField
 		{
 			return false;
 		}
-		return generateClass;
+		return !dontGenerateClass;
 	}
 	
 	/**
@@ -80,7 +80,7 @@ public abstract class MetaMetadataCompositeField extends MetaMetadataField
 	 */
 	public void setGenerateClass(boolean generateClass)
 	{
-		this.generateClass = generateClass;
+		this.dontGenerateClass = !generateClass;
 	}
 	
 }
