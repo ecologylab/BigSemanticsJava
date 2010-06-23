@@ -180,12 +180,13 @@ public class MetaMetadataCollectionField extends MetaMetadataCompositeField
 
 	protected String getMetaMetadataTagToInheritFrom()
 	{
-		if (childEntity)
-			return  DocumentParserTagNames.ENTITY;
-		else if (childType != null)
-			return childType;
-		else
-			return null;
+//		if (childEntity)
+//			return  DocumentParserTagNames.ENTITY;
+//		else if (childType != null)
+//			return childType;
+//		else
+		//Need not inherit from child meta-metadatas
+		return null;
 	}
 
 }
