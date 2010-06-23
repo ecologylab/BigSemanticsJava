@@ -2,6 +2,7 @@ package ecologylab.semantics.metametadata;
 
 import java.io.IOException;
 
+import ecologylab.semantics.metadata.DocumentParserTagNames;
 import ecologylab.semantics.tools.MetadataCompilerUtils;
 import ecologylab.xml.XMLTools;
 import ecologylab.xml.xml_inherit;
@@ -9,8 +10,17 @@ import ecologylab.xml.ElementState.xml_tag;
 
 @xml_inherit
 @xml_tag("mm_nested_field")
-public class MetaMetadataNestedField extends MetaMetadataField
+public class MetaMetadataNestedField extends MetaMetadataCompositeField
 {
+
+	/**
+	 * The type/class of metadata object.
+	 */
+	@xml_attribute
+	protected String	type;
+
+	@xml_attribute
+	protected boolean	entity	= false;
 
 	public MetaMetadataNestedField()
 	{
@@ -20,7 +30,6 @@ public class MetaMetadataNestedField extends MetaMetadataField
 	public MetaMetadataNestedField(MetaMetadataField mmf)
 	{
 		this.name = mmf.name;
-		this.type = mmf.type;
 		this.extendsAttribute = mmf.extendsAttribute;
 		this.hide = mmf.hide;
 		this.alwaysShow = mmf.alwaysShow;
@@ -30,13 +39,10 @@ public class MetaMetadataNestedField extends MetaMetadataField
 		this.navigatesTo = mmf.navigatesTo;
 		this.shadows = mmf.shadows;
 		this.stringPrefix = mmf.stringPrefix;
-		this.generateClass = mmf.generateClass;
 		this.isFacet = mmf.isFacet;
 		this.ignoreInTermVector = mmf.ignoreInTermVector;
-		this.noWrap = mmf.noWrap;
 		this.comment = mmf.comment;
 		this.dontCompile = mmf.dontCompile;
-		this.entity = mmf.entity;
 		this.key = mmf.key;
 		this.textRegex = mmf.textRegex;
 		this.matchReplacement = mmf.matchReplacement;
@@ -46,10 +52,38 @@ public class MetaMetadataNestedField extends MetaMetadataField
 		this.kids = mmf.kids;
 	}
 
+	public MetaMetadataNestedField(MetaMetadataField copy, String name)
+	{
+		super(copy, name);
+	}
+
+	public String getType()
+	{
+		return type;
+	}
+	
+	public boolean isEntity()
+	{
+		return entity;
+	}
+	
+	public String getTypeOrName()
+	{
+		if (type != null)
+			return type;
+		else 
+			return getName();
+	}
+	
+	public String getTagForTranslationScope()
+	{
+		return entity == true ? DocumentParserTagNames.ENTITY : tag != null ? tag : name;
+	}
+	
 	@Override
 	protected void doAppending(Appendable appendable, int pass) throws IOException
 	{
-		appenedNestedMetadataField(appendable,pass);
+		appenedNestedMetadataField(appendable, pass);
 	}
 
 	/**
@@ -58,20 +92,21 @@ public class MetaMetadataNestedField extends MetaMetadataField
 	 * @param appendable
 	 * @throws IOException
 	 */
-	protected void appenedNestedMetadataField(Appendable appendable,int pass) throws IOException
+	protected void appenedNestedMetadataField(Appendable appendable, int pass) throws IOException
 	{
-		String variableType=" @xml_nested "+XMLTools.classNameFromElementName(getTypeOrName());
+		String variableType = " @xml_nested " + XMLTools.classNameFromElementName(getTypeOrName());
 		String fieldType = XMLTools.classNameFromElementName(getTypeOrName());
-		if(isEntity())
+		if (isEntity())
 		{
-			variableType = " @xml_nested Entity<"+XMLTools.classNameFromElementName(getTypeOrName())+">";
-			fieldType = "Entity<"+XMLTools.classNameFromElementName(getTypeOrName())+">";
+			variableType = " @xml_nested Entity<" + XMLTools.classNameFromElementName(getTypeOrName())
+					+ ">";
+			fieldType = "Entity<" + XMLTools.classNameFromElementName(getTypeOrName()) + ">";
 		}
-		if(pass == MetadataCompilerUtils.GENERATE_FIELDS_PASS)
+		if (pass == MetadataCompilerUtils.GENERATE_FIELDS_PASS)
 		{
-			appendable.append("\nprivate " + getTagDecl() +variableType + "\t" + name + ";");
+			appendable.append("\nprivate " + getTagDecl() + variableType + "\t" + name + ";");
 		}
-		else if(pass == MetadataCompilerUtils.GENERATE_METHODS_PASS)
+		else if (pass == MetadataCompilerUtils.GENERATE_METHODS_PASS)
 		{
 			appendLazyEvaluationMethod(appendable, getName(), fieldType);
 			appendSetterForCollection(appendable, getName(), fieldType);
@@ -79,4 +114,15 @@ public class MetaMetadataNestedField extends MetaMetadataField
 		}
 	}
 	
+	protected String getMetaMetadataTagToInheritFrom()
+	{
+		if (isEntity())
+			return  DocumentParserTagNames.ENTITY;
+		else if (type != null)
+			return type;
+		else
+			return null;
+//			return name;
+	}
+
 }

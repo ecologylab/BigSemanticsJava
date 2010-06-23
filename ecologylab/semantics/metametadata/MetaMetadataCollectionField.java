@@ -3,6 +3,7 @@ package ecologylab.semantics.metametadata;
 import java.io.IOException;
 
 import ecologylab.semantics.html.utils.StringBuilderUtils;
+import ecologylab.semantics.metadata.DocumentParserTagNames;
 import ecologylab.semantics.tools.MetadataCompilerUtils;
 import ecologylab.xml.XMLTools;
 import ecologylab.xml.xml_inherit;
@@ -10,18 +11,28 @@ import ecologylab.xml.ElementState.xml_tag;
 
 @xml_inherit
 @xml_tag("mm_collection_field")
-public class MetaMetadataCollectionField extends MetaMetadataField
+public class MetaMetadataCollectionField extends MetaMetadataCompositeField
 {
 
 	@xml_attribute
-	protected String																			childTag;
-	
+	protected String	childTag;
+
 	/**
 	 * The type for collection children.
 	 */
 	@xml_attribute
-	protected String															childType;
+	protected String	childType;
 	
+	@xml_attribute
+	protected boolean	childEntity	= false;
+
+	/**
+	 * Specifies adding @xml_nowrap to the collection object in cases where items in the collection
+	 * are not wrapped inside a tag.
+	 */
+	@xml_attribute
+	protected boolean	noWrap;
+
 	public MetaMetadataCollectionField()
 	{
 		// TODO Auto-generated constructor stub
@@ -30,7 +41,6 @@ public class MetaMetadataCollectionField extends MetaMetadataField
 	public MetaMetadataCollectionField(MetaMetadataField mmf)
 	{
 		this.name = mmf.name;
-		this.type = mmf.type;
 		this.extendsAttribute = mmf.extendsAttribute;
 		this.hide = mmf.hide;
 		this.alwaysShow = mmf.alwaysShow;
@@ -40,13 +50,10 @@ public class MetaMetadataCollectionField extends MetaMetadataField
 		this.navigatesTo = mmf.navigatesTo;
 		this.shadows = mmf.shadows;
 		this.stringPrefix = mmf.stringPrefix;
-		this.generateClass = mmf.generateClass;
 		this.isFacet = mmf.isFacet;
 		this.ignoreInTermVector = mmf.ignoreInTermVector;
-		this.noWrap = mmf.noWrap;
 		this.comment = mmf.comment;
 		this.dontCompile = mmf.dontCompile;
-		this.entity = mmf.entity;
 		this.key = mmf.key;
 		this.textRegex = mmf.textRegex;
 		this.matchReplacement = mmf.matchReplacement;
@@ -65,11 +72,45 @@ public class MetaMetadataCollectionField extends MetaMetadataField
 	{
 		return (childTag != null) ? childTag : childType;
 	}
+
+	public boolean isNoWrap()
+	{
+		return noWrap;
+	}
 	
+	public boolean isChildEntity()
+	{
+		return childEntity;
+	}
+
+	/**
+	 * @return the tag
+	 */
+	public String resolveTag()
+	{
+		if (isNoWrap())
+		{
+			// is it sure that it will be a collection field?
+			String childTag = ((MetaMetadataCollectionField) this).childTag;
+			String childType = ((MetaMetadataCollectionField) this).childType;
+			return (childTag != null) ? childTag : childType;
+		}
+		else
+		{
+			return (tag != null) ? tag : name;
+		}
+		// return (isNoWrap()) ? ((childTag != null) ? childTag : childType) : (tag != null) ? tag : name;
+	}
+	
+	public String getTagForTranslationScope()
+	{
+		return childEntity == true ? DocumentParserTagNames.ENTITY : childType != null ? childType : tag != null ? tag : name;
+	}
+
 	@Override
 	protected void doAppending(Appendable appendable, int pass) throws IOException
 	{
-		appendCollection(appendable,pass);
+		appendCollection(appendable, pass);
 	}
 
 	/**
@@ -80,7 +121,7 @@ public class MetaMetadataCollectionField extends MetaMetadataField
 	 *          The appendable to append to.
 	 * @throws IOException
 	 */
-	protected void appendCollection(Appendable appendable,int pass) throws IOException
+	protected void appendCollection(Appendable appendable, int pass) throws IOException
 	{
 		// name of the element.
 		String elementName = this.name;
@@ -100,14 +141,14 @@ public class MetaMetadataCollectionField extends MetaMetadataField
 		// appending the declaration.
 		// String mapDecl = childMetaMetadata.get(key).getScalarType().fieldTypeName() + " , " +
 		// className;
-		
-		//FIXME- New metadata collection types here!!
-		String variableTypeStart =" ArrayList<";
-		String variableTypeEnd =">";
-		if(isEntity())
+
+		// FIXME- New metadata collection types here!!
+		String variableTypeStart = " ArrayList<";
+		String variableTypeEnd = ">";
+		if (childEntity)
 		{
 			variableTypeStart = " ArrayList<Entity<";
-			variableTypeEnd=">>";
+			variableTypeEnd = ">>";
 		}
 		String tag = getChildTag();
 		if (tag == null)
@@ -115,23 +156,36 @@ public class MetaMetadataCollectionField extends MetaMetadataField
 			warning("child_tag not specified in meta-metadata for collection field " + this.name);
 			return;
 		}
-		
+
 		StringBuilder annotation = StringBuilderUtils.acquire();
 		annotation.append("@xml_collection(\"" + tag + "\")");
 		if (noWrap)
 			annotation.append(" @xml_nowrap");
-		
-		
-		if(pass == MetadataCompilerUtils.GENERATE_FIELDS_PASS)
+
+		if (pass == MetadataCompilerUtils.GENERATE_FIELDS_PASS)
 		{
-			appendMetalanguageDecl(appendable, annotation.toString(),"private" +variableTypeStart , className,variableTypeEnd , fieldName);
+			appendMetalanguageDecl(appendable, annotation.toString(), "private" + variableTypeStart,
+					className, variableTypeEnd, fieldName);
 		}
-		else if(pass == MetadataCompilerUtils.GENERATE_METHODS_PASS)
+		else if (pass == MetadataCompilerUtils.GENERATE_METHODS_PASS)
 		{
-			appendLazyEvaluationMethod(appendable, fieldName, variableTypeStart + className + variableTypeEnd);
-			appendSetterForCollection(appendable, fieldName, variableTypeStart + className + variableTypeEnd);
-			appendGetterForCollection(appendable, fieldName, variableTypeStart + className + variableTypeEnd);
+			appendLazyEvaluationMethod(appendable, fieldName, variableTypeStart + className
+					+ variableTypeEnd);
+			appendSetterForCollection(appendable, fieldName, variableTypeStart + className
+					+ variableTypeEnd);
+			appendGetterForCollection(appendable, fieldName, variableTypeStart + className
+					+ variableTypeEnd);
 		}
+	}
+
+	protected String getMetaMetadataTagToInheritFrom()
+	{
+		if (childEntity)
+			return  DocumentParserTagNames.ENTITY;
+		else if (childType != null)
+			return childType;
+		else
+			return null;
 	}
 
 }

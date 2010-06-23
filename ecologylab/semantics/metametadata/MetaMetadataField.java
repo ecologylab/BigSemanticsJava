@@ -38,7 +38,7 @@ import ecologylab.xml.types.scalar.ScalarType;
  * 
  */
 @xml_inherit
-public class MetaMetadataField extends ElementState implements Mappable<String>, PackageSpecifier,
+public abstract class MetaMetadataField extends ElementState implements Mappable<String>, PackageSpecifier,
 		Iterable<MetaMetadataField>
 {
 	MetadataFieldDescriptor										metadataFieldDescriptor;
@@ -49,12 +49,6 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	@xml_attribute
 	protected String															name;
 
-	/**
-	 * The type/class of metadata object.
-	 */
-	@xml_attribute
-	protected String						type;
-	
 	@xml_tag("extends")
 	@xml_attribute
 	protected String						extendsAttribute;
@@ -107,9 +101,6 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	@xml_attribute
 	protected String															stringPrefix;
 
-	@xml_attribute
-	protected boolean						generateClass	= true;
-
 	/*
 	 * @xml_attribute protected boolean isList;
 	 */
@@ -124,13 +115,6 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	@xml_attribute
 	protected boolean															ignoreInTermVector;
 
-	/**
-	 * Specifies adding @xml_nowrap to the collection object in cases where items in the collection
-	 * are not wrapped inside a tag.
-	 */
-	@xml_attribute
-	protected boolean															noWrap;
-
 	@xml_attribute
 	protected String															comment;
 
@@ -141,9 +125,6 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	@xml_attribute
 	protected boolean															dontCompile;
 	
-	@xml_attribute 
-	protected boolean															entity=false;
-
 	@xml_attribute
 	protected String															key;
 
@@ -205,7 +186,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	private MetaMetadataRepository mmdRepository;
 	
 
-	private boolean						inheritMetaMetadataFinished = false;
+	protected boolean						inheritMetaMetadataFinished = false;
 	/**************************************************************************************/
 
 	public MetaMetadataField()
@@ -350,22 +331,28 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 
 	protected String generateNewClassName()
 	{
-		String javaClassName = getTypeOrName();
-
-		// if the meta-metadata field is of type list or map
+		String javaClassName = null;
+		
 		if (this instanceof MetaMetadataCollectionField)
 		{
 			// we will generate a class of the name collectionChildType.
 			javaClassName = ((MetaMetadataCollectionField)this).childType;
 		}
+		else // this instanceof MetaMetadataNestedField
+		{
+			javaClassName = ((MetaMetadataNestedField)this).getTypeOrName();
+		}
+		
 		return javaClassName;
 	}
 
 	public boolean isNewClass()
 	{
-		MetaMetadataField firstField = kids != null ? kids.get(0) : null;
+		if (this instanceof MetaMetadataScalarField)
+			return false;
+		MetaMetadataField firstField = (kids != null ? kids.get(0) : null);
 		// is this an actual definition (define scalar types) or just overriding attributes (e.g. xpath) for an existing definition 
-		return firstField != null && isGenerateClass() && (firstField instanceof MetaMetadataScalarField || firstField instanceof MetaMetadataCollectionField || firstField.getType() != null);
+		return firstField != null && ((MetaMetadataCompositeField)this).isGenerateClass();
 	}
 
 	protected void appendImport(Appendable appendable, String importDecl) throws IOException
@@ -890,6 +877,8 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	
 	/**
 	 * Lookup the Metadata class object that corresponds to tag_name, type, or extends attribute depending on which exist.
+	 * <p>
+	 * This method will only be called on composite fields, not scalar fields.
 	 * 
 	 * @return
 	 */
@@ -903,7 +892,8 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 			result													= (Class<? extends Metadata>) ts.getClassByTag(tagForTranslationScope);
 			if (result == null)
 			{
-				result 												= (Class<? extends Metadata>) ts.getClassByTag(getTypeOrName());
+				if (this instanceof MetaMetadataNestedField)
+					result 												= (Class<? extends Metadata>) ts.getClassByTag(((MetaMetadataNestedField)this).getTypeOrName());
 				if (result == null)
 				{
 					// there is no class for this tag we can use class of meta-metadata it extends
@@ -925,55 +915,12 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 
 	
 	/**
-	 * Bind field declarations through the extends and type keywords.
-	 */
-	public void inheritMetaMetadata(MetaMetadataRepository repository)
-	{
-		if(!inheritMetaMetadataFinished)
-		{
-			if (kids != null)
-			{
-				for(MetaMetadataField childField : kids)
-				{
-					childField.inheritMetaMetadata(repository);
-				}
-			}
-			String tagName = getMetaMetadataTagToInheritFrom();
-			MetaMetadata inheritedMetaMetadata =  repository.getByTagName(tagName);
-			if(inheritedMetaMetadata != null)
-			{
-				inheritedMetaMetadata.inheritMetaMetadata(repository);
-				inheritNonDefaultAttributes(inheritedMetaMetadata);
-				for(MetaMetadataField inheritedField : inheritedMetaMetadata.getChildMetaMetadata())
-					inheritForField(inheritedField);
-				inheritSemanticActionsFromMM(inheritedMetaMetadata);
-			}
-			
-			inheritMetaMetadataFinished = true;
-		}
-	}
-
-	/**
 	 * Hook overrided by MetaMetadata class
 	 * @param inheritedMetaMetadata
 	 */
 	protected void inheritSemanticActionsFromMM(MetaMetadata inheritedMetaMetadata)
 	{
 		//MetaMetadataFields don't have semantic actions.
-	}
-
-	protected String getMetaMetadataTagToInheritFrom()
-	{
-		if (isEntity())
-			return  DocumentParserTagNames.ENTITY;
-		else if (this instanceof MetaMetadataCollectionField && ((MetaMetadataCollectionField)this).childType != null)
-			return ((MetaMetadataCollectionField)this).childType;
-		else if (type != null)
-			return type;
-		else if (this instanceof MetaMetadataNestedField)
-			return name;
-		else
-			return null;
 	}
 
 	/**
@@ -1011,7 +958,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 			
 	}
 
-	private void inheritNonDefaultAttributes(MetaMetadataField inheritFrom)
+	protected void inheritNonDefaultAttributes(MetaMetadataField inheritFrom)
 	{
 		ClassDescriptor<?, ? extends FieldDescriptor> classDescriptor	= classDescriptor();
 		
@@ -1183,41 +1130,6 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 		return contextNode;
 	}
 	
-	/**
-	 * @return the generateClass
-	 */
-	public boolean isGenerateClass()
-	{
-		// we r not using getType as by default getType will give meta-metadata name
-		if(type!=null)
-		{
-			return false;
-		}
-		return generateClass;
-	}
-	
-	/**
-	 * @param generateClass
-	 *          the generateClass to set
-	 */
-	public void setGenerateClass(boolean generateClass)
-	{
-		this.generateClass = generateClass;
-	}
-	
-	
-	public String getTypeOrName()
-	{
-		if(type!=null)
-			return type;
-		else 
-			return getName();
-	}
-	
-	public String getType()
-	{
-		return type;
-	}
 	
 	public String parentString()
 	{
@@ -1242,10 +1154,6 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 			toString	= result;
 		}
 		return result;
-	}
-	public boolean isEntity()
-	{
-		return entity;
 	}
 	
 	/*public String getChildTag()
@@ -1277,17 +1185,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	 */
 	public String resolveTag()
 	{
-		if (isNoWrap())
-		{
-			// is it sure that it will be a collection field?
-			String childTag = ((MetaMetadataCollectionField) this).childTag;
-			String childType = ((MetaMetadataCollectionField) this).childType;
-			return (childTag != null) ? childTag : childType;
-		}
-		else
-		{
-			return (tag != null) ? tag : name;
-		}
+		return (tag != null) ? tag : name;
 		// return (isNoWrap()) ? ((childTag != null) ? childTag : childType) : (tag != null) ? tag : name;
 	}
 	
@@ -1332,11 +1230,6 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	}
 	
 	
-	public boolean isNoWrap()
-	{
-		return noWrap;
-	}
-
 	/**
 	 * @return the comment
 	 */
@@ -1352,8 +1245,7 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 	
 	public String getTagForTranslationScope()
 	{
-		String childType = (this instanceof MetaMetadataCollectionField) ? ((MetaMetadataCollectionField) this).childType : null;
-		return entity == true ? DocumentParserTagNames.ENTITY : childType != null ? childType : tag != null ? tag : name;
+		return tag != null ? tag : name;
 	}
 	
 	public File getFile()
@@ -1364,9 +1256,5 @@ public class MetaMetadataField extends ElementState implements Mappable<String>,
 		return (parent != null) ? parent.getFile() : null;
 	}
 
-	protected void doAppending(Appendable appendable, int pass) throws IOException
-	{
-		// TODO Auto-generated method stub
-		
-	}
+	abstract protected void doAppending(Appendable appendable, int pass) throws IOException;
 }

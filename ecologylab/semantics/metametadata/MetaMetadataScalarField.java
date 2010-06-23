@@ -21,13 +21,10 @@ public class MetaMetadataScalarField extends MetaMetadataField
 
 	public MetaMetadataScalarField()
 	{
-		this.generateClass = false; // for scalar fields, they never generate classes.
-		this.entity = false;
 	}
 
 	public MetaMetadataScalarField(MetaMetadataField mmf)
 	{
-		this();
 		this.name = mmf.name;
 		this.extendsAttribute = mmf.extendsAttribute;
 		this.hide = mmf.hide;
@@ -38,10 +35,8 @@ public class MetaMetadataScalarField extends MetaMetadataField
 		this.navigatesTo = mmf.navigatesTo;
 		this.shadows = mmf.shadows;
 		this.stringPrefix = mmf.stringPrefix;
-		this.generateClass = false; // for scalar fields, they never generate classes.
 		this.isFacet = mmf.isFacet;
 		this.ignoreInTermVector = mmf.ignoreInTermVector;
-		this.noWrap = mmf.noWrap;
 		this.comment = mmf.comment;
 		this.dontCompile = mmf.dontCompile;
 		this.key = mmf.key;

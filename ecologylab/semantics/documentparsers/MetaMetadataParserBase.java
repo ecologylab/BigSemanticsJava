@@ -450,7 +450,7 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 			
 			// get class of the collection
 			Class collectionChildClass = null;
-			if(mmdElement.isEntity())
+			if(mmdElement.isChildEntity())
 			{
 				collectionChildClass=translationScope.getClassByTag(DocumentParserTagNames.ENTITY);
 			}

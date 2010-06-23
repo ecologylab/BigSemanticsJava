@@ -34,7 +34,7 @@ import ecologylab.xml.types.element.Mappable;
  * @author damaraju
  * 
  */
-public class MetaMetadata extends MetaMetadataField 
+public class MetaMetadata extends MetaMetadataNestedField 
 implements Mappable<String>
 {
 	@xml_attribute
