@@ -59,7 +59,8 @@ public class MetaMetadataScalarField extends MetaMetadataField
 	@Override
 	protected void doAppending(Appendable appendable, int pass) throws IOException
 	{
-		appendScalarLeaf(appendable, pass);
+		if (scalarType != null)
+			appendScalarLeaf(appendable, pass);
 	}
 
 	/**
@@ -106,6 +107,15 @@ public class MetaMetadataScalarField extends MetaMetadataField
 				appendHWAppendMethod(appendable, fieldName, "String");
 			}
 		}
+	}
+
+	/**
+	 * This method will always return false since scalar fields never generate classes.
+	 */
+	@Override
+	public boolean isNewClass()
+	{
+		return false;
 	}
 
 }

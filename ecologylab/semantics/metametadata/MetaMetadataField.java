@@ -346,14 +346,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 		return javaClassName;
 	}
 
-	public boolean isNewClass()
-	{
-		if (this instanceof MetaMetadataScalarField)
-			return false;
-		MetaMetadataField firstField = (kids != null ? kids.get(0) : null);
-		// is this an actual definition (define scalar types) or just overriding attributes (e.g. xpath) for an existing definition 
-		return firstField != null && ((MetaMetadataCompositeField)this).isGenerateClass();
-	}
+	abstract public boolean isNewClass();
 
 	protected void appendImport(Appendable appendable, String importDecl) throws IOException
 	{

@@ -8,9 +8,6 @@ import ecologylab.xml.types.scalar.ScalarType;
 public abstract class MetaMetadataCompositeField extends MetaMetadataField
 {
 
-	@xml_attribute
-	protected boolean						dontGenerateClass = false;
-
 	public MetaMetadataCompositeField()
 	{
 		// TODO Auto-generated constructor stub
@@ -62,25 +59,50 @@ public abstract class MetaMetadataCompositeField extends MetaMetadataField
 	}
 
 	/**
-	 * @return the generateClass
+	 * Indicate whether to generate a new class definition for this meta-metadata.
 	 */
-	public boolean isGenerateClass()
+	@Override
+	public boolean isNewClass()
 	{
-		// we r not using getType as by default getType will give meta-metadata name
-		if((this instanceof MetaMetadataNestedField) && ((MetaMetadataNestedField) this).type!=null)
-		{
+		// if no internal structure, no need to generate a class
+		if (kids == null)
 			return false;
-		}
-		return !dontGenerateClass;
+		
+		// if indicated by the author explicitly, do not generate a class
+		if (this instanceof MetaMetadata && !((MetaMetadata) this).isGenerateClass())
+			return false;
+		
+		// otherwise, determine if we need to generate a class
+		/*
+		 * look through its children recursively. if any of them is a data definition, which implies
+		 * that this composite field is supposed to define or extend a type inline, we have to generate
+		 * a class for it
+		 * 
+		 * must start from the 1st level children, not the field itself
+		 */
+		for (MetaMetadataField child: getChildMetaMetadata())
+			if (isDefinition(child))
+				return true;
+		
+		return false;
 	}
 	
 	/**
-	 * @param generateClass
-	 *          the generateClass to set
+	 * Recursively check if a meta-metadata field is a definition, by checking if any of its nested
+	 * scalar field contains a scalar_type attribute.
+	 * @param mmf
+	 * @return
 	 */
-	public void setGenerateClass(boolean generateClass)
+	protected boolean isDefinition(MetaMetadataField mmf)
 	{
-		this.dontGenerateClass = !generateClass;
+		if (mmf instanceof MetaMetadataScalarField)
+		{
+			return ((MetaMetadataScalarField) mmf).getScalarType() != null;
+		}
+		
+		if (mmf instanceof MetaMetadataNestedField && ((MetaMetadataNestedField) mmf).getType() != null)
+			return true;
+		
+		return mmf.isNewClass();
 	}
-	
 }

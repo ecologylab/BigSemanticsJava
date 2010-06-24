@@ -68,6 +68,10 @@ implements Mappable<String>
 
 	@xml_attribute
 	private String						parser=null;
+	
+	@xml_attribute
+	protected boolean					dontGenerateClass = false;
+
 	/*
 	 * @xml_collection("meta_metadata_field") private ArrayList<MetaMetadataField>
 	 * metaMetadataFieldList;
@@ -490,6 +494,22 @@ implements Mappable<String>
 	{
 		return getName();
 	}
+	
+	public boolean isGenerateClass()
+	{
+		// we r not using getType as by default getType will give meta-metadata name
+		if((this instanceof MetaMetadataNestedField) && ((MetaMetadataNestedField) this).type!=null)
+		{
+			return false;
+		}
+		return !dontGenerateClass;
+	}
+	
+	public void setGenerateClass(boolean generateClass)
+	{
+		this.dontGenerateClass = !generateClass;
+	}
+	
 	
 	public MetadataFieldDescriptor getFieldDescriptorByTagName(String tagName)
 	{

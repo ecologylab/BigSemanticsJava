@@ -63,7 +63,7 @@ public class MetaMetadataCollectionField extends MetaMetadataCompositeField
 		this.kids = mmf.kids;
 	}
 
-	public String getCollectionChildType()
+	public String getChildType()
 	{
 		return childType;
 	}
