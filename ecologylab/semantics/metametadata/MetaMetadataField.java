@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -41,7 +43,7 @@ import ecologylab.xml.types.scalar.ScalarType;
 public abstract class MetaMetadataField extends ElementState implements Mappable<String>, PackageSpecifier,
 		Iterable<MetaMetadataField>
 {
-	MetadataFieldDescriptor										metadataFieldDescriptor;
+	MetadataFieldDescriptor												metadataFieldDescriptor;
 	
 	/**
 	 * Name of the metadata field.
@@ -51,7 +53,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 
 	@xml_tag("extends")
 	@xml_attribute
-	protected String						extendsAttribute;
+	protected String															extendsAttribute;
 
 	/**
 	 * true if this field should not be displayed in interactive in-context metadata
@@ -72,7 +74,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	 * Specifies the order in which a field is displayed in relation to other fields.
 	 */
 	@xml_attribute
-	protected int																	layer;
+	protected float																layer;
 
 	/**
 	 * XPath expression used to extract this field.
@@ -92,6 +94,12 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	 */
 	@xml_attribute
 	protected String															shadows;
+	
+	/**
+	 * The label to be used when visualizing this field. Name is used by default. This overrides name.
+	 */
+	@xml_attribute
+	protected String															label;
 
 	// FIXME -- talk to bharat, eliminate this declaration
 	// no idea what this is for....added while parsing for acmportal
@@ -163,9 +171,11 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	@xml_nowrap
 	protected HashMapArrayList<String, MetaMetadataField>	kids;
 	
-	HashSet<String>																		nonDisplayedFieldNames;
+	HashSet<String>																				nonDisplayedFieldNames;
 	
-	File																								file;
+	File																									file;
+	
+	private boolean																				fieldsSortedForDisplay = false;
 
 	HashMap<String, String>											childPackagesMap	= new HashMap<String, String>(2);
 
@@ -173,6 +183,8 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 																																		0);
 
 	public static Iterator<MetaMetadataField>		EMPTY_ITERATOR		= EMPTY_COLLECTION.iterator();
+	
+	private static LayerComparator							LAYER_COMPARATOR 	= new LayerComparator();
 	
 	/*************These 2 variables are needed fo inheritence implementation*********************/
 	/**
@@ -688,9 +700,9 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 		return kids.get(name);
 	}
 
-	public MetaMetadataField lookupChild(FieldDescriptor fieldAccessor)
+	public MetaMetadataField lookupChild(MetadataFieldDescriptor metadataFieldDescriptor)
 	{
-		return lookupChild(XMLTools.getXmlTagName(fieldAccessor.getFieldName(), null));
+		return lookupChild(XMLTools.getXmlTagName(metadataFieldDescriptor.getFieldName(), null));
 	}
 
 	public String getXpath()
@@ -998,6 +1010,15 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	{
 		return (kids != null) ? kids.iterator() : EMPTY_ITERATOR;
 	}
+	
+	public void sortForDisplay()
+	{
+		if (!fieldsSortedForDisplay)
+		{
+			Collections.sort((ArrayList<MetaMetadataField>) kids.values(), LAYER_COMPARATOR);
+			fieldsSortedForDisplay = true;
+		}
+	}
 
 	public boolean isAlwaysShow()
 	{
@@ -1250,4 +1271,21 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	}
 
 	abstract protected void doAppending(Appendable appendable, int pass) throws IOException;
+	
+	protected static class LayerComparator implements Comparator<MetaMetadataField>
+	{
+
+		@Override
+		public int compare(MetaMetadataField o1, MetaMetadataField o2)
+		{
+			// return negation for descending ordering in sort
+			return -Float.compare(o1.layer, o2.layer);
+		}
+		
+	}
+	
+	public String getDisplayedLabel()
+	{
+		return (label != null) ? label : name;
+	}
 }

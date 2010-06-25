@@ -8,7 +8,6 @@ import java.lang.annotation.Target;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -19,17 +18,15 @@ import ecologylab.net.ParsedURL;
 import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataField;
+import ecologylab.semantics.metametadata.MetaMetadataOneLevelNestingIterator;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.model.text.CompositeTermVector;
 import ecologylab.semantics.model.text.ITermVector;
 import ecologylab.semantics.seeding.SearchState;
 import ecologylab.semantics.seeding.Seed;
-import ecologylab.xml.ClassDescriptor;
 import ecologylab.xml.ElementState;
-import ecologylab.xml.FieldDescriptor;
 import ecologylab.xml.ScalarUnmarshallingContext;
 import ecologylab.xml.serial_descriptors_classes;
-import ecologylab.xml.ElementState.xml_collection;
 
 /**
  * This is the new metadata class that is the base class for the meta-metadata system. It contains
@@ -190,64 +187,45 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 		}
 	}
 
-	public boolean isFilled(String attributeName)
-	{
-		//FIXME -- toLowerCase() is BS!!!
-		attributeName = attributeName.toLowerCase();
-
-		OneLevelNestingIterator<MetadataFieldDescriptor, Metadata> fullIterator = fullNonRecursiveIterator();
-		while (fullIterator.hasNext())
-		{
-			MetadataFieldDescriptor metadataFieldAccessor = fullIterator.next();
-			Metadata currentMetadata = fullIterator.currentObject();
-			// getFieldName() or getTagName()??? attributeName is from TypeTagNames.java
-			if (attributeName.equals(metadataFieldAccessor.getFieldName()))
-			{
-				String valueString = metadataFieldAccessor.getValueString(currentMetadata);
-				return MetadataString.isNotNullValue(valueString);
-			}
-		}
-		return false;
-	}
-
 	/**
 	 * @return the number of non-Null fields within this metadata
 	 */
 	public int size()
 	{
-		return numberOfVisibleFields(null);
+		return numberOfVisibleFields();
 	}
 
-	public int numberOfVisibleFields(MetaMetadataField metaMetadataField)
+	public int numberOfVisibleFields()
 	{
 		int size = 0;
 
-		OneLevelNestingIterator<MetadataFieldDescriptor, Metadata> fullIterator = fullNonRecursiveIterator();
+		MetaMetadataOneLevelNestingIterator fullIterator = fullNonRecursiveMetaMetadataIterator(null);
 		// iterate over all fields in this & then in each mixin of this
 		while (fullIterator.hasNext())
 		{
-			MetadataFieldDescriptor metadataFieldDescriptor = fullIterator.next();
-			Metadata currentMetadata = fullIterator.currentObject();	// stays the same for until we iterate over all mfd's for it
-			MetaMetadata currentMetaMetadata = currentMetadata.getMetaMetadata();
-			MetaMetadataField metaMetadata = (metaMetadataField != null) ? metaMetadataField
-					.lookupChild(metadataFieldDescriptor) : (currentMetaMetadata != null) ? currentMetaMetadata
-					.lookupChild(metadataFieldDescriptor) : null;
-
+			MetaMetadataField metaMetadataField = fullIterator.next();
+			MetaMetadataField metaMetadata 			= fullIterator.currentObject();	// stays the same for until we iterate over all mfd's for it
+			Metadata currentMetadata						= this;
+			
 			// When the iterator enters the metadata in the mixins "this" in getValueString has to be
 			// the corresponding metadata in mixin.
 			boolean hasVisibleNonNullField = false;
-
-			if (metadataFieldDescriptor.isPseudoScalar())
-				hasVisibleNonNullField 	= MetadataString.isNotNullAndEmptyValue(metadataFieldDescriptor.getValueString(currentMetadata));
-			else if (metadataFieldDescriptor.isNested())
+			MetadataFieldDescriptor mfd 		= metaMetadataField.getMetadataFieldDescriptor();
+			
+			if (metaMetadata.isChildFieldDisplayed(metaMetadataField.getName()))
 			{
-				Metadata nestedMetadata = (Metadata) metadataFieldDescriptor.getNested((MetadataBase) currentMetadata);
-				hasVisibleNonNullField 	= (nestedMetadata != null) ? (nestedMetadata.numberOfVisibleFields(metaMetadata) > 0) : false;
-			}
-			else
-			{
-				Collection collection 	= metadataFieldDescriptor.getCollection(currentMetadata);
-				hasVisibleNonNullField 	= (collection != null) ? (collection.size() > 0) : false;
+				if (mfd.isScalar())
+					hasVisibleNonNullField 	= MetadataString.isNotNullAndEmptyValue(mfd.getValueString(currentMetadata));
+				else if (mfd.isNested())
+				{
+					Metadata nestedMetadata = (Metadata) mfd.getNested((ElementState) currentMetadata);
+					hasVisibleNonNullField 	= (nestedMetadata != null) ? (nestedMetadata.numberOfVisibleFields() > 0) : false;
+				}
+				else if (mfd.isCollection())
+				{
+					Collection collection 	= mfd.getCollection(currentMetadata);
+					hasVisibleNonNullField 	= (collection != null) ? (collection.size() > 0) : false;
+				}
 			}
 
 			// "null" happens with mixins fieldAccessor b'coz getValueString() returns "null".
@@ -259,6 +237,7 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 				size++;
 			}
 		}
+			
 		return size;
 	}
 
@@ -428,16 +407,12 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 	{
 		return (termVector != null && termVector.isRecycled());
 	}
-
-	/**
-	 * Provides MetadataFieldAccessors for each of the ecologylab.xml annotated fields in this
-	 * (probably a subclass), plus all the ecologylab.xml annotated fields in the mixins of this, if
-	 * there are any.
-	 */
-	public OneLevelNestingIterator<MetadataFieldDescriptor, Metadata> fullNonRecursiveIterator()
+	
+	public MetaMetadataOneLevelNestingIterator fullNonRecursiveMetaMetadataIterator(MetaMetadataField metaMetadataField)
 	{
-		return new OneLevelNestingIterator<MetadataFieldDescriptor, Metadata>(this, (mixins == null) ? null	: mixins);
-	}	
+		MetaMetadataField firstMetaMetadataField = (metaMetadataField != null) ? metaMetadataField : metaMetadata;
+		return new MetaMetadataOneLevelNestingIterator(firstMetaMetadataField, this, mixins);
+	}
 
 	public ClassAndCollectionIterator<MetadataFieldDescriptor, Metadata> metadataIterator()
 	{

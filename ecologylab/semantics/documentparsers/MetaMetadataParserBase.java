@@ -27,9 +27,11 @@ import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.DocumentParserTagNames;
 import ecologylab.semantics.metadata.Metadata;
+import ecologylab.semantics.metadata.MetadataBase;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.DefVar;
+import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataField;
 import ecologylab.semantics.metametadata.MetaMetadataNestedField;
 import ecologylab.semantics.metametadata.MetaMetadataCollectionField;
@@ -407,11 +409,15 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 			Node parentNode = (Node)xpath.evaluate(xPathString, contextNode,
 										XPathConstants.NODE);
 			
-			// Have to return the nested object for the field.
-			MetadataFieldDescriptor metadataFieldDescriptor = mmdElement.getMetadataFieldDescriptor();
+			Class<? extends Metadata> metadataClass = mmdElement.getMetadataClass();
+			MetaMetadata metaMetadata 							= mmdElement.metaMetadataRepository().getByClass(metadataClass);
+			Class[] argClasses 	= new Class[] { metaMetadata.getClass() };
+			Object[] argObjects = new Object[] { metaMetadata };
+			nestedMetadata = ReflectionTools.getInstance(metadataClass, argClasses, argObjects);
+			ReflectionTools.setFieldValue(metadata, mmdElement.getMetadataFieldDescriptor().getField(), nestedMetadata);
 			//FIXME -- need to use repository recursively!
-			nestedMetadata = (Metadata) metadataFieldDescriptor.getAndPerhapsCreateNested(metadata);
-			nestedMetadata.setMetaMetadata(infoCollector.metaMetaDataRepository().getMM(nestedMetadata.getClass()));
+			//nestedMetadata = (Metadata) metadataFieldDescriptor.getAndPerhapsCreateNested(metadata);
+			//nestedMetadata.setMetaMetadata(infoCollector.metaMetaDataRepository().getMM(nestedMetadata.getClass()));
 			recursiveExtraction(translationScope,mmdElement, nestedMetadata, xpath, param,parentNode);
 		}
 		catch (Exception e)
@@ -456,7 +462,7 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 			}
 			else
 			{
-				collectionChildClass =translationScope.getClassByTag(mmdElement.getChildTag());
+				collectionChildClass =translationScope.getClassByTag(mmdElement.determineCollectionChildType()); //mmdElement.getChildTag());
 			}
 //			HashMapArrayList<String, MetadataFieldDescriptor> collectionElementAccessors = metadata.getMetadataFieldDescriptorsByTagName();
 
@@ -521,8 +527,11 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 						// returned.
 						for (int j = 0; j < parentNodeListLength; j++)
 						{
-							Metadata metadataInstance = (Metadata) ReflectionTools.getInstance(collectionChildClass);
-							metadataInstance.setMetaMetadata(infoCollector.metaMetaDataRepository().getMM(collectionChildClass));
+							String childTag 								= mmdElement.determineCollectionChildType(); //getChildTag();
+							MetaMetadata mmdForNewMetadata 	= mmdElement.metaMetadataRepository().getByTagName(childTag);
+							Class[] argClasses 	= new Class[] { mmdForNewMetadata.getClass() };
+							Object[] argObjects = new Object[] { mmdForNewMetadata };
+							Metadata metadataInstance = (Metadata) ReflectionTools.getInstance(collectionChildClass, argClasses, argObjects);
 							collectionInstanceList.add(metadataInstance);
 							
 						}

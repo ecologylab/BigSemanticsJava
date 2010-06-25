@@ -63,7 +63,12 @@ public class MetaMetadataCollectionField extends MetaMetadataCompositeField
 		this.kids = mmf.kids;
 	}
 
-	public String getChildType()
+	public String determineCollectionChildType()
+	{
+		return (!childEntity) ? childType : DocumentParserTagNames.ENTITY;
+	}
+	
+	public String collectionChildType()
 	{
 		return childType;
 	}
@@ -178,15 +183,15 @@ public class MetaMetadataCollectionField extends MetaMetadataCompositeField
 		}
 	}
 
+	@Override
 	protected String getMetaMetadataTagToInheritFrom()
 	{
-//		if (childEntity)
-//			return  DocumentParserTagNames.ENTITY;
-//		else if (childType != null)
-//			return childType;
-//		else
-		//Need not inherit from child meta-metadatas
-		return null;
+		if (childEntity)
+			return  DocumentParserTagNames.ENTITY;
+		else if (childType != null)
+			return childType;
+		else
+			return null;
 	}
 
 }

@@ -39,8 +39,8 @@ public abstract class MetaMetadataCompositeField extends MetaMetadataField
 			{
 				for(MetaMetadataField childField : kids)
 				{
-					if (childField instanceof MetaMetadataCompositeField)
-						((MetaMetadataCompositeField)childField).inheritMetaMetadata(repository);
+					if (childField instanceof MetaMetadataNestedField)
+						((MetaMetadataNestedField)childField).inheritMetaMetadata(repository);
 				}
 			}
 			String tagName = getMetaMetadataTagToInheritFrom();
@@ -55,6 +55,8 @@ public abstract class MetaMetadataCompositeField extends MetaMetadataField
 			}
 			
 			inheritMetaMetadataFinished = true;
+			
+			sortForDisplay();
 		}
 	}
 

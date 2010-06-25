@@ -177,7 +177,7 @@ implements Mappable<String>
 	public Metadata constructMetadata(TranslationScope ts)
 	{
 		Metadata result = null;
-		Class<? extends Metadata> metadataClass = getMetadataClassDescriptor().describedClass();
+		Class<? extends Metadata> metadataClass = getMetadataClass(ts);
 		
 		if (metadataClass != null)
 		{
