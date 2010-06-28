@@ -193,5 +193,12 @@ public class MetaMetadataCollectionField extends MetaMetadataCompositeField
 		else
 			return null;
 	}
+	
+	@Override
+	protected void inheritNonDefaultAttributes(MetaMetadataField inheritFrom)
+	{
+		
+	}
+	
 
 }

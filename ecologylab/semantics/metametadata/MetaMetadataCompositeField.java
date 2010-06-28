@@ -39,8 +39,8 @@ public abstract class MetaMetadataCompositeField extends MetaMetadataField
 			{
 				for(MetaMetadataField childField : kids)
 				{
-					if (childField instanceof MetaMetadataNestedField)
-						((MetaMetadataNestedField)childField).inheritMetaMetadata(repository);
+					if (childField instanceof MetaMetadataCompositeField)
+						((MetaMetadataCompositeField)childField).inheritMetaMetadata(repository);
 				}
 			}
 			String tagName = getMetaMetadataTagToInheritFrom();
