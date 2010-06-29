@@ -176,6 +176,8 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	File																									file;
 	
 	private boolean																				fieldsSortedForDisplay = false;
+	
+	private	String																				displayedLabel = null;
 
 	HashMap<String, String>											childPackagesMap	= new HashMap<String, String>(2);
 
@@ -1286,6 +1288,16 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	
 	public String getDisplayedLabel()
 	{
-		return (label != null) ? label : name;
+		String result = displayedLabel;
+		if (result == null)
+		{
+			if (label != null)
+				result = label;
+			else
+				result = name.replace("_", " ");
+			
+			displayedLabel = result;
+		}
+		return result;
 	}
 }
