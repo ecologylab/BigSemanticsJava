@@ -322,7 +322,7 @@ implements InfoCollector<AC>, SemanticsPrefs, ApplicationProperties, DocumentPar
 	 * @param metadataClass
 	 * @return
 	 */
-	public MetaMetadata getMM(Class<? extends Metadata> metadataClass)
+	public static MetaMetadata getMM(Class<? extends Metadata> metadataClass)
 	{
 		return META_METADATA_REPOSITORY.getMM(metadataClass);
 	}
