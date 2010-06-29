@@ -181,7 +181,7 @@ implements InfoCollector<AC>, SemanticsPrefs, ApplicationProperties, DocumentPar
 	
 	static final File	LOCAL_META_METADATA_DIR_FILE		= new File(EnvironmentGeneric.codeBase().file(), "/config/semantics/");
 	
-	static final String	META_METADATA_REPOSITORY_DIR		= "metametadata/metaMetadataRepository";
+	static final String	META_METADATA_REPOSITORY_DIR		= "metametadata";
 
 
 	/**
