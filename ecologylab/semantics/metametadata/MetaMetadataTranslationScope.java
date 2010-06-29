@@ -23,7 +23,7 @@ public class MetaMetadataTranslationScope extends Debug
 		MetadataFieldDescriptor.class,
 		MetaMetadataField.class,
 		MetaMetadataScalarField.class,
-		MetaMetadataNestedField.class,
+		MetaMetadataCompositeField.class,
 		MetaMetadataCollectionField.class,
 		MetaMetadata.class,
 		SearchEngines.class,

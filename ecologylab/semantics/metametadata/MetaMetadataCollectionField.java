@@ -11,7 +11,7 @@ import ecologylab.xml.ElementState.xml_tag;
 
 @xml_inherit
 @xml_tag("collection")
-public class MetaMetadataCollectionField extends MetaMetadataCompositeField
+public class MetaMetadataCollectionField extends MetaMetadataNestedField
 {
 
 	@xml_attribute

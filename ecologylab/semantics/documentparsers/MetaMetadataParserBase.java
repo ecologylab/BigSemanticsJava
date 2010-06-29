@@ -33,7 +33,7 @@ import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.DefVar;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataField;
-import ecologylab.semantics.metametadata.MetaMetadataNestedField;
+import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.metametadata.MetaMetadataCollectionField;
 import ecologylab.xml.FieldDescriptor;
 import ecologylab.xml.ScalarUnmarshallingContext;
@@ -324,7 +324,7 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 					// System.out.println("DEBUG::mmdElementName= \t" + mmdElementName);
 
 					// if it is nested
-					if (mmdElement instanceof MetaMetadataNestedField)
+					if (mmdElement instanceof MetaMetadataCompositeField)
 					{
 						extractNested(translationScope, metadata,contextNode, mmdElement, mmdElementName, xpath, param,xpathString);
 					}
@@ -560,7 +560,7 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 									(MetaMetadataCollectionField) childMetaMetadataField, childMetaMetadataField.getName(), xpath, param,
 									childMetaMetadataField.getXpath());
 						}
-						if (childMetaMetadataField instanceof MetaMetadataNestedField)
+						if (childMetaMetadataField instanceof MetaMetadataCompositeField)
 						{
 							 extractNested(translationScope, collectionInstanceList.get(m), contextNode,childMetaMetadataField, childMetaMetadataField.getName(), xpath, param,
 										childMetaMetadataField.getXpath());

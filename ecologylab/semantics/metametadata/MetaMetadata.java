@@ -34,7 +34,7 @@ import ecologylab.xml.types.element.Mappable;
  * @author damaraju
  * 
  */
-public class MetaMetadata extends MetaMetadataNestedField 
+public class MetaMetadata extends MetaMetadataCompositeField 
 implements Mappable<String>
 {
 	@xml_attribute
@@ -498,7 +498,7 @@ implements Mappable<String>
 	public boolean isGenerateClass()
 	{
 		// we r not using getType as by default getType will give meta-metadata name
-		if((this instanceof MetaMetadataNestedField) && ((MetaMetadataNestedField) this).type!=null)
+		if((this instanceof MetaMetadataCompositeField) && ((MetaMetadataCompositeField) this).type!=null)
 		{
 			return false;
 		}

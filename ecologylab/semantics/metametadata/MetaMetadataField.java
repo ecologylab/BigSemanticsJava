@@ -165,7 +165,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	@xml_classes({
 		MetaMetadataField.class,
 		MetaMetadataScalarField.class,
-		MetaMetadataNestedField.class,
+		MetaMetadataCompositeField.class,
 		MetaMetadataCollectionField.class,
 		})
 	@xml_nowrap
@@ -352,7 +352,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 		}
 		else // this instanceof MetaMetadataNestedField
 		{
-			javaClassName = ((MetaMetadataNestedField)this).getTypeOrName();
+			javaClassName = ((MetaMetadataCompositeField)this).getTypeOrName();
 		}
 		
 		return javaClassName;
@@ -897,8 +897,8 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 			result													= (Class<? extends Metadata>) ts.getClassByTag(tagForTranslationScope);
 			if (result == null)
 			{
-				if (this instanceof MetaMetadataNestedField)
-					result 												= (Class<? extends Metadata>) ts.getClassByTag(((MetaMetadataNestedField)this).getTypeOrName());
+				if (this instanceof MetaMetadataCompositeField)
+					result 												= (Class<? extends Metadata>) ts.getClassByTag(((MetaMetadataCompositeField)this).getTypeOrName());
 				if (result == null)
 				{
 					// there is no class for this tag we can use class of meta-metadata it extends

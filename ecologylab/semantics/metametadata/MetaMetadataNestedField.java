@@ -1,128 +1,110 @@
 package ecologylab.semantics.metametadata;
 
-import java.io.IOException;
-
-import ecologylab.semantics.metadata.DocumentParserTagNames;
-import ecologylab.semantics.tools.MetadataCompilerUtils;
-import ecologylab.xml.XMLTools;
+import ecologylab.generic.HashMapArrayList;
 import ecologylab.xml.xml_inherit;
-import ecologylab.xml.ElementState.xml_tag;
+import ecologylab.xml.types.scalar.ScalarType;
 
 @xml_inherit
-@xml_tag("composite")
-public class MetaMetadataNestedField extends MetaMetadataCompositeField
+public abstract class MetaMetadataNestedField extends MetaMetadataField
 {
-
-	/**
-	 * The type/class of metadata object.
-	 */
-	@xml_attribute
-	protected String	type;
-
-	@xml_attribute
-	protected boolean	entity	= false;
 
 	public MetaMetadataNestedField()
 	{
 		// TODO Auto-generated constructor stub
 	}
 
-	public MetaMetadataNestedField(MetaMetadataField mmf)
+	public MetaMetadataNestedField(String name, ScalarType metadataType,
+			HashMapArrayList<String, MetaMetadataField> set)
 	{
-		this.name = mmf.name;
-		this.extendsAttribute = mmf.extendsAttribute;
-		this.hide = mmf.hide;
-		this.alwaysShow = mmf.alwaysShow;
-		this.style = mmf.style;
-		this.layer = mmf.layer;
-		this.xpath = mmf.xpath;
-		this.navigatesTo = mmf.navigatesTo;
-		this.shadows = mmf.shadows;
-		this.stringPrefix = mmf.stringPrefix;
-		this.isFacet = mmf.isFacet;
-		this.ignoreInTermVector = mmf.ignoreInTermVector;
-		this.comment = mmf.comment;
-		this.dontCompile = mmf.dontCompile;
-		this.key = mmf.key;
-		this.textRegex = mmf.textRegex;
-		this.matchReplacement = mmf.matchReplacement;
-		this.contextNode = mmf.contextNode;
-		this.tag = mmf.tag;
-		this.ignoreExtractionError = mmf.ignoreExtractionError;
-		this.kids = mmf.kids;
+		super(name, metadataType, set);
+		// TODO Auto-generated constructor stub
 	}
 
 	public MetaMetadataNestedField(MetaMetadataField copy, String name)
 	{
 		super(copy, name);
+		// TODO Auto-generated constructor stub
 	}
 
-	public String getType()
+	abstract protected String getMetaMetadataTagToInheritFrom();
+
+	/**
+	 * Bind field declarations through the extends and type keywords.
+	 */
+	public void inheritMetaMetadata(MetaMetadataRepository repository)
 	{
-		return type;
-	}
-	
-	public boolean isEntity()
-	{
-		return entity;
-	}
-	
-	public String getTypeOrName()
-	{
-		if (type != null)
-			return type;
-		else 
-			return getName();
-	}
-	
-	public String getTagForTranslationScope()
-	{
-		return entity == true ? DocumentParserTagNames.ENTITY : tag != null ? tag : name;
-	}
-	
-	@Override
-	protected void doAppending(Appendable appendable, int pass) throws IOException
-	{
-		appenedNestedMetadataField(appendable, pass);
+		if(!inheritMetaMetadataFinished)
+		{
+			if (kids != null)
+			{
+				for(MetaMetadataField childField : kids)
+				{
+					if (childField instanceof MetaMetadataNestedField)
+						((MetaMetadataNestedField)childField).inheritMetaMetadata(repository);
+				}
+			}
+			String tagName = getMetaMetadataTagToInheritFrom();
+			MetaMetadata inheritedMetaMetadata =  repository.getByTagName(tagName);
+			if(inheritedMetaMetadata != null)
+			{
+				inheritedMetaMetadata.inheritMetaMetadata(repository);
+				inheritNonDefaultAttributes(inheritedMetaMetadata);
+				for(MetaMetadataField inheritedField : inheritedMetaMetadata.getChildMetaMetadata())
+					inheritForField(inheritedField);
+				inheritSemanticActionsFromMM(inheritedMetaMetadata);
+			}
+			
+			inheritMetaMetadataFinished = true;
+			
+			sortForDisplay();
+		}
 	}
 
 	/**
-	 * Append method for Is_nested=true fields
-	 * 
-	 * @param appendable
-	 * @throws IOException
+	 * Indicate whether to generate a new class definition for this meta-metadata.
 	 */
-	protected void appenedNestedMetadataField(Appendable appendable, int pass) throws IOException
+	@Override
+	public boolean isNewClass()
 	{
-		String variableType = " @xml_nested " + XMLTools.classNameFromElementName(getTypeOrName());
-		String fieldType = XMLTools.classNameFromElementName(getTypeOrName());
-		if (isEntity())
-		{
-			variableType = " @xml_nested Entity<" + XMLTools.classNameFromElementName(getTypeOrName())
-					+ ">";
-			fieldType = "Entity<" + XMLTools.classNameFromElementName(getTypeOrName()) + ">";
-		}
-		if (pass == MetadataCompilerUtils.GENERATE_FIELDS_PASS)
-		{
-			appendable.append("\nprivate " + getTagDecl() + variableType + "\t" + name + ";");
-		}
-		else if (pass == MetadataCompilerUtils.GENERATE_METHODS_PASS)
-		{
-			appendLazyEvaluationMethod(appendable, getName(), fieldType);
-			appendSetterForCollection(appendable, getName(), fieldType);
-			appendGetterForCollection(appendable, getName(), fieldType);
-		}
+		// if no internal structure, no need to generate a class
+		if (kids == null)
+			return false;
+		
+		// if indicated by the author explicitly, do not generate a class
+		if (this instanceof MetaMetadata && !((MetaMetadata) this).isGenerateClass())
+			return false;
+		
+		// otherwise, determine if we need to generate a class
+		/*
+		 * look through its children recursively. if any of them is a data definition, which implies
+		 * that this composite field is supposed to define or extend a type inline, we have to generate
+		 * a class for it
+		 * 
+		 * must start from the 1st level children, not the field itself
+		 */
+		for (MetaMetadataField child: getChildMetaMetadata())
+			if (isDefinition(child))
+				return true;
+		
+		return false;
 	}
 	
-	protected String getMetaMetadataTagToInheritFrom()
+	/**
+	 * Recursively check if a meta-metadata field is a definition, by checking if any of its nested
+	 * scalar field contains a scalar_type attribute.
+	 * @param mmf
+	 * @return
+	 */
+	protected boolean isDefinition(MetaMetadataField mmf)
 	{
-		if (isEntity())
-			return  DocumentParserTagNames.ENTITY;
-		else if (type != null)
-			return type;
-		else
-			return null;
-//			return name;
+		if (mmf instanceof MetaMetadataScalarField)
+		{
+			return ((MetaMetadataScalarField) mmf).getScalarType() != null;
+		}
+		
+		if (mmf instanceof MetaMetadataCompositeField && ((MetaMetadataCompositeField) mmf).getType() != null)
+			return true;
+		
+		return mmf.isNewClass();
 	}
-
 }
