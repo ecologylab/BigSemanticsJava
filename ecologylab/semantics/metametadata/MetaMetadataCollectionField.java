@@ -10,7 +10,7 @@ import ecologylab.xml.xml_inherit;
 import ecologylab.xml.ElementState.xml_tag;
 
 @xml_inherit
-@xml_tag("mm_collection_field")
+@xml_tag("collection")
 public class MetaMetadataCollectionField extends MetaMetadataCompositeField
 {
 
@@ -109,6 +109,7 @@ public class MetaMetadataCollectionField extends MetaMetadataCompositeField
 	
 	public String getTagForTranslationScope()
 	{
+		// FIXME: seems broken when rewriting collection xpath without re-indicating child_type
 		return childEntity == true ? DocumentParserTagNames.ENTITY : childType != null ? childType : tag != null ? tag : name;
 	}
 

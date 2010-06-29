@@ -9,7 +9,7 @@ import ecologylab.xml.ElementState.xml_tag;
 import ecologylab.xml.types.scalar.ScalarType;
 
 @xml_inherit
-@xml_tag("mm_scalar_field")
+@xml_tag("scalar")
 public class MetaMetadataScalarField extends MetaMetadataField
 {
 

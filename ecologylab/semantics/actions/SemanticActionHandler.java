@@ -246,6 +246,7 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 		}
 		catch(Exception e)
 		{
+			e.printStackTrace();
 			throw new ForLoopException(e,action,semanticActionReturnValueMap);
 		}
 	}

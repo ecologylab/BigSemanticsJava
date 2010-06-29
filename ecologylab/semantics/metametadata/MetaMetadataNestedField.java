@@ -9,7 +9,7 @@ import ecologylab.xml.xml_inherit;
 import ecologylab.xml.ElementState.xml_tag;
 
 @xml_inherit
-@xml_tag("mm_nested_field")
+@xml_tag("composite")
 public class MetaMetadataNestedField extends MetaMetadataCompositeField
 {
 
