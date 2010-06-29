@@ -327,7 +327,7 @@ implements SemanticsSessionObjectNames, Iterable<S>
 	
 	public boolean isEmpty()
 	{
-		return seeds.isEmpty();
+		return seeds == null || seeds.isEmpty();
 	}
 
 }
