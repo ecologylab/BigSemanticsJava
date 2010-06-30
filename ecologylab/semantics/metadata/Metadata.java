@@ -11,11 +11,10 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 
-import ecologylab.generic.ClassAndCollectionIterator;
 import ecologylab.generic.HashMapArrayList;
-import ecologylab.generic.OneLevelNestingIterator;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.metadata.scalar.MetadataString;
+import ecologylab.semantics.metametadata.ClassAndCollectionIterator;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataField;
 import ecologylab.semantics.metametadata.MetaMetadataOneLevelNestingIterator;
@@ -265,7 +264,7 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 
 		Set<ITermVector> vectors = termVector.componentVectors();
 		
-		ClassAndCollectionIterator<MetadataFieldDescriptor, Metadata> i = metadataIterator();
+		ClassAndCollectionIterator i = metadataIterator();
 		while (i.hasNext())
 		{
 			MetadataBase mb = i.next();
@@ -282,8 +281,8 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 	@Override
 	protected void postTranslationProcessingHook()
 	{
-		initializeMetadataCompTermVector();
 		getMetaMetadata();
+		initializeMetadataCompTermVector();
 	}
 
 	public boolean hwSet(String tagName, String value)
@@ -323,7 +322,7 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 		if (termVector != null)
 			return termVector;
 		CompositeTermVector tv = new CompositeTermVector();
-		ClassAndCollectionIterator<MetadataFieldDescriptor, Metadata> i = metadataIterator();
+		ClassAndCollectionIterator i = metadataIterator();
 		while (i.hasNext())
 		{
 			MetadataBase mb = i.next();
@@ -395,7 +394,7 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 
 	public void recycle()
 	{
-		ClassAndCollectionIterator<MetadataFieldDescriptor, Metadata> iterator = metadataIterator();
+		ClassAndCollectionIterator iterator = metadataIterator();
 		for(MetadataBase metadata = iterator.next(); metadata != null; metadata = iterator.next())
 			metadata.recycle();
 		super.recycle();
@@ -414,9 +413,9 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 		return new MetaMetadataOneLevelNestingIterator(firstMetaMetadataField, this, mixins);
 	}
 
-	public ClassAndCollectionIterator<MetadataFieldDescriptor, Metadata> metadataIterator()
+	public ClassAndCollectionIterator metadataIterator()
 	{
-		return new ClassAndCollectionIterator<MetadataFieldDescriptor, Metadata>(this);
+		return new ClassAndCollectionIterator(this.metaMetadata, this);
 	}
 
 	public boolean hasObservers()
