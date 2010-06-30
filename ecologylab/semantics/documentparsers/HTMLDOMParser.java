@@ -267,7 +267,7 @@ extends HTMLParserCommon<C, IC>
 				if (hrefContainer != null)
 				{
 					SemanticAnchor semAnchor 					= new SemanticAnchor(container.purl(), anchorContext);
-					hrefContainer.addSemanticInLink(semAnchor, container);
+					hrefContainer.addSemanticInLink(semAnchor, container, true);
 	
 					// this is not being performed because we create weights through SemanticInlinks
 					//				metadata.appendAnchorText(anchorText);

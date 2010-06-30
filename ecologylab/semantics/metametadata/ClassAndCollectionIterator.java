@@ -28,7 +28,9 @@ implements Iterator<MetadataBase>
   private MetaMetadataField root;
   private MetadataBase currentObject;
   
-  private Metadata metadata;
+  private MetaMetadataField currentMMField;
+
+	private Metadata metadata;
 
   /**
    * 
@@ -54,7 +56,8 @@ implements Iterator<MetadataBase>
       
       if (iterator.hasNext())
       {
-    	MetaMetadataField firstNext = iterator.next(); 
+      	MetaMetadataField firstNext = iterator.next(); 
+      	currentMMField = firstNext;
         if (firstNext instanceof MetaMetadataCollectionField)
         {
         	MetadataFieldDescriptor mfd = firstNext.getMetadataFieldDescriptor();
@@ -108,4 +111,10 @@ implements Iterator<MetadataBase>
   {    
     return iterator.hasNext() || (collectionIterator != null && collectionIterator.hasNext());
   }
+  
+  
+  public MetaMetadataField getCurrentMMField()
+	{
+		return currentMMField;
+	}
 }

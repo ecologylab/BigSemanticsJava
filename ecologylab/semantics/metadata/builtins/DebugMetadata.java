@@ -3,6 +3,7 @@
  */
 package ecologylab.semantics.metadata.builtins;
 
+import ecologylab.semantics.connectors.InfoCollectorBase;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.scalar.MetadataStringBuilder;
 import ecologylab.semantics.metametadata.MetaMetadata;
@@ -28,16 +29,7 @@ public class DebugMetadata extends Metadata
 	
 	public DebugMetadata(MetadataStringBuilder newTermVector)
 	{
-
+		super(InfoCollectorBase.getMM(DebugMetadata.class));
 		this.newTermVector = newTermVector;
 	}
-
-	/**
-	 * @param metaMetadata
-	 */
-	public DebugMetadata(MetaMetadata metaMetadata)
-	{
-		super(metaMetadata);
-	}
-
 }

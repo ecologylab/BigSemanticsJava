@@ -21,12 +21,6 @@ public class SemanticInLinks extends ArrayList<SemanticAnchor>
 		return semanticInlinkCollection();
 	}
 	
-	@Override
-	public boolean add(SemanticAnchor e)
-	{
-		return addIfUnique(e);
-	}
-	
 	public synchronized void recycle()
 	{
 		int index	= size();
@@ -51,23 +45,34 @@ public class SemanticInLinks extends ArrayList<SemanticAnchor>
 	
 	public synchronized boolean addIfUnique(SemanticAnchor newAnchor)
 	{
+		if(!isUnique(newAnchor))
+			return false;
+		
+		return add(newAnchor);
+	}
+
+	@Override
+	public synchronized boolean add(SemanticAnchor newAnchor)
+	{
+		semanticInlinkCollection().add(newAnchor.signficance,newAnchor.termVector());
+		super.add(newAnchor);
+		return true;
+	}
+
+	private boolean isUnique(SemanticAnchor newAnchor)
+	{
 		String newAnchorText = newAnchor.getAnchorText();
-		if(newAnchorText != null)
+		for(SemanticAnchor oldAnchor : this)
 		{
-			for(SemanticAnchor oldAnchor : this)
+			String anchorText = oldAnchor != null ? oldAnchor.getAnchorText() : null;
+			if(anchorText != null && anchorText.equals(newAnchorText))	// guaranteed to be lower case already
 			{
-				String anchorText = oldAnchor != null ? oldAnchor.getAnchorText() : null;
-				if(anchorText != null && anchorText.equals(newAnchorText))	// guaranteed to be lower case already
-				{
-					//This is one case we know we want to ignore this new anchor.
-					return false;
-				}
+				//This is one case we know we want to ignore this new anchor.
+				return false;
 			}
-			super.add(newAnchor);
-			semanticInlinkCollection().add(newAnchor.signficance,newAnchor.termVector());
-			return true;
 		}
-		return false;
+		// Anchor is unique.
+		return true;
 	}
 
 	/**

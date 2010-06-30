@@ -13,6 +13,8 @@ import java.util.Set;
 
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.metadata.builtins.DebugMetadata;
+import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
 import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.semantics.metametadata.ClassAndCollectionIterator;
 import ecologylab.semantics.metametadata.MetaMetadata;
@@ -25,6 +27,7 @@ import ecologylab.semantics.seeding.SearchState;
 import ecologylab.semantics.seeding.Seed;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.ScalarUnmarshallingContext;
+import ecologylab.xml.TranslationScope;
 import ecologylab.xml.serial_descriptors_classes;
 
 /**
@@ -55,13 +58,18 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 	 * Seed object associated with this, if this is a seed.
 	 */
 	private Seed				seed;
+	
+	public static final String MIXIN_TRANSLATION_STRING = "mixingTranslations";
+	static Class[] mixinClasses = {DebugMetadata.class};
+	static TranslationScope MIXIN_TRANSLATIONS = TranslationScope.get(MIXIN_TRANSLATION_STRING, mixinClasses);
 	/**
 	 * Allows combining instantiated Metadata subclass declarations without hierarchy.
 	 * 
 	 * Could help, for example, to support user annotation.
 	 */
 	@semantics_mixin
-	@xml_collection("mixin")
+	@xml_collection("mixins")
+	//@xml_scope(MIXIN_TRANSLATION_STRING)
 	ArrayList<Metadata>									mixins;
 
 	final static int					INITIAL_SIZE							= 5;
@@ -204,7 +212,7 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 		{
 			MetaMetadataField metaMetadataField = fullIterator.next();
 			MetaMetadataField metaMetadata 			= fullIterator.currentObject();	// stays the same for until we iterate over all mfd's for it
-			Metadata currentMetadata						= this;
+			Metadata currentMetadata						= fullIterator.currentMetadata();
 			
 			// When the iterator enters the metadata in the mixins "this" in getValueString has to be
 			// the corresponding metadata in mixin.
@@ -326,8 +334,13 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 		while (i.hasNext())
 		{
 			MetadataBase mb = i.next();
-			if (mb != null)
+			
+			MetaMetadataField currentMMField = i.getCurrentMMField();
+			if (mb != null && !currentMMField.isIgnoreInTermVector()
+					&& ! (mb instanceof MetadataParsedURL))
+			{
 				tv.add(mb.termVector());
+			}
 		}
 		return (termVector = tv);
 	}
