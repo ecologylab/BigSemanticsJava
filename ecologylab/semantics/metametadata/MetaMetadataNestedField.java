@@ -35,6 +35,30 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 	{
 		if(!inheritMetaMetadataFinished)
 		{
+			/**************************************************************************************
+			 * Inheritance works here in a top-down manner: first we know the type or extends of a
+			 * meta-metadata, from which we can infer scalar_type/type/child_type of its first-level
+			 * children (those not defined inline). In this way we can resolve type information
+			 * recursively.
+			 **************************************************************************************/
+			
+			/*
+			 * tagName will be type / extends attribute for <composite>, or child_type attribute for
+			 * <collection>
+			 */
+			String tagName = getMetaMetadataTagToInheritFrom();
+			MetaMetadata inheritedMetaMetadata =  repository.getByTagName(tagName);
+			if(inheritedMetaMetadata != null)
+			{
+				inheritedMetaMetadata.inheritMetaMetadata(repository);
+				// <collection> should not inherit attributes from its child_type
+				if (!(this instanceof MetaMetadataCollectionField))
+					inheritNonDefaultAttributes(inheritedMetaMetadata);
+				for(MetaMetadataField inheritedField : inheritedMetaMetadata.getChildMetaMetadata())
+					inheritForField(inheritedField);
+				inheritSemanticActionsFromMM(inheritedMetaMetadata);
+			}
+			
 			if (kids != null)
 			{
 				for(MetaMetadataField childField : kids)
@@ -42,16 +66,6 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 					if (childField instanceof MetaMetadataNestedField)
 						((MetaMetadataNestedField)childField).inheritMetaMetadata(repository);
 				}
-			}
-			String tagName = getMetaMetadataTagToInheritFrom();
-			MetaMetadata inheritedMetaMetadata =  repository.getByTagName(tagName);
-			if(inheritedMetaMetadata != null)
-			{
-				inheritedMetaMetadata.inheritMetaMetadata(repository);
-				inheritNonDefaultAttributes(inheritedMetaMetadata);
-				for(MetaMetadataField inheritedField : inheritedMetaMetadata.getChildMetaMetadata())
-					inheritForField(inheritedField);
-				inheritSemanticActionsFromMM(inheritedMetaMetadata);
 			}
 			
 			inheritMetaMetadataFinished = true;

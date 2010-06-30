@@ -983,7 +983,9 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 			}
 			catch (IllegalArgumentException e)
 			{
+				// TODO Auto-generated catch block
 				debug(inheritFrom.getName() + " doesn't have field " + fieldDescriptor.getFieldName() + ", ignore it.");
+				e.printStackTrace();
 			}
 			catch (IllegalAccessException e)
 			{
