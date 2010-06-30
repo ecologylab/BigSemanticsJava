@@ -195,11 +195,4 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 			return null;
 	}
 	
-	@Override
-	protected void inheritNonDefaultAttributes(MetaMetadataField inheritFrom)
-	{
-		
-	}
-	
-
 }
