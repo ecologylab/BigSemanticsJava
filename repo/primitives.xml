@@ -3,53 +3,61 @@
  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
 		
 	<!--+++++++++++++++++++++++++++++++++ Builtin Primitive Base Types  +++++++++++++++++++++++++++++++++-->
-	
-	<!-- The Declaration of Document Class  -->
-	<meta_metadata name="document" extends="metadata" generate_class="false" comment="The Document Class" >
-		<meta_metadata_field name="title" scalar_type="String" style="h1" comment="The Title of the Document" navigates_to="location"/>
-		<meta_metadata_field name="description" scalar_type="String"/>
-		<meta_metadata_field name="location" scalar_type="ParsedURL" always_show="true" comment="The document's actual location."/>
-		<meta_metadata_field name="generation" scalar_type="Int"/>
-		<meta_metadata_field name="page_structure" scalar_type="String" comment="For debugging. Type of the structure recognized by information extraction."/>
-		<meta_metadata_field name="query" scalar_type="String" comment="The search query"/>
+	<meta_metadata name="metadata" dont_generate_class="true" comment="The Metadata Class">
+		<scalar name="meta_metadata_name" scalar_type="String" hide="true" ignore_in_term_vector="true" comment="Stores the name of the meta-metadata, and is used on restoring from XML." />
 	</meta_metadata>
 	
-	<!-- The Declaration of Entity Class  -->
-	<meta_metadata name="entity" extends="metadata" generate_class="false" comment="Reference to a nested document." >
-		<meta_metadata_field name="location" scalar_type="ParsedURL" hide="true" comment="The document's actual location."/>
-		<meta_metadata_field name="gist" scalar_type="String" navigates_to="location" comment="Initial text that describes the document before its downloaded."/>
+	<meta_metadata name="document" dont_generate_class="true" extends="metadata" comment="The Document Class">
+		<scalar name="title" scalar_type="String" style="h1" layer="10" navigates_to="location" comment="The Title of the Document" />
+		<scalar name="description" scalar_type="String" layer="9" />
+		<scalar name="location" scalar_type="ParsedURL" layer="8" always_show="true" comment="The document's actual location." />
+		<scalar name="generation" scalar_type="Int" layer="7" />
+		<scalar name="page_structure" scalar_type="String" layer="6" comment="For debugging. Type of the structure recognized by information extraction." />
+		<scalar name="query" scalar_type="String" layer="5" comment="The search query" />
 	</meta_metadata>
 	
-		<!-- PDF Class -->
-	<meta_metadata name="pdf" parser="pdf" extends="document" comment="The PDF class.">
-		<meta_metadata_field name="author" scalar_type="String" comment="The author of the pdf document"/>
-		<meta_metadata_field name="summary" scalar_type="String" comment="Summary of the pdf document"/>
-		<meta_metadata_field name="keywords" scalar_type="String" comment="Key Words of the document"/>
-		<meta_metadata_field name="subject" scalar_type="String" comment="Subject of the document"/>
-		<meta_metadata_field name="trapped" scalar_type="String" />
-		<meta_metadata_field name="modified" scalar_type="String" />
-		<meta_metadata_field name="contents" scalar_type="String" comment="Contents of the document"/>
-		<meta_metadata_field name="creationdate" scalar_type="String" comment="Creation date of the document"/>
+	<meta_metadata name="entity" dont_generate_class="true" extends="metadata" comment="Reference to a nested document.">
+		<scalar name="location" scalar_type="ParsedURL" hide="true" comment="The document's actual location." />
+		<scalar name="gist" scalar_type="String" navigates_to="location" comment="Initial text that describes the document before its downloaded." />
+	</meta_metadata>
+	
+	<meta_metadata name="pdf" extends="document" comment="The PDF class." parser="pdf">
+		<scalar name="author" scalar_type="String" comment="The author of the pdf document" />
+		<scalar name="summary" scalar_type="String" comment="Summary of the pdf document" />
+		<scalar name="keywords" scalar_type="String" comment="Key Words of the document" />
+		<scalar name="subject" scalar_type="String" comment="Subject of the document" />
+		<scalar name="trapped" scalar_type="String" />
+		<scalar name="modified" scalar_type="String" />
+		<scalar name="contents" scalar_type="String" comment="Contents of the document" />
+		<scalar name="creationdate" scalar_type="String" comment="Creation date of the document" />
 		<mime_type>application/pdf</mime_type>
 		<mime_type>application/x-pdf</mime_type>
 		<mime_type>image/pdf</mime_type>
-		<suffix>pdf</suffix> 
+		<suffix>pdf</suffix>
 	</meta_metadata>
 	
-	<!-- -The Declaration of Media Class -->
-	<meta_metadata name="media" generate_class ="false" extends="metadata" comment="Extend this for Image, sounds, video, etc.">
-		<meta_metadata_field name="context" scalar_type="String" />
+	<meta_metadata name="media" dont_generate_class="true" extends="metadata" comment="Extend this for Image, sounds, video, etc.">
+		<scalar name="context" scalar_type="String" layer="10" />
+		<scalar name="meta_metadata_name" scalar_type="String" hide="true" ignore_in_term_vector="true" comment="Stores the name of the meta-metadata, and is used on restoring from XML." />
 	</meta_metadata>
 	
-	<!-- The Declaration of Image Class -->
-	<meta_metadata name="image" extends="media" generate_class="false" comment="The Image Base Class">
-		<meta_metadata_field name="caption" style="h1" scalar_type="String" comment="The caption of the image."/>
-		<meta_metadata_field name="location" scalar_type="ParsedURL" comment="Location of the image."/>
-		<meta_metadata_field name="local_location" scalar_type="String" hide="true" comment="Relative location of local copy of image."/>
+	<meta_metadata name="image" dont_generate_class="true" extends="media" comment="The Image Base Class">
+		<scalar name="caption" scalar_type="String" style="h1" layer="11" comment="The caption of the image." />
+		<scalar name="location" scalar_type="ParsedURL" layer="9" comment="Location of the image." />
+		<scalar name="local_location" scalar_type="String" hide="true" comment="Relative location of local copy of image." />
+		<mime_type>image/jpeg</mime_type>
+		<mime_type>image/png</mime_type>
+		<mime_type>image/gif</mime_type>
+		<mime_type>image/bmp</mime_type>
+		<suffix>jpg</suffix>
+		<suffix>jpeg</suffix>
+		<suffix>gif</suffix>
+		<suffix>png</suffix>
+		<suffix>bmp</suffix>
 	</meta_metadata>
 	
-	<meta_metadata name="debug_metadata" generate_class="false">
-		<meta_metadata_field name="new_term_vector" scalar_type="StringBuilder" ignore_in_term_vector="true" />
+	<meta_metadata name="debug_metadata" dont_generate_class="true">
+		<scalar name="new_term_vector" scalar_type="StringBuilder" ignore_in_term_vector="true" />
 	</meta_metadata>
-
+	
 </meta_metadata_repository>
