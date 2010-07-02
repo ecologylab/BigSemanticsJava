@@ -26,7 +26,7 @@ public class MetadataCompiler extends ApplicationEnvironment
 {
 	static final TranslationScope	META_METADATA_TRANSLATIONS	= MetaMetadataTranslationScope.get();
 
-	public static final String		DEFAULT_REPOSITORY_DIRECTORY	= "../cf/config/semantics/metametadata/metaMetadataRepository";
+	public static final String		DEFAULT_REPOSITORY_DIRECTORY	= "../cf/config/semantics/metametadata";
 
 	public MetadataCompiler(String[] args) throws XMLTranslationException
 	{
