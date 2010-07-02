@@ -152,7 +152,11 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	 */
 	public static MetaMetadataRepository load(File dir)
 	{
-		println("MetaMetadataRepository directory: " + dir + "\n");
+		if(!dir.exists())
+			println("ERROR - MetaMetadataRepository directory does not exist : " + dir + "\n");
+		else
+			println("MetaMetadataRepository directory : " + dir + "\n");
+			
 		MetaMetadataRepository result = null;
 
 		FileFilter xmlFilter = new FileFilter()
