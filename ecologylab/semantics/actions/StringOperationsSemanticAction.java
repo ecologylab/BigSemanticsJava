@@ -18,6 +18,8 @@ public class StringOperationsSemanticAction<SA extends SemanticAction> extends
 	private static final String	ARG_CONCAT_ANOTHER	= "another";
 
 	// <def_var> names
+	private static final String VAR_CONCAT_ANOTHER  = "another";
+	
 	private static final String	VAR_SUBSTRING_BEGIN	= "begin";
 
 	private static final String	VAR_SUBSTRING_END		= "end";
@@ -65,7 +67,9 @@ public class StringOperationsSemanticAction<SA extends SemanticAction> extends
 		}
 		else if (action.equals(ACTION_CONCAT))
 		{
-			String another = (String) args.get(ARG_CONCAT_ANOTHER);
+			String another = getDefVar(VAR_CONCAT_ANOTHER).getValue();
+			if (another == null)
+				another = (String) args.get(ARG_CONCAT_ANOTHER);
 			StringBuilder sb = new StringBuilder(dest);
 			sb.append(another);
 			return sb.toString();
@@ -114,6 +118,9 @@ public class StringOperationsSemanticAction<SA extends SemanticAction> extends
 				defVarMap.put(var.getName(), var);
 			}
 		}
-		return defVarMap.get(name);
+		if (defVarMap.containsKey(name))
+			return defVarMap.get(name);
+		else
+			return null;
 	}
 }
