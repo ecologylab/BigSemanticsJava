@@ -34,9 +34,13 @@ public class XPathTest
 //	private static final String	LOCATION	= ACM_CITATION;
 //	private static final String	XPATH	= CITATION_XPATH;
 	
-	private static final String	XPATH				= WIKIPEDIA_XPATH;
-	private static final String	CHILD_XPATH	= WIKIPEDIA_CHILD_XPATH;
-	private static final String	LOCATION		= WIKIPEDIA;
+	private static final String	TRENDS	= "http://www.google.com/trends";
+	private static final String	TRENDS_XPATH	= "//td[@class='hotListTable']";
+	private static final String	TRENDS_CHILD_XPATH	= ".";
+	
+	private static final String	XPATH				= TRENDS_XPATH;
+	private static final String	CHILD_XPATH	= TRENDS_CHILD_XPATH;
+	private static final String	LOCATION		= TRENDS;
 	
 	private static final ParsedURL PURL = ParsedURL.getAbsolute(LOCATION);
 
