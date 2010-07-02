@@ -5,6 +5,7 @@ package ecologylab.semantics.actions;
 
 import java.util.ArrayList;
 
+import ecologylab.xml.xml_inherit;
 import ecologylab.xml.ElementState.xml_nowrap;
 
 /**
@@ -16,6 +17,7 @@ import ecologylab.xml.ElementState.xml_nowrap;
  * 
  */
 
+@xml_inherit
 public abstract class NestedSemanticAction<SA extends SemanticAction> extends SemanticAction
 {
 

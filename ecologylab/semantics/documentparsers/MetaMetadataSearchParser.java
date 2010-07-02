@@ -138,6 +138,11 @@ public class MetaMetadataSearchParser
 				try
 				{
 						populatedMetadata = (Document) ElementState.translateFromXML(inputStream(), getMetadataTranslationScope());
+						if (populatedMetadata.getMetaMetadata() == null)
+						{
+							populatedMetadata.setMetaMetadata(metaMetadata);
+							populatedMetadata.initializeMetadataCompTermVector();
+						}
 				}
 				catch (XMLTranslationException e)
 				{

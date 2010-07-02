@@ -24,6 +24,8 @@ public class NestedSemanticActionsTranslationScope
 		SetFieldSemanticAction.class,
 		SetMetadataSemanticAction.class,
 
+		StringOperationsSemanticAction.class,
+		SearchSemanticAction.class,
 	};
 	
 	public static final TranslationScope get()

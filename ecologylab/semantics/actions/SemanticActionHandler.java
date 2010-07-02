@@ -26,6 +26,9 @@ import ecologylab.semantics.metametadata.Argument;
 import ecologylab.semantics.metametadata.Check;
 import ecologylab.semantics.metametadata.DefVar;
 import ecologylab.semantics.tools.GenericIterable;
+import ecologylab.xml.types.scalar.FloatType;
+import ecologylab.xml.types.scalar.IntType;
+import ecologylab.xml.types.scalar.StringType;
 
 /**
 *
@@ -376,10 +379,31 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 			// proceed only if some variables are defined.
 			for(DefVar defVar :	defVars)
 			{
-				 // get value[TODO have to change if any thing apart from numerical value can be defined as local variable]
-				 float value = Float.parseFloat(defVar.getValue());
-				 semanticActionReturnValueMap.put(defVar.getName(), value);
-				 //parameter.addParameter(defVar.getName(), value);
+				if (defVar.getScalarType() != null)
+				{
+					if (defVar.getScalarType() instanceof FloatType)
+					{
+						float value = Float.parseFloat(defVar.getValue());
+						semanticActionReturnValueMap.put(defVar.getName(), value);
+					}
+					else if (defVar.getScalarType() instanceof StringType)
+					{
+						String value = defVar.getValue();
+						semanticActionReturnValueMap.put(defVar.getName(), value);
+					}
+					else if (defVar.getScalarType() instanceof IntType)
+					{
+						int value = Integer.parseInt(defVar.getValue());
+						semanticActionReturnValueMap.put(defVar.getName(), value);
+					}
+				}
+				else
+				{
+					// the previous default action is to treat the variable as a float
+					 float value = Float.parseFloat(defVar.getValue());
+					 semanticActionReturnValueMap.put(defVar.getName(), value);
+					 //parameter.addParameter(defVar.getName(), value);
+				}
 			}
 		}
 	}
@@ -397,6 +421,8 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
    */
 	public  void handleSemanticAction(SemanticAction action, DocumentParser documentType, IC infoCollector)
 	{
+		action.setInfoCollector(infoCollector);
+		
 		final String actionName = action.getActionName();
 		
 		try

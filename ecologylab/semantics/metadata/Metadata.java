@@ -156,6 +156,10 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 				}
 				if (mm == null)
 					mm								= repository.getByClass(getClass());
+				if (mm == null && classDescriptor() != null)
+				{
+					mm = repository.getByTagName(classDescriptor().getTagName());
+				}
 			}
 			metaMetadata				= mm;
 		}
@@ -290,7 +294,8 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 	protected void postTranslationProcessingHook()
 	{
 		getMetaMetadata();
-		initializeMetadataCompTermVector();
+		if (metaMetadata != null)
+			initializeMetadataCompTermVector();
 	}
 
 	public boolean hwSet(String tagName, String value)
@@ -313,7 +318,8 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 	public void setMetaMetadata(MetaMetadata metaMetadata)
 	{
 		//FIXME -- get rid of all call sites for this method -- andruid 6/1/10
-//		this.metaMetadata = metaMetadata;
+		// see MetaMetadataSearchParser for a call site. can we avoid this call?
+		this.metaMetadata = metaMetadata;
 	}
 
 	@Override

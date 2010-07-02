@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.metametadata.Argument;
 import ecologylab.semantics.metametadata.Check;
 import ecologylab.semantics.metametadata.DefVar;
@@ -80,12 +81,12 @@ public abstract class SemanticAction extends ElementState
 	@xml_attribute
 	private String										error;
 
+	private InfoCollector							infoCollector;
 
 	public SemanticAction()
 	{
 		args = new HashMap<String, Argument>();
 	}
-
 	
 	/**
 	 * returns the name of the action.
@@ -229,5 +230,15 @@ public abstract class SemanticAction extends ElementState
 			MetaMetadataTranslationScope.get().addTranslation(SAClass);
 			NestedSemanticActionsTranslationScope.get().addTranslation(SAClass);
 		}
+	}
+	
+	public InfoCollector getInfoCollector()
+	{
+		return infoCollector;
+	}
+	
+	public void setInfoCollector(InfoCollector infoCollector)
+	{
+		this.infoCollector = infoCollector;
 	}
 }
