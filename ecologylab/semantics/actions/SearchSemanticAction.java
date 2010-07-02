@@ -35,6 +35,8 @@ public class SearchSemanticAction<SA extends SemanticAction> extends NestedSeman
 	public Object handle(Object obj, Map<String, Object> args)
 	{
 		String query = (String) args.get(ARG_QUERY);
+		if (query == null || query.isEmpty())
+			return null;
 		
 		InfoCollector ic = getInfoCollector();
 		SeedSet seedSet = ic.getSeedSet();
