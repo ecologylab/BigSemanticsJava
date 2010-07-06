@@ -25,4 +25,22 @@ public class MetadataIntegerScalarType extends MetadataScalarScalarType<Metadata
 		return new MetadataInteger(getValueInstance(value, formatStrings, scalarUnmarshallingContext));
 	}
 
+	@Override
+	public String getCSharptType() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getDbType() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getObjectiveCType() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

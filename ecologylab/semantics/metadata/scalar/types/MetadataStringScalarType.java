@@ -38,4 +38,22 @@ public class MetadataStringScalarType extends MetadataScalarScalarType<MetadataS
 			e.printStackTrace();
 		}
 	}
+
+	@Override
+	public String getCSharptType() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getDbType() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getObjectiveCType() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
