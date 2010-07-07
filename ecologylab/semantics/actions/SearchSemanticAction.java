@@ -5,8 +5,8 @@ import java.util.Map;
 import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.seeding.SearchState;
 import ecologylab.semantics.seeding.SeedSet;
-import ecologylab.xml.simpl_inherit;
-import ecologylab.xml.ElementState.xml_tag;
+import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.ElementState.xml_tag;
 
 @simpl_inherit
 @xml_tag("search")

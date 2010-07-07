@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import ecologylab.net.ParsedURL;
-import ecologylab.xml.types.scalar.ScalarType;
+import ecologylab.serialization.types.scalar.ScalarType;
 
 /**
  * @author andruid

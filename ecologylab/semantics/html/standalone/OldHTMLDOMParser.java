@@ -35,7 +35,7 @@ import ecologylab.semantics.html.documentstructure.IndexPage;
 import ecologylab.semantics.html.documentstructure.TextOnlyPage;
 import ecologylab.semantics.html.utils.HTMLAttributeNames;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
-import ecologylab.xml.XMLTools;
+import ecologylab.serialization.XMLTools;
 
 
 /**

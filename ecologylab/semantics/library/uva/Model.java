@@ -8,11 +8,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import ecologylab.semantics.seeding.DocumentState;
-import ecologylab.xml.ElementState;
-import ecologylab.xml.TranslationScope;
-import ecologylab.xml.SIMPLTranslationException;
-import ecologylab.xml.simpl_inherit;
-import ecologylab.xml.library.geom.RectangularShape;
+import ecologylab.serialization.ElementState;
+import ecologylab.serialization.SIMPLTranslationException;
+import ecologylab.serialization.TranslationScope;
+import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.library.geom.RectangularShape;
 
 /**
  * 

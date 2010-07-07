@@ -3,8 +3,8 @@
  */
 package ecologylab.semantics.actions;
 
-import ecologylab.xml.simpl_inherit;
-import ecologylab.xml.ElementState.xml_tag;
+import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.ElementState.xml_tag;
 
 /**
  * This is the class of the actions which can be invoked via reflection.

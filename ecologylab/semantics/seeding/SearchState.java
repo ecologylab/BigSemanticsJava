@@ -11,9 +11,9 @@ import ecologylab.semantics.connectors.SeedPeer;
 import ecologylab.semantics.documentparsers.MetaMetadataSearchParser;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.model.text.InterestModel;
-import ecologylab.xml.SIMPLTranslationException;
-import ecologylab.xml.simpl_inherit;
-import ecologylab.xml.library.dc.Dc;
+import ecologylab.serialization.SIMPLTranslationException;
+import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.library.dc.Dc;
 
 /**
  * {@link Seed Seed} element that directs combinFormation to perform a search.

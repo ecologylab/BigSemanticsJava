@@ -3,7 +3,7 @@ package ecologylab.semantics.model.text;
 import java.text.DecimalFormat;
 import java.util.Hashtable;
 
-import ecologylab.xml.ElementState;
+import ecologylab.serialization.ElementState;
 
 
 public class Term extends ElementState implements Comparable<Term>

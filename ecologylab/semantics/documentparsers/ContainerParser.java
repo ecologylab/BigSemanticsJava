@@ -5,7 +5,7 @@ import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.seeding.SeedDistributor;
 import ecologylab.semantics.seeding.SearchState;
-import ecologylab.xml.ElementState;
+import ecologylab.serialization.ElementState;
 
 
 /**

@@ -3,13 +3,13 @@ package ecologylab.semantics.seeding;
 
 import ecologylab.collections.Scope;
 import ecologylab.generic.Debug;
-import ecologylab.services.messages.OkResponse;
-import ecologylab.services.messages.RequestMessage;
-import ecologylab.services.messages.ResponseMessage;
-import ecologylab.xml.Hint;
-import ecologylab.xml.TranslationScope;
-import ecologylab.xml.SIMPLTranslationException;
-import ecologylab.xml.simpl_inherit;
+import ecologylab.oodss.messages.OkResponse;
+import ecologylab.oodss.messages.RequestMessage;
+import ecologylab.oodss.messages.ResponseMessage;
+import ecologylab.serialization.Hint;
+import ecologylab.serialization.SIMPLTranslationException;
+import ecologylab.serialization.TranslationScope;
+import ecologylab.serialization.simpl_inherit;
 
 @simpl_inherit
 public class CfCollaborationGetSurrogate extends RequestMessage {

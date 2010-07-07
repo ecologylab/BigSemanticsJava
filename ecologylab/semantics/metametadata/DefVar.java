@@ -4,8 +4,8 @@ import javax.xml.namespace.QName;
 import javax.xml.xpath.XPathConstants;
 
 import ecologylab.semantics.actions.SemanticActionsKeyWords;
-import ecologylab.xml.ElementState;
-import ecologylab.xml.types.scalar.ScalarType;
+import ecologylab.serialization.ElementState;
+import ecologylab.serialization.types.scalar.ScalarType;
 
 public class DefVar  extends ElementState
 {

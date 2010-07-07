@@ -3,16 +3,16 @@ package ecologylab.semantics.tutorials;
 
 import ecologylab.generic.Debug;
 import ecologylab.generic.Generic;
+import ecologylab.oodss.distributed.common.ServicesHostsAndPorts;
+import ecologylab.oodss.distributed.legacy.ServicesClient;
+import ecologylab.oodss.messages.ResponseMessage;
 import ecologylab.semantics.seeding.CfBaseSeedTranslations;
 import ecologylab.semantics.seeding.SearchState;
 import ecologylab.semantics.seeding.SeedCf;
-import ecologylab.services.distributed.common.ServicesHostsAndPorts;
-import ecologylab.services.distributed.legacy.ServicesClient;
-import ecologylab.services.messages.ResponseMessage;
-import ecologylab.xml.TranslationScope;
+import ecologylab.serialization.TranslationScope;
 
 /**
- * Example of how to use ecologylab.services to form a combinFormation client,
+ * Example of how to use ecologylab.oodss to form a combinFormation client,
  * and send search queries and such to the server.
  * 
  * @author andruid

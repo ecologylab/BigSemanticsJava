@@ -3,9 +3,9 @@
  */
 package ecologylab.semantics.actions;
 
-import ecologylab.xml.ElementState;
-import ecologylab.xml.ElementState.simpl_collection;
-import ecologylab.xml.ElementState.xml_tag;
+import ecologylab.serialization.ElementState;
+import ecologylab.serialization.ElementState.simpl_collection;
+import ecologylab.serialization.ElementState.xml_tag;
 
 /**
  * @author amathur

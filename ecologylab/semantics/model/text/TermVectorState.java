@@ -6,7 +6,7 @@ package ecologylab.semantics.model.text;
 import java.util.ArrayList;
 import java.util.Map;
 
-import ecologylab.xml.ElementState;
+import ecologylab.serialization.ElementState;
 
 /**
  * @author andrew

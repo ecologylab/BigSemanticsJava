@@ -5,7 +5,7 @@ package ecologylab.semantics.metadata.scalar.types;
 
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
-import ecologylab.xml.ScalarUnmarshallingContext;
+import ecologylab.serialization.ScalarUnmarshallingContext;
 
 /**
  * @author andruid

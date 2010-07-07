@@ -1,7 +1,7 @@
 package ecologylab.semantics.model;
 
 import ecologylab.generic.Debug;
-import ecologylab.xml.TranslationScope;
+import ecologylab.serialization.TranslationScope;
 
 public class TextTokenTranslations extends Debug
 {

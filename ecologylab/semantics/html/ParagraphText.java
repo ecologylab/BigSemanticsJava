@@ -5,7 +5,7 @@ import org.w3c.tidy.TdNode;
 import ecologylab.generic.StringBuilderPool;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.model.text.TermVector;
-import ecologylab.xml.XMLTools;
+import ecologylab.serialization.XMLTools;
 
 /**
  * Keep the paragraph text in the document with the DOM Node to recognize the ArticleMain node.

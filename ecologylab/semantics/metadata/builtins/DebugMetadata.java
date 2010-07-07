@@ -6,8 +6,8 @@ package ecologylab.semantics.metadata.builtins;
 import ecologylab.semantics.connectors.InfoCollectorBase;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.scalar.MetadataStringBuilder;
-import ecologylab.xml.Hint;
-import ecologylab.xml.simpl_inherit;
+import ecologylab.serialization.Hint;
+import ecologylab.serialization.simpl_inherit;
 
 /**
  * Dynamically generated fields, only for debugging purposes by developers.

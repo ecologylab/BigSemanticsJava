@@ -9,8 +9,8 @@ import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.seeding.Feed;
-import ecologylab.xml.SIMPLTranslationException;
-import ecologylab.xml.TranslationScope;
+import ecologylab.serialization.SIMPLTranslationException;
+import ecologylab.serialization.TranslationScope;
 
 /**
  * @author andruid

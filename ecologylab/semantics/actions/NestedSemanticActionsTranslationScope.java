@@ -1,7 +1,7 @@
 package ecologylab.semantics.actions;
 
 import ecologylab.semantics.metametadata.DefVar;
-import ecologylab.xml.TranslationScope;
+import ecologylab.serialization.TranslationScope;
 
 public class NestedSemanticActionsTranslationScope
 {

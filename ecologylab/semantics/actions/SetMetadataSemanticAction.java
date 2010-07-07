@@ -5,8 +5,8 @@ package ecologylab.semantics.actions;
 
 import java.util.Map;
 
-import ecologylab.xml.simpl_inherit;
-import ecologylab.xml.ElementState.xml_tag;
+import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.ElementState.xml_tag;
 
 /**
  * @author amathur

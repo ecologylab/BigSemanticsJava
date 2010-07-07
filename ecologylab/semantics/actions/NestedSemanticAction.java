@@ -5,8 +5,8 @@ package ecologylab.semantics.actions;
 
 import java.util.ArrayList;
 
-import ecologylab.xml.simpl_inherit;
-import ecologylab.xml.ElementState.simpl_nowrap;
+import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.ElementState.simpl_nowrap;
 
 /**
  * This class is the base class for semantic actions which can have nested semantic actions inside

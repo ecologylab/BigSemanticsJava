@@ -29,7 +29,7 @@ import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.seeding.Seed;
-import ecologylab.xml.ElementState;
+import ecologylab.serialization.ElementState;
 
 /**
  * Super class for all document types. This class obtains the connection to a document. A parse

@@ -5,10 +5,10 @@ package ecologylab.semantics.seeding;
 
 import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.documentparsers.DocumentParser;
-import ecologylab.xml.ElementState;
-import ecologylab.xml.Hint;
-import ecologylab.xml.SIMPLTranslationException;
-import ecologylab.xml.TranslationScope;
+import ecologylab.serialization.ElementState;
+import ecologylab.serialization.Hint;
+import ecologylab.serialization.SIMPLTranslationException;
+import ecologylab.serialization.TranslationScope;
 
 /**
  * 
@@ -20,7 +20,7 @@ public class InlineSeed extends Seed
 	@simpl_scalar @simpl_hints(Hint.XML_LEAF_CDATA) protected String			content;
 
 	/**
-	 * Blank constructor used by automatic ecologylab.xml instantiations. 
+	 * Blank constructor used by automatic ecologylab.serialization instantiations. 
 	 */
 	public InlineSeed()
 	{

@@ -18,8 +18,8 @@ import ecologylab.semantics.seeding.SearchState;
 import ecologylab.semantics.seeding.Seed;
 import ecologylab.semantics.seeding.SeedDistributor;
 import ecologylab.semantics.seeding.SeedSet;
-import ecologylab.xml.ElementState;
-import ecologylab.xml.TranslationScope;
+import ecologylab.serialization.ElementState;
+import ecologylab.serialization.TranslationScope;
 
 /**
  * @author andruid

@@ -9,7 +9,7 @@ import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.model.TextChunkBase;
 import ecologylab.semantics.model.text.utils.Filter;
 import ecologylab.semantics.seeding.SemanticsPrefs;
-import ecologylab.xml.ElementState;
+import ecologylab.serialization.ElementState;
 
 
 

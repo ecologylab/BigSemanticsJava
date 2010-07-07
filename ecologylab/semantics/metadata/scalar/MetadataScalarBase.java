@@ -7,7 +7,7 @@ import ecologylab.generic.OneLevelNestingIterator;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataBase;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
-import ecologylab.xml.ElementState;
+import ecologylab.serialization.ElementState;
 
 abstract
 public class MetadataScalarBase<T> implements MetadataBase

@@ -18,7 +18,7 @@ import ecologylab.semantics.seeding.QandDownloadable;
 import ecologylab.semantics.seeding.SeedDistributor;
 import ecologylab.semantics.seeding.SearchResult;
 import ecologylab.semantics.seeding.Seed;
-import ecologylab.xml.TranslationScope;
+import ecologylab.serialization.TranslationScope;
 
 /**
  * @author andruid

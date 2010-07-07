@@ -14,9 +14,9 @@ import ecologylab.appframework.ApplicationEnvironment;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.metametadata.MetaMetadataTranslationScope;
-import ecologylab.xml.TranslationScope;
-import ecologylab.xml.XMLTools;
-import ecologylab.xml.SIMPLTranslationException;
+import ecologylab.serialization.SIMPLTranslationException;
+import ecologylab.serialization.TranslationScope;
+import ecologylab.serialization.XMLTools;
 
 /**
  * @author andruid

@@ -8,8 +8,8 @@ import ecologylab.semantics.actions.SemanticAction;
 import ecologylab.semantics.connectors.SemanticsSite;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
+import ecologylab.serialization.TranslationScope;
 import ecologylab.textformat.NamedStyle;
-import ecologylab.xml.TranslationScope;
 
 public class MetaMetadataTranslationScope extends Debug
 {

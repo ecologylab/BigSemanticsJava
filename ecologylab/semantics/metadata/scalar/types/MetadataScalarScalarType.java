@@ -8,10 +8,10 @@ import java.lang.reflect.Field;
 import ecologylab.generic.ReflectionTools;
 import ecologylab.semantics.metadata.scalar.MetadataScalarBase;
 import ecologylab.semantics.metadata.scalar.MetadataString;
-import ecologylab.xml.ScalarUnmarshallingContext;
-import ecologylab.xml.types.scalar.ReferenceType;
-import ecologylab.xml.types.scalar.ScalarType;
-import ecologylab.xml.types.scalar.TypeRegistry;
+import ecologylab.serialization.ScalarUnmarshallingContext;
+import ecologylab.serialization.types.scalar.ReferenceType;
+import ecologylab.serialization.types.scalar.ScalarType;
+import ecologylab.serialization.types.scalar.TypeRegistry;
 
 /**
  * Basis for scalar types for classes that derive from MetadataScalarBase.

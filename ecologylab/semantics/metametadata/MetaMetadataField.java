@@ -19,16 +19,16 @@ import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
 import ecologylab.semantics.tools.MetadataCompiler;
 import ecologylab.semantics.tools.MetadataCompilerUtils;
+import ecologylab.serialization.ClassDescriptor;
+import ecologylab.serialization.ElementState;
+import ecologylab.serialization.FieldDescriptor;
+import ecologylab.serialization.SIMPLTranslationException;
+import ecologylab.serialization.TranslationScope;
+import ecologylab.serialization.XMLTools;
+import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.types.element.Mappable;
+import ecologylab.serialization.types.scalar.ScalarType;
 import ecologylab.textformat.NamedStyle;
-import ecologylab.xml.ClassDescriptor;
-import ecologylab.xml.ElementState;
-import ecologylab.xml.FieldDescriptor;
-import ecologylab.xml.TranslationScope;
-import ecologylab.xml.XMLTools;
-import ecologylab.xml.SIMPLTranslationException;
-import ecologylab.xml.simpl_inherit;
-import ecologylab.xml.types.element.Mappable;
-import ecologylab.xml.types.scalar.ScalarType;
 
 /**
  * 
@@ -1203,7 +1203,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	}
 	
 	/**
-	 * If a tag was declared, form an ecologylab.xml @xml_tag declaration with it.
+	 * If a tag was declared, form an ecologylab.serialization @xml_tag declaration with it.
 	 * 
 	 * @return	The @xml_tag declaration string, or the empty string.
 	 */

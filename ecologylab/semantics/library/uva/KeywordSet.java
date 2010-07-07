@@ -5,8 +5,8 @@ package ecologylab.semantics.library.uva;
 
 import java.util.ArrayList;
 
-import ecologylab.xml.ElementState;
-import ecologylab.xml.simpl_inherit;
+import ecologylab.serialization.ElementState;
+import ecologylab.serialization.simpl_inherit;
 
 /**
  * 

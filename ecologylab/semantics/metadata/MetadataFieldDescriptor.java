@@ -10,10 +10,10 @@ import java.util.ArrayList;
 import ecologylab.semantics.gui.EditValueEvent;
 import ecologylab.semantics.gui.EditValueListener;
 import ecologylab.semantics.gui.EditValueNotifier;
-import ecologylab.xml.ClassDescriptor;
-import ecologylab.xml.ElementState;
-import ecologylab.xml.FieldDescriptor;
-import ecologylab.xml.ScalarUnmarshallingContext;
+import ecologylab.serialization.ClassDescriptor;
+import ecologylab.serialization.ElementState;
+import ecologylab.serialization.FieldDescriptor;
+import ecologylab.serialization.ScalarUnmarshallingContext;
 
 /**
  * @author andruid

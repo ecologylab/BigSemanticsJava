@@ -10,7 +10,7 @@ import java.util.*;
 
 import ecologylab.generic.*;
 import ecologylab.net.ParsedURL;
-import ecologylab.xml.XMLTools;
+import ecologylab.serialization.XMLTools;
 
 
 /**

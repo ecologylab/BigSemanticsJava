@@ -6,7 +6,7 @@ import ecologylab.semantics.connectors.CFPrefNames;
 import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.connectors.SeedPeer;
-import ecologylab.xml.ElementState;
+import ecologylab.serialization.ElementState;
 
 /**
  * Specification of a directive to the agent or otherwise to composition space services.
@@ -47,7 +47,7 @@ abstract public class Seed<AC extends Container> extends ElementState implements
 		}
 
     /**
-     * Blank constructor used by automatic ecologylab.xml instantiations.
+     * Blank constructor used by automatic ecologylab.serialization instantiations.
      */
 		public Seed()
     {}

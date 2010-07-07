@@ -14,7 +14,7 @@ import ecologylab.appframework.PropertiesAndDirectories;
 import ecologylab.appframework.types.prefs.PrefString;
 import ecologylab.io.Files;
 import ecologylab.semantics.metadata.MetadataBuiltinsTranslationScope;
-import ecologylab.xml.XMLTools;
+import ecologylab.serialization.XMLTools;
 
 /**
  * This class has all the constants which are needed by the compiler.
@@ -44,11 +44,11 @@ public class MetadataCompilerUtils
 		"ecologylab.semantics.metametadata.MetaMetadata",
 		"ecologylab.net.ParsedURL",
 		"ecologylab.generic.HashMapArrayList",
-		"ecologylab.xml.xml_inherit",
-		"ecologylab.xml.types.element.Mappable",
+		"ecologylab.serialization.xml_inherit",
+		"ecologylab.serialization.types.element.Mappable",
 		"ecologylab.semantics.metadata.scalar.*",
-		"ecologylab.xml.TranslationScope",
-		"ecologylab.xml.ElementState.xml_tag",
+		"ecologylab.serialization.TranslationScope",
+		"ecologylab.serialization.ElementState.xml_tag",
 		"ecologylab.semantics.metadata.builtins.*",
 		"ecologylab.semantics.metametadata.MetaMetadataRepository",
 		// "ecologylab.semantics.generated.library.*",

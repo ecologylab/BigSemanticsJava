@@ -1,8 +1,8 @@
 package ecologylab.semantics.model.text;
 
-import ecologylab.xml.ElementState;
-import ecologylab.xml.ElementState.simpl_scalar;
-import ecologylab.xml.ElementState.simpl_composite;
+import ecologylab.serialization.ElementState;
+import ecologylab.serialization.ElementState.simpl_composite;
+import ecologylab.serialization.ElementState.simpl_scalar;
 
 public class TermVectorEntry extends ElementState
 {

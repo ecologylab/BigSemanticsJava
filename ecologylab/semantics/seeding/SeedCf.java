@@ -4,9 +4,9 @@
 package ecologylab.semantics.seeding;
 
 import ecologylab.collections.Scope;
-import ecologylab.services.messages.RequestMessage;
-import ecologylab.services.messages.ResponseMessage;
-import ecologylab.xml.simpl_inherit;
+import ecologylab.oodss.messages.RequestMessage;
+import ecologylab.oodss.messages.ResponseMessage;
+import ecologylab.serialization.simpl_inherit;
 
 /**
  * Pass a set of seeds to combinFormation's agents.

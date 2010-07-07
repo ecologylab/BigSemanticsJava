@@ -3,8 +3,8 @@ package ecologylab.semantics.actions;
 import javax.xml.namespace.QName;
 import javax.xml.xpath.XPathConstants;
 
-import ecologylab.xml.simpl_inherit;
-import ecologylab.xml.ElementState.xml_tag;
+import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.ElementState.xml_tag;
 
 @simpl_inherit
 public @xml_tag(SemanticActionStandardMethods.GET_XPATH_NODE) class GetXPathNodeSemanticAction extends SemanticAction implements SemanticActionStandardMethods

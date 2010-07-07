@@ -26,9 +26,9 @@ import ecologylab.semantics.metametadata.Argument;
 import ecologylab.semantics.metametadata.Check;
 import ecologylab.semantics.metametadata.DefVar;
 import ecologylab.semantics.tools.GenericIterable;
-import ecologylab.xml.types.scalar.FloatType;
-import ecologylab.xml.types.scalar.IntType;
-import ecologylab.xml.types.scalar.StringType;
+import ecologylab.serialization.types.scalar.FloatType;
+import ecologylab.serialization.types.scalar.IntType;
+import ecologylab.serialization.types.scalar.StringType;
 
 /**
 *

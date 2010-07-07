@@ -29,10 +29,10 @@ import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
 import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.semantics.metadata.scalar.MetadataStringBuilder;
 import ecologylab.semantics.metadata.scalar.types.MetadataScalarScalarType;
+import ecologylab.serialization.ElementState;
+import ecologylab.serialization.SIMPLTranslationException;
+import ecologylab.serialization.TranslationScope;
 import ecologylab.textformat.NamedStyle;
-import ecologylab.xml.ElementState;
-import ecologylab.xml.TranslationScope;
-import ecologylab.xml.SIMPLTranslationException;
 
 /**
  * @author damaraju

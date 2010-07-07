@@ -22,10 +22,10 @@ import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
 import ecologylab.semantics.tools.MetadataCompiler;
 import ecologylab.semantics.tools.MetadataCompilerUtils;
-import ecologylab.xml.TranslationScope;
-import ecologylab.xml.XMLTools;
-import ecologylab.xml.SIMPLTranslationException;
-import ecologylab.xml.types.element.Mappable;
+import ecologylab.serialization.SIMPLTranslationException;
+import ecologylab.serialization.TranslationScope;
+import ecologylab.serialization.XMLTools;
+import ecologylab.serialization.types.element.Mappable;
 
 /**
  * @author damaraju

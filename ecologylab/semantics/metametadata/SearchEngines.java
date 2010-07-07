@@ -1,7 +1,7 @@
 package ecologylab.semantics.metametadata;
 
 import ecologylab.generic.HashMapArrayList;
-import ecologylab.xml.ElementState;
+import ecologylab.serialization.ElementState;
 
 public class SearchEngines extends ElementState
 {

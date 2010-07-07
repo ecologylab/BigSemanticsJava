@@ -19,7 +19,7 @@ import ecologylab.semantics.html.documentstructure.ImageFeatures;
 import ecologylab.semantics.html.utils.HTMLAttributeNames;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.model.text.TermVector;
-import ecologylab.xml.XMLTools;
+import ecologylab.serialization.XMLTools;
 
 
 

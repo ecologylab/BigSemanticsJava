@@ -2,9 +2,9 @@ package ecologylab.semantics.model.text;
 
 import java.util.Map.Entry;
 
-import ecologylab.xml.ElementState;
-import ecologylab.xml.types.element.Mappable;
-import ecologylab.xml.types.scalar.ScalarType;
+import ecologylab.serialization.ElementState;
+import ecologylab.serialization.types.element.Mappable;
+import ecologylab.serialization.types.scalar.ScalarType;
 
 public class InterestModelEntry extends ElementState
 implements Mappable<String>

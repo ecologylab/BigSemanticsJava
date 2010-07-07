@@ -4,7 +4,7 @@ import ecologylab.generic.StringTools;
 import ecologylab.semantics.metadata.semantics_pseudo_scalar;
 import ecologylab.semantics.model.text.ITermVector;
 import ecologylab.semantics.model.text.TermVector;
-import ecologylab.xml.XMLTools;
+import ecologylab.serialization.XMLTools;
 
 @semantics_pseudo_scalar
 public class MetadataStringBuilder extends MetadataScalarBase<StringBuilder>

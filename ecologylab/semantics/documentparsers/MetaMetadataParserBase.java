@@ -35,12 +35,12 @@ import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataField;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.metametadata.MetaMetadataCollectionField;
-import ecologylab.xml.FieldDescriptor;
-import ecologylab.xml.ScalarUnmarshallingContext;
-import ecologylab.xml.TranslationScope;
-import ecologylab.xml.XMLTools;
-import ecologylab.xml.SIMPLTranslationException;
-import ecologylab.xml.types.scalar.ScalarType;
+import ecologylab.serialization.FieldDescriptor;
+import ecologylab.serialization.SIMPLTranslationException;
+import ecologylab.serialization.ScalarUnmarshallingContext;
+import ecologylab.serialization.TranslationScope;
+import ecologylab.serialization.XMLTools;
+import ecologylab.serialization.types.scalar.ScalarType;
 
 /**
  * This is the base class for the all the document type which we create using meta-metadata.

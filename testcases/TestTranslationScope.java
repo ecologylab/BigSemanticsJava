@@ -4,7 +4,7 @@ package testcases;
 import ecologylab.generic.Debug;
 import ecologylab.semantics.metadata.builtins.Image;
 import ecologylab.semantics.metadata.scalar.MetadataString;
-import ecologylab.xml.TranslationScope;
+import ecologylab.serialization.TranslationScope;
 
 public class TestTranslationScope extends Debug
 {

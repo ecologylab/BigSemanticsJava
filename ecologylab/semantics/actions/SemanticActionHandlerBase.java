@@ -20,7 +20,7 @@ import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metametadata.Argument;
 import ecologylab.semantics.metametadata.MetaMetadata;
-import ecologylab.xml.XMLTools;
+import ecologylab.serialization.XMLTools;
 
 /**
  * This is the base class for SemanticActionHandler interface. It implements the most common

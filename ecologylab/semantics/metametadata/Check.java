@@ -3,7 +3,7 @@
  */
 package ecologylab.semantics.metametadata;
 
-import ecologylab.xml.ElementState;
+import ecologylab.serialization.ElementState;
 
 /**
  * @author amathur

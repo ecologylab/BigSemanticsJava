@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 import ecologylab.net.ParsedURL;
-import ecologylab.xml.ElementState;
-import ecologylab.xml.simpl_inherit;
+import ecologylab.serialization.ElementState;
+import ecologylab.serialization.simpl_inherit;
 
 /**
  * 

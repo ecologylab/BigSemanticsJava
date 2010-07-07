@@ -21,8 +21,8 @@ import ecologylab.semantics.model.text.InterestModel;
 import ecologylab.semantics.seeding.Seed;
 import ecologylab.semantics.seeding.SeedDistributor;
 import ecologylab.semantics.seeding.SearchState;
-import ecologylab.xml.SIMPLTranslationException;
-import ecologylab.xml.TranslationScope;
+import ecologylab.serialization.SIMPLTranslationException;
+import ecologylab.serialization.TranslationScope;
 
 /**
  * @author amathur

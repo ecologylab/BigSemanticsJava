@@ -7,7 +7,7 @@ import ecologylab.net.ParsedURL;
 import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.connectors.InfoCollectorBase;
-import ecologylab.xml.simpl_inherit;
+import ecologylab.serialization.simpl_inherit;
 
 /**
  * {@link Seed Seed} element used to tell combinFormation to process a document.

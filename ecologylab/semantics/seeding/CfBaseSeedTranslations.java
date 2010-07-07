@@ -4,8 +4,8 @@
 package ecologylab.semantics.seeding;
 
 import ecologylab.generic.Debug;
-import ecologylab.services.messages.DefaultServicesTranslations;
-import ecologylab.xml.TranslationScope;
+import ecologylab.oodss.messages.DefaultServicesTranslations;
+import ecologylab.serialization.TranslationScope;
 
 /**
  * TranslationSpace for client-side CFServices.

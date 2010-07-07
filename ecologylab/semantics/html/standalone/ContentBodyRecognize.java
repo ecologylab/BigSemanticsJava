@@ -25,9 +25,9 @@ import ecologylab.semantics.html.DOMWalkInformationTagger;
 import ecologylab.semantics.html.HTMLElement;
 import ecologylab.semantics.html.ImgElement;
 import ecologylab.semantics.html.RecognizedDocumentStructure;
-import ecologylab.xml.ElementState;
-import ecologylab.xml.TranslationScope;
-import ecologylab.xml.SIMPLTranslationException;
+import ecologylab.serialization.ElementState;
+import ecologylab.serialization.SIMPLTranslationException;
+import ecologylab.serialization.TranslationScope;
 
 
 

@@ -8,9 +8,9 @@ import java.net.URL;
 
 import ecologylab.generic.StringBuilderPool;
 import ecologylab.net.ParsedURL;
-import ecologylab.xml.ElementState;
-import ecologylab.xml.Hint;
-import ecologylab.xml.simpl_inherit;
+import ecologylab.serialization.ElementState;
+import ecologylab.serialization.Hint;
+import ecologylab.serialization.simpl_inherit;
 
 /**
  * Smallest unit of top-level text in an HTML page; that is, a token of text that lives outside of

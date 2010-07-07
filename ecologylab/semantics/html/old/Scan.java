@@ -19,7 +19,7 @@ import ecologylab.generic.StringTools;
  */
 public class Scan
 extends Debug
-implements ecologylab.xml.CharacterConstants
+implements ecologylab.serialization.CharacterConstants
 {
    public String	urlString; // just convenient for debug messages
    

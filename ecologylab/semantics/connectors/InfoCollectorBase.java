@@ -23,6 +23,7 @@ import ecologylab.generic.HashMapWriteSynch;
 import ecologylab.generic.StringTools;
 import ecologylab.io.Assets;
 import ecologylab.net.ParsedURL;
+import ecologylab.oodss.distributed.common.SessionObjects;
 import ecologylab.semantics.metadata.DocumentParserTagNames;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.builtins.Document;
@@ -32,7 +33,6 @@ import ecologylab.semantics.seeding.Seed;
 import ecologylab.semantics.seeding.SeedDistributor;
 import ecologylab.semantics.seeding.SeedSet;
 import ecologylab.semantics.seeding.SemanticsPrefs;
-import ecologylab.services.distributed.common.SessionObjects;
 
 /**
  * @author amathur
@@ -276,7 +276,7 @@ implements InfoCollector<AC>, SemanticsPrefs, ApplicationProperties, DocumentPar
 			seedSet.performNextSeeding(sessionScope);
 			System.out.println(this + ".gotMoreSeedResults()!!! " + seedSet.getStartingResultNum());
 		}
-		// for (ecologylab.services.messages.cf.Seed s : seedSet)
+		// for (ecologylab.oodss.messages.cf.Seed s : seedSet)
 		// if (s instanceof SearchState)
 		// {
 		// SearchState searchState = (SearchState) s;

@@ -1,6 +1,6 @@
 package ecologylab.semantics.connectors;
 
-import ecologylab.services.distributed.common.SessionObjects;
+import ecologylab.oodss.distributed.common.SessionObjects;
 
 public interface SemanticsSessionObjectNames extends SessionObjects
 {

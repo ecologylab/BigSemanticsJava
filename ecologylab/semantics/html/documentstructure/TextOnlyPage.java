@@ -13,7 +13,7 @@ import ecologylab.semantics.html.ParagraphText;
 import ecologylab.semantics.html.RecognizedDocumentStructure;
 import ecologylab.semantics.html.TidyInterface;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
-import ecologylab.xml.XMLTools;
+import ecologylab.serialization.XMLTools;
 
 
 /**

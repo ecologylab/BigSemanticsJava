@@ -5,7 +5,7 @@ package ecologylab.semantics.metametadata;
 
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.net.UserAgent;
-import ecologylab.xml.ElementState;
+import ecologylab.serialization.ElementState;
 
 /**
  * @author amathur

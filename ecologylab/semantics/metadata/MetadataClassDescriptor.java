@@ -3,8 +3,8 @@
  */
 package ecologylab.semantics.metadata;
 
-import ecologylab.xml.ClassDescriptor;
-import ecologylab.xml.simpl_inherit;
+import ecologylab.serialization.ClassDescriptor;
+import ecologylab.serialization.simpl_inherit;
 
 /**
  * Special class descriptor for Metadata subclasses.

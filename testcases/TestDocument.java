@@ -1,8 +1,8 @@
 package testcases;
 
 import ecologylab.semantics.metadata.scalar.MetadataString;
-import ecologylab.xml.ElementState;
-import ecologylab.xml.Hint;
+import ecologylab.serialization.ElementState;
+import ecologylab.serialization.Hint;
 
 public class TestDocument extends ElementState
 {

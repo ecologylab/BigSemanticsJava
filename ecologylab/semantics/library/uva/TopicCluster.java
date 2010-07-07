@@ -5,11 +5,11 @@ package ecologylab.semantics.library.uva;
 
 import java.util.ArrayList;
 
-import ecologylab.xml.ElementState;
-import ecologylab.xml.ElementState.simpl_composite;
-import ecologylab.xml.ElementState.simpl_nowrap;
-import ecologylab.xml.library.geom.Rectangle2DDoubleState;
-import ecologylab.xml.library.geom.RectangularShape;
+import ecologylab.serialization.ElementState;
+import ecologylab.serialization.ElementState.simpl_composite;
+import ecologylab.serialization.ElementState.simpl_nowrap;
+import ecologylab.serialization.library.geom.Rectangle2DDoubleState;
+import ecologylab.serialization.library.geom.RectangularShape;
 
 /**
  * 

@@ -8,9 +8,9 @@ import java.lang.reflect.Method;
 import java.util.Map;
 
 import ecologylab.generic.ReflectionTools;
-import ecologylab.xml.XMLTools;
-import ecologylab.xml.simpl_inherit;
-import ecologylab.xml.ElementState.xml_tag;
+import ecologylab.serialization.XMLTools;
+import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.ElementState.xml_tag;
 
 /**
  * @author amathur

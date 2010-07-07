@@ -11,9 +11,9 @@ import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.connectors.SeedPeer;
 import ecologylab.semantics.connectors.SemanticsSessionObjectNames;
-import ecologylab.xml.ElementState;
-import ecologylab.xml.TranslationScope;
-import ecologylab.xml.simpl_inherit;
+import ecologylab.serialization.ElementState;
+import ecologylab.serialization.TranslationScope;
+import ecologylab.serialization.simpl_inherit;
 
 /**
  * A collection of seeds that will be performed by the agent, or elsewhere,

@@ -25,11 +25,11 @@ import ecologylab.semantics.model.text.CompositeTermVector;
 import ecologylab.semantics.model.text.ITermVector;
 import ecologylab.semantics.seeding.SearchState;
 import ecologylab.semantics.seeding.Seed;
-import ecologylab.xml.ElementState;
-import ecologylab.xml.Hint;
-import ecologylab.xml.ScalarUnmarshallingContext;
-import ecologylab.xml.TranslationScope;
-import ecologylab.xml.simpl_descriptor_classes;
+import ecologylab.serialization.ElementState;
+import ecologylab.serialization.Hint;
+import ecologylab.serialization.ScalarUnmarshallingContext;
+import ecologylab.serialization.TranslationScope;
+import ecologylab.serialization.simpl_descriptor_classes;
 
 /**
  * This is the new metadata class that is the base class for the meta-metadata system. It contains

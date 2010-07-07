@@ -21,7 +21,7 @@ import ecologylab.semantics.documentparsers.HTMLDOMParser;
 import ecologylab.semantics.html.documentstructure.ImageFeatures;
 import ecologylab.semantics.html.utils.HTMLAttributeNames;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
-import ecologylab.xml.XMLTools;
+import ecologylab.serialization.XMLTools;
 
 
 

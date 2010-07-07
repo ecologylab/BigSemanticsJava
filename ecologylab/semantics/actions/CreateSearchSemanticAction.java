@@ -3,7 +3,7 @@
  */
 package ecologylab.semantics.actions;
 
-import ecologylab.xml.ElementState.xml_tag;
+import ecologylab.serialization.ElementState.xml_tag;
 
 /**
  * @author amathur

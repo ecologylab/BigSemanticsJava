@@ -11,9 +11,9 @@ import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.MetaMetadata;
-import ecologylab.xml.TranslationScope;
-import ecologylab.xml.XMLTools;
-import ecologylab.xml.SIMPLTranslationException;
+import ecologylab.serialization.SIMPLTranslationException;
+import ecologylab.serialization.TranslationScope;
+import ecologylab.serialization.XMLTools;
 
 /**
  * This class is used for directly biniding the XML document with metadata classes to build metadata

@@ -3,7 +3,7 @@ package testcases;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import ecologylab.xml.XMLTools;
+import ecologylab.serialization.XMLTools;
 
 public class RegExTest
 {

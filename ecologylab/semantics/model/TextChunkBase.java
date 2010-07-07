@@ -13,11 +13,11 @@ import java.util.regex.Pattern;
 import ecologylab.generic.StringTools;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
+import ecologylab.serialization.ElementState;
+import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.types.scalar.ScalarType;
+import ecologylab.serialization.types.scalar.ScalarTypeInstanceConstants;
 import ecologylab.textformat.NamedStyle;
-import ecologylab.xml.ElementState;
-import ecologylab.xml.simpl_inherit;
-import ecologylab.xml.types.scalar.ScalarType;
-import ecologylab.xml.types.scalar.ScalarTypeInstanceConstants;
 
 /**
  * A text chunk from an HTML page; delimited by markup, or a size threshold; composed of an ordered
@@ -482,7 +482,7 @@ class TextChunkBase<T extends TextToken> extends ElementState implements
 
 			if (!inHref && (href != null))
 			{
-				result += open + "a " + ecologylab.xml.XMLTools.nameVal("href", href.url()) + close;
+				result += open + "a " + ecologylab.serialization.XMLTools.nameVal("href", href.url()) + close;
 				inHref = true;
 			}
 

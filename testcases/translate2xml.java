@@ -5,8 +5,8 @@ import java.io.IOException;
 
 import ecologylab.semantics.metadata.builtins.Image;
 import ecologylab.semantics.metametadata.MetaMetadataTranslationScope;
-import ecologylab.xml.TranslationScope;
-import ecologylab.xml.SIMPLTranslationException;
+import ecologylab.serialization.SIMPLTranslationException;
+import ecologylab.serialization.TranslationScope;
 
 public class translate2xml
 {

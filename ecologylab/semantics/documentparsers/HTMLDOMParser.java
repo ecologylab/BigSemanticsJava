@@ -24,8 +24,8 @@ import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
-import ecologylab.xml.ElementState;
-import ecologylab.xml.XMLTools;
+import ecologylab.serialization.ElementState;
+import ecologylab.serialization.XMLTools;
 
 /**
  * Parse HTML page and create DOM

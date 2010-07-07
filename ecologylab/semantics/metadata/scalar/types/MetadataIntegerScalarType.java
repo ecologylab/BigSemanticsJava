@@ -4,7 +4,7 @@
 package ecologylab.semantics.metadata.scalar.types;
 
 import ecologylab.semantics.metadata.scalar.MetadataInteger;
-import ecologylab.xml.ScalarUnmarshallingContext;
+import ecologylab.serialization.ScalarUnmarshallingContext;
 
 /**
  * @author andruid

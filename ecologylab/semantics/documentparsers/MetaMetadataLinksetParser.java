@@ -12,7 +12,7 @@ import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.seeding.Seed;
 import ecologylab.semantics.seeding.SeedDistributor;
-import ecologylab.xml.ElementState;
+import ecologylab.serialization.ElementState;
 
 /**
  * This is the base class for all seeds which bascially return a collection of links to be

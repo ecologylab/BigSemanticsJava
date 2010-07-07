@@ -2,8 +2,8 @@ package ecologylab.semantics.metadata.scalar.types;
 
 import ecologylab.semantics.metadata.builtins.Image;
 import ecologylab.semantics.metadata.scalar.MetadataString;
-import ecologylab.xml.ScalarUnmarshallingContext;
-import ecologylab.xml.SIMPLTranslationException;
+import ecologylab.serialization.SIMPLTranslationException;
+import ecologylab.serialization.ScalarUnmarshallingContext;
 
 public class MetadataStringScalarType extends MetadataScalarScalarType<MetadataString, String>
 {

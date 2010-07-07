@@ -9,7 +9,7 @@ import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.Entity;
 import ecologylab.semantics.metadata.builtins.Image;
 import ecologylab.semantics.metadata.builtins.Media;
-import ecologylab.xml.TranslationScope;
+import ecologylab.serialization.TranslationScope;
 
 /**
  * 
