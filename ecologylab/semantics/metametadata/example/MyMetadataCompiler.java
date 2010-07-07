@@ -2,7 +2,7 @@ package ecologylab.semantics.metametadata.example;
 
 import ecologylab.semantics.actions.SemanticAction;
 import ecologylab.semantics.tools.MetadataCompiler;
-import ecologylab.xml.XMLTranslationException;
+import ecologylab.xml.SIMPLTranslationException;
 
 /**
  * Use the MetadataCompiler class to compile a meta-metadata repository. The generated class
@@ -24,7 +24,7 @@ public class MyMetadataCompiler
 			MetadataCompiler compiler = new MetadataCompiler(args);
 			compiler.compile("repo", ".");
 		}
-		catch (XMLTranslationException e)
+		catch (SIMPLTranslationException e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();

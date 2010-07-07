@@ -10,7 +10,7 @@ import ecologylab.io.Assets;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.generated.library.GeneratedMetadataTranslationScope;
 import ecologylab.semantics.metadata.builtins.Image;
-import ecologylab.xml.XMLTranslationException;
+import ecologylab.xml.SIMPLTranslationException;
 
 /**
  * @author andruid
@@ -21,9 +21,9 @@ public class SemanticsTest extends ApplicationEnvironment
 
 	/**
 	 * @param applicationName
-	 * @throws XMLTranslationException
+	 * @throws SIMPLTranslationException
 	 */
-	public SemanticsTest() throws XMLTranslationException
+	public SemanticsTest() throws SIMPLTranslationException
 	{
 		super("Semantics Test");
 		// TODO Auto-generated constructor stub
@@ -69,7 +69,7 @@ public class SemanticsTest extends ApplicationEnvironment
 			i.serialize(System.out);
 		
 		}
-		catch (XMLTranslationException e)
+		catch (SIMPLTranslationException e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -14,7 +14,7 @@ import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticAction;
 import ecologylab.semantics.metametadata.example.generated.GeneratedMetadataTranslationScope;
 import ecologylab.semantics.metametadata.example.generated.WeatherReport;
-import ecologylab.xml.XMLTranslationException;
+import ecologylab.xml.SIMPLTranslationException;
 
 /**
  * This example shows how to use a search as seed to collect data from the Internet.
@@ -33,11 +33,11 @@ public class WeatherDataCollector
 	 * DownloadMonitor will never start downloading due to limited available memory!
 	 * 
 	 * @param args
-	 * @throws XMLTranslationException
+	 * @throws SIMPLTranslationException
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	public static void main(String[] args) throws XMLTranslationException, IOException,
+	public static void main(String[] args) throws SIMPLTranslationException, IOException,
 			InterruptedException
 	{
 		// register our own semantic action
