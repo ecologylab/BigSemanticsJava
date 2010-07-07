@@ -5,10 +5,9 @@ package ecologylab.semantics.metametadata.example;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.*;
+import java.util.logging.Logger;
 
 import javax.swing.JFrame;
 
@@ -28,6 +27,7 @@ import ecologylab.semantics.seeding.SearchState;
 import ecologylab.semantics.seeding.Seed;
 import ecologylab.semantics.seeding.SeedDistributor;
 import ecologylab.semantics.seeding.SeedSet;
+import ecologylab.semantics.tools.MetadataCompiler;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.TranslationScope;
 

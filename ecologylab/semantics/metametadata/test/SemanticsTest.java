@@ -66,7 +66,7 @@ public class SemanticsTest extends ApplicationEnvironment
 			i.setCaption("a nice caption.");
 			i.setContext("A much, much longer context");
 			
-			i.translateToXML(System.out);
+			i.serialize(System.out);
 		
 		}
 		catch (XMLTranslationException e)

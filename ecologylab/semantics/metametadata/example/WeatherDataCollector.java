@@ -11,13 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.actions.SemanticAction;
 import ecologylab.semantics.metametadata.example.generated.GeneratedMetadataTranslationScope;
 import ecologylab.semantics.metametadata.example.generated.WeatherReport;
 import ecologylab.xml.XMLTranslationException;
-
-//needed
-import ecologylab.semantics.actions.SemanticAction;
-import ecologylab.semantics.documentparsers.DocumentParser;
 
 /**
  * This example shows how to use a search as seed to collect data from the Internet.

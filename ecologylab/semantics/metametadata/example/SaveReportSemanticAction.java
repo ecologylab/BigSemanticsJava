@@ -5,10 +5,10 @@ import java.util.Map;
 import ecologylab.semantics.actions.NestedSemanticAction;
 import ecologylab.semantics.actions.SemanticAction;
 import ecologylab.semantics.metametadata.example.generated.WeatherReport;
-import ecologylab.xml.xml_inherit;
+import ecologylab.xml.simpl_inherit;
 import ecologylab.xml.ElementState.xml_tag;
 
-@xml_inherit
+@simpl_inherit
 @xml_tag("save_report")
 public class SaveReportSemanticAction<SA extends SemanticAction> extends NestedSemanticAction<SA>
 {
