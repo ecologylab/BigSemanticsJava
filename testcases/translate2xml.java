@@ -7,7 +7,7 @@ import ecologylab.semantics.metadata.builtins.Image;
 import ecologylab.semantics.metametadata.MetaMetadataTranslationScope;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.TranslationScope;
-import ecologylab.xml.XMLTranslationException;
+import ecologylab.xml.SIMPLTranslationException;
 
 public class translate2xml
 {
@@ -30,7 +30,7 @@ public class translate2xml
 			image.serialize(System.out);
 //			TestDocument testDocumentfromXML = (TestDocument) TestDocument.translateFromXMLSAX(file, TS);
 //			testDocumentfromXML.translateToXML(System.out);
-		} catch (XMLTranslationException e)
+		} catch (SIMPLTranslationException e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();

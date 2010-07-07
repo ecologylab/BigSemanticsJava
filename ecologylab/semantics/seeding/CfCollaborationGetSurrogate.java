@@ -8,7 +8,7 @@ import ecologylab.services.messages.RequestMessage;
 import ecologylab.services.messages.ResponseMessage;
 import ecologylab.xml.Hint;
 import ecologylab.xml.TranslationScope;
-import ecologylab.xml.XMLTranslationException;
+import ecologylab.xml.SIMPLTranslationException;
 import ecologylab.xml.simpl_inherit;
 
 @simpl_inherit
@@ -16,7 +16,7 @@ public class CfCollaborationGetSurrogate extends RequestMessage {
 
 	@simpl_scalar @simpl_hints(Hint.XML_LEAF) protected String surrogateSetString;
 	
-	static TranslationScope translationSpace;
+	static TranslationScope translationScope;
 	
 	public CfCollaborationGetSurrogate()
 	{
@@ -41,11 +41,11 @@ public class CfCollaborationGetSurrogate extends RequestMessage {
 		return OkResponse.get();
 	}
 	
-	public CfCollaborationGetSurrogate (String surrogateSetString, TranslationScope translationSpace) 
-	throws XMLTranslationException
+	public CfCollaborationGetSurrogate (String surrogateSetString, TranslationScope translationScope) 
+	throws SIMPLTranslationException
 	{
 		this(surrogateSetString);
-		this.translationSpace = translationSpace;
+		this.translationScope = translationScope;
 	}
 	
 	public CfCollaborationGetSurrogate(String surrogateSetString)
@@ -62,11 +62,11 @@ public class CfCollaborationGetSurrogate extends RequestMessage {
 		final String test = "Will this work ?";
 		try 
 		{
-			CfCollaborationGetSurrogate cfCollabGet = new CfCollaborationGetSurrogate (test, translationSpace);
+			CfCollaborationGetSurrogate cfCollabGet = new CfCollaborationGetSurrogate (test, translationScope);
 			System.out.println("cfCollabGet.get: " + cfCollabGet.getSurrogateSetString());
 			System.out.println("cfCollabGet: " + cfCollabGet.serialize());
 			
-		} catch (XMLTranslationException e) {
+		} catch (SIMPLTranslationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

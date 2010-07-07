@@ -11,7 +11,7 @@ import ecologylab.semantics.connectors.SeedPeer;
 import ecologylab.semantics.documentparsers.MetaMetadataSearchParser;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.model.text.InterestModel;
-import ecologylab.xml.XMLTranslationException;
+import ecologylab.xml.SIMPLTranslationException;
 import ecologylab.xml.simpl_inherit;
 import ecologylab.xml.library.dc.Dc;
 
@@ -168,7 +168,7 @@ implements SemanticsPrefs, SearchEngineNames
 		   try
 		   {
 			   error("Can't process search seed with null query: " + this.serialize());
-		   } catch (XMLTranslationException e)
+		   } catch (SIMPLTranslationException e)
 		   {
 			   e.printStackTrace();
 		   }

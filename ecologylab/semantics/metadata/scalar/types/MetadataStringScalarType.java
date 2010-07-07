@@ -3,7 +3,7 @@ package ecologylab.semantics.metadata.scalar.types;
 import ecologylab.semantics.metadata.builtins.Image;
 import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.xml.ScalarUnmarshallingContext;
-import ecologylab.xml.XMLTranslationException;
+import ecologylab.xml.SIMPLTranslationException;
 
 public class MetadataStringScalarType extends MetadataScalarScalarType<MetadataString, String>
 {
@@ -32,7 +32,7 @@ public class MetadataStringScalarType extends MetadataScalarScalarType<MetadataS
 		{
 			i.serialize(System.out);
 		}
-		catch (XMLTranslationException e)
+		catch (SIMPLTranslationException e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import ecologylab.semantics.seeding.DocumentState;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.TranslationScope;
-import ecologylab.xml.XMLTranslationException;
+import ecologylab.xml.SIMPLTranslationException;
 import ecologylab.xml.simpl_inherit;
 import ecologylab.xml.library.geom.RectangularShape;
 
@@ -61,7 +61,7 @@ public class Model extends ElementState
 
 			File outFile	= new File(OUT_FILE);
 			model.serialize(outFile);
-		} catch (XMLTranslationException e)
+		} catch (SIMPLTranslationException e)
 		{
 			e.printStackTrace();
 		} catch (IOException e)

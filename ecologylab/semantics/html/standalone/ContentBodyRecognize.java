@@ -27,7 +27,7 @@ import ecologylab.semantics.html.ImgElement;
 import ecologylab.semantics.html.RecognizedDocumentStructure;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.TranslationScope;
-import ecologylab.xml.XMLTranslationException;
+import ecologylab.xml.SIMPLTranslationException;
 
 
 

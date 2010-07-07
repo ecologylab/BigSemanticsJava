@@ -32,7 +32,7 @@ import ecologylab.semantics.metadata.scalar.types.MetadataScalarScalarType;
 import ecologylab.textformat.NamedStyle;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.TranslationScope;
-import ecologylab.xml.XMLTranslationException;
+import ecologylab.xml.SIMPLTranslationException;
 
 /**
  * @author damaraju
@@ -132,7 +132,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		{
 			metaMetaDataRepository.serialize(System.out);
 		}
-		catch (XMLTranslationException e)
+		catch (SIMPLTranslationException e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -226,7 +226,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 			repos = (MetaMetadataRepository) ElementState.translateFromXML(file, metaMetadataTScope);
 			repos.file	= file;
 		}
-		catch (XMLTranslationException e)
+		catch (SIMPLTranslationException e)
 		{
 			Debug.error("MetaMetadataRepository", "translating repository source file "
 					+ file.getAbsolutePath());

@@ -25,7 +25,7 @@ import ecologylab.semantics.tools.MetadataCompilerUtils;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.TranslationScope;
 import ecologylab.xml.XMLTools;
-import ecologylab.xml.XMLTranslationException;
+import ecologylab.xml.SIMPLTranslationException;
 import ecologylab.xml.types.element.Mappable;
 
 /**
@@ -270,7 +270,7 @@ implements Mappable<String>
 					// translate the field into for metadata class.
 					metaMetadataField.translateToMetadataClass(packageName, p,MetadataCompilerUtils.GENERATE_FIELDS_PASS,false);
 				}
-				catch (XMLTranslationException e)
+				catch (SIMPLTranslationException e)
 				{
 					e.printStackTrace();
 				}
@@ -294,7 +294,7 @@ implements Mappable<String>
 					// translate the field into for metadata class.
 					f.translateToMetadataClass(packageName, p,MetadataCompilerUtils.GENERATE_METHODS_PASS,true);
 				}
-				catch (XMLTranslationException e)
+				catch (SIMPLTranslationException e)
 				{
 					e.printStackTrace();
 				}
@@ -514,7 +514,7 @@ implements Mappable<String>
 		return metadataClassDescriptor.getFieldDescriptorByTag(tagName, metaMetadataRepository().metadataTranslationScope());
 	}
 
-	public static void main(String args[]) throws XMLTranslationException
+	public static void main(String args[]) throws SIMPLTranslationException
 	{
 		final TranslationScope TS = MetaMetadataTranslationScope.get();
 		String patternXMLFilepath = "../cf/config/semantics/metametadata/metaMetadataRepository.xml";

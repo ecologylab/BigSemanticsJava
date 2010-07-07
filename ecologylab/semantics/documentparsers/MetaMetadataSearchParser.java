@@ -22,7 +22,7 @@ import ecologylab.semantics.seeding.Seed;
 import ecologylab.semantics.seeding.SeedDistributor;
 import ecologylab.semantics.seeding.SearchState;
 import ecologylab.xml.ElementState;
-import ecologylab.xml.XMLTranslationException;
+import ecologylab.xml.SIMPLTranslationException;
 
 /**
  * @author amathur
@@ -144,7 +144,7 @@ public class MetaMetadataSearchParser
 							populatedMetadata.initializeMetadataCompTermVector();
 						}
 				}
-				catch (XMLTranslationException e)
+				catch (SIMPLTranslationException e)
 				{
 					// TODO Auto-generated catch block
 					e.printStackTrace();

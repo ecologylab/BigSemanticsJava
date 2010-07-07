@@ -13,7 +13,7 @@ import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.XMLTools;
-import ecologylab.xml.XMLTranslationException;
+import ecologylab.xml.SIMPLTranslationException;
 
 /**
  * This class is used for directly biniding the XML document with metadata classes to build metadata
@@ -54,7 +54,7 @@ public class MetaMetadataDirectBindingParser<SA extends SemanticAction>
 					metaMetadata = mmd;
 				System.out.println();
 			}
-			catch (XMLTranslationException e)
+			catch (SIMPLTranslationException e)
 			{
 				// TODO Auto-generated catch block
 				e.printStackTrace();

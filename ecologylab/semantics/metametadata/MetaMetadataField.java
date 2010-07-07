@@ -25,7 +25,7 @@ import ecologylab.xml.ElementState;
 import ecologylab.xml.FieldDescriptor;
 import ecologylab.xml.TranslationScope;
 import ecologylab.xml.XMLTools;
-import ecologylab.xml.XMLTranslationException;
+import ecologylab.xml.SIMPLTranslationException;
 import ecologylab.xml.simpl_inherit;
 import ecologylab.xml.types.element.Mappable;
 import ecologylab.xml.types.scalar.ScalarType;
@@ -246,7 +246,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	// TODO track generated classes for TranslationScope declaration
 
 	public void translateToMetadataClass(String packageName, Appendable appendable,int pass,boolean appendedToTranslastionScope)
-			throws XMLTranslationException, IOException
+			throws SIMPLTranslationException, IOException
 	{
 		doAppending(appendable, pass);
 
@@ -673,7 +673,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 		appendable.append(fieldName).append(';').append('\n');
 	}
 
-	public static void main(String args[]) throws XMLTranslationException
+	public static void main(String args[]) throws SIMPLTranslationException
 	{
 
 	}

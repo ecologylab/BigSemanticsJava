@@ -16,7 +16,7 @@ import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.metametadata.MetaMetadataTranslationScope;
 import ecologylab.xml.TranslationScope;
 import ecologylab.xml.XMLTools;
-import ecologylab.xml.XMLTranslationException;
+import ecologylab.xml.SIMPLTranslationException;
 
 /**
  * @author andruid
@@ -28,7 +28,7 @@ public class MetadataCompiler extends ApplicationEnvironment
 
 	public static final String		DEFAULT_REPOSITORY_DIRECTORY	= "../cf/config/semantics/metametadata";
 
-	public MetadataCompiler(String[] args) throws XMLTranslationException
+	public MetadataCompiler(String[] args) throws SIMPLTranslationException
 	{
 		super("MetadataCompiler", META_METADATA_TRANSLATIONS, args, 1.0F);
 	}
@@ -125,7 +125,7 @@ public class MetadataCompiler extends ApplicationEnvironment
 			MetadataCompiler compiler = new MetadataCompiler(args);
 			compiler.compile();
 		}
-		catch (XMLTranslationException e)
+		catch (SIMPLTranslationException e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();

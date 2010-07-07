@@ -7,7 +7,7 @@ import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.Hint;
-import ecologylab.xml.XMLTranslationException;
+import ecologylab.xml.SIMPLTranslationException;
 
 /**
  * 
@@ -96,7 +96,7 @@ public class InlineSeed extends Seed
 					xmlBaseType.parse(inlineDoc);
 				else
 					error("Can't find type for " + inlineDoc);
-			} catch (XMLTranslationException e)
+			} catch (SIMPLTranslationException e)
 			{
 				e.printStackTrace();
 			}
