@@ -21,8 +21,8 @@ import ecologylab.semantics.model.text.InterestModel;
 import ecologylab.semantics.seeding.Seed;
 import ecologylab.semantics.seeding.SeedDistributor;
 import ecologylab.semantics.seeding.SearchState;
-import ecologylab.xml.ElementState;
 import ecologylab.xml.SIMPLTranslationException;
+import ecologylab.xml.TranslationScope;
 
 /**
  * @author amathur
@@ -137,7 +137,7 @@ public class MetaMetadataSearchParser
 			{
 				try
 				{
-						populatedMetadata = (Document) ElementState.translateFromXML(inputStream(), getMetadataTranslationScope());
+						populatedMetadata = (Document) TranslationScope.translateFromXML(inputStream(), getMetadataTranslationScope());
 						if (populatedMetadata.getMetaMetadata() == null)
 						{
 							populatedMetadata.setMetaMetadata(metaMetadata);

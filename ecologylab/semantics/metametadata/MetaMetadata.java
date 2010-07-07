@@ -22,7 +22,6 @@ import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
 import ecologylab.semantics.tools.MetadataCompiler;
 import ecologylab.semantics.tools.MetadataCompilerUtils;
-import ecologylab.xml.ElementState;
 import ecologylab.xml.TranslationScope;
 import ecologylab.xml.XMLTools;
 import ecologylab.xml.SIMPLTranslationException;
@@ -520,7 +519,7 @@ implements Mappable<String>
 		String patternXMLFilepath = "../cf/config/semantics/metametadata/metaMetadataRepository.xml";
 
 		// ElementState.setUseDOMForTranslateTo(true);
-		MetaMetadataRepository test = (MetaMetadataRepository) ElementState.translateFromXML(
+		MetaMetadataRepository test = (MetaMetadataRepository) TranslationScope.translateFromXML(
 				patternXMLFilepath, TS);
 
 	  test.serialize(System.out);

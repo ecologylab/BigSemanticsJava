@@ -5,7 +5,6 @@ import java.io.IOException;
 
 import ecologylab.semantics.metadata.builtins.Image;
 import ecologylab.semantics.metametadata.MetaMetadataTranslationScope;
-import ecologylab.xml.ElementState;
 import ecologylab.xml.TranslationScope;
 import ecologylab.xml.SIMPLTranslationException;
 
@@ -26,7 +25,7 @@ public class translate2xml
 		File file = new File("./testcases/file3.xml");
 		try
 		{
-			Image image = (Image) ElementState.translateFromXML(file, TS);
+			Image image = (Image) TranslationScope.translateFromXML(file, TS);
 			image.serialize(System.out);
 //			TestDocument testDocumentfromXML = (TestDocument) TestDocument.translateFromXMLSAX(file, TS);
 //			testDocumentfromXML.translateToXML(System.out);

@@ -11,7 +11,7 @@ import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.MetaMetadata;
-import ecologylab.xml.ElementState;
+import ecologylab.xml.TranslationScope;
 import ecologylab.xml.XMLTools;
 import ecologylab.xml.SIMPLTranslationException;
 
@@ -40,7 +40,7 @@ public class MetaMetadataDirectBindingParser<SA extends SemanticAction>
 		{
 			try
 			{
-				populatedMetadata = (Document) ElementState.translateFromXML(inputStream(), getMetadataTranslationScope());
+				populatedMetadata = (Document) TranslationScope.translateFromXML(inputStream(), getMetadataTranslationScope());
 			  populatedMetadata.serialize(System.out);
 			  System.out.println();
 			  /*

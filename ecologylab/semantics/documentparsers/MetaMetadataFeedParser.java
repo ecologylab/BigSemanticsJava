@@ -9,8 +9,8 @@ import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.seeding.Feed;
-import ecologylab.xml.ElementState;
 import ecologylab.xml.SIMPLTranslationException;
+import ecologylab.xml.TranslationScope;
 
 /**
  * @author andruid
@@ -43,7 +43,7 @@ public class MetaMetadataFeedParser
 		{
 			try
 			{
-				populatedMetadata = (Document) ElementState.translateFromXML(inputStream(), getMetadataTranslationScope());
+				populatedMetadata = (Document) TranslationScope.translateFromXML(inputStream(), getMetadataTranslationScope());
 			}
 			catch (SIMPLTranslationException e)
 			{

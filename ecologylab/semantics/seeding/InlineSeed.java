@@ -8,6 +8,7 @@ import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.Hint;
 import ecologylab.xml.SIMPLTranslationException;
+import ecologylab.xml.TranslationScope;
 
 /**
  * 
@@ -90,7 +91,7 @@ public class InlineSeed extends Seed
 		{
 			try
 			{
-				ElementState inlineDoc	= ElementState.translateFromXMLCharSequence(content, infoCollector.inlineDocumentTranslations());
+				ElementState inlineDoc	= TranslationScope.translateFromXMLCharSequence(content, infoCollector.inlineDocumentTranslations());
 				DocumentParser xmlBaseType	= infoCollector.constructDocumentType(inlineDoc);
 				if (xmlBaseType != null)
 					xmlBaseType.parse(inlineDoc);

@@ -223,7 +223,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 
 		try
 		{
-			repos = (MetaMetadataRepository) ElementState.translateFromXML(file, metaMetadataTScope);
+			repos = (MetaMetadataRepository) TranslationScope.translateFromXML(file, metaMetadataTScope);
 			repos.file	= file;
 		}
 		catch (SIMPLTranslationException e)

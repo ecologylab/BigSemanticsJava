@@ -54,7 +54,7 @@ public class Model extends ElementState
 	{
 		try
 		{
-			Model model	= (Model) ElementState.translateFromXML(new File(FILE_NAME), getTranslations());
+			Model model	= (Model) TranslationScope.translateFromXML(new File(FILE_NAME), getTranslations());
 			
 			model.serialize(System.out);
 			System.out.println("\n\n");
