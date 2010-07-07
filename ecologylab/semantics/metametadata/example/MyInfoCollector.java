@@ -28,8 +28,8 @@ import ecologylab.semantics.seeding.Seed;
 import ecologylab.semantics.seeding.SeedDistributor;
 import ecologylab.semantics.seeding.SeedSet;
 import ecologylab.semantics.tools.MetadataCompiler;
-import ecologylab.xml.ElementState;
-import ecologylab.xml.TranslationScope;
+import ecologylab.serialization.ElementState;
+import ecologylab.serialization.TranslationScope;
 
 /**
  * This is the InfoCollector class for this example.

@@ -21,7 +21,7 @@ import ecologylab.semantics.model.text.ITermVector;
 import ecologylab.semantics.seeding.SearchResult;
 import ecologylab.semantics.seeding.Seed;
 import ecologylab.semantics.seeding.SeedDistributor;
-import ecologylab.xml.TranslationScope;
+import ecologylab.serialization.TranslationScope;
 
 /**
  * This is the Container class for this example.

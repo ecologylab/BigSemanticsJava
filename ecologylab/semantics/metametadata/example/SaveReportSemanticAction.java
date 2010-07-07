@@ -5,8 +5,8 @@ import java.util.Map;
 import ecologylab.semantics.actions.NestedSemanticAction;
 import ecologylab.semantics.actions.SemanticAction;
 import ecologylab.semantics.metametadata.example.generated.WeatherReport;
-import ecologylab.xml.simpl_inherit;
-import ecologylab.xml.ElementState.xml_tag;
+import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.ElementState.xml_tag;
 
 @simpl_inherit
 @xml_tag("save_report")

@@ -2,7 +2,7 @@ package ecologylab.semantics.metametadata.example;
 
 import ecologylab.semantics.actions.SemanticAction;
 import ecologylab.semantics.tools.MetadataCompiler;
-import ecologylab.xml.SIMPLTranslationException;
+import ecologylab.serialization.SIMPLTranslationException;
 
 /**
  * Use the MetadataCompiler class to compile a meta-metadata repository. The generated class

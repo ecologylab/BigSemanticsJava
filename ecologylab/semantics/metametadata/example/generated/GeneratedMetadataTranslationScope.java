@@ -9,7 +9,7 @@ This is a generated code. DO NOT edit or modify it.
 
 
 import ecologylab.semantics.metadata.MetadataBuiltinsTranslationScope;
-import ecologylab.xml.TranslationScope;
+import ecologylab.serialization.TranslationScope;
 
 
 /**

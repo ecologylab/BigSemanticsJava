@@ -10,7 +10,7 @@ import ecologylab.io.Assets;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.generated.library.GeneratedMetadataTranslationScope;
 import ecologylab.semantics.metadata.builtins.Image;
-import ecologylab.xml.SIMPLTranslationException;
+import ecologylab.serialization.SIMPLTranslationException;
 
 /**
  * @author andruid
