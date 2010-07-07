@@ -519,8 +519,8 @@ implements Mappable<String>
 		String patternXMLFilepath = "../cf/config/semantics/metametadata/metaMetadataRepository.xml";
 
 		// ElementState.setUseDOMForTranslateTo(true);
-		MetaMetadataRepository test = (MetaMetadataRepository) TranslationScope.translateFromXML(
-				patternXMLFilepath, TS);
+		MetaMetadataRepository test = (MetaMetadataRepository) TS.deserialize(
+				patternXMLFilepath);
 
 	  test.serialize(System.out);
 

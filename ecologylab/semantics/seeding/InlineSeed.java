@@ -91,7 +91,7 @@ public class InlineSeed extends Seed
 		{
 			try
 			{
-				ElementState inlineDoc	= TranslationScope.translateFromXMLCharSequence(content, infoCollector.inlineDocumentTranslations());
+				ElementState inlineDoc	= infoCollector.inlineDocumentTranslations().deserializeCharSequence(content);
 				DocumentParser xmlBaseType	= infoCollector.constructDocumentType(inlineDoc);
 				if (xmlBaseType != null)
 					xmlBaseType.parse(inlineDoc);

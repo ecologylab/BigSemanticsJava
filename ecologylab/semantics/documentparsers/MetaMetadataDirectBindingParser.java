@@ -40,7 +40,7 @@ public class MetaMetadataDirectBindingParser<SA extends SemanticAction>
 		{
 			try
 			{
-				populatedMetadata = (Document) TranslationScope.translateFromXML(inputStream(), getMetadataTranslationScope());
+				populatedMetadata = (Document) getMetadataTranslationScope().deserialize(inputStream());
 			  populatedMetadata.serialize(System.out);
 			  System.out.println();
 			  /*

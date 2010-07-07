@@ -43,7 +43,7 @@ public class MetaMetadataFeedParser
 		{
 			try
 			{
-				populatedMetadata = (Document) TranslationScope.translateFromXML(inputStream(), getMetadataTranslationScope());
+				populatedMetadata = (Document) getMetadataTranslationScope().deserialize(inputStream());
 			}
 			catch (SIMPLTranslationException e)
 			{

@@ -25,7 +25,7 @@ public class translate2xml
 		File file = new File("./testcases/file3.xml");
 		try
 		{
-			Image image = (Image) TranslationScope.translateFromXML(file, TS);
+			Image image = (Image) TS.deserialize(file);
 			image.serialize(System.out);
 //			TestDocument testDocumentfromXML = (TestDocument) TestDocument.translateFromXMLSAX(file, TS);
 //			testDocumentfromXML.translateToXML(System.out);

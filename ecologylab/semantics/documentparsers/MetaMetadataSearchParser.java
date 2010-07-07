@@ -137,7 +137,7 @@ public class MetaMetadataSearchParser
 			{
 				try
 				{
-						populatedMetadata = (Document) TranslationScope.translateFromXML(inputStream(), getMetadataTranslationScope());
+						populatedMetadata = (Document) getMetadataTranslationScope().deserialize(inputStream());
 						if (populatedMetadata.getMetaMetadata() == null)
 						{
 							populatedMetadata.setMetaMetadata(metaMetadata);
