@@ -704,20 +704,6 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 	/**
 	 * Filter description cFMetadata for junk
 	 * 
-	 * @param elementState
-	 *            ElementState object with a TEXT Node for description.
-	 * 
-	 * @return true if the stuff is worth using
-	 */
-	public static boolean isNonJunkDescription ( ElementState elementState )
-	{
-		return (elementState == null) ? false : isNonJunkDescription(elementState
-				.getTextNodeString());
-	}
-
-	/**
-	 * Filter description cFMetadata for junk
-	 * 
 	 * @return true if the stuff is worth using
 	 */
 	public static boolean isNonJunkDescription ( String description )
