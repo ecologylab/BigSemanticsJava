@@ -2,13 +2,11 @@ package ecologylab.semantics.seeding;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Hashtable;
 
 import ecologylab.generic.Debug;
 import ecologylab.generic.DispatchTarget;
 import ecologylab.generic.Generic;
-import ecologylab.io.Downloadable;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.InfoCollector;

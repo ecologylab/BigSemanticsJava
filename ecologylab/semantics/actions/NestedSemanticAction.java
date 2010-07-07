@@ -5,8 +5,8 @@ package ecologylab.semantics.actions;
 
 import java.util.ArrayList;
 
-import ecologylab.xml.xml_inherit;
-import ecologylab.xml.ElementState.xml_nowrap;
+import ecologylab.xml.simpl_inherit;
+import ecologylab.xml.ElementState.simpl_nowrap;
 
 /**
  * This class is the base class for semantic actions which can have nested semantic actions inside
@@ -17,16 +17,16 @@ import ecologylab.xml.ElementState.xml_nowrap;
  * 
  */
 
-@xml_inherit
+@simpl_inherit
 public abstract class NestedSemanticAction<SA extends SemanticAction> extends SemanticAction
 {
 
 	/**
 	 * List of nested semantic actions.
 	 */
-	@xml_nowrap 
-	@xml_collection
-	@xml_scope(NestedSemanticActionsTranslationScope.NESTED_SEMANTIC_ACTIONS_SCOPE)
+	@simpl_nowrap 
+	@simpl_collection
+	@simpl_scope(NestedSemanticActionsTranslationScope.NESTED_SEMANTIC_ACTIONS_SCOPE)
 	private ArrayList<SA>	nestedSemanticActionList;
 
 	/**

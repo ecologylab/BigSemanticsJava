@@ -26,9 +26,10 @@ import ecologylab.semantics.model.text.ITermVector;
 import ecologylab.semantics.seeding.SearchState;
 import ecologylab.semantics.seeding.Seed;
 import ecologylab.xml.ElementState;
+import ecologylab.xml.Hint;
 import ecologylab.xml.ScalarUnmarshallingContext;
 import ecologylab.xml.TranslationScope;
-import ecologylab.xml.serial_descriptors_classes;
+import ecologylab.xml.simpl_descriptor_classes;
 
 /**
  * This is the new metadata class that is the base class for the meta-metadata system. It contains
@@ -39,7 +40,7 @@ import ecologylab.xml.serial_descriptors_classes;
  * @author sashikanth
  * 
  */
-@serial_descriptors_classes({MetadataClassDescriptor.class, MetadataFieldDescriptor.class})
+@simpl_descriptor_classes({MetadataClassDescriptor.class, MetadataFieldDescriptor.class})
 abstract public class Metadata extends ElementState
 implements MetadataBase, Iterable<MetadataFieldDescriptor>
 {
@@ -68,7 +69,7 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 	 * Could help, for example, to support user annotation.
 	 */
 	@semantics_mixin
-	@xml_collection("mixins")
+	@simpl_collection("mixins")
 	//@xml_scope(MIXIN_TRANSLATION_STRING)
 	ArrayList<Metadata>									mixins;
 
@@ -94,7 +95,7 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 	
 	private MetaMetadata			metaMetadata;
 	
-	@xml_leaf MetadataString metaMetadataName;
+	@simpl_scalar @simpl_hints(Hint.XML_LEAF) MetadataString metaMetadataName;
 	
 	/**
 	 * This constructor should *only* be used when marshalled Metadata is read.

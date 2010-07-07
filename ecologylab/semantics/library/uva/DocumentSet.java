@@ -7,18 +7,18 @@ import java.util.ArrayList;
 
 import ecologylab.semantics.seeding.DocumentState;
 import ecologylab.xml.ElementState;
-import ecologylab.xml.xml_inherit;
+import ecologylab.xml.simpl_inherit;
 
 /**
  * 
  *
  * @author andruid 
  */
-@xml_inherit
+@simpl_inherit
 public class DocumentSet extends ElementState
 {
-	@xml_nowrap
-	@xml_collection("document")
+	@simpl_nowrap
+	@simpl_collection("document")
 	ArrayList<DocumentState>	documents;
 	
 	/**

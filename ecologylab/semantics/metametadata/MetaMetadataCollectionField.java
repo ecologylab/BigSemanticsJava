@@ -6,31 +6,31 @@ import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.DocumentParserTagNames;
 import ecologylab.semantics.tools.MetadataCompilerUtils;
 import ecologylab.xml.XMLTools;
-import ecologylab.xml.xml_inherit;
+import ecologylab.xml.simpl_inherit;
 import ecologylab.xml.ElementState.xml_tag;
 
-@xml_inherit
+@simpl_inherit
 @xml_tag("collection")
 public class MetaMetadataCollectionField extends MetaMetadataNestedField
 {
 
-	@xml_attribute
+	@simpl_scalar
 	protected String	childTag;
 
 	/**
 	 * The type for collection children.
 	 */
-	@xml_attribute
+	@simpl_scalar
 	protected String	childType;
 	
-	@xml_attribute
+	@simpl_scalar
 	protected boolean	childEntity	= false;
 
 	/**
 	 * Specifies adding @xml_nowrap to the collection object in cases where items in the collection
 	 * are not wrapped inside a tag.
 	 */
-	@xml_attribute
+	@simpl_scalar
 	protected boolean	noWrap;
 
 	public MetaMetadataCollectionField()

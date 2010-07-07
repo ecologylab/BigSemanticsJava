@@ -3,7 +3,7 @@
  */
 package ecologylab.semantics.actions;
 
-import ecologylab.xml.xml_inherit;
+import ecologylab.xml.simpl_inherit;
 import ecologylab.xml.ElementState.xml_tag;
 
 /**
@@ -12,14 +12,14 @@ import ecologylab.xml.ElementState.xml_tag;
  * @author amathur
  * 
  */
-@xml_inherit
+@simpl_inherit
 public @xml_tag(SemanticActionStandardMethods.GENERAL_ACTION)
 class GeneralSemanticAction extends SemanticAction 
 {
 	/**
 	 * Name of the action which should be invoked via reflection
 	 */
-	@xml_attribute
+	@simpl_scalar
 	private String	actionName;
 
 	@Override

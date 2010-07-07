@@ -11,7 +11,7 @@ import ecologylab.semantics.seeding.DocumentState;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.TranslationScope;
 import ecologylab.xml.XMLTranslationException;
-import ecologylab.xml.xml_inherit;
+import ecologylab.xml.simpl_inherit;
 import ecologylab.xml.library.geom.RectangularShape;
 
 /**
@@ -19,15 +19,15 @@ import ecologylab.xml.library.geom.RectangularShape;
  *
  * @author andruid 
  */
-@xml_inherit
+@simpl_inherit
 public class Model extends ElementState
 {
 	static final String FILE_NAME = "c:/web/code/java/ecologylabFundamental/config/preferences/uvaSiteGuideExample_two_clusters_v2.xml";
 	
 	static final String OUT_FILE = "c:/web/code/java/ecologylabFundamental/config/preferences/uvaSiteGuideExample_parsed.xml";
 
-	@xml_nowrap
-	@xml_collection("topic_cluster")
+	@simpl_nowrap
+	@simpl_collection("topic_cluster")
 	ArrayList<TopicCluster>	topicClusters;
 
 	public ArrayList<TopicCluster> getTopicClusters() {
@@ -56,11 +56,11 @@ public class Model extends ElementState
 		{
 			Model model	= (Model) ElementState.translateFromXML(new File(FILE_NAME), getTranslations());
 			
-			model.translateToXML(System.out);
+			model.serialize(System.out);
 			System.out.println("\n\n");
 
 			File outFile	= new File(OUT_FILE);
-			model.translateToXML(outFile);
+			model.serialize(outFile);
 		} catch (XMLTranslationException e)
 		{
 			e.printStackTrace();

@@ -9,8 +9,8 @@ import ecologylab.xml.types.scalar.ScalarType;
 public class InterestModelEntry extends ElementState
 implements Mappable<String>
 {
-	@xml_attribute	protected String	string;
-	@xml_attribute	protected double 	value;
+	@simpl_scalar	protected String	string;
+	@simpl_scalar	protected double 	value;
 	
 	public InterestModelEntry()
 	{

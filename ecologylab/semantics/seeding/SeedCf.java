@@ -6,7 +6,7 @@ package ecologylab.semantics.seeding;
 import ecologylab.collections.Scope;
 import ecologylab.services.messages.RequestMessage;
 import ecologylab.services.messages.ResponseMessage;
-import ecologylab.xml.xml_inherit;
+import ecologylab.xml.simpl_inherit;
 
 /**
  * Pass a set of seeds to combinFormation's agents.
@@ -16,7 +16,7 @@ import ecologylab.xml.xml_inherit;
  * 
  * @author andruid
  */
-@xml_inherit
+@simpl_inherit
 public class SeedCf extends RequestMessage
 {
 	/**
@@ -25,17 +25,17 @@ public class SeedCf extends RequestMessage
 	 * The default, 0, indicates the first session that was created,
 	 * or if none have been, to create one now, and then use it.
 	 */
-	@xml_attribute protected	int		sessionNumber;
+	@simpl_scalar protected	int		sessionNumber;
 
 	/**
 	 * The set of seeds being passed to the combinFormation information collecting agent.
 	 */
-	@xml_nested protected		SeedSet seedSet;
+	@simpl_composite protected		SeedSet seedSet;
 	
 	/**
 	 * If there are multiple seeding requests in a single session, how should we handle it?
 	 */
-	@xml_attribute protected	int	handleMultipleRequests;
+	@simpl_scalar protected	int	handleMultipleRequests;
 	
 	public static final String[] MULTIPLE_REQUESTSTS_DIALOG_OPTIONS = {  "ignore", "replace seeds", "mix seeds",    };
 	

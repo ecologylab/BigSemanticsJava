@@ -5,17 +5,17 @@ import java.util.Map;
 import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.seeding.SearchState;
 import ecologylab.semantics.seeding.SeedSet;
-import ecologylab.xml.xml_inherit;
+import ecologylab.xml.simpl_inherit;
 import ecologylab.xml.ElementState.xml_tag;
 
-@xml_inherit
+@simpl_inherit
 @xml_tag("search")
 public class SearchSemanticAction<SA extends SemanticAction> extends NestedSemanticAction<SA>
 {
 
 	private static final String	ARG_QUERY	= "query";
 	
-	@xml_attribute
+	@simpl_scalar
 	private String engine;
 	
 	@Override

@@ -3,9 +3,8 @@
  */
 package ecologylab.semantics.metadata;
 
-import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.xml.ClassDescriptor;
-import ecologylab.xml.xml_inherit;
+import ecologylab.xml.simpl_inherit;
 
 /**
  * Special class descriptor for Metadata subclasses.
@@ -13,7 +12,7 @@ import ecologylab.xml.xml_inherit;
  * @author andruid
  *
  */
-@xml_inherit
+@simpl_inherit
 public class MetadataClassDescriptor /* <M extends Metadata>*/ extends ClassDescriptor<Metadata, MetadataFieldDescriptor>
 {
 	public MetadataClassDescriptor()

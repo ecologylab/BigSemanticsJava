@@ -38,47 +38,47 @@ public abstract class SemanticAction extends ElementState
 	/**
 	 * Checks if any for this action. Any action can have 0 to any number of checks
 	 */
-	@xml_nowrap 
-	@xml_collection("check")
+	@simpl_nowrap 
+	@simpl_collection("check")
 	private ArrayList<Check>					checks;
 	
 	/**
 	 * The map of arguments for this semantic action.
 	 */
-	@xml_nowrap 
-	@xml_map("arg")
+	@simpl_nowrap 
+	@simpl_map("arg")
 	private HashMap<String, Argument>	args;
 
 	/**
 	 * List of variables which can be used inside this action
 	 */
-	@xml_nowrap 
-	@xml_collection("def_var")
+	@simpl_nowrap 
+	@simpl_collection("def_var")
 	private ArrayList<DefVar> 				defVars;
 	
 
 	/**
 	 * Object on which the Action is to be taken
 	 */
-	@xml_attribute
+	@simpl_scalar
 	private String										object;
 
 	/**
 	 * Return type of the semantic Action
 	 */
-	@xml_attribute
+	@simpl_scalar
 	private String										returnType;
 
 	/**
 	 * The value returned from the action
 	 */
-	@xml_attribute
+	@simpl_scalar
 	private String										name;
 
 	/**
 	 * Error string for this action
 	 */
-	@xml_attribute
+	@simpl_scalar
 	private String										error;
 
 	private InfoCollector							infoCollector;

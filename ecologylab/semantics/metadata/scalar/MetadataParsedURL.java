@@ -6,13 +6,13 @@ package ecologylab.semantics.metadata.scalar;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.metadata.semantics_pseudo_scalar;
 import ecologylab.semantics.model.text.NullTermVector;
-import ecologylab.xml.xml_inherit;
+import ecologylab.xml.simpl_inherit;
 
 /**
  * @author bharat
  *
  */
-@xml_inherit
+@simpl_inherit
 @semantics_pseudo_scalar
 public class MetadataParsedURL extends MetadataScalarBase<ParsedURL>
 {

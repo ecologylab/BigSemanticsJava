@@ -8,13 +8,14 @@ package ecologylab.semantics.metadata.builtins;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.semantics.metametadata.MetaMetadata;
-import ecologylab.xml.xml_inherit;
+import ecologylab.xml.Hint;
+import ecologylab.xml.simpl_inherit;
 
 /**
  * The Media Class
  **/
 
-@xml_inherit
+@simpl_inherit
 public class Media extends Metadata
 {
 
@@ -41,7 +42,7 @@ public class Media extends Metadata
 **/
 
 	@xml_tag("context")
-	@xml_leaf
+	@simpl_scalar @simpl_hints(Hint.XML_LEAF)
 	private MetadataString	context;
 
 	/**

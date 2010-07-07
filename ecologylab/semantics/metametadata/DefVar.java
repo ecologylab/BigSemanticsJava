@@ -5,8 +5,6 @@ import javax.xml.xpath.XPathConstants;
 
 import ecologylab.semantics.actions.SemanticActionsKeyWords;
 import ecologylab.xml.ElementState;
-import ecologylab.xml.ElementState.xml_attribute;
-import ecologylab.xml.ElementState.xml_tag;
 import ecologylab.xml.types.scalar.ScalarType;
 
 public class DefVar  extends ElementState
@@ -14,39 +12,39 @@ public class DefVar  extends ElementState
 	/**
 	 * Name of the variable to be declared
 	 */
-	@xml_attribute private String name;
+	@simpl_scalar private String name;
 	
 	/**
 	 * XPath to evaluate this variable
 	 */
-	@xml_attribute private String xpath;
+	@simpl_scalar private String xpath;
 	
 	
 	/**
 	 * The return type of this evaluation after applicatiopn of XPath
 	 */
-	@xml_attribute private String type;
+	@simpl_scalar private String type;
 	
 	/**
 	 * Node on which this XPath has to be applied
 	 */
-	@xml_attribute private String contextNode;
+	@simpl_scalar private String contextNode;
 	
 	
 	/**
 	 * scalar type of variable
 	 */
-	@xml_attribute	private ScalarType													scalarType;			
+	@simpl_scalar	private ScalarType													scalarType;			
 	
 	/**
 	 *  Value of variable
 	 */
-	@xml_attribute private String 						value;
+	@simpl_scalar private String 						value;
 	
 	/**
 	 * comment for this variable
 	 */
-	@xml_attribute private String comment;
+	@simpl_scalar private String comment;
 
 	/**
 	 * @return the name

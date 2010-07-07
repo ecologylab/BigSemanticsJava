@@ -11,10 +11,10 @@ public class Term extends ElementState implements Comparable<Term>
 
 	private static final Hashtable<String, String> uniqueStemObjectMap = new Hashtable<String, String>();
 	
-	@xml_attribute private String stem;
-	@xml_attribute private String word;
+	@simpl_scalar private String stem;
+	@simpl_scalar private String word;
 	private boolean hasWord = false;
-	@xml_attribute private double idf;
+	@simpl_scalar private double idf;
 	public static DecimalFormat ONE_DECIMAL_PLACE = new DecimalFormat("#0.0");
 
 	public double idf()

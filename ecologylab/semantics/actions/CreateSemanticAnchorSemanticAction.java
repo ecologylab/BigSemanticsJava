@@ -2,7 +2,7 @@ package ecologylab.semantics.actions;
 
 import ecologylab.collections.Scope;
 import ecologylab.semantics.html.documentstructure.AnchorContext;
-import ecologylab.xml.xml_inherit;
+import ecologylab.xml.simpl_inherit;
 import ecologylab.xml.ElementState.xml_tag;
 
 /**
@@ -11,7 +11,7 @@ import ecologylab.xml.ElementState.xml_tag;
  *
  */
 
-@xml_inherit
+@simpl_inherit
 public @xml_tag(SemanticActionStandardMethods.CREATE_SEMANTIC_ANCHOR)
 class CreateSemanticAnchorSemanticAction extends SemanticAction implements SemanticActionStandardMethods
 {

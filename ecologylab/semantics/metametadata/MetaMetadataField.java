@@ -14,8 +14,6 @@ import java.util.Iterator;
 
 import ecologylab.appframework.PropertiesAndDirectories;
 import ecologylab.generic.HashMapArrayList;
-import ecologylab.semantics.html.utils.StringBuilderUtils;
-import ecologylab.semantics.metadata.DocumentParserTagNames;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
@@ -28,9 +26,7 @@ import ecologylab.xml.FieldDescriptor;
 import ecologylab.xml.TranslationScope;
 import ecologylab.xml.XMLTools;
 import ecologylab.xml.XMLTranslationException;
-import ecologylab.xml.xml_inherit;
-import ecologylab.xml.ElementState.xml_attribute;
-import ecologylab.xml.ElementState.xml_tag;
+import ecologylab.xml.simpl_inherit;
 import ecologylab.xml.types.element.Mappable;
 import ecologylab.xml.types.scalar.ScalarType;
 
@@ -39,7 +35,7 @@ import ecologylab.xml.types.scalar.ScalarType;
  * @author damaraju
  * 
  */
-@xml_inherit
+@simpl_inherit
 public abstract class MetaMetadataField extends ElementState implements Mappable<String>, PackageSpecifier,
 		Iterable<MetaMetadataField>
 {
@@ -48,57 +44,57 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	/**
 	 * Name of the metadata field.
 	 */
-	@xml_attribute
+	@simpl_scalar
 	protected String															name;
 
 	@xml_tag("extends")
-	@xml_attribute
+	@simpl_scalar
 	protected String															extendsAttribute;
 
 	/**
 	 * true if this field should not be displayed in interactive in-context metadata
 	 */
-	@xml_attribute
+	@simpl_scalar
 	protected boolean															hide;
 
 	/**
 	 * If true the field is shown even if its null or empty.
 	 */
-	@xml_attribute
+	@simpl_scalar
 	protected boolean															alwaysShow;
 
-	@xml_attribute
+	@simpl_scalar
 	protected String															style;
 	
 	/**
 	 * Specifies the order in which a field is displayed in relation to other fields.
 	 */
-	@xml_attribute
+	@simpl_scalar
 	protected float																layer;
 
 	/**
 	 * XPath expression used to extract this field.
 	 */
-	@xml_attribute
+	@simpl_scalar
 	protected String															xpath;
 
 	/**
 	 * Another field name that this field navigates to (e.g. from a label in in-context metadata)
 	 */
-	@xml_attribute
+	@simpl_scalar
 	protected String															navigatesTo;
 
 	/**
 	 * This MetaMetadataField shadows another field, so it is to be displayed instead of the other.It
 	 * is kind of over-riding a field.
 	 */
-	@xml_attribute
+	@simpl_scalar
 	protected String															shadows;
 	
 	/**
 	 * The label to be used when visualizing this field. Name is used by default. This overrides name.
 	 */
-	@xml_attribute
+	@simpl_scalar
 	protected String															label;
 
 	// FIXME -- talk to bharat, eliminate this declaration
@@ -106,7 +102,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	/**
 	 * This is used to specify the prefix string which is to be stripped off.
 	 */
-	@xml_attribute
+	@simpl_scalar
 	protected String															stringPrefix;
 
 	/*
@@ -117,58 +113,58 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	 * @xml_attribute protected boolean isMap;
 	 */
 
-	@xml_attribute
+	@simpl_scalar
 	protected boolean															isFacet;
 
-	@xml_attribute
+	@simpl_scalar
 	protected boolean															ignoreInTermVector;
 
-	@xml_attribute
+	@simpl_scalar
 	protected String															comment;
 
 	/**
 	 * Enables hand coding a few Metadata classes, but still providing MetaMetadata to control
 	 * operations on them.
 	 */
-	@xml_attribute
+	@simpl_scalar
 	protected boolean															dontCompile;
 	
-	@xml_attribute
+	@simpl_scalar
 	protected String															key;
 
 	/**
 	 * The regular expression
 	 */
-	@xml_attribute
+	@simpl_scalar
 	protected String																			textRegex;
 
 	/**
 	 * The string used to replace the match.
 	 */
-	@xml_attribute
+	@simpl_scalar
 	protected String																			matchReplacement;
 	
 	/**
 	 * Context node for xpath based extarction rules for this field.
 	 * Default value is document root.
 	 */
-	@xml_attribute
+	@simpl_scalar
 	protected String																			contextNode;
 
-	@xml_attribute 
+	@simpl_scalar 
 	protected String																			tag;
 	
-	@xml_attribute
+	@simpl_scalar
 	protected boolean																			ignoreExtractionError;
 
-	@xml_map
-	@xml_classes({
+	@simpl_map
+	@simpl_classes({
 		MetaMetadataField.class,
 		MetaMetadataScalarField.class,
 		MetaMetadataCompositeField.class,
 		MetaMetadataCollectionField.class,
 		})
-	@xml_nowrap
+	@simpl_nowrap
 	protected HashMapArrayList<String, MetaMetadataField>	kids;
 	
 	HashSet<String>																				nonDisplayedFieldNames;
@@ -609,7 +605,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	}
 	
 	/**
-	 * Appends scalar field with @xml_leaf annotation
+	 * Appends scalar field with @simpl_scalar @simpl_hints(Hint.XML_LEAF) annotation
 	 * 
 	 * @param appendable
 	 * @param classNamePrefix
@@ -625,7 +621,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 			// HACK FOR METADATAINTEGER
 			className = "Integer";
 		}
-		appendMetalanguageDecl(appendable, getTagDecl() + " @xml_leaf",
+		appendMetalanguageDecl(appendable, getTagDecl() + " @simpl_scalar @simpl_hints(Hint.XML_LEAF)",
 				classNamePrefix, className, fieldName);
 	}
 

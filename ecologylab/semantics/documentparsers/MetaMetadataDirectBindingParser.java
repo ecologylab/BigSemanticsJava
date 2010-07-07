@@ -12,6 +12,7 @@ import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.xml.ElementState;
+import ecologylab.xml.XMLTools;
 import ecologylab.xml.XMLTranslationException;
 
 /**
@@ -40,7 +41,7 @@ public class MetaMetadataDirectBindingParser<SA extends SemanticAction>
 			try
 			{
 				populatedMetadata = (Document) ElementState.translateFromXML(inputStream(), getMetadataTranslationScope());
-			  populatedMetadata.translateToXML(System.out);
+			  populatedMetadata.serialize(System.out);
 			  System.out.println();
 			  /*
 				//FIXME-- Is there an efficient way to find the root element?????
@@ -69,7 +70,7 @@ public class MetaMetadataDirectBindingParser<SA extends SemanticAction>
 	 */
 	protected void createDOMandParse(ParsedURL purl)
 	{
-		org.w3c.dom.Document document	= ElementState.buildDOM(purl);
+		org.w3c.dom.Document document	= XMLTools.buildDOM(purl);
 		semanticActionHandler.getSemanticActionReturnValueMap().put(SemanticActionsKeyWords.DOCUMENT_ROOT_NODE, document);
 	}
 }

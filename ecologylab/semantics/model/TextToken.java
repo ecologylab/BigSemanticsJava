@@ -9,7 +9,8 @@ import java.net.URL;
 import ecologylab.generic.StringBuilderPool;
 import ecologylab.net.ParsedURL;
 import ecologylab.xml.ElementState;
-import ecologylab.xml.xml_inherit;
+import ecologylab.xml.Hint;
+import ecologylab.xml.simpl_inherit;
 
 /**
  * Smallest unit of top-level text in an HTML page; that is, a token of text that lives outside of
@@ -18,19 +19,19 @@ import ecologylab.xml.xml_inherit;
  * 
  * @author alexgrau
  */
-public @xml_inherit
+public @simpl_inherit
 class TextToken extends ElementState
 {
 
-	@xml_leaf
+	@simpl_scalar @simpl_hints(Hint.XML_LEAF)
 	protected String		string = "";
 
 	/** Link for the TextToken, if one exists */
-	@xml_attribute
+	@simpl_scalar
 	protected ParsedURL		href;
 
 	/** Delimiters that come before the string found in WordForms */
-	@xml_attribute
+	@simpl_scalar
 	protected String		delimsBefore					= " ";
 
 	/**
@@ -38,7 +39,7 @@ class TextToken extends ElementState
 	 * Plain, 2 is Bold, etc. Returned and set using values in Font, just plus or minus one. Done so
 	 * that if the token is the same as the chunk, the value is not stored in the xml.
 	 */
-	@xml_attribute
+	@simpl_scalar
 	protected int			stylePlusOne					= 0;
 
 	/**
@@ -46,17 +47,17 @@ class TextToken extends ElementState
 	 * fontIndex just plus one so that 0 can be the same as the chunk, rather than -1. Although in
 	 * the methods it is coded as -1.
 	 */
-	@xml_attribute
+	@simpl_scalar
 	protected int			facePlusOne						= 0;
 
 	/**
 	 * Font size of the token. 0 means that it is the same as the Chunk.
 	 */
-	@xml_attribute
+	@simpl_scalar
 	protected int			fontSize						= 0;
 
 	// TODO Boolean
-	@xml_attribute
+	@simpl_scalar
 	protected int			eol								= 0;
 
 	/**
@@ -64,7 +65,7 @@ class TextToken extends ElementState
 	 * Underline Style. 1-Don't Underline Token 2-Do Underline String but not Delims 3-Do Underline
 	 * Entire Token 4-Do Double Underline String but not Delims 5-Do Double Underline Entire Token
 	 */
-	@xml_attribute
+	@simpl_scalar
 	protected int			underline						= 0;
 
 	/** Variable used to denote the end of a link */

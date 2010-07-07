@@ -11,7 +11,7 @@ import ecologylab.generic.HashMapWriteSynch2Args;
 import ecologylab.generic.ValueFactory2;
 import ecologylab.io.BasicSite;
 import ecologylab.net.ParsedURL;
-import ecologylab.xml.xml_inherit;
+import ecologylab.xml.simpl_inherit;
 
 /**
  * BasicSite extended to maintain semantics 
@@ -19,7 +19,7 @@ import ecologylab.xml.xml_inherit;
  * @author damaraju
  *
  */
-@xml_inherit
+@simpl_inherit
 public class SemanticsSite extends BasicSite
 {
 

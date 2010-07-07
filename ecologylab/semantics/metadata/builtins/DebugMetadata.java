@@ -6,8 +6,8 @@ package ecologylab.semantics.metadata.builtins;
 import ecologylab.semantics.connectors.InfoCollectorBase;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.scalar.MetadataStringBuilder;
-import ecologylab.semantics.metametadata.MetaMetadata;
-import ecologylab.xml.xml_inherit;
+import ecologylab.xml.Hint;
+import ecologylab.xml.simpl_inherit;
 
 /**
  * Dynamically generated fields, only for debugging purposes by developers.
@@ -15,10 +15,10 @@ import ecologylab.xml.xml_inherit;
  * 
  * @author andruid
  */
-@xml_inherit
+@simpl_inherit
 public class DebugMetadata extends Metadata
 {
-	@xml_leaf MetadataStringBuilder newTermVector;
+	@simpl_scalar @simpl_hints(Hint.XML_LEAF) MetadataStringBuilder newTermVector;
 	
 	/**
 	 * 

@@ -7,16 +7,13 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
-import ecologylab.generic.ReflectionTools;
 import ecologylab.semantics.gui.EditValueEvent;
 import ecologylab.semantics.gui.EditValueListener;
 import ecologylab.semantics.gui.EditValueNotifier;
-import ecologylab.semantics.metametadata.MetaMetadataField;
 import ecologylab.xml.ClassDescriptor;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.FieldDescriptor;
 import ecologylab.xml.ScalarUnmarshallingContext;
-import ecologylab.xml.types.scalar.ScalarType;
 
 /**
  * @author andruid

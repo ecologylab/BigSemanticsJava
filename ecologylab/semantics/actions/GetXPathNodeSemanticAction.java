@@ -3,27 +3,27 @@ package ecologylab.semantics.actions;
 import javax.xml.namespace.QName;
 import javax.xml.xpath.XPathConstants;
 
-import ecologylab.xml.xml_inherit;
+import ecologylab.xml.simpl_inherit;
 import ecologylab.xml.ElementState.xml_tag;
 
-@xml_inherit
+@simpl_inherit
 public @xml_tag(SemanticActionStandardMethods.GET_XPATH_NODE) class GetXPathNodeSemanticAction extends SemanticAction implements SemanticActionStandardMethods
 {
 
 	/**
 	 *  DOM node on which to apply xpath
 	 */
-	@xml_attribute private String node;
+	@simpl_scalar private String node;
 	
 	/**
 	 * The XPath to apply.
 	 */
-	@xml_attribute private String xpath;
+	@simpl_scalar private String xpath;
 	
 	/**
 	 * The return type of this evaluation after applicatiopn of XPath
 	 */
-	@xml_attribute private String returnObject;
+	@simpl_scalar private String returnObject;
 	
 	@Override
 	public String getActionName()

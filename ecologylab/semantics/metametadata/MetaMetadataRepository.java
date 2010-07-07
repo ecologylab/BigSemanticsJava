@@ -49,26 +49,26 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	/**
 	 * The name of the repository.
 	 */
-	@xml_attribute
+	@simpl_scalar
 	private String																							name;
 
 	/**
 	 * The package in which the class files have to be generated.
 	 */
 	@xml_tag("package")
-	@xml_attribute
+	@simpl_scalar
 	private String																							packageName;
 
-	@xml_map("user_agent")
+	@simpl_map("user_agent")
 	private HashMap<String, UserAgent>											userAgents;
 
-	@xml_map("search_engine")
+	@simpl_map("search_engine")
 	private HashMap<String, SearchEngine>									searchEngines;
 
-	@xml_map("named_style")
+	@simpl_map("named_style")
 	private HashMap<String, NamedStyle>										namedStyles;
 
-	@xml_attribute
+	@simpl_scalar
 	private String																							defaultUserAgentName;
 
 	private String																							defaultUserAgentString			= null;
@@ -78,8 +78,8 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	 * automatically, by translateFromXML(). It contains all bindings, for both Document and Media
 	 * subtypes.
 	 */
-	@xml_map("meta_metadata")
-	@xml_nowrap
+	@simpl_map("meta_metadata")
+	@simpl_nowrap
 	private HashMapArrayList<String, MetaMetadata>							repositoryByTagName;
 
 	/**
@@ -115,7 +115,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	
 	File																												file;
 	
-	@xml_map("site")	HashMap<String, SemanticsSite>						sites;
+	@simpl_map("site")	HashMap<String, SemanticsSite>						sites;
 	
 	static
 	{
@@ -130,7 +130,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		MetaMetadataRepository metaMetaDataRepository = load(REPOSITORY_FILE);
 		try
 		{
-			metaMetaDataRepository.writePrettyXML(System.out);
+			metaMetaDataRepository.serialize(System.out);
 		}
 		catch (XMLTranslationException e)
 		{
@@ -187,7 +187,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 			//			
 			// result.populateMimeMap();
 			// For debug
-			// this.metaMetaDataRepository.writePrettyXML(System.out);
+			// this.metaMetaDataRepository.translateToXML(System.out);
 		}
 
 		if (repositorySources.exists())

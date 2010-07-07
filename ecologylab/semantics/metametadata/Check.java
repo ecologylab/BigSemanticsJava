@@ -20,12 +20,12 @@ public class Check extends ElementState
 	/**
 	 * The name of the check
 	 */
-	@xml_attribute private String condition;
+	@simpl_scalar private String condition;
 
 	/**
 	 * The name of the flag which this check will set.
 	 */
-	@xml_attribute private String name;
+	@simpl_scalar private String name;
 
 	/**
 	 * @return the name

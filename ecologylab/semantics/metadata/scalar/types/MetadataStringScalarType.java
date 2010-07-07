@@ -30,7 +30,7 @@ public class MetadataStringScalarType extends MetadataScalarScalarType<MetadataS
 		
 		try
 		{
-			i.translateToXML(System.out);
+			i.serialize(System.out);
 		}
 		catch (XMLTranslationException e)
 		{

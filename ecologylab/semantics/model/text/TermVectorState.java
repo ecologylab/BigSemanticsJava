@@ -14,7 +14,7 @@ import ecologylab.xml.ElementState;
  */
 public class TermVectorState extends ElementState
 {
-	@xml_collection("term_vector_entry") ArrayList<TermVectorEntry> terms = new ArrayList<TermVectorEntry>();
+	@simpl_collection("term_vector_entry") ArrayList<TermVectorEntry> terms = new ArrayList<TermVectorEntry>();
 	
 	public TermVectorState() 
 	{

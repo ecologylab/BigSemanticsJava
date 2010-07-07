@@ -5,10 +5,10 @@ import java.util.List;
 import java.util.Map;
 
 import ecologylab.semantics.metametadata.DefVar;
-import ecologylab.xml.xml_inherit;
+import ecologylab.xml.simpl_inherit;
 import ecologylab.xml.ElementState.xml_tag;
 
-@xml_inherit
+@simpl_inherit
 @xml_tag("string_operation")
 public class StringOperationsSemanticAction<SA extends SemanticAction> extends
 		NestedSemanticAction<SA>
@@ -39,7 +39,7 @@ public class StringOperationsSemanticAction<SA extends SemanticAction> extends
 
 	public static final String	ACTION_TRIM					= "trim";
 
-	@xml_attribute
+	@simpl_scalar
 	private String							action;
 
 	@Override

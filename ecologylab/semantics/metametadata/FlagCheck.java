@@ -22,7 +22,7 @@ public @xml_tag("flag_check")class FlagCheck extends ElementState
 		/**
 		 *  The name of the flags to be checked
 		 */
-		@xml_attribute private String value;
+		@simpl_scalar private String value;
 
 		/**
 		 * @return the name

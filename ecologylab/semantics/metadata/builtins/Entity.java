@@ -8,7 +8,8 @@ import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
 import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.semantics.metametadata.MetaMetadata;
-import ecologylab.xml.xml_inherit;
+import ecologylab.xml.Hint;
+import ecologylab.xml.simpl_inherit;
 import ecologylab.xml.types.element.Mappable;
 
 /**
@@ -18,12 +19,12 @@ import ecologylab.xml.types.element.Mappable;
  * 
  * @author andruid
  */
-@xml_inherit
+@simpl_inherit
 public class Entity<D extends Document> extends Metadata
 implements Mappable<ParsedURL>
 {
-	@xml_leaf MetadataString		gist;
-	@xml_leaf MetadataParsedURL	location;
+	@simpl_scalar @simpl_hints(Hint.XML_LEAF) MetadataString		gist;
+	@simpl_scalar @simpl_hints(Hint.XML_LEAF) MetadataParsedURL	location;
 	
 	D															linkedDocument;
 	

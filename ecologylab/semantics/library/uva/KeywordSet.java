@@ -6,20 +6,20 @@ package ecologylab.semantics.library.uva;
 import java.util.ArrayList;
 
 import ecologylab.xml.ElementState;
-import ecologylab.xml.xml_inherit;
+import ecologylab.xml.simpl_inherit;
 
 /**
  * 
  *
  * @author andruid 
  */
-@xml_inherit
+@simpl_inherit
 public class KeywordSet extends ElementState
 {
-	@xml_attribute	String	type;
+	@simpl_scalar	String	type;
 	
-	@xml_nowrap 
-	@xml_collection("keyword")	ArrayList<String>	keywords;
+	@simpl_nowrap 
+	@simpl_collection("keyword")	ArrayList<String>	keywords;
 	
 	
 	/**

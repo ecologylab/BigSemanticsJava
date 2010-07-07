@@ -4,11 +4,11 @@ import java.io.IOException;
 
 import ecologylab.semantics.tools.MetadataCompilerUtils;
 import ecologylab.xml.XMLTools;
-import ecologylab.xml.xml_inherit;
+import ecologylab.xml.simpl_inherit;
 import ecologylab.xml.ElementState.xml_tag;
 import ecologylab.xml.types.scalar.ScalarType;
 
-@xml_inherit
+@simpl_inherit
 @xml_tag("scalar")
 public class MetaMetadataScalarField extends MetaMetadataField
 {
@@ -16,7 +16,7 @@ public class MetaMetadataScalarField extends MetaMetadataField
 	/**
 	 * The type of the field -- only if it is a scalar.
 	 */
-	@xml_attribute
+	@simpl_scalar
 	protected ScalarType	scalarType;
 
 	public MetaMetadataScalarField()

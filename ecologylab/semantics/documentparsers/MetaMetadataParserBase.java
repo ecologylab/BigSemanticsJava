@@ -129,7 +129,7 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 		try
 		{
 			debug("Metadata parsed from: " + container.purl());
-			debug(populatedMetadata.translateToXML());
+			debug(populatedMetadata.serialize());
 			
 		}
 		

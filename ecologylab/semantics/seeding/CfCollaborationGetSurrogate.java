@@ -3,20 +3,18 @@ package ecologylab.semantics.seeding;
 
 import ecologylab.collections.Scope;
 import ecologylab.generic.Debug;
-import ecologylab.services.distributed.common.ServicesHostsAndPorts;
-import ecologylab.services.distributed.legacy.ServicesClient;
 import ecologylab.services.messages.OkResponse;
 import ecologylab.services.messages.RequestMessage;
 import ecologylab.services.messages.ResponseMessage;
-import ecologylab.xml.ElementState;
+import ecologylab.xml.Hint;
 import ecologylab.xml.TranslationScope;
 import ecologylab.xml.XMLTranslationException;
-import ecologylab.xml.xml_inherit;
+import ecologylab.xml.simpl_inherit;
 
-@xml_inherit
+@simpl_inherit
 public class CfCollaborationGetSurrogate extends RequestMessage {
 
-	@xml_leaf protected String surrogateSetString;
+	@simpl_scalar @simpl_hints(Hint.XML_LEAF) protected String surrogateSetString;
 	
 	static TranslationScope translationSpace;
 	
@@ -66,7 +64,7 @@ public class CfCollaborationGetSurrogate extends RequestMessage {
 		{
 			CfCollaborationGetSurrogate cfCollabGet = new CfCollaborationGetSurrogate (test, translationSpace);
 			System.out.println("cfCollabGet.get: " + cfCollabGet.getSurrogateSetString());
-			System.out.println("cfCollabGet: " + cfCollabGet.translateToXML());
+			System.out.println("cfCollabGet: " + cfCollabGet.serialize());
 			
 		} catch (XMLTranslationException e) {
 			// TODO Auto-generated catch block

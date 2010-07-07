@@ -5,7 +5,6 @@ package ecologylab.semantics.seeding;
 
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.connectors.InfoCollector;
-import ecologylab.xml.ElementState;
 
 /**
  * Specification of a directive to the agent or otherwise to compositon space services.
@@ -20,20 +19,20 @@ public class Crawler extends Seed
 	/**
 	 * URL that the action operates on.
 	 */
-	@xml_attribute
+	@simpl_scalar
 	protected					ParsedURL	url;
 	
 	/**
 	 * The domain -- for reject actions only.
 	 */
-	@xml_attribute
+	@simpl_scalar
 	protected					String		domain;
 	
 	/**
 	 * What is the web crawler being told to do?
 	 * 		traversable, untraversable, or reject.
 	 */
-	@xml_attribute
+	@simpl_scalar
 	protected					String		action;
 
 	/**

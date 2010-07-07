@@ -3,26 +3,7 @@
  */
 package ecologylab.semantics.metadata;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-
-import ecologylab.generic.HashMapArrayList;
-import ecologylab.generic.OneLevelNestingIterator;
-import ecologylab.semantics.metametadata.MetaMetadata;
-import ecologylab.semantics.metametadata.MetaMetadataField;
-import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.model.text.ITermVector;
-import ecologylab.xml.ClassDescriptor;
-import ecologylab.xml.ElementState;
-import ecologylab.xml.FieldDescriptor;
-import ecologylab.xml.ScalarUnmarshallingContext;
-import ecologylab.xml.serial_descriptors_classes;
 
 /**
  * Base class for Metadata fields that represent scalar values.

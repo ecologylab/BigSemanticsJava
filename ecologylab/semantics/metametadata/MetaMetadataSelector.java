@@ -5,11 +5,7 @@ import java.util.regex.Pattern;
 
 import ecologylab.net.ParsedURL;
 import ecologylab.xml.ElementState;
-import ecologylab.xml.xml_inherit;
-import ecologylab.xml.ElementState.xml_attribute;
-import ecologylab.xml.ElementState.xml_collection;
-import ecologylab.xml.ElementState.xml_nowrap;
-import ecologylab.xml.ElementState.xml_tag;
+import ecologylab.xml.simpl_inherit;
 
 /**
  * 
@@ -19,40 +15,40 @@ import ecologylab.xml.ElementState.xml_tag;
  *
  */
 
-public @xml_inherit class MetaMetadataSelector extends ElementState{
+public @simpl_inherit class MetaMetadataSelector extends ElementState{
 
-	@xml_attribute
+	@simpl_scalar
 	private String					name;
 	
-	@xml_attribute
+	@simpl_scalar
 	private String					cfPref;
 	//TODO add somthing to make cfPref do what it is supposed to.  Cf pref could generate a static int that creates an ordering...
 	
-	@xml_attribute
+	@simpl_scalar
 	private ParsedURL					urlStripped;
 	
-	@xml_attribute
+	@simpl_scalar
 	private ParsedURL 				urlPathTree;
 
 	/**
 	 * Regular expression. Must be paired with domain.
 	 * This is the least efficient form of matcher, so it should be used only when url_base & url_prefix cannot be used.
 	 */
-	@xml_attribute
+	@simpl_scalar
 	private Pattern						urlRegex;
 	
 	/**
 	 * This key is *required* for urlPatterns, so that we can organize them efficiently.
 	 */
-	@xml_attribute
+	@simpl_scalar
 	private String						domain;
 	
-	@xml_collection("mime_type")
-	@xml_nowrap 
+	@simpl_collection("mime_type")
+	@simpl_nowrap 
 	private ArrayList<String>	mimeTypes;
 
-	@xml_collection("suffix")
-	@xml_nowrap 
+	@simpl_collection("suffix")
+	@simpl_nowrap 
 	private ArrayList<String>	suffixes;
 	
 	public MetaMetadataSelector()

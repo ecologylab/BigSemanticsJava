@@ -11,30 +11,30 @@ import ecologylab.semantics.metadata.scalar.MetadataInteger;
 import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
 import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.semantics.metametadata.MetaMetadata;
-import ecologylab.xml.xml_inherit;
-import ecologylab.xml.ElementState.xml_leaf;
+import ecologylab.xml.Hint;
+import ecologylab.xml.simpl_inherit;
 
 /**
  * The Document Class
  **/
 
-@xml_inherit
+@simpl_inherit
 public class Document extends Metadata
 {
-	@xml_leaf MetadataString		title;
-	@xml_leaf MetadataString		description;
-	@xml_leaf MetadataParsedURL	location;
+	@simpl_scalar @simpl_hints(Hint.XML_LEAF) MetadataString		title;
+	@simpl_scalar @simpl_hints(Hint.XML_LEAF) MetadataString		description;
+	@simpl_scalar @simpl_hints(Hint.XML_LEAF) MetadataParsedURL	location;
 	
-//	@xml_leaf MetadataStringBuilder 	anchorText;
-//	@@xml_leaf MetadataStringBuilder 	anchorContextString;
+//	@simpl_scalar @simpl_hints(Hint.XML_LEAF) MetadataStringBuilder 	anchorText;
+//	@@simpl_scalar @simpl_hints(Hint.XML_LEAF) MetadataStringBuilder 	anchorContextString;
 	
-	@xml_leaf MetadataInteger			generation;
+	@simpl_scalar @simpl_hints(Hint.XML_LEAF) MetadataInteger			generation;
 
 	/**
 	 * Occasionally, we want to navigate to somewhere other than the regular purl,
 	 * as in when this is an RSS feed, but there's an equivalent HTML page.
 	 */
-//	@xml_leaf MetadataParsedURL	navLocation;
+//	@simpl_scalar @simpl_hints(Hint.XML_LEAF) MetadataParsedURL	navLocation;
 	
 	/**
 	 * Constructor
@@ -317,7 +317,7 @@ public class Document extends Metadata
 	 * For debugging. Type of the structure recognized by information extraction.
 	 **/
 
-	@xml_leaf
+	@simpl_scalar @simpl_hints(Hint.XML_LEAF)
 	private MetadataString	pageStructure;
 
 	/**
@@ -387,7 +387,7 @@ public class Document extends Metadata
 	/**
 	 * The search query
 	 **/
-	@xml_leaf
+	@simpl_scalar @simpl_hints(Hint.XML_LEAF)
 	private MetadataString	query;
 
 	/**

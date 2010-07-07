@@ -3,22 +3,19 @@
  */
 package ecologylab.semantics.seeding;
 
-import ecologylab.appframework.types.prefs.Pref;
 import ecologylab.appframework.types.prefs.PrefElementState;
-import ecologylab.xml.xml_inherit;
-import ecologylab.xml.ElementState.xml_nested;
+import ecologylab.xml.simpl_inherit;
 import ecologylab.xml.ElementState.xml_other_tags;
-import ecologylab.xml.ElementState.xml_tag;
 
 /**
  * @author andruid
  *
  */
-@xml_inherit
+@simpl_inherit
 @xml_other_tags({"pref_element"})
 public class PrefSeedSet extends PrefElementState<SeedSet>
 {
-	@xml_nested
+	@simpl_composite
 	@xml_tag("seed_set")
 	SeedSet				value;
 	/**

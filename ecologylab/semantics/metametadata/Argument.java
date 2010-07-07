@@ -4,7 +4,6 @@
 package ecologylab.semantics.metametadata;
 
 import ecologylab.xml.ElementState;
-import ecologylab.xml.xml_inherit;
 import ecologylab.xml.ElementState.xml_tag;
 import ecologylab.xml.types.element.Mappable;
 
@@ -24,25 +23,25 @@ implements Mappable
 	/**
 	 * The value of the argument
 	 */
-	@xml_attribute
+	@simpl_scalar
 	private String value;
 
 	/**
 	 * The name of the argument
 	 */
-	@xml_attribute
+	@simpl_scalar
 	private String name;
 
 	/**
 	 * The check to be performed for this argument.
 	 */
-	@xml_attribute
+	@simpl_scalar
 	private String check;
 
-	@xml_attribute
+	@simpl_scalar
 	private String context;
 
-	@xml_attribute
+	@simpl_scalar
 	private boolean isNested;
 
 	/**

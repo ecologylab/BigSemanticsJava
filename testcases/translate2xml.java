@@ -27,7 +27,7 @@ public class translate2xml
 		try
 		{
 			Image image = (Image) ElementState.translateFromXML(file, TS);
-			image.translateToXML(System.out);
+			image.serialize(System.out);
 //			TestDocument testDocumentfromXML = (TestDocument) TestDocument.translateFromXMLSAX(file, TS);
 //			testDocumentfromXML.translateToXML(System.out);
 		} catch (XMLTranslationException e)

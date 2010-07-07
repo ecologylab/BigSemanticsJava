@@ -13,11 +13,7 @@ import ecologylab.semantics.connectors.SeedPeer;
 import ecologylab.semantics.connectors.SemanticsSessionObjectNames;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.TranslationScope;
-import ecologylab.xml.xml_inherit;
-import ecologylab.xml.ElementState.xml_attribute;
-import ecologylab.xml.ElementState.xml_collection;
-import ecologylab.xml.ElementState.xml_nowrap;
-import ecologylab.xml.ElementState.xml_scope;
+import ecologylab.xml.simpl_inherit;
 
 /**
  * A collection of seeds that will be performed by the agent, or elsewhere,
@@ -26,23 +22,23 @@ import ecologylab.xml.ElementState.xml_scope;
  * 
  * @author andruid
  */
-@xml_inherit
+@simpl_inherit
 public class SeedSet<S extends Seed> extends ElementState
 implements SemanticsSessionObjectNames, Iterable<S>
 {	
 	static TranslationScope ts = CfBaseSeedTranslations.get();
 	
-	@xml_attribute protected boolean		dontPlayOnStart;
+	@simpl_scalar protected boolean		dontPlayOnStart;
 	
-	@xml_attribute protected String			id;
+	@simpl_scalar protected String			id;
 	
-	@xml_attribute protected String			category;
+	@simpl_scalar protected String			category;
 	
-	@xml_attribute protected String			description;
+	@simpl_scalar protected String			description;
 	
-	@xml_collection
-	@xml_scope(CfBaseSeedTranslations.TSCOPE_NAME)
-	@xml_nowrap protected ArrayList<S> 	seeds; 
+	@simpl_collection
+	@simpl_scope(CfBaseSeedTranslations.TSCOPE_NAME)
+	@simpl_nowrap protected ArrayList<S> 	seeds; 
 	
 	public SeedSet()
 	{

@@ -8,13 +8,13 @@ import ecologylab.semantics.metadata.semantics_pseudo_scalar;
 import ecologylab.semantics.model.text.ITermVector;
 import ecologylab.semantics.model.text.TermVector;
 import ecologylab.xml.XMLTools;
-import ecologylab.xml.xml_inherit;
+import ecologylab.xml.simpl_inherit;
 
 /**
  * @author andruid
  *
  */
-@xml_inherit
+@simpl_inherit
 @semantics_pseudo_scalar
 public class MetadataString extends MetadataScalarBase<String>
 {

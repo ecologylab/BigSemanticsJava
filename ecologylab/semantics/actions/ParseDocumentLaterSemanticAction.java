@@ -1,9 +1,9 @@
 package ecologylab.semantics.actions;
 
-import ecologylab.xml.xml_inherit;
+import ecologylab.xml.simpl_inherit;
 import ecologylab.xml.ElementState.xml_tag;
 
-@xml_inherit
+@simpl_inherit
 public @xml_tag(SemanticActionStandardMethods.PARSE_DOCUMENT_LATER)
 class ParseDocumentLaterSemanticAction extends SemanticAction implements SemanticActionStandardMethods
 {

@@ -17,13 +17,11 @@ import ecologylab.generic.ReflectionTools;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.NestedSemanticActionsTranslationScope;
 import ecologylab.semantics.actions.SemanticAction;
-import ecologylab.semantics.metadata.DocumentParserTagNames;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
 import ecologylab.semantics.tools.MetadataCompiler;
 import ecologylab.semantics.tools.MetadataCompilerUtils;
-import ecologylab.xml.ClassDescriptor;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.TranslationScope;
 import ecologylab.xml.XMLTools;
@@ -37,39 +35,39 @@ import ecologylab.xml.types.element.Mappable;
 public class MetaMetadata extends MetaMetadataCompositeField 
 implements Mappable<String>
 {
-	@xml_attribute
+	@simpl_scalar
 	private ParsedURL					urlStripped;
 	
-	@xml_attribute
+	@simpl_scalar
 	private ParsedURL 				urlPathTree;
 
 	/**
 	 * Regular expression. Must be paired with domain.
 	 * This is the least efficient form of matcher, so it should be used only when url_base & url_prefix cannot be used.
 	 */
-	@xml_attribute
+	@simpl_scalar
 	private Pattern						urlRegex;
 	
 	/**
 	 * This key is *required* for urlPatterns, so that we can organize them efficiently.
 	 */
-	@xml_attribute
+	@simpl_scalar
 	private String						domain;
 	
-	@xml_attribute
+	@simpl_scalar
 	private String						userAgentName;
 
 	@xml_tag("package")
-	@xml_attribute
+	@simpl_scalar
 	String										packageAttribute;
 
-	@xml_attribute
+	@simpl_scalar
 	private String						userAgentString;
 
-	@xml_attribute
+	@simpl_scalar
 	private String						parser=null;
 	
-	@xml_attribute
+	@simpl_scalar
 	protected boolean					dontGenerateClass = false;
 
 	/*
@@ -82,28 +80,28 @@ implements Mappable<String>
 	 * metadata class. It basically provide us to simulate the functionality of multiple inheritance
 	 * which is missing in java.
 	 */
-	@xml_collection("mixins")
-	@xml_nowrap 
+	@simpl_collection("mixins")
+	@simpl_nowrap 
 	private ArrayList<String>	mixins;
 
-	@xml_collection("mime_type")
-	@xml_nowrap 
+	@simpl_collection("mime_type")
+	@simpl_nowrap 
 	private ArrayList<String>	mimeTypes;
 
-	@xml_collection("suffix")
-	@xml_nowrap 
+	@simpl_collection("suffix")
+	@simpl_nowrap 
 	private ArrayList<String>	suffixes;
 
-	@xml_collection
-	@xml_scope(NestedSemanticActionsTranslationScope.NESTED_SEMANTIC_ACTIONS_SCOPE)
+	@simpl_collection
+	@simpl_scope(NestedSemanticActionsTranslationScope.NESTED_SEMANTIC_ACTIONS_SCOPE)
 	private ArrayList<SemanticAction>	semanticActions;
 	
-	@xml_collection("def_var")
-	@xml_nowrap 
+	@simpl_collection("def_var")
+	@simpl_nowrap 
 	private ArrayList<DefVar> defVars;
 
 	
-	@xml_attribute
+	@simpl_scalar
 	private String 					collectionOf;
 	
 
@@ -525,7 +523,7 @@ implements Mappable<String>
 		MetaMetadataRepository test = (MetaMetadataRepository) ElementState.translateFromXML(
 				patternXMLFilepath, TS);
 
-	  test.writePrettyXML(System.out);
+	  test.serialize(System.out);
 
 		File outputRoot = PropertiesAndDirectories.userDir();
 

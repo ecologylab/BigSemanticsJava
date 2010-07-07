@@ -6,6 +6,7 @@ package ecologylab.semantics.seeding;
 import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.xml.ElementState;
+import ecologylab.xml.Hint;
 import ecologylab.xml.XMLTranslationException;
 
 /**
@@ -15,7 +16,7 @@ import ecologylab.xml.XMLTranslationException;
  */
 public class InlineSeed extends Seed
 {
-	@xml_leaf(CDATA) protected String			content;
+	@simpl_scalar @simpl_hints(Hint.XML_LEAF_CDATA) protected String			content;
 
 	/**
 	 * Blank constructor used by automatic ecologylab.xml instantiations. 

@@ -8,14 +8,14 @@ import java.util.Map;
 
 import ecologylab.generic.ReflectionTools;
 import ecologylab.xml.XMLTools;
-import ecologylab.xml.xml_inherit;
+import ecologylab.xml.simpl_inherit;
 import ecologylab.xml.ElementState.xml_tag;
 
 /**
  * @author amathur
  *
  */
-@xml_inherit
+@simpl_inherit
 public @xml_tag(SemanticActionStandardMethods.SET_FIELD_ACTION) class SetFieldSemanticAction extends SemanticAction implements SemanticActionStandardMethods
 {
 

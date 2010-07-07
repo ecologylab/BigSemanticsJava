@@ -3,7 +3,6 @@
  */
 package ecologylab.semantics.metametadata;
 
-import ecologylab.net.ParsedURL;
 import ecologylab.xml.ElementState;
 import ecologylab.xml.types.element.Mappable;
 
@@ -14,15 +13,15 @@ import ecologylab.xml.types.element.Mappable;
 public class SearchEngine extends ElementState implements Mappable<String>
 {
 
-	@xml_attribute private String name;
+	@simpl_scalar private String name;
 	
-	@xml_attribute private String urlPrefix;
+	@simpl_scalar private String urlPrefix;
 	
-	@xml_attribute private String urlSuffix;
+	@simpl_scalar private String urlSuffix;
 	
-	@xml_attribute private String numResultString;
+	@simpl_scalar private String numResultString;
 	
-	@xml_attribute private String startString;
+	@simpl_scalar private String startString;
 	
 	public SearchEngine() {}
 

@@ -5,7 +5,7 @@ package ecologylab.semantics.actions;
 
 import java.util.ArrayList;
 
-import ecologylab.xml.xml_inherit;
+import ecologylab.xml.simpl_inherit;
 import ecologylab.xml.ElementState.xml_tag;
 
 /**
@@ -13,12 +13,12 @@ import ecologylab.xml.ElementState.xml_tag;
  * @author amathur
  *
  */
-@xml_inherit
+@simpl_inherit
 public @xml_tag(SemanticActionStandardMethods.IF)
 class IfSemanticAction  extends NestedSemanticAction implements SemanticActionStandardMethods
 {
-	@xml_nowrap 
-	@xml_collection("flag_check")
+	@simpl_nowrap 
+	@simpl_collection("flag_check")
 	private ArrayList<FlagCheck> flagCheck;
 		
 	@Override

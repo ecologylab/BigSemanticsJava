@@ -29,9 +29,9 @@ abstract public class Seed<AC extends Container> extends ElementState implements
     /**
      * Query string to pass to the search engine.
      */
-    @xml_attribute protected String				query;
+    @simpl_scalar protected String				query;
     
-    @xml_attribute protected float				bias		= 1.0f;
+    @simpl_scalar protected float				bias		= 1.0f;
 
     protected SeedDistributor            	seedDistributer;
     

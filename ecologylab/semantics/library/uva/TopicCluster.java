@@ -6,8 +6,8 @@ package ecologylab.semantics.library.uva;
 import java.util.ArrayList;
 
 import ecologylab.xml.ElementState;
-import ecologylab.xml.ElementState.xml_nested;
-import ecologylab.xml.ElementState.xml_nowrap;
+import ecologylab.xml.ElementState.simpl_composite;
+import ecologylab.xml.ElementState.simpl_nowrap;
 import ecologylab.xml.library.geom.Rectangle2DDoubleState;
 import ecologylab.xml.library.geom.RectangularShape;
 
@@ -18,14 +18,14 @@ import ecologylab.xml.library.geom.RectangularShape;
  */
 public class TopicCluster extends ElementState
 {
-	@xml_attribute	int						id;
+	@simpl_scalar	int						id;
 	
-	@xml_nested		Rectangle2DDoubleState		rectangle;
+	@simpl_composite		Rectangle2DDoubleState		rectangle;
 	
-	@xml_nested		DocumentSet				documentSet;
+	@simpl_composite		DocumentSet				documentSet;
 	
-	@xml_nowrap 
-	@xml_collection("keyword_set")		
+	@simpl_nowrap 
+	@simpl_collection("keyword_set")		
 					ArrayList<KeywordSet>	keywordSets;
 	
 	/**

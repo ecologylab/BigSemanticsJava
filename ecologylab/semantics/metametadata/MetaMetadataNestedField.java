@@ -1,10 +1,10 @@
 package ecologylab.semantics.metametadata;
 
 import ecologylab.generic.HashMapArrayList;
-import ecologylab.xml.xml_inherit;
+import ecologylab.xml.simpl_inherit;
 import ecologylab.xml.types.scalar.ScalarType;
 
-@xml_inherit
+@simpl_inherit
 public abstract class MetaMetadataNestedField extends MetaMetadataField
 {
 

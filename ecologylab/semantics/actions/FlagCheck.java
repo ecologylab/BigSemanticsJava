@@ -4,7 +4,7 @@
 package ecologylab.semantics.actions;
 
 import ecologylab.xml.ElementState;
-import ecologylab.xml.ElementState.xml_collection;
+import ecologylab.xml.ElementState.simpl_collection;
 import ecologylab.xml.ElementState.xml_tag;
 
 /**
@@ -24,7 +24,7 @@ public @xml_tag("flag_check")class FlagCheck extends ElementState
 		/**
 		 *  The name of the flags to be checked
 		 */
-		@xml_attribute private String value;
+		@simpl_scalar private String value;
 
 		/**
 		 * @return the name

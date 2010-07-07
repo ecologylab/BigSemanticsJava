@@ -4,22 +4,23 @@ import ecologylab.net.ParsedURL;
 import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
 import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.semantics.metametadata.MetaMetadata;
-import ecologylab.xml.xml_inherit;
+import ecologylab.xml.Hint;
+import ecologylab.xml.simpl_inherit;
 
 /**
  * This is not generated code, but a hand-authored base class in the 
  * Metadata hierarchy. It is hand-authored in order to provide specific functionalities
  **/
-@xml_inherit
+@simpl_inherit
 public class Image extends Media
 {
-	@xml_leaf
+	@simpl_scalar @simpl_hints(Hint.XML_LEAF)
 	MetadataString					caption;
 
-	@xml_leaf
+	@simpl_scalar @simpl_hints(Hint.XML_LEAF)
 	MetadataParsedURL				location;
 
-	@xml_leaf
+	@simpl_scalar @simpl_hints(Hint.XML_LEAF)
 	private MetadataString	localLocation;
 
 	public Image()

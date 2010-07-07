@@ -3,14 +3,14 @@
  */
 package ecologylab.semantics.actions;
 
-import ecologylab.xml.xml_inherit;
+import ecologylab.xml.simpl_inherit;
 import ecologylab.xml.ElementState.xml_tag;
 
 /**
  * @author amathur
  * 
  */
-@xml_inherit
+@simpl_inherit
 public @xml_tag(SemanticActionStandardMethods.FOR_EACH)
 class ForEachSemanticAction extends NestedSemanticAction implements SemanticActionStandardMethods
 {
@@ -18,33 +18,33 @@ class ForEachSemanticAction extends NestedSemanticAction implements SemanticActi
 	/**
 	 * Name of the collection object on which for loop is applied
 	 */
-	@xml_attribute private String collection;
+	@simpl_scalar private String collection;
 	
 	/**
 	 * Name of the iterator [iterator variable]
 	 */
-	@xml_attribute private String as;
+	@simpl_scalar private String as;
 	
 	/**
 	 * Starting index
 	 */
-	@xml_attribute private String start;
+	@simpl_scalar private String start;
 	
 	/**
 	 * end index
 	 */
-	@xml_attribute private String end;
+	@simpl_scalar private String end;
 	
 	/**
 	 * current index of  loop
 	 */
-	@xml_attribute private String currentIndex;
+	@simpl_scalar private String currentIndex;
 	
 	
 	/**
 	 *  variable to store collection size.
 	 */
- @xml_attribute private String  size;
+ @simpl_scalar private String  size;
 	
 	@Override
 	public String getActionName()

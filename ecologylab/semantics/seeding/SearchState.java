@@ -3,10 +3,8 @@ package ecologylab.semantics.seeding;
 import java.io.File;
 
 import ecologylab.collections.Scope;
-import ecologylab.generic.Generic;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionHandler;
-import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.connectors.SearchEngineNames;
 import ecologylab.semantics.connectors.SeedPeer;
@@ -14,7 +12,7 @@ import ecologylab.semantics.documentparsers.MetaMetadataSearchParser;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.model.text.InterestModel;
 import ecologylab.xml.XMLTranslationException;
-import ecologylab.xml.xml_inherit;
+import ecologylab.xml.simpl_inherit;
 import ecologylab.xml.library.dc.Dc;
 
 /**
@@ -23,7 +21,7 @@ import ecologylab.xml.library.dc.Dc;
  * Starts by providing a basis for specification of search seeds.
  * Then, keeps state during processing of the search.
  */
-@xml_inherit
+@simpl_inherit
 public class SearchState extends Seed
 implements SemanticsPrefs, SearchEngineNames
 {
@@ -36,7 +34,7 @@ implements SemanticsPrefs, SearchEngineNames
    /**
     * Search engine to use. Currently supported are google, flickr, yahoo, yahoo_image, yahoo_news, yahoo_buzz, delicious.
     */
-   @xml_attribute protected String			engine;
+   @simpl_scalar protected String			engine;
 
    
    protected String							queryNoPluses;
@@ -44,18 +42,18 @@ implements SemanticsPrefs, SearchEngineNames
    /**
     * For del.icio.us only. Allows querying the delicious tags for a particular user.
     */
-   @xml_attribute protected String			creator;
+   @simpl_scalar protected String			creator;
    
    /**
     * For Yahoo Buzz. Queries to buzz can either be "leaders" (the default) or "movers".
     * The latter tend to be more current and interesting.
     */
-   @xml_attribute protected boolean			isMovers;
+   @simpl_scalar protected boolean			isMovers;
    
    /**
     * For any query that allows searching on DC fields.
     */
-   @xml_nested protected Dc 				dc; 
+   @simpl_composite protected Dc 				dc; 
    
    private int				numResults		= NUM_SEARCH_RESULTS.value();
    
@@ -65,7 +63,7 @@ implements SemanticsPrefs, SearchEngineNames
     * Each time a subsequent search is run, it will be incremented by the number of searchResults that
     * were requested the previous time.
     */
-   @xml_attribute
+   @simpl_scalar
    private int				currentFirstResultIndex;
 
    private int				searchType;
@@ -169,7 +167,7 @@ implements SemanticsPrefs, SearchEngineNames
 	   {
 		   try
 		   {
-			   error("Can't process search seed with null query: " + this.translateToXML());
+			   error("Can't process search seed with null query: " + this.serialize());
 		   } catch (XMLTranslationException e)
 		   {
 			   e.printStackTrace();

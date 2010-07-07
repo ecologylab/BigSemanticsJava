@@ -15,11 +15,7 @@ import ecologylab.net.ParsedURL;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.textformat.NamedStyle;
 import ecologylab.xml.ElementState;
-import ecologylab.xml.FieldDescriptor;
-import ecologylab.xml.xml_inherit;
-import ecologylab.xml.ElementState.xml_attribute;
-import ecologylab.xml.ElementState.xml_nested;
-import ecologylab.xml.ElementState.xml_other_tags;
+import ecologylab.xml.simpl_inherit;
 import ecologylab.xml.types.scalar.ScalarType;
 import ecologylab.xml.types.scalar.ScalarTypeInstanceConstants;
 
@@ -27,33 +23,33 @@ import ecologylab.xml.types.scalar.ScalarTypeInstanceConstants;
  * A text chunk from an HTML page; delimited by markup, or a size threshold; composed of an ordered
  * collection of {@link TextToken TextToken}s.
  */
-abstract public @xml_inherit
+abstract public @simpl_inherit
 class TextChunkBase<T extends TextToken> extends ElementState implements
 		ScalarTypeInstanceConstants,
 		Iterable<T>
 {
 	
-	@xml_collection
-	@xml_scope(TextTokenTranslations.TEXT_TOKEN_SCOPE_NAME)
-	@xml_nowrap
+	@simpl_collection
+	@simpl_scope(TextTokenTranslations.TEXT_TOKEN_SCOPE_NAME)
+	@simpl_nowrap
 	protected ArrayList<T>						tokens;
 	/**
 	 * Named Style for this text chunk. Default is to an anonymous style.
 	 */
-	@xml_nested @xml_other_tags({"anon_style"})
+	@simpl_composite @xml_other_tags({"anon_style"})
 	protected NamedStyle							namedStyle									= new NamedStyle(DEFAULT_POINT_SIZE);
 
 	/**
 	 * Current style name. Either this or anon style will be null so that only one will be sent to
 	 * xml.
 	 */
-	@xml_attribute
+	@simpl_scalar
 	protected String									styleName									= null;
 
-	@xml_attribute
+	@simpl_scalar
 	protected ParsedURL								commonHref								= null;
 
-	@xml_attribute
+	@simpl_scalar
 	protected float										nonStopIndex;
 
 	private boolean										recycled;

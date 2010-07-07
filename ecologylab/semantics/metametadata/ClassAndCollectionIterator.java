@@ -6,7 +6,6 @@ import java.util.Iterator;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataBase;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
-import ecologylab.xml.ElementState;
 
 /**
  * Iterates through a Collection of things, and then through an Iterator

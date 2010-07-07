@@ -2,14 +2,13 @@ package testcases;
 
 import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.xml.ElementState;
-import ecologylab.xml.ElementState.xml_nested;
-import ecologylab.xml.ElementState.xml_text;
+import ecologylab.xml.Hint;
 
 public class TestDocument extends ElementState
 {
-	@xml_attribute	String 			context;
-	@xml_nested 	MetadataString	title;
-	@xml_text		String			aValue;
+	@simpl_scalar	String 			context;
+	@simpl_composite 	MetadataString	title;
+	@simpl_scalar @simpl_hints(Hint.XML_TEXT)		String			aValue;
 	
 	MetadataString title()
 	{
