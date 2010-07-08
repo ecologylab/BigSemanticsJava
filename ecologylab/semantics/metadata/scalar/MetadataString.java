@@ -34,11 +34,9 @@ public class MetadataString extends MetadataScalarBase<String>
 	@Override
 	public void setValue(String value)
 	{
-//	  if (value == null)
-//	    value = "";
 		if ((value != null) && (value.length() > 0))
 		{
-		  	value		= XMLTools.unescapeXML(value);
+			value		= XMLTools.unescapeXML(value);
 			this.value = value;
 			if (termVector != null)
 				termVector.reset(value);
