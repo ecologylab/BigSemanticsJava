@@ -25,16 +25,16 @@ public class Document extends Metadata
 	@simpl_scalar MetadataString		description;
 	@simpl_scalar MetadataParsedURL	location;
 	
-//	@simpl_scalar @simpl_hints(Hint.XML_LEAF) MetadataStringBuilder 	anchorText;
-//	@@simpl_scalar @simpl_hints(Hint.XML_LEAF) MetadataStringBuilder 	anchorContextString;
+//	@simpl_scalar MetadataStringBuilder 	anchorText;
+//	@@simpl_scalar MetadataStringBuilder 	anchorContextString;
 	
-	@simpl_scalar @simpl_hints(Hint.XML_LEAF) MetadataInteger			generation;
+	@simpl_scalar MetadataInteger			generation;
 
 	/**
 	 * Occasionally, we want to navigate to somewhere other than the regular purl,
 	 * as in when this is an RSS feed, but there's an equivalent HTML page.
 	 */
-//	@simpl_scalar @simpl_hints(Hint.XML_LEAF) MetadataParsedURL	navLocation;
+//	@simpl_scalar MetadataParsedURL	navLocation;
 	
 	/**
 	 * Constructor
