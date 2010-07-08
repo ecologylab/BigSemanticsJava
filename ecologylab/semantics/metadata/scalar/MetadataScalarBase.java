@@ -12,7 +12,7 @@ import ecologylab.serialization.ElementState;
 abstract
 public class MetadataScalarBase<T> implements MetadataBase
 {
-	public T		value;
+	protected T		value;
 	
 	public static final String	VALUE_FIELD_NAME	= "value";
 	
