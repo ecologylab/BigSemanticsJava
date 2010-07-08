@@ -149,9 +149,8 @@ public class MetaMetadataScalarField extends MetaMetadataField
 		}
 		else
 		{
-			// by default, we add the XML_LEAF hint
-			appendMetalanguageDecl(appendable, getTagDecl()
-					+ " @simpl_scalar @simpl_hints(Hint.XML_LEAF)", classNamePrefix, className, fieldName);
+			appendMetalanguageDecl(appendable, getTagDecl() + " @simpl_scalar", classNamePrefix,
+					className, fieldName);
 		}
 	}
 
