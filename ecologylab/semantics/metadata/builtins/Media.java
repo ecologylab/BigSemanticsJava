@@ -42,7 +42,7 @@ public class Media extends Metadata
 **/
 
 	@xml_tag("context")
-	@simpl_scalar @simpl_hints(Hint.XML_LEAF)
+	@simpl_scalar
 	private MetadataString	context;
 
 	/**
