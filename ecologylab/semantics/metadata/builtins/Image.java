@@ -14,13 +14,13 @@ import ecologylab.serialization.simpl_inherit;
 @simpl_inherit
 public class Image extends Media
 {
-	@simpl_scalar @simpl_hints(Hint.XML_LEAF)
+	@simpl_scalar
 	MetadataString					caption;
 
-	@simpl_scalar @simpl_hints(Hint.XML_LEAF)
+	@simpl_scalar
 	MetadataParsedURL				location;
 
-	@simpl_scalar @simpl_hints(Hint.XML_LEAF)
+	@simpl_scalar
 	private MetadataString	localLocation;
 
 	public Image()
