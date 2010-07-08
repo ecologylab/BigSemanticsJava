@@ -81,6 +81,7 @@ public class MetaMetadataScalarField extends MetaMetadataField
 
 	/**
 	 * Writes a Scalar Nested attribute to the class file.It is of the form
+	 * 
 	 * @xml_tag(tagName) @simpl_composite scalarType name;
 	 * @param appendable
 	 *          The appendable in which this declaration has to be appended.
@@ -148,8 +149,9 @@ public class MetaMetadataScalarField extends MetaMetadataField
 		}
 		else
 		{
-			appendMetalanguageDecl(appendable, getTagDecl() + " @simpl_scalar", classNamePrefix,
-					className, fieldName);
+			// by default, we add the XML_LEAF hint
+			appendMetalanguageDecl(appendable, getTagDecl()
+					+ " @simpl_scalar @simpl_hints(Hint.XML_LEAF)", classNamePrefix, className, fieldName);
 		}
 	}
 
