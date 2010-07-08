@@ -3,10 +3,13 @@ package ecologylab.semantics.metametadata;
 import java.io.IOException;
 
 import ecologylab.semantics.tools.MetadataCompilerUtils;
+import ecologylab.serialization.Hint;
+import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.simpl_inherit;
 import ecologylab.serialization.ElementState.xml_tag;
 import ecologylab.serialization.types.scalar.ScalarType;
+import ecologylab.serialization.types.scalar.StringType;
 
 @simpl_inherit
 @xml_tag("scalar")
@@ -18,6 +21,9 @@ public class MetaMetadataScalarField extends MetaMetadataField
 	 */
 	@simpl_scalar
 	protected ScalarType	scalarType;
+
+	@simpl_scalar
+	protected Hint				hint;
 
 	public MetaMetadataScalarField()
 	{
@@ -55,7 +61,17 @@ public class MetaMetadataScalarField extends MetaMetadataField
 	{
 		return scalarType;
 	}
-	
+
+	public Hint getHint()
+	{
+		return hint;
+	}
+
+	public void setHint(Hint hint)
+	{
+		this.hint = hint;
+	}
+
 	@Override
 	protected void doAppending(Appendable appendable, int pass) throws IOException
 	{
@@ -65,8 +81,7 @@ public class MetaMetadataScalarField extends MetaMetadataField
 
 	/**
 	 * Writes a Scalar Nested attribute to the class file.It is of the form
-	 * 
-	 * @xml_tag(tagName) @xml_nested scalarType name;
+	 * @xml_tag(tagName) @simpl_composite scalarType name;
 	 * @param appendable
 	 *          The appendable in which this declaration has to be appended.
 	 * @throws IOException
@@ -110,6 +125,35 @@ public class MetaMetadataScalarField extends MetaMetadataField
 	}
 
 	/**
+	 * Appends scalar field with @simpl_scalar @simpl_hints(Hint.XML_LEAF) annotation
+	 * 
+	 * @param appendable
+	 * @param classNamePrefix
+	 * @param className
+	 * @param fieldName
+	 * @throws IOException
+	 */
+	protected void appendLeaf(Appendable appendable, String classNamePrefix, String className,
+			String fieldName) throws IOException
+	{
+		if ("int".equals(className))
+		{
+			// HACK FOR METADATAINTEGER
+			className = "Integer";
+		}
+		if (getHint() != null)
+		{
+			appendMetalanguageDecl(appendable, getTagDecl() + " @simpl_scalar @simpl_hints(Hint."
+					+ getHint() + ")", classNamePrefix, className, fieldName);
+		}
+		else
+		{
+			appendMetalanguageDecl(appendable, getTagDecl() + " @simpl_scalar", classNamePrefix,
+					className, fieldName);
+		}
+	}
+
+	/**
 	 * This method will always return false since scalar fields never generate classes.
 	 */
 	@Override
@@ -118,4 +162,16 @@ public class MetaMetadataScalarField extends MetaMetadataField
 		return false;
 	}
 
+	public static void main(String[] args) throws SIMPLTranslationException
+	{
+		/*
+		 * MetaMetadataScalarField mmsf = new MetaMetadataScalarField(); mmsf.scalarType = new
+		 * StringType(); mmsf.hint = Hint.XML_LEAF; System.out.println(mmsf.serialize());
+		 */
+
+		String xml = "<scalar name=\"example\" scalar_type=\"String\" hint=\"XML_attribute\"></scalar>";
+		MetaMetadataScalarField m = (MetaMetadataScalarField) MetaMetadataTranslationScope.get()
+				.deserializeCharSequence(xml);
+		System.out.println(m);
+	}
 }

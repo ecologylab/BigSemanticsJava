@@ -94,11 +94,11 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField
 	 */
 	protected void appenedNestedMetadataField(Appendable appendable, int pass) throws IOException
 	{
-		String variableType = " @xml_nested " + XMLTools.classNameFromElementName(getTypeOrName());
+		String variableType = " @simpl_composite " + XMLTools.classNameFromElementName(getTypeOrName());
 		String fieldType = XMLTools.classNameFromElementName(getTypeOrName());
 		if (isEntity())
 		{
-			variableType = " @xml_nested Entity<" + XMLTools.classNameFromElementName(getTypeOrName())
+			variableType = " @simpl_composite Entity<" + XMLTools.classNameFromElementName(getTypeOrName())
 					+ ">";
 			fieldType = "Entity<" + XMLTools.classNameFromElementName(getTypeOrName()) + ">";
 		}

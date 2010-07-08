@@ -215,7 +215,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	 * @param metadataTScope
 	 * @return repository
 	 */
-	private static MetaMetadataRepository readRepository(File file,
+	public static MetaMetadataRepository readRepository(File file,
 			TranslationScope metaMetadataTScope)
 	{
 		MetaMetadataRepository repos = null;

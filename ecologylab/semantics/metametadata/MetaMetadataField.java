@@ -288,7 +288,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 			MetadataCompiler.printImports(p);
 
 			// write xml_inherit
-			p.println("@xml_inherit");
+			p.println("@simpl_inherit");
 //			p.println("@xml_tag(\""+collectionChildType+"\")");
 			p.println(getTagDecl());
 
@@ -364,7 +364,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	}
 
 	/**
-	 * Append an @xml_nested declaration to appendable, using the name of this to directly form both
+	 * Append an @simpl_composite declaration to appendable, using the name of this to directly form both
 	 * the class name and the field name.
 	 * 
 	 * @param appendable
@@ -600,31 +600,10 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	private void appendNested(Appendable appendable, String classNamePrefix, String className,
 			String fieldName) throws IOException
 	{
-		appendMetalanguageDecl(appendable, getTagDecl() + " @xml_nested",
+		appendMetalanguageDecl(appendable, getTagDecl() + " @simpl_composite",
 				classNamePrefix, className, fieldName);
 	}
 	
-	/**
-	 * Appends scalar field with @simpl_scalar @simpl_hints(Hint.XML_LEAF) annotation
-	 * 
-	 * @param appendable
-	 * @param classNamePrefix
-	 * @param className
-	 * @param fieldName
-	 * @throws IOException
-	 */
-	protected void appendLeaf(Appendable appendable, String classNamePrefix, String className,
-			String fieldName) throws IOException
-	{
-		if ("int".equals(className))
-		{
-			// HACK FOR METADATAINTEGER
-			className = "Integer";
-		}
-		appendMetalanguageDecl(appendable, getTagDecl() + " @simpl_scalar @simpl_hints(Hint.XML_LEAF)",
-				classNamePrefix, className, fieldName);
-	}
-
 	/**
 	 * public void setAuthors(HashMapArrayList<String, Author> authors) { this.authorNames = authors;
 	 * }
@@ -658,7 +637,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 		appendable.append("return this." + fieldName+ ";\n}\n");
 	}
 
-	private void appendMetalanguageDecl(Appendable appendable, String metalanguage,
+	protected void appendMetalanguageDecl(Appendable appendable, String metalanguage,
 			String classNamePrefix, String className, String fieldName) throws IOException
 	{
 		appendMetalanguageDecl(appendable, metalanguage, classNamePrefix, className, "", fieldName);

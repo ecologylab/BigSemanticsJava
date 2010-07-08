@@ -27,7 +27,7 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 	protected boolean	childEntity	= false;
 
 	/**
-	 * Specifies adding @xml_nowrap to the collection object in cases where items in the collection
+	 * Specifies adding @simpl_nowrap to the collection object in cases where items in the collection
 	 * are not wrapped inside a tag.
 	 */
 	@simpl_scalar
@@ -164,9 +164,9 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 		}
 
 		StringBuilder annotation = StringBuilderUtils.acquire();
-		annotation.append("@xml_collection(\"" + tag + "\")");
+		annotation.append("@simpl_collection(\"" + tag + "\")");
 		if (noWrap)
-			annotation.append(" @xml_nowrap");
+			annotation.append(" @simpl_nowrap");
 
 		if (pass == MetadataCompilerUtils.GENERATE_FIELDS_PASS)
 		{

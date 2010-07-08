@@ -242,8 +242,8 @@ implements Mappable<String>
 		// Write java-doc comments
 		MetadataCompilerUtils.writeJavaDocComment(getComment(), fileWriter);
 
-		//write @xml_inherit
-		p.println("@xml_inherit");
+		//write @simpl_inherit
+		p.println("@simpl_inherit");
 		
 //		p.println("@xml_tag(\""+getName()+"\")");
 
