@@ -26,7 +26,6 @@ import ecologylab.semantics.model.text.ITermVector;
 import ecologylab.semantics.seeding.SearchState;
 import ecologylab.semantics.seeding.Seed;
 import ecologylab.serialization.ElementState;
-import ecologylab.serialization.Hint;
 import ecologylab.serialization.ScalarUnmarshallingContext;
 import ecologylab.serialization.TranslationScope;
 import ecologylab.serialization.simpl_descriptor_classes;
@@ -44,6 +43,13 @@ import ecologylab.serialization.simpl_descriptor_classes;
 abstract public class Metadata extends ElementState
 implements MetadataBase, Iterable<MetadataFieldDescriptor>
 {
+	@simpl_scalar 
+	@xml_other_tags("meta_metadata_name")
+	@xml_tag("mm_name")
+	MetadataString 						metaMetadataName;
+	
+	private MetaMetadata			metaMetadata;
+
 	/**
 	 * Hidden reference to the MetaMetadataRepository. DO NOT access this field directly.
 	 * DO NOT create a static public accessor.
@@ -59,7 +65,7 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 	 * Seed object associated with this, if this is a seed.
 	 */
 	private Seed				seed;
-	
+
 	public static final String MIXIN_TRANSLATION_STRING = "mixingTranslations";
 	static Class[] mixinClasses = {DebugMetadata.class};
 	static TranslationScope MIXIN_TRANSLATIONS = TranslationScope.get(MIXIN_TRANSLATION_STRING, mixinClasses);
@@ -86,16 +92,12 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 	 * Indicates that this Container is a truly a seed, not just one
 	 * that is associated into a Seed's inverted index.
 	 */
-	private boolean			isTrueSeed;
+	private boolean						isTrueSeed;
 	
 	/**
 	 * Indicates that this Container is processed via drag and drop.
 	 */
-	private boolean			isDnd;
-	
-	private MetaMetadata			metaMetadata;
-	
-	@simpl_scalar @simpl_hints(Hint.XML_LEAF) MetadataString metaMetadataName;
+	private boolean						isDnd;
 	
 	/**
 	 * This constructor should *only* be used when marshalled Metadata is read.
