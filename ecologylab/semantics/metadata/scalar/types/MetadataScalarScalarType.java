@@ -28,16 +28,14 @@ public abstract class MetadataScalarScalarType<M, T> extends ReferenceType<M>
 	
 	Field						valueField;
 	
-	Class<M> 				metadataScalarTypeClass;
-	
 	/**
 	 * @param thatClass
 	 */
 	public MetadataScalarScalarType(Class<M> metadataScalarTypeClass, Class valueClass)
 	{
 		super(metadataScalarTypeClass);
-		this.metadataScalarTypeClass	= metadataScalarTypeClass;
 		this.valueScalarType					= TypeRegistry.getType(valueClass);
+		valueField();
 	}
 	
 	Field valueField()
@@ -45,25 +43,31 @@ public abstract class MetadataScalarScalarType<M, T> extends ReferenceType<M>
 		Field result	= valueField;
 		if (result == null)
 		{
-			Class metadataScalarBaseClass	= MetadataScalarBase.class;
+			Class typeClass = MetadataScalarBase.class;
 			try
 			{
-				result							= metadataScalarBaseClass.getField(MetadataScalarBase.VALUE_FIELD_NAME);
+				result							= typeClass.getDeclaredField(MetadataScalarBase.VALUE_FIELD_NAME);
 				result.setAccessible(true);
 				valueField = result;
 			}
 			catch (SecurityException e)
 			{
-				error("Can't access value field for " + metadataScalarTypeClass);
+				error("Can't access value field for " + typeClass);
 			}
 			catch (NoSuchFieldException e)
 			{
-				error("Can't find value field for " + metadataScalarTypeClass);
+				error("Can't find value field for " + typeClass);
 			}
 		}
 		return result;
 	}
 	
+	/**
+	 * Set the value field inside the MetadataScalarBase subtype object that largerMetadataContext refers to.
+	 * Instantiate that MetadataScalarBase subtype object if necessary, and set it there.
+	 * 
+	 * Used for deserializing.
+	 */
 	@Override
   public boolean setField(Object largerMetadataContext, Field field, String valueString, String[] format, ScalarUnmarshallingContext scalarUnmarshallingContext)
   {
@@ -95,6 +99,17 @@ public abstract class MetadataScalarScalarType<M, T> extends ReferenceType<M>
       return result;
   }
 
+	/**
+	 * Called during deserialization.
+	 * 
+	 * Uses the valueScalarType stored inside the scalar type to get an instance of type T.
+	 * Called inside the various subtypes of this.
+	 * 
+	 * @param value
+	 * @param formatStrings
+	 * @param scalarUnmarshallingContext
+	 * @return
+	 */
 	public T getValueInstance(String value, String[] formatStrings,
 			ScalarUnmarshallingContext scalarUnmarshallingContext)
 	{
@@ -104,7 +119,7 @@ public abstract class MetadataScalarScalarType<M, T> extends ReferenceType<M>
 	public static final Class[] METADATA_SCALAR_TYPES	=
 	{
 			MetadataStringScalarType.class, MetadataStringBuilderScalarType.class, MetadataIntegerScalarType.class,
-			MetadataParsedURLScalarType.class,
+			MetadataParsedURLScalarType.class, MetaMetadataType.class, 
 	};
 	
 	public static void init()
@@ -151,5 +166,10 @@ public abstract class MetadataScalarScalarType<M, T> extends ReferenceType<M>
 	public String toString(T instance)
 	{
 		return instance.toString();
+	}
+	
+	public boolean isDefaultValue(String value)
+	{
+		return valueScalarType.isDefaultValue(value);
 	}
 }

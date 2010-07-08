@@ -13,6 +13,9 @@ public class MetadataStringScalarType extends MetadataScalarScalarType<MetadataS
 		super(MetadataString.class, String.class);
 	}
 
+	/**
+	 * Used in deserialization. Creates new instance. 
+	 */
 	@Override
 	public MetadataString getInstance(String value, String[] formatStrings,
 			ScalarUnmarshallingContext scalarUnmarshallingContext)
