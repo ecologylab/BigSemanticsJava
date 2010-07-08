@@ -26,7 +26,9 @@ public class SemanticsTest extends ApplicationEnvironment
 	public SemanticsTest() throws SIMPLTranslationException
 	{
 		super("Semantics Test");
-		// TODO Auto-generated constructor stub
+
+		fixCodeBase("cf");
+		new TestInfoCollector();
 	}
 
 	/**
@@ -58,9 +60,6 @@ public class SemanticsTest extends ApplicationEnvironment
 		try
 		{
 			SemanticsTest st	= new SemanticsTest();
-			st.fixCodeBase("cf");
-//			GeneratedMetadataTranslationScope.get();
-			new TestInfoCollector();
 			
 			Image i	= new Image();
 			i.setCaption("a nice caption.");
