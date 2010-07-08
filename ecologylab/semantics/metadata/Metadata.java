@@ -116,7 +116,9 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 	{
 		this();
 		this.metaMetadata 		= metaMetadata;
-		this.metaMetadataName = new MetadataString(metaMetadata.getName());
+		String metaMetadataName = metaMetadata.getName();
+		if (!classDescriptor().getTagName().equals(metaMetadataName))
+			this.metaMetadataName = new MetadataString(metaMetadataName);
 	}
 	
 	/**
