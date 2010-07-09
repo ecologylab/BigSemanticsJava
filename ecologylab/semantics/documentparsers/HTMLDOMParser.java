@@ -234,6 +234,13 @@ extends HTMLParserCommon<C, IC>
 		newImgTxt(imgNode, anchorHref);
 	}
 
+	public void generateCandidateContainersFromContexts(ArrayList<AnchorContext> anchorContexts)
+	{
+		// by default we treat it as in content body, since this method is called to support drag-and-
+		// drop function, and we suppose that user will drag contents they are really interested in
+		generateCandidateContainersFromContexts(anchorContexts, true);
+	}
+	
 	/**
 	 * For each anchorContext:
 	 * 	 create purl and check to see 
@@ -241,18 +248,19 @@ extends HTMLParserCommon<C, IC>
 	 * 	 sets the metadata
 	 *   adds an outlink from the ancestor
 	 *   add a semantic inlink to hrefContainer from this.
+	 * @param isInContentBody 
 	 *   
 	 */
-	public void generateCandidateContainersFromContexts(ArrayList<AnchorContext> anchorContexts)
+	public void generateCandidateContainersFromContexts(ArrayList<AnchorContext> anchorContexts, boolean isInContentBody)
 	{
 		C	container	= this.container();
 		for(AnchorContext anchorContext : anchorContexts)
 		{
-				generateCanidateContainerFromContext(anchorContext,container, false);
+				generateCanidateContainerFromContext(anchorContext,container, false, isInContentBody);
 		}
 	}
 	
-	public void generateCanidateContainerFromContext(AnchorContext anchorContext, C container, boolean shouldTraverse)
+	public void generateCanidateContainerFromContext(AnchorContext anchorContext, C container, boolean shouldTraverse, boolean isInContentBody)
 	{
 		ParsedURL hrefPurl 			= anchorContext.getHref();
 		if(hrefPurl !=null && !hrefPurl.isNull())
@@ -275,8 +283,7 @@ extends HTMLParserCommon<C, IC>
 	
 					container.addCandidateContainer(hrefContainer);
 	
-					//FIXME: All links use this control flow. Why are we considering all of them as from article body ?
-					container.setInArticleBody(true);
+					container.setInArticleBody(isInContentBody);
 				}
 			}
 			//The href associated is actually an image. Create a new img element and associate text to it.

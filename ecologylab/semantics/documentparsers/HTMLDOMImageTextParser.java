@@ -77,6 +77,7 @@ implements TidyInterface, HTMLAttributeNames
 		
 		TdNode contentBody = getContentBody(taggedDoc);
 		DOMWalkInformationTagger taggedContentnode = walkAndTagDom(contentBody, this);
+		boolean isInContentBody = (taggedContentnode != null);
 		
 		extractImageTextSurrogates(taggedDoc, contentBody);
 		
@@ -87,7 +88,7 @@ implements TidyInterface, HTMLAttributeNames
 		else
 			anchorContexts = buildAnchorContexts(taggedDoc.getAllAnchorNodes());
 		
-  	generateCandidateContainersFromContexts(anchorContexts);
+  	generateCandidateContainersFromContexts(anchorContexts, isInContentBody);
   	
   	anchorContexts.clear();
 		taggedDoc.recycle();
