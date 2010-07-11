@@ -25,6 +25,9 @@ public class MetaMetadataScalarField extends MetaMetadataField
 	@simpl_scalar
 	protected Hint				hint;
 
+	@simpl_composite
+	protected RegexFilter	filter;
+
 	public MetaMetadataScalarField()
 	{
 	}
@@ -142,16 +145,29 @@ public class MetaMetadataScalarField extends MetaMetadataField
 			// HACK FOR METADATAINTEGER
 			className = "Integer";
 		}
+
+		StringBuilder annotation = new StringBuilder(" @simpl_scalar");
+
 		if (getHint() != null)
 		{
-			appendMetalanguageDecl(appendable, getTagDecl() + " @simpl_scalar @simpl_hints(Hint."
-					+ getHint() + ")", classNamePrefix, className, fieldName);
+			annotation.append(String.format(" @simpl_hints(Hint.%s)", getHint()));
 		}
-		else
+
+		if (filter != null && filter.regex != null)
 		{
-			appendMetalanguageDecl(appendable, getTagDecl() + " @simpl_scalar", classNamePrefix,
-					className, fieldName);
+			if (filter.replace != null)
+			{
+				annotation.append(String.format(" @simpl_filter(regex=\"%s\", replace=\"%s\")",
+						filter.regex, filter.replace));
+			}
+			else
+			{
+				annotation.append(String.format(" @simpl_filter(regex=\"%s\")", filter.regex));
+			}
 		}
+
+		appendMetalanguageDecl(appendable, getTagDecl() + annotation, classNamePrefix, className,
+				fieldName);
 	}
 
 	/**
@@ -165,14 +181,27 @@ public class MetaMetadataScalarField extends MetaMetadataField
 
 	public static void main(String[] args) throws SIMPLTranslationException
 	{
-		/*
-		 * MetaMetadataScalarField mmsf = new MetaMetadataScalarField(); mmsf.scalarType = new
-		 * StringType(); mmsf.hint = Hint.XML_LEAF; System.out.println(mmsf.serialize());
-		 */
+		testSerialization();
+		testDeserialization();
+	}
 
-		String xml = "<scalar name=\"example\" scalar_type=\"String\" hint=\"XML_attribute\"></scalar>";
+	public static void testSerialization() throws SIMPLTranslationException
+	{
+		MetaMetadataScalarField mmsf = new MetaMetadataScalarField();
+		mmsf.scalarType = new StringType();
+		mmsf.hint = Hint.XML_LEAF;
+		mmsf.filter = new RegexFilter();
+		mmsf.filter.regex = ".";
+		mmsf.filter.replace = ".";
+		System.out.println(mmsf.serialize());
+	}
+
+	public static void testDeserialization() throws SIMPLTranslationException
+	{
+		String xml = "<scalar name=\"example\" scalar_type=\"String\" hint=\"XML_ATTRIBUTE\"><filter regex=\".\" replace=\".\" /></scalar>";
 		MetaMetadataScalarField m = (MetaMetadataScalarField) MetaMetadataTranslationScope.get()
 				.deserializeCharSequence(xml);
 		System.out.println(m);
 	}
+
 }
