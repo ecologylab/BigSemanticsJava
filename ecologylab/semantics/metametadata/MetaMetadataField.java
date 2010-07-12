@@ -900,7 +900,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	 * Hook overrided by MetaMetadata class
 	 * @param inheritedMetaMetadata
 	 */
-	protected void inheritSemanticActionsFromMM(MetaMetadata inheritedMetaMetadata)
+	protected void inheritNonFieldComponentsFromMM(MetaMetadata inheritedMetaMetadata)
 	{
 		//MetaMetadataFields don't have semantic actions.
 	}

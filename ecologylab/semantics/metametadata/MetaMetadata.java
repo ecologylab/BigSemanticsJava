@@ -327,11 +327,36 @@ implements Mappable<String>
 	/**
 	 * 
 	 */
-	protected void inheritSemanticActionsFromMM(MetaMetadata inheritedMetaMetadata)
+	protected void inheritNonFieldComponentsFromMM(MetaMetadata inheritedMetaMetadata)
 	{
 		if(semanticActions == null)
 		{
 			semanticActions = inheritedMetaMetadata.getSemanticActions();
+		}
+		
+		ArrayList<DefVar> inheritedDefVars = inheritedMetaMetadata.getDefVars();
+		if (defVars == null)
+		{
+			defVars = inheritedDefVars;
+		}
+		else if (inheritedDefVars != null)
+		{
+			// only inherit unique DefVars. don't overwrite existing ones. 
+			for (DefVar inheritedDefVar : inheritedDefVars)
+			{
+				boolean add = true;
+				for (DefVar existingDefVar : defVars)
+				{
+					if (existingDefVar.getName().equals(inheritedDefVar.getName()))
+					{
+						add = false;
+						break;
+					}
+				}
+				
+				if (add)
+					defVars.add(inheritedDefVar);
+			}
 		}
 	}
 	
