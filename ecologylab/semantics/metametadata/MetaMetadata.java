@@ -25,7 +25,10 @@ import ecologylab.semantics.tools.MetadataCompilerUtils;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.TranslationScope;
 import ecologylab.serialization.XMLTools;
+import ecologylab.serialization.ElementState.simpl_composite;
+import ecologylab.serialization.ElementState.xml_tag;
 import ecologylab.serialization.types.element.Mappable;
+import ecologylab.tests.FieldTagged;
 
 /**
  * @author damaraju
@@ -34,25 +37,9 @@ import ecologylab.serialization.types.element.Mappable;
 public class MetaMetadata extends MetaMetadataCompositeField 
 implements Mappable<String>
 {
-	@simpl_scalar
-	private ParsedURL					urlStripped;
 	
-	@simpl_scalar
-	private ParsedURL 				urlPathTree;
+	@simpl_composite @xml_tag("selector") MetaMetadataSelector selector;
 
-	/**
-	 * Regular expression. Must be paired with domain.
-	 * This is the least efficient form of matcher, so it should be used only when url_base & url_prefix cannot be used.
-	 */
-	@simpl_scalar
-	private Pattern						urlRegex;
-	
-	/**
-	 * This key is *required* for urlPatterns, so that we can organize them efficiently.
-	 */
-	@simpl_scalar
-	private String						domain;
-	
 	@simpl_scalar
 	private String						userAgentName;
 
@@ -82,14 +69,6 @@ implements Mappable<String>
 	@simpl_collection("mixins")
 	@simpl_nowrap 
 	private ArrayList<String>	mixins;
-
-	@simpl_collection("mime_type")
-	@simpl_nowrap 
-	private ArrayList<String>	mimeTypes;
-
-	@simpl_collection("suffix")
-	@simpl_nowrap 
-	private ArrayList<String>	suffixes;
 
 	@simpl_collection
 	@simpl_scope(NestedSemanticActionsTranslationScope.NESTED_SEMANTIC_ACTIONS_SCOPE)
@@ -124,13 +103,13 @@ implements Mappable<String>
 	 */
 	public boolean isSupported(ParsedURL purl, String mimeType)
 	{
-		if(urlStripped!=null)
-			return purl.toString().startsWith(urlStripped.toString());
+		if(getSelector().getUrlStripped()!=null)
+			return purl.toString().startsWith(getSelector().getUrlStripped().toString());
 		Pattern pattern = null;
-		if(urlPathTree!=null)
-			 pattern = Pattern.compile(urlPathTree.toString());
-		if(urlRegex!=null)
-			pattern = Pattern.compile(urlRegex.toString());
+		if(getSelector().getUrlPathTree()!=null)
+			 pattern = Pattern.compile(getSelector().getUrlPathTree().toString());
+		if(getSelector().getUrlRegex()!=null)
+			pattern = Pattern.compile(getSelector().getUrlRegex().toString());
 		
 		if(pattern != null)
 		{
@@ -141,17 +120,17 @@ implements Mappable<String>
 			//System.out.println(result);
 			return result;
 		}
-		if(suffixes!=null)
+		if(getSelector().getSuffixes()!=null)
 		{
-			for(String suffix : suffixes)
+			for(String suffix : getSelector().getSuffixes())
 			{
 				if(purl.hasSuffix(suffix))
 					return true;
 			}				
 		}
-		if(mimeTypes!=null)
+		if(getSelector().getMimeTypes()!=null)
 		{
-			for(String mime: mimeTypes)
+			for(String mime: getSelector().getMimeTypes())
 			{
 				if(mime.equals(mimeType))
 					return true;
@@ -327,36 +306,11 @@ implements Mappable<String>
 	/**
 	 * 
 	 */
-	protected void inheritNonFieldComponentsFromMM(MetaMetadata inheritedMetaMetadata)
+	protected void inheritSemanticActionsFromMM(MetaMetadata inheritedMetaMetadata)
 	{
 		if(semanticActions == null)
 		{
 			semanticActions = inheritedMetaMetadata.getSemanticActions();
-		}
-		
-		ArrayList<DefVar> inheritedDefVars = inheritedMetaMetadata.getDefVars();
-		if (defVars == null)
-		{
-			defVars = inheritedDefVars;
-		}
-		else if (inheritedDefVars != null)
-		{
-			// only inherit unique DefVars. don't overwrite existing ones. 
-			for (DefVar inheritedDefVar : inheritedDefVars)
-			{
-				boolean add = true;
-				for (DefVar existingDefVar : defVars)
-				{
-					if (existingDefVar.getName().equals(inheritedDefVar.getName()))
-					{
-						add = false;
-						break;
-					}
-				}
-				
-				if (add)
-					defVars.add(inheritedDefVar);
-			}
 		}
 	}
 	
@@ -408,7 +362,7 @@ implements Mappable<String>
 	 */
 	public Pattern getUrlRegex()
 	{
-		return urlRegex;
+		return getSelector().getUrlRegex();
 	}
 
 	/**
@@ -416,7 +370,7 @@ implements Mappable<String>
 	 */
 	public void setUrlRegex(Pattern urlPattern)
 	{
-		this.urlRegex = urlPattern;
+		getSelector().setUrlRegex(urlPattern);
 	}
 
 	/**
@@ -424,7 +378,7 @@ implements Mappable<String>
 	 */
 	public String getDomain()
 	{
-		return domain;
+		return getSelector().getDomain();
 	}
 
 	/**
@@ -432,7 +386,7 @@ implements Mappable<String>
 	 */
 	public void setDomain(String domain)
 	{
-		this.domain = domain;
+		getSelector().setDomain(domain);
 	}
 
 	/**
@@ -450,32 +404,32 @@ implements Mappable<String>
 
 	public ParsedURL getUrlBase()
 	{
-		return urlStripped;
+		return getSelector().getUrlStripped();
 	}
 
 	public void setUrlBase(ParsedURL urlBase)
 	{
-		this.urlStripped = urlBase;
+		getSelector().setUrlBase(urlBase);
 	}
 
 	public void setUrlBase(String urlBase)
 	{
-		this.urlStripped = ParsedURL.getAbsolute(urlBase);
+		getSelector().setUrlBase(ParsedURL.getAbsolute(urlBase));
 	}
 
 	public ParsedURL getUrlPrefix()
 	{
-		return urlPathTree;
+		return getSelector().getUrlPathTree();
 	}
 	
 	public void setUrlPrefix(ParsedURL urlPrefix)
 	{
-		this.urlPathTree = urlPrefix;
+		getSelector().setUrlPrefix(urlPrefix);
 	}
 	
 	public void setUrlPrefix(String urlPrefix)
 	{
-		this.urlPathTree = ParsedURL.getAbsolute(urlPrefix);
+		 getSelector().setUrlPrefix(ParsedURL.getAbsolute(urlPrefix));
 	}
 	/**
 	 * @param mimeTypes
@@ -483,15 +437,18 @@ implements Mappable<String>
 	 */
 	public void setMimeTypes(ArrayList<String> mimeTypes)
 	{
-		this.mimeTypes = mimeTypes;
+		getSelector().setMimeTypes(mimeTypes);
 	}
 
 	/**
 	 * @return the mimeTypes
 	 */
+	/**
+	 * @return
+	 */
 	public ArrayList<String> getMimeTypes()
 	{
-		return mimeTypes;
+		return getSelector().getMimeTypes();
 	}
 
 	/**
@@ -500,7 +457,7 @@ implements Mappable<String>
 	 */
 	public void setSuffixes(ArrayList<String> suffixes)
 	{
-		this.suffixes = suffixes;
+		getSelector().setSuffixes(suffixes);
 	}
 
 	/**
@@ -508,7 +465,7 @@ implements Mappable<String>
 	 */
 	public ArrayList<String> getSuffixes()
 	{
-		return suffixes;
+		return getSelector().getSuffixes();
 	}
 
 	@Override
@@ -566,4 +523,11 @@ implements Mappable<String>
 		return metadataClassDescriptor;
 	}
 
+	public MetaMetadataSelector getSelector()
+	{
+		if(selector == null)
+			return MetaMetadataSelector.NULL_SELECTOR;
+		return selector;
+	}
+	
 }

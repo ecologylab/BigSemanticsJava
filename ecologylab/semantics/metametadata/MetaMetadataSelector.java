@@ -6,6 +6,8 @@ import java.util.regex.Pattern;
 import ecologylab.net.ParsedURL;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.ElementState.simpl_collection;
+import ecologylab.serialization.ElementState.simpl_nowrap;
 
 /**
  * 
@@ -17,12 +19,13 @@ import ecologylab.serialization.simpl_inherit;
 
 public @simpl_inherit class MetaMetadataSelector extends ElementState{
 
+	public static MetaMetadataSelector NULL_SELECTOR = new MetaMetadataSelector();
+	
 	@simpl_scalar
 	private String					name;
 	
 	@simpl_scalar
 	private String					cfPref;
-	//TODO add somthing to make cfPref do what it is supposed to.  Cf pref could generate a static int that creates an ordering...
 	
 	@simpl_scalar
 	private ParsedURL					urlStripped;
@@ -50,10 +53,9 @@ public @simpl_inherit class MetaMetadataSelector extends ElementState{
 	@simpl_collection("suffix")
 	@simpl_nowrap 
 	private ArrayList<String>	suffixes;
-	
+		
 	public MetaMetadataSelector()
 	{
-		System.out.println("selectorcreted");
 	}
 	
 	public ParsedURL getUrlStripped() {
@@ -167,7 +169,6 @@ public @simpl_inherit class MetaMetadataSelector extends ElementState{
 	public String getCfPref() {
 		return cfPref;
 	}
-
 
 	
 }

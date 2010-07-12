@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import ecologylab.appframework.types.prefs.Pref;
 import ecologylab.collections.PrefixCollection;
 import ecologylab.generic.Debug;
 import ecologylab.generic.HashMapArrayList;
@@ -42,7 +43,7 @@ import ecologylab.textformat.NamedStyle;
 public class MetaMetadataRepository extends ElementState implements PackageSpecifier,
 		DocumentParserTagNames
 {
-	private static final String	FIREFOX_3_6_4_AGENT_STRING	= "Mozilla/5.0 (Windows; U; Windows NT 6.1; ru; rv:1.9.2.4) Gecko/20100513 Firefox/3.6.4";
+	private static final String																	FIREFOX_3_6_4_AGENT_STRING	= "Mozilla/5.0 (Windows; U; Windows NT 6.1; ru; rv:1.9.2.4) Gecko/20100513 Firefox/3.6.4";
 
 	private static final String																	DEFAULT_STYLE_NAME					= "default";
 
@@ -60,13 +61,13 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	private String																							packageName;
 
 	@simpl_map("user_agent")
-	private HashMap<String, UserAgent>											userAgents;
+	private HashMap<String, UserAgent>													userAgents;
 
 	@simpl_map("search_engine")
-	private HashMap<String, SearchEngine>									searchEngines;
+	private HashMap<String, SearchEngine>												searchEngines;
 
 	@simpl_map("named_style")
-	private HashMap<String, NamedStyle>										namedStyles;
+	private HashMap<String, NamedStyle>													namedStyles;
 
 	@simpl_scalar
 	private String																							defaultUserAgentName;
@@ -106,20 +107,23 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	private PrefixCollection																		urlprefixCollection					= new PrefixCollection(
 																																															'/');
 
-	// public static final TranslationScope META_METADATA_TSCOPE = MetaMetadataTranslationScope.get();
+	// public static final TranslationScope META_METADATA_TSCOPE =
+	// MetaMetadataTranslationScope.get();
 
 	private TranslationScope																		metadataTScope;
 
 	// for debugging
 	protected static File																				REPOSITORY_FILE;
-	
+
 	File																												file;
-	
-	@simpl_map("site")	HashMap<String, SemanticsSite>						sites;
-	
+
+	@simpl_map("site")
+	HashMap<String, SemanticsSite>															sites;
+
 	static
 	{
-		MetadataScalarScalarType.init();	// register metadata-specific scalar types
+		MetadataScalarScalarType.init(); // register metadata-specific scalar
+		// types
 		ecologylab.semantics.metadata.MetadataBuiltinsTranslationScope.get();
 	}
 
@@ -152,11 +156,11 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	 */
 	public static MetaMetadataRepository load(File dir)
 	{
-		if(!dir.exists())
+		if (!dir.exists())
 			println("ERROR - MetaMetadataRepository directory does not exist : " + dir + "\n");
 		else
 			println("MetaMetadataRepository directory : " + dir + "\n");
-			
+
 		MetaMetadataRepository result = null;
 
 		FileFilter xmlFilter = new FileFilter()
@@ -171,9 +175,10 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		File repositorySources = new File(dir, "repositorySources");
 
 		TranslationScope metaMetadataTScope = MetaMetadataTranslationScope.get();
-		// need to instantiate scope so that meta-metadata translation works properly.
+		// need to instantiate scope so that meta-metadata translation works
+		// properly.
 		NestedSemanticActionsTranslationScope.get();
-		
+
 		for (File file : dir.listFiles(xmlFilter))
 		{
 			MetaMetadataRepository repos = readRepository(file, metaMetadataTScope);
@@ -202,7 +207,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 				result.joinRepository(readRepository(file, metaMetadataTScope));
 		}
 
-		//FIXME -- get rid of this?!
+		// FIXME -- get rid of this?!
 		Metadata.setRepository(result);
 
 		return result;
@@ -215,16 +220,16 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	 * @param metadataTScope
 	 * @return repository
 	 */
-	public static MetaMetadataRepository readRepository(File file,
-			TranslationScope metaMetadataTScope)
+	public static MetaMetadataRepository readRepository(File file, TranslationScope metaMetadataTScope)
 	{
 		MetaMetadataRepository repos = null;
-		println("MetaMetadataRepository:\t" + new File(file.getParent()).getName() + "/" + file.getName());
+		println("MetaMetadataRepository:\t" + new File(file.getParent()).getName() + "/"
+				+ file.getName());
 
 		try
 		{
 			repos = (MetaMetadataRepository) metaMetadataTScope.deserialize(file);
-			repos.file	= file;
+			repos.file = file;
 		}
 		catch (SIMPLTranslationException e)
 		{
@@ -256,9 +261,9 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 			this.namedStyles = repository.namedStyles;
 
 		// combine sites
-		if(!combineMapStates(repository.sites, this.sites))
-			this.sites 			= repository.sites;
-		
+		if (!combineMapStates(repository.sites, this.sites))
+			this.sites = repository.sites;
+
 		// set metaMetadata to have the correct parent repository
 		HashMapArrayList<String, MetaMetadata> repositoryByTagName = repository.repositoryByTagName;
 		if (repositoryByTagName != null)
@@ -266,10 +271,10 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 			for (MetaMetadata metametadata : repositoryByTagName)
 			{
 				metametadata.setParent(this);
-				metametadata.file	= repository.file;
+				metametadata.file = repository.file;
 			}
 		}
-		
+
 		// combine metaMetadata
 		if (!combineMaps(repositoryByTagName, this.repositoryByTagName))
 			this.repositoryByTagName = repositoryByTagName;
@@ -303,7 +308,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	{
 		this.metadataTScope = metadataTScope;
 		initializeDefaultUserAgent();
-		
+
 		findAndDeclareNestedMetaMetadata();
 		initializeLocationBasedMaps();
 		initializeSuffixAndMimeBasedMaps();
@@ -321,12 +326,12 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 			{
 				if (defaultUserAgentName == null)
 				{
-						defaultUserAgentString	= (String) userAgents().values().toArray()[0];
+					defaultUserAgentString = (String) userAgents().values().toArray()[0];
 				}
 				else
 					userAgents.get(defaultUserAgentName).userAgentString();
 			}
-			this.defaultUserAgentString	= FIREFOX_3_6_4_AGENT_STRING;
+			this.defaultUserAgentString = FIREFOX_3_6_4_AGENT_STRING;
 		}
 	}
 
@@ -337,11 +342,11 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		{
 			nestedDeclarations.addAll(generateNestedDeclarations(metaMetadata));
 		}
-		
-		for(MetaMetadata metaMetadata : nestedDeclarations)
+
+		for (MetaMetadata metaMetadata : nestedDeclarations)
 		{
-			//if(!repositoryByTagName.containsKey(metaMetadata.getTag()))
-				repositoryByTagName.put(metaMetadata.resolveTag(), metaMetadata);
+			// if(!repositoryByTagName.containsKey(metaMetadata.getTag()))
+			repositoryByTagName.put(metaMetadata.resolveTag(), metaMetadata);
 		}
 	}
 
@@ -353,7 +358,8 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	 */
 	protected void recursivePopulate(MetaMetadata destMetaMetadata)
 	{
-		// recursivePopulate(destMetaMetadata, destMetaMetadata.getExtendsClass());
+		// recursivePopulate(destMetaMetadata,
+		// destMetaMetadata.getExtendsClass());
 	}
 
 	public MetaMetadata getMM(Class<? extends Metadata> thatClass)
@@ -361,6 +367,41 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		String tag = metadataTScope.getTag(thatClass);
 
 		return (tag == null) ? null : repositoryByTagName.get(tag);
+	}
+
+	private MetaMetadata domainAndPatternForMetadata(String domain, Pattern pattern)
+	{
+		MetaMetadata result = null;
+		ArrayList<RepositoryPatternEntry> entries = documentRepositoryByPattern.get(domain);
+		if (entries != null)
+		{
+			for (RepositoryPatternEntry entry : entries)
+			{
+				if (entry.getPattern().pattern().equals(pattern.pattern()))
+				{
+					result = entry.getMetaMetadata();
+				}
+			}
+		}
+		return result;
+	}
+
+	private void removeDomainAndPatternForMetadata(String domain, Pattern pattern)
+	{
+		MetaMetadata result = null;
+		ArrayList<RepositoryPatternEntry> entries = documentRepositoryByPattern.get(domain);
+		if (entries != null)
+		{
+			for (RepositoryPatternEntry entry : entries)
+			{
+				if (entry.getPattern().pattern().equals(pattern.pattern()))
+				{
+					// result = entry.getMetaMetadata();
+					entries.remove(entry);
+					return;
+				}
+			}
+		}
 	}
 
 	/**
@@ -388,7 +429,8 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 				{
 					String protocolStrippedURL = purl.toString().split("://")[1];
 					String matchingPhrase = urlprefixCollection.getMatchingPhrase(protocolStrippedURL, '/');
-					// FIXME -- andruid needs abhinav to explain this code better and make more clear!!!
+					// FIXME -- andruid needs abhinav to explain this code
+					// better and make more clear!!!
 					if (matchingPhrase != null)
 					{
 						String key = purl.url().getProtocol() + "://" + matchingPhrase;
@@ -543,17 +585,12 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	 */
 	private void initializeLocationBasedMaps()
 	{
-		// 1st pass -- resolve nested and collection types as needed -- fill in all child metadata
-		// fields
-		/*
-		 * for (MetaMetadata metaMetadata : repositoryByTagName) { metaMetadata.bindNonScalarChildren();
-		 * }
-		 */
-
+		// TODO make sure that null selectors take precedence over filled out
+		// selectors
 		for (MetaMetadata metaMetadata : repositoryByTagName)
 		{
 			metaMetadata.inheritMetaMetadata(this);
-			
+
 			Class<? extends Metadata> metadataClass = metaMetadata.getMetadataClass(metadataTScope);
 			if (metadataClass == null)
 			{
@@ -576,30 +613,74 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 			else
 				continue;
 
-			ParsedURL purl = metaMetadata.getUrlBase();
+			boolean cfPrefIsSet = Pref.lookupBoolean(metaMetadata.getSelector().getCfPref());
+			ParsedURL purl = metaMetadata.getSelector().getUrlBase();
 			if (purl != null)
-				repositoryByPURL.put(purl.noAnchorNoQueryPageString(), metaMetadata);
+			{
+				MetaMetadata currentlyMappedMMD = repositoryByPURL.get(purl.noAnchorNoQueryPageString());
+				if (currentlyMappedMMD == null)
+				{
+					repositoryByPURL.put(purl.noAnchorNoQueryPageString(), metaMetadata);
+				}
+				else if (cfPrefIsSet == true)
+				{
+					// currentlyMappedMMD = metaMetadata;
+					repositoryByPURL.remove(currentlyMappedMMD.getSelector().getUrlBase()
+							.noAnchorNoQueryPageString());
+					repositoryByPURL.put(purl.noAnchorNoQueryPageString(), metaMetadata);
+				}
+			}
 			else
 			{
-				ParsedURL urlPrefix = metaMetadata.getUrlPrefix();
+				ParsedURL urlPrefix = metaMetadata.getSelector().getUrlPrefix();// change
 				if (urlPrefix != null)
 				{
-					urlprefixCollection.add(urlPrefix);
-					repositoryByPURL.put(urlPrefix.toString(), metaMetadata);
+					MetaMetadata currentlyMappedMMD = repositoryByPURL.get(urlPrefix.toString());
+					if (currentlyMappedMMD == null)
+					{
+						urlprefixCollection.add(urlPrefix);
+						repositoryByPURL.put(urlPrefix.toString(), metaMetadata);
+					}
+					else if (cfPrefIsSet == true)
+					{
+						// currentlyMappedMMD = metaMetadata;
+						urlprefixCollection.removePrefix(currentlyMappedMMD.getSelector().getUrlPrefix()
+								.toString());
+						urlprefixCollection.add(urlPrefix);
+						repositoryByPURL.put(urlPrefix.toString(), metaMetadata);
+					}
 				}
 				else
 				{
-					String domain = metaMetadata.getDomain();
-					Pattern urlPattern = metaMetadata.getUrlRegex();
+					// use .pattern() for comparison
+					String domain = metaMetadata.getSelector().getDomain();
+					Pattern urlPattern = metaMetadata.getSelector().getUrlRegex();
 					if (domain != null && urlPattern != null)
 					{
-						ArrayList<RepositoryPatternEntry> bucket = repositoryByPattern.get(domain);
-						if (bucket == null)
+						MetaMetadata currentlyMappedMMD = domainAndPatternForMetadata(domain, urlPattern);
+						if (currentlyMappedMMD == null)
 						{
-							bucket = new ArrayList<RepositoryPatternEntry>(2);
-							repositoryByPattern.put(domain, bucket);
+							ArrayList<RepositoryPatternEntry> bucket = repositoryByPattern.get(domain);
+							if (bucket == null)
+							{
+								bucket = new ArrayList<RepositoryPatternEntry>(2);
+								repositoryByPattern.put(domain, bucket);
+							}
+							bucket.add(new RepositoryPatternEntry(urlPattern, metaMetadata));
 						}
-						bucket.add(new RepositoryPatternEntry(urlPattern, metaMetadata));
+						else if (cfPrefIsSet == true)
+						{
+							// currentlyMappedMMD = metaMetadata;
+							removeDomainAndPatternForMetadata(currentlyMappedMMD.getSelector().getDomain(),
+									currentlyMappedMMD.getSelector().getUrlRegex());
+							ArrayList<RepositoryPatternEntry> bucket = repositoryByPattern.get(domain);
+							if (bucket == null)
+							{
+								bucket = new ArrayList<RepositoryPatternEntry>(2);
+								repositoryByPattern.put(domain, bucket);
+							}
+							bucket.add(new RepositoryPatternEntry(urlPattern, metaMetadata));
+						}
 					}
 				}
 			}
@@ -607,31 +688,32 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	}
 
 	/**
-	 * Recursively looks for nested declarations of meta-metadata by iterating over the fields of existing meta-metadata objects. 
-	 * Defines new MetaMetadata objects and adds them to the repository.
-	 *  
+	 * Recursively looks for nested declarations of meta-metadata by iterating over the fields of
+	 * existing meta-metadata objects. Defines new MetaMetadata objects and adds them to the
+	 * repository.
+	 * 
 	 * @param metaMetadata
 	 * @return a collection of new meta-metadata objects to add to repository
 	 */
 	private ArrayList<MetaMetadata> generateNestedDeclarations(MetaMetadata metaMetadata)
 	{
 		ArrayList<MetaMetadata> result = new ArrayList<MetaMetadata>();
-		for(MetaMetadataField metaMetadataField : metaMetadata)
+		for (MetaMetadataField metaMetadataField : metaMetadata)
 		{
 			if (metaMetadataField.isNewClass())
 			{
-				String mmName 								= metaMetadataField.getTagForTranslationScope();
-				MetaMetadata newMetaMetadata 	= new MetaMetadata(metaMetadataField, mmName);
-				//newMetaMetadata.setName(mmName);
-				//newMetaMetadata.setChildMetaMetadata(metaMetadataField.childMetaMetadata);
-				//repositoryByTagName.put(className, newMetaMetadata);
+				String mmName = metaMetadataField.getTagForTranslationScope();
+				MetaMetadata newMetaMetadata = new MetaMetadata(metaMetadataField, mmName);
+				// newMetaMetadata.setName(mmName);
+				// newMetaMetadata.setChildMetaMetadata(metaMetadataField.childMetaMetadata);
+				// repositoryByTagName.put(className, newMetaMetadata);
 				result.add(newMetaMetadata);
-				
+
 				// recurse to find deeper nested declarations
 				result.addAll(generateNestedDeclarations(newMetaMetadata));
 			}
 		}
-		
+
 		return result;
 	}
 
@@ -643,25 +725,28 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		for (MetaMetadata metaMetadata : repositoryByTagName)
 		{
 			metaMetadata.inheritMetaMetadata(this);
-			
+
 			if (!metaMetadata.getClassAndBindDescriptors(metadataTScope))
 				continue;
-			
-//			Class<? extends Metadata> metadataClass = metaMetadata.getMetadataClass(metadataTScope);
-//			if (metadataClass == null)
-//			{
-////				error(metaMetadata + "\tCan't resolve in TranslationScope " + metadataTScope);
-//				continue;
-//			}
-//			//
-//			metaMetadata.bindClassDescriptor(metadataClass, metadataTScope);
-			
+
+			// Class<? extends Metadata> metadataClass =
+			// metaMetadata.getMetadataClass(metadataTScope);
+			// if (metadataClass == null)
+			// {
+			// // error(metaMetadata + "\tCan't resolve in TranslationScope " +
+			// metadataTScope);
+			// continue;
+			// }
+			// //
+			// metaMetadata.bindClassDescriptor(metadataClass, metadataTScope);
+
 			ArrayList<String> suffixes = metaMetadata.getSuffixes();
 			if (suffixes != null)
 			{
 				for (String suffix : suffixes)
 				{
-					// FIXME-- Ask whether the suffix and mime should be inherited or not
+					// FIXME-- Ask whether the suffix and mime should be
+					// inherited or not
 					if (!repositoryBySuffix.containsKey(suffix))
 						repositoryBySuffix.put(suffix, metaMetadata);
 				}
@@ -672,7 +757,8 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 			{
 				for (String mimeType : mimeTypes)
 				{
-					// FIXME -- Ask whether the suffix and mime should be inherited or not
+					// FIXME -- Ask whether the suffix and mime should be
+					// inherited or not
 					if (!repositoryByMime.containsKey(mimeType))
 						repositoryByMime.put(mimeType, metaMetadata);
 				}
@@ -839,12 +925,12 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	{
 		return name;
 	}
-	
+
 	public void setName(String name)
 	{
 		this.name = name;
 	}
-	
+
 	public HashMap<String, SemanticsSite> getSites()
 	{
 		return sites;
