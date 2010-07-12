@@ -50,6 +50,7 @@ import ecologylab.serialization.XMLTools;
  * @author eunyee
  *
  */
+@Deprecated
 public class OldHTMLDOMParser extends Tidy
 implements HTMLAttributeNames
 {
@@ -100,10 +101,10 @@ implements HTMLAttributeNames
 		extractImageTextSurrogates(taggedDoc, htmlType);
 		
 		//Now, find hrefs, with their context and generate containers with metadata
-		ArrayList<AnchorContext> anchorContexts = buildAnchorContexts(taggedDoc.getAllAnchorNodes());
+		ArrayList<AnchorContext> anchorContexts = buildAnchorContexts(taggedDoc.getAllAnchorNodes(), purl());
 		
   	if(htmlType != null)
-			htmlType.generateCandidateContainersFromContexts(anchorContexts);
+			htmlType.generateCandidateContainersFromContexts(anchorContexts, false);
   	
   	anchorContexts.clear();
 		taggedDoc.recycle();
@@ -216,13 +217,13 @@ implements HTMLAttributeNames
 	 * 
 	 * @return
 	 */
-	public ArrayList<AnchorContext> buildAnchorContexts(ArrayList<AElement> anchorElements)
+	public ArrayList<AnchorContext> buildAnchorContexts(ArrayList<AElement> anchorElements, ParsedURL sourcePurl)
 	{
 		ArrayList<AnchorContext> anchorNodeContexts = new ArrayList<AnchorContext>();
 		
 		for (AElement aElement : anchorElements)
 		{
-			AnchorContext aContext= constructAnchorContext(aElement);
+			AnchorContext aContext= constructAnchorContext(aElement, sourcePurl);
 			if(aContext!=null)
 			{
 					anchorNodeContexts.add(aContext);
@@ -244,7 +245,7 @@ implements HTMLAttributeNames
 	 * 
 	 * @return					AnchorContext object, or null.
 	 */
-	public AnchorContext constructAnchorContext(AElement aElement)
+	public AnchorContext constructAnchorContext(AElement aElement, ParsedURL sourcePurl)
 	{
 		TdNode anchorNodeNode 				  = aElement.getNode();
 		ParsedURL href 									= aElement.getHref();
@@ -274,7 +275,7 @@ implements HTMLAttributeNames
 					anchorTextString					= StringTools.toString(anchorText);
 					StringBuilderUtils.release(anchorText);
 				}
-				return new AnchorContext(href, anchorTextString, anchorContextString);
+				return new AnchorContext(href, anchorTextString, anchorContextString, sourcePurl, false, false);
 			}
 		}
 		return null;

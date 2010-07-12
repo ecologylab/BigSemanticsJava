@@ -26,6 +26,7 @@ import ecologylab.semantics.html.RecognizedDocumentStructure;
  * 
  * @author eunyee
  */
+@Deprecated
 public class ArticlePageRecognize extends OldHTMLDOMParser
 {
     private static final String	PORTAL_PURL	= "http://portal.acm.org/browse_dl.cfm?coll=ACM&dl=ACM&idx=J961&linked=1&part=transaction";

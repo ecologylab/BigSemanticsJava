@@ -30,7 +30,7 @@ import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.TranslationScope;
 
 
-
+@Deprecated
 public class ContentBodyRecognize extends OldHTMLDOMParser
 {
 	RecognizedDocumentStructure recPageType;
