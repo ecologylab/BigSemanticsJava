@@ -77,22 +77,25 @@ implements TidyInterface, HTMLAttributeNames
 		
 		TdNode contentBody = getContentBody(taggedDoc);
 		DOMWalkInformationTagger taggedContentnode = walkAndTagDom(contentBody, this);
-		boolean isInContentBody = (taggedContentnode != null);
 		
 		extractImageTextSurrogates(taggedDoc, contentBody);
 		
-		//Now, find hrefs, with their context and generate containers with metadata
-		ArrayList<AnchorContext> anchorContexts = null;
-		if (taggedContentnode != null)
-			anchorContexts = buildAnchorContexts(taggedContentnode.getAllAnchorNodes());
-		else
-			anchorContexts = buildAnchorContexts(taggedDoc.getAllAnchorNodes());
 		
-  	generateCandidateContainersFromContexts(anchorContexts, isInContentBody);
+		//The information on whether the anchorContexts where produced by the document entirely or the ContentNode.
+		ArrayList<AnchorContext> anchorContexts = null;
+		//This document's purl
+		ParsedURL purl = purl();
+		boolean fromContentBody = taggedContentnode != null;
+		if (fromContentBody)
+			anchorContexts = buildAnchorContexts(taggedContentnode.getAllAnchorNodes(), purl, true);
+		else
+			anchorContexts = buildAnchorContexts(taggedDoc.getAllAnchorNodes(), purl, false);
+		
+  	generateCandidateContainersFromContexts(anchorContexts, fromContentBody);
   	
   	anchorContexts.clear();
 		taggedDoc.recycle();
-		if (taggedContentnode != null)
+		if (fromContentBody)
 			taggedContentnode.recycle();
 	}
 
@@ -203,20 +206,19 @@ implements TidyInterface, HTMLAttributeNames
 	 * Transform an set of AElements (HTML a) into a set of AnchorContexts.
 	 * In some cases, an AElement may result in no entry, because the anchor text and anchor context are both empty.
 	 * @param anchorElements
+	 * @param sourcePurl The purl from which these AElements were extracted from.
 	 * 
 	 * @return
 	 */
-	public ArrayList<AnchorContext> buildAnchorContexts(ArrayList<AElement> anchorElements)
+	public ArrayList<AnchorContext> buildAnchorContexts(ArrayList<AElement> anchorElements, ParsedURL sourcePurl, boolean fromContentBody )
 	{
 		ArrayList<AnchorContext> anchorNodeContexts = new ArrayList<AnchorContext>();
 		
 		for (AElement aElement : anchorElements)
 		{
-			AnchorContext aContext= constructAnchorContext(aElement);
+			AnchorContext aContext= constructAnchorContext(aElement, sourcePurl, fromContentBody);
 			if(aContext!=null)
-			{
 					anchorNodeContexts.add(aContext);
-			}
 		}
 		return anchorNodeContexts;
 	}
@@ -231,10 +233,11 @@ implements TidyInterface, HTMLAttributeNames
 	 * is either null or the same as anchor text.
 	 * 
 	 * @param aElement	Anchor HTMLElement (a href=...)
+	 * @param fromContentBody 
 	 * 
 	 * @return					AnchorContext object, or null.
 	 */
-	public AnchorContext constructAnchorContext(AElement aElement)
+	public AnchorContext constructAnchorContext(AElement aElement, ParsedURL sourcePurl, boolean fromContentBody)
 	{
 		TdNode anchorNodeNode 				  = aElement.getNode();
 		ParsedURL href 									= aElement.getHref();
@@ -264,7 +267,7 @@ implements TidyInterface, HTMLAttributeNames
 					anchorTextString					= StringTools.toString(anchorText);
 					StringBuilderUtils.release(anchorText);
 				}
-				return new AnchorContext(href, anchorTextString, anchorContextString);
+				return new AnchorContext(href, anchorTextString, anchorContextString, sourcePurl, fromContentBody, false);
 			}
 		}
 		return null;
@@ -279,12 +282,11 @@ implements TidyInterface, HTMLAttributeNames
    * Non-recursive method to get the text for the <code>node</code>
    * Collects the text even if the node contains other nodes in between,
    * specifically the <code>anchor</code>. It does not however include the 
-   * text from the anchor node.
+   * text from the anchor node, as it exists in the anchorText
    * @param node
    * @param te
    * @return
    */
-	//FIXME -- why is text in anchor node not included?
   public static StringBuilder getTextinSubTree(TdNode node, boolean recurse, StringBuilder result)
   {
   	for (TdNode childNode	= node.content(); childNode != null; childNode = childNode.next())
@@ -348,5 +350,5 @@ implements TidyInterface, HTMLAttributeNames
 	{
 		return contentPage;
 	}
-	
+
 }

@@ -8,6 +8,7 @@ import org.w3c.tidy.TdNode;
 import org.w3c.tidy.Tidy;
 
 import ecologylab.appframework.types.prefs.PrefBoolean;
+import ecologylab.generic.HashMapArrayList;
 import ecologylab.generic.StringTools;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionHandler;
@@ -234,65 +235,70 @@ extends HTMLParserCommon<C, IC>
 		newImgTxt(imgNode, anchorHref);
 	}
 
-	public void generateCandidateContainersFromContexts(ArrayList<AnchorContext> anchorContexts)
-	{
-		// by default we treat it as in content body, since this method is called to support drag-and-
-		// drop function, and we suppose that user will drag contents they are really interested in
-		generateCandidateContainersFromContexts(anchorContexts, true);
-	}
-	
 	/**
 	 * For each anchorContext:
 	 * 	 create purl and check to see 
-	 * 	 creates a container
+	 *   Aggregates AnchorContext by their destination hrefs.
 	 * 	 sets the metadata
+	 * 	 creates a container
 	 *   adds an outlink from the ancestor
-	 *   add a semantic inlink to hrefContainer from this.
-	 * @param isInContentBody 
 	 *   
 	 */
-	public void generateCandidateContainersFromContexts(ArrayList<AnchorContext> anchorContexts, boolean isInContentBody)
+	public void generateCandidateContainersFromContexts(ArrayList<AnchorContext> anchorContexts, boolean fromContentBody)
 	{
 		C	container	= this.container();
+		
+		HashMapArrayList<ParsedURL, ArrayList<AnchorContext>> hashedAnchorContexts = new HashMapArrayList<ParsedURL, ArrayList<AnchorContext>>();
 		for(AnchorContext anchorContext : anchorContexts)
 		{
-				generateCanidateContainerFromContext(anchorContext,container, false, isInContentBody);
+			
+			ParsedURL destHref = anchorContext.getHref();
+			if(destHref.isImg())
+			{	// The href associated is actually an image. Create a new img element and associate text to it.
+				newImg(destHref, anchorContext.getAnchorText(), 0,0, false);
+				continue;
+			}
+			
+			ArrayList<AnchorContext> arrayList = hashedAnchorContexts.get(destHref);
+			if(arrayList == null)
+			{
+				arrayList = new ArrayList<AnchorContext>();
+				hashedAnchorContexts.put(destHref, arrayList);
+			}
+			arrayList.add(anchorContext);
+		}
+		//Now that we have aggregated AnchorContext, 
+		//We generate One SemanticAnchor per purl, that aggregates all the semantics of the set of anchorContexts
+		for(ParsedURL hrefPurl : hashedAnchorContexts.keySet())
+		{
+			ArrayList<AnchorContext> anchorContextsPerHref = hashedAnchorContexts.get(hrefPurl);
+			
+			SemanticAnchor semanticAnchor = new SemanticAnchor(hrefPurl, anchorContextsPerHref, false, 1, purl(), fromContentBody, false);
+			//generateCanidateContainerFromContext(aggregated,container, false);
+			createContainerFromSemanticAnchor(container, hrefPurl, semanticAnchor);
 		}
 	}
 	
-	public void generateCanidateContainerFromContext(AnchorContext anchorContext, C container, boolean shouldTraverse, boolean isInContentBody)
+	protected void createContainerFromSemanticAnchor(C container, ParsedURL hrefPurl, SemanticAnchor semanticAnchor)
 	{
-		ParsedURL hrefPurl 			= anchorContext.getHref();
 		if(hrefPurl !=null && !hrefPurl.isNull())
 		{	
-			newAHref(hrefPurl);
-	
-			if (!hrefPurl.isImg() && (infoCollector.accept(hrefPurl)||shouldTraverse))
-			{
-				MetaMetadataRepository mmdRepository= infoCollector.metaMetaDataRepository();
-				MetaMetadata metaMetadata 					= mmdRepository.getDocumentMM(hrefPurl);
-				Container hrefContainer 					= infoCollector.getContainer(container, hrefPurl, false, false, metaMetadata);
-				if (hrefContainer != null)
-				{
-					SemanticAnchor semAnchor 					= new SemanticAnchor(container.purl(), anchorContext);
-					hrefContainer.addSemanticInLink(semAnchor, container, true);
-	
-					// this is not being performed because we create weights through SemanticInlinks
-					//				metadata.appendAnchorText(anchorText);
-					//				metadata.hwAppendAnchorContextString(anchorContextString);
-	
-					container.addCandidateContainer(hrefContainer);
-	
-					container.setInArticleBody(isInContentBody);
-				}
-			}
-			//The href associated is actually an image. Create a new img element and associate text to it.
-			else
-			{
-				//TODO Send this anchorText into it's appropriate place in the metadata
-				//For now it's being set as the caption of the img.
-				newImg(hrefPurl, anchorContext.getAnchorText(), 0,0, false);
-			}
+			newAHref(hrefPurl); //Parser count maintenance. 
+
+			if(!infoCollector.accept(hrefPurl))
+				return;
+			
+			MetaMetadataRepository mmdRepository	= infoCollector.metaMetaDataRepository();
+			MetaMetadata metaMetadata 						= mmdRepository.getDocumentMM(hrefPurl);
+			Container hrefContainer 							= infoCollector.getContainer(container, hrefPurl, false, false, metaMetadata);
+			
+			if (hrefContainer == null)
+				return; //Should actually raise an exception, but this could happen when a container is not meant to be reincarnated
+			
+			hrefContainer.addSemanticInLink(semanticAnchor, container);
+
+			container.setInArticleBody(semanticAnchor.fromContentBody());			
+			container.addCandidateContainer(hrefContainer);
 		}
 	}
 

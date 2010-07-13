@@ -114,7 +114,8 @@ extends ContainerParser<C, IC, ElementState> implements SemanticsPrefs
 		{	
 			currentAnchorHref		= hrefPurl;
 			numLinks++;
-			processHref(hrefPurl);
+			//This seems wrong. We generate containers in HTMLDomParser 
+			//processHref(hrefPurl);
 		}
 	}
 

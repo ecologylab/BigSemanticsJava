@@ -93,7 +93,7 @@ implements QandDownloadable
 	
 	abstract public int numLocalCandidates();
 	
-	abstract public boolean addSemanticInLink(SemanticAnchor newAnchor, Container srcContainer, boolean onlyIfUnique);
+	abstract public boolean addSemanticInLink(SemanticAnchor newAnchor, Container srcContainer);
 	
 	abstract public void addCandidateContainer (Container newContainer );
 	

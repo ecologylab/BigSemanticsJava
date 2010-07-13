@@ -2,6 +2,9 @@ package ecologylab.semantics.html.documentstructure;
 
 import java.util.ArrayList;
 
+import com.sun.org.apache.bcel.internal.generic.NEWARRAY;
+
+import ecologylab.net.ParsedURL;
 import ecologylab.semantics.model.text.CompositeTermVector;
 import ecologylab.semantics.model.text.ITermVector;
 import ecologylab.semantics.model.text.TermVectorWeightStrategy;
@@ -43,35 +46,11 @@ public class SemanticInLinks extends ArrayList<SemanticAnchor>
 		return result;
 	}
 	
-	public synchronized boolean addIfUnique(SemanticAnchor newAnchor)
-	{
-		if(!isUnique(newAnchor))
-			return false;
-		
-		return add(newAnchor);
-	}
-
 	@Override
 	public synchronized boolean add(SemanticAnchor newAnchor)
 	{
 		semanticInlinkCollection().add(newAnchor.signficance,newAnchor.termVector());
 		super.add(newAnchor);
-		return true;
-	}
-
-	private boolean isUnique(SemanticAnchor newAnchor)
-	{
-		String newAnchorText = newAnchor.getAnchorText();
-		for(SemanticAnchor oldAnchor : this)
-		{
-			String anchorText = oldAnchor != null ? oldAnchor.getAnchorText() : null;
-			if(anchorText != null && anchorText.equals(newAnchorText))	// guaranteed to be lower case already
-			{
-				//This is one case we know we want to ignore this new anchor.
-				return false;
-			}
-		}
-		// Anchor is unique.
 		return true;
 	}
 
