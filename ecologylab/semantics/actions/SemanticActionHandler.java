@@ -23,7 +23,6 @@ import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.metametadata.Argument;
-import ecologylab.semantics.metametadata.Check;
 import ecologylab.semantics.metametadata.DefVar;
 import ecologylab.semantics.tools.GenericIterable;
 import ecologylab.serialization.types.scalar.FloatType;
@@ -269,7 +268,7 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 			ArrayList<SemanticAction> nestedSemanticActions = action.getNestedSemanticActionList();
 			
 			// check if all the flags are true
-			if(checkPreConditionFlagsIfAny(action))
+			if(checkConditionsIfAny(action))
 			{
 				// handle each of the nested action
 				for (SemanticAction nestedSemanticAction  : nestedSemanticActions)
@@ -523,48 +522,6 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 		}
 	}
 	
-
-	/**
-	 * Sets the flag if any based on the checks in the action TODO right now 2 types of checks are
-	 * implemented. 1) NOT_NULL_CHECK: sets flag true if returnValue is not true 2) METHOD_CHECK: Used
-	 * for methods with boolean return value. Sets the flag equal to return value.
-	 * 
-	 * @param action
-	 * @param returnValue
-	 */
-	protected  void setFlagIfAny(SemanticAction action, Object returnValue)
-	{
-		// get the checks for this action
-		ArrayList<Check> checks = action.getChecks();
-
-		// if checks are not null
-		if (checks != null)
-		{
-			// loop over all the checks
-			for (Check check : checks)
-			{
-				String checkType = check.getCondition();
-
-				// now see which check it is
-				if (SemanticActionsKeyWords.NOT_NULL_CHECK.equals(checkType))
-				{
-					// this is a not null check
-					boolean flagValue = true;
-					if (returnValue == null)
-					{
-						flagValue = false;
-					}
-					semanticActionReturnValueMap.put(check.getName(), flagValue);
-				}
-				else if (SemanticActionsKeyWords.METHOD_CHECK.equals(checkType))
-				{
-					// This is a method check
-					semanticActionReturnValueMap.put(check.getName(), (Boolean) returnValue);
-				}
-			} // end for
-		}// end if
-	}
-
 	/**
 	 * This function checks for the pre-condition flag values for this action and returns the "anded"
 	 * result.
@@ -572,17 +529,17 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 	 * @param action
 	 * @return
 	 */
-	protected boolean checkPreConditionFlagsIfAny(IfSemanticAction action)
+	protected boolean checkConditionsIfAny(IfSemanticAction action)
 	{
 		boolean returnValue = true;
-		ArrayList<FlagCheckBase> flagChecks = action.getFlagChecks();
+		ArrayList<Condition> conditions = action.getChecks();
 
-		if (flagChecks != null)
+		if (conditions != null)
 		{
 			// loop over all the flags to be checked
-			for (FlagCheckBase flagCheck : flagChecks)
+			for (Condition condition : conditions)
 			{
-				boolean flag = flagCheck.evaluate(this);
+				boolean flag = condition.evaluate(this);
 				returnValue = returnValue && flag;
 			}
 		}

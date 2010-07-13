@@ -10,11 +10,9 @@ import java.util.Map;
 import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.metametadata.Argument;
-import ecologylab.semantics.metametadata.Check;
 import ecologylab.semantics.metametadata.DefVar;
 import ecologylab.semantics.metametadata.MetaMetadataTranslationScope;
 import ecologylab.serialization.ElementState;
-import ecologylab.semantics.metametadata.NotNullCheck;
 
 /**
  * This is the abstract class which defines the semantic action. All the semantic actions must
@@ -34,15 +32,6 @@ import ecologylab.semantics.metametadata.NotNullCheck;
 
 public abstract class SemanticAction extends ElementState
 {
-
-	/**
-	 * Checks if any for this action. Any action can have 0 to any number of checks
-	 */
-	@simpl_collection
-	@simpl_classes(
-	{ Check.class, NotNullCheck.class })
-	@simpl_nowrap
-	private ArrayList<Check>					checks;
 
 	/**
 	 * The map of arguments for this semantic action.
@@ -104,14 +93,6 @@ public abstract class SemanticAction extends ElementState
 	 * Handles the error for the action
 	 */
 	public abstract void handleError();
-
-	/**
-	 * @return the checks
-	 */
-	public ArrayList<Check> getChecks()
-	{
-		return checks;
-	}
 
 	/**
 	 * @return the object

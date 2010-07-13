@@ -8,6 +8,7 @@ import org.junit.Test;
 import ecologylab.semantics.actions.exceptions.NestedActionException;
 import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.documentparsers.DocumentParser;
+import ecologylab.semantics.metametadata.MetaMetadataTranslationScope;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.simpl_inherit;
 import ecologylab.serialization.ElementState.xml_tag;
@@ -69,7 +70,7 @@ public class ChooseSemanticAction extends SemanticAction
 				ArrayList<SemanticAction> nestedSemanticActions = aCase.getNestedSemanticActionList();
 
 				// check if all the flags are true
-				if (handler.checkPreConditionFlagsIfAny(aCase))
+				if (handler.checkConditionsIfAny(aCase))
 				{
 					// handle each of the nested action
 					for (SemanticAction nestedSemanticAction : nestedSemanticActions)
@@ -102,11 +103,12 @@ public class ChooseSemanticAction extends SemanticAction
 	@Test
 	public void test() throws SIMPLTranslationException
 	{
-		String xml = "<choose><case><flag_check /><get_field /><for_each /></case><case><flag_check /><set_metadata /></case><otherwise><get_field /></otherwise></choose>";
-		ChooseSemanticAction choose = (ChooseSemanticAction) NestedSemanticActionsTranslationScope
-				.get().deserializeCharSequence(xml);
+		String xml = "<choose><case><not_null /><get_field /><for_each /></case><case><not_null /><set_metadata /></case><otherwise><get_field /></otherwise></choose>";
+		ChooseSemanticAction choose = (ChooseSemanticAction) MetaMetadataTranslationScope.get()
+				.deserializeCharSequence(xml);
 		System.out.println(choose);
-
+		System.out.println(choose.cases);
+		System.out.println(choose.otherwise);
 		System.out.println(choose.serialize());
 	}
 

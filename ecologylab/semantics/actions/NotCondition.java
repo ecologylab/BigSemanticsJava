@@ -9,13 +9,12 @@ import ecologylab.serialization.ElementState.xml_tag;
 
 @simpl_inherit
 @xml_tag("not")
-public class NotFlagCheck extends FlagCheckBase
+public class NotCondition extends Condition
 {
 
 	@simpl_composite
-	@simpl_classes(
-	{ FlagCheck.class, OrFlagCheck.class, AndFlagCheck.class, NotFlagCheck.class })
-	private FlagCheckBase	check;
+	@simpl_scope(ConditionTranslationScope.CONDITION_SCOPE)
+	private Condition	check;
 
 	@Override
 	public boolean evaluate(SemanticActionHandler handler)
@@ -24,12 +23,14 @@ public class NotFlagCheck extends FlagCheckBase
 	}
 
 	@Test
-	public void testDeserialization() throws SIMPLTranslationException
+	public void test() throws SIMPLTranslationException
 	{
-		String xml = "<not><and><or><and /><or /></or><flag_check /></and></not>";
-		NotFlagCheck not = (NotFlagCheck) MetaMetadataTranslationScope.get().deserializeCharSequence(
+		String xml = "<not><and><or><and /><or /></or><not_null /></and></not>";
+		NotCondition not = (NotCondition) MetaMetadataTranslationScope.get().deserializeCharSequence(
 				xml);
 		System.out.println(not);
+		System.out.println(not.check);
+		System.out.println(not.serialize());
 	}
 
 }

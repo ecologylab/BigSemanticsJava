@@ -11,14 +11,13 @@ import ecologylab.serialization.ElementState.xml_tag;
 
 @simpl_inherit
 @xml_tag("and")
-public class AndFlagCheck extends FlagCheckBase
+public class AndCondition extends Condition
 {
 
 	@simpl_collection
-	@simpl_classes(
-	{ FlagCheck.class, OrFlagCheck.class, AndFlagCheck.class, NotFlagCheck.class })
+	@simpl_scope(ConditionTranslationScope.CONDITION_SCOPE)
 	@simpl_nowrap
-	private ArrayList<FlagCheckBase>	checks;
+	private ArrayList<Condition>	checks;
 
 	@Override
 	public boolean evaluate(SemanticActionHandler handler)
@@ -26,7 +25,7 @@ public class AndFlagCheck extends FlagCheckBase
 		boolean flag = true;
 		if (checks != null)
 		{
-			for (FlagCheckBase check : checks)
+			for (Condition check : checks)
 			{
 				flag = flag && check.evaluate(handler);
 				if (!flag)
@@ -37,12 +36,14 @@ public class AndFlagCheck extends FlagCheckBase
 	}
 
 	@Test
-	public void testDeserialization() throws SIMPLTranslationException
+	public void test() throws SIMPLTranslationException
 	{
-		String xml = "<and><or><and /><or /></or><flag_check /></and>";
-		AndFlagCheck and = (AndFlagCheck) MetaMetadataTranslationScope.get().deserializeCharSequence(
+		String xml = "<and><or><and /><or /></or><not_null /></and>";
+		AndCondition and = (AndCondition) MetaMetadataTranslationScope.get().deserializeCharSequence(
 				xml);
 		System.out.println(and);
+		System.out.println(and.checks);
+		System.out.println(and.serialize());
 	}
 
 }

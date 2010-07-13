@@ -17,11 +17,11 @@ import ecologylab.serialization.ElementState.xml_tag;
 public @xml_tag(SemanticActionStandardMethods.IF)
 class IfSemanticAction  extends NestedSemanticAction implements SemanticActionStandardMethods
 {
+	
 	@simpl_collection
-	@simpl_classes(
-	{ FlagCheck.class, OrFlagCheck.class, AndFlagCheck.class, NotFlagCheck.class })
+	@simpl_scope(ConditionTranslationScope.CONDITION_SCOPE)
 	@simpl_nowrap 
-	private ArrayList<FlagCheckBase> flagCheck;
+	private ArrayList<Condition> checks;
 		
 	@Override
 	public String getActionName()
@@ -36,12 +36,9 @@ class IfSemanticAction  extends NestedSemanticAction implements SemanticActionSt
 		
 	}
 
-	/**
-	 * @return the flagCheck
-	 */
-	public final ArrayList<FlagCheckBase> getFlagChecks()
+	public final ArrayList<Condition> getChecks()
 	{
-		return flagCheck;
+		return checks;
 	}
 
 }

@@ -194,9 +194,6 @@ public class SemanticActionHandlerBase<C extends Container, IC extends InfoColle
 //			Object returnValue = method.invoke(action, object, argValues);
 			// System.out.println("DEBUG::Return Value=\t" + returnValue);
 
-			// set the flags if any
-			setFlagIfAny(action, returnValue);
-
 			// put it into the semantic action return value map
 			if (action.getReturnValue() != null)
 			{

@@ -2,12 +2,8 @@ package ecologylab.semantics.metametadata;
 
 import ecologylab.generic.Debug;
 import ecologylab.net.UserAgent;
-import ecologylab.semantics.actions.FlagCheckBase;
-import ecologylab.semantics.actions.AndFlagCheck;
-import ecologylab.semantics.actions.FlagCheck;
+import ecologylab.semantics.actions.ConditionTranslationScope;
 import ecologylab.semantics.actions.NestedSemanticActionsTranslationScope;
-import ecologylab.semantics.actions.NotFlagCheck;
-import ecologylab.semantics.actions.OrFlagCheck;
 import ecologylab.semantics.actions.SemanticAction;
 import ecologylab.semantics.connectors.SemanticsSite;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
@@ -37,13 +33,7 @@ public class MetaMetadataTranslationScope extends Debug
 		SemanticAction.class,
 		SemanticsSite.class,
 		Argument.class,
-		Check.class,
-		NotNullCheck.class,
-		FlagCheckBase.class,
-		FlagCheck.class,
-		OrFlagCheck.class,
-		AndFlagCheck.class,
-		NotFlagCheck.class,
+		
 		MetaMetadataRepository.class, 
 		
 		DefVar.class,	// cannot be in NestedSemanticActionsTranslationScope because these are collected separtely in MetaMetadataField
@@ -55,6 +45,7 @@ public class MetaMetadataTranslationScope extends Debug
 	{
 		BASE_TRANSLATIONS, 
 		NestedSemanticActionsTranslationScope.get(),
+		ConditionTranslationScope.get(),
 	};
 
 	public static TranslationScope get()
