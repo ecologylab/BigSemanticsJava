@@ -68,7 +68,7 @@ public class MyContainer extends Container
 	}
 
 	@Override
-	public boolean addSemanticInLink(SemanticAnchor newAnchor, Container srcContainer, boolean onlyIfUnique)
+	public boolean addSemanticInLink(SemanticAnchor newAnchor, Container srcContainer)
 	{
 		// TODO Auto-generated method stub
 		return false;
