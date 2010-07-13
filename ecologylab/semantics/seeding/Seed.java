@@ -31,7 +31,7 @@ abstract public class Seed<AC extends Container> extends ElementState implements
      */
     @simpl_scalar protected String				query;
     
-    @simpl_scalar protected float				bias		= 1.0f;
+    @simpl_scalar protected float					bias		= 1.0f;
 
     protected SeedDistributor            	seedDistributer;
     
@@ -41,6 +41,8 @@ abstract public class Seed<AC extends Container> extends ElementState implements
     
     private			boolean										active	= true;
 
+    
+    
     public SeedPeer getSeedPeer()
 		{
 			return seedPeer;
