@@ -4,29 +4,29 @@
 package ecologylab.semantics.actions;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import ecologylab.semantics.connectors.InfoCollector;
+import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.metametadata.Argument;
 import ecologylab.semantics.metametadata.Check;
 import ecologylab.semantics.metametadata.DefVar;
 import ecologylab.semantics.metametadata.MetaMetadataTranslationScope;
 import ecologylab.serialization.ElementState;
+import ecologylab.semantics.metametadata.NotNullCheck;
 
 /**
  * This is the abstract class which defines the semantic action. All the semantic actions must
  * extend it. To add a new semantic action following steps needed to be taken. 1) Create a class for
  * that semantic action which extends SemanticAction class. 2) Write all the custom code for that
- * semantic action in this new class file. [Example see <code>ForEachSemanticAction.java</code> 
- * or<code>IfSemanticAction</code>
- * which implements for_each semantic action.] 3) Modify the <code>handleSemanticAction</code>
- * method of <code>SemanticActionHandle.java</code> to add case for new semantic action. 4) Add a
- * new method in <code>SemanticActionHandler.java </code> to handle this action. Mostly this method
- * should be abstract unless the action is a flow control action like FOR LOOP. 5) For code clarity
- * and readability define a constant for the new action name in
- * <code>SemanticActionStandardMethods.java</code>
+ * semantic action in this new class file. [Example see <code>ForEachSemanticAction.java</code> or
+ * <code>IfSemanticAction</code> which implements for_each semantic action.] 3) Modify the
+ * <code>handleSemanticAction</code> method of <code>SemanticActionHandle.java</code> to add case
+ * for new semantic action. 4) Add a new method in <code>SemanticActionHandler.java </code> to
+ * handle this action. Mostly this method should be abstract unless the action is a flow control
+ * action like FOR LOOP. 5) For code clarity and readability define a constant for the new action
+ * name in <code>SemanticActionStandardMethods.java</code>
  * 
  * @author amathur
  * 
@@ -38,24 +38,25 @@ public abstract class SemanticAction extends ElementState
 	/**
 	 * Checks if any for this action. Any action can have 0 to any number of checks
 	 */
-	@simpl_nowrap 
-	@simpl_collection("check")
+	@simpl_collection
+	@simpl_classes(
+	{ Check.class, NotNullCheck.class })
+	@simpl_nowrap
 	private ArrayList<Check>					checks;
-	
+
 	/**
 	 * The map of arguments for this semantic action.
 	 */
-	@simpl_nowrap 
+	@simpl_nowrap
 	@simpl_map("arg")
 	private HashMap<String, Argument>	args;
 
 	/**
 	 * List of variables which can be used inside this action
 	 */
-	@simpl_nowrap 
+	@simpl_nowrap
 	@simpl_collection("def_var")
-	private ArrayList<DefVar> 				defVars;
-	
+	private ArrayList<DefVar>					defVars;
 
 	/**
 	 * Object on which the Action is to be taken
@@ -83,11 +84,15 @@ public abstract class SemanticAction extends ElementState
 
 	private InfoCollector							infoCollector;
 
+	private SemanticActionHandler			semanticActionHandler;
+
+	private DocumentParser						documentParser;
+
 	public SemanticAction()
 	{
 		args = new HashMap<String, Argument>();
 	}
-	
+
 	/**
 	 * returns the name of the action.
 	 * 
@@ -108,7 +113,6 @@ public abstract class SemanticAction extends ElementState
 		return checks;
 	}
 
-	
 	/**
 	 * @return the object
 	 */
@@ -137,16 +141,17 @@ public abstract class SemanticAction extends ElementState
 	{
 		return (args == null) ? null : args.get(name);
 	}
+
 	public boolean hasArguments()
 	{
 		return args != null && args.size() > 0;
 	}
-	
+
 	public Map<String, Argument> getArgs()
 	{
 		return (args == null) ? null : args;
 	}
-	
+
 	/**
 	 * @param object
 	 *          the object to set
@@ -183,13 +188,13 @@ public abstract class SemanticAction extends ElementState
 	}
 
 	/**
-	 * @param error the error to set
+	 * @param error
+	 *          the error to set
 	 */
 	public final void setError(String error)
 	{
 		this.error = error;
 	}
-
 
 	/**
 	 * @return the defVars
@@ -198,12 +203,14 @@ public abstract class SemanticAction extends ElementState
 	{
 		return defVars;
 	}
-	
+
 	/**
 	 * Handle this semantic action. User defined semantic actions should override this method.
 	 * 
-	 * @param obj The object the action operates on.
-	 * @param args The arguments passed to the action, in the form of name-object pair.
+	 * @param obj
+	 *          The object the action operates on.
+	 * @param args
+	 *          The arguments passed to the action, in the form of name-object pair.
 	 * @return The result of this semantic action (if any), or null.
 	 */
 	public Object handle(Object obj, Map<String, Object> args)
@@ -219,8 +226,9 @@ public abstract class SemanticAction extends ElementState
 	 * <p>
 	 * This method should be called before compiling or loading the MetaMetadata repository, if user
 	 * defined semantic actions are used.
-	 *  
-	 * @param semanticActionClasses Classes of user defined semantic actions.
+	 * 
+	 * @param semanticActionClasses
+	 *          Classes of user defined semantic actions.
 	 * @see {@link NestedSemanticAction}, {@link NestedSemanticActionTranslationScope}
 	 */
 	public static void register(Class<? extends SemanticAction>... semanticActionClasses)
@@ -231,14 +239,35 @@ public abstract class SemanticAction extends ElementState
 			NestedSemanticActionsTranslationScope.get().addTranslation(SAClass);
 		}
 	}
-	
+
 	public InfoCollector getInfoCollector()
 	{
 		return infoCollector;
 	}
-	
+
 	public void setInfoCollector(InfoCollector infoCollector)
 	{
 		this.infoCollector = infoCollector;
 	}
+
+	public SemanticActionHandler getSemanticActionHandler()
+	{
+		return semanticActionHandler;
+	}
+
+	public void setSemanticActionHandler(SemanticActionHandler handler)
+	{
+		this.semanticActionHandler = handler;
+	}
+
+	public void setDocumentParser(DocumentParser documentParser)
+	{
+		this.documentParser = documentParser;
+	}
+
+	public DocumentParser getDocumentParser()
+	{
+		return documentParser;
+	}
+
 }

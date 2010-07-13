@@ -27,7 +27,7 @@ public interface SemanticActionStandardMethods
 	/**
 	 * Creates a container for search.
 	 */
-	//public static String	CREATE_CONTAINER_FOR_SEARCH					= "create_container_for_search";
+	// public static String CREATE_CONTAINER_FOR_SEARCH = "create_container_for_search";
 
 	/**
 	 * Creates and send a visual surrogate for visualization
@@ -42,7 +42,7 @@ public interface SemanticActionStandardMethods
 	/**
 	 * process a conatiner
 	 */
-	public static String	PARSE_DOCUMENT_NOW										= "parse_document_now";
+	public static String	PARSE_DOCUMENT_NOW									= "parse_document_now";
 
 	/**
 	 * Create a new search
@@ -63,12 +63,12 @@ public interface SemanticActionStandardMethods
 	/**
 	 * to set a paticular field
 	 */
-	public static String	SET_FIELD_ACTION												= "set_field";
+	public static String	SET_FIELD_ACTION										= "set_field";
 
 	/**
 	 * to queue a search request. It may be same as create search action. Have to verify it.
 	 */
-//	public static String	PROCESS_SEARCH											= "process_search";
+	// public static String PROCESS_SEARCH = "process_search";
 
 	/**
 	 * 
@@ -78,12 +78,12 @@ public interface SemanticActionStandardMethods
 	/**
 	 * 
 	 */
-	public static String	PARSE_DOCUMENT_LATER							= "parse_document_later";
+	public static String	PARSE_DOCUMENT_LATER								= "parse_document_later";
 
 	/**
 	 * Applies XPath on a DOM Node
 	 */
-	public static String	GET_XPATH_NODE													= "get_xpath_node";
+	public static String	GET_XPATH_NODE											= "get_xpath_node";
 
 	/**
 	 * If semantic action
@@ -98,12 +98,16 @@ public interface SemanticActionStandardMethods
 	/**
 	 * this semantic action seems obsoleted. -- quyin
 	 */
-	// public static String	TRY_SYNC_NESTED_METADATA						= "try_sync_nested_metadata";
-	
+	// public static String TRY_SYNC_NESTED_METADATA = "try_sync_nested_metadata";
+
 	/**
 	 * 
 	 */
-	public static String EVALUATE_RANK_WEIGHT									=  "eval_rank_wt";
-	
-	public static String BACK_OFF_FROM_SITE										= "back_off_from_site";
+	public static String	EVALUATE_RANK_WEIGHT								= "eval_rank_wt";
+
+	public static String	BACK_OFF_FROM_SITE									= "back_off_from_site";
+
+	public static String	CHOOSE															= "choose";
+
+	public static String	OTHERWISE														= "otherwise";
 }

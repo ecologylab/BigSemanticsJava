@@ -422,6 +422,8 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 	public  void handleSemanticAction(SemanticAction action, DocumentParser documentType, IC infoCollector)
 	{
 		action.setInfoCollector(infoCollector);
+		action.setSemanticActionHandler(this);
+		action.setDocumentParser(documentType);
 		
 		final String actionName = action.getActionName();
 		
@@ -573,14 +575,14 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 	protected boolean checkPreConditionFlagsIfAny(IfSemanticAction action)
 	{
 		boolean returnValue = true;
-		ArrayList<FlagCheck> flagChecks = action.getFlagChecks();
+		ArrayList<FlagCheckBase> flagChecks = action.getFlagChecks();
 
 		if (flagChecks != null)
 		{
 			// loop over all the flags to be checked
-			for (FlagCheck flagCheck : flagChecks)
+			for (FlagCheckBase flagCheck : flagChecks)
 			{
-				boolean flag = (Boolean) semanticActionReturnValueMap.get(flagCheck.getValue());
+				boolean flag = flagCheck.evaluate(this);
 				returnValue = returnValue && flag;
 			}
 		}

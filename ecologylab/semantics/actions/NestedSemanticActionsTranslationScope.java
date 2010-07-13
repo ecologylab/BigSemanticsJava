@@ -26,6 +26,9 @@ public class NestedSemanticActionsTranslationScope
 
 		StringOperationsSemanticAction.class,
 		SearchSemanticAction.class,
+		
+		ChooseSemanticAction.class,
+		ChooseSemanticAction.Otherwise.class,
 	};
 	
 	public static final TranslationScope get()
