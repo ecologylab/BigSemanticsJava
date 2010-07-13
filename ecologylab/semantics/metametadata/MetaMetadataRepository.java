@@ -585,8 +585,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	 */
 	private void initializeLocationBasedMaps()
 	{
-		// TODO make sure that null selectors take precedence over filled out
-		// selectors
+		// TODO make this code less ugly
 		for (MetaMetadata metaMetadata : repositoryByTagName)
 		{
 			metaMetadata.inheritMetaMetadata(this);
@@ -614,15 +613,24 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 				continue;
 
 			boolean cfPrefIsSet = Pref.lookupBoolean(metaMetadata.getSelector().getCfPref());
+			boolean cfPrefIsNull = (metaMetadata.getSelector().getCfPref() == null);
+			boolean currentCfPrefIsSet = false;
+
+			// We need to check if something is there already
+			// if something is there, then we need to check to see if it has its cf pref set
+			// if not, then if I am null then I win
+
 			ParsedURL purl = metaMetadata.getSelector().getUrlBase();
 			if (purl != null)
 			{
 				MetaMetadata currentlyMappedMMD = repositoryByPURL.get(purl.noAnchorNoQueryPageString());
+				if (currentlyMappedMMD != null)
+					currentCfPrefIsSet = Pref.lookupBoolean(currentlyMappedMMD.getSelector().getCfPref());
 				if (currentlyMappedMMD == null)
 				{
 					repositoryByPURL.put(purl.noAnchorNoQueryPageString(), metaMetadata);
 				}
-				else if (cfPrefIsSet == true)
+				else if (cfPrefIsSet == true || (cfPrefIsNull == true && currentCfPrefIsSet == false))
 				{
 					// currentlyMappedMMD = metaMetadata;
 					repositoryByPURL.remove(currentlyMappedMMD.getSelector().getUrlBase()
@@ -636,12 +644,14 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 				if (urlPrefix != null)
 				{
 					MetaMetadata currentlyMappedMMD = repositoryByPURL.get(urlPrefix.toString());
+					if (currentlyMappedMMD != null)
+						currentCfPrefIsSet = Pref.lookupBoolean(currentlyMappedMMD.getSelector().getCfPref());
 					if (currentlyMappedMMD == null)
 					{
 						urlprefixCollection.add(urlPrefix);
 						repositoryByPURL.put(urlPrefix.toString(), metaMetadata);
 					}
-					else if (cfPrefIsSet == true)
+					else if (cfPrefIsSet == true || (cfPrefIsNull == true && currentCfPrefIsSet == false))
 					{
 						// currentlyMappedMMD = metaMetadata;
 						urlprefixCollection.removePrefix(currentlyMappedMMD.getSelector().getUrlPrefix()
@@ -658,6 +668,8 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 					if (domain != null && urlPattern != null)
 					{
 						MetaMetadata currentlyMappedMMD = domainAndPatternForMetadata(domain, urlPattern);
+						if (currentlyMappedMMD != null)
+							currentCfPrefIsSet = Pref.lookupBoolean(currentlyMappedMMD.getSelector().getCfPref());
 						if (currentlyMappedMMD == null)
 						{
 							ArrayList<RepositoryPatternEntry> bucket = repositoryByPattern.get(domain);
@@ -668,7 +680,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 							}
 							bucket.add(new RepositoryPatternEntry(urlPattern, metaMetadata));
 						}
-						else if (cfPrefIsSet == true)
+						else if (cfPrefIsSet == true || (cfPrefIsNull == true && currentCfPrefIsSet == false))
 						{
 							// currentlyMappedMMD = metaMetadata;
 							removeDomainAndPatternForMetadata(currentlyMappedMMD.getSelector().getDomain(),

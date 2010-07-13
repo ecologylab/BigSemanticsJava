@@ -11,85 +11,93 @@ import ecologylab.serialization.ElementState.simpl_nowrap;
 
 /**
  * 
- * @author rhema
- *  Contains all of the information that one should need to define
- *  when a particular MetaMetadata object should be selected.
- *
+ * @author rhema Contains all of the information that one should need to define when a particular
+ *         MetaMetadata object should be selected.
+ * 
  */
 
-public @simpl_inherit class MetaMetadataSelector extends ElementState{
+public @simpl_inherit
+class MetaMetadataSelector extends ElementState
+{
 
-	public static MetaMetadataSelector NULL_SELECTOR = new MetaMetadataSelector();
-	
+	public static MetaMetadataSelector	NULL_SELECTOR	= new MetaMetadataSelector();
+
 	@simpl_scalar
-	private String					name;
-	
+	private String											name;
+
 	@simpl_scalar
-	private String					cfPref;
-	
+	private String											cfPref;
+
 	@simpl_scalar
-	private ParsedURL					urlStripped;
-	
+	private ParsedURL										urlStripped;
+
 	@simpl_scalar
-	private ParsedURL 				urlPathTree;
+	private ParsedURL										urlPathTree;
 
 	/**
-	 * Regular expression. Must be paired with domain.
-	 * This is the least efficient form of matcher, so it should be used only when url_base & url_prefix cannot be used.
+	 * Regular expression. Must be paired with domain. This is the least efficient form of matcher, so
+	 * it should be used only when url_base & url_prefix cannot be used.
 	 */
 	@simpl_scalar
-	private Pattern						urlRegex;
-	
+	private Pattern											urlRegex;
+
 	/**
 	 * This key is *required* for urlPatterns, so that we can organize them efficiently.
 	 */
 	@simpl_scalar
-	private String						domain;
-	
+	private String											domain;
+
 	@simpl_collection("mime_type")
-	@simpl_nowrap 
-	private ArrayList<String>	mimeTypes;
+	@simpl_nowrap
+	private ArrayList<String>						mimeTypes;
 
 	@simpl_collection("suffix")
-	@simpl_nowrap 
-	private ArrayList<String>	suffixes;
-		
+	@simpl_nowrap
+	private ArrayList<String>						suffixes;
+
 	public MetaMetadataSelector()
 	{
 	}
-	
-	public ParsedURL getUrlStripped() {
+
+	public ParsedURL getUrlStripped()
+	{
 		return urlStripped;
 	}
 
-	public void setUrlStripped(ParsedURL urlStripped) {
+	public void setUrlStripped(ParsedURL urlStripped)
+	{
 		this.urlStripped = urlStripped;
 	}
 
-	public ParsedURL getUrlPathTree() {
+	public ParsedURL getUrlPathTree()
+	{
 		return urlPathTree;
 	}
 
-	public void setUrlPathTree(ParsedURL urlPathTree) {
+	public void setUrlPathTree(ParsedURL urlPathTree)
+	{
 		this.urlPathTree = urlPathTree;
 	}
 
-	public Pattern getUrlRegex() {
+	public Pattern getUrlRegex()
+	{
 		return urlRegex;
 	}
 
-	public void setUrlRegex(Pattern urlRegex) {
+	public void setUrlRegex(Pattern urlRegex)
+	{
 		this.urlRegex = urlRegex;
 	}
 
-	public String getDomain() {
+	public String getDomain()
+	{
 		return domain;
 	}
 
-	public void setDomain(String domain) {
+	public void setDomain(String domain)
+	{
 		this.domain = domain;
 	}
-
 
 	public ParsedURL getUrlBase()
 	{
@@ -110,16 +118,17 @@ public @simpl_inherit class MetaMetadataSelector extends ElementState{
 	{
 		return urlPathTree;
 	}
-	
+
 	public void setUrlPrefix(ParsedURL urlPrefix)
 	{
 		this.urlPathTree = urlPrefix;
 	}
-	
+
 	public void setUrlPrefix(String urlPrefix)
 	{
 		this.urlPathTree = ParsedURL.getAbsolute(urlPrefix);
 	}
+
 	/**
 	 * @param mimeTypes
 	 *          the mimeTypes to set
@@ -154,21 +163,24 @@ public @simpl_inherit class MetaMetadataSelector extends ElementState{
 		return suffixes;
 	}
 
-	public void setName(String name) {
+	public void setName(String name)
+	{
 		this.name = name;
 	}
 
-	public String getName() {
+	public String getName()
+	{
 		return name;
 	}
 
-	public void setCfPref(String cfPref) {
+	public void setCfPref(String cfPref)
+	{
 		this.cfPref = cfPref;
 	}
 
-	public String getCfPref() {
+	public String getCfPref()
+	{
 		return cfPref;
 	}
 
-	
 }
