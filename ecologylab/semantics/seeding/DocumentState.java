@@ -7,6 +7,7 @@ import ecologylab.net.ParsedURL;
 import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.connectors.InfoCollectorBase;
+import ecologylab.semantics.model.text.InterestModel;
 import ecologylab.serialization.simpl_inherit;
 
 /**
@@ -78,7 +79,7 @@ public class DocumentState extends Seed
 	 * @param infoCollector TODO
 	 */
 	public void performInternalSeedingSteps(InfoCollector infoCollector)
-  	{
+	{
  		// get a Container object associated with this, associate a seed, and initiate download
  		println("-- processing document seed: " + url);
  		infoCollector.traversable(url);
@@ -94,8 +95,11 @@ public class DocumentState extends Seed
  		Container container =infoCollector.getContainerDownloadIfNeeded(parentContainer, url, this, 
  				(dropPoint != null), justcrawl, justmedia);
  		if(query != null)
- 		container.setQuery(query);
-  	}
+ 		{
+ 			container.setQuery(query);
+ 			InterestModel.expressInterest(query, (short)3);
+ 		}
+	}
  	
  	/**
  	 * The String the dashboard needs to show.
