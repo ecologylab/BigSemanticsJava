@@ -316,13 +316,14 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		initializeDefaultUserAgent();
 
 		findAndDeclareNestedMetaMetadata();
-		initializeLocationBasedMaps();
 		
 		for (MetaMetadata metaMetadata : repositoryByTagName)
 		{
 			metaMetadata.inheritMetaMetadata(this);
 			metaMetadata.getClassAndBindDescriptors(metadataTScope);
 		}
+		
+		initializeLocationBasedMaps();
 		System.out.println();
 	}
 

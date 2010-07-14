@@ -33,6 +33,11 @@ import ecologylab.serialization.ElementState;
 public abstract class SemanticAction extends ElementState
 {
 
+	@simpl_collection
+	@simpl_scope(ConditionTranslationScope.CONDITION_SCOPE)
+	@simpl_nowrap 
+	private ArrayList<Condition> checks;
+		
 	/**
 	 * The map of arguments for this semantic action.
 	 */
@@ -249,6 +254,11 @@ public abstract class SemanticAction extends ElementState
 	public DocumentParser getDocumentParser()
 	{
 		return documentParser;
+	}
+	
+	public ArrayList<Condition> getChecks()
+	{
+		return checks;
 	}
 
 }

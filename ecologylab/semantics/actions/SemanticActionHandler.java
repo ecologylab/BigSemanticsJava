@@ -30,69 +30,70 @@ import ecologylab.serialization.types.scalar.IntType;
 import ecologylab.serialization.types.scalar.StringType;
 
 /**
-*
-* This is the handler for semantic actions. It contains a list of abstract method for the semantic
-* action possible. It has a <code>handleSemanticAction</code> method which decides what action to
-* take when a semantic action is passed to it. If a new semantic action has to be added we must add a
-* case to handle that in this method.
-* There is one SemanticActionHandler created for each DocumentType.connect
-* TODO Might want to implement lexical scoping in variables.
-*
-* @author amathur
-*
-*/
-public abstract class SemanticActionHandler<C extends Container, IC extends InfoCollector<C>> 
-extends Debug
-implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionNamedArguments
+ * 
+ * This is the handler for semantic actions. It contains a list of abstract method for the semantic
+ * action possible. It has a <code>handleSemanticAction</code> method which decides what action to
+ * take when a semantic action is passed to it. If a new semantic action has to be added we must add
+ * a case to handle that in this method. There is one SemanticActionHandler created for each
+ * DocumentType.connect TODO Might want to implement lexical scoping in variables.
+ * 
+ * @author amathur
+ * 
+ */
+public abstract class SemanticActionHandler<C extends Container, IC extends InfoCollector<C>>
+		extends Debug implements SemanticActionStandardMethods, SemanticActionsKeyWords,
+		SemanticActionNamedArguments
 {
-	static final Scope<Object>					BUILT_IN_SCOPE	= new Scope<Object>();
+	static final Scope<Object>						BUILT_IN_SCOPE	= new Scope<Object>();
 	static
-	{		
+	{
 		BUILT_IN_SCOPE.put(FALSE, false);
 		BUILT_IN_SCOPE.put(TRUE, true);
 		BUILT_IN_SCOPE.put(NULL, null);
 	}
+
 	/**
 	 * TODO move this also to super class This is the Map of StandadObject on which we might call some
 	 * methods.
 	 */
-	//FIXME -- andruid > abhinav: this Scope is currently never initialized. what is the use case to keep it?
-	//protected Scope<Object>	standardObjectMap	= new Scope<Object>();
+	// FIXME -- andruid > abhinav: this Scope is currently never initialized. what is the use case to
+	// keep it?
+	// protected Scope<Object> standardObjectMap = new Scope<Object>();
 	/**
 	 * This is a map of return value and objects from semantic action. The key being the return_value
-	 * of the semantic action.
-	 * TODO remane this also to some thing like objectMap or variableMap.
+	 * of the semantic action. TODO remane this also to some thing like objectMap or variableMap.
 	 */
-	protected Scope<Object>		semanticActionReturnValueMap;
+	protected Scope<Object>								semanticActionReturnValueMap;
 
 	/**
 	 * Map of various flags used and set during the semantic actions
 	 */
-	//protected Scope<Boolean>	semanticActionFlagMap;
+	// protected Scope<Boolean> semanticActionFlagMap;
 
 	/**
 	 * Error handler for the semantic actions.
 	 */
-	protected SemanticActionErrorHandler 							errorHandler;
-	
+	protected SemanticActionErrorHandler	errorHandler;
+
 	/**
 	 * Parameters
 	 */
-	//protected SemanticActionParameters parameter; 
+	// protected SemanticActionParameters parameter;
 
 	public SemanticActionHandler()
 	{
 		semanticActionReturnValueMap = new Scope<Object>(BUILT_IN_SCOPE);
-		
-	//	semanticActionFlagMap = new Scope<Boolean>();
-	//	parameter = new SemanticActionParameters(standardObjectMap);
+
+		// semanticActionFlagMap = new Scope<Boolean>();
+		// parameter = new SemanticActionParameters(standardObjectMap);
 	}
-	
+
 	/**
 	 * 
 	 * @param action
 	 */
-	public abstract void createAndVisualizeImgSurrogate(SemanticAction action, DocumentParser<C,?,?> docType,IC infoCollector);
+	public abstract void createAndVisualizeImgSurrogate(SemanticAction action,
+			DocumentParser<C, ?, ?> docType, IC infoCollector);
 
 	/**
 	 * 
@@ -100,53 +101,59 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 	 * @param paramter
 	 * @return
 	 */
-	public abstract C createContainer(SemanticAction action, DocumentParser<C,?,?> docType,IC infoCollector);
+	public abstract C createContainer(SemanticAction action, DocumentParser<C, ?, ?> docType,
+			IC infoCollector);
 
-	
 	/**
 	 * 
 	 * @param action
 	 */
-	public abstract void setMetadata(SemanticAction action, DocumentParser docType,IC infoCollector);
+	public abstract void setMetadata(SemanticAction action, DocumentParser docType, IC infoCollector);
 
 	/**
 	 * 
 	 * @param action
 	 * @return
 	 */
-	//public abstract C createContainerForSearch(SemanticAction action, DocumentParser<C,?,?> docType,IC infoCollector);
+	// public abstract C createContainerForSearch(SemanticAction action, DocumentParser<C,?,?>
+	// docType,IC infoCollector);
 
 	/**
 	 * 
 	 * @param action
-	 * @throws InvocationTargetException 
-	 * @throws IllegalAccessException 
-	 * @throws IllegalArgumentException 
+	 * @throws InvocationTargetException
+	 * @throws IllegalAccessException
+	 * @throws IllegalArgumentException
 	 */
-	public abstract void handleGeneralAction(SemanticAction action) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException;
+	public abstract void handleGeneralAction(SemanticAction action) throws IllegalArgumentException,
+			IllegalAccessException, InvocationTargetException;
 
 	/**
 	 * 
 	 * @param action
-	 * @throws InvocationTargetException 
-	 * @throws IllegalAccessException 
-	 * @throws IllegalArgumentException 
+	 * @throws InvocationTargetException
+	 * @throws IllegalAccessException
+	 * @throws IllegalArgumentException
 	 */
 	@Deprecated
-	public abstract void setFieldAction(SemanticAction action, DocumentParser docType,IC infoCollector) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException;
+	public abstract void setFieldAction(SemanticAction action, DocumentParser docType,
+			IC infoCollector) throws IllegalArgumentException, IllegalAccessException,
+			InvocationTargetException;
 
 	/**
 	 * 
 	 * @param action
 	 */
 	@Deprecated
-	public abstract void getFieldAction(SemanticAction action, DocumentParser docType,IC infoCollector);
-	
+	public abstract void getFieldAction(SemanticAction action, DocumentParser docType,
+			IC infoCollector);
+
 	/**
 	 * 
 	 * @param action
 	 */
-	public abstract void parseDocumentNow(SemanticAction action, DocumentParser docType,IC infoCollector);
+	public abstract void parseDocumentNow(SemanticAction action, DocumentParser docType,
+			IC infoCollector);
 
 	/**
 	 * 
@@ -154,18 +161,21 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 	 * @param documentType
 	 * @param infoCollector
 	 */
-	public abstract void createSemanticAnchor(SemanticAction action, DocumentParser<C,?,?> documentType,IC infoCollector);
-	
-	
-	public abstract void backOffFromSite(SemanticAction action, DocumentParser <C, ?, ?> documentType, IC infoCollector);
+	public abstract void createSemanticAnchor(SemanticAction action,
+			DocumentParser<C, ?, ?> documentType, IC infoCollector);
+
+	public abstract void backOffFromSite(SemanticAction action, DocumentParser<C, ?, ?> documentType,
+			IC infoCollector);
+
 	/**
 	 * 
 	 * @param action
 	 * @param documentType
 	 * @param infoCollector
 	 */
-	public abstract void parseDocumentLater(SemanticAction action, DocumentParser documentType,IC infoCollector);
-	
+	public abstract void parseDocumentLater(SemanticAction action, DocumentParser documentType,
+			IC infoCollector);
+
 	/**
 	 * 
 	 * @param action
@@ -174,209 +184,214 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 	 */
 	public abstract void createAndVisualizeTextSurrogateSemanticAction(SemanticAction action,
 			DocumentParser documentType, IC infoCollector);
-	
+
 	/**
-	 * (This semantic action is obsoleted, according to remarks in CfSemanticActionsHandler.java. --quyin)
+	 * (This semantic action is obsoleted, according to remarks in CfSemanticActionsHandler.java.
+	 * --quyin)
+	 * 
 	 * @param action
 	 * @param documentType
 	 * @param infoCollector
-	public abstract void syncNestedMetadataSemanticAction(SemanticAction action,	DocumentParser documentType, IC infoCollector);
+	 *          public abstract void syncNestedMetadataSemanticAction(SemanticAction action,
+	 *          DocumentParser documentType, IC infoCollector);
 	 */
-	
+
 	/**
 	 * Implementation of for loop.
-	 * @param documentType TODO
-	 * @param infoCollector TODO
+	 * 
+	 * @param documentType
+	 *          TODO
+	 * @param infoCollector
+	 *          TODO
 	 * @param semanticAction
 	 */
-	public synchronized void  handleForLoop(ForEachSemanticAction action, DocumentParser documentType, IC infoCollector)
+	public synchronized void handleForLoop(ForEachSemanticAction action, DocumentParser documentType,
+			IC infoCollector)
 	{
 		try
 		{
 			// get all the action which have to be performed in loop
 			ArrayList<SemanticAction> nestedSemanticActions = action.getNestedSemanticActionList();
-			
+
 			// get the collection object name on which we have to loop
-			String collectionObjectName = action.getCollection(); 
-			//if(checkPreConditionFlagsIfAny(action))
+			String collectionObjectName = action.getCollection();
+			// if(checkPreConditionFlagsIfAny(action))
 			{
-				//get the actual collection object
-				Object collectionObject =  semanticActionReturnValueMap.get(collectionObjectName);
+				// get the actual collection object
+				Object collectionObject = semanticActionReturnValueMap.get(collectionObjectName);
 				GenericIterable gItr = new GenericIterable(collectionObject);
-				//debug(documentType.purl().toString()); <<Annoying as hell !
+				// debug(documentType.purl().toString()); <<Annoying as hell !
 				Iterator itr = gItr.iterator();
-				int collectionSize=gItr.size();
-				
+				int collectionSize = gItr.size();
+
 				// set the size of collection in the for loop action.
-				if(action.getSize()!=null)
+				if (action.getSize() != null)
 				{
 					// we have the size value. so we add it in parameters
 					semanticActionReturnValueMap.put(action.getSize(), collectionSize);
 				}
-				
-				int start =0;
-				int end =collectionSize;
-				
-				if(action.getStart()!=null)
+
+				int start = 0;
+				int end = collectionSize;
+
+				if (action.getStart() != null)
 				{
-					start =Integer.parseInt(action.getStart());
+					start = Integer.parseInt(action.getStart());
 				}
-				if(action.getEnd()!=null)
+				if (action.getEnd() != null)
 				{
 					end = Integer.parseInt(action.getEnd());
 				}
-				
+
 				// start the loop over each object
-				for(int i=start;i<end;i++)
-				{	
+				for (int i = start; i < end; i++)
+				{
 					Object item = gItr.get(i);
-					//put it in semantic action return value map
+					// put it in semantic action return value map
 					semanticActionReturnValueMap.put(action.getAs(), item);
-					
+
 					// see if current index is needed
-					if(action.getCurIndex()!=null)
+					if (action.getCurIndex() != null)
 					{
 						// set the value of this variable in parameters
 						semanticActionReturnValueMap.put(action.getCurIndex(), i);
 					}
-					
-					//now take all the actions nested inside for loop
-					for (SemanticAction nestedSemanticAction  : nestedSemanticActions)
+
+					// now take all the actions nested inside for loop
+					for (SemanticAction nestedSemanticAction : nestedSemanticActions)
 						handleSemanticAction(nestedSemanticAction, documentType, infoCollector);
 				}
 			}
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			e.printStackTrace();
-			throw new ForLoopException(e,action,semanticActionReturnValueMap);
+			throw new ForLoopException(e, action, semanticActionReturnValueMap);
 		}
 	}
-	
+
 	/**
 	 * Handles the IF statement
+	 * 
 	 * @param action
 	 * @param parameter2
 	 * @param documentType
 	 * @param infoCollector
 	 */
-	public void handleIf(IfSemanticAction action,
-			DocumentParser documentType, IC infoCollector)
+	public void handleIf(IfSemanticAction action, DocumentParser documentType, IC infoCollector)
 	{
 		try
 		{
 			ArrayList<SemanticAction> nestedSemanticActions = action.getNestedSemanticActionList();
-			
-			// check if all the flags are true
-			if(checkConditionsIfAny(action))
-			{
-				// handle each of the nested action
-				for (SemanticAction nestedSemanticAction  : nestedSemanticActions)
-					handleSemanticAction(nestedSemanticAction, documentType, infoCollector);
-			}
+			for (SemanticAction nestedSemanticAction : nestedSemanticActions)
+				handleSemanticAction(nestedSemanticAction, documentType, infoCollector);
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
-			throw new NestedActionException(e,action,semanticActionReturnValueMap);
+			throw new NestedActionException(e, action, semanticActionReturnValueMap);
 		}
 	}
 
 	/**
-	 *  Implementation of apply xpath
+	 * Implementation of apply xpath
+	 * 
 	 * @param action
 	 * @param parameter2
 	 * @param documentType
 	 * @param infoCollector
 	 */
-	public void getXPathNode(GetXPathNodeSemanticAction action, DocumentParser documentType, IC infoCollector)
+	public void getXPathNode(GetXPathNodeSemanticAction action, DocumentParser documentType,
+			IC infoCollector)
 	{
-			try
-			{
-					// get the XPath object
-					XPath xpath = XPathFactory.newInstance().newXPath();
-				
-					Node node =null;
-					
-					// if no node is specified, we will apply XPaths by deafult on document root.
-					if(action.getNode()==null)
-					{
-							node =(Node) semanticActionReturnValueMap.get(DOCUMENT_ROOT_NODE);
-					}
-					else
-					{
-						// get the node on which XPAth needs to be applied
-						node = (Node)semanticActionReturnValueMap.get(action.getNode());
-					}
-					
-					final String xpathExpression = action.getXpath();
-					
-					//if return object is not null [Right now its gonna be NodeList only TODO; For other cases]
-					if(action.getReturnObject()!=null)
-					{
-						  // apply xpath and get the node list
-							NodeList nList =(NodeList) xpath.evaluate(xpathExpression, node, action.getReturnObject());
-							
-							// put the value in the map
-							semanticActionReturnValueMap.put(action.getReturnValue(), nList);
-					}
-					else
-					{
-							// its gonna be a simple string evaluation
-							String evaluation = xpath.evaluate(xpathExpression, node);
-							
-							// put it into returnValueMap
-							semanticActionReturnValueMap.put(action.getReturnValue(), evaluation);
-					}
-					
-			}
-			catch(Exception e)
-			{
-				throw new ApplyXPathException(e,action,semanticActionReturnValueMap);
-			}
-		
-	}
-	
+		try
+		{
+			// get the XPath object
+			XPath xpath = XPathFactory.newInstance().newXPath();
 
-		
+			Node node = null;
+
+			// if no node is specified, we will apply XPaths by deafult on document root.
+			if (action.getNode() == null)
+			{
+				node = (Node) semanticActionReturnValueMap.get(DOCUMENT_ROOT_NODE);
+			}
+			else
+			{
+				// get the node on which XPAth needs to be applied
+				node = (Node) semanticActionReturnValueMap.get(action.getNode());
+			}
+
+			final String xpathExpression = action.getXpath();
+
+			// if return object is not null [Right now its gonna be NodeList only TODO; For other cases]
+			if (action.getReturnObject() != null)
+			{
+				// apply xpath and get the node list
+				NodeList nList = (NodeList) xpath.evaluate(xpathExpression, node, action.getReturnObject());
+
+				// put the value in the map
+				semanticActionReturnValueMap.put(action.getReturnValue(), nList);
+			}
+			else
+			{
+				// its gonna be a simple string evaluation
+				String evaluation = xpath.evaluate(xpathExpression, node);
+
+				// put it into returnValueMap
+				semanticActionReturnValueMap.put(action.getReturnValue(), evaluation);
+			}
+
+		}
+		catch (Exception e)
+		{
+			throw new ApplyXPathException(e, action, semanticActionReturnValueMap);
+		}
+
+	}
+
 	/**
-	 *  Function which evaluates rank weight
+	 * Function which evaluates rank weight
+	 * 
 	 * @param action
 	 * @param parameter
 	 * @param documentType
 	 * @param infoCollector
 	 * @return
 	 */
-	public float evaluateRankWeight(SemanticAction action,DocumentParser documentType, IC infoCollector)
+	public float evaluateRankWeight(SemanticAction action, DocumentParser documentType,
+			IC infoCollector)
 	{
 		Argument indexA = getNamedArgument(action, INDEX);
-		int index = (Integer)semanticActionReturnValueMap.get(indexA.getValue());
-		
-		Argument sizeA =getNamedArgument(action, SIZE);
-		int size = (Integer)semanticActionReturnValueMap.get(sizeA.getValue());
-		
-		float result = ((float)size-index)/size;
-		
+		int index = (Integer) semanticActionReturnValueMap.get(indexA.getValue());
+
+		Argument sizeA = getNamedArgument(action, SIZE);
+		int size = (Integer) semanticActionReturnValueMap.get(sizeA.getValue());
+
+		float result = ((float) size - index) / size;
+
 		semanticActionReturnValueMap.put(action.getReturnValue(), result);
-		
+
 		return result;
 	}
-	
+
 	/**
-	 * This function evaluates  any local variables which are decalred inside the semantic action
-	 * and sets them in semantic action return value map.
-	 * Right now we assume that only numerical constants will be passed to as variables.
-	 * TODO implement a generic evaluate variables for local and global variables
+	 * This function evaluates any local variables which are decalred inside the semantic action and
+	 * sets them in semantic action return value map. Right now we assume that only numerical
+	 * constants will be passed to as variables. TODO implement a generic evaluate variables for local
+	 * and global variables
+	 * 
 	 * @param action
 	 * @param documentType
 	 * @param infoCollector
 	 */
-	protected void evalauateVaiablesIfAny(SemanticAction action, DocumentParser documentType, IC infoCollector)
+	protected void evalauateVaiablesIfAny(SemanticAction action, DocumentParser documentType,
+			IC infoCollector)
 	{
 		ArrayList<DefVar> defVars = action.getDefVars();
-		if(defVars!=null)
+		if (defVars != null)
 		{
 			// proceed only if some variables are defined.
-			for(DefVar defVar :	defVars)
+			for (DefVar defVar : defVars)
 			{
 				if (defVar.getScalarType() != null)
 				{
@@ -399,129 +414,134 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 				else
 				{
 					// the previous default action is to treat the variable as a float
-					 float value = Float.parseFloat(defVar.getValue());
-					 semanticActionReturnValueMap.put(defVar.getName(), value);
-					 //parameter.addParameter(defVar.getName(), value);
+					float value = Float.parseFloat(defVar.getValue());
+					semanticActionReturnValueMap.put(defVar.getName(), value);
+					// parameter.addParameter(defVar.getName(), value);
 				}
 			}
 		}
 	}
-	
-	
-	
+
 	/**
-   * Method which handles the semantic actions.When you define a new semantic action it must be
-   * added here as another <code>if-else</code> clause. Also a corresponding method, mostly abstract
-   * should be declared in this class for handling the action. TODO complete this method.
-   *
-   * @param action
-	 * @param documentType TODO
-	 * @param infoCollector TODO
-   */
-	public  void handleSemanticAction(SemanticAction action, DocumentParser documentType, IC infoCollector)
+	 * Method which handles the semantic actions.When you define a new semantic action it must be
+	 * added here as another <code>if-else</code> clause. Also a corresponding method, mostly abstract
+	 * should be declared in this class for handling the action. TODO complete this method.
+	 * 
+	 * @param action
+	 * @param documentType
+	 *          TODO
+	 * @param infoCollector
+	 *          TODO
+	 */
+	public void handleSemanticAction(SemanticAction action, DocumentParser documentType,
+			IC infoCollector)
 	{
+		if (!checkConditionsIfAny(action))
+		{
+			if (!(action instanceof IfSemanticAction))
+				warning(String.format(
+						"Semantic action %s not taken since (some) pre-requisite conditions are not met",
+						action));
+			return;
+		}
+
 		action.setInfoCollector(infoCollector);
 		action.setSemanticActionHandler(this);
 		action.setDocumentParser(documentType);
-		
+
 		final String actionName = action.getActionName();
-		
+
 		try
 		{
 			// evaluate local variables
-			evalauateVaiablesIfAny(action,documentType,infoCollector);
-			
+			evalauateVaiablesIfAny(action, documentType, infoCollector);
+
 			if (SemanticActionStandardMethods.FOR_EACH.equals(actionName))
 			{
-				handleForLoop((ForEachSemanticAction)action, documentType, infoCollector);
+				handleForLoop((ForEachSemanticAction) action, documentType, infoCollector);
 			}
 			else if (SemanticActionStandardMethods.CREATE_AND_VISUALIZE_IMG_SURROGATE.equals(actionName))
 			{
-				createAndVisualizeImgSurrogate(action, documentType,infoCollector);
+				createAndVisualizeImgSurrogate(action, documentType, infoCollector);
 			}
 			else if (SemanticActionStandardMethods.CREATE_CONATINER.equals(actionName))
 			{
-				createContainer(action, documentType,infoCollector);
+				createContainer(action, documentType, infoCollector);
 			}
 			else if (SemanticActionStandardMethods.PARSE_DOCUMENT_NOW.equals(actionName))
 			{
-				parseDocumentNow(action, documentType,infoCollector);
+				parseDocumentNow(action, documentType, infoCollector);
 			}
-			else if(SemanticActionStandardMethods.PARSE_DOCUMENT_LATER.equals(actionName))
+			else if (SemanticActionStandardMethods.PARSE_DOCUMENT_LATER.equals(actionName))
 			{
 				parseDocumentLater(action, documentType, infoCollector);
 			}
 			else if (SemanticActionStandardMethods.SET_METADATA.equals(actionName))
 			{
-				setMetadata(action, documentType,infoCollector);
-			}
-			/*else if (SemanticActionStandardMethods.CREATE_CONTAINER_FOR_SEARCH.equals(actionName))
-			{
-				createContainer(action, documentType,infoCollector);
-			}*/
-			
-			/**********************************
-			 * these semantic action handlers are not used
-			 * the get_field and set_field actions are now dealt with by handleGeneralAction(),
-			 * which also deals with the environment
-			 **********************************
-			else if (SemanticActionStandardMethods.GET_FIELD_ACTION.equals(actionName))
-			{
-				getFieldAction(action, documentType,infoCollector);
-			}
-			else if (SemanticActionStandardMethods.SET_FIELD_ACTION.equals(actionName))
-			{
-				setFieldAction(action, documentType,infoCollector);
-			}
-			**********************************/
-			
-			/*else if(SemanticActionStandardMethods.PROCESS_SEARCH.equals(actionName))
-			{
-				processSearch(action,documentType,infoCollector);
-			}*/
-			else if(SemanticActionStandardMethods.CREATE_SEMANTIC_ANCHOR.equals(actionName))
-			{
-				createSemanticAnchor((CreateSemanticAnchorSemanticAction)action,documentType,infoCollector);
-			}
-			else if(SemanticActionStandardMethods.GET_XPATH_NODE.equals(actionName))
-			{
-				getXPathNode((GetXPathNodeSemanticAction)action, documentType, infoCollector);
-			}
-			else if(SemanticActionStandardMethods.IF.equals(actionName))
-			{
-				handleIf((IfSemanticAction)action,documentType,infoCollector);
-			}
-			else if(SemanticActionStandardMethods.CREATE_AND_VISUALIZE_TEXT_SURROGATE.equals(actionName))
-			{
-				createAndVisualizeTextSurrogateSemanticAction(action,documentType,infoCollector);
+				setMetadata(action, documentType, infoCollector);
 			}
 			/*
-			 * obsoleted semantic action
-			else if(SemanticActionStandardMethods.TRY_SYNC_NESTED_METADATA.equals(actionName))
+			 * else if (SemanticActionStandardMethods.CREATE_CONTAINER_FOR_SEARCH.equals(actionName)) {
+			 * createContainer(action, documentType,infoCollector); }
+			 */
+
+			/**********************************
+			 * these semantic action handlers are not used the get_field and set_field actions are now
+			 * dealt with by handleGeneralAction(), which also deals with the environment
+			 ********************************** 
+			 * else if (SemanticActionStandardMethods.GET_FIELD_ACTION.equals(actionName)) {
+			 * getFieldAction(action, documentType,infoCollector); } else if
+			 * (SemanticActionStandardMethods.SET_FIELD_ACTION.equals(actionName)) {
+			 * setFieldAction(action, documentType,infoCollector); }
+			 **********************************/
+
+			/*
+			 * else if(SemanticActionStandardMethods.PROCESS_SEARCH.equals(actionName)) {
+			 * processSearch(action,documentType,infoCollector); }
+			 */
+			else if (SemanticActionStandardMethods.CREATE_SEMANTIC_ANCHOR.equals(actionName))
 			{
-				syncNestedMetadataSemanticAction(action,documentType,infoCollector);
+				createSemanticAnchor((CreateSemanticAnchorSemanticAction) action, documentType,
+						infoCollector);
 			}
-			*/
-			else if(SemanticActionStandardMethods.EVALUATE_RANK_WEIGHT.equals(actionName))
+			else if (SemanticActionStandardMethods.GET_XPATH_NODE.equals(actionName))
 			{
-				evaluateRankWeight(action,documentType,infoCollector);
+				getXPathNode((GetXPathNodeSemanticAction) action, documentType, infoCollector);
 			}
-			else if(SemanticActionStandardMethods.BACK_OFF_FROM_SITE.equals(actionName))
+			else if (SemanticActionStandardMethods.IF.equals(actionName))
 			{
-				backOffFromSite(action,documentType,infoCollector);
+				handleIf((IfSemanticAction) action, documentType, infoCollector);
+			}
+			else if (SemanticActionStandardMethods.CREATE_AND_VISUALIZE_TEXT_SURROGATE.equals(actionName))
+			{
+				createAndVisualizeTextSurrogateSemanticAction(action, documentType, infoCollector);
+			}
+			/*
+			 * obsoleted semantic action else
+			 * if(SemanticActionStandardMethods.TRY_SYNC_NESTED_METADATA.equals(actionName)) {
+			 * syncNestedMetadataSemanticAction(action,documentType,infoCollector); }
+			 */
+			else if (SemanticActionStandardMethods.EVALUATE_RANK_WEIGHT.equals(actionName))
+			{
+				evaluateRankWeight(action, documentType, infoCollector);
+			}
+			else if (SemanticActionStandardMethods.BACK_OFF_FROM_SITE.equals(actionName))
+			{
+				backOffFromSite(action, documentType, infoCollector);
 			}
 			else
 			{
 				handleGeneralAction(action);
 			}
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			e.printStackTrace();
-			System.out.println("The action "+actionName+" could not be executed. Please see the stack trace for errors.");
+			System.out.println("The action " + actionName
+					+ " could not be executed. Please see the stack trace for errors.");
 		}
 	}
-	
+
 	/**
 	 * This function checks for the pre-condition flag values for this action and returns the "anded"
 	 * result.
@@ -529,9 +549,8 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 	 * @param action
 	 * @return
 	 */
-	protected boolean checkConditionsIfAny(IfSemanticAction action)
+	protected boolean checkConditionsIfAny(SemanticAction action)
 	{
-		boolean returnValue = true;
 		ArrayList<Condition> conditions = action.getChecks();
 
 		if (conditions != null)
@@ -540,14 +559,14 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 			for (Condition condition : conditions)
 			{
 				boolean flag = condition.evaluate(this);
-				returnValue = returnValue && flag;
+				if (!flag)
+					return false;
 			}
 		}
-		return returnValue;
+		return true;
 	}
 
-
-	protected  Object getObjectFromKeyName(String key, SemanticActionParameters parameters)
+	protected Object getObjectFromKeyName(String key, SemanticActionParameters parameters)
 	{
 		Object returnValue = null;
 
@@ -560,73 +579,71 @@ implements SemanticActionStandardMethods,SemanticActionsKeyWords,SemanticActionN
 			// if this was passed in parameters
 			returnValue = parameters.getObjectInstance(key);
 		}
-		
+
 		return returnValue;
 	}
 
 	/**
-	 * This function replaces the old value of a variable by new value. 
-	 * This is right now used only in case of redirected containers.
+	 * This function replaces the old value of a variable by new value. This is right now used only in
+	 * case of redirected containers.
+	 * 
 	 * @param oldValue
 	 * @param newValue
 	 */
-	public void replaceVariableValue(Object oldValue,Object newValue)
+	public void replaceVariableValue(Object oldValue, Object newValue)
 	{
-		 // get the set of all the values stored in the return value map
-		 Collection<Object> valueSet=semanticActionReturnValueMap.values();
-		 
-		 // get the set of all the keys
-		 Collection<String> keySet= semanticActionReturnValueMap.keySet();
-		 
-		 // get an iterator over it
-		 Iterator<Object> valueItr=valueSet.iterator();
-		 
-		 // get an iterator for the keys
-		 Iterator<String> keyItr = keySet.iterator();
-		 
-		 // iterate over the values
-		 while(valueItr.hasNext())
-		 {
-			 Object obj = valueItr.next();
-			 String key = keyItr.next();
-			 
-			 // if the current value equals old value
-			 if(obj.equals(oldValue))
-			 {
-				  //replace currentvalue with old value.
-				 	semanticActionReturnValueMap.put(key, newValue);
-				 	break;
-			 }
-		 }
+		// get the set of all the values stored in the return value map
+		Collection<Object> valueSet = semanticActionReturnValueMap.values();
+
+		// get the set of all the keys
+		Collection<String> keySet = semanticActionReturnValueMap.keySet();
+
+		// get an iterator over it
+		Iterator<Object> valueItr = valueSet.iterator();
+
+		// get an iterator for the keys
+		Iterator<String> keyItr = keySet.iterator();
+
+		// iterate over the values
+		while (valueItr.hasNext())
+		{
+			Object obj = valueItr.next();
+			String key = keyItr.next();
+
+			// if the current value equals old value
+			if (obj.equals(oldValue))
+			{
+				// replace currentvalue with old value.
+				semanticActionReturnValueMap.put(key, newValue);
+				break;
+			}
+		}
 	}
 
 	/**
 	 * @return the parameter
-	 *//*
-	public final SemanticActionParameters getParameter()
-	{
-		return parameter;
-	}
+	 */
+	/*
+	 * public final SemanticActionParameters getParameter() { return parameter; }
+	 *//**
+	 * @param parameter
+	 *          the parameter to set
+	 */
+	/*
+	 * public final void setParameter(SemanticActionParameters parameter) { this.parameter =
+	 * parameter; }
+	 */
 
-	*//**
-	 * @param parameter the parameter to set
-	 *//*
-	public final void setParameter(SemanticActionParameters parameter)
-	{
-		this.parameter = parameter;
-	}*/
-	
-		
 	protected Argument getNamedArgument(SemanticAction action, String name)
 	{
 		return action.getArgument(name);
 	}
-	
+
 	public void recycle()
 	{
-		/*parameter.recycle();
-		semanticActionFlagMap.clear();
-		semanticActionFlagMap = null;*/
+		/*
+		 * parameter.recycle(); semanticActionFlagMap.clear(); semanticActionFlagMap = null;
+		 */
 		semanticActionReturnValueMap.clear();
 		semanticActionReturnValueMap = null;
 	}

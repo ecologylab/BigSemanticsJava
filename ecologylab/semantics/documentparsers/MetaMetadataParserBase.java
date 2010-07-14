@@ -139,8 +139,11 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 			e.printStackTrace();
 		}
 		
-		// make sure termVector is built here
+		// if the metametadata reference is null, assign the correct metametadata object to it.
+		if (populatedMetadata.getMetaMetadata() == null)
+			populatedMetadata.setMetaMetadata(metaMetadata);
 		
+		// make sure termVector is built here
 		populatedMetadata.rebuildCompositeTermVector();
 		
 		if (populatedMetadata!= null)
