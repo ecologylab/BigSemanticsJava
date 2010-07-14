@@ -3,6 +3,8 @@ package ecologylab.semantics.actions;
 import java.util.Map;
 
 import ecologylab.semantics.connectors.InfoCollector;
+import ecologylab.semantics.connectors.SeedPeer;
+import ecologylab.semantics.connectors.SemanticsSessionObjectNames;
 import ecologylab.semantics.seeding.SearchState;
 import ecologylab.semantics.seeding.SeedSet;
 import ecologylab.serialization.simpl_inherit;
@@ -41,8 +43,14 @@ public class SearchSemanticAction<SA extends SemanticAction> extends NestedSeman
 		InfoCollector ic = getInfoCollector();
 		SeedSet seedSet = ic.getSeedSet();
 		SearchState search = new SearchState(query, engine);
-		seedSet.add(search);
-		seedSet.performSeeding(ic.sessionScope());
+		synchronized (seedSet)
+		{
+			seedSet.add(search);
+//			seedSet.performSeeding(ic.sessionScope());
+//			search.performSeedingSteps(ic);
+//			SeedPeer seedPeer = search.getSeedPeer();
+//			seedPeer.notifyInterface(ic.sessionScope(), SemanticsSessionObjectNames.SEARCH_DASH_BOARD);
+		}
 		return null;
 	}
 }

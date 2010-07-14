@@ -51,7 +51,12 @@ public class MetaMetadataDirectBindingParser<SA extends SemanticAction>
 				*/
 			  MetaMetadata mmd = populatedMetadata.getMetaMetadata();
 				if(mmd!=null)
-					metaMetadata = mmd;
+				{
+					if (metaMetadata == null)
+						metaMetadata = mmd;
+					else
+						warning("abandon metaMetadata from deserialization since we already find the right one.");
+				}
 				System.out.println();
 			}
 			catch (SIMPLTranslationException e)
