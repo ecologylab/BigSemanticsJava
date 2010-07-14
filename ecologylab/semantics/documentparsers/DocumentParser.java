@@ -322,7 +322,7 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 	
 		String binding = SemanticActionsKeyWords.DEFAULT;
 		// if we made PURL connection but could not find parser using container
-		if ((purlConnection != null) && (result == null))
+		if ((purlConnection != null))
 		{
 			String cacheValue = purlConnection.urlConnection().getHeaderField("X-Cache");
 			cacheHit = cacheValue != null && cacheValue.contains("HIT");
