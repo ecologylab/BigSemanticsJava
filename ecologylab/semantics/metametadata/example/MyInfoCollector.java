@@ -108,7 +108,7 @@ public class MyInfoCollector implements InfoCollector<MyContainer>
 		this.metadataTranslationScope = metadataTranslationScope;
 		
 		mmdRepo = MetaMetadataRepository.load(new File(repoDir));
-		mmdRepo.initializeRepository(metadataTranslationScope);
+		mmdRepo.bindMetadataClassDescriptorsToMetaMetadata(metadataTranslationScope);
 		rejectDomains = new HashSet<String>();
 		downloadMonitor = new DownloadMonitor("info-collector_download-monitor",
 				DEFAULT_COUNT_DOWNLOAD_THREAD);

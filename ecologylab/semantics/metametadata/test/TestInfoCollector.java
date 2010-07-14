@@ -30,7 +30,7 @@ public class TestInfoCollector extends InfoCollectorBase<MyContainer>
 {
 	static
 	{
-		META_METADATA_REPOSITORY.initializeRepository(GeneratedMetadataTranslationScope.get());
+		META_METADATA_REPOSITORY.bindMetadataClassDescriptorsToMetaMetadata(GeneratedMetadataTranslationScope.get());
 	}
 
 	public TestInfoCollector()
