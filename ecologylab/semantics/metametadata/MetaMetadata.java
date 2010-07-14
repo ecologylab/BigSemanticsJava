@@ -38,7 +38,8 @@ public class MetaMetadata extends MetaMetadataCompositeField
 implements Mappable<String>
 {
 	
-	@simpl_composite @xml_tag("selector") MetaMetadataSelector selector;
+	@simpl_composite 
+	MetaMetadataSelector 			selector;
 
 	@simpl_scalar
 	private String						userAgentName;

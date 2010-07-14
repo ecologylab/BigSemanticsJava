@@ -751,12 +751,19 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	 */
 	protected MetadataClassDescriptor											metadataClassDescriptor;
 
+	/**
+	 * Connect the appropriate MetadataClassDescriptor with this, and likewise,
+	 * recursively perform this binding operation for all the children of this.
+	 * 
+	 * @param metadataTScope
+	 * @return
+	 */
 	boolean getClassAndBindDescriptors(TranslationScope metadataTScope)
 	{
 		Class<? extends Metadata> metadataClass = getMetadataClass(metadataTScope);
 		if (metadataClass == null)
 		{
-//			error(metaMetadata + "\tCan't resolve in TranslationScope " + metadataTScope);
+			//TODO -- remove this, and all of the tree of meta_metadata it belongs to, from the repository
 			return false;
 		}
 		//

@@ -104,7 +104,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 
 	private HashMap<String, MetaMetadata>												repositoryBySuffix					= new HashMap<String, MetaMetadata>();
 
-	private PrefixCollection																		urlprefixCollection					= new PrefixCollection(
+	private PrefixCollection																		urlPrefixCollection					= new PrefixCollection(
 																																															'/');
 
 	// public static final TranslationScope META_METADATA_TSCOPE =
@@ -185,7 +185,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 			if (result == null)
 				result = repos;
 			else
-				result.joinRepository(repos);
+				result.integrateRepositoryWithThis(repos);
 			// result.populateURLBaseMap();
 			// // necessary to get, for example, fields for document into pdf...
 			// result.populateInheritedValues();
@@ -198,13 +198,13 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		if (repositorySources.exists())
 		{
 			for (File file : repositorySources.listFiles(xmlFilter))
-				result.joinRepository(readRepository(file, metaMetadataTScope));
+				result.integrateRepositoryWithThis(file, metaMetadataTScope);
 		}
 
 		if (powerUserDir.exists())
 		{
 			for (File file : powerUserDir.listFiles(xmlFilter))
-				result.joinRepository(readRepository(file, metaMetadataTScope));
+				result.integrateRepositoryWithThis(file, metaMetadataTScope);
 		}
 
 		// FIXME -- get rid of this?!
@@ -230,6 +230,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		{
 			repos = (MetaMetadataRepository) metaMetadataTScope.deserialize(file);
 			repos.file = file;
+			repos.initializeSuffixAndMimeBasedMaps();
 		}
 		catch (SIMPLTranslationException e)
 		{
@@ -240,30 +241,44 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		return repos;
 	}
 
+	public void integrateRepositoryWithThis(File repositoryFile, TranslationScope metaMetadataTScope)
+	{
+		MetaMetadataRepository thatRepo	= readRepository(repositoryFile, metaMetadataTScope);
+		if (thatRepo == null)
+			error("Could not integrate repository file:\t" + repositoryFile);
+		else
+			integrateRepositoryWithThis(thatRepo);
+	}
 	/**
-	 * Combines the HashMaps and HashMapStates of the parameter repository to this repository.
+	 * Combines the data stored in the parameter repository into this repository.
 	 * 
 	 * @param repository
 	 * @return
 	 */
-	public void joinRepository(MetaMetadataRepository repository)
+	public void integrateRepositoryWithThis(MetaMetadataRepository repository)
 	{
 		// combine userAgents
-		if (!combineMapStates(repository.userAgents, this.userAgents))
+		if (!combineMaps(repository.userAgents, this.userAgents))
 			this.userAgents = repository.userAgents;
 
 		// combine searchEngines
-		if (!combineMapStates(repository.searchEngines, this.searchEngines))
+		if (!combineMaps(repository.searchEngines, this.searchEngines))
 			this.searchEngines = repository.searchEngines;
 
 		// combine namedStyles
-		if (!combineMapStates(repository.namedStyles, this.namedStyles))
+		if (!combineMaps(repository.namedStyles, this.namedStyles))
 			this.namedStyles = repository.namedStyles;
 
 		// combine sites
-		if (!combineMapStates(repository.sites, this.sites))
+		if (!combineMaps(repository.sites, this.sites))
 			this.sites = repository.sites;
-
+		
+		if (!combineMaps(repository.repositoryByMime, this.repositoryByMime))
+			this.repositoryByMime	= repository.repositoryByMime;
+		
+		if (!combineMaps(repository.repositoryBySuffix, this.repositoryBySuffix))
+			this.repositoryBySuffix	= repository.repositoryBySuffix;
+		
 		// set metaMetadata to have the correct parent repository
 		HashMapArrayList<String, MetaMetadata> repositoryByTagName = repository.repositoryByTagName;
 		if (repositoryByTagName != null)
@@ -289,29 +304,25 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		return true;
 	}
 
-	private boolean combineMapStates(HashMap srcMap, HashMap destMap)
-	{
-		if (destMap == null)
-			return false;
-		if (srcMap != null)
-			destMap.putAll(srcMap);
-		return true;
-	}
-
 	/**
-	 * Initialize repository maps using the TranslationScope to find out if classes are Document or
-	 * Media.
+	 * Recursively bind MetadataFieldDescriptors to all MetaMetadataFields.
+	 * Perform other initialization.
 	 * 
 	 * @param metadataTScope
 	 */
-	public void initializeRepository(TranslationScope metadataTScope)
+	public void bindMetadataClassDescriptorsToMetaMetadata(TranslationScope metadataTScope)
 	{
 		this.metadataTScope = metadataTScope;
 		initializeDefaultUserAgent();
 
 		findAndDeclareNestedMetaMetadata();
 		initializeLocationBasedMaps();
-		initializeSuffixAndMimeBasedMaps();
+		
+		for (MetaMetadata metaMetadata : repositoryByTagName)
+		{
+			metaMetadata.inheritMetaMetadata(this);
+			metaMetadata.getClassAndBindDescriptors(metadataTScope);
+		}
 		System.out.println();
 	}
 
@@ -428,7 +439,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 				if (result == null)
 				{
 					String protocolStrippedURL = purl.toString().split("://")[1];
-					String matchingPhrase = urlprefixCollection.getMatchingPhrase(protocolStrippedURL, '/');
+					String matchingPhrase = urlPrefixCollection.getMatchingPhrase(protocolStrippedURL, '/');
 					// FIXME -- andruid needs abhinav to explain this code
 					// better and make more clear!!!
 					if (matchingPhrase != null)
@@ -517,7 +528,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 				String protocolStrippedURL = purl.toString().split("://")[1];
 
 				String key = purl.url().getProtocol() + "://"
-						+ urlprefixCollection.getMatchingPhrase(protocolStrippedURL, '/');
+						+ urlPrefixCollection.getMatchingPhrase(protocolStrippedURL, '/');
 
 				result = mediaRepositoryByURL.get(key);
 
@@ -588,7 +599,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		// TODO make this code less ugly
 		for (MetaMetadata metaMetadata : repositoryByTagName)
 		{
-			metaMetadata.inheritMetaMetadata(this);
+//			metaMetadata.inheritMetaMetadata(this);
 
 			Class<? extends Metadata> metadataClass = metaMetadata.getMetadataClass(metadataTScope);
 			if (metadataClass == null)
@@ -648,15 +659,15 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 						currentCfPrefIsSet = Pref.lookupBoolean(currentlyMappedMMD.getSelector().getCfPref());
 					if (currentlyMappedMMD == null)
 					{
-						urlprefixCollection.add(urlPrefix);
+						urlPrefixCollection.add(urlPrefix);
 						repositoryByPURL.put(urlPrefix.toString(), metaMetadata);
 					}
 					else if (cfPrefIsSet == true || (cfPrefIsNull == true && currentCfPrefIsSet == false))
 					{
 						// currentlyMappedMMD = metaMetadata;
-						urlprefixCollection.removePrefix(currentlyMappedMMD.getSelector().getUrlPrefix()
+						urlPrefixCollection.removePrefix(currentlyMappedMMD.getSelector().getUrlPrefix()
 								.toString());
-						urlprefixCollection.add(urlPrefix);
+						urlPrefixCollection.add(urlPrefix);
 						repositoryByPURL.put(urlPrefix.toString(), metaMetadata);
 					}
 				}
@@ -734,24 +745,11 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	 */
 	private void initializeSuffixAndMimeBasedMaps()
 	{
+		if (repositoryByTagName == null)
+			return;
+		
 		for (MetaMetadata metaMetadata : repositoryByTagName)
 		{
-			metaMetadata.inheritMetaMetadata(this);
-
-			if (!metaMetadata.getClassAndBindDescriptors(metadataTScope))
-				continue;
-
-			// Class<? extends Metadata> metadataClass =
-			// metaMetadata.getMetadataClass(metadataTScope);
-			// if (metadataClass == null)
-			// {
-			// // error(metaMetadata + "\tCan't resolve in TranslationScope " +
-			// metadataTScope);
-			// continue;
-			// }
-			// //
-			// metaMetadata.bindClassDescriptor(metadataClass, metadataTScope);
-
 			ArrayList<String> suffixes = metaMetadata.getSuffixes();
 			if (suffixes != null)
 			{

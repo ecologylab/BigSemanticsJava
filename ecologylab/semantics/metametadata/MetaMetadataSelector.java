@@ -19,9 +19,8 @@ import ecologylab.serialization.ElementState.simpl_nowrap;
 public @simpl_inherit
 class MetaMetadataSelector extends ElementState
 {
-
-	public static MetaMetadataSelector	NULL_SELECTOR	= new MetaMetadataSelector();
-
+	public static final MetaMetadataSelector NULL_SELECTOR = new MetaMetadataSelector();
+	
 	@simpl_scalar
 	private String											name;
 

@@ -36,6 +36,8 @@ public class MetaMetadataTranslationScope extends Debug
 		
 		MetaMetadataRepository.class, 
 		
+		MetaMetadataSelector.class,
+		
 		DefVar.class,	// cannot be in NestedSemanticActionsTranslationScope because these are collected separtely in MetaMetadataField
 	};
 
