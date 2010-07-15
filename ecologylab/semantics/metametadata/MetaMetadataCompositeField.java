@@ -83,17 +83,6 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField
 	@Override
 	protected void doAppending(Appendable appendable, int pass) throws IOException
 	{
-		appenedNestedMetadataField(appendable, pass);
-	}
-
-	/**
-	 * Append method for Is_nested=true fields
-	 * 
-	 * @param appendable
-	 * @throws IOException
-	 */
-	protected void appenedNestedMetadataField(Appendable appendable, int pass) throws IOException
-	{
 		String variableType = " @simpl_composite " + XMLTools.classNameFromElementName(getTypeOrName());
 		String fieldType = XMLTools.classNameFromElementName(getTypeOrName());
 		if (isEntity())
@@ -102,15 +91,17 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField
 					+ ">";
 			fieldType = "Entity<" + XMLTools.classNameFromElementName(getTypeOrName()) + ">";
 		}
-		if (pass == MetadataCompilerUtils.GENERATE_FIELDS_PASS)
+		String fieldName = getFieldName();
+		switch (pass)
 		{
-			appendable.append("\nprivate " + getTagDecl() + variableType + "\t" + name + ";");
-		}
-		else if (pass == MetadataCompilerUtils.GENERATE_METHODS_PASS)
-		{
-			appendLazyEvaluationMethod(appendable, getName(), fieldType);
-			appendSetterForCollection(appendable, getName(), fieldType);
-			appendGetterForCollection(appendable, getName(), fieldType);
+		case MetadataCompilerUtils.GENERATE_FIELDS_PASS:
+			appendable.append("\nprivate " + getTagDecl() + variableType + "\t" + fieldName + ";");
+			break;
+		case MetadataCompilerUtils.GENERATE_METHODS_PASS:
+			appendLazyEvaluationMethod(appendable, fieldName, fieldType);
+			appendSetter(appendable, fieldName, fieldType);
+			appendGetter(appendable, fieldName, fieldType);
+			break;
 		}
 	}
 	

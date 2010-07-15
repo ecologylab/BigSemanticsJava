@@ -68,9 +68,9 @@ public class MetadataCompilerUtils
 
 	public static PrintWriter		directBindingTranslationScope;
 
-	public static int						GENERATE_FIELDS_PASS									= 0;
+	public static final int			GENERATE_FIELDS_PASS									= 0;
 
-	public static int						GENERATE_METHODS_PASS									= 1;
+	public static final int			GENERATE_METHODS_PASS									= 1;
 
 	/*
 	 * static { JAVA_KEY_WORDS_MAP.put("abstract", "abstractField"); JAVA_KEY_WORDS_MAP.put("package",

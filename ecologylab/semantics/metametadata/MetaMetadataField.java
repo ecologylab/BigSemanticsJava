@@ -14,6 +14,7 @@ import java.util.Iterator;
 
 import ecologylab.appframework.PropertiesAndDirectories;
 import ecologylab.generic.HashMapArrayList;
+import ecologylab.generic.StringTools;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
@@ -488,65 +489,6 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 		appendable.append("rebuildCompositeTermVector();\n }");
 	}
 
-	/**
-	 * This method will generate the getter for the field. public String getTitle() { return
-	 * title().getValue(); }
-	 */
-	protected void appendGetter(Appendable appendable, String fieldName, String fieldType)
-			throws IOException
-	{
-		String comment = "Gets the value of the field " + fieldName;
-		// write java doc
-		MetadataCompilerUtils.writeJavaDocComment(comment, appendable);
-
-		// first line
-		appendable.append("public " + fieldType + " get"
-				+ XMLTools.javaNameFromElementName(fieldName, true) + "(){\n");
-
-		// second line
-		appendable.append("return " + fieldName + "().getValue();\n}\n");
-
-	}
-
-	/**
-	 * This method will generate setter for the field. public void setTitle(String title) {
-	 * this.title().setValue(title); }
-	 */
-	protected void appendSetter(Appendable appendable, String fieldName, String fieldType)
-			throws IOException
-	{
-		String comment = "Sets the value of the field " + fieldName;
-		// write java doc
-		MetadataCompilerUtils.writeJavaDocComment(comment, appendable);
-
-		// first line
-		appendable.append("public void set" + XMLTools.javaNameFromElementName(fieldName, true) + "( "
-				+ fieldType + " " + fieldName + " )\n{\n");
-
-		// second line
-		appendable.append("this." + fieldName + "().setValue(" + fieldName + ");\n}\n");
-	}
-
-	/**
-	 * public void hwSetTitle(String title) { this.setTitle(title); rebuildCompositeTermVector(); }
-	 */
-	protected void appendHWSetter(Appendable appendable, String fieldName, String fieldType)
-			throws IOException
-	{
-		String comment = "The heavy weight setter method for field " + fieldName;
-		// write java doc
-		MetadataCompilerUtils.writeJavaDocComment(comment, appendable);
-
-		// first line
-		appendable.append("public void hwSet" + XMLTools.javaNameFromElementName(fieldName, true)
-				+ "( " + fieldType + " " + fieldName + " )\n{\n");
-
-		// second line
-		appendable.append("this." + fieldName + "().setValue(" + fieldName + ");\n");
-
-		// third line
-		appendable.append("rebuildCompositeTermVector();\n }");
-	}
 
 	/**
 	 * MetadataString title() { MetadataString result = this.title; if(result == null) { result = new
@@ -604,39 +546,6 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 				classNamePrefix, className, fieldName);
 	}
 	
-	/**
-	 * public void setAuthors(HashMapArrayList<String, Author> authors) { this.authorNames = authors;
-	 * }
-	 * 
-	 * @param appendable
-	 * @param fieldName
-	 * @param fieldType
-	 */
-	protected void appendSetterForCollection(Appendable appendable, String fieldName, String fieldType)
-			throws IOException
-	{
-		String comment = "Set the value of field " + fieldName;
-		// write Java doc
-		MetadataCompilerUtils.writeJavaDocComment(comment, appendable);
-
-		// write first line
-		appendable.append("public void set" + XMLTools.javaNameFromElementName(fieldName, true) + "( "
-				+ fieldType + " " + fieldName + " )\n{\n");
-		appendable.append("this." + fieldName + " = " + fieldName + " ;\n}\n");
-	}
-
-	protected void appendGetterForCollection(Appendable appendable, String fieldName, String fieldType)
-			throws IOException
-	{
-		String comment = "Get the value of field " + fieldName;
-		// write Java doc
-		MetadataCompilerUtils.writeJavaDocComment(comment, appendable);
-
-		// write first line
-		appendable.append("public "+fieldType+" get" + XMLTools.javaNameFromElementName(fieldName, true) + "(){\n");
-		appendable.append("return this." + fieldName+ ";\n}\n");
-	}
-
 	protected void appendMetalanguageDecl(Appendable appendable, String metalanguage,
 			String classNamePrefix, String className, String fieldName) throws IOException
 	{
@@ -666,7 +575,10 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	{
 		return name;
 	}
-
+	public String getFieldName()
+	{
+		return XMLTools.fieldNameFromElementName(getName());
+	}
 	public String key()
 	{
 		return name;

@@ -168,19 +168,20 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 		if (noWrap)
 			annotation.append(" @simpl_nowrap");
 
-		if (pass == MetadataCompilerUtils.GENERATE_FIELDS_PASS)
+		switch (pass)
 		{
+		case MetadataCompilerUtils.GENERATE_FIELDS_PASS:
 			appendMetalanguageDecl(appendable, annotation.toString(), "private" + variableTypeStart,
 					className, variableTypeEnd, fieldName);
-		}
-		else if (pass == MetadataCompilerUtils.GENERATE_METHODS_PASS)
-		{
+			break;
+		case MetadataCompilerUtils.GENERATE_METHODS_PASS:
 			appendLazyEvaluationMethod(appendable, fieldName, variableTypeStart + className
 					+ variableTypeEnd);
-			appendSetterForCollection(appendable, fieldName, variableTypeStart + className
+			appendSetter(appendable, fieldName, variableTypeStart + className
 					+ variableTypeEnd);
-			appendGetterForCollection(appendable, fieldName, variableTypeStart + className
+			appendGetter(appendable, fieldName, variableTypeStart + className
 					+ variableTypeEnd);
+			break;
 		}
 	}
 

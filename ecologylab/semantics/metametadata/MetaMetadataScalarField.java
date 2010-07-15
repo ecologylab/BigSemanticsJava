@@ -75,13 +75,6 @@ public class MetaMetadataScalarField extends MetaMetadataField
 		this.hint = hint;
 	}
 
-	@Override
-	protected void doAppending(Appendable appendable, int pass) throws IOException
-	{
-		if (scalarType != null)
-			appendScalarLeaf(appendable, pass);
-	}
-
 	/**
 	 * Writes a Scalar Nested attribute to the class file.It is of the form
 	 * 
@@ -90,42 +83,106 @@ public class MetaMetadataScalarField extends MetaMetadataField
 	 *          The appendable in which this declaration has to be appended.
 	 * @throws IOException
 	 */
-	protected void appendScalarLeaf(Appendable appendable, int pass) throws IOException
+	@Override
+	protected void doAppending(Appendable appendable, int pass) throws IOException
 	{
-		String fieldName = XMLTools.fieldNameFromElementName(getName());
-		// fieldName = MetadataCompilerConstants.handleJavaKeyWord(fieldName);
-		String fieldTypeName = scalarType.fieldTypeName();
-		if (fieldTypeName.equals("int"))
+		if (scalarType != null)
 		{
-			// HACK FOR METADATAINTEGER
-			fieldTypeName = "Integer";
-		}
-
-		if (pass == MetadataCompilerUtils.GENERATE_FIELDS_PASS)
-		{
-			// write the java doc comment for this field
-			MetadataCompilerUtils.writeJavaDocComment(comment, appendable);
-
-			// append the Nested field.
-			appendLeaf(appendable, "private Metadata", scalarType.fieldTypeName(), fieldName);
-		}
-		else if (pass == MetadataCompilerUtils.GENERATE_METHODS_PASS)
-		{
-			// append the getter and setter methods
-			appendLazyEvaluationMethod(appendable, fieldName, "Metadata" + fieldTypeName);
-			appendGetter(appendable, fieldName, fieldTypeName);
-			appendSetter(appendable, fieldName, fieldTypeName);
-			appendHWSetter(appendable, fieldName, fieldTypeName);
-			appendDirectSetMethod(appendable, fieldName, "Metadata" + fieldTypeName);
-			appendDirectHWSetMethod(appendable, fieldName, "Metadata" + fieldTypeName);
-			if (fieldTypeName.equals("StringBuilder"))
+			String fieldName = getFieldName();
+			// fieldName = MetadataCompilerConstants.handleJavaKeyWord(fieldName);
+			String fieldTypeName = scalarType.fieldTypeName();
+			if (fieldTypeName.equals("int"))
 			{
-				// appendAppendMethod(appendable,fieldName,"StringBuilder");
-				appendAppendMethod(appendable, fieldName, "String");
-				appendHWAppendMethod(appendable, fieldName, "StringBuilder");
-				appendHWAppendMethod(appendable, fieldName, "String");
+				// HACK FOR METADATAINTEGER
+				fieldTypeName = "Integer";
+			}
+	
+			if (pass == MetadataCompilerUtils.GENERATE_FIELDS_PASS)
+			{
+				// write the java doc comment for this field
+				MetadataCompilerUtils.writeJavaDocComment(comment, appendable);
+	
+				// append the Nested field.
+				appendLeaf(appendable, "private Metadata", scalarType.fieldTypeName(), fieldName);
+			}
+			else if (pass == MetadataCompilerUtils.GENERATE_METHODS_PASS)
+			{
+				// append the getter and setter methods
+				appendLazyEvaluationMethod(appendable, fieldName, "Metadata" + fieldTypeName);
+				appendGetter(appendable, fieldName, fieldTypeName);
+				appendSetter(appendable, fieldName, fieldTypeName);
+				appendHWSetter(appendable, fieldName, fieldTypeName);
+				appendDirectSetMethod(appendable, fieldName, "Metadata" + fieldTypeName);
+				appendDirectHWSetMethod(appendable, fieldName, "Metadata" + fieldTypeName);
+				if (fieldTypeName.equals("StringBuilder"))
+				{
+					// appendAppendMethod(appendable,fieldName,"StringBuilder");
+					appendAppendMethod(appendable, fieldName, "String");
+					appendHWAppendMethod(appendable, fieldName, "StringBuilder");
+					appendHWAppendMethod(appendable, fieldName, "String");
+				}
 			}
 		}
+	}
+
+	/**
+	 * This method will generate the getter for the field. public String getTitle() { return
+	 * title().getValue(); }
+	 */
+	protected void appendGetter(Appendable appendable, String fieldName, String fieldType)
+			throws IOException
+	{
+		String comment = "Gets the value of the field " + fieldName;
+		// write java doc
+		MetadataCompilerUtils.writeJavaDocComment(comment, appendable);
+
+		// first line
+		appendable.append("public " + fieldType + " get"
+				+ XMLTools.javaNameFromElementName(fieldName, true) + "(){\n");
+
+		// second line
+		appendable.append("return " + fieldName + "().getValue();\n}\n");
+
+	}
+
+	/**
+	 * This method will generate setter for the field. public void setTitle(String title) {
+	 * this.title().setValue(title); }
+	 */
+	protected void appendSetter(Appendable appendable, String fieldName, String fieldType)
+			throws IOException
+	{
+		String comment = "Sets the value of the field " + fieldName;
+		// write java doc
+		MetadataCompilerUtils.writeJavaDocComment(comment, appendable);
+
+		// first line
+		appendable.append("public void set" + XMLTools.javaNameFromElementName(fieldName, true) + "( "
+				+ fieldType + " " + fieldName + " )\n{\n");
+
+		// second line
+		appendable.append("this." + fieldName + "().setValue(" + fieldName + ");\n}\n");
+	}
+
+	/**
+	 * public void hwSetTitle(String title) { this.setTitle(title); rebuildCompositeTermVector(); }
+	 */
+	protected void appendHWSetter(Appendable appendable, String fieldName, String fieldType)
+			throws IOException
+	{
+		String comment = "The heavy weight setter method for field " + fieldName;
+		// write java doc
+		MetadataCompilerUtils.writeJavaDocComment(comment, appendable);
+
+		// first line
+		appendable.append("public void hwSet" + XMLTools.javaNameFromElementName(fieldName, true)
+				+ "( " + fieldType + " " + fieldName + " )\n{\n");
+
+		// second line
+		appendable.append("this." + fieldName + "().setValue(" + fieldName + ");\n");
+
+		// third line
+		appendable.append("rebuildCompositeTermVector();\n }");
 	}
 
 	/**

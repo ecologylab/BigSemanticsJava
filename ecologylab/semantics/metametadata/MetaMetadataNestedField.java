@@ -1,6 +1,10 @@
 package ecologylab.semantics.metametadata;
 
+import java.io.IOException;
+
 import ecologylab.generic.HashMapArrayList;
+import ecologylab.generic.StringTools;
+import ecologylab.semantics.tools.MetadataCompilerUtils;
 import ecologylab.serialization.simpl_inherit;
 import ecologylab.serialization.types.scalar.ScalarType;
 
@@ -121,4 +125,39 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 		
 		return mmf.isNewClass();
 	}
+	
+	/**
+	 * public void setAuthors(HashMapArrayList<String, Author> authors) { this.authorNames = authors;
+	 * }
+	 * 
+	 * @param appendable
+	 * @param fieldName
+	 * @param fieldType
+	 */
+	protected void appendSetter(Appendable appendable, String fieldName, String fieldType)
+			throws IOException
+	{
+		String comment = "Set the value of field " + fieldName;
+		// write Java doc
+		MetadataCompilerUtils.writeJavaDocComment(comment, appendable);
+
+		// write first line
+		appendable.append("public void set" + StringTools.capitalize(fieldName) + "( "
+				+ fieldType + " " + fieldName + " )\n{\n");
+		appendable.append("this." + fieldName + " = " + fieldName + " ;\n}\n");
+	}
+
+	protected void appendGetter(Appendable appendable, String fieldName, String fieldType)
+			throws IOException
+	{
+		String comment = "Get the value of field " + fieldName;
+		// write Java doc
+		MetadataCompilerUtils.writeJavaDocComment(comment, appendable);
+
+		// write first line
+		appendable.append("public "+fieldType+" get" + StringTools.capitalize(fieldName) + "(){\n");
+		appendable.append("return this." + fieldName+ ";\n}\n");
+	}
+
+
 }
