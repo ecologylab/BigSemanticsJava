@@ -237,7 +237,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	public static MetaMetadataRepository readRepository(File file, TranslationScope metaMetadataTScope)
 	{
 		MetaMetadataRepository repos = null;
-		println("MetaMetadataRepository:\t" + new File(file.getParent()).getName() + "/"
+		println("MetaMetadataRepository read:\t" + new File(file.getParent()).getName() + "/"
 				+ file.getName());
 
 		try
