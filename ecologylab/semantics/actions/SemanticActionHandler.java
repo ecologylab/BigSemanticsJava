@@ -351,7 +351,9 @@ public abstract class SemanticActionHandler<C extends Container, IC extends Info
 
 	/**
 	 * Function which evaluates rank weight
+	 * Also applies a transfer function to make this sequence top heavy
 	 * 
+	 * http://www.wolframalpha.com/input/?i=Plot[(1+%2B+E^(-10*(x-.6)))^(-1),+{x,+0,+1}]
 	 * @param action
 	 * @param parameter
 	 * @param documentType
@@ -368,8 +370,15 @@ public abstract class SemanticActionHandler<C extends Container, IC extends Info
 		int size = (Integer) semanticActionReturnValueMap.get(sizeA.getValue());
 
 		float result = ((float) size - index) / size;
-
-		semanticActionReturnValueMap.put(action.getReturnValue(), result);
+		
+		double e = Math.E;
+		
+		double transferFuncCenter = .5; // the bend of the sigmoid
+		int curveAmount = 10;
+		
+		double val = 1 / (1 + Math.pow(e, curveAmount * (transferFuncCenter - result)));
+		
+		semanticActionReturnValueMap.put(action.getReturnValue(), (float)val);
 
 		return result;
 	}

@@ -66,4 +66,19 @@ public class SemanticInLinks extends ArrayList<SemanticAnchor>
 		
 		return idfDot;
 	}
+
+	/**
+	 * Returns 1 if no links exist, else the mean of the significance's of its contents
+	 * @return
+	 */
+	public float meanSignificance()
+	{
+		if (this.size() == 0)
+			return 1;
+		float meanSig = 0;		
+		for(SemanticAnchor a : this)
+			meanSig += a.getSignificance(); 
+		meanSig /= this.size();
+		return meanSig;
+	}
 }
