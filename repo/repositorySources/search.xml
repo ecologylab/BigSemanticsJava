@@ -12,7 +12,8 @@
 		<collection name="search_results" child_type="search_result" no_wrap="true" />
 	</meta_metadata>
 	
-	<meta_metadata name="google_search" type="search" comment="The google Search class" url_stripped="http://www.google.com/search" user_agent_name="opera_9" parser="xpath">
+	<meta_metadata name="google_search" type="search" comment="The google Search class" user_agent_name="opera_9" parser="xpath">
+		<selector url_stripped="http://www.google.com/search"/>
 		<collection name="search_results" xpath="//div[@id='res']//div//ol/li[@*]">
 			<scalar name="heading" xpath="./h3/a" />
 			<scalar name="snippet" xpath="./div[1]" />
@@ -29,7 +30,8 @@
 		</semantic_actions>
 	</meta_metadata>
 	
-	<meta_metadata name="my_google_search" type="search" comment="The my_google Search class" url_stripped="http://staging.cs.tamu.edu:8080/my_google/search" user_agent_name="opera_9" parser="xpath">
+	<meta_metadata name="my_google_search" type="search" comment="The my_google Search class" user_agent_name="opera_9" parser="xpath">
+		<selector url_stripped="http://staging.cs.tamu.edu:8080/my_google/search"/>
 		<collection name="search_results" xpath="//div[@class='result']">
 			<scalar name="heading" xpath="./a/@href" />
 			<scalar name="snippet" xpath="./p" />
@@ -46,23 +48,32 @@
 		</semantic_actions>
 	</meta_metadata>
 	
-	<meta_metadata name="my_google_ecology0_search" type="search" extends="my_google_search" comment="The my_google_ecology0 Search class" url_stripped="http://ecology0.csdl.tamu.edu/my_google/search" parser="xpath" />
+	<meta_metadata name="my_google_ecology0_search" type="search" extends="my_google_search" comment="The my_google_ecology0 Search class" parser="xpath">
+		<selector url_stripped="http://ecology0.csdl.tamu.edu/my_google/search"/>
+	</meta_metadata>
 	
-	<meta_metadata name="yahoo_result_set" extends="search" comment="Yahoo Web Search Service" tag="ResultSet" parser="direct">
+	<meta_metadata name="yahoo_thumbnail" extends="metadata">
+		<scalar name="thumb_url" tag="Url" scalar_type="ParsedURL" hint="XML_LEAF"/>
+		<scalar name="width" tag="Width" scalar_type="Int" hint="XML_LEAF"/>
+		<scalar name="height" tag="Height" scalar_type="Int" hint="XML_LEAF"/>
+	</meta_metadata>
+	
+	<meta_metadata name="yahoo_result_set" extends="document" comment="Yahoo Web Search Service" tag="ResultSet" parser="direct">
 		<collection name="results" child_type="result" no_wrap="true" comment="Collection of results for yahoo search" child_tag="Result">
-			<scalar name="title" scalar_type="String" tag="Title" />
-			<scalar name="summary" scalar_type="String" tag="Summary" />
-			<scalar name="url" scalar_type="ParsedURL" tag="Url" />
-			<scalar name="referer_url" scalar_type="ParsedURL" tag="RefererUrl" />
-			<scalar name="modification_date" scalar_type="Int" tag="ModificationDate" />
-			<scalar name="mime_type" scalar_type="String" tag="MimeType" />
-			<collection name="thumbnails" child_type="thumbnail" no_wrap="true" child_tag="Thumbnail">
-				<scalar name="url" scalar_type="ParsedURL" tag="Url" />
-			</collection>
+			<scalar name="title" scalar_type="String" tag="Title" hint="XML_LEAF" />
+			<scalar name="summary" scalar_type="String" tag="Summary" hint="XML_LEAF" />
+			<scalar name="url" scalar_type="ParsedURL" tag="Url" hint="XML_LEAF" />
+			<scalar name="referer_url" scalar_type="ParsedURL" tag="RefererUrl" hint="XML_LEAF" />
+			<!--
+			<scalar name="modification_date" scalar_type="Date" tag="ModificationDate" hint="XML_LEAF" />
+			-->
+			<scalar name="mime_type" scalar_type="String" tag="MimeType" hint="XML_LEAF" />
+			<composite name="thumbnail" tag="Thumbnail" type="yahoo_thumbnail" />
 		</collection>
 	</meta_metadata>
 	
-	<meta_metadata name="yahoo_web_search" type="yahoo_result_set" url_stripped="http://api.search.yahoo.com/WebSearchService/V1/webSearch">
+	<meta_metadata name="yahoo_web_search" type="yahoo_result_set">
+	<selector  url_stripped="http://api.search.yahoo.com/WebSearchService/V1/webSearch"/>
 		<semantic_actions>
 			<get_field name="results" />
 			<for_each collection="results" as="result">
@@ -75,7 +86,9 @@
 			</for_each>
 		</semantic_actions>
 	</meta_metadata>
-	<meta_metadata name="yahoo_image_search" type="yahoo_result_set" url_stripped="http://api.search.yahoo.com/ImageSearchService/V1/imageSearch">
+	
+	<meta_metadata name="yahoo_image_search" type="yahoo_result_set">
+		<selector url_stripped="http://api.search.yahoo.com/ImageSearchService/V1/imageSearch"/>
 		<semantic_actions>
 			<get_field name="results" />
 			<for_each collection="results" as="result">
@@ -89,22 +102,35 @@
 				</create_and_visualize_img_surrogate>
 			</for_each>
 		</semantic_actions>
-	</meta_metadata><meta_metadata name="yahoo_news_search" type="yahoo_result_set" url_stripped="http://api.search.yahoo.com/NewsSearchService/V1/newsSearch">
+	</meta_metadata>
+	
+	<meta_metadata name="yahoo_news_search" type="yahoo_result_set">
+		<selector url_stripped="http://api.search.yahoo.com/NewsSearchService/V1/newsSearch"/>
 		<semantic_actions>
 			<get_field name="results" />
 			<for_each collection="results" as="result">
-				<get_field object="result" name="url" />
 				<get_field object="result" name="summary" />
-				<parse_document_now>
-					<arg value="url" name="container_link" />
-					<arg value="summary" name="anchor_text" />
-				</parse_document_now>
+				<get_field object="result" name="thumbnail" />
+				<get_field object="result" name="url" />
+				<choose>
+					<case>
+						<not_null value="thumbnail"/>
+						<get_field object="thumbnail" name="thumb_url" />
+						<create_and_visualize_img_surrogate>
+							<arg value="thumb_url" name="image_purl" />
+							<arg value="summary" name="caption" />
+							<arg value="url" name="href" />
+						</create_and_visualize_img_surrogate>
+					</case>
+					<otherwise>
+						<parse_document_now>
+							<arg value="url" name="container_link" />
+							<arg value="summary" name="anchor_text" />
+						</parse_document_now>
+					</otherwise>
+				</choose>
 			</for_each>
 		</semantic_actions>
 	</meta_metadata>
 	
-	
-	
-	
-
 </meta_metadata_repository>
