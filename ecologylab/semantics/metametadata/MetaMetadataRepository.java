@@ -25,6 +25,7 @@ import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.builtins.DebugMetadata;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.Media;
+import ecologylab.semantics.metadata.scalar.MetadataDate;
 import ecologylab.semantics.metadata.scalar.MetadataInteger;
 import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
 import ecologylab.semantics.metadata.scalar.MetadataString;
@@ -923,7 +924,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	public static TranslationScope scalarMetadataTranslations()
 	{
 		return TranslationScope.get("scalar_metadata", DebugMetadata.class, MetadataString.class,
-				MetadataStringBuilder.class, MetadataParsedURL.class, MetadataInteger.class);
+				MetadataStringBuilder.class, MetadataParsedURL.class, MetadataInteger.class, MetadataDate.class);
 	}
 
 	void bindChildren(MetaMetadataField childField, String tag)
