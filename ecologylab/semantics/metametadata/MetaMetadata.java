@@ -205,6 +205,7 @@ implements Mappable<String>
 		// create a file writer to write the JAVA files.
 		File directoryPath = PropertiesAndDirectories.createDirsAsNeeded(new File(generationPath));
 		File file = new File(directoryPath, XMLTools.classNameFromElementName(getName()) + ".java");
+		System.out.print(this.file + "\n\t\t -> " + file);
 		FileWriter fileWriter = new FileWriter(file);
 		PrintWriter p = new PrintWriter(fileWriter);
 		
@@ -231,7 +232,7 @@ implements Mappable<String>
 		
 		// Write class declaration
 		String className = XMLTools.classNameFromElementName(getName());
-		System.out.println("#######################################"+getName());
+//		System.out.println("#######################################"+getName());
 		p.println("public class  " + className + "\nextends  "
 				+ XMLTools.classNameFromElementName(extendsAttribute) + "\n{\n");
 
