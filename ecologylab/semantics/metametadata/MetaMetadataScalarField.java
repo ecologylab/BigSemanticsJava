@@ -2,6 +2,7 @@ package ecologylab.semantics.metametadata;
 
 import java.io.IOException;
 
+import ecologylab.semantics.documentparsers.MetaMetadataParserBase;
 import ecologylab.semantics.tools.MetadataCompilerUtils;
 import ecologylab.serialization.Hint;
 import ecologylab.serialization.SIMPLTranslationException;
@@ -49,14 +50,12 @@ public class MetaMetadataScalarField extends MetaMetadataField
 		this.comment = mmf.comment;
 		this.dontCompile = mmf.dontCompile;
 		this.key = mmf.key;
-		this.textRegex = mmf.textRegex;
-		this.matchReplacement = mmf.matchReplacement;
 		this.contextNode = mmf.contextNode;
 		this.tag = mmf.tag;
 		this.ignoreExtractionError = mmf.ignoreExtractionError;
 		this.kids = mmf.kids;
 	}
-
+	
 	/**
 	 * @return the scalarType
 	 */
@@ -73,6 +72,48 @@ public class MetaMetadataScalarField extends MetaMetadataField
 	public void setHint(Hint hint)
 	{
 		this.hint = hint;
+	}
+
+	/**
+	 * @return the regularExpression
+	 */
+	public String getRegexPattern()
+	{
+		if (filter != null)
+			return filter.regex;
+		return null;
+	}
+
+	/**
+	 * @param regularExpression
+	 *          the regularExpression to set
+	 */
+	public void setRegularExpression(String regex)
+	{
+		if (filter == null)
+			filter = new RegexFilter();
+		filter.regex = regex;
+	}
+
+	/**
+	 * @return the replacementString
+	 */
+	public String getRegexReplacement()
+	{
+		if (filter != null)
+			return filter.replace;
+		return null;
+	}
+
+	/**
+	 * @param replacementString
+	 *          the replacementString to set
+	 */
+	public void setReplacementString(String replace)
+	{
+		if (filter == null)
+			filter = new RegexFilter();
+		filter.replace = replace;
 	}
 
 	/**
@@ -203,29 +244,33 @@ public class MetaMetadataScalarField extends MetaMetadataField
 			className = "Integer";
 		}
 
-		StringBuilder annotation = new StringBuilder(" @simpl_scalar");
+		StringBuilder annotations = new StringBuilder(" @simpl_scalar");
 
 		if (getHint() != null)
 		{
-			annotation.append(String.format(" @simpl_hints(Hint.%s)", getHint()));
+			annotations.append(String.format(" @simpl_hints(Hint.%s)", getHint()));
 		}
-
-		if (filter != null && filter.regex != null)
+		
+		if (filter != null && getMetaMetadataParser().equals(MetaMetadataParserBase.DIRECT_BINDING))
 		{
 			String regex = filter.regex.replaceAll("\\\\", "\\\\\\\\");
-			if (filter.replace != null)
-			{
-				String replace = filter.replace.replaceAll("\\\\", "\\\\\\\\");
-				annotation.append(String.format(" @simpl_filter(regex=\"%s\", replace=\"%s\")", regex, replace));
-			}
-			else
-			{
-				annotation.append(String.format(" @simpl_filter(regex=\"%s\")", regex));
-			}
+			String replace = filter.replace.replaceAll("\\\\", "\\\\\\\\");
+			annotations.append(String.format(" @simpl_filter(regex=\"%s\", replace=\"%s\")", regex, replace));
 		}
 
-		appendMetalanguageDecl(appendable, getTagDecl() + annotation, classNamePrefix, className,
+		appendMetalanguageDecl(appendable, getTagDecl() + annotations, classNamePrefix, className,
 				fieldName);
+	}
+
+	private String getMetaMetadataParser()
+	{
+		MetaMetadataField field = this;
+		while (!(field instanceof MetaMetadata))
+		{
+			field = (MetaMetadataField) field.parent();
+		}
+		MetaMetadata mmd = (MetaMetadata) field;
+		return mmd.getParser();
 	}
 
 	/**

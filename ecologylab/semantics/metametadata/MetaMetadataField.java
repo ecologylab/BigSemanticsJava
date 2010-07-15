@@ -14,7 +14,6 @@ import java.util.Iterator;
 
 import ecologylab.appframework.PropertiesAndDirectories;
 import ecologylab.generic.HashMapArrayList;
-import ecologylab.generic.StringTools;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
@@ -133,18 +132,6 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	@simpl_scalar
 	protected String															key;
 
-	/**
-	 * The regular expression
-	 */
-	@simpl_scalar
-	protected String																			textRegex;
-
-	/**
-	 * The string used to replace the match.
-	 */
-	@simpl_scalar
-	protected String																			matchReplacement;
-	
 	/**
 	 * Context node for xpath based extarction rules for this field.
 	 * Default value is document root.
@@ -961,40 +948,6 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	public NamedStyle lookupStyle()
 	{
 		return (style != null) ? metaMetadataRepository().lookupStyle(style) : metaMetadataRepository().getDefaultStyle();
-	}
-
-	/**
-	 * @return the regularExpression
-	 */
-	public String getRegularExpression()
-	{
-		return textRegex;
-	}
-
-	/**
-	 * @param regularExpression
-	 *          the regularExpression to set
-	 */
-	public void setRegularExpression(String regularExpression)
-	{
-		this.textRegex = regularExpression;
-	}
-
-	/**
-	 * @return the replacementString
-	 */
-	public String getReplacementString()
-	{
-		return matchReplacement;
-	}
-
-	/**
-	 * @param replacementString
-	 *          the replacementString to set
-	 */
-	public void setReplacementString(String replacementString)
-	{
-		this.matchReplacement = replacementString;
 	}
 
 	/**

@@ -35,6 +35,7 @@ import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataField;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.metametadata.MetaMetadataCollectionField;
+import ecologylab.semantics.metametadata.MetaMetadataScalarField;
 import ecologylab.serialization.FieldDescriptor;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.ScalarUnmarshallingContext;
@@ -616,8 +617,14 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 	// to void
 	private String applyPrefixAndRegExOnEvaluation(String evaluation, MetaMetadataField mmdElement)
 	{
+		// regex replacing should happen only to scalar fields
+		if (!(mmdElement instanceof MetaMetadataScalarField))
+			return evaluation;
+		
+		MetaMetadataScalarField field = (MetaMetadataScalarField) mmdElement;
+		
 		// get the regular expression
-		String regularExpression = mmdElement.getRegularExpression();
+		String regularExpression = field.getRegexPattern();
 		/*
 		 * System.out.println("DEBUG:: mmdElementName=\t" + mmdElement.getName());
 		 * System.out.println("DEBUG:: regularExpression=\t" + regularExpression);
@@ -635,16 +642,18 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 			// TODO right now we r using regular expressions just to replace the
 			// matching string we might use them for more better uses.
 			// get the replacement thing.
-			String replacementString = mmdElement.getReplacementString();
+			String replacementString = field.getRegexReplacement();
 			if (replacementString != null)
 			{
+				debug(String.format("regex replacement: regex=%s, replace=%s", regularExpression, replacementString));
+			
 				//Consecutively check for further matches. Replacing all with the replacementString
 				evaluation = matcher.replaceAll(replacementString);
 			}
 		}
 
 		// Now we apply the string prefix
-		String stringPrefix = mmdElement.getStringPrefix();
+		String stringPrefix = field.getStringPrefix();
 		if (stringPrefix != null)
 		{
 			evaluation = stringPrefix + evaluation;

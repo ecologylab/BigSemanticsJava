@@ -44,8 +44,6 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField
 		this.comment = mmf.comment;
 		this.dontCompile = mmf.dontCompile;
 		this.key = mmf.key;
-		this.textRegex = mmf.textRegex;
-		this.matchReplacement = mmf.matchReplacement;
 		this.contextNode = mmf.contextNode;
 		this.tag = mmf.tag;
 		this.ignoreExtractionError = mmf.ignoreExtractionError;
