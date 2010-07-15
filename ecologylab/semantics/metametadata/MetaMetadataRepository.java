@@ -921,12 +921,6 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		return returnVal;
 	}
 
-	public static TranslationScope scalarMetadataTranslations()
-	{
-		return TranslationScope.get("scalar_metadata", DebugMetadata.class, MetadataString.class,
-				MetadataStringBuilder.class, MetadataParsedURL.class, MetadataInteger.class, MetadataDate.class);
-	}
-
 	void bindChildren(MetaMetadataField childField, String tag)
 	{
 		MetaMetadata newChildMM = getByTagName(tag);
