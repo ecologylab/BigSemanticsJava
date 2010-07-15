@@ -24,13 +24,15 @@ import ecologylab.serialization.XMLTools;
  */
 public class MetadataCompiler extends ApplicationEnvironment
 {
-	static final TranslationScope	META_METADATA_TRANSLATIONS	= MetaMetadataTranslationScope.get();
+	{
+		MetaMetadataRepository.initializeTypes();
+	}
 
 	public static final String		DEFAULT_REPOSITORY_DIRECTORY	= "../cf/config/semantics/metametadata";
 
 	public MetadataCompiler(String[] args) throws SIMPLTranslationException
 	{
-		super("MetadataCompiler", META_METADATA_TRANSLATIONS, args, 1.0F);
+		super("MetadataCompiler", MetaMetadataTranslationScope.get(), args, 1.0F);
 	}
 
 	public void compile()
@@ -68,8 +70,7 @@ public class MetadataCompiler extends ApplicationEnvironment
 	public void compile(String mmdRepositoryDir, String generatedSemanticsLocation)
 	{
 		// ElementState.setUseDOMForTranslateTo(true);
-		MetaMetadataRepository metaMetadataRepository;
-		metaMetadataRepository = MetaMetadataRepository.load(new File(mmdRepositoryDir));
+		MetaMetadataRepository metaMetadataRepository = MetaMetadataRepository.load(new File(mmdRepositoryDir));
 		//metaMetadataRepository.translateToXML(System.out);
 		
 		// for each metadata first find the list of packages in which they have to
