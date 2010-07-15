@@ -155,14 +155,15 @@ public class MetaMetadataScalarField extends MetaMetadataField
 
 		if (filter != null && filter.regex != null)
 		{
+			String regex = filter.regex.replaceAll("\\\\", "\\\\\\\\");
 			if (filter.replace != null)
 			{
-				annotation.append(String.format(" @simpl_filter(regex=\"%s\", replace=\"%s\")",
-						filter.regex, filter.replace));
+				String replace = filter.replace.replaceAll("\\\\", "\\\\\\\\");
+				annotation.append(String.format(" @simpl_filter(regex=\"%s\", replace=\"%s\")", regex, replace));
 			}
 			else
 			{
-				annotation.append(String.format(" @simpl_filter(regex=\"%s\")", filter.regex));
+				annotation.append(String.format(" @simpl_filter(regex=\"%s\")", regex));
 			}
 		}
 
