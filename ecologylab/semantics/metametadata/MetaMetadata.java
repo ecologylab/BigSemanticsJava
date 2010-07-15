@@ -193,7 +193,7 @@ implements Mappable<String>
 	 * @param test TODO
 	 * @throws IOException
 	 */
-	public void translateToMetadataClass(String packageName, MetaMetadataRepository mmdRepository) throws IOException
+	public void compileToMetadataClass(String packageName, MetaMetadataRepository mmdRepository) throws IOException
 	{
 		// get the generation path from the package name.
 		if (this.packageAttribute != null)
@@ -247,7 +247,7 @@ implements Mappable<String>
 				try
 				{
 					// translate the field into for metadata class.
-					metaMetadataField.translateToMetadataClass(packageName, p,MetadataCompilerUtils.GENERATE_FIELDS_PASS,false);
+					metaMetadataField.compileToMetadataClass(packageName, p,MetadataCompilerUtils.GENERATE_FIELDS_PASS,false);
 				}
 				catch (SIMPLTranslationException e)
 				{
@@ -271,7 +271,7 @@ implements Mappable<String>
 				try
 				{
 					// translate the field into for metadata class.
-					f.translateToMetadataClass(packageName, p,MetadataCompilerUtils.GENERATE_METHODS_PASS,true);
+					f.compileToMetadataClass(packageName, p,MetadataCompilerUtils.GENERATE_METHODS_PASS,true);
 				}
 				catch (SIMPLTranslationException e)
 				{

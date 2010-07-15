@@ -100,7 +100,7 @@ public class MetadataCompiler extends ApplicationEnvironment
 			{
 				// translate it into a meta data class.
 				try {
-					metaMetadata.translateToMetadataClass(metaMetadataRepository.getPackageName(),
+					metaMetadata.compileToMetadataClass(metaMetadataRepository.getPackageName(),
 							metaMetadataRepository);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block

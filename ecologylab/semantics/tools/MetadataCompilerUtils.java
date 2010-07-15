@@ -84,8 +84,11 @@ public class MetadataCompilerUtils
 	 */
 	public static void writeJavaDocComment(String comment, Appendable f) throws IOException
 	{
-		System.out.println(START_JAVA_DOC + "\t" + comment + END_JAVA_DOC);
-		f.append(START_JAVA_DOC + "\t" + comment + END_JAVA_DOC);
+		if (comment != null && comment.length() > 0)
+		{
+			System.out.println(START_JAVA_DOC + "\t" + comment + END_JAVA_DOC);
+			f.append(START_JAVA_DOC + "\t" + comment + END_JAVA_DOC);
+		}
 	}
 
 	/**

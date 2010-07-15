@@ -246,7 +246,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 
 	// TODO track generated classes for TranslationScope declaration
 
-	public void translateToMetadataClass(String packageName, Appendable appendable,int pass,boolean appendedToTranslastionScope)
+	public void compileToMetadataClass(String packageName, Appendable appendable,int pass,boolean appendedToTranslastionScope)
 			throws SIMPLTranslationException, IOException
 	{
 		doAppending(appendable, pass);
@@ -259,7 +259,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 			String generationPath = MetadataCompilerUtils.getGenerationPath(packageName);
 
 			// the name of the java class.
-			String javaClassName = generateNewClassName();
+			String typeNameXmlStyle = generateNewClassName();
 
 			// if this class implements any Interface it will contain that.
 			String implementDecl = "";
@@ -274,10 +274,10 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 			 * 
 			 * }
 			 */
-
+			String javaClassName	= XMLTools.classNameFromElementName(typeNameXmlStyle);
 			// file writer.
 			File directoryPath = PropertiesAndDirectories.createDirsAsNeeded(new File(generationPath));
-			File f = new File(directoryPath, XMLTools.classNameFromElementName(javaClassName) + ".java");
+			File f = new File(directoryPath,  javaClassName + ".java");
 			FileWriter fileWriter = new FileWriter(f);
 			PrintWriter p = new PrintWriter(fileWriter);
 
@@ -294,7 +294,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 			p.println(getTagDecl());
 
 			// start of class definition
-			p.println("public class " + XMLTools.classNameFromElementName(javaClassName)
+			p.println("public class " + javaClassName
 					+ " extends Metadata" + implementDecl + "{\n");
 
 			// loop to write the class definition.
@@ -304,14 +304,12 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 				MetaMetadataField cField = kids.get(i);
 				cField.setExtendsField(extendsField);
 				cField.setMmdRepository(mmdRepository);
-				cField.translateToMetadataClass(packageName, p,MetadataCompilerUtils.GENERATE_FIELDS_PASS,false);
+				cField.compileToMetadataClass(packageName, p,MetadataCompilerUtils.GENERATE_FIELDS_PASS,false);
 			}
 			
 		// write the constructors
-			MetadataCompilerUtils.appendBlankConstructor(p, XMLTools
-					.classNameFromElementName(javaClassName));
-			MetadataCompilerUtils.appendConstructor(p, XMLTools
-					.classNameFromElementName(javaClassName));
+			MetadataCompilerUtils.appendBlankConstructor(p, javaClassName);
+			MetadataCompilerUtils.appendConstructor(p, javaClassName);
 			
 			for (int i = 0; i < kids.size(); i++)
 			{
@@ -319,7 +317,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 				MetaMetadataField cField = kids.get(i);
 				cField.setExtendsField(extendsField);
 				cField.setMmdRepository(mmdRepository);
-				cField.translateToMetadataClass(packageName, p,MetadataCompilerUtils.GENERATE_METHODS_PASS,true);
+				cField.compileToMetadataClass(packageName, p,MetadataCompilerUtils.GENERATE_METHODS_PASS,true);
 			}
 
 			// if this is a Map we have to implement the key() method.
@@ -333,9 +331,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 			if(!appendedToTranslastionScope)
 			{
 				// append this class to generated translation scope
-				MetadataCompilerUtils.appendToTranslationScope(XMLTools
-						.classNameFromElementName(javaClassName)
-						+ ".class,\n");
+				MetadataCompilerUtils.appendToTranslationScope(javaClassName + ".class,\n");
 			}	
 		}
 	}
