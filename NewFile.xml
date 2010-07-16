@@ -1,0 +1,9 @@
+
+<weather_report mm_name="wu_weather_report"
+	location="http://www.wunderground.com/US/TX/Austin.html">
+	<city>Austin, Texas</city>
+	<weather>Scattered Clouds</weather>
+	<pic_url>http://icons-ecast.wxug.com/i/c/a/partlycloudy.gif
+	</pic_url>
+	<temperature>93.0</temperature>
+	<humidity>42%</humidity><wind>Calm</wind><dew_point>67 &#176;F</dew_point></weather_report>

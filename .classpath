@@ -6,5 +6,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/ecologylabFundamental"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jtidy"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/ecologylabGeneratedSemantics"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="output" path=""/>
 </classpath>

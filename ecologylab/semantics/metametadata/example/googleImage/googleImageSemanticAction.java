@@ -24,8 +24,8 @@ public class googleImageSemanticAction<sa extends SemanticAction> extends Nested
 	@Override
 	public Object handle(Object obj, Map<String, Object> args)
 	{
-//		if(obj instanceof googleImage)
-//			googleImage.metadataCollected.add((googleImage)obj)
+//		if(obj instanceof GoogleImage)
+//			GoogleImage.metadataCollected.add((GoogleImage)obj)
 			
 		return null; 
 	}
