@@ -3,12 +3,10 @@
  */
 package ecologylab.semantics.metametadata.test;
 
-import ecologylab.generic.Debug;
 import ecologylab.semantics.generated.library.GeneratedMetadataTranslationScope;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.TranslationScope;
-import ecologylab.serialization.library.jnlp.information.Description;
 
 /**
  * @author andruid
