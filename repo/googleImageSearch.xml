@@ -1,0 +1,24 @@
+<meta_metadata_repository name="google_image" package="ecologylab.semantics.generated.library" default_user_agent_name="chrome_2">
+	<meta_metadata name="google_image" extends="document" comment="metadata definition for google image search">
+		<scalar name="title" scalar_type="String" comment="the title of image"/>
+		<!-- 
+		<scalar name="src" scalar_type="ParsedURL" comment="the source url of an image source"/>
+		<scalar name="size_kbyte_format" scalar_type="String" comment="the pixel size, physical size, and format of an image"/>
+		<scalar name-"ref_url" scalar_type="ParsedURL" comment="the reference site url where image is located"/>
+		-->
+	</meta_metadata>
+	
+	<meta_metadata name="google_image_type" type="google_image" parser="xpath">
+		<seelctor url_stripped="http://www.google.com/images"/>
+		<scalar name="title" xpath="//table[@id='imgtb']//tr/td/div"/>
+		<!-- 
+			// TODO extract title from web page e.g. Seeing <b>Texas</b>, <b>Texas</b> Maps, etc. 
+		<scalar name="title" xpath="concat(//table[@id='imgtb']//tr/td/div/text(), //table[@id='imgtb']//tr/td/div/b)"/>
+			// TODO - removing noisy string   
+		<scalar name="src" xpath="//table[@id='imgtb']//tr[*]/td[starts-with(@id,'tDataImage')]/a/@href"/>
+			// TODO - need to split string based on '-' ref. semantic action 'string_operation' in 'buzz.xml' 
+		<scalar name="size_kbyte_format" xpath="//div[@id='ImgContent']//td[starts-with(@id, 'tDataText')]/div/div[1]"/>
+		<scalar name-"ref_url" xpath="//div[@id='ImgContent']//tr[*]/td[starts-with(@id,'tDataText')]//cite"/>
+		-->	
+	</meta_metadata>
+</meta_metadata_repository>
