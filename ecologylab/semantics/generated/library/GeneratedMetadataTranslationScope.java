@@ -37,21 +37,7 @@ This is the tranlation scope class for generated files
 
 public class GeneratedMetadataTranslationScope
 {protected static final Class TRANSLATIONS[]=
-	{Pdf.class,
-
-Thumbnail.class,
-
-Result.class,
-
-Thumbnail.class,
-
-YahooResultSet.class,
-
-Search.class,
-
-SearchResult.class,
-
-WeatherReport.class,
+	{GoogleImage.class,
 
 
 };
