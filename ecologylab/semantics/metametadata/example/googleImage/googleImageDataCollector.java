@@ -13,7 +13,7 @@ import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticAction;
 import ecologylab.semantics.generated.library.GoogleImage;
 import ecologylab.semantics.metametadata.example.MyInfoCollector;
-import ecologylab.semantics.metametadata.example.generated.GeneratedMetadataTranslationScope;
+import ecologylab.semantics.generated.library.GeneratedMetadataTranslationScope;
 
 public class googleImageDataCollector
 {
@@ -23,9 +23,10 @@ public class googleImageDataCollector
 		
 	public static void main(String[] args) throws InterruptedException
 	{ 
-
+	
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	/**
 	 * Main test method 
@@ -46,7 +47,7 @@ public class googleImageDataCollector
 		mic.getDownloadMonitor().stop(); 
 		
 		//	print out result to file 
-		printOutToFile("googleImage.out", metadataCollected);
+//		printOutToFile("googleImage.out", metadataCollected);
 		
 		//print out result to database
 		
