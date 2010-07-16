@@ -20,10 +20,12 @@
 		<scalar name="size_kbyte_format" xpath="//div[@id='ImgContent']//td[starts-with(@id, 'tDataText')]/div/div[1]"/>
 		<scalar name-"ref_url" xpath="//div[@id='ImgContent']//tr[*]/td[starts-with(@id,'tDataText')]//cite"/>
 		-->	
+  
 		<semantic_actions>
 			<save_metadata/>
 		</semantic_actions>
-	
+
+		
 	</meta_metadata>
 	
 </meta_metadata_repository>
