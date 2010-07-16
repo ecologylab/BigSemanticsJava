@@ -96,6 +96,9 @@ public class MetadataCompiler extends ApplicationEnvironment
 		// for each meta-metadata in the repository
 		for (MetaMetadata metaMetadata : metaMetadataRepository.values())
 		{
+//			if (metaMetadata.getName() == null)
+//				continue;
+			
 			// if a metadataclass has to be generated
 			if (metaMetadata.isGenerateClass())
 			{
@@ -107,8 +110,12 @@ public class MetadataCompiler extends ApplicationEnvironment
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				MetadataCompilerUtils.appendToTranslationScope(XMLTools
-						.classNameFromElementName(metaMetadata.getName())
+				String packageName	= metaMetadata.getPackageAttribute();
+				if (packageName == null)
+					packageName				= "";
+				else
+					packageName				+= ".";
+				MetadataCompilerUtils.appendToTranslationScope(packageName + XMLTools.classNameFromElementName(metaMetadata.getName())
 						+ ".class,\n");
 				System.out.println('\n');
 			}
