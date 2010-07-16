@@ -264,7 +264,12 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 			String javaClassName	= XMLTools.classNameFromElementName(typeNameXmlStyle);
 			// file writer.
 			File directoryPath = PropertiesAndDirectories.createDirsAsNeeded(new File(generationPath));
+			
 			File f = new File(directoryPath,  javaClassName + ".java");
+			// write to console
+			if (pass == MetadataCompilerUtils.GENERATE_FIELDS_PASS)
+				System.out.println("\n\t\t -> " + f);
+
 			FileWriter fileWriter = new FileWriter(f);
 			PrintWriter p = new PrintWriter(fileWriter);
 
@@ -341,6 +346,14 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	}
 
 	abstract public boolean isNewClass();
+
+	/**
+	 * Does this declaration declare a new field, rather than referring to a previously declared field?
+	 * 
+	 * @return
+	 */
+	abstract protected boolean isNewDeclaration();
+	
 
 	protected void appendImport(Appendable appendable, String importDecl) throws IOException
 	{

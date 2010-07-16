@@ -59,7 +59,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	 */
 	@xml_tag("package")
 	@simpl_scalar
-	private String																							packageName;
+	private String																							packageAttribute;
 
 	@simpl_map("user_agent")
 	private HashMap<String, UserAgent>													userAgents;
@@ -297,10 +297,12 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		HashMapArrayList<String, MetaMetadata> repositoryByTagName = repository.repositoryByTagName;
 		if (repositoryByTagName != null)
 		{
-			for (MetaMetadata metametadata : repositoryByTagName)
+			for (MetaMetadata metaMetadata : repositoryByTagName)
 			{
-				metametadata.setParent(this);
-				metametadata.file = repository.file;
+				metaMetadata.setParent(this);
+				metaMetadata.file = repository.file;
+				if (metaMetadata.getPackageAttribute() == null)
+					metaMetadata.setPackageAttribute(repository.packageAttribute);
 			}
 		}
 
@@ -818,7 +820,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 
 	public String packageName()
 	{
-		return packageName;
+		return packageAttribute;
 	}
 
 	public static String documentTag()
@@ -846,7 +848,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	 */
 	public String getPackageName()
 	{
-		return packageName;
+		return packageAttribute;
 	}
 
 	/**
@@ -855,7 +857,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	 */
 	public void setPackageName(String packageName)
 	{
-		this.packageName = packageName;
+		this.packageAttribute = packageName;
 	}
 
 	public NamedStyle lookupStyle(String styleName)

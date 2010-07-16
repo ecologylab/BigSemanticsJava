@@ -205,7 +205,10 @@ implements Mappable<String>
 		// create a file writer to write the JAVA files.
 		File directoryPath = PropertiesAndDirectories.createDirsAsNeeded(new File(generationPath));
 		File file = new File(directoryPath, XMLTools.classNameFromElementName(getName()) + ".java");
+		
+		// write to console
 		System.out.print(this.file + "\n\t\t -> " + file);
+		
 		FileWriter fileWriter = new FileWriter(file);
 		PrintWriter p = new PrintWriter(fileWriter);
 		
@@ -397,6 +400,11 @@ implements Mappable<String>
 	public final String getPackageAttribute()
 	{
 		return packageAttribute;
+	}
+	
+	final void setPackageAttribute(String pa)
+	{
+		packageAttribute	= pa;
 	}
 	
 	public String getUserAgent()

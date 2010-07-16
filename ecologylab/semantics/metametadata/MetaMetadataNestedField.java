@@ -70,11 +70,11 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 					if (childField instanceof MetaMetadataNestedField)
 						((MetaMetadataNestedField)childField).inheritMetaMetadata(repository);
 				}
+				
+				sortForDisplay();
 			}
 			
 			inheritMetaMetadataFinished = true;
-			
-			sortForDisplay();
 		}
 	}
 
@@ -101,7 +101,7 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 		 * must start from the 1st level children, not the field itself
 		 */
 		for (MetaMetadataField child: getChildMetaMetadata())
-			if (isDefinition(child))
+			if (child.isNewDeclaration())
 				return true;
 		
 		return false;

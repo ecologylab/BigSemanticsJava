@@ -114,4 +114,16 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField
 //			return name;
 	}
 
+	/**
+	 * Does this declaration declare a new field, rather than referring to a previously declared field?
+	 * 
+	 * @return	true if there is a scalar_type attribute declared.
+	 */
+	protected boolean isNewDeclaration()
+	{
+		return entity || // (getType() != null) && 
+			isNewClass();		// recurse
+	}
+
+
 }
