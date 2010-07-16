@@ -12,15 +12,14 @@
 		<selector url_stripped="http://www.google.com/images"/>
 		<scalar name="title" xpath="//table[@id='imgtb']//tr/td/div"/>
 		<!-- 
-			// TODO issue) extract title from web page e.g. Seeing <b>Texas</b>, <b>Texas</b> Maps, etc. 
+		// TODO issue) extract title from web page e.g. Seeing <b>Texas</b>, <b>Texas</b> Maps, etc. 
 		<scalar name="title" xpath="concat(//table[@id='imgtb']//tr/td/div/text(), //table[@id='imgtb']//tr/td/div/b)"/>
-			// TODO - removing noisy string   
+		// TODO - removing noisy string   
 		<scalar name="src" xpath="//table[@id='imgtb']//tr[*]/td[starts-with(@id,'tDataImage')]/a/@href"/>
-			// TODO - need to split string based on '-' ref. semantic action 'string_operation' in 'buzz.xml' 
+		// TODO - need to split string based on '-' ref. semantic action 'string_operation' in 'buzz.xml' 
 		<scalar name="size_kbyte_format" xpath="//div[@id='ImgContent']//td[starts-with(@id, 'tDataText')]/div/div[1]"/>
 		<scalar name-"ref_url" xpath="//div[@id='ImgContent']//tr[*]/td[starts-with(@id,'tDataText')]//cite"/>
 		-->	
-		
 		<semantic_actions>
 			<save_metadata/>
 		</semantic_actions>
