@@ -9,7 +9,7 @@
 	</meta_metadata>
 	
 	<meta_metadata name="google_image_type" type="google_image" parser="xpath">
-		<seelctor url_stripped="http://www.google.com/images"/>
+		<selector url_stripped="http://www.google.com/images"/>
 		<scalar name="title" xpath="//table[@id='imgtb']//tr/td/div"/>
 		<!-- 
 			// TODO extract title from web page e.g. Seeing <b>Texas</b>, <b>Texas</b> Maps, etc. 
