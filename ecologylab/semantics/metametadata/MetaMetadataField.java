@@ -671,7 +671,13 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 		Class<? extends Metadata> metadataClass = getMetadataClass(metadataTScope);
 		if (metadataClass == null)
 		{
-			//TODO -- remove this, and all of the tree of meta_metadata it belongs to, from the repository
+			ElementState parent	= parent();
+			if (parent instanceof MetaMetadataField)
+				((MetaMetadataField) parent).kids.remove(this);
+			else if (parent instanceof MetaMetadataRepository)
+			{
+				//TODO remove from the repository level
+			}
 			return false;
 		}
 		//

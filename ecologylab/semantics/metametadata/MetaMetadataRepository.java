@@ -85,14 +85,19 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	private HashMapArrayList<String, MetaMetadata>							repositoryByTagName;
 
 	/**
-	 * Repository for Document and its subclasses.
+	 * Repository with noAnchorNoQuery URL string as key.
 	 */
-	private HashMap<String, MetaMetadata>												documentRepositoryByURL			= new HashMap<String, MetaMetadata>();
+	private HashMap<String, MetaMetadata>												documentRepositoryByUrlStripped	= new HashMap<String, MetaMetadata>();
+
+	/**
+	 * Repository with domain as key.
+	 */
+	private HashMap<String, MetaMetadata>												documentRepositoryByDomain			= new HashMap<String, MetaMetadata>();
 
 	/**
 	 * Repository for Media and its subclasses.
 	 */
-	private HashMap<String, MetaMetadata>												mediaRepositoryByURL				= new HashMap<String, MetaMetadata>();
+	private HashMap<String, MetaMetadata>												mediaRepositoryByUrlStripped		= new HashMap<String, MetaMetadata>();
 
 	private HashMap<String, ArrayList<RepositoryPatternEntry>>	documentRepositoryByPattern	= new HashMap<String, ArrayList<RepositoryPatternEntry>>();
 
@@ -105,8 +110,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 
 	private HashMap<String, MetaMetadata>												repositoryBySuffix					= new HashMap<String, MetaMetadata>();
 
-	private PrefixCollection																		urlPrefixCollection					= new PrefixCollection(
-																																															'/');
+	private PrefixCollection																		urlPrefixCollection					= new PrefixCollection('/');
 
 	// public static final TranslationScope META_METADATA_TSCOPE =
 	// MetaMetadataTranslationScope.get();
@@ -293,6 +297,8 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		if (!combineMaps(repository.repositoryBySuffix, this.repositoryBySuffix))
 			this.repositoryBySuffix	= repository.repositoryBySuffix;
 		
+		combineMaps(repository.documentRepositoryByDomain, this.documentRepositoryByDomain);
+		
 		// set metaMetadata to have the correct parent repository
 		HashMapArrayList<String, MetaMetadata> repositoryByTagName = repository.repositoryByTagName;
 		if (repositoryByTagName != null)
@@ -451,7 +457,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 			if (!purl.isFile())
 			{
 				String noAnchorNoQueryPageString = purl.noAnchorNoQueryPageString();
-				result = documentRepositoryByURL.get(noAnchorNoQueryPageString);
+				result = documentRepositoryByUrlStripped.get(noAnchorNoQueryPageString);
 
 				if (result == null)
 				{
@@ -463,7 +469,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 					{
 						String key = purl.url().getProtocol() + "://" + matchingPhrase;
 
-						result = documentRepositoryByURL.get(key);
+						result = documentRepositoryByUrlStripped.get(key);
 					}
 				}
 
@@ -487,7 +493,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 					}
 				}
 			}
-			// Lastly, check for MMD by suffix
+			// be careful of the order! suffix before domain
 			if (result == null)
 			{
 				String suffix = purl.suffix();
@@ -495,9 +501,18 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 				if (suffix != null)
 					result = getMMBySuffix(suffix);
 			}
+			if (result == null)
+			{
+				String domain = purl.domain();
+				result		= documentRepositoryByDomain.get(domain);
+				if (result != null)
+					debug("Matched by domain = " + domain +"\t" + result);
+			}
 		}
-
-		return (result != null) ? result : getByTagName(tagName);
+		if (result == null)
+			result			= getByTagName(tagName);
+		
+		return result;
 	}
 
 	// TODO implement get by domain too
@@ -538,7 +553,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		MetaMetadata result = null;
 		if (purl != null && !purl.isFile())
 		{
-			result = mediaRepositoryByURL.get(purl.noAnchorNoQueryPageString());
+			result = mediaRepositoryByUrlStripped.get(purl.noAnchorNoQueryPageString());
 
 			if (result == null)
 			{
@@ -547,7 +562,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 				String key = purl.url().getProtocol() + "://"
 						+ urlPrefixCollection.getMatchingPhrase(protocolStrippedURL, '/');
 
-				result = mediaRepositoryByURL.get(key);
+				result = mediaRepositoryByUrlStripped.get(key);
 
 				if (result == null)
 				{
@@ -624,18 +639,18 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 				continue;
 			}
 
-			HashMap<String, MetaMetadata> repositoryByPURL;
+			HashMap<String, MetaMetadata> repositoryByUrlStripped;
 			HashMap<String, ArrayList<RepositoryPatternEntry>> repositoryByPattern;
 
 			if (Media.class.isAssignableFrom(metadataClass))
 			{
-				repositoryByPURL = mediaRepositoryByURL;
-				repositoryByPattern = mediaRepositoryByPattern;
+				repositoryByUrlStripped = mediaRepositoryByUrlStripped;
+				repositoryByPattern 		= mediaRepositoryByPattern;
 			}
 			else if (Document.class.isAssignableFrom(metadataClass))
 			{
-				repositoryByPURL = documentRepositoryByURL;
-				repositoryByPattern = documentRepositoryByPattern;
+				repositoryByUrlStripped = documentRepositoryByUrlStripped;
+				repositoryByPattern 		= documentRepositoryByPattern;
 			}
 			else
 				continue;
@@ -651,19 +666,19 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 			ParsedURL purl = metaMetadata.getSelector().getUrlBase();
 			if (purl != null)
 			{
-				MetaMetadata currentlyMappedMMD = repositoryByPURL.get(purl.noAnchorNoQueryPageString());
+				MetaMetadata currentlyMappedMMD = repositoryByUrlStripped.get(purl.noAnchorNoQueryPageString());
 				if (currentlyMappedMMD != null)
 					currentCfPrefIsSet = Pref.lookupBoolean(currentlyMappedMMD.getSelector().getCfPref());
 				if (currentlyMappedMMD == null)
 				{
-					repositoryByPURL.put(purl.noAnchorNoQueryPageString(), metaMetadata);
+					repositoryByUrlStripped.put(purl.noAnchorNoQueryPageString(), metaMetadata);
 				}
 				else if (cfPrefIsSet == true || (cfPrefIsNull == true && currentCfPrefIsSet == false))
 				{
 					// currentlyMappedMMD = metaMetadata;
-					repositoryByPURL.remove(currentlyMappedMMD.getSelector().getUrlBase()
+					repositoryByUrlStripped.remove(currentlyMappedMMD.getSelector().getUrlBase()
 							.noAnchorNoQueryPageString());
-					repositoryByPURL.put(purl.noAnchorNoQueryPageString(), metaMetadata);
+					repositoryByUrlStripped.put(purl.noAnchorNoQueryPageString(), metaMetadata);
 				}
 			}
 			else
@@ -671,13 +686,13 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 				ParsedURL urlPrefix = metaMetadata.getSelector().getUrlPrefix();// change
 				if (urlPrefix != null)
 				{
-					MetaMetadata currentlyMappedMMD = repositoryByPURL.get(urlPrefix.toString());
+					MetaMetadata currentlyMappedMMD = repositoryByUrlStripped.get(urlPrefix.toString());
 					if (currentlyMappedMMD != null)
 						currentCfPrefIsSet = Pref.lookupBoolean(currentlyMappedMMD.getSelector().getCfPref());
 					if (currentlyMappedMMD == null)
 					{
 						urlPrefixCollection.add(urlPrefix);
-						repositoryByPURL.put(urlPrefix.toString(), metaMetadata);
+						repositoryByUrlStripped.put(urlPrefix.toString(), metaMetadata);
 					}
 					else if (cfPrefIsSet == true || (cfPrefIsNull == true && currentCfPrefIsSet == false))
 					{
@@ -685,41 +700,49 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 						urlPrefixCollection.removePrefix(currentlyMappedMMD.getSelector().getUrlPrefix()
 								.toString());
 						urlPrefixCollection.add(urlPrefix);
-						repositoryByPURL.put(urlPrefix.toString(), metaMetadata);
+						repositoryByUrlStripped.put(urlPrefix.toString(), metaMetadata);
 					}
 				}
 				else
 				{
 					// use .pattern() for comparison
 					String domain = metaMetadata.getSelector().getDomain();
-					Pattern urlPattern = metaMetadata.getSelector().getUrlRegex();
-					if (domain != null && urlPattern != null)
+					if (domain != null)
 					{
-						MetaMetadata currentlyMappedMMD = domainAndPatternForMetadata(domain, urlPattern);
-						if (currentlyMappedMMD != null)
-							currentCfPrefIsSet = Pref.lookupBoolean(currentlyMappedMMD.getSelector().getCfPref());
-						if (currentlyMappedMMD == null)
+						Pattern urlPattern = metaMetadata.getSelector().getUrlRegex();
+						if (urlPattern != null)
 						{
-							ArrayList<RepositoryPatternEntry> bucket = repositoryByPattern.get(domain);
-							if (bucket == null)
+							MetaMetadata currentlyMappedMMD = domainAndPatternForMetadata(domain, urlPattern);
+							if (currentlyMappedMMD != null)
+								currentCfPrefIsSet = Pref.lookupBoolean(currentlyMappedMMD.getSelector().getCfPref());
+							if (currentlyMappedMMD == null)
 							{
-								bucket = new ArrayList<RepositoryPatternEntry>(2);
-								repositoryByPattern.put(domain, bucket);
+								ArrayList<RepositoryPatternEntry> bucket = repositoryByPattern.get(domain);
+								if (bucket == null)
+								{
+									bucket = new ArrayList<RepositoryPatternEntry>(2);
+									repositoryByPattern.put(domain, bucket);
+								}
+								bucket.add(new RepositoryPatternEntry(urlPattern, metaMetadata));
 							}
-							bucket.add(new RepositoryPatternEntry(urlPattern, metaMetadata));
+							else if (cfPrefIsSet == true || (cfPrefIsNull == true && currentCfPrefIsSet == false))
+							{
+								// currentlyMappedMMD = metaMetadata;
+								removeDomainAndPatternForMetadata(currentlyMappedMMD.getSelector().getDomain(),
+										currentlyMappedMMD.getSelector().getUrlRegex());
+								ArrayList<RepositoryPatternEntry> bucket = repositoryByPattern.get(domain);
+								if (bucket == null)
+								{
+									bucket = new ArrayList<RepositoryPatternEntry>(2);
+									repositoryByPattern.put(domain, bucket);
+								}
+								bucket.add(new RepositoryPatternEntry(urlPattern, metaMetadata));
+							}
 						}
-						else if (cfPrefIsSet == true || (cfPrefIsNull == true && currentCfPrefIsSet == false))
+						else
 						{
-							// currentlyMappedMMD = metaMetadata;
-							removeDomainAndPatternForMetadata(currentlyMappedMMD.getSelector().getDomain(),
-									currentlyMappedMMD.getSelector().getUrlRegex());
-							ArrayList<RepositoryPatternEntry> bucket = repositoryByPattern.get(domain);
-							if (bucket == null)
-							{
-								bucket = new ArrayList<RepositoryPatternEntry>(2);
-								repositoryByPattern.put(domain, bucket);
-							}
-							bucket.add(new RepositoryPatternEntry(urlPattern, metaMetadata));
+							// domain only -- no pattern
+							documentRepositoryByDomain.put(domain, metaMetadata);
 						}
 					}
 				}
@@ -957,4 +980,12 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		return sites;
 	}
 
+	@Override
+	public String toString()
+	{
+		String result	= "MetaMetadataRepository";
+		if (file != null)
+			result			+= "[" + file + "]";
+		return result;
+	}
 }
