@@ -6,6 +6,7 @@ package ecologylab.semantics.metadata;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 import ecologylab.semantics.gui.EditValueEvent;
 import ecologylab.semantics.gui.EditValueListener;
@@ -113,4 +114,5 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 		
 		super.setFieldToScalar(context, value, scalarUnmarshallingContext);
 	}
+	
 }

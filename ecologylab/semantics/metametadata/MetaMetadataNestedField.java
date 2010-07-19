@@ -108,25 +108,6 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 	}
 	
 	/**
-	 * Recursively check if a meta-metadata field is a definition, by checking if any of its nested
-	 * scalar field contains a scalar_type attribute.
-	 * @param mmf
-	 * @return
-	 */
-	protected boolean isDefinition(MetaMetadataField mmf)
-	{
-		if (mmf instanceof MetaMetadataScalarField)
-		{
-			return ((MetaMetadataScalarField) mmf).getScalarType() != null;
-		}
-		
-		if (mmf instanceof MetaMetadataCompositeField && ((MetaMetadataCompositeField) mmf).getType() != null)
-			return true;
-		
-		return mmf.isNewClass();
-	}
-	
-	/**
 	 * public void setAuthors(HashMapArrayList<String, Author> authors) { this.authorNames = authors;
 	 * }
 	 * 

@@ -11,6 +11,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.regex.Pattern;
 
 import ecologylab.appframework.PropertiesAndDirectories;
 import ecologylab.generic.HashMapArrayList;
@@ -740,6 +741,16 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 		for (MetaMetadataField thatChild : kids)
 		{
 			thatChild.bindMetadataFieldDescriptor(metadataTScope, metadataClassDescriptor);
+			
+			if (thatChild instanceof MetaMetadataScalarField)
+			{
+				MetaMetadataScalarField scalar = (MetaMetadataScalarField) thatChild;
+				if (scalar.getRegexPattern() != null)
+				{
+					MetadataFieldDescriptor fd = scalar.getMetadataFieldDescriptor();
+					fd.setRegexFilter(Pattern.compile(scalar.getRegexPattern()), scalar.getRegexReplacement());
+				}
+			}
 			
 			HashSet<String> nonDisplayedFieldNames = nonDisplayedFieldNames();
 			if (thatChild.hide)

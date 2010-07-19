@@ -29,6 +29,8 @@ public class MetaMetadataScalarField extends MetaMetadataField
 	@simpl_composite
 	protected RegexFilter	filter;
 
+	private String				metaMetadataParser;
+
 	public MetaMetadataScalarField()
 	{
 	}
@@ -55,7 +57,7 @@ public class MetaMetadataScalarField extends MetaMetadataField
 		this.ignoreExtractionError = mmf.ignoreExtractionError;
 		this.kids = mmf.kids;
 	}
-	
+
 	/**
 	 * @return the scalarType
 	 */
@@ -75,45 +77,23 @@ public class MetaMetadataScalarField extends MetaMetadataField
 	}
 
 	/**
-	 * @return the regularExpression
+	 * @return the regex pattern
 	 */
 	public String getRegexPattern()
 	{
 		if (filter != null)
-			return filter.regex;
+			return filter.getRegex();
 		return null;
 	}
 
 	/**
-	 * @param regularExpression
-	 *          the regularExpression to set
-	 */
-	public void setRegularExpression(String regex)
-	{
-		if (filter == null)
-			filter = new RegexFilter();
-		filter.regex = regex;
-	}
-
-	/**
-	 * @return the replacementString
+	 * @return the replacement string
 	 */
 	public String getRegexReplacement()
 	{
 		if (filter != null)
-			return filter.replace;
+			return filter.getReplace();
 		return null;
-	}
-
-	/**
-	 * @param replacementString
-	 *          the replacementString to set
-	 */
-	public void setReplacementString(String replace)
-	{
-		if (filter == null)
-			filter = new RegexFilter();
-		filter.replace = replace;
 	}
 
 	/**
@@ -137,12 +117,12 @@ public class MetaMetadataScalarField extends MetaMetadataField
 				// HACK FOR METADATAINTEGER
 				fieldTypeName = "Integer";
 			}
-	
+
 			if (pass == MetadataCompilerUtils.GENERATE_FIELDS_PASS)
 			{
 				// write the java doc comment for this field
 				MetadataCompilerUtils.writeJavaDocComment(comment, appendable);
-	
+
 				// append the Nested field.
 				appendLeaf(appendable, "private Metadata", scalarType.fieldTypeName(), fieldName);
 			}
@@ -250,12 +230,13 @@ public class MetaMetadataScalarField extends MetaMetadataField
 		{
 			annotations.append(String.format(" @simpl_hints(Hint.%s)", getHint()));
 		}
-		
+
 		if (filter != null && getMetaMetadataParser().equals(MetaMetadataParserBase.DIRECT_BINDING))
 		{
-			String regex = filter.regex.replaceAll("\\\\", "\\\\\\\\");
-			String replace = filter.replace.replaceAll("\\\\", "\\\\\\\\");
-			annotations.append(String.format(" @simpl_filter(regex=\"%s\", replace=\"%s\")", regex, replace));
+			String regex = filter.getJavaRegex();
+			String replace = filter.getJavaReplace();
+			annotations.append(String.format(" @simpl_filter(regex=\"%s\", replace=\"%s\")", regex,
+					replace));
 		}
 
 		appendMetalanguageDecl(appendable, getTagDecl() + annotations, classNamePrefix, className,
@@ -263,9 +244,10 @@ public class MetaMetadataScalarField extends MetaMetadataField
 	}
 
 	/**
-	 * Does this declaration declare a new field, rather than referring to a previously declared field?
+	 * Does this declaration declare a new field, rather than referring to a previously declared
+	 * field?
 	 * 
-	 * @return	true if there is a scalar_type attribute declared.
+	 * @return true if there is a scalar_type attribute declared.
 	 */
 	protected boolean isNewDeclaration()
 	{
@@ -274,13 +256,33 @@ public class MetaMetadataScalarField extends MetaMetadataField
 
 	private String getMetaMetadataParser()
 	{
-		MetaMetadataField field = this;
-		while (!(field instanceof MetaMetadata))
+		if (metaMetadataParser == null)
 		{
-			field = (MetaMetadataField) field.parent();
+			synchronized (this)
+			{
+				MetaMetadataField field = this;
+				while (!(field instanceof MetaMetadata))
+				{
+					field = (MetaMetadataField) field.parent();
+				}
+				MetaMetadata mmd = (MetaMetadata) field;
+				metaMetadataParser = mmd.getParser();
+
+				if (metaMetadataParser == null && mmd.getExtendsAttribute() != null)
+				{
+					// might be inherited from base class
+					// TODO ... what to do ...
+				}
+
+				if (metaMetadataParser == null)
+				{
+					// if still null we just return an empty string to prevent null pointer exception
+					metaMetadataParser = "";
+				}
+			}
 		}
-		MetaMetadata mmd = (MetaMetadata) field;
-		return mmd.getParser();
+
+		return metaMetadataParser;
 	}
 
 	/**
@@ -303,9 +305,7 @@ public class MetaMetadataScalarField extends MetaMetadataField
 		MetaMetadataScalarField mmsf = new MetaMetadataScalarField();
 		mmsf.scalarType = new StringType();
 		mmsf.hint = Hint.XML_LEAF;
-		mmsf.filter = new RegexFilter();
-		mmsf.filter.regex = ".";
-		mmsf.filter.replace = ".";
+		mmsf.filter = new RegexFilter("regex", "replace");
 		System.out.println(mmsf.serialize());
 	}
 
