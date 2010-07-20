@@ -246,12 +246,9 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 
 			// "null" happens with mixins fieldAccessor b'coz getValueString() returns "null".
 			//TODO use MetaMetadataField.numNonDisplayedFields()
-			boolean isAlwaysShowAndNotHide = metaMetadata == null
-					|| (metaMetadata.isAlwaysShow() || !metaMetadata.isHide());
-			if (isAlwaysShowAndNotHide && hasVisibleNonNullField)
-			{
+			boolean isVisibleField = metaMetadataField.isAlwaysShow() || (hasVisibleNonNullField && !metaMetadataField.isHide());
+			if (isVisibleField)
 				size++;
-			}
 		}
 			
 		return size;
