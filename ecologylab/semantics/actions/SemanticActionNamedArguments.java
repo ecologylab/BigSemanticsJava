@@ -36,6 +36,8 @@ public interface SemanticActionNamedArguments
 	public static final String	WIDTH									= "width";
 
 	public static final String	HEIGHT								= "height";
+	
+	public static final String	HREF_METADATA					= "href_metadata";
 
 	/**
 	 * 1) CreateContainer

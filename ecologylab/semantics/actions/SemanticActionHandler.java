@@ -628,7 +628,35 @@ public abstract class SemanticActionHandler<C extends Container, IC extends Info
 			}
 		}
 	}
+	
+/**
+ * 
+ * @param action
+ * @param argumentName
+ * @param defaultValue
+ * 
+ * @return	Integer value from the argument in the action, or the default.
+ */
+	public int getIntegerArgumentValueByName(SemanticAction action, String argumentName, int defaultValue)
+	{
+		Integer integer	= (Integer) getArgumentValueByName(action, argumentName);
+		return integer == null ? defaultValue : integer;
+	}
 
+	public Object getArgumentValueByName(SemanticAction action, String argumentName)
+	{
+		Argument argument	= action.getArgument(argumentName);
+		return argument == null ? null : getArgumentValue(argument);
+	}
+
+	public Object getArgumentValue(Argument argument)
+	{
+		if (argument == null)
+			return null;
+		
+		String argumentValue = argument.getValue();
+		return  argumentValue == null ? null : semanticActionReturnValueMap.get(argumentValue);
+	}
 	/**
 	 * @return the parameter
 	 */

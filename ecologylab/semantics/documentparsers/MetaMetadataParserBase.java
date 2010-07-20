@@ -203,7 +203,8 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 		{
 			// only if some variables are there we create a DOM[for diect binidng types for others DOM is
 			// already there]
-			createDOMandParse(container.purl());
+			//TODO -- if direct binding, make sure that there are vars that use xPath.
+			createDOMandParse(container.purl());	// sets DOCUMENT_ROOT_NODE to parsed DOM for xPath only
 			for (DefVar defVar : defVars)
 			{
 				String xpathExpression = defVar.getXpath();

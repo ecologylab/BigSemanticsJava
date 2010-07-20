@@ -8,11 +8,11 @@ import ecologylab.semantics.actions.SemanticAction;
 import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.actions.SemanticActionsKeyWords;
 import ecologylab.semantics.connectors.InfoCollector;
-import ecologylab.semantics.metadata.Metadata;
+import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.MetaMetadata;
+import ecologylab.serialization.ElementState;
 import ecologylab.serialization.SIMPLTranslationException;
-import ecologylab.serialization.TranslationScope;
 import ecologylab.serialization.XMLTools;
 
 /**
@@ -40,7 +40,9 @@ public class MetaMetadataDirectBindingParser<SA extends SemanticAction>
 		{
 			try
 			{
-				populatedMetadata = (Document) getMetadataTranslationScope().deserialize(inputStream());
+				MetadataClassDescriptor metadataClassDescriptor = metaMetadata.getMetadataClassDescriptor();
+				ElementState rootElement	= metadataClassDescriptor.getInstance();
+				populatedMetadata = (Document) getMetadataTranslationScope().deserialize(inputStream(), rootElement);
 			  populatedMetadata.serialize(System.out);
 			  System.out.println();
 			  /*
@@ -50,13 +52,18 @@ public class MetaMetadataDirectBindingParser<SA extends SemanticAction>
 				String tagName= ele.getTagName();
 				*/
 			  MetaMetadata mmd = populatedMetadata.getMetaMetadata();
-				if(mmd!=null)
+				if(mmd!=null)	// should be always
 				{
-					if (metaMetadata == null)
+					if (metadataClassDescriptor.getDescribedClass().isAssignableFrom(mmd.getMetadataClassDescriptor().getDescribedClass()))
+				  // need to choose the more specific one
 						metaMetadata = mmd;
-					else
-						warning("abandon metaMetadata from deserialization since we already find the right one.");
+
+//					if (metaMetadata == null)
+//					else
+//						warning("abandon metaMetadata from deserialization since we already find the right one.");
 				}
+				else
+					error("No meta-metadata in root after direct binding :-(");
 				System.out.println();
 			}
 			catch (SIMPLTranslationException e)
@@ -70,11 +77,14 @@ public class MetaMetadataDirectBindingParser<SA extends SemanticAction>
 
 	
 	/**
-	 * This method is called for dierct binding only if it has some variables as it is expensive
+	 * This method is called for direct binding only.
+	 * It creates a DOM, by parsing a 2nd time. This DOM would only be used if XPath parsing is used
+	 * specifically in the definition of variables.
 	 * @param purl
 	 */
 	protected void createDOMandParse(ParsedURL purl)
 	{
+		// used to create a DOM 
 		org.w3c.dom.Document document	= XMLTools.buildDOM(purl);
 		semanticActionHandler.getSemanticActionReturnValueMap().put(SemanticActionsKeyWords.DOCUMENT_ROOT_NODE, document);
 	}

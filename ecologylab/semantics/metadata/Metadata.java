@@ -144,7 +144,7 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 		MetaMetadata mm			= metaMetadata;
 		if (mm == null)
 		{
-			if (metaMetadataName != null)
+			if (metaMetadataName != null)	// get from saved composition
 				mm									= repository.getByTagName(metaMetadataName.getValue());
 			
 			if (mm == null)
@@ -296,9 +296,13 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 	}
 
 	@Override
+	protected void preTranslationProcessingHook()
+	{
+		getMetaMetadata();		
+	}
+	@Override
 	protected void postTranslationProcessingHook()
 	{
-		getMetaMetadata();
 		if (metaMetadata != null)
 			initializeMetadataCompTermVector();
 	}
