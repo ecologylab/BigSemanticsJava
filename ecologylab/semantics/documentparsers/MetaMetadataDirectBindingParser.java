@@ -35,35 +35,48 @@ public class MetaMetadataDirectBindingParser<SA extends SemanticAction>
 	public Document populateMetadataObject()
 	{
 		Document populatedMetadata = null;
-		String mimeType = (String) semanticActionHandler.getSemanticActionReturnValueMap().get(SemanticActionsKeyWords.PURLCONNECTION_MIME);
+		String mimeType = (String) semanticActionHandler.getSemanticActionReturnValueMap().get(
+				SemanticActionsKeyWords.PURLCONNECTION_MIME);
 		if (metaMetadata.isSupported(container.purl(), mimeType))
 		{
 			try
 			{
 				MetadataClassDescriptor metadataClassDescriptor = metaMetadata.getMetadataClassDescriptor();
-				ElementState rootElement	= metadataClassDescriptor.getInstance();
-				populatedMetadata = (Document) getMetadataTranslationScope().deserialize(inputStream(), rootElement);
-			  populatedMetadata.serialize(System.out);
-			  System.out.println();
-			  /*
-				//FIXME-- Is there an efficient way to find the root element?????
-			  org.w3c.dom.Document doc = populatedMetadata.translateToDOM();
-			  Element ele = doc.getDocumentElement();
-				String tagName= ele.getTagName();
-				*/
-			  MetaMetadata mmd = populatedMetadata.getMetaMetadata();
-				if(mmd!=null)	// should be always
+				ElementState rootElement = metadataClassDescriptor.getInstance();
+				populatedMetadata = (Document) getMetadataTranslationScope().deserialize(inputStream(),
+						rootElement);
+				populatedMetadata.serialize(System.out);
+				System.out.println();
+				/*
+				 * //FIXME-- Is there an efficient way to find the root element????? org.w3c.dom.Document
+				 * doc = populatedMetadata.translateToDOM(); Element ele = doc.getDocumentElement(); String
+				 * tagName= ele.getTagName();
+				 */
+				MetaMetadata mmd = populatedMetadata.getMetaMetadata();
+				if (mmd != null) // should be always
 				{
-					if (metadataClassDescriptor.getDescribedClass().isAssignableFrom(mmd.getMetadataClassDescriptor().getDescribedClass()))
-				  // need to choose the more specific one
+					if (metadataClassDescriptor.equals(mmd.getMetadataClassDescriptor()))
+					{
+						// if they have the same metadataClassDescriptor, they can be of the same type, or one
+						// of them is using "type=" attribute.
+						if (mmd.getType() != null)
+							metaMetadata = mmd;
+					}
+					else if (metadataClassDescriptor.getDescribedClass().isAssignableFrom(
+							mmd.getMetadataClassDescriptor().getDescribedClass()))
+					{
+						// if they have different metadataClassDescriptor, need to choose the more specific one
 						metaMetadata = mmd;
+					}
 
-//					if (metaMetadata == null)
-//					else
-//						warning("abandon metaMetadata from deserialization since we already find the right one.");
+					// if (metaMetadata == null)
+					// else
+					// warning("abandon metaMetadata from deserialization since we already find the right one.");
 				}
 				else
+				{
 					error("No meta-metadata in root after direct binding :-(");
+				}
 				System.out.println();
 			}
 			catch (SIMPLTranslationException e)

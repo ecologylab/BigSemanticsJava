@@ -485,10 +485,13 @@ implements InfoCollector<AC>, SemanticsPrefs, ApplicationProperties, DocumentPar
 	 */
 	public void endSeeding()
 	{
-		duringSeeding = false;
-		debug("endSeeding() unpause crawler");
-		crawlerDownloadMonitor.unpause();
-		start();	// start thread *or* unpause()
+		if (duringSeeding)
+		{
+			duringSeeding = false;
+			debug("endSeeding() unpause crawler");
+			crawlerDownloadMonitor.unpause();
+			start();	// start thread *or* unpause()
+		}
 	}
 
 	public DownloadMonitor getCrawlerDownloadMonitor()

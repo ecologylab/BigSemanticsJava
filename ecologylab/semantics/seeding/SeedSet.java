@@ -195,8 +195,7 @@ implements SemanticsSessionObjectNames, Iterable<S>
      			seed.setActive(false);	// does not affect SearchState or Feed
    			}
    		}
-   		if (!aSeedingIsPerformed)
-   			infoCollector.endSeeding();
+ 			infoCollector.endSeeding();
    	}
    	
    	public String toString()
