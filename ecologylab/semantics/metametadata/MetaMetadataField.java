@@ -1098,7 +1098,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	}
 
 	@Override
-  protected void postTranslationProcessingHook()
+  protected void postDeserializationHook()
   {
 
   }

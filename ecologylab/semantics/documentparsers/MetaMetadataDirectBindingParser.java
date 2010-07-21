@@ -41,6 +41,7 @@ public class MetaMetadataDirectBindingParser<SA extends SemanticAction>
 		{
 			try
 			{
+				//FIXME 
 				MetadataClassDescriptor metadataClassDescriptor = metaMetadata.getMetadataClassDescriptor();
 				ElementState rootElement = metadataClassDescriptor.getInstance();
 				populatedMetadata = (Document) getMetadataTranslationScope().deserialize(inputStream(),
@@ -55,19 +56,21 @@ public class MetaMetadataDirectBindingParser<SA extends SemanticAction>
 				MetaMetadata mmd = populatedMetadata.getMetaMetadata();
 				if (mmd != null) // should be always
 				{
-					if (metadataClassDescriptor.equals(mmd.getMetadataClassDescriptor()))
-					{
-						// if they have the same metadataClassDescriptor, they can be of the same type, or one
-						// of them is using "type=" attribute.
-						if (mmd.getType() != null)
-							metaMetadata = mmd;
-					}
-					else if (metadataClassDescriptor.getDescribedClass().isAssignableFrom(
-							mmd.getMetadataClassDescriptor().getDescribedClass()))
-					{
+					MetadataClassDescriptor mmdClassDescriptor = mmd.getMetadataClassDescriptor();
+					boolean sameMetadataSubclass 		= metadataClassDescriptor.equals(mmdClassDescriptor);
+					// if they have the same metadataClassDescriptor, they can be of the same type, or one
+					// of them is using "type=" attribute.
+					boolean useMmdFromDirectBinding = sameMetadataSubclass && (mmd.getType() != null);
+					if (!useMmdFromDirectBinding && !sameMetadataSubclass)
 						// if they have different metadataClassDescriptor, need to choose the more specific one
+						useMmdFromDirectBinding				= metadataClassDescriptor.getDescribedClass().isAssignableFrom(
+								mmdClassDescriptor.getDescribedClass());
+					if (useMmdFromDirectBinding)
+					{
 						metaMetadata = mmd;
 					}
+					else
+						populatedMetadata.setMetaMetadata(metaMetadata); //
 
 					// if (metaMetadata == null)
 					// else

@@ -293,12 +293,12 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 	}
 
 	@Override
-	protected void preTranslationProcessingHook()
+	protected void preSerializationHook()
 	{
 		getMetaMetadata();		
 	}
 	@Override
-	protected void postTranslationProcessingHook()
+	protected void postDeserializationHook()
 	{
 		if (metaMetadata != null)
 			initializeMetadataCompTermVector();
