@@ -109,6 +109,7 @@ public class StringOperationsSemanticAction<SA extends SemanticAction> extends
 		}
 		else if (action.equals(ACTION_URL))
 		{
+			
 			ParsedURL p = null; 
 			String url = dest.substring(dest.indexOf("=") + 1, dest.indexOf('&'));
 			URL u;
