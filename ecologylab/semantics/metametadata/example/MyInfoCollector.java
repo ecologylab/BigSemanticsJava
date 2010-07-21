@@ -421,4 +421,9 @@ public class MyInfoCollector implements InfoCollector<MyContainer>
 		// TODO Auto-generated method stub
 		
 	}
+
+	public SeedDistributor getSeedDistributor()
+	{
+		return null;
+	}
 }
