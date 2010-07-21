@@ -38,6 +38,9 @@ public class StringOperationsSemanticAction<SA extends SemanticAction> extends
 	public static final String	ACTION_FIELD				= "field";
 
 	public static final String	ACTION_TRIM					= "trim";
+	
+	// added for extracting google image url 
+	public static final String  ACTION_URL					= "url"; 
 
 	@simpl_scalar
 	private String							action;
@@ -101,6 +104,10 @@ public class StringOperationsSemanticAction<SA extends SemanticAction> extends
 		{
 			return dest.trim();
 		}
+		else if (action.equals(ACTION_URL))
+		{
+			return dest.substring(dest.indexOf("=") + 1, dest.indexOf('&'));
+		}
 
 		return dest;
 	}
@@ -122,5 +129,17 @@ public class StringOperationsSemanticAction<SA extends SemanticAction> extends
 			return defVarMap.get(name);
 		else
 			return null;
+	}
+	
+	public static void main(String[] args)
+	{
+		String thisExample = "/imgres?imgurl=http://nonsensegrandcentral.com/wp-content/uploads/2010/02/picasso24.jpg&imgrefurl=http://nonsensegrandcentral.com/%3Fp%3D134&usg=__hiW72vVOXXPIaKImVkE0ttT6rzA=&h=734&w=601";
+		
+		//TODO extract 'imgurl' from above 
+		// target url = http://nonsensegrandcentral.com/wp-content/uploads/2010/02/picasso24.jpg
+		
+		String thisUrl = thisExample.substring(thisExample.indexOf("=") + 1, thisExample.indexOf('&'));
+		
+		System.out.println(thisUrl);
 	}
 }
