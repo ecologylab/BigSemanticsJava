@@ -456,7 +456,7 @@ extends Debug implements DispatchTarget<QandDownloadable>
 			{
 				for (QandDownloadable item : slice)
 				{
-					if (item != null)
+					if (item != null && item instanceof Container)
 					{
 						Container container = (Container) item;
 						String q = container.getSeed().getQuery();
