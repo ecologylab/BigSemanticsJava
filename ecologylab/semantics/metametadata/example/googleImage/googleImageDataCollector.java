@@ -6,14 +6,12 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
-
 import ecologylab.generic.Debug;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticAction;
+import ecologylab.semantics.generated.library.GeneratedMetadataTranslationScope;
 import ecologylab.semantics.generated.library.GoogleImage;
 import ecologylab.semantics.metametadata.example.MyInfoCollector;
-import ecologylab.semantics.generated.library.GeneratedMetadataTranslationScope;
 
 public class googleImageDataCollector
 {
