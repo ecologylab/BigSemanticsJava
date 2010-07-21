@@ -117,4 +117,6 @@ public interface InfoCollector<C extends Container>
 	Container getContainerDownloadIfNeeded(C ancestor, ParsedURL purl, 
 			Seed seed, boolean dnd,
 			boolean justCrawl, boolean justMedia);
+
+	public abstract SeedDistributor getSeedDistributor();
 }

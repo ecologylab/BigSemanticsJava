@@ -41,16 +41,12 @@ public class SearchSemanticAction<SA extends SemanticAction> extends NestedSeman
 			return null;
 		
 		InfoCollector ic = getInfoCollector();
-		SeedSet seedSet = ic.getSeedSet();
+		
 		SearchState search = new SearchState(query, engine);
-		synchronized (seedSet)
-		{
-			seedSet.add(search);
-//			seedSet.performSeeding(ic.sessionScope());
-//			search.performSeedingSteps(ic);
-//			SeedPeer seedPeer = search.getSeedPeer();
-//			seedPeer.notifyInterface(ic.sessionScope(), SemanticsSessionObjectNames.SEARCH_DASH_BOARD);
-		}
+		SeedSet seedSet = new SeedSet();
+		seedSet.setSeedDistributor(ic.getSeedDistributor());
+		seedSet.add(search);
+		seedSet.performSeeding(ic.sessionScope(), true);
 		return null;
 	}
 }

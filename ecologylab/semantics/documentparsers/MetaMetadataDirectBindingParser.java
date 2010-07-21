@@ -70,7 +70,7 @@ public class MetaMetadataDirectBindingParser<SA extends SemanticAction, M extend
 			MetadataClassDescriptor originalClassDescriptor 				= originalMM.getMetadataClassDescriptor();
 			MetadataClassDescriptor deserializationClassDescriptor	= deserializationMM.getMetadataClassDescriptor();
 
-			boolean sameMetadataSubclass 														= originalClassDescriptor.equals(deserializationMM);
+			boolean sameMetadataSubclass 														= originalClassDescriptor.equals(deserializationClassDescriptor);
 			// if they have the same metadataClassDescriptor, they can be of the same type, or one
 			// of them is using "type=" attribute.
 			boolean useMmdFromDeserialization 											= sameMetadataSubclass && (deserializationMM.getType() != null);

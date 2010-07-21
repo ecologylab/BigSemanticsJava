@@ -294,6 +294,7 @@ implements SemanticsSessionObjectNames, Iterable<S>
 			if (seeds == null)
 				seeds	= new ArrayList<S>();
 		seeds.add(seed);
+		seed.setSeedSet(this);
 	}
 
 	public void clear() 
@@ -325,6 +326,11 @@ implements SemanticsSessionObjectNames, Iterable<S>
 	public boolean isEmpty()
 	{
 		return seeds == null || seeds.isEmpty();
+	}
+
+	public void setSeedDistributor(SeedDistributor seedDistributer)
+	{
+		this.resultDistributer = seedDistributer;
 	}
 
 }

@@ -644,5 +644,11 @@ implements InfoCollector<AC>, SemanticsPrefs, ApplicationProperties, DocumentPar
 	{
 		return null;
 	}
+	
+	@Override
+	public SeedDistributor getSeedDistributor()
+	{
+		return getSeedSet().seedDistributer(this);
+	}
 
 }
