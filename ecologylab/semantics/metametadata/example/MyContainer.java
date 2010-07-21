@@ -373,4 +373,11 @@ public class MyContainer extends Container
 		return null;
 	}
 
+	@Override
+	public Seed getSeed()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
