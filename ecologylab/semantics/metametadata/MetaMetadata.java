@@ -525,14 +525,6 @@ implements Mappable<String>
 		}
 	}
 
-	/**
-	 * @return the metadataClassDescriptor
-	 */
-	public MetadataClassDescriptor getMetadataClassDescriptor()
-	{
-		return metadataClassDescriptor;
-	}
-
 	public MetaMetadataSelector getSelector()
 	{
 		if(selector == null)

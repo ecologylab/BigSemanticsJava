@@ -55,6 +55,7 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField
 		super(copy, name);
 	}
 
+	@Override
 	public String getType()
 	{
 		return type;

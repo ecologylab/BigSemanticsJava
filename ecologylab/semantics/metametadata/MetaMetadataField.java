@@ -1174,4 +1174,18 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 		}
 		return result;
 	}
+
+	/**
+	 * @return the metadataClassDescriptor
+	 */
+	public MetadataClassDescriptor getMetadataClassDescriptor()
+	{
+		return metadataClassDescriptor;
+	}
+	
+	public String getType()
+	{
+		return null;
+	}
+
 }

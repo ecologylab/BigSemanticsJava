@@ -22,6 +22,7 @@ import ecologylab.semantics.actions.NestedSemanticActionsTranslationScope;
 import ecologylab.semantics.connectors.SemanticsSite;
 import ecologylab.semantics.metadata.DocumentParserTagNames;
 import ecologylab.semantics.metadata.Metadata;
+import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.builtins.DebugMetadata;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.Media;
@@ -84,6 +85,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	@simpl_nowrap
 	private HashMapArrayList<String, MetaMetadata>							repositoryByTagName;
 
+	private HashMap<String, MetaMetadata>												repositoryByClassName	= new HashMap<String, MetaMetadata>();
 	/**
 	 * Repository with noAnchorNoQuery URL string as key.
 	 */
@@ -337,12 +339,14 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		this.metadataTScope = metadataTScope;
 		initializeDefaultUserAgent();
 
-		findAndDeclareNestedMetaMetadata();
+		findAndDeclareNestedMetaMetadata(metadataTScope);
 		
 		for (MetaMetadata metaMetadata : repositoryByTagName)
 		{
 			metaMetadata.inheritMetaMetadata(this);
 			metaMetadata.getClassAndBindDescriptors(metadataTScope);
+			MetadataClassDescriptor metadataClassDescriptor = metaMetadata.getMetadataClassDescriptor();
+			repositoryByClassName.put(metadataClassDescriptor.getDescribedClass().getName(), metaMetadata);
 		}
 		
 		initializeLocationBasedMaps();
@@ -369,7 +373,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		}
 	}
 
-	private void findAndDeclareNestedMetaMetadata()
+	private void findAndDeclareNestedMetaMetadata(TranslationScope metadataTScope)
 	{
 		ArrayList<MetaMetadata> nestedDeclarations = new ArrayList<MetaMetadata>();
 		for (MetaMetadata metaMetadata : repositoryByTagName)
@@ -828,7 +832,8 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	{
 		if (metadataClass == null)
 			return null;
-		return repositoryByTagName.get(metadataTScope.getTag(metadataClass));
+//		String tag = metadataTScope.getTag(metadataClass);
+		return repositoryByClassName.get(metadataClass.getName());
 	}
 
 	public Set<String> keySet()

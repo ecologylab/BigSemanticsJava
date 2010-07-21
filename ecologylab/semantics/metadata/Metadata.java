@@ -115,10 +115,7 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 	public Metadata(MetaMetadata metaMetadata)
 	{
 		this();
-		this.metaMetadata 		= metaMetadata;
-		String metaMetadataName = metaMetadata.getName();
-		if (!classDescriptor().getTagName().equals(metaMetadataName))
-			this.metaMetadataName = new MetadataString(metaMetadataName);
+		setMetaMetadata(metaMetadata);
 	}
 	
 	/**
@@ -138,6 +135,12 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 		return (MetadataClassDescriptor) classDescriptor();
 	}
 	
+	/**
+	 * If necessary, bind a MetaMetadata object to this.
+	 * Save the result for next time.
+	 * 
+	 * @return
+	 */
 	public MetaMetadata getMetaMetadata()
 	{
 //		return getMetadataClassDescriptor().getMetaMetadata();
@@ -166,7 +169,8 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 					mm = repository.getByTagName(classDescriptor().getTagName());
 				}
 			}
-			metaMetadata				= mm;
+			setMetaMetadata(mm);
+//			metaMetadata				= mm;
 		}
 		return mm;
 	}
@@ -325,7 +329,11 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 	{
 		//FIXME -- get rid of all call sites for this method -- andruid 6/1/10
 		// see MetaMetadataSearchParser for a call site. can we avoid this call?
-		this.metaMetadata = metaMetadata;
+		
+		this.metaMetadata 		= metaMetadata;
+		String metaMetadataName = metaMetadata.getName();
+		if (!classDescriptor().getTagName().equals(metaMetadataName))	// avoid writing these when you don't need them
+			this.metaMetadataName = new MetadataString(metaMetadataName);
 	}
 
 	@Override
