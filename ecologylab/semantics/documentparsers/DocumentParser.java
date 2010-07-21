@@ -312,7 +312,6 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 		PURLConnection purlConnection = purl.connect(documentParserConnectHelper, (metaMetadata == null) ? null
 				: metaMetadata.getUserAgentString());
 		
-		
 		// check for a parser that was discovered while processing a re-direct
 		DocumentParser result = documentParserConnectHelper.getResult();
 

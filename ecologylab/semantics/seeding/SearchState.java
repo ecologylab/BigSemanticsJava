@@ -86,13 +86,6 @@ implements SemanticsPrefs, SearchEngineNames
    private int				searchNum;
    
    private boolean		generatingTermDictionary;
-
-   /**
-    * Registry that maps the engine attribute in a SearchState Seed to a
-    * DocumentType that will initiate and process the requested search.
-    */
-   private static final Scope	SEARCH_DOCUMENT_TYPE_REGISTRY	= new Scope();
-
    
    public SearchState()
    {
@@ -199,18 +192,6 @@ implements SemanticsPrefs, SearchEngineNames
   	 SemanticActionHandler actionHandler= infoCollector.createSemanticActionHandler();
   	 new MetaMetadataSearchParser(infoCollector,actionHandler, engine, this);
    }
-	
- 	/**
- 	 * Create an entry for the DocumentType class in the registry, for dynamic dispatch.
- 	 * 
- 	 * @param engineName
- 	 * @param documentTypeClass
- 	 */
- 	static public void registerEngine(String engineName, Class<?> documentTypeClass)
- 	{
-	  if (engineName != null)
-		  SEARCH_DOCUMENT_TYPE_REGISTRY.put(engineName, documentTypeClass);
- 	}
 
 	/**
 	 * Do stuff in the DocumentType constructor to setup this search result Container.
