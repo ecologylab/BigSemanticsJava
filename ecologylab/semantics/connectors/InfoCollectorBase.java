@@ -174,6 +174,7 @@ implements InfoCollector<AC>, SemanticsPrefs, ApplicationProperties, DocumentPar
 	protected static final DownloadMonitor			seedingDownloadMonitor				= new DownloadMonitor<Container>("Seeding", InfoCollectorBase.NUM_SEEDING_DOWNLOAD_THREADS, 1);
 
 	//
+	static final Object													SEEDING_STATE_LOCK = new Object();
 
 	protected boolean														duringSeeding;
 
@@ -474,10 +475,16 @@ implements InfoCollector<AC>, SemanticsPrefs, ApplicationProperties, DocumentPar
 
 	public void beginSeeding()
 	{
-		debug("beginSeeding() pause crawler");
-		duringSeeding = true;
-		crawlerDownloadMonitor.pause();
-		pause();
+		synchronized (SEEDING_STATE_LOCK)
+		{
+			if (!duringSeeding)
+			{
+				debug("beginSeeding() pause crawler");
+				duringSeeding = true;
+				crawlerDownloadMonitor.pause();
+				pause();
+			}
+		}
 	}
 
 	/**
@@ -485,12 +492,15 @@ implements InfoCollector<AC>, SemanticsPrefs, ApplicationProperties, DocumentPar
 	 */
 	public void endSeeding()
 	{
-		if (duringSeeding)
+		synchronized (SEEDING_STATE_LOCK)
 		{
-			duringSeeding = false;
-			debug("endSeeding() unpause crawler");
-			crawlerDownloadMonitor.unpause();
-			start();	// start thread *or* unpause()
+			if (duringSeeding)
+			{
+				duringSeeding = false;
+				debug("endSeeding() unpause crawler");
+				crawlerDownloadMonitor.unpause();
+				start();	// start thread *or* unpause()
+			}
 		}
 	}
 

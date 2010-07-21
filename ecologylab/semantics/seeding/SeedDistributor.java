@@ -23,6 +23,7 @@ import ecologylab.semantics.connectors.InfoCollector;
  *  
  * @author eunyee
  * @author andruid
+ * @param <slice>
  */
 public class SeedDistributor<AC extends Container>
 extends Debug implements DispatchTarget<QandDownloadable>
@@ -175,6 +176,7 @@ extends Debug implements DispatchTarget<QandDownloadable>
 					QandDownloadable result = currentSlice.remove(currentSlice.size() - 1);
 					if (result != null)
 					{
+						debugOutputSliceQueries("processing downloadable: " + result);
 						/*
 					debug("\n\n  Total: " + this.expectedNumSearchesInCurrentLevel + " Engine: "
 							+ ((SearchState)result.seed()).getEngine()
@@ -309,6 +311,8 @@ extends Debug implements DispatchTarget<QandDownloadable>
 		SearchResult searchResult	= resultContainer.searchResult();
 		int resultNum				= searchResult.resultNum();	
 		resultSlice(resultNum).add(resultContainer);
+		
+		debugOutputSliceQueries("added downloadable: " + resultContainer);
 
 		if (!this.processingDownloads)
 			downloadResults();
@@ -440,4 +444,27 @@ extends Debug implements DispatchTarget<QandDownloadable>
 	{
 		unMapContainerAndCheckForEndSeeding(container);
 	}
+	
+	private void debugOutputSliceQueries(String msg)
+	{
+		for (int i = 0; i < resultSlices.size(); ++i)
+		{
+			debug(msg);
+			debug("\tslice " + i + ":");
+			ArrayList<QandDownloadable> slice = resultSlice(i);
+			if (slice != null)
+			{
+				for (QandDownloadable item : slice)
+				{
+					if (item != null)
+					{
+						Container container = (Container) item;
+						String q = container.getSeed().getQuery();
+						debug("\t\tquery: " + q);
+					}
+				}
+			}
+		}
+	}
+	
 }

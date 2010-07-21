@@ -99,6 +99,8 @@ implements QandDownloadable
 	
 	public abstract boolean isSeed();
 	
+	public abstract Seed getSeed();
+	
 	abstract public void setInArticleBody(boolean value);
 	
 	abstract public AbstractImgElement createImageElement(ParsedURL parsedImgUrl, String alt, 

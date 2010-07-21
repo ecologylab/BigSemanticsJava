@@ -195,6 +195,8 @@ implements SemanticsSessionObjectNames, Iterable<S>
      			seed.setActive(false);	// does not affect SearchState or Feed
    			}
    		}
+   		// for search seeds, endSeeding() will be called from SeedDistributor. however, for <feed>
+   		// seeds, we need to call endSeeding() here. endSeeding() will check the seeding status.
  			infoCollector.endSeeding();
    	}
    	

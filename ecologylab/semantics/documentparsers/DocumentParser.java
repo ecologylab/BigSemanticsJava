@@ -342,15 +342,19 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 				}
 			}
 			
-			if(metaMetadata!=null)
-			{
-				binding = metaMetadata.getParser();
-			}
-			else
+			// if still null, use the default one for Document
+			if(metaMetadata == null)
 			{
 				metaMetadata = metaMetaDataRepository.getByTagName(DocumentParserTagNames.DOCUMENT_TAG);
 			}
-			result = getParserInstanceFromBindingMap(binding, infoCollector, semanticActionHandler);
+			
+			// if we haven't got a DocumentParser here, using the binding hint; if we already have one,
+			// it is very likely a predefined one, e.g. MetaMetadataSearchParser
+			if (result == null)
+			{
+				binding = metaMetadata.getParser();
+				result = getParserInstanceFromBindingMap(binding, infoCollector, semanticActionHandler);
+			}
 		}
 		
 		if (result != null)
@@ -358,6 +362,7 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 			result.metaMetadata = metaMetadata;
 			result.fillValues(purlConnection, container, infoCollector);
 		}
+		
 		return result;
 	}
 
