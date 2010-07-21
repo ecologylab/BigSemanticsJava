@@ -10,14 +10,15 @@ This is a generated code. DO NOT edit or modify it.
 
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.generated.library.*;
+import ecologylab.semantics.generated.library.search.Result;
+import ecologylab.semantics.generated.library.search.Search;
+import ecologylab.semantics.generated.library.search.SearchResult;
+import ecologylab.semantics.generated.library.search.YahooResultSet;
+import ecologylab.semantics.generated.library.search.YahooThumbnail;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataBuiltinsTranslationScope;
 import ecologylab.semantics.metadata.builtins.*;
-import ecologylab.semantics.metadata.builtins.DebugMetadata;
-import ecologylab.semantics.metadata.builtins.Document;
-import ecologylab.semantics.metadata.builtins.Entity;
-import ecologylab.semantics.metadata.builtins.Image;
-import ecologylab.semantics.metadata.builtins.Media;
 import ecologylab.semantics.metadata.scalar.*;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
@@ -37,7 +38,19 @@ This is the tranlation scope class for generated files
 
 public class GeneratedMetadataTranslationScope
 {protected static final Class TRANSLATIONS[]=
-	{GoogleImage.class,
+	{ecologylab.semantics.generated.library.Pdf.class,
+
+Result.class,
+
+YahooResultSet.class,
+
+Search.class,
+
+SearchResult.class,
+
+YahooThumbnail.class,
+
+WeatherReport.class,
 
 
 };
