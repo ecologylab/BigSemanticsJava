@@ -1,9 +1,12 @@
 package ecologylab.semantics.actions;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ecologylab.net.ParsedURL;
 import ecologylab.semantics.metametadata.DefVar;
 import ecologylab.serialization.simpl_inherit;
 import ecologylab.serialization.ElementState.xml_tag;
@@ -106,7 +109,19 @@ public class StringOperationsSemanticAction<SA extends SemanticAction> extends
 		}
 		else if (action.equals(ACTION_URL))
 		{
-			return dest.substring(dest.indexOf("=") + 1, dest.indexOf('&'));
+			ParsedURL p = null; 
+			String url = dest.substring(dest.indexOf("=") + 1, dest.indexOf('&'));
+			URL u;
+			try
+			{
+				u = new URL(url);
+				p = new ParsedURL(u);
+			}
+			catch (MalformedURLException e)
+			{
+				e.printStackTrace();
+			}
+			return p; 
 		}
 
 		return dest;
