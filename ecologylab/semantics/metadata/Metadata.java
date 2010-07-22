@@ -645,4 +645,10 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 	{
 		return false;
 	}
+	
+	@Retention(RetentionPolicy.RUNTIME)
+	public @interface mm_name
+	{
+		String value();
+	}
 }
