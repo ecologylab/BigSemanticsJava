@@ -50,10 +50,10 @@ public class MetaMetadataOneLevelNestingIterator extends OneLevelNestingIterator
 	
 	private static Iterator<? extends MetaMetadataField> createMixinCollectionIterator(ArrayList<Metadata> mixinMetadatas)
 	{
-		ArrayList<MetaMetadata> mixinMetaMetadatas = null;
+		ArrayList<MetaMetadataCompositeField> mixinMetaMetadatas = null;
 		if (mixinMetadatas != null)
 		{
-			mixinMetaMetadatas = new ArrayList<MetaMetadata>();
+			mixinMetaMetadatas = new ArrayList<MetaMetadataCompositeField>();
 			for (Metadata metadata : mixinMetadatas)
 				mixinMetaMetadatas.add(metadata.getMetaMetadata());
 			

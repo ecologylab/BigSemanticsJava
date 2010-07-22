@@ -416,7 +416,7 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 			
 			Class<? extends Metadata> metadataClass = mmdElement.getMetadataClass();
 			MetaMetadata metaMetadata 							= mmdElement.metaMetadataRepository().getByClass(metadataClass);
-			Class[] argClasses 	= new Class[] { metaMetadata.getClass() };
+			Class[] argClasses 	= new Class[] { MetaMetadataCompositeField.class };
 			Object[] argObjects = new Object[] { metaMetadata };
 			nestedMetadata = ReflectionTools.getInstance(metadataClass, argClasses, argObjects);
 			ReflectionTools.setFieldValue(metadata, mmdElement.getMetadataFieldDescriptor().getField(), nestedMetadata);
@@ -490,7 +490,8 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 			// the collection meta-metadatafield
 			boolean collectionInstanceListInitialized = false;
 			// get the field from childField list which has the same name as this field
-			for (MetaMetadataField childMetaMetadataField : mmdElement.getChildMetaMetadata())
+			HashMapArrayList<String, MetaMetadataField> childMetaMetadata = mmdElement.getChildMetaMetadata();
+			for (MetaMetadataField childMetaMetadataField : childMetaMetadata)
 			{
 				// if this field exists in childField list this means there are some extraction rules for it
 				// and so get the values
@@ -532,10 +533,10 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 						// returned.
 						for (int j = 0; j < parentNodeListLength; j++)
 						{
-							String childTag 								= mmdElement.determineCollectionChildType(); //getChildTag();
-							MetaMetadata mmdForNewMetadata 	= mmdElement.metaMetadataRepository().getByTagName(childTag);
-							Class[] argClasses 	= new Class[] { mmdForNewMetadata.getClass() };
-							Object[] argObjects = new Object[] { mmdForNewMetadata };
+							//String childTag 								= mmdElement.determineCollectionChildType(); //getChildTag();
+							//MetaMetadata mmdForNewMetadata 	= mmdElement.metaMetadataRepository().getByTagName(childTag);
+							Class[] argClasses 	= new Class[] { MetaMetadataCompositeField.class }; //mmdForNewMetadata.getClass() };
+							Object[] argObjects = new Object[] { mmdElement.getChildComposite() }; //mmdForNewMetadata };
 							Metadata metadataInstance = (Metadata) ReflectionTools.getInstance(collectionChildClass, argClasses, argObjects);
 							collectionInstanceList.add(metadataInstance);
 							

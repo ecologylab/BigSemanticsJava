@@ -339,7 +339,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		this.metadataTScope = metadataTScope;
 		initializeDefaultUserAgent();
 
-		findAndDeclareNestedMetaMetadata(metadataTScope);
+		//findAndDeclareNestedMetaMetadata(metadataTScope);
 		
 		for (MetaMetadata metaMetadata : repositoryByTagName)
 		{

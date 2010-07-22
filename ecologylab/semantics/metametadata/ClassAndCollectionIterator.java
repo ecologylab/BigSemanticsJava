@@ -35,7 +35,7 @@ implements Iterator<MetadataBase>
    * 
    * @param firstObject - The object whose elements need to be iterated over.
    */
-  public ClassAndCollectionIterator(MetaMetadata firstObject, Metadata metadata)
+  public ClassAndCollectionIterator(MetaMetadataField firstObject, Metadata metadata)
   {
     root = firstObject;
     this.iterator  = firstObject.iterator();

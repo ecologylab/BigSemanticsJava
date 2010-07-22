@@ -291,10 +291,12 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 					+ " extends Metadata" + implementDecl + "{\n");
 
 			// loop to write the class definition.
-			for (int i = 0; i < kids.size(); i++)
+			
+			HashMapArrayList<String, MetaMetadataField> childMetaMetadata = getChildMetaMetadata();
+			for (int i = 0; i < childMetaMetadata.size(); i++)
 			{
 				// translate the each meta-metadata field into class.
-				MetaMetadataField cField = kids.get(i);
+				MetaMetadataField cField = childMetaMetadata.get(i);
 				cField.setExtendsField(extendsField);
 				cField.setMmdRepository(mmdRepository);
 				cField.compileToMetadataClass(packageName, p,MetadataCompilerUtils.GENERATE_FIELDS_PASS,false);
@@ -304,10 +306,10 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 			MetadataCompilerUtils.appendBlankConstructor(p, javaClassName);
 			MetadataCompilerUtils.appendConstructor(p, javaClassName);
 			
-			for (int i = 0; i < kids.size(); i++)
+			for (int i = 0; i < childMetaMetadata.size(); i++)
 			{
 				// translate the each meta-metadata field into class.
-				MetaMetadataField cField = kids.get(i);
+				MetaMetadataField cField = childMetaMetadata.get(i);
 				cField.setExtendsField(extendsField);
 				cField.setMmdRepository(mmdRepository);
 				cField.compileToMetadataClass(packageName, p,MetadataCompilerUtils.GENERATE_METHODS_PASS,true);
@@ -847,14 +849,19 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	{
 		String fieldName = fieldToInheritFrom.getName();
 		// this is for the case when meta_metadata has no meta_metadata fields of its own. It just inherits from super class.
-		if (kids == null)
-			kids = new HashMapArrayList<String, MetaMetadataField>();
+		HashMapArrayList<String, MetaMetadataField> childMetaMetadata = getChildMetaMetadata();
+		if (childMetaMetadata == null)
+		{
+			childMetaMetadata = new HashMapArrayList<String, MetaMetadataField>();
+			setChildMetaMetadata(childMetaMetadata);
+		}
 		
 		// *do not* override fields in here with fields from super classes.
-		MetaMetadataField fieldToInheritTo = kids.get(fieldName);
+		
+		MetaMetadataField fieldToInheritTo 														= childMetaMetadata.get(fieldName);
 		if (fieldToInheritTo == null)
 		{
-			kids.put(fieldName, fieldToInheritFrom);
+			childMetaMetadata.put(fieldName, fieldToInheritFrom);
 			fieldToInheritTo = fieldToInheritFrom;
 		}
 		else
@@ -862,9 +869,10 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 			fieldToInheritTo.inheritNonDefaultAttributes(fieldToInheritFrom);
 		}
 		
-		if (fieldToInheritFrom.kids != null)
+		HashMapArrayList<String, MetaMetadataField> inheritedChildMetaMetadata = fieldToInheritFrom.getChildMetaMetadata();
+		if (inheritedChildMetaMetadata != null)
 		{
-			for(MetaMetadataField grandChildMetaMetadataField : fieldToInheritFrom.kids)
+			for(MetaMetadataField grandChildMetaMetadataField : inheritedChildMetaMetadata)
 			{
 				fieldToInheritTo.inheritForField(grandChildMetaMetadataField);
 			}
@@ -918,14 +926,18 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 
 	public Iterator<MetaMetadataField> iterator()
 	{
-		return (kids != null) ? kids.iterator() : EMPTY_ITERATOR;
+		HashMapArrayList<String, MetaMetadataField> childMetaMetadata = getChildMetaMetadata();
+		return (childMetaMetadata != null) ? childMetaMetadata.iterator() : EMPTY_ITERATOR;
 	}
 	
 	public void sortForDisplay()
 	{
 		if (!fieldsSortedForDisplay)
 		{
-			Collections.sort((ArrayList<MetaMetadataField>) kids.values(), LAYER_COMPARATOR);
+			
+			HashMapArrayList<String, MetaMetadataField> childMetaMetadata = getChildMetaMetadata();
+			if (childMetaMetadata != null)
+				Collections.sort((ArrayList<MetaMetadataField>) childMetaMetadata.values(), LAYER_COMPARATOR);
 			fieldsSortedForDisplay = true;
 		}
 	}

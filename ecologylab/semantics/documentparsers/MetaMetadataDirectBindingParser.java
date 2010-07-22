@@ -12,6 +12,7 @@ import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.MetaMetadata;
+import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.metametadata.MetaMetadataField;
 import ecologylab.serialization.DeserializationHookStrategy;
 import ecologylab.serialization.SIMPLTranslationException;
@@ -112,7 +113,7 @@ public class MetaMetadataDirectBindingParser<SA extends SemanticAction, M extend
 	{
 		if (deserializedMetadata.parent() == null)
 		{
-			MetaMetadata deserializationMM = deserializedMetadata.getMetaMetadata();
+			MetaMetadata deserializationMM = (MetaMetadata) deserializedMetadata.getMetaMetadata();
 			if (bindMetaMetadataToMetadata(deserializationMM, metaMetadata))
 			{
 				metaMetadata 										= deserializationMM;
@@ -125,17 +126,17 @@ public class MetaMetadataDirectBindingParser<SA extends SemanticAction, M extend
 		}
 		else 
 		{
-			MetaMetadata deserializationMM		= deserializedMetadata.getMetaMetadata();
+			MetaMetadataCompositeField deserializationMM		= deserializedMetadata.getMetaMetadata();
 			if (currentMM != null)
 			{
-				MetaMetadataField newOriginalMMF	= currentMM.lookupChild(deserializationMM.getName());	// this fails for collections :-(
+				MetaMetadataCompositeField newOriginalMMF	= (MetaMetadataCompositeField) currentMM.lookupChild(deserializationMM.getName());	// this fails for collections :-(
 				if (false) // (newOriginalMMF != null)
 				{
 					if (!bindMetaMetadataToMetadata(deserializationMM, newOriginalMMF))
 					{
 						//TODO -- if this class cast fails, lookup equiv?! it must be a composite object for us to get here.
 						//TODO -- are the types correct anyway? should it be MetaMetadata or MetaMetadataCompositeField in Metadata???
-						deserializedMetadata.setMetaMetadata((MetaMetadata) newOriginalMMF);
+						deserializedMetadata.setMetaMetadata(newOriginalMMF);
 					}
 				}
 				currentMM													= newOriginalMMF;

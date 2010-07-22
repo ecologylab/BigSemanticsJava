@@ -3,8 +3,7 @@ package ecologylab.semantics.metadata.builtins;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
 import ecologylab.semantics.metadata.scalar.MetadataString;
-import ecologylab.semantics.metametadata.MetaMetadata;
-import ecologylab.serialization.Hint;
+import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.serialization.simpl_inherit;
 
 /**
@@ -28,7 +27,7 @@ public class Image extends Media
 
 	}
 
-	public Image(MetaMetadata metaMetadata)
+	public Image(MetaMetadataCompositeField metaMetadata)
 	{
 		super(metaMetadata);
 	}

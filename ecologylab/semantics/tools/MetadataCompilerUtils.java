@@ -41,7 +41,7 @@ public class MetadataCompilerUtils
 	public static final HashSet<String> importTargets = new HashSet<String>(Arrays.asList
 	(
 		"java.util.*",
-		"ecologylab.semantics.metametadata.MetaMetadata",
+		"ecologylab.semantics.metametadata.MetaMetadataCompositeField",
 		"ecologylab.net.ParsedURL",
 		"ecologylab.generic.HashMapArrayList",
 		"ecologylab.serialization.simpl_inherit",
@@ -138,7 +138,7 @@ public class MetadataCompilerUtils
 		String comment = "Constructor";
 		MetadataCompilerUtils.writeJavaDocComment(comment, appendable);
 		appendable.append("public ").append(className).append(
-				"(MetaMetadata metaMetadata)\n{\nsuper(metaMetadata);\n}\n");
+				"(MetaMetadataCompositeField metaMetadata)\n{\nsuper(metaMetadata);\n}\n");
 	}
 
 	/**

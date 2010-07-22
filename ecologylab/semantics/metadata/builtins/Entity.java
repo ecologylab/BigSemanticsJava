@@ -7,7 +7,7 @@ import ecologylab.net.ParsedURL;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
 import ecologylab.semantics.metadata.scalar.MetadataString;
-import ecologylab.semantics.metametadata.MetaMetadata;
+import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.serialization.Hint;
 import ecologylab.serialization.simpl_inherit;
 import ecologylab.serialization.types.element.Mappable;
@@ -40,7 +40,7 @@ implements Mappable<ParsedURL>
 	/**
 	 * @param metaMetadata
 	 */
-	public Entity(MetaMetadata metaMetadata)
+	public Entity(MetaMetadataCompositeField metaMetadata)
 	{
 		super(metaMetadata);
 		// TODO Auto-generated constructor stub

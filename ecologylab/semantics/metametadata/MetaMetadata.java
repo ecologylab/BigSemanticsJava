@@ -158,7 +158,7 @@ implements Mappable<String>
 		
 		if (metadataClass != null)
 		{
-			Class[] argClasses 	= new Class[] { this.getClass() };
+			Class[] argClasses 	= new Class[] { MetaMetadataCompositeField.class };
 			Object[] argObjects = new Object[] { this };
 			result = ReflectionTools.getInstance(metadataClass, argClasses, argObjects);
 			if (mixins != null && mixins.size() > 0)

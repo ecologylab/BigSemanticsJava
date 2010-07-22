@@ -2,6 +2,7 @@ package ecologylab.semantics.metametadata;
 
 import java.io.IOException;
 
+import ecologylab.generic.HashMapArrayList;
 import ecologylab.semantics.metadata.DocumentParserTagNames;
 import ecologylab.semantics.tools.MetadataCompilerUtils;
 import ecologylab.serialization.XMLTools;
@@ -25,6 +26,14 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField
 	public MetaMetadataCompositeField()
 	{
 		// TODO Auto-generated constructor stub
+	}
+	
+	public MetaMetadataCompositeField(String name, HashMapArrayList<String, MetaMetadataField> kids)
+	{
+		this.name = name;
+		this.kids = new HashMapArrayList<String, MetaMetadataField>();
+		if (kids != null)
+			this.kids.putAll(kids);
 	}
 
 	public MetaMetadataCompositeField(MetaMetadataField mmf)

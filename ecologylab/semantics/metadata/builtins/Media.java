@@ -7,13 +7,8 @@ package ecologylab.semantics.metadata.builtins;
 
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.scalar.MetadataString;
-import ecologylab.semantics.metametadata.MetaMetadata;
-import ecologylab.serialization.Hint;
+import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.serialization.simpl_inherit;
-
-/**
- * The Media Class
- **/
 
 @simpl_inherit
 public class Media extends Metadata
@@ -32,7 +27,7 @@ public class Media extends Metadata
 	 * Constructor
 	 **/
 
-	public Media(MetaMetadata metaMetadata)
+	public Media(MetaMetadataCompositeField metaMetadata)
 	{
 		super(metaMetadata);
 	}

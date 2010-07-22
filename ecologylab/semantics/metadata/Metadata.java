@@ -17,7 +17,7 @@ import ecologylab.semantics.metadata.builtins.DebugMetadata;
 import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
 import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.semantics.metametadata.ClassAndCollectionIterator;
-import ecologylab.semantics.metametadata.MetaMetadata;
+import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.metametadata.MetaMetadataField;
 import ecologylab.semantics.metametadata.MetaMetadataOneLevelNestingIterator;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
@@ -48,7 +48,7 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 	@xml_tag("mm_name")
 	MetadataString 						metaMetadataName;
 	
-	private MetaMetadata			metaMetadata;
+	private MetaMetadataCompositeField			metaMetadata;
 
 	/**
 	 * Hidden reference to the MetaMetadataRepository. DO NOT access this field directly.
@@ -112,7 +112,7 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 	 * 
 	 * @param metaMetadata
 	 */
-	public Metadata(MetaMetadata metaMetadata)
+	public Metadata(MetaMetadataCompositeField metaMetadata)
 	{
 		this();
 		setMetaMetadata(metaMetadata);
@@ -141,10 +141,10 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 	 * 
 	 * @return
 	 */
-	public MetaMetadata getMetaMetadata()
+	public MetaMetadataCompositeField getMetaMetadata()
 	{
 //		return getMetadataClassDescriptor().getMetaMetadata();
-		MetaMetadata mm			= metaMetadata;
+		MetaMetadataCompositeField mm			= metaMetadata;
 		if (mm == null)
 		{
 			if (metaMetadataName != null)	// get from saved composition
@@ -169,7 +169,8 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 					mm = repository.getByTagName(classDescriptor().getTagName());
 				}
 			}
-			setMetaMetadata(mm);
+			if (mm != null)
+				setMetaMetadata(mm);
 //			metaMetadata				= mm;
 		}
 		return mm;
@@ -325,12 +326,12 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 		return null;
 	}
 
-	public void setMetaMetadata(MetaMetadata metaMetadata)
+	public void setMetaMetadata(MetaMetadataCompositeField metaMetadata)
 	{
 		//FIXME -- get rid of all call sites for this method -- andruid 6/1/10
 		// see MetaMetadataSearchParser for a call site. can we avoid this call?
 		
-		this.metaMetadata 		= metaMetadata;
+		this.metaMetadata 			= metaMetadata;
 		String metaMetadataName = metaMetadata.getName();
 		if (!classDescriptor().getTagName().equals(metaMetadataName))	// avoid writing these when you don't need them
 			this.metaMetadataName = new MetadataString(metaMetadataName);
@@ -339,7 +340,7 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 	@Override
 	public CompositeTermVector termVector()
 	{
-		if (termVector == null)
+		if (termVector == null && metaMetadata != null)
 			return initializeMetadataCompTermVector();
 		return termVector;
 	}
@@ -448,7 +449,7 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 
 	public ClassAndCollectionIterator metadataIterator()
 	{
-		return new ClassAndCollectionIterator(this.metaMetadata, this);
+		return new ClassAndCollectionIterator(metaMetadata, this);
 	}
 
 	public boolean hasObservers()

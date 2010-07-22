@@ -2,9 +2,11 @@ package ecologylab.semantics.metametadata;
 
 import java.io.IOException;
 
+import ecologylab.generic.HashMapArrayList;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.DocumentParserTagNames;
 import ecologylab.semantics.tools.MetadataCompilerUtils;
+import ecologylab.serialization.TranslationScope;
 import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.simpl_inherit;
 import ecologylab.serialization.ElementState.xml_tag;
@@ -202,5 +204,40 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 	protected boolean isNewDeclaration()
 	{
 		return childType != null && isNewClass();
+	}
+	
+	@Override
+	public void postDeserializationHook()
+	{
+		MetaMetadataCompositeField composite = new MetaMetadataCompositeField(determineCollectionChildType(), kids);
+		if (kids != null)
+		{
+			kids.clear();
+			kids.put(composite.getName(), composite);
+		}
+	}
+	
+	/**
+	 * Collection fields with children need to bind a class descriptor to the composite
+	 * field created in postDeserializationHook(), and not itself.
+	 */
+	@Override
+	boolean getClassAndBindDescriptors(TranslationScope metadataTScope)
+	{
+		if (kids != null && kids.size() > 0)
+			return kids.get(0).getClassAndBindDescriptors(metadataTScope);
+		else
+			return false;
+	}
+	
+	@Override
+	public HashMapArrayList<String, MetaMetadataField> getChildMetaMetadata()
+	{
+		return (kids != null && kids.size() > 0) ? kids.get(0).getChildMetaMetadata() : null;
+	}
+	
+	public MetaMetadataCompositeField getChildComposite()
+	{
+		return (kids != null && kids.size() > 0) ? (MetaMetadataCompositeField) kids.get(0) : null;
 	}
 }

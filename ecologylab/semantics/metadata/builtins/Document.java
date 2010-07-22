@@ -10,7 +10,7 @@ import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.scalar.MetadataInteger;
 import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
 import ecologylab.semantics.metadata.scalar.MetadataString;
-import ecologylab.semantics.metametadata.MetaMetadata;
+import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.serialization.Hint;
 import ecologylab.serialization.simpl_inherit;
 
@@ -49,7 +49,7 @@ public class Document extends Metadata
 	 * Constructor
 	 **/
 
-	public Document(MetaMetadata metaMetadata)
+	public Document(MetaMetadataCompositeField metaMetadata)
 	{
 		super(metaMetadata);
 	}
