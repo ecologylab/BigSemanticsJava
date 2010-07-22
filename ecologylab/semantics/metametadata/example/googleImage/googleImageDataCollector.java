@@ -3,7 +3,6 @@ package ecologylab.semantics.metametadata.example.googleImage;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
@@ -12,14 +11,13 @@ import ecologylab.generic.Debug;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticAction;
 import ecologylab.semantics.generated.library.GeneratedMetadataTranslationScope;
-import ecologylab.semantics.generated.library.GoogleImage;
 import ecologylab.semantics.metametadata.example.MyInfoCollector;
 
 public class googleImageDataCollector
 {
 
 	 //ref. Document <- Media <- Image <- GoogleImage  
-	static List<GoogleImage> metadataCollected = new ArrayList<GoogleImage>(); 
+	//static List<GoogleImage> metadataCollected = new ArrayList<GoogleImage>(); 
 		
 	public static void main(String[] args) throws InterruptedException
 	{ 
@@ -67,10 +65,10 @@ public class googleImageDataCollector
 		if(metadataCollected.size() > 0){
 			for (Object obj : metadataCollected)
 			{
-				if(obj instanceof GoogleImage){
+//				if(obj instanceof GoogleImage){
 					//sb.append(((GoogleImage) obj).getTitle() + " " + obj.getSize() + " " + obj.getSrcUrl() + " " + obj.getRefUrl() + "\n");
 					
-				}
+//				}
 			}
 			
 		}else
