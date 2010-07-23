@@ -647,6 +647,8 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 	}
 	
 	@Retention(RetentionPolicy.RUNTIME)
+	@Inherited
+	@Target(ElementType.FIELD)
 	public @interface mm_name
 	{
 		String value();
