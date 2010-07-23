@@ -167,6 +167,8 @@ extends Debug implements DispatchTarget<QandDownloadable>
 		{
 			//if (!done)
 			{
+				debugOutputSliceQueries("the slices:");
+				
 				processingDownloads		= true; // imperfect but useful mechanism of scheduling
 				
 				ArrayList<QandDownloadable> currentSlice	= resultSlice(resultNumLevel);
@@ -176,7 +178,6 @@ extends Debug implements DispatchTarget<QandDownloadable>
 					QandDownloadable result = currentSlice.remove(currentSlice.size() - 1);
 					if (result != null)
 					{
-						debugOutputSliceQueries("processing downloadable: " + result);
 						/*
 					debug("\n\n  Total: " + this.expectedNumSearchesInCurrentLevel + " Engine: "
 							+ ((SearchState)result.seed()).getEngine()
@@ -312,8 +313,6 @@ extends Debug implements DispatchTarget<QandDownloadable>
 		int resultNum				= searchResult.resultNum();	
 		resultSlice(resultNum).add(resultContainer);
 		
-		debugOutputSliceQueries("added downloadable: " + resultContainer);
-
 		if (!this.processingDownloads)
 			downloadResults();
 		
@@ -447,9 +446,10 @@ extends Debug implements DispatchTarget<QandDownloadable>
 	
 	private void debugOutputSliceQueries(String msg)
 	{
+		debug("\n");
+		debug(msg);
 		for (int i = 0; i < resultSlices.size(); ++i)
 		{
-			debug(msg);
 			debug("\tslice " + i + ":");
 			ArrayList<QandDownloadable> slice = resultSlice(i);
 			if (slice != null)

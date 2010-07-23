@@ -23,6 +23,7 @@ abstract public class Seed<AC extends Container> extends ElementState implements
      * When set, indicates that the seed should be processed without using a
      * {@link SeedDistributor ResultDistributer}.
      */
+    // FIXME it seems that we can get rid of noAggregator since it is always set to true 
     protected boolean                     noAggregator;
 
     protected boolean                     queueInsteadOfImmediate;

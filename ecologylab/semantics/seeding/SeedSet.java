@@ -185,6 +185,8 @@ implements SemanticsSessionObjectNames, Iterable<S>
 
    			if (seed.isActive())	// false if inactive
    			{  				
+   				debug("perform seeding: " + seed);
+   				
    				seed.performSeedingSteps(infoCollector);
    				aSeedingIsPerformed	= true;
    				
@@ -326,11 +328,6 @@ implements SemanticsSessionObjectNames, Iterable<S>
 	public boolean isEmpty()
 	{
 		return seeds == null || seeds.isEmpty();
-	}
-
-	public void setSeedDistributor(SeedDistributor seedDistributer)
-	{
-		this.resultDistributer = seedDistributer;
 	}
 
 }
