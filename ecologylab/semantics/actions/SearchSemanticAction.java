@@ -44,7 +44,7 @@ public class SearchSemanticAction<SA extends SemanticAction> extends NestedSeman
 		
 		SearchState search = new SearchState(query, engine);
 		SeedSet seedSet = new SeedSet();
-		seedSet.setSeedDistributor(ic.getSeedDistributor());
+		seedSet.setParentSeedSet(ic.getSeedSet());
 		seedSet.add(search);
 		seedSet.performSeeding(ic.sessionScope(), true);
 		return null;

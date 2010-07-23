@@ -224,8 +224,8 @@ public class MetaMetadataScalarField extends MetaMetadataField
 			className = "Integer";
 		}
 
-		StringBuilder annotations = new StringBuilder(" @simpl_scalar");
-
+		StringBuilder annotations = new StringBuilder("@simpl_scalar");
+		
 		if (getHint() != null)
 		{
 			annotations.append(String.format(" @simpl_hints(Hint.%s)", getHint()));

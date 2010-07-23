@@ -91,19 +91,21 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField
 	@Override
 	protected void doAppending(Appendable appendable, int pass) throws IOException
 	{
-		String variableType = " @simpl_composite " + XMLTools.classNameFromElementName(getTypeOrName());
+		StringBuilder annotations = new StringBuilder();
+		annotations.append("@simpl_composite @mm_name(\"" + name + "\")");
+		annotations.append(" "); // the space between annotations and type
+		
 		String fieldType = XMLTools.classNameFromElementName(getTypeOrName());
 		if (isEntity())
 		{
-			variableType = " @simpl_composite Entity<" + XMLTools.classNameFromElementName(getTypeOrName())
-					+ ">";
 			fieldType = "Entity<" + XMLTools.classNameFromElementName(getTypeOrName()) + ">";
 		}
 		String fieldName = getFieldName();
+		
 		switch (pass)
 		{
 		case MetadataCompilerUtils.GENERATE_FIELDS_PASS:
-			appendable.append("\nprivate " + getTagDecl() + variableType + "\t" + fieldName + ";");
+			appendable.append("\nprivate " + getTagDecl() + annotations + fieldType + "\t" + fieldName + ";");
 			break;
 		case MetadataCompilerUtils.GENERATE_METHODS_PASS:
 			appendLazyEvaluationMethod(appendable, fieldName, fieldType);

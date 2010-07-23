@@ -168,6 +168,8 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 		if (noWrap)
 			annotation.append(" @simpl_nowrap");
 
+		annotation.append(" @mm_name(\"" + name + "\")");
+		
 		switch (pass)
 		{
 		case MetadataCompilerUtils.GENERATE_FIELDS_PASS:
