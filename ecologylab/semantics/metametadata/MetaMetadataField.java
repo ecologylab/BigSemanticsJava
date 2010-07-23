@@ -1057,30 +1057,6 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 		}
 		return result;
 	}
-	
-	/*public String getChildTag()
-	{
-		if(childTag!=null && noWrap)
-		{
-			return childTag;
-		}
-		else if (tag != null && collection == null)
-		{
-			// TODO implement other cases
-			return tag;
-		}
-		else
-			return name;	
-	}	*/
-	
-	protected void bindChildren(MetaMetadata childMM)
-	{
-		if (childMM != null)
-		{
-			kids	= childMM.kids;
-		}
-
-	}
 
 	/**
 	 * @return the tag

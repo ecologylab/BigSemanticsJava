@@ -964,12 +964,6 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		return returnVal;
 	}
 
-	void bindChildren(MetaMetadataField childField, String tag)
-	{
-		MetaMetadata newChildMM = getByTagName(tag);
-		childField.bindChildren(newChildMM);
-	}
-
 	public String getName()
 	{
 		return name;
