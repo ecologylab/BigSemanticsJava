@@ -6,7 +6,7 @@ import ecologylab.generic.Generic;
 import ecologylab.oodss.distributed.common.ServicesHostsAndPorts;
 import ecologylab.oodss.distributed.legacy.ServicesClient;
 import ecologylab.oodss.messages.ResponseMessage;
-import ecologylab.semantics.seeding.CfBaseSeedTranslations;
+import ecologylab.semantics.seeding.BaseSeedTranslations;
 import ecologylab.semantics.seeding.SearchState;
 import ecologylab.semantics.seeding.SeedCf;
 import ecologylab.serialization.TranslationScope;
@@ -19,7 +19,7 @@ import ecologylab.serialization.TranslationScope;
  */
 public class CFServicesClientExample extends Debug
 {
-	static final TranslationScope	CF_TRANSLATIONS		= CfBaseSeedTranslations.get();
+	static final TranslationScope	CF_TRANSLATIONS		= BaseSeedTranslations.get();
 	 
 	/**
 	 * 

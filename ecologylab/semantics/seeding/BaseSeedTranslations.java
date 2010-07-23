@@ -12,9 +12,9 @@ import ecologylab.serialization.TranslationScope;
  * 
  * @author andruid
  */
-public class CfBaseSeedTranslations extends Debug
+public class BaseSeedTranslations extends Debug
 {
-	public static final String	TSCOPE_NAME	= "cf_base_seed_translations";
+	public static final String	TSCOPE_NAME	= "base_seed_translations";
 	
 	public static final Class	TRANSLATIONS[]	= 
 	{ 
@@ -34,7 +34,7 @@ public class CfBaseSeedTranslations extends Debug
 	/**
 	 * 
 	 */
-	public CfBaseSeedTranslations()
+	public BaseSeedTranslations()
 	{
 		super();
 

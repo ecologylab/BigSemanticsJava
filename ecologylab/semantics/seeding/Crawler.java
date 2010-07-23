@@ -35,101 +35,149 @@ public class Crawler extends Seed
 	@simpl_scalar
 	protected					String		action;
 
+	public Crawler()
+	{
+		super();
+	}
+	
+	public Crawler(String value, String action)
+	{
+		super();
+		this.setValue(value);
+		this.setCategory(action);
+	}
+	
 	/**
-	 * @return the url
+	 * Check the validity of this seed.
 	 */
-	public ParsedURL getUrl()
+	public boolean validate()
+	{
+		boolean result = false;
+		if (REJECT.equals(action))
+		{
+			String arg	= domain;
+			if (arg == null)
+			{
+				if (url != null)
+				{
+					arg	= url.domain();
+					domain	= arg;
+				}
+			}
+			if (arg != null)
+				result = true;
+		}
+
+		else if (url != null)
+			result = true;
+		
+		return result;
+	}
+	
+	
+	/**
+	 * Bring this seed into the agent or directly into the composition.
+	 * 
+	 * @param infoCollector 
+	 */
+	public void performInternalSeedingSteps(InfoCollector infoCollector)
+ 	{
+  	   if (REJECT.equals(action))
+  		   infoCollector.reject(domain);
+
+  	   else if (url != null)
+ 	   {
+		   if (TRAVERSABLE.equals(action))
+			   infoCollector.traversable(url);
+
+		   else if (UNTRAVERSABLE.equals(action))
+			   infoCollector.untraversable(url);
+ 	   }
+ 	}
+
+	/**
+	 * Set the value of the purl field, if the String is valid, 
+	 * or (assume) and set the value to be the domain.
+	 * 
+	 * @param value
+	 */
+	public boolean setValue(String value)
+	{
+		ParsedURL trialValue	= ParsedURL.getAbsolute(value, "error parsing from seed");
+		boolean result			= (trialValue != null);
+		if (result)
+			url					= trialValue;
+		else
+		{
+			domain				= value;
+			debug("Assuming value from seed is the domain");
+		}
+		return true;
+	}
+ 	
+ 	/**
+	 * The String the dashboard needs to show.
+	 * 
+	 * @return	The search query.
+	 */
+	public String valueString()
+	{
+		return (domain != null) ? domain : url.toString();
+	}
+	
+	/**
+	 * The category the dashboard uses to show.
+	 * 
+	 * @return	The search category.
+	 */
+	public String categoryString()
+	{
+		return (action != null) ? action : new String("");
+	}
+
+	/**
+	 * @param actionTypeString
+	 */
+	public void setCategory(String actionTypeString)
+	{
+		action = actionTypeString;
+	}
+	
+	/**
+	 * Not used but necessary.
+	 * 
+	 * @return	The search engine category.
+	 */
+	public String detailedCategoryString()
+	{
+		return (action != null) ? action : new String("");
+	}
+	
+	public ParsedURL purl()
 	{
 		return url;
 	}
 
-	/**
-	 * @param url the url to set
-	 */
-	public void setUrl(ParsedURL url)
+	public boolean canChangeVisibility()
 	{
-		this.url = url;
+		return true;
 	}
 
-	/**
-	 * @return the domain
-	 */
-	public String getDomain()
+	public boolean isDeletable()
 	{
-		return domain;
+		return true;
 	}
 
-	/**
-	 * @param domain the domain to set
-	 */
-	public void setDomain(String domain)
-	{
-		this.domain = domain;
-	}
-
-	/**
-	 * @return the action
-	 */
-	public String getAction()
-	{
-		return action;
-	}
-
-	/**
-	 * @param action the action to set
-	 */
-	public void setAction(String action)
-	{
-		this.action = action;
-	}
-
-	@Override
-	public String categoryString()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String detailedCategoryString()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public boolean isEditable()
 	{
-		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
-	@Override
-	public void performInternalSeedingSteps(InfoCollector infoCollector)
+	public boolean isRejectable()
 	{
-		// TODO Auto-generated method stub
-		
+		return true;
 	}
 
-	@Override
-	public void setCategory(String value)
-	{
-		// TODO Auto-generated method stub
-		
-	}
 
-	@Override
-	public boolean setValue(String value)
-	{
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public String valueString()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
 	
 }
