@@ -15,6 +15,8 @@ import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.FieldDescriptor;
 import ecologylab.serialization.ScalarUnmarshallingContext;
+import ecologylab.serialization.XMLTools;
+import ecologylab.serialization.ElementState.simpl_scalar;
 
 /**
  * @author andruid
@@ -27,6 +29,12 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 	final private boolean		isMixin;
 	
 	Method									hwSetMethod;
+	
+	/**
+	 * The name in the MetaMetadataComposite field whose declaration resulted in the generation of this.
+	 */
+	@simpl_scalar
+	private String					mmName;
 	
 	private ArrayList<EditValueListener> editValueListeners = new ArrayList<EditValueListener>();
 	
@@ -48,6 +56,7 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 			isMixin							= false;
 			isPseudoScalar			= false;		
 		}
+		this.mmName						= deriveMmName();
 	}
 	
 	public MetadataFieldDescriptor(ClassDescriptor baseClassDescriptor, FieldDescriptor wrappedFD, String wrapperTag)
@@ -115,4 +124,31 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 		super.setFieldToScalar(context, value, scalarUnmarshallingContext);
 	}
 	
+	private String deriveMmName()
+	{
+		String result	= null;
+		
+		Field thatField = this.field;
+		final Metadata.mm_name mmNameAnnotation 	= thatField.getAnnotation(Metadata.mm_name.class);
+	
+		if (mmNameAnnotation != null)
+		{
+			result			= mmNameAnnotation.value();
+		}
+		if (result == null)
+		{
+			result			= XMLTools.getXmlTagName(thatField.getName(), null);
+			error("Missing @mm_name annotation for " + thatField + "\tusing " + result);
+		}
+		return result;
+	}
+	/**
+	 * @return the mmName
+	 */
+	public String getMmName()
+	{
+		return mmName;
+	}
+
+
 }
