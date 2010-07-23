@@ -126,29 +126,15 @@ public class MetaMetadataSearchParser
 	}
 
 	@Override
-	public Document populateMetadataObject()
+	public Document populateMetadata()
 	{
-		Document populatedMetadata = container.metadata();
+		Document populatedMetadata	= container.metadata();
 		
-		ParsedURL purl = container.purl();
-		if (metaMetadata.isSupported(purl, null))
+		if (metaMetadata.isSupported(purl(), null))
 		{
 			if ("direct".equals(metaMetadata.getParser()))
 			{
-				try
-				{
-						populatedMetadata = (Document) getMetadataTranslationScope().deserialize(inputStream());
-						if (populatedMetadata.getMetaMetadata() == null)
-						{
-							populatedMetadata.setMetaMetadata(metaMetadata);
-							populatedMetadata.initializeMetadataCompTermVector();
-						}
-				}
-				catch (SIMPLTranslationException e)
-				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				populatedMetadata				= directBindingPopulateMetadata();
 			}
 			else if ("xpath".equals(metaMetadata.getParser()))
 			{

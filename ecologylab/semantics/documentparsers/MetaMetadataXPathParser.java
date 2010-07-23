@@ -35,9 +35,9 @@ public class MetaMetadataXPathParser< SA extends SemanticAction> extends
 	}
 
 	@Override
-	public ecologylab.semantics.metadata.builtins.Document populateMetadataObject()
+	public ecologylab.semantics.metadata.builtins.Document populateMetadata()
 	{
-		if (metaMetadata.isSupported(truePURL, null))
+		if (metaMetadata.isSupported(purl(), null))
 		{
 			recursiveExtraction(getMetadataTranslationScope(), metaMetadata,
 					container.metadata(), xpath, semanticActionHandler.getSemanticActionReturnValueMap(),document);

@@ -135,5 +135,14 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField
 			isNewClass();		// recurse
 	}
 
+	/**
+	 * Get the MetaMetadataCompositeField associated with this.
+	 * 
+	 * @return	this, because it is a composite itself.
+	 */
+	public MetaMetadataCompositeField metaMetadataCompositeField()
+	{
+		return this;
+	}
 
 }

@@ -219,6 +219,10 @@ public abstract class SemanticActionHandler<C extends Container, IC extends Info
 			{
 				// get the actual collection object
 				Object collectionObject = semanticActionReturnValueMap.get(collectionObjectName);
+				
+				if (collectionObject == null)
+					error("Can't execute loop because collection is null: " + action.serialize());
+				
 				GenericIterable gItr = new GenericIterable(collectionObject);
 				// debug(documentType.purl().toString()); <<Annoying as hell !
 				Iterator itr = gItr.iterator();

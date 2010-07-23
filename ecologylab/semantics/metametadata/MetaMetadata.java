@@ -104,6 +104,7 @@ implements Mappable<String>
 	 */
 	public boolean isSupported(ParsedURL purl, String mimeType)
 	{
+		/*
 		if(getSelector().getUrlStripped()!=null)
 			return purl.toString().startsWith(getSelector().getUrlStripped().toString());
 		Pattern pattern = null;
@@ -138,6 +139,8 @@ implements Mappable<String>
 			}
 		}
 		return false;
+		*/
+		return true;
 	}
 
 	public Metadata constructMetadata()

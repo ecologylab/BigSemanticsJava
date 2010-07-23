@@ -266,4 +266,14 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 	{
 		return (kids != null && kids.size() > 0) ? (MetaMetadataCompositeField) kids.get(0) : null;
 	}
+	
+	/**
+	 * Get the MetaMetadataCompositeField associated with this.
+	 * 
+	 * @return	this, because it is a composite itself.
+	 */
+	public MetaMetadataCompositeField metaMetadataCompositeField()
+	{
+		return getChildComposite();
+	}
 }

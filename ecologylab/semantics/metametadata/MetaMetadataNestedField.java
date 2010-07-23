@@ -139,6 +139,10 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 		appendable.append("public "+fieldType+" get" + StringTools.capitalize(fieldName) + "(){\n");
 		appendable.append("return this." + fieldName+ ";\n}\n");
 	}
-
+	/**
+	 * Get the MetaMetadataCompositeField associated with this.
+	 * @return
+	 */
+	public abstract MetaMetadataCompositeField metaMetadataCompositeField();
 
 }

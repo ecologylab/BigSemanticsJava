@@ -34,24 +34,9 @@ public class MetaMetadataFeedParser
 	}
 
 	@Override
-	public Document populateMetadataObject()
+	public Document populateMetadata()
 	{
-		Document populatedMetadata = container.metadata();
-		
-		ParsedURL purl = container.purl();
-		if(metaMetadata.isSupported(purl, null))
-		{
-			try
-			{
-				populatedMetadata = (Document) getMetadataTranslationScope().deserialize(inputStream());
-			}
-			catch (SIMPLTranslationException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		return populatedMetadata;
+		return directBindingPopulateMetadata();
 	}
 	
 	

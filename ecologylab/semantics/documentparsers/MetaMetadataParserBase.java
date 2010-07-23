@@ -3,6 +3,7 @@ package ecologylab.semantics.documentparsers;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,16 +28,17 @@ import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.DocumentParserTagNames;
 import ecologylab.semantics.metadata.Metadata;
-import ecologylab.semantics.metadata.MetadataBase;
+import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.DefVar;
 import ecologylab.semantics.metametadata.MetaMetadata;
-import ecologylab.semantics.metametadata.MetaMetadataField;
-import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.metametadata.MetaMetadataCollectionField;
+import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
+import ecologylab.semantics.metametadata.MetaMetadataField;
+import ecologylab.semantics.metametadata.MetaMetadataNestedField;
 import ecologylab.semantics.metametadata.MetaMetadataScalarField;
-import ecologylab.serialization.FieldDescriptor;
+import ecologylab.serialization.DeserializationHookStrategy;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.ScalarUnmarshallingContext;
 import ecologylab.serialization.TranslationScope;
@@ -50,7 +52,8 @@ import ecologylab.serialization.types.scalar.ScalarType;
  * 
  */
 public abstract class MetaMetadataParserBase
-extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWords
+extends HTMLDOMParser 
+implements ScalarUnmarshallingContext,SemanticActionsKeyWords, DeserializationHookStrategy<Metadata, MetadataFieldDescriptor>
 {
 
 	/**
@@ -83,7 +86,7 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 		xpath = XPathFactory.newInstance().newXPath();
 	}
 
-	public abstract Document populateMetadataObject();
+	public abstract Document populateMetadata();
 
 	/**
 	 * Main method in which we take semantic actions
@@ -125,21 +128,27 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 		truePURL 						= container.purl();
 		// build the metadata object
 
-		Metadata populatedMetadata =populateMetadataObject();
+		Metadata populatedMetadata = populateMetadata();
 		
 		try
 		{
 			debug("Metadata parsed from: " + container.purl());
-			debug(populatedMetadata.serialize());
-			
-		}
-		
-		catch (SIMPLTranslationException e)
+			if (populatedMetadata != null)
+				debug(populatedMetadata.serialize());
+			else
+			{
+				warning("Couldn't parse metadata.");
+				return;
+			}
+		}	
+		catch (Throwable e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return;
 		}
 		
+		//FIXME -- should be able to get rid of this step here. its way too late!
 		// if the metametadata reference is null, assign the correct metametadata object to it.
 		if (populatedMetadata.getMetaMetadata() == null)
 			populatedMetadata.setMetaMetadata(metaMetadata);
@@ -802,4 +811,90 @@ extends HTMLDOMParser implements ScalarUnmarshallingContext,SemanticActionsKeyWo
 		return (truePURL != null) ? truePURL : super.getTruePURL();
 	}
 
+	/**
+	 * @return Document subclass metadata resulting from s.im.pl deserialization of the input stream.
+	 */
+	protected Document directBindingPopulateMetadata()
+	{
+		Document populatedMetadata	= null;
+		try
+		{
+			populatedMetadata = (Document) getMetadataTranslationScope().deserialize(inputStream(), this);
+			populatedMetadata.serialize(System.out);
+			System.out.println();
+		}
+		catch (SIMPLTranslationException e)
+		{
+			warning("Direct binding failed " + e);
+		}
+		return populatedMetadata;
+	}
+
+
+	/**
+	 * @param metadataFromDerialization
+	 */
+	private boolean bindMetaMetadataToMetadata(MetaMetadataField deserializationMM, MetaMetadataField originalMM)
+	{
+		if (deserializationMM != null) // should be always
+		{
+			MetadataClassDescriptor originalClassDescriptor 				= originalMM.getMetadataClassDescriptor();
+			MetadataClassDescriptor deserializationClassDescriptor	= deserializationMM.getMetadataClassDescriptor();
+
+			boolean sameMetadataSubclass 														= originalClassDescriptor.equals(deserializationClassDescriptor);
+			// if they have the same metadataClassDescriptor, they can be of the same type, or one
+			// of them is using "type=" attribute.
+			boolean useMmdFromDeserialization 											= sameMetadataSubclass && (deserializationMM.getType() != null);
+			if (!useMmdFromDeserialization && !sameMetadataSubclass)
+				// if they have different metadataClassDescriptor, need to choose the more specific one
+				useMmdFromDeserialization				= originalClassDescriptor.getDescribedClass().isAssignableFrom(
+						deserializationClassDescriptor.getDescribedClass());
+			return useMmdFromDeserialization ;
+		}
+		else
+		{
+			error("No meta-metadata in root after direct binding :-(");
+			return false;
+		}
+	}
+
+	Stack<MetaMetadataNestedField>	currentMMstack						= new Stack<MetaMetadataNestedField>();
+	
+	/**
+	 * For the root, compare the meta-metadata from the binding with the one we started with.
+	 * Down the hierarchy, try to perform similar bindings.
+	 */
+	@Override
+	public void deserializationPreHook(Metadata deserializedMetadata, MetadataFieldDescriptor mfd)
+	{
+		if (deserializedMetadata.parent() == null)
+		{
+			MetaMetadataCompositeField deserializationMM = (MetaMetadata) deserializedMetadata.getMetaMetadata();
+			if (bindMetaMetadataToMetadata(deserializationMM, metaMetadata))
+			{
+				metaMetadata 										= (MetaMetadata) deserializationMM;
+			}
+			else
+			{
+				deserializedMetadata.setMetaMetadata(metaMetadata);
+			}
+			currentMMstack.push(metaMetadata);
+		}
+		else 
+		{
+			String mmName																= mfd.getMmName();
+			MetaMetadataNestedField currentMM						= currentMMstack.peek();
+			MetaMetadataNestedField childMMNested				= (MetaMetadataNestedField) currentMM.lookupChild(mmName);	// this fails for collections :-(
+			MetaMetadataCompositeField childMMComposite = childMMNested.metaMetadataCompositeField();
+			deserializedMetadata.setMetaMetadata(childMMComposite);
+			currentMMstack.push(childMMComposite);
+		}
+	}
+
+	public void deserializationPostHook(Metadata deserializedMetadata, MetadataFieldDescriptor mfd)
+	{
+		currentMMstack.pop();
+	}
+
+	
 }

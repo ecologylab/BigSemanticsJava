@@ -23,14 +23,8 @@ import ecologylab.semantics.connectors.SemanticsSite;
 import ecologylab.semantics.metadata.DocumentParserTagNames;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
-import ecologylab.semantics.metadata.builtins.DebugMetadata;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.Media;
-import ecologylab.semantics.metadata.scalar.MetadataDate;
-import ecologylab.semantics.metadata.scalar.MetadataInteger;
-import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
-import ecologylab.semantics.metadata.scalar.MetadataString;
-import ecologylab.semantics.metadata.scalar.MetadataStringBuilder;
 import ecologylab.semantics.metadata.scalar.types.MetadataScalarScalarType;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.SIMPLTranslationException;
@@ -346,7 +340,8 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 			metaMetadata.inheritMetaMetadata(this);
 			metaMetadata.getClassAndBindDescriptors(metadataTScope);
 			MetadataClassDescriptor metadataClassDescriptor = metaMetadata.getMetadataClassDescriptor();
-			repositoryByClassName.put(metadataClassDescriptor.getDescribedClass().getName(), metaMetadata);
+			if (metaMetadata.getType() == null)	// don't put restatements of the same base type into *this* map
+				repositoryByClassName.put(metadataClassDescriptor.getDescribedClass().getName(), metaMetadata);
 		}
 		
 		initializeLocationBasedMaps();
