@@ -26,7 +26,7 @@ import ecologylab.serialization.simpl_inherit;
 public class SeedSet<S extends Seed> extends ElementState
 implements SemanticsSessionObjectNames, Iterable<S>
 {	
-	static TranslationScope ts = CfBaseSeedTranslations.get();
+	static TranslationScope ts = BaseSeedTranslations.get();
 	
 	@simpl_scalar protected boolean		dontPlayOnStart;
 	
@@ -37,7 +37,7 @@ implements SemanticsSessionObjectNames, Iterable<S>
 	@simpl_scalar protected String			description;
 	
 	@simpl_collection
-	@simpl_scope(CfBaseSeedTranslations.TSCOPE_NAME)
+	@simpl_scope(BaseSeedTranslations.TSCOPE_NAME)
 	@simpl_nowrap protected ArrayList<S> 	seeds; 
 	
 	public SeedSet()
