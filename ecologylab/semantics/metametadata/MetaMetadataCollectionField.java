@@ -209,7 +209,7 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 	}
 	
 	@Override
-	public void postDeserializationHook()
+	public void deserializationPostHook()
 	{
 		MetaMetadataCompositeField composite = new MetaMetadataCompositeField(determineCollectionChildType(), kids);
 		if (kids != null)
