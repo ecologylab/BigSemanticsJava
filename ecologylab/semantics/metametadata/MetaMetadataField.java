@@ -852,8 +852,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 		HashMapArrayList<String, MetaMetadataField> childMetaMetadata = getChildMetaMetadata();
 		if (childMetaMetadata == null)
 		{
-			childMetaMetadata = new HashMapArrayList<String, MetaMetadataField>();
-			setChildMetaMetadata(childMetaMetadata);
+			childMetaMetadata = initializeChildMetaMetadata();
 		}
 		
 		// *do not* override fields in here with fields from super classes.
@@ -922,6 +921,12 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	public void setChildMetaMetadata(HashMapArrayList<String, MetaMetadataField> childMetaMetadata)
 	{
 		this.kids = childMetaMetadata;
+	}
+	
+	public HashMapArrayList<String, MetaMetadataField> initializeChildMetaMetadata()
+	{
+		this.kids = new HashMapArrayList<String, MetaMetadataField>();
+		return this.kids;
 	}
 
 	public Iterator<MetaMetadataField> iterator()

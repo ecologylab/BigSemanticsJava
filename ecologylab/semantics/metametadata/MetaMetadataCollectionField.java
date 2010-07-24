@@ -250,18 +250,28 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 		}
 	}
 	
-	@Override
+	/*@Override
 	public void setChildMetaMetadata(HashMapArrayList<String, MetaMetadataField> childMetaMetadata)
 	{
 		MetaMetadataCompositeField composite = getChildComposite();
 		if (composite == null)
 		{
 			kids = new HashMapArrayList<String, MetaMetadataField>();
-			composite = new MetaMetadataCompositeField(determineCollectionChildType(), childMetaMetadata);
+			composite = new MetaMetadataCompositeField(determineCollectionChildType(), null);
 			kids.put(composite.getName(), composite);
 		}
 		else
 			composite.getChildMetaMetadata().putAll(childMetaMetadata);
+	}*/
+	
+	@Override
+	public HashMapArrayList<String, MetaMetadataField> initializeChildMetaMetadata()
+	{
+		kids = new HashMapArrayList<String, MetaMetadataField>();
+		MetaMetadataCompositeField composite = new MetaMetadataCompositeField(determineCollectionChildType(), null);
+		kids.put(composite.getName(), composite);
+		
+		return composite.getChildMetaMetadata();
 	}
 	
 	public MetaMetadataCompositeField getChildComposite()
