@@ -102,7 +102,10 @@ public class MetaMetadataSearchParser
 	 */
 	private void setQuery(SearchState searchSeed)
 	{
-		container.setQuery(searchSeed.getQuery());
+		if (container != null)
+			container.setQuery(searchSeed.getQuery());
+		else
+			warning("WEIRD problem: this.container == null! might have been recycled.");
 	}
 
 	/**

@@ -1,470 +1,389 @@
 package ecologylab.semantics.seeding;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Hashtable;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.PriorityQueue;
+import java.util.Queue;
 
 import ecologylab.generic.Debug;
 import ecologylab.generic.DispatchTarget;
 import ecologylab.generic.Generic;
-import ecologylab.net.ParsedURL;
 import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.InfoCollector;
 
-/** 
- * Aggregate all results across multiple searches and feeds.
- * Interleave the results from each Seed.
+/**
+ * Aggregate all results across multiple searches and feeds. Interleave the results from each Seed.
  * Round-robin the scheduling of parsing each.
  * <p/>
- * We want to keep track of:
- * 	number of searches that will report to us.
- *  has each search (s1) started?
- *  has each search (s1) finished?
- *  
+ * We want to keep track of: number of searches that will report to us. has each search (s1)
+ * started? has each search (s1) finished?
+ * 
  * @author eunyee
  * @author andruid
  * @param <slice>
  */
-public class SeedDistributor<AC extends Container>
-extends Debug implements DispatchTarget<QandDownloadable>
+public class SeedDistributor<AC extends Container> extends Debug implements Runnable,
+		DispatchTarget<AC>
 {
-	InfoCollector			infoCollector;
-   
-	/**
-	 * The number of search engine results to request, when processing
-	 * a search specified during seeding.
-	 */
-	static final int 		TYPICAL_NUM_SEARCH_RESULTS	= 15;
 
-	private static final long	MIN_DELAY_BW_SEARCHES	= 1000;
-	
 	/**
-	 * Each entry is a ArrayList/Vector that holds the slice of result i's gathered
-	 * across different searches.
-	 * The outer array list is in order, and may be sparsely populated 
-	 * (that is, may have null entries in the middle).
-	 * The inner resultSlice is not ordered, and will never contain null entries.
-	 *  
+	 * initial size of the search result queue
 	 */
-	private final ArrayList<ArrayList<QandDownloadable>>			resultSlices	= new ArrayList<ArrayList<QandDownloadable>>();
-	
+	private static final int											INIT_CAPACITY											= 128;
+
+	private static final int											MIN_INTERVAL_BTW_SEARCHES					= 1000;
+
+	private static final int											MIN_INTERVAL_BTW_QUEUE_PROCESSING	= 1000;
+
 	/**
-	 * the total number of searches being conducted at once and aggregated
+	 * to generate surrogates as soon as possible, during each queue processing we will process the
+	 * top NUM_RESULTS_PROCESSED_EACH_TIME search results.
 	 */
-	private int 			totalSearches;
-	
+	private static final int											NUM_RESULTS_PROCESSED_EACH_TIME		= 1;
+
 	/**
-	 * Keep track of how deeply into the set of resultSlices that we're currently processing.
+	 * limit the number of searches being downloaded at one time in order to prevent blocking the
+	 * traffic by searches, since some search engine limits the rate we can access them, and we have
+	 * only 4 threads for downloading during seeding.
 	 */
-	private 	int			resultNumLevel	= 0;
-    
+	private static final int											MAX_NUM_SEARCHES_PROCESSING				= 2;
+
+	private InfoCollector													infoCollector;
+
 	/**
-	 * Expected the number of searches in the each result level. 
-	 * This value is adjusted when the resultNumLevel goes up and when a seach downloading is done. 
+	 * number of searches that we have to queue and process in total
 	 */
-    private		int			expectedNumSearchesInCurrentLevel;
-    
-    /**
-     * For storing initial value for expectedNumSearchesInCurrentLevel. Used in reset to restore expectedNumSearchesInCurrentLevel.
-     */
-    private final int	intialExpectedNumSearchesInCurrentLevel;
-    
-    /**
-     * Keep the number of results whenever each search is done,
-     * and remove the slot when the resultNum has adjusted the expectedNumSearchesInCurrentLevel.
-     */
-    private		ArrayList<Integer>	resultNumOfDoneSearches		= new ArrayList<Integer>();
-    
-//    private	ArrayList		numSearchesPerSlice		= new ArrayList(TYPICAL_NUM_SEARCH_RESULTS);
-    
-    private final Object	DOWNLOAD_RESULTS_LOCK	= new Object();
-    
-  	/**
-  	 * Counts how many searches are queued to the DownloadMonitor. 
-  	 * This is to control queuing the search and result pages in balanced manner to the DownloadMonitor.
-  	 * 
-  	 * This searchCount will be set to 0 when the non-search page become processed. 
-  	 */
-  	private int searchCount = 0;
-  	
-  	/**
-  	 * Limit the search pages to be queued to three at a time. 
-  	 */
-  	private final static int NUM_SEARCHES_BEFORE_1ST_RESULT_DOWNLOAD = 3; 
-  	
-  	/**
-  	 * We dont want to queue too many search pages to the DownloadMonitor initially, because
-  	 * then we will not be able to show any surrogates to the user until all searches have run.
-  	 * Thus, we hold some later search Containers here while processing initial searches and
-  	 * one result Container from each.
-  	 * <p/>
-  	 * When the search pages have been queued to the DownloadMonitor up to a threshold (initially 3), 
-  	 * the next search page should not go straight to the DownloadMonitor.
-  	 * Instead, the first result pages from ResultSlice 1 are prioritized.
-  	 * The searches will stay here in the searchesDelayedUntilFirstResultsCanShow queue
-  	 * until a non-search result page has been processed. 
-  	 */
-  	ArrayList<AC> searchesDelayedUntilFirstResultsCanShow = new ArrayList<AC>();
-  	
-  	/**
-  	 * This data structure keeps track both of 
-  	 * 		(1) searches that we queue and parse, AND also of
-  	 * 		(2) search result containers that we queue and parse.
-  	 */
-  	Hashtable<ParsedURL, ParsedURL> queuedDownloadablesMap	= new Hashtable<ParsedURL, ParsedURL>();
-  	
-	
-	public SeedDistributor(InfoCollector infoCollector, int numSearches)
+	private int																		numSearchesToQueue								= 0;
+
+	/**
+	 * number of searches that have been queued to DownloadMonitor, but not yet finished
+	 */
+	private int																		numSearchesProcessing							= 0;
+
+	/**
+	 * number of searches that have been finished (will call doneQueueing()). track this number to
+	 * decide when to finish seeding.
+	 */
+	private int																		numSearchesDone										= 0;
+
+	/**
+	 * a waiting list for search requests, in case that there are already MAX_NUM_SEARCHES_PROCESSING
+	 * searches in processing.
+	 */
+	private final Queue<AC>												waitingSearches										= new LinkedList<AC>();
+
+	/**
+	 * the comparator to decide the order of search results to be processed. can be customized through
+	 * constructor. by default, search results will be ordered according to their ranks in the search
+	 * result list.
+	 */
+	private final Comparator<QandDownloadable>		comparator;
+
+	/**
+	 * The priority queue holding (weighted) search results waiting for downloading and parsing. Note
+	 * that PriorityQueue is not synchronized.
+	 */
+	private final PriorityQueue<QandDownloadable>	queuedResults;
+
+	private long																	lastSearchTimestamp;
+
+	private long																	lastQueueProcessingTimestamp;
+
+	private boolean																started														= false;
+
+	private boolean																stopFlag;
+
+	public SeedDistributor(InfoCollector infoCollector, Comparator<QandDownloadable> comparator)
 	{
-		this.infoCollector														= infoCollector;
-		this.totalSearches														= numSearches;
-		this.expectedNumSearchesInCurrentLevel				= numSearches;
-		this.intialExpectedNumSearchesInCurrentLevel 	= numSearches;
+		this.infoCollector = infoCollector;
+		this.comparator = comparator;
+		this.queuedResults = new PriorityQueue<QandDownloadable>(INIT_CAPACITY, comparator);
 	}
-	/**
-	 * The ArrayList that corresponds to the ith result
-	 * for all searches (that are involved).
-	 * 
-	 * @param i
-	 * @return
-	 */
-	private synchronized ArrayList<QandDownloadable> resultSlice(int i)
+
+	public SeedDistributor(InfoCollector infoCollector)
 	{
-		ArrayList<QandDownloadable> thatSlice	= null;
-		if (i >= resultSlices.size())
-		{	// grow cause number of search results is larger than typical in some case
-			thatSlice 		= createNewSlice(i);
-		}
-		else
+		this(infoCollector, new Comparator<QandDownloadable>()
 		{
-			thatSlice		= resultSlices.get(i);
-			if (thatSlice == null)
+
+			@Override
+			public int compare(QandDownloadable o1, QandDownloadable o2)
 			{
-				thatSlice	= createNewSlice(i);
-			}
-		}
-		return thatSlice;
-	}
-	private ArrayList<QandDownloadable> createNewSlice(int sliceNum)
-	{
-		ArrayList<QandDownloadable> thatSlice				= new ArrayList<QandDownloadable>(totalSearches);			
-		resultSlices.add(sliceNum, thatSlice);
-		return thatSlice;
-	}
-
-	private boolean		processingDownloads;
-	//private boolean 	done;
-
-	/**
-	 * Download results from the array.
-	 * The GoogleResult Object that ranked the highest in the array will download first. 
-	 * @param onebyone true for downloading the container one by one method call
-	 * 		  false for downloading all the containers left by one method call
-	 */
-	private void downloadResults()
-	{
-		synchronized (DOWNLOAD_RESULTS_LOCK)
-		{
-			//if (!done)
-			{
-				debugOutputSliceQueries("the slices:");
-				
-				processingDownloads		= true; // imperfect but useful mechanism of scheduling
-				
-				ArrayList<QandDownloadable> currentSlice	= resultSlice(resultNumLevel);
-
-				while ((currentSlice != null) && (currentSlice.size()>0))
+				// here o1 and o2 should always be container, and their searchResult() should never
+				// return null, considering they can get to the seed distributor only if they are generated
+				// from a search.
+				if (o1 instanceof Container && o2 instanceof Container)
 				{
-					QandDownloadable result = currentSlice.remove(currentSlice.size() - 1);
-					if (result != null)
-					{
-						/*
-					debug("\n\n  Total: " + this.expectedNumSearchesInCurrentLevel + " Engine: "
-							+ ((SearchState)result.seed()).getEngine()
-							+ " SearchNum:" + result.searchNum() + " ResultNum:"+ resultNumLevel + 
-							" Result PURL " + result.purl());
-						 */
-						result.setDispatchTarget(this);
-						if (result.queueDownload())
-						{
-							putQueuedDownloadable(result);
-						}
-						queueCount ++;
-
-						// reset the searchCount to 0 when the non-search page has been queued. 
-						searchCount = 0;
-					}
+					Container c1 = (Container) o1;
+					Container c2 = (Container) o2;
+					int i1 = c1.searchResult() == null ? 0 : c1.searchResult().resultNum();
+					int i2 = c2.searchResult() == null ? 0 : c2.searchResult().resultNum();
+					return i1 - i2;
 				}
-
-				adjustExpectedNumSearches();
-
-				int expectedNumSearchesInCurrentLevel = this.expectedNumSearchesInCurrentLevel;
-				if ((expectedNumSearchesInCurrentLevel > 0) 	// lookout for no more searches -- end boundary condition
-						&& queueCount >= expectedNumSearchesInCurrentLevel)
+				else
 				{
-						resultNumLevel++;
-						queueCount = 0;
-						downloadResults();	// more slices to process, so recurse to next
+					return 0;
 				}
-				processingDownloads		= false;
 			}
-		}
-	}
-	
-	/**
-	 * return if all the slices have been processed and downloaded.
-	 *
-	 * @return
-	 */
-	public boolean checkIfAllSearchesOver()
-	{
-		for (ArrayList<QandDownloadable> slice : resultSlices)
-		{
-			if (slice != null && slice.size() != 0)
-				return false;
-		}
-		return true;
+
+		});
 	}
 
 	/**
-	 * Adjust the expected number of searches in the current level 
-	 * based on the download done status of each search. 
-	 */
-	private void adjustExpectedNumSearches()
-	{
-		Integer temp;
-		while ( (resultNumOfDoneSearches.size()>0) &&
-				(resultNumLevel >= (temp = Collections.min(resultNumOfDoneSearches)).intValue()) )
-		{			
-			expectedNumSearchesInCurrentLevel--;				
-			this.resultNumOfDoneSearches.remove(temp);
-		}
-	}
-	
-	/**
-	 * Queue search pages to DownloadMonitor if the search count is less than the limit number. 
-	 * If it is larger than the limit number, add the search page to the waitingPipeToDownloadMonitor, 
-	 * which will be stayed until the non-search page to be processed. 
+	 * Queue a search request to the SeedDistributor. The request might be put to a waiting list in
+	 * order not to block the traffic.
 	 * 
 	 * @param searchContainer
 	 */
 	public void queueSearchRequest(AC searchContainer)
 	{
-		if( searchCount < NUM_SEARCHES_BEFORE_1ST_RESULT_DOWNLOAD )
+		numSearchesToQueue++;
+		if (numSearchesProcessing >= MAX_NUM_SEARCHES_PROCESSING)
 		{
-			// Queue search pages to DownloadMonitor that have been waiting till the non-search page to be processed. 
-			if (downloadNextSearchIfThereIsOne())
-				searchesDelayedUntilFirstResultsCanShow.add(searchContainer);
-			else	// If there is nothing waiting, just queue search container to DownloadMonitor.
+			synchronized (waitingSearches)
 			{
-				if (searchContainer.queueDownload())	// look out for previous downloads of searchContainer!
-				{
-					putQueuedDownloadable(searchContainer);
-				}
+				waitingSearches.offer(searchContainer);
 			}
-			
-			// Increment searchCount that is counting search containers queued to DownloadMonitor. 
-			searchCount++;
 		}
 		else
 		{
-			// If the searchCount is larger than the limit, queue non-search pages to DownloadMonitor.
-			synchronized (DOWNLOAD_RESULTS_LOCK)
-			{
-			if( !this.processingDownloads )
-				downloadResults();
-			
-			}
-			// Add searchContainers to be processed to waiting pipeline for DownloadMonitor.
-			searchesDelayedUntilFirstResultsCanShow.add(searchContainer);
+			downloadSearchRequest(searchContainer);
 		}
-		
+
+		if (!started)
+		{
+			start();
+		}
 	}
+
 	/**
+	 * Actually process a search request (send it to DownloadMonitor). Will wait for some time after
+	 * each processing.
+	 * 
 	 * @param searchContainer
 	 */
-	private void putQueuedDownloadable(QandDownloadable searchContainer)
+	public void downloadSearchRequest(AC searchContainer)
 	{
-		synchronized (queuedDownloadablesMap)
-		{
-			final ParsedURL initialPURL = searchContainer.getInitialPURL();
-			queuedDownloadablesMap.put(initialPURL, initialPURL);
-		}
-	}
-	
-	/**
-	 * Count how many google results are removed from array structure in a same level(same PageRank).
-	 */
-	private int queueCount = 0;
+		searchContainer.queueDownload();
+		numSearchesProcessing++;
+		debug("sending search request to DownloadMonitor: " + searchContainer);
 
-	private static long lastSearchTimestamp = 0;
+		waitForAtMost(lastSearchTimestamp, MIN_INTERVAL_BTW_SEARCHES);
+		lastSearchTimestamp = System.currentTimeMillis();
+	}
+
 	/**
-	 * Queue Search Result here to be subsequently queued to a DownloadMonitor
-	 * through the round robin across searches, as the proper slice levels are reached.
+	 * Called whenever a search is downloaded and parsed.
+	 * 
+	 * @param searchContainer
+	 * @param searchNum
+	 * @param numResults
+	 */
+	public void doneQueueing(Container searchContainer, int searchNum, int numResults)
+	{
+		debug("search parsed: " + searchContainer);
+		numSearchesProcessing--;
+		numSearchesDone++;
+	}
+
+	/**
+	 * Queue a search result to the queue. Queued search results are interleaved and processed by the
+	 * consumer thread.
 	 * 
 	 * @param resultContainer
 	 */
 	public void queueResult(QandDownloadable resultContainer)
-	{	
-		if(lastSearchTimestamp == 0)
-			lastSearchTimestamp = System.currentTimeMillis();
-
-		SearchResult searchResult	= resultContainer.searchResult();
-		int resultNum				= searchResult.resultNum();	
-		resultSlice(resultNum).add(resultContainer);
-		
-		if (!this.processingDownloads)
-			downloadResults();
-		
-		waitAndProcessFurtherSearches();
-	}
-	
-	private void waitAndProcessFurtherSearches()
 	{
-		int wait = (int) (System.currentTimeMillis() - lastSearchTimestamp);
-		
-		if(wait < MIN_DELAY_BW_SEARCHES)
+		synchronized (queuedResults)
 		{
-				Generic.sleep((int) (MIN_DELAY_BW_SEARCHES));
-				debug("Waiting to process further searches (millis): " + MIN_DELAY_BW_SEARCHES);
+			debug("queuing result: " + resultContainer);
+			queuedResults.offer(resultContainer);
 		}
-		
-		downloadNextSearchIfThereIsOne();
 	}
+
 	/**
-	 * Queue the next search, if there is one.
-	 * 
-	 * @return	true if there was a search to queue.
+	 * Process one group of search results. The size of one group is controlled by
+	 * NUM_RESULTS_PROCESSED_EACH_TIME.
 	 */
-	private boolean downloadNextSearchIfThereIsOne()
+	private void downloadResults()
 	{
-		synchronized (searchesDelayedUntilFirstResultsCanShow)
+		int i = 0;
+		while (queuedResults.size() > 0 && i < NUM_RESULTS_PROCESSED_EACH_TIME)
 		{
-			int waitingSize = searchesDelayedUntilFirstResultsCanShow.size();
-			boolean result	= waitingSize > 0;
-			if (result)
+			synchronized (queuedResults)
 			{
-				AC searchContainer	= searchesDelayedUntilFirstResultsCanShow.remove(waitingSize - 1);
-				searchContainer.queueDownload();
-				lastSearchTimestamp = System.currentTimeMillis();
-			}
-			return result;
-		}
-
-	}
-	
-	private int countingDone = 0;
-	
-	/**
-	 * Called only for MetaMetadataSearchType and DocumentState (seed types).
-	 * 
-	 * @param container
-	 * @param searchNum
-	 * @param numResults
-	 */
-	public void doneQueueing(Container container, int searchNum, int numResults)
-	{
-		// Keep the number of results generated by each search.
-		resultNumOfDoneSearches.add(new Integer(numResults));
-		countingDone++;
-		downloadResults();		// download more if there is any more to download
-		
-		unMapContainerAndCheckForEndSeeding(container);
-	}
-	/**
-	 * Called both for search results, that is, those objects passed to queueSearch(),
-	 * and also for seeds.
-	 * 
-	 * @param container
-	 */
-	private synchronized void unMapContainerAndCheckForEndSeeding(QandDownloadable container)
-	{
-		boolean endSeeding;
-		synchronized (queuedDownloadablesMap)
-		{
-			this.queuedDownloadablesMap.remove(container.getInitialPURL());
-			endSeeding = queuedDownloadablesMap.isEmpty() && this.checkIfAllSearchesOver();
-		}
-		if (endSeeding)
-		{
-			System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-			System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-			System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-			System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-			infoCollector.endSeeding();
-		}
-	}
-
-	/** 
-	* how many seed search result has processed so far.
-	*/
-	int seedProcessingNum = 0;
-	
-	/**
-	 * Increase number of searches, due to multiple SeedSets
-	 * @param numMoreSearches
-	 */
-	public void moreSearches(int numMoreSearches)
-	{
-///		Chage TotalSearches in case of Buzz!!! and also set searchNums!!!!!
-//		Integrate other searches with Buzz!! and Buzz with Delicious.
-		this.totalSearches 											+= numMoreSearches;
-		this.expectedNumSearchesInCurrentLevel 	+= numMoreSearches;
-	}
-	
-	public void handleFailedSearch()
-	{
-		this.totalSearches--;
-		this.expectedNumSearchesInCurrentLevel--;
-		//TODO -- are there nasty concurrency issues that also need to be handled here.
-	}
-	
-	/**
-	 * Supposed to reset state for clear() op in CfInfoCollector
-	 */
-	public void reset()
-	{
-		this.resultNumLevel = 0;
-		this.countingDone = 0;
-		this.resultSlices.clear();
-		this.resultNumOfDoneSearches.clear();
-		
-		// added 11/3/09 - andruid
-		this.searchCount	= 0;
-		this.expectedNumSearchesInCurrentLevel	= this.intialExpectedNumSearchesInCurrentLevel;
-	}
-
-	/**
-	 * Called only for search results, that is, those objects passed to queueSearch().
-	 * 
-	 * @param container
-	 */
-	public void delivery(QandDownloadable container)
-	{
-		unMapContainerAndCheckForEndSeeding(container);
-	}
-	
-	private void debugOutputSliceQueries(String msg)
-	{
-		debug("\n");
-		debug(msg);
-		for (int i = 0; i < resultSlices.size(); ++i)
-		{
-			debug("\tslice " + i + ":");
-			ArrayList<QandDownloadable> slice = resultSlice(i);
-			if (slice != null)
-			{
-				for (QandDownloadable item : slice)
+				if (queuedResults.size() > 0)
 				{
-					if (item != null && item instanceof Container)
-					{
-						Container container = (Container) item;
-						String q = container.getSeed().getQuery();
-						debug("\t\tquery: " + q);
-					}
+					QandDownloadable downloadable = queuedResults.poll();
+					String query = getQuery(downloadable);
+					int rank = getSearchResultRank(downloadable);
+					debug(String.format("sending container to DownloadMonitor: [%s:%d]%s", query, rank,
+							downloadable));
+					downloadable.setDispatchTarget(this);
+					downloadable.queueDownload();
+					i++;
 				}
 			}
 		}
 	}
-	
+
+	private int getSearchResultRank(QandDownloadable downloadable)
+	{
+		int r = -1;
+		if (downloadable instanceof Container)
+		{
+			Container container = (Container) downloadable;
+			r = container.searchResult() == null ? -2 : container.searchResult().resultNum();
+		}
+		return r;
+	}
+
+	private String getQuery(QandDownloadable downloadable)
+	{
+		String q = null;
+		if (downloadable instanceof Container)
+		{
+			Container container = (Container) downloadable;
+			q = container.getSeed() == null ? null : container.getSeed().getQuery();
+		}
+		return q == null ? "" : q;
+	}
+
+	/**
+	 * Start the consumer thread.
+	 */
+	public void start()
+	{
+		if (!started)
+		{
+			stopFlag = false;
+			debug("starting seed distributor consumer thread ...");
+			Thread t = new Thread(this, toString() + " consumer");
+			t.start();
+			started = true;
+		}
+	}
+
+	/**
+	 * Stop the consumer thread.
+	 */
+	public void stop()
+	{
+		stopFlag = true;
+		debug("stopping seed distributor consumer thread ...");
+	}
+
+	/**
+	 * Reset the SeedDistributor.
+	 */
+	public void reset()
+	{
+		this.numSearchesToQueue = 0;
+		this.numSearchesProcessing = 0;
+		this.numSearchesDone = 0;
+	}
+
+	private void waitForAtMost(long timestamp, int minMillis)
+	{
+		if (timestamp == 0)
+		{
+			// first time, no need to wait
+			return;
+		}
+
+		int wait = (int) (System.currentTimeMillis() - timestamp);
+		if (wait < 0)
+			wait = 0;
+
+		if (wait < minMillis)
+		{
+			int sleepMillis = minMillis - wait;
+			Generic.sleep((int) sleepMillis);
+			debug("waiting (in milliseconds): " + sleepMillis);
+		}
+	}
+
+	/**
+	 * The consumer thread. It will be started when the first search request comes, and activated
+	 * every MIN_INTERVAL_BTW_QUEUE_PROCESSING milliseconds.
+	 * <p />
+	 * During each activation, it will first check if there are waiting search requests that could be
+	 * processed. If there are, it will poll one from the queue and process it. If there are not, it
+	 * will process a group of search results from the priority queue.
+	 * <p />
+	 * At last, it will check for the ending condition in order to call endSeeding() when all the
+	 * seeds have been processed.
+	 */
+	@Override
+	public void run()
+	{
+		while (!stopFlag)
+		{
+			waitForAtMost(lastQueueProcessingTimestamp, MIN_INTERVAL_BTW_QUEUE_PROCESSING);
+			lastQueueProcessingTimestamp = System.currentTimeMillis();
+
+			if (numSearchesProcessing < MAX_NUM_SEARCHES_PROCESSING && waitingSearches.size() > 0)
+			{
+				synchronized (waitingSearches)
+				{
+					if (waitingSearches.size() > 0)
+					{
+						AC search = waitingSearches.poll();
+						downloadSearchRequest(search);
+					}
+				}
+			}
+			else
+			{
+				downloadResults();
+			}
+
+			checkForEndSeeding();
+		}
+
+		started = false;
+	}
+
+	/**
+	 * Check for ending conditions and call endSeeding() at the right time. The ending condition is:
+	 * all the searches that are queued have been downloaded and parsed, and all the search results
+	 * have been processed.
+	 */
+	private void checkForEndSeeding()
+	{
+		int numResultsRemaining = 0;
+		synchronized (queuedResults)
+		{
+			numResultsRemaining = queuedResults.size();
+		}
+		debug(String.format(
+				"checking for endSeeding(): toQueue=%d, processing=%d, done=%d, remaining results=%d",
+				numSearchesToQueue, numSearchesProcessing, numSearchesDone, numResultsRemaining));
+		if (numSearchesDone == numSearchesToQueue && numSearchesProcessing == 0
+				&& numResultsRemaining == 0)
+		{
+			System.out
+					.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+			System.out
+					.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+			System.out
+					.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+			System.out
+					.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+			infoCollector.endSeeding();
+			stop();
+		}
+	}
+
+	/**
+	 * (Currently for debugging only.)
+	 */
+	@Override
+	public void delivery(AC o)
+	{
+		if (!o.isRecycled())
+		{
+			debug("done downloading: " + o);
+		}
+	}
+
 }

@@ -323,7 +323,6 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 		if ((result == null) && (container != null))
 			result = container.getDocumentParser();
 	
-		String binding = SemanticActionsKeyWords.DEFAULT;
 		// if we made PURL connection but could not find parser using container
 		if ((purlConnection != null))
 		{
@@ -355,7 +354,9 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 			// it is very likely a predefined one, e.g. MetaMetadataSearchParser
 			if (result == null)
 			{
-				binding = metaMetadata.getParser();
+				String binding = metaMetadata.getParser();
+				if (binding == null)
+					binding = SemanticActionsKeyWords.DEFAULT;
 				result = getParserInstanceFromBindingMap(binding, infoCollector, semanticActionHandler);
 			}
 		}

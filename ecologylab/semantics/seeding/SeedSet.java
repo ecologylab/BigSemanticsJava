@@ -83,10 +83,10 @@ implements SemanticsSessionObjectNames, Iterable<S>
    			if( parentSeedSet != null )	// recurse to get from parent
    			{
    				result 		= parentSeedSet.seedDistributer(infoCollector);
-   				result.moreSearches(numSearches);
+//   				result.moreSearches(numSearches);
    			}
    			else
-   				result		= new SeedDistributor<C>(infoCollector, numSearches);
+   				result		= new SeedDistributor<C>(infoCollector);
    			this.resultDistributer	= result;
    		}
    			
@@ -166,7 +166,7 @@ implements SemanticsSessionObjectNames, Iterable<S>
    		{
    			if (nextSearch)
    			{
-   				seed.seedDistributer	= null;
+//   				seed.seedDistributer	= null; // it seems that we can reuse the previous seed distributor
  					int thisStartingResultNum	= seed.nextResultSet();
  					if (thisStartingResultNum > startingResultNum)
  						startingResultNum	= thisStartingResultNum;
@@ -197,9 +197,10 @@ implements SemanticsSessionObjectNames, Iterable<S>
      			seed.setActive(false);	// does not affect SearchState or Feed
    			}
    		}
-   		// for search seeds, endSeeding() will be called from SeedDistributor. however, for <feed>
-   		// seeds, we need to call endSeeding() here. endSeeding() will check the seeding status.
- 			infoCollector.endSeeding();
+   		// infoCollector.endSeeding() should be called from other places, since performSeedingSteps()
+   		//   may involve other threads.
+   		// for searches, it will be called from SeedDistributor.
+ 			// infoCollector.endSeeding();
    	}
    	
    	public String toString()
