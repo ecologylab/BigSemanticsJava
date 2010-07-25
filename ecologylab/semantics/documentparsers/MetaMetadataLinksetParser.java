@@ -59,16 +59,16 @@ public abstract class MetaMetadataLinksetParser
 
 
 	/**
-	 * 
+	 * call doneQueueing() to notify seed distributor
 	 */
 	public void delivery(Container downloadedContainer)
 	{
-		if (this.searchSeed != null)
+		Seed seed = downloadedContainer.getSeed();
+		if (seed != null)
 		{
-			SeedDistributor aggregator = this.searchSeed.seedDistributer(infoCollector);
+			SeedDistributor aggregator = seed.seedDistributer(infoCollector);
 			if (aggregator != null)
-				aggregator.doneQueueing(downloadedContainer, searchSeed.searchNum(), resultsSoFar);
-			this.searchSeed.incrementNumResultsBy(searchSeed.numResults());
+				aggregator.doneQueueing(downloadedContainer);
 		}
 	}
 	

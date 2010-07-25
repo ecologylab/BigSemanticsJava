@@ -9,6 +9,7 @@ import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.seeding.Feed;
+import ecologylab.semantics.seeding.Seed;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.TranslationScope;
 
@@ -19,6 +20,8 @@ import ecologylab.serialization.TranslationScope;
 public class MetaMetadataFeedParser
 		extends MetaMetadataLinksetParser
 {
+	
+	private Feed feed;
 
 	public MetaMetadataFeedParser(InfoCollector infoCollector)
 	{
@@ -30,6 +33,7 @@ public class MetaMetadataFeedParser
 			Feed feed)
 	{
 		super(infoCollector, semanticActionHandler);
+		this.feed = feed;
 		getMetaMetadataAndContainerAndQueue(infoCollector,feed.getUrl(),feed,null);
 	}
 
@@ -38,7 +42,10 @@ public class MetaMetadataFeedParser
 	{
 		return directBindingPopulateMetadata();
 	}
-	
-	
 
+	@Override
+	public Seed getSeed()
+	{
+		return feed;
+	}
 }

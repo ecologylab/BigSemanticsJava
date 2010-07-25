@@ -18,6 +18,8 @@ import ecologylab.semantics.documentparsers.MetaMetadataFeedParser;
 public class Feed extends DocumentState
 {
 
+	private String queryString;
+	
 	/**
 	 * 
 	 */
@@ -70,4 +72,17 @@ public class Feed extends DocumentState
 		
 	}
 
+	/**
+	 * (current for debug only)
+	 */
+	@Override
+	public String getQuery()
+	{
+		if (queryString == null)
+		{
+			queryString = "Feed(" + url + ")";
+		}
+		return queryString;
+	}
+	
 }

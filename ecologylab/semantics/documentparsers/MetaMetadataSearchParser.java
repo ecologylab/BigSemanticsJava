@@ -150,6 +150,13 @@ public class MetaMetadataSearchParser
 		return populatedMetadata;
 	}
 
+	@Override
+	public void delivery(Container downloadedContainer)
+	{
+		super.delivery(downloadedContainer);
+		if (searchSeed != null)
+			searchSeed.incrementNumResultsBy(searchSeed.numResults());
+	}
 /*	protected void createDOMandParse(ParsedURL purl)
 	{
 		if ("direct".equals(metaMetadata.getBinding()))

@@ -127,21 +127,9 @@ public class SeedDistributor<AC extends Container> extends Debug implements Runn
 			@Override
 			public int compare(QandDownloadable o1, QandDownloadable o2)
 			{
-				// here o1 and o2 should always be container, and their searchResult() should never
-				// return null, considering they can get to the seed distributor only if they are generated
-				// from a search.
-				if (o1 instanceof Container && o2 instanceof Container)
-				{
-					Container c1 = (Container) o1;
-					Container c2 = (Container) o2;
-					int i1 = c1.searchResult() == null ? 0 : c1.searchResult().resultNum();
-					int i2 = c2.searchResult() == null ? 0 : c2.searchResult().resultNum();
-					return i1 - i2;
-				}
-				else
-				{
-					return 0;
-				}
+				int i1 = getRank(o1);
+				int i2 = getRank(o2);
+				return i1 - i2;
 			}
 
 		});
@@ -197,7 +185,7 @@ public class SeedDistributor<AC extends Container> extends Debug implements Runn
 	 * @param searchNum
 	 * @param numResults
 	 */
-	public void doneQueueing(Container searchContainer, int searchNum, int numResults)
+	public void doneQueueing(Container searchContainer)
 	{
 		debug("search parsed: " + searchContainer);
 		numSearchesProcessing--;
@@ -234,7 +222,7 @@ public class SeedDistributor<AC extends Container> extends Debug implements Runn
 				{
 					QandDownloadable downloadable = queuedResults.poll();
 					String query = getQuery(downloadable);
-					int rank = getSearchResultRank(downloadable);
+					int rank = getRank(downloadable);
 					debug(String.format("sending container to DownloadMonitor: [%s:%d]%s", query, rank,
 							downloadable));
 					downloadable.setDispatchTarget(this);
@@ -245,7 +233,7 @@ public class SeedDistributor<AC extends Container> extends Debug implements Runn
 		}
 	}
 
-	private int getSearchResultRank(QandDownloadable downloadable)
+	private static int getRank(QandDownloadable downloadable)
 	{
 		int r = -1;
 		if (downloadable instanceof Container)
@@ -256,7 +244,7 @@ public class SeedDistributor<AC extends Container> extends Debug implements Runn
 		return r;
 	}
 
-	private String getQuery(QandDownloadable downloadable)
+	private static String getQuery(QandDownloadable downloadable)
 	{
 		String q = null;
 		if (downloadable instanceof Container)
