@@ -1,7 +1,9 @@
 package ecologylab.semantics.seeding;
 
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
@@ -27,7 +29,7 @@ import ecologylab.semantics.connectors.InfoCollector;
  * searches at proper time. check the search results to process them. check for ending condition in
  * order to call endSeeding().
  * <p />
- *     -- above updated 7/24/2010, Yin Qu
+ * -- above updated 7/24/2010, Yin Qu
  * 
  * <p />
  * <p />
@@ -45,72 +47,79 @@ public class SeedDistributor<AC extends Container> extends Debug implements Runn
 		DispatchTarget<AC>
 {
 
+	public static interface DistributeCallBack<C extends QandDownloadable>
+	{
+		void distribute(C result);
+	}
+
 	/**
 	 * initial size of the search result queue
 	 */
-	private static final int											INIT_CAPACITY											= 128;
+	private static final int																INIT_CAPACITY											= 128;
 
-	private static final int											MIN_INTERVAL_BTW_SEARCHES					= 1000;
+	private static final int																MIN_INTERVAL_BTW_SEARCHES					= 1000;
 
-	private static final int											MIN_INTERVAL_BTW_QUEUE_PROCESSING	= 1000;
+	private static final int																MIN_INTERVAL_BTW_QUEUE_PROCESSING	= 1000;
 
 	/**
 	 * to generate surrogates as soon as possible, during each queue processing we will process the
 	 * top NUM_RESULTS_PROCESSED_EACH_TIME search results.
 	 */
-	private static final int											NUM_RESULTS_PROCESSED_EACH_TIME		= 1;
+	private static final int																NUM_RESULTS_PROCESSED_EACH_TIME		= 1;
 
 	/**
 	 * limit the number of searches being downloaded at one time in order to prevent blocking the
 	 * traffic by searches, since some search engine limits the rate we can access them, and we have
 	 * only 4 threads for downloading during seeding.
 	 */
-	private static final int											MAX_NUM_SEARCHES_PROCESSING				= 2;
+	private static final int																MAX_NUM_SEARCHES_PROCESSING				= 2;
 
-	private InfoCollector													infoCollector;
+	private InfoCollector																		infoCollector;
 
 	/**
 	 * number of searches that we have to queue and process in total
 	 */
-	private int																		numSearchesToQueue								= 0;
+	private int																							numSearchesToQueue								= 0;
 
 	/**
 	 * number of searches that have been queued to DownloadMonitor, but not yet finished
 	 */
-	private int																		numSearchesProcessing							= 0;
+	private int																							numSearchesProcessing							= 0;
 
 	/**
 	 * number of searches that have been finished (will call doneQueueing()). track this number to
 	 * decide when to finish seeding.
 	 */
-	private int																		numSearchesDone										= 0;
+	private int																							numSearchesDone										= 0;
 
 	/**
 	 * a waiting list for search requests, in case that there are already MAX_NUM_SEARCHES_PROCESSING
 	 * searches in processing.
 	 */
-	private final Queue<AC>												waitingSearches										= new LinkedList<AC>();
+	private final Queue<AC>																	waitingSearches										= new LinkedList<AC>();
 
 	/**
 	 * the comparator to decide the order of search results to be processed. can be customized through
 	 * constructor. by default, search results will be ordered according to their ranks in the search
 	 * result list.
 	 */
-	private final Comparator<QandDownloadable>		comparator;
+	private final Comparator<QandDownloadable>							comparator;
 
 	/**
 	 * The priority queue holding (weighted) search results waiting for downloading and parsing. Note
 	 * that PriorityQueue is not synchronized.
 	 */
-	private final PriorityQueue<QandDownloadable>	queuedResults;
+	private final PriorityQueue<QandDownloadable>						queuedResults;
 
-	private long																	lastSearchTimestamp;
+	private final Map<QandDownloadable, DistributeCallBack>	callbackMap												= new HashMap<QandDownloadable, SeedDistributor.DistributeCallBack>();
 
-	private long																	lastQueueProcessingTimestamp;
+	private long																						lastSearchTimestamp;
 
-	private boolean																started														= false;
+	private long																						lastQueueProcessingTimestamp;
 
-	private boolean																stopFlag;
+	private boolean																					started														= false;
+
+	private boolean																					stopFlag;
 
 	public SeedDistributor(InfoCollector infoCollector, Comparator<QandDownloadable> comparator)
 	{
@@ -200,10 +209,27 @@ public class SeedDistributor<AC extends Container> extends Debug implements Runn
 	 */
 	public void queueResult(QandDownloadable resultContainer)
 	{
+		queueResult(resultContainer, null);
+	}
+
+	/**
+	 * Queue a search result to the queue, with a specific callback method. The callback method will
+	 * be called when the result is distributed (polled from the queue and processed), instead of
+	 * calling queueDownload() on the result.
+	 * 
+	 * @param resultContainer
+	 * @param callback
+	 */
+	public void queueResult(QandDownloadable resultContainer, DistributeCallBack callback)
+	{
 		synchronized (queuedResults)
 		{
 			debug("queuing result: " + resultContainer);
 			queuedResults.offer(resultContainer);
+			if (callback != null)
+			{
+				callbackMap.put(resultContainer, callback);
+			}
 		}
 	}
 
@@ -226,7 +252,15 @@ public class SeedDistributor<AC extends Container> extends Debug implements Runn
 					debug(String.format("sending container to DownloadMonitor: [%s:%d]%s", query, rank,
 							downloadable));
 					downloadable.setDispatchTarget(this);
-					downloadable.queueDownload();
+					if (callbackMap.containsKey(downloadable))
+					{
+						callbackMap.get(downloadable).distribute(downloadable);
+						callbackMap.remove(downloadable);
+					}
+					else
+					{
+						downloadable.queueDownload();
+					}
 					i++;
 				}
 			}
