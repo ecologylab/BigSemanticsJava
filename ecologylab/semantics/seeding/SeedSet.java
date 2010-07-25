@@ -179,6 +179,7 @@ implements SemanticsSessionObjectNames, Iterable<S>
    		// it requires to have total searchNum before it starts performSeeding.
    		// Do not try to aggregate these two for loops unless you have better structure.
    		boolean aSeedingIsPerformed	= false;
+   		boolean shouldEndSeeding = true;
    		for (Seed seed : seeds)
    		{
    			seed.fixNumResults();
@@ -186,6 +187,9 @@ implements SemanticsSessionObjectNames, Iterable<S>
    			if (seed.isActive())	// false if inactive
    			{  				
    				debug("perform seeding: " + seed);
+   				
+   				if (shouldNotEndSeeding(seed))
+   					shouldEndSeeding = false;
    				
    				seed.performSeedingSteps(infoCollector);
    				aSeedingIsPerformed	= true;
@@ -197,13 +201,30 @@ implements SemanticsSessionObjectNames, Iterable<S>
      			seed.setActive(false);	// does not affect SearchState or Feed
    			}
    		}
-   		// infoCollector.endSeeding() should be called from other places, since performSeedingSteps()
-   		//   may involve other threads.
-   		// for searches, it will be called from SeedDistributor.
- 			// infoCollector.endSeeding();
+   		
+   		if (aSeedingIsPerformed && shouldEndSeeding)
+   		{
+   			infoCollector.endSeeding();
+   			seedDistributer(infoCollector).stop();
+   		}
    	}
    	
-   	public String toString()
+   	/**
+   	 * 
+   	 * @param seed
+   	 * @return true if we should not call endSeeding() immediately because this seed has outsourced
+   	 *         its seeding steps (e.g. through a SeedDistributor). otherwise false.
+   	 */
+   	private boolean shouldNotEndSeeding(Seed seed)
+		{
+   		if (seed instanceof SearchState)
+   			return true;
+   		if (seed instanceof Feed)
+   			return true;
+			return false;
+		}
+
+		public String toString()
    	{
    		return "SeedSet[" + size() + "]";
    	}
