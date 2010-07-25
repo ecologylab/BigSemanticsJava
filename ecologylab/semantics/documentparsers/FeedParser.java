@@ -17,19 +17,19 @@ import ecologylab.serialization.TranslationScope;
  * @author andruid
  * 
  */
-public class MetaMetadataFeedParser
-		extends MetaMetadataLinksetParser
+public class FeedParser
+		extends LinksetParser
 {
 	
 	private Feed feed;
 
-	public MetaMetadataFeedParser(InfoCollector infoCollector)
+	public FeedParser(InfoCollector infoCollector)
 	{
 		super(infoCollector);
 		// TODO Auto-generated constructor stub
 	}
 
-	public MetaMetadataFeedParser(InfoCollector infoCollector, SemanticActionHandler semanticActionHandler,
+	public FeedParser(InfoCollector infoCollector, SemanticActionHandler semanticActionHandler,
 			Feed feed)
 	{
 		super(infoCollector, semanticActionHandler);

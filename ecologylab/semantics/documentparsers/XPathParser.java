@@ -20,16 +20,16 @@ import ecologylab.serialization.SIMPLTranslationException;
  * @author amathur
  * 
  */
-public class MetaMetadataXPathParser< SA extends SemanticAction> extends
-		MetaMetadataParserBase implements SemanticActionsKeyWords
+public class XPathParser< SA extends SemanticAction> extends
+		ParserBase implements SemanticActionsKeyWords
 {
 	
-	public MetaMetadataXPathParser(InfoCollector infoCollector)
+	public XPathParser(InfoCollector infoCollector)
 	{
 		super(infoCollector);
 	}
 
-	public MetaMetadataXPathParser(InfoCollector infoCollector,SemanticActionHandler semanticActionHandler)
+	public XPathParser(InfoCollector infoCollector,SemanticActionHandler semanticActionHandler)
 	{
 		super(infoCollector, semanticActionHandler);
 	}

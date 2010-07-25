@@ -2,7 +2,7 @@ package ecologylab.semantics.metametadata;
 
 import java.io.IOException;
 
-import ecologylab.semantics.documentparsers.MetaMetadataParserBase;
+import ecologylab.semantics.documentparsers.ParserBase;
 import ecologylab.semantics.tools.MetadataCompilerUtils;
 import ecologylab.serialization.Hint;
 import ecologylab.serialization.SIMPLTranslationException;
@@ -231,7 +231,7 @@ public class MetaMetadataScalarField extends MetaMetadataField
 			annotations.append(String.format(" @simpl_hints(Hint.%s)", getHint()));
 		}
 
-		if (filter != null && getMetaMetadataParser().equals(MetaMetadataParserBase.DIRECT_BINDING))
+		if (filter != null && getMetaMetadataParser().equals(ParserBase.DIRECT_BINDING_PARSER))
 		{
 			String regex = filter.getJavaRegex();
 			String replace = filter.getJavaReplace();

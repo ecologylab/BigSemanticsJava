@@ -21,17 +21,17 @@ import ecologylab.serialization.ElementState;
  * @author andruid
  * 
  */
-public abstract class MetaMetadataLinksetParser
-		extends MetaMetadataParserBase implements DispatchTarget<Container>
+public abstract class LinksetParser
+		extends ParserBase implements DispatchTarget<Container>
 {
 
-	public MetaMetadataLinksetParser(InfoCollector infoCollector)
+	public LinksetParser(InfoCollector infoCollector)
 	{
 		super(infoCollector);
 		// TODO Auto-generated constructor stub
 	}
 
-	public MetaMetadataLinksetParser(InfoCollector infoCollector,
+	public LinksetParser(InfoCollector infoCollector,
 			SemanticActionHandler semanticActionHandler)
 	{
 		super(infoCollector, semanticActionHandler);

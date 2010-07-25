@@ -58,15 +58,17 @@ public interface SemanticActionsKeyWords
 
 	public static String	TRUE_PURL									= "TRUE_PURL";
 
-	public static String  DIRECT_BINDING						= "direct";
+	public static String  DIRECT_BINDING_PARSER			= "direct";
 	
-	public static String  XPATH_BINDING							= "xpath";
+	public static String  XPATH_PARSER							= "xpath";
 	
-	public static String  DEFAULT										= "default";
+	public static String  DEFAULT_PARSER						= "default";
 	
-	public static String PDF_BINDING								= "pdf";
+	public static String  FEED_PARSER								= "feed";
 	
-	public static String IMAGE_BINDING							= "image";
+	public static String	PDF_PARSER								= "pdf";
+	
+	public static String	IMAGE_PARSER							= "image";
 	
 	public static String PURLCONNECTION_MIME				= "purl_connect_mime";
 }

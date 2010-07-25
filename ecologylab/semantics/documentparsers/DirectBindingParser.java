@@ -25,11 +25,11 @@ import ecologylab.serialization.XMLTools;
  * @author amathur
  * 
  */
-public class MetaMetadataDirectBindingParser
-		extends MetaMetadataParserBase
+public class DirectBindingParser
+		extends ParserBase
 {
 
-	public MetaMetadataDirectBindingParser(InfoCollector infoCollector,SemanticActionHandler semanticActionHandler)
+	public DirectBindingParser(InfoCollector infoCollector,SemanticActionHandler semanticActionHandler)
 	{
 		super(infoCollector, semanticActionHandler);
 	}

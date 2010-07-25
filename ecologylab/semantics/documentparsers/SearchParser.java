@@ -28,8 +28,8 @@ import ecologylab.serialization.TranslationScope;
  * @author amathur
  * 
  */
-public class MetaMetadataSearchParser
-		extends MetaMetadataLinksetParser implements CFPrefNames, DispatchTarget<Container>,
+public class SearchParser
+		extends LinksetParser implements CFPrefNames, DispatchTarget<Container>,
 		SemanticActionsKeyWords
 {
 
@@ -50,7 +50,7 @@ public class MetaMetadataSearchParser
 	 * @param infoCollector
 	 * @param semanticActionHandler
 	 */
-	public MetaMetadataSearchParser(InfoCollector infoCollector,
+	public SearchParser(InfoCollector infoCollector,
 			SemanticActionHandler semanticActionHandler)
 	{
 		super(infoCollector,semanticActionHandler);
@@ -58,13 +58,13 @@ public class MetaMetadataSearchParser
 
 	}
 
-	public MetaMetadataSearchParser(InfoCollector infoCollector, String query, float bias,
+	public SearchParser(InfoCollector infoCollector, String query, float bias,
 			int numResults, String engine)
 	{
 		this(new SearchState(query, engine, (short) 0, numResults, true), infoCollector, engine);
 	}
 
-	public MetaMetadataSearchParser(SearchState searchSeed, InfoCollector infoCollector, String engine)
+	public SearchParser(SearchState searchSeed, InfoCollector infoCollector, String engine)
 	{
 		this(infoCollector, null, engine, searchSeed);
 	}
@@ -75,7 +75,7 @@ public class MetaMetadataSearchParser
 	 * @param semanticAction
 	 * @param searchURL
 	 */
-	public MetaMetadataSearchParser(InfoCollector infoCollector,
+	public SearchParser(InfoCollector infoCollector,
 			SemanticActionHandler semanticActionHandler, String engine, SearchState searchSeed)
 	{
 		super(infoCollector, semanticActionHandler);

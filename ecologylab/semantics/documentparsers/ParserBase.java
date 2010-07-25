@@ -51,7 +51,7 @@ import ecologylab.serialization.types.scalar.ScalarType;
  * @author amathur
  * 
  */
-public abstract class MetaMetadataParserBase
+public abstract class ParserBase
 extends HTMLDOMParser 
 implements ScalarUnmarshallingContext,SemanticActionsKeyWords, DeserializationHookStrategy<Metadata, MetadataFieldDescriptor>
 {
@@ -73,13 +73,13 @@ implements ScalarUnmarshallingContext,SemanticActionsKeyWords, DeserializationHo
 	 * 
 	 * @param infoCollector
 	 */
-	public MetaMetadataParserBase(InfoCollector infoCollector)
+	public ParserBase(InfoCollector infoCollector)
 	{
 		super(infoCollector);
 		xpath = XPathFactory.newInstance().newXPath();
 	}
 
-	public MetaMetadataParserBase(InfoCollector infoCollector,
+	public ParserBase(InfoCollector infoCollector,
 			SemanticActionHandler semanticActionHandler)
 	{
 		super(infoCollector,semanticActionHandler);

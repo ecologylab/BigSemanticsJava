@@ -6,7 +6,7 @@ package ecologylab.semantics.seeding;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.connectors.InfoCollector;
-import ecologylab.semantics.documentparsers.MetaMetadataFeedParser;
+import ecologylab.semantics.documentparsers.FeedParser;
 
 /**
  * A Feed is a Document Seed whose links are interleaved by a SeedDistributor, enabling round-robin scheduling
@@ -57,7 +57,7 @@ public class Feed extends DocumentState
 	public void performInternalSeedingSteps(InfoCollector infoCollector)
 	{
  	 SemanticActionHandler actionHandler= infoCollector.createSemanticActionHandler();
-	 new MetaMetadataFeedParser(infoCollector,actionHandler, this);
+	 new FeedParser(infoCollector,actionHandler, this);
 	}
   
 	/**

@@ -8,7 +8,7 @@ import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.connectors.SearchEngineNames;
 import ecologylab.semantics.connectors.SeedPeer;
-import ecologylab.semantics.documentparsers.MetaMetadataSearchParser;
+import ecologylab.semantics.documentparsers.SearchParser;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.model.text.InterestModel;
 import ecologylab.serialization.SIMPLTranslationException;
@@ -190,7 +190,7 @@ implements SemanticsPrefs, SearchEngineNames
   	 //  	 InterestModel.expressInterest(query, interestLevel);
   	 //infoCollector.instantiateDocumentType(SEARCH_DOCUMENT_TYPE_REGISTRY, engine, this);		
   	 SemanticActionHandler actionHandler= infoCollector.createSemanticActionHandler();
-  	 new MetaMetadataSearchParser(infoCollector,actionHandler, engine, this);
+  	 new SearchParser(infoCollector,actionHandler, engine, this);
    }
 
 	/**

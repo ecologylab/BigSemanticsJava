@@ -74,13 +74,6 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 
 	protected IC					infoCollector;
 
-	public static final String[]	IMAGE_MIME_STRINGS		= javax.imageio.ImageIO
-																	.getReaderMIMETypes();
-
-	public static final String[]	IMAGE_SUFFIX_STRINGS	= ImageIO.getReaderFormatNames();
-	
-	
-
 	protected static final class DocumentTypeRegistry extends Scope<DocumentParser>
 	{
 
@@ -97,9 +90,10 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 
 	static
 	{
-		bindingParserMap.put(SemanticActionsKeyWords.DIRECT_BINDING,MetaMetadataDirectBindingParser.class);
-		bindingParserMap.put(SemanticActionsKeyWords.XPATH_BINDING,MetaMetadataXPathParser.class);
-		bindingParserMap.put(SemanticActionsKeyWords.DEFAULT, HTMLDOMImageTextParser.class);
+		bindingParserMap.put(SemanticActionsKeyWords.DIRECT_BINDING_PARSER,DirectBindingParser.class);
+		bindingParserMap.put(SemanticActionsKeyWords.XPATH_PARSER,XPathParser.class);
+		bindingParserMap.put(SemanticActionsKeyWords.FEED_PARSER, FeedParser.class);
+		bindingParserMap.put(SemanticActionsKeyWords.DEFAULT_PARSER, HTMLDOMImageTextParser.class);
 		
 	}
 	/**
@@ -315,7 +309,7 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 		
 		// set meta-metadata in case a correct one was found after a redirect
 		if (metaMetadata == null && container != null && container.metadata() != null)
-			metaMetadata = container.metadata().getMetaMetadata();
+			metaMetadata = (MetaMetadataCompositeField) container.metadata().getMetaMetadata();
 		
 		// check for a parser that was discovered while processing a re-direct
 		DocumentParser result = documentParserConnectHelper.getResult();
@@ -355,10 +349,10 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 			// it is very likely a predefined one, e.g. MetaMetadataSearchParser
 			if (result == null)
 			{
-				String binding = metaMetadata.getParser();
-				if (binding == null)
-					binding = SemanticActionsKeyWords.DEFAULT;
-				result = getParserInstanceFromBindingMap(binding, infoCollector, semanticActionHandler);
+				String parserName = metaMetadata.getParser();
+				if (parserName == null)
+					parserName = SemanticActionsKeyWords.DEFAULT_PARSER;
+				result = getParserInstanceFromBindingMap(parserName, infoCollector, semanticActionHandler);
 			}
 		}
 		
