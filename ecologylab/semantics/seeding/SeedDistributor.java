@@ -12,6 +12,25 @@ import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.InfoCollector;
 
 /**
+ * now how SeedDistributor works:
+ * <p />
+ * searches: at most 2 searches are being processed (download and parse) at one time, in order not
+ * to block traffic. when there are already 2 being processed, new searches will be put in a waiting
+ * list.
+ * <p />
+ * search results: will be put into a priority queue when they come. will be processed by a consumer
+ * thread one group by one group. group size is set to 1 at this time (i.e. each time 1 search
+ * result is processed).
+ * <p />
+ * consumer thread: will be start when the first search request comes, and stopped when all the
+ * searches and search results are processed. check the search waiting list to process waiting
+ * searches at proper time. check the search results to process them. check for ending condition in
+ * order to call endSeeding().
+ * <p />
+ *     -- above updated 7/24/2010, Yin Qu
+ * 
+ * <p />
+ * <p />
  * Aggregate all results across multiple searches and feeds. Interleave the results from each Seed.
  * Round-robin the scheduling of parsing each.
  * <p/>
