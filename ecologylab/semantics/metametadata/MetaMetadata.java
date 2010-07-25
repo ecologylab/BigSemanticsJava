@@ -41,19 +41,10 @@ implements Mappable<String>
 	@simpl_composite 
 	MetaMetadataSelector 			selector;
 
-	@simpl_scalar
-	private String						userAgentName;
-
 	@xml_tag("package")
 	@simpl_scalar
 	String										packageAttribute;
 
-	@simpl_scalar
-	private String						userAgentString;
-
-	@simpl_scalar
-	private String						parser=null;
-	
 	@simpl_scalar
 	protected boolean					dontGenerateClass = false;
 
@@ -71,14 +62,6 @@ implements Mappable<String>
 	@simpl_nowrap 
 	private ArrayList<String>	mixins;
 
-	@simpl_collection
-	@simpl_scope(NestedSemanticActionsTranslationScope.NESTED_SEMANTIC_ACTIONS_SCOPE)
-	private ArrayList<SemanticAction>	semanticActions;
-	
-	@simpl_collection("def_var")
-	@simpl_nowrap 
-	private ArrayList<DefVar> defVars;
-
 	
 	@simpl_scalar
 	private String 					collectionOf;
@@ -95,52 +78,6 @@ implements Mappable<String>
 	protected MetaMetadata(MetaMetadataField copy, String name)
 	{
 		super(copy, name);
-	}
-
-	/**
-	 * @param purl
-	 * @param mimeType TODO
-	 * @return
-	 */
-	public boolean isSupported(ParsedURL purl, String mimeType)
-	{
-		/*
-		if(getSelector().getUrlStripped()!=null)
-			return purl.toString().startsWith(getSelector().getUrlStripped().toString());
-		Pattern pattern = null;
-		if(getSelector().getUrlPathTree()!=null)
-			 pattern = Pattern.compile(getSelector().getUrlPathTree().toString());
-		if(getSelector().getUrlRegex()!=null)
-			pattern = Pattern.compile(getSelector().getUrlRegex().toString());
-		
-		if(pattern != null)
-		{
-			// create a matcher based on input string
-			Matcher matcher = pattern.matcher(purl.toString());
-			
-			boolean result = matcher.find();
-			//System.out.println(result);
-			return result;
-		}
-		if(getSelector().getSuffixes()!=null)
-		{
-			for(String suffix : getSelector().getSuffixes())
-			{
-				if(purl.hasSuffix(suffix))
-					return true;
-			}				
-		}
-		if(getSelector().getMimeTypes()!=null)
-		{
-			for(String mime: getSelector().getMimeTypes())
-			{
-				if(mime.equals(mimeType))
-					return true;
-			}
-		}
-		return false;
-		*/
-		return true;
 	}
 
 	public Metadata constructMetadata()
@@ -295,46 +232,12 @@ implements Mappable<String>
 		p.flush();
 	}
 
-	public MetaMetadataRepository repository()
-	{
-		return (MetaMetadataRepository) parent();
-	}
-
-	public String getUserAgentString()
-	{
-		if (userAgentString == null)
-		{
-			userAgentString = (userAgentName == null) ? repository().getDefaultUserAgentString() :
-				repository().getUserAgentString(userAgentName);
-		}
-
-		return userAgentString;
-	}
-	
-	/**
-	 * 
-	 */
-	protected void inheritSemanticActionsFromMM(MetaMetadata inheritedMetaMetadata)
-	{
-		if(semanticActions == null)
-		{
-			semanticActions = inheritedMetaMetadata.getSemanticActions();
-		}
-	}
 	
 	@Override
 	protected String getMetaMetadataTagToInheritFrom()
 	{
 		return (extendsAttribute != null) ? extendsAttribute : super.getMetaMetadataTagToInheritFrom();
 	}
-	/**
-	 * @return the semanticActions
-	 */
-	public ArrayList<SemanticAction> getSemanticActions()
-	{
-		return semanticActions;
-	}
-
 	/**
 	 * @return the collectionOf
 	 */
@@ -349,20 +252,6 @@ implements Mappable<String>
 	public String getExtendsAttribute()
 	{
 		return extendsAttribute;
-	}
-
-	public String getParser()
-	{
-		// TODO Auto-generated method stub
-		return parser;
-	}
-
-	/**
-	 * @return the defVars
-	 */
-	public final ArrayList<DefVar> getDefVars()
-	{
-		return defVars;
 	}
 
 	/**
@@ -410,7 +299,7 @@ implements Mappable<String>
 		packageAttribute	= pa;
 	}
 	
-	public String getUserAgent()
+	public String getUserAgentName()
 	{
 		return userAgentName;
 	}

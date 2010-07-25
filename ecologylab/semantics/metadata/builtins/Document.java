@@ -21,9 +21,11 @@ import ecologylab.serialization.simpl_inherit;
 @simpl_inherit
 public class Document extends Metadata
 {
-	@simpl_scalar MetadataString		title;
-	@simpl_scalar MetadataString		description;
 	@simpl_scalar MetadataParsedURL	location;
+	
+	@simpl_scalar MetadataString		title;
+	
+	@simpl_scalar MetadataString		description;
 	
 //	@simpl_scalar MetadataStringBuilder 	anchorText;
 //	@@simpl_scalar MetadataStringBuilder 	anchorContextString;

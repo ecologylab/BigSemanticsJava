@@ -643,8 +643,20 @@ public abstract class SemanticActionHandler<C extends Container, IC extends Info
  */
 	public int getIntegerArgumentValueByName(SemanticAction action, String argumentName, int defaultValue)
 	{
-		Integer integer	= (Integer) getArgumentValueByName(action, argumentName);
-		return integer == null ? defaultValue : integer;
+		Integer result	= (Integer) getArgumentValueByName(action, argumentName);
+		return result == null ? defaultValue : result;
+	}
+
+	public float getFloatArgumentValueByName(SemanticAction action, String argumentName, float defaultValue)
+	{
+		Float result		= (Float) getArgumentValueByName(action, argumentName);
+		return result == null ? defaultValue : result;
+	}
+
+	public boolean getBooleanArgumentValueByName(SemanticAction action, String argumentName)
+	{
+		Boolean result	= (Boolean) getArgumentValueByName(action, argumentName);
+		return result != null && result;
 	}
 
 	public Object getArgumentValueByName(SemanticAction action, String argumentName)

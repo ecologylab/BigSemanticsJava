@@ -12,7 +12,9 @@ public class ConditionTranslationScope
 		OrCondition.class,
 		NotCondition.class,
 		
-		NotNull.class
+		NotNull.class,
+		Null.class,
+		
 	};
 
 	public static final TranslationScope get()

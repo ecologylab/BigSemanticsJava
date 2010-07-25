@@ -13,6 +13,7 @@ import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.MetaMetadata;
+import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.seeding.SearchState;
 import ecologylab.semantics.seeding.Seed;
@@ -84,10 +85,10 @@ public interface InfoCollector<C extends Container>
 	
 	C getContainerForSearch(C ancestor, ParsedURL purl, Seed seed);
 	
-	C getContainerForSearch(C ancestor, ParsedURL purl, Seed seed, MetaMetadata metaMetadata);
+	C getContainerForSearch(C ancestor, ParsedURL purl, Seed seed, Document metadata, MetaMetadata metaMetadata);
 
 	Container getContainer(C ancestor, ParsedURL purl, boolean reincarnate,
-			boolean addToCandidatesIfNeeded, MetaMetadata metaMetadata);
+			boolean addToCandidatesIfNeeded, Document metadata, MetaMetadataCompositeField metaMetadata);
 	
 	public void removeCandidateContainer(Container candidate);
 

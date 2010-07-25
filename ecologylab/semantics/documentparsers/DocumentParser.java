@@ -27,6 +27,7 @@ import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.metadata.DocumentParserTagNames;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.MetaMetadata;
+import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.seeding.Seed;
 import ecologylab.serialization.ElementState;
@@ -61,7 +62,7 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 	 * Associated MetaMetadata object, which drives extraction and interaction.
 	 * Filled out by the connect() method.
 	 */
-	protected MetaMetadata			metaMetadata;
+	protected MetaMetadataCompositeField			metaMetadata;
 	
 	public static boolean 					cacheHit = false;
 
@@ -306,7 +307,7 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 
 		// based on purl we try to find meta-metadata from reposiotry.
 		final MetaMetadataRepository metaMetaDataRepository = infoCollector.metaMetaDataRepository();
-		MetaMetadata metaMetadata = metaMetaDataRepository.getDocumentMM(purl,null);
+		MetaMetadataCompositeField metaMetadata = metaMetaDataRepository.getDocumentMM(purl,null);
 		
 		// then try to create a connection using the PURL
 		PURLConnection purlConnection = purl.connect(documentParserConnectHelper, (metaMetadata == null) ? null
@@ -314,7 +315,7 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 		
 		// set meta-metadata in case a correct one was found after a redirect
 		if (metaMetadata == null && container != null && container.metadata() != null)
-			metaMetadata = (MetaMetadata) container.metadata().getMetaMetadata();
+			metaMetadata = container.metadata().getMetaMetadata();
 		
 		// check for a parser that was discovered while processing a re-direct
 		DocumentParser result = documentParserConnectHelper.getResult();
@@ -819,7 +820,7 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 		return infoCollector;
 	}
 
-	public MetaMetadata getMetaMetadata()
+	public MetaMetadataCompositeField getMetaMetadata()
 	{
 		return metaMetadata;
 	}

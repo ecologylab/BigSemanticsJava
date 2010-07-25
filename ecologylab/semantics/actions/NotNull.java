@@ -34,9 +34,8 @@ public class NotNull extends Condition
 	{
 		String name = getValue();
 		Scope theMap = handler.getSemanticActionReturnValueMap();
-		if (theMap.containsKey(name) && theMap.get(name) != null)
-			return true;
-		return false;
+
+		return theMap.containsKey(name) && theMap.get(name) != null;
 	}
 
 }

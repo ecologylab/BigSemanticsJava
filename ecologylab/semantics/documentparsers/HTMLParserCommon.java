@@ -190,7 +190,7 @@ extends ContainerParser<C, IC, ElementState> implements SemanticsPrefs
 //				CfContainer newContainer = abstractInfoCollector.getContainerWithoutQueuing(container, hrefPurl);
 //				if (newContainer != null)
 //					container.addCandidateContainer(newContainer);
-				infoCollector.getContainer(container, hrefPurl, false, true, metaMetadata);
+				infoCollector.getContainer(container, hrefPurl, false, true, null, metaMetadata);
 			}
 		}
 	}

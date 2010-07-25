@@ -1,12 +1,19 @@
 package ecologylab.semantics.metametadata;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import ecologylab.generic.HashMapArrayList;
+import ecologylab.semantics.actions.NestedSemanticActionsTranslationScope;
+import ecologylab.semantics.actions.SemanticAction;
 import ecologylab.semantics.metadata.DocumentParserTagNames;
 import ecologylab.semantics.tools.MetadataCompilerUtils;
 import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.ElementState.simpl_collection;
+import ecologylab.serialization.ElementState.simpl_nowrap;
+import ecologylab.serialization.ElementState.simpl_scalar;
+import ecologylab.serialization.ElementState.simpl_scope;
 import ecologylab.serialization.ElementState.xml_tag;
 
 @simpl_inherit
@@ -22,6 +29,26 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField
 
 	@simpl_scalar
 	protected boolean	entity	= false;
+	
+
+	@simpl_scalar
+	protected String						userAgentName;
+	
+	@simpl_scalar
+	protected String						userAgentString;
+
+	@simpl_scalar
+	private String						parser=null;
+	
+
+	@simpl_collection
+	@simpl_scope(NestedSemanticActionsTranslationScope.NESTED_SEMANTIC_ACTIONS_SCOPE)
+	private ArrayList<SemanticAction>	semanticActions;
+	
+	@simpl_collection("def_var")
+	@simpl_nowrap 
+	private ArrayList<DefVar> defVars;
+
 
 	public MetaMetadataCompositeField()
 	{
@@ -146,5 +173,52 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField
 	{
 		return this;
 	}
+
+	public String getParser()
+	{
+		// TODO Auto-generated method stub
+		return parser;
+	}
+
+	public String getUserAgentString()
+	{
+		if (userAgentString == null)
+		{
+			userAgentString = (userAgentName == null) ? repository().getDefaultUserAgentString() :
+				repository().getUserAgentString(userAgentName);
+		}
+
+		return userAgentString;
+	}
+	
+	/**
+	 * 
+	 */
+	protected void inheritSemanticActionsFromMM(MetaMetadata inheritedMetaMetadata)
+	{
+		if(semanticActions == null)
+		{
+			semanticActions = inheritedMetaMetadata.getSemanticActions();
+		}
+	}
+
+	/**
+	 * @return the defVars
+	 */
+	public final ArrayList<DefVar> getDefVars()
+	{
+		return defVars;
+	}
+
+	/**
+	 * @return the semanticActions
+	 */
+	public ArrayList<SemanticAction> getSemanticActions()
+	{
+		return semanticActions;
+	}
+
+
+
 
 }

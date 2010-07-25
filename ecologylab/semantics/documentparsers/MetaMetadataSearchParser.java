@@ -133,18 +133,15 @@ public class MetaMetadataSearchParser
 	{
 		Document populatedMetadata	= container.metadata();
 		
-		if (metaMetadata.isSupported(purl(), null))
+		if ("direct".equals(metaMetadata.getParser()))
 		{
-			if ("direct".equals(metaMetadata.getParser()))
-			{
-				populatedMetadata				= directBindingPopulateMetadata();
-			}
-			else if ("xpath".equals(metaMetadata.getParser()))
-			{
-				recursiveExtraction(getMetadataTranslationScope(), metaMetadata,
-						populatedMetadata, xpath, semanticActionHandler.getSemanticActionReturnValueMap(),document);
-				container.setMetadata(populatedMetadata);
-			}
+			populatedMetadata				= directBindingPopulateMetadata();
+		}
+		else if ("xpath".equals(metaMetadata.getParser()))
+		{
+			recursiveExtraction(getMetadataTranslationScope(), metaMetadata,
+					populatedMetadata, xpath, semanticActionHandler.getSemanticActionReturnValueMap(),document);
+			container.setMetadata(populatedMetadata);
 		}
 
 		return populatedMetadata;

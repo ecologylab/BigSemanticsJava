@@ -16,13 +16,14 @@ import ecologylab.serialization.ElementState.xml_tag;
  *
  */
 @simpl_inherit
-public @xml_tag(SemanticActionStandardMethods.SET_FIELD_ACTION) class SetFieldSemanticAction extends SemanticAction implements SemanticActionStandardMethods
+@xml_tag(SemanticActionStandardMethods.SET_FIELD_ACTION) 
+public class SetFieldSemanticAction 
+extends SemanticAction implements SemanticActionStandardMethods
 {
 
 	@Override
 	public String getActionName()
 	{
-		// TODO Auto-generated method stub
 		return SET_FIELD_ACTION;
 	}
 

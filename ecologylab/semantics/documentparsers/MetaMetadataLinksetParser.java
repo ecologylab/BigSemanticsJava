@@ -48,7 +48,7 @@ public abstract class MetaMetadataLinksetParser
 		// first try to find the search meta-metadata using the purl
 		MetaMetadata metaMetadata = infoCollector.metaMetaDataRepository().getDocumentMM(purl, defaultTag);
 
-		Container container = infoCollector.getContainer(null, purl, false, false, metaMetadata);
+		Container container = infoCollector.getContainer(null, purl, false, false, null, metaMetadata);
 		setContainer(container);
 		container.presetDocumentType(this);
 		container.setDispatchTarget(this);

@@ -1181,4 +1181,21 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 		return null;
 	}
 
+	private MetaMetadataRepository repository;
+
+	public MetaMetadataRepository repository()
+	{
+		MetaMetadataRepository result	= this.repository;
+		if (result == null)
+		{
+			
+		}
+		return (MetaMetadataRepository) parent();
+	}
+
+	private MetaMetadataRepository findRepository()
+	{
+		ElementState parent	= parent();
+		return (parent instanceof MetaMetadataRepository) ? (MetaMetadataRepository) parent : ((MetaMetadataField) parent).findRepository();
+	}
 }
