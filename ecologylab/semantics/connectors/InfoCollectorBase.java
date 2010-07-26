@@ -391,6 +391,11 @@ implements InfoCollector<AC>, SemanticsPrefs, ApplicationProperties, DocumentPar
 	 */
 	public void traversable(ParsedURL purl)
 	{
+		traversable(purl, false);
+	}
+	
+	public void traversable(ParsedURL purl, boolean ignoreReject)
+	{
 		// String uniquePrefix = purl.directoryString();
 		// debug("add traversable " +url +"->" +uniquePrefix);
 		// println("-- allow downloads that start with " + uniquePrefix + " --");
@@ -400,7 +405,7 @@ implements InfoCollector<AC>, SemanticsPrefs, ApplicationProperties, DocumentPar
 		// prefixPhrase.toStringBuilder(buffy, traversablePrefixes.separator());
 		// buffy.append(" --");
 		// println(buffy);
-		if (this.isNotReject(purl) &&
+		if ((ignoreReject || this.isNotReject(purl)) &&
 				!traversablePrefixes.match(purl)) //If this purl already exists in traversablePrefixes, don't add/
 			recordPrefix(traversablePrefixes, purl, "-- allow downloads that start with ");
 	}

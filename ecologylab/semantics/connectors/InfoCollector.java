@@ -88,7 +88,7 @@ public interface InfoCollector<C extends Container>
 	C getContainerForSearch(C ancestor, ParsedURL purl, Seed seed, Document metadata, MetaMetadata metaMetadata);
 
 	Container getContainer(C ancestor, ParsedURL purl, boolean reincarnate,
-			boolean addToCandidatesIfNeeded, Document metadata, MetaMetadataCompositeField metaMetadata);
+			boolean addToCandidatesIfNeeded, Document metadata, MetaMetadataCompositeField metaMetadata, boolean ignoreRejects);
 	
 	public void removeCandidateContainer(Container candidate);
 

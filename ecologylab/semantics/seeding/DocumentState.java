@@ -90,7 +90,7 @@ public class DocumentState extends Seed
  		{
 			File parent				= file.getParentFile();	// the directory the file lives in
 			ParsedURL parentPURL	= new ParsedURL(parent);
-			parentContainer	= infoCollector.getContainer(null, parentPURL, false, false, null, InfoCollectorBase.DOCUMENT_META_METADATA);
+			parentContainer	= infoCollector.getContainer(null, parentPURL, false, false, null, InfoCollectorBase.DOCUMENT_META_METADATA, false);
  		}
  		Container container =infoCollector.getContainerDownloadIfNeeded(parentContainer, url, this, 
  				(dropPoint != null), justcrawl, justmedia);
