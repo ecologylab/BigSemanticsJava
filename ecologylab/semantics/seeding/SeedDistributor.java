@@ -43,8 +43,7 @@ import ecologylab.semantics.connectors.InfoCollector;
  * @author andruid
  * @param <slice>
  */
-public class SeedDistributor<AC extends Container> extends Debug implements Runnable,
-		DispatchTarget<AC>
+public class SeedDistributor<AC extends Container> extends Debug implements Runnable
 {
 
 	public static interface DistributeCallBack<C extends QandDownloadable>
@@ -181,7 +180,7 @@ public class SeedDistributor<AC extends Container> extends Debug implements Runn
 	{
 		searchContainer.queueDownload();
 		numSearchesProcessing++;
-		debug("sending search request to DownloadMonitor: " + searchContainer);
+//		debug("sending search request to DownloadMonitor: " + searchContainer);
 
 		waitForAtMost(lastSearchTimestamp, MIN_INTERVAL_BTW_SEARCHES);
 		lastSearchTimestamp = System.currentTimeMillis();
@@ -196,7 +195,7 @@ public class SeedDistributor<AC extends Container> extends Debug implements Runn
 	 */
 	public void doneQueueing(Container searchContainer)
 	{
-		debug("search parsed: " + searchContainer);
+//		debug("search parsed: " + searchContainer);
 		numSearchesProcessing--;
 		numSearchesDone++;
 	}
@@ -224,7 +223,7 @@ public class SeedDistributor<AC extends Container> extends Debug implements Runn
 	{
 		synchronized (queuedResults)
 		{
-			debug("queuing result: " + resultContainer);
+//			debug("queuing result: " + resultContainer);
 			queuedResults.offer(resultContainer);
 			if (callback != null)
 			{
@@ -249,9 +248,11 @@ public class SeedDistributor<AC extends Container> extends Debug implements Runn
 					QandDownloadable downloadable = queuedResults.poll();
 					String query = getQuery(downloadable);
 					int rank = getRank(downloadable);
+					/*
 					debug(String.format("sending container to DownloadMonitor: [%s:%d]%s", query, rank,
 							downloadable));
-					downloadable.setDispatchTarget(this);
+					*/
+					// downloadable.setDispatchTarget(this);
 					if (callbackMap.containsKey(downloadable))
 					{
 						callbackMap.get(downloadable).distribute(downloadable);
@@ -396,9 +397,11 @@ public class SeedDistributor<AC extends Container> extends Debug implements Runn
 		{
 			numResultsRemaining = queuedResults.size();
 		}
+		/*
 		debug(String.format(
 				"checking for endSeeding(): toQueue=%d, processing=%d, done=%d, remaining results=%d",
 				numSearchesToQueue, numSearchesProcessing, numSearchesDone, numResultsRemaining));
+		*/
 		if (numSearchesDone == numSearchesToQueue && numSearchesProcessing == 0
 				&& numResultsRemaining == 0)
 		{
@@ -417,7 +420,6 @@ public class SeedDistributor<AC extends Container> extends Debug implements Runn
 
 	/**
 	 * (Currently for debugging only.)
-	 */
 	@Override
 	public void delivery(AC o)
 	{
@@ -426,5 +428,6 @@ public class SeedDistributor<AC extends Container> extends Debug implements Runn
 			debug("done downloading: " + o);
 		}
 	}
+	 */
 
 }
