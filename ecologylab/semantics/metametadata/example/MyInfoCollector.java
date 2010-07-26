@@ -22,6 +22,7 @@ import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.scalar.types.MetadataScalarScalarType;
 import ecologylab.semantics.metametadata.MetaMetadata;
+import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.seeding.SearchState;
 import ecologylab.semantics.seeding.Seed;
@@ -207,9 +208,10 @@ public class MyInfoCollector implements InfoCollector<MyContainer>
 	 */
 	@Override
 	public MyContainer getContainer(MyContainer ancestor, ParsedURL purl, boolean reincarnate,
-			boolean addToCandidatesIfNeeded, MetaMetadata metaMetadata)
+			boolean addToCandidatesIfNeeded, Document metadata, MetaMetadataCompositeField metaMetadata,
+			boolean ignoreRejects)
 	{
-		if (!accept(purl))
+		if (!accept(purl) && !ignoreRejects)
 			return null;
 	
 		MyContainer result = new MyContainer(ancestor, this, purl);
@@ -229,21 +231,13 @@ public class MyInfoCollector implements InfoCollector<MyContainer>
 	public MyContainer getContainerDownloadIfNeeded(MyContainer ancestor, ParsedURL purl, Seed seed,
 			boolean dnd, boolean justCrawl, boolean justMedia)
 	{
-		MyContainer result = getContainer(ancestor, purl, false, false, null);
+		MyContainer result = getContainer(ancestor, purl, false, false, null, null, false);
 		downloadMonitor.download(result, null);
 		return result;
 	}
 
 	@Override
 	public MyContainer getContainerForSearch(MyContainer ancestor, ParsedURL purl, Seed seed)
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public MyContainer getContainerForSearch(MyContainer ancestor, ParsedURL purl, Seed seed,
-			MetaMetadata metaMetadata)
 	{
 		// TODO Auto-generated method stub
 		return null;
@@ -426,4 +420,13 @@ public class MyInfoCollector implements InfoCollector<MyContainer>
 	{
 		return null;
 	}
+
+	@Override
+	public MyContainer getContainerForSearch(MyContainer ancestor, ParsedURL purl, Seed seed,
+			Document metadata, MetaMetadata metaMetadata)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

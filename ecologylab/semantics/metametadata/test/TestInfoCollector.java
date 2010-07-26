@@ -14,7 +14,9 @@ import ecologylab.semantics.connectors.InfoCollectorBase;
 import ecologylab.semantics.connectors.SeedPeer;
 import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.generated.library.GeneratedMetadataTranslationScope;
+import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.MetaMetadata;
+import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.metametadata.example.MyContainer;
 import ecologylab.semantics.seeding.SearchState;
 import ecologylab.semantics.seeding.Seed;
@@ -97,14 +99,6 @@ public class TestInfoCollector extends InfoCollectorBase<MyContainer>
 	}
 
 	@Override
-	public Container getContainer(MyContainer ancestor, ParsedURL purl, boolean reincarnate,
-			boolean addToCandidatesIfNeeded, MetaMetadata metaMetadata)
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public Container getContainerDownloadIfNeeded(MyContainer ancestor, ParsedURL purl, Seed seed,
 			boolean dnd, boolean justCrawl, boolean justMedia)
 	{
@@ -114,14 +108,6 @@ public class TestInfoCollector extends InfoCollectorBase<MyContainer>
 
 	@Override
 	public MyContainer getContainerForSearch(MyContainer ancestor, ParsedURL purl, Seed seed)
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public MyContainer getContainerForSearch(MyContainer ancestor, ParsedURL purl, Seed seed,
-			MetaMetadata metaMetadata)
 	{
 		// TODO Auto-generated method stub
 		return null;
@@ -209,6 +195,23 @@ public class TestInfoCollector extends InfoCollectorBase<MyContainer>
 	{
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public MyContainer getContainerForSearch(MyContainer ancestor, ParsedURL purl, Seed seed,
+			Document metadata, MetaMetadata metaMetadata)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Container getContainer(MyContainer ancestor, ParsedURL purl, boolean reincarnate,
+			boolean addToCandidatesIfNeeded, Document metadata, MetaMetadataCompositeField metaMetadata,
+			boolean ignoreRejects)
+	{
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
