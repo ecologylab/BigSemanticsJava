@@ -25,7 +25,8 @@ public class bingImageDataCollector{
 		
 		MyInfoCollector mic = new MyInfoCollector("repo", GeneratedMetadataTranslationScope.get());
 		
-		/* Test cases
+		/* Test cases */
+		/*
 		ParsedURL flickr_search = ParsedURL.getAbsolute("http://www.flickr.com/search/?q=lion");
 
 		ParsedURL flickr_search_detailed = ParsedURL.getAbsolute("http://www.flickr.com/search/?q=texas&z=m");
