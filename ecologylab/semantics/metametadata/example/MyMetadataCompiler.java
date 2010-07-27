@@ -1,6 +1,7 @@
 package ecologylab.semantics.metametadata.example;
 
 import ecologylab.semantics.actions.SemanticAction;
+import ecologylab.semantics.metametadata.example.bingImage.bingImageSemanticAction;
 import ecologylab.semantics.tools.MetadataCompiler;
 import ecologylab.serialization.SIMPLTranslationException;
 
@@ -18,6 +19,7 @@ public class MyMetadataCompiler
 		try
 		{
 			SemanticAction.register(SaveReportSemanticAction.class);
+			SemanticAction.register(bingImageSemanticAction.class);
 			
 			// use the default repository location
 			// needed to provide this!!
