@@ -156,17 +156,24 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 			variableTypeStart = " ArrayList<Entity<";
 			variableTypeEnd = ">>";
 		}
-		String tag = getChildTag();
-		if (tag == null)
+		
+		String childTag = getChildTag();
+		if (childTag == null)
 		{
 			warning("child_tag not specified in meta-metadata for collection field " + this.name);
 			return;
 		}
 
 		StringBuilder annotation = StringBuilderUtils.acquire();
-		annotation.append("@simpl_collection(\"" + tag + "\")");
+		annotation.append(" @simpl_collection(\"" + childTag + "\")");
 		if (noWrap)
+		{
 			annotation.append(" @simpl_nowrap");
+		}
+		else
+		{
+			annotation.append(" @xml_tag(\"" + resolveTag() + "\")");
+		}
 
 		annotation.append(" @mm_name(\"" + name + "\")");
 		

@@ -307,8 +307,8 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 	@Override
 	protected void deserializationPostHook()
 	{
-		if (metaMetadata != null)
-			initializeMetadataCompTermVector();
+//		if (metaMetadata != null)
+//			initializeMetadataCompTermVector();
 	}
 
 	public boolean hwSet(String tagName, String value)

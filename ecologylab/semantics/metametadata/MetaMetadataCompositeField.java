@@ -119,7 +119,7 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField
 	protected void doAppending(Appendable appendable, int pass) throws IOException
 	{
 		StringBuilder annotations = new StringBuilder();
-		annotations.append("@simpl_composite @mm_name(\"" + name + "\")");
+		annotations.append(" @simpl_composite @mm_name(\"" + name + "\")");
 		annotations.append(" "); // the space between annotations and type
 		
 		String fieldType = XMLTools.classNameFromElementName(getTypeOrName());
