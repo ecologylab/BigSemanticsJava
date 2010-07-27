@@ -22,6 +22,7 @@ import ecologylab.semantics.actions.exceptions.NestedActionException;
 import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.documentparsers.DocumentParser;
+import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metametadata.Argument;
 import ecologylab.semantics.metametadata.DefVar;
 import ecologylab.semantics.tools.GenericIterable;
@@ -708,4 +709,15 @@ public abstract class SemanticActionHandler<C extends Container, IC extends Info
 	{
 		return semanticActionReturnValueMap;
 	}
+	
+	public void preSemanticActionsHook(Metadata metadata)
+	{
+		
+	}
+	
+	public void postSemanticActionsHook(Metadata metadata)
+	{
+		
+	}
+	
 }

@@ -108,11 +108,13 @@ implements ScalarUnmarshallingContext,SemanticActionsKeyWords, DeserializationHo
 			return;
 		}
 		
+		semanticActionHandler.preSemanticActionsHook(populatedMetadata);
 		for (int i = 0; i < semanticActions.size(); i++)
 		{
 			SemanticAction action = semanticActions.get(i);
 			semanticActionHandler.handleSemanticAction(action, this, infoCollector);
 		}
+		semanticActionHandler.postSemanticActionsHook(populatedMetadata);
 	}
 
 	/**

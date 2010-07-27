@@ -41,11 +41,6 @@ public class MetadataCompiler extends ApplicationEnvironment
 		compile(DEFAULT_REPOSITORY_DIRECTORY, MetadataCompilerUtils.DEFAULT_GENERATED_SEMANTICS_LOCATION);
 	}
 
-	public void compile(String mmdRepositoryDir)
-	{
-		compile(mmdRepositoryDir, MetadataCompilerUtils.DEFAULT_GENERATED_SEMANTICS_LOCATION);
-	}
-	
 	public static void printImports(Appendable appendable) throws IOException
 	{
 		List<String>			 targetList	= new ArrayList(MetadataCompilerUtils.importTargets);
@@ -66,11 +61,21 @@ public class MetadataCompiler extends ApplicationEnvironment
 			appendable.append(";\n");
 		}
 	}
-
+	
+	public void compile(String mmdRepositoryDir)
+	{
+		compile(mmdRepositoryDir, MetadataCompilerUtils.DEFAULT_GENERATED_SEMANTICS_LOCATION);
+	}
+	
 	public void compile(String mmdRepositoryDir, String generatedSemanticsLocation)
 	{
-		// ElementState.setUseDOMForTranslateTo(true);
 		MetaMetadataRepository metaMetadataRepository = MetaMetadataRepository.load(new File(mmdRepositoryDir));
+		compile(metaMetadataRepository, generatedSemanticsLocation);
+	}
+
+	public void compile(MetaMetadataRepository metaMetadataRepository, String generatedSemanticsLocation)
+	{
+		// ElementState.setUseDOMForTranslateTo(true);
 		//metaMetadataRepository.translateToXML(System.out);
 		
 		// for each metadata first find the list of packages in which they have to
