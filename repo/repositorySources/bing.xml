@@ -1,0 +1,43 @@
+<meta_metadata_repository name="bing_image_repository" package="ecologylab.semantics.generated.library.bing" default_user_agent_name="chrome_2" >
+
+	<meta_metadata name="bing_search" type="search" comment="The bing Search class" user_agent_name="opera_9" parser="xpath">
+		<selector url_stripped="http://www.bing.com/search"/>
+		<collection name="search_results" xpath="//div[@id='results']/ul/li[*]">
+			<scalar name="heading" xpath=".//h3/a" />
+			<scalar name="snippet" xpath=".//div[@class='sa_cc']/p" />
+			<scalar name="link" xpath=".//h3/a/@href" />
+		</collection>
+		<semantic_actions>
+			<get_field name="search_results" />
+			<for_each collection="search_results" as="res">
+				<get_field object="res" name="link" />
+				<if>
+				<not_null value="link" />
+				<parse_document_now>
+					<arg value="link" name="container_link" />
+				</parse_document_now>
+				</if>
+			</for_each>
+		</semantic_actions>
+	</meta_metadata>
+	
+	<meta_metadata name="bing_image_type" extends="document" >
+		<collection name="bing_images" child_type="bing_image" >
+			<scalar name="caption" scalar_type="String" />
+			<scalar name="img_ref" scalar_type="ParsedURL" />
+			<scalar name="img_url" scalar_type="ParsedURL" />
+			<scalar name="img_property" scalar_type="String" />
+		</collection>		
+	</meta_metadata> 
+	
+	<meta_metadata name="bing_image_page" type="bing_image_type" parser="xpath" >
+		<selector url_path_tree = "http://www.bing.com/images/" />
+		<collection name="bing_images" xpath="//span[@class='tc']" child_type="bing_image" >
+			<scalar name="caption" xpath=".//span[@class='md_de']" />
+			<scalar name="img_ref" xpath=".//span[@class='md_pu']" />
+			<scalar name="img_url" xpath=".//span[@class='md_mu']" />
+			<scalar name="img_property" xpath="//span[@class='md_fd']" />
+		</collection>
+	</meta_metadata>
+	
+</meta_metadata_repository> 
