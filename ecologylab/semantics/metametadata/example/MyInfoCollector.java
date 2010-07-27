@@ -51,28 +51,54 @@ import ecologylab.serialization.TranslationScope;
  */
 public class MyInfoCollector implements InfoCollector<MyContainer>
 {
-	//how many threads for downloads - how many downloads to allow concurrently
+	// how many threads for downloads - how many downloads to allow concurrently
 	public final static int					DEFAULT_COUNT_DOWNLOAD_THREAD	= 1;
 
-	//reference to mmd repso
+	// reference to mmd repso
 	private MetaMetadataRepository	mmdRepo;
 
-	//stores the infocollects list of rejected domains
+	// stores the infocollects list of rejected domains
 	private Set<String>							rejectDomains;
 
 	private DownloadMonitor					downloadMonitor;
-	
-	private Logger							logger;
-	
-	public boolean		slow;
-	
-	public ArrayList<String>			visitedURLs;
-	
+
+	private Logger									logger;
+
+	public boolean									slow;
+
+	public ArrayList<String>				visitedURLs;
+
 	static
 	{
 		// need to register scalar types BEFORE any translation scope is set up, or some scalar types
-		//   cannot be recognized.
+		// cannot be recognized.
 		MetadataScalarScalarType.init();
+	}
+
+	public MyInfoCollector(String repoDir, TranslationScope metadataTranslationScope)
+	{
+		this(MetaMetadataRepository.load(new File(repoDir)), metadataTranslationScope);
+	}
+
+	/**
+	 * This constructor also loads and initializes the {@link MetaMetadataRepository}, given a
+	 * metadata {@link TranslationScope}. Typically this TranslationScope should have been generated
+	 * by the {@link MetadataCompiler}, named as <i>GeneratedMetadataTranslationScope</i>.
+	 * 
+	 * @param repo
+	 *          The metametadata repository.
+	 * @param metadataTranslationScope
+	 *          The metadata TranslationScope.
+	 */
+	public MyInfoCollector(MetaMetadataRepository repo, TranslationScope metadataTranslationScope)
+	{
+		this.metadataTranslationScope = metadataTranslationScope;
+		this.mmdRepo = repo;
+
+		mmdRepo.bindMetadataClassDescriptorsToMetaMetadata(metadataTranslationScope);
+		rejectDomains = new HashSet<String>();
+		downloadMonitor = new DownloadMonitor("info-collector_download-monitor",
+				DEFAULT_COUNT_DOWNLOAD_THREAD);
 	}
 
 	/**
@@ -85,38 +111,21 @@ public class MyInfoCollector implements InfoCollector<MyContainer>
 
 	public void log(String s)
 	{
-		
+
 	}
+
 	public Logger getLogger()
 	{
 		return logger;
 	}
+
 	public void setLogger(Logger l)
 	{
 		logger = l;
 	}
 
-	/**
-	 * This constructor also loads and initializes the {@link MetaMetadataRepository}, given a
-	 * metadata {@link TranslationScope}. Typically this TranslationScope should have been generated
-	 * by the {@link MetadataCompiler}, named as <i>GeneratedMetadataTranslationScope</i>.
-	 * 
-	 * @param repoDir The directory where repository files are stored.
-	 * @param metadataTranslationScope The metadata TranslationScope.
-	 */
-	public MyInfoCollector(String repoDir, TranslationScope metadataTranslationScope)
-	{
-		this.metadataTranslationScope = metadataTranslationScope;
-		
-		mmdRepo = MetaMetadataRepository.load(new File(repoDir));
-		mmdRepo.bindMetadataClassDescriptorsToMetaMetadata(metadataTranslationScope);
-		rejectDomains = new HashSet<String>();
-		downloadMonitor = new DownloadMonitor("info-collector_download-monitor",
-				DEFAULT_COUNT_DOWNLOAD_THREAD);
-	}
-	
-	TranslationScope metadataTranslationScope;
-	
+	TranslationScope	metadataTranslationScope;
+
 	public TranslationScope getMetadataTranslationScope()
 	{
 		return metadataTranslationScope;
@@ -213,11 +222,11 @@ public class MyInfoCollector implements InfoCollector<MyContainer>
 	{
 		if (!accept(purl) && !ignoreRejects)
 			return null;
-	
+
 		MyContainer result = new MyContainer(ancestor, this, purl);
 		return result;
 	}
-	
+
 	public boolean visited(String purl)
 	{
 		return false;
@@ -350,8 +359,8 @@ public class MyInfoCollector implements InfoCollector<MyContainer>
 		return null;
 	}
 
-	/** New 
-	 * Reject all the URLs from a domain from now on.
+	/**
+	 * New Reject all the URLs from a domain from now on.
 	 */
 	@Override
 	public void reject(String domain)
@@ -411,9 +420,10 @@ public class MyInfoCollector implements InfoCollector<MyContainer>
 	}
 
 	@Override
-	public void removeCandidateContainer(Container candidate) {
+	public void removeCandidateContainer(Container candidate)
+	{
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public SeedDistributor getSeedDistributor()
