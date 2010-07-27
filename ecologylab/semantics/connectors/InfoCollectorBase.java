@@ -10,6 +10,7 @@ import java.util.Vector;
 
 import javax.swing.JFrame;
 
+import ecologylab.appframework.ApplicationEnvironment;
 import ecologylab.appframework.ApplicationProperties;
 import ecologylab.appframework.EnvironmentGeneric;
 import ecologylab.appframework.types.prefs.Pref;
@@ -209,7 +210,7 @@ implements InfoCollector<AC>, SemanticsPrefs, ApplicationProperties, DocumentPar
 		// retrieval and incontextMetadata display.
 		Assets.downloadSemanticsZip(METAMETADATA, null, !USE_ASSETS_CACHE, SemanticsAssetVersions.METAMETADATA_ASSET_VERSION);
 	
-		if(Pref.lookupBoolean(USE_LOCAL_CF_PREF_NAME)) //default is set to false in the metaprefs.
+		if(ApplicationEnvironment.runningInEclipse() && Pref.lookupBoolean(USE_LOCAL_CF_PREF_NAME)) //default is set to false in the metaprefs.
 		{
 			println("\t\t-- Reading meta_metadata from : " + LOCAL_META_METADATA_DIR_FILE);
 			METAMETADATA_REPOSITORY_DIR_FILE 		= new File(LOCAL_META_METADATA_DIR_FILE, META_METADATA_REPOSITORY_DIR);			
