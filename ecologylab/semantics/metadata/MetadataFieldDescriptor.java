@@ -138,7 +138,8 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 		if (result == null)
 		{
 			result			= XMLTools.getXmlTagName(thatField.getName(), null);
-			error("Missing @mm_name annotation for " + thatField + "\tusing " + result);
+			if (!this.isScalar())
+				error("Missing @mm_name annotation for " + thatField + "\tusing " + result);
 		}
 		return result;
 	}
