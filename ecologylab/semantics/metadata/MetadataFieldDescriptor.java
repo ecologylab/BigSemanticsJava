@@ -24,8 +24,6 @@ import ecologylab.serialization.ElementState.simpl_scalar;
  */
 public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor implements EditValueNotifier
 {
-	final private boolean		isPseudoScalar;
-	
 	final private boolean		isMixin;
 	
 	Method									hwSetMethod;
@@ -45,16 +43,12 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 		{
 			isMixin							= field.isAnnotationPresent(Metadata.semantics_mixin.class);
 
-			Class<?> thatClass	= field.getType();
-			isPseudoScalar	= thatClass.isAnnotationPresent(semantics_pseudo_scalar.class);
-			
 			//TODO -- for future expansion??? andruid 4/14/09
 //			hwSetMethod					= ReflectionTools.getMethod(thatClass, "hwSet", SET_METHOD_ARG);
 		}
 		else
 		{
 			isMixin							= false;
-			isPseudoScalar			= false;		
 		}
 		this.mmName						= deriveMmName();
 	}
@@ -63,18 +57,8 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 	{
 		super(baseClassDescriptor, wrappedFD, wrapperTag);
 		isMixin	= false;
-		isPseudoScalar	= false;
 	}
 	
-	public boolean isNonNullReference(MetadataBase context)
-	{
-		return (getScalarType() == null) && super.isNonNullReference((ElementState) context);
-	}
-	public boolean isPseudoScalar() 
-	{
-		return isPseudoScalar;
-	}
-
 	public boolean isMixin() 
 	{
 		return isMixin;
