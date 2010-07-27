@@ -27,8 +27,7 @@ public class BaseSeedTranslations extends Debug
 		InlineSeed.class,
 		Feed.class,
 		Crawler.class,
-				
-		CfCollaborationGetSurrogate.class,
+		CuratedSeeding.class,
 	};
 
 	/**
