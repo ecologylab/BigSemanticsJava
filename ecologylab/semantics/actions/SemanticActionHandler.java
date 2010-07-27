@@ -152,12 +152,6 @@ public abstract class SemanticActionHandler<C extends Container, IC extends Info
 	public abstract void parseDocument(SemanticAction action, DocumentParser documentType,
 			IC infoCollector);
 	
-	public abstract void parseDocumentNow(SemanticAction action, DocumentParser docType,
-			IC infoCollector);
-
-	public abstract void parseDocumentLater(SemanticAction action, DocumentParser documentType,
-			IC infoCollector);
-
 	/**
 	 * 
 	 * @param action

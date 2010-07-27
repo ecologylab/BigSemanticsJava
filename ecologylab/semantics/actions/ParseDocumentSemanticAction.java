@@ -19,11 +19,11 @@ class ParseDocumentSemanticAction extends SemanticAction implements SemanticActi
 
 	@simpl_scalar
 	@simpl_hints(Hint.XML_ATTRIBUTE)
-	private boolean parseNow = false;
+	private boolean now = false;
 	
-	public boolean isParseNow()
+	public boolean isNow()
 	{
-		return parseNow;
+		return now;
 	}
 	
 	@Override

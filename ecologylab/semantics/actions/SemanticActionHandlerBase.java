@@ -203,12 +203,13 @@ public class SemanticActionHandlerBase<C extends Container, IC extends InfoColle
 		}
 	}
 
+	@Override
 	public void parseDocument(SemanticAction action, DocumentParser documentType,
 			IC infoCollector)
 	{
 		assert (action instanceof ParseDocumentSemanticAction);
 		ParseDocumentSemanticAction parseDoc = (ParseDocumentSemanticAction) action;
-		if (parseDoc.isParseNow())
+		if (parseDoc.isNow())
 		{
 			parseDocumentNow(action, documentType, infoCollector);
 		}
@@ -223,7 +224,6 @@ public class SemanticActionHandlerBase<C extends Container, IC extends InfoColle
 	 * later. When it will be downloaded and parsed is determined by the InfoCollector. This action is
 	 * similiar to ParseDocumentNow action.
 	 */
-	@Override
 	public void parseDocumentLater(SemanticAction action, DocumentParser documentType,
 			IC infoCollector)
 	{
@@ -239,7 +239,6 @@ public class SemanticActionHandlerBase<C extends Container, IC extends InfoColle
 	 * This action downloads the document from a given URL, parses it with specified parsing method,
 	 * and put the results in a Container which can be used later.
 	 */
-	@Override
 	public void parseDocumentNow(SemanticAction action, DocumentParser docType, IC infoCollector)
 	{
 		Container container = createContainer(action, docType, infoCollector);
