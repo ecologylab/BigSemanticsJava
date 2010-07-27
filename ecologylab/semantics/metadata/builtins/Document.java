@@ -21,16 +21,28 @@ import ecologylab.serialization.simpl_inherit;
 @simpl_inherit
 public class Document extends Metadata
 {
+	@mm_name("location") 
 	@simpl_scalar MetadataParsedURL	location;
 	
+	@mm_name("title") 
 	@simpl_scalar MetadataString		title;
 	
+	@mm_name("description") 
 	@simpl_scalar MetadataString		description;
 	
 //	@simpl_scalar MetadataStringBuilder 	anchorText;
 //	@@simpl_scalar MetadataStringBuilder 	anchorContextString;
 	
+	@mm_name("generation") 
 	@simpl_scalar MetadataInteger			generation;
+
+	/**
+	 * For debugging. Type of the structure recognized by information extraction.
+	 **/
+
+	@mm_name("page_structure") 
+	@simpl_scalar
+	private MetadataString	pageStructure;
 
 	/**
 	 * Occasionally, we want to navigate to somewhere other than the regular purl,
@@ -314,13 +326,6 @@ public class Document extends Metadata
 		this.generation = generation;
 		rebuildCompositeTermVector();
 	}
-
-	/**
-	 * For debugging. Type of the structure recognized by information extraction.
-	 **/
-
-	@simpl_scalar @simpl_hints(Hint.XML_LEAF)
-	private MetadataString	pageStructure;
 
 	/**
 	 * Lazy Evaluation for pageStructure

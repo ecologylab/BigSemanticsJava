@@ -50,6 +50,20 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 	
 	private MetaMetadataCompositeField			metaMetadata;
 
+	public static final String MIXIN_TRANSLATION_STRING = "mixin_translations";
+	static Class[] mixinClasses = {DebugMetadata.class};
+	static TranslationScope MIXIN_TRANSLATIONS = TranslationScope.get(MIXIN_TRANSLATION_STRING, mixinClasses);
+	/**
+	 * Allows combining instantiated Metadata subclass declarations without hierarchy.
+	 * 
+	 * Could help, for example, to support user annotation.
+	 */
+	@semantics_mixin
+	@simpl_collection("mixins")
+	//@xml_scope(MIXIN_TRANSLATION_STRING)
+	@mm_name("mixins") 
+	ArrayList<Metadata>									mixins;
+
 	/**
 	 * Hidden reference to the MetaMetadataRepository. DO NOT access this field directly.
 	 * DO NOT create a static public accessor.
@@ -66,18 +80,6 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 	 */
 	private Seed				seed;
 
-	public static final String MIXIN_TRANSLATION_STRING = "mixingTranslations";
-	static Class[] mixinClasses = {DebugMetadata.class};
-	static TranslationScope MIXIN_TRANSLATIONS = TranslationScope.get(MIXIN_TRANSLATION_STRING, mixinClasses);
-	/**
-	 * Allows combining instantiated Metadata subclass declarations without hierarchy.
-	 * 
-	 * Could help, for example, to support user annotation.
-	 */
-	@semantics_mixin
-	@simpl_collection("mixins")
-	//@xml_scope(MIXIN_TRANSLATION_STRING)
-	ArrayList<Metadata>									mixins;
 
 	final static int					INITIAL_SIZE							= 5;
 

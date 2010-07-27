@@ -18,7 +18,9 @@ import ecologylab.serialization.simpl_inherit;
 @simpl_inherit
 public class DebugMetadata extends Metadata
 {
-	@simpl_scalar @simpl_hints(Hint.XML_LEAF) MetadataStringBuilder newTermVector;
+	@simpl_scalar 
+	@mm_name("new_term_vector")
+	MetadataStringBuilder newTermVector;
 	
 	/**
 	 * 

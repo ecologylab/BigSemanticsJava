@@ -1,6 +1,7 @@
 package ecologylab.semantics.metadata.builtins;
 
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.metadata.Metadata.mm_name;
 import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
 import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
@@ -13,12 +14,15 @@ import ecologylab.serialization.simpl_inherit;
 @simpl_inherit
 public class Image extends Media
 {
+	@mm_name("caption") 
 	@simpl_scalar
 	MetadataString					caption;
 
+	@mm_name("location") 
 	@simpl_scalar
 	MetadataParsedURL				location;
 
+	@mm_name("local_location") 
 	@simpl_scalar
 	private MetadataString	localLocation;
 
