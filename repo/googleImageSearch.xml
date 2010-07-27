@@ -21,9 +21,6 @@
 		<scalar name-"ref_url" xpath="//div[@id='ImgContent']//tr[*]/td[starts-with(@id,'tDataText')]//cite"/>
 		-->	
   
-		<semantic_actions>
-			<save_metadata/>
-		</semantic_actions>
 
 		
 	</meta_metadata>
