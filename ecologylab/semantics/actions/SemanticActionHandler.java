@@ -149,11 +149,13 @@ public abstract class SemanticActionHandler<C extends Container, IC extends Info
 	public abstract void getFieldAction(SemanticAction action, DocumentParser docType,
 			IC infoCollector);
 
-	/**
-	 * 
-	 * @param action
-	 */
+	public abstract void parseDocument(SemanticAction action, DocumentParser documentType,
+			IC infoCollector);
+	
 	public abstract void parseDocumentNow(SemanticAction action, DocumentParser docType,
+			IC infoCollector);
+
+	public abstract void parseDocumentLater(SemanticAction action, DocumentParser documentType,
 			IC infoCollector);
 
 	/**
@@ -166,15 +168,6 @@ public abstract class SemanticActionHandler<C extends Container, IC extends Info
 			DocumentParser<C, ?, ?> documentType, IC infoCollector);
 
 	public abstract void backOffFromSite(SemanticAction action, DocumentParser<C, ?, ?> documentType,
-			IC infoCollector);
-
-	/**
-	 * 
-	 * @param action
-	 * @param documentType
-	 * @param infoCollector
-	 */
-	public abstract void parseDocumentLater(SemanticAction action, DocumentParser documentType,
 			IC infoCollector);
 
 	/**
@@ -482,13 +475,9 @@ public abstract class SemanticActionHandler<C extends Container, IC extends Info
 			{
 				createContainer(action, documentType, infoCollector);
 			}
-			else if (SemanticActionStandardMethods.PARSE_DOCUMENT_NOW.equals(actionName))
+			else if (SemanticActionStandardMethods.PARSE_DOCUMENT.equals(actionName))
 			{
-				parseDocumentNow(action, documentType, infoCollector);
-			}
-			else if (SemanticActionStandardMethods.PARSE_DOCUMENT_LATER.equals(actionName))
-			{
-				parseDocumentLater(action, documentType, infoCollector);
+				parseDocument(action, documentType, infoCollector);
 			}
 			else if (SemanticActionStandardMethods.SET_METADATA.equals(actionName))
 			{
@@ -555,6 +544,7 @@ public abstract class SemanticActionHandler<C extends Container, IC extends Info
 					+ " could not be executed. Please see the stack trace for errors.");
 		}
 	}
+
 
 	/**
 	 * This function checks for the pre-condition flag values for this action and returns the "anded"

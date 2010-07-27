@@ -42,7 +42,7 @@ public interface SemanticActionStandardMethods
 	/**
 	 * process a conatiner
 	 */
-	public static String	PARSE_DOCUMENT_NOW									= "parse_document_now";
+	public static String	PARSE_DOCUMENT											= "parse_document";
 
 	/**
 	 * Create a new search
@@ -76,9 +76,9 @@ public interface SemanticActionStandardMethods
 	public static String	CREATE_SEMANTIC_ANCHOR							= "create_semantic_anchor";
 
 	/**
-	 * 
-	 */
+	 * merged with parse_document_now into parse_document
 	public static String	PARSE_DOCUMENT_LATER								= "parse_document_later";
+	 */
 
 	/**
 	 * Applies XPath on a DOM Node

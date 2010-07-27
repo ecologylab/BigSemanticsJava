@@ -203,6 +203,21 @@ public class SemanticActionHandlerBase<C extends Container, IC extends InfoColle
 		}
 	}
 
+	public void parseDocument(SemanticAction action, DocumentParser documentType,
+			IC infoCollector)
+	{
+		assert (action instanceof ParseDocumentSemanticAction);
+		ParseDocumentSemanticAction parseDoc = (ParseDocumentSemanticAction) action;
+		if (parseDoc.isParseNow())
+		{
+			parseDocumentNow(action, documentType, infoCollector);
+		}
+		else
+		{
+			parseDocumentLater(action, documentType, infoCollector);
+		}
+	}
+	
 	/**
 	 * This action adds a URL to the to-be-downloaded list. The URL will be downloaded and parsed
 	 * later. When it will be downloaded and parsed is determined by the InfoCollector. This action is

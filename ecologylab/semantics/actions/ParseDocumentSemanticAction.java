@@ -1,0 +1,42 @@
+/**
+ * 
+ */
+package ecologylab.semantics.actions;
+
+import ecologylab.serialization.Hint;
+import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.ElementState.xml_tag;
+
+
+/**
+ * @author amathur
+ *
+ */
+@simpl_inherit
+public @xml_tag(SemanticActionStandardMethods.PARSE_DOCUMENT)
+class ParseDocumentSemanticAction extends SemanticAction implements SemanticActionStandardMethods
+{
+
+	@simpl_scalar
+	@simpl_hints(Hint.XML_ATTRIBUTE)
+	private boolean parseNow = false;
+	
+	public boolean isParseNow()
+	{
+		return parseNow;
+	}
+	
+	@Override
+	public String getActionName()
+	{
+		return PARSE_DOCUMENT;
+	}
+
+	@Override
+	public void handleError()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+}

@@ -19,8 +19,7 @@ public class NestedSemanticActionsTranslationScope
 		GetFieldSemanticAction.class,
 		GetXPathNodeSemanticAction.class,
 		IfSemanticAction.class,
-		ParseDocumentLaterSemanticAction.class,
-		ParseDocumentNowSemanticAction.class,
+		ParseDocumentSemanticAction.class,
 		SetFieldSemanticAction.class,
 		SetMetadataSemanticAction.class,
 
