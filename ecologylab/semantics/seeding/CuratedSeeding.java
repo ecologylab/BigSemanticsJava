@@ -53,7 +53,7 @@ implements SemanticsSessionObjectNames
 	 */
 	public void performInternalSeedingSteps(InfoCollector infoCollector)
 	{
-		final SeedSet ss	= CuratedSeedSets.lookup(name);
+		final SeedSet<?> ss	= CuratedSeedSets.lookup(name);
 		
 		infoCollector.displayStatus("Downloading curated collection: " + name);
 		
