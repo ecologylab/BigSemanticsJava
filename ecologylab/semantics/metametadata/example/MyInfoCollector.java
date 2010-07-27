@@ -13,6 +13,7 @@ import javax.swing.JFrame;
 
 import ecologylab.collections.Scope;
 import ecologylab.concurrent.DownloadMonitor;
+import ecologylab.generic.DispatchTarget;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.connectors.Container;
@@ -240,8 +241,14 @@ public class MyInfoCollector implements InfoCollector<MyContainer>
 	public MyContainer getContainerDownloadIfNeeded(MyContainer ancestor, ParsedURL purl, Seed seed,
 			boolean dnd, boolean justCrawl, boolean justMedia)
 	{
+		return getContainerDownloadIfNeeded(ancestor, purl, seed, dnd, justCrawl, justMedia, null);
+	}
+
+	public MyContainer getContainerDownloadIfNeeded(MyContainer ancestor, ParsedURL purl, Seed seed,
+			boolean dnd, boolean justCrawl, boolean justMedia, DispatchTarget dispatchTarget)
+	{
 		MyContainer result = getContainer(ancestor, purl, false, false, null, null, false);
-		downloadMonitor.download(result, null);
+		downloadMonitor.download(result, dispatchTarget);
 		return result;
 	}
 

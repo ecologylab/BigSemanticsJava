@@ -155,6 +155,7 @@ public class MyContainer extends Container
 
 	// needed used in downloading process
 	private ParsedURL	initPurl;
+	private boolean	downloadDone = false;
 
 	@Override
 	public ParsedURL getInitialPURL()
@@ -196,7 +197,7 @@ public class MyContainer extends Container
 		//calls connect to find the right parser, then calls the infocollector to download the content
 		//also process the semantic actions
 		
-		DocumentParser parser = DocumentParser.connect(purl(), this, infoCollector, new SemanticActionHandlerBase());
+		DocumentParser parser = DocumentParser.connect(purl(), this, infoCollector, infoCollector.createSemanticActionHandler());
 		
 		if(parser != null)
 			parser.parse();
@@ -313,8 +314,7 @@ public class MyContainer extends Container
 	@Override
 	public void downloadAndParseDone()
 	{
-		// TODO Auto-generated method stub
-
+		downloadDone = true;
 	}
 
 	@Override
@@ -341,8 +341,7 @@ public class MyContainer extends Container
 	@Override
 	public boolean isDownloadDone()
 	{
-		// TODO Auto-generated method stub
-		return false;
+		return downloadDone;
 	}
 
 	@Override
