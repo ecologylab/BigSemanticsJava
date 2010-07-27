@@ -38,6 +38,11 @@
 			<scalar name="img_url" xpath=".//span[@class='md_mu']" />
 			<scalar name="img_property" xpath="//span[@class='md_fd']" />
 		</collection>
+		
+		<semantic_actions>
+			<save_image_metadata />
+		</semantic_actions>
+		
 	</meta_metadata>
 	
 </meta_metadata_repository> 
