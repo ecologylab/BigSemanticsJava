@@ -1,9 +1,9 @@
-<meta_metadata_repository name="primitives" package="ecologylab.semantics.metadata.builtins" default_user_agent_name="chrome_2">
+<meta_metadata_repository name="primitives" package="ecologylab.semantics.generated.library" default_user_agent_name="firefox_3_5">
 	<meta_metadata name="metadata" comment="The Metadata Class" dont_generate_class="true">
 		<scalar name="meta_metadata_name" hide="true" ignore_in_term_vector="true" comment="Stores the name of the meta-metadata, and is used on restoring from XML." scalar_type="String" />
 	</meta_metadata>
 	
-	<meta_metadata name="document" extends="metadata" comment="The Document Class" dont_generate_class="false">
+	<meta_metadata name="document" extends="metadata" comment="The Document Class" dont_generate_class="true">
 		<scalar name="title" style="h1" layer="10.0" navigates_to="location" comment="The Title of the Document" scalar_type="String"  hint="XML_LEAF"/>
 		<scalar name="description" layer="9.0" scalar_type="String" />
 		<scalar name="location" always_show="true" layer="8.0" comment="The document's actual location." scalar_type="ParsedURL" />
@@ -12,7 +12,7 @@
 		<scalar name="query" layer="5.0" comment="The search query" scalar_type="String" />
 	</meta_metadata>
 	
-	<meta_metadata name="entity" extends="metadata" comment="Reference to a nested document." dont_generate_class="false">
+	<meta_metadata name="entity" extends="metadata" comment="Reference to a nested document." dont_generate_class="true">
 		<scalar name="location" hide="true" comment="The document's actual location." scalar_type="ParsedURL" />
 		<scalar name="gist" navigates_to="location" comment="Initial text that describes the document before its downloaded." scalar_type="String" />
 	</meta_metadata>
@@ -34,12 +34,12 @@
 		<scalar name="creationdate" comment="Creation date of the document" scalar_type="String" />
 	</meta_metadata>
 	
-	<meta_metadata name="media" extends="metadata" comment="Extend this for Image, sounds, video, etc." dont_generate_class="false">
+	<meta_metadata name="media" extends="metadata" comment="Extend this for Image, sounds, video, etc." dont_generate_class="true">
 		<scalar name="context" layer="10.0" scalar_type="String" />
 		<scalar name="meta_metadata_name" hide="true" ignore_in_term_vector="true" comment="Stores the name of the meta-metadata, and is used on restoring from XML." scalar_type="String" />
 	</meta_metadata>
 	
-	<meta_metadata name="image" extends="media" comment="The Image Base Class" dont_generate_class="false">
+	<meta_metadata name="image" extends="media" comment="The Image Base Class" dont_generate_class="true">
 		<selector>
 			<mime_type>image/jpeg</mime_type>
 			<mime_type>image/png</mime_type>
