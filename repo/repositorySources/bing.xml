@@ -13,9 +13,9 @@
 				<get_field object="res" name="link" />
 				<if>
 				<not_null value="link" />
-				<parse_document_now>
+				<parse_document now="true">
 					<arg value="link" name="container_link" />
-				</parse_document_now>
+				</parse_document>
 				</if>
 			</for_each>
 		</semantic_actions>

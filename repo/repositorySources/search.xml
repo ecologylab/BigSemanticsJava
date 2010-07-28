@@ -1,4 +1,4 @@
-<meta_metadata_repository name="search" default_user_agent_name="chrome_2" package="ecologylab.semantics.generated.library" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<meta_metadata_repository name="search" default_user_agent_name="chrome_2" package="ecologylab.semantics.generated.library.bing" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
 	<!-- +++++++++++++++++++++++++++++++++ More Specific Types - Search & its Children +++++++++++++++++++++++++++++++++ -->
 
@@ -23,9 +23,9 @@
 			<get_field name="search_results" />
 			<for_each collection="search_results" as="res">
 				<get_field object="res" name="link" />
-				<parse_document_now>
+				<parse_document now="true">
 					<arg value="link" name="container_link" />
-				</parse_document_now>
+				</parse_document>
 			</for_each>
 		</semantic_actions>
 	</meta_metadata>
@@ -41,9 +41,9 @@
 			<get_field name="search_results" />
 			<for_each collection="search_results" as="res">
 				<get_field object="res" name="link" />
-				<parse_document_now>
+				<parse_document now="true">
 					<arg value="link" name="container_link" />
-				</parse_document_now>
+				</parse_document>
 			</for_each>
 		</semantic_actions>
 	</meta_metadata>
@@ -79,10 +79,10 @@
 			<for_each collection="results" as="result">
 				<get_field object="result" name="url" />
 				<get_field object="result" name="summary" />
-				<parse_document_now>
+				<parse_document now="true">
 					<arg value="url" name="container_link" />
 					<arg value="summary" name="anchor_text" />
-				</parse_document_now>
+				</parse_document>
 			</for_each>
 		</semantic_actions>
 	</meta_metadata>
@@ -123,10 +123,10 @@
 						</create_and_visualize_img_surrogate>
 					</case>
 					<otherwise>
-						<parse_document_now>
+						<parse_document now="true">
 							<arg value="url" name="container_link" />
 							<arg value="summary" name="anchor_text" />
-						</parse_document_now>
+						</parse_document>
 					</otherwise>
 				</choose>
 			</for_each>
@@ -149,10 +149,10 @@
 			<for_each collection="results" as="result">
 				<get_field object="result" name="url" />
 				<get_field object="result" name="description" />
-				<parse_document_now>
+				<parse_document now="true">
 					<arg value="url" name="container_link" />
 					<arg value="description" name="anchor_text" />
-				</parse_document_now>
+				</parse_document>
 			</for_each>
 		</semantic_actions>
 	</meta_metadata>
