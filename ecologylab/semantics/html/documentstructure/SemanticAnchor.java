@@ -28,7 +28,7 @@ public class SemanticAnchor implements TermVectorFeature
 	TermVector 					tv;
 	private boolean 		fromContentBody;
 	private boolean			fromSemanticAction;
-	final float					signficance;
+	public float					significance;
 	
 	public static final Double TEXT_OVER_CONTEXT_EMPHASIS_FACTOR	= 3.0;
 	
@@ -47,13 +47,13 @@ public class SemanticAnchor implements TermVectorFeature
 		tv 												= new TermVector();
 		
 		if (citationSignificance)
-			this.signficance	= CITATION_SIGNIFICANCE*significanceVal;
+			this.significance	= CITATION_SIGNIFICANCE*significanceVal;
 		else if (sourcePurl != null && sourcePurl.domain().equals(href.domain()))
-			this.signficance	= SAME_DOMAIN_SIGNIFICANCE;
+			this.significance	= SAME_DOMAIN_SIGNIFICANCE;
 		else if(!fromSemanticAction && fromContentBody)
-			this.signficance	= CONTENT_BODY_SIGNIFICANCE;
+			this.significance	= CONTENT_BODY_SIGNIFICANCE;
 		else
-			this.signficance	= NO_SPECIAL_SIGNIFICANCE;
+			this.significance	= NO_SPECIAL_SIGNIFICANCE;
 			
 		
 		if(anchorContexts == null)
@@ -105,7 +105,7 @@ public class SemanticAnchor implements TermVectorFeature
 	
 	public float getSignificance()
 	{
-		return signficance;
+		return significance;
 	}
 	
 	public boolean fromContentBody()

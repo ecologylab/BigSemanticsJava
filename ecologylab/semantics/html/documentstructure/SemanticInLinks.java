@@ -49,7 +49,7 @@ public class SemanticInLinks extends ArrayList<SemanticAnchor>
 	@Override
 	public synchronized boolean add(SemanticAnchor newAnchor)
 	{
-		semanticInlinkCollection().add(newAnchor.signficance,newAnchor.termVector());
+		semanticInlinkCollection().add(newAnchor.significance,newAnchor.termVector());
 		super.add(newAnchor);
 		return true;
 	}
