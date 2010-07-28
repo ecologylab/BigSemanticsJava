@@ -115,6 +115,7 @@ public class bingImageDataCollector{
 	}
 	
 	/**
+	 * print out to DB 
 	 * @param targetTranslationScope
 	 * @param metadataCollected
 	 */
