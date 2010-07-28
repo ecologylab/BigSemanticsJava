@@ -10,9 +10,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import translators.sql.DBUtil;
-import translators.sql.SqlTranslator;
-import translators.sql.SqlTranslatorUtil;
+import ecologylab.semantics.metametadata.example.bingImage.sqlTranslator.*; 
 import ecologylab.generic.Debug;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticAction;
