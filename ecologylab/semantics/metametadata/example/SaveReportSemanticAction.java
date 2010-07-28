@@ -29,8 +29,10 @@ public class SaveReportSemanticAction<SA extends SemanticAction> extends NestedS
 	@Override
 	public Object handle(Object obj, Map<String, Object> args)
 	{
-		if (obj instanceof WeatherReport)
+		if (obj instanceof WeatherReport){
 			WeatherDataCollector.collected.add((WeatherReport)obj);
+			System.out.println("this is weather report");
+		}
 		return null;
 	}
 	

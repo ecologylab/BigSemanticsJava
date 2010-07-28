@@ -12,7 +12,8 @@ import java.util.List;
 
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticAction;
-import ecologylab.semantics.metametadata.example.generated.GeneratedMetadataTranslationScope;
+import ecologylab.semantics.generated.library.GeneratedMetadataTranslationScope;
+import ecologylab.semantics.metametadata.example.bingImage.bingImageSemanticAction;
 import ecologylab.semantics.metametadata.example.generated.WeatherReport;
 import ecologylab.serialization.SIMPLTranslationException;
 
@@ -41,6 +42,7 @@ public class WeatherDataCollector
 			InterruptedException
 	{
 		// register our own semantic action
+		SemanticAction.register(bingImageSemanticAction.class);
 		SemanticAction.register(SaveReportSemanticAction.class);
 		// create the infoCollector
 		// the repository files are in a sub-directory, indicated by the first parameter
