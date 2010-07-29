@@ -8,6 +8,7 @@ import ecologylab.serialization.ElementState;
 import ecologylab.serialization.simpl_inherit;
 import ecologylab.serialization.ElementState.simpl_collection;
 import ecologylab.serialization.ElementState.simpl_nowrap;
+import ecologylab.serialization.types.element.Mappable;
 
 /**
  * 
@@ -17,7 +18,7 @@ import ecologylab.serialization.ElementState.simpl_nowrap;
  */
 
 public @simpl_inherit
-class MetaMetadataSelector extends ElementState
+class MetaMetadataSelector extends ElementState implements Mappable<String>
 {
 	public static final MetaMetadataSelector NULL_SELECTOR = new MetaMetadataSelector();
 	
@@ -25,7 +26,10 @@ class MetaMetadataSelector extends ElementState
 	private String											name;
 
 	@simpl_scalar
-	private String											cfPref;
+	private String											prefName;
+	
+	@simpl_scalar
+	private String											defaultPref;
 
 	@simpl_scalar
 	private ParsedURL										urlStripped;
@@ -56,6 +60,7 @@ class MetaMetadataSelector extends ElementState
 
 	public MetaMetadataSelector()
 	{
+
 	}
 
 	public ParsedURL getUrlStripped()
@@ -172,14 +177,29 @@ class MetaMetadataSelector extends ElementState
 		return name;
 	}
 
-	public void setCfPref(String cfPref)
+	public void setPrefName(String cfPref)
 	{
-		this.cfPref = cfPref;
+		this.prefName = cfPref;
 	}
 
-	public String getCfPref()
+	public String getPrefName()
 	{
-		return cfPref;
+		return prefName;
 	}
 
+	@Override
+	public String key()
+	{
+		return name;
+	}
+	
+	public String getDefaultPref()
+	{
+		return defaultPref;
+	}
+
+	public void setDefaultPref(String defaultPref)
+	{
+		this.defaultPref = defaultPref;
+	}
 }

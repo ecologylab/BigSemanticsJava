@@ -34,19 +34,18 @@ import ecologylab.tests.FieldTagged;
  * @author damaraju
  * 
  */
-public class MetaMetadata extends MetaMetadataCompositeField 
-implements Mappable<String>
+public class MetaMetadata extends MetaMetadataCompositeField implements Mappable<String>
 {
-	
-	@simpl_composite 
-	MetaMetadataSelector 			selector;
+
+	@simpl_composite
+	MetaMetadataSelector			selector;
 
 	@xml_tag("package")
 	@simpl_scalar
 	String										packageAttribute;
 
 	@simpl_scalar
-	protected boolean					dontGenerateClass = false;
+	protected boolean					dontGenerateClass	= false;
 
 	/*
 	 * @xml_collection("meta_metadata_field") private ArrayList<MetaMetadataField>
@@ -59,22 +58,19 @@ implements Mappable<String>
 	 * which is missing in java.
 	 */
 	@simpl_collection("mixins")
-	@simpl_nowrap 
+	@simpl_nowrap
 	private ArrayList<String>	mixins;
 
-	
 	@simpl_scalar
-	private String 					collectionOf;
-	
-
+	private String						collectionOf;
 
 	// TranslationScope DEFAULT_METADATA_TRANSLATIONS = DefaultMetadataTranslationSpace.get();
-	
+
 	public MetaMetadata()
 	{
 		super();
 	}
-	
+
 	protected MetaMetadata(MetaMetadataField copy, String name)
 	{
 		super(copy, name);
@@ -84,6 +80,7 @@ implements Mappable<String>
 	{
 		return constructMetadata(this.repository().metadataTranslationScope());
 	}
+
 	/**
 	 * Lookup the Metadata class that corresponds to the (tag) name of this, using the
 	 * DefaultMetadataTranslationSpace. Assuming that is found, use reflection to instantiate it.
@@ -95,45 +92,49 @@ implements Mappable<String>
 	{
 		Metadata result = null;
 		Class<? extends Metadata> metadataClass = getMetadataClass(ts);
-		
+
 		if (metadataClass != null)
 		{
-			Class[] argClasses 	= new Class[] { MetaMetadataCompositeField.class };
-			Object[] argObjects = new Object[] { this };
+			Class[] argClasses = new Class[]
+			{ MetaMetadataCompositeField.class };
+			Object[] argObjects = new Object[]
+			{ this };
 			result = ReflectionTools.getInstance(metadataClass, argClasses, argObjects);
 			if (mixins != null && mixins.size() > 0)
 			{
 				for (String mixinName : mixins)
 				{
-					MetaMetadata mixinMM	= repository().getByTagName(mixinName);
+					MetaMetadata mixinMM = repository().getByTagName(mixinName);
 					if (mixinMM != null)
 					{
-						Metadata mixinMetadata	= mixinMM.constructMetadata(ts);
+						Metadata mixinMetadata = mixinMM.constructMetadata(ts);
 						if (mixinMetadata != null)
 							result.addMixin(mixinMetadata);
 					}
 					// andruid & andrew 11/2/09 changed from below to above
-//					Class<? extends Metadata> mixinClass = (Class<? extends Metadata>) ts.getClassByTag(mixinName);
-//					if (mixinClass != null)
-//					{
-//						result.addMixin(ReflectionTools.getInstance(mixinClass));
-//					}
+					// Class<? extends Metadata> mixinClass = (Class<? extends Metadata>)
+					// ts.getClassByTag(mixinName);
+					// if (mixinClass != null)
+					// {
+					// result.addMixin(ReflectionTools.getInstance(mixinClass));
+					// }
 				}
 			}
 		}
 		return result;
 	}
 
-
 	/**
 	 * This method translates the MetaMetaDeclaration into a metadata class.
 	 * 
 	 * @param packageName
 	 *          The package in which the generated metadata class is to be placed.
-	 * @param test TODO
+	 * @param test
+	 *          TODO
 	 * @throws IOException
 	 */
-	public void compileToMetadataClass(String packageName, MetaMetadataRepository mmdRepository) throws IOException
+	public void compileToMetadataClass(String packageName, MetaMetadataRepository mmdRepository)
+			throws IOException
 	{
 		// get the generation path from the package name.
 		if (this.packageAttribute != null)
@@ -145,14 +146,14 @@ implements Mappable<String>
 		// create a file writer to write the JAVA files.
 		File directoryPath = PropertiesAndDirectories.createDirsAsNeeded(new File(generationPath));
 		File file = new File(directoryPath, XMLTools.classNameFromElementName(getName()) + ".java");
-		
+
 		// write to console
 		System.out.print(this.file + "\n\t\t -> " + file);
-		
+
 		FileWriter fileWriter = new FileWriter(file);
 		PrintWriter p = new PrintWriter(fileWriter);
-		
-		//update the translation class.
+
+		// update the translation class.
 
 		// Write the package
 		p.println(MetadataCompilerUtils.PACKAGE + " " + packageName + ";");
@@ -161,28 +162,27 @@ implements Mappable<String>
 		p.println(MetadataCompilerUtils.COMMENT);
 
 		// Write the import statements
-//		p.println(MetadataCompiler.getImportStatement());
+		// p.println(MetadataCompiler.getImportStatement());
 		MetadataCompiler.printImports(p);
 		// Write java-doc comments
 		MetadataCompilerUtils.writeJavaDocComment(getComment(), fileWriter);
 
-		//write @simpl_inherit
+		// write @simpl_inherit
 		p.println("@simpl_inherit");
-		
-//		p.println("@xml_tag(\""+getName()+"\")");
+
+		// p.println("@xml_tag(\""+getName()+"\")");
 
 		p.println(getTagDecl());
-		
+
 		// Write class declaration
 		String className = XMLTools.classNameFromElementName(getName());
-//		System.out.println("#######################################"+getName());
+		// System.out.println("#######################################"+getName());
 		p.println("public class  " + className + "\nextends  "
 				+ XMLTools.classNameFromElementName(extendsAttribute) + "\n{\n");
 
-		
 		// loop to write the class definition
 		HashMapArrayList<String, MetaMetadataField> metaMetadataFieldList = getChildMetaMetadata();
-		if(metaMetadataFieldList != null)
+		if (metaMetadataFieldList != null)
 		{
 			for (MetaMetadataField metaMetadataField : metaMetadataFieldList)
 			{
@@ -191,7 +191,8 @@ implements Mappable<String>
 				try
 				{
 					// translate the field into for metadata class.
-					metaMetadataField.compileToMetadataClass(packageName, p,MetadataCompilerUtils.GENERATE_FIELDS_PASS,false);
+					metaMetadataField.compileToMetadataClass(packageName, p,
+							MetadataCompilerUtils.GENERATE_FIELDS_PASS, false);
 				}
 				catch (SIMPLTranslationException e)
 				{
@@ -202,7 +203,7 @@ implements Mappable<String>
 					e.printStackTrace();
 				}
 			}
-			
+
 			// write the constructors
 			MetadataCompilerUtils.appendBlankConstructor(p, className);
 			MetadataCompilerUtils.appendConstructor(p, className);
@@ -215,7 +216,8 @@ implements Mappable<String>
 				try
 				{
 					// translate the field into for metadata class.
-					f.compileToMetadataClass(packageName, p,MetadataCompilerUtils.GENERATE_METHODS_PASS,true);
+					f.compileToMetadataClass(packageName, p, MetadataCompilerUtils.GENERATE_METHODS_PASS,
+							true);
 				}
 				catch (SIMPLTranslationException e)
 				{
@@ -232,12 +234,12 @@ implements Mappable<String>
 		p.flush();
 	}
 
-	
 	@Override
 	protected String getMetaMetadataTagToInheritFrom()
 	{
 		return (extendsAttribute != null) ? extendsAttribute : super.getMetaMetadataTagToInheritFrom();
 	}
+
 	/**
 	 * @return the collectionOf
 	 */
@@ -263,7 +265,8 @@ implements Mappable<String>
 	}
 
 	/**
-	 * @param urlPattern the urlPattern to set
+	 * @param urlPattern
+	 *          the urlPattern to set
 	 */
 	public void setUrlRegex(Pattern urlPattern)
 	{
@@ -279,7 +282,8 @@ implements Mappable<String>
 	}
 
 	/**
-	 * @param domain the domain to set
+	 * @param domain
+	 *          the domain to set
 	 */
 	public void setDomain(String domain)
 	{
@@ -293,12 +297,12 @@ implements Mappable<String>
 	{
 		return packageAttribute;
 	}
-	
+
 	final void setPackageAttribute(String pa)
 	{
-		packageAttribute	= pa;
+		packageAttribute = pa;
 	}
-	
+
 	public String getUserAgentName()
 	{
 		return userAgentName;
@@ -323,16 +327,17 @@ implements Mappable<String>
 	{
 		return getSelector().getUrlPathTree();
 	}
-	
+
 	public void setUrlPrefix(ParsedURL urlPrefix)
 	{
 		getSelector().setUrlPrefix(urlPrefix);
 	}
-	
+
 	public void setUrlPrefix(String urlPrefix)
 	{
-		 getSelector().setUrlPrefix(ParsedURL.getAbsolute(urlPrefix));
+		getSelector().setUrlPrefix(ParsedURL.getAbsolute(urlPrefix));
 	}
+
 	/**
 	 * @param mimeTypes
 	 *          the mimeTypes to set
@@ -375,26 +380,27 @@ implements Mappable<String>
 	{
 		return getName();
 	}
-	
+
 	public boolean isGenerateClass()
 	{
 		// we r not using getType as by default getType will give meta-metadata name
-		if((this instanceof MetaMetadataCompositeField) && ((MetaMetadataCompositeField) this).type!=null)
+		if ((this instanceof MetaMetadataCompositeField)
+				&& ((MetaMetadataCompositeField) this).type != null)
 		{
 			return false;
 		}
 		return !dontGenerateClass;
 	}
-	
+
 	public void setGenerateClass(boolean generateClass)
 	{
 		this.dontGenerateClass = !generateClass;
 	}
-	
-	
+
 	public MetadataFieldDescriptor getFieldDescriptorByTagName(String tagName)
 	{
-		return metadataClassDescriptor.getFieldDescriptorByTag(tagName, metaMetadataRepository().metadataTranslationScope());
+		return metadataClassDescriptor.getFieldDescriptorByTag(tagName, metaMetadataRepository()
+				.metadataTranslationScope());
 	}
 
 	public static void main(String args[]) throws SIMPLTranslationException
@@ -403,10 +409,9 @@ implements Mappable<String>
 		String patternXMLFilepath = "../cf/config/semantics/metametadata/metaMetadataRepository.xml";
 
 		// ElementState.setUseDOMForTranslateTo(true);
-		MetaMetadataRepository test = (MetaMetadataRepository) TS.deserialize(
-				patternXMLFilepath);
+		MetaMetadataRepository test = (MetaMetadataRepository) TS.deserialize(patternXMLFilepath);
 
-	  test.serialize(System.out);
+		test.serialize(System.out);
 
 		File outputRoot = PropertiesAndDirectories.userDir();
 
@@ -419,9 +424,14 @@ implements Mappable<String>
 
 	public MetaMetadataSelector getSelector()
 	{
-		if(selector == null)
+		if (selector == null)
 			return MetaMetadataSelector.NULL_SELECTOR;
 		return selector;
 	}
-	
+
+	public void setSelector(MetaMetadataSelector s)
+	{
+		selector = s;
+	}
+
 }

@@ -19,6 +19,7 @@ import ecologylab.generic.HashMapArrayList;
 import ecologylab.net.ParsedURL;
 import ecologylab.net.UserAgent;
 import ecologylab.semantics.actions.NestedSemanticActionsTranslationScope;
+import ecologylab.semantics.connectors.CFPrefNames;
 import ecologylab.semantics.connectors.SemanticsSite;
 import ecologylab.semantics.metadata.DocumentParserTagNames;
 import ecologylab.semantics.metadata.Metadata;
@@ -39,9 +40,9 @@ import ecologylab.textformat.NamedStyle;
 public class MetaMetadataRepository extends ElementState implements PackageSpecifier,
 		DocumentParserTagNames
 {
-	private static final String																	FIREFOX_3_6_4_AGENT_STRING	= "Mozilla/5.0 (Windows; U; Windows NT 6.1; ru; rv:1.9.2.4) Gecko/20100513 Firefox/3.6.4";
+	private static final String																	FIREFOX_3_6_4_AGENT_STRING			= "Mozilla/5.0 (Windows; U; Windows NT 6.1; ru; rv:1.9.2.4) Gecko/20100513 Firefox/3.6.4";
 
-	private static final String																	DEFAULT_STYLE_NAME					= "default";
+	private static final String																	DEFAULT_STYLE_NAME							= "default";
 
 	/**
 	 * The name of the repository.
@@ -68,7 +69,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	@simpl_scalar
 	private String																							defaultUserAgentName;
 
-	private String																							defaultUserAgentString			= null;
+	private String																							defaultUserAgentString					= null;
 
 	/**
 	 * The keys for this hashmap are the values within TypeTagNames. This map is filled out
@@ -79,7 +80,12 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	@simpl_nowrap
 	private HashMapArrayList<String, MetaMetadata>							repositoryByTagName;
 
-	private HashMap<String, MetaMetadata>												repositoryByClassName	= new HashMap<String, MetaMetadata>();
+	@simpl_map("selector")
+	@simpl_nowrap
+	private HashMapArrayList<String, MetaMetadataSelector>			selectorsByName;
+
+	private HashMap<String, MetaMetadata>												repositoryByClassName						= new HashMap<String, MetaMetadata>();
+
 	/**
 	 * Repository with noAnchorNoQuery URL string as key.
 	 */
@@ -95,18 +101,22 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	 */
 	private HashMap<String, MetaMetadata>												mediaRepositoryByUrlStripped		= new HashMap<String, MetaMetadata>();
 
-	private HashMap<String, ArrayList<RepositoryPatternEntry>>	documentRepositoryByPattern	= new HashMap<String, ArrayList<RepositoryPatternEntry>>();
+	private HashMap<String, ArrayList<RepositoryPatternEntry>>	documentRepositoryByPattern			= new HashMap<String, ArrayList<RepositoryPatternEntry>>();
 
-	private HashMap<String, ArrayList<RepositoryPatternEntry>>	mediaRepositoryByPattern		= new HashMap<String, ArrayList<RepositoryPatternEntry>>();
+	private HashMap<String, ArrayList<RepositoryPatternEntry>>	mediaRepositoryByPattern				= new HashMap<String, ArrayList<RepositoryPatternEntry>>();
 
 	/**
 	 * We have only documents as direct binding will be used only in case of feeds and XML
 	 */
-	private HashMap<String, MetaMetadata>												repositoryByMime						= new HashMap<String, MetaMetadata>();
+	private HashMap<String, MetaMetadata>												repositoryByMime								= new HashMap<String, MetaMetadata>();
 
-	private HashMap<String, MetaMetadata>												repositoryBySuffix					= new HashMap<String, MetaMetadata>();
+	private HashMap<String, MetaMetadata>												repositoryBySuffix							= new HashMap<String, MetaMetadata>();
 
-	private PrefixCollection																		urlPrefixCollection					= new PrefixCollection('/');
+	private PrefixCollection																		urlPrefixCollection							= new PrefixCollection(
+																																																	'/');
+
+	// /////////rm s00n private HashMap<String, MetaMetadataSelector> selectorsByName = new
+	// HashMap<String, MetaMetadataSelector>();
 
 	// public static final TranslationScope META_METADATA_TSCOPE =
 	// MetaMetadataTranslationScope.get();
@@ -126,7 +136,8 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		initializeTypes();
 	}
 
-	private static boolean initializedTypes;
+	private static boolean																			initializedTypes;
+
 	/**
 	 * 
 	 */
@@ -134,7 +145,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	{
 		if (!initializedTypes)
 		{
-			initializedTypes	= true;
+			initializedTypes = true;
 			MetadataScalarScalarType.init(); // register metadata-specific scalar
 			// types
 			ecologylab.semantics.metadata.MetadataBuiltinsTranslationScope.get();
@@ -203,7 +214,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 			// result.populateURLBaseMap();
 			// // necessary to get, for example, fields for document into pdf...
 			// result.populateInheritedValues();
-			//			
+			//
 			// result.populateMimeMap();
 			// For debug
 			// this.metaMetaDataRepository.translateToXML(System.out);
@@ -248,8 +259,8 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		}
 		catch (SIMPLTranslationException e)
 		{
-			Debug.error("MetaMetadataRepository", "translating repository source file "
-					+ file.getAbsolutePath());
+			Debug.error("MetaMetadataRepository",
+					"translating repository source file " + file.getAbsolutePath());
 		}
 
 		return repos;
@@ -257,12 +268,13 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 
 	public void integrateRepositoryWithThis(File repositoryFile, TranslationScope metaMetadataTScope)
 	{
-		MetaMetadataRepository thatRepo	= readRepository(repositoryFile, metaMetadataTScope);
+		MetaMetadataRepository thatRepo = readRepository(repositoryFile, metaMetadataTScope);
 		if (thatRepo == null)
 			error("Could not integrate repository file:\t" + repositoryFile);
 		else
 			integrateRepositoryWithThis(thatRepo);
 	}
+
 	/**
 	 * Combines the data stored in the parameter repository into this repository.
 	 * 
@@ -286,15 +298,15 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		// combine sites
 		if (!combineMaps(repository.sites, this.sites))
 			this.sites = repository.sites;
-		
+
 		if (!combineMaps(repository.repositoryByMime, this.repositoryByMime))
-			this.repositoryByMime	= repository.repositoryByMime;
-		
+			this.repositoryByMime = repository.repositoryByMime;
+
 		if (!combineMaps(repository.repositoryBySuffix, this.repositoryBySuffix))
-			this.repositoryBySuffix	= repository.repositoryBySuffix;
-		
+			this.repositoryBySuffix = repository.repositoryBySuffix;
+
 		combineMaps(repository.documentRepositoryByDomain, this.documentRepositoryByDomain);
-		
+
 		// set metaMetadata to have the correct parent repository
 		HashMapArrayList<String, MetaMetadata> repositoryByTagName = repository.repositoryByTagName;
 		if (repositoryByTagName != null)
@@ -323,8 +335,8 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	}
 
 	/**
-	 * Recursively bind MetadataFieldDescriptors to all MetaMetadataFields.
-	 * Perform other initialization.
+	 * Recursively bind MetadataFieldDescriptors to all MetaMetadataFields. Perform other
+	 * initialization.
 	 * 
 	 * @param metadataTScope
 	 */
@@ -333,17 +345,19 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		this.metadataTScope = metadataTScope;
 		initializeDefaultUserAgent();
 
-		//findAndDeclareNestedMetaMetadata(metadataTScope);
-		
+		// findAndDeclareNestedMetaMetadata(metadataTScope);
+
 		for (MetaMetadata metaMetadata : repositoryByTagName)
 		{
 			metaMetadata.inheritMetaMetadata(this);
 			metaMetadata.getClassAndBindDescriptors(metadataTScope);
 			MetadataClassDescriptor metadataClassDescriptor = metaMetadata.getMetadataClassDescriptor();
-			if (metaMetadata.getType() == null)	// don't put restatements of the same base type into *this* map
-				repositoryByClassName.put(metadataClassDescriptor.getDescribedClass().getName(), metaMetadata);
+			if (metaMetadata.getType() == null) // don't put restatements of the same base type into
+																					// *this* map
+				repositoryByClassName.put(metadataClassDescriptor.getDescribedClass().getName(),
+						metaMetadata);
 		}
-		
+
 		initializeLocationBasedMaps();
 		System.out.println();
 	}
@@ -503,14 +517,14 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 			if (result == null)
 			{
 				String domain = purl.domain();
-				result		= documentRepositoryByDomain.get(domain);
+				result = documentRepositoryByDomain.get(domain);
 				if (result != null)
-					debug("Matched by domain = " + domain +"\t" + result);
+					debug("Matched by domain = " + domain + "\t" + result);
 			}
 		}
 		if (result == null)
-			result			= getByTagName(tagName);
-		
+			result = getByTagName(tagName);
+
 		return result;
 	}
 
@@ -627,10 +641,9 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	 */
 	private void initializeLocationBasedMaps()
 	{
-		// TODO make this code less ugly
 		for (MetaMetadata metaMetadata : repositoryByTagName)
 		{
-//			metaMetadata.inheritMetaMetadata(this);
+			// metaMetadata.inheritMetaMetadata(this);
 
 			Class<? extends Metadata> metadataClass = metaMetadata.getMetadataClass(metadataTScope);
 			if (metadataClass == null)
@@ -644,19 +657,15 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 			if (Media.class.isAssignableFrom(metadataClass))
 			{
 				repositoryByUrlStripped = mediaRepositoryByUrlStripped;
-				repositoryByPattern 		= mediaRepositoryByPattern;
+				repositoryByPattern = mediaRepositoryByPattern;
 			}
 			else if (Document.class.isAssignableFrom(metadataClass))
 			{
 				repositoryByUrlStripped = documentRepositoryByUrlStripped;
-				repositoryByPattern 		= documentRepositoryByPattern;
+				repositoryByPattern = documentRepositoryByPattern;
 			}
 			else
 				continue;
-
-			boolean cfPrefIsSet = Pref.lookupBoolean(metaMetadata.getSelector().getCfPref());
-			boolean cfPrefIsNull = (metaMetadata.getSelector().getCfPref() == null);
-			boolean currentCfPrefIsSet = false;
 
 			// We need to check if something is there already
 			// if something is there, then we need to check to see if it has its cf pref set
@@ -665,42 +674,15 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 			ParsedURL purl = metaMetadata.getSelector().getUrlBase();
 			if (purl != null)
 			{
-				MetaMetadata currentlyMappedMMD = repositoryByUrlStripped.get(purl.noAnchorNoQueryPageString());
-				if (currentlyMappedMMD != null)
-					currentCfPrefIsSet = Pref.lookupBoolean(currentlyMappedMMD.getSelector().getCfPref());
-				if (currentlyMappedMMD == null)
-				{
-					repositoryByUrlStripped.put(purl.noAnchorNoQueryPageString(), metaMetadata);
-				}
-				else if (cfPrefIsSet == true || (cfPrefIsNull == true && currentCfPrefIsSet == false))
-				{
-					// currentlyMappedMMD = metaMetadata;
-					repositoryByUrlStripped.remove(currentlyMappedMMD.getSelector().getUrlBase()
-							.noAnchorNoQueryPageString());
-					repositoryByUrlStripped.put(purl.noAnchorNoQueryPageString(), metaMetadata);
-				}
+				repositoryByUrlStripped.put(purl.noAnchorNoQueryPageString(), metaMetadata);
 			}
 			else
 			{
 				ParsedURL urlPrefix = metaMetadata.getSelector().getUrlPrefix();// change
 				if (urlPrefix != null)
 				{
-					MetaMetadata currentlyMappedMMD = repositoryByUrlStripped.get(urlPrefix.toString());
-					if (currentlyMappedMMD != null)
-						currentCfPrefIsSet = Pref.lookupBoolean(currentlyMappedMMD.getSelector().getCfPref());
-					if (currentlyMappedMMD == null)
-					{
-						urlPrefixCollection.add(urlPrefix);
-						repositoryByUrlStripped.put(urlPrefix.toString(), metaMetadata);
-					}
-					else if (cfPrefIsSet == true || (cfPrefIsNull == true && currentCfPrefIsSet == false))
-					{
-						// currentlyMappedMMD = metaMetadata;
-						urlPrefixCollection.removePrefix(currentlyMappedMMD.getSelector().getUrlPrefix()
-								.toString());
-						urlPrefixCollection.add(urlPrefix);
-						repositoryByUrlStripped.put(urlPrefix.toString(), metaMetadata);
-					}
+					urlPrefixCollection.add(urlPrefix);
+					repositoryByUrlStripped.put(urlPrefix.toString(), metaMetadata);
 				}
 				else
 				{
@@ -711,38 +693,19 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 						Pattern urlPattern = metaMetadata.getSelector().getUrlRegex();
 						if (urlPattern != null)
 						{
-							MetaMetadata currentlyMappedMMD = domainAndPatternForMetadata(domain, urlPattern);
-							if (currentlyMappedMMD != null)
-								currentCfPrefIsSet = Pref.lookupBoolean(currentlyMappedMMD.getSelector().getCfPref());
-							if (currentlyMappedMMD == null)
+							ArrayList<RepositoryPatternEntry> bucket = repositoryByPattern.get(domain);
+							if (bucket == null)
 							{
-								ArrayList<RepositoryPatternEntry> bucket = repositoryByPattern.get(domain);
-								if (bucket == null)
-								{
-									bucket = new ArrayList<RepositoryPatternEntry>(2);
-									repositoryByPattern.put(domain, bucket);
-								}
-								bucket.add(new RepositoryPatternEntry(urlPattern, metaMetadata));
+								bucket = new ArrayList<RepositoryPatternEntry>(2);
+								repositoryByPattern.put(domain, bucket);
 							}
-							else if (cfPrefIsSet == true || (cfPrefIsNull == true && currentCfPrefIsSet == false))
-							{
-								// currentlyMappedMMD = metaMetadata;
-								removeDomainAndPatternForMetadata(currentlyMappedMMD.getSelector().getDomain(),
-										currentlyMappedMMD.getSelector().getUrlRegex());
-								ArrayList<RepositoryPatternEntry> bucket = repositoryByPattern.get(domain);
-								if (bucket == null)
-								{
-									bucket = new ArrayList<RepositoryPatternEntry>(2);
-									repositoryByPattern.put(domain, bucket);
-								}
-								bucket.add(new RepositoryPatternEntry(urlPattern, metaMetadata));
-							}
+							bucket.add(new RepositoryPatternEntry(urlPattern, metaMetadata));
 						}
-						else
-						{
-							// domain only -- no pattern
-							documentRepositoryByDomain.put(domain, metaMetadata);
-						}
+					}
+					else
+					{
+						// domain only -- no pattern
+						documentRepositoryByDomain.put(domain, metaMetadata);
 					}
 				}
 			}
@@ -786,7 +749,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	{
 		if (repositoryByTagName == null)
 			return;
-		
+
 		for (MetaMetadata metaMetadata : repositoryByTagName)
 		{
 			ArrayList<String> suffixes = metaMetadata.getSuffixes();
@@ -827,7 +790,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	{
 		if (metadataClass == null)
 			return null;
-//		String tag = metadataTScope.getTag(metadataClass);
+		// String tag = metadataTScope.getTag(metadataClass);
 		return repositoryByClassName.get(metadataClass.getName());
 	}
 
@@ -977,9 +940,81 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	@Override
 	public String toString()
 	{
-		String result	= "MetaMetadataRepository";
+		String result = "MetaMetadataRepository";
 		if (file != null)
-			result			+= "[" + file + "]";
+			result += "[" + file + "]";
 		return result;
+	}
+
+	/**
+	 * This method initializes the mappings from selectors in the repository to selectors in meta
+	 * metadata.
+	 */
+	private void initializeSelectors()
+	{
+		if (selectorsByName != null)
+		{
+			for (MetaMetadataSelector selector : selectorsByName)
+			{
+				String prefName = selector.getPrefName();
+				prefName = Pref.lookupString(prefName);
+				if (prefName == null)
+				{
+					prefName = selector.getDefaultPref();
+				}
+				int numberOfMetametaData = 0;
+				if (repositoryByTagName != null)
+				{
+					ArrayList<MetaMetadataSelector> candidates = new ArrayList<MetaMetadataSelector>();
+					MetaMetadata onlyCandidate = null;
+					boolean prefNameMetaMetadataFound = false;
+					for (MetaMetadata metaMetadata : repositoryByTagName)
+					{
+						onlyCandidate = metaMetadata;
+						if (metaMetadata != null)
+						{
+							MetaMetadataSelector mSelector = metaMetadata.getSelector();
+							if (mSelector != null)
+							{
+								if (mSelector.getName() != null)
+								{
+									if (mSelector.getName().equals(selector.getName()))
+									{
+										numberOfMetametaData += 1;
+										if (metaMetadata.getName().equals(prefName))
+										{
+											metaMetadata.setSelector(selector);
+											prefNameMetaMetadataFound = true;
+										}
+									}
+								}
+							}
+						}
+					}
+					if (prefNameMetaMetadataFound == false)
+					{
+						if (numberOfMetametaData == 0)
+						{
+							Debug.warning(this, "Selector " + selector.getName()
+									+ " does not appear to be used in any MetaMetadata.");
+						}
+						else if (numberOfMetametaData == 1)
+						{
+							onlyCandidate.setSelector(selector);
+						}
+						else if (numberOfMetametaData > 1)
+						{
+							Debug.error(this, "Selector " + selector.getName()
+									+ " is ambiguous.  Set the pref_name or use a default_pref.");
+						}
+					}
+				}
+			}
+		}
+	}
+
+	protected void deserializationPostHook()
+	{
+		initializeSelectors();
 	}
 }
