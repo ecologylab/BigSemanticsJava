@@ -151,6 +151,7 @@ public class SeedDistributor<AC extends Container> extends Debug implements Runn
 	 */
 	public void queueSearchRequest(AC searchContainer)
 	{
+		debug("search request: " + searchContainer);
 		numSearchesToQueue++;
 		if (numSearchesProcessing >= MAX_NUM_SEARCHES_PROCESSING)
 		{
@@ -178,6 +179,7 @@ public class SeedDistributor<AC extends Container> extends Debug implements Runn
 	 */
 	public void downloadSearchRequest(AC searchContainer)
 	{
+		debug("queueing search request to DownloadMonitor: " + searchContainer);
 		searchContainer.queueDownload();
 		numSearchesProcessing++;
 //		debug("sending search request to DownloadMonitor: " + searchContainer);
@@ -195,7 +197,7 @@ public class SeedDistributor<AC extends Container> extends Debug implements Runn
 	 */
 	public void doneQueueing(Container searchContainer)
 	{
-//		debug("search parsed: " + searchContainer);
+		debug("search parsed: " + searchContainer);
 		numSearchesProcessing--;
 		numSearchesDone++;
 	}
@@ -223,7 +225,7 @@ public class SeedDistributor<AC extends Container> extends Debug implements Runn
 	{
 		synchronized (queuedResults)
 		{
-//			debug("queuing result: " + resultContainer);
+			debug("queueing result: " + resultContainer);
 			queuedResults.offer(resultContainer);
 			if (callback != null)
 			{
@@ -248,10 +250,8 @@ public class SeedDistributor<AC extends Container> extends Debug implements Runn
 					QandDownloadable downloadable = queuedResults.poll();
 					String query = getQuery(downloadable);
 					int rank = getRank(downloadable);
-					/*
 					debug(String.format("sending container to DownloadMonitor: [%s:%d]%s", query, rank,
 							downloadable));
-					*/
 					// downloadable.setDispatchTarget(this);
 					if (callbackMap.containsKey(downloadable))
 					{
@@ -397,11 +397,9 @@ public class SeedDistributor<AC extends Container> extends Debug implements Runn
 		{
 			numResultsRemaining = queuedResults.size();
 		}
-		/*
 		debug(String.format(
 				"checking for endSeeding(): toQueue=%d, processing=%d, done=%d, remaining results=%d",
 				numSearchesToQueue, numSearchesProcessing, numSearchesDone, numResultsRemaining));
-		*/
 		if (numSearchesDone == numSearchesToQueue && numSearchesProcessing == 0
 				&& numResultsRemaining == 0)
 		{
