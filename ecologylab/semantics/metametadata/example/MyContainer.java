@@ -49,7 +49,7 @@ public class MyContainer extends Container
 		super(progenitor);
 		this.infoCollector = infoCollector;
 		this.metadata = (Document) infoCollector.constructDocument(purl);
-
+		
 		initPurl = purl;
 	}
 
