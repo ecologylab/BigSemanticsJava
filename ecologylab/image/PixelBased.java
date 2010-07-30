@@ -168,7 +168,7 @@ implements Downloadable
 			if (width > maxWidth || height > maxHeight)
 			{
 				originalDimension	= new Dimension(width, height);
-				if (width/height < maxWidth/maxHeight) 
+				if (width / (float) height < maxWidth / (float) maxHeight) 
 				{
 					width 	= (width*maxHeight + height/2) / height;
 					height 	= maxHeight;
