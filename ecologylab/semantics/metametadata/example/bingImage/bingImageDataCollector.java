@@ -202,9 +202,9 @@ public class bingImageDataCollector{
       )INHERITS (Metadata);
 		*/ 
 		String table = "CREATE TABLE bingimage ("  
-								      + "imgUrl varchar(64) ," 	 
+								      + "imgUrl text ," 	 
 								      + "imgProperty text ," 	 
-								      + "imgRef varchar(64) ," 
+								      + "imgRef text ," 
 								      + "caption text" 
 								      +  ");"; 
 
