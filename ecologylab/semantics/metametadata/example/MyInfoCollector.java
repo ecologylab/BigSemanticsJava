@@ -11,6 +11,8 @@ import java.util.logging.Logger;
 
 import javax.swing.JFrame;
 
+import cf.model.CfInfoCollector;
+import cf.model.semanticactions.CfSemanticActionsHandler;
 import ecologylab.collections.Scope;
 import ecologylab.concurrent.DownloadMonitor;
 import ecologylab.generic.DispatchTarget;
@@ -97,6 +99,7 @@ public class MyInfoCollector implements InfoCollector<MyContainer>
 		this.mmdRepo = repo;
 
 		mmdRepo.bindMetadataClassDescriptorsToMetaMetadata(metadataTranslationScope);
+		
 		rejectDomains = new HashSet<String>();
 		downloadMonitor = new DownloadMonitor("info-collector_download-monitor",
 				DEFAULT_COUNT_DOWNLOAD_THREAD);
@@ -188,8 +191,7 @@ public class MyInfoCollector implements InfoCollector<MyContainer>
 	@Override
 	public SemanticActionHandler createSemanticActionHandler()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return new CfSemanticActionsHandler();
 	}
 
 	@Override
