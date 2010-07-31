@@ -2,15 +2,16 @@ package ecologylab.semantics.metametadata.example.bingImage;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
 
-import ecologylab.semantics.metametadata.example.bingImage.sqlTranslator.*; 
 import ecologylab.generic.Debug;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticAction;
@@ -19,6 +20,10 @@ import ecologylab.semantics.metametadata.example.SaveReportSemanticAction;
 import ecologylab.semantics.metametadata.example.bingImage.generated.BingImage;
 import ecologylab.semantics.metametadata.example.bingImage.generated.BingImageType;
 import ecologylab.semantics.metametadata.example.bingImage.generated.GeneratedMetadataTranslationScope;
+import ecologylab.semantics.metametadata.example.bingImage.sqlTranslator.DBUtil;
+import ecologylab.semantics.metametadata.example.bingImage.sqlTranslator.SqlTranslator;
+import ecologylab.semantics.metametadata.example.bingImage.sqlTranslator.SqlTranslatorUtil;
+import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.TranslationScope;
 
 public class bingImageDataCollector{
@@ -116,6 +121,8 @@ public class bingImageDataCollector{
 	 * print out to DB 
 	 * @param targetTranslationScope
 	 * @param metadataCollected
+	 * @throws SIMPLTranslationException 
+	 * @throws IOException 
 	 */
 	private static void printoutToDB(TranslationScope ts, List<BingImageType> mc) throws Exception{
 		//create table script generation
@@ -144,7 +151,9 @@ public class bingImageDataCollector{
 		//db connection & declare psmt & execute insert using metadataCollected 
 		DBUtil u = new DBUtil();
 		
-		Connection conn = u.connectToDB();
+		Connection conn;
+		conn = u.connectToDB();
+
 		if(conn != null)
 			System.out.println("db connected");
 		
