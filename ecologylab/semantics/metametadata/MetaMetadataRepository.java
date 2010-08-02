@@ -352,7 +352,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 			metaMetadata.inheritMetaMetadata(this);
 			metaMetadata.getClassAndBindDescriptors(metadataTScope);
 			MetadataClassDescriptor metadataClassDescriptor = metaMetadata.getMetadataClassDescriptor();
-			if (metaMetadata.getType() == null) // don't put restatements of the same base type into
+			if (metaMetadata.getType() == null && metadataClassDescriptor != null) // don't put restatements of the same base type into
 																					// *this* map
 				repositoryByClassName.put(metadataClassDescriptor.getDescribedClass().getName(),
 						metaMetadata);
@@ -645,7 +645,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		{
 			// metaMetadata.inheritMetaMetadata(this);
 
-			Class<? extends Metadata> metadataClass = metaMetadata.getMetadataClass(metadataTScope);
+			Class<? extends Metadata> metadataClass = metaMetadata.getExactMetadataClass(metadataTScope);
 			if (metadataClass == null)
 			{
 				continue;
