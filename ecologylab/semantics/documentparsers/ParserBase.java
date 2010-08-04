@@ -843,6 +843,10 @@ implements ScalarUnmarshallingContext,SemanticActionsKeyWords, DeserializationHo
 			MetadataClassDescriptor originalClassDescriptor 				= originalMM.getMetadataClassDescriptor();
 			MetadataClassDescriptor deserializationClassDescriptor	= deserializationMM.getMetadataClassDescriptor();
 
+			// quick fix for a NullPointerException for RSS. originalClassDescriptor can be null because it might be a meta-metadata that does not generate metadata class, e.g. xml
+			if (originalClassDescriptor == null)
+				return true; // use the one from deserialization
+			
 			boolean sameMetadataSubclass 														= originalClassDescriptor.equals(deserializationClassDescriptor);
 			// if they have the same metadataClassDescriptor, they can be of the same type, or one
 			// of them is using "type=" attribute.
