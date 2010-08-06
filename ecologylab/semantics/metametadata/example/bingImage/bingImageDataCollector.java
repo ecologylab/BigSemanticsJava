@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -20,6 +21,7 @@ import ecologylab.semantics.metametadata.example.SaveReportSemanticAction;
 import ecologylab.semantics.metametadata.example.bingImage.generated.BingImage;
 import ecologylab.semantics.metametadata.example.bingImage.generated.BingImageType;
 import ecologylab.semantics.metametadata.example.bingImage.generated.GeneratedMetadataTranslationScope;
+import ecologylab.semantics.metametadata.example.bingImage.sqlTranslator.DBInterface;
 import ecologylab.semantics.metametadata.example.bingImage.sqlTranslator.DBUtil;
 import ecologylab.semantics.metametadata.example.bingImage.sqlTranslator.SqlTranslator;
 import ecologylab.semantics.metametadata.example.bingImage.sqlTranslator.SqlTranslatorUtil;
@@ -77,7 +79,6 @@ public class bingImageDataCollector{
 
 	}
 	
-	
 	/**
 	 * print out to file 
 	 * @param filename
@@ -131,16 +132,14 @@ public class bingImageDataCollector{
 		SqlTranslatorUtil.setDEFAULT_SQL_OUTPUT_DIRECTORY("ecologylab//semantics//metametadata//example//bingImage"); 
 		t.createSQLTableSchema(ts, SqlTranslatorUtil.DEFAULT_CREATE_TABLE_MODE);
 		
-		/* part of result table script generated above*/
-		/*
+		/*//part of result table script generated above
 		--MetadataClassDescriptor[ecologylab.semantics.metametadata.example.bingImage.generated.BingImage]
-      CREATE TABLE BingImage (
-      imgUrl varchar(64) ,	 
-      imgProperty text ,	 
-      imgRef varchar(64) , 
-      caption text 	 
-      )INHERITS (Metadata);
-		*/ 
+	      CREATE TABLE BingImage (
+	      imgUrl varchar(64) ,	 
+	      imgProperty text ,	 
+	      imgRef varchar(64) , 
+	      caption text 	 
+	      )INHERITS (Metadata);*/ 
 		String table = "CREATE TABLE bingimage ("  
 								      + "imgUrl text ," 	 
 								      + "imgProperty text ," 	 
@@ -152,7 +151,7 @@ public class bingImageDataCollector{
 		DBUtil u = new DBUtil();
 		
 		Connection conn;
-		conn = u.connectToDB();
+		conn = u.connectToDB(); 
 
 		if(conn != null)
 			System.out.println("db connected");
@@ -184,73 +183,70 @@ public class bingImageDataCollector{
 		u.closeDBConnection(); 
 		
 	}
-		
-	/**
-	 * JUnit test
-	 * @throws Exception
-	 */
+	
+	//TODO : test remote access 
+	@Test
+	public void testDBconnection() throws SQLException, ClassNotFoundException{
+		Connection conn = (new DBUtil()).connectToDB("jdbc:postgresql://227.0.0.1:5432/", 
+				"comma78", "postgresql");
+		if(conn != null)
+			System.out.println("db connected");
+	}
+	
 	@Test
 	public void testPrintoutToDB() throws Exception{
+		BingImage b = new BingImage(); 
+		b.setImgUrl(new ParsedURL(new URL("http://www.ecologylab.net")));
+		b.setImgRef(new ParsedURL(new URL("http://www.ecologylab.net/metadata")));
+		b.setImgProperty("img property");
+		b.setCaption("img caption");
+		
+		BingImageType bi = new BingImageType(); 
+		bi.bingImages().add(b);
+		
+		List<BingImageType> li = new ArrayList<BingImageType>();
+		li.add(bi);
+		
 		TranslationScope ts = GeneratedMetadataTranslationScope.get();
-		List<BingImageType> mc = metadataCollected;
-		
-		//create table script generation
 		SqlTranslator t = new SqlTranslator(); 
-		
 		SqlTranslatorUtil.setDEFAULT_SQL_OUTPUT_DIRECTORY("ecologylab//semantics//metametadata//example//bingImage"); 
 		t.createSQLTableSchema(ts, SqlTranslatorUtil.DEFAULT_CREATE_TABLE_MODE);
 		
-		/* part of result table script generated above*/
-		/*
-		--MetadataClassDescriptor[ecologylab.semantics.metametadata.example.bingImage.generated.BingImage]
-      CREATE TABLE BingImage (
-      imgUrl varchar(64) ,	 
-      imgProperty text ,	 
-      imgRef varchar(64) , 
-      caption text 	 
-      )INHERITS (Metadata);
-		*/ 
 		String table = "CREATE TABLE bingimage ("  
 								      + "imgUrl text ," 	 
 								      + "imgProperty text ," 	 
 								      + "imgRef text ," 
 								      + "caption text" 
-								      +  ");"; 
-
-		//db connection & declare psmt & execute insert using metadataCollected 
-		DBUtil u = new DBUtil();
+								      +  ");";
+		DBUtil DB = new DBUtil(); 
+		Connection conn = DB.connectToDB("jdbc:postgresql://127.0.0.1:5432/", 
+				"comma78", "postgresql");
 		
-		Connection conn = u.connectToDB();
-		if(conn != null)
-			System.out.println("db connected");
-		
-		// should commit_mode = true to be effective   
-		// TODO: check if table already exists 
-		u.executeUpdateQuery(table);
-	 
-		String insertString = "INSERT INTO bingimage("
-											+ "imgUrl, ImgProperty, imgRef, caption) "
-											+ "VALUES (?, ?, ?, ?)";
-		
-		PreparedStatement sqlInsertPsmt = conn.prepareStatement(insertString);
-		
-		for (BingImageType bingImageType : mc)
-		{
-			ArrayList<BingImage> images = bingImageType.getBingImages(); 
-			for (BingImage bingImage : images)
+		if(conn != null){
+			// should commit_mode = true to be effective   
+			DB.executeUpdateQuery(table);
+			String insertString = "INSERT INTO bingimage("
+												+ "imgUrl, ImgProperty, imgRef, caption) "
+												+ "VALUES (?, ?, ?, ?)";
+			PreparedStatement p = conn.prepareStatement(insertString);
+			
+			for (BingImageType bit : li)
 			{
-				sqlInsertPsmt.setString(1,bingImage.getImgUrl().toString());
-				sqlInsertPsmt.setString(2,bingImage.getImgProperty());
-				sqlInsertPsmt.setString(3,bingImage.getImgRef().toString());
-				sqlInsertPsmt.setString(4,bingImage.getCaption());
-		
-				sqlInsertPsmt.executeUpdate();
+				ArrayList<BingImage> images = bit.getBingImages(); 
+				for (BingImage bi2 : images)
+				{
+					p.setString(1,bi2.getImgUrl().toString());
+					p.setString(2,bi2.getImgProperty());
+					p.setString(3,bi2.getImgRef().toString());
+					p.setString(4,bi2.getCaption());
+			
+					p.executeUpdate();
+				}
 			}
+			
+			p.close(); 
+			DB.closeDBConnection(); 
 		}
-		
-		sqlInsertPsmt.close(); 
-		u.closeDBConnection(); 
-		
 	}
 }
  
