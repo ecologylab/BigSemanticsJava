@@ -38,8 +38,7 @@ public class bingImageDataCollector{
 		
 		MyInfoCollector mic = new MyInfoCollector("repo", GeneratedMetadataTranslationScope.get());
 		
-		/* Test cases */
-		/*
+		/* Test cases
 		ParsedURL flickr_search = ParsedURL.getAbsolute("http://www.flickr.com/search/?q=lion");
 		ParsedURL flickr_search_detailed = ParsedURL.getAbsolute("http://www.flickr.com/search/?q=texas&z=m");
 		ParsedURL google_search_focused = ParsedURL.getAbsolute("http://www.google.com/search?q=texas+site%3Awww.nytimes.com");
@@ -111,13 +110,12 @@ public class bingImageDataCollector{
 	 * @throws IOException 
 	 */
 	private static void printoutToDB(TranslationScope ts, List<BingImageType> mc) throws Exception{
-		//create table script generation
 		SqlTranslator t = new SqlTranslator(); 
 		
 		SqlTranslatorUtil.setDEFAULT_SQL_OUTPUT_DIRECTORY("ecologylab//semantics//metametadata//example//bingImage"); 
 		t.createSQLTableSchema(ts, SqlTranslatorUtil.DEFAULT_CREATE_TABLE_MODE);
 		
-		/*//part of result table script generated above
+		/*part of result table script generated above
 		--MetadataClassDescriptor[ecologylab.semantics.metametadata.example.bingImage.generated.BingImage]
 	      CREATE TABLE BingImage (
 	      imgUrl varchar(64) ,	 
@@ -211,8 +209,8 @@ public class bingImageDataCollector{
 			// should set commit_mode = true to be effective   
 			DB.executeUpdateQuery(table);
 			String insertString = "INSERT INTO bingimage("
-												+ "imgUrl, ImgProperty, imgRef, caption) "
-												+ "VALUES (?, ?, ?, ?)";
+									+ "imgUrl, ImgProperty, imgRef, caption) "
+									+ "VALUES (?, ?, ?, ?)";
 			PreparedStatement p = conn.prepareStatement(insertString);
 			
 			for (BingImageType bit : li)
