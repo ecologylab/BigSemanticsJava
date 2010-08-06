@@ -145,22 +145,28 @@ public class DBUtil extends Debug implements DBInterface
 	 */
 	public int executeUpdateQuery(String updateQuery)
 	{
-		int thisUpdatedRows = 0 ;
+		int thisUpdatedRows = -1 ;
+		boolean isCreateTable = false; 
 		if (thisConnection != null)
 		{
+			if(updateQuery.trim().toLowerCase().startsWith("create table"))
+				isCreateTable = true;  
 			try {
 				thisStatement = thisConnection.createStatement();
 				thisUpdatedRows = thisStatement.executeUpdate(updateQuery);
 			} catch (SQLException e1) {
-				println("executeUpdateQuery() exception occurred");
+				if(isCreateTable == true)
+					println("[WARNING] table is not created : table might already exist");
+				else 
+					println("executeUpdateQuery() exception occurred");
 			}
 			
 			return thisUpdatedRows;
 		}
-		else
+		else{
 			println("db connection is not made : create db connection first.");
-
-		return -1;
+			return -1;
+		}
 	}
 
 	/**
