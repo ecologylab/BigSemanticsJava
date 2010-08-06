@@ -671,7 +671,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	 */
 	boolean getClassAndBindDescriptors(TranslationScope metadataTScope)
 	{
-		Class<? extends Metadata> metadataClass = getExactMetadataClass(metadataTScope);
+		Class<? extends Metadata> metadataClass = getMetadataClass(metadataTScope);
 		if (metadataClass == null)
 		{
 			ElementState parent	= parent();
@@ -821,25 +821,6 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 			else
 				ts.error("Can't resolve: " + this + " using " + tagForTranslationScope);
 		}
-		return result;
-	}
-	
-	/**
-	 * Get the exact metadata class from the translation scope. Called when binding classes to descriptors
-	 * because we don't want to bind classes to meta-metadata that doesn't have a class (e.g. xml).
-	 * @param ts
-	 * @return
-	 */
-	public Class<? extends Metadata> getExactMetadataClass(TranslationScope ts)
-	{
-		Class<? extends Metadata> result = this.metadataClass;
-		
-		String tagForTranslationScope 	= getTagForTranslationScope();
-		result													= (Class<? extends Metadata>) ts.getClassByTag(tagForTranslationScope);
-		
-		if (result != null)
-			this.metadataClass						= result;
-		
 		return result;
 	}
 

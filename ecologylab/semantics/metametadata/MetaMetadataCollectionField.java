@@ -253,7 +253,8 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 		MetaMetadataCompositeField composite = getChildComposite();
 		if (composite != null && composite.getName() == null)
 		{
-			composite.setName(((MetaMetadataCollectionField) inheritFrom).getChildComposite().getName());
+			MetaMetadataCompositeField childComposite = ((MetaMetadataCollectionField) inheritFrom).getChildComposite();
+			composite.setName(childComposite != null ? childComposite.getName() : this.childType);
 		}
 	}
 	

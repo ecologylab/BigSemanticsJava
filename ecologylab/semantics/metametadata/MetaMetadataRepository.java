@@ -645,7 +645,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		{
 			// metaMetadata.inheritMetaMetadata(this);
 
-			Class<? extends Metadata> metadataClass = metaMetadata.getExactMetadataClass(metadataTScope);
+			Class<? extends Metadata> metadataClass = metaMetadata.getMetadataClass(metadataTScope);
 			if (metadataClass == null)
 			{
 				continue;
