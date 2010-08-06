@@ -143,12 +143,18 @@ public class DBUtil extends Debug implements DBInterface
 	 * @return number of rows affected
 	 * @throws SQLException
 	 */
-	public int executeUpdateQuery(String updateQuery) throws SQLException
+	public int executeUpdateQuery(String updateQuery)
 	{
+		int thisUpdatedRows = 0 ;
 		if (thisConnection != null)
 		{
-			thisStatement = thisConnection.createStatement();
-			int thisUpdatedRows = thisStatement.executeUpdate(updateQuery);
+			try {
+				thisStatement = thisConnection.createStatement();
+				thisUpdatedRows = thisStatement.executeUpdate(updateQuery);
+			} catch (SQLException e1) {
+				println("executeUpdateQuery() exception occurred");
+			}
+			
 			return thisUpdatedRows;
 		}
 		else
