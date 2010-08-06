@@ -75,26 +75,24 @@ public class DBUtil extends Debug implements DBInterface
 	 * @throws SQLException
 	 * @throws ClassNotFoundException
 	 */
-	public Connection connectToDB(String dbURI, String userName, String password)
-			throws SQLException, ClassNotFoundException
-	{
-		Class.forName(POSTGRESQL_DRIVER);
+	public Connection connectToDB(String dbURI, String userName, String password){
+		try {
+			Class.forName(POSTGRESQL_DRIVER);
+		} catch (ClassNotFoundException e1) {
+			println("[WARNING] postgresql driver cannot be found");
+		}
 
-		thisConnection = DriverManager.getConnection(dbURI, userName, password);
-		thisConnection.setAutoCommit(POSTGRESQL_DEFAULT_COMMIT_MODE);
-		if (thisConnection != null)
-		{
+		try {
+			thisConnection = DriverManager.getConnection(dbURI, userName, password);
+			thisConnection.setAutoCommit(POSTGRESQL_DEFAULT_COMMIT_MODE);
+			
 			DatabaseMetaData thisDBMetadata = thisConnection.getMetaData();
 			println("(" + thisDBMetadata.getUserName() + ") are connected to (" + thisDBMetadata.getURL()
 					+ ") " + thisDBMetadata.getDatabaseProductName() + " using "
 					+ thisDBMetadata.getDriverVersion());
-
+		} catch (SQLException e) {
+			println("[WARNING] db connection is not made: check uri, and user name, pwd"); 
 		}
-		else
-		{
-			println("DB connection is not created");
-		}
-
 		return thisConnection;
 	}
 
