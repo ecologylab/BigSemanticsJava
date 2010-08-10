@@ -103,7 +103,7 @@ implements ScalarUnmarshallingContext,SemanticActionsKeyWords, DeserializationHo
 		//FIXME: Throw semantic warning when no semantic actions exist
 		if(semanticActions == null)
 		{
-			System.out.println("warning: no semantic actions exist");
+			System.out.println("[ParserBase] warning: no semantic actions exist");
 			return;
 		}
 		
@@ -111,7 +111,7 @@ implements ScalarUnmarshallingContext,SemanticActionsKeyWords, DeserializationHo
 		for (int i = 0; i < semanticActions.size(); i++)
 		{
 			SemanticAction action = semanticActions.get(i);
-			debug(this.getClass().getName() + "- semantic action: " + action.getActionName());
+			debug("[ParserBase] semantic action: " + action.getActionName());
 			semanticActionHandler.handleSemanticAction(action, this, infoCollector);
 		}
 		semanticActionHandler.postSemanticActionsHook(populatedMetadata);
@@ -134,9 +134,10 @@ implements ScalarUnmarshallingContext,SemanticActionsKeyWords, DeserializationHo
 		
 		try
 		{
-			debug(this.getClass().getName() + ": Metadata parsed from: " + container.purl() );
-			if (populatedMetadata != null)
+			debug("Metadata parsed from: " + container.purl() );
+			if (populatedMetadata != null){
 				debug(populatedMetadata.serialize());
+			}
 			else
 			{
 				warning("Couldn't parse metadata.");
