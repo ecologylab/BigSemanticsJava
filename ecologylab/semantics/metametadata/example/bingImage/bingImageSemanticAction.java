@@ -28,12 +28,13 @@ public class bingImageSemanticAction<sa extends SemanticAction> extends NestedSe
 	@Override
 	public Object handle(Object obj, Map<String, Object> args)
 	{
+		System.out.println(this.getClass().getName() + " [handle] : " + obj);
 		if(obj instanceof BingImageType){
-			System.out.println("Hello welcome bing image type!!!");
+			System.out.println("[bing image type]");
 			bingImageDataCollector.metadataCollected.add((BingImageType)obj);
 			
 		}else{
-			System.out.println("what else!");
+			System.out.println("[what else]");
 		}
 		
 		return null; 
