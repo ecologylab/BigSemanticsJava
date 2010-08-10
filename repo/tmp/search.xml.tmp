@@ -23,9 +23,9 @@
 			<get_field name="search_results" />
 			<for_each collection="search_results" as="res">
 				<get_field object="res" name="link" />
-				<parse_document now="true">
+				<parse_document_now>
 					<arg value="link" name="container_link" />
-				</parse_document>
+				</parse_document_now>
 			</for_each>
 		</semantic_actions>
 	</meta_metadata>
@@ -41,9 +41,9 @@
 			<get_field name="search_results" />
 			<for_each collection="search_results" as="res">
 				<get_field object="res" name="link" />
-				<parse_document now="true">
+				<parse_document_now>
 					<arg value="link" name="container_link" />
-				</parse_document>
+				</parse_document_now>
 			</for_each>
 		</semantic_actions>
 	</meta_metadata>
@@ -79,10 +79,10 @@
 			<for_each collection="results" as="result">
 				<get_field object="result" name="url" />
 				<get_field object="result" name="summary" />
-				<parse_document now="true">
+				<parse_document_now>
 					<arg value="url" name="container_link" />
 					<arg value="summary" name="anchor_text" />
-				</parse_document>
+				</parse_document_now>
 			</for_each>
 		</semantic_actions>
 	</meta_metadata>
@@ -123,39 +123,14 @@
 						</create_and_visualize_img_surrogate>
 					</case>
 					<otherwise>
-						<parse_document now="true">
+						<parse_document_now>
 							<arg value="url" name="container_link" />
 							<arg value="summary" name="anchor_text" />
-						</parse_document>
+						</parse_document_now>
 					</otherwise>
 				</choose>
 			</for_each>
 		</semantic_actions>
 	</meta_metadata>
-	
-	<!-- 
-	<meta_metadata name="bing_result_set" extends="document" comment="Bing Web Search Service" tag="ResultSet" parser="direct">
-		<collection name="results" child_type="bing_result" no_wrap="true" comment="Collection of results for bing search" child_tag="web:Web">
-			<scalar name="title" scalar_type="String" tag="web:Title" hint="XML_LEAF" />
-			<scalar name="description" scalar_type="String" tag="web:Description" hint="XML_LEAF" />
-			<scalar name="url" scalar_type="ParsedURL" tag="web:Url" hint="XML_LEAF" />
-		</collection>
-	</meta_metadata>
-	
-	<meta_metadata name="bing_web_search" type="bing_result_set">
-	<selector  url_stripped="http://api.bing.net/xml.aspx?Sources=web+spell"/>
-		<semantic_actions>
-			<get_field name="results" />
-			<for_each collection="results" as="result">
-				<get_field object="result" name="url" />
-				<get_field object="result" name="description" />
-				<parse_document now="true">
-					<arg value="url" name="container_link" />
-					<arg value="description" name="anchor_text" />
-				</parse_document>
-			</for_each>
-		</semantic_actions>
-	</meta_metadata>
-	-->
 	
 </meta_metadata_repository>

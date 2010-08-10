@@ -1,0 +1,33 @@
+<meta_metadata_repository name="agents_engines_styles_sites" package="ecologylab.semantics.generated.library" default_user_agent_name="chrome_2">
+	<user_agents>
+		<user_agent name="google_bot_2" string="Googlebot/2.1 (+http://www.googlebot.com/bot.html)" />
+		<user_agent name="opera_9" string="Opera/9.25 (Windows NT 6.0; U; en)" />
+		<user_agent name="google_bot_1" string="Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)" default="true" />
+		<user_agent name="google_bot_0" string="Googlebot/2.1 (+http://www.google.com/bot.html)" />
+		<user_agent name="chrome_2" string="Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US) AppleWebKit/530.5 (KHTML, like Gecko) Chrome/2.0.172.43 Safari/530.5" />
+		<user_agent name="ie_5" string="Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 5.0" />
+		<user_agent name="firefox_3_5" string="Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.1.2) Gecko/20090729 Firefox/3.5.2 (.NET CLR 3.5.30729)" />
+		<user_agent name="firefox_2" string="Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.7) Gecko/20070914 Firefox/2.0.0.7" />
+	</user_agents>
+	<search_engines>
+		<search_engine name="my_google_ecology0" url_prefix="http://ecology0.csdl.tamu.edu/my_google/search?query=" num_result_string="&amp;resultsPerPage=" start_string="&amp;startIndex=" />
+		<search_engine name="flickr_tag" url_prefix="http://www.flickr.com/photos/tags/" url_suffix="/interesting/" />
+		<search_engine name="flickr" url_prefix="http://www.flickr.com/search/?q=" url_suffix="&amp;z=m" />
+		<search_engine name="google" url_prefix="http://www.google.com/search?hl=en&amp;q=" num_result_string="&amp;num=" start_string="&amp;start=" />
+		<search_engine name="wikipedia" url_prefix="http://en.wikipedia.org/w/index.php?title=Special%3ASearch&amp;redirs=1&amp;search=" url_suffix="&amp;fulltext=Search&amp;ns0=1" num_result_string="&amp;limit=" start_string="&amp;offset=" />
+		<search_engine name="flickr_author" url_prefix="http://www.flickr.com/photos/" url_suffix="/" />
+		<search_engine name="google_patents" url_prefix="http://www.google.com/patents?q=" num_result_string="&amp;num=" start_string="&amp;start=" />
+		<search_engine name="yahoo_image" url_prefix="http://api.search.yahoo.com/ImageSearchService/V1/imageSearch?appid=yahoosearchwebrss&amp;query=" num_result_string="&amp;result=" start_string="&amp;start=" />
+		<search_engine name="my_google" url_prefix="http://staging.cs.tamu.edu:8080/my_google/search?query=" num_result_string="&amp;resultsPerPage=" start_string="&amp;startIndex=" />
+		<search_engine name="yahoo_news" url_prefix="http://api.search.yahoo.com/NewsSearchService/V1/newsSearch?appid=yahoosearchwebrss&amp;query=" num_result_string="&amp;result=" start_string="&amp;start=" />
+		<search_engine name="yahoo" url_prefix="http://api.search.yahoo.com/WebSearchService/V1/webSearch?appid=yahoosearchwebrss&amp;query=" num_result_string="&amp;result=" start_string="&amp;start=" />
+	</search_engines>
+	<named_styles>
+		<named_style name="default" font_size="10" />
+		<named_style name="h1" font_size="11" font_style="1" />
+	</named_styles>
+	<sites>
+		<site domain="google.com" min_download_interval="15" />
+		<site domain="acm.org" min_download_interval="20" />
+	</sites>
+</meta_metadata_repository>

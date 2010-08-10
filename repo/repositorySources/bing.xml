@@ -1,4 +1,4 @@
-<meta_metadata_repository name="bing_image_repository" package="ecologylab.semantics.generated.library.bing" default_user_agent_name="chrome_2" >
+<meta_metadata_repository name="bing_image_repository" package="ecologylab.semantics.generated.library" default_user_agent_name="chrome_2" >
 
 	<meta_metadata name="bing_search" type="search" comment="The bing Search class" user_agent_name="opera_9" parser="xpath">
 		<selector url_stripped="http://www.bing.com/search"/>
