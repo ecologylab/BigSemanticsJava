@@ -22,7 +22,7 @@ import ecologylab.semantics.metametadata.example.SaveReportSemanticAction;
 import ecologylab.semantics.metametadata.example.bingImage.generated.BingImage;
 import ecologylab.semantics.metametadata.example.bingImage.generated.BingImageType;
 // generatedTranslationScope
-import ecologylab.semantics.generated.library.GeneratedMetadataTranslationScope;
+import ecologylab.semantics.metametadata.example.bingImage.generated.GeneratedMetadataTranslationScope;
 import ecologylab.semantics.metametadata.example.bingImage.sqlTranslator.DBInterface;
 import ecologylab.semantics.metametadata.example.bingImage.sqlTranslator.DBUtil;
 import ecologylab.semantics.metametadata.example.bingImage.sqlTranslator.SqlTranslator;
@@ -61,8 +61,8 @@ public class bingImageDataCollector{
 		Thread.sleep(2000); 
 		mic.getDownloadMonitor().stop(); 
 		
-//		printoutToFile("bingImage.csv", metadataCollected);
-//		printoutToDB(GeneratedMetadataTranslationScope.get(), metadataCollected);
+		printoutToFile("bingImage.csv", metadataCollected);
+		printoutToDB(GeneratedMetadataTranslationScope.get(), metadataCollected);
 	}
 	
 	/**
