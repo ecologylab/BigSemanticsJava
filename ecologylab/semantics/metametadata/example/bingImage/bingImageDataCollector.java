@@ -16,11 +16,13 @@ import org.junit.Test;
 import ecologylab.generic.Debug;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticAction;
+import ecologylab.semantics.metametadata.example.MyContainer;
 import ecologylab.semantics.metametadata.example.MyInfoCollector;
 import ecologylab.semantics.metametadata.example.SaveReportSemanticAction;
 import ecologylab.semantics.metametadata.example.bingImage.generated.BingImage;
 import ecologylab.semantics.metametadata.example.bingImage.generated.BingImageType;
-import ecologylab.semantics.metametadata.example.bingImage.generated.GeneratedMetadataTranslationScope;
+// generatedTranslationScope
+import ecologylab.semantics.generated.library.GeneratedMetadataTranslationScope;
 import ecologylab.semantics.metametadata.example.bingImage.sqlTranslator.DBInterface;
 import ecologylab.semantics.metametadata.example.bingImage.sqlTranslator.DBUtil;
 import ecologylab.semantics.metametadata.example.bingImage.sqlTranslator.SqlTranslator;
@@ -33,8 +35,7 @@ public class bingImageDataCollector{
 	
 	public static void main(String[] args) throws Exception
 	{ 
-		SemanticAction.register(SaveReportSemanticAction.class);
-		SemanticAction.register(bingImageSemanticAction.class);
+		SemanticAction.register(SaveReportSemanticAction.class, bingImageSemanticAction.class);
 		
 		MyInfoCollector mic = new MyInfoCollector("repo", GeneratedMetadataTranslationScope.get());
 		
@@ -51,12 +52,13 @@ public class bingImageDataCollector{
 		ParsedURL bing_web_search_xml = ParsedURL.getAbsolute("http://api.bing.net/xml.aspx?Sources=web+spell&AppId=828DA72AA6D172560F256E7B3784FA2295CB7D99&Version=2.2&Market=en-US&Query=texas&Web.Count=20");
 		ParsedURL bing_web_search = ParsedURL.getAbsolute("http://www.bing.com/search?q=seoul&go=&form=QBLH&qs=n&sk=&sc=8-5");		
 		*/ 
-		
+//		ParsedURL yahoo_web_search_xml = ParsedURL.getAbsolute("http://api.search.yahoo.com/WebSearchService/V1/webSearch?appid=yahoosearchwebrss&query=texas");		
 		ParsedURL bing_image_search_detailed = ParsedURL.getAbsolute("http://www.bing.com/images/search?q=seoul#lod4");
 		System.out.println("************" + bing_image_search_detailed);
 		
-		mic.getContainerDownloadIfNeeded(null, bing_image_search_detailed, null, false, false, false);
-		Thread.sleep(5000); 
+		MyContainer r = mic.getContainerDownloadIfNeeded(null, bing_image_search_detailed, null, false, false, false);
+		 
+		Thread.sleep(2000); 
 		mic.getDownloadMonitor().stop(); 
 		
 //		printoutToFile("bingImage.csv", metadataCollected);
