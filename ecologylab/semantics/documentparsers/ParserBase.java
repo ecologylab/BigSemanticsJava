@@ -97,9 +97,6 @@ implements ScalarUnmarshallingContext,SemanticActionsKeyWords, DeserializationHo
 	{
 		// get the semantic actions
 		ArrayList<? extends SemanticAction> semanticActions = metaMetadata.getSemanticActions();
-		for (SemanticAction semanticAction : semanticActions) {
-			debug(this.getClass().getName() + " : semantic actions: " + semanticAction.getActionName());
-		}
 		addAdditionalParameters(populatedMetadata);
 		
 		// handle the semantic actions sequentially
@@ -114,6 +111,7 @@ implements ScalarUnmarshallingContext,SemanticActionsKeyWords, DeserializationHo
 		for (int i = 0; i < semanticActions.size(); i++)
 		{
 			SemanticAction action = semanticActions.get(i);
+			debug(this.getClass().getName() + "- semantic action: " + action.getActionName());
 			semanticActionHandler.handleSemanticAction(action, this, infoCollector);
 		}
 		semanticActionHandler.postSemanticActionsHook(populatedMetadata);
