@@ -97,9 +97,11 @@ implements ScalarUnmarshallingContext,SemanticActionsKeyWords, DeserializationHo
 	{
 		// get the semantic actions
 		ArrayList<? extends SemanticAction> semanticActions = metaMetadata.getSemanticActions();
-
+		for (SemanticAction semanticAction : semanticActions) {
+			debug(this.getClass().getName() + " : semantic actions: " + semanticAction.getActionName());
+		}
 		addAdditionalParameters(populatedMetadata);
-
+		
 		// handle the semantic actions sequentially
 		//FIXME: Throw semantic warning when no semantic actions exist
 		if(semanticActions == null)
@@ -134,7 +136,7 @@ implements ScalarUnmarshallingContext,SemanticActionsKeyWords, DeserializationHo
 		
 		try
 		{
-			debug("Metadata parsed from: " + container.purl());
+			debug(this.getClass().getName() + ": Metadata parsed from: " + container.purl() );
 			if (populatedMetadata != null)
 				debug(populatedMetadata.serialize());
 			else
