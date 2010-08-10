@@ -10,7 +10,7 @@ import ecologylab.serialization.ElementState.xml_tag;
 
 @simpl_inherit
 @xml_tag("save_image_metadata")
-public class bingImageSemanticAction<sa extends SemanticAction> extends NestedSemanticAction<sa>  
+public class bingImageSemanticAction extends SemanticAction  
 {
 
 	@Override
