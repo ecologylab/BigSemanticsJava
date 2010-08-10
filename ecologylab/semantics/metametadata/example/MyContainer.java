@@ -206,7 +206,7 @@ public class MyContainer extends Container
 
 		if(!((MyInfoCollector)infoCollector).visited(purl().toString()))
 		{
-			System.out.println("Downloading slow");
+			System.out.println("\nDownloading slow");
 			infoCollector.getDownloadMonitor().pause(500);//60000 + (MathTools.random(100)*2000));
 		}
 	}
