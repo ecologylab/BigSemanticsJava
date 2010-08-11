@@ -1,0 +1,19 @@
+<meta_metadata_repository name="artwork" package="ecologylab.semantics.generated.library" default_user_agent_name="chrome_2">
+	<meta_metadata name="artwork" extends="document" comment="Artwork class">
+		<collection name="artists" comment="Set of artists." child_type="author" />
+		<scalar name="abstractField" comment="Abstract of the work." tag="abstract" scalar_type="String" />
+		<scalar name="medium" comment="Medium on which the work is done." scalar_type="String" />
+		<scalar name="year" comment="Year the work was created." scalar_type="String" />
+		<scalar name="website" comment="Website of the work or group responsible." scalar_type="ParsedURL" />
+	</meta_metadata>
+	<meta_metadata name="mm_artwork" extends="document" comment="ACM Multimedia Interactive Artwork class">
+		<scalar name="art_title" style="h1" shadows="title" scalar_type="String" />
+		<collection name="artists" comment="Set of artists." child_type="author" />
+		<scalar name="abstractField" comment="Abstract of the work." tag="abstract" scalar_type="String" />
+		<scalar name="medium" comment="Medium on which the work is done." scalar_type="String" />
+		<scalar name="year" comment="Year the work was created." scalar_type="String" />
+		<scalar name="website" comment="Website of the work or group responsible." scalar_type="ParsedURL" />
+		<scalar name="extended_abstract" comment="Link the ACM Portal page." scalar_type="ParsedURL" />
+		<scalar name="location" hide="true" />
+	</meta_metadata>
+</meta_metadata_repository>

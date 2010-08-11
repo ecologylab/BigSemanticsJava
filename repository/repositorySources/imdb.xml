@@ -1,0 +1,227 @@
+<meta_metadata_repository name="imdb" package="ecologylab.semantics.generated.library.imdb" default_user_agent_name="chrome_2">
+
+	<meta_metadata name="birth_detail" extends="document" comment="Metadata for storing details of birth (date and place) of people" parser="xpath">
+		<scalar name="day_of_birth" navigates_to="day_of_birth_link" label="day of birth" scalar_type="String" />
+		<scalar name="year_of_birth" navigates_to="year_of_birth_link" label="year of birth" scalar_type="String" />
+		<scalar name="place_of_birth" navigates_to="place_of_birth_link" label="place of birth" scalar_type="String" />
+		<scalar name="day_of_birth_link" hide="true" scalar_type="ParsedURL" />
+		<scalar name="year_of_birth_link" hide="true" scalar_type="ParsedURL" />
+		<scalar name="place_of_birth_link" hide="true" scalar_type="ParsedURL" />
+	</meta_metadata>
+
+	<meta_metadata name="imdb_title" extends="document" comment="IMDB metadata" parser="xpath">
+		<selector url_path_tree="http://www.imdb.com/title/" />
+		<scalar name="title" xpath="//div[@id='tn15title']/h1">
+			<filter regex="More [a-zA-Z\s&amp;;#0-9\-]*" replace="" />
+		</scalar>
+		<scalar name="location" layer="-1.0" />
+		<scalar name="year_released" style="h1" layer="9.5" xpath="//div[@id='tn15title']/h1/span/a[1]" label="year released" scalar_type="String" />
+		<scalar name="rating" xpath="//div[@id='tn15rating']//b" scalar_type="String" />
+		<collection name="directors" layer="9.0" xpath="//div[@id='director-info']//a" child_type="person_details" child_entity="true">
+			<scalar name="location" xpath="./@href" />
+			<scalar name="gist" xpath="." label="name" />
+		</collection>
+		<collection name="writers" layer="8.5" xpath="//div[@class='info']/h5[starts-with(child::text(), 'Writers')]/../a" child_type="person_details" child_entity="true">
+			<scalar name="location" xpath="./@href" />
+			<scalar name="gist" xpath="." label="name" />
+		</collection>
+		<scalar name="release_date" xpath="//div[@class='info']/h5[starts-with(child::text(), 'Release')]/../child::text()" label="release date" scalar_type="String" />
+		<collection name="genres" xpath="//div[@class='info']/h5[starts-with(child::text(), 'Genre')]/..//a" child_type="genre">
+			<scalar name="name" xpath="string(.)" navigates_to="genre_link" scalar_type="String">
+				<filter regex="more" replace="" />
+			</scalar>
+			<scalar name="genre_link" hide="true" xpath="./@href" scalar_type="ParsedURL" />
+		</collection>
+		<scalar name="plot" xpath="//div[@class='info']/h5[starts-with(child::text(), 'Plot:')]/../child::text()" scalar_type="String">
+			<filter regex="more|\|" replace="" />
+		</scalar>
+		<scalar name="tagline" xpath="//div[@class='info']/h5[starts-with(child::text(), 'Tagline:')]/.." scalar_type="String">
+			<filter regex="Tagline:|more" replace="" />
+		</scalar>
+		<collection name="cast" layer="8.0" xpath="//table[@class='cast']//tr" child_type="cast_member">
+			<composite name="actor" xpath="td[@class='nm']" type="person_details" entity="true">
+				<scalar name="gist" xpath="string(.)" label="name" />
+				<scalar name="location" xpath="./a/@href" />
+			</composite>
+			<composite name="character" xpath="td[@class='char']" type="person_details" entity="true">
+				<scalar name="gist" xpath="string(.)" label="name" />
+				<scalar name="location" xpath="./a/@href" />
+			</composite>
+		</collection>
+		<collection name="title_photos" hide="true" xpath="//td[1]/div[@class='media_strip_thumbs']//img/@src" child_type="image">
+			<scalar name="location" xpath="." />
+		</collection>
+		<scalar name="poster_img" hide="true" xpath="//a[@name='poster']/img/@src" scalar_type="ParsedURL" />
+
+		<semantic_actions>
+			<get_field name="cast" />
+			<get_field name="tagline" />
+			<if>
+				<not_null value="tagline" />
+				<create_and_visualize_text_surrogate>
+					<arg value="tagline" name="text" />
+				</create_and_visualize_text_surrogate>
+			</if>
+			<get_field name="poster_img" />
+			<create_and_visualize_img_surrogate name="imgSurrogate">
+				<arg value="poster_img" name="image_purl" />
+			</create_and_visualize_img_surrogate>
+			<get_field name="title_photos" />
+			<for_each collection="title_photos" as="photo">
+				<get_field object="photo" name="location" />
+				<create_and_visualize_img_surrogate name="title_photos_surrogate">
+					<arg value="location" name="image_purl" />
+				</create_and_visualize_img_surrogate>
+			</for_each>
+			<for_each collection="cast" as="c" current_index="index" size="cast_size">
+				<eval_rank_wt name="rankWt">
+					<arg value="index" name="index" />
+					<arg value="cast_size" name="size" />
+				</eval_rank_wt>
+				<get_field object="c" name="actor" />
+				<get_field object="actor" name="gist" />
+				<parse_document>
+					<arg value="true" name="citation_sig" />
+					<arg value="gist" name="anchor_text" />
+					<arg value="rankWt" name="sig_value" />
+					<arg value="actor" name="entity" />
+				</parse_document>
+			</for_each>
+		</semantic_actions>
+	</meta_metadata>
+
+	<meta_metadata name="person_details" extends="document" comment="IMDB metadata" parser="xpath">
+		<selector url_path_tree="http://www.imdb.com/name/" />
+		<def_var name="bio_node" xpath="//div[@class='info']/h5[starts-with(child::text(), 'Mini Biography:')]/.." type="node" />
+		<def_var name="trivia_node" xpath="//div[@class='info']/h5[starts-with(child::text(), 'Trivia:')]/.." type="node" />
+		<def_var name="awards_node" xpath="//div[@class='info']/h5[starts-with(child::text(), 'Awards:')]/.." type="node" />
+		<scalar name="title" xpath="//div[@id='tn15title']/h1">
+			<filter regex="More [a-zA-Z\s&amp;;#0-9\-]*" replace="" />
+		</scalar>
+		<scalar name="person_img" hide="true" xpath="//div[@class='photo']/a/img/@src" scalar_type="ParsedURL" />
+		<composite name="birth_detail" xpath="//div[@class='info']/h5[starts-with(child::text(), 'Date of Birth:')]/.." type="birth_detail">
+			<scalar name="day_of_birth" xpath="./a[1]/child::text()" />
+			<scalar name="place_of_birth_link" xpath="./a[3]/@href" />
+			<scalar name="year_of_birth" xpath="./a[2]/child::text()" />
+			<scalar name="year_of_birth_link" xpath="./a[2]/@href" />
+			<scalar name="day_of_birth_link" xpath="./a[1]/@href" />
+			<scalar name="place_of_birth" xpath="./a[3]/child::text()" />
+		</composite>
+		<scalar name="mini_biography" xpath="./child::text()" navigates_to="biography_link" context_node="bio_node" scalar_type="String" />
+		<scalar name="biography_link" hide="true" xpath="./a/@href" context_node="bio_node" scalar_type="ParsedURL" />
+		<scalar name="trivia" xpath="./child::text()" navigates_to="trivia_link" context_node="trivia_node" scalar_type="String" />
+		<scalar name="trivia_link" hide="true" xpath="./a/@href" context_node="trivia_node" scalar_type="ParsedURL" />
+		<scalar name="awards" xpath="./child::text()" navigates_to="awards_link" context_node="awards_node" scalar_type="String" />
+		<scalar name="awards_link" hide="true" xpath="./a/@href" context_node="awards_node" scalar_type="ParsedURL" />
+		<scalar name="alternate_names" xpath="//div[@class='info']/h5[starts-with(child::text(), 'Alternate Names:')]/.." scalar_type="String">
+			<filter regex="Alternate Names:" replace="" />
+		</scalar>
+		<collection name="titles_as_actor" xpath="//div[@class='filmo']/h5/a[starts-with(@name, 'act')]/../..//a[1][starts-with(@href, '/title/')]" child_type="imdb_title" child_entity="true">
+			<scalar name="gist" xpath="./child::text()" />
+			<scalar name="location" xpath="./@href" />
+		</collection>
+		<collection name="titles_as_director" xpath="//div[@class='filmo']/h5/a[@name='director']/../..//a[1][starts-with(@href, '/title/')]" child_type="imdb_title" child_entity="true">
+			<scalar name="gist" xpath="./child::text()" />
+			<scalar name="location" xpath="./@href" />
+		</collection>
+		<collection name="titles_for_soundtrack" xpath="//div[@class='filmo']/h5/a[@name='soundtrack']/../..//a[1][starts-with(@href, '/title/')]" child_type="imdb_title" child_entity="true">
+			<scalar name="gist" xpath="./child::text()" />
+			<scalar name="location" xpath="./@href" />
+		</collection>
+		<collection name="titles_as_producer" xpath="//div[@class='filmo']/h5/a[@name='producer']/../..//a[1][starts-with(@href, '/title/')]" child_type="imdb_title" child_entity="true">
+			<scalar name="gist" xpath="./child::text()" />
+			<scalar name="location" xpath="./@href" />
+		</collection>
+		<collection name="titles_thanked_in" xpath="//div[@class='filmo']/h5/a[@name='thanks']/../..//a[1][starts-with(@href, '/title/')]" child_type="imdb_title" child_entity="true">
+			<scalar name="gist" xpath="./child::text()" />
+			<scalar name="location" xpath="./@href" />
+		</collection>
+		<collection name="titles_as_self" xpath="//div[@class='filmo']/h5/a[@name='self']/../..//a[1][starts-with(@href, '/title/')]" child_type="imdb_title" child_entity="true">
+			<scalar name="gist" xpath="./child::text()" />
+			<scalar name="location" xpath="./@href" />
+		</collection>
+		<collection name="titles_in_development" xpath="//div[@class='filmo']/h5/a[@name='indev']/../..//a[1][starts-with(@href, '/title/')]" child_type="imdb_title" child_entity="true">
+			<scalar name="gist" xpath="./child::text()" />
+			<scalar name="location" xpath="./@href" />
+		</collection>
+		<semantic_actions>
+			<get_field name="titles_as_actor" />
+			<get_field name="person_img" />
+			<if>
+				<not_null value="titles_as_actor" />
+				<for_each collection="titles_as_actor" as="tit" current_index="index" size="num_titles">
+					<eval_rank_wt name="rankWt">
+						<arg value="index" name="index" />
+						<arg value="num_titles" name="size" />
+					</eval_rank_wt>
+					<get_field object="tit" name="location" />
+					<get_field object="tit" name="gist" />
+					<parse_document>
+						<arg value="true" name="citation_sig" />
+						<arg value="gist" name="anchor_text" />
+						<arg value="rankWt" name="sig_value" />
+						<arg value="tit" name="entity" />
+					</parse_document>
+				</for_each>
+			</if>
+			<!-- 
+			<get_field name="titles_as_director" />
+			<if>
+				<not_null value="titles_as_director" />
+				<for_each collection="titles_as_director" as="dir" current_index="index" size="num_titles">
+					<eval_rank_wt name="rankWt">
+						<arg value="index" name="index" />
+						<arg value="num_titles" name="size" />
+					</eval_rank_wt>
+					<get_field object="dir" name="location" />
+					<get_field object="dir" name="gist" />
+					<parse_document>
+						<arg value="true" name="citation_sig" />
+						<arg value="gist" name="anchor_text" />
+						<arg value="rankWt" name="sig_value" />
+						<arg value="dir" name="entity" />
+					</parse_document>
+				</for_each>
+			</if>-->
+		</semantic_actions>
+	</meta_metadata>
+
+	<meta_metadata name="imdb_chart" extends="document" comment="IMDB chart" parser="xpath">
+		<selector url_path_tree="http://www.imdb.com/chart/" />
+		<collection name="results" xpath="//div[@id='main']/table//a" child_type="imdb_title">
+			<scalar name="title" xpath="./text()" />
+			<scalar name="location" xpath="./@href" />
+		</collection>
+		<semantic_actions>
+			<get_field name="results" />
+			<for_each collection="results" as="result">
+				<get_field object="result" name="location" />
+				<get_field object="result" name="title" />
+				<parse_document>
+					<arg value="title" name="anchor_text" />
+					<arg value="location" name="container_link" />
+				</parse_document>
+			</for_each>
+		</semantic_actions>
+	</meta_metadata>
+
+	<meta_metadata name="imdb_genre" extends="document" comment="IMDB genre" parser="xpath" >
+		<selector url_path_tree="http://www.imdb.com/genre/" />
+		<collection name="results" xpath="//table[@class='results']//td[@class='title']/a" child_type="imdb_title">
+			<scalar name="title" xpath="./text()" />
+			<scalar name="location" xpath="./@href" />
+		</collection>
+		<semantic_actions>
+			<get_field name="results" />
+			<for_each collection="results" as="result">
+				<get_field object="result" name="location" />
+				<get_field object="result" name="title" />
+				<parse_document>
+					<arg value="title" name="anchor_text" />
+					<arg value="location" name="container_link" />
+				</parse_document>
+			</for_each>
+		</semantic_actions>
+	</meta_metadata>
+
+</meta_metadata_repository>

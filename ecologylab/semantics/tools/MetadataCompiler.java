@@ -28,7 +28,7 @@ public class MetadataCompiler extends ApplicationEnvironment
 		MetaMetadataRepository.initializeTypes();
 	}
 
-	public static final String		DEFAULT_REPOSITORY_DIRECTORY	= "../cf/config/semantics/metametadata";
+	public static final String		DEFAULT_REPOSITORY_DIRECTORY	= "repository";
 
 	public MetadataCompiler(String[] args) throws SIMPLTranslationException
 	{

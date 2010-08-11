@@ -181,16 +181,16 @@ implements InfoCollector<AC>, SemanticsPrefs, ApplicationProperties, DocumentPar
 
 	// ++++++++++++++++++++++++++++++++++++++++ //
 	
-	static final File	LOCAL_META_METADATA_DIR_FILE		= new File(EnvironmentGeneric.codeBase().file(), "/config/semantics/");
+	static final File	LOCAL_META_METADATA_DIR_FILE		= new File(EnvironmentGeneric.codeBase().file(), "../ecologylabSemantics/");
 	
-	static final String	META_METADATA_REPOSITORY_DIR		= "metametadata";
+	static final String	META_METADATA_REPOSITORY_DIR		= "repository";
 
 
 	/**
 	 * This is the xml file defining ALL the metaMetadata required
 	 * It resides in the ecologylabSemantics project.
 	 */
-	public static final String	METAMETADATA				= "metametadata";
+	public static final String	METAMETADATA_REPOSITORY				= "repository";
 
 	/**
 	 * 
@@ -208,7 +208,7 @@ implements InfoCollector<AC>, SemanticsPrefs, ApplicationProperties, DocumentPar
 	{
 		// MetaMetadata repository file has all the metametadata needed for metadata collection, 
 		// retrieval and incontextMetadata display.
-		Assets.downloadSemanticsZip(METAMETADATA, null, !USE_ASSETS_CACHE, SemanticsAssetVersions.METAMETADATA_ASSET_VERSION);
+		Assets.downloadSemanticsZip(METAMETADATA_REPOSITORY, null, !USE_ASSETS_CACHE, SemanticsAssetVersions.METAMETADATA_ASSET_VERSION);
 	
 		if(ApplicationEnvironment.runningInEclipse() && Pref.lookupBoolean(USE_LOCAL_CF_PREF_NAME)) //default is set to false in the metaprefs.
 		{

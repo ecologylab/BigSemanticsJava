@@ -1,0 +1,32 @@
+<meta_metadata_repository name="scholarlyPublication" package="ecologylab.semantics.generated.library.scholarlyPublication">
+
+	<meta_metadata name="source" extends="document" comment="Metadata related to where an article is published.">
+		<scalar name="year_of_publication" is_facet="true" scalar_type="Int" />
+		<scalar name="archive" hide="true" comment="Archive of conference or journal." scalar_type="ParsedURL" />
+		<scalar name="pages" layer="-1.0" navigates_to="table_of_contents" scalar_type="String" />
+		<scalar name="isbn" comment="" scalar_type="String" />
+	</meta_metadata>
+	
+	<meta_metadata name="author" extends="document" comment="An author of an article or creative work.">
+		<scalar name="name" navigates_to="location" is_facet="true" comment="" scalar_type="String" />
+		<scalar name="affiliation" comment="" scalar_type="String" />
+		<scalar name="location" hide="true" />
+		<scalar name="city" scalar_type="String" />
+	</meta_metadata>
+	
+	<meta_metadata name="scholarly_article" extends="pdf">
+		<scalar name="metadata_page" shadows="location" comment="citation.cfm" scalar_type="ParsedURL" />
+		<scalar name="abstract_field" shadows="summary" comment="" tag="abstract" scalar_type="String" />
+		<scalar name="subject" hide="true" />
+		<composite name="source" comment="Metadata related to where this article was published." type="source" />
+		<collection name="authors" shadows="author" comment="Set of authors." child_type="author" />
+		<collection name="references" comment="Papers cited by this paper." child_tag="reference" child_type="scholarly_article" child_entity="true" />
+		<collection name="citations" comment="Papers that cite this paper." child_tag="citation" child_type="scholarly_article" child_entity="true" />
+		<collection name="classifications" comment="The Classifications of this paper." child_type="tag">
+			<scalar name="tag_name" scalar_type="String" navigates_to="link" />
+			<scalar name="link" hide="true" scalar_type="ParsedURL" />
+		</collection>
+		<collection name="keywords" comment="Key Terms of the paper." child_type="tag"/>
+	</meta_metadata>
+	
+</meta_metadata_repository>
