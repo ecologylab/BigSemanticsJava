@@ -99,9 +99,7 @@
 	<meta_metadata name="google_sorry" extends="document" parser="xpath">
 		<selector url_regex="http://sorry.google.com" domain="google.com"/>
 		<semantic_actions>
-			<back_off_from_site>
-				<arg value="google.com" name="domain" />
-			</back_off_from_site>
+			<back_off_from_site domain="google.com" />
 		</semantic_actions>
 	</meta_metadata>
 </meta_metadata_repository>

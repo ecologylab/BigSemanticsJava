@@ -36,18 +36,18 @@ public interface SemanticActionNamedArguments
 	public static final String	WIDTH									= "width";
 
 	public static final String	HEIGHT								= "height";
-	
+
 	public static final String	HREF_METADATA					= "href_metadata";
 
 	/**
 	 * 1) CreateContainer
 	 */
 	public static final String	ANCHOR_TEXT						= "anchor_text";
-	
+
 	/**
 	 * 1) CreateContainer
 	 */
-	public static final String ANCHOR_CONTEXT					= "anchor_context";
+	public static final String	ANCHOR_CONTEXT				= "anchor_context";
 
 	/**
 	 * 1) CreateContainer
@@ -63,29 +63,33 @@ public interface SemanticActionNamedArguments
 	 * 1) CreateContainer
 	 */
 	public static final String	CITATION_SIGNIFICANCE	= "citation_sig";
-	
+
 	/**
 	 * 1) CreateContainer
 	 */
-	public static final String  SIGNIFICANCE_VALUE		= "sig_value";
-	
+	public static final String	SIGNIFICANCE_VALUE		= "sig_value";
+
 	/**
 	 * 1) CreateContainer
 	 */
-	public static final String  TRAVERSABLE           = "traversable";
-	
-	public static final String INDEX									= "index";
-	
-	public static final String SIZE										= "size";
-	
-	
+	public static final String	TRAVERSABLE						= "traversable";
+
+	public static final String	INDEX									= "index";
+
+	public static final String	SIZE									= "size";
+
 	/**
-	 *  CreateVisualizeTextSurrogate
+	 * CreateVisualizeTextSurrogate
 	 */
-	public static final  String TEXT									= "text";
-	
-	public static final String SEMANTIC_TEXT					= "semantic_text";
-	
-	public static final String DOMAIN									= "domain";
+	public static final String	TEXT									= "text";
+
+	public static final String	SEMANTIC_TEXT					= "semantic_text";
+
+	public static final String	DOMAIN								= "domain";
+
+	/**
+	 * Used by set_field
+	 */
+	public static final String	VALUE									= "value";
 
 }

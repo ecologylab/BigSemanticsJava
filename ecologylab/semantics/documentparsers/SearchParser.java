@@ -140,7 +140,7 @@ public class SearchParser
 		else if ("xpath".equals(metaMetadata.getParser()))
 		{
 			recursiveExtraction(getMetadataTranslationScope(), metaMetadata,
-					populatedMetadata, xpath, semanticActionHandler.getSemanticActionReturnValueMap(),document);
+					populatedMetadata, xpath, semanticActionHandler.getSemanticActionVariableMap(),document);
 			container.setMetadata(populatedMetadata);
 		}
 

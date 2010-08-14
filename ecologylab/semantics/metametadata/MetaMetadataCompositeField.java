@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import ecologylab.generic.HashMapArrayList;
-import ecologylab.semantics.actions.NestedSemanticActionsTranslationScope;
+import ecologylab.semantics.actions.SemanticActionTranslationScope;
 import ecologylab.semantics.actions.SemanticAction;
 import ecologylab.semantics.metadata.DocumentParserTagNames;
 import ecologylab.semantics.tools.MetadataCompilerUtils;
@@ -42,7 +42,7 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField
 	
 
 	@simpl_collection
-	@simpl_scope(NestedSemanticActionsTranslationScope.NESTED_SEMANTIC_ACTIONS_SCOPE)
+	@simpl_scope(SemanticActionTranslationScope.SEMANTIC_ACTION_TRANSLATION_SCOPE)
 	private ArrayList<SemanticAction>	semanticActions;
 	
 	@simpl_collection("def_var")

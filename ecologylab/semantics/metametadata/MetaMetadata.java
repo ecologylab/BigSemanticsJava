@@ -15,7 +15,7 @@ import ecologylab.appframework.PropertiesAndDirectories;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.generic.ReflectionTools;
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.actions.NestedSemanticActionsTranslationScope;
+import ecologylab.semantics.actions.SemanticActionTranslationScope;
 import ecologylab.semantics.actions.SemanticAction;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;

@@ -5,35 +5,46 @@ package ecologylab.semantics.actions;
 
 import java.util.Map;
 
+import ecologylab.semantics.connectors.ContentElement;
+import ecologylab.semantics.connectors.InfoCollector;
+import ecologylab.semantics.metadata.Metadata;
 import ecologylab.serialization.simpl_inherit;
 import ecologylab.serialization.ElementState.xml_tag;
 
 /**
  * @author amathur
- *
+ * 
  */
 @simpl_inherit
-public @xml_tag(SemanticActionStandardMethods.SET_METADATA) class SetMetadataSemanticAction extends SemanticAction implements SemanticActionStandardMethods
+public @xml_tag(SemanticActionStandardMethods.SET_METADATA)
+class SetMetadataSemanticAction<IC extends InfoCollector, SAH extends SemanticActionHandler>
+		extends SemanticAction<IC, SAH>
 {
 
 	@Override
 	public String getActionName()
 	{
-		return SET_METADATA;
+		return SemanticActionStandardMethods.SET_METADATA;
 	}
 
 	@Override
 	public void handleError()
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
-	public Object handle(Object obj, Map<String, Object> args)
+	public Object perform(Object obj)
 	{
-		// TODO Auto-generated method stub
-		System.err.format("The set_metadata semantic action is called! but it is no longer used.");
+		// get the argument
+		Metadata metadata = (Metadata) getArgumentObject(SemanticActionNamedArguments.FIELD_VALUE);
+		// get the object
+		ContentElement container = (ContentElement) obj;
+		// invoke the actual method
+		if (container != null)
+			container.setMetadata(metadata);
+
 		return null;
 	}
 

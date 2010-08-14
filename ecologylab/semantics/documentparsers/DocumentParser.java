@@ -335,7 +335,7 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 					//look up using mime
 					String mimeType = purlConnection.mimeType();
 					metaMetadata = metaMetaDataRepository.getMMByMime(mimeType);
-					semanticActionHandler.getSemanticActionReturnValueMap().put(SemanticActionsKeyWords.PURLCONNECTION_MIME, mimeType);
+					semanticActionHandler.getSemanticActionVariableMap().put(SemanticActionsKeyWords.PURLCONNECTION_MIME, mimeType);
 				}
 			}
 			

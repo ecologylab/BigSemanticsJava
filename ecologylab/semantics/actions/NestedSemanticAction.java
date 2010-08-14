@@ -5,8 +5,8 @@ package ecologylab.semantics.actions;
 
 import java.util.ArrayList;
 
+import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.serialization.simpl_inherit;
-import ecologylab.serialization.ElementState.simpl_nowrap;
 
 /**
  * This class is the base class for semantic actions which can have nested semantic actions inside
@@ -18,21 +18,22 @@ import ecologylab.serialization.ElementState.simpl_nowrap;
  */
 
 @simpl_inherit
-public abstract class NestedSemanticAction<SA extends SemanticAction> extends SemanticAction
+public abstract class NestedSemanticAction<IC extends InfoCollector, SAH extends SemanticActionHandler>
+		extends SemanticAction<IC, SAH>
 {
 
 	/**
 	 * List of nested semantic actions.
 	 */
-	@simpl_nowrap 
+	@simpl_nowrap
 	@simpl_collection
-	@simpl_scope(NestedSemanticActionsTranslationScope.NESTED_SEMANTIC_ACTIONS_SCOPE)
-	private ArrayList<SA>	nestedSemanticActionList;
+	@simpl_scope(SemanticActionTranslationScope.SEMANTIC_ACTION_TRANSLATION_SCOPE)
+	private ArrayList<SemanticAction>	nestedSemanticActionList;
 
 	/**
 	 * @return the nestedSemanticActionList
 	 */
-	public ArrayList<SA> getNestedSemanticActionList()
+	public ArrayList<SemanticAction> getNestedSemanticActionList()
 	{
 		return nestedSemanticActionList;
 	}
@@ -41,7 +42,7 @@ public abstract class NestedSemanticAction<SA extends SemanticAction> extends Se
 	 * @param nestedSemanticActionList
 	 *          the nestedSemanticActionList to set
 	 */
-	public void setNestedSemanticActionList(ArrayList<SA> nestedSemanticActionList)
+	public void setNestedSemanticActionList(ArrayList<SemanticAction> nestedSemanticActionList)
 	{
 		this.nestedSemanticActionList = nestedSemanticActionList;
 	}

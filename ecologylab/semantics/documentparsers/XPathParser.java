@@ -38,7 +38,7 @@ public class XPathParser< SA extends SemanticAction> extends
 	public ecologylab.semantics.metadata.builtins.Document populateMetadata()
 	{
 		recursiveExtraction(getMetadataTranslationScope(), metaMetadata,
-					container.metadata(), xpath, semanticActionHandler.getSemanticActionReturnValueMap(),document);
+					container.metadata(), xpath, semanticActionHandler.getSemanticActionVariableMap(),document);
 
 		return container.metadata();
 	}

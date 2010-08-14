@@ -5,7 +5,6 @@ import ecologylab.serialization.simpl_inherit;
 import ecologylab.serialization.ElementState.xml_tag;
 
 @simpl_inherit
-@xml_tag("not_null")
 public class NotNull extends Condition
 {
 
@@ -33,7 +32,7 @@ public class NotNull extends Condition
 	public boolean evaluate(SemanticActionHandler handler)
 	{
 		String name = getValue();
-		Scope theMap = handler.getSemanticActionReturnValueMap();
+		Scope theMap = handler.getSemanticActionVariableMap();
 
 		return theMap.containsKey(name) && theMap.get(name) != null;
 	}

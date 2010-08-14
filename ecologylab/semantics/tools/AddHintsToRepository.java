@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 
-import ecologylab.semantics.actions.NestedSemanticActionsTranslationScope;
+import ecologylab.semantics.actions.SemanticActionTranslationScope;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataField;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
@@ -26,7 +26,7 @@ public class AddHintsToRepository
 		File destRepositorySources = new File(destDir, "repositorySources");
 
 		// need to instantiate scope so that meta-metadata translation works properly.
-		NestedSemanticActionsTranslationScope.get();
+		SemanticActionTranslationScope.get();
 
 		processDir(srcDir, destDir);
 		processDir(srcPowerUserDir, destPowerUserDir);

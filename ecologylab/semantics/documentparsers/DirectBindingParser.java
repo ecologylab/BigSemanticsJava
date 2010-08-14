@@ -51,7 +51,7 @@ public class DirectBindingParser
 	{
 		// used to create a DOM 
 		org.w3c.dom.Document document	= XMLTools.buildDOM(purl);
-		semanticActionHandler.getSemanticActionReturnValueMap().put(SemanticActionsKeyWords.DOCUMENT_ROOT_NODE, document);
+		semanticActionHandler.getSemanticActionVariableMap().put(SemanticActionsKeyWords.DOCUMENT_ROOT_NODE, document);
 	}
 
 }

@@ -32,7 +32,7 @@ public class SemanticActionExecutionException extends RuntimeException
 		StringBuilder buffy = StringBuilderUtils.acquire();
 		buffy.append("Action Object:: ").append(action.getObject()).append(
 				"  :: is NULL or DOES NOT EXISTS\n");
-		buffy.append("Action ReturnValue:: ").append(action.getReturnValue()).append(
+		buffy.append("Action ReturnValue:: ").append(action.getReturnObjectName()).append(
 				" ::  is NULL or DOES NOT EXISTS FOR SPECIFIED OBJECT");
 		String errorMessage = buffy.toString();
 		StringBuilderUtils.release(buffy);

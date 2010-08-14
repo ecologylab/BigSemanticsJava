@@ -1,19 +1,20 @@
 package ecologylab.semantics.actions;
 
-import ecologylab.collections.Scope;
-import ecologylab.semantics.html.documentstructure.AnchorContext;
+import java.util.Map;
+
+import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.serialization.simpl_inherit;
 import ecologylab.serialization.ElementState.xml_tag;
 
 /**
+ * needs to be implemented by the client.
  * 
  * @author amathur
- *
  */
-
 @simpl_inherit
 public @xml_tag(SemanticActionStandardMethods.CREATE_SEMANTIC_ANCHOR)
-class CreateSemanticAnchorSemanticAction extends SemanticAction implements SemanticActionStandardMethods
+class CreateSemanticAnchorSemanticAction<IC extends InfoCollector, SAH extends SemanticActionHandler>
+		extends SemanticAction<IC, SAH> implements SemanticActionStandardMethods
 {
 
 	@Override
@@ -26,7 +27,14 @@ class CreateSemanticAnchorSemanticAction extends SemanticAction implements Seman
 	public void handleError()
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
-	
+
+	@Override
+	public Object perform(Object obj)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

@@ -18,7 +18,7 @@ import ecologylab.generic.Debug;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.net.ParsedURL;
 import ecologylab.net.UserAgent;
-import ecologylab.semantics.actions.NestedSemanticActionsTranslationScope;
+import ecologylab.semantics.actions.SemanticActionTranslationScope;
 import ecologylab.semantics.connectors.CFPrefNames;
 import ecologylab.semantics.connectors.SemanticsSite;
 import ecologylab.semantics.metadata.DocumentParserTagNames;
@@ -202,7 +202,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		TranslationScope metaMetadataTScope = MetaMetadataTranslationScope.get();
 		// need to instantiate scope so that meta-metadata translation works
 		// properly.
-		NestedSemanticActionsTranslationScope.get();
+		SemanticActionTranslationScope.get();
 
 		for (File file : dir.listFiles(xmlFilter))
 		{

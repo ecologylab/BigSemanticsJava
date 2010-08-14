@@ -3,6 +3,9 @@
  */
 package ecologylab.semantics.actions;
 
+import java.util.Map;
+
+import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.serialization.simpl_inherit;
 import ecologylab.serialization.ElementState.xml_tag;
 
@@ -14,13 +17,14 @@ import ecologylab.serialization.ElementState.xml_tag;
  */
 @simpl_inherit
 public @xml_tag(SemanticActionStandardMethods.IF)
-class IfSemanticAction extends NestedSemanticAction implements SemanticActionStandardMethods
+class IfSemanticAction<IC extends InfoCollector, SAH extends SemanticActionHandler> extends
+		NestedSemanticAction<IC, SAH>
 {
 
 	@Override
 	public String getActionName()
 	{
-		return IF;
+		return SemanticActionStandardMethods.IF;
 	}
 
 	@Override
@@ -28,6 +32,13 @@ class IfSemanticAction extends NestedSemanticAction implements SemanticActionSta
 	{
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public Object perform(Object obj)
+	{
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

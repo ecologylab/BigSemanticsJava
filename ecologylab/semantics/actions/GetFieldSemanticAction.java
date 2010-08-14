@@ -3,11 +3,12 @@
  */
 package ecologylab.semantics.actions;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.Map;
 
 import ecologylab.generic.ReflectionTools;
+import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.simpl_inherit;
 import ecologylab.serialization.ElementState.xml_tag;
@@ -18,36 +19,49 @@ import ecologylab.serialization.ElementState.xml_tag;
  */
 @simpl_inherit
 public @xml_tag(SemanticActionStandardMethods.GET_FIELD_ACTION)
-class GetFieldSemanticAction extends SemanticAction implements SemanticActionStandardMethods
+class GetFieldSemanticAction<IC extends InfoCollector, SAH extends SemanticActionHandler> extends
+		SemanticAction<IC, SAH>
 {
+
+	private static Map<String, Method>	cachedGetterMethods	= new HashMap<String, Method>();
+
+	private synchronized Method getGetterMethod(Class context, String getterName)
+	{
+		String id = context + "." + getterName;
+		if (cachedGetterMethods.containsKey(id))
+			return cachedGetterMethods.get(id);
+
+		Method method = ReflectionTools.getMethod(context, getterName, null);
+		cachedGetterMethods.put(id, method);
+		return method;
+	}
 
 	@Override
 	public String getActionName()
 	{
-		return GET_FIELD_ACTION;
+		return SemanticActionStandardMethods.GET_FIELD_ACTION;
 	}
 
 	@Override
 	public void handleError()
 	{
+
 	}
 
 	@Override
-	public Object handle(Object obj, Map<String, Object> args)
+	public Object perform(Object obj)
 	{
+		String returnObjectName = getReturnObjectName();
+		String getterName = "get" + XMLTools.javaNameFromElementName(returnObjectName, true);
+		Method method = getGetterMethod(obj.getClass(), getterName);
 		try
 		{
-			String returnValueName = getReturnValue();
-			String getterName = "get" + XMLTools.javaNameFromElementName(returnValueName, true);
-
-			Method method = ReflectionTools.getMethod(obj.getClass(), getterName, null);
 			return method.invoke(obj, null);
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
-			System.err
-					.format("The get_field semantic action cannot be handled. See the stack trace for details.");
+			error(String.format("get_field failed: object=%s, getter=%s()", obj, getterName));
 			return null;
 		}
 	}

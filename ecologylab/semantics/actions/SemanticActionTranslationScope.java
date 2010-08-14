@@ -1,37 +1,30 @@
 package ecologylab.semantics.actions;
 
-import ecologylab.semantics.metametadata.DefVar;
 import ecologylab.serialization.TranslationScope;
 
-public class NestedSemanticActionsTranslationScope
+public class SemanticActionTranslationScope
 {
-	public static final String	NESTED_SEMANTIC_ACTIONS_SCOPE	= "nested_semantic_actions_scope";
+	public static final String	SEMANTIC_ACTION_TRANSLATION_SCOPE	= "semantic_action_translation_scope";
 	static final Class[] CLASSES = 
 	{
-		BackOffFromSite.class,
+		BackOffFromSiteSemanticAction.class,
+		ChooseSemanticAction.class,
+		ChooseSemanticAction.Otherwise.class,
 		CreateAndVisualizeImgSurrogateSemanticAction.class,
 		CreateAndVisualizeTextSurrogateSemanticAction.class,
-	  CreateContainerSemanticAction.class,
 		CreateSemanticAnchorSemanticAction.class,
 		EvaluateRankWeight.class,
 		ForEachSemanticAction.class,
-		GeneralSemanticAction.class,
 		GetFieldSemanticAction.class,
-		GetXPathNodeSemanticAction.class,
 		IfSemanticAction.class,
 		ParseDocumentSemanticAction.class,
+		SearchSemanticAction.class,
 		SetFieldSemanticAction.class,
 		SetMetadataSemanticAction.class,
-
-		StringOperationsSemanticAction.class,
-		SearchSemanticAction.class,
-		
-		ChooseSemanticAction.class,
-		ChooseSemanticAction.Otherwise.class,
 	};
 	
 	public static final TranslationScope get()
 	{
-		return TranslationScope.get(NESTED_SEMANTIC_ACTIONS_SCOPE, CLASSES);
+		return TranslationScope.get(SEMANTIC_ACTION_TRANSLATION_SCOPE, CLASSES);
 	}
 }

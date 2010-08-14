@@ -3,8 +3,6 @@
  */
 package ecologylab.semantics.actions;
 
-import java.util.HashMap;
-
 import ecologylab.collections.Scope;
 
 /**

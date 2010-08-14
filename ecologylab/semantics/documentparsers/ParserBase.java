@@ -175,7 +175,7 @@ implements ScalarUnmarshallingContext,SemanticActionsKeyWords, DeserializationHo
 	@SuppressWarnings("unchecked")
 	private void addAdditionalParameters(Metadata populatedMetadata)
 	{
-		Scope<Object> param = semanticActionHandler.getSemanticActionReturnValueMap();
+		Scope<Object> param = semanticActionHandler.getSemanticActionVariableMap();
 		param.put(DOCUMENT_TYPE, this);
 		param.put(METADATA, populatedMetadata);
 		param.put(TRUE_PURL, truePURL);
@@ -210,7 +210,7 @@ implements ScalarUnmarshallingContext,SemanticActionsKeyWords, DeserializationHo
 		ArrayList<DefVar> defVars = metaMetadata.getDefVars();
 
 		// get the parameters
-		Scope<Object> parameters = semanticActionHandler.getSemanticActionReturnValueMap();
+		Scope<Object> parameters = semanticActionHandler.getSemanticActionVariableMap();
 		if (defVars != null)
 		{
 			// only if some variables are there we create a DOM[for diect binidng types for others DOM is

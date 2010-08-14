@@ -3,7 +3,7 @@ package ecologylab.semantics.metametadata;
 import ecologylab.generic.Debug;
 import ecologylab.net.UserAgent;
 import ecologylab.semantics.actions.ConditionTranslationScope;
-import ecologylab.semantics.actions.NestedSemanticActionsTranslationScope;
+import ecologylab.semantics.actions.SemanticActionTranslationScope;
 import ecologylab.semantics.actions.SemanticAction;
 import ecologylab.semantics.connectors.SemanticsSite;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
@@ -46,7 +46,7 @@ public class MetaMetadataTranslationScope extends Debug
 	public static final TranslationScope[]	SCOPE_SET	= 
 	{
 		BASE_TRANSLATIONS, 
-		NestedSemanticActionsTranslationScope.get(),
+		SemanticActionTranslationScope.get(),
 		ConditionTranslationScope.get(),
 	};
 

@@ -94,7 +94,7 @@ extends HTMLParserCommon<C, IC>
 
 	protected void postParse()
 	{
-		semanticActionHandler.getSemanticActionReturnValueMap().put(SemanticActionsKeyWords.DOCUMENT_ROOT_NODE, document);
+		semanticActionHandler.getSemanticActionVariableMap().put(SemanticActionsKeyWords.DOCUMENT_ROOT_NODE, document);
 	}
 	/**
 	 * Root DOM node of the current HTML document
@@ -220,7 +220,7 @@ extends HTMLParserCommon<C, IC>
 
 	public void removeTheContainerFromCandidates(ParsedURL containerPURL)
 	{
-		Container candidate = getInfoCollector().getContainer(container, containerPURL, false, false, null, null, false);
+		C candidate = getInfoCollector().getContainer(container, containerPURL, false, false, null, null, false);
 		getInfoCollector().removeCandidateContainer(candidate);
 	}
 

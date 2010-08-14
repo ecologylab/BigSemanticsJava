@@ -3,6 +3,9 @@
  */
 package ecologylab.semantics.actions;
 
+import java.util.Map;
+
+import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.serialization.simpl_inherit;
 import ecologylab.serialization.ElementState.xml_tag;
 
@@ -12,44 +15,50 @@ import ecologylab.serialization.ElementState.xml_tag;
  */
 @simpl_inherit
 public @xml_tag(SemanticActionStandardMethods.FOR_EACH)
-class ForEachSemanticAction extends NestedSemanticAction implements SemanticActionStandardMethods
+class ForEachSemanticAction<IC extends InfoCollector, SAH extends SemanticActionHandler> extends
+		NestedSemanticAction<IC, SAH>
 {
 
 	/**
 	 * Name of the collection object on which for loop is applied
 	 */
-	@simpl_scalar private String collection;
-	
+	@simpl_scalar
+	private String	collection;
+
 	/**
 	 * Name of the iterator [iterator variable]
 	 */
-	@simpl_scalar private String as;
-	
+	@simpl_scalar
+	private String	as;
+
 	/**
 	 * Starting index
 	 */
-	@simpl_scalar private String start;
-	
+	@simpl_scalar
+	private String	start;
+
 	/**
 	 * end index
 	 */
-	@simpl_scalar private String end;
-	
+	@simpl_scalar
+	private String	end;
+
 	/**
-	 * current index of  loop
+	 * current index of loop
 	 */
-	@simpl_scalar private String currentIndex;
-	
-	
+	@simpl_scalar
+	private String	currentIndex;
+
 	/**
-	 *  variable to store collection size.
+	 * variable to store collection size.
 	 */
- @simpl_scalar private String  size;
-	
+	@simpl_scalar
+	private String	size;
+
 	@Override
 	public String getActionName()
 	{
-		return FOR_EACH;
+		return SemanticActionStandardMethods.FOR_EACH;
 	}
 
 	/**
@@ -61,7 +70,8 @@ class ForEachSemanticAction extends NestedSemanticAction implements SemanticActi
 	}
 
 	/**
-	 * @param collection the collection to set
+	 * @param collection
+	 *          the collection to set
 	 */
 	public void setCollection(String collection)
 	{
@@ -77,7 +87,8 @@ class ForEachSemanticAction extends NestedSemanticAction implements SemanticActi
 	}
 
 	/**
-	 * @param as the as to set
+	 * @param as
+	 *          the as to set
 	 */
 	public void setAs(String as)
 	{
@@ -88,7 +99,7 @@ class ForEachSemanticAction extends NestedSemanticAction implements SemanticActi
 	public void handleError()
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	/**
@@ -116,7 +127,8 @@ class ForEachSemanticAction extends NestedSemanticAction implements SemanticActi
 	}
 
 	/**
-	 * @param curIndex the curIndex to set
+	 * @param curIndex
+	 *          the curIndex to set
 	 */
 	public void setCurIndex(String curIndex)
 	{
@@ -132,13 +144,19 @@ class ForEachSemanticAction extends NestedSemanticAction implements SemanticActi
 	}
 
 	/**
-	 * @param size the size to set
+	 * @param size
+	 *          the size to set
 	 */
 	public void setSize(String size)
 	{
 		this.size = size;
 	}
 
-
+	@Override
+	public Object perform(Object obj)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

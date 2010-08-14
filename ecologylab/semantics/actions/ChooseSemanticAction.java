@@ -5,9 +5,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import ecologylab.semantics.actions.exceptions.NestedActionException;
 import ecologylab.semantics.connectors.InfoCollector;
-import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.metametadata.MetaMetadataTranslationScope;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.simpl_inherit;
@@ -15,12 +13,13 @@ import ecologylab.serialization.ElementState.xml_tag;
 
 @simpl_inherit
 @xml_tag(SemanticActionStandardMethods.CHOOSE)
-public class ChooseSemanticAction extends SemanticAction
+public class ChooseSemanticAction<IC extends InfoCollector, SAH extends SemanticActionHandler>
+		extends SemanticAction<IC, SAH>
 {
 
 	@simpl_inherit
-	@xml_tag(SemanticActionStandardMethods.OTHERWISE)
-	public static class Otherwise extends NestedSemanticAction
+	public static class Otherwise<IC extends InfoCollector, SAH extends SemanticActionHandler>
+			extends NestedSemanticAction<IC, SAH>
 	{
 		@Override
 		public String getActionName()
@@ -33,6 +32,17 @@ public class ChooseSemanticAction extends SemanticAction
 		{
 			// TODO Auto-generated method stub
 
+		}
+
+		/**
+		 * Otherwise.perform() does not do anything since Otherwise is merely a container for nested
+		 * semantic actions.
+		 */
+		@Override
+		public Object perform(Object obj)
+		{
+			// TODO Auto-generated method stub
+			return null;
 		}
 	}
 
@@ -57,45 +67,30 @@ public class ChooseSemanticAction extends SemanticAction
 	}
 
 	@Override
-	public Object handle(Object obj, Map<String, Object> args)
+	public Object perform(Object obj)
 	{
-		SemanticActionHandler handler = getSemanticActionHandler();
-		DocumentParser parser = getDocumentParser();
-		InfoCollector infoCollector = getInfoCollector();
-
 		for (IfSemanticAction aCase : cases)
 		{
-			try
-			{
-				ArrayList<SemanticAction> nestedSemanticActions = aCase.getNestedSemanticActionList();
+			ArrayList<SemanticAction> nestedSemanticActions = aCase.getNestedSemanticActionList();
 
-				// check if all the flags are true
-				if (handler.checkConditionsIfAny(aCase))
-				{
-					// handle each of the nested action
-					for (SemanticAction nestedSemanticAction : nestedSemanticActions)
-						handler.handleSemanticAction(nestedSemanticAction, parser, infoCollector);
-
-					return null;
-				}
-			}
-			catch (Exception e)
+			// check if all the flags are true
+			if (semanticActionHandler.checkConditionsIfAny(aCase))
 			{
-				throw new NestedActionException(e, aCase, handler.getSemanticActionReturnValueMap());
+				// handle each of the nested action
+				for (SemanticAction nestedSemanticAction : nestedSemanticActions)
+					semanticActionHandler.handleSemanticAction(nestedSemanticAction, documentParser,
+							infoCollector);
+
+				// end processing following cases
+				return null;
 			}
 		}
 
+		// if none cases are executed
 		ArrayList<SemanticAction> otherwiseActions = otherwise.getNestedSemanticActionList();
 		for (SemanticAction action : otherwiseActions)
 		{
-			try
-			{
-				handler.handleSemanticAction(action, parser, infoCollector);
-			}
-			catch (Exception e)
-			{
-				throw new NestedActionException(e, otherwise, handler.getSemanticActionReturnValueMap());
-			}
+			semanticActionHandler.handleSemanticAction(action, documentParser, infoCollector);
 		}
 		return null;
 	}

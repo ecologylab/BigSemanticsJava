@@ -1,52 +1,47 @@
 package ecologylab.semantics.actions;
 
-import java.util.Map;
-
 import ecologylab.semantics.connectors.InfoCollector;
-import ecologylab.semantics.connectors.SeedPeer;
-import ecologylab.semantics.connectors.SemanticsSessionObjectNames;
 import ecologylab.semantics.seeding.SearchState;
 import ecologylab.semantics.seeding.SeedSet;
 import ecologylab.serialization.simpl_inherit;
 import ecologylab.serialization.ElementState.xml_tag;
 
 @simpl_inherit
-@xml_tag("search")
-public class SearchSemanticAction<SA extends SemanticAction> extends NestedSemanticAction<SA>
+@xml_tag(SemanticActionStandardMethods.SEARCH)
+public class SearchSemanticAction<IC extends InfoCollector, SAH extends SemanticActionHandler>
+		extends SemanticAction<IC, SAH>
 {
 
-	private static final String	ARG_QUERY	= "query";
-	
+	protected static final String	ARG_QUERY	= "query";
+
 	@simpl_scalar
-	private String engine;
-	
+	protected String							engine;
+
 	@Override
 	public String getActionName()
 	{
-		return "search";
+		return SemanticActionStandardMethods.SEARCH;
 	}
 
 	@Override
 	public void handleError()
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
-	public Object handle(Object obj, Map<String, Object> args)
+	public Object perform(Object obj)
 	{
-		String query = (String) args.get(ARG_QUERY);
+		String query = (String) getArgumentObject(ARG_QUERY);
 		if (query == null || query.isEmpty())
 			return null;
-		
-		InfoCollector ic = getInfoCollector();
-		
+
 		SearchState search = new SearchState(query, engine);
 		SeedSet seedSet = new SeedSet();
-		seedSet.setParentSeedSet(ic.getSeedSet());
+		seedSet.setParentSeedSet(infoCollector.getSeedSet());
 		seedSet.add(search);
-		seedSet.performSeeding(ic.sessionScope(), true);
+		seedSet.performSeeding(infoCollector.sessionScope(), true);
 		return null;
 	}
 }

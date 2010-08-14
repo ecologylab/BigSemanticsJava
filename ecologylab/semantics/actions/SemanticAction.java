@@ -5,12 +5,10 @@ package ecologylab.semantics.actions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.metametadata.Argument;
-import ecologylab.semantics.metametadata.DefVar;
 import ecologylab.semantics.metametadata.MetaMetadataTranslationScope;
 import ecologylab.serialization.ElementState;
 
@@ -30,14 +28,15 @@ import ecologylab.serialization.ElementState;
  * 
  */
 
-public abstract class SemanticAction extends ElementState
+public abstract class SemanticAction<IC extends InfoCollector, SAH extends SemanticActionHandler>
+		extends ElementState
 {
 
 	@simpl_collection
 	@simpl_scope(ConditionTranslationScope.CONDITION_SCOPE)
-	@simpl_nowrap 
-	private ArrayList<Condition> checks;
-		
+	@simpl_nowrap
+	private ArrayList<Condition>			checks;
+
 	/**
 	 * The map of arguments for this semantic action.
 	 */
@@ -46,23 +45,10 @@ public abstract class SemanticAction extends ElementState
 	private HashMap<String, Argument>	args;
 
 	/**
-	 * List of variables which can be used inside this action
-	 */
-	@simpl_nowrap
-	@simpl_collection("def_var")
-	private ArrayList<DefVar>					defVars;
-
-	/**
 	 * Object on which the Action is to be taken
 	 */
 	@simpl_scalar
 	private String										object;
-
-	/**
-	 * Return type of the semantic Action
-	 */
-	@simpl_scalar
-	private String										returnType;
 
 	/**
 	 * The value returned from the action
@@ -76,56 +62,35 @@ public abstract class SemanticAction extends ElementState
 	@simpl_scalar
 	private String										error;
 
-	private InfoCollector							infoCollector;
+	protected IC											infoCollector;
 
-	private SemanticActionHandler			semanticActionHandler;
+	protected SAH											semanticActionHandler;
 
-	private DocumentParser						documentParser;
+	protected DocumentParser					documentParser;
 
 	public SemanticAction()
 	{
 		args = new HashMap<String, Argument>();
 	}
 
-	/**
-	 * returns the name of the action.
-	 * 
-	 * @return
-	 */
-	public abstract String getActionName();
+	public ArrayList<Condition> getChecks()
+	{
+		return checks;
+	}
 
-	/**
-	 * Handles the error for the action
-	 */
-	public abstract void handleError();
-
-	/**
-	 * @return the object
-	 */
 	public String getObject()
 	{
 		return object;
 	}
 
-	/**
-	 * @return the returnType
-	 */
-	public String getReturnType()
+	public void setObject(String object)
 	{
-		return returnType;
+		this.object = object;
 	}
 
-	/**
-	 * @return the returnValue
-	 */
-	public String getReturnValue()
+	public String getReturnObjectName()
 	{
 		return name;
-	}
-
-	public Argument getArgument(String name)
-	{
-		return (args == null) ? null : args.get(name);
 	}
 
 	public boolean hasArguments()
@@ -133,115 +98,53 @@ public abstract class SemanticAction extends ElementState
 		return args != null && args.size() > 0;
 	}
 
-	public Map<String, Argument> getArgs()
+	public String getArgumentValue(String argName)
 	{
-		return (args == null) ? null : args;
+		return (args != null && args.containsKey(argName)) ? args.get(argName).getValue() : null;
 	}
 
-	/**
-	 * @param object
-	 *          the object to set
-	 */
-	public void setObject(String object)
+	public Object getArgumentObject(String argName)
 	{
-		this.object = object;
+		String objectName = getArgumentValue(argName);
+		if (objectName == null)
+			return null;
+		return semanticActionHandler.getSemanticActionVariableMap().get(objectName);
 	}
 
-	/**
-	 * @param returnType
-	 *          the returnType to set
-	 */
-	public void setReturnType(String returnType)
+	public int getArgumentInteger(String argName, int defaultValue)
 	{
-		this.returnType = returnType;
+		Integer value = (Integer) getArgumentObject(argName);
+		return (value != null) ? value : defaultValue;
 	}
 
-	/**
-	 * @param returnValue
-	 *          the returnValue to set
-	 */
-	public void setReturnValue(String returnValue)
+	public boolean getArgumentBoolean(String argName, boolean defaultValue)
 	{
-		this.name = returnValue;
+		Boolean value = (Boolean) getArgumentObject(argName);
+		return (value != null) ? value : defaultValue;
 	}
 
-	/**
-	 * @return the error
-	 */
+	public float getArgumentFloat(String argName, float defaultValue)
+	{
+		Float value = (Float) getArgumentObject(argName);
+		return (value != null) ? value : defaultValue;
+	}
+
 	public final String getError()
 	{
 		return error;
 	}
 
-	/**
-	 * @param error
-	 *          the error to set
-	 */
 	public final void setError(String error)
 	{
 		this.error = error;
 	}
 
-	/**
-	 * @return the defVars
-	 */
-	public ArrayList<DefVar> getDefVars()
-	{
-		return defVars;
-	}
-
-	/**
-	 * Handle this semantic action. User defined semantic actions should override this method.
-	 * 
-	 * @param obj
-	 *          The object the action operates on.
-	 * @param args
-	 *          The arguments passed to the action, in the form of name-object pair.
-	 * @return The result of this semantic action (if any), or null.
-	 */
-	public Object handle(Object obj, Map<String, Object> args)
-	{
-		return null;
-	}
-
-	/**
-	 * Register a user defined semantic action to the system, so that the reading/writing of
-	 * MetaMetadata repository works properly.
-	 * <p>
-	 * We don't distinguish nested / non-nested semantic actions here.
-	 * <p>
-	 * This method should be called before compiling or loading the MetaMetadata repository, if user
-	 * defined semantic actions are used.
-	 * 
-	 * @param semanticActionClasses
-	 *          Classes of user defined semantic actions.
-	 * @see {@link NestedSemanticAction}, {@link NestedSemanticActionTranslationScope}
-	 */
-	public static void register(Class<? extends SemanticAction>... semanticActionClasses)
-	{
-		for (Class<? extends SemanticAction> SAClass : semanticActionClasses)
-		{
-			MetaMetadataTranslationScope.get().addTranslation(SAClass);
-			NestedSemanticActionsTranslationScope.get().addTranslation(SAClass);
-		}
-	}
-
-	public InfoCollector getInfoCollector()
-	{
-		return infoCollector;
-	}
-
-	public void setInfoCollector(InfoCollector infoCollector)
+	public void setInfoCollector(IC infoCollector)
 	{
 		this.infoCollector = infoCollector;
 	}
 
-	public SemanticActionHandler getSemanticActionHandler()
-	{
-		return semanticActionHandler;
-	}
-
-	public void setSemanticActionHandler(SemanticActionHandler handler)
+	public void setSemanticActionHandler(SAH handler)
 	{
 		this.semanticActionHandler = handler;
 	}
@@ -251,14 +154,43 @@ public abstract class SemanticAction extends ElementState
 		this.documentParser = documentParser;
 	}
 
-	public DocumentParser getDocumentParser()
+	/**
+	 * return the name of the action.
+	 * 
+	 * @return
+	 */
+	public abstract String getActionName();
+
+	/**
+	 * handle error during action performing.
+	 */
+	public abstract void handleError();
+
+	/**
+	 * Perform this semantic action. User defined semantic actions should override this method.
+	 * 
+	 * @param obj
+	 *          The object the action operates on.
+	 * @return The result of this semantic action (if any), or null.
+	 */
+	public abstract Object perform(Object obj);
+
+	/**
+	 * Register a user defined semantic action to the system. This method should be called before
+	 * compiling or using the MetaMetadata repository.
+	 * <p />
+	 * To override an existing semantic action, subclass your own semantic action class, use the same
+	 * tag (indicated in @xml_tag), and override perform().
+	 * 
+	 * @param semanticActionClass
+	 * @param canBeNested
+	 *          indicates if this semantic action can be nested by other semantic actions, like
+	 *          <code>for</code> or <code>if</code>. if so, it will also be registered to
+	 *          NestedSemanticActionTranslationScope.
+	 */
+	public static void register(Class<? extends SemanticAction> semanticActionClass)
 	{
-		return documentParser;
-	}
-	
-	public ArrayList<Condition> getChecks()
-	{
-		return checks;
+		SemanticActionTranslationScope.get().addTranslation(semanticActionClass);
 	}
 
 }
