@@ -7,10 +7,10 @@ import ecologylab.semantics.actions.IfSemanticAction;
 import ecologylab.semantics.actions.NestedSemanticAction;
 import ecologylab.semantics.actions.SemanticAction;
 
-public class NestedActionException extends SemanticActionExecutionException
+public class IfActionException extends SemanticActionExecutionException
 {
 
-	public NestedActionException(Exception e, NestedSemanticAction action,
+	public IfActionException(Exception e, NestedSemanticAction action,
 			Scope<Object> semanticActionReturnValueMap)
 	{
 		super(action);

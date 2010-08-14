@@ -1,6 +1,3 @@
-/**
- * 
- */
 package ecologylab.semantics.actions;
 
 import java.util.ArrayList;
@@ -10,7 +7,7 @@ import ecologylab.collections.Scope;
 import ecologylab.generic.Debug;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.exceptions.ForLoopException;
-import ecologylab.semantics.actions.exceptions.NestedActionException;
+import ecologylab.semantics.actions.exceptions.IfActionException;
 import ecologylab.semantics.actions.exceptions.SemanticActionExecutionException;
 import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.InfoCollector;
@@ -221,7 +218,7 @@ public abstract class SemanticActionHandler<C extends Container, IC extends Info
 		}
 		catch (Exception e)
 		{
-			throw new NestedActionException(e, action, semanticActionVariableMap);
+			throw new IfActionException(e, action, semanticActionVariableMap);
 		}
 	}
 
