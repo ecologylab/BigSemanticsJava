@@ -99,7 +99,7 @@ public class TestInfoCollector extends InfoCollectorBase<MyContainer>
 	}
 
 	@Override
-	public Container getContainerDownloadIfNeeded(MyContainer ancestor, ParsedURL purl, Seed seed,
+	public MyContainer getContainerDownloadIfNeeded(MyContainer ancestor, ParsedURL purl, Seed seed,
 			boolean dnd, boolean justCrawl, boolean justMedia)
 	{
 		// TODO Auto-generated method stub
@@ -169,12 +169,12 @@ public class TestInfoCollector extends InfoCollectorBase<MyContainer>
 		return null;
 	}
 
-	@Override
-	public void removeCandidateContainer(Container candidate)
-	{
-		// TODO Auto-generated method stub
-		
-	}
+//	@Override
+//	public void removeCandidateContainer(Container candidate)
+//	{
+//		// TODO Auto-generated method stub
+//		
+//	}
 
 	@Override
 	public void setCurrentFileFromUntitled(File file)
@@ -206,12 +206,18 @@ public class TestInfoCollector extends InfoCollectorBase<MyContainer>
 	}
 
 	@Override
-	public Container getContainer(MyContainer ancestor, ParsedURL purl, boolean reincarnate,
+	public MyContainer getContainer(MyContainer ancestor, ParsedURL purl, boolean reincarnate,
 			boolean addToCandidatesIfNeeded, Document metadata, MetaMetadataCompositeField metaMetadata,
 			boolean ignoreRejects)
 	{
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void removeCandidateContainer(MyContainer candidate) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
