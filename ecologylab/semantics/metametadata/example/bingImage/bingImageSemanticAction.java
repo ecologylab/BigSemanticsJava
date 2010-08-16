@@ -25,9 +25,22 @@ public class bingImageSemanticAction extends SemanticAction
 
 	}
 
+//	@Override
+//	public Object handle(Object obj, Map<String, Object> args)
+//	{ 
+//		System.out.println(this.getClass().getName() + " [handle] : " + obj);
+//		if(obj instanceof BingImageType){
+//			System.out.println("[bingImageSemanticAction]");
+//			bingImageDataCollector.metadataCollected.add((BingImageType)obj);	
+//		}else{
+//			System.out.println("[what else]");
+//		}
+//		
+//		return null; 
+//	}
+
 	@Override
-	public Object handle(Object obj, Map<String, Object> args)
-	{ 
+	public Object perform(Object obj) {
 		System.out.println(this.getClass().getName() + " [handle] : " + obj);
 		if(obj instanceof BingImageType){
 			System.out.println("[bingImageSemanticAction]");
@@ -36,6 +49,6 @@ public class bingImageSemanticAction extends SemanticAction
 			System.out.println("[what else]");
 		}
 		
-		return null; 
+		return null;
 	}
 }
