@@ -427,12 +427,12 @@ public class MyInfoCollector implements InfoCollector<MyContainer>
 
 	}
 
-	@Override
-	public void removeCandidateContainer(Container candidate)
-	{
-		// TODO Auto-generated method stub
-
-	}
+//	@Override
+//	public void removeCandidateContainer(Container candidate)
+//	{
+//		// TODO Auto-generated method stub
+//
+//	}
 
 	public SeedDistributor getSeedDistributor()
 	{
