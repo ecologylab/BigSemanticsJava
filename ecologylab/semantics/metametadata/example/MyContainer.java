@@ -8,7 +8,6 @@ import java.io.IOException;
 import ecologylab.generic.DispatchTarget;
 import ecologylab.io.BasicSite;
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.actions.SemanticActionHandlerBase;
 import ecologylab.semantics.connectors.AbstractImgElement;
 import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.ContentElement;

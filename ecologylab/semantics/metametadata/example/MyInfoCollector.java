@@ -16,7 +16,6 @@ import ecologylab.concurrent.DownloadMonitor;
 import ecologylab.generic.DispatchTarget;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionHandler;
-import ecologylab.semantics.actions.SemanticActionHandlerBase;
 import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.connectors.SeedPeer;
@@ -190,7 +189,7 @@ public class MyInfoCollector implements InfoCollector<MyContainer>
 	@Override
 	public SemanticActionHandler createSemanticActionHandler()
 	{
-		return new SemanticActionHandlerBase(); 
+		return new SemanticActionHandler(); 
 	}
 
 	@Override
@@ -426,13 +425,6 @@ public class MyInfoCollector implements InfoCollector<MyContainer>
 		// TODO Auto-generated method stub
 
 	}
-
-//	@Override
-//	public void removeCandidateContainer(Container candidate)
-//	{
-//		// TODO Auto-generated method stub
-//
-//	}
 
 	public SeedDistributor getSeedDistributor()
 	{

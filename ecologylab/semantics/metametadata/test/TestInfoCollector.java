@@ -169,12 +169,12 @@ public class TestInfoCollector extends InfoCollectorBase<MyContainer>
 		return null;
 	}
 
-//	@Override
-//	public void removeCandidateContainer(Container candidate)
-//	{
-//		// TODO Auto-generated method stub
-//		
-//	}
+	@Override
+	public void removeCandidateContainer(MyContainer candidate)
+	{
+		// TODO Auto-generated method stub
+		
+	}
 
 	@Override
 	public void setCurrentFileFromUntitled(File file)
@@ -212,12 +212,6 @@ public class TestInfoCollector extends InfoCollectorBase<MyContainer>
 	{
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-	@Override
-	public void removeCandidateContainer(MyContainer candidate) {
-		// TODO Auto-generated method stub
-		
 	}
 
 }
