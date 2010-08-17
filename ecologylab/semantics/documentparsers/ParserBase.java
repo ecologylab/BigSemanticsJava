@@ -111,7 +111,7 @@ implements ScalarUnmarshallingContext,SemanticActionsKeyWords, DeserializationHo
 		for (int i = 0; i < semanticActions.size(); i++)
 		{
 			SemanticAction action = semanticActions.get(i);
-			debug("[ParserBase] semantic action: " + action.getActionName() + "\n");
+			debug("[ParserBase] semantic action: " + action.getActionName() + ", SA class: " + action.getClassName() + "\n");
 			semanticActionHandler.handleSemanticAction(action, this, infoCollector);
 		}
 		semanticActionHandler.postSemanticActionsHook(populatedMetadata);

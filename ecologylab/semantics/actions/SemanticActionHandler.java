@@ -24,7 +24,7 @@ import ecologylab.semantics.tools.GenericIterable;
  * @author amathur
  */
 // TODO Might want to implement lexical scoping in variables.
-public abstract class SemanticActionHandler<C extends Container, IC extends InfoCollector<C>>
+public class SemanticActionHandler<C extends Container, IC extends InfoCollector<C>>
 		extends Debug implements SemanticActionStandardMethods, SemanticActionsKeyWords,
 		SemanticActionNamedArguments
 {

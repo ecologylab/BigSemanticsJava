@@ -136,7 +136,7 @@
         <for_each collection="anchors" as="anchor">
           <get_field object="anchor" name="anchor_text" />
           <get_field object="anchor" name="target_title" />
-          <parse_document now="true">
+          <parse_document now="true" link_type="anchor">
             <arg value="anchor_text" name="surface" />
             <arg value="target_title" name="target_title" />
           </parse_document>
@@ -146,7 +146,7 @@
       <get_field name="categories" />
       <for_each collection="categories" as="category">
         <get_field object="category" name="name" />
-        <parse_document now="true">
+        <parse_document now="true" link_type="category">
           <arg value="name" name="category" />
         </parse_document>
       </for_each>

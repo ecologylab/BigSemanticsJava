@@ -200,9 +200,6 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		File repositorySources = new File(dir, "repositorySources");
 
 		TranslationScope metaMetadataTScope = MetaMetadataTranslationScope.get();
-		// need to instantiate scope so that meta-metadata translation works
-		// properly.
-		SemanticActionTranslationScope.get();
 
 		for (File file : dir.listFiles(xmlFilter))
 		{

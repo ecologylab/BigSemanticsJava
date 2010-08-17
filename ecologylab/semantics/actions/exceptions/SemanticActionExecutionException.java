@@ -13,32 +13,34 @@ import ecologylab.semantics.html.utils.StringBuilderUtils;
  */
 public class SemanticActionExecutionException extends RuntimeException
 {
-	protected static String ERROR_STRING ="###########################POSSIBLE CAUSES OF ERROR##############################";
-		
-	
-	
+	protected static String	ERROR_STRING	= "###########################POSSIBLE CAUSES OF ERROR##############################";
+
 	public SemanticActionExecutionException(SemanticAction action)
 	{
-		System.out.println("\n******ERROR******["+action.getActionName().toUpperCase()+"]*******FAILED **********");
+		System.out.println("\n******ERROR******[" + action.getActionName().toUpperCase()
+				+ "]*******FAILED **********");
 		System.out.println(ERROR_STRING);
 	}
 
-	
-
-	public SemanticActionExecutionException(Exception e,SemanticAction action,
+	public SemanticActionExecutionException(Exception e, SemanticAction action,
 			Scope<Object> semanticActionReturnValueMap)
 	{
 		this(action);
+		
 		StringBuilder buffy = StringBuilderUtils.acquire();
-		buffy.append("Action Object:: ").append(action.getObject()).append(
-				"  :: is NULL or DOES NOT EXISTS\n");
-		buffy.append("Action ReturnValue:: ").append(action.getReturnObjectName()).append(
-				" ::  is NULL or DOES NOT EXISTS FOR SPECIFIED OBJECT");
+		buffy.append("Action Object:: ").append(action.getObject())
+				.append("  :: is NULL or DOES NOT EXISTS\n");
+		buffy.append("Action ReturnValue:: ").append(action.getReturnObjectName())
+				.append(" ::  is NULL or DOES NOT EXISTS FOR SPECIFIED OBJECT");
+		
 		String errorMessage = buffy.toString();
 		StringBuilderUtils.release(buffy);
 		System.out.println(errorMessage);
 		stackTrace(semanticActionReturnValueMap);
-		System.out.println("############################################################################################");
+		System.out.println("######## POSSIBLE CAUSE:");
+		e.printStackTrace();
+		System.out
+				.println("############################################################################################");
 	}
 
 	public void stackTrace(Scope<Object> map)

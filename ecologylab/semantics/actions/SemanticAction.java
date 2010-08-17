@@ -188,9 +188,12 @@ public abstract class SemanticAction<IC extends InfoCollector, SAH extends Seman
 	 *          <code>for</code> or <code>if</code>. if so, it will also be registered to
 	 *          NestedSemanticActionTranslationScope.
 	 */
-	public static void register(Class<? extends SemanticAction> semanticActionClass)
+	public static void register(Class<? extends SemanticAction>... semanticActionClasses)
 	{
-		SemanticActionTranslationScope.get().addTranslation(semanticActionClass);
+		for (Class<? extends SemanticAction> semanticActionClass : semanticActionClasses)
+		{
+			SemanticActionTranslationScope.get().addTranslation(semanticActionClass);
+		}
 	}
 
 }
