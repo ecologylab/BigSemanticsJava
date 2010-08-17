@@ -34,7 +34,7 @@
 		</composite>
 
 		<selector>
-			<suffix>rss</suffix>
+			 <!-- <suffix>rss</suffix>  this is part of a temporary fix -->
 			<mime_type>xml/rss</mime_type>
 			<mime_type>application/rss</mime_type>
 		</selector>
