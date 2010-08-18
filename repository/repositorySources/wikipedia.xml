@@ -108,9 +108,9 @@
   <meta_metadata name="wikipedia_page_for_parsing" extends="wikipedia_page_type" parser="xpath" comment="Used to parse wikipedia pages for concept mapping project.">
     <selector url_path_tree="http://achilles.cse.tamu.edu/wiki/" />
     <scalar name="title" xpath="//h1[@class='firstHeading']" />
-    <collection name="paragraphs" child_type="paragraph" xpath="//div[@id='bodyContent']//p[string-length(.)>0]">
+    <collection name="paragraphs" child_type="paragraph" xpath="//div[@id='bodyContent']/p[string-length(.)>0]">
       <scalar name="paragraph_text" xpath="string(.)" />
-      <collection name="anchors" child_type="anchor" xpath=".//a[string-length(./@title)>0]">
+      <collection name="anchors" child_type="anchor" xpath="./a[string-length(./@title)>0]">
         <scalar name="link" xpath="./@href" /> <!-- not used -->
         <scalar name="anchor_text" xpath="string(.)" /> <!-- surface -->
         <scalar name="target_title" xpath="./@title" />
