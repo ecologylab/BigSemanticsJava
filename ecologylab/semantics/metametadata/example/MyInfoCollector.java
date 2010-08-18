@@ -13,6 +13,7 @@ import javax.swing.JFrame;
 
 import ecologylab.collections.Scope;
 import ecologylab.concurrent.DownloadMonitor;
+import ecologylab.generic.Debug;
 import ecologylab.generic.DispatchTarget;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionHandler;
@@ -50,7 +51,7 @@ import ecologylab.serialization.TranslationScope;
  * @author quyin
  * 
  */
-public class MyInfoCollector implements InfoCollector<MyContainer>
+public class MyInfoCollector extends Debug implements InfoCollector<MyContainer>
 {
 	// how many threads for downloads - how many downloads to allow concurrently
 	public final static int					DEFAULT_COUNT_DOWNLOAD_THREAD	= 1;
