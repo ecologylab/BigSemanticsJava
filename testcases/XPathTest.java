@@ -38,9 +38,13 @@ public class XPathTest
 	private static final String	TRENDS_XPATH	= "//td[@class='hotListTable']";
 	private static final String	TRENDS_CHILD_XPATH	= ".";
 	
-	private static final String	XPATH				= TRENDS_XPATH;
-	private static final String	CHILD_XPATH	= TRENDS_CHILD_XPATH;
-	private static final String	LOCATION		= TRENDS;
+	private static final String	FLICKR	= "http://www.flickr.com/photos/81124164@N00/4085549266/";
+	private static final String	FLICKR_XPATH	= "//html/head/link[2]/@href";
+	private static final String	FLICKR_CHILD_XPATH	= ".";
+	
+	private static final String	XPATH				= FLICKR_XPATH;
+	private static final String	CHILD_XPATH	= FLICKR_CHILD_XPATH;
+	private static final String	LOCATION		= FLICKR;
 	
 	private static final ParsedURL PURL = ParsedURL.getAbsolute(LOCATION);
 

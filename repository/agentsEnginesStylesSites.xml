@@ -26,6 +26,7 @@
     <search_engine name="yahoo_news" url_prefix="http://api.search.yahoo.com/NewsSearchService/V1/newsSearch?appid=yahoosearchwebrss&amp;query=" num_result_string="&amp;result=" start_string="&amp;start=" />
     <search_engine name="yahoo" url_prefix="http://api.search.yahoo.com/WebSearchService/V1/webSearch?appid=yahoosearchwebrss&amp;query=" num_result_string="&amp;result=" start_string="&amp;start=" />
     <search_engine name="flickr_nearby" url_prefix="http://www.flickr.com/photos/" url_suffix="/nearby?show=thumb&amp;fromfilter=1&amp;by=everyone&amp;taken=alltime&amp;sort=distance&amp;show=detail" />
+    <search_engine name="flickr_groups" url_prefix="http://www.flickr.com/groups/" url_suffix="/pool" />
   </search_engines>
   <named_styles>
     <named_style name="default" font_size="10" />

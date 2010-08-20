@@ -6,6 +6,7 @@
     <scalar name="heading" scalar_type="String" comment="The heading of search result" />
     <scalar name="snippet" scalar_type="String" comment="The snippet of search result" />
     <scalar name="link" scalar_type="ParsedURL" comment="The link of the search result" />
+    <scalar name="link_other" scalar_type="ParsedURL" comment="Alternate link in search results" />
   </meta_metadata>
 
   <meta_metadata name="search" extends="document" comment="">
