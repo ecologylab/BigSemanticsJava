@@ -251,7 +251,7 @@ implements Colors
 	protected BufferedImage createNewBufferedImage(DataBufferInt scaledDataBuffer, BufferedImage referenceImage, int width, int height)
 	{
 		SampleModel sm					= getSampleModel(referenceImage, width, height);
-		WritableRaster	wr				= Raster.createWritableRaster(sm, scaledDataBuffer, null);
+		WritableRaster	wr			= Raster.createWritableRaster(sm, scaledDataBuffer, null);
 		ColorModel	cm					= getColorModel(referenceImage);
 		return new BufferedImage(cm, wr, false, null);
 	}
