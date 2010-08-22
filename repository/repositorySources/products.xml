@@ -1,0 +1,11 @@
+<meta_metadata_repository name="dream_house" package="ecologylab.semantics.generated.library.products">
+
+<meta_metadata name="product" extends="document" parser="xpath">
+	<scalar name="price" scalar_type="String"/>
+	
+</meta_metadata>
+
+
+
+
+</meta_metadata_repository>

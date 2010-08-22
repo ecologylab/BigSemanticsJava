@@ -1,0 +1,28 @@
+<meta_metadata_repository name="dream_house" package="ecologylab.semantics.generated.library.dreamHouse">
+
+<meta_metadata name="glass_tile_store_product" type="product" parser="xpath">
+	<selector url_regex="http://www.glasstilestore.com/\w+-p/\w+.htm" domain="glasstilestore.com" />
+	
+	<scalar name="price" xpath="//font[@class='pricecolor']/text()" />
+	<scalar name="description" xpath="//table[@class='colors_descriptionbox'//p/text()"/>
+	<scalar name="title" xpath="//font[@class='productnamecolorLARGE colors_productname']/text()" />
+</meta_metadata>
+
+<meta_metadata name="urban_hardwoods_product" type="product" parser="xpath">
+	<selector url_stripped="http://www.urbanhardwoods.com/furniture/product.aspx"/>
+	
+	<scalar name="title" xpath="//span[@class='productName']/text()"/>
+	<scalar name="description" xpath="//span[@class='furnitureINTRO']/div[0]/text()"/>
+</meta_metadata>
+
+<meta_metadata name="home_depot_product" type="product" parser="xpath">
+	<selector url_stripped="http://www.homedepot.com/webapp/wcs/stores/servlet/ProductDisplay"/>
+	
+	<scalar name="price" xpath="//p[@class='pip-price']/text()" />
+	<scalar name="description" xpath="//div[@id='tab-features'/p[0]/text()"/>
+	
+</meta_metadata>
+
+
+
+</meta_metadata_repository>
