@@ -206,7 +206,7 @@
     </meta_metadata>
 
 
-    <meta_metadata name="flickr_image_detail_two" extends="document" parser="xpath" comment="A Flickr Image result page" >
+    <!-- <meta_metadata name="flickr_image_detail_two" extends="document" parser="xpath" comment="A Flickr Image result page" >
     <selector name="flickr_image_detail_selector"/>
         <def_var name="photoTD" xpath="//div[@id='meta']" type="node"/>
         
@@ -318,5 +318,5 @@
 			</for_each>
 		</semantic_actions>
 	</meta_metadata>
-
+-->
 </meta_metadata_repository>
