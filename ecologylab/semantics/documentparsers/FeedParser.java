@@ -34,7 +34,7 @@ public class FeedParser
 	{
 		super(infoCollector, semanticActionHandler);
 		this.feed = feed;
-		getMetaMetadataAndContainerAndQueue(infoCollector,feed.getUrl(),feed,null);
+		getMetaMetadataAndContainerAndQueue(infoCollector,feed.getUrl(),feed,"xml");
 	}
 
 	@Override
