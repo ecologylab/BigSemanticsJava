@@ -49,8 +49,22 @@
     </semantic_actions>
   </meta_metadata>
 
-  <meta_metadata name="my_google_ecology0_search" type="search" extends="my_google_search" comment="The my_google_ecology0 Search class" parser="xpath">
+  <meta_metadata name="my_google_ecology0_search" type="search" comment="The my_google_ecology0 Search class" parser="xpath">
     <selector url_stripped="http://ecology0.csdl.tamu.edu/my_google/search" />
+     <collection name="search_results" xpath="//div[@class='result']">
+      <scalar name="heading" xpath="./a/@href" />
+      <scalar name="snippet" xpath="./p" />
+      <scalar name="link" xpath="./span" />
+    </collection>
+    <semantic_actions>
+      <get_field name="search_results" />
+      <for_each collection="search_results" as="res">
+        <get_field object="res" name="link" />
+        <parse_document now="true">
+          <arg value="link" name="container_link" />
+        </parse_document>
+      </for_each>
+    </semantic_actions>
   </meta_metadata>
 
   <meta_metadata name="yahoo_thumbnail" extends="metadata">
