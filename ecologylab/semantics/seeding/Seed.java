@@ -60,7 +60,7 @@ abstract public class Seed<AC extends Container> extends ElementState implements
      * 
      * @param infoProcessor
      */
-    protected void initialize(InfoCollector infoProcessor)
+    public void initialize(InfoCollector infoProcessor)
     {
     		this.infoCollector	= infoProcessor;
     		
