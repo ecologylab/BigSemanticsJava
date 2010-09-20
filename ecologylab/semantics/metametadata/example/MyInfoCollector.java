@@ -5,7 +5,9 @@ package ecologylab.semantics.metametadata.example;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -51,7 +53,7 @@ import ecologylab.serialization.TranslationScope;
  * @author quyin
  * 
  */
-public class MyInfoCollector extends Debug implements InfoCollector<MyContainer>
+public class MyInfoCollector<C extends MyContainer> extends Debug implements InfoCollector<C>
 {
 	// how many threads for downloads - how many downloads to allow concurrently
 	public final static int					DEFAULT_COUNT_DOWNLOAD_THREAD	= 1;
@@ -68,7 +70,7 @@ public class MyInfoCollector extends Debug implements InfoCollector<MyContainer>
 
 	public boolean									slow;
 
-	public ArrayList<String>				visitedURLs;
+	private Map<ParsedURL, C>				visitedContainers							= new HashMap<ParsedURL, C>();
 
 	static
 	{
@@ -98,7 +100,7 @@ public class MyInfoCollector extends Debug implements InfoCollector<MyContainer>
 		this.mmdRepo = repo;
 
 		mmdRepo.bindMetadataClassDescriptorsToMetaMetadata(metadataTranslationScope);
-		
+
 		rejectDomains = new HashSet<String>();
 		downloadMonitor = new DownloadMonitor("info-collector_download-monitor",
 				DEFAULT_COUNT_DOWNLOAD_THREAD);
@@ -173,8 +175,7 @@ public class MyInfoCollector extends Debug implements InfoCollector<MyContainer>
 	}
 
 	@Override
-	public DocumentParser<MyContainer, ? extends InfoCollector, ?> constructDocumentType(
-			ElementState inlineDoc)
+	public DocumentParser<C, ? extends InfoCollector, ?> constructDocumentType(ElementState inlineDoc)
 	{
 		// TODO Auto-generated method stub
 		return null;
@@ -190,7 +191,7 @@ public class MyInfoCollector extends Debug implements InfoCollector<MyContainer>
 	@Override
 	public SemanticActionHandler createSemanticActionHandler()
 	{
-		return new SemanticActionHandler(); 
+		return new SemanticActionHandler();
 	}
 
 	@Override
@@ -229,9 +230,20 @@ public class MyInfoCollector extends Debug implements InfoCollector<MyContainer>
 		return result;
 	}
 
-	public boolean visited(String purl)
+	public boolean isVisited(ParsedURL purl)
 	{
-		return false;
+		return visitedContainers.containsKey(purl);
+	}
+
+	public void setVisited(C container)
+	{
+		ParsedURL purl = container.purl();
+		if (purl == null)
+			return;
+		if (!isVisited(purl))
+		{
+			visitedContainers.put(purl, container);
+		}
 	}
 
 	/**
@@ -338,9 +350,10 @@ public class MyInfoCollector extends Debug implements InfoCollector<MyContainer>
 	}
 
 	@Override
-	public MyContainer lookupAbstractContainer(ParsedURL connectionPURL)
+	public C lookupAbstractContainer(ParsedURL connectionPURL)
 	{
-		// TODO Auto-generated method stub
+		if (isVisited(connectionPURL))
+			return visitedContainers.get(connectionPURL);
 		return null;
 	}
 
@@ -361,7 +374,7 @@ public class MyInfoCollector extends Debug implements InfoCollector<MyContainer>
 
 	// new add return null
 	@Override
-	public DocumentParser<MyContainer, ? extends InfoCollector, ?> newFileDirectoryType(File file)
+	public DocumentParser<C, ? extends InfoCollector, ?> newFileDirectoryType(File file)
 	{
 		// TODO Auto-generated method stub
 		return null;

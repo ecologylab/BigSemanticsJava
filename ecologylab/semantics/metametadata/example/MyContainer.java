@@ -197,16 +197,15 @@ public class MyContainer extends Container
 		//also process the semantic actions
 		
 		DocumentParser parser = DocumentParser.connect(purl(), this, infoCollector, infoCollector.createSemanticActionHandler());
-		
 		if(parser != null)
 			parser.parse();
 		
-		((MyInfoCollector)infoCollector).log(purl().toString());
-
-		if(!((MyInfoCollector)infoCollector).visited(purl().toString()))
+		infoCollector.log(purl().toString());
+		if(!infoCollector.isVisited(purl()))
 		{
 			System.out.println("\nDownloading slow");
 			infoCollector.getDownloadMonitor().pause(500);//60000 + (MathTools.random(100)*2000));
+			infoCollector.setVisited(this);
 		}
 	}
 
@@ -243,8 +242,9 @@ public class MyContainer extends Container
 	@Override
 	public void resetPURL(ParsedURL connectionPURL)
 	{
-		// TODO Auto-generated method stub
-
+		if (metadata() != null)
+			metadata().setLocation(connectionPURL);
+		infoCollector.setVisited(this);
 	}
 
 	@Override
