@@ -127,10 +127,9 @@
       use parse_document_now to handle links.
     -->
     <semantic_actions>
+    	<get_field name="title" />
       <get_field name="paragraphs" />
-      <create_and_visualize_text_surrogate>
-        <arg value="paragraphs" name="wiki_text" />
-      </create_and_visualize_text_surrogate>
+      
       <for_each collection="paragraphs" as="paragraph">
         <get_field object="paragraph" name="anchors" />
         <for_each collection="anchors" as="anchor">
@@ -142,14 +141,10 @@
           </parse_document>
         </for_each>
       </for_each>
-
-      <get_field name="categories" />
-      <for_each collection="categories" as="category">
-        <get_field object="category" name="name" />
-        <parse_document now="true" link_type="category">
-          <arg value="name" name="category" />
-        </parse_document>
-      </for_each>
+      
+      <create_and_visualize_text_surrogate>
+        <arg value="paragraphs" name="wiki_text" />
+      </create_and_visualize_text_surrogate>
     </semantic_actions>
   </meta_metadata>
 
