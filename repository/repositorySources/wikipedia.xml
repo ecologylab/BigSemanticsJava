@@ -106,19 +106,15 @@
 
   <!-- this type uses a local dump of Wikipedia, so the xpath might be different from http://en.wikipedia.org -->
   <meta_metadata name="wikipedia_page_for_parsing" extends="wikipedia_page_type" parser="xpath" comment="Used to parse wikipedia pages for concept mapping project.">
-    <selector url_path_tree="http://achilles.cse.tamu.edu/wiki/" />
+    <selector url_path_tree="http://achilles.cse.tamu.edu/mediawiki/index.php/" />
     <scalar name="title" xpath="//h1[@class='firstHeading']" />
-    <collection name="paragraphs" child_type="paragraph" xpath="//div[@id='bodyContent']/p[string-length(.)>0]">
+    <collection name="paragraphs" child_type="paragraph" xpath="//div[@id='bodyContent']/p[string-length(.)>1]">
       <scalar name="paragraph_text" xpath="string(.)" />
       <collection name="anchors" child_type="anchor" xpath="./a[string-length(./@title)>0]">
         <scalar name="link" xpath="./@href" /> <!-- not used -->
         <scalar name="anchor_text" xpath="string(.)" /> <!-- surface -->
         <scalar name="target_title" xpath="./@title" />
       </collection>
-    </collection>
-    <collection name="categories" child_type="category" xpath="//div[@id='mw-normal-catlinks']/span/a">
-      <scalar name="name" xpath="./@title" />
-      <scalar name="cat_link" xpath="./@href" />
     </collection>
 
     <!--
@@ -135,7 +131,7 @@
         <for_each collection="anchors" as="anchor">
           <get_field object="anchor" name="anchor_text" />
           <get_field object="anchor" name="target_title" />
-          <parse_document now="true" link_type="anchor">
+          <parse_document now="true">
             <arg value="anchor_text" name="surface" />
             <arg value="target_title" name="target_title" />
           </parse_document>

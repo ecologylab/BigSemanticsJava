@@ -335,6 +335,12 @@ implements ScalarUnmarshallingContext,SemanticActionsKeyWords, DeserializationHo
 					String xpathString = mmdElement.getXpath();
 					// xpathString="/html/body[@id='gsr']/div[@id='res']/div[1]/ol/li[@*]/h3/a";
 					// System.out.println("DEBUG::xPathString=\t" + xpathString);
+					
+					if (xpathString == null)
+					{
+						warning("xpath not specified for " + mmdElement);
+						continue;
+					}
 
 					// name of the metaMetadata element.
 					String mmdElementName = mmdElement.getName();
