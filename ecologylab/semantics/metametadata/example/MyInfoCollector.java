@@ -64,7 +64,7 @@ public class MyInfoCollector<C extends MyContainer> extends Debug implements Inf
 	// stores the infocollects list of rejected domains
 	private Set<String>							rejectDomains;
 
-	private DownloadMonitor					downloadMonitor;
+	protected DownloadMonitor					downloadMonitor;
 
 	private Logger									logger;
 
@@ -102,8 +102,6 @@ public class MyInfoCollector<C extends MyContainer> extends Debug implements Inf
 		mmdRepo.bindMetadataClassDescriptorsToMetaMetadata(metadataTranslationScope);
 
 		rejectDomains = new HashSet<String>();
-		downloadMonitor = new DownloadMonitor("info-collector_download-monitor",
-				DEFAULT_COUNT_DOWNLOAD_THREAD);
 	}
 
 	/**
@@ -111,6 +109,8 @@ public class MyInfoCollector<C extends MyContainer> extends Debug implements Inf
 	 */
 	public DownloadMonitor getDownloadMonitor()
 	{
+		if (downloadMonitor == null)
+			downloadMonitor = new DownloadMonitor("info-collector_download-monitor", DEFAULT_COUNT_DOWNLOAD_THREAD);
 		return downloadMonitor;
 	}
 
@@ -261,7 +261,7 @@ public class MyInfoCollector<C extends MyContainer> extends Debug implements Inf
 			boolean dnd, boolean justCrawl, boolean justMedia, DispatchTarget dispatchTarget)
 	{
 		MyContainer result = getContainer(ancestor, purl, false, false, null, null, false);
-		downloadMonitor.download(result, dispatchTarget);
+		getDownloadMonitor().download(result, dispatchTarget);
 		return result;
 	}
 
