@@ -46,52 +46,13 @@ class ParseDocumentSemanticAction<IC extends InfoCollector, SAH extends Semantic
 	@Override
 	public Object perform(Object obj)
 	{
-		if (isNow())
-		{
-			parseDocumentNow();
-		}
-		else
-		{
-			parseDocumentLater();
-		}
-		return null;
-	}
-
-	/**
-	 * This action downloads the document from a given URL, parses it with specified parsing method,
-	 * and put the results in a Container which can be used later.
-	 */
-	protected void parseDocumentNow()
-	{
-		Container container = semanticActionHandler
-				.createContainer(this, documentParser, infoCollector);
-		if (container != null)
-		{
-			try
-			{
-				container.performDownload();
-			}
-			catch (IOException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-	}
-
-	/**
-	 * add a URL to a waiting list. URLs in the waiting list is weighted based on contents, links,
-	 * user interests, etc.
-	 */
-	protected void parseDocumentLater()
-	{
-		Container container = semanticActionHandler
-				.createContainer(this, documentParser, infoCollector);
+		Container container = semanticActionHandler.createContainer(this, documentParser, infoCollector);
 		if (container != null)
 		{
 			infoCollector.getContainerDownloadIfNeeded(documentParser.getContainer(), container.purl(),
 					null, false, false, false);
 		}
+		return null;
 	}
 
 }
