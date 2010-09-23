@@ -40,15 +40,24 @@ import ecologylab.serialization.TranslationScope;
  */
 public class MyContainer extends Container
 {
-	
+
 	protected MyInfoCollector	infoCollector;
+
+	// needed: used in downloading process
+	private ParsedURL					initPurl;
+
+	private boolean						downloadDone	= false;
+
+	private DispatchTarget		dispatchTarget;
 
 	public MyContainer(ContentElement progenitor, MyInfoCollector infoCollector, ParsedURL purl)
 	{
 		super(progenitor);
 		this.infoCollector = infoCollector;
 		this.metadata = (Document) infoCollector.constructDocument(purl);
-		
+		if (progenitor != null && progenitor instanceof MyContainer)
+			this.dispatchTarget = ((MyContainer) progenitor).dispatchTarget;
+
 		initPurl = purl;
 	}
 
@@ -145,16 +154,12 @@ public class MyContainer extends Container
 		return null;
 	}
 
-	// New -generated when repository is compiled
+	// new: generated when repository is compiled
 	@Override
 	public TranslationScope getGeneratedMetadataTranslationScope()
 	{
 		return infoCollector.getMetadataTranslationScope();
 	}
-
-	// needed used in downloading process
-	private ParsedURL	initPurl;
-	private boolean	downloadDone = false;
 
 	@Override
 	public ParsedURL getInitialPURL()
@@ -193,20 +198,22 @@ public class MyContainer extends Container
 	@Override
 	public void performDownload() throws IOException
 	{
-		//calls connect to find the right parser, then calls the infocollector to download the content
-		//also process the semantic actions
-		
-		DocumentParser parser = DocumentParser.connect(purl(), this, infoCollector, infoCollector.createSemanticActionHandler());
-		if(parser != null)
+		// calls connect to find the right parser, then calls the infocollector to download the content
+		// also process the semantic actions
+
+		DocumentParser parser = DocumentParser.connect(purl(), this, infoCollector,
+				infoCollector.createSemanticActionHandler());
+		if (parser != null)
 			parser.parse();
-		
-		infoCollector.log(purl().toString());
-		if(!infoCollector.isVisited(purl()))
-		{
-			System.out.println("\nDownloading slow");
-			infoCollector.getDownloadMonitor().pause(500);//60000 + (MathTools.random(100)*2000));
-			infoCollector.setVisited(this);
-		}
+
+		/*
+		 * recording visited urls could exhaust memory!
+		 * 
+		 * infoCollector.log(purl().toString()); if(!infoCollector.isVisited(purl())) {
+		 * System.out.println("\nDownloading slow");
+		 * infoCollector.getDownloadMonitor().pause(500);//60000 + (MathTools.random(100)*2000));
+		 * infoCollector.setVisited(this); }
+		 */
 	}
 
 	@Override
@@ -244,7 +251,7 @@ public class MyContainer extends Container
 	{
 		if (metadata() != null)
 			metadata().setLocation(connectionPURL);
-		infoCollector.setVisited(this);
+		// infoCollector.setVisited(this);
 	}
 
 	@Override
@@ -261,11 +268,15 @@ public class MyContainer extends Container
 
 	}
 
-	@Override
-	public void setDispatchTarget(DispatchTarget documentType)
+	public DispatchTarget getDispatchTarget()
 	{
-		// TODO Auto-generated method stub
-
+		return dispatchTarget;
+	}
+	
+	@Override
+	public void setDispatchTarget(DispatchTarget dispatchTarget)
+	{
+		this.dispatchTarget = dispatchTarget;
 	}
 
 	@Override
@@ -376,6 +387,14 @@ public class MyContainer extends Container
 	{
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	private String cachedToString;
+	public String toString()
+	{
+		if (cachedToString == null)
+			cachedToString = getClassName() + "[" + purl() + "]"; 
+		return cachedToString;
 	}
 
 }

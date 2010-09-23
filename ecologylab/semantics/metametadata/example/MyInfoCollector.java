@@ -4,10 +4,7 @@
 package ecologylab.semantics.metametadata.example;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -19,7 +16,6 @@ import ecologylab.generic.Debug;
 import ecologylab.generic.DispatchTarget;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionHandler;
-import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.connectors.SeedPeer;
 import ecologylab.semantics.documentparsers.DocumentParser;
@@ -40,37 +36,40 @@ import ecologylab.serialization.TranslationScope;
  * This is the InfoCollector class for this example.
  * 
  * An InfoCollector initiates the seeding process, holds containers and manages the downloading
- * process (e.g. through DownloadMonitor as here). It also provides methods to add / remove
- * listeners for the containers.
+ * process (e.g. through DownloadMonitor as here).
  * 
  * Note that we use DownloadMonitor (from ecologylabFundamental) to manage the downloading process.
- * It provides multi-thread downloading in a easy-to-use way. However, you should remember to set
+ * It provides multi-threaded downloading in an easy-to-use way. However, you should remember to set
  * the VM arguments to allocate enough memory for it, or it can't start working (you'll see console
  * output like "Memory.reclaim...").
  * 
- * Also, we don't implement all the methods from the interface InfoCollector.
+ * Also, we don't implement all the methods from the interface InfoCollector, since we don't need
+ * all of them.
  * 
  * @author quyin
  * 
  */
 public class MyInfoCollector<C extends MyContainer> extends Debug implements InfoCollector<C>
 {
+	
+	public final static int								DEFAULT_COUNT_DOWNLOAD_THREAD	= 1;
+
 	// how many threads for downloads - how many downloads to allow concurrently
-	public final static int					DEFAULT_COUNT_DOWNLOAD_THREAD	= 1;
+	private int														numDownloadThreads;
 
 	// reference to mmd repso
-	private MetaMetadataRepository	mmdRepo;
+	private MetaMetadataRepository				mmdRepo;
+
+	private TranslationScope							metadataTranslationScope;
+
+	private SemanticActionHandlerFactory	semanticActionHandlerFactory;
 
 	// stores the infocollects list of rejected domains
-	private Set<String>							rejectDomains;
+	private Set<String>										rejectDomains;
 
-	protected DownloadMonitor					downloadMonitor;
+	protected DownloadMonitor							downloadMonitor;
 
-	private Logger									logger;
-
-	public boolean									slow;
-
-	private Map<ParsedURL, C>				visitedContainers							= new HashMap<ParsedURL, C>();
+	private Logger												logger;
 
 	static
 	{
@@ -79,9 +78,9 @@ public class MyInfoCollector<C extends MyContainer> extends Debug implements Inf
 		MetadataScalarScalarType.init();
 	}
 
-	public MyInfoCollector(String repoDir, TranslationScope metadataTranslationScope)
+	public MyInfoCollector(MetaMetadataRepository repo, TranslationScope metadataTranslationScope)
 	{
-		this(MetaMetadataRepository.load(new File(repoDir)), metadataTranslationScope);
+		this(repo, metadataTranslationScope, null, DEFAULT_COUNT_DOWNLOAD_THREAD);
 	}
 
 	/**
@@ -94,10 +93,13 @@ public class MyInfoCollector<C extends MyContainer> extends Debug implements Inf
 	 * @param metadataTranslationScope
 	 *          The metadata TranslationScope.
 	 */
-	public MyInfoCollector(MetaMetadataRepository repo, TranslationScope metadataTranslationScope)
+	public MyInfoCollector(MetaMetadataRepository repo, TranslationScope metadataTranslationScope,
+			SemanticActionHandlerFactory semanticActionHandlerFactory, int numDownloadThreads)
 	{
-		this.metadataTranslationScope = metadataTranslationScope;
 		this.mmdRepo = repo;
+		this.metadataTranslationScope = metadataTranslationScope;
+		this.semanticActionHandlerFactory = semanticActionHandlerFactory;
+		this.numDownloadThreads = numDownloadThreads;
 
 		mmdRepo.bindMetadataClassDescriptorsToMetaMetadata(metadataTranslationScope);
 
@@ -110,13 +112,13 @@ public class MyInfoCollector<C extends MyContainer> extends Debug implements Inf
 	public DownloadMonitor getDownloadMonitor()
 	{
 		if (downloadMonitor == null)
-			downloadMonitor = new DownloadMonitor("info-collector_download-monitor", DEFAULT_COUNT_DOWNLOAD_THREAD);
+			downloadMonitor = new DownloadMonitor("my-info-collector", numDownloadThreads);
 		return downloadMonitor;
 	}
 
 	public void log(String s)
 	{
-
+		logger.fine(s);
 	}
 
 	public Logger getLogger()
@@ -128,8 +130,6 @@ public class MyInfoCollector<C extends MyContainer> extends Debug implements Inf
 	{
 		logger = l;
 	}
-
-	TranslationScope	metadataTranslationScope;
 
 	public TranslationScope getMetadataTranslationScope()
 	{
@@ -175,7 +175,7 @@ public class MyInfoCollector<C extends MyContainer> extends Debug implements Inf
 	}
 
 	@Override
-	public DocumentParser<C, ? extends InfoCollector, ?> constructDocumentType(ElementState inlineDoc)
+	public DocumentParser constructDocumentType(ElementState inlineDoc)
 	{
 		// TODO Auto-generated method stub
 		return null;
@@ -191,7 +191,9 @@ public class MyInfoCollector<C extends MyContainer> extends Debug implements Inf
 	@Override
 	public SemanticActionHandler createSemanticActionHandler()
 	{
-		return new SemanticActionHandler();
+		if (semanticActionHandlerFactory == null)
+			return new SemanticActionHandler();
+		return semanticActionHandlerFactory.create();
 	}
 
 	@Override
@@ -204,8 +206,7 @@ public class MyInfoCollector<C extends MyContainer> extends Debug implements Inf
 	@Override
 	public void displayStatus(String message)
 	{
-		// TODO Auto-generated method stub
-
+		debug(message);
 	}
 
 	@Override
@@ -225,25 +226,7 @@ public class MyInfoCollector<C extends MyContainer> extends Debug implements Inf
 	{
 		if (!accept(purl) && !ignoreRejects)
 			return null;
-
-		MyContainer result = new MyContainer(ancestor, this, purl);
-		return result;
-	}
-
-	public boolean isVisited(ParsedURL purl)
-	{
-		return visitedContainers.containsKey(purl);
-	}
-
-	public void setVisited(C container)
-	{
-		ParsedURL purl = container.purl();
-		if (purl == null)
-			return;
-		if (!isVisited(purl))
-		{
-			visitedContainers.put(purl, container);
-		}
+		return new MyContainer(ancestor, this, purl);
 	}
 
 	/**
@@ -254,13 +237,16 @@ public class MyInfoCollector<C extends MyContainer> extends Debug implements Inf
 	public MyContainer getContainerDownloadIfNeeded(MyContainer ancestor, ParsedURL purl, Seed seed,
 			boolean dnd, boolean justCrawl, boolean justMedia)
 	{
-		return getContainerDownloadIfNeeded(ancestor, purl, seed, dnd, justCrawl, justMedia, null);
+		MyContainer result = getContainer(ancestor, purl, false, false, null, null, false);
+		getDownloadMonitor().download(result, result.getDispatchTarget());
+		return result;
 	}
 
 	public MyContainer getContainerDownloadIfNeeded(MyContainer ancestor, ParsedURL purl, Seed seed,
 			boolean dnd, boolean justCrawl, boolean justMedia, DispatchTarget dispatchTarget)
 	{
 		MyContainer result = getContainer(ancestor, purl, false, false, null, null, false);
+		result.setDispatchTarget(dispatchTarget);
 		getDownloadMonitor().download(result, dispatchTarget);
 		return result;
 	}
@@ -352,8 +338,6 @@ public class MyInfoCollector<C extends MyContainer> extends Debug implements Inf
 	@Override
 	public C lookupAbstractContainer(ParsedURL connectionPURL)
 	{
-		if (isVisited(connectionPURL))
-			return visitedContainers.get(connectionPURL);
 		return null;
 	}
 
@@ -374,7 +358,7 @@ public class MyInfoCollector<C extends MyContainer> extends Debug implements Inf
 
 	// new add return null
 	@Override
-	public DocumentParser<C, ? extends InfoCollector, ?> newFileDirectoryType(File file)
+	public DocumentParser newFileDirectoryType(File file)
 	{
 		// TODO Auto-generated method stub
 		return null;

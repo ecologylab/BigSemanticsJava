@@ -1,5 +1,6 @@
 package ecologylab.semantics.metametadata.example.bingImage;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -16,9 +17,10 @@ import org.junit.Test;
 import ecologylab.generic.Debug;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticAction;
+import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.metametadata.example.MyContainer;
 import ecologylab.semantics.metametadata.example.MyInfoCollector;
-import ecologylab.semantics.metametadata.example.SaveReportSemanticAction;
+import ecologylab.semantics.metametadata.example.SaveImageSemanticAction;
 import ecologylab.semantics.metametadata.example.bingImage.generated.BingImage;
 import ecologylab.semantics.metametadata.example.bingImage.generated.BingImageType;
 // generatedTranslationScope
@@ -35,9 +37,10 @@ public class bingImageDataCollector{
 	
 	public static void main(String[] args) throws Exception
 	{ 
-		SemanticAction.register(SaveReportSemanticAction.class, bingImageSemanticAction.class);
+		SemanticAction.register(SaveImageSemanticAction.class, bingImageSemanticAction.class);
 		
-		MyInfoCollector mic = new MyInfoCollector("repo", GeneratedMetadataTranslationScope.get());
+		MetaMetadataRepository repo = MetaMetadataRepository.load(new File("../ecologylabSemantics/repository"));
+		MyInfoCollector mic = new MyInfoCollector(repo, GeneratedMetadataTranslationScope.get());
 		
 		/* Test cases
 		ParsedURL flickr_search = ParsedURL.getAbsolute("http://www.flickr.com/search/?q=lion");
