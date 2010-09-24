@@ -74,15 +74,11 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField
 		this.xpath = mmf.xpath;
 		this.navigatesTo = mmf.navigatesTo;
 		this.shadows = mmf.shadows;
-		this.stringPrefix = mmf.stringPrefix;
 		this.isFacet = mmf.isFacet;
 		this.ignoreInTermVector = mmf.ignoreInTermVector;
 		this.comment = mmf.comment;
-		this.dontCompile = mmf.dontCompile;
-		this.key = mmf.key;
 		this.contextNode = mmf.contextNode;
 		this.tag = mmf.tag;
-		this.ignoreExtractionError = mmf.ignoreExtractionError;
 		this.kids = mmf.kids;
 	}
 
@@ -184,8 +180,8 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField
 	{
 		if (userAgentString == null)
 		{
-			userAgentString = (userAgentName == null) ? repository().getDefaultUserAgentString() :
-				repository().getUserAgentString(userAgentName);
+			userAgentString = (userAgentName == null) ? getRepository().getDefaultUserAgentString() :
+				getRepository().getUserAgentString(userAgentName);
 		}
 
 		return userAgentString;

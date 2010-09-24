@@ -78,7 +78,7 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 
 	public Metadata constructMetadata()
 	{
-		return constructMetadata(this.repository().metadataTranslationScope());
+		return constructMetadata(this.getRepository().metadataTranslationScope());
 	}
 
 	/**
@@ -104,7 +104,7 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 			{
 				for (String mixinName : mixins)
 				{
-					MetaMetadata mixinMM = repository().getByTagName(mixinName);
+					MetaMetadata mixinMM = getRepository().getByTagName(mixinName);
 					if (mixinMM != null)
 					{
 						Metadata mixinMetadata = mixinMM.constructMetadata(ts);
@@ -187,7 +187,7 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 			for (MetaMetadataField metaMetadataField : metaMetadataFieldList)
 			{
 				metaMetadataField.setExtendsField(extendsAttribute);
-				metaMetadataField.setMmdRepository(mmdRepository);
+				metaMetadataField.setRepository(mmdRepository);
 				try
 				{
 					// translate the field into for metadata class.
@@ -212,7 +212,7 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 				// get the metadata field.
 				MetaMetadataField f = (MetaMetadataField) metaMetadataFieldList.get(i);
 				f.setExtendsField(extendsAttribute);
-				f.setMmdRepository(mmdRepository);
+				f.setRepository(mmdRepository);
 				try
 				{
 					// translate the field into for metadata class.
@@ -399,7 +399,7 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 
 	public MetadataFieldDescriptor getFieldDescriptorByTagName(String tagName)
 	{
-		return metadataClassDescriptor.getFieldDescriptorByTag(tagName, metaMetadataRepository()
+		return metadataClassDescriptor.getFieldDescriptorByTag(tagName, getRepository()
 				.metadataTranslationScope());
 	}
 

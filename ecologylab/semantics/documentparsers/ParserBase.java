@@ -433,7 +433,7 @@ implements ScalarUnmarshallingContext,SemanticActionsKeyWords, DeserializationHo
 										XPathConstants.NODE);
 			
 			Class<? extends Metadata> metadataClass = mmdElement.getMetadataClass();
-			MetaMetadata metaMetadata 							= mmdElement.metaMetadataRepository().getByClass(metadataClass);
+			MetaMetadata metaMetadata 							= mmdElement.getRepository().getByClass(metadataClass);
 			Class[] argClasses 	= new Class[] { MetaMetadataCompositeField.class };
 			Object[] argObjects = new Object[] { metaMetadata };
 			nestedMetadata = ReflectionTools.getInstance(metadataClass, argClasses, argObjects);
@@ -672,12 +672,12 @@ implements ScalarUnmarshallingContext,SemanticActionsKeyWords, DeserializationHo
 			}
 		}
 
-		// Now we apply the string prefix
-		String stringPrefix = field.getStringPrefix();
-		if (stringPrefix != null)
-		{
-			evaluation = stringPrefix + evaluation;
-		}
+//		// Now we apply the string prefix
+//		String stringPrefix = field.getStringPrefix();
+//		if (stringPrefix != null)
+//		{
+//			evaluation = stringPrefix + evaluation;
+//		}
 
 		// to remove unwanted XML characters
 		evaluation = XMLTools.unescapeXML(evaluation);

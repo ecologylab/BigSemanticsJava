@@ -17,10 +17,9 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 		// TODO Auto-generated constructor stub
 	}
 
-	public MetaMetadataNestedField(String name, ScalarType metadataType,
-			HashMapArrayList<String, MetaMetadataField> set)
+	public MetaMetadataNestedField(String name, HashMapArrayList<String, MetaMetadataField> set)
 	{
-		super(name, metadataType, set);
+		super(name, set);
 		// TODO Auto-generated constructor stub
 	}
 
