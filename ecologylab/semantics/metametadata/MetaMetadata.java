@@ -249,14 +249,6 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 	}
 
 	/**
-	 * @return the extendsAttribute
-	 */
-	public String getExtendsAttribute()
-	{
-		return extendsAttribute;
-	}
-
-	/**
 	 * @return the urlPattern
 	 */
 	public Pattern getUrlRegex()
@@ -440,6 +432,10 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 		return getName();
 	}
 
+	/**
+	 * for definitive meta-metadata, return the super meta-metadata type name (extends= or "metadat");
+	 * for decorative meta-metadata, return the decorated meta-metadata type name (type=).
+	 */
 	@Override
 	protected String getSuperTypeName()
 	{
@@ -459,6 +455,18 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 	{
 		String inheritedMmdName = getSuperTypeName();
 		return getRepository().getByTagName(inheritedMmdName);
+	}
+	
+	@Override
+	protected boolean checkForErrors()
+	{
+		MetaMetadata superMmd = (MetaMetadata) getInheritedField();
+		MetaMetadata existentMmd = getRepository().getByTagName(getTypeName());
+		
+		return assertNotNull(getTypeName(), "meta-metadata type name must be specified.")
+				&& assertNotNull(getSuperTypeName(), "can't resolve parent meta-metadata.")
+				&& assertNull(existentMmd, "meta-metadata '%s' alreadly exists.", getTypeName())
+				&& assertNotNull(superMmd, "meta-metadata '%s' not found.", getSuperTypeName());
 	}
 
 }

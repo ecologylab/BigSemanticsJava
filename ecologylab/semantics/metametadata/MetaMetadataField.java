@@ -235,6 +235,14 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	}
 
 	/**
+	 * @return the extendsAttribute
+	 */
+	public String getExtendsAttribute()
+	{
+		return extendsAttribute;
+	}
+
+	/**
 	 * @return the extendsField
 	 */
 	public String getExtendsField()
@@ -538,11 +546,11 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	}
 
 	/**
-	 * check for necessary fields, e.g. name & type information.
+	 * check for errors.
 	 * 
 	 * @return true if nothing goes wrong; false if there is something wrong.
 	 */
-	abstract protected boolean checkNecessaryFields();
+	abstract protected boolean checkForErrors();
 
 	/**
 	 * do we need to generate a new class definition (e.g. java source file) for this field? 
@@ -663,7 +671,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	
 		return javaClassName;
 	}
-
+	
 	public void compileToMetadataClass(String packageName, Appendable appendable, int pass,
 			boolean appendedToTranslastionScope) throws SIMPLTranslationException, IOException
 	{
@@ -672,7 +680,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	
 		// TODO track generated classes for TranslationScope declaration
 		
-		if (!checkNecessaryFields())
+		if (!checkForErrors())
 			return;
 	
 		doAppending(appendable, pass);
@@ -741,7 +749,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 			{
 				// translate the each meta-metadata field into class.
 				MetaMetadataField cField = childMetaMetadata.get(i);
-				if (!cField.checkNecessaryFields())
+				if (!cField.checkForErrors())
 					continue;
 				cField.setExtendsField(extendsField);
 				cField.setRepository(repository);
@@ -757,7 +765,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 			{
 				// translate the each meta-metadata field into class.
 				MetaMetadataField cField = childMetaMetadata.get(i);
-				if (!cField.checkNecessaryFields())
+				if (!cField.checkForErrors())
 					continue;
 				cField.setExtendsField(extendsField);
 				cField.setRepository(repository);
@@ -1145,17 +1153,52 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	}
 	
 	/**
-	 * util function for debugging. if obj == null, print error message to stderr and return false.
-	 * otherwise return true.
-	 * 
+	 * util function making sure that an object is null.
 	 * @param obj
 	 * @param errorMsgFmt
 	 * @param vars
-	 * @return
+	 * @return true if obj is null, otherwise false.
 	 */
-	protected boolean debugCheckForNull(Object obj, String errorMsgFmt, Object... vars)
+	protected boolean assertNull(Object obj, String errorMsgFmt, Object... vars)
+	{
+		if (obj != null)
+		{
+			String err = String.format(errorMsgFmt, vars);
+			error(err);
+			return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * util function making sure that an object is not null.
+	 * @param obj
+	 * @param errorMsgFmt
+	 * @param vars
+	 * @return true if obj is not null, otherwise false.
+	 */
+	protected boolean assertNotNull(Object obj, String errorMsgFmt, Object... vars)
 	{
 		if (obj == null)
+		{
+			String err = String.format(errorMsgFmt, vars);
+			error(err);
+			return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * util function making sure that two objects are equal (by calling equals()).
+	 * @param obj1
+	 * @param obj2
+	 * @param errorMsgFmt
+	 * @param vars
+	 * @return true if they are equal, otherwise false.
+	 */
+	protected boolean assertEquals(Object obj1, Object obj2, String errorMsgFmt, Object... vars)
+	{
+		if (!obj1.equals(obj2))
 		{
 			String err = String.format(errorMsgFmt, vars);
 			error(err);

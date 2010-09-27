@@ -36,7 +36,7 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 	 */
 	public void inheritMetaMetadata(MetaMetadataRepository repository)
 	{
-		if(!inheritMetaMetadataFinished)
+		if (!inheritMetaMetadataFinished)
 		{
 			/**************************************************************************************
 			 * Inheritance works here in a top-down manner: first we know the type or extends of a
@@ -44,35 +44,35 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 			 * children (those not defined inline). In this way we can resolve type information
 			 * recursively.
 			 **************************************************************************************/
-			
+
 			/*
 			 * tagName will be type / extends attribute for <composite>, or child_type attribute for
 			 * <collection>
 			 */
 			String tagName = getMetaMetadataTagToInheritFrom();
-			MetaMetadata inheritedMetaMetadata =  repository.getByTagName(tagName);
-			if(inheritedMetaMetadata != null)
+			MetaMetadata inheritedMetaMetadata = repository.getByTagName(tagName);
+			if (inheritedMetaMetadata != null)
 			{
 				inheritedMetaMetadata.inheritMetaMetadata(repository);
 				// <collection> should not inherit attributes from its child_type
 				if (!(this instanceof MetaMetadataCollectionField))
 					inheritNonDefaultAttributes(inheritedMetaMetadata);
-				for(MetaMetadataField inheritedField : inheritedMetaMetadata.getChildMetaMetadata())
+				for (MetaMetadataField inheritedField : inheritedMetaMetadata.getChildMetaMetadata())
 					inheritForField(inheritedField);
 				inheritNonFieldComponentsFromMM(inheritedMetaMetadata);
 			}
-			
+
 			if (kids != null)
 			{
-				for(MetaMetadataField childField : kids)
+				for (MetaMetadataField childField : kids)
 				{
 					if (childField instanceof MetaMetadataNestedField)
-						((MetaMetadataNestedField)childField).inheritMetaMetadata(repository);
+						((MetaMetadataNestedField) childField).inheritMetaMetadata(repository);
 				}
-				
+
 				sortForDisplay();
 			}
-			
+
 			inheritMetaMetadataFinished = true;
 		}
 	}
@@ -83,11 +83,11 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 		// if no internal structure, no need to generate a class
 		if (kids == null)
 			return false;
-		
+
 		// if indicated by the author explicitly, do not generate a class
 		if (this instanceof MetaMetadata && !((MetaMetadata) this).isGenerateClass())
 			return false;
-		
+
 		// otherwise, determine if we need to generate a class
 		/*
 		 * look through its children recursively. if any of them is a data definition, which implies
@@ -96,13 +96,13 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 		 * 
 		 * must start from the 1st level children, not the field itself
 		 */
-		for (MetaMetadataField child: getChildMetaMetadata())
+		for (MetaMetadataField child : getChildMetaMetadata())
 			if (child.isNewDeclaration())
 				return true;
-		
+
 		return false;
 	}
-	
+
 	/**
 	 * public void setAuthors(HashMapArrayList<String, Author> authors) { this.authorNames = authors;
 	 * }
@@ -119,8 +119,8 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 		MetadataCompilerUtils.writeJavaDocComment(comment, appendable);
 
 		// write first line
-		appendable.append("public void set" + StringTools.capitalize(fieldName) + "( "
-				+ fieldType + " " + fieldName + " )\n{\n");
+		appendable.append("public void set" + StringTools.capitalize(fieldName) + "( " + fieldType
+				+ " " + fieldName + " )\n{\n");
 		appendable.append("this." + fieldName + " = " + fieldName + " ;\n}\n");
 	}
 
@@ -132,11 +132,13 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 		MetadataCompilerUtils.writeJavaDocComment(comment, appendable);
 
 		// write first line
-		appendable.append("public "+fieldType+" get" + StringTools.capitalize(fieldName) + "(){\n");
-		appendable.append("return this." + fieldName+ ";\n}\n");
+		appendable.append("public " + fieldType + " get" + StringTools.capitalize(fieldName) + "(){\n");
+		appendable.append("return this." + fieldName + ";\n}\n");
 	}
+
 	/**
 	 * Get the MetaMetadataCompositeField associated with this.
+	 * 
 	 * @return
 	 */
 	public abstract MetaMetadataCompositeField metaMetadataCompositeField();
@@ -144,9 +146,27 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 	@Override
 	protected String getSuperTypeName()
 	{
-		if (extendsAttribute != null)
-			return extendsAttribute;
+		if (getExtendsAttribute() != null)
+			return getExtendsAttribute();
 		return "metadata";
+	}
+
+	@Override
+	protected boolean checkForErrors()
+	{
+		MetaMetadataNestedField inherited = (MetaMetadataNestedField) getInheritedField();
+		if (inherited == null)
+		{
+			// definitive
+			return assertNotNull(getName(), "name must be specified.")
+					&& assertNotNull(getTypeName(), "type information must be specified.");
+		}
+		else
+		{
+			// declarative
+			String inheritedTypeName = inherited.getTypeName();
+			return assertEquals(getTypeName(), inheritedTypeName, "field type not matches inherited one: ", getTypeName());
+		}
 	}
 
 }

@@ -314,14 +314,10 @@ public class MetaMetadataScalarField extends MetaMetadataField
 	}
 
 	@Override
-	protected boolean checkNecessaryFields()
+	protected boolean checkForErrors()
 	{
 		if (name == null)
 			return false;
-		
-		if (isNewDeclaration() && scalarType == null)
-			return false;
-		
 		return true;
 	}
 

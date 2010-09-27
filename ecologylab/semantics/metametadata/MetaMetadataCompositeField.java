@@ -215,23 +215,6 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField
 	}
 
 	@Override
-	protected boolean checkNecessaryFields()
-	{
-		if (!debugCheckForNull(name, "name must be specified: %s", this))
-			return false;
-		
-		String typeInfo = type == null ? extendsAttribute : type;
-		if (isNewDeclaration() && !debugCheckForNull(typeInfo, "no type info specified: %s", this))
-			return false;
-		
-		MetaMetadata referred = getRepository().getByTagName(typeInfo);
-		if (!debugCheckForNull(referred, "referred to non-existent meta-metadata: %s", typeInfo))
-			return false;
-		
-		return true;
-	}
-
-	@Override
 	protected String getTypeName()
 	{
 		if (type != null)
