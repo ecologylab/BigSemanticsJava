@@ -292,4 +292,23 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 	{
 		return getChildComposite();
 	}
+	
+	@Override
+	protected boolean checkNecessaryFields()
+	{
+		if (!debugCheckForNull(name, "name must be specified: %s", this))
+			return false;
+		
+		if (isNewDeclaration())
+		{
+			if (!debugCheckForNull(childType, "child_type must be specified: %s", this))
+				return false;
+			MetaMetadata referred = getRepository().getByTagName(childType);
+			if (!debugCheckForNull(referred, "referred to non-existent meta-metadata: %s", childType))
+				return false;
+		}
+		
+		return true;
+	}
+
 }

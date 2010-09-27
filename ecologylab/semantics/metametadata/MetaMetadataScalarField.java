@@ -313,4 +313,16 @@ public class MetaMetadataScalarField extends MetaMetadataField
 		System.out.println(m);
 	}
 
+	@Override
+	protected boolean checkNecessaryFields()
+	{
+		if (name == null)
+			return false;
+		
+		if (isNewDeclaration() && scalarType == null)
+			return false;
+		
+		return true;
+	}
+
 }

@@ -34,9 +34,9 @@
 		<selector domain="slashdot.org" url_regex="http://[a-zA-Z]*.slashdot.org/story/" />
 		<def_var name="poster_node" xpath="//div[starts-with(@id, 'details-')]/small/a/.." type="node" />
 		<def_var name="description_node" xpath="//div[starts-with(@id, 'text-')]/i/.." type="node" />
-		<scalar name="poster" scalar_type="String" navigates_to="poster_url" context-node="poster_node" xpath="." />
-		<scalar name="poster_url" scalar_type="ParsedURL" hide="true" context-node="poster_node" xpath="./small/a" />
-		<scalar name="description" scalar_type="String" context-node="description_node" xpath="." />
+		<scalar name="poster" scalar_type="String" navigates_to="poster_url" context_node="poster_node" xpath="." />
+		<scalar name="poster_url" scalar_type="ParsedURL" hide="true" context_node="poster_node" xpath="./small/a" />
+		<scalar name="description" scalar_type="String" context_node="description_node" xpath="." />
 		<collection name="anchors" child_type="anchor" xpath = "//div[starts-with(@id, 'text-')]//a" >
 			<scalar name="link" scalar_type="ParsedURL" xpath="./@href" />
 			<scalar name="anchor_text" scalar_type="String" xpath="string(.)" />

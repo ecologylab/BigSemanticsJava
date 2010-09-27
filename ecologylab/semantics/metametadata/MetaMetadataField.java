@@ -538,6 +538,13 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	}
 
 	/**
+	 * check for necessary fields, e.g. name & type information.
+	 * 
+	 * @return true if nothing goes wrong; false if there is something wrong.
+	 */
+	abstract protected boolean checkNecessaryFields();
+
+	/**
 	 * do we need to generate a new class definition (e.g. java source file) for this field? 
 	 * 
 	 * @return
@@ -664,6 +671,9 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 		// TODO import paths
 	
 		// TODO track generated classes for TranslationScope declaration
+		
+		if (!checkNecessaryFields())
+			return;
 	
 		doAppending(appendable, pass);
 	
@@ -676,7 +686,13 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 			String generationPath = MetadataCompilerUtils.getGenerationPath(packageName);
 	
 			// the name of the java class.
-			String typeNameXmlStyle = generateNewClassName();
+			String metaMetadataName = generateNewClassName();
+			
+			MetaMetadataField existent = getRepository().getByTagName(metaMetadataName);
+			if (existent != null)
+			{
+				warning("overriding existent meta-metadata: " + existent.packageName() + "." + metaMetadataName);
+			}
 	
 			// if this class implements any Interface it will contain that.
 			String implementDecl = "";
@@ -691,7 +707,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 			 * 
 			 * }
 			 */
-			String javaClassName = XMLTools.classNameFromElementName(typeNameXmlStyle);
+			String javaClassName = XMLTools.classNameFromElementName(metaMetadataName);
 			// file writer.
 			File directoryPath = PropertiesAndDirectories.createDirsAsNeeded(new File(generationPath));
 	
@@ -725,6 +741,8 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 			{
 				// translate the each meta-metadata field into class.
 				MetaMetadataField cField = childMetaMetadata.get(i);
+				if (!cField.checkNecessaryFields())
+					continue;
 				cField.setExtendsField(extendsField);
 				cField.setRepository(repository);
 				cField.compileToMetadataClass(packageName, p, MetadataCompilerUtils.GENERATE_FIELDS_PASS,
@@ -739,6 +757,8 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 			{
 				// translate the each meta-metadata field into class.
 				MetaMetadataField cField = childMetaMetadata.get(i);
+				if (!cField.checkNecessaryFields())
+					continue;
 				cField.setExtendsField(extendsField);
 				cField.setRepository(repository);
 				cField.compileToMetadataClass(packageName, p, MetadataCompilerUtils.GENERATE_METHODS_PASS,
@@ -1122,6 +1142,26 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	protected void deserializationPostHook()
 	{
 	
+	}
+	
+	/**
+	 * util function for debugging. if obj == null, print error message to stderr and return false.
+	 * otherwise return true.
+	 * 
+	 * @param obj
+	 * @param errorMsgFmt
+	 * @param vars
+	 * @return
+	 */
+	protected boolean debugCheckForNull(Object obj, String errorMsgFmt, Object... vars)
+	{
+		if (obj == null)
+		{
+			String err = String.format(errorMsgFmt, vars);
+			error(err);
+			return false;
+		}
+		return true;
 	}
 
 }

@@ -219,6 +219,7 @@
 			<scalar name="location" xpath="//div[@class='photo-div']/img/@src" />
 			<scalar name="caption" xpath="./h1" context_node="photoTD" />
 		</composite>
+		
 		<collection name="flickr_tags" child_type="flickr_tag" xpath="//a[@class='tag-item ywa-track']">
 			<scalar name="tag_name" xpath="." />
 			<scalar name="tag_link" xpath="./@href" />
@@ -293,8 +294,7 @@
 	<meta_metadata name="flickr_groups" extends="search" comment="Searching from a photo for nearby photos" parser="xpath">
 		<selector url_regex="^http://www.flickr.com/groups/[A-z0-9_@-]+/pool" domain="flickr.com" />
 		<!-- This is a convenience thing...  there is probably a better way to do search  -->
-		<collection name="flickr_tags"
-				xpath="//div[@class='Paginator']/a/@href" child_type="flickr_tag" hide="true">
+		<collection name="flickr_tags" xpath="//div[@class='Paginator']/a/@href" child_type="flickr_tag" hide="true">
 				<scalar name="tag_name" xpath="." />
 				<scalar name="tag_link" xpath="." />
 		</collection>
@@ -303,10 +303,6 @@
 			<scalar name="link" xpath="./span/a/@href">
 				<filter regex="/in/.*$" replace="/" />
 			</scalar>
-			<scalar name="link" xpath="./span/a/@href">
-				<filter regex="/in/.*$" replace="/" />
-			</scalar>
-
 			<scalar name="heading" xpath="./span/a" />
 			<scalar name="snippet" xpath="./span/a/@title" />
 		</collection>
@@ -326,7 +322,6 @@
 				<parse_document now="true">
 					<arg value="tag_link" name="container_link" />
 				</parse_document>
-
 			</for_each>
 		</semantic_actions>
 	</meta_metadata>

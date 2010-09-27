@@ -173,11 +173,11 @@
 
   <!-- intermediate layers for source types. necessary for binding tags. -->
   <meta_metadata name="bing_search_web_section" extends="document">
-    <collection name="web_search_results" child_type="bing_web_search_result" tag="web:Results" child_tag="web:WebResult" nowrap="false" />
+    <collection name="web_search_results" child_type="bing_web_search_result" tag="web:Results" child_tag="web:WebResult" no_wrap="false" />
   </meta_metadata>
 
   <meta_metadata name="bing_search_image_section" extends="document">
-    <collection name="image_search_results" child_type="bing_image_search_result" tag="mms:Results" child_tag="mms:ImageResult" nowrap="false" />
+    <collection name="image_search_results" child_type="bing_image_search_result" tag="mms:Results" child_tag="mms:ImageResult" no_wrap="false" />
   </meta_metadata>
 
   <!-- Bing search. note that they put different types of search results (i.e. sources) into the same structure. -->
