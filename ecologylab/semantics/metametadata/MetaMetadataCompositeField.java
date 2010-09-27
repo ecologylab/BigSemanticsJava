@@ -231,4 +231,12 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField
 		return true;
 	}
 
+	@Override
+	protected String getTypeName()
+	{
+		if (type != null)
+			return type;
+		return name;
+	}
+
 }

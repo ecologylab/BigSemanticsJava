@@ -434,4 +434,31 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 		selector = s;
 	}
 
+	@Override
+	protected String getTypeName()
+	{
+		return getName();
+	}
+
+	@Override
+	protected String getSuperTypeName()
+	{
+		// decorative
+		if (getType() != null)
+			return getType();
+		
+		// definitive
+		if (getExtendsAttribute() != null)
+			return getExtendsAttribute();
+		else
+			return "metadata";
+	}
+
+	@Override
+	protected MetaMetadataField getInheritedField()
+	{
+		String inheritedMmdName = getSuperTypeName();
+		return getRepository().getByTagName(inheritedMmdName);
+	}
+
 }

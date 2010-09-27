@@ -77,9 +77,6 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 		}
 	}
 
-	/**
-	 * Indicate whether to generate a new class definition for this meta-metadata.
-	 */
 	@Override
 	public boolean isNewClass()
 	{
@@ -143,5 +140,13 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 	 * @return
 	 */
 	public abstract MetaMetadataCompositeField metaMetadataCompositeField();
+
+	@Override
+	protected String getSuperTypeName()
+	{
+		if (extendsAttribute != null)
+			return extendsAttribute;
+		return "metadata";
+	}
 
 }

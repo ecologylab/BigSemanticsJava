@@ -1163,5 +1163,30 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 		}
 		return true;
 	}
+	
+	/**
+	 * @return the type name of this field (or meta-metadata). for meta-metadata, it returns its name
+	 * cause its name is actually a type name. for (nested) fields, it returns type= or child_type= if
+	 * their values are specified, otherwise name= -- in either case the type information of this
+	 * field.
+	 */
+	abstract protected String getTypeName();
+	
+	/**
+	 * @return the super type name of this field (or meta-metadata). for meta-metadata, it returns
+	 * type= if specified (indicating this is a <b>decorative</b> meta-metadata), otherwise extends=
+	 * or "metadata". for fields, it returns extends= or "metadata".
+	 */
+	abstract protected String getSuperTypeName();
+	
+	/**
+	 * @return the field object from which this field inherits.
+	 */
+	protected MetaMetadataField getInheritedField()
+	{
+		MetaMetadataNestedField parent = (MetaMetadataNestedField) parent();
+		MetaMetadataNestedField parentInherited = (MetaMetadataNestedField) parent.getInheritedField();
+		return parentInherited.lookupChild(getName());
+	}
 
 }

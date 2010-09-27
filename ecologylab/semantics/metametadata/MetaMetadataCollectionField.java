@@ -311,4 +311,12 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 		return true;
 	}
 
+	@Override
+	protected String getTypeName()
+	{
+		if (childType != null)
+			return childType;
+		return name;
+	}
+
 }

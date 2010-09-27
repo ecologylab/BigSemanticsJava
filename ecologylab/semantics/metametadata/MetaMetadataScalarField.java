@@ -325,4 +325,16 @@ public class MetaMetadataScalarField extends MetaMetadataField
 		return true;
 	}
 
+	@Override
+	protected String getTypeName()
+	{
+		return scalarType.fieldTypeName();
+	}
+
+	@Override
+	protected String getSuperTypeName()
+	{
+		return null;
+	}
+
 }
