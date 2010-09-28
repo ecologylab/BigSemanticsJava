@@ -314,11 +314,9 @@ public class MetaMetadataScalarField extends MetaMetadataField
 	}
 
 	@Override
-	protected boolean checkForErrors()
+	public boolean checkForErrors()
 	{
-		if (name == null)
-			return false;
-		return true;
+		return name != null;
 	}
 
 	@Override
