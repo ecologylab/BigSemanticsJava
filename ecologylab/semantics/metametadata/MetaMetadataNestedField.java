@@ -159,13 +159,13 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 		{
 			// definitive
 			return assertNotNull(getName(), "name must be specified.")
-					&& assertNotNull(getTypeName(), "type information must be specified.");
+					&& assertNotNull(getTypeName(), "can't resolve type.");
 		}
 		else
 		{
 			// declarative
 			String inheritedTypeName = inherited.getTypeName();
-			return assertEquals(getTypeName(), inheritedTypeName, "field type not matches inherited one: ", getTypeName());
+			return assertEquals(getTypeName(), inheritedTypeName, "field type not matches inherited one: %s", getTypeName());
 		}
 	}
 

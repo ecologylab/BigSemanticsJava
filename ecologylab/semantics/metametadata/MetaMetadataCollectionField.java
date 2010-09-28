@@ -298,7 +298,20 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 	{
 		if (childType != null)
 			return childType;
-		return name;
+			
+		MetaMetadataField inherited = getInheritedField();
+		if (inherited == null)
+		{
+			// definitive
+			return name;
+		}
+		else
+		{
+			// decorative
+			if (!(inherited instanceof MetaMetadataCollectionField))
+				return null; // type mismatch
+			return inherited.getTypeName();
+		}
 	}
 
 }

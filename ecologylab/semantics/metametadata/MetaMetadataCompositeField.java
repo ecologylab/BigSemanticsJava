@@ -219,7 +219,20 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField
 	{
 		if (type != null)
 			return type;
-		return name;
+			
+		MetaMetadataField inherited = getInheritedField();
+		if (inherited == null)
+		{
+			// definitive
+			return name;
+		}
+		else
+		{
+			// decorative
+			if (!(inherited instanceof MetaMetadataCompositeField))
+				return null; // type mismatch
+			return inherited.getTypeName();
+		}
 	}
 
 }

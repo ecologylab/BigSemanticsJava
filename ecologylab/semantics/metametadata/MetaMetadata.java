@@ -136,6 +136,9 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 	public void compileToMetadataClass(String packageName, MetaMetadataRepository mmdRepository)
 			throws IOException
 	{
+		if (!checkForErrors())
+			return;
+		
 		// get the generation path from the package name.
 		if (this.packageAttribute != null)
 		{
@@ -461,11 +464,9 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 	protected boolean checkForErrors()
 	{
 		MetaMetadata superMmd = (MetaMetadata) getInheritedField();
-		MetaMetadata existentMmd = getRepository().getByTagName(getTypeName());
 		
 		return assertNotNull(getTypeName(), "meta-metadata type name must be specified.")
 				&& assertNotNull(getSuperTypeName(), "can't resolve parent meta-metadata.")
-				&& assertNull(existentMmd, "meta-metadata '%s' alreadly exists.", getTypeName())
 				&& assertNotNull(superMmd, "meta-metadata '%s' not found.", getSuperTypeName());
 	}
 

@@ -749,8 +749,6 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 			{
 				// translate the each meta-metadata field into class.
 				MetaMetadataField cField = childMetaMetadata.get(i);
-				if (!cField.checkForErrors())
-					continue;
 				cField.setExtendsField(extendsField);
 				cField.setRepository(repository);
 				cField.compileToMetadataClass(packageName, p, MetadataCompilerUtils.GENERATE_FIELDS_PASS,
@@ -765,8 +763,6 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 			{
 				// translate the each meta-metadata field into class.
 				MetaMetadataField cField = childMetaMetadata.get(i);
-				if (!cField.checkForErrors())
-					continue;
 				cField.setExtendsField(extendsField);
 				cField.setRepository(repository);
 				cField.compileToMetadataClass(packageName, p, MetadataCompilerUtils.GENERATE_METHODS_PASS,
@@ -1209,9 +1205,9 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	
 	/**
 	 * @return the type name of this field (or meta-metadata). for meta-metadata, it returns its name
-	 * cause its name is actually a type name. for (nested) fields, it returns type= or child_type= if
-	 * their values are specified, otherwise name= -- in either case the type information of this
-	 * field.
+	 * cause its name is actually a type name. for definitive fields, it tries type= / child_type= and
+	 * name in order; for decorative fields, it tries type= / child_type= and inherited type name in
+	 * order.
 	 */
 	abstract protected String getTypeName();
 	
@@ -1229,7 +1225,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	{
 		MetaMetadataNestedField parent = (MetaMetadataNestedField) parent();
 		MetaMetadataNestedField parentInherited = (MetaMetadataNestedField) parent.getInheritedField();
-		return parentInherited.lookupChild(getName());
+		return parentInherited == null ? null : parentInherited.lookupChild(getName());
 	}
 
 }
