@@ -51,15 +51,11 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 		this.xpath = mmf.xpath;
 		this.navigatesTo = mmf.navigatesTo;
 		this.shadows = mmf.shadows;
-		this.stringPrefix = mmf.stringPrefix;
 		this.isFacet = mmf.isFacet;
 		this.ignoreInTermVector = mmf.ignoreInTermVector;
 		this.comment = mmf.comment;
-		this.dontCompile = mmf.dontCompile;
-		this.key = mmf.key;
 		this.contextNode = mmf.contextNode;
 		this.tag = mmf.tag;
-		this.ignoreExtractionError = mmf.ignoreExtractionError;
 		this.kids = mmf.kids;
 	}
 
@@ -160,7 +156,7 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 		String childTag = getChildTag();
 		if (childTag == null)
 		{
-			warning("child_tag not specified in meta-metadata for collection field " + this.name);
+			warning("child_tag / child_type not specified in meta-metadata for collection field " + this.name);
 			return;
 		}
 
@@ -296,4 +292,26 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 	{
 		return getChildComposite();
 	}
+	
+	@Override
+	protected String getTypeName()
+	{
+		if (childType != null)
+			return childType;
+			
+		MetaMetadataField inherited = getInheritedField();
+		if (inherited == null)
+		{
+			// definitive
+			return name;
+		}
+		else
+		{
+			// decorative
+			if (!(inherited instanceof MetaMetadataCollectionField))
+				return null; // type mismatch
+			return inherited.getTypeName();
+		}
+	}
+
 }

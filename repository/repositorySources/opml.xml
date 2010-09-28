@@ -33,10 +33,12 @@
 								keeping the other attributes-->
 						<get_field name="outlines" object="outline"/>
 						<not_null value="outlines"/>
+						<!--
 						<call_action name="recursiveForLoop" >
 							<arg value="outlines" name="collection"/>
 
 						</call_action> 
+						-->
 					</case>
 				</choose>
 				

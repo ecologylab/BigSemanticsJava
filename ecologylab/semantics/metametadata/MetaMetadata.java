@@ -78,7 +78,7 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 
 	public Metadata constructMetadata()
 	{
-		return constructMetadata(this.repository().metadataTranslationScope());
+		return constructMetadata(this.getRepository().metadataTranslationScope());
 	}
 
 	/**
@@ -104,7 +104,7 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 			{
 				for (String mixinName : mixins)
 				{
-					MetaMetadata mixinMM = repository().getByTagName(mixinName);
+					MetaMetadata mixinMM = getRepository().getByTagName(mixinName);
 					if (mixinMM != null)
 					{
 						Metadata mixinMetadata = mixinMM.constructMetadata(ts);
@@ -136,6 +136,9 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 	public void compileToMetadataClass(String packageName, MetaMetadataRepository mmdRepository)
 			throws IOException
 	{
+		if (!checkForErrors())
+			return;
+		
 		// get the generation path from the package name.
 		if (this.packageAttribute != null)
 		{
@@ -187,7 +190,7 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 			for (MetaMetadataField metaMetadataField : metaMetadataFieldList)
 			{
 				metaMetadataField.setExtendsField(extendsAttribute);
-				metaMetadataField.setMmdRepository(mmdRepository);
+				metaMetadataField.setRepository(mmdRepository);
 				try
 				{
 					// translate the field into for metadata class.
@@ -212,7 +215,7 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 				// get the metadata field.
 				MetaMetadataField f = (MetaMetadataField) metaMetadataFieldList.get(i);
 				f.setExtendsField(extendsAttribute);
-				f.setMmdRepository(mmdRepository);
+				f.setRepository(mmdRepository);
 				try
 				{
 					// translate the field into for metadata class.
@@ -246,14 +249,6 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 	public String getCollectionOf()
 	{
 		return collectionOf;
-	}
-
-	/**
-	 * @return the extendsAttribute
-	 */
-	public String getExtendsAttribute()
-	{
-		return extendsAttribute;
 	}
 
 	/**
@@ -399,7 +394,7 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 
 	public MetadataFieldDescriptor getFieldDescriptorByTagName(String tagName)
 	{
-		return metadataClassDescriptor.getFieldDescriptorByTag(tagName, metaMetadataRepository()
+		return metadataClassDescriptor.getFieldDescriptorByTag(tagName, getRepository()
 				.metadataTranslationScope());
 	}
 
@@ -432,6 +427,47 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 	public void setSelector(MetaMetadataSelector s)
 	{
 		selector = s;
+	}
+
+	@Override
+	protected String getTypeName()
+	{
+		return getName();
+	}
+
+	/**
+	 * for definitive meta-metadata, return the super meta-metadata type name (extends= or "metadat");
+	 * for decorative meta-metadata, return the decorated meta-metadata type name (type=).
+	 */
+	@Override
+	protected String getSuperTypeName()
+	{
+		// decorative
+		if (getType() != null)
+			return getType();
+		
+		// definitive
+		if (getExtendsAttribute() != null)
+			return getExtendsAttribute();
+		else
+			return "metadata";
+	}
+
+	@Override
+	protected MetaMetadataField getInheritedField()
+	{
+		String inheritedMmdName = getSuperTypeName();
+		return getRepository().getByTagName(inheritedMmdName);
+	}
+	
+	@Override
+	protected boolean checkForErrors()
+	{
+		MetaMetadata superMmd = (MetaMetadata) getInheritedField();
+		
+		return assertNotNull(getTypeName(), "meta-metadata type name must be specified.")
+				&& assertNotNull(getSuperTypeName(), "can't resolve parent meta-metadata.")
+				&& assertNotNull(superMmd, "meta-metadata '%s' not found.", getSuperTypeName());
 	}
 
 }
