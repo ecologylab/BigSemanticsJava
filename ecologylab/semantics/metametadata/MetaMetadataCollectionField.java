@@ -156,7 +156,7 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 		String childTag = getChildTag();
 		if (childTag == null)
 		{
-			warning("child_tag not specified in meta-metadata for collection field " + this.name);
+			warning("child_tag / child_type not specified in meta-metadata for collection field " + this.name);
 			return;
 		}
 
