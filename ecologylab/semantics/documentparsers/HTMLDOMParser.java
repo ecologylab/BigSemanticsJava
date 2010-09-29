@@ -25,6 +25,7 @@ import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
+import ecologylab.semantics.tools.SimpleTimer;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.XMLTools;
 
@@ -80,6 +81,9 @@ extends HTMLParserCommon<C, IC>
 	  	 // we dont build a tidy for for direct biniding
 	  	 if(metaMetadata == null || !"direct".equals(metaMetadata.getParser()))
 	  		 		document 							= tidy.parseDOM(inputStream(),/* System.out*/null);
+	  	 
+	  	 SimpleTimer.get().finishTiming(getContainer());
+	  	 
 		   postParse();
 	   } catch (Exception e) 
 	   {
