@@ -20,6 +20,7 @@ import ecologylab.semantics.model.text.ITermVector;
 import ecologylab.semantics.seeding.SearchResult;
 import ecologylab.semantics.seeding.Seed;
 import ecologylab.semantics.seeding.SeedDistributor;
+import ecologylab.semantics.tools.SimpleTimer;
 import ecologylab.serialization.TranslationScope;
 
 /**
@@ -200,6 +201,8 @@ public class MyContainer extends Container
 	{
 		// calls connect to find the right parser, then calls the infocollector to download the content
 		// also process the semantic actions
+		
+		SimpleTimer.get().startTiming(this);
 
 		DocumentParser parser = DocumentParser.connect(purl(), this, infoCollector,
 				infoCollector.createSemanticActionHandler());
