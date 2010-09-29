@@ -17,20 +17,20 @@ import java.util.Map;
  * only when you don't need much accuracy.
  * 
  * @author quyin
- *
+ * 
  */
 public class SimpleTimer
 {
-	
-	private BufferedWriter out;
-	
-	private Map<Object, Long> timeTable = new HashMap<Object, Long>();
+
+	private BufferedWriter		out;
+
+	private Map<Object, Long>	timeTable	= new HashMap<Object, Long>();
 
 	private SimpleTimer(String recordFilePath) throws IOException
 	{
 		out = new BufferedWriter(new FileWriter(recordFilePath));
 	}
-	
+
 	/**
 	 * start timing on a particular object.
 	 * 
@@ -38,34 +38,44 @@ public class SimpleTimer
 	 */
 	public void startTiming(Object obj)
 	{
-		timeTable.put(obj, System.currentTimeMillis());
+		synchronized (timeTable)
+		{
+			timeTable.put(obj, System.currentTimeMillis());
+		}
 	}
-	
+
 	/**
 	 * finish timing on a particular object, and record interval into file.
 	 * 
 	 * @param obj
 	 */
-	public void finishTiming(Object obj)
+	public synchronized void finishTiming(Object obj)
 	{
-		long t1 = System.currentTimeMillis();
-		if (timeTable.containsKey(obj))
+		synchronized (timeTable)
 		{
-			long t0 = timeTable.get(obj);
-			long interval = t1 - t0;
-			try
+			long t1 = System.currentTimeMillis();
+			if (timeTable.containsKey(obj))
 			{
-				out.write(String.format("timing %s: %d ms.\n", obj, interval));
-			}
-			catch (IOException e)
-			{
-				System.err.println("error finishing timing " + obj + ": " + e.getMessage());
+				long t0 = timeTable.get(obj);
+				long interval = t1 - t0;
+				try
+				{
+					out.write(String.format("timing %s: %d ms.\n", obj, interval));
+				}
+				catch (IOException e)
+				{
+					System.err.println("error finishing timing " + obj + ": " + e.getMessage());
+				}
+				finally
+				{
+					timeTable.remove(obj);
+				}
 			}
 		}
 	}
-	
-	static private Map<String, SimpleTimer> theMap = new HashMap<String, SimpleTimer>();
-	
+
+	static private Map<String, SimpleTimer>	theMap	= new HashMap<String, SimpleTimer>();
+
 	/**
 	 * create or retrieve a timer using given file path.
 	 * 
@@ -81,9 +91,9 @@ public class SimpleTimer
 		theMap.put(recordFilePath, pm);
 		return pm;
 	}
-	
-	static public final String defaultRecordFilePath = "performance.log";
-	
+
+	static public final String	defaultRecordFilePath	= "performance.log";
+
 	/**
 	 * get the default timer.
 	 * 
@@ -94,7 +104,7 @@ public class SimpleTimer
 	{
 		return get(defaultRecordFilePath);
 	}
-	
+
 	/**
 	 * close a particular timer. must be called after use.
 	 * 
@@ -109,7 +119,7 @@ public class SimpleTimer
 			theMap.remove(recordFilePath);
 		}
 	}
-	
+
 	/**
 	 * close all timers. must be called if you haven't close each timer manually.
 	 * 
@@ -119,8 +129,9 @@ public class SimpleTimer
 	{
 		for (String path : theMap.keySet())
 		{
-			close(path);
+			theMap.get(path).out.close();
 		}
+		theMap.clear();
 	}
-	
+
 }
