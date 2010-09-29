@@ -25,7 +25,6 @@ import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
-import ecologylab.semantics.tools.SimpleTimer;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.XMLTools;
 
@@ -82,7 +81,7 @@ extends HTMLParserCommon<C, IC>
 	  	 if(metaMetadata == null || !"direct".equals(metaMetadata.getParser()))
 	  		 		document 							= tidy.parseDOM(inputStream(),/* System.out*/null);
 	  	 
-	  	 SimpleTimer.get("fetching_and_rendering.log").finishTiming(getContainer());
+//	  	 SimpleTimer.get("fetching_and_rendering.log").finishTiming(getContainer());
 	  	 
 		   postParse();
 	   } catch (Exception e) 
