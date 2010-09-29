@@ -82,7 +82,7 @@ extends HTMLParserCommon<C, IC>
 	  	 if(metaMetadata == null || !"direct".equals(metaMetadata.getParser()))
 	  		 		document 							= tidy.parseDOM(inputStream(),/* System.out*/null);
 	  	 
-	  	 SimpleTimer.get().finishTiming(getContainer());
+	  	 SimpleTimer.get("fetching_and_rendering.log").finishTiming(getContainer());
 	  	 
 		   postParse();
 	   } catch (Exception e) 

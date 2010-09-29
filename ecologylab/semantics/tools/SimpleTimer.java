@@ -36,12 +36,9 @@ public class SimpleTimer
 	 * 
 	 * @param obj
 	 */
-	public void startTiming(Object obj)
+	public synchronized void startTiming(Object obj)
 	{
-		synchronized (timeTable)
-		{
-			timeTable.put(obj, System.currentTimeMillis());
-		}
+		timeTable.put(obj, System.currentTimeMillis());
 	}
 
 	/**
@@ -51,25 +48,22 @@ public class SimpleTimer
 	 */
 	public synchronized void finishTiming(Object obj)
 	{
-		synchronized (timeTable)
+		long t1 = System.currentTimeMillis();
+		if (timeTable.containsKey(obj))
 		{
-			long t1 = System.currentTimeMillis();
-			if (timeTable.containsKey(obj))
+			long t0 = timeTable.get(obj);
+			long interval = t1 - t0;
+			try
 			{
-				long t0 = timeTable.get(obj);
-				long interval = t1 - t0;
-				try
-				{
-					out.write(String.format("timing %s: %d ms.\n", obj, interval));
-				}
-				catch (IOException e)
-				{
-					System.err.println("error finishing timing " + obj + ": " + e.getMessage());
-				}
-				finally
-				{
-					timeTable.remove(obj);
-				}
+				out.write(String.format("timing %s: %d ms.\n", obj, interval));
+			}
+			catch (IOException e)
+			{
+				System.err.println("error finishing timing " + obj + ": " + e.getMessage());
+			}
+			finally
+			{
+				timeTable.remove(obj);
 			}
 		}
 	}
@@ -92,19 +86,6 @@ public class SimpleTimer
 		return pm;
 	}
 
-	static public final String	defaultRecordFilePath	= "performance.log";
-
-	/**
-	 * get the default timer.
-	 * 
-	 * @return
-	 * @throws IOException
-	 */
-	static public SimpleTimer get() throws IOException
-	{
-		return get(defaultRecordFilePath);
-	}
-
 	/**
 	 * close a particular timer. must be called after use.
 	 * 
@@ -115,6 +96,7 @@ public class SimpleTimer
 	{
 		if (theMap.containsKey(recordFilePath))
 		{
+			theMap.get(recordFilePath).out.flush();
 			theMap.get(recordFilePath).out.close();
 			theMap.remove(recordFilePath);
 		}
@@ -129,6 +111,7 @@ public class SimpleTimer
 	{
 		for (String path : theMap.keySet())
 		{
+			theMap.get(path).out.flush();
 			theMap.get(path).out.close();
 		}
 		theMap.clear();

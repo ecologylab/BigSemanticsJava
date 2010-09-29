@@ -3,6 +3,8 @@
  */
 package ecologylab.semantics.documentparsers;
 
+import java.io.IOException;
+
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
 
@@ -14,6 +16,7 @@ import ecologylab.semantics.actions.SemanticActionsKeyWords;
 import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataBase;
+import ecologylab.semantics.tools.SimpleTimer;
 import ecologylab.serialization.SIMPLTranslationException;
 
 /**
@@ -37,9 +40,29 @@ public class XPathParser< SA extends SemanticAction> extends
 	@Override
 	public ecologylab.semantics.metadata.builtins.Document populateMetadata()
 	{
+		try
+		{
+			SimpleTimer.get("populating.log").startTiming(getContainer());
+		}
+		catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		recursiveExtraction(getMetadataTranslationScope(), metaMetadata,
 					container.metadata(), xpath, semanticActionHandler.getSemanticActionVariableMap(),document);
 
+		try
+		{
+			SimpleTimer.get("populating.log").finishTiming(getContainer());
+		}
+		catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		return container.metadata();
 	}
 }
