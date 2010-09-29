@@ -73,6 +73,7 @@ public interface SemanticActionNamedArguments
 	 * 1) CreateContainer
 	 */
 	public static final String	TRAVERSABLE						= "traversable";
+	public static final String	IGNORE_CONTEXT_FOR_TV	= "ignore_context_for_tv";
 
 	public static final String	INDEX									= "index";
 

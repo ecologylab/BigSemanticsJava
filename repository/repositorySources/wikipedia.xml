@@ -81,6 +81,7 @@
               <arg value="anchor_text" name="anchor_text" />
               <arg value="paragraph_text" name="anchor_context" />
               <arg value="link" name="container_link" />
+              <arg value="true" name="ignore_context_for_tv" />
             </parse_document>
           </if>
         </for_each>
