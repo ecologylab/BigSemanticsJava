@@ -15,8 +15,8 @@
     <search_engine name="flickr" url_prefix="http://www.flickr.com/search/?q=" url_suffix="&amp;z=m" />
     <search_engine name="google" url_prefix="http://www.google.com/search?hl=en&amp;q=" num_result_string="&amp;num=" start_string="&amp;start=" />
     <search_engine name="google_image" url_prefix="http://www.google.com/images?sout=1&amp;q=" num_result_string="&amp;num=" start_string="&amp;start=" />
-    <search_engine name="bing" url_prefix="http://api.bing.net/xml.aspx?appid=41793F369AD63C9CD9D6C27BB2E72EB5AB4C9234&amp;sources=web&amp;query=" num_result_string="&amp;count=" start_string="&amp;offset=" />
-    <search_engine name="bing_image" url_prefix="http://api.bing.net/xml.aspx?appid=41793F369AD63C9CD9D6C27BB2E72EB5AB4C9234&amp;sources=image&amp;query=" num_result_string="&amp;count=" start_string="&amp;offset=" />
+    <search_engine name="bing" url_prefix="http://api.bing.net/xml.aspx?appid=41793F369AD63C9CD9D6C27BB2E72EB5AB4C9234&amp;sources=web&amp;query=" num_result_string="&amp;Web.Count=" start_string="&amp;Web.Offset=" />
+    <search_engine name="bing_image" url_prefix="http://api.bing.net/xml.aspx?appid=41793F369AD63C9CD9D6C27BB2E72EB5AB4C9234&amp;sources=image&amp;query=" num_result_string="&amp;Web.Count=" start_string="&amp;Web.Offset=" />
     <search_engine name="bing_xpath" url_prefix="http://www.bing.com/search?q=" url_suffix="&amp;go=&amp;form=QBLH&amp;qs=n&amp;sk=&amp;sc=8-5" start_string="&amp;first=" num_result_string="&amp;count=" />
     <search_engine name="wikipedia" url_prefix="http://en.wikipedia.org/w/index.php?title=Special%3ASearch&amp;redirs=1&amp;search=" url_suffix="&amp;fulltext=Search&amp;ns0=1" num_result_string="&amp;limit=" start_string="&amp;offset=" />
     <search_engine name="flickr_author" url_prefix="http://www.flickr.com/photos/" url_suffix="/" />
