@@ -224,7 +224,7 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 			public boolean processRedirect(URL connectionURL) throws Exception
 			{
 				ParsedURL connectionPURL = new ParsedURL(connectionURL);
-				System.out.println("DocumentType.processRedirect("+ purl + " > " + connectionURL);
+				displayStatus("redirecting: " + purl + " > " + connectionURL);
 				Container redirectedAbstractContainer = infoCollector.lookupAbstractContainer(connectionPURL);
 				if (redirectedAbstractContainer != null)	// existing container
 				{
