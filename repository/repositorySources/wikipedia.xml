@@ -127,6 +127,11 @@
     	<get_field name="title" />
       <get_field name="paragraphs" />
       
+      <create_and_visualize_text_surrogate>
+        <arg value="title" name="title" />
+        <arg value="paragraphs" name="wiki_text" />
+      </create_and_visualize_text_surrogate>
+      
       <for_each collection="paragraphs" as="paragraph">
         <get_field object="paragraph" name="anchors" />
         <for_each collection="anchors" as="anchor">
@@ -138,10 +143,6 @@
           </parse_document>
         </for_each>
       </for_each>
-      
-      <create_and_visualize_text_surrogate>
-        <arg value="paragraphs" name="wiki_text" />
-      </create_and_visualize_text_surrogate>
     </semantic_actions>
   </meta_metadata>
 
