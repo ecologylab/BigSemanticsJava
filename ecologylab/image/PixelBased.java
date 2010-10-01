@@ -443,6 +443,8 @@ implements Downloadable
 	public void noAlphaGradient()
 	{
 		this.setCurrentRendering(unprocessedRendering);
+		unprocessedRendering.recycleRenderingChain(false);
+		unprocessedRendering.nextRendering = null;
 		alphaGradientRendering 	= null;
 		desaturatedRendering 		= null;
 		//goInactive(alphaGradientRendering);
@@ -614,7 +616,7 @@ implements Downloadable
 				
 				if (unprocessedRendering != null)
 				{
-					unprocessedRendering.recycleRenderingChain();
+					unprocessedRendering.recycleRenderingChain(true);
 					unprocessedRendering.recycle(); // also calls chain of Renderings
 					unprocessedRendering		= null;
 				}

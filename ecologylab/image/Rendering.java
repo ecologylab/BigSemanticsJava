@@ -616,13 +616,15 @@ implements Colors
 		nextRendering = null;
 	}
 	
-	void recycleRenderingChain()
+	void recycleRenderingChain(boolean recycleThis)
 	{
 		Rendering temp = null;
 		for (Rendering prev = lastInChain(); (prev != null); prev = temp)
 		{
-			temp = prev.previousRendering;
-			prev.recycle();
+			temp 						= prev.previousRendering;
+			boolean recycle = recycleThis || this != prev;
+			if (recycle)
+				prev.recycle();
 		}
 	}
 	
