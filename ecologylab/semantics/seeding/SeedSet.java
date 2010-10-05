@@ -319,6 +319,28 @@ implements SemanticsSessionObjectNames, Iterable<S>
 				seeds	= new ArrayList<S>();
 		seeds.add(seed);
 		seed.setSeedSet(this);
+		
+		//Test for hetero/homogeneity
+		Iterator iterator = iterator();
+		while(iterator.hasNext())
+		{
+			Seed s = (Seed) iterator.next();
+			if(size() == 1)
+			{
+				s.infoCollector.setHeterogeneousSearchScenario( ! s.isHomogenousSeed() );
+				break;
+			}
+			else
+			{
+				//More than one seed.
+				//Even if one isn't homogeneous, scenario is hetero
+				if(! s.isHomogenousSeed())
+				{
+					s.infoCollector.setHeterogeneousSearchScenario(true);
+					break;
+				}
+			}
+		}
 	}
 
 	public void clear() 

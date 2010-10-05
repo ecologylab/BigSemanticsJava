@@ -123,7 +123,7 @@ implements InfoCollector<AC>, SemanticsPrefs, ApplicationProperties, DocumentPar
 	// Vector<String> untraversableURLStrings = new Vector<String>();
 	protected PrefixCollection									untraversablePrefixes					= new PrefixCollection();
 
-	protected SeedSet															seedSet												= null;
+	protected SeedSet														seedSet												= null;
 
 	private final Scope													sessionScope;
 	
@@ -274,27 +274,7 @@ implements InfoCollector<AC>, SemanticsPrefs, ApplicationProperties, DocumentPar
 		}
 		int numSeeds = seedSet.size();
 		
-		//Test for hetero/homogeneity
-		Iterator iterator = seedSet.iterator();
-		while(iterator.hasNext())
-		{
-			Seed seed = (Seed) iterator.next();
-			if(numSeeds == 1)
-			{
-				isHeterogeneousSearchScenario = ! seed.isHomogenousSeed();
-				break;
-			}
-			else
-			{
-				//More than one seed.
-				//Even if one isn't homogeneous, scenario is hetero
-				if(! seed.isHomogenousSeed())
-				{
-					isHeterogeneousSearchScenario = true;
-					break;
-				}
-			}
-		}
+		
 		debugT("The current session scenario is " + (isHeterogeneousSearchScenario ? "Heterogeneous" : "Homogeneous"));
 	}
 

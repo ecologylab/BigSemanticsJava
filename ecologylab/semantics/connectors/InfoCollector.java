@@ -120,4 +120,6 @@ public interface InfoCollector<C extends Container>
 			boolean justCrawl, boolean justMedia);
 
 	public abstract SeedDistributor getSeedDistributor();
+
+	void setHeterogeneousSearchScenario(boolean b);
 }
