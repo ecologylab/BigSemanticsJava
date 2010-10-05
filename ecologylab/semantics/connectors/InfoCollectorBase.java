@@ -6,6 +6,7 @@ package ecologylab.semantics.connectors;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Vector;
 
 import javax.swing.JFrame;
@@ -204,6 +205,8 @@ implements InfoCollector<AC>, SemanticsPrefs, ApplicationProperties, DocumentPar
 	public static final MetaMetadata								SEARCH_META_METADATA;
 	public static final MetaMetadata								IMAGE_META_METADATA;
 
+	public boolean 			isHeterogeneousSearchScenario = true;
+	
 	static
 	{
 		// MetaMetadata repository file has all the metametadata needed for metadata collection, 
@@ -259,6 +262,7 @@ implements InfoCollector<AC>, SemanticsPrefs, ApplicationProperties, DocumentPar
 
 	public void addSeeds(SeedSet<? extends Seed> newSeeds)
 	{
+		
 		if (this.seedSet == null)
 			this.seedSet = newSeeds;
 		else
@@ -268,6 +272,30 @@ implements InfoCollector<AC>, SemanticsPrefs, ApplicationProperties, DocumentPar
 				this.seedSet.add(seed);
 			}
 		}
+		int numSeeds = seedSet.size();
+		
+		//Test for hetero/homogeneity
+		Iterator iterator = seedSet.iterator();
+		while(iterator.hasNext())
+		{
+			Seed seed = (Seed) iterator.next();
+			if(numSeeds == 1)
+			{
+				isHeterogeneousSearchScenario = ! seed.isHomogenousSeed();
+				break;
+			}
+			else
+			{
+				//More than one seed.
+				//Even if one isn't homogeneous, scenario is hetero
+				if(! seed.isHomogenousSeed())
+				{
+					isHeterogeneousSearchScenario = true;
+					break;
+				}
+			}
+		}
+		debugT("The current session scenario is " + (isHeterogeneousSearchScenario ? "Heterogeneous" : "Homogeneous"));
 	}
 
 	public void getMoreSeedResults()
@@ -276,7 +304,6 @@ implements InfoCollector<AC>, SemanticsPrefs, ApplicationProperties, DocumentPar
 		{
 			System.out.println(this + ".getMoreSeedResults()!!! " + seedSet.getStartingResultNum());
 			seedSet.performNextSeeding(sessionScope);
-			System.out.println(this + ".gotMoreSeedResults()!!! " + seedSet.getStartingResultNum());
 		}
 		// for (ecologylab.oodss.messages.cf.Seed s : seedSet)
 		// if (s instanceof SearchState)

@@ -20,6 +20,7 @@ public class Filter extends Debug
 		new FilterElement("ads", true, false), new FilterElement("adv", true, false),
 		new FilterElement("ad", true, true),
 		new FilterElement("adx", true, true),
+		new FilterElement("doubleclick", true, true),
 		// new FilterElement("help", false, false),
 		new FilterElement("banner", false, false), new FilterElement("wp-srv", false, false),
 		new FilterElement("creditcard", false, false), new FilterElement("promos", true, false),

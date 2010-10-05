@@ -198,4 +198,10 @@ public class DocumentState extends Seed
 	{
 		return false;
 	}
+	
+	@Override
+	public boolean isHomogenousSeed()
+	{
+		return true;
+	}
 }

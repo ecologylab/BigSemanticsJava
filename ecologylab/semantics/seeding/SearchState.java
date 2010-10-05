@@ -91,6 +91,7 @@ implements SemanticsPrefs, SearchEngineNames
    {
 	   super();
    }
+
    public SearchState(String query, String engine)
    {
   	 this(query, engine, DEFAULT_SEARCH_INTEREST_LEVEL);
@@ -113,6 +114,7 @@ implements SemanticsPrefs, SearchEngineNames
 	   this.noAggregator				= generatingTermDictionary;
 	   this.generatingTermDictionary	= generatingTermDictionary;
    }
+   
    /**
     * this is when we do a buzz, etc search, and seeds are created because they are a result.
     * 
@@ -437,6 +439,12 @@ implements SemanticsPrefs, SearchEngineNames
 	public boolean isRejectable()
 	{
 		return false;
+	}
+	
+	@Override
+	public boolean isHomogenousSeed()
+	{
+		return (query != null && query.contains("site:"));
 	}
 	
 	public void setDcQuery(Dc dcQuery)

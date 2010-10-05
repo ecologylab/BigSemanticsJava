@@ -340,4 +340,10 @@ abstract public class Seed<AC extends Container> extends ElementState implements
 	{
 		this.bias = bias;
 	}
+
+	public boolean isHomogenousSeed()
+	{
+	
+		return false;
+	}
 }

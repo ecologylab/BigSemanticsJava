@@ -51,9 +51,9 @@ class EvaluateRankWeight<IC extends InfoCollector, SAH extends SemanticActionHan
 		float result = ((float) size - index) / size;
 
 		double e = Math.E;
-		double val = 1 / (1 + Math.pow(e, CURVE_AMOUNT * (TRANSFER_FUNC_CENTER - result)));
+		float val = (float)( 1 / (1 + Math.pow(e, CURVE_AMOUNT * (TRANSFER_FUNC_CENTER - result))));
 
-		return Double.valueOf(val);
+		return Float.valueOf(val);
 	}
 
 }

@@ -19,11 +19,6 @@ public class SemanticInLinks extends ArrayList<SemanticAnchor>
 	{
 	}
 	
-	public ITermVector termVector()
-	{
-		return semanticInlinkCollection();
-	}
-	
 	public synchronized void recycle()
 	{
 		int index	= size();
@@ -49,7 +44,7 @@ public class SemanticInLinks extends ArrayList<SemanticAnchor>
 	@Override
 	public synchronized boolean add(SemanticAnchor newAnchor)
 	{
-		semanticInlinkCollection().add(newAnchor.significance,newAnchor.termVector());
+		semanticInlinkCollection().add(newAnchor.significance, newAnchor.termVector());
 		super.add(newAnchor);
 		return true;
 	}
@@ -60,13 +55,29 @@ public class SemanticInLinks extends ArrayList<SemanticAnchor>
 	 */
 	public double getWeight(ITermVector weightingVector)
 	{
-		double idfDot = this.termVector().idfDot(weightingVector);
+		double idfDot = this.semanticInlinkCollection().idfDot(weightingVector);
+		ArrayList<ParsedURL> sourcePurls = new ArrayList<ParsedURL>();
 		for(SemanticAnchor anchor : this)
-			idfDot += anchor.getSignificance();
+		{
+			//Only boost weight from unique purls.
+			//This is possibly causing us to crawl through a sitemap,
+			// in the cases where the links are found across pages.
+			if(!sourcePurls.contains(anchor.sourcePurl))
+				idfDot += anchor.getSignificance();
+			sourcePurls.add(anchor.sourcePurl);
+		}
 		
 		return idfDot;
 	}
 
+	public boolean containsPurl(ParsedURL purl)
+	{
+		for(SemanticAnchor anchor : this)
+			if(anchor.sourcePurl == purl)
+				return true;
+		return false;
+	}
+	
 	/**
 	 * Returns 1 if no links exist, else the mean of the significance's of its contents
 	 * @return

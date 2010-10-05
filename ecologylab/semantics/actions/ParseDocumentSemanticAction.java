@@ -25,9 +25,26 @@ class ParseDocumentSemanticAction<IC extends InfoCollector, SAH extends Semantic
 	@simpl_hints(Hint.XML_ATTRIBUTE)
 	protected boolean	now	= false;
 
+	/**
+	 * This attribute is meant to be used when we only require the top document to actually be sent 
+	 * to the infoCollector. It requires two strings 
+	 */
+	@simpl_scalar
+	@simpl_hints(Hint.XML_ATTRIBUTE)
+	protected boolean onlyPickTopDocuments = false;
+	
+	@simpl_scalar
+	@simpl_hints(Hint.XML_ATTRIBUTE)
+	protected int numberOfTopDocuments = 1;
+	
 	public boolean isNow()
 	{
 		return now;
+	}
+	
+	public boolean onlyPickTopDocument()
+	{
+		return onlyPickTopDocuments;
 	}
 
 	@Override

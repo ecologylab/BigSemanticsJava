@@ -77,8 +77,14 @@ public interface SemanticActionNamedArguments
 
 	public static final String	INDEX									= "index";
 
+	public static final String	CURRENT_INDEX					= "current_index";
 	public static final String	SIZE									= "size";
 
+	public static final String	OUTER_LOOP_INDEX			= "outer_loop_index";
+	public static final String	OUTER_LOOP_SIZE				= "outer_loop_size";
+
+	public static final String	NUMBER_OF_TOP_DOCUMENTS			= "number_of_top_documents";
+	
 	/**
 	 * CreateVisualizeTextSurrogate
 	 */

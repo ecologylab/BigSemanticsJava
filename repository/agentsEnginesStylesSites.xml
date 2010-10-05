@@ -11,22 +11,31 @@
   </user_agents>
   <search_engines>
     <search_engine name="my_google_ecology0" url_prefix="http://ecology0.csdl.tamu.edu/my_google/search?query=" num_result_string="&amp;resultsPerPage=" start_string="&amp;startIndex=" />
-    <search_engine name="flickr_tag" url_prefix="http://www.flickr.com/photos/tags/" url_suffix="/interesting/" />
-    <search_engine name="flickr" url_prefix="http://www.flickr.com/search/?q=" url_suffix="&amp;z=m" />
-    <search_engine name="google" url_prefix="http://www.google.com/search?hl=en&amp;q=" num_result_string="&amp;num=" start_string="&amp;start=" />
-    <search_engine name="google_image" url_prefix="http://www.google.com/images?sout=1&amp;q=" num_result_string="&amp;num=" start_string="&amp;start=" />
-    <search_engine name="bing" url_prefix="http://api.bing.net/xml.aspx?appid=41793F369AD63C9CD9D6C27BB2E72EB5AB4C9234&amp;sources=web&amp;query=" num_result_string="&amp;Web.Count=" start_string="&amp;Web.Offset=" />
-    <search_engine name="bing_image" url_prefix="http://api.bing.net/xml.aspx?appid=41793F369AD63C9CD9D6C27BB2E72EB5AB4C9234&amp;sources=image&amp;query=" num_result_string="&amp;Web.Count=" start_string="&amp;Web.Offset=" />
-    <search_engine name="bing_xpath" url_prefix="http://www.bing.com/search?q=" url_suffix="&amp;go=&amp;form=QBLH&amp;qs=n&amp;sk=&amp;sc=8-5" start_string="&amp;first=" num_result_string="&amp;count=" />
-    <search_engine name="wikipedia" url_prefix="http://en.wikipedia.org/w/index.php?title=Special%3ASearch&amp;redirs=1&amp;search=" url_suffix="&amp;fulltext=Search&amp;ns0=1" num_result_string="&amp;limit=" start_string="&amp;offset=" />
-    <search_engine name="flickr_author" url_prefix="http://www.flickr.com/photos/" url_suffix="/" />
-    <search_engine name="google_patents" url_prefix="http://www.google.com/patents?q=" num_result_string="&amp;num=" start_string="&amp;start=" />
-    <search_engine name="yahoo_image" url_prefix="http://api.search.yahoo.com/ImageSearchService/V1/imageSearch?appid=yahoosearchwebrss&amp;query=" num_result_string="&amp;result=" start_string="&amp;start=" />
     <search_engine name="my_google" url_prefix="http://staging.cs.tamu.edu:8080/my_google/search?query=" num_result_string="&amp;resultsPerPage=" start_string="&amp;startIndex=" />
-    <search_engine name="yahoo_news" url_prefix="http://api.search.yahoo.com/NewsSearchService/V1/newsSearch?appid=yahoosearchwebrss&amp;query=" num_result_string="&amp;result=" start_string="&amp;start=" />
-    <search_engine name="yahoo" url_prefix="http://api.search.yahoo.com/WebSearchService/V1/webSearch?appid=yahoosearchwebrss&amp;query=" num_result_string="&amp;result=" start_string="&amp;start=" />
+    
+    <search_engine name="flickr_tag" url_prefix="http://www.flickr.com/photos/tags/" url_suffix="/interesting/" />
+    <search_engine name="flickr" homogeneous="true" url_prefix="http://www.flickr.com/search/?q=" url_suffix="&amp;z=m" />
     <search_engine name="flickr_nearby" url_prefix="http://www.flickr.com/photos/" url_suffix="/nearby?show=thumb&amp;fromfilter=1&amp;by=everyone&amp;taken=alltime&amp;sort=distance&amp;show=detail" />
     <search_engine name="flickr_groups" url_prefix="http://www.flickr.com/groups/" url_suffix="/pool" />
+        
+    <search_engine name="google" url_prefix="http://www.google.com/search?hl=en&amp;q=" num_result_string="&amp;num=" start_string="&amp;start=" />
+    <search_engine name="google_site_specific" homogeneous="true" url_prefix="http://www.google.com/search?hl=en&amp;q=" num_result_string="&amp;num=" start_string="&amp;start=" />
+    <search_engine name="google_image" url_prefix="http://www.google.com/images?sout=1&amp;q=" num_result_string="&amp;num=" start_string="&amp;start=" />
+    <search_engine name="google_patents" url_prefix="http://www.google.com/patents?q=" num_result_string="&amp;num=" start_string="&amp;start=" />
+    
+    <search_engine name="bing" url_prefix="http://api.bing.net/xml.aspx?appid=41793F369AD63C9CD9D6C27BB2E72EB5AB4C9234&amp;sources=web&amp;query=" num_result_string="&amp;Web.Count=" start_string="&amp;Web.Offset=" />
+    <search_engine name="bing_site_specific" homogeneous="true" url_prefix="http://api.bing.net/xml.aspx?appid=41793F369AD63C9CD9D6C27BB2E72EB5AB4C9234&amp;sources=web&amp;query=" num_result_string="&amp;Web.Count=" start_string="&amp;Web.Offset=" />
+    <search_engine name="bing_image" url_prefix="http://api.bing.net/xml.aspx?appid=41793F369AD63C9CD9D6C27BB2E72EB5AB4C9234&amp;sources=image&amp;query=" num_result_string="&amp;Web.Count=" start_string="&amp;Web.Offset=" />
+    <search_engine name="bing_xpath" url_prefix="http://www.bing.com/search?q=" url_suffix="&amp;go=&amp;form=QBLH&amp;qs=n&amp;sk=&amp;sc=8-5" start_string="&amp;first=" num_result_string="&amp;count=" />
+    
+    <search_engine name="wikipedia" homogeneous="true" url_prefix="http://en.wikipedia.org/w/index.php?title=Special%3ASearch&amp;redirs=1&amp;search=" url_suffix="&amp;fulltext=Search&amp;ns0=1" num_result_string="&amp;limit=" start_string="&amp;offset=" />
+    
+    <search_engine name="flickr_author" homogeneous="true" url_prefix="http://www.flickr.com/photos/" url_suffix="/" />
+    
+    <search_engine name="yahoo_image" url_prefix="http://api.search.yahoo.com/ImageSearchService/V1/imageSearch?appid=yahoosearchwebrss&amp;query=" num_result_string="&amp;result=" start_string="&amp;start=" />
+    <search_engine name="yahoo_news" url_prefix="http://api.search.yahoo.com/NewsSearchService/V1/newsSearch?appid=yahoosearchwebrss&amp;query=" num_result_string="&amp;result=" start_string="&amp;start=" />
+    <search_engine name="yahoo" url_prefix="http://api.search.yahoo.com/WebSearchService/V1/webSearch?appid=yahoosearchwebrss&amp;query=" num_result_string="&amp;result=" start_string="&amp;start=" />
+	<search_engine name="yahoo_site_specific" url_prefix="http://api.search.yahoo.com/WebSearchService/V1/webSearch?appid=yahoosearchwebrss&amp;query=" num_result_string="&amp;result=" start_string="&amp;start=" />
   </search_engines>
   <named_styles>
     <named_style name="default" font_size="10" />
@@ -37,5 +46,6 @@
     <site domain="nytimes.com" min_download_interval=".5" />
     <site domain="acm.org" min_download_interval="20" />
     <site domain="bing.net" min_download_interval=".125" />
+    <site domain="wikipedia.org" min_download_interval="5" ignore_semantic_boost="true" />
   </sites>
 </meta_metadata_repository>

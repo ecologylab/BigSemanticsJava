@@ -54,5 +54,12 @@ public class HTMLFragmentDOMParser<C extends Container> extends HTMLDOMParser<C,
 	{	
 	}
 	
-
+	/**
+	 * To make code navigation simpler around JTidy-parsers 
+	 */
+	@Override
+	public void newImgTxt(ImgElement imgNode, ParsedURL anchorHref)
+	{
+		super.newImgTxt(imgNode, anchorHref);
+	}
 }

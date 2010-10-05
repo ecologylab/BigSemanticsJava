@@ -100,6 +100,9 @@ public class ImageCollectionPage extends RecognizedDocumentStructure
 						break;
 					}
 				}
+				
+				//TODO: sashi - Do something with the tv and InterestModel 
+				//if(altText == null && extractedCaption == null )
 				htmlType.newImgTxt(imgElement, anchorPurl);
 			}
 			imgElement.recycle();
