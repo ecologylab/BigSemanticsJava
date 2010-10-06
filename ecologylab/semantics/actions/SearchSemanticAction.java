@@ -38,6 +38,7 @@ public class SearchSemanticAction<IC extends InfoCollector, SAH extends Semantic
 			return null;
 
 		SearchState search = new SearchState(query, engine);
+		search.initialize(infoCollector);
 		SeedSet seedSet = new SeedSet();
 		seedSet.setParentSeedSet(infoCollector.getSeedSet());
 		seedSet.add(search);
