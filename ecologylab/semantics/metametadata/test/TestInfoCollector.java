@@ -214,4 +214,11 @@ public class TestInfoCollector extends InfoCollectorBase<MyContainer>
 		return null;
 	}
 
+	@Override
+	public void setHeterogeneousSearchScenario(boolean b)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
 }

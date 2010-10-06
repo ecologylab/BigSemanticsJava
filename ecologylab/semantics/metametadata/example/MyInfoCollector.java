@@ -436,5 +436,12 @@ public class MyInfoCollector<C extends MyContainer> extends Debug implements Inf
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	@Override
+	public void setHeterogeneousSearchScenario(boolean b)
+	{
+		// TODO Auto-generated method stub
+		
+	}
 
 }
