@@ -1,6 +1,7 @@
-<meta_metadata_repository name="imdb" package="ecologylab.semantics.generated.library.imdb" default_user_agent_name="chrome_2">
-
-	<meta_metadata name="birth_detail" extends="document" comment="Metadata for storing details of birth (date and place) of people" parser="xpath">
+<meta_metadata_repository name="imdb" package="ecologylab.semantics.generated.library.imdb" 
+	default_user_agent_name="chrome_2">
+	
+	<meta_metadata name="birth_detail" extends="document" comment="Metadata for storing details of birth (date and place) of people" parser="xpath" >
 		<scalar name="day_of_birth" navigates_to="day_of_birth_link" label="day of birth" scalar_type="String" />
 		<scalar name="year_of_birth" navigates_to="year_of_birth_link" label="year of birth" scalar_type="String" />
 		<scalar name="place_of_birth" navigates_to="place_of_birth_link" label="place of birth" scalar_type="String" />
@@ -9,41 +10,45 @@
 		<scalar name="place_of_birth_link" hide="true" scalar_type="ParsedURL" />
 	</meta_metadata>
 
-	<meta_metadata name="imdb_title" extends="document" comment="IMDB metadata" parser="xpath">
+	<meta_metadata name="imdb_title" extends="document" comment="IMDB metadata" parser="xpath" reload_page_first_time="true">
 		<selector url_path_tree="http://www.imdb.com/title/" />
-		<scalar name="title" xpath="//div[@id='tn15title']/h1">
-			<filter regex="More [a-zA-Z\s&amp;;#0-9\-]*" replace="" />
+		<scalar name="title" xpath="//h1[@class='header']">
+<!--			<filter regex="More [a-zA-Z\s&amp;;#0-9\-]*" replace="" />-->
 		</scalar>
 		<scalar name="location" layer="-1.0" />
 		<scalar name="year_released" style="h1" layer="9.5" xpath="//div[@id='tn15title']/h1/span/a[1]" label="year released" scalar_type="String" />
-		<scalar name="rating" xpath="//div[@id='tn15rating']//b" scalar_type="String" />
-		<collection name="directors" layer="9.0" xpath="//div[@id='director-info']//a" child_type="person_details" child_entity="true">
+		<scalar name="rating" xpath="//span[@class='rating-rating']" scalar_type="String" />
+		<collection name="directors" layer="9.0" xpath="//td[@id='overview-top']//div[@class='txt-block'][contains(.,'Director')]//a" 
+				child_type="person_details" child_entity="true">
 			<scalar name="location" xpath="./@href" />
 			<scalar name="gist" xpath="." label="name" />
 		</collection>
-		<collection name="writers" layer="8.5" xpath="//div[@class='info']/h5[starts-with(child::text(), 'Writers')]/../a" child_type="person_details" child_entity="true">
+		<collection name="writers" layer="8.5" xpath="//td[@id='overview-top']//div[@class='txt-block'][contains(.,'Writer')]//a" child_type="person_details" child_entity="true">
 			<scalar name="location" xpath="./@href" />
 			<scalar name="gist" xpath="." label="name" />
 		</collection>
-		<scalar name="release_date" xpath="//div[@class='info']/h5[starts-with(child::text(), 'Release')]/../child::text()" label="release date" scalar_type="String" />
-		<collection name="genres" xpath="//div[@class='info']/h5[starts-with(child::text(), 'Genre')]/..//a" child_type="genre">
+		<scalar name="release_date" xpath="//td[@id='overview-top']//div[@class='txt-block'][contains(.,'Release Date')]" label="release date" scalar_type="String">
+			<filter regex="Release Date:" replace="" /> <!-- Start of string until colon, inclusive, must be removed -->
+		</scalar>
+		
+		<collection name="genres" xpath="//h4[contains(.,'Genres')]/..//a" child_type="genre">
 			<scalar name="name" xpath="string(.)" navigates_to="genre_link" scalar_type="String">
-				<filter regex="more" replace="" />
+				<!--<filter regex="more" replace="" />-->
 			</scalar>
 			<scalar name="genre_link" hide="true" xpath="./@href" scalar_type="ParsedURL" />
 		</collection>
-		<scalar name="plot" xpath="//div[@class='info']/h5[starts-with(child::text(), 'Plot:')]/../child::text()" scalar_type="String">
+		<scalar name="plot" xpath="//h2[contains(.,'Storyline')]/../p[1]" scalar_type="String">
 			<filter regex="more|\|" replace="" />
 		</scalar>
-		<scalar name="tagline" xpath="//div[@class='info']/h5[starts-with(child::text(), 'Tagline:')]/.." scalar_type="String">
-			<filter regex="Tagline:|more" replace="" />
+		<scalar name="tagline" xpath="//h4[contains(.,'Tagline')]/.." scalar_type="String">
+			<filter regex="Taglines:|See more" replace="" />
 		</scalar>
-		<collection name="cast" layer="8.0" xpath="//table[@class='cast']//tr" child_type="cast_member">
-			<composite name="actor" xpath="td[@class='nm']" type="person_details" entity="true">
+		<collection name="cast" layer="8.0" xpath="//table[@class='cast_list']//tr[@class='odd' or @class='even']" child_type="cast_member">
+			<composite name="actor" xpath="td[@class='name']" type="person_details" entity="true">
 				<scalar name="gist" xpath="string(.)" label="name" />
 				<scalar name="location" xpath="./a/@href" />
 			</composite>
-			<composite name="character" xpath="td[@class='char']" type="person_details" entity="true">
+			<composite name="character" xpath="td[@class='character']" type="person_details" entity="true">
 				<scalar name="gist" xpath="string(.)" label="name" />
 				<scalar name="location" xpath="./a/@href" />
 			</composite>
@@ -51,7 +56,7 @@
 		<collection name="title_photos" hide="true" xpath="//td[1]/div[@class='media_strip_thumbs']//img/@src" child_type="image">
 			<scalar name="location" xpath="." />
 		</collection>
-		<scalar name="poster_img" hide="true" xpath="//a[@name='poster']/img/@src" scalar_type="ParsedURL" />
+		<scalar name="poster_img" hide="true" xpath="//td[@id='img_primary']//img/@src" scalar_type="ParsedURL" />
 
 		<semantic_actions>
 			<get_field name="cast" />
@@ -90,7 +95,7 @@
 		</semantic_actions>
 	</meta_metadata>
 
-	<meta_metadata name="person_details" extends="document" comment="IMDB metadata" parser="xpath">
+	<meta_metadata name="person_details" extends="document" comment="IMDB metadata" parser="xpath" reload_page_first_time="true">
 		<selector url_path_tree="http://www.imdb.com/name/" />
 		<def_var name="bio_node" xpath="//div[@class='info']/h5[starts-with(child::text(), 'Mini Biography:')]/.." type="node" />
 		<def_var name="trivia_node" xpath="//div[@class='info']/h5[starts-with(child::text(), 'Trivia:')]/.." type="node" />
@@ -186,7 +191,7 @@
 		</semantic_actions>
 	</meta_metadata>
 
-	<meta_metadata name="imdb_chart" extends="document" comment="IMDB chart" parser="xpath">
+	<meta_metadata name="imdb_chart" extends="document" comment="IMDB chart" parser="xpath" reload_page_first_time="true">
 		<selector url_path_tree="http://www.imdb.com/chart/" />
 		<collection name="results" xpath="//div[@id='main']/table//a" child_type="imdb_title">
 			<scalar name="title" xpath="./text()" />

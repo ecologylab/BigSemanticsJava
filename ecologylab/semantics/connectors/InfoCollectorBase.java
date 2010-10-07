@@ -70,11 +70,6 @@ implements InfoCollector<AC>, SemanticsPrefs, ApplicationProperties, DocumentPar
 	protected int																badSeeds;
 
 	/**
-	 * Set of expected seed download <code>Container</code>s).
-	 */
-	protected Vector														seeds;
-
-	/**
 	 * Priority to run at when we seem to have an overabundance of <code>MediaElement</code>s ready
 	 * for display.
 	 */
@@ -123,7 +118,7 @@ implements InfoCollector<AC>, SemanticsPrefs, ApplicationProperties, DocumentPar
 	// Vector<String> untraversableURLStrings = new Vector<String>();
 	protected PrefixCollection									untraversablePrefixes					= new PrefixCollection();
 
-	protected SeedSet														seedSet												= null;
+	private SeedSet														seedSet												= null;
 
 	private final Scope													sessionScope;
 	
@@ -260,6 +255,17 @@ implements InfoCollector<AC>, SemanticsPrefs, ApplicationProperties, DocumentPar
 		return result;
 	}
 
+	public void setSeedSet(SeedSet seedSet)
+	{
+		this.seedSet = seedSet;
+	}
+	
+	public void clearSeedSet()
+	{
+		if(seedSet != null)
+			seedSet.clear();
+	}
+	
 	public void addSeeds(SeedSet<? extends Seed> newSeeds)
 	{
 		
@@ -273,9 +279,6 @@ implements InfoCollector<AC>, SemanticsPrefs, ApplicationProperties, DocumentPar
 			}
 		}
 		int numSeeds = seedSet.size();
-		
-		
-		debugT("The current session scenario is " + (isHeterogeneousSearchScenario ? "Heterogeneous" : "Homogeneous"));
 	}
 
 	public void getMoreSeedResults()
@@ -579,7 +582,7 @@ implements InfoCollector<AC>, SemanticsPrefs, ApplicationProperties, DocumentPar
 
 	public int numSeeds()
 	{
-		return (seeds == null) ? -1 : seeds.size();
+		return (seedSet == null) ? -1 : seedSet.size();
 	}
 
 	// Accessors for InfoCollectorState
@@ -661,7 +664,7 @@ implements InfoCollector<AC>, SemanticsPrefs, ApplicationProperties, DocumentPar
 	@Override
 	public SeedDistributor getSeedDistributor()
 	{
-		return getSeedSet().seedDistributer(this);
+		return seedSet.seedDistributer(this);
 	}
 
 }

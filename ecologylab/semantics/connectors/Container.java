@@ -6,18 +6,17 @@ package ecologylab.semantics.connectors;
 import java.io.IOException;
 
 import ecologylab.generic.DispatchTarget;
-import ecologylab.io.Downloadable;
+import ecologylab.io.BasicSite;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.html.ParagraphText;
 import ecologylab.semantics.html.documentstructure.SemanticAnchor;
-import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.seeding.QandDownloadable;
-import ecologylab.semantics.seeding.SeedDistributor;
 import ecologylab.semantics.seeding.SearchResult;
 import ecologylab.semantics.seeding.Seed;
+import ecologylab.semantics.seeding.SeedDistributor;
 import ecologylab.serialization.TranslationScope;
 
 /**
@@ -105,4 +104,6 @@ implements QandDownloadable
 	
 	abstract public AbstractImgElement createImageElement(ParsedURL parsedImgUrl, String alt, 
 			int width, int height, boolean isMap, ParsedURL hrefPurl);
+	
+	abstract public BasicSite site();
 }

@@ -68,15 +68,6 @@ public class SeedCf extends RequestMessage
 		}
 		return result;
 	}
-	/**
-	 * Add a Seed to the request, through its seedSet.
-	 * 
-	 * @param seed
-	 */
-	public void add(Seed seed)
-	{
-		seedSet().add(seed);
-	}
 
 	/**
 	 * Dummy version -- will never get called, because this version lives only on the client,

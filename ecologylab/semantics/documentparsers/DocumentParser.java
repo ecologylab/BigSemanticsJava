@@ -16,6 +16,7 @@ import ecologylab.collections.PrefixCollection;
 import ecologylab.collections.Scope;
 import ecologylab.generic.Debug;
 import ecologylab.generic.ReflectionTools;
+import ecologylab.io.BasicSite;
 import ecologylab.net.ConnectionHelper;
 import ecologylab.net.PURLConnection;
 import ecologylab.net.ParsedURL;
@@ -304,9 +305,18 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 		MetaMetadataCompositeField metaMetadata = metaMetaDataRepository.getDocumentMM(purl,null);
 		
 		// then try to create a connection using the PURL
-		PURLConnection purlConnection = purl.connect(documentParserConnectHelper, (metaMetadata == null) ? null
-				: metaMetadata.getUserAgentString());
+		String userAgentString = (metaMetadata == null) ? null : metaMetadata.getUserAgentString();
+		PURLConnection purlConnection = purl.connect(documentParserConnectHelper, userAgentString);
 		
+		BasicSite site = container.site();
+		if(metaMetadata != null && metaMetadata.isReloadPageFirstTime() &&  !site.hasBeenReloaded())
+		{
+			System.out.println("Re-downloading a page, because MMD says we have to : " + purl);
+			purlConnection = purl.connect(documentParserConnectHelper, userAgentString);
+			if(purlConnection != null)
+				site.setHasBeenReloaded(true);
+		}
+
 		// set meta-metadata in case a correct one was found after a redirect
 		if (metaMetadata == null && container != null && container.metadata() != null)
 			metaMetadata = (MetaMetadataCompositeField) container.metadata().getMetaMetadata();
