@@ -397,4 +397,11 @@ public class MyContainer extends Container
 		return cachedToString;
 	}
 
+	@Override
+	public BasicSite site()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
