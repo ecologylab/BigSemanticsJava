@@ -77,9 +77,10 @@ extends HTMLParserCommon<C, IC>
 //	   HTMLDOMParser domParser	= new HTMLDOMParser();
 	   try
 	   {
-	  	 // we dont build a tidy for for direct biniding
+	  	 // we dont build a tidy for for direct binding
+	  	 //Uncomment System.out to print parsed page to console.
 	  	 if(metaMetadata == null || !"direct".equals(metaMetadata.getParser()))
-	  		 		document 							= tidy.parseDOM(inputStream(),/* System.out*/null);
+	  		 		document 							= tidy.parseDOM(inputStream(), /*System.out*/ null );
 	  	 
 //	  	 SimpleTimer.get("fetching_and_rendering.log").finishTiming(getContainer());
 	  	 
