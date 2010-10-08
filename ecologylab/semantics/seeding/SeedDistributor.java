@@ -322,6 +322,8 @@ public class SeedDistributor<AC extends Container> extends Debug implements Runn
 		this.numSearchesToQueue = 0;
 		this.numSearchesProcessing = 0;
 		this.numSearchesDone = 0;
+		
+		this.queuedResults.clear();
 	}
 
 	private void waitForAtMost(long timestamp, int minMillis)
@@ -400,7 +402,7 @@ public class SeedDistributor<AC extends Container> extends Debug implements Runn
 		debug(String.format(
 				"checking for endSeeding(): toQueue=%d, processing=%d, done=%d, remaining results=%d",
 				numSearchesToQueue, numSearchesProcessing, numSearchesDone, numResultsRemaining));
-		if (numSearchesDone == numSearchesToQueue && numSearchesProcessing == 0
+		if (numSearchesDone >= numSearchesToQueue && numSearchesProcessing <= 0
 				&& numResultsRemaining == 0)
 		{
 			System.out
