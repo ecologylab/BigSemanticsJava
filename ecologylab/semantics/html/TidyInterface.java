@@ -7,6 +7,7 @@ import org.w3c.tidy.TdNode;
 
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.html.documentstructure.AnchorContext;
+import ecologylab.semantics.html.documentstructure.RecognizedDocumentStructure;
 
 
 /**

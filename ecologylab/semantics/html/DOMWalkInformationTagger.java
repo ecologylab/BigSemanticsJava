@@ -19,6 +19,7 @@ import org.w3c.tidy.TdNode;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.documentparsers.HTMLDOMParser;
 import ecologylab.semantics.html.documentstructure.ImageFeatures;
+import ecologylab.semantics.html.documentstructure.RecognizedDocumentStructure;
 import ecologylab.semantics.html.utils.HTMLAttributeNames;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.serialization.XMLTools;

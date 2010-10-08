@@ -1,7 +1,6 @@
 package ecologylab.semantics.html.documentstructure;
 
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.html.RecognizedDocumentStructure;
 
 
 /**

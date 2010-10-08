@@ -24,7 +24,7 @@ import ecologylab.net.ParsedURL;
 import ecologylab.semantics.html.DOMWalkInformationTagger;
 import ecologylab.semantics.html.HTMLElement;
 import ecologylab.semantics.html.ImgElement;
-import ecologylab.semantics.html.RecognizedDocumentStructure;
+import ecologylab.semantics.html.documentstructure.RecognizedDocumentStructure;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.TranslationScope;

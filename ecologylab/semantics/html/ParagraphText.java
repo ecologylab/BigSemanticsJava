@@ -132,7 +132,8 @@ public class ParagraphText
 		XMLTools.unescapeXML(buffy);
 	}
 	TermVector termVector;
-	TermVector termVector()
+	
+	public TermVector termVector()
 	{
 		TermVector result = this.termVector;
 		if (result == null)

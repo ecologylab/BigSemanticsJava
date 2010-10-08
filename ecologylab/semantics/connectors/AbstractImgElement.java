@@ -33,4 +33,6 @@ public interface AbstractImgElement extends AbstractSetElement
 	 * @return
 	 */
 	public String caption();
+	
+	public boolean isNullCaption();
 }

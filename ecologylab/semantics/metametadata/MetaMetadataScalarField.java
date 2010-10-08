@@ -129,6 +129,7 @@ public class MetaMetadataScalarField extends MetaMetadataField
 				appendGetter(appendable, fieldName, fieldTypeName);
 				appendSetter(appendable, fieldName, fieldTypeName);
 				appendHWSetter(appendable, fieldName, fieldTypeName);
+				appendIsNull(appendable, fieldName, fieldTypeName);
 				appendDirectSetMethod(appendable, fieldName, "Metadata" + fieldTypeName);
 				appendDirectHWSetMethod(appendable, fieldName, "Metadata" + fieldTypeName);
 				if (fieldTypeName.equals("StringBuilder"))
@@ -146,6 +147,27 @@ public class MetaMetadataScalarField extends MetaMetadataField
 	 * This method will generate the getter for the field. public String getTitle() { return
 	 * title().getValue(); }
 	 */
+	protected void appendIsNull(Appendable appendable, String fieldName, String fieldType)
+			throws IOException
+	{
+		String comment = "Tests to see if the value of the field is null, or if the field itself is null: " + fieldName;
+		// write java doc
+		MetadataCompilerUtils.writeJavaDocComment(comment, appendable);
+
+		// first line
+		appendable.append("public boolean isNull"
+				+ XMLTools.javaNameFromElementName(fieldName, true) + "()\n{\n");
+
+		// second line
+		appendable.append("\treturn " + fieldName + " == null || " + fieldName + ".getValue() == null;\n}\n");
+
+	}
+
+
+	/**
+	 * This method will generate the getter for the field. public String getTitle() { return
+	 * title().getValue(); }
+	 */
 	protected void appendGetter(Appendable appendable, String fieldName, String fieldType)
 			throws IOException
 	{
@@ -155,10 +177,10 @@ public class MetaMetadataScalarField extends MetaMetadataField
 
 		// first line
 		appendable.append("public " + fieldType + " get"
-				+ XMLTools.javaNameFromElementName(fieldName, true) + "(){\n");
+				+ XMLTools.javaNameFromElementName(fieldName, true) + "()\n{\n");
 
 		// second line
-		appendable.append("return " + fieldName + "().getValue();\n}\n");
+		appendable.append("\treturn " + fieldName + "().getValue();\n}\n");
 
 	}
 
@@ -178,7 +200,7 @@ public class MetaMetadataScalarField extends MetaMetadataField
 				+ fieldType + " " + fieldName + " )\n{\n");
 
 		// second line
-		appendable.append("this." + fieldName + "().setValue(" + fieldName + ");\n}\n");
+		appendable.append("\tthis." + fieldName + "().setValue(" + fieldName + ");\n}\n");
 	}
 
 	/**
@@ -196,10 +218,10 @@ public class MetaMetadataScalarField extends MetaMetadataField
 				+ "( " + fieldType + " " + fieldName + " )\n{\n");
 
 		// second line
-		appendable.append("this." + fieldName + "().setValue(" + fieldName + ");\n");
+		appendable.append("\tthis." + fieldName + "().setValue(" + fieldName + ");\n");
 
 		// third line
-		appendable.append("rebuildCompositeTermVector();\n }");
+		appendable.append("\trebuildCompositeTermVector();\n}");
 	}
 
 	/**

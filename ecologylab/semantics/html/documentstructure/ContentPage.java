@@ -11,7 +11,6 @@ import ecologylab.net.ParsedURL;
 import ecologylab.semantics.html.HTMLElement;
 import ecologylab.semantics.html.ImgElement;
 import ecologylab.semantics.html.ParagraphText;
-import ecologylab.semantics.html.RecognizedDocumentStructure;
 import ecologylab.semantics.html.TidyInterface;
 
 
