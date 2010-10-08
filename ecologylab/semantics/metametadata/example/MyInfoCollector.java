@@ -75,7 +75,10 @@ public class MyInfoCollector<C extends MyContainer> extends Debug implements Inf
 	{
 		// need to register scalar types BEFORE any translation scope is set up, or some scalar types
 		// cannot be recognized.
-		MetadataScalarScalarType.init();
+		
+		// useful for supporting multiple repositories only?
+		
+//		MetadataScalarScalarType.init();
 	}
 
 	public MyInfoCollector(MetaMetadataRepository repo, TranslationScope metadataTranslationScope)
