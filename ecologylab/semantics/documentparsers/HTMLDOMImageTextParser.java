@@ -17,13 +17,13 @@ import ecologylab.semantics.html.AElement;
 import ecologylab.semantics.html.DOMWalkInformationTagger;
 import ecologylab.semantics.html.ImgElement;
 import ecologylab.semantics.html.ParagraphText;
-import ecologylab.semantics.html.RecognizedDocumentStructure;
 import ecologylab.semantics.html.TidyInterface;
 import ecologylab.semantics.html.documentstructure.AnchorContext;
 import ecologylab.semantics.html.documentstructure.ContentPage;
 import ecologylab.semantics.html.documentstructure.ImageCollectionPage;
 import ecologylab.semantics.html.documentstructure.ImageFeatures;
 import ecologylab.semantics.html.documentstructure.IndexPage;
+import ecologylab.semantics.html.documentstructure.RecognizedDocumentStructure;
 import ecologylab.semantics.html.documentstructure.TextOnlyPage;
 import ecologylab.semantics.html.utils.HTMLAttributeNames;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
@@ -190,7 +190,7 @@ implements TidyInterface, HTMLAttributeNames
 		}
 
 		// No Informative images are in this document. Form surrogate only with text.  	
-		// We cannot tell whether the images in the pages are informative or not until downloding all, thus this is the case after we 
+		// We cannot tell whether the images in the pages are informative or not until downloading all, thus this is the case after we 
 		// look through all the images in the page and determine no image is worth displaying.
 		if( (numCandidatesExtractedFrom()==0) && (paragraphTextsTMap.size()>0) )
 		{

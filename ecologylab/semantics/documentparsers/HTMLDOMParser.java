@@ -18,8 +18,8 @@ import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.html.ImgElement;
 import ecologylab.semantics.html.ParagraphText;
-import ecologylab.semantics.html.RecognizedDocumentStructure;
 import ecologylab.semantics.html.documentstructure.AnchorContext;
+import ecologylab.semantics.html.documentstructure.RecognizedDocumentStructure;
 import ecologylab.semantics.html.documentstructure.SemanticAnchor;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.builtins.Document;
@@ -159,11 +159,14 @@ extends HTMLParserCommon<C, IC>
 					textContext	= textContext.trim();
 
 					// caption may be alt, but may have been filtered by ImgElement.deriveMetadata()
-					String caption	= imageElement.caption();
 					// Checking whether the mined textContext is exactly the same as the alt text. 
 					// In that case, we don't want to display the redundant information. 
-					if ((caption==null) || !textContext.equals(caption))
-						imageElement.hwSetContext( trimTooLongContext(textContext) );
+					if (!imageElement.isNullCaption())
+					{
+						String caption	= imageElement.caption();
+						if (!textContext.equals(caption))
+							imageElement.hwSetContext( trimTooLongContext(textContext) );
+					}
 				}
 
 				container.allocLocalCollections();
