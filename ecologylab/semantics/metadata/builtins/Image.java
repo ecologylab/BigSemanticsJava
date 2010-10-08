@@ -92,6 +92,12 @@ public class Image extends Media
 		this.caption().setValue(caption);
 	}
 
+	public boolean isNullCaption()
+	{
+		return caption == null || caption.getValue() == null;
+	}
+
+
 	@Override
 	public void setLocation(ParsedURL location)
 	{
