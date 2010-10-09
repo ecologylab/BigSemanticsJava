@@ -51,6 +51,7 @@ public class CookieProcessing extends ElementState
 			ParsedURL purl	= ParsedURL.get(uri);
 			String domain		= purl.domain();
 			Boolean result	= globalCookieAcceptance.get(domain);
+			purl.recycle();
 			return (result == null) || result;
 		}
 		
