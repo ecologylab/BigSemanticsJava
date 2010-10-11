@@ -1,6 +1,8 @@
 <meta_metadata_repository name="imdb" package="ecologylab.semantics.generated.library.imdb" 
 	default_user_agent_name="chrome_2">
 	
+	<cookie_processing domain="imdb.com" ignore_all_cookies="true" />
+	
 	<meta_metadata name="birth_detail" extends="document" comment="Metadata for storing details of birth (date and place) of people" parser="xpath" >
 		<scalar name="day_of_birth" navigates_to="day_of_birth_link" label="day of birth" scalar_type="String" />
 		<scalar name="year_of_birth" navigates_to="year_of_birth_link" label="year of birth" scalar_type="String" />
@@ -10,13 +12,13 @@
 		<scalar name="place_of_birth_link" hide="true" scalar_type="ParsedURL" />
 	</meta_metadata>
 
-	<meta_metadata name="imdb_title" extends="document" comment="IMDB metadata" parser="xpath" reload_page_first_time="true">
+	<meta_metadata name="imdb_title" extends="document" comment="IMDB metadata" parser="xpath">
 		<selector url_path_tree="http://www.imdb.com/title/" />
 		<scalar name="title" xpath="//h1[@class='header']">
 <!--			<filter regex="More [a-zA-Z\s&amp;;#0-9\-]*" replace="" />-->
 		</scalar>
 		<scalar name="location" layer="-1.0" />
-		<scalar name="year_released" style="h1" layer="9.5" xpath="//div[@id='tn15title']/h1/span/a[1]" label="year released" scalar_type="String" />
+		<scalar name="year_released" style="h1" layer="9.5" xpath="//h1[@class='header']//a" label="year released" scalar_type="String" />
 		<scalar name="rating" xpath="//span[@class='rating-rating']" scalar_type="String" />
 		<collection name="directors" layer="9.0" xpath="//td[@id='overview-top']//div[@class='txt-block'][contains(.,'Director')]//a" 
 				child_type="person_details" child_entity="true">
@@ -95,60 +97,60 @@
 		</semantic_actions>
 	</meta_metadata>
 
-	<meta_metadata name="person_details" extends="document" comment="IMDB metadata" parser="xpath" reload_page_first_time="true">
+	<meta_metadata name="person_details" extends="document" comment="IMDB metadata" parser="xpath">
 		<selector url_path_tree="http://www.imdb.com/name/" />
-		<def_var name="bio_node" xpath="//div[@class='info']/h5[starts-with(child::text(), 'Mini Biography:')]/.." type="node" />
-		<def_var name="trivia_node" xpath="//div[@class='info']/h5[starts-with(child::text(), 'Trivia:')]/.." type="node" />
-		<def_var name="awards_node" xpath="//div[@class='info']/h5[starts-with(child::text(), 'Awards:')]/.." type="node" />
-		<scalar name="title" xpath="//div[@id='tn15title']/h1">
-			<filter regex="More [a-zA-Z\s&amp;;#0-9\-]*" replace="" />
-		</scalar>
-		<scalar name="person_img" hide="true" xpath="//div[@class='photo']/a/img/@src" scalar_type="ParsedURL" />
-		<composite name="birth_detail" xpath="//div[@class='info']/h5[starts-with(child::text(), 'Date of Birth:')]/.." type="birth_detail">
-			<scalar name="day_of_birth" xpath="./a[1]/child::text()" />
-			<scalar name="place_of_birth_link" xpath="./a[3]/@href" />
-			<scalar name="year_of_birth" xpath="./a[2]/child::text()" />
-			<scalar name="year_of_birth_link" xpath="./a[2]/@href" />
-			<scalar name="day_of_birth_link" xpath="./a[1]/@href" />
-			<scalar name="place_of_birth" xpath="./a[3]/child::text()" />
+		<def_var name="bio_node" xpath="//td[@id='overview-top']/p" type="node" />
+<!--		<def_var name="trivia_node" xpath="//div[@class='info']/h5[starts-with(child::text(), 'Trivia:')]/.." type="node" />-->
+<!--		<def_var name="awards_node" xpath="//div[@class='info']/h5[starts-with(child::text(), 'Awards:')]/.." type="node" />-->
+		<scalar name="title" xpath="//div[@id='main']//h1"/>
+		<scalar name="person_img" hide="true" xpath="//td[@id='img_primary']//img/@src" scalar_type="ParsedURL" />
+		<composite name="birth_detail" xpath="//td[@id='overview-top']" type="birth_detail">
+			<scalar name="day_of_birth" xpath="//a[contains(./@href,'date')]" />
+			<scalar name="day_of_birth_link" xpath="//a[contains(./@href,'date')]/@href" />
+			<scalar name="year_of_birth" xpath="//a[contains(./@href,'birth_year')]" />
+			<scalar name="year_of_birth_link" xpath="//a[contains(./@href,'birth_year')]/@href" />
+			<scalar name="place_of_birth" xpath="//a[contains(./@href,'birth_place')]" />
+			<scalar name="place_of_birth_link" xpath="//a[contains(./@href,'birth_place')]/@href" />
 		</composite>
-		<scalar name="mini_biography" xpath="./child::text()" navigates_to="biography_link" context_node="bio_node" scalar_type="String" />
-		<scalar name="biography_link" hide="true" xpath="./a/@href" context_node="bio_node" scalar_type="ParsedURL" />
-		<scalar name="trivia" xpath="./child::text()" navigates_to="trivia_link" context_node="trivia_node" scalar_type="String" />
-		<scalar name="trivia_link" hide="true" xpath="./a/@href" context_node="trivia_node" scalar_type="ParsedURL" />
-		<scalar name="awards" xpath="./child::text()" navigates_to="awards_link" context_node="awards_node" scalar_type="String" />
-		<scalar name="awards_link" hide="true" xpath="./a/@href" context_node="awards_node" scalar_type="ParsedURL" />
-		<scalar name="alternate_names" xpath="//div[@class='info']/h5[starts-with(child::text(), 'Alternate Names:')]/.." scalar_type="String">
-			<filter regex="Alternate Names:" replace="" />
+		<scalar name="mini_biography" xpath="." navigates_to="biography_link" context_node="bio_node" scalar_type="String" >
+			<filter regex="See full bio" replace="" />
 		</scalar>
-		<collection name="titles_as_actor" xpath="//div[@class='filmo']/h5/a[starts-with(@name, 'act')]/../..//a[1][starts-with(@href, '/title/')]" child_type="imdb_title" child_entity="true">
+		<scalar name="biography_link" hide="true" xpath="//a[contains(.,'See')]/@href" context_node="bio_node" scalar_type="ParsedURL" />
+<!--		<scalar name="trivia" xpath="./child::text()" navigates_to="trivia_link" context_node="trivia_node" scalar_type="String" />-->
+<!--		<scalar name="trivia_link" hide="true" xpath="./a/@href" context_node="trivia_node" scalar_type="ParsedURL" />-->
+<!--		<scalar name="awards" xpath="./child::text()" navigates_to="awards_link" context_node="awards_node" scalar_type="String" />-->
+<!--		<scalar name="awards_link" hide="true" xpath="./a/@href" context_node="awards_node" scalar_type="ParsedURL" />-->
+<!--		<scalar name="alternate_names" xpath="//div[@class='info']/h5[starts-with(child::text(), 'Alternate Names:')]/.." scalar_type="String">-->
+<!--			<filter regex="Alternate Names:" replace="" />-->
+<!--		</scalar>-->
+		<collection name="titles_as_actor" xpath="//div[@id='filmo-head-Actor']/following-sibling::div[1]//b/a" child_type="imdb_title" child_entity="true">
 			<scalar name="gist" xpath="./child::text()" />
 			<scalar name="location" xpath="./@href" />
 		</collection>
-		<collection name="titles_as_director" xpath="//div[@class='filmo']/h5/a[@name='director']/../..//a[1][starts-with(@href, '/title/')]" child_type="imdb_title" child_entity="true">
+		<collection name="titles_as_director" xpath="//div[@id='filmo-head-Director']/following-sibling::div[1]//b/a" child_type="imdb_title" child_entity="true">
 			<scalar name="gist" xpath="./child::text()" />
 			<scalar name="location" xpath="./@href" />
 		</collection>
-		<collection name="titles_for_soundtrack" xpath="//div[@class='filmo']/h5/a[@name='soundtrack']/../..//a[1][starts-with(@href, '/title/')]" child_type="imdb_title" child_entity="true">
+		<collection name="titles_for_soundtrack" xpath="//div[@id='filmo-head-Soundtrack']/following-sibling::div[1]//b/a" child_type="imdb_title" child_entity="true">
 			<scalar name="gist" xpath="./child::text()" />
 			<scalar name="location" xpath="./@href" />
 		</collection>
-		<collection name="titles_as_producer" xpath="//div[@class='filmo']/h5/a[@name='producer']/../..//a[1][starts-with(@href, '/title/')]" child_type="imdb_title" child_entity="true">
+		<collection name="titles_as_producer" xpath="//div[@id='filmo-head-Producer']/following-sibling::div[1]//b/a" child_type="imdb_title" child_entity="true">
 			<scalar name="gist" xpath="./child::text()" />
 			<scalar name="location" xpath="./@href" />
 		</collection>
-		<collection name="titles_thanked_in" xpath="//div[@class='filmo']/h5/a[@name='thanks']/../..//a[1][starts-with(@href, '/title/')]" child_type="imdb_title" child_entity="true">
+		<collection name="titles_thanked_in" xpath="//div[@id='filmo-head-Thanks']/following-sibling::div[1]//b/a" child_type="imdb_title" child_entity="true">
 			<scalar name="gist" xpath="./child::text()" />
 			<scalar name="location" xpath="./@href" />
 		</collection>
-		<collection name="titles_as_self" xpath="//div[@class='filmo']/h5/a[@name='self']/../..//a[1][starts-with(@href, '/title/')]" child_type="imdb_title" child_entity="true">
+		<collection name="titles_as_self" xpath="//div[@id='filmo-head-Self']/following-sibling::div[1]//b/a" child_type="imdb_title" child_entity="true">
 			<scalar name="gist" xpath="./child::text()" />
 			<scalar name="location" xpath="./@href" />
 		</collection>
-		<collection name="titles_in_development" xpath="//div[@class='filmo']/h5/a[@name='indev']/../..//a[1][starts-with(@href, '/title/')]" child_type="imdb_title" child_entity="true">
-			<scalar name="gist" xpath="./child::text()" />
-			<scalar name="location" xpath="./@href" />
-		</collection>
+<!--		<collection name="titles_in_development" xpath="//div[@id='filmo-head-Actor']/following-sibling::div[1]//b/a" child_type="imdb_title" child_entity="true">-->
+<!--			<scalar name="gist" xpath="./child::text()" />-->
+<!--			<scalar name="location" xpath="./@href" />-->
+<!--		</collection>-->
 		<semantic_actions>
 			<get_field name="titles_as_actor" />
 			<get_field name="person_img" />
@@ -191,7 +193,7 @@
 		</semantic_actions>
 	</meta_metadata>
 
-	<meta_metadata name="imdb_chart" extends="document" comment="IMDB chart" parser="xpath" reload_page_first_time="true">
+	<meta_metadata name="imdb_chart" extends="document" comment="IMDB chart" parser="xpath">
 		<selector url_path_tree="http://www.imdb.com/chart/" />
 		<collection name="results" xpath="//div[@id='main']/table//a" child_type="imdb_title">
 			<scalar name="title" xpath="./text()" />
