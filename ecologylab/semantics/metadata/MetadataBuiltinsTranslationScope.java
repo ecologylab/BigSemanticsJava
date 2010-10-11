@@ -9,6 +9,9 @@ import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.Entity;
 import ecologylab.semantics.metadata.builtins.Image;
 import ecologylab.semantics.metadata.builtins.Media;
+import ecologylab.semantics.metadata.scalar.MetadataInteger;
+import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
+import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.serialization.TranslationScope;
 
 /**
@@ -29,6 +32,11 @@ public class MetadataBuiltinsTranslationScope extends Debug
 		Media.class, 
 		Image.class, 
 		DebugMetadata.class,
+		
+		MetadataString.class,
+		MetadataParsedURL.class,
+		MetadataInteger.class,
+		
 	};
 
 	public static TranslationScope get()

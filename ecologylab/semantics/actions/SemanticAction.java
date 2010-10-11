@@ -48,7 +48,8 @@ public abstract class SemanticAction<IC extends InfoCollector, SAH extends Seman
 	 * Object on which the Action is to be taken
 	 */
 	@simpl_scalar
-	private String										object;
+	@xml_tag("object")
+	private String										objectStr;
 
 	/**
 	 * The value returned from the action
@@ -80,12 +81,12 @@ public abstract class SemanticAction<IC extends InfoCollector, SAH extends Seman
 
 	public String getObject()
 	{
-		return object;
+		return objectStr;
 	}
 
 	public void setObject(String object)
 	{
-		this.object = object;
+		this.objectStr = object;
 	}
 
 	public String getReturnObjectName()

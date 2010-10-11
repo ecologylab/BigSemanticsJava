@@ -1,10 +1,13 @@
 package ecologylab.semantics.metametadata;
 
 import ecologylab.generic.Debug;
+import ecologylab.io.BasicSite;
 import ecologylab.net.UserAgent;
 import ecologylab.semantics.actions.ConditionTranslationScope;
+import ecologylab.semantics.actions.NestedSemanticAction;
 import ecologylab.semantics.actions.SemanticActionTranslationScope;
 import ecologylab.semantics.actions.SemanticAction;
+import ecologylab.semantics.connectors.CookieProcessing;
 import ecologylab.semantics.connectors.SemanticsSite;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
@@ -24,6 +27,7 @@ public class MetaMetadataTranslationScope extends Debug
 		MetaMetadataField.class,
 		MetaMetadataScalarField.class,
 		MetaMetadataCompositeField.class,
+		MetaMetadataNestedField.class,
 		MetaMetadataCollectionField.class,
 		MetaMetadata.class,
 		SearchEngines.class,
@@ -31,10 +35,18 @@ public class MetaMetadataTranslationScope extends Debug
 		UserAgent.class, 
 		NamedStyle.class, 
 		SemanticAction.class,
+		NestedSemanticAction.class,
+		
 		SemanticsSite.class,
+		BasicSite.class,
 		Argument.class,
 		
+		RegexFilter.class,
+		
+		CookieProcessing.class,
+		
 		MetaMetadataRepository.class, 
+		
 		
 		MetaMetadataSelector.class,
 		

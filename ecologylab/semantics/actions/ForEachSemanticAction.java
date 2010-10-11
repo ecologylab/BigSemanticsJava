@@ -29,7 +29,8 @@ class ForEachSemanticAction<IC extends InfoCollector, SAH extends SemanticAction
 	 * Name of the iterator [iterator variable]
 	 */
 	@simpl_scalar
-	private String	as;
+	@xml_tag("as")
+	private String	asStr;
 
 	/**
 	 * Starting index
@@ -83,7 +84,7 @@ class ForEachSemanticAction<IC extends InfoCollector, SAH extends SemanticAction
 	 */
 	public String getAs()
 	{
-		return as;
+		return asStr;
 	}
 
 	/**
@@ -92,7 +93,7 @@ class ForEachSemanticAction<IC extends InfoCollector, SAH extends SemanticAction
 	 */
 	public void setAs(String as)
 	{
-		this.as = as;
+		this.asStr = as;
 	}
 
 	@Override
