@@ -21,7 +21,7 @@ public class CookieProcessing extends ElementState
 	String		domain;
 	
 	@simpl_scalar
-	boolean		ignore;
+	boolean		ignoreAllCookies;
 	
 	static 
 	HashMap<String, Boolean>		globalCookieAcceptance	= new HashMap<String, Boolean>();
@@ -35,13 +35,14 @@ public class CookieProcessing extends ElementState
 
 	
 	@Override
-	public void serializationPostHook()
+	public void deserializationPostHook()
 	{
+		System.out.println("Setting cookie policy for domain : " + domain + " [IgnoreAllCookies: " + ignoreAllCookies + "]");
 		if (domain != null)
-			globalCookieAcceptance.put(domain, ignore);
+			globalCookieAcceptance.put(domain, ignoreAllCookies);
 	}
 	
-	static CookiePolicy semanticsCookiePolicy	= new CookiePolicy()
+	public static CookiePolicy semanticsCookiePolicy	= new CookiePolicy()
 	{
 
 		@Override
@@ -52,6 +53,10 @@ public class CookieProcessing extends ElementState
 			String domain		= purl.domain();
 			Boolean result	= globalCookieAcceptance.get(domain);
 			purl.recycle();
+			
+			//result = (result == null) || result;
+			//System.out.println("MMD has Cookie rejected from URI: [" + result + "] :" + uri );
+			
 			return (result == null) || result;
 		}
 		

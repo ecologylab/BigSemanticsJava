@@ -20,7 +20,9 @@ import ecologylab.net.ParsedURL;
 import ecologylab.net.UserAgent;
 import ecologylab.semantics.actions.SemanticActionTranslationScope;
 import ecologylab.semantics.connectors.CFPrefNames;
+import ecologylab.semantics.connectors.CookieProcessing;
 import ecologylab.semantics.connectors.SemanticsSite;
+import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.metadata.DocumentParserTagNames;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
@@ -71,6 +73,10 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 
 	private String																							defaultUserAgentString					= null;
 
+	@simpl_nowrap
+	@simpl_collection("cookie_processing")
+	ArrayList<CookieProcessing> cookieProcessors;
+	
 	/**
 	 * The keys for this hashmap are the values within TypeTagNames. This map is filled out
 	 * automatically, by translateFromXML(). It contains all bindings, for both Document and Media
@@ -229,6 +235,9 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 				result.integrateRepositoryWithThis(file, metaMetadataTScope);
 		}
 
+		//We might want to do this only if we have some policies worth enforcing.
+		ParsedURL.cookieManager.setCookiePolicy(CookieProcessing.semanticsCookiePolicy);
+		
 		// FIXME -- get rid of this?!
 		Metadata.setRepository(result);
 
