@@ -147,7 +147,7 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 	{
 //		return getMetadataClassDescriptor().getMetaMetadata();
 		MetaMetadataCompositeField mm			= metaMetadata;
-		if (mm == null)
+		if (mm == null && repository != null)
 		{
 			if (metaMetadataName != null)	// get from saved composition
 				mm									= repository.getByTagName(metaMetadataName.getValue());

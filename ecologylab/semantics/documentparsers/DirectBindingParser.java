@@ -37,7 +37,10 @@ public class DirectBindingParser
 	@Override
 	public Document populateMetadata()
 	{
-		return directBindingPopulateMetadata();
+		Document populatedMetadata	= directBindingPopulateMetadata();
+		container.setMetadata(populatedMetadata);
+		
+		return populatedMetadata;
 	}
 	
 	/**

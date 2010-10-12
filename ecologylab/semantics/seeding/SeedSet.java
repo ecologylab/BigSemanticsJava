@@ -312,7 +312,7 @@ implements SemanticsSessionObjectNames, Iterable<S>
 		}
 	}
 	
-	public void add(S seed) 
+	public void add(S seed, InfoCollector infoCollector) 
 	{
 		if (seed != null)
 			if (seeds == null)
@@ -327,7 +327,7 @@ implements SemanticsSessionObjectNames, Iterable<S>
 			Seed s = (Seed) iterator.next();
 			if(size() == 1)
 			{
-				s.infoCollector.setHeterogeneousSearchScenario( ! s.isHomogenousSeed() );
+				infoCollector.setHeterogeneousSearchScenario( ! s.isHomogenousSeed() );
 				break;
 			}
 			else
@@ -336,7 +336,7 @@ implements SemanticsSessionObjectNames, Iterable<S>
 				//Even if one isn't homogeneous, scenario is hetero
 				if(! s.isHomogenousSeed())
 				{
-					s.infoCollector.setHeterogeneousSearchScenario(true);
+					infoCollector.setHeterogeneousSearchScenario(true);
 					break;
 				}
 			}

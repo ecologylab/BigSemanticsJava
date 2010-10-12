@@ -41,7 +41,7 @@ public class SearchSemanticAction<IC extends InfoCollector, SAH extends Semantic
 		search.initialize(infoCollector);
 		SeedSet seedSet = new SeedSet();
 		seedSet.setParentSeedSet(infoCollector.getSeedSet());
-		seedSet.add(search);
+		seedSet.add(search, infoCollector);
 		seedSet.performSeeding(infoCollector.sessionScope(), true);
 		return null;
 	}
