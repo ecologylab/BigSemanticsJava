@@ -385,7 +385,24 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 	public void setLocation(ParsedURL location)
 	{
 	}
+	
+	public String getContext()
+	{
+		return null;
+	}
 
+	/**
+	 * Sets the value of the field context
+	 **/
+
+	public void setContext(String context)
+	{
+	}
+
+	public void hwSetContext(String context)
+	{
+	}
+	
 	public ParsedURL getNavLocation()
 	{
 		return null;

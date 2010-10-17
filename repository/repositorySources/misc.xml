@@ -7,10 +7,6 @@
 		<scalar name="subject" scalar_type="String" />
 	</meta_metadata>
 	
-	<meta_metadata name="text" extends="media" comment="The Text Class">
-		<scalar name="text" scalar_type="String" />
-	</meta_metadata>
-	
 	<meta_metadata name="dc_document" extends="document" comment="">
 		<scalar name="subject" scalar_type="String" />
 		<mixins>search</mixins>

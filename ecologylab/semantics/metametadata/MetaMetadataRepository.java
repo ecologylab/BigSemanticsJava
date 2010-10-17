@@ -18,16 +18,14 @@ import ecologylab.generic.Debug;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.net.ParsedURL;
 import ecologylab.net.UserAgent;
-import ecologylab.semantics.actions.SemanticActionTranslationScope;
-import ecologylab.semantics.connectors.CFPrefNames;
 import ecologylab.semantics.connectors.CookieProcessing;
 import ecologylab.semantics.connectors.SemanticsSite;
-import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.metadata.DocumentParserTagNames;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
+import ecologylab.semantics.metadata.builtins.ClippableDocument;
 import ecologylab.semantics.metadata.builtins.Document;
-import ecologylab.semantics.metadata.builtins.Media;
+import ecologylab.semantics.metadata.builtins.Image;
 import ecologylab.semantics.metadata.scalar.types.MetadataScalarScalarType;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.SIMPLTranslationException;
@@ -79,8 +77,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	
 	/**
 	 * The keys for this hashmap are the values within TypeTagNames. This map is filled out
-	 * automatically, by translateFromXML(). It contains all bindings, for both Document and Media
-	 * subtypes.
+	 * automatically, by translateFromXML(). It contains  bindings, for all subtypes.
 	 */
 	@simpl_map("meta_metadata")
 	@simpl_nowrap
@@ -103,13 +100,13 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	private HashMap<String, MetaMetadata>												documentRepositoryByDomain			= new HashMap<String, MetaMetadata>();
 
 	/**
-	 * Repository for Media and its subclasses.
+	 * Repository for ClippableDocument and its subclasses.
 	 */
-	private HashMap<String, MetaMetadata>												mediaRepositoryByUrlStripped		= new HashMap<String, MetaMetadata>();
+	private HashMap<String, MetaMetadata>												clippableDocumentRepositoryByUrlStripped		= new HashMap<String, MetaMetadata>();
 
 	private HashMap<String, ArrayList<RepositoryPatternEntry>>	documentRepositoryByPattern			= new HashMap<String, ArrayList<RepositoryPatternEntry>>();
 
-	private HashMap<String, ArrayList<RepositoryPatternEntry>>	mediaRepositoryByPattern				= new HashMap<String, ArrayList<RepositoryPatternEntry>>();
+	private HashMap<String, ArrayList<RepositoryPatternEntry>>	clippableDocumentRepositoryByPattern				= new HashMap<String, ArrayList<RepositoryPatternEntry>>();
 
 	/**
 	 * We have only documents as direct binding will be used only in case of feeds and XML
@@ -564,15 +561,15 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 
 	public MetaMetadata getImageMM(ParsedURL purl)
 	{
-		return getMediaMM(purl, IMAGE_TAG);
+		return getClippableDocumentMM(purl, IMAGE_TAG);
 	}
 
-	public MetaMetadata getMediaMM(ParsedURL purl, String tagName)
+	public MetaMetadata getClippableDocumentMM(ParsedURL purl, String tagName)
 	{
 		MetaMetadata result = null;
 		if (purl != null && !purl.isFile())
 		{
-			result = mediaRepositoryByUrlStripped.get(purl.noAnchorNoQueryPageString());
+			result = clippableDocumentRepositoryByUrlStripped.get(purl.noAnchorNoQueryPageString());
 
 			if (result == null)
 			{
@@ -581,14 +578,14 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 				String key = purl.url().getProtocol() + "://"
 						+ urlPrefixCollection.getMatchingPhrase(protocolStrippedURL, '/');
 
-				result = mediaRepositoryByUrlStripped.get(key);
+				result = clippableDocumentRepositoryByUrlStripped.get(key);
 
 				if (result == null)
 				{
 					String domain = purl.domain();
 					if (domain != null)
 					{
-						ArrayList<RepositoryPatternEntry> entries = mediaRepositoryByPattern.get(domain);
+						ArrayList<RepositoryPatternEntry> entries = clippableDocumentRepositoryByPattern.get(domain);
 						if (entries != null)
 						{
 							for (RepositoryPatternEntry entry : entries)
@@ -614,13 +611,13 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	 * @param purl
 	 * @return A Metadata object, either of type Image, or a subclass. Never null!
 	 */
-	public Media constructImage(ParsedURL purl)
+	public Image constructImage(ParsedURL purl)
 	{
 		MetaMetadata metaMetadata = getImageMM(purl);
-		Media result = null;
+		Image result = null;
 		if (metaMetadata != null)
 		{
-			result = (Media) metaMetadata.constructMetadata(metadataTScope);
+			result = (Image) metaMetadata.constructMetadata(metadataTScope);
 		}
 		return result;
 	}
@@ -642,7 +639,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	}
 
 	/**
-	 * Initializes HashMaps for MetaMetadata selectors by URL or pattern. Uses the Media and Document
+	 * Initializes HashMaps for MetaMetadata selectors by URL or pattern. Uses the ClippableDocument and Document
 	 * base classes to ensure that maps are only filled with appropriate matching MetaMetadata.
 	 */
 	private void initializeLocationBasedMaps()
@@ -660,10 +657,10 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 			HashMap<String, MetaMetadata> repositoryByUrlStripped;
 			HashMap<String, ArrayList<RepositoryPatternEntry>> repositoryByPattern;
 
-			if (Media.class.isAssignableFrom(metadataClass))
+			if (ClippableDocument.class.isAssignableFrom(metadataClass))
 			{
-				repositoryByUrlStripped = mediaRepositoryByUrlStripped;
-				repositoryByPattern = mediaRepositoryByPattern;
+				repositoryByUrlStripped = clippableDocumentRepositoryByUrlStripped;
+				repositoryByPattern = clippableDocumentRepositoryByPattern;
 			}
 			else if (Document.class.isAssignableFrom(metadataClass))
 			{

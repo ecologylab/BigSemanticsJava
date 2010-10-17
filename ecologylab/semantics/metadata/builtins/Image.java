@@ -1,7 +1,12 @@
 package ecologylab.semantics.metadata.builtins;
 
+import java.util.HashMap;
+
+import ecologylab.collections.CollectionTools;
+import ecologylab.generic.IntSlot;
+import ecologylab.net.MimeType;
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.metadata.Metadata.mm_name;
+import ecologylab.semantics.html.documentstructure.ImageConstants;
 import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
 import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
@@ -12,19 +17,24 @@ import ecologylab.serialization.simpl_inherit;
  * Metadata hierarchy. It is hand-authored in order to provide specific functionalities
  **/
 @simpl_inherit
-public class Image extends Media
+public class Image extends ClippableDocument
+implements MimeType, ImageConstants
 {
-	@mm_name("caption") 
-	@simpl_scalar
-	MetadataString					caption;
-
-	@mm_name("location") 
-	@simpl_scalar
-	MetadataParsedURL				location;
-
 	@mm_name("local_location") 
 	@simpl_scalar
 	private MetadataString	localLocation;
+	
+	static final HashMap<String, Integer>		mimeTypeToIndexMap		= new HashMap<String, Integer>(15);
+
+	static
+	{
+		mimeTypeToIndexMap.put("image/jpeg", JPG);
+		mimeTypeToIndexMap.put("image/pjpeg", JPG);
+		mimeTypeToIndexMap.put("image/gif", GIF);
+		mimeTypeToIndexMap.put("image/png", PNG);
+	}
+
+
 
 	public Image()
 	{
@@ -36,80 +46,10 @@ public class Image extends Media
 		super(metaMetadata);
 	}
 
-	MetadataString caption()
-	{
-		MetadataString result = this.caption;
-		if (result == null)
-		{
-			result = new MetadataString();
-			this.caption = result;
-		}
-		return result;
-	}
-
-	MetadataParsedURL location()
-	{
-		MetadataParsedURL result = this.location;
-		if (result == null)
-		{
-			result = new MetadataParsedURL();
-			this.location = result;
-		}
-		return result;
-	}
-
-	public String getCaption()
-	{
-		// return caption;
-		return caption().getValue();
-	}
-
-	@Override
-	public ParsedURL getLocation()
-	{
-		// return location;
-		return location().getValue();
-	}
-
-	public void hwSetCaption(String caption)
-	{
-		// this.caption = caption;
-		this.setCaption(caption);
-		rebuildCompositeTermVector();
-	}
-
-	@Override
-	public void hwSetLocation(ParsedURL location)
-	{
-		// this.location = location;
-		this.setLocation(location);
-		rebuildCompositeTermVector();
-	}
-
-	public void setCaption(String caption)
-	{
-		// this.caption = caption;
-		this.caption().setValue(caption);
-	}
-
-	public boolean isNullCaption()
-	{
-		return caption == null || caption.getValue() == null;
-	}
-
-
-	@Override
-	public void setLocation(ParsedURL location)
-	{
-		// this.location = location;
-		this.location().setValue(location);
-	}
-
 
 	@Override
 	public void hwSetNavLocation(ParsedURL navLocation)
 	{
-		// this.navLocation = navLocation;
 		this.setNavLocation(navLocation);
 		rebuildCompositeTermVector();
 	}
@@ -182,5 +122,17 @@ public class Image extends Media
 	public boolean isImage()
 	{
 		return true;
+	}
+	
+
+	/**
+	 * Get index indicating mimeType. May be used for designRole() and in weighting.
+	 * 
+	 * @param parsedURL
+	 */
+	public static int mimeIndexFromMimeType ( String mimeType )
+	{
+		return Image.mimeTypeToIndexMap.get(mimeType);
+//		return (mimeSlot != null) ? mimeSlot.ge : UNKNOWN_MIME;
 	}
 }
