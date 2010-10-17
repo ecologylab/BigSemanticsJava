@@ -13,7 +13,7 @@ import java.util.HashSet;
 import ecologylab.appframework.PropertiesAndDirectories;
 import ecologylab.appframework.types.prefs.PrefString;
 import ecologylab.io.Files;
-import ecologylab.semantics.metadata.MetadataBuiltinsTranslationScope;
+import ecologylab.semantics.metadata.builtins.MetadataBuiltinsTranslationScope;
 import ecologylab.serialization.XMLTools;
 
 /**
@@ -51,9 +51,7 @@ public class MetadataCompilerUtils
 		"ecologylab.serialization.TranslationScope",
 		"ecologylab.serialization.ElementState.xml_tag",
 		"ecologylab.semantics.metadata.builtins.*",
-		"ecologylab.semantics.metametadata.MetaMetadataRepository",
-		// "ecologylab.semantics.generated.library.*",
-		"ecologylab.semantics.metadata.MetadataBuiltinsTranslationScope"
+		"ecologylab.semantics.metametadata.MetaMetadataRepository"
 	));
 	static
 	{
