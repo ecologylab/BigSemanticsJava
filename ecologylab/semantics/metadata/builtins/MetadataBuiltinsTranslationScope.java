@@ -1,24 +1,17 @@
 /**
  * 
  */
-package ecologylab.semantics.metadata;
+package ecologylab.semantics.metadata.builtins;
 
 import ecologylab.generic.Debug;
-import ecologylab.semantics.metadata.builtins.ClippableDocument;
-import ecologylab.semantics.metadata.builtins.DebugMetadata;
-import ecologylab.semantics.metadata.builtins.Document;
-import ecologylab.semantics.metadata.builtins.Entity;
-import ecologylab.semantics.metadata.builtins.Image;
+import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.scalar.MetadataInteger;
 import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
 import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.serialization.TranslationScope;
 
 /**
- * 
- * 
- * @author bharat
- * 
+ * Encapsulates ClassDescriptors for Metadata and its subclasses that are coded by hand.
  */
 public class MetadataBuiltinsTranslationScope extends Debug
 {
@@ -31,6 +24,8 @@ public class MetadataBuiltinsTranslationScope extends Debug
 		Entity.class,
 		ClippableDocument.class, 
 		Image.class, 
+		Text.class,
+		Surrogate.class,
 		DebugMetadata.class,
 		
 		MetadataString.class,

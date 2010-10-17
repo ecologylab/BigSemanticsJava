@@ -151,7 +151,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 			initializedTypes = true;
 			MetadataScalarScalarType.init(); // register metadata-specific scalar
 			// types
-			ecologylab.semantics.metadata.MetadataBuiltinsTranslationScope.get();
+			ecologylab.semantics.metadata.builtins.MetadataBuiltinsTranslationScope.get();
 		}
 	}
 
