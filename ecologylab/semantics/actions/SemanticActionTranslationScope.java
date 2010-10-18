@@ -21,6 +21,8 @@ public class SemanticActionTranslationScope
 		SearchSemanticAction.class,
 		SetFieldSemanticAction.class,
 		SetMetadataSemanticAction.class,
+		
+		ParseBibtexSemanticAction.class,
 	};
 	
 	public static final TranslationScope get()

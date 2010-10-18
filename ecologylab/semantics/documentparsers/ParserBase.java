@@ -343,7 +343,7 @@ implements ScalarUnmarshallingContext,SemanticActionsKeyWords, DeserializationHo
 					}
 
 					// name of the metaMetadata element.
-					String mmdElementName = mmdElement.getName();
+					String mmdElementName = mmdElement.getTagForTranslationScope();
 					// System.out.println("DEBUG::mmdElementName= \t" + mmdElementName);
 
 					// if it is nested

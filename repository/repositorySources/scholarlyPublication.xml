@@ -2,7 +2,8 @@
 
 	<meta_metadata name="source" extends="document" comment="Metadata related to where an article is published.">
 		<scalar name="year_of_publication" is_facet="true" scalar_type="Int" />
-		<scalar name="archive" hide="true" comment="Archive of conference or journal." scalar_type="ParsedURL" />
+		<scalar name="archive_name" comment="Archive of conference or journal." scalar_type="String" />
+		<scalar name="archive" hide="true" comment="Url to the archive of conference or journal." scalar_type="ParsedURL" />
 		<scalar name="pages" layer="-1.0" navigates_to="table_of_contents" scalar_type="String" />
 		<scalar name="isbn" comment="" scalar_type="String" />
 	</meta_metadata>

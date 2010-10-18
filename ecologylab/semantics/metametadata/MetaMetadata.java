@@ -171,9 +171,9 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 
 		// Write class declaration
 		String className = XMLTools.classNameFromElementName(getName());
+		String extendsName = extendsAttribute == null ? "Metadata" : XMLTools.classNameFromElementName(extendsAttribute);
 		// System.out.println("#######################################"+getName());
-		p.println("public class  " + className + "\nextends  "
-				+ XMLTools.classNameFromElementName(extendsAttribute) + "\n{\n");
+		p.println("public class  " + className + "\nextends  " + extendsName + "\n{\n");
 
 		// loop to write the class definition
 		HashMapArrayList<String, MetaMetadataField> metaMetadataFieldList = getChildMetaMetadata();

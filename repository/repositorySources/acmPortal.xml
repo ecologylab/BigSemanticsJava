@@ -13,6 +13,7 @@
 			<scalar name="pages" xpath=".//div[contains(.,'Pages')]">
 				<filter regex="Pages:" replace="" />
 			</scalar>
+			<scalar name="archive_name" xpath="./a[child::text()='archive']" />
 			<scalar name="archive" xpath="./a[child::text()='archive']/@href" />
 		</composite>
 		<collection name="authors" xpath=".//div[@class='authors']//tr">
