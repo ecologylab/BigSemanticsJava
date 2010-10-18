@@ -84,13 +84,6 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 	final static int					INITIAL_SIZE							= 5;
 
 	/**
-	 * Set to true if this cFMetadata object was restored from a saved collage. This is necessary to
-	 * prevent cFMetadata from being added again and hence overwritting edited cFMetadata when the
-	 * elements are recrawled on a restore.
-	 */
-	private boolean						loadedFromPreviousSession	= false;
-	
-	/**
 	 * Indicates that this Container is a truly a seed, not just one
 	 * that is associated into a Seed's inverted index.
 	 */
@@ -366,11 +359,6 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 			}
 		}
 		return (termVector = tv);
-	}
-
-	public boolean loadedFromPreviousSession()
-	{
-		return loadedFromPreviousSession;
 	}
 
 	public ParsedURL getLocation()

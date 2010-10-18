@@ -34,6 +34,11 @@ implements MimeType, ImageConstants
 		mimeTypeToIndexMap.put("image/png", PNG);
 	}
 
+	/**
+	 * Number of images that we parsed with an alt-text.
+	 */
+	public static int		hasAlt;
+
 
 
 	public Image()
@@ -53,6 +58,7 @@ implements MimeType, ImageConstants
 		this.setNavLocation(navLocation);
 		rebuildCompositeTermVector();
 	}
+	
 
 	/**
 	 * Lazy Evaluation for localLocation

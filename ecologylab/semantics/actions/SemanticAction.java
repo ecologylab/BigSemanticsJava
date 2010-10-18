@@ -9,7 +9,7 @@ import java.util.HashMap;
 import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.metametadata.Argument;
-import ecologylab.semantics.metametadata.MetaMetadataTranslationScope;
+import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.serialization.ElementState;
 
 /**
@@ -195,6 +195,22 @@ public abstract class SemanticAction<IC extends InfoCollector, SAH extends Seman
 		{
 			SemanticActionTranslationScope.get().addTranslation(semanticActionClass);
 		}
+	}
+	
+	protected MetaMetadata getMetaMetadata()
+	{
+		return getMetaMetadata(this);
+	}
+	
+	static public MetaMetadata getMetaMetadata(ElementState that)
+	{
+		if (that instanceof MetaMetadata)
+		{
+			return (MetaMetadata) that;
+		}
+		ElementState parent	= that.parent();
+		
+		return (parent == null) ? null : getMetaMetadata(parent);
 	}
 
 }

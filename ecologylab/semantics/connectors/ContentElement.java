@@ -65,14 +65,6 @@ public abstract class ContentElement<M extends Metadata> extends SetElement impl
 		metadata.rebuildCompositeTermVector();
 	}
 
-	/**
-	 * @return true if this cFMetadata is from a previous session (a saved XML file)
-	 */
-	protected boolean metadataLoadedFromPreviousSession()
-	{
-		return metadata.loadedFromPreviousSession();
-	}
-
 	public void setMetadata(M metadata)
 	{
 		/*if (this.metadata != null && metadata != null)

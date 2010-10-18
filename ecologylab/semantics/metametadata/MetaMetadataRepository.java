@@ -618,6 +618,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		if (metaMetadata != null)
 		{
 			result = (Image) metaMetadata.constructMetadata(metadataTScope);
+			result.setLocation(purl);
 		}
 		return result;
 	}

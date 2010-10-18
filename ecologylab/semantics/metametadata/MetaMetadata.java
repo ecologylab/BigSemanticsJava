@@ -95,10 +95,9 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 
 		if (metadataClass != null)
 		{
-			Class[] argClasses = new Class[]
-			{ MetaMetadataCompositeField.class };
-			Object[] argObjects = new Object[]
-			{ this };
+			Class[] argClasses	= new Class[]  { MetaMetadataCompositeField.class };
+			Object[] argObjects = new Object[] { this };
+			
 			result = ReflectionTools.getInstance(metadataClass, argClasses, argObjects);
 			if (mixins != null && mixins.size() > 0)
 			{
@@ -111,13 +110,6 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 						if (mixinMetadata != null)
 							result.addMixin(mixinMetadata);
 					}
-					// andruid & andrew 11/2/09 changed from below to above
-					// Class<? extends Metadata> mixinClass = (Class<? extends Metadata>)
-					// ts.getClassByTag(mixinName);
-					// if (mixinClass != null)
-					// {
-					// result.addMixin(ReflectionTools.getInstance(mixinClass));
-					// }
 				}
 			}
 		}
