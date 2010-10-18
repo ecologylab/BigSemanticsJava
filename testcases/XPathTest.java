@@ -41,10 +41,15 @@ public class XPathTest
 	private static final String	FLICKR	= "http://www.flickr.com/photos/81124164@N00/4085549266/";
 	private static final String	FLICKR_XPATH	= "//html/head/link[2]/@href";
 	private static final String	FLICKR_CHILD_XPATH	= ".";
+
+	private static final String	IMDB	= "file:///S:/currentResearchers/sashikanth/IMDBFromEclipse-withCookie-ActorPage.html";
+	///div[@id='filmo-head-Actor']/following-sibling::*
+	private static final String	IMDB_XPATH	= "//div[@id='filmo-head-Actor']/following-sibling::div[1]";
+	private static final String	IMDB_CHILD_XPATH	= "./child::text()";
 	
-	private static final String	XPATH				= FLICKR_XPATH;
-	private static final String	CHILD_XPATH	= FLICKR_CHILD_XPATH;
-	private static final String	LOCATION		= FLICKR;
+	private static final String	LOCATION		= IMDB;
+	private static final String	XPATH				= IMDB_XPATH;
+	private static final String	CHILD_XPATH	= IMDB_CHILD_XPATH;
 	
 	private static final ParsedURL PURL = ParsedURL.getAbsolute(LOCATION);
 
@@ -62,11 +67,12 @@ public class XPathTest
 		{
 //		InputStream inStream = new FileInputStream(new File("C:\\abhinavCode\\ecologylabSemantics\\testcases\\file2.xml"));
 			InputStream inStream = PURL.connect().inputStream();
-			Document contextNode = tidy.parseDOM(inStream, System.out);
+			Document contextNode = tidy.parseDOM(inStream, null);
 			String parentXPathString=XPATH;
 			
 				DTMNodeList parentNodeList =(DTMNodeList) xpath.evaluate(parentXPathString, contextNode, XPathConstants.NODESET);
 				String childXPath = CHILD_XPATH;
+				System.out.println("List Size: " + parentNodeList.getLength());
 				for(int i=0;i<parentNodeList.getLength();i++)
 				{
 					Node node = parentNodeList.item(i);
