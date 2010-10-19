@@ -35,7 +35,9 @@
     <search_engine name="yahoo_image" url_prefix="http://api.search.yahoo.com/ImageSearchService/V1/imageSearch?appid=yahoosearchwebrss&amp;query=" num_result_string="&amp;result=" start_string="&amp;start=" />
     <search_engine name="yahoo_news" url_prefix="http://api.search.yahoo.com/NewsSearchService/V1/newsSearch?appid=yahoosearchwebrss&amp;query=" num_result_string="&amp;result=" start_string="&amp;start=" />
     <search_engine name="yahoo" url_prefix="http://api.search.yahoo.com/WebSearchService/V1/webSearch?appid=yahoosearchwebrss&amp;query=" num_result_string="&amp;result=" start_string="&amp;start=" />
-	<search_engine name="yahoo_site_specific" url_prefix="http://api.search.yahoo.com/WebSearchService/V1/webSearch?appid=yahoosearchwebrss&amp;query=" num_result_string="&amp;result=" start_string="&amp;start=" />
+  	<search_engine name="yahoo_site_specific" url_prefix="http://api.search.yahoo.com/WebSearchService/V1/webSearch?appid=yahoosearchwebrss&amp;query=" num_result_string="&amp;result=" start_string="&amp;start=" />
+    
+    <search_engine name="citeseerx" url_prefix="http://citeseerx.ist.psu.edu/search?q=" start_string="&amp;start=" />
   </search_engines>
   <named_styles>
     <named_style name="default" font_size="10" />

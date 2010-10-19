@@ -29,11 +29,17 @@
     <scalar name="source_bibtex" hide="true" scalar_type="String" xpath="//div[@id='right-sidebar']/div/div[2]/div[@class='content']" />
     
     <collection name="references" xpath="//table[@class='citelist']//a">
-      <scalar name="location" xpath="./@href" />
+      <scalar name="location" xpath="./@href">
+        <filter regex=";jsessionid=[A-Za-z0-9]*" replace="" />
+      </scalar>
       <scalar name="gist" xpath=".." />
     </collection>
-    <scalar name="citation_page" scalar_type="ParsedURL" hide="true" xpath="//div[@id='conclusion']//a[2]/@href" />
-    <scalar name="cocitation_page" scalar_type="ParsedURL" hide="true" xpath="//div[@id='conclusion']//a[3]/@href" />
+    <scalar name="citation_page" scalar_type="ParsedURL" hide="true" xpath="//div[@id='conclusion']//a[2]/@href">
+      <filter regex=";jsessionid=[A-Za-z0-9]*" replace="" />
+    </scalar>
+    <scalar name="cocitation_page" scalar_type="ParsedURL" hide="true" xpath="//div[@id='conclusion']//a[3]/@href">
+      <filter regex=";jsessionid=[A-Za-z0-9]*" replace="" />
+    </scalar>
 
     <semantic_actions>
       <get_field name="source_bibtex" />
@@ -63,7 +69,7 @@
         <not_null value="references" />
         <for_each collection="references" as="ref">
           <get_field object="ref" name="gist" />
-          <parse_document>
+          <parse_document now="true">
             <arg value="true" name="citation_sig" />
             <arg value="gist" name="anchor_text" />
             <arg value="ref" name="entity" />
@@ -107,7 +113,9 @@
     </scalar>
     
     <collection name="citations" xpath="//table[@class='citelist']//a">
-      <scalar name="location" xpath="./@href" />
+      <scalar name="location" xpath="./@href">
+        <filter regex=";jsessionid=[A-Za-z0-9]*" replace="" />
+      </scalar>
       <scalar name="gist" xpath=".." />
     </collection>
     
@@ -117,13 +125,51 @@
         <not_null value="citations" />
         <for_each collection="citations" as="cite">
           <get_field object="cite" name="gist" />
-          <parse_document>
+          <parse_document now="true">
             <arg value="true" name="citation_sig" />
             <arg value="gist" name="anchor_text" />
             <arg value="cite" name="entity" />
           </parse_document>
         </for_each>
       </if>
+    </semantic_actions>
+  </meta_metadata>
+  
+  <meta_metadata name="citeseerx_search" extends="search" parser="xpath" comment="CiteSeerX search using keywords.">
+    <selector url_stripped="http://citeseerx.ist.psu.edu/search" />
+    
+    <collection name="search_results" xpath="//div[@class='searchresult'][1]/div">
+      <scalar name="heading" xpath=".//a[contains(@class, 'doc_details')]" />
+      <scalar name="snippet" xpath=".//li[2]" />
+      <scalar name="link" xpath=".//a[contains(@class, 'doc_details')]/@href">
+        <filter regex=";jsessionid=[A-Za-z0-9]*" replace="" />
+      </scalar>
+    </collection>
+    
+    <semantic_actions>
+      <get_field name="search_results" />
+      <for_each collection="search_results" as="res">
+        <get_field name="link" object="res" />
+        <parse_document now="true">
+          <arg name="container_link" value="link" />
+        </parse_document>
+      </for_each>
+    </semantic_actions>
+  </meta_metadata>
+  
+  <meta_metadata name="citeseerx_citing" type="search" comment="CiteSeerX citing results.">
+    <selector url_stripped="http://citeseerx.ist.psu.edu/showciting" />
+    
+    <collection name="search_results" />
+    
+    <semantic_actions>
+      <get_field name="search_results" />
+      <for_each collection="search_results" as="res">
+        <get_field name="link" object="res" />
+        <parse_document now="true">
+          <arg name="container_link" value="link" />
+        </parse_document>
+      </for_each>
     </semantic_actions>
   </meta_metadata>
   
