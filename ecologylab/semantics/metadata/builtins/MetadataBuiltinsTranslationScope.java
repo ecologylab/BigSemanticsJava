@@ -27,10 +27,7 @@ public class MetadataBuiltinsTranslationScope extends Debug
 		Text.class,
 		Surrogate.class,
 		DebugMetadata.class,
-		
-		MetadataString.class,
-		MetadataParsedURL.class,
-		MetadataInteger.class,
+
 		
 	};
 

@@ -40,7 +40,7 @@
 			<scalar name="genre_link" hide="true" xpath="./@href" scalar_type="ParsedURL" />
 		</collection>
 		<scalar name="plot" xpath="//h2[contains(.,'Storyline')]/../p[1]" scalar_type="String">
-			<filter regex="more|\|" replace="" />
+			<filter regex="more" replace="" />
 		</scalar>
 		<scalar name="tagline" xpath="//h4[contains(.,'Tagline')]/.." scalar_type="String">
 			<filter regex="Taglines:|See more" replace="" />
