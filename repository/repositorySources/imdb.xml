@@ -52,10 +52,10 @@
 			</composite>
 			<composite name="character" xpath="td[@class='character']" type="person_details" entity="true">
 				<scalar name="gist" xpath="string(.)" label="name" />
-				<scalar name="location" xpath="./a/@href" />
+				<scalar name="location" xpath="./div/a/@href" />
 			</composite>
 		</collection>
-		<collection name="title_photos" hide="true" xpath="//td[1]/div[@class='media_strip_thumbs']//img/@src" child_type="image">
+		<collection name="title_photos" hide="true" xpath="//div[@class='mediastrip']//img/@src" child_type="image">
 			<scalar name="location" xpath="." />
 		</collection>
 		<scalar name="poster_img" hide="true" xpath="//td[@id='img_primary']//img/@src" scalar_type="ParsedURL" />
