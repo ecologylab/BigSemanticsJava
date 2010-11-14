@@ -6,11 +6,14 @@ import ecologylab.generic.HashMapArrayList;
 import ecologylab.generic.StringTools;
 import ecologylab.semantics.tools.MetadataCompilerUtils;
 import ecologylab.serialization.simpl_inherit;
-import ecologylab.serialization.types.scalar.ScalarType;
 
 @simpl_inherit
 public abstract class MetaMetadataNestedField extends MetaMetadataField
 {
+	
+	@simpl_composite
+	@xml_tag("field_parser")
+	private FieldParserElement fieldParserElement;
 
 	public MetaMetadataNestedField()
 	{
@@ -27,6 +30,11 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 	{
 		super(copy, name);
 		// TODO Auto-generated constructor stub
+	}
+	
+	public FieldParserElement getFieldParserElement()
+	{
+		return fieldParserElement;
 	}
 
 	abstract protected String getMetaMetadataTagToInheritFrom();

@@ -20,6 +20,7 @@ public class MetaMetadataTranslationScope extends Debug
 
 	public static final String		BASE_NAME				= "meta_metadata_base";
 
+	@SuppressWarnings("rawtypes")
 	protected static final Class	BASE_CLASSES[]	=
 	{
 		MetadataClassDescriptor.class,
@@ -42,11 +43,11 @@ public class MetaMetadataTranslationScope extends Debug
 		Argument.class,
 		
 		RegexFilter.class,
+		FieldParserElement.class,
 		
 		CookieProcessing.class,
 		
 		MetaMetadataRepository.class, 
-		
 		
 		MetaMetadataSelector.class,
 		

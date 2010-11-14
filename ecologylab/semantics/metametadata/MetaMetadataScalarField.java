@@ -12,6 +12,7 @@ import ecologylab.serialization.ElementState.xml_tag;
 import ecologylab.serialization.types.scalar.ScalarType;
 import ecologylab.serialization.types.scalar.StringType;
 
+@SuppressWarnings("rawtypes")
 @simpl_inherit
 @xml_tag("scalar")
 public class MetaMetadataScalarField extends MetaMetadataField
@@ -33,6 +34,7 @@ public class MetaMetadataScalarField extends MetaMetadataField
 
 	public MetaMetadataScalarField()
 	{
+		
 	}
 
 	public MetaMetadataScalarField(MetaMetadataField mmf)
@@ -150,7 +152,8 @@ public class MetaMetadataScalarField extends MetaMetadataField
 	protected void appendIsNull(Appendable appendable, String fieldName, String fieldType)
 			throws IOException
 	{
-		String comment = "Tests to see if the value of the field is null, or if the field itself is null: " + fieldName;
+		String comment = "Tests to see if the value of the field is null, or if the field itself is null: "
+				+ fieldName;
 		// write java doc
 		MetadataCompilerUtils.writeJavaDocComment(comment, appendable);
 
@@ -159,10 +162,10 @@ public class MetaMetadataScalarField extends MetaMetadataField
 				+ XMLTools.javaNameFromElementName(fieldName, true) + "()\n{\n");
 
 		// second line
-		appendable.append("\treturn " + fieldName + " == null || " + fieldName + ".getValue() == null;\n}\n");
+		appendable.append("\treturn " + fieldName + " == null || " + fieldName
+				+ ".getValue() == null;\n}\n");
 
 	}
-
 
 	/**
 	 * This method will generate the getter for the field. public String getTitle() { return
@@ -243,7 +246,7 @@ public class MetaMetadataScalarField extends MetaMetadataField
 		}
 
 		StringBuilder annotations = new StringBuilder("@simpl_scalar");
-		
+
 		if (getHint() != null)
 		{
 			annotations.append(String.format(" @simpl_hints(Hint.%s)", getHint()));

@@ -81,6 +81,9 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	@xml_tag("extends")
 	@simpl_scalar
 	protected String																			extendsAttribute;
+	
+	@simpl_scalar
+	protected String																			fieldParserKey;
 
 	@simpl_map
 	@simpl_classes(
@@ -248,6 +251,11 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	public String getExtendsField()
 	{
 		return extendsField;
+	}
+	
+	public String getFieldParserKey()
+	{
+		return fieldParserKey;
 	}
 
 	public String getFieldName()

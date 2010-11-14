@@ -1,32 +1,43 @@
 <meta_metadata_repository name="bib_managing" package="ecologylab.semantics.generated.library.bibManaging" default_user_agent_name="chrome_2">
 
-  <meta_metadata name="citeseerx_record" extends="scholarly_article" comment="CiteSeerX record for an article.">
-    <scalar name="location" comment="Url of this record" />
-    <scalar name="title" navigates_to="metadata_page" comment="Article title." />
-    <scalar name="author_list" scalar_type="String" comment="Author list, in a line. CiteSeerX doesn't allow you to navigate by author." />
-    <scalar name="total_citation" scalar_type="Int" comment="Number of total citations." />
-    <scalar name="self_citation" scalar_type="Int" comment="Number of self citations." />
+  <meta_metadata name="citation_info" extends="document" comment="Citation numbers.">
+    <scalar name="total_citation" scalar_type="Int" />
+    <scalar name="self_citation" scalar_type="Int" />
   </meta_metadata>
   
-  <meta_metadata name="citeseerx_summary" extends="citeseerx_record" parser="xpath" comment="Summary page from CiteSeerX.">
-    <selector url_stripped="http://citeseerx.ist.psu.edu/viewdoc/summary" />
-
+  
+  
+  <meta_metadata name="citeseerx_record" extends="scholarly_article" comment="CiteSeerX record for an article.">
     <scalar name="location" xpath="//div[@id='downloads']/a[@title='View or Download this document as PDF']" />
     <scalar name="title" xpath="//h1[@class='primaryheader']" navigates_to="metadata_page">
       <filter regex="\[.*\]" replace="" />
     </scalar>
-    <scalar name="author_list" xpath="//div[@id='introduction']/div[contains(@class, 'char_mediumvalue')]">
-      <filter regex="^by\s+" replace="" />
-    </scalar>
-    <scalar name="total_citation" xpath="//h1[@class='primaryheader']/a">
-      <!-- <matcher /> -->
-    </scalar>
-    <scalar name="self_citation" xpath="//h1[@class='primaryheader']/a">
-      <!-- <matcher /> -->
-    </scalar>
+		<collection name="authors" xpath="//div[@id='introduction']/div[contains(@class, 'char_mediumvalue')]">
+      <field_parser name="regex_split" regex="\s*,\s*" />
+      <scalar name="name" field_parser_key="$0">
+        <filter regex="^by\s+" replace="" />
+      </scalar>
+    </collection>
+    <composite name="citation_info" xpath="//h1[@class='primaryheader']/a">
+      <field_parser name="regex_find" regex="(\d+) citations — (\d+) self" />
+      <scalar name="total_citation" field_parser_key="$1" />
+      <scalar name="self_citation" field_parser_key="$2" />
+    </composite>
+  </meta_metadata>
+  
+  
+  
+  <meta_metadata name="citeseerx_summary" extends="citeseerx_record" parser="xpath" comment="Summary page from CiteSeerX.">
+    <selector url_stripped="http://citeseerx.ist.psu.edu/viewdoc/summary" />
     
     <scalar name="abstract_field" xpath="//div[@id='main_content']/p" />
-    <scalar name="source_bibtex" hide="true" scalar_type="String" xpath="//div[@id='right-sidebar']/div/div[2]/div[@class='content']" />
+    <composite name="source" xpath="//div[@id='right-sidebar']/div/div[2]/div[@class='content']">
+      <field_parser name="bibtex" />
+  		<scalar name="year_of_publication" field_parser_key="year" />
+  		<scalar name="archive_name" field_parser_key="booktitle" />
+  		<scalar name="pages" field_parser_key="pages" />
+  		<scalar name="isbn" field_parser_key="isbn" />
+    </composite>
     
     <collection name="references" xpath="//table[@class='citelist']//a">
       <scalar name="location" xpath="./@href">
@@ -42,14 +53,6 @@
     </scalar>
 
     <semantic_actions>
-      <get_field name="source_bibtex" />
-      <get_field name="source" />
-      <parse_bibtex name="source">
-        <arg name="bibtex_string" value="source_bibtex" />
-        <arg name="bibtex_meta_metadata_name" value="source" />
-      </parse_bibtex>
-      <set_field name="source" value="source" />
-      
       <get_field name="location" />
       <if>
         <not_null value="location" />
@@ -95,22 +98,10 @@
     </semantic_actions>
   </meta_metadata>
   
+  
+  
   <meta_metadata name="citeseerx_similar" extends="citeseerx_record" parser="xpath" comment="Citation or co-citation page from CiteSeerX.">
     <selector url_stripped="http://citeseerx.ist.psu.edu/viewdoc/similar" />
-    
-    <scalar name="location" xpath="//div[@id='downloads']/a[@title='View or Download this document as PDF']" />
-    <scalar name="title" xpath="//h1[@class='primaryheader']" navigates_to="metadata_page">
-      <filter regex="\[.*\]" />
-    </scalar>
-    <scalar name="author_list" xpath="//div[@id='introduction']/div[contains(@class, 'char_mediumvalue')]">
-      <filter regex="^by\s+"/>
-    </scalar>
-    <scalar name="total_citation" xpath="//h1[@class='primaryheader']/a">
-      <!-- <matcher /> -->
-    </scalar>
-    <scalar name="self_citation" xpath="//h1[@class='primaryheader']/a">
-      <!-- <matcher /> -->
-    </scalar>
     
     <collection name="citations" xpath="//table[@class='citelist']//a">
       <scalar name="location" xpath="./@href">
@@ -135,6 +126,8 @@
     </semantic_actions>
   </meta_metadata>
   
+  
+  
   <meta_metadata name="citeseerx_search" extends="search" parser="xpath" comment="CiteSeerX search using keywords.">
     <selector url_stripped="http://citeseerx.ist.psu.edu/search" />
     
@@ -157,7 +150,9 @@
     </semantic_actions>
   </meta_metadata>
   
-  <meta_metadata name="citeseerx_citing" type="search" comment="CiteSeerX citing results.">
+  
+  
+  <meta_metadata name="citeseerx_citing" type="citeseerx_search" comment="CiteSeerX citing results.">
     <selector url_stripped="http://citeseerx.ist.psu.edu/showciting" />
     
     <collection name="search_results" />

@@ -3,25 +3,16 @@
  */
 package ecologylab.semantics.documentparsers;
 
-import java.io.IOException;
-
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathFactory;
-
-import org.w3c.dom.Document;
-
 import ecologylab.semantics.actions.SemanticAction;
 import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.actions.SemanticActionsKeyWords;
 import ecologylab.semantics.connectors.InfoCollector;
-import ecologylab.semantics.metadata.Metadata;
-import ecologylab.semantics.metadata.MetadataBase;
-import ecologylab.serialization.SIMPLTranslationException;
 
 /**
  * @author amathur
  * 
  */
+@SuppressWarnings("rawtypes")
 public class XPathParser< SA extends SemanticAction> extends
 		ParserBase implements SemanticActionsKeyWords
 {
@@ -36,6 +27,7 @@ public class XPathParser< SA extends SemanticAction> extends
 		super(infoCollector, semanticActionHandler);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public ecologylab.semantics.metadata.builtins.Document populateMetadata()
 	{
