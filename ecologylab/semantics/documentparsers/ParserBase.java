@@ -483,9 +483,8 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 			Node parentNode = (Node) xpath.evaluate(xPathString, contextNode, XPathConstants.NODE);
 
 			Class<? extends Metadata> metadataClass = mmdElement.getMetadataClass();
-			MetaMetadata metaMetadata = mmdElement.getRepository().getByClass(metadataClass);
-			Class[] argClasses = new Class[] { MetaMetadataCompositeField.class };
-			Object[] argObjects = new Object[] { metaMetadata };
+			Class[] argClasses 	= new Class[] { MetaMetadataCompositeField.class };
+			Object[] argObjects = new Object[] { (MetaMetadataCompositeField) mmdElement };
 			nestedMetadata = ReflectionTools.getInstance(metadataClass, argClasses, argObjects);
 			ReflectionTools.setFieldValue(metadata, mmdElement.getMetadataFieldDescriptor().getField(),
 					nestedMetadata);
