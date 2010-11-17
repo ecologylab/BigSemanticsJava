@@ -14,14 +14,18 @@ import ecologylab.serialization.ElementState;
 
 /**
  * This is the abstract class which defines the semantic action. All the semantic actions must
- * extend it. To add a new semantic action following steps needed to be taken. 1) Create a class for
- * that semantic action which extends SemanticAction class. 2) Write all the custom code for that
+ * extend it. To add a new semantic action following steps needed to be taken. 
+ * <li> 1) Create a class for  that semantic action which extends SemanticAction class.
+ * <li> 2) Write all the custom code for that
  * semantic action in this new class file. [Example see <code>ForEachSemanticAction.java</code> or
- * <code>IfSemanticAction</code> which implements for_each semantic action.] 3) Modify the
- * <code>handleSemanticAction</code> method of <code>SemanticActionHandle.java</code> to add case
- * for new semantic action. 4) Add a new method in <code>SemanticActionHandler.java </code> to
+ * <code>IfSemanticAction</code> which implements for_each semantic action.] 
+ * <li> 3) Modify the <code>handleSemanticAction</code> method of 
+ * <code>SemanticActionHandle.java</code> to add case
+ * for new semantic action. 
+ * <li> 4) Add a new method in <code>SemanticActionHandler.java </code> to
  * handle this action. Mostly this method should be abstract unless the action is a flow control
- * action like FOR LOOP. 5) For code clarity and readability define a constant for the new action
+ * action like FOR LOOP. 
+ * <li> 5) For code clarity and readability define a constant for the new action
  * name in <code>SemanticActionStandardMethods.java</code>
  * 
  * @author amathur
