@@ -4,7 +4,11 @@
 		<scalar name="meta_metadata_name" hide="true" ignore_in_term_vector="true" comment="Stores the name of the meta-metadata, and is used on restoring from XML." scalar_type="String" />
 	</meta_metadata>
 	
-	<meta_metadata name="document" extends="metadata" comment="The Document Class" dont_generate_class="true">
+	<meta_metadata name="document" extends="metadata" comment="The Document Class" parser="default" dont_generate_class="true">
+		<selector>
+			<suffix>html</suffix>
+			<suffix>htm</suffix>
+		</selector>
 		<scalar name="title" style="h1" layer="10.0" navigates_to="location" comment="The Title of the Document" scalar_type="String"  hint="XML_LEAF"/>
 		<scalar name="description" layer="9.0" scalar_type="String" />
 		<scalar name="location" always_show="true" layer="8.0" comment="The document's actual location." scalar_type="ParsedURL" />

@@ -19,4 +19,5 @@ public interface SemanticsPrefs extends CFPrefNames
 	public static final PrefBoolean	FILTER_OUT_ADS			= Pref.usePrefBoolean("ads_bias", true);
 	
 	public static final PrefBoolean INTEREST_DECAY_PREF = Pref.usePrefBoolean(DECAY_INTEREST, false);
+	public static final PrefBoolean	IGNORE_PDF_PREF			= Pref.usePrefBoolean("ignore_pdf", false);
 }
