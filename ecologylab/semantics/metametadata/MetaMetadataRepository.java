@@ -494,6 +494,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 								if (matcher.find())
 								{
 									result = entry.getMetaMetadata();
+									break;
 								}
 							}
 						}
