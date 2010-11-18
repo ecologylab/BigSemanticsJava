@@ -374,6 +374,9 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	 * Connect the appropriate MetadataClassDescriptor with this, and likewise, recursively perform
 	 * this binding operation for all the children of this.
 	 * 
+	 * This method will remove this metametadata field from it's parent when no appropriate metadata subclass 
+	 * was found. 
+	 * 
 	 * @param metadataTScope
 	 * @return
 	 */
@@ -384,7 +387,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 		{
 			ElementState parent = parent();
 			if (parent instanceof MetaMetadataField)
-				((MetaMetadataField) parent).kids.remove(this);
+				((MetaMetadataField) parent).kids.remove(this.getName()); 
 			else if (parent instanceof MetaMetadataRepository)
 			{
 				// TODO remove from the repository level

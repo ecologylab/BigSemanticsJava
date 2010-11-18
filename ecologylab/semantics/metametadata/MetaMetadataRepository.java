@@ -362,7 +362,6 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		}
 
 		initializeLocationBasedMaps();
-		System.out.println();
 	}
 
 	/**
@@ -370,19 +369,11 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	 */
 	private void initializeDefaultUserAgent()
 	{
-		if (defaultUserAgentString == null)
-		{
-			if (userAgents().size() > 0)
-			{
-				if (defaultUserAgentName == null)
-				{
-					defaultUserAgentString = (String) userAgents().values().toArray()[0];
-				}
-				else
-					userAgents.get(defaultUserAgentName).userAgentString();
-			}
-			this.defaultUserAgentString = FIREFOX_3_6_4_AGENT_STRING;
-		}
+		UserAgent userAgent = userAgents.get(defaultUserAgentName);
+		if (userAgent != null)
+			defaultUserAgentName = userAgent.userAgentString();
+		else
+			defaultUserAgentName = FIREFOX_3_6_4_AGENT_STRING;
 	}
 
 	private void findAndDeclareNestedMetaMetadata(TranslationScope metadataTScope)
@@ -675,14 +666,15 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 			// if something is there, then we need to check to see if it has its cf pref set
 			// if not, then if I am null then I win
 
-			ParsedURL purl = metaMetadata.getSelector().getUrlBase();
+			MetaMetadataSelector selector = metaMetadata.getSelector();
+			ParsedURL purl = selector.getUrlBase();
 			if (purl != null)
 			{
 				repositoryByUrlStripped.put(purl.noAnchorNoQueryPageString(), metaMetadata);
 			}
 			else
 			{
-				ParsedURL urlPrefix = metaMetadata.getSelector().getUrlPrefix();// change
+				ParsedURL urlPrefix = selector.getUrlPrefix();// change
 				if (urlPrefix != null)
 				{
 					urlPrefixCollection.add(urlPrefix);
@@ -691,10 +683,10 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 				else
 				{
 					// use .pattern() for comparison
-					String domain = metaMetadata.getSelector().getDomain();
+					String domain = selector.getDomain();
 					if (domain != null)
 					{
-						Pattern urlPattern = metaMetadata.getSelector().getUrlRegex();
+						Pattern urlPattern = selector.getUrlRegex();
 						if (urlPattern != null)
 						{
 							ArrayList<RepositoryPatternEntry> bucket = repositoryByPattern.get(domain);

@@ -211,7 +211,12 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 		return childType != null && isNewClass();
 	}
 	
+	
 	@Override
+	/**
+	 * Each object in a collection of metadata require a specific MMdata composite object to be associated with them.
+	 * This is unavailable in the MMD XML, and must be generated when the XML is read in.
+	 */
 	public void deserializationPostHook()
 	{
 		MetaMetadataCompositeField composite = new MetaMetadataCompositeField(determineCollectionChildType(), kids);
