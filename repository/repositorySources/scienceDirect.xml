@@ -3,14 +3,14 @@
 		<selector url_stripped="http://www.sciencedirect.com/science" />
 		<scalar name="title" xpath="//div[@class='articleTitle']" scalar_type="String" />
 		<collection name="authors"  xpath="//div[@id='articleContent']/p" comment="All authors" child_type="author">
-			<field_parser name="regex_split" regex="," />
+			<field_parser name="regex_split" regex=",|(and)" />
 			<scalar name="name" field_parser_key="$0">
 				<filter regex="[a-z]" replace="" />
 			</scalar>	
 		</collection>		
-		<scalar name="abst" xpath="//div[@class='articleText_indent']//p" comment="The abstract of the article" scalar_type="String" />
-		<collection name="references" xpath="//div[@class='refText']" comment="Articles cited by the article">
-			<field_parser name="regex_split" regex="(\.\d\.)" />
+		<scalar name="abstract_field" xpath="//div[@class='articleText_indent']//p" comment="The abstract of the article" scalar_type="String" />
+		<collection name="references" xpath="//div[@class='refText']//text()" comment="Articles cited by the article">
+			<field_parser name="regex_split" regex="\.\d\." />
 			<scalar name="reference" field_parser_key="$0">
 				<filter regex="References1\." replace="" />
 			</scalar>
