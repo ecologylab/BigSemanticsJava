@@ -1079,7 +1079,10 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 				if (scalar.getRegexPattern() != null)
 				{
 					MetadataFieldDescriptor fd = scalar.getMetadataFieldDescriptor();
-					fd.setRegexFilter(Pattern.compile(scalar.getRegexPattern()), scalar.getRegexReplacement());
+					if(fd != null)
+						fd.setRegexFilter(Pattern.compile(scalar.getRegexPattern()), scalar.getRegexReplacement());
+					else
+						warning("Encountered null fd for scalar: " + scalar);
 				}
 			}
 
@@ -1147,8 +1150,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 		}
 		else
 		{
-			warning("Ignoring <" + tagName
-					+ "> because no corresponding MetadataFieldDescriptor can be found.");
+			warning("Ignoring <" + tagName + "> because no corresponding MetadataFieldDescriptor can be found.");
 		}
 
 	}

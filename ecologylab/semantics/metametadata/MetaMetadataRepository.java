@@ -667,18 +667,18 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 			// if not, then if I am null then I win
 
 			MetaMetadataSelector selector = metaMetadata.getSelector();
-			ParsedURL purl = selector.getUrlBase();
+			ParsedURL purl = selector.getUrlStripped();
 			if (purl != null)
 			{
 				repositoryByUrlStripped.put(purl.noAnchorNoQueryPageString(), metaMetadata);
 			}
 			else
 			{
-				ParsedURL urlPrefix = selector.getUrlPrefix();// change
-				if (urlPrefix != null)
+				ParsedURL urlPathTree = selector.getUrlPathTree();
+				if (urlPathTree != null)
 				{
-					urlPrefixCollection.add(urlPrefix);
-					repositoryByUrlStripped.put(urlPrefix.toString(), metaMetadata);
+					urlPrefixCollection.add(urlPathTree);
+					repositoryByUrlStripped.put(urlPathTree.toString(), metaMetadata);
 				}
 				else
 				{
@@ -697,11 +697,11 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 							}
 							bucket.add(new RepositoryPatternEntry(urlPattern, metaMetadata));
 						}
-					}
-					else
-					{
-						// domain only -- no pattern
-						documentRepositoryByDomain.put(domain, metaMetadata);
+						else
+						{
+							// domain only -- no pattern
+							documentRepositoryByDomain.put(domain, metaMetadata);
+						}
 					}
 				}
 			}

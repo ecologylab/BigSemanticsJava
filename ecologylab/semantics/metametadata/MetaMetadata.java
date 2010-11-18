@@ -295,36 +295,6 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 		return userAgentName;
 	}
 
-	public ParsedURL getUrlBase()
-	{
-		return getSelector().getUrlStripped();
-	}
-
-	public void setUrlBase(ParsedURL urlBase)
-	{
-		getSelector().setUrlBase(urlBase);
-	}
-
-	public void setUrlBase(String urlBase)
-	{
-		getSelector().setUrlBase(ParsedURL.getAbsolute(urlBase));
-	}
-
-	public ParsedURL getUrlPrefix()
-	{
-		return getSelector().getUrlPathTree();
-	}
-
-	public void setUrlPrefix(ParsedURL urlPrefix)
-	{
-		getSelector().setUrlPrefix(urlPrefix);
-	}
-
-	public void setUrlPrefix(String urlPrefix)
-	{
-		getSelector().setUrlPrefix(ParsedURL.getAbsolute(urlPrefix));
-	}
-
 	/**
 	 * @param mimeTypes
 	 *          the mimeTypes to set

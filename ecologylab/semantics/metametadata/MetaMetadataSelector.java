@@ -103,36 +103,7 @@ class MetaMetadataSelector extends ElementState implements Mappable<String>
 		this.domain = domain;
 	}
 
-	public ParsedURL getUrlBase()
-	{
-		return urlStripped;
-	}
-
-	public void setUrlBase(ParsedURL urlBase)
-	{
-		this.urlStripped = urlBase;
-	}
-
-	public void setUrlBase(String urlBase)
-	{
-		this.urlStripped = ParsedURL.getAbsolute(urlBase);
-	}
-
-	public ParsedURL getUrlPrefix()
-	{
-		return urlPathTree;
-	}
-
-	public void setUrlPrefix(ParsedURL urlPrefix)
-	{
-		this.urlPathTree = urlPrefix;
-	}
-
-	public void setUrlPrefix(String urlPrefix)
-	{
-		this.urlPathTree = ParsedURL.getAbsolute(urlPrefix);
-	}
-
+	
 	/**
 	 * @param mimeTypes
 	 *          the mimeTypes to set
