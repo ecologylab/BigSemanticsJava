@@ -1,14 +1,12 @@
 package ecologylab.semantics.metadata.builtins;
 
+import java.io.File;
 import java.util.HashMap;
 
-import ecologylab.collections.CollectionTools;
-import ecologylab.generic.IntSlot;
 import ecologylab.net.MimeType;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.html.documentstructure.ImageConstants;
-import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
-import ecologylab.semantics.metadata.scalar.MetadataString;
+import ecologylab.semantics.metadata.scalar.MetadataFile;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.serialization.simpl_inherit;
 
@@ -22,7 +20,7 @@ implements MimeType, ImageConstants
 {
 	@mm_name("local_location") 
 	@simpl_scalar
-	private MetadataString	localLocation;
+	private MetadataFile	localLocation;
 	
 	static final HashMap<String, Integer>		mimeTypeToIndexMap		= new HashMap<String, Integer>(15);
 
@@ -64,64 +62,21 @@ implements MimeType, ImageConstants
 	 * Lazy Evaluation for localLocation
 	 **/
 
-	public MetadataString localLocation()
+	public MetadataFile localLocation()
 	{
-		MetadataString result = this.localLocation;
-		if (result == null)
-		{
-			result = new MetadataString();
-			this.localLocation = result;
-		}
-		return result;
-	}
-
-	/**
-	 * Gets the value of the field localLocation
-	 **/
-
-	public String getLocalLocation()
-	{
-		return localLocation().getValue();
-	}
-
-	/**
-	 * Sets the value of the field localLocation
-	 **/
-
-	public void setLocalLocation(String localLocation)
-	{
-		this.localLocation().setValue(localLocation);
-	}
-
-	/**
-	 * The heavy weight setter method for field localLocation
-	 **/
-
-	public void hwSetLocalLocation(String localLocation)
-	{
-		this.localLocation().setValue(localLocation);
-		rebuildCompositeTermVector();
+		return this.localLocation;
 	}
 
 	/**
 	 * Sets the localLocation directly
 	 **/
 
-	public void setLocalLocationMetadata(MetadataString localLocation)
+	public void setLocalLocation(File localLocationFile)
 	{
-		this.localLocation = localLocation;
-	}
-
-	/**
-	 * Heavy Weight Direct setter method for localLocation
-	 **/
-
-	public void hwSetLocalLocationMetadata(MetadataString localLocation)
-	{
-		if (this.localLocation != null && this.localLocation.getValue() != null && hasTermVector())
-			termVector().remove(this.localLocation.termVector());
-		this.localLocation = localLocation;
-		rebuildCompositeTermVector();
+		if (this.localLocation == null)
+			this.localLocation = new MetadataFile(localLocationFile);
+		else
+			this.localLocation.setValue(localLocationFile);
 	}
 	
 	@Override
