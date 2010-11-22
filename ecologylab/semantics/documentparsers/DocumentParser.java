@@ -329,7 +329,7 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 			result = container.getDocumentParser();
 	
 		// if we made PURL connection but could not find parser using container
-		if ((purlConnection != null))
+		if ((purlConnection != null) && (!purl.isFile()))
 		{
 			String cacheValue = purlConnection.urlConnection().getHeaderField("X-Cache");
 			cacheHit = cacheValue != null && cacheValue.contains("HIT");
