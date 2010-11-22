@@ -122,7 +122,7 @@ public abstract class MetadataScalarScalarType<M, T> extends ReferenceType<M>
 	public static final Class[]	METADATA_SCALAR_TYPES	=
 																										{ MetadataStringScalarType.class,
 			MetadataStringBuilderScalarType.class, MetadataIntegerScalarType.class,
-			MetadataParsedURLScalarType.class, MetadataDateScalarType.class, };
+			MetadataParsedURLScalarType.class, MetadataDateScalarType.class, MetadataFileScalarType.class };
 
 	public static synchronized void init()
 	{

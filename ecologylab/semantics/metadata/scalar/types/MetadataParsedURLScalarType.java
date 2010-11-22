@@ -6,6 +6,7 @@ package ecologylab.semantics.metadata.scalar.types;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
 import ecologylab.serialization.ScalarUnmarshallingContext;
+import ecologylab.serialization.SerializationContext;
 
 /**
  * @author andruid
@@ -43,6 +44,12 @@ public class MetadataParsedURLScalarType extends
 	public String getObjectiveCType() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	@Override
+	public String marshall(MetadataParsedURL instance, SerializationContext serializationContext)
+	{
+		return operativeScalarType().marshall(instance.getValue(), serializationContext);
 	}
 
 }
