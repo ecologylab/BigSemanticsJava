@@ -62,7 +62,7 @@
 			<suffix>bmp</suffix>
 		</selector>
 		<scalar name="location" hide="true" layer="9.0" comment="Location of the image." scalar_type="ParsedURL" />
-		<scalar name="local_location" hide="true" comment="Relative location of local copy of image." scalar_type="String" />
+		<scalar name="local_location" hide="true" comment="Relative location of local copy of image." scalar_type="File" />
 	</meta_metadata>
 	<meta_metadata name="debug_metadata" dont_generate_class="true">
 		<scalar name="new_term_vector" ignore_in_term_vector="true" scalar_type="StringBuilder" />

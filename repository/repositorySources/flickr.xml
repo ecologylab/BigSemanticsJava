@@ -1,5 +1,5 @@
 <meta_metadata_repository name="flickr" package="ecologylab.semantics.generated.library.flickr">
-	<selector name="flickr_search_selector" default_pref="flickr_search" pref_name="flickr_search_type" url_stripped="http://www.flickr.com/search/" />
+	<selector name="flickr_search_selector" default_pref="flickr_search_two" pref_name="flickr_search_type" url_stripped="http://www.flickr.com/search/" />
 	<selector name="flickr_image_detail_selector" pref_name="flickr_detail_type" default_pref="flickr_image_detail_two"	url_regex="http://www.flickr.com/photos/(?!tags)[A-z0-9_@-]+/[0-9]+/$" domain="flickr.com" />
 	<selector name="flickr_nearby_selector" pref_name="flickr_nearby_type" default_pref="flickr_nearby" url_regex="^http://www.flickr.com/photos/[A-z0-9_@-]+/[0-9]+/nearby" domain="flickr.com" />
 

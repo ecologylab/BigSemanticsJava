@@ -17,7 +17,7 @@
 	
 	<meta_metadata name="scholarly_article" extends="pdf">
 		<scalar name="metadata_page" shadows="location" comment="citation.cfm" scalar_type="ParsedURL" />
-		<scalar name="abstract_field" shadows="summary" comment="" tag="abstract" scalar_type="String" />
+		<scalar name="abstract_field" shadows="summary" comment="" tag="abstract" scalar_type="String" label="abstract" />
 		<scalar name="subject" hide="true" />
 		<composite name="source" comment="Metadata related to where this article was published." type="source" />
 		<collection name="authors" shadows="author" comment="Set of authors." child_type="author" />
