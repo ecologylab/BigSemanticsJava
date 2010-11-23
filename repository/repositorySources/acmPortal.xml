@@ -1,42 +1,42 @@
 <meta_metadata_repository name="acm_portal" package="ecologylab.semantics.generated.library.scholarlyPublication" default_user_agent_name="chrome_2">
 	<meta_metadata name="acm_portal" type="scholarly_article" parser="xpath">
 		<selector url_stripped="http://portal.acm.org/citation.cfm" />
-		<scalar name="title" xpath="//td[@class='medium-text']/strong/child::text()" navigates_to="metadata_page" />
-		<scalar name="location" xpath="//a[@name='FullText']/@href" />
-		<scalar name="abstract_field" xpath="//div[@class='abstract']/p[2]/text()" label="abstract" />
-		<composite name="source" xpath="//td[@class='small-text' and @colspan='2']" navigates_to="location">
-			<scalar name="year_of_publication" xpath=".//div[contains(.,'Year')]" label="year published">
-				<filter regex="Year of Publication:" replace="" />
+		<scalar name="title" xpath="//div[@class='large-text']" navigates_to="metadata_page" />
+		<scalar name="location" xpath="//a[@name='FullTextPdf']/@href" />
+		<scalar name="abstract_field" xpath="//div[@id='abstract']/div/div/text()" label="abstract" />
+		<composite name="source" xpath="//div[@id='divmain']/table[2]/tbody/tr/td/table/tbody" navigates_to="location">
+			<scalar name="year_of_publication" xpath="./tr[4]/td/text()[1]" label="year published">
+				<filter regex="[\D]" replace="" />
 			</scalar>
-			<scalar name="title" xpath="./span[@class='mediumb-text'][1]" />
-			<scalar name="location" hide="true" xpath="./a[@class='small-link-text'][2]/@href" />
-			<scalar name="pages" xpath=".//div[contains(.,'Pages')]">
-				<filter regex="Pages:" replace="" />
-			</scalar>
-			<scalar name="archive_name" xpath="./a[child::text()='archive']" />
-			<scalar name="archive" xpath="./a[child::text()='archive']/@href" />
+			<scalar name="title" xpath="./tr[3]/td/text()[2]" />
+			<scalar name="location" hide="true" xpath="./tr[4]/td/a/@href" />
+<!--			<scalar name="pages" xpath=".//div[contains(.,'Pages')]">-->
+<!--				<filter regex="Pages:" replace="" />-->
+<!--			</scalar>-->
+			<scalar name="archive_name" xpath="./tr[3]/td/a/text()" />
+			<scalar name="archive" xpath="./tr[3]/td/a/@href" />
 		</composite>
-		<collection name="authors" xpath=".//div[@class='authors']//tr">
-			<scalar name="location" xpath="./td[1]/a/@href" />
-			<scalar name="name" xpath="./td[1]/a" />
-			<scalar name="affiliation" xpath="./td[2]" />
+		<collection name="authors" xpath="//div[@id='divmain']/table[1]/tbody/tr/td[1]/table[2]">
+			<scalar name="location" xpath="./tbody/tr/td/a/@href" />
+			<scalar name="name" xpath="./tbody/tr/td/a" />
+			<scalar name="affiliation" xpath="./tbody/tr/td[3]" />
 		</collection>
-		<collection name="references" xpath="//a[@name='references']/../following-sibling::table//a[@href[starts-with(.,'citation')]]">
-			<scalar name="location" xpath="./@href" />
-			<scalar name="gist" xpath="./child::text()" />
-		</collection>
-		<collection name="citations" xpath=".//a[@name='citings']/../following-sibling::table//a[@href[starts-with(.,'citation')]]">
-			<scalar name="location" xpath="./@href" />
-			<scalar name="gist" xpath="./child::text()" />
-		</collection>
-		<collection name="classifications" xpath="//p[@class='Categories']/a">
-			<scalar name="link" xpath="./@href" />
-			<scalar name="tag_name" xpath="./text()" />
-		</collection>
-		<collection name="keywords" xpath="//p[@class='keywords']/a">
-			<scalar name="link" xpath="./@href" />
-			<scalar name="tag_name" xpath="./text()" />
-		</collection>
+<!--		<collection name="references" xpath="//a[@name='references']/../following-sibling::table//a[@href[starts-with(.,'citation')]]">-->
+<!--			<scalar name="location" xpath="./@href" />-->
+<!--			<scalar name="gist" xpath="./child::text()" />-->
+<!--		</collection>-->
+<!--		<collection name="citations" xpath=".//a[@name='citings']/../following-sibling::table//a[@href[starts-with(.,'citation')]]">-->
+<!--			<scalar name="location" xpath="./@href" />-->
+<!--			<scalar name="gist" xpath="./child::text()" />-->
+<!--		</collection>-->
+<!--		<collection name="classifications" xpath="//p[@class='Categories']/a">-->
+<!--			<scalar name="link" xpath="./@href" />-->
+<!--			<scalar name="tag_name" xpath="./text()" />-->
+<!--		</collection>-->
+<!--		<collection name="keywords" xpath="//p[@class='keywords']/a">-->
+<!--			<scalar name="link" xpath="./@href" />-->
+<!--			<scalar name="tag_name" xpath="./text()" />-->
+<!--		</collection>-->
 		<semantic_actions>
 			<set_field name="metadata_page">
 				<arg value="TRUE_PURL" name="value" />
@@ -49,60 +49,60 @@
 					<arg value="location" name="container_link" />
 				</parse_document>
 			</if>
-			<get_field name="references" />
+<!--			<get_field name="references" />-->
 			<get_field name="title" />
 			<create_and_visualize_text_surrogate>
 				<arg value="title" name="text" />
 			</create_and_visualize_text_surrogate>
-			<if>
-				<not_null value="references" />
-				<for_each collection="references" as="ref">
-					<get_field object="ref" name="gist" />
-					<parse_document>
-						<arg value="true" name="citation_sig" />
-						<arg value="gist" name="anchor_text" />
-						<arg value="ref" name="entity" />
-					</parse_document>
-				</for_each>
-			</if>
-			<get_field name="citations" />
-			<if>
-				<not_null value="citations" />
-				<for_each collection="citations" as="cit">
-					<get_field object="cit" name="location" />
-					<get_field object="cit" name="gist" />
-					<parse_document>
-						<arg value="true" name="citation_sig" />
-						<arg value="gist" name="anchor_text" />
-						<arg value="cit" name="entity" />
-					</parse_document>
-				</for_each>
-			</if>
+<!--			<if>-->
+<!--				<not_null value="references" />-->
+<!--				<for_each collection="references" as="ref">-->
+<!--					<get_field object="ref" name="gist" />-->
+<!--					<parse_document>-->
+<!--						<arg value="true" name="citation_sig" />-->
+<!--						<arg value="gist" name="anchor_text" />-->
+<!--						<arg value="ref" name="entity" />-->
+<!--					</parse_document>-->
+<!--				</for_each>-->
+<!--			</if>-->
+<!--			<get_field name="citations" />-->
+<!--			<if>-->
+<!--				<not_null value="citations" />-->
+<!--				<for_each collection="citations" as="cit">-->
+<!--					<get_field object="cit" name="location" />-->
+<!--					<get_field object="cit" name="gist" />-->
+<!--					<parse_document>-->
+<!--						<arg value="true" name="citation_sig" />-->
+<!--						<arg value="gist" name="anchor_text" />-->
+<!--						<arg value="cit" name="entity" />-->
+<!--					</parse_document>-->
+<!--				</for_each>-->
+<!--			</if>-->
 		</semantic_actions>
 	</meta_metadata>
 	<meta_metadata name="acm_proceeding" extends="document" parser="xpath">
 		<selector url_stripped="http://portal.acm.org/toc.cfm" />
-		<collection name="proceedings" hide="true" xpath="//tr[@valign='top']/td[@class='small-text']/strong" child_type="search_result">
-			<scalar name="link" xpath="./a/@href" />
-			<scalar name="heading" xpath="./a/text()" />
-		</collection>
-		<collection name="papers" xpath="//a[@class='medium-text']" child_type="search_result">
-			<scalar name="link" xpath="./@href" />
-			<scalar name="heading" xpath="." />
+<!--		<collection name="proceedings" hide="true" xpath="//tr[@valign='top']/td[@class='small-text']/strong" child_type="search_result">-->
+<!--			<scalar name="link" xpath="./a/@href" />-->
+<!--			<scalar name="heading" xpath="./a/text()" />-->
+<!--		</collection>-->
+		<collection name="papers" xpath="//div[@id='prox']/div/table/tbody/tr" child_type="search_result">
+			<scalar name="link" xpath=".//@href" />
+			<scalar name="heading" xpath=".//a" />
 		</collection>
 		<semantic_actions>
-			<get_field name="proceedings" />
-			<if>
-				<not_null value="proceedings" />
-				<for_each collection="proceedings" as="proceeding">
-					<get_field object="proceeding" name="link" />
-					<get_field object="proceeding" name="heading" />
-					<parse_document>
-						<arg value="heading" name="anchor_text" />
-						<arg value="link" name="container_link" />
-					</parse_document>
-				</for_each>
-			</if>
+<!--			<get_field name="proceedings" />-->
+<!--			<if>-->
+<!--				<not_null value="proceedings" />-->
+<!--				<for_each collection="proceedings" as="proceeding">-->
+<!--					<get_field object="proceeding" name="link" />-->
+<!--					<get_field object="proceeding" name="heading" />-->
+<!--					<parse_document>-->
+<!--						<arg value="heading" name="anchor_text" />-->
+<!--						<arg value="link" name="container_link" />-->
+<!--					</parse_document>-->
+<!--				</for_each>-->
+<!--			</if>-->
 			<get_field name="papers" />
 			<if>
 				<not_null value="papers" />
