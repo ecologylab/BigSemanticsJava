@@ -66,6 +66,11 @@ implements MimeType, ImageConstants
 	{
 		return this.localLocation;
 	}
+	
+	public File getLocalLocationFile()
+	{
+		return (localLocation != null) ? localLocation.getValue() : null;
+	}
 
 	/**
 	 * Sets the localLocation directly
