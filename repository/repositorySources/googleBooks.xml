@@ -1,0 +1,60 @@
+<meta_metadata_repository name="google_books" package="ecologylab.semantics.generated.library" default_user_agent_name="chrome_2">
+	<meta_metadata name="google_book" extends="document" parser="xpath">
+		<selector url_path_tree="http://www.books.google.com/books" />
+		<scalar name="title" xpath="//div[@class='booktitle']" scalar_type="String" />
+		<collection name="authors" xpath="//table[@id='metadata_content_table']/tbody/tr[contains(., 'Author')]">
+			<field_parser name="regex_split" regex="," />
+			<scalar name="author" field_parser_key="$0">
+				<filter regex="Authors" replace="" />
+			</scalar>
+		</collection>
+		<scalar name="publisher" xpath="//table[@id='metadata_content_table']/tbody/tr[contains(., 'Publisher')]" scalar_type="String">
+			<filter regex="Publisher" replace="" />
+		</scalar>
+		<scalar name="category" xpath="//div[@class='bookinfo_sectionwrap']//div[3]/a" scalar_type="String" />
+		<scalar name="pages" xpath="//td[@id='bookinfo']/div[3]/div[3]/text()[2]" scalar_type="String">
+			<filter regex="(\s-\s)+" replace="" />
+		</scalar>
+		<scalar name="description" xpath="//div[@id='synopsistext']" scalar_type="String" />
+		<collection name="related_books" xpath="//td[@id='viewport_td']/div[contains(., 'Related books')]/div//a">
+			<scalar name="title" xpath="./text()" />
+			<scalar name="link" xpath="./@href" />
+		</collection>
+		<collection name="contents" xpath="//div[@id='toc']" >
+			<scalar name="chapter" xpath=".//a" />
+			<scalar name="link" xpath=".//@href" />
+		</collection>	
+		<collection name="common_terms" xpath="//div[@id='word_cloud_v']/div">
+			<scalar name="term" xpath="./a" />
+			<scalar name="link" xpath=".//@href" />
+		</collection>	
+		<scalar name="about_the_author" xpath="//div[@class='textmodulecontent']" scalar_type="String" />
+		<collection name="references_from_books" xpath="//div[@id='citations_module_v']/div[1]/div/div/table/tbody/tr/td[2]">
+			<scalar name="title" xpath="./div/h5" />
+			<scalar name="title_link" xpath="./div/h5//@href" />
+			<collection name="authors" xpath="./div/font/span/span[1]">
+				<field_parser name="regex_split" regex="," />
+				<scalar name="author" field_parser_key="$0" />
+				<scalar name="link" xpath=".//@href" />
+			</collection>			
+		</collection>
+		<collection name="references_from_google_scholar" xpath="//div[@id='citations_module_v']/div[2]//div">
+			<scalar name="title" xpath="./h5" />
+			<scalar name="title_link" xpath="./h5//@href" />
+			<collection name="authors" xpath="./div/span[1]" >
+				<field_parser name="regex_split" regex="," />
+				<scalar name="author" field_parser_key="$0" />				
+			</collection>
+		</collection>
+		<scalar name="isbn" xpath="//table[@id='metadata_content_table']/tbody/tr[contains(., 'ISBN')]">
+			<filter regex="ISBN" replace="" />
+		</scalar>
+		<collection name="subjects" xpath="//table[@id='metadata_content_table']/tbody/tr[contains(., 'Subjects')]/td[2]">
+			<scalar name="subject" xpath="./a" />
+			<scalar name="link" xpath="./a/@href" />
+		</collection>
+		<semantic_actions>
+			<get_field name="title" />
+		</semantic_actions>
+	</meta_metadata>
+</meta_metadata_repository>	
