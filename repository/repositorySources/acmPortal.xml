@@ -4,7 +4,7 @@
 		<scalar name="title" xpath="//div[@class='large-text']" navigates_to="metadata_page" />
 		<scalar name="location" xpath="//a[@name='FullTextPdf']/@href" />
 		<scalar name="abstract_field" xpath="//div[@id='abstract']/div/div/text()" label="abstract" />
-		<composite name="source" xpath="//div[@id='divmain']/table[2]/tbody/tr/td/table/tbody" navigates_to="location">
+		<composite name="source" xpath="//div[@id='divmain']/table[2]/tr/td/table" navigates_to="location">
 			<scalar name="year_of_publication" xpath="./tr[4]/td/text()[1]" label="year published">
 				<filter regex="[\D]" replace="" />
 			</scalar>
@@ -16,10 +16,10 @@
 			<scalar name="archive_name" xpath="./tr[3]/td/a/text()" />
 			<scalar name="archive" xpath="./tr[3]/td/a/@href" />
 		</composite>
-		<collection name="authors" xpath="//div[@id='divmain']/table[1]/tbody/tr/td[1]/table[2]">
-			<scalar name="location" xpath="./tbody/tr/td/a/@href" />
-			<scalar name="name" xpath="./tbody/tr/td/a" />
-			<scalar name="affiliation" xpath="./tbody/tr/td[3]" />
+		<collection name="authors" xpath="//div[@id='divmain']/table[1]/tr/td[1]/table[2]/tr">
+			<scalar name="location" xpath="./td/a/@href" />
+			<scalar name="name" xpath="./td/a" />
+			<scalar name="affiliation" xpath="./td[3]" />
 		</collection>
 <!--		<collection name="references" xpath="//a[@name='references']/../following-sibling::table//a[@href[starts-with(.,'citation')]]">-->
 <!--			<scalar name="location" xpath="./@href" />-->
