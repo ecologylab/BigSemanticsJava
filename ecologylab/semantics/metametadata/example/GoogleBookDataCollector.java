@@ -49,7 +49,7 @@ public class GoogleBookDataCollector implements DispatchTarget<MyContainer>
 
 		// seeding start url
 		ParsedURL seedUrl = ParsedURL
-				.getAbsolute("http://books.google.com/books?id=fu5HtixRje8C");
+				.getAbsolute("http://books.google.com/books?id=L7XCoDpZKhQC");
 		infoCollector.getContainerDownloadIfNeeded(null, seedUrl, null, false, false, false, this);
 		// when a wunderground.com page is processed, field 'processed' will be increased by 1 by the
 		// download monitor. so we count this field to see if we have reached our goal: 5 results.
