@@ -62,8 +62,6 @@ public class MyInfoCollector<C extends MyContainer> extends Debug implements Inf
 
 	private TranslationScope							metadataTranslationScope;
 
-	private SemanticActionHandlerFactory	semanticActionHandlerFactory;
-
 	// stores the infocollects list of rejected domains
 	private Set<String>										rejectDomains;
 
@@ -83,7 +81,7 @@ public class MyInfoCollector<C extends MyContainer> extends Debug implements Inf
 
 	public MyInfoCollector(MetaMetadataRepository repo, TranslationScope metadataTranslationScope)
 	{
-		this(repo, metadataTranslationScope, null, DEFAULT_COUNT_DOWNLOAD_THREAD);
+		this(repo, metadataTranslationScope, DEFAULT_COUNT_DOWNLOAD_THREAD);
 	}
 
 	/**
@@ -96,12 +94,10 @@ public class MyInfoCollector<C extends MyContainer> extends Debug implements Inf
 	 * @param metadataTranslationScope
 	 *          The metadata TranslationScope.
 	 */
-	public MyInfoCollector(MetaMetadataRepository repo, TranslationScope metadataTranslationScope,
-			SemanticActionHandlerFactory semanticActionHandlerFactory, int numDownloadThreads)
+	public MyInfoCollector(MetaMetadataRepository repo, TranslationScope metadataTranslationScope, int numDownloadThreads)
 	{
 		this.mmdRepo = repo;
 		this.metadataTranslationScope = metadataTranslationScope;
-		this.semanticActionHandlerFactory = semanticActionHandlerFactory;
 		this.numDownloadThreads = numDownloadThreads;
 
 		mmdRepo.bindMetadataClassDescriptorsToMetaMetadata(metadataTranslationScope);
@@ -194,9 +190,7 @@ public class MyInfoCollector<C extends MyContainer> extends Debug implements Inf
 	@Override
 	public SemanticActionHandler createSemanticActionHandler()
 	{
-		if (semanticActionHandlerFactory == null)
-			return new SemanticActionHandler();
-		return semanticActionHandlerFactory.create();
+		return new MySemanticActionHandler();
 	}
 
 	@Override
