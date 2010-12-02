@@ -50,7 +50,6 @@ public class DataCollector implements DispatchTarget<MyContainer>
 		System.out.print("\n");
 			for(Metadata m : collected)
 			{
-				System.out.print(m.getClassName() + ": ");
 				try
 				{
 					m.serialize(System.out);
