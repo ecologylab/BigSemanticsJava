@@ -32,22 +32,14 @@ public class DataCollector implements DispatchTarget<MyContainer>
 			"../ecologylabSemantics/repository"));
 		for (int i = 0;i<urls.length;i++)
 		{
-			SemanticActionHandlerFactory semanticActionHandlerFactory = new SemanticActionHandlerFactory()
-			{
-				@Override
-				public SemanticActionHandler create()
-				{
-					return new MySemanticActionHandler();
-				}
-			};
+
 			MyInfoCollector infoCollector = new MyInfoCollector<MyContainer>(repository,
-					GeneratedMetadataTranslationScope.get(), semanticActionHandlerFactory, 1);
+					GeneratedMetadataTranslationScope.get(), 1);
 
 			// seeding start url
 			ParsedURL seedUrl = ParsedURL
 			.getAbsolute(urls[i]);
 			infoCollector.getContainerDownloadIfNeeded(null, seedUrl, null, false, false, false, this);
-
 			while (processed<1)
 			{
 				Thread.sleep(1000);	
@@ -55,15 +47,16 @@ public class DataCollector implements DispatchTarget<MyContainer>
 			Thread.sleep(3000); // allow some time for some processing
 			infoCollector.getDownloadMonitor().stop(); // stop downloading thread(s).
 		}
+		System.out.print("\n");
 			for(Metadata m : collected)
 			{
+				System.out.print(m.getClassName() + ": ");
 				try
 				{
 					m.serialize(System.out);
 				}
 				catch (SIMPLTranslationException e)
 				{
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				System.out.print('\n');
