@@ -190,7 +190,7 @@ public class MyInfoCollector<C extends MyContainer> extends Debug implements Inf
 	@Override
 	public SemanticActionHandler createSemanticActionHandler()
 	{
-		return new MySemanticActionHandler();
+		return new SemanticActionHandler();
 	}
 
 	@Override
