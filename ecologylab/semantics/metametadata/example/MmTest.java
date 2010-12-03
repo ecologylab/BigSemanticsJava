@@ -11,7 +11,13 @@ import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.serialization.SIMPLTranslationException;
 
-public class DataCollector extends Debug implements DispatchTarget<MyContainer>
+/**
+ * Test program for meta-metadata curator / authors.
+ * Takes URLs to extract information from as arguments.
+ * Uses meta-metadata repository to identify appropriate wrapper / type.
+ * Prints results of information extraction to the console.
+ */
+public class MmTest extends Debug implements DispatchTarget<MyContainer>
 {
 
 	Object	outputLock	= new Object();
@@ -35,7 +41,7 @@ public class DataCollector extends Debug implements DispatchTarget<MyContainer>
 
 	public static void main(String[] args) throws FileNotFoundException, InterruptedException
 	{
-		DataCollector dc = new DataCollector();
+		MmTest dc = new MmTest();
 		dc.collect(args);
 	}
 
