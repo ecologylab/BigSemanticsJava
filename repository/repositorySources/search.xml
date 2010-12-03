@@ -30,6 +30,55 @@
       </for_each>
     </semantic_actions>
   </meta_metadata>
+  
+  <meta_metadata name="google_scholar_search_result" extends="search_result" comment="A google scholar search result" user_agent_name="opera_9" parser="xpath">
+  	<scalar name="document_link" scalar_type="ParsedURL" />
+  	<scalar name="citation_count" scalar_type="Int" />
+  	<scalar name="citations_link" scalar_type="ParsedURL" />
+  	<scalar name="related_articles_link" scalar_type="ParsedURL" />
+  </meta_metadata> 
+  
+  <meta_metadata name="google_scholar_search" extends="document" comment="The google Search class" user_agent_name="opera_9" parser="xpath">
+    <selector url_stripped="http://scholar.google.com/scholar" />
+    <collection name="search_results" xpath="//div[@class='gs_r']" child_type="google_scholar_search_result" no_wrap="true">
+      <scalar name="heading" xpath="./div/h3/a" />
+      <scalar name="snippet" xpath="./font">
+      	<filter regex="Cited by [0-9]* - [A-Za-z \-@0-9]*" replace="" />
+      </scalar>
+      <scalar name="link" xpath="./div/h3/a/@href" />
+      <scalar name="document_link" xpath="./span/a/@href" />
+       <scalar name="citation_count" xpath="//span[@class='gs_fl']/a[1]">
+      	<filter regex="Cited by " replace="" />
+      </scalar>
+      <scalar name="citations_link" xpath="//span[@class='gs_fl']/a[1]/@href" />
+  	  <scalar name="related_articles_link" xpath="//span[@class='gs_fl']/a[2]/@href" />
+    </collection>
+    <semantic_actions>
+      <get_field name="search_results" />
+      <for_each collection="search_results" as="res">
+        <get_field object="res" name="link" />
+        <get_field object="res" name="document_link" />
+        <if>
+        	<not_null value="document_link" />
+        	<parse_document now="true">
+          		<arg value="document_link" name="container_link" />
+        	</parse_document>
+        </if>
+        <if>
+        	<and>
+        		<null value="document_link" />
+        		<not_null value="link" />
+        	</and>
+        	<parse_document now="true">
+          		<arg value="link" name="container_link" />
+        	</parse_document>
+        </if>
+        <parse_document now="true">
+          <arg value="link" name="container_link" />
+        </parse_document>
+      </for_each>
+    </semantic_actions>
+  </meta_metadata>
 
   <meta_metadata name="my_google_search" type="search" comment="The my_google Search class" user_agent_name="opera_9" parser="xpath">
     <selector url_stripped="http://staging.cs.tamu.edu:8080/my_google/search" />

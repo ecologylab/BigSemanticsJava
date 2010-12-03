@@ -8,7 +8,7 @@
   
   
   <meta_metadata name="citeseerx_record" extends="scholarly_article" comment="CiteSeerX record for an article.">
-    <scalar name="location" xpath="//div[@id='downloads']/a[@title='View or Download this document as PDF']" />
+    <scalar name="location" xpath="//div[@id='downloads']/a[@title='View or Download this document as PDF']/@href" />
     <scalar name="title" xpath="//h1[@class='primaryheader']" navigates_to="metadata_page">
       <filter regex="\[.*\]" replace="" />
     </scalar>
@@ -53,6 +53,9 @@
     </scalar>
 
     <semantic_actions>
+	  <set_field name="metadata_page">
+		<arg value="TRUE_PURL" name="value" />
+	  </set_field>
       <get_field name="location" />
       <if>
         <not_null value="location" />
@@ -72,7 +75,7 @@
         <not_null value="references" />
         <for_each collection="references" as="ref">
           <get_field object="ref" name="gist" />
-          <parse_document now="true">
+          <parse_document>
             <arg value="true" name="citation_sig" />
             <arg value="gist" name="anchor_text" />
             <arg value="ref" name="entity" />
@@ -83,7 +86,7 @@
       <get_field name="citation_page" />
       <if>
         <not_null value="citation_page" />
-        <parse_document now="true">
+        <parse_document>
           <arg value="citation_page" name="container_link" />
         </parse_document>
       </if>
@@ -91,7 +94,7 @@
       <get_field name="cocitation_page" />
       <if>
         <not_null value="cocitation_page" />
-        <parse_document now="true">
+        <parse_document>
           <arg value="cocitation_page" name="container_link" />
         </parse_document>
       </if>
@@ -116,7 +119,7 @@
         <not_null value="citations" />
         <for_each collection="citations" as="cite">
           <get_field object="cite" name="gist" />
-          <parse_document now="true">
+          <parse_document>
             <arg value="true" name="citation_sig" />
             <arg value="gist" name="anchor_text" />
             <arg value="cite" name="entity" />
@@ -161,7 +164,7 @@
       <get_field name="search_results" />
       <for_each collection="search_results" as="res">
         <get_field name="link" object="res" />
-        <parse_document now="true">
+        <parse_document>
           <arg name="container_link" value="link" />
         </parse_document>
       </for_each>

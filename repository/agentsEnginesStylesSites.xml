@@ -23,6 +23,7 @@
     <search_engine name="google_site_specific" homogeneous="true" url_prefix="http://www.google.com/search?hl=en&amp;q=" num_result_string="&amp;num=" start_string="&amp;start=" />
     <search_engine name="google_image" url_prefix="http://www.google.com/images?sout=1&amp;q=" num_result_string="&amp;num=" start_string="&amp;start=" />
     <search_engine name="google_patents" url_prefix="http://www.google.com/patents?q=" num_result_string="&amp;num=" start_string="&amp;start=" />
+    <search_engine name="google_scholar" url_prefix="http://scholar.google.com/scholar?q=" num_result_string="&amp;num=" start_string="&amp;start=" />
     
     <search_engine name="bing" url_prefix="http://api.bing.net/xml.aspx?appid=41793F369AD63C9CD9D6C27BB2E72EB5AB4C9234&amp;sources=web&amp;query=" num_result_string="&amp;Web.Count=" start_string="&amp;Web.Offset=" />
     <search_engine name="bing_site_specific" homogeneous="true" url_prefix="http://api.bing.net/xml.aspx?appid=41793F369AD63C9CD9D6C27BB2E72EB5AB4C9234&amp;sources=web&amp;query=" num_result_string="&amp;Web.Count=" start_string="&amp;Web.Offset=" />
@@ -46,6 +47,7 @@
   </named_styles>
   <sites>
     <site domain="google.com" min_download_interval="15" />
+    <site domain="scholar.google.com" min_download_interval="15" />
     <site domain="nytimes.com" min_download_interval=".5" />
     <site domain="acm.org" min_download_interval="20" />
     <site domain="bing.net" min_download_interval=".125" />
