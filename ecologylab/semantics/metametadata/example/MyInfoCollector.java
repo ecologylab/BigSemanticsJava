@@ -28,7 +28,7 @@ import ecologylab.semantics.seeding.SearchState;
 import ecologylab.semantics.seeding.Seed;
 import ecologylab.semantics.seeding.SeedDistributor;
 import ecologylab.semantics.seeding.SeedSet;
-import ecologylab.semantics.tools.MetadataCompiler;
+import ecologylab.semantics.tools.MetaMetadataCompiler;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.TranslationScope;
 
@@ -87,7 +87,7 @@ public class MyInfoCollector<C extends MyContainer> extends Debug implements Inf
 	/**
 	 * This constructor also loads and initializes the {@link MetaMetadataRepository}, given a
 	 * metadata {@link TranslationScope}. Typically this TranslationScope should have been generated
-	 * by the {@link MetadataCompiler}, named as <i>GeneratedMetadataTranslationScope</i>.
+	 * by the {@link MetaMetadataCompiler}, named as <i>GeneratedMetadataTranslationScope</i>.
 	 * 
 	 * @param repo
 	 *          The metametadata repository.
