@@ -475,6 +475,12 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 			Node contextNode, MetaMetadataField mmdElement, String mmdElementName, XPath xpath,
 			Scope<Object> param, String xPathString, Map<String, String> fieldParserMap)
 	{
+		if (xPathString == null || xPathString.isEmpty())
+		{
+			// no xpath provided; we don't need to extract it
+			return;
+		}
+		
 		try
 		{
 			Metadata nestedMetadata = null;
@@ -603,7 +609,8 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 				}
 				else
 				{
-					error("neither xpath nor field_parser specified!");
+//					error("neither xpath nor field_parser specified!");
+					// if no xpath is provided, we don't need to process this field
 					return;
 				}
 				
