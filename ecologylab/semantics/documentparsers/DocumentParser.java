@@ -171,6 +171,7 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 	interface DocumentParserConnectHelper extends ConnectionHelper
 	{
 		DocumentParser getResult ( );
+		boolean hadRedirect();
 	}
 
 	/**
@@ -192,6 +193,7 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 		DocumentParserConnectHelper documentParserConnectHelper = new DocumentParserConnectHelper()
 		{
 			DocumentParser	result;
+			boolean hadRedirect = false;
 
 			public void handleFileDirectory(File file)
 			{
@@ -225,6 +227,7 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 			public boolean processRedirect(URL connectionURL) throws Exception
 			{
 				ParsedURL connectionPURL = new ParsedURL(connectionURL);
+				hadRedirect = true;
 				displayStatus("redirecting: " + purl + " > " + connectionURL);
 				Container redirectedAbstractContainer = infoCollector.lookupAbstractContainer(connectionPURL);
 				if (redirectedAbstractContainer != null)	// existing container
@@ -297,6 +300,11 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 			{
 				return result;
 			}
+			
+			public boolean hadRedirect()
+			{
+				return this.hadRedirect;
+			}
 
 		};
 
@@ -318,7 +326,7 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 		}
 
 		// set meta-metadata in case a correct one was found after a redirect
-		if (metaMetadata == null && container != null && container.metadata() != null)
+		if (documentParserConnectHelper.hadRedirect() && (metaMetadata == null && container != null && container.metadata() != null))
 			metaMetadata = (MetaMetadataCompositeField) container.metadata().getMetaMetadata();
 		
 		// check for a parser that was discovered while processing a re-direct
