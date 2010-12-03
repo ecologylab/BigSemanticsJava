@@ -1,4 +1,4 @@
-package ecologylab.semantics.metametadata.example;
+package ecologylab.semantics.metametadata.test;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -9,6 +9,8 @@ import ecologylab.net.ParsedURL;
 import ecologylab.semantics.generated.library.GeneratedMetadataTranslationScope;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
+import ecologylab.semantics.metametadata.example.MyContainer;
+import ecologylab.semantics.metametadata.example.MyInfoCollector;
 import ecologylab.serialization.SIMPLTranslationException;
 
 /**
