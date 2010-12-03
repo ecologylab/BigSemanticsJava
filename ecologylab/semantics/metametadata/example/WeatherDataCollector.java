@@ -2,10 +2,7 @@ package ecologylab.semantics.metametadata.example;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.PrintStream;
 
 import ecologylab.generic.Debug;
 import ecologylab.generic.DispatchTarget;
@@ -33,12 +30,10 @@ import ecologylab.semantics.metametadata.MetaMetadataRepository;
  */
 public class WeatherDataCollector extends Debug implements DispatchTarget<MyContainer>
 {
-	
-	private static final long	MAX_WAIT						= 30000;
 
-	List<WeatherReport>				collected						= new ArrayList<WeatherReport>();
+	PrintStream	out;
 
-	Object										downloadMonitorLock	= new Object();
+	Object			downloadMonitorLock	= new Object();
 
 	/**
 	 * This example shows how to use the library to collect information and perform semantic actions
@@ -57,44 +52,18 @@ public class WeatherDataCollector extends Debug implements DispatchTarget<MyCont
 		MyInfoCollector infoCollector = new MyInfoCollector<MyContainer>(repository,
 				GeneratedMetadataTranslationScope.get(), 1);
 
+		// prepare output file (it will be closed by the system after program stops)
+		out = new PrintStream(new File("output.csv"));
+		out.println("city,weather,temperature,humidity,wind_speed,dewpoint");
+
 		// seeding start url
 		ParsedURL seedUrl = ParsedURL
 				.getAbsolute("http://www.google.com/search?q=texas+site%3Awww.wunderground.com");
 		infoCollector.getContainerDownloadIfNeeded(null, seedUrl, null, false, false, false, this);
 
-		// when a wunderground.com page is processed, field 'processed' will be increased by 1 by the
-		// download monitor. so we count this field to see if we have reached our goal: 5 results.
-		while (!infoCollector.getDownloadMonitor().isIdle())
-		{
-			synchronized (downloadMonitorLock)
-			{
-				try
-				{
-					downloadMonitorLock.wait(MAX_WAIT);
-				}
-				catch (InterruptedException e)
-				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		}
-
-		infoCollector.getDownloadMonitor().stop(); // stop downloading thread(s).
-
-		// output to a .csv
-		PrintWriter writer = new PrintWriter(new FileOutputStream("output.csv"));
-		writer.printf("#format:city,weather,temperature,humidity,wind_speed,dewpoint\n");
-		for (WeatherReport report : collected)
-		{
-			// check to make sure there are no parsing error
-			if (report.getCity() != null)
-			{
-				writer.printf("%s,%s,%s,%s,%s,%s\n", report.getCity(), report.getWeather(),
-						report.getTemperature(), report.getHumidity(), report.getWind(), report.getDewPoint());
-			}
-		}
-		writer.close();
+		// request the download monitor to stop (after all the downloads are handled) so we can exit
+		// gracefully.
+		infoCollector.getDownloadMonitor().requestStop();
 	}
 
 	public static void main(String[] args) throws FileNotFoundException
@@ -113,25 +82,19 @@ public class WeatherDataCollector extends Debug implements DispatchTarget<MyCont
 	public void delivery(MyContainer container)
 	{
 		Metadata metadata = container.metadata();
-		if (metadata == null)
+		if (metadata != null && metadata instanceof WeatherReport)
 		{
-			warning("null metadata for container " + container);
-			return;
-		}
-		if (!(metadata instanceof WeatherReport))
-		{
-			warning("non-weather report metadata collected: " + metadata);
-			return;
-		}
-
-		synchronized (collected)
-		{
-			collected.add((WeatherReport) metadata);
-		}
-		
-		synchronized (downloadMonitorLock)
-		{
-			downloadMonitorLock.notify();
+			WeatherReport report = (WeatherReport) metadata;
+			if (report.getCity() != null)
+			{
+				synchronized (out)
+				{
+					out.format("%s,%s,%s,%s,%s,%s", report.getCity(), report.getWeather(),
+							report.getTemperature(), report.getHumidity(), report.getWind(), report.getDewPoint());
+					out.println();
+					out.flush();
+				}
+			}
 		}
 	}
 
