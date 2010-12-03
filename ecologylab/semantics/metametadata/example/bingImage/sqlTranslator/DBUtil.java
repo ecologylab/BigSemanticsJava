@@ -396,7 +396,7 @@ public class DBUtil extends Debug implements DBInterface
 		al1.add(0, sr1);
 		
 		ap.setPapers(al);
-		ap.setProceedings(al1);
+//		ap.setProceedings(al1); MAKE THIS COMPILE -- andruid 12/2010
 		
 		ap.serialize(System.out);
 		System.out.println();
