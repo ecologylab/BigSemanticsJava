@@ -15,9 +15,12 @@ import ecologylab.serialization.SIMPLTranslationException;
 
 public class DataCollector extends Debug implements DispatchTarget<MyContainer>
 {
-	List<Metadata>	collected						= new ArrayList<Metadata>();
+	
+	private static final long	MAX_WAIT						= 30000;
 
-	Object					downloadMonitorLock	= new Object();
+	List<Metadata>						collected						= new ArrayList<Metadata>();
+
+	Object										downloadMonitorLock	= new Object();
 
 	public void collect(String[] urls)
 	{
@@ -41,23 +44,13 @@ public class DataCollector extends Debug implements DispatchTarget<MyContainer>
 			{
 				try
 				{
-					downloadMonitorLock.wait(1000);
+					downloadMonitorLock.wait(MAX_WAIT);
 				}
 				catch (InterruptedException e)
 				{
 					e.printStackTrace();
 				}
 			}
-		}
-
-		// allow some time for possible post-processing
-		try
-		{
-			Thread.sleep(3000);
-		}
-		catch (InterruptedException e)
-		{
-			e.printStackTrace();
 		}
 
 		// stop download thread(s)
