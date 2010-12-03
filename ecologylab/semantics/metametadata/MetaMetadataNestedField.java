@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.generic.StringTools;
-import ecologylab.semantics.tools.MetadataCompilerUtils;
+import ecologylab.semantics.tools.MetaMetadataCompilerUtils;
 import ecologylab.serialization.simpl_inherit;
 
 @simpl_inherit
@@ -124,7 +124,7 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 	{
 		String comment = "Set the value of field " + fieldName;
 		// write Java doc
-		MetadataCompilerUtils.writeJavaDocComment(comment, appendable);
+		MetaMetadataCompilerUtils.writeJavaDocComment(comment, appendable);
 
 		// write first line
 		appendable.append("public void set" + StringTools.capitalize(fieldName) + "( " + fieldType
@@ -137,7 +137,7 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 	{
 		String comment = "Get the value of field " + fieldName;
 		// write Java doc
-		MetadataCompilerUtils.writeJavaDocComment(comment, appendable);
+		MetaMetadataCompilerUtils.writeJavaDocComment(comment, appendable);
 
 		// write first line
 		appendable.append("public " + fieldType + " get" + StringTools.capitalize(fieldName) + "(){\n");

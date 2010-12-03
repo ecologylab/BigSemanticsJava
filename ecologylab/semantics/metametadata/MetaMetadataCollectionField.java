@@ -5,7 +5,7 @@ import java.io.IOException;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.DocumentParserTagNames;
-import ecologylab.semantics.tools.MetadataCompilerUtils;
+import ecologylab.semantics.tools.MetaMetadataCompilerUtils;
 import ecologylab.serialization.TranslationScope;
 import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.simpl_inherit;
@@ -175,11 +175,11 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 		
 		switch (pass)
 		{
-		case MetadataCompilerUtils.GENERATE_FIELDS_PASS:
+		case MetaMetadataCompilerUtils.GENERATE_FIELDS_PASS:
 			appendMetalanguageDecl(appendable, annotation.toString(), "private" + variableTypeStart,
 					className, variableTypeEnd, fieldName);
 			break;
-		case MetadataCompilerUtils.GENERATE_METHODS_PASS:
+		case MetaMetadataCompilerUtils.GENERATE_METHODS_PASS:
 			appendLazyEvaluationMethod(appendable, fieldName, variableTypeStart + className
 					+ variableTypeEnd);
 			appendSetter(appendable, fieldName, variableTypeStart + className

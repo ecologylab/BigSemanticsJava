@@ -22,7 +22,7 @@ import ecologylab.serialization.XMLTools;
  * @author amathur
  * 
  */
-public class MetadataCompilerUtils
+public class MetaMetadataCompilerUtils
 {
 
 	public static final String	DEFAULT_GENERATED_SEMANTICS_LOCATION	= ".."
@@ -124,7 +124,7 @@ public class MetadataCompilerUtils
 			throws IOException
 	{
 		String comment = "Constructor";
-		MetadataCompilerUtils.writeJavaDocComment(comment, appendable);
+		MetaMetadataCompilerUtils.writeJavaDocComment(comment, appendable);
 		appendable.append("public ").append(className + "()\n{\n super();\n}\n");
 	}
 
@@ -134,7 +134,7 @@ public class MetadataCompilerUtils
 	public static void appendConstructor(Appendable appendable, String className) throws IOException
 	{
 		String comment = "Constructor";
-		MetadataCompilerUtils.writeJavaDocComment(comment, appendable);
+		MetaMetadataCompilerUtils.writeJavaDocComment(comment, appendable);
 		appendable.append("public ").append(className).append(
 				"(MetaMetadataCompositeField metaMetadata)\n{\nsuper(metaMetadata);\n}\n");
 	}
@@ -158,7 +158,7 @@ public class MetadataCompilerUtils
 	 */
 	public static void appendToTranslationScope(String append)
 	{
-		MetadataCompilerUtils.printWriter.println(append);
+		MetaMetadataCompilerUtils.printWriter.println(append);
 	}
 
 	/**
@@ -166,14 +166,14 @@ public class MetadataCompilerUtils
 	 */
 	public static void endTranslationScopeClass()
 	{
-		MetadataCompilerUtils.printWriter.print("\n};\n \n");
-		MetadataCompilerUtils.printWriter
+		MetaMetadataCompilerUtils.printWriter.print("\n};\n \n");
+		MetaMetadataCompilerUtils.printWriter
 				.print("public static TranslationScope get()\n{\n");
-		MetadataCompilerUtils.printWriter.print("return TranslationScope.get(\""
+		MetaMetadataCompilerUtils.printWriter.print("return TranslationScope.get(\""
 				+ GENERATED_METADATA_TRANSLATIONS
 				+ "\", MetadataBuiltinsTranslationScope.get(), TRANSLATIONS);\n}\n}");
 
-		MetadataCompilerUtils.printWriter.flush();
+		MetaMetadataCompilerUtils.printWriter.flush();
 	}
 
 	/**
@@ -199,7 +199,7 @@ public class MetadataCompilerUtils
 
 		// Write the import statements
 //		printWriter.println(MetadataCompiler.getImportStatement());
-		MetadataCompiler.printImports(printWriter);
+		MetaMetadataCompiler.printImports(printWriter);
 
 		// Write java-doc comments
 		writeJavaDocComment("\nThis is the tranlation scope class for generated files\n.",

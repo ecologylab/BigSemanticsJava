@@ -17,8 +17,8 @@ import ecologylab.generic.HashMapArrayList;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
-import ecologylab.semantics.tools.MetadataCompiler;
-import ecologylab.semantics.tools.MetadataCompilerUtils;
+import ecologylab.semantics.tools.MetaMetadataCompiler;
+import ecologylab.semantics.tools.MetaMetadataCompilerUtils;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.FieldDescriptor;
@@ -702,7 +702,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 			// FIXME -- call the regular routine for generating a class declaration!!!!!!!!!!!!!! code
 			// should not be duplicated
 			// getting the generation path for the java class.
-			String generationPath = MetadataCompilerUtils.getGenerationPath(packageName);
+			String generationPath = MetaMetadataCompilerUtils.getGenerationPath(packageName);
 	
 			// the name of the java class.
 			String metaMetadataName = generateNewClassName();
@@ -732,18 +732,18 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	
 			File f = new File(directoryPath, javaClassName + ".java");
 			// write to console
-			if (pass == MetadataCompilerUtils.GENERATE_FIELDS_PASS)
+			if (pass == MetaMetadataCompilerUtils.GENERATE_FIELDS_PASS)
 				System.out.println("\n\t\t -> " + f);
 	
 			FileWriter fileWriter = new FileWriter(f);
 			PrintWriter p = new PrintWriter(fileWriter);
 	
 			// writing the package declaration
-			p.println(MetadataCompilerUtils.PACKAGE + " " + packageName + ";");
+			p.println(MetaMetadataCompilerUtils.PACKAGE + " " + packageName + ";");
 	
 			// writing the imports
 			// p.println(MetadataCompiler.getImportStatement());
-			MetadataCompiler.printImports(p);
+			MetaMetadataCompiler.printImports(p);
 	
 			// write xml_inherit
 			p.println("@simpl_inherit");
@@ -762,13 +762,13 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 				MetaMetadataField cField = childMetaMetadata.get(i);
 				cField.setExtendsField(extendsField);
 				cField.setRepository(repository);
-				cField.compileToMetadataClass(packageName, p, MetadataCompilerUtils.GENERATE_FIELDS_PASS,
+				cField.compileToMetadataClass(packageName, p, MetaMetadataCompilerUtils.GENERATE_FIELDS_PASS,
 						false);
 			}
 	
 			// write the constructors
-			MetadataCompilerUtils.appendBlankConstructor(p, javaClassName);
-			MetadataCompilerUtils.appendConstructor(p, javaClassName);
+			MetaMetadataCompilerUtils.appendBlankConstructor(p, javaClassName);
+			MetaMetadataCompilerUtils.appendConstructor(p, javaClassName);
 	
 			for (int i = 0; i < childMetaMetadata.size(); i++)
 			{
@@ -776,7 +776,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 				MetaMetadataField cField = childMetaMetadata.get(i);
 				cField.setExtendsField(extendsField);
 				cField.setRepository(repository);
-				cField.compileToMetadataClass(packageName, p, MetadataCompilerUtils.GENERATE_METHODS_PASS,
+				cField.compileToMetadataClass(packageName, p, MetaMetadataCompilerUtils.GENERATE_METHODS_PASS,
 						true);
 			}
 	
@@ -791,7 +791,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 			if (!appendedToTranslastionScope)
 			{
 				// append this class to generated translation scope
-				MetadataCompilerUtils.appendToTranslationScope(javaClassName + ".class,\n");
+				MetaMetadataCompilerUtils.appendToTranslationScope(javaClassName + ".class,\n");
 			}
 		}
 	}
@@ -898,7 +898,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 		String comment = " Appends the value to the field " + fieldName;
 
 		// javadoc comment
-		MetadataCompilerUtils.writeJavaDocComment(comment, appendable);
+		MetaMetadataCompilerUtils.writeJavaDocComment(comment, appendable);
 
 		// first line
 		appendable.append("public void append" + XMLTools.javaNameFromElementName(fieldName, true)
@@ -926,7 +926,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 		String comment = "Heavy Weight Direct setter method for " + fieldName;
 
 		// write the java doc comment
-		MetadataCompilerUtils.writeJavaDocComment(comment, appendable);
+		MetaMetadataCompilerUtils.writeJavaDocComment(comment, appendable);
 
 		// first line
 		appendable.append("public void hwSet" + XMLTools.javaNameFromElementName(fieldName, true)
@@ -960,7 +960,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 		String comment = " Sets the " + fieldName + " directly";
 
 		// write the java doc comment
-		MetadataCompilerUtils.writeJavaDocComment(comment, appendable);
+		MetaMetadataCompilerUtils.writeJavaDocComment(comment, appendable);
 
 		// first line
 		appendable.append("public void set" + XMLTools.javaNameFromElementName(fieldName, true)
@@ -983,7 +983,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	{
 		String comment = "The heavy weight Append method for field " + fieldName;
 		// write java doc
-		MetadataCompilerUtils.writeJavaDocComment(comment, appendable);
+		MetaMetadataCompilerUtils.writeJavaDocComment(comment, appendable);
 
 		// first line
 		appendable.append("public void hwAppend" + XMLTools.javaNameFromElementName(fieldName, true)
@@ -1015,7 +1015,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 		String returnType = fieldType;
 
 		// write comment for this method
-		MetadataCompilerUtils.writeJavaDocComment(comment, appendable);
+		MetaMetadataCompilerUtils.writeJavaDocComment(comment, appendable);
 
 		// first line . Start of method name
 		appendable.append("public ").append(returnType).append("\t").append(fieldName)

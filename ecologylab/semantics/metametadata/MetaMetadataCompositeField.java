@@ -7,7 +7,7 @@ import ecologylab.generic.HashMapArrayList;
 import ecologylab.semantics.actions.SemanticActionTranslationScope;
 import ecologylab.semantics.actions.SemanticAction;
 import ecologylab.semantics.metadata.DocumentParserTagNames;
-import ecologylab.semantics.tools.MetadataCompilerUtils;
+import ecologylab.semantics.tools.MetaMetadataCompilerUtils;
 import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.simpl_inherit;
 import ecologylab.serialization.ElementState.simpl_collection;
@@ -129,10 +129,10 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField
 		
 		switch (pass)
 		{
-		case MetadataCompilerUtils.GENERATE_FIELDS_PASS:
+		case MetaMetadataCompilerUtils.GENERATE_FIELDS_PASS:
 			appendable.append("\nprivate " + getTagDecl() + annotations + fieldType + "\t" + fieldName + ";");
 			break;
-		case MetadataCompilerUtils.GENERATE_METHODS_PASS:
+		case MetaMetadataCompilerUtils.GENERATE_METHODS_PASS:
 			appendLazyEvaluationMethod(appendable, fieldName, fieldType);
 			appendSetter(appendable, fieldName, fieldType);
 			appendGetter(appendable, fieldName, fieldType);

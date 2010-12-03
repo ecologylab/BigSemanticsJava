@@ -22,7 +22,7 @@ import ecologylab.serialization.XMLTools;
  * @author andruid
  * 
  */
-public class MetadataCompiler extends ApplicationEnvironment
+public class MetaMetadataCompiler extends ApplicationEnvironment
 {
 	{
 		MetaMetadataRepository.initializeTypes();
@@ -30,7 +30,7 @@ public class MetadataCompiler extends ApplicationEnvironment
 
 	public static final String		DEFAULT_REPOSITORY_DIRECTORY	= "repository";
 
-	public MetadataCompiler(String[] args) throws SIMPLTranslationException
+	public MetaMetadataCompiler(String[] args) throws SIMPLTranslationException
 	{
 		super("MetadataCompiler", MetaMetadataTranslationScope.get(), args, 1.0F);
 	}
@@ -38,12 +38,12 @@ public class MetadataCompiler extends ApplicationEnvironment
 	public void compile()
 	{
 
-		compile(DEFAULT_REPOSITORY_DIRECTORY, MetadataCompilerUtils.DEFAULT_GENERATED_SEMANTICS_LOCATION);
+		compile(DEFAULT_REPOSITORY_DIRECTORY, MetaMetadataCompilerUtils.DEFAULT_GENERATED_SEMANTICS_LOCATION);
 	}
 
 	public static void printImports(Appendable appendable) throws IOException
 	{
-		List<String>			 targetList	= new ArrayList(MetadataCompilerUtils.importTargets);
+		List<String>			 targetList	= new ArrayList(MetaMetadataCompilerUtils.importTargets);
 		Collections.sort(targetList);
 		
 		appendable.append('\n');
@@ -64,7 +64,7 @@ public class MetadataCompiler extends ApplicationEnvironment
 	
 	public void compile(String mmdRepositoryDir)
 	{
-		compile(mmdRepositoryDir, MetadataCompilerUtils.DEFAULT_GENERATED_SEMANTICS_LOCATION);
+		compile(mmdRepositoryDir, MetaMetadataCompilerUtils.DEFAULT_GENERATED_SEMANTICS_LOCATION);
 	}
 	
 	public void compile(String mmdRepositoryDir, String generatedSemanticsLocation)
@@ -84,14 +84,14 @@ public class MetadataCompiler extends ApplicationEnvironment
 		{
 			String packageAttribute = metaMetadata.getPackageAttribute();
 			if (packageAttribute != null)
-				MetadataCompilerUtils.importTargets.add(packageAttribute + ".*");
+				MetaMetadataCompilerUtils.importTargets.add(packageAttribute + ".*");
 		}
 
 		// Writer for the translation scope for generated class.
-		String generatedSemanticsPath = MetadataCompilerUtils.getGenerationPath(
+		String generatedSemanticsPath = MetaMetadataCompilerUtils.getGenerationPath(
 				metaMetadataRepository.getPackageName(), generatedSemanticsLocation);
 		try {
-			MetadataCompilerUtils.createTranslationScopeClass(generatedSemanticsPath,
+			MetaMetadataCompilerUtils.createTranslationScopeClass(generatedSemanticsPath,
 					metaMetadataRepository.packageName());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -120,14 +120,14 @@ public class MetadataCompiler extends ApplicationEnvironment
 					packageName				= "";
 				else
 					packageName				+= ".";
-				MetadataCompilerUtils.appendToTranslationScope(packageName + XMLTools.classNameFromElementName(metaMetadata.getName())
+				MetaMetadataCompilerUtils.appendToTranslationScope(packageName + XMLTools.classNameFromElementName(metaMetadata.getName())
 						+ ".class,\n");
 				System.out.println('\n');
 			}
 		}
 
 		// end the translationScope class
-		MetadataCompilerUtils.endTranslationScopeClass();
+		MetaMetadataCompilerUtils.endTranslationScopeClass();
 		
 	}
 
@@ -135,7 +135,7 @@ public class MetadataCompiler extends ApplicationEnvironment
 	{
 		try
 		{
-			MetadataCompiler compiler = new MetadataCompiler(args);
+			MetaMetadataCompiler compiler = new MetaMetadataCompiler(args);
 			compiler.compile();
 		}
 		catch (SIMPLTranslationException e)

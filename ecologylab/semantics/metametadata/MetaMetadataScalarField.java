@@ -3,7 +3,7 @@ package ecologylab.semantics.metametadata;
 import java.io.IOException;
 
 import ecologylab.semantics.documentparsers.ParserBase;
-import ecologylab.semantics.tools.MetadataCompilerUtils;
+import ecologylab.semantics.tools.MetaMetadataCompilerUtils;
 import ecologylab.serialization.Hint;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.XMLTools;
@@ -116,15 +116,15 @@ public class MetaMetadataScalarField extends MetaMetadataField
 				fieldTypeName = "Integer";
 			}
 
-			if (pass == MetadataCompilerUtils.GENERATE_FIELDS_PASS)
+			if (pass == MetaMetadataCompilerUtils.GENERATE_FIELDS_PASS)
 			{
 				// write the java doc comment for this field
-				MetadataCompilerUtils.writeJavaDocComment(comment, appendable);
+				MetaMetadataCompilerUtils.writeJavaDocComment(comment, appendable);
 
 				// append the Nested field.
 				appendLeaf(appendable, "private Metadata", scalarType.fieldTypeName(), fieldName);
 			}
-			else if (pass == MetadataCompilerUtils.GENERATE_METHODS_PASS)
+			else if (pass == MetaMetadataCompilerUtils.GENERATE_METHODS_PASS)
 			{
 				// append the getter and setter methods
 				appendLazyEvaluationMethod(appendable, fieldName, "Metadata" + fieldTypeName);
@@ -155,7 +155,7 @@ public class MetaMetadataScalarField extends MetaMetadataField
 		String comment = "Tests to see if the value of the field is null, or if the field itself is null: "
 				+ fieldName;
 		// write java doc
-		MetadataCompilerUtils.writeJavaDocComment(comment, appendable);
+		MetaMetadataCompilerUtils.writeJavaDocComment(comment, appendable);
 
 		// first line
 		appendable.append("public boolean isNull"
@@ -176,7 +176,7 @@ public class MetaMetadataScalarField extends MetaMetadataField
 	{
 		String comment = "Gets the value of the field " + fieldName;
 		// write java doc
-		MetadataCompilerUtils.writeJavaDocComment(comment, appendable);
+		MetaMetadataCompilerUtils.writeJavaDocComment(comment, appendable);
 
 		// first line
 		appendable.append("public " + fieldType + " get"
@@ -196,7 +196,7 @@ public class MetaMetadataScalarField extends MetaMetadataField
 	{
 		String comment = "Sets the value of the field " + fieldName;
 		// write java doc
-		MetadataCompilerUtils.writeJavaDocComment(comment, appendable);
+		MetaMetadataCompilerUtils.writeJavaDocComment(comment, appendable);
 
 		// first line
 		appendable.append("public void set" + XMLTools.javaNameFromElementName(fieldName, true) + "( "
@@ -214,7 +214,7 @@ public class MetaMetadataScalarField extends MetaMetadataField
 	{
 		String comment = "The heavy weight setter method for field " + fieldName;
 		// write java doc
-		MetadataCompilerUtils.writeJavaDocComment(comment, appendable);
+		MetaMetadataCompilerUtils.writeJavaDocComment(comment, appendable);
 
 		// first line
 		appendable.append("public void hwSet" + XMLTools.javaNameFromElementName(fieldName, true)
