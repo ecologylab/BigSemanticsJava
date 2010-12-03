@@ -23,10 +23,6 @@ public class DataCollector implements DispatchTarget<MyContainer>
 
 	public void collect(String[] urls) throws InterruptedException, FileNotFoundException
 	{
-
-			// register our own semantic action
-			SemanticAction.register(SaveImageSemanticAction.class);
-
 			// create the infoCollector
 			MetaMetadataRepository repository = MetaMetadataRepository.load(new File(
 			"../ecologylabSemantics/repository"));
