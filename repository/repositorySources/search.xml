@@ -144,10 +144,17 @@
       <for_each collection="results" as="result">
         <get_field object="result" name="location" />
         <get_field object="result" name="summary" />
-        <parse_document now="true">
-          <arg value="result" name="document" />
-          <arg value="summary" name="anchor_text" />
-        </parse_document>
+         <get_field object="result" name="description" />
+        
+          <parse_document now="true">
+            <arg value="location" name="container_link" />
+            <arg value="summary" name="description" />
+          </parse_document>
+        
+<!--        <parse_document now="true">-->
+<!--          <arg value="result" name="document" />-->
+<!--          <arg value="summary" name="anchor_text" />-->
+<!--        </parse_document>-->
       </for_each>
     </semantic_actions>
   </meta_metadata>
