@@ -1,52 +1,45 @@
 <meta_metadata_repository name="google_books" package="ecologylab.semantics.generated.library" >
 	<meta_metadata name="google_book" extends="document" parser="xpath" user_agent_name="firefox_3_6_8">
 		<selector url_stripped="http://books.google.com/books" />
-		<scalar name="title" xpath="//div[@class='booktitle']" scalar_type="String" />
+		<scalar name="title" layer="10.0" xpath="//div[@class='booktitle']" scalar_type="String" />
 		<collection name="authors" xpath="//table[@id='metadata_content_table']/tr[contains(., 'Author')]/td[2]/a" child_type="author" layer="9.5">
-			<scalar name="name" xpath="." />
-			<scalar name="location" xpath="./@href" />
+			<scalar name="name" navigates_to="location" xpath="." />
+			<scalar name="location" xpath="./@href" scalar_type="ParsedURL" />
 		</collection>
-		<scalar name="publisher" xpath="//table[@id='metadata_content_table']/tr[contains(., 'Publisher')]" scalar_type="String">
+		<scalar name="publisher" layer="9.1" xpath="//table[@id='metadata_content_table']/tr[contains(., 'Publisher')]" scalar_type="String">
 			<filter regex="Publisher" replace="" />
 		</scalar>
-		<scalar name="category" xpath="//div[@class='bookinfo_sectionwrap']//div[3]/a" scalar_type="String" />
-		<scalar name="pages" xpath="//td[@id='bookinfo']/div[3]/div[3]" scalar_type="String">
-			<filter regex="(\s-\s)+" replace="" />
+		<scalar name="category" layer="9.3" xpath="//div[@class='bookinfo_sectionwrap']//div[3]/a" scalar_type="String" />
+		<scalar name="pages" layer="6.0" xpath="//td[@id='bookinfo']/div[3]/div[3]" scalar_type="String">
+			<filter regex=".+(?&lt;=\s-\s)" replace="" />
 		</scalar>
-		<scalar name="description" xpath="//div[@id='synopsistext']" scalar_type="String" />
+		<scalar name="description" layer="8.0" xpath="//div[@id='synopsistext']" scalar_type="String" />
 		<collection name="related_books" xpath="//td[@id='viewport_td']/div[contains(., 'Related books')]/div/div/div/div/div/a" child_type="document">
-			<scalar name="title" xpath="." />
+			<scalar name="title" navigates_to="location" xpath="." />
 			<scalar name="location" xpath="./@href" />
 		</collection>
-		<collection name="contents" xpath="//div[@id='toc']//table/tr/td/div" child_type="chapter" >
+		<collection name="contents" hide="true" xpath="//div[@id='toc']//table/tr/td/div" child_type="chapter" >
 			<scalar name="title" xpath="./span" scalar_type="String"/>
 		</collection>	
-		<collection name="common_terms" xpath="//div[@id='word_cloud_v']/div/a" child_type="term">
-			<scalar name="term" xpath="." scalar_type="String" />
-			<scalar name="link" xpath="./@href" scalar_type="ParsedURL" />
+		<collection name="common_terms" hide="true" xpath="//div[@id='word_cloud_v']/div/a" child_type="term">
+			<scalar name="term" navigates_to="link" xpath="." scalar_type="String" />
+			<scalar name="location" hide="true" xpath="./@href" scalar_type="ParsedURL" />
 		</collection>	
-		<scalar name="about_the_author" xpath="//div[@class='textmodulecontent']" scalar_type="String" />
-		<collection name="references_from_books" xpath="//div[@id='citations_module_v']/div[1]/div/div/table/tr/td[2]" child_type="scholarly_article">
+		<scalar name="about_the_author" layer="7.0" xpath="//div[@class='textmodulecontent']" scalar_type="String" />
+		<collection name="references_from_books" hide="true" xpath="//div[@id='citations_module_v']/div[1]/div/div/table/tr/td[2]" child_type="scholarly_article">
 			<scalar name="title" xpath="./div/h5" />
 			<scalar name="location" xpath=".//@href" />
-			<collection name="authors" xpath="./div/font/span/span[1]">
-				<field_parser name="regex_split" regex="," />
-				<scalar name="name" field_parser_key="$0" />
-				<scalar name="location" xpath=".//@href" />
-			</collection>			
+			<scalar name="authors" xpath="./div/font/span/span[1]" />	
 		</collection>
-		<collection name="references_from_google_scholar" xpath="//div[@id='citations_module_v']/div[2]//div" child_type="scholarly_article">
-			<scalar name="title" xpath="./h5" />
-			<scalar name="location" xpath="./h5//@href" />
-			<collection name="authors" xpath="./div/span[1]" >
-				<field_parser name="regex_split" regex="," />
-				<scalar name="name" field_parser_key="$0" />				
-			</collection>
+		<collection name="references_from_google_scholar" hide="true" xpath="//div[@id='citations_module_v']/div[2]//div" child_type="scholarly_article">
+			<scalar name="title" xpath="//div[@id='citations_module_v']/div[2]//div/div//a" />
+			<scalar name="location" xpath="//div[@id='citations_module_v']/div[2]//div/h5//@href" />
+			<scalar name="authors" xpath="//div[@id='citations_module_v']/div[2]//div/div/span[1]" />				
 		</collection>
-		<scalar name="isbn" xpath="//table[@id='metadata_content_table']/tr[contains(., 'ISBN')]" scalar_type="String">
+		<scalar name="isbn" layer="5.0" xpath="//table[@id='metadata_content_table']/tr[contains(., 'ISBN')]" scalar_type="String">
 			<filter regex="ISBN" replace="" />
 		</scalar>
-		<collection name="subjects" xpath="//table[@id='metadata_content_table']/tr[contains(., 'Subjects')]/td[2]/a" child_type="subject" >
+		<collection name="subjects" layer="9.0" xpath="//table[@id='metadata_content_table']/tr[contains(., 'Subjects')]/td[2]/a" child_type="subject" >
 			<scalar name="subject" xpath="." scalar_type="String" navigates_to="location" />
 			<scalar name="location" xpath="./@href" scalar_type="ParsedURL" hide="true" />
 		</collection>
