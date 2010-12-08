@@ -86,7 +86,7 @@
 <!--			<scalar name="link" xpath="./a/@href" />-->
 <!--			<scalar name="heading" xpath="./a/text()" />-->
 <!--		</collection>-->
-		<collection name="papers" xpath="//div[@id='prox']/div/table/tbody/tr" child_type="search_result">
+		<collection name="papers" xpath="//div[@id='prox']/div/table/tr" child_type="search_result">
 			<scalar name="link" xpath=".//@href" />
 			<scalar name="heading" xpath=".//a" />
 		</collection>
