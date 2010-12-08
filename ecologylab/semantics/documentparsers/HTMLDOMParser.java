@@ -98,7 +98,8 @@ extends HTMLParserCommon<C, IC>
 
 	protected void postParse()
 	{
-		semanticActionHandler.getSemanticActionVariableMap().put(SemanticActionsKeyWords.DOCUMENT_ROOT_NODE, document);
+		if (semanticActionHandler != null)
+			semanticActionHandler.getSemanticActionVariableMap().put(SemanticActionsKeyWords.DOCUMENT_ROOT_NODE, document);
 	}
 	/**
 	 * Root DOM node of the current HTML document

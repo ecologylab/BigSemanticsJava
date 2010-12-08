@@ -20,7 +20,7 @@ public class HTMLFragmentDOMParser<C extends Container> extends HTMLDOMParser<C,
 	
 	public HTMLFragmentDOMParser(InfoCollector<C> infoCollector, InputStream inputStream)
 	{
-		super(infoCollector);
+		super(infoCollector, infoCollector.createSemanticActionHandler());
 		fragmentStream = inputStream;
 		parse();
 	}

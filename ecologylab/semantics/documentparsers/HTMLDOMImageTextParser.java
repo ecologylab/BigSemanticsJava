@@ -44,10 +44,10 @@ implements TidyInterface, HTMLAttributeNames
 	{
 		super(infoCollector);
 	}
-
-	public HTMLDOMImageTextParser(InfoCollector infoCollector,SemanticActionHandler semanticActionHandelr)	// this is of type In
+	
+	public HTMLDOMImageTextParser(InfoCollector infoCollector,SemanticActionHandler semanticActionHandler)	// this is of type In
 	{
-		super(infoCollector);
+		super(infoCollector, semanticActionHandler);
 	}
 	
 	boolean indexPage = false;

@@ -188,7 +188,7 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 	 * 3) If still parser is null and binding is also null, use in-build tables to find the parser.
 	 */
 	public static DocumentParser connect(final ParsedURL purl, final Container container,
-			final InfoCollector infoCollector, SemanticActionHandler semanticActionHandler)
+			final InfoCollector infoCollector, final SemanticActionHandler semanticActionHandler)
 	{
 		DocumentParserConnectHelper documentParserConnectHelper = new DocumentParserConnectHelper()
 		{
@@ -206,7 +206,7 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 			{
 				MetaMetadata mmd = infoCollector.metaMetaDataRepository().getMMBySuffix(suffix);
 				if(mmd!=null)
-					result = getParserInstanceFromBindingMap(mmd.getParser(), infoCollector, null);
+					result = getParserInstanceFromBindingMap(mmd.getParser(), infoCollector, semanticActionHandler);
 				return (result != null);
 			}
 
