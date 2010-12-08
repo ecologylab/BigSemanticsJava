@@ -278,7 +278,6 @@ implements InfoCollector<AC>, SemanticsPrefs, ApplicationProperties, DocumentPar
 				this.seedSet.add(seed, this);
 			}
 		}
-		int numSeeds = seedSet.size();
 	}
 
 	public void getMoreSeedResults()
