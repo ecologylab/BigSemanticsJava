@@ -1,12 +1,10 @@
 package ecologylab.semantics.model.text;
 
 import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Observable;
-import java.util.Set;
 import java.util.Observer;
+import java.util.Set;
 
 import ecologylab.generic.IFeatureVector;
 /**
