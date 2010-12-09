@@ -436,8 +436,11 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 	public void recycle()
 	{
 		ClassAndCollectionIterator iterator = metadataIterator();
-		for(MetadataBase metadata = iterator.next(); metadata != null; metadata = iterator.next())
-			metadata.recycle();
+		for(MetadataBase metadata = iterator.next(); iterator.hasNext(); metadata = iterator.next())
+		{
+			if (metadata != null)
+				metadata.recycle();
+		}
 		super.recycle();
 		termVector.recycle();
 		termVector = null;
