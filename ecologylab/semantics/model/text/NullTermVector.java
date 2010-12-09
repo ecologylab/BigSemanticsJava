@@ -21,6 +21,8 @@ public class NullTermVector implements ITermVector
 
 	public static NullTermVector	ntv	= new NullTermVector();
 
+	private static final HashSet<Term> HASH_SET = new HashSet<Term>();
+	
 	public static NullTermVector singleton()
 	{
 		return ntv;
@@ -47,7 +49,7 @@ public class NullTermVector implements ITermVector
 	public Set<Term> elements()
 	{
 		// TODO Auto-generated method stub
-		return new HashSet<Term>();
+		return HASH_SET;
 	}
 
 	public double get(Term term)
@@ -60,14 +62,14 @@ public class NullTermVector implements ITermVector
 	public HashMap<Term, Double> map()
 	{
 		// TODO Auto-generated method stub
-		return new HashMap();
+		return null;
 	}
 
 	//FIXME -- this is wasteful crap code -- sez andruid
 	public Set<Double> values()
 	{
 		// TODO Auto-generated method stub
-		return new HashSet<Double>();
+		return null;
 	}
 
 	public double norm()
