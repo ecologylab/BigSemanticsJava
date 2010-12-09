@@ -27,6 +27,12 @@ public class SemanticInLinks extends ArrayList<SemanticAnchor>
 			SemanticAnchor semanticAnchor		= remove(index);
 			semanticAnchor.recycle();
 		}
+		clear();
+		
+		if (semanticInlinkCollection != null)
+			semanticInlinkCollection.recycle();
+		
+		semanticInlinkCollection = null;
 	}
 	
 	public CompositeTermVector semanticInlinkCollection()
