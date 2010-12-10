@@ -260,9 +260,7 @@ implements TidyInterface, HTMLAttributeNames
 				anchorContext = getTextInSubTree(parent, false);				
 				if (anchorContext != null)
 				{
-					XMLTools.unescapeXML(anchorContext);
-					StringTools.toLowerCase(anchorContext);
-					anchorContextString				= StringTools.toString(anchorContext);
+					anchorContextString = StringTools.unescapeAndLowerCaseStringBuilder(anchorContext);
 					StringBuilderUtils.release(anchorContext);
 					tdNodeAnchorContextStringCache.put(parent, anchorContextString);
 				}
@@ -270,15 +268,13 @@ implements TidyInterface, HTMLAttributeNames
 
 			//TODO: provide ability to specify alternate anchorContext
 			StringBuilder anchorText 			= getTextInSubTree(anchorNodeNode, true);
-			if ((anchorContext != null) || (anchorText != null))
+			if ((anchorContextString != null) || (anchorText != null))
 			{
 
 				String anchorTextString			= null;
 				if (anchorText != null)
 				{
-					XMLTools.unescapeXML(anchorText);
-					StringTools.toLowerCase(anchorText);
-					anchorTextString					= StringTools.toString(anchorText);
+					anchorTextString = StringTools.unescapeAndLowerCaseStringBuilder(anchorText);
 					StringBuilderUtils.release(anchorText);
 				}
 				return new AnchorContext(href, anchorTextString, anchorContextString, sourcePurl, fromContentBody, false);
@@ -286,6 +282,8 @@ implements TidyInterface, HTMLAttributeNames
 		}
 		return null;
 	}
+
+
 	
   public static StringBuilder getTextInSubTree(TdNode node, boolean recurse)
   {
