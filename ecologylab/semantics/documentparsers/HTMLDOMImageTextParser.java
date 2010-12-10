@@ -375,8 +375,11 @@ implements TidyInterface, HTMLAttributeNames
 	@Override
 	public void recycle()
 	{
-		this.tdNodeAnchorContextStringCache.clear();
-		this.tdNodeAnchorContextStringCache = null;
+		if (this.tdNodeAnchorContextStringCache != null)
+		{
+			this.tdNodeAnchorContextStringCache.clear();
+			this.tdNodeAnchorContextStringCache = null;
+		}
 		super.recycle();
 	}
 }
