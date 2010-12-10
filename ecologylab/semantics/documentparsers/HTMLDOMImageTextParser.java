@@ -1,6 +1,7 @@
 package ecologylab.semantics.documentparsers;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.TreeMap;
 
 import org.w3c.tidy.AttVal;
@@ -52,7 +53,7 @@ implements TidyInterface, HTMLAttributeNames
 	
 	boolean indexPage = false;
 	boolean contentPage = false;
-
+	HashMap<TdNode, String> tdNodeAnchorContextStringCache;
 //	@Override
 //	public void parse() 
 //	{   	
@@ -223,6 +224,8 @@ implements TidyInterface, HTMLAttributeNames
 		return anchorNodeContexts;
 	}
 	
+
+	
 	/**
 	 * Given the a element from the HTML, get its anchor text (text between open and close a tags),
 	 * and its anchor context (surrounding text). If either of these is not null, then return an
@@ -243,22 +246,33 @@ implements TidyInterface, HTMLAttributeNames
 		ParsedURL href 									= aElement.getHref();
 		if (href != null)
 		{
+			//Cache TdNode-AnchorContext getTextInSubTree.
 			TdNode parent 							  = anchorNodeNode.parent();
 			//FIXME -- this routine drops all sorts of significant stuff because it does not concatenate across tags.
-			StringBuilder anchorContext 	= getTextInSubTree(parent, false);
+			StringBuilder anchorContext = null;
 			
-			//TODO: provide ability to specify alternate anchorContext
-			StringBuilder anchorText 			= getTextInSubTree(anchorNodeNode, true);
-			if ((anchorContext != null) || (anchorText != null))
+			if(tdNodeAnchorContextStringCache == null)
+				tdNodeAnchorContextStringCache = new HashMap<TdNode, String>();
+
+			String anchorContextString	= tdNodeAnchorContextStringCache.get(parent);
+			if(anchorContextString == null)
 			{
-				String anchorContextString	= null;
+				anchorContext = getTextInSubTree(parent, false);				
 				if (anchorContext != null)
 				{
 					XMLTools.unescapeXML(anchorContext);
 					StringTools.toLowerCase(anchorContext);
 					anchorContextString				= StringTools.toString(anchorContext);
 					StringBuilderUtils.release(anchorContext);
+					tdNodeAnchorContextStringCache.put(parent, anchorContextString);
 				}
+			}
+
+			//TODO: provide ability to specify alternate anchorContext
+			StringBuilder anchorText 			= getTextInSubTree(anchorNodeNode, true);
+			if ((anchorContext != null) || (anchorText != null))
+			{
+
 				String anchorTextString			= null;
 				if (anchorText != null)
 				{
@@ -360,4 +374,11 @@ implements TidyInterface, HTMLAttributeNames
 		super.newImgTxt(imgNode, anchorHref);
 	}
 
+	@Override
+	public void recycle()
+	{
+		this.tdNodeAnchorContextStringCache.clear();
+		this.tdNodeAnchorContextStringCache = null;
+		super.recycle();
+	}
 }
