@@ -49,9 +49,6 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField
 	@simpl_nowrap 
 	private ArrayList<DefVar> defVars;
 
-	@simpl_scalar
-	private boolean reloadPageFirstTime;
-
 	public MetaMetadataCompositeField()
 	{
 		// TODO Auto-generated constructor stub
@@ -200,17 +197,6 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField
 		}
 	}
 
-	/**
-	 * To catch cases where the page needs to be reloaded to obtain the proper pages
-	 * Use case for which it was implemented - IMDB.com, where the cookie decides which
-	 * version of the page is received. This might go away when IMDB decides to serve 
-	 * pages consistently	
-	 * @return
-	 */
-	public boolean isReloadPageFirstTime()
-	{
-		return reloadPageFirstTime;
-	}
 	/**
 	 * @return the defVars
 	 */

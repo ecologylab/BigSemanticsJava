@@ -317,13 +317,6 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 		PURLConnection purlConnection = purl.connect(documentParserConnectHelper, userAgentString);
 		
 		BasicSite site = container.site();
-		if(metaMetadata != null && metaMetadata.isReloadPageFirstTime() &&  !site.hasBeenReloaded())
-		{
-			System.out.println("Re-downloading a page, because MMD says we have to : " + purl);
-			purlConnection = purl.connect(documentParserConnectHelper, userAgentString);
-			if(purlConnection != null)
-				site.setHasBeenReloaded(true);
-		}
 
 		// set meta-metadata in case a correct one was found after a redirect
 		if (documentParserConnectHelper.hadRedirect() && (metaMetadata == null && container != null && container.metadata() != null))
