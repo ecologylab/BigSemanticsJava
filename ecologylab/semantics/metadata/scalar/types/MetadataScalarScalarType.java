@@ -179,4 +179,14 @@ public abstract class MetadataScalarScalarType<M, T> extends ReferenceType<M>
 	{
 		return valueScalarType.isDefaultValue(value);
 	}
+	
+	/**
+	 * True if the user should be able to express interest in fields of this type.
+	 * 
+	 * @return true for Strings
+	 */
+	public boolean affordsInterestExpression()
+	{
+		return true;
+	}
 }

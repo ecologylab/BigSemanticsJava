@@ -52,4 +52,9 @@ public class MetadataParsedURLScalarType extends
 		return operativeScalarType().marshall(instance.getValue(), serializationContext);
 	}
 
+	@Override
+	public boolean affordsInterestExpression()
+	{
+		return false;
+	}
 }
