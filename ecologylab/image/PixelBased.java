@@ -594,6 +594,11 @@ implements Downloadable
 		return Integer.toHexString(h) + " ";
 	}
 
+	public void recycleUnconditionally()
+	{
+		this.recycle();
+	}
+	
 	/**
 	 * Encourage resource relamation -- flush <code>Image</code> and 
 	 * release <code>Rendering</code> buffers..
@@ -858,11 +863,11 @@ implements Downloadable
 	 * 
 	 * @return	true if there is a Site object, and there have been too many timeouts on stuff downloaded from that site.
 	 */
-	public boolean cancel()
+	public boolean shouldCancel()
 	{
 		boolean result = (basicSite != null) && basicSite.tooManyTimeouts();
 		if (result)
-			warning("cancelling download because too many timeouts");
+			warning("Consider cancelling this download because too many timeouts");
 		return result;
 	}
 	
