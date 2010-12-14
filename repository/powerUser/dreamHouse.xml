@@ -24,7 +24,7 @@
 </meta_metadata>
 
 <meta_metadata name="overstock.com_product" type="product" parser="xpath">
-	<selector url_stripped="http://www.overstock.com/Home-Garden/Hunter-Lugano-56-inch-Brushed-Nickel-Ceiling-Fan/2458203/product.html"/>
+	<selector url_regex="http://www.overstock.com/[^/]+/[^/]+/[0-9]+/product.html" domain="overstock.com" />
 	
 	<!--
 	
