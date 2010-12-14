@@ -315,7 +315,7 @@ public class MyContainer extends Container
 	}
 
 	@Override
-	public boolean cancel()
+	public boolean shouldCancel()
 	{
 		// TODO Auto-generated method stub
 		return false;
@@ -404,4 +404,8 @@ public class MyContainer extends Container
 		return null;
 	}
 
+	public void recycleUnconditionally()
+	{
+		
+	}
 }
