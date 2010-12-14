@@ -284,7 +284,7 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 			MetaMetadataField mmdField,
 			Metadata metadata, XPath xpath, Scope<Object> param, Node contextNode)
 	{
-//		System.out.println("HEYHEY!\n" + ((org.w3c.tidy.DOMDocumentImpl) contextNode).adaptee);
+//System.out.println("HEYHEY!\n" + ((org.w3c.tidy.DOMDocumentImpl) contextNode).adaptee);
 
 		return recursiveExtraction(translationScope, mmdField, metadata, xpath, param, contextNode,
 				null);
@@ -742,15 +742,14 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 			// TODO right now we r using regular expressions just to replace the
 			// matching string we might use them for more better uses.
 			// get the replacement thing.
-			String replacementString = field.getRegexReplacement();
-			if (replacementString != null)
-			{
-				debug(String.format("regex replacement: regex=%s, replace=%s", regularExpression,
+			String replacementString	= field.getRegexReplacement();
+			if (replacementString == null)
+				replacementString				= "";
+			debug(String.format("regex replacement: regex=%s, replace=%s", regularExpression,
 						replacementString));
 
 				// Consecutively check for further matches. Replacing all with the replacementString
 				evaluation = matcher.replaceAll(replacementString);
-			}
 		}
 
 		// // Now we apply the string prefix
