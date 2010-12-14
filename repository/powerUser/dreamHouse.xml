@@ -23,6 +23,20 @@
 	
 </meta_metadata>
 
+<meta_metadata name="overstock.com_product" type="product" parser="xpath">
+	<selector url_stripped="http://www.overstock.com/Home-Garden/Hunter-Lugano-56-inch-Brushed-Nickel-Ceiling-Fan/2458203/product.html"/>
+	
+	<!--
+	
+	<scalar name="description" xpath="//div[@id='prodMain_descShort']//li[1]/text()"/>
+	-->
+	
+	<scalar name="description" xpath="//li[3]/text()"/>
+
+	<scalar name="title" xpath="//h1[@class='productName']/text()"/>
+	<scalar name="price" xpath="//span[@class='Ovalue']/text()"/>
+</meta_metadata>
+
 
 
 </meta_metadata_repository>
