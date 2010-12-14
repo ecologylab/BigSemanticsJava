@@ -127,6 +127,10 @@
 			<scalar name="gist" xpath="./child::text()" />
 			<scalar name="location" xpath="./@href" />
 		</collection>
+		<collection name="titles_as_actress" xpath="//div[@id='filmo-head-Actress']/following-sibling::div[1]//b/a" child_type="imdb_title" child_entity="true">
+			<scalar name="gist" xpath="./child::text()" />
+			<scalar name="location" xpath="./@href" />
+		</collection>
 		<collection name="titles_as_director" xpath="//div[@id='filmo-head-Director']/following-sibling::div[1]//b/a" child_type="imdb_title" child_entity="true">
 			<scalar name="gist" xpath="./child::text()" />
 			<scalar name="location" xpath="./@href" />
@@ -152,11 +156,29 @@
 <!--			<scalar name="location" xpath="./@href" />-->
 <!--		</collection>-->
 		<semantic_actions>
-			<get_field name="titles_as_actor" />
 			<get_field name="person_img" />
+			<get_field name="titles_as_actor" />
 			<if>
 				<not_null value="titles_as_actor" />
 				<for_each collection="titles_as_actor" as="tit" current_index="index" size="num_titles">
+					<eval_rank_wt name="rankWt">
+						<arg value="index" name="index" />
+						<arg value="num_titles" name="size" />
+					</eval_rank_wt>
+					<get_field object="tit" name="location" />
+					<get_field object="tit" name="gist" />
+					<parse_document>
+						<arg value="true" name="citation_sig" />
+						<arg value="gist" name="anchor_text" />
+						<arg value="rankWt" name="sig_value" />
+						<arg value="tit" name="entity" />
+					</parse_document>
+				</for_each>
+			</if>
+			<get_field name="titles_as_actress" />
+			<if>
+				<not_null value="titles_as_actress" />
+				<for_each collection="titles_as_actress" as="tit" current_index="index" size="num_titles">
 					<eval_rank_wt name="rankWt">
 						<arg value="index" name="index" />
 						<arg value="num_titles" name="size" />

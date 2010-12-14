@@ -25,19 +25,16 @@ import ecologylab.serialization.XMLTools;
 public class MetaMetadataCompilerUtils
 {
 
-	public static final String	DEFAULT_GENERATED_SEMANTICS_LOCATION	= ".."
-																																				+ Files.sep
-																																				+ "ecologylabGeneratedSemantics";
+	public static final String	DEFAULT_GENERATED_SEMANTICS_LOCATION	= ".." + Files.sep + "ecologylabGeneratedSemantics";
 
 	public static final String	PACKAGE_NAME													= "package ecologylab.semantics.generated.library;\n";
 
 	public static final String	START_JAVA_DOC												= "\n/**\n";
 
-	public static final String	END_JAVA_DOC													= "\n**/ \n\n";
+	public static final String	END_JAVA_DOC													= "\n*/\n";
 
-	public static final String	COMMENT																= START_JAVA_DOC
-																																				+ "This is a generated code. DO NOT edit or modify it.\n @author MetadataCompiler \n"
-																																				+ END_JAVA_DOC;
+	public static final String	COMMENT																= "\n\nThis is a generated code. DO NOT edit or modify it.\n@author MetadataCompiler";
+	
 	public static final HashSet<String> importTargets = new HashSet<String>(Arrays.asList
 	(
 		"java.util.*",
@@ -158,6 +155,7 @@ public class MetaMetadataCompilerUtils
 	 */
 	public static void appendToTranslationScope(String append)
 	{
+		MetaMetadataCompilerUtils.printWriter.print("\t\t");
 		MetaMetadataCompilerUtils.printWriter.println(append);
 	}
 
@@ -195,20 +193,19 @@ public class MetaMetadataCompilerUtils
 		printWriter.println("package " + packageName + ";");
 
 		// write java doc comment
-		printWriter.println(COMMENT);
+		writeJavaDocComment(COMMENT, printWriter);
 
 		// Write the import statements
 //		printWriter.println(MetadataCompiler.getImportStatement());
 		MetaMetadataCompiler.printImports(printWriter);
 
 		// Write java-doc comments
-		writeJavaDocComment("\nThis is the tranlation scope class for generated files\n.",
+		writeJavaDocComment("\nThis is the tranlation scope class for generated files.\n",
 				printWriter);
 
 		// begin writing the class
-		printWriter
-				.print("public class GeneratedMetadataTranslationScope\n{");
-		printWriter.print("protected static final Class TRANSLATIONS[]=\n\t{");
-
+		printWriter.print("public class GeneratedMetadataTranslationScope\n{\n");
+		printWriter.print("\tprotected static final Class TRANSLATIONS[] =\n\t{\n");
 	}
+	
 }

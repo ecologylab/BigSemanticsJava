@@ -425,8 +425,13 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 				metadata.recycle();
 		}
 		super.recycle();
-		termVector.recycle();
-		termVector = null;
+		if (termVector != null)
+		{
+			// termVector can be null for those metadata created on the fly, e.g. ImageElement created
+			// from semantic action without metadata information (with only location & caption).
+			termVector.recycle();
+			termVector = null;
+		}
 	}
 	
 	public boolean isRecycled()

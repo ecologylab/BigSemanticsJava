@@ -265,9 +265,17 @@
           <not_null value="image_search_results" />
           <get_field name="location" object="result" />
           <get_field name="caption" object="result" />
+          <get_field name="content_type" object="result" />
+          <get_field name="referrer_url" object="result" />
+          <get_field name="width" object="result" />
+          <get_field name="height" object="result" />
           <create_and_visualize_img_surrogate>
             <arg value="location" name="image_purl" />
             <arg value="caption" name="caption" />
+            <arg value="referrer_url" name="href" />
+            <arg value="width" name="width" />
+            <arg value="height" name="height" />
+            <arg value="result" name="metadata" />
           </create_and_visualize_img_surrogate>
         </for_each>
       </if>

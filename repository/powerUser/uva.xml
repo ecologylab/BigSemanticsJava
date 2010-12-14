@@ -2,7 +2,9 @@
 
 <meta_metadata name="keyword_set" extends="metadata" parser="direct">
 	<scalar name="type" scalar_type="String"/>
+  <!-- currently collection of scalar types are not supported. use a nested scalar field instead.
 	<collection name="keywords" child_type="String" />
+  -->
 </meta_metadata>
 
 <meta_metadata name="document_set" extends="metadata" parser="direct">

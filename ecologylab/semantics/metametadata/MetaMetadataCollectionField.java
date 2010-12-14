@@ -1,11 +1,8 @@
 package ecologylab.semantics.metametadata;
 
-import java.io.IOException;
-
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.DocumentParserTagNames;
-import ecologylab.semantics.tools.MetaMetadataCompilerUtils;
 import ecologylab.serialization.TranslationScope;
 import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.simpl_inherit;
@@ -35,6 +32,11 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 	@simpl_scalar
 	protected boolean	noWrap;
 
+	/**
+	 * for caching getTypeNameInJava().
+	 */
+	private String typeNameInJava = null;
+
 	public MetaMetadataCollectionField()
 	{
 		// TODO Auto-generated constructor stub
@@ -59,31 +61,76 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 		this.kids = mmf.kids;
 	}
 
-	public String determineCollectionChildType()
-	{
-		return (!childEntity) ? childType : DocumentParserTagNames.ENTITY;
-	}
-	
-	public String collectionChildType()
-	{
-		return childType;
-	}
-
 	public String getChildTag()
 	{
 		return (childTag != null) ? childTag : childType;
+	}
+
+	public String getChildType()
+	{
+		return childType;
 	}
 
 	public boolean isNoWrap()
 	{
 		return noWrap;
 	}
-	
+
 	public boolean isChildEntity()
 	{
 		return childEntity;
 	}
 
+	@Override
+	protected String getAnnotationsInJava()
+	{
+		StringBuilder annotations = StringBuilderUtils.acquire();
+		
+		// @simpl_collection
+		String childTag = getChildTag();
+		if (childTag == null)
+		{
+			// TODO check for inherited child_tag / child_type !!!
+			warning("neither child_tag nor child_type specified in meta_metadata for collection field " + this.name);
+		}
+		annotations.append("@simpl_collection(\"" + childTag + "\")");
+		
+		// @simpl_nowrap or @xml_tag
+		if (isNoWrap())
+		{
+			annotations.append(" @simpl_nowrap");
+		}
+		else
+		{
+			annotations.append(" @xml_tag(\"" + resolveTag() + "\")");
+		}
+	
+		// @mm_name
+		annotations.append(" @mm_name(\"" + getName() + "\")");
+		
+		return annotations.toString();
+	}
+
+	@Override
+	protected String getTypeNameInJava()
+	{
+		String rst = typeNameInJava;
+		if (rst == null)
+		{
+			String typeName = getTypeName();
+			String className = XMLTools.classNameFromElementName(typeName);
+			String genericPart = isChildEntity() ? "Entity<" + className + ">" : className;
+			rst = "ArrayList<" + genericPart + ">";
+			typeNameInJava = rst;
+		}
+		return typeNameInJava;
+	}
+
+	public String determineCollectionChildType()
+	{
+		return (!childEntity) ? childType : DocumentParserTagNames.ENTITY;
+	}
+	
 	/**
 	 * @return the tag
 	 */
@@ -92,8 +139,8 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 		if (isNoWrap())
 		{
 			// is it sure that it will be a collection field?
-			String childTag = ((MetaMetadataCollectionField) this).childTag;
-			String childType = ((MetaMetadataCollectionField) this).childType;
+//			String childTag = ((MetaMetadataCollectionField) this).childTag;
+//			String childType = ((MetaMetadataCollectionField) this).childType;
 			return (childTag != null) ? childTag : childType;
 		}
 		else
@@ -110,87 +157,6 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 	}
 
 	@Override
-	protected void doAppending(Appendable appendable, int pass) throws IOException
-	{
-		appendCollection(appendable, pass);
-	}
-
-	/**
-	 * This method append a field of type collection to the Java Class. TODO Have to change it to use
-	 * HashMapArrayList instead of array list.
-	 * 
-	 * @param appendable
-	 *          The appendable to append to.
-	 * @throws IOException
-	 */
-	protected void appendCollection(Appendable appendable, int pass) throws IOException
-	{
-		// name of the element.
-		String elementName = this.name;
-
-		// if it belongs to a particular type we will generate a class for it so the type is set to
-		// collectionChildType.
-		if (this.childType != null)
-		{
-			elementName = this.childType;
-		}
-		// getting the class name
-		String className = XMLTools.classNameFromElementName(elementName);
-
-		// getting the field name.
-		String fieldName = XMLTools.fieldNameFromElementName(name);
-
-		// appending the declaration.
-		// String mapDecl = childMetaMetadata.get(key).getScalarType().fieldTypeName() + " , " +
-		// className;
-
-		// FIXME- New metadata collection types here!!
-		String variableTypeStart = " ArrayList<";
-		String variableTypeEnd = ">";
-		if (childEntity)
-		{
-			variableTypeStart = " ArrayList<Entity<";
-			variableTypeEnd = ">>";
-		}
-		
-		String childTag = getChildTag();
-		if (childTag == null)
-		{
-			warning("child_tag / child_type not specified in meta-metadata for collection field " + this.name);
-			return;
-		}
-
-		StringBuilder annotation = StringBuilderUtils.acquire();
-		annotation.append(" @simpl_collection(\"" + childTag + "\")");
-		if (noWrap)
-		{
-			annotation.append(" @simpl_nowrap");
-		}
-		else
-		{
-			annotation.append(" @xml_tag(\"" + resolveTag() + "\")");
-		}
-
-		annotation.append(" @mm_name(\"" + name + "\")");
-		
-		switch (pass)
-		{
-		case MetaMetadataCompilerUtils.GENERATE_FIELDS_PASS:
-			appendMetalanguageDecl(appendable, annotation.toString(), "private" + variableTypeStart,
-					className, variableTypeEnd, fieldName);
-			break;
-		case MetaMetadataCompilerUtils.GENERATE_METHODS_PASS:
-			appendLazyEvaluationMethod(appendable, fieldName, variableTypeStart + className
-					+ variableTypeEnd);
-			appendSetter(appendable, fieldName, variableTypeStart + className
-					+ variableTypeEnd);
-			appendGetter(appendable, fieldName, variableTypeStart + className
-					+ variableTypeEnd);
-			break;
-		}
-	}
-
-	@Override
 	protected String getMetaMetadataTagToInheritFrom()
 	{
 		if (childEntity)
@@ -199,32 +165,6 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 			return childType;
 		else
 			return null;
-	}
-	
-	/**
-	 * Does this declaration declare a new field, rather than referring to a previously declared field?
-	 * 
-	 * @return	true if there is a scalar_type attribute declared.
-	 */
-	protected boolean isNewDeclaration()
-	{
-		return childType != null && isNewClass();
-	}
-	
-	
-	@Override
-	/**
-	 * Each object in a collection of metadata require a specific MMdata composite object to be associated with them.
-	 * This is unavailable in the MMD XML, and must be generated when the XML is read in.
-	 */
-	public void deserializationPostHook()
-	{
-		MetaMetadataCompositeField composite = new MetaMetadataCompositeField(determineCollectionChildType(), kids);
-		if (kids != null)
-		{
-			kids.clear();
-			kids.put(composite.getName(), composite);
-		}
 	}
 	
 	/**
@@ -259,20 +199,6 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 		}
 	}
 	
-	/*@Override
-	public void setChildMetaMetadata(HashMapArrayList<String, MetaMetadataField> childMetaMetadata)
-	{
-		MetaMetadataCompositeField composite = getChildComposite();
-		if (composite == null)
-		{
-			kids = new HashMapArrayList<String, MetaMetadataField>();
-			composite = new MetaMetadataCompositeField(determineCollectionChildType(), null);
-			kids.put(composite.getName(), composite);
-		}
-		else
-			composite.getChildMetaMetadata().putAll(childMetaMetadata);
-	}*/
-	
 	@Override
 	public HashMapArrayList<String, MetaMetadataField> initializeChildMetaMetadata()
 	{
@@ -299,23 +225,17 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 	}
 	
 	@Override
-	protected String getTypeName()
+	/**
+	 * Each object in a collection of metadata require a specific MMdata composite object to be associated with them.
+	 * This is unavailable in the MMD XML, and must be generated when the XML is read in.
+	 */
+	public void deserializationPostHook()
 	{
-		if (childType != null)
-			return childType;
-			
-		MetaMetadataField inherited = getInheritedField();
-		if (inherited == null)
+		MetaMetadataCompositeField composite = new MetaMetadataCompositeField(determineCollectionChildType(), kids);
+		if (kids != null)
 		{
-			// definitive
-			return name;
-		}
-		else
-		{
-			// decorative
-			if (!(inherited instanceof MetaMetadataCollectionField))
-				return null; // type mismatch
-			return inherited.getTypeName();
+			kids.clear();
+			kids.put(composite.getName(), composite);
 		}
 	}
 

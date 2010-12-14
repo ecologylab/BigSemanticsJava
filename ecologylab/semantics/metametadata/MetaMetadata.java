@@ -3,32 +3,17 @@
  */
 package ecologylab.semantics.metametadata;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import ecologylab.appframework.PropertiesAndDirectories;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.generic.ReflectionTools;
-import ecologylab.net.ParsedURL;
-import ecologylab.semantics.actions.SemanticActionTranslationScope;
-import ecologylab.semantics.actions.SemanticAction;
 import ecologylab.semantics.metadata.Metadata;
-import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
-import ecologylab.semantics.tools.MetaMetadataCompiler;
-import ecologylab.semantics.tools.MetaMetadataCompilerUtils;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.TranslationScope;
-import ecologylab.serialization.XMLTools;
-import ecologylab.serialization.ElementState.simpl_composite;
-import ecologylab.serialization.ElementState.xml_tag;
 import ecologylab.serialization.types.element.Mappable;
-import ecologylab.tests.FieldTagged;
 
 /**
  * @author damaraju
@@ -114,119 +99,6 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 			}
 		}
 		return result;
-	}
-
-	/**
-	 * This method translates the MetaMetaDeclaration into a metadata class.
-	 * 
-	 * @param packageName
-	 *          The package in which the generated metadata class is to be placed.
-	 * @param test
-	 *          TODO
-	 * @throws IOException
-	 */
-	public void compileToMetadataClass(String packageName, MetaMetadataRepository mmdRepository)
-			throws IOException
-	{
-		if (!checkForErrors())
-			return;
-		
-		// get the generation path from the package name.
-		if (this.packageAttribute != null)
-		{
-			packageName = this.packageAttribute;
-		}
-		String generationPath = MetaMetadataCompilerUtils.getGenerationPath(packageName);
-
-		// create a file writer to write the JAVA files.
-		File directoryPath = PropertiesAndDirectories.createDirsAsNeeded(new File(generationPath));
-		File file = new File(directoryPath, XMLTools.classNameFromElementName(getName()) + ".java");
-
-		// write to console
-		System.out.print(this.file + "\n\t\t -> " + file);
-
-		FileWriter fileWriter = new FileWriter(file);
-		PrintWriter p = new PrintWriter(fileWriter);
-
-		// update the translation class.
-
-		// Write the package
-		p.println(MetaMetadataCompilerUtils.PACKAGE + " " + packageName + ";");
-
-		// write java doc comment
-		p.println(MetaMetadataCompilerUtils.COMMENT);
-
-		// Write the import statements
-		// p.println(MetadataCompiler.getImportStatement());
-		MetaMetadataCompiler.printImports(p);
-		// Write java-doc comments
-		MetaMetadataCompilerUtils.writeJavaDocComment(getComment(), fileWriter);
-
-		// write @simpl_inherit
-		p.println("@simpl_inherit");
-
-		// p.println("@xml_tag(\""+getName()+"\")");
-
-		p.println(getTagDecl());
-
-		// Write class declaration
-		String className = XMLTools.classNameFromElementName(getName());
-		String extendsName = extendsAttribute == null ? "Metadata" : XMLTools.classNameFromElementName(extendsAttribute);
-		// System.out.println("#######################################"+getName());
-		p.println("public class  " + className + "\nextends  " + extendsName + "\n{\n");
-
-		// loop to write the class definition
-		HashMapArrayList<String, MetaMetadataField> metaMetadataFieldList = getChildMetaMetadata();
-		if (metaMetadataFieldList != null)
-		{
-			for (MetaMetadataField metaMetadataField : metaMetadataFieldList)
-			{
-				metaMetadataField.setExtendsField(extendsAttribute);
-				metaMetadataField.setRepository(mmdRepository);
-				try
-				{
-					// translate the field into for metadata class.
-					metaMetadataField.compileToMetadataClass(packageName, p,
-							MetaMetadataCompilerUtils.GENERATE_FIELDS_PASS, false);
-				}
-				catch (SIMPLTranslationException e)
-				{
-					e.printStackTrace();
-				}
-				catch (IOException e)
-				{
-					e.printStackTrace();
-				}
-			}
-
-			// write the constructors
-			MetaMetadataCompilerUtils.appendBlankConstructor(p, className);
-			MetaMetadataCompilerUtils.appendConstructor(p, className);
-			for (int i = 0; i < metaMetadataFieldList.size(); i++)
-			{
-				// get the metadata field.
-				MetaMetadataField f = (MetaMetadataField) metaMetadataFieldList.get(i);
-				f.setExtendsField(extendsAttribute);
-				f.setRepository(mmdRepository);
-				try
-				{
-					// translate the field into for metadata class.
-					f.compileToMetadataClass(packageName, p, MetaMetadataCompilerUtils.GENERATE_METHODS_PASS,
-							true);
-				}
-				catch (SIMPLTranslationException e)
-				{
-					e.printStackTrace();
-				}
-				catch (IOException e)
-				{
-					e.printStackTrace();
-				}
-			}
-		}
-		// end the class declaration
-		p.println("\n}\n");
-		p.flush();
 	}
 
 	@Override
@@ -370,13 +242,13 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 
 		test.serialize(System.out);
 
-		File outputRoot = PropertiesAndDirectories.userDir();
-
-		for (MetaMetadata metaMetadata : test.values())
-		{
-			// metaMetadata.translateToMetadataClass();
-			System.out.println('\n');
-		}
+//		File outputRoot = PropertiesAndDirectories.userDir();
+//
+//		for (MetaMetadata metaMetadata : test.values())
+//		{
+//			// metaMetadata.translateToMetadataClass();
+//			System.out.println('\n');
+//		}
 	}
 
 	public MetaMetadataSelector getSelector()
@@ -394,15 +266,17 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 	@Override
 	protected String getTypeName()
 	{
+		if (getType() != null)
+			return getType();
 		return getName();
 	}
 
 	/**
-	 * for definitive meta-metadata, return the super meta-metadata type name (extends= or "metadat");
-	 * for decorative meta-metadata, return the decorated meta-metadata type name (type=).
+	 * @return for meta-metadata defining a new mmd type, return the super meta-metadata type name
+	 *         (extends= or "metadata"); for meta-metadata decorating an existent mmd type, return the
+	 *         decorated meta-metadata type name (type=).
 	 */
-	@Override
-	protected String getSuperTypeName()
+	public String getSuperMmdTypeName()
 	{
 		// decorative
 		if (getType() != null)
@@ -415,11 +289,13 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 			return "metadata";
 	}
 
+	/**
+	 * this will always return null since meta-metadata doesn't inherit from any fields. 
+	 */
 	@Override
 	protected MetaMetadataField getInheritedField()
 	{
-		String inheritedMmdName = getSuperTypeName();
-		return getRepository().getByTagName(inheritedMmdName);
+		return null;
 	}
 	
 	@Override
@@ -428,8 +304,22 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 		MetaMetadata superMmd = (MetaMetadata) getInheritedField();
 		
 		return assertNotNull(getTypeName(), "meta-metadata type name must be specified.")
-				&& assertNotNull(getSuperTypeName(), "can't resolve parent meta-metadata.")
-				&& assertNotNull(superMmd, "meta-metadata '%s' not found.", getSuperTypeName());
+				&& assertNotNull(getSuperMmdTypeName(), "can't resolve parent meta-metadata.")
+				&& assertNotNull(superMmd, "meta-metadata '%s' not found.", getSuperMmdTypeName());
+	}
+
+	/**
+	 * meta_metadata can define their own package attribute. otherwise is the same as meta-metadata
+	 * field.
+	 */
+	@Override
+	public void compileToMetadataClass(String packageName) throws IOException
+	{
+		String packageAttr = getPackageAttribute();
+		if (packageAttr != null)
+			super.compileToMetadataClass(packageAttr);
+		else
+			super.compileToMetadataClass(packageName);
 	}
 
 }

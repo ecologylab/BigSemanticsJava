@@ -6,7 +6,6 @@ package ecologylab.semantics.tools;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -15,7 +14,6 @@ import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.metametadata.MetaMetadataTranslationScope;
 import ecologylab.serialization.SIMPLTranslationException;
-import ecologylab.serialization.TranslationScope;
 import ecologylab.serialization.XMLTools;
 
 /**
@@ -75,9 +73,6 @@ public class MetaMetadataCompiler extends ApplicationEnvironment
 
 	public void compile(MetaMetadataRepository metaMetadataRepository, String generatedSemanticsLocation)
 	{
-		// ElementState.setUseDOMForTranslateTo(true);
-		//metaMetadataRepository.translateToXML(System.out);
-		
 		// for each metadata first find the list of packages in which they have to
 		// be generated.
 		for (MetaMetadata metaMetadata : metaMetadataRepository.values())
@@ -90,10 +85,13 @@ public class MetaMetadataCompiler extends ApplicationEnvironment
 		// Writer for the translation scope for generated class.
 		String generatedSemanticsPath = MetaMetadataCompilerUtils.getGenerationPath(
 				metaMetadataRepository.getPackageName(), generatedSemanticsLocation);
-		try {
+		try
+		{
 			MetaMetadataCompilerUtils.createTranslationScopeClass(generatedSemanticsPath,
 					metaMetadataRepository.packageName());
-		} catch (IOException e) {
+		}
+		catch (IOException e)
+		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -101,34 +99,25 @@ public class MetaMetadataCompiler extends ApplicationEnvironment
 		// for each meta-metadata in the repository
 		for (MetaMetadata metaMetadata : metaMetadataRepository.values())
 		{
-//			if (metaMetadata.getName() == null)
-//				continue;
-			
 			// if a metadataclass has to be generated
 			if (metaMetadata.isGenerateClass())
 			{
 				// translate it into a meta data class.
-				try {
-					metaMetadata.compileToMetadataClass(metaMetadataRepository.getPackageName(),
-							metaMetadataRepository);
-				} catch (IOException e) {
+				try
+				{
+					metaMetadata.setRepository(metaMetadataRepository);
+					metaMetadata.compileToMetadataClass(metaMetadataRepository.getPackageName());
+				}
+				catch (IOException e)
+				{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				String packageName	= metaMetadata.getPackageAttribute();
-				if (packageName == null)
-					packageName				= "";
-				else
-					packageName				+= ".";
-				MetaMetadataCompilerUtils.appendToTranslationScope(packageName + XMLTools.classNameFromElementName(metaMetadata.getName())
-						+ ".class,\n");
-				System.out.println('\n');
 			}
 		}
 
 		// end the translationScope class
 		MetaMetadataCompilerUtils.endTranslationScopeClass();
-		
 	}
 
 	public static void main(String[] args)

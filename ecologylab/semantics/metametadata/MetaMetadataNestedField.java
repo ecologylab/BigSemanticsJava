@@ -1,10 +1,6 @@
 package ecologylab.semantics.metametadata;
 
-import java.io.IOException;
-
 import ecologylab.generic.HashMapArrayList;
-import ecologylab.generic.StringTools;
-import ecologylab.semantics.tools.MetaMetadataCompilerUtils;
 import ecologylab.serialization.simpl_inherit;
 
 @simpl_inherit
@@ -89,60 +85,12 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 	@Override
 	public boolean isNewClass()
 	{
-		// if no internal structure, no need to generate a class
-		if (kids == null)
-			return false;
-
 		// if indicated by the author explicitly, do not generate a class
 		if (this instanceof MetaMetadata && !((MetaMetadata) this).isGenerateClass())
 			return false;
-
-		// otherwise, determine if we need to generate a class
-		/*
-		 * look through its children recursively. if any of them is a data definition, which implies
-		 * that this composite field is supposed to define or extend a type inline, we have to generate
-		 * a class for it
-		 * 
-		 * must start from the 1st level children, not the field itself
-		 */
-		for (MetaMetadataField child : getChildMetaMetadata())
-			if (child.isNewDeclaration())
-				return true;
-
-		return false;
-	}
-
-	/**
-	 * public void setAuthors(HashMapArrayList<String, Author> authors) { this.authorNames = authors;
-	 * }
-	 * 
-	 * @param appendable
-	 * @param fieldName
-	 * @param fieldType
-	 */
-	protected void appendSetter(Appendable appendable, String fieldName, String fieldType)
-			throws IOException
-	{
-		String comment = "Set the value of field " + fieldName;
-		// write Java doc
-		MetaMetadataCompilerUtils.writeJavaDocComment(comment, appendable);
-
-		// write first line
-		appendable.append("public void set" + StringTools.capitalize(fieldName) + "( " + fieldType
-				+ " " + fieldName + " )\n{\n");
-		appendable.append("this." + fieldName + " = " + fieldName + " ;\n}\n");
-	}
-
-	protected void appendGetter(Appendable appendable, String fieldName, String fieldType)
-			throws IOException
-	{
-		String comment = "Get the value of field " + fieldName;
-		// write Java doc
-		MetaMetadataCompilerUtils.writeJavaDocComment(comment, appendable);
-
-		// write first line
-		appendable.append("public " + fieldType + " get" + StringTools.capitalize(fieldName) + "(){\n");
-		appendable.append("return this." + fieldName + ";\n}\n");
+		
+		// otherwise
+		return getTypeDefinition() == this;
 	}
 
 	/**
@@ -151,14 +99,6 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 	 * @return
 	 */
 	public abstract MetaMetadataCompositeField metaMetadataCompositeField();
-
-	@Override
-	protected String getSuperTypeName()
-	{
-		if (getExtendsAttribute() != null)
-			return getExtendsAttribute();
-		return "metadata";
-	}
 
 	@Override
 	protected boolean checkForErrors()
@@ -177,5 +117,141 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 			return assertEquals(getTypeName(), inheritedTypeName, "field type not matches inherited one: %s", getTypeName());
 		}
 	}
+	
+	/**
+	 * for caching getTypeName().
+	 */
+	private String typeName;
+	
+	@Override
+	protected String getTypeName()
+	{
+		String result = typeName;
+		if (result == null)
+		{
+			if (this instanceof MetaMetadataCompositeField)
+			{
+				MetaMetadataCompositeField mmcf = (MetaMetadataCompositeField) this;
+				if (mmcf.type != null)
+					result = mmcf.type;
+			}
+			else if (this instanceof MetaMetadataCollectionField)
+			{
+				MetaMetadataCollectionField mmcf = (MetaMetadataCollectionField) this;
+				if (mmcf.childType != null)
+					result = mmcf.childType;
+			}
+			
+			if (result == null)
+			{
+				MetaMetadataField inherited = getInheritedField();
+				if (inherited != null)
+				{
+					// use inherited field's type
+					result = inherited.getTypeName();
+				}
+			}
+				
+			if (result == null)
+			{
+				// defining new type inline without using type= / child_type=
+				result = getName();
+			}
+			
+			typeName = result;
+		}
+		return typeName;
+	}
 
+	/**
+	 * for caching getTypeDefinition().
+	 */
+	private MetaMetadataNestedField typeDefinition;
+	
+	@Override
+	protected MetaMetadataNestedField getTypeDefinition()
+	{
+		MetaMetadataNestedField result = typeDefinition;
+		if (result == null)
+		{
+			// get the type name
+			String typeName = getTypeName();
+
+			// search for mmd type in repository
+			MetaMetadata globalMmd = getRepository().getByTagName(typeName);
+			if (globalMmd != null)
+				result = globalMmd;
+
+			if (result == null)
+			{
+				// check if inherited field is defining a new type inline
+				MetaMetadataField inherited = getInheritedField();
+				if (inherited != null)
+				{
+					MetaMetadataNestedField inheritedDef = inherited.getTypeDefinition();
+					if (inheritedDef != null)
+						result = inheritedDef;
+				}
+			}
+
+			if (result == null)
+			{
+				if (this instanceof MetaMetadataCollectionField)
+				{
+					// check if this is a collection field defining a new type inline
+					MetaMetadataCollectionField mmcf = (MetaMetadataCollectionField) this;
+					String childType = mmcf.getChildType();
+					if (childType != null && childType.equals(typeName))
+						result = this;
+				}
+				else if (this instanceof MetaMetadataCompositeField)
+				{
+					// check if this is a composite field defining a new type inline
+					MetaMetadataCompositeField mmcf = (MetaMetadataCompositeField) this;
+					String type = mmcf.getType();
+					String name = mmcf.getName();
+					if (type != null && type.equals(typeName) || name != null && name.equals(typeName))
+						result = this;
+				}
+			}
+			
+			typeDefinition = result;
+		}
+
+		// TODO error if null: wrong type specifier!
+		return typeDefinition;
+	}
+	
+	/**
+	 * this method searches for a particular child field in this meta-metadata. if not found, it also
+	 * searches super mmd class along the inheritance tree.
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public MetaMetadataField searchForChild(String name)
+	{
+		MetaMetadataField child = lookupChild(name);
+		if (child == null)
+		{
+			if (this instanceof MetaMetadata)
+			{
+				if (this.getName().equals("metadata"))
+					return null;
+				
+				MetaMetadata mmd = (MetaMetadata) this;
+				String superMmdName = mmd.getSuperMmdTypeName();
+				MetaMetadata superMmd = getRepository().getByTagName(superMmdName);
+				return superMmd.searchForChild(name);
+			}
+			else
+			{
+				MetaMetadata inheritedMmd = (MetaMetadata) getInheritedField();
+				if (inheritedMmd != null)
+					return inheritedMmd.searchForChild(name);
+			}
+		}
+		return child;
+	}
+	
 }
