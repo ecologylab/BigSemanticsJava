@@ -16,15 +16,23 @@
 </meta_metadata>
 
 <meta_metadata name="home_depot_product" type="product" parser="xpath">
-	<selector url_regex="http://www.homedepot.com/[^/]+/[^/]+/[0-9]+/ProductDisplay?[.]*"/>
+	<selector url_regex="http://www.homedepot.com/.+?/ProductDisplay?.*" domain="homedepot.com" />
 	
 	<scalar name="title" xpath="//p[@class='product-name']/text()"/>
-	<scalar name="price" xpath="//p[@class='pip-price']/text()" />
 	<scalar name="description" xpath="//div[@id='tab-features']/p[1]/text()"/>
+	<scalar name="price" xpath="//p[@class='pip-price']/text()" />
 	<scalar name="model" xpath="//input[@name='modelNumber']/@value"/>
 	
 	<scalar name="image_url" xpath="//img[@id='pip-main-image']/@src"/>
 	
+  <semantic_actions>
+    <get_field name="image_url" />
+    <get_field name="title" />
+    <create_and_visualize_img_surrogate>
+      <arg name="image_purl" value="image_url" />
+      <arg name="caption" value="title" />
+    </create_and_visualize_img_surrogate>
+  </semantic_actions>
 </meta_metadata>
 
 <meta_metadata name="remodelista_product" type="product" parser="xpath">
@@ -70,7 +78,6 @@
     <create_and_visualize_img_surrogate>
       <arg name="image_purl" value="image_url" />
       <arg name="caption" value="title" />
-      <arg name="metadata" value="metadata" />
     </create_and_visualize_img_surrogate>
   </semantic_actions>
 	
