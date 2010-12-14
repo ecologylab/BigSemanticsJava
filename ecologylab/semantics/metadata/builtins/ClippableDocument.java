@@ -99,7 +99,7 @@ public class ClippableDocument extends Document
 		rebuildCompositeTermVector();
 	}
 
-	MetadataString caption()
+	public MetadataString caption()
 	{
 		MetadataString result = this.caption;
 		if (result == null)

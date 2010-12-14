@@ -39,6 +39,7 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 
 	abstract protected String getMetaMetadataTagToInheritFrom();
 
+	//FIXME -- make it work for type graphs!!!
 	/**
 	 * Bind field declarations through the extends and type keywords.
 	 */

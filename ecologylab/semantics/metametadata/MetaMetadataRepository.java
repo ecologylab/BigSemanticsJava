@@ -102,11 +102,11 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	/**
 	 * Repository for ClippableDocument and its subclasses.
 	 */
-	private HashMap<String, MetaMetadata>												clippableDocumentRepositoryByUrlStripped		= new HashMap<String, MetaMetadata>();
+	private HashMap<String, MetaMetadata>												imageRepositoryByUrlStripped		= new HashMap<String, MetaMetadata>();
 
 	private HashMap<String, ArrayList<RepositoryPatternEntry>>	documentRepositoryByPattern			= new HashMap<String, ArrayList<RepositoryPatternEntry>>();
 
-	private HashMap<String, ArrayList<RepositoryPatternEntry>>	clippableDocumentRepositoryByPattern				= new HashMap<String, ArrayList<RepositoryPatternEntry>>();
+	private HashMap<String, ArrayList<RepositoryPatternEntry>>	imageRepositoryByPattern				= new HashMap<String, ArrayList<RepositoryPatternEntry>>();
 
 	/**
 	 * We have only documents as direct binding will be used only in case of feeds and XML
@@ -561,7 +561,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		MetaMetadata result = null;
 		if (purl != null && !purl.isFile())
 		{
-			result = clippableDocumentRepositoryByUrlStripped.get(purl.noAnchorNoQueryPageString());
+			result = imageRepositoryByUrlStripped.get(purl.noAnchorNoQueryPageString());
 
 			if (result == null)
 			{
@@ -570,14 +570,14 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 				String key = purl.url().getProtocol() + "://"
 						+ urlPrefixCollection.getMatchingPhrase(protocolStrippedURL, '/');
 
-				result = clippableDocumentRepositoryByUrlStripped.get(key);
+				result = imageRepositoryByUrlStripped.get(key);
 
 				if (result == null)
 				{
 					String domain = purl.domain();
 					if (domain != null)
 					{
-						ArrayList<RepositoryPatternEntry> entries = clippableDocumentRepositoryByPattern.get(domain);
+						ArrayList<RepositoryPatternEntry> entries = imageRepositoryByPattern.get(domain);
 						if (entries != null)
 						{
 							for (RepositoryPatternEntry entry : entries)
@@ -650,10 +650,10 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 			HashMap<String, MetaMetadata> repositoryByUrlStripped;
 			HashMap<String, ArrayList<RepositoryPatternEntry>> repositoryByPattern;
 
-			if (ClippableDocument.class.isAssignableFrom(metadataClass))
+			if (Image.class.isAssignableFrom(metadataClass))
 			{
-				repositoryByUrlStripped = clippableDocumentRepositoryByUrlStripped;
-				repositoryByPattern = clippableDocumentRepositoryByPattern;
+				repositoryByUrlStripped = imageRepositoryByUrlStripped;
+				repositoryByPattern 		= imageRepositoryByPattern;
 			}
 			else if (Document.class.isAssignableFrom(metadataClass))
 			{

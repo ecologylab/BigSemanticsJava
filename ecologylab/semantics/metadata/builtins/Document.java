@@ -19,7 +19,7 @@ import ecologylab.serialization.simpl_inherit;
  **/
 
 @simpl_inherit
-public class Document extends Metadata
+public class Document extends ClippableMetadata
 {
 	@mm_name("location") 
 	@simpl_scalar MetadataParsedURL	location;

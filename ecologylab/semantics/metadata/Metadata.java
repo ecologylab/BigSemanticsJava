@@ -46,10 +46,10 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 	@simpl_scalar 
 	@xml_other_tags("meta_metadata_name")
 	@xml_tag("mm_name")
-	MetadataString 						metaMetadataName;
+	MetadataString 											metaMetadataName;
 	
-	private MetaMetadataCompositeField			metaMetadata;
-
+	private MetaMetadataCompositeField	metaMetadata;
+	
 	public static final String MIXIN_TRANSLATION_STRING = "mixin_translations";
 	static Class[] mixinClasses = {DebugMetadata.class};
 	static TranslationScope MIXIN_TRANSLATIONS = TranslationScope.get(MIXIN_TRANSLATION_STRING, mixinClasses);
@@ -373,24 +373,7 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 	public void setLocation(ParsedURL location)
 	{
 	}
-	
-	public String getContext()
-	{
-		return null;
-	}
 
-	/**
-	 * Sets the value of the field context
-	 **/
-
-	public void setContext(String context)
-	{
-	}
-
-	public void hwSetContext(String context)
-	{
-	}
-	
 	public ParsedURL getNavLocation()
 	{
 		return null;
@@ -627,7 +610,7 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 	 * 
 	 * @return
 	 */
-	public MetaMetadataRepository repository()
+	public static MetaMetadataRepository repository()
 	{
 		return repository;
 	}

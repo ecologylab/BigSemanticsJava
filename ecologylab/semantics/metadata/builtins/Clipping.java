@@ -30,11 +30,37 @@ public class Clipping extends Metadata
 	private MetadataString	context;
 
 	/**
+	 * Location of the clipping in the source document.
+	 */
+	@simpl_scalar
+	private MetadataString	xpath;
+
+	/**
+	 * The source document.
+	 */
+//	@simpl_composite
+//	private Document				source;
+//	
+//	/**
+//	 * A hyperlinked Document.
+//	 */
+//	@simpl_composite
+//	private Document				outlink;
+	
+
+	static int							numWithCaption;
+	/**
+	 * Total number of images we have created within this session
+	 */
+	static int							numConstructed;
+
+	
+	/**
 	 * 
 	 */
 	public Clipping()
 	{
-
+		numConstructed++;
 	}
 
 	/**
@@ -60,17 +86,15 @@ public class Clipping extends Metadata
 	 * Gets the value of the field context
 	 **/
 
-	@Override
 	public String getContext()
 	{
-		return context().getValue();
+		return context == null ? null : context.getValue();
 	}
 
 	/**
 	 * Sets the value of the field context
 	 **/
 
-	@Override
 	public void setContext(String context)
 	{
 		this.context().setValue(context);
@@ -80,14 +104,14 @@ public class Clipping extends Metadata
 	 * The heavy weight setter method for field context
 	 **/
 
-	@Override
 	public void hwSetContext(String context)
 	{
 		this.context().setValue(context);
 		rebuildCompositeTermVector();
 	}
 
-	MetadataString caption()
+	
+	public MetadataString caption()
 	{
 		MetadataString result = this.caption;
 		if (result == null)
@@ -100,14 +124,13 @@ public class Clipping extends Metadata
 
 	public String getCaption()
 	{
-		// return caption;
-		return caption().getValue();
+		return caption == null ? null : caption.getValue();
 	}
 
-	public void setCaption(String caption)
+	public void setCaption(String captionString)
 	{
-		if (caption != null)
-			this.caption().setValue(caption);
+		MetadataString caption = this.caption();
+		caption.setValue(captionString);
 	}
 	
 	public void hwSetCaption(String caption)
@@ -128,7 +151,7 @@ public class Clipping extends Metadata
 	{
 		if (!ImageFeatures.altIsBogus(newCandidateCaption))
 		{
-//			numWithCaption++;
+			numWithCaption++;
 			hwSetCaption(newCandidateCaption);
 		}
 	}
@@ -145,21 +168,32 @@ public class Clipping extends Metadata
 	}
 
 	/**
-	 * Derive further cFMetadata from an HTML <code>alt</code> attribute.
-	 * This is to be executed subsequent to initital construction, in case we
-	 * encounter additional references to this (in HTML).
-	 */
-	public void refineMetadata(Image newMetadata)
+	 * used for deriving statistics that track how many images
+	 * on the web have alt text.
+	 * @return
+	 */   
+	public static int hasCaptionPercent()
 	{
-		if (newMetadata != null)
-		{
-			setCaptionIfEmpty(newMetadata.getCaption());
-			if (isNullContext() && !newMetadata.isNullContext())
-			{
-				hwSetContext(newMetadata.getContext());
-			}
-		}
+		return (int) (100.0f * (float) numWithCaption / ((float) numConstructed));
 	}
+
+
+//	/**
+//	 * Derive further cFMetadata from an HTML <code>alt</code> attribute.
+//	 * This is to be executed subsequent to initital construction, in case we
+//	 * encounter additional references to this (in HTML).
+//	 */
+//	public void refineMetadata(Image newMetadata)
+//	{
+//		if (newMetadata != null)
+//		{
+//			setCaptionIfEmpty(newMetadata.getCaption());
+//			if (isNullContext() && !newMetadata.isNullContext())
+//			{
+//				hwSetContext(newMetadata.getContext());
+//			}
+//		}
+//	}
 	public boolean isNullCaption()
 	{
 		return caption == null || caption.getValue() == null;
@@ -169,16 +203,41 @@ public class Clipping extends Metadata
 	{
 		return context == null || context.getValue() == null;
 	}
+	
+	public boolean isNullXpath()
+	{
+		return xpath == null || xpath.getValue() == null;
+	}
+	
+	public MetadataString xpath()
+	{
+		MetadataString result = this.xpath;
+		if (result == null)
+		{
+			result = new MetadataString();
+			this.xpath = result;
+		}
+		return result;
+	}
 
-///**
-//* used for deriving statistics that track how many images
-//* on the web have alt text.
-//* @return
-//*/   
-//public static int hasCaptionPercent()
-//{
-//	return (int) (100.0f * (float) numWithCaption / ((float) numConstructed));
-//}
+	/**
+	 * Gets the value of the field context
+	 **/
+
+	public String getXpath()
+	{
+		return xpath == null ? null : xpath().getValue();
+	}
+
+	/**
+	 * Sets the value of the field context
+	 **/
+
+	public void setXpath(String context)
+	{
+		this.xpath().setValue(context);
+	}
+
 
 
 }

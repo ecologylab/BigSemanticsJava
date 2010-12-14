@@ -28,7 +28,7 @@ public class Surrogate extends Metadata
 	Document								source;
 	
 	@simpl_composite
-	Document								linksTo;
+	Document								outLink;
 	
 	
 	/**

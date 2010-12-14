@@ -15,7 +15,7 @@ import ecologylab.serialization.simpl_inherit;
  * Metadata hierarchy. It is hand-authored in order to provide specific functionalities
  **/
 @simpl_inherit
-public class Image extends ClippableDocument
+public class Image extends Document
 implements MimeType, ImageConstants
 {
 	@mm_name("local_location") 

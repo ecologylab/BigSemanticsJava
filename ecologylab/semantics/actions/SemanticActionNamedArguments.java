@@ -31,6 +31,8 @@ public interface SemanticActionNamedArguments
 
 	public static final String	CAPTION								= "caption";
 
+	public static final String	DESCRIPTION						= "description";
+
 	public static final String	HREF									= "href";
 
 	public static final String	WIDTH									= "width";

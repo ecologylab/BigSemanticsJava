@@ -475,6 +475,7 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 			Node contextNode, MetaMetadataField mmdElement, String mmdElementName, XPath xpath,
 			Scope<Object> param, String xPathString, Map<String, String> fieldParserMap)
 	{
+		//TODO -- is this necessary?
 		if (xPathString == null || xPathString.isEmpty())
 		{
 			// no xpath provided; we don't need to extract it
@@ -486,7 +487,8 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 			Metadata nestedMetadata = null;
 
 			// for nested objects xPath on context node will give only one node.
-			Node parentNode = (Node) xpath.evaluate(xPathString, contextNode, XPathConstants.NODE);
+			Node parentNode = //TODO (xPathString == null || xPathString.isEmpty()) ? contextNode :
+				(Node) xpath.evaluate(xPathString, contextNode, XPathConstants.NODE);
 
 			Class<? extends Metadata> metadataClass = mmdElement.getMetadataClass();
 			Class[] argClasses 	= new Class[] { MetaMetadataCompositeField.class };

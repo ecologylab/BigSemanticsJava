@@ -10,7 +10,7 @@ import ecologylab.serialization.simpl_inherit;
  **/
 
 @simpl_inherit
-public class Text extends Metadata
+public class Text extends ClippableMetadata
 {
 
 	@simpl_scalar

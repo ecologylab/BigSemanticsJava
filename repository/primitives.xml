@@ -4,7 +4,19 @@
 		<scalar name="meta_metadata_name" hide="true" ignore_in_term_vector="true" comment="Stores the name of the meta-metadata, and is used on restoring from XML." scalar_type="String" />
 	</meta_metadata>
 	
-	<meta_metadata name="document" extends="metadata" comment="The Document Class" parser="default" dont_generate_class="true">
+	<meta_metadata name="clipping" dont_generate_class="true">
+		<scalar name="caption" style="h1" always_show="true" layer="11.0" comment="The caption of the image." scalar_type="String" />
+		<scalar name="context" layer="10.0" scalar_type="String" />
+		<scalar name="xpath" scalar_type="String" hide="true"/>
+<!--		<composite name="source" type="document"/>-->
+<!--		<composite name="outlink" type="document"/>-->
+	</meta_metadata>
+
+	<meta_metadata name="clippable_metadata"  dont_generate_class="true">
+		<composite name="clipping" type="clipping"/>
+	</meta_metadata>
+	
+	<meta_metadata name="document" extends="clippable_metadata" comment="The Document Class" parser="default" dont_generate_class="true">
 		<selector>
 			<suffix>html</suffix>
 			<suffix>htm</suffix>
@@ -39,17 +51,12 @@
 		<scalar name="creationdate" comment="Creation date of the document" scalar_type="String" />
 	</meta_metadata>
 	
-	<meta_metadata name="text" extends="metadata" comment="text clippings from documents" dont_generate_class="true">
+	<meta_metadata name="text" extends="clippable_metadata" comment="text clippings from documents" dont_generate_class="true">
 		<scalar name="text" scalar_type="String" hide="true"/>
 		<scalar name="context" layer="10.0" scalar_type="String" />
 	</meta_metadata>
 	
-	<meta_metadata name="clippable_document" dont_generate_class="true">
-		<scalar name="caption" style="h1" navigates_to="location" always_show="true" layer="11.0" comment="The caption of the image." scalar_type="String" />
-		<scalar name="context" layer="10.0" scalar_type="String" />
-	</meta_metadata>
-	
-	<meta_metadata name="image" extends="clippable_document" comment="The Image Base Class" dont_generate_class="true">
+	<meta_metadata name="image" extends="document" comment="The Image Base Class" dont_generate_class="true">
 		<selector>
 			<mime_type>image/jpeg</mime_type>
 			<mime_type>image/png</mime_type>
