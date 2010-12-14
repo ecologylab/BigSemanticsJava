@@ -7,7 +7,7 @@
 <listEntry value="1"/>
 </listAttribute>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="ecologylab.semantics.metametadata.test.MmTest"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="http://books.google.com/books?id=fu5HtixRje8C http://portal.acm.org/citation.cfm?id=1133286"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="http://www.overstock.com/Home-Garden/Hunter-Lugano-56-inch-Brushed-Nickel-Ceiling-Fan/2458203/product.html http://www.overstock.com/Home-Garden/Superior-Hard-Surface-and-Carpet-Rug-Pad-8-x-10/2663174/product.html"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="ecologylabSemanticsExample"/>
 <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Xms320m -Xmx320m"/>
 </launchConfiguration>
