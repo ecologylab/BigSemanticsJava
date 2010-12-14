@@ -284,6 +284,8 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 			MetaMetadataField mmdField,
 			Metadata metadata, XPath xpath, Scope<Object> param, Node contextNode)
 	{
+//		System.out.println("HEYHEY!\n" + ((org.w3c.tidy.DOMDocumentImpl) contextNode).adaptee);
+
 		return recursiveExtraction(translationScope, mmdField, metadata, xpath, param, contextNode,
 				null);
 	}
