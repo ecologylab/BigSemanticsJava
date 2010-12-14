@@ -35,6 +35,11 @@ public class MmTest extends Debug implements DispatchTarget<MyContainer>
 		// seed start urls
 		for (int i = 0; i < urls.length; i++)
 		{
+			if ("//".equals(urls[i]))
+			{
+				System.err.println("Terminate due to //");
+				break;
+			}
 			ParsedURL seedUrl = ParsedURL.getAbsolute(urls[i]);
 			infoCollector.getContainerDownloadIfNeeded(null, seedUrl, null, false, false, false, this);
 		}
