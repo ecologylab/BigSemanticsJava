@@ -1,4 +1,4 @@
-<meta_metadata_repository name="dream_house" package="ecologylab.semantics.generated.library.dreamHouse">
+<meta_metadata_repository name="dream_house" package="ecologylab.semantics.generated.library.dreamHouse" default_user_agent_name="firefox_3_6_8">
 
 <meta_metadata name="glass_tile_store_product" type="product" parser="xpath">
 	<selector url_regex="http://www.glasstilestore.com/\w+-p/\w+.htm" domain="glasstilestore.com" />
@@ -15,12 +15,14 @@
 	<scalar name="description" xpath="//span[@class='furnitureINTRO']/div[0]/text()"/>
 </meta_metadata>
 
-<meta_metadata name="home_depot_product" type="product" parser="xpath">
+<meta_metadata name="home_depot_product" type="product" parser="xpath" user_agent_name="firefox_3_6_8">
 	<selector url_regex="http://www.homedepot.com/.+?/ProductDisplay?.*" domain="homedepot.com" />
 	
 	<scalar name="title" xpath="//p[@class='product-name']/text()"/>
 	<scalar name="description" xpath="//div[@id='tab-features']/p[1]/text()"/>
-	<scalar name="price" xpath="//p[@class='pip-price']/text()" />
+	<scalar name="price" xpath="//p[@class='pip-price']/text()" >
+		<filter regex="/[a-z|A-Z|-]*"/>
+	</scalar>
 	<scalar name="model" xpath="//input[@name='modelNumber']/@value"/>
 	
 	<scalar name="image_url" xpath="//img[@id='pip-main-image']/@src"/>
