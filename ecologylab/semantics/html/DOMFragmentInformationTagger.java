@@ -9,6 +9,7 @@ import org.w3c.tidy.Out;
 import org.w3c.tidy.TdNode;
 
 import ecologylab.net.ParsedURL;
+import ecologylab.serialization.XMLTools;
 
 public class DOMFragmentInformationTagger extends DOMWalkInformationTagger
 {
@@ -31,7 +32,14 @@ public class DOMFragmentInformationTagger extends DOMWalkInformationTagger
 		{
 			AttVal container = node.getAttrByName("container");
 			if (container != null)
-				containerPurl = ParsedURL.getAbsolute(container.value);
+			{
+				String containerValue = container.value;
+				if (containerValue != null && containerValue.length() > 0)
+				{
+					containerValue= XMLTools.unescapeXML(containerValue);
+					containerPurl = ParsedURL.getAbsolute(containerValue);
+				}
+			}
 		}
 		if( "img".equals(tagName) )
 		{   
