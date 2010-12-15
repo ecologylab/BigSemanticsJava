@@ -186,9 +186,10 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 	 *    to find the parser.
 	 * 2) Else find meta-metadata using URL suffix and mime type and make a direct binding parser.
 	 * 3) If still parser is null and binding is also null, use in-build tables to find the parser.
+	 * @param metadata TODO
 	 */
 	public static DocumentParser connect(final ParsedURL purl, final Container container,
-			final InfoCollector infoCollector, final SemanticActionHandler semanticActionHandler)
+			final InfoCollector infoCollector, final SemanticActionHandler semanticActionHandler, Document metadata)
 	{
 		DocumentParserConnectHelper documentParserConnectHelper = new DocumentParserConnectHelper()
 		{
@@ -308,22 +309,19 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 
 		};
 
+		// check for a parser that was discovered while processing a re-direct
+		DocumentParser result = documentParserConnectHelper.getResult();
+
 		// based on purl we try to find meta-metadata from reposiotry.
 		final MetaMetadataRepository metaMetaDataRepository = infoCollector.metaMetaDataRepository();
-		MetaMetadataCompositeField metaMetadata = metaMetaDataRepository.getDocumentMM(purl,null);
+		MetaMetadataCompositeField metaMetadata = (metadata != null) ? metadata.getMetaMetadata() 
+				: metaMetaDataRepository.getDocumentMM(purl,null);
 		
 		// then try to create a connection using the PURL
 		String userAgentString = (metaMetadata == null) ? null : metaMetadata.getUserAgentString();
 		PURLConnection purlConnection = purl.connect(documentParserConnectHelper, userAgentString);
 		
 		BasicSite site = container.site();
-
-		// set meta-metadata in case a correct one was found after a redirect
-		if (documentParserConnectHelper.hadRedirect() && (metaMetadata == null && container != null && container.metadata() != null))
-			metaMetadata = (MetaMetadataCompositeField) container.metadata().getMetaMetadata();
-		
-		// check for a parser that was discovered while processing a re-direct
-		DocumentParser result = documentParserConnectHelper.getResult();
 
 		// if a parser was preset for this container, use it
 		if ((result == null) && (container != null))
