@@ -202,7 +202,7 @@ public class MyContainer extends Container
 		// also process the semantic actions
 		
 		DocumentParser parser = DocumentParser.connect(purl(), this, infoCollector,
-				infoCollector.createSemanticActionHandler());
+				infoCollector.createSemanticActionHandler(), null);
 		if (parser != null)
 			parser.parse();
 
