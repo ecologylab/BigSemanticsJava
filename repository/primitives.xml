@@ -13,7 +13,7 @@
 	</meta_metadata>
 
 	<meta_metadata name="clippable_metadata"  dont_generate_class="true">
-		<composite name="clipping" type="clipping"/>
+		<composite name="clipping" type="clipping" promote_children="true"/>
 	</meta_metadata>
 	
 	<meta_metadata name="document" extends="clippable_metadata" comment="The Document Class" parser="default" dont_generate_class="true">

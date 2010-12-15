@@ -21,6 +21,7 @@ import ecologylab.semantics.tools.MetaMetadataCompilerUtils;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.FieldDescriptor;
+import ecologylab.serialization.FieldTypes;
 import ecologylab.serialization.TranslationScope;
 import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.simpl_inherit;
@@ -1176,6 +1177,21 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 				inheritedField = result;
 		}
 		return inheritedField;
+	}
+	
+	public int getFieldType()
+	{
+		if (this.metadataFieldDescriptor != null)
+			return metadataFieldDescriptor.getType();
+		else
+		{
+			if (this instanceof MetaMetadataCompositeField)
+				return FieldTypes.COMPOSITE_ELEMENT;
+			else if (this instanceof MetaMetadataCollectionField)
+				return FieldTypes.COLLECTION_ELEMENT;
+			else
+				return FieldTypes.SCALAR;
+		}
 	}
 
 }

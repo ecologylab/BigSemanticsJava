@@ -231,7 +231,7 @@
 			</composite>
 		</composite>
 		
-		<collection name="flickr_tags" child_type="flickr_tag" xpath="//a[@class='tag-item ywa-track']">
+		<collection name="flickr_tags" child_type="flickr_tag" xpath="//a[@class='tag-item ywa-track']" promote_children="true">
 			<scalar name="tag_name" xpath="." />
 			<scalar name="tag_link" xpath="./@href" />
 		</collection>

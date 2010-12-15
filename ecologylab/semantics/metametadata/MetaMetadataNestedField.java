@@ -10,6 +10,9 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 	@simpl_composite
 	@xml_tag("field_parser")
 	private FieldParserElement fieldParserElement;
+	
+	@simpl_scalar
+	private boolean promoteChildren;
 
 	public MetaMetadataNestedField()
 	{
@@ -176,7 +179,6 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 		{
 			// get the type name
 			String typeName = getTypeName();
-
 			// search for mmd type in repository
 			MetaMetadata globalMmd = getRepository().getByTagName(typeName);
 			if (globalMmd != null)
@@ -254,4 +256,14 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 		return child;
 	}
 	
+	public boolean shouldPromoteChildren()
+	{
+		return promoteChildren;
+	}
+
+	public void setPromoteChildren(boolean promoteChildren)
+	{
+		this.promoteChildren = promoteChildren;
+	}
+
 }

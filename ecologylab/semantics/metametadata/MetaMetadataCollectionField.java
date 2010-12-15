@@ -237,6 +237,7 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 			kids.clear();
 			kids.put(composite.getName(), composite);
 		}
+		composite.setPromoteChildren(this.shouldPromoteChildren());
 	}
 
 }
