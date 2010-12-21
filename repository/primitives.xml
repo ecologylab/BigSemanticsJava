@@ -8,8 +8,8 @@
 		<scalar name="caption" style="h1" layer="11.0" comment="The caption of the image." scalar_type="String" />
 		<scalar name="context" layer="10.0" scalar_type="String" />
 		<scalar name="xpath" scalar_type="String" hide="true"/>
-<!--		<composite name="source" type="document"/>-->
-<!--		<composite name="outlink" type="document"/>-->
+		<composite name="source" type="document"/>
+		<composite name="outlink" type="document"/>
 	</meta_metadata>
 
 	<meta_metadata name="clippable_metadata"  dont_generate_class="true">

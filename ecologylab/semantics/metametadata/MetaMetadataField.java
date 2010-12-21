@@ -157,6 +157,10 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	private MetaMetadataRepository												repository;
 
 	protected boolean																			inheritMetaMetadataFinished	= false;
+	
+	private boolean																				fieldInherited							= false;
+	
+	private boolean																				bindDescriptorsFinished			= false;
 
 	/**
 	 * Class of the Metadata object that corresponds to this. Non-null for nested and collection
@@ -576,6 +580,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	 */
 	void inheritForField(MetaMetadataField fieldToInheritFrom)
 	{
+
 		String fieldName = fieldToInheritFrom.getName();
 		// this is for the case when meta_metadata has no meta_metadata fields of its own. It just
 		// inherits from super class.
@@ -584,30 +589,35 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 		{
 			childMetaMetadata = initializeChildMetaMetadata();
 		}
-	
+
 		// *do not* override fields in here with fields from super classes.
-	
 		MetaMetadataField fieldToInheritTo = childMetaMetadata.get(fieldName);
+
 		if (fieldToInheritTo == null)
 		{
 			childMetaMetadata.put(fieldName, fieldToInheritFrom);
 			fieldToInheritTo = fieldToInheritFrom;
 		}
 		else
-		{
+		{			
 			fieldToInheritTo.inheritNonDefaultAttributes(fieldToInheritFrom);
 		}
-	
-		HashMapArrayList<String, MetaMetadataField> inheritedChildMetaMetadata = fieldToInheritFrom
-				.getChildMetaMetadata();
-		if (inheritedChildMetaMetadata != null)
+
+		if (!fieldToInheritTo.fieldInherited)
 		{
-			for (MetaMetadataField grandChildMetaMetadataField : inheritedChildMetaMetadata)
+
+			HashMapArrayList<String, MetaMetadataField> inheritedChildMetaMetadata = fieldToInheritFrom
+			.getChildMetaMetadata();
+			if (inheritedChildMetaMetadata != null)
 			{
-				fieldToInheritTo.inheritForField(grandChildMetaMetadataField);
+				for (MetaMetadataField grandChildMetaMetadataField : inheritedChildMetaMetadata)
+				{
+					fieldToInheritTo.inheritForField(grandChildMetaMetadataField);
+				}
 			}
+
+			fieldToInheritTo.fieldInherited = true;
 		}
-	
 	}
 
 	HashSet<String> nonDisplayedFieldNames()
@@ -977,38 +987,43 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	protected final void bindMetadataFieldDescriptors(TranslationScope metadataTScope,
 			MetadataClassDescriptor metadataClassDescriptor)
 	{
-		for (MetaMetadataField thatChild : kids)
+		if (!bindDescriptorsFinished)
 		{
-			thatChild.bindMetadataFieldDescriptor(metadataTScope, metadataClassDescriptor);
-
-			if (thatChild instanceof MetaMetadataScalarField)
+			for (MetaMetadataField thatChild : kids)
 			{
-				MetaMetadataScalarField scalar = (MetaMetadataScalarField) thatChild;
-				if (scalar.getRegexPattern() != null)
+				thatChild.bindMetadataFieldDescriptor(metadataTScope, metadataClassDescriptor);
+	
+				if (thatChild instanceof MetaMetadataScalarField)
 				{
-					MetadataFieldDescriptor fd = scalar.getMetadataFieldDescriptor();
-					if(fd != null)
-						fd.setRegexFilter(Pattern.compile(scalar.getRegexPattern()), scalar.getRegexReplacement());
-					else
-						warning("Encountered null fd for scalar: " + scalar);
+					MetaMetadataScalarField scalar = (MetaMetadataScalarField) thatChild;
+					if (scalar.getRegexPattern() != null)
+					{
+						MetadataFieldDescriptor fd = scalar.getMetadataFieldDescriptor();
+						if(fd != null)
+							fd.setRegexFilter(Pattern.compile(scalar.getRegexPattern()), scalar.getRegexReplacement());
+						else
+							warning("Encountered null fd for scalar: " + scalar);
+					}
 				}
+	
+				HashSet<String> nonDisplayedFieldNames = nonDisplayedFieldNames();
+				if (thatChild.hide)
+					nonDisplayedFieldNames.add(thatChild.name);
+				if (thatChild.shadows != null)
+					nonDisplayedFieldNames.add(thatChild.shadows);
+	
+				// recursive descent
+				if (thatChild.hasChildren())
+					thatChild.getClassAndBindDescriptors(metadataTScope);
+				
+				bindDescriptorsFinished = true;
 			}
-
-			HashSet<String> nonDisplayedFieldNames = nonDisplayedFieldNames();
-			if (thatChild.hide)
-				nonDisplayedFieldNames.add(thatChild.name);
-			if (thatChild.shadows != null)
-				nonDisplayedFieldNames.add(thatChild.shadows);
-
-			// recursive descent
-			if (thatChild.hasChildren())
-				thatChild.getClassAndBindDescriptors(metadataTScope);
 		}
-		// for (FieldDescriptor fieldDescriptor : allFieldDescriptorsByFieldName.values())
-		// {
-		// String tagName = fieldDescriptor.getTagName();
-		// result.put(tagName, (MetadataFieldDescriptor) fieldDescriptor);
-		// }
+			// for (FieldDescriptor fieldDescriptor : allFieldDescriptorsByFieldName.values())
+			// {
+			// String tagName = fieldDescriptor.getTagName();
+			// result.put(tagName, (MetadataFieldDescriptor) fieldDescriptor);
+			// }
 	}
 
 	/**
@@ -1044,9 +1059,9 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	void bindMetadataFieldDescriptor(TranslationScope metadataTScope,
 			MetadataClassDescriptor metadataClassDescriptor)
 	{
-		String tagName = this.resolveTag(); // TODO -- is this the correct tag?
+		String fieldName = this.getFieldNameInJava(false); // TODO -- is this the correct tag?
 		MetadataFieldDescriptor metadataFieldDescriptor = (MetadataFieldDescriptor) metadataClassDescriptor
-				.getFieldDescriptorByTag(tagName, metadataTScope);
+				.getFieldDescriptorByFieldName(fieldName);
 		if (metadataFieldDescriptor != null)
 		{
 			// if we don't have a field, then this is a wrapped collection, so we need to get the wrapped
@@ -1058,7 +1073,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 		}
 		else
 		{
-			warning("Ignoring <" + tagName + "> because no corresponding MetadataFieldDescriptor can be found.");
+			warning("Ignoring <" + fieldName + "> because no corresponding MetadataFieldDescriptor can be found.");
 		}
 
 	}

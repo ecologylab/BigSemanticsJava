@@ -52,6 +52,8 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 			 * children (those not defined inline). In this way we can resolve type information
 			 * recursively.
 			 **************************************************************************************/
+			
+			inheritMetaMetadataFinished = true;
 
 			/*
 			 * tagName will be type / extends attribute for <composite>, or child_type attribute for
@@ -80,8 +82,6 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 
 				sortForDisplay();
 			}
-
-			inheritMetaMetadataFinished = true;
 		}
 	}
 

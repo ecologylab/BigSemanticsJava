@@ -38,14 +38,14 @@ public class Clipping extends Metadata
 	/**
 	 * The source document.
 	 */
-//	@simpl_composite
-//	private Document				source;
-//	
-//	/**
-//	 * A hyperlinked Document.
-//	 */
-//	@simpl_composite
-//	private Document				outlink;
+	@simpl_composite
+	private Document				source;
+	
+	/**
+	 * A hyperlinked Document.
+	 */
+	@simpl_composite
+	private Document				outlink;
 	
 
 	static int							numWithCaption;
