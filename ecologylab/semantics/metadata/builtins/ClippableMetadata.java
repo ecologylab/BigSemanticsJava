@@ -37,14 +37,14 @@ public class ClippableMetadata extends Metadata
 		// TODO Auto-generated constructor stub
 	}
 
-	static MetaMetadata 		clippingMM;
+	static MetaMetadataCompositeField 		clippingMM;
 	
-	static MetaMetadata getClippingMM()
+	static MetaMetadataCompositeField getClippingMM(Class<? extends ClippableMetadata> parentClass)
 	{
-		MetaMetadata result = clippingMM;
+		MetaMetadataCompositeField result = clippingMM;
 		if (result == null)
 		{
-			result						= repository().getMM(Clipping.class);
+			result						= repository().getMM(parentClass, "clipping");
 			clippingMM							= result;
 		}
 		return result;
@@ -55,7 +55,7 @@ public class ClippableMetadata extends Metadata
 		Clipping result	= this.clipping;
 		if (result == null)
 		{
-			result				= new Clipping(getClippingMM());
+			result				= new Clipping(getClippingMM(this.getClass()));
 			this.clipping	= result;
 		}
 		return result;

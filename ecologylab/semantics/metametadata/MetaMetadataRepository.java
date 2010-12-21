@@ -409,6 +409,17 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 
 		return (tag == null) ? null : repositoryByTagName.get(tag);
 	}
+	
+	public MetaMetadataCompositeField getMM(Class<? extends Metadata> parentClass, String fieldName)
+	{
+		MetaMetadataCompositeField result = null;
+		MetaMetadata parentMM 						= getMM(parentClass);
+		
+		if (parentMM != null)
+			result = (MetaMetadataCompositeField) parentMM.lookupChild(fieldName);
+		
+		return result;
+	}
 
 	private MetaMetadata domainAndPatternForMetadata(String domain, Pattern pattern)
 	{
