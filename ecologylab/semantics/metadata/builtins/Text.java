@@ -17,12 +17,6 @@ public class Text extends ClippableMetadata
 	private MetadataString	text;
 
 	/**
-	 * Text connected to the clipping in the source document.
-	 */
-	@simpl_scalar
-	private MetadataString	context;
-
-	/**
 	 * Constructor
 	 **/
 
@@ -110,44 +104,6 @@ public class Text extends ClippableMetadata
 		if (this.text != null && this.text.getValue() != null && hasTermVector())
 			termVector().remove(this.text.termVector());
 		this.text = text;
-		rebuildCompositeTermVector();
-	}
-	
-	public MetadataString context()
-	{
-		MetadataString result = this.context;
-		if (result == null)
-		{
-			result = new MetadataString();
-			this.context = result;
-		}
-		return result;
-	}
-
-	/**
-	 * Gets the value of the field context
-	 **/
-
-	@Override
-	public String getContext()
-	{
-		return context().getValue();
-	}
-
-	/**
-	 * Sets the value of the field context
-	 **/
-
-	@Override
-	public void setContext(String context)
-	{
-		this.context().setValue(context);
-	}
-
-	@Override
-	public void hwSetContext(String context)
-	{
-		this.context().setValue(context);
 		rebuildCompositeTermVector();
 	}
 
