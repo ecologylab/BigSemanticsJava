@@ -178,9 +178,12 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 			final Container container, final InfoCollector infoCollector)
 	{
 		{
-			MetaMetadataCompositeField metaMetadata = infoCollector.metaMetaDataRepository().getDocumentMM(purl);
-			Document metadata						= (Document) ((MetaMetadata) metaMetadata).constructMetadata();
-			
+			Document metadata			= container.getMetadata();
+			if (metadata == null)
+			{
+				MetaMetadataCompositeField metaMetadata = infoCollector.metaMetaDataRepository().getDocumentMM(purl);
+				metadata						= (Document) ((MetaMetadata) metaMetadata).constructMetadata();
+			}
 			return connect(metadata, container, infoCollector);
 		}
 		
