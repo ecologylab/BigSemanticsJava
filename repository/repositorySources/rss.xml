@@ -4,8 +4,8 @@
 		<scalar name="dc_creator" tag="dc:creator" label="author" scalar_type="String" hint="XML_LEAF"/>
 		<scalar name="dc_subject" tag="dc:subject" scalar_type="String" hint="XML_LEAF"/>
 		<scalar name="dc_description" tag="dc:description" scalar_type="String" hint="XML_LEAF"/>
-		<scalar name="dc_title" tag="dc:title" scalar_type="String" hint="XML_LEAF"/>
-		<scalar name="dc_date" tag="dc:date" scalar_type="Date" hint="XML_LEAF"/>
+		<scalar name="dc_title" tag="dc:title" scalar_type="String" hint="XML_LEAF" hide="true"/>
+		<scalar name="dc_date" tag="dc:date" scalar_type="Date" hint="XML_LEAF" ignore_in_term_vector="true"/>
 	</meta_metadata>
 	
 	<meta_metadata name="yahoo_media_rss" extends="dc" comment="News feeds." parser="direct">
@@ -20,8 +20,8 @@
 	<meta_metadata name="item" extends="yahoo_media_rss" comment="One item in a news feed." parser="direct">
 			<!-- scalar name="title" scalar_type="String" hint="XML_LEAF" /> -->
 			<!-- scalar name="location" shadows="location" tag="link" scalar_type="ParsedURL" hint="XML_LEAF" /> -->
-			<scalar name="link" scalar_type="ParsedURL" hint="XML_LEAF" hide="true"/>
-			<scalar name="location" override="true" scalar_type="ParsedURL" tag="guid" hint="XML_LEAF" />
+			<scalar name="link" scalar_type="ParsedURL" hint="XML_LEAF" hide="true" hide="true"/>
+			<scalar name="location" override="true" scalar_type="ParsedURL" tag="guid" hint="XML_LEAF" hide="true"/>
 			<!--<collection name="categories" child_tag="category" scalar_type="String"/>   -->
 	</meta_metadata>
 	
@@ -69,7 +69,8 @@
 							</case>
 							<otherwise>
 								<parse_document now="true">
-									<arg value="item" name="document" />
+									<arg value="item" name="mixin" />
+									<arg value="location" name="container_link" />
 								</parse_document>
 							</otherwise>
 						</choose>

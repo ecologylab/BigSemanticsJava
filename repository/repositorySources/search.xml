@@ -2,10 +2,10 @@
 
   <!-- +++++++++++++++++++++++++++++++++ More Specific Types - Search & its Children +++++++++++++++++++++++++++++++++ -->
 
-  <meta_metadata name="search_result" extends="document" comment="">
+  <meta_metadata name="search_result" extends="metadata" comment="">
     <scalar name="heading" scalar_type="String" comment="The heading of search result" />
     <scalar name="snippet" scalar_type="String" comment="The snippet of search result" />
-    <scalar name="link" scalar_type="ParsedURL" comment="The link of the search result" />
+    <scalar name="link" scalar_type="ParsedURL" comment="The link of the search result" hide="true"/>
     <scalar name="link_other" scalar_type="ParsedURL" comment="Alternate link in search results" />
   </meta_metadata>
 
@@ -26,6 +26,7 @@
         <get_field object="res" name="link" />
         <parse_document now="true">
           <arg value="link" name="container_link" />
+          <arg value="res" name="mixin"/>
         </parse_document>
       </for_each>
     </semantic_actions>
@@ -62,6 +63,7 @@
         	<not_null value="document_link" />
         	<parse_document now="true">
           		<arg value="document_link" name="container_link" />
+          		<arg value="res" name="mixin"/>
         	</parse_document>
         </if>
         <if>
@@ -111,6 +113,7 @@
         <get_field object="res" name="link" />
         <parse_document now="true">
           <arg value="link" name="container_link" />
+          <arg value="res" name="mixin"/>
         </parse_document>
       </for_each>
     </semantic_actions>
@@ -123,7 +126,7 @@
   </meta_metadata>
 
   <meta_metadata name="yahoo_result" extends="document">
-    <scalar name="title" scalar_type="String" tag="Title" />
+    <scalar name="title" scalar_type="String" tag="Title" hide="true"/>
     <scalar name="summary" scalar_type="String" tag="Summary" />
     <scalar name="location" scalar_type="ParsedURL" tag="Url" hide="true" />
     <scalar name="referer_url" scalar_type="ParsedURL" tag="RefererUrl" hide="true" />
@@ -148,7 +151,7 @@
         
           <parse_document now="true">
             <arg value="location" name="container_link" />
-            <arg value="summary" name="description" />
+            <arg value="result" name="mixin" />
           </parse_document>
         
 <!--        <parse_document now="true">-->
@@ -170,7 +173,8 @@
         <create_and_visualize_img_surrogate>
           <arg value="location" name="image_purl" />
           <arg value="summary" name="caption" />
-          <!-- <arg value="referer_url" name="href" /> -->
+          <arg value="result" name="mixin" />
+           <!-- <arg value="referer_url" name="href" /> -->
         </create_and_visualize_img_surrogate>
       </for_each>
     </semantic_actions>
@@ -196,8 +200,8 @@
           </case>
           <otherwise>
             <parse_document now="true">
-              <arg value="result" name="document" />
-              <arg value="summary" name="anchor_text" />
+              <arg value="result" name="mixin" />
+              <arg value="location" name="container_link" />
             </parse_document>
           </otherwise>
         </choose>
@@ -218,9 +222,9 @@
 
   <!-- definitions of Bing search results from different sources. -->
   <meta_metadata name="bing_web_search_result" extends="search_result" comment="Bing web search result.">
-    <scalar name="heading" scalar_type="String" tag="web:Title" />
+    <scalar name="heading" scalar_type="String" tag="web:Title" hide="true" />
     <scalar name="snippet" scalar_type="String" tag="web:Description" />
-    <scalar name="link" scalar_type="ParsedURL" tag="web:Url" />
+    <scalar name="link" scalar_type="ParsedURL" tag="web:Url" hide="true"/>
   </meta_metadata>
 
   <meta_metadata name="bing_image_search_result" extends="image_in_search_result" comment="Bing image search result.">
@@ -253,6 +257,7 @@
           <get_field name="link" object="result" />
           <parse_document now="true">
             <arg value="link" name="container_link" />
+            <arg value="result" name="mixin" />
           </parse_document>
         </for_each>
       </if>
@@ -297,6 +302,7 @@
           <not_null value="link" />
           <parse_document now="true">
             <arg value="link" name="container_link" />
+             <arg value="res" name="mixin" />
           </parse_document>
         </if>
       </for_each>

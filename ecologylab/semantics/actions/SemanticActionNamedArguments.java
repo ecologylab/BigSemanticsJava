@@ -60,6 +60,8 @@ public interface SemanticActionNamedArguments
 	 * 1) CreateContainer
 	 */
 	public static final String	DOCUMENT							= "document";
+	
+	public static final String	MIXIN									= "mixin";
 
 	/**
 	 * 1) CreateContainer
