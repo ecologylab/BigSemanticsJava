@@ -177,8 +177,6 @@ implements InfoCollector<AC>, SemanticsPrefs, ApplicationProperties, DocumentPar
 	static final Object													SEEDING_STATE_LOCK = new Object();
 
 	protected boolean														duringSeeding;
-	
-	public static final AssetsRoot							SEMANTICS_ASSETS_ROOT =  new AssetsRoot("semantics/", ApplicationEnvironment.runningInEclipse() ? EnvironmentGeneric.configDir().file() : null);
 
 	// ++++++++++++++++++++++++++++++++++++++++ //
 	

@@ -7,6 +7,7 @@ import ecologylab.appframework.ApplicationEnvironment;
 import ecologylab.io.Assets;
 import ecologylab.semantics.connectors.CFPrefNames;
 import ecologylab.semantics.connectors.InfoCollectorBase;
+import ecologylab.semantics.connectors.SemanticsAssetVersions;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.TranslationScope;
@@ -42,7 +43,7 @@ implements CFPrefNames
 
 	private static void init()
 	{
-		File seedingsFile	= Assets.getAsset(InfoCollectorBase.SEMANTICS_ASSETS_ROOT, CFPrefNames.CURATED + "/curated_seed_sets.xml");
+		File seedingsFile	= Assets.getAsset(SemanticsAssetVersions.SEMANTICS_ASSETS_ROOT, CFPrefNames.CURATED + "/curated_seed_sets.xml");
 		if (!ApplicationEnvironment.runningInEclipse())
 			Assets.updateAssetsXml("CuratedSeedSets.init()");
 		try

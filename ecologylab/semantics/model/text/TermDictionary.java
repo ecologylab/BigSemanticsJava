@@ -7,18 +7,16 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import ecologylab.io.Assets;
-import ecologylab.semantics.connectors.InfoCollectorBase;
 import ecologylab.appframework.ApplicationProperties;
 import ecologylab.collections.CollectionTools;
+import ecologylab.io.Assets;
+import ecologylab.semantics.connectors.SemanticsAssetVersions;
 
 public class TermDictionary implements ApplicationProperties
 {
@@ -158,7 +156,7 @@ public class TermDictionary implements ApplicationProperties
 	{
 		try
 		{
-			createDictionary(Assets.getAsset(InfoCollectorBase.SEMANTICS_ASSETS_ROOT, "dictionary" + "/Dic.txt", null, !USE_ASSETS_CACHE, dictionaryAssetVersion));
+			createDictionary(Assets.getAsset(SemanticsAssetVersions.SEMANTICS_ASSETS_ROOT, "dictionary" + "/Dic.txt", null, !USE_ASSETS_CACHE, dictionaryAssetVersion));
 		}
 		catch (Exception e)
 		{
