@@ -217,7 +217,7 @@ extends HTMLParserCommon<C, IC>
 		if ((paraText!=null) && (paraText.length()>0) && (container != null))
 		{
 //			container.createTextElementAndAddToCollections(contextChunk, contextString, userRequested)
-			container.createTextElementAndAddToCollections(paraText);
+			container.createTextFromPhatContextAddToCollections(paraText);
 		}
 	}
 

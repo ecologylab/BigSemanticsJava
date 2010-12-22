@@ -95,6 +95,10 @@ public class Text extends ClippableMetadata
 		this.text = text;
 	}
 
+	public void setText(CharSequence textSequence)
+	{
+		this.text	= new MetadataString(textSequence.toString());
+	}
 	/**
 	 * Heavy Weight Direct setter method for text
 	 **/

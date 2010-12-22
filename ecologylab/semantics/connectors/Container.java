@@ -88,7 +88,7 @@ implements QandDownloadable
 	
 	abstract public void hwSetTitle(String newTitle);
 	
-	abstract public void createTextElementAndAddToCollections(ParagraphText paraText);
+	abstract public void createTextFromPhatContextAddToCollections(ParagraphText paraText);
 	
 	abstract public int numLocalCandidates();
 	
