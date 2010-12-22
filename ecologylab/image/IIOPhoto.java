@@ -33,12 +33,15 @@ import javax.imageio.ImageReader;
 import javax.imageio.ImageTypeSpecifier;
 import javax.imageio.stream.ImageInputStream;
 
+import ecologylab.appframework.EnvironmentGeneric;
 import ecologylab.collections.CollectionTools;
 import ecologylab.concurrent.DownloadMonitor;
 import ecologylab.generic.DispatchTarget;
 import ecologylab.io.Assets;
+import ecologylab.io.AssetsRoot;
 import ecologylab.io.BasicSite;
 import ecologylab.io.Downloadable;
+import ecologylab.io.Files;
 import ecologylab.net.ConnectionAdapter;
 import ecologylab.net.PURLConnection;
 import ecologylab.net.ParsedURL;
@@ -91,7 +94,8 @@ implements Downloadable, DispatchTarget<IIOPhoto>
 	};
 	static HashMap<String, String>	noAlphaBySuffixMap	= CollectionTools.buildHashMapFromStrings(NO_ALPHA_SUFFIXES);
 
-
+	public 	static final String 		INTERFACE			= "interface/";
+	private static final AssetsRoot INTERFACE_ASSETS_ROOT = new AssetsRoot(INTERFACE, null);
 
 	/**
 	 * Most popular constructor.
@@ -478,7 +482,7 @@ implements Downloadable, DispatchTarget<IIOPhoto>
 		 * The download must be finished, so cache the file.
 		 */
 		//the cache location
-		File cachedFile 	= new File(Assets.getAsset(Assets.INTERFACE), fileName);
+		File cachedFile 	= new File(INTERFACE_ASSETS_ROOT.getCacheRoot(), fileName);
 
 		//actually write to disk
 		try 
@@ -516,7 +520,8 @@ implements Downloadable, DispatchTarget<IIOPhoto>
 	{
 		//FIXME need to make sure zip has been downloaded here
 		// if not, initiate download & wait for it!
-		File cachedInterfaceFile = Assets.getCachedInterfaceFile(imagePath);
+
+		File cachedInterfaceFile = Assets.getAsset(INTERFACE_ASSETS_ROOT, imagePath);
 		ParsedURL cachedImagePURL	= new ParsedURL(cachedInterfaceFile);
 		IIOPhoto result = new IIOPhoto(cachedImagePURL, dispatchTarget, graphicsConfiguration);
 		//		result.downloadWithHighPriority();
