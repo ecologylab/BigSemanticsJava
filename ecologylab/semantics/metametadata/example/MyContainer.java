@@ -97,20 +97,6 @@ public class MyContainer extends Container
 	}
 
 	@Override
-	public Document constructAndSetMetadata(MetaMetadata metaMetadata)
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Document constructMetadata(MetaMetadata metaMetadata)
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public boolean crawlLinks()
 	{
 		// TODO Auto-generated method stub
@@ -201,8 +187,7 @@ public class MyContainer extends Container
 		// calls connect to find the right parser, then calls the infocollector to download the content
 		// also process the semantic actions
 		
-		DocumentParser parser = DocumentParser.connect(purl(), this, infoCollector,
-				infoCollector.createSemanticActionHandler(), null);
+		DocumentParser parser = DocumentParser.connect(purl(), this, infoCollector);
 		if (parser != null)
 			parser.parse();
 

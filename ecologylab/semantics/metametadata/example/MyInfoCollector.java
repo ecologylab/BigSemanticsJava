@@ -174,13 +174,6 @@ public class MyInfoCollector<C extends MyContainer> extends Debug implements Inf
 	}
 
 	@Override
-	public DocumentParser constructDocumentType(ElementState inlineDoc)
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public SeedPeer constructSeedPeer(Seed seed)
 	{
 		// TODO Auto-generated method stub
@@ -190,7 +183,7 @@ public class MyInfoCollector<C extends MyContainer> extends Debug implements Inf
 	@Override
 	public SemanticActionHandler createSemanticActionHandler()
 	{
-		return new SemanticActionHandler();
+		return new SemanticActionHandler(this);
 	}
 
 	@Override
@@ -217,9 +210,9 @@ public class MyInfoCollector<C extends MyContainer> extends Debug implements Inf
 	 * Create a MyContainer object for a given URL, and add listeners for it.
 	 */
 	@Override
-	public MyContainer getContainer(MyContainer ancestor, ParsedURL purl, boolean reincarnate,
-			boolean addToCandidatesIfNeeded, Document metadata, MetaMetadataCompositeField metaMetadata,
-			boolean ignoreRejects)
+	public MyContainer getContainer(MyContainer ancestor, 
+			Document metadata, MetaMetadataCompositeField metaMetadata, ParsedURL purl,
+			boolean reincarnate, boolean addToCandidatesIfNeeded, boolean ignoreRejects)
 	{
 		if (!accept(purl) && !ignoreRejects)
 			return null;
@@ -230,11 +223,10 @@ public class MyInfoCollector<C extends MyContainer> extends Debug implements Inf
 	 * Add a MyContainer object to the to-be-downloaded queue of the DownloadMonitor. The
 	 * DownloadMonitor will decide when the container will be actually downloaded and processed.
 	 */
-	@Override
 	public MyContainer getContainerDownloadIfNeeded(MyContainer ancestor, ParsedURL purl, Seed seed,
 			boolean dnd, boolean justCrawl, boolean justMedia)
 	{
-		MyContainer result = getContainer(ancestor, purl, false, false, null, null, false);
+		MyContainer result = getContainer(ancestor, null, null, purl, false, false, false);
 		getDownloadMonitor().download(result, result.getDispatchTarget());
 		return result;
 	}
@@ -242,18 +234,12 @@ public class MyInfoCollector<C extends MyContainer> extends Debug implements Inf
 	public MyContainer getContainerDownloadIfNeeded(MyContainer ancestor, ParsedURL purl, Seed seed,
 			boolean dnd, boolean justCrawl, boolean justMedia, DispatchTarget dispatchTarget)
 	{
-		MyContainer result = getContainer(ancestor, purl, false, false, null, null, false);
+		MyContainer result = getContainer(ancestor, null, null, purl, false, false, false);
 		result.setDispatchTarget(dispatchTarget);
 		getDownloadMonitor().download(result, dispatchTarget);
 		return result;
 	}
 
-	@Override
-	public MyContainer getContainerForSearch(MyContainer ancestor, ParsedURL purl, Seed seed)
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
 	public MetaMetadata getDocumentMM(ParsedURL purl, String tagName)
@@ -316,13 +302,6 @@ public class MyInfoCollector<C extends MyContainer> extends Debug implements Inf
 	{
 		// TODO Auto-generated method stub
 
-	}
-
-	@Override
-	public TranslationScope inlineDocumentTranslations()
-	{
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override
@@ -423,14 +402,6 @@ public class MyInfoCollector<C extends MyContainer> extends Debug implements Inf
 
 	public SeedDistributor getSeedDistributor()
 	{
-		return null;
-	}
-
-	@Override
-	public MyContainer getContainerForSearch(MyContainer ancestor, ParsedURL purl, Seed seed,
-			Document metadata, MetaMetadata metaMetadata)
-	{
-		// TODO Auto-generated method stub
 		return null;
 	}
 	
