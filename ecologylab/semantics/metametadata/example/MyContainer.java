@@ -134,7 +134,7 @@ public class MyContainer extends Container
 	}
 
 	@Override
-	public void createTextElementAndAddToCollections(ParagraphText paraText)
+	public void createTextFromPhatContextAddToCollections(ParagraphText paraText)
 	{
 		// TODO Auto-generated method stub
 
