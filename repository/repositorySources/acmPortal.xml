@@ -9,7 +9,7 @@
 				<filter regex="[\D]" replace="" />
 			</scalar>
 			<scalar name="title" xpath="./tr[3]/td/text()[2]" />
-			<scalar name="location" hide="true" xpath="./tr[4]/td/a/@href" />
+			<scalar name="location" hide="true" always_show="false" xpath="./tr[4]/td/a/@href" />
 <!--			<scalar name="pages" xpath=".//div[contains(.,'Pages')]">-->
 <!--				<filter regex="Pages:" replace="" />-->
 <!--			</scalar>-->

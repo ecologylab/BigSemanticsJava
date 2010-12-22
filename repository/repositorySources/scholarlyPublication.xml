@@ -17,10 +17,10 @@
 	
 	<meta_metadata name="scholarly_article" extends="pdf">
 		<scalar name="metadata_page" shadows="location" comment="citation.cfm" scalar_type="ParsedURL" />
-		<scalar name="abstract_field" shadows="summary" comment="" tag="abstract" scalar_type="String" label="abstract" />
+		<scalar name="abstract_field" shadows="summary" comment="" tag="abstract" scalar_type="String" label="abstract" layer="9.0"/>
 		<scalar name="subject" hide="true" />
-		<composite name="source" comment="Metadata related to where this article was published." type="source" />
-		<collection name="authors" shadows="author" comment="Set of authors." child_type="author" />
+		<composite name="source" comment="Metadata related to where this article was published." type="source" layer="7.0"/>
+		<collection name="authors" shadows="author" comment="Set of authors." child_type="author" layer="8.0"/>
 		<collection name="references" comment="Papers cited by this paper." child_tag="reference" child_type="scholarly_article" child_entity="true" />
 		<collection name="citations" comment="Papers that cite this paper." child_tag="citation" child_type="scholarly_article" child_entity="true" />
 		<collection name="classifications" comment="The Classifications of this paper." child_type="tag">

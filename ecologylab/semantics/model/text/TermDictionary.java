@@ -16,6 +16,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import ecologylab.io.Assets;
+import ecologylab.semantics.connectors.InfoCollectorBase;
 import ecologylab.appframework.ApplicationProperties;
 import ecologylab.collections.CollectionTools;
 
@@ -155,10 +156,9 @@ public class TermDictionary implements ApplicationProperties
 
 	public static void download ( float dictionaryAssetVersion )
 	{
-		Assets.downloadSemanticsZip(DICTIONARY, null, !USE_ASSETS_CACHE, dictionaryAssetVersion);
 		try
 		{
-			createDictionary(Assets.getSemanticsFile("dictionary" + "/Dic.txt"));
+			createDictionary(Assets.getAsset(InfoCollectorBase.SEMANTICS_ASSETS_ROOT, "dictionary" + "/Dic.txt", null, !USE_ASSETS_CACHE, dictionaryAssetVersion));
 		}
 		catch (Exception e)
 		{

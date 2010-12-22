@@ -14,6 +14,7 @@ import javax.swing.JFrame;
 import ecologylab.appframework.ApplicationEnvironment;
 import ecologylab.appframework.ApplicationProperties;
 import ecologylab.appframework.EnvironmentGeneric;
+import ecologylab.appframework.PropertiesAndDirectories;
 import ecologylab.appframework.types.prefs.Pref;
 import ecologylab.appframework.types.prefs.PrefBoolean;
 import ecologylab.collections.PrefixCollection;
@@ -24,6 +25,8 @@ import ecologylab.generic.Debug;
 import ecologylab.generic.HashMapWriteSynch;
 import ecologylab.generic.StringTools;
 import ecologylab.io.Assets;
+import ecologylab.io.AssetsRoot;
+import ecologylab.io.Files;
 import ecologylab.net.ParsedURL;
 import ecologylab.oodss.distributed.common.SessionObjects;
 import ecologylab.semantics.metadata.DocumentParserTagNames;
@@ -174,6 +177,8 @@ implements InfoCollector<AC>, SemanticsPrefs, ApplicationProperties, DocumentPar
 	static final Object													SEEDING_STATE_LOCK = new Object();
 
 	protected boolean														duringSeeding;
+	
+	public static final AssetsRoot							SEMANTICS_ASSETS_ROOT =  new AssetsRoot("semantics/", ApplicationEnvironment.runningInEclipse() ? EnvironmentGeneric.configDir().file() : null);
 
 	// ++++++++++++++++++++++++++++++++++++++++ //
 	
@@ -187,7 +192,8 @@ implements InfoCollector<AC>, SemanticsPrefs, ApplicationProperties, DocumentPar
 	 * It resides in the ecologylabSemantics project.
 	 */
 	public static final String	METAMETADATA_REPOSITORY				= "repository";
-
+	public static final String 	SEMANTICS											= "semantics/";
+	
 	/**
 	 * 
 	 * The repository has the metaMetadatas of the document types. The repository is populated as the
@@ -204,27 +210,18 @@ implements InfoCollector<AC>, SemanticsPrefs, ApplicationProperties, DocumentPar
 	
 	static
 	{
-		// MetaMetadata repository file has all the metametadata needed for metadata collection, 
-		// retrieval and incontextMetadata display.
-		Assets.downloadSemanticsZip(METAMETADATA_REPOSITORY, null, !USE_ASSETS_CACHE, SemanticsAssetVersions.METAMETADATA_ASSET_VERSION);
-	
-		if(ApplicationEnvironment.runningInEclipse() && Pref.lookupBoolean(USE_LOCAL_CF_PREF_NAME)) //default is set to false in the metaprefs.
-		{
-			println("\t\t-- Reading meta_metadata from : " + LOCAL_META_METADATA_DIR_FILE);
-			METAMETADATA_REPOSITORY_DIR_FILE 		= new File(LOCAL_META_METADATA_DIR_FILE, META_METADATA_REPOSITORY_DIR);			
-			
-		}
-		else
-		{
-			println("\t\t-- Reading meta_metadata from zip");
-			METAMETADATA_REPOSITORY_DIR_FILE 	= Assets.getSemanticsFile(META_METADATA_REPOSITORY_DIR);
-		}
-		META_METADATA_REPOSITORY = MetaMetadataRepository.load(METAMETADATA_REPOSITORY_DIR_FILE);
+		AssetsRoot mmAssetsRoot = new AssetsRoot(EnvironmentGeneric.configDir(), 
+				ApplicationEnvironment.runningInEclipse() ? Files.newFile(EnvironmentGeneric.codeBase().file(), "../ecologylabSemantics/") : Files.newFile(PropertiesAndDirectories.thisApplicationDir(), SEMANTICS));
+
+		METAMETADATA_REPOSITORY_DIR_FILE 	= Assets.getAsset(mmAssetsRoot, META_METADATA_REPOSITORY_DIR, null, !USE_ASSETS_CACHE, SemanticsAssetVersions.METAMETADATA_ASSET_VERSION);
+		println("\t\t-- Reading meta_metadata from " + METAMETADATA_REPOSITORY_DIR_FILE);
+
+		META_METADATA_REPOSITORY 					= MetaMetadataRepository.load(METAMETADATA_REPOSITORY_DIR_FILE);
 		
 		DOCUMENT_META_METADATA						= META_METADATA_REPOSITORY.getByTagName(DOCUMENT_TAG);
-		PDF_META_METADATA							= META_METADATA_REPOSITORY.getByTagName(PDF_TAG);
-		SEARCH_META_METADATA						= META_METADATA_REPOSITORY.getByTagName(SEARCH_TAG);
-		IMAGE_META_METADATA							= META_METADATA_REPOSITORY.getByTagName(IMAGE_TAG);
+		PDF_META_METADATA									= META_METADATA_REPOSITORY.getByTagName(PDF_TAG);
+		SEARCH_META_METADATA							= META_METADATA_REPOSITORY.getByTagName(SEARCH_TAG);
+		IMAGE_META_METADATA								= META_METADATA_REPOSITORY.getByTagName(IMAGE_TAG);
 	}
 
 	public InfoCollectorBase(Scope sessionScope)
