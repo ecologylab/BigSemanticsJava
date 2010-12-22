@@ -29,6 +29,14 @@
 		<scalar name="query" layer="5.0" comment="The search query" scalar_type="String" />
 	</meta_metadata>
 	
+	<meta_metadata name="xml" type="document" dont_generate_class="true" comment="XML" parser="direct" user_agent_name="firefox_3_6_8">
+		<selector>
+			<mime_type>text/xml</mime_type>
+			<mime_type>application/xml</mime_type>
+			<suffix>xml</suffix>
+		</selector>
+	</meta_metadata>
+	
 	<meta_metadata name="entity" extends="metadata" comment="Reference to a nested document." dont_generate_class="true">
 		<scalar name="location" hide="true" comment="The document's actual location." scalar_type="ParsedURL" />
 		<scalar name="gist" navigates_to="location" comment="Initial text that describes the document before its downloaded." scalar_type="String" />
@@ -79,4 +87,5 @@
 	<meta_metadata name="debug_metadata" dont_generate_class="true">
 		<scalar name="new_term_vector" ignore_in_term_vector="true" scalar_type="StringBuilder" />
 	</meta_metadata>
+	
 </meta_metadata_repository>

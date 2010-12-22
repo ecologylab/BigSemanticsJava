@@ -508,23 +508,21 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 								}
 							}
 						}
+						if (result == null)
+						{
+							result = documentRepositoryByDomain.get(domain);
+							if (result != null)
+								debug("Matched by domain = " + domain + "\t" + result);
+						}
 					}
 				}
 			}
-			// be careful of the order! suffix before domain
 			if (result == null)
 			{
 				String suffix = purl.suffix();
 
 				if (suffix != null)
 					result = getMMBySuffix(suffix);
-			}
-			if (result == null)
-			{
-				String domain = purl.domain();
-				result = documentRepositoryByDomain.get(domain);
-				if (result != null)
-					debug("Matched by domain = " + domain + "\t" + result);
 			}
 		}
 		if (result == null)
@@ -678,10 +676,11 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 			// if not, then if I am null then I win
 
 			MetaMetadataSelector selector = metaMetadata.getSelector();
-			ParsedURL purl = selector.getUrlStripped();
-			if (purl != null)
+			ParsedURL strippedPurl = selector.getUrlStripped();
+			if (strippedPurl != null)
 			{
-				repositoryByUrlStripped.put(purl.noAnchorNoQueryPageString(), metaMetadata);
+				repositoryByUrlStripped.put(strippedPurl.noAnchorNoQueryPageString(), metaMetadata);
+				metaMetadata.setMmSelectorType(MMSelectorType.LOCATION);
 			}
 			else
 			{
@@ -689,7 +688,9 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 				if (urlPathTree != null)
 				{
 					urlPrefixCollection.add(urlPathTree);
+					//TODO is this next line correct??? it looks wrong!
 					repositoryByUrlStripped.put(urlPathTree.toString(), metaMetadata);
+					metaMetadata.setMmSelectorType(MMSelectorType.LOCATION);
 				}
 				else
 				{
@@ -707,11 +708,13 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 								repositoryByPattern.put(domain, bucket);
 							}
 							bucket.add(new RepositoryPatternEntry(urlPattern, metaMetadata));
+							metaMetadata.setMmSelectorType(MMSelectorType.LOCATION);
 						}
 						else
 						{
 							// domain only -- no pattern
 							documentRepositoryByDomain.put(domain, metaMetadata);
+							metaMetadata.setMmSelectorType(MMSelectorType.DOMAIN);
 						}
 					}
 				}
@@ -767,7 +770,10 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 					// FIXME-- Ask whether the suffix and mime should be
 					// inherited or not
 					if (!repositoryBySuffix.containsKey(suffix))
+					{
 						repositoryBySuffix.put(suffix, metaMetadata);
+						metaMetadata.setMmSelectorType(MMSelectorType.SUFFIX_OR_MIME);
+					}
 				}
 			}
 
@@ -779,7 +785,10 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 					// FIXME -- Ask whether the suffix and mime should be
 					// inherited or not
 					if (!repositoryByMime.containsKey(mimeType))
+					{
 						repositoryByMime.put(mimeType, metaMetadata);
+						metaMetadata.setMmSelectorType(MMSelectorType.SUFFIX_OR_MIME);
+					}
 				}
 			}
 

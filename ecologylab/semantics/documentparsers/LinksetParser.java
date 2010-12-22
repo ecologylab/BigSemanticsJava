@@ -45,10 +45,7 @@ public abstract class LinksetParser
 	 */
 	protected void getMetaMetadataAndContainerAndQueue(InfoCollector infoCollector, ParsedURL purl, Seed seed, String defaultTag)
 	{
-		// first try to find the search meta-metadata using the purl
-		MetaMetadata metaMetadata = infoCollector.metaMetaDataRepository().getDocumentMM(purl, defaultTag);
-
-		Container container = infoCollector.getContainer(null, purl, false, false, null, metaMetadata, false);
+		Container container = infoCollector.getContainer(null, null, metaMetadata, purl, false, false, false);
 		setContainer(container);
 		container.presetDocumentType(this);
 		container.setDispatchTarget(this);

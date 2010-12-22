@@ -69,12 +69,6 @@ implements QandDownloadable
 	public abstract void setSearchResult(SeedDistributor sra, int resultsSoFar);
 	
 	public abstract void setQuery(String query);
-	
-
-
-	abstract public Document constructMetadata(MetaMetadata metaMetadata);
-	
-	abstract public Document constructAndSetMetadata(MetaMetadata metaMetadata);
 
 	
 	abstract public void addToCandidateLocalImages(AbstractImgElement imgElement);

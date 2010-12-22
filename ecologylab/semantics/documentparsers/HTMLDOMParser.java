@@ -228,7 +228,7 @@ extends HTMLParserCommon<C, IC>
 
 	public void removeTheContainerFromCandidates(ParsedURL containerPURL)
 	{
-		C candidate = getInfoCollector().getContainer(container, containerPURL, false, false, null, null, false);
+		C candidate = getInfoCollector().getContainer(container, null, null, containerPURL, false, false, false);
 		getInfoCollector().removeCandidateContainer(candidate);
 	}
 
@@ -298,7 +298,7 @@ extends HTMLParserCommon<C, IC>
 			
 			MetaMetadataRepository mmdRepository	= infoCollector.metaMetaDataRepository();
 			MetaMetadata metaMetadata 						= mmdRepository.getDocumentMM(hrefPurl);
-			Container hrefContainer 							= infoCollector.getContainer(container, hrefPurl, false, false, null, metaMetadata, false);
+			Container hrefContainer 							= infoCollector.getContainer(container, null, metaMetadata, hrefPurl, false, false, false);
 			
 			if (hrefContainer == null)
 				return; //Should actually raise an exception, but this could happen when a container is not meant to be reincarnated

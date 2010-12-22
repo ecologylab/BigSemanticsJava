@@ -89,18 +89,19 @@ public class InlineSeed extends Seed
 	{
 		if (content != null)
 		{
-			try
-			{
-				ElementState inlineDoc	= infoCollector.inlineDocumentTranslations().deserializeCharSequence(content);
-				DocumentParser xmlBaseType	= infoCollector.constructDocumentType(inlineDoc);
-				if (xmlBaseType != null)
-					xmlBaseType.parse(inlineDoc);
-				else
-					error("Can't find type for " + inlineDoc);
-			} catch (SIMPLTranslationException e)
-			{
-				e.printStackTrace();
-			}
+			//FIXME
+//			try
+//			{
+//				ElementState inlineDoc	= infoCollector.inlineDocumentTranslations().deserializeCharSequence(content);
+//				DocumentParser xmlBaseType	= infoCollector.constructDocumentType(inlineDoc);
+//				if (xmlBaseType != null)
+//					xmlBaseType.parse(inlineDoc);
+//				else
+//					error("Can't find type for " + inlineDoc);
+//			} catch (SIMPLTranslationException e)
+//			{
+//				e.printStackTrace();
+//			}
 		}
 
 	}

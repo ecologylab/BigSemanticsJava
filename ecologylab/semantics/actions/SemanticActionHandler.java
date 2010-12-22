@@ -28,6 +28,7 @@ public class SemanticActionHandler<C extends Container, IC extends InfoCollector
 		extends Debug implements SemanticActionStandardMethods, SemanticActionsKeyWords,
 		SemanticActionNamedArguments
 {
+	IC infoCollector;
 
 	static final Scope<Object>						BUILT_IN_SCOPE	= new Scope<Object>();
 
@@ -49,8 +50,9 @@ public class SemanticActionHandler<C extends Container, IC extends InfoCollector
 	 */
 	protected SemanticActionErrorHandler	errorHandler;
 
-	public SemanticActionHandler()
+	public SemanticActionHandler(IC infoCollector)
 	{
+		this.infoCollector				= infoCollector;
 		semanticActionVariableMap = new Scope<Object>(BUILT_IN_SCOPE);
 	}
 
@@ -264,7 +266,7 @@ public class SemanticActionHandler<C extends Container, IC extends InfoCollector
 		{
 			Container ancestor = parser.getContainer();
 			MetaMetadata mmd = infoCollector.metaMetaDataRepository().getDocumentMM(purl);
-			C container = infoCollector.getContainer((C) ancestor, purl, false, true, null, mmd, false);
+			C container = infoCollector.getContainer((C) ancestor, null, mmd, purl, false, true, false);
 			return container;
 		}
 		return null;

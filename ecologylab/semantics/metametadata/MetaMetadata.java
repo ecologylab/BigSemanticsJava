@@ -48,7 +48,7 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 
 	@simpl_scalar
 	private String						collectionOf;
-
+	
 	// TranslationScope DEFAULT_METADATA_TRANSLATIONS = DefaultMetadataTranslationSpace.get();
 
 	public MetaMetadata()

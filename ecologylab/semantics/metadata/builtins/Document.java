@@ -30,8 +30,13 @@ public class Document extends ClippableMetadata
 	@mm_name("description") 
 	@simpl_scalar MetadataString		description;
 	
-//	@simpl_scalar MetadataStringBuilder 	anchorText;
-//	@@simpl_scalar MetadataStringBuilder 	anchorContextString;
+
+	/**
+	 * The search query
+	 **/
+	@simpl_scalar @simpl_hints(Hint.XML_LEAF)
+	private MetadataString					query;
+	
 	
 	@mm_name("generation") 
 	@simpl_scalar MetadataInteger			generation;
@@ -390,12 +395,6 @@ public class Document extends ClippableMetadata
 		this.pageStructure = pageStructure;
 		rebuildCompositeTermVector();
 	}
-
-	/**
-	 * The search query
-	 **/
-	@simpl_scalar @simpl_hints(Hint.XML_LEAF)
-	private MetadataString	query;
 
 	/**
 	 * Lazy Evaluation for query

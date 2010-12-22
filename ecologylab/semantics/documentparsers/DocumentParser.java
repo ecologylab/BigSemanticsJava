@@ -9,8 +9,6 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
 
-import javax.imageio.ImageIO;
-
 import ecologylab.appframework.types.prefs.Pref;
 import ecologylab.collections.PrefixCollection;
 import ecologylab.collections.Scope;
@@ -25,7 +23,6 @@ import ecologylab.semantics.actions.SemanticActionsKeyWords;
 import ecologylab.semantics.connectors.CFPrefNames;
 import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.InfoCollector;
-import ecologylab.semantics.metadata.DocumentParserTagNames;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
@@ -63,7 +60,9 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 	 * Associated MetaMetadata object, which drives extraction and interaction.
 	 * Filled out by the connect() method.
 	 */
-	protected MetaMetadataCompositeField			metaMetadata;
+	protected MetaMetadataCompositeField	metaMetadata;
+	
+	private Document										metadata;
 	
 	public static boolean 					cacheHit = false;
 
@@ -172,8 +171,20 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 	{
 		DocumentParser getResult ( );
 		boolean hadRedirect();
+		Document newMetadata();
 	}
 
+	public static DocumentParser connect(final ParsedURL purl,
+			final Container container, final InfoCollector infoCollector)
+	{
+		{
+			MetaMetadataCompositeField metaMetadata = infoCollector.metaMetaDataRepository().getDocumentMM(purl);
+			Document metadata						= (Document) ((MetaMetadata) metaMetadata).constructMetadata();
+			
+			return connect(metadata, container, infoCollector);
+		}
+		
+	}
 	/**
 	 * Open a connection to the URL. Read the header, but not the content. Look at if the path exists,
 	 * if there is a redirect, and the mime type. If there is a redirect, process it.
@@ -188,13 +199,17 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 	 * 3) If still parser is null and binding is also null, use in-build tables to find the parser.
 	 * @param metadata TODO
 	 */
-	public static DocumentParser connect(final ParsedURL purl, final Container container,
-			final InfoCollector infoCollector, final SemanticActionHandler semanticActionHandler, Document metadata)
+	public static DocumentParser connect(Document metadata, 
+			final Container container, final InfoCollector infoCollector)
 	{
+		final ParsedURL purl	= metadata.getLocation();
+		final SemanticActionHandler semanticActionHandler	= infoCollector.createSemanticActionHandler();
+		
 		DocumentParserConnectHelper documentParserConnectHelper = new DocumentParserConnectHelper()
 		{
 			DocumentParser	result;
 			boolean hadRedirect = false;
+			Document newMetadata;
 
 			public void handleFileDirectory(File file)
 			{
@@ -280,7 +295,8 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 								// get new MetaMetadata & metadata
 								Document oldMetadata	=(Document) container.metadata();
 								MetaMetadata newMetaMetadata	= infoCollector.getDocumentMM(connectionPURL);
-								Document newMetadata	= container.constructAndSetMetadata(newMetaMetadata);
+								newMetadata	= (Document) newMetaMetadata.constructMetadata();
+								container.setMetadata(newMetadata);
 //			done by resetPURL()					newMetadata.setLocation(oldMetadata.getLocation());
 								newMetadata.setQuery(oldMetadata.getQuery());
 							}
@@ -306,20 +322,26 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 			{
 				return this.hadRedirect;
 			}
-
+			public Document newMetadata()
+			{
+				return this.newMetadata;
+			}
 		};
 
-		// check for a parser that was discovered while processing a re-direct
-		DocumentParser result = documentParserConnectHelper.getResult();
-
-		// based on purl we try to find meta-metadata from reposiotry.
-		final MetaMetadataRepository metaMetaDataRepository = infoCollector.metaMetaDataRepository();
-		MetaMetadataCompositeField metaMetadata = (metadata != null) ? metadata.getMetaMetadata() 
-				: metaMetaDataRepository.getDocumentMM(purl,null);
-		
+		assert(metadata != null);
+		MetaMetadataCompositeField metaMetadata = metadata.getMetaMetadata();
 		// then try to create a connection using the PURL
-		String userAgentString = (metaMetadata == null) ? null : metaMetadata.getUserAgentString();
+		String userAgentString	= (metaMetadata == null) ? null : metaMetadata.getUserAgentString();
 		PURLConnection purlConnection = purl.connect(documentParserConnectHelper, userAgentString);
+		DocumentParser result 	= documentParserConnectHelper.getResult();
+		//FIXME -- need to access new
+		Document newMetadata		= documentParserConnectHelper.newMetadata();
+		if (newMetadata != null)	// in case it changed while we were parsing
+		{
+			metadata							= newMetadata;
+			metaMetadata 					= newMetadata.getMetaMetadata();
+		}
+		// check for a parser that was discovered while processing a re-direct
 		
 		BasicSite site = container.site();
 
@@ -332,28 +354,24 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 		{
 			String cacheValue = purlConnection.urlConnection().getHeaderField("X-Cache");
 			cacheHit = cacheValue != null && cacheValue.contains("HIT");
-			
-			// if look up by purl fails
-			if(metaMetadata == null)
-			{
-				// look up using suffix
-				metaMetadata = metaMetaDataRepository.getMMBySuffix(purl.suffix());
-				// if look up by suffix fails
-				if(metaMetadata == null)
-				{
-					//look up using mime
-					String mimeType = purlConnection.mimeType();
-					metaMetadata = metaMetaDataRepository.getMMByMime(mimeType);
-					semanticActionHandler.getSemanticActionVariableMap().put(SemanticActionsKeyWords.PURLCONNECTION_MIME, mimeType);
+
+			String mimeType = purlConnection.mimeType();
+			semanticActionHandler.getSemanticActionVariableMap().put(SemanticActionsKeyWords.PURLCONNECTION_MIME, mimeType);
+
+			if (metaMetadata.hasDefaultSuffixOrMimeSelector())
+			{	// see if we can find more specifc meta-metadata using mimeType
+				final MetaMetadataRepository metaMetaDataRepository = infoCollector.metaMetaDataRepository();
+				MetaMetadataCompositeField mimeMmd	= metaMetaDataRepository.getMMByMime(mimeType);
+				if (mimeMmd != null && !mimeMmd.equals(metaMetadata))
+				{	// new meta-metadata!
+					if (!mimeMmd.getMetadataClass().isAssignableFrom(metadata.getClass()))
+					{	// more specifc so we need new metadata!
+						Document mimeMetadata	= (Document) ((MetaMetadata) mimeMmd).constructMetadata();
+						container.setMetadata(mimeMetadata);
+					}
+					metaMetadata	= mimeMmd;
 				}
 			}
-			
-			// if still null, use the default one for Document
-			if(metaMetadata == null)
-			{
-				metaMetadata = metaMetaDataRepository.getByTagName(DocumentParserTagNames.DOCUMENT_TAG);
-			}
-			
 			// if we haven't got a DocumentParser here, using the binding hint; if we already have one,
 			// it is very likely a predefined one, e.g. MetaMetadataSearchParser
 			if (result == null)
@@ -367,8 +385,7 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 		
 		if (result != null)
 		{
-			result.metaMetadata = metaMetadata;
-			result.fillValues(purlConnection, container, infoCollector);
+			result.fillValues(purlConnection, metadata, container, infoCollector);
 		}
 		
 		return result;
@@ -431,16 +448,23 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 	 * Fill out the instance of this resulting from a succcessful connect().
 	 * 
 	 * @param purlConnection
+	 * @param metadata TODO
 	 * @param container
 	 * @param infoCollector
 	 */
-	protected void fillValues ( PURLConnection purlConnection, C container, IC infoCollector )
+	protected void fillValues ( PURLConnection purlConnection, Document metadata, C container, IC infoCollector )
 	{
 		this.purlConnection = purlConnection;
 		setContainer(container);
 		setInfoCollector(infoCollector);
+		setMetadata(metadata);
 	}
 
+	protected void setMetadata(Document metadata)
+	{
+		this.metadata			= metadata;
+		this.metaMetadata	= metadata.getMetaMetadata();
+	}
 	/**
 	 * True if our analysis indicates the present AbstractContainer is an article, and not a
 	 * collection of links. This affects calls to getWeight() in the model!

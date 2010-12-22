@@ -41,6 +41,9 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField
 	@simpl_nowrap
 	private ArrayList<DefVar>					defVars;
 
+	
+	private MMSelectorType						mmSelectorType	= MMSelectorType.DEFAULT;
+
 	/**
 	 * for caching getTypeNameInJava().
 	 */
@@ -213,4 +216,25 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField
 		return typeNameInJava;
 	}
 
+	/**
+	 * @return the mmSelectorType
+	 */
+	public MMSelectorType getMmSelectorType()
+	{
+		return mmSelectorType;
+	}
+
+	/**
+	 * @param mmSelectorType the mmSelectorType to set
+	 */
+	public void setMmSelectorType(MMSelectorType mmSelectorType)
+	{
+		this.mmSelectorType = mmSelectorType;
+	}
+
+	public boolean hasDefaultSuffixOrMimeSelector()
+	{
+		return mmSelectorType == MMSelectorType.DEFAULT || mmSelectorType == MMSelectorType.SUFFIX_OR_MIME;
+	}
+	
 }

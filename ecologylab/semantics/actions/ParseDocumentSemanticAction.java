@@ -66,8 +66,9 @@ class ParseDocumentSemanticAction<IC extends InfoCollector, SAH extends Semantic
 		Container container = semanticActionHandler.createContainer(this, documentParser, infoCollector);
 		if (container != null)
 		{
-			infoCollector.getContainerDownloadIfNeeded(documentParser.getContainer(), container.purl(),
-					null, false, false, false);
+			container.queueDownload();
+//			infoCollector.getContainerDownloadIfNeeded(documentParser.getContainer(), null, null, container.purl(),
+//					null, false, false, false);
 		}
 		return null;
 	}

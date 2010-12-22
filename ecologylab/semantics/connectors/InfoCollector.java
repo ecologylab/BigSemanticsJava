@@ -76,17 +76,8 @@ public interface InfoCollector<C extends Container>
 
 	void untraversable(ParsedURL url);
 
-	DocumentParser<C, ? extends InfoCollector, ?> constructDocumentType(ElementState inlineDoc);
-
-	TranslationScope inlineDocumentTranslations();
-
-	C getContainerForSearch(C ancestor, ParsedURL purl, Seed seed);
-
-	C getContainerForSearch(C ancestor, ParsedURL purl, Seed seed, Document metadata,
-			MetaMetadata metaMetadata);
-
-	C getContainer(C ancestor, ParsedURL purl, boolean reincarnate, boolean addToCandidatesIfNeeded,
-			Document metadata, MetaMetadataCompositeField metaMetadata, boolean ignoreRejects);
+	C getContainer(C ancestor, Document metadata, MetaMetadataCompositeField metaMetadata, ParsedURL purl,
+			boolean reincarnate, boolean addToCandidatesIfNeeded, boolean ignoreRejects);
 
 	public void removeCandidateContainer(C candidate);
 
@@ -115,9 +106,6 @@ public interface InfoCollector<C extends Container>
 	SemanticActionHandler createSemanticActionHandler();
 
 	JFrame getJFrame();
-
-	C getContainerDownloadIfNeeded(C ancestor, ParsedURL purl, Seed seed, boolean dnd,
-			boolean justCrawl, boolean justMedia);
 
 	public abstract SeedDistributor getSeedDistributor();
 
