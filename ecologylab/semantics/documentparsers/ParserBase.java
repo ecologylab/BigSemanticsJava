@@ -65,7 +65,7 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 	/**
 	 * True PURL for container
 	 */
-	ParsedURL				truePURL;	;
+	ParsedURL				truePURL;	
 
 	/**
 	 * 
@@ -186,11 +186,6 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 		return container.getGeneratedMetadataTranslationScope();
 	}
 
-	protected void createDOMandParse(ParsedURL purl)
-	{
-
-	}
-
 	/**
 	 * Instantiate MetaMetadata variables that are used during XPath information extraction, and in
 	 * semantic actions.
@@ -210,22 +205,19 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 			// only if some variables are there we create a DOM[for diect binidng types for others DOM is
 			// already there]
 			// TODO -- if direct binding, make sure that there are vars that use xPath.
-			createDOMandParse(container.purl()); // sets DOCUMENT_ROOT_NODE to parsed DOM for xPath only
 			for (DefVar defVar : defVars)
 			{
 				String xpathExpression = defVar.getXpath();
 				String node = defVar.getNode();
 				String name = defVar.getName();
-				QName type = defVar.getType();
-				Node contextNode = null;
+				QName type	= defVar.getType();
+				Node contextNode	= null;
 				try
 				{
-
-					if (node == null)
+					if  (node == null)
 					{
 						// apply the XPath on the document root.
-						contextNode = (Node) parameters
-								.get(SemanticActionsKeyWords.DOCUMENT_ROOT_NODE);
+						contextNode = getDom();
 					}
 					else
 					{

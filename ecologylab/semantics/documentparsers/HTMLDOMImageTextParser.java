@@ -74,7 +74,7 @@ implements TidyInterface, HTMLAttributeNames
 	{
 		DOMWalkInformationTagger taggedDoc = new DOMWalkInformationTagger(tidy.getConfiguration(), purlConnection.getPurl(), this);
 		// this function actually traverse the dom tree
-		taggedDoc.generateCollections(document);
+		taggedDoc.generateCollections(getDom());
 		
 		TdNode contentBody = getContentBody(taggedDoc);
 		DOMWalkInformationTagger taggedContentnode = walkAndTagDom(contentBody, this);

@@ -44,7 +44,7 @@ public class XPathParser< SA extends SemanticAction> extends
 		*/
 		
 		recursiveExtraction(getMetadataTranslationScope(), metaMetadata,
-					container.metadata(), xpath, semanticActionHandler.getSemanticActionVariableMap(),document);
+					container.metadata(), xpath, semanticActionHandler.getSemanticActionVariableMap(), getDom());
 
 		/*
 		try

@@ -40,10 +40,10 @@ extends HTMLParserCommon<C, IC>
 	protected SemanticActionHandler<C, IC>	semanticActionHandler;
 	
 	/**
-	 * Root DOM node of the current HTML document
+	 * Root DOM of the current document
 	 */
-	protected org.w3c.dom.Document	document	= null;
-	
+	private org.w3c.dom.Document dom;
+
 	protected	Tidy 									tidy 			= new Tidy();
 	
 	public HTMLDOMParser(IC infoCollector,SemanticActionHandler<C,IC> semanticActionHandler)
@@ -59,14 +59,38 @@ extends HTMLParserCommon<C, IC>
 		tidy.setQuiet(true);
 		tidy.setShowWarnings(false);
 	}
+	
+	
+	protected org.w3c.dom.Document getDom()
+	{
+		org.w3c.dom.Document result	= this.dom;
+		if (result == null)
+		{
+			result	= createDom();
+			this.dom= result;
+		}
+		return result;
+	}
+	
+	/**
+	 * 
+	 * @return A bogus dom with a root element called empty.
+	 */
+	protected org.w3c.dom.Document createDom()
+	{
+		return  tidy.parseDOM(inputStream(), /*System.out*/ null );
+	}
+	
+	
 	/**
 	 * 
 	 * @return The root node of the document, which should be <html>.
 	 */
 	public TdNode getRootNode()
 	{
-		return ((DOMNodeImpl) document).adaptee;
+		return ((DOMNodeImpl) getDom()).adaptee;
 	}
+
 	/**
 	 * Andruid says: NEVER override this method when you parse HTML. 
 	 * Instead, override postParse().
@@ -79,8 +103,9 @@ extends HTMLParserCommon<C, IC>
 	   {
 	  	 // we dont build a tidy for for direct binding
 	  	 //Uncomment System.out to print parsed page to console.
-	  	 if(metaMetadata == null || !"direct".equals(metaMetadata.getParser()))
-	  		 		document 							= tidy.parseDOM(inputStream(), /*System.out*/ null );
+//	  	 if(metaMetadata == null || !"direct".equals(metaMetadata.getParser()))
+//	  		 		document 							= tidy.parseDOM(inputStream(), /*System.out*/ null );
+//	  	 getDom();
 	  	 
 //	  	 SimpleTimer.get("fetching_and_rendering.log").finishTiming(getContainer());
 	  	 
@@ -98,22 +123,12 @@ extends HTMLParserCommon<C, IC>
 
 	protected void postParse()
 	{
-		if (semanticActionHandler != null)
-			semanticActionHandler.getSemanticActionVariableMap().put(SemanticActionsKeyWords.DOCUMENT_ROOT_NODE, document);
-	}
-	/**
-	 * Root DOM node of the current HTML document
-	 * 
-	 * @return
-	 */
-	public org.w3c.dom.Document getDocumentNode()
-	{
-		return document;
+
 	}
 	
 	public void recycle()
 	{
-		document 	= null;
+		dom			 	= null;
 		tidy 			= null;
 		if (semanticActionHandler != null)
 		{

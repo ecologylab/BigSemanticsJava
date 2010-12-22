@@ -42,19 +42,11 @@ public class DirectBindingParser
 		
 		return populatedMetadata;
 	}
-	
-	/**
-	 * This method is called for direct binding only.
-	 * It creates a DOM, by parsing a 2nd time. This DOM would only be used if XPath parsing is used
-	 * specifically in the definition of variables.
-	 * @param purl
-	 */
+
 	@Override
-	protected void createDOMandParse(ParsedURL purl)
+	protected org.w3c.dom.Document createDom()
 	{
-		// used to create a DOM 
-		org.w3c.dom.Document document	= XMLTools.buildDOM(purl);
-		semanticActionHandler.getSemanticActionVariableMap().put(SemanticActionsKeyWords.DOCUMENT_ROOT_NODE, document);
+		return XMLTools.buildDOM(getTruePURL());
 	}
 
 }

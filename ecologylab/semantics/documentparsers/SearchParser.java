@@ -133,6 +133,7 @@ public class SearchParser
 	{
 		Document populatedMetadata	= container.metadata();
 		
+		//FIXME use overrides instead of constants here!!!!!!!!!!
 		if ("direct".equals(metaMetadata.getParser()))
 		{
 			populatedMetadata				= directBindingPopulateMetadata();
@@ -140,7 +141,7 @@ public class SearchParser
 		else if ("xpath".equals(metaMetadata.getParser()))
 		{
 			recursiveExtraction(getMetadataTranslationScope(), metaMetadata,
-					populatedMetadata, xpath, semanticActionHandler.getSemanticActionVariableMap(),document);
+					populatedMetadata, xpath, semanticActionHandler.getSemanticActionVariableMap(),getDom());
 			container.setMetadata(populatedMetadata);
 		}
 

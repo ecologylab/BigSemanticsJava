@@ -870,5 +870,13 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 		return null;
 	}
 
+	/**
+	 * 
+	 * @return	true to avoid building a DOM at the beginning
+	 */
+	public boolean doesDirectBinding()
+	{
+		return false;
+	}
 
 }
