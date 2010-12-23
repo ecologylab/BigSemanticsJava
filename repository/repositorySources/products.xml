@@ -13,7 +13,14 @@
     </collection>
 </meta_metadata>
 
-
+<meta_metadata name="amazon" type="product" parser="xpath" >
+	<selector url_path_tree="http://www.amazon.com/*/dp/*" />
+	
+	<scalar name="price" xpath="//b[@class='priceLarge']" />
+	<scalar name="title" xpath="//span[@id='btAsinTitle']" />
+	
+	<scalar name="description" xpath="//span[@class='productDescriptionWrapper']" />
+</meta_metadata>
 
 
 </meta_metadata_repository>
