@@ -174,8 +174,8 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 		Document newMetadata();
 	}
 
-	public static DocumentParser connect(final ParsedURL purl,
-			final Container container, final InfoCollector infoCollector)
+	public static<C extends Container, IC extends InfoCollector<C>> DocumentParser connect(final ParsedURL purl,
+			final Container<IC> container, final IC infoCollector)
 	{
 		{
 			Document metadata			= container.getMetadata();
@@ -296,7 +296,7 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 							else
 							{
 								// get new MetaMetadata & metadata
-								Document oldMetadata	=(Document) container.metadata();
+								Document oldMetadata	=(Document) container.getMetadata();
 								MetaMetadata newMetaMetadata	= infoCollector.getDocumentMM(connectionPURL);
 								newMetadata	= (Document) newMetaMetadata.constructMetadata();
 								container.setMetadata(newMetadata);

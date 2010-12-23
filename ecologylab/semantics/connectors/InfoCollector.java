@@ -11,6 +11,7 @@ import ecologylab.collections.Scope;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.documentparsers.DocumentParser;
+import ecologylab.semantics.html.documentstructure.SemanticInLinks;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
@@ -19,8 +20,6 @@ import ecologylab.semantics.seeding.SearchState;
 import ecologylab.semantics.seeding.Seed;
 import ecologylab.semantics.seeding.SeedDistributor;
 import ecologylab.semantics.seeding.SeedSet;
-import ecologylab.serialization.ElementState;
-import ecologylab.serialization.TranslationScope;
 
 /**
  * @author andruid
@@ -110,4 +109,9 @@ public interface InfoCollector<C extends Container>
 	public abstract SeedDistributor getSeedDistributor();
 
 	void setHeterogeneousSearchScenario(boolean b);
+	
+	boolean aContainerExistsFor(ParsedURL purl);
+	
+	C getContainerForSearch(C ancestor, Document metadata, ParsedURL purl, Seed seed, boolean reincarnate);
+
 }

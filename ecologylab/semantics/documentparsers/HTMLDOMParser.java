@@ -331,7 +331,7 @@ extends HTMLParserCommon<C, IC>
 	{
 		if (SHOW_PAGE_STRUCTURE_PREF.value())
 		{
-			Document metadata	=(Document) container.metadata();
+			Document metadata	=(Document) container.getMetadata();
 			if (metadata != null)
 				metadata.setPageStructure(pageType.getSimpleName());
 			else

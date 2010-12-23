@@ -11,6 +11,7 @@ import ecologylab.net.ParsedURL;
 import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.html.ParagraphText;
 import ecologylab.semantics.html.documentstructure.SemanticAnchor;
+import ecologylab.semantics.html.documentstructure.SemanticInLinks;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.seeding.QandDownloadable;
@@ -23,26 +24,48 @@ import ecologylab.serialization.TranslationScope;
  * @author andruid
  * 
  */
-public abstract class Container extends ContentElement<Document>
+public abstract class Container<IC extends InfoCollector> extends ContentElement<Document>
 implements QandDownloadable
 {
-
-	public Container(ContentElement progenitor)
+	DocumentParser 	parser;
+	
+	protected IC		infoCollector;
+	
+//	Container				ancestor;
+	
+	public Container(ContentElement progenitor, IC infoCollector)
 	{
 		super(progenitor);
-		
+		this.infoCollector	= infoCollector;
 	}
 
 	public abstract void  redirectInlinksTo(Container redirectedAbstractContainer);
 
-	public abstract void performDownload() throws IOException;
+	/**
+	 * This method performs the downloading action. It first calls the DocumentParser.connect() method
+	 * to get the appropriate parser for the URL, then downloads it and parses it. At last, it calls
+	 * the collect() method for each listener to allow the application to collect information from the
+	 * parsed metadata.
+	 */
+	@Override
+	public void performDownload() throws IOException
+	{
+		// calls connect to find the right parser, then calls the infocollector to download the content
+		// also process the semantic actions
+		
+		parser = DocumentParser.connect(purl(), this, infoCollector);
+		if (parser != null)
+			parser.parse();
+	}
 
 	public abstract void addAdditionalPURL(ParsedURL purl);
 
 	public abstract void resetPURL(ParsedURL connectionPURL);
 
-	public abstract DocumentParser getDocumentParser();
-
+	public DocumentParser getDocumentParser()
+	{
+		return parser;
+	}
 	public abstract ParsedURL purl();
 
 	abstract public TranslationScope getGeneratedMetadataTranslationScope();
@@ -64,25 +87,51 @@ implements QandDownloadable
 	
 	abstract public void setDispatchTarget(DispatchTarget documentType);
 	
-	abstract public boolean downloadHasBeenQueued();
+	public boolean downloadHasBeenQueued()
+	{
+		// TODO Auto-generated method stub
+		return false;
+	}
 
 	public abstract void setSearchResult(SeedDistributor sra, int resultsSoFar);
 	
 	public abstract void setQuery(String query);
 
 	
-	abstract public void addToCandidateLocalImages(AbstractImgElement imgElement);
+	public void addToCandidateLocalImages(AbstractImgElement imgElement)
+	{
+		// TODO Auto-generated method stub
+	}
 	
-	abstract public void createImageElementAndAddToPools(ParsedURL imagePurl, String alt, 
-			int width, int height, boolean isMap, ParsedURL hrefPurl);
+	public AbstractImgElement createImageElement(ParsedURL parsedImgUrl, String alt, int width,
+			int height, boolean isMap, ParsedURL hrefPurl)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+	public void createImageElementAndAddToPools(ParsedURL imagePurl, String alt, int width,
+			int height, boolean isMap, ParsedURL hrefPurl)
+	{
+		// TODO Auto-generated method stub
+	}
 
-	abstract public void allocLocalCollections();
+	public void createTextFromPhatContextAddToCollections(ParagraphText paraText)
+	{
+		// TODO Auto-generated method stub
+	}
+
+	public void allocLocalCollections()
+	{
+		// TODO Auto-generated method stub
+	}
 	
-	abstract public boolean crawlLinks();
+	public boolean crawlLinks()
+	{
+		// TODO Auto-generated method stub
+		return false;
+	}
 	
 	abstract public void hwSetTitle(String newTitle);
-	
-	abstract public void createTextFromPhatContextAddToCollections(ParagraphText paraText);
 	
 	abstract public int numLocalCandidates();
 	
@@ -96,8 +145,33 @@ implements QandDownloadable
 	
 	abstract public void setInArticleBody(boolean value);
 	
-	abstract public AbstractImgElement createImageElement(ParsedURL parsedImgUrl, String alt, 
-			int width, int height, boolean isMap, ParsedURL hrefPurl);
-	
 	abstract public BasicSite site();
+	
+	public SemanticInLinks semanticInLinks()
+	{
+		return null;
+	}
+
+	public Container ancestor()
+	{
+		return null;
+	}
+	
+	public void perhapsAddAdditionalContainer ( )
+	{
+		
+	}
+	
+	public int numOutlinks()
+	{
+		return 0;
+	}
+
+	/**
+	 * @param infoCollector the infoCollector to set
+	 */
+	public void setInfoCollector(IC infoCollector)
+	{
+		this.infoCollector = infoCollector;
+	}
 }

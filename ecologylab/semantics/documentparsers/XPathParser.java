@@ -7,6 +7,7 @@ import ecologylab.semantics.actions.SemanticAction;
 import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.actions.SemanticActionsKeyWords;
 import ecologylab.semantics.connectors.InfoCollector;
+import ecologylab.semantics.metadata.builtins.Document;
 
 /**
  * @author amathur
@@ -44,7 +45,7 @@ public class XPathParser< SA extends SemanticAction> extends
 		*/
 		
 		recursiveExtraction(getMetadataTranslationScope(), metaMetadata,
-					container.metadata(), xpath, semanticActionHandler.getSemanticActionVariableMap(), getDom());
+					container.getMetadata(), xpath, semanticActionHandler.getSemanticActionVariableMap(), getDom());
 
 		/*
 		try
@@ -58,6 +59,6 @@ public class XPathParser< SA extends SemanticAction> extends
 		}
 		*/
 		
-		return container.metadata();
+		return (Document)container.getMetadata();
 	}
 }

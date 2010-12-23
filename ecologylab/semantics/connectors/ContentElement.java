@@ -38,11 +38,6 @@ public abstract class ContentElement<M extends Metadata> extends SetElement impl
 	 */
 	protected M								metadata ;
 
-	public M getMetadata()
-	{
-		return metadata;
-	}
-
 	public ContentElement(ContentElement progenitor)
 	{
 		if (progenitor != null)
@@ -55,7 +50,7 @@ public abstract class ContentElement<M extends Metadata> extends SetElement impl
 	/**
 	 * Returns the Metadata stored about the content.
 	 */
-	public M metadata()
+	public M getMetadata()
 	{
 		return metadata;
 	}

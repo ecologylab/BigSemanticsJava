@@ -131,7 +131,7 @@ public class SearchParser
 	@Override
 	public Document populateMetadata()
 	{
-		Document populatedMetadata	= container.metadata();
+		Document populatedMetadata	= (Document) container.getMetadata();
 		
 		//FIXME use overrides instead of constants here!!!!!!!!!!
 		if ("direct".equals(metaMetadata.getParser()))
