@@ -15,7 +15,7 @@
 	<meta_metadata name="flickr_search" extends="document" comment="The flickr search class" parser="xpath">
 		<selector name="flickr_search_selector" />
 		<collection name="flickr_results" xpath="//div[@class='DetailResults']//div[@class='box']" child_type="flickr_image">
-			<composite name="clipping" xpath=".">
+			<composite name="clipping" xpath="." promote_children="true">
 				<scalar name="caption" xpath=".//h3[@class='PicTitle']" />
 			</composite>
 			<scalar name="location" xpath=".//span//img/@src" />
@@ -60,8 +60,8 @@
 		<scalar name="description" xpath="./div[@class='photo-desc']" ignore_in_term_vector="true" context_node="photoTD" />
 		<composite name="flickr_image" hide="true" xpath="." type="flickr_image">
 			<scalar name="location" xpath="//div[@class='photo-div']/img/@src" />
-			<composite name="clipping" xpath=".">
-				<scalar name="caption" xpath="./h1" context_node="photoTD" />
+			<composite name="clipping" xpath="." promote_children="true">
+				<scalar name="caption" xpath="./h1" context_node="photoTD"  />
 			</composite>
 			<collection name="flickr_tags" xpath="//a[@class='tag-item ywa-track']" child_type="flickr_tag">
 				<scalar name="tag_name" xpath="." />
@@ -154,7 +154,7 @@
 	<meta_metadata name="flickr_search_two" extends="document" comment="The flickr search class" parser="xpath">
 		<selector name="flickr_search_selector" />
 		<collection name="flickr_results" xpath="//div[@class='DetailResults']//div[@class='box']" child_type="flickr_image">
-			<composite name="clipping" xpath=".">
+			<composite name="clipping" xpath="." promote_children="true">
 				<scalar name="caption" xpath=".//h3[@class='PicTitle']" />
 			</composite>
 			<scalar name="location" xpath=".//span//img/@src" />
@@ -226,7 +226,7 @@
 
 		<composite name="flickr_image" xpath="." hide="true">
 			<scalar name="location" xpath="//div[@class='photo-div']/img/@src" />
-			<composite name="clipping" xpath=".">
+			<composite name="clipping" xpath="." promote_children="true">
 				<scalar name="caption" xpath="./h1" context_node="photoTD" />
 			</composite>
 		</composite>
