@@ -156,7 +156,8 @@ public class TermDictionary implements ApplicationProperties
 	{
 		try
 		{
-			createDictionary(Assets.getAsset(SemanticsAssetVersions.SEMANTICS_ASSETS_ROOT, "dictionary" + "/Dic.txt", null, !USE_ASSETS_CACHE, dictionaryAssetVersion));
+			final String ASSET_NAME = "dictionary";
+			createDictionary(Assets.getAsset(SemanticsAssetVersions.SEMANTICS_ASSETS_ROOT, ASSET_NAME + "/Dic.txt", ASSET_NAME, null, !USE_ASSETS_CACHE, dictionaryAssetVersion));
 		}
 		catch (Exception e)
 		{

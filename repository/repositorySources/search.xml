@@ -3,7 +3,7 @@
   <!-- +++++++++++++++++++++++++++++++++ More Specific Types - Search & its Children +++++++++++++++++++++++++++++++++ -->
 
   <meta_metadata name="search_result" extends="metadata" comment="">
-    <scalar name="heading" scalar_type="String" comment="The heading of search result" />
+    <scalar name="heading" scalar_type="String" comment="The heading of search result" hide="true"/>
     <scalar name="snippet" scalar_type="String" comment="The snippet of search result" />
     <scalar name="link" scalar_type="ParsedURL" comment="The link of the search result" hide="true"/>
     <scalar name="link_other" scalar_type="ParsedURL" comment="Alternate link in search results" />
@@ -33,26 +33,34 @@
   </meta_metadata>
   
   <meta_metadata name="google_scholar_search_result" extends="search_result" comment="A google scholar search result" user_agent_name="opera_9" parser="xpath">
-  	<scalar name="document_link" scalar_type="ParsedURL" />
-  	<scalar name="citation_count" scalar_type="Int" />
-  	<scalar name="citations_link" scalar_type="ParsedURL" />
-  	<scalar name="related_articles_link" scalar_type="ParsedURL" />
+  	<scalar name="document_link" scalar_type="ParsedURL" hide="true"/>
+  	<scalar name="citations" scalar_type="Int" navigates_to="citations_link" />
+  	<scalar name="citations_link" scalar_type="ParsedURL" hide="true" />
+  	<scalar name="related_articles_link" scalar_type="ParsedURL" label="related articles"/>
+  	<scalar name="versions" scalar_type="Int" navigates_to="versions_link" />
+  	<scalar name="versions_link" scalar_type="ParsedURL" hide="true" />
   </meta_metadata> 
   
   <meta_metadata name="google_scholar_search" extends="document" comment="The google Search class" user_agent_name="opera_9" parser="xpath">
     <selector url_stripped="http://scholar.google.com/scholar" />
+    <def_var name="links_row" xpath="//span[@class='gs_fl']" type="node" />
+    <def_var name="pub_row" xpath="//span[@class='gs_a']" type="node" />
     <collection name="search_results" xpath="//div[@class='gs_r']" child_type="google_scholar_search_result" no_wrap="true">
       <scalar name="heading" xpath="./div/h3/a" />
       <scalar name="snippet" xpath="./font">
       	<filter regex="Cited by [0-9]* - [A-Za-z \-@0-9]*" replace="" />
       </scalar>
       <scalar name="link" xpath="./div/h3/a/@href" />
-      <scalar name="document_link" xpath="./span/a/@href" />
-       <scalar name="citation_count" xpath="//span[@class='gs_fl']/a[1]">
+      <scalar name="document_link" xpath="./span/a/@href"/>
+      <scalar name="citations" context_node="links_row" xpath="./a[1]" >
       	<filter regex="Cited by " replace="" />
       </scalar>
-      <scalar name="citations_link" xpath="//span[@class='gs_fl']/a[1]/@href" />
-  	  <scalar name="related_articles_link" xpath="//span[@class='gs_fl']/a[2]/@href" />
+      <scalar name="citations_link" context_node="links_row" xpath="./a[1]/@href" />
+  	  <scalar name="related_articles_link" context_node="links_row" xpath="./a[2]/@href" />
+  	  <scalar name="versions" context_node="links_row" xpath="./a[last()]">
+  	  	<filter regex="All | versions" replace="" />
+  	  </scalar>
+	  <scalar name="versions_link" context_node="links_row" xpath="./a[last()]/@href"  />
     </collection>
     <semantic_actions>
       <get_field name="search_results" />
@@ -130,7 +138,7 @@
     <scalar name="summary" scalar_type="String" tag="Summary" />
     <scalar name="location" scalar_type="ParsedURL" tag="Url" hide="true" />
     <scalar name="referer_url" scalar_type="ParsedURL" tag="RefererUrl" hide="true" />
-    <scalar name="modification_date" scalar_type="String" tag="ModificationDate" hide="true" />
+    <scalar name="modification_date" scalar_type="String" tag="ModificationDate" />
     <scalar name="mime_type" scalar_type="String" tag="MimeType" hide="true" />
     <composite name="thumbnail" tag="Thumbnail" type="yahoo_thumbnail" />
   </meta_metadata>
@@ -146,18 +154,11 @@
       <get_field name="results" />
       <for_each collection="results" as="result">
         <get_field object="result" name="location" />
-        <get_field object="result" name="summary" />
-         <get_field object="result" name="description" />
         
-          <parse_document now="true">
-            <arg value="location" name="container_link" />
-            <arg value="result" name="mixin" />
-          </parse_document>
-        
-<!--        <parse_document now="true">-->
-<!--          <arg value="result" name="document" />-->
-<!--          <arg value="summary" name="anchor_text" />-->
-<!--        </parse_document>-->
+         <parse_document now="true">
+           <arg value="location" name="container_link" />
+           <arg value="result" name="mixin" />
+         </parse_document>      
       </for_each>
     </semantic_actions>
   </meta_metadata>

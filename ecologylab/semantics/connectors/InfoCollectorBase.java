@@ -208,10 +208,10 @@ implements InfoCollector<AC>, SemanticsPrefs, ApplicationProperties, DocumentPar
 	
 	static
 	{
-		AssetsRoot mmAssetsRoot = new AssetsRoot(EnvironmentGeneric.configDir(), 
-				ApplicationEnvironment.runningInEclipse() ? Files.newFile(EnvironmentGeneric.codeBase().file(), "../ecologylabSemantics/") : Files.newFile(PropertiesAndDirectories.thisApplicationDir(), SEMANTICS));
+		AssetsRoot mmAssetsRoot = new AssetsRoot(EnvironmentGeneric.configDir().getRelative(SEMANTICS), 
+				ApplicationEnvironment.runningInEclipse() ? Files.newFile(EnvironmentGeneric.codeBase().file(), "../ecologylabSemantics/repository") : Files.newFile(PropertiesAndDirectories.thisApplicationDir(), SEMANTICS + "/repository"));
 
-		METAMETADATA_REPOSITORY_DIR_FILE 	= Assets.getAsset(mmAssetsRoot, META_METADATA_REPOSITORY_DIR, null, !USE_ASSETS_CACHE, SemanticsAssetVersions.METAMETADATA_ASSET_VERSION);
+		METAMETADATA_REPOSITORY_DIR_FILE 	= Assets.getAsset(mmAssetsRoot, null, "repository", null, !USE_ASSETS_CACHE, SemanticsAssetVersions.METAMETADATA_ASSET_VERSION);
 		println("\t\t-- Reading meta_metadata from " + METAMETADATA_REPOSITORY_DIR_FILE);
 
 		META_METADATA_REPOSITORY 					= MetaMetadataRepository.load(METAMETADATA_REPOSITORY_DIR_FILE);
