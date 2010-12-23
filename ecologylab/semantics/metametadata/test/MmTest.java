@@ -55,7 +55,7 @@ public class MmTest extends Debug implements DispatchTarget<MyContainer>
 	@Override
 	public void delivery(MyContainer container)
 	{
-		Metadata metadata = container.metadata();
+		Metadata metadata = container.getMetadata();
 		if (metadata == null)
 		{
 			warning("null metadata for container " + container);
