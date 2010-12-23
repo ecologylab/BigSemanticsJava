@@ -188,9 +188,13 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 	{
 		if (mixin != null)
 		{
-			mixins().add(mixin);
-			if (mixin.termVector() != null)
-				termVector().add(mixin.termVector());
+			ArrayList<Metadata> mixins = mixins();
+			if (!mixins.contains(mixin))
+			{
+				mixins.add(mixin);
+				if (mixin.termVector() != null)
+					termVector().add(mixin.termVector());
+			}
 		}
 	}
 
