@@ -36,7 +36,7 @@ public class MetadataString extends MetadataScalarBase<String>
 	{
 		if ((value != null) && (value.length() > 0))
 		{
-			value		= XMLTools.unescapeXML(value);
+//			value		= XMLTools.unescapeXML(value); Now done in FieldDescriptor.setFieldToScalar
 			this.value = value;
 			if (termVector != null)
 				termVector.reset(value);
