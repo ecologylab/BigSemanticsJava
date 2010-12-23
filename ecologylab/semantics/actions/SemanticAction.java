@@ -6,10 +6,19 @@ package ecologylab.semantics.actions;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import ecologylab.collections.Scope;
+import ecologylab.net.ParsedURL;
+import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.documentparsers.DocumentParser;
+import ecologylab.semantics.html.documentstructure.SemanticAnchor;
+import ecologylab.semantics.html.documentstructure.SemanticInLinks;
+import ecologylab.semantics.metadata.Metadata;
+import ecologylab.semantics.metadata.builtins.Document;
+import ecologylab.semantics.metadata.builtins.Entity;
 import ecologylab.semantics.metametadata.Argument;
 import ecologylab.semantics.metametadata.MetaMetadata;
+import ecologylab.semantics.seeding.Seed;
 import ecologylab.serialization.ElementState;
 
 /**
@@ -34,6 +43,7 @@ import ecologylab.serialization.ElementState;
 
 public abstract class SemanticAction<IC extends InfoCollector, SAH extends SemanticActionHandler>
 		extends ElementState
+		implements SemanticActionNamedArguments
 {
 
 	@simpl_collection
@@ -215,6 +225,132 @@ public abstract class SemanticAction<IC extends InfoCollector, SAH extends Seman
 		ElementState parent	= that.parent();
 		
 		return (parent == null) ? null : getMetaMetadata(parent);
+	}
+
+	public Container createContainer(DocumentParser documentParser)
+	{
+		Container localContainer = null;
+		// get the ancestor container
+		Container ancestor = documentParser.getContainer();
+
+		// get the seed. Non null only for search types .
+		Seed seed = documentParser.getSeed();
+		ParsedURL purl = null;
+		Document metadata = (Document) getArgumentObject(DOCUMENT);
+		Metadata mixin		= (Metadata) getArgumentObject(MIXIN);
+		if (metadata == null)
+		{
+			purl = (ParsedURL) getArgumentObject(CONTAINER_LINK);
+			if (purl == null)
+			{
+				Entity entity = (Entity) getArgumentObject(ENTITY);
+				if (entity != null)
+				{
+					purl = entity.key();
+					metadata = (Document) entity.getLinkedDocument();
+				}
+			}
+		}
+		if (purl == null && metadata != null)
+			purl = metadata.getLocation();
+
+		// FIXME check for some weird case when entity has nothing.
+		if (purl != null)
+		{
+			boolean containerIsOld;
+			synchronized (infoCollector.globalCollectionContainersLock())
+			{
+				containerIsOld = infoCollector.aContainerExistsFor(purl);
+				if (seed == null)
+					localContainer = infoCollector.getContainer(ancestor, metadata, null, purl, false, false, false);
+				else
+				{
+					// Avoid recycling containers.
+					// We trust GlobalCollections has had a good reason to discard the container.
+					localContainer 	= infoCollector.getContainerForSearch(ancestor, metadata, purl, seed, true);
+				}
+				if (localContainer != null)
+					metadata				= (Document) localContainer.getMetadata();
+				if (mixin != null && metadata != null)
+					metadata.addMixin(mixin);
+			}
+			
+			String anchorText = (String) getArgumentObject(ANCHOR_TEXT);
+			// create anchor text from Document title if there is none passed in directly, and we won't
+			// be setting metadata
+			if (containerIsOld && anchorText == null && metadata != null)
+				anchorText = metadata.getTitle();
+
+			String anchorContextString 		= (String) getArgumentObject(ANCHOR_CONTEXT);
+			boolean citationSignificance	= getArgumentBoolean(CITATION_SIGNIFICANCE, false);
+			float significanceVal 				= getArgumentFloat(SIGNIFICANCE_VALUE, 1);
+			boolean traversable 					= getArgumentBoolean(TRAVERSABLE, true);
+			boolean ignoreContextForTv 		= getArgumentBoolean(IGNORE_CONTEXT_FOR_TV, false);
+			
+			if (traversable)
+				infoCollector.traversable(purl);
+
+			if (localContainer != null)
+			{
+				boolean anchorIsInAncestor = false;
+				if (ancestor != null)
+				{
+					// Chain the significance from the ancestor
+					SemanticInLinks ancestorInLinks = ancestor.semanticInLinks();
+					if (ancestorInLinks != null)
+					{
+						significanceVal *= ancestorInLinks.meanSignificance();
+						anchorIsInAncestor = ancestorInLinks.containsPurl(purl);
+					}
+				}
+				if(! anchorIsInAncestor)
+				{
+					//By default use the boost, unless explicitly stated in this site's MMD
+					boolean useSemanticBoost = !localContainer.site().ignoreSemanticBoost();
+					SemanticAnchor semanticAnchor = new SemanticAnchor(purl, null, citationSignificance,
+							significanceVal, documentParser.purl(), false, useSemanticBoost);// this is not fromContentBody,
+																																		// but is fromSemanticActions
+					if(ignoreContextForTv)
+						semanticAnchor.addAnchorContextToTV(anchorText, null);
+					else
+						semanticAnchor.addAnchorContextToTV(anchorText, anchorContextString);
+					localContainer.addSemanticInLink(semanticAnchor, ancestor);
+				}
+				else
+				{
+					debug("Ignoring inlink, because ancestor contains the same: ancestor -- purl :: " + ancestor + " -- " + purl);
+				}
+			}
+			// adding the return value to map
+			Scope semanticActionVariableMap = semanticActionHandler.getSemanticActionVariableMap();
+			if(semanticActionVariableMap != null)
+				semanticActionVariableMap.put(getReturnObjectName(), localContainer);
+			else
+				error("semanticActionVariableMap is null !! Not frequently reproducible either. Place a breakpoint here to try fixing it next time.");
+			// set flags if any
+			// setFlagIfAny(action, localContainer);
+		}
+		// return the value. Right now no need for it. Later it might be used.
+		return localContainer;
+	}
+
+	/**
+	 * Lookup the container in the named arguments map, and return it if its there. Otherwise, use
+	 * location and metadata arguments from that map to create the container.
+	 * @param documentParser
+	 * 
+	 * @return
+	 */
+	public Container getOrCreateContainer(DocumentParser documentParser)
+	{
+		Container result	= (Container) getArgumentObject(CONTAINER);
+		if (result == null)
+		{
+			result					= createContainer(documentParser);
+			if (result == null)
+				result				= documentParser.getContainer();
+		}
+		return result;
 	}
 
 }
