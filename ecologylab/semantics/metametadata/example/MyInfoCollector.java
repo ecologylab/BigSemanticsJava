@@ -412,4 +412,19 @@ public class MyInfoCollector<C extends MyContainer> extends Debug implements Inf
 		
 	}
 
+	@Override
+	public boolean aContainerExistsFor(ParsedURL purl)
+	{
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public C getContainerForSearch(C ancestor, Document metadata, ParsedURL purl, Seed seed,
+			boolean reincarnate)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

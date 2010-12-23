@@ -81,7 +81,7 @@ public class WeatherDataCollector extends Debug implements DispatchTarget<MyCont
 	@Override
 	public void delivery(MyContainer container)
 	{
-		Metadata metadata = container.metadata();
+		Metadata metadata = container.getMetadata();
 		if (metadata != null && metadata instanceof WeatherReport)
 		{
 			WeatherReport report = (WeatherReport) metadata;

@@ -38,7 +38,7 @@ import ecologylab.serialization.TranslationScope;
  * 
  * @author quyin
  */
-public class MyContainer extends Container
+public class MyContainer extends Container<MyInfoCollector<MyContainer>>
 {
 
 	protected MyInfoCollector	infoCollector;
@@ -52,7 +52,7 @@ public class MyContainer extends Container
 
 	public MyContainer(ContentElement progenitor, MyInfoCollector infoCollector, ParsedURL purl)
 	{
-		super(progenitor);
+		super(progenitor, infoCollector);
 		this.infoCollector = infoCollector;
 		this.metadata = (Document) infoCollector.constructDocument(purl);
 		if (progenitor != null && progenitor instanceof MyContainer)
@@ -80,64 +80,6 @@ public class MyContainer extends Container
 	{
 		// TODO Auto-generated method stub
 		return false;
-	}
-
-	@Override
-	public void addToCandidateLocalImages(AbstractImgElement imgElement)
-	{
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void allocLocalCollections()
-	{
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public boolean crawlLinks()
-	{
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public AbstractImgElement createImageElement(ParsedURL parsedImgUrl, String alt, int width,
-			int height, boolean isMap, ParsedURL hrefPurl)
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void createImageElementAndAddToPools(ParsedURL imagePurl, String alt, int width,
-			int height, boolean isMap, ParsedURL hrefPurl)
-	{
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void createTextFromPhatContextAddToCollections(ParagraphText paraText)
-	{
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public boolean downloadHasBeenQueued()
-	{
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public DocumentParser getDocumentParser()
-	{
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	// new: generated when repository is compiled
@@ -175,32 +117,6 @@ public class MyContainer extends Container
 		return 0;
 	}
 
-	/**
-	 * This method performs the downloading action. It first calls the DocumentParser.connect() method
-	 * to get the appropriate parser for the URL, then downloads it and parses it. At last, it calls
-	 * the collect() method for each listener to allow the application to collect information from the
-	 * parsed metadata.
-	 */
-	@Override
-	public void performDownload() throws IOException
-	{
-		// calls connect to find the right parser, then calls the infocollector to download the content
-		// also process the semantic actions
-		
-		DocumentParser parser = DocumentParser.connect(purl(), this, infoCollector);
-		if (parser != null)
-			parser.parse();
-
-		/*
-		 * recording visited urls could exhaust memory!
-		 * 
-		 * infoCollector.log(purl().toString()); if(!infoCollector.isVisited(purl())) {
-		 * System.out.println("\nDownloading slow");
-		 * infoCollector.getDownloadMonitor().pause(500);//60000 + (MathTools.random(100)*2000));
-		 * infoCollector.setVisited(this); }
-		 */
-	}
-
 	@Override
 	public void presetDocumentType(DocumentParser documentType)
 	{
@@ -212,9 +128,9 @@ public class MyContainer extends Container
 	@Override
 	public ParsedURL purl()
 	{
-		if (metadata() == null)
+		if (getMetadata() == null)
 			return null;
-		return metadata().getLocation();
+		return getMetadata().getLocation();
 	}
 
 	@Override
@@ -234,8 +150,8 @@ public class MyContainer extends Container
 	@Override
 	public void resetPURL(ParsedURL connectionPURL)
 	{
-		if (metadata() != null)
-			metadata().setLocation(connectionPURL);
+		if (getMetadata() != null)
+			getMetadata().setLocation(connectionPURL);
 		// infoCollector.setVisited(this);
 	}
 
