@@ -8,13 +8,6 @@
 		<scalar name="isbn" comment="" scalar_type="String" />
 	</meta_metadata>
 	
-	<meta_metadata name="author" extends="document" comment="An author of an article or creative work.">
-		<scalar name="name" navigates_to="location" is_facet="true" comment="" scalar_type="String" />
-		<scalar name="affiliation" comment="" scalar_type="String" />
-		<scalar name="location" hide="true" />
-		<scalar name="city" scalar_type="String" />
-	</meta_metadata>
-	
 	<meta_metadata name="scholarly_article" extends="pdf">
 		<scalar name="metadata_page" shadows="location" comment="citation.cfm" scalar_type="ParsedURL" />
 		<scalar name="abstract_field" shadows="summary" comment="" tag="abstract" scalar_type="String" label="abstract" layer="9.0"/>
