@@ -597,7 +597,7 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 	 */
 	public ParsedURL purl ( )
 	{
-		return (container == null) ? null : container.purl();
+		return purlConnection != null ? purlConnection.getPurl() : (container != null) ? container.purl() : null;
 	}
 
 	public String toString ( )
