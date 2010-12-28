@@ -23,7 +23,7 @@ public class MetadataBuiltinsTranslationScope extends Debug
 		Document.class, 
 		Entity.class,
 		Clipping.class,
-//		ClippableDocument.class, 
+		ClippableMetadata.class, 
 		Image.class, 
 		Text.class,
 		Surrogate.class,
