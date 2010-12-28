@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
 
 import ecologylab.appframework.types.prefs.Pref;
 import ecologylab.collections.PrefixCollection;
+import ecologylab.collections.PrefixPhrase;
 import ecologylab.generic.Debug;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.net.ParsedURL;
@@ -478,15 +479,10 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 
 				if (result == null)
 				{
-					String protocolStrippedURL = purl.toString().split("://")[1];
-					String matchingPhrase = urlPrefixCollection.getMatchingPhrase(protocolStrippedURL, '/');
-					// FIXME -- andruid needs abhinav to explain this code
-					// better and make more clear!!!
-					if (matchingPhrase != null)
+					PrefixPhrase matchingPrefix	= urlPrefixCollection.getMatchingPrefix(purl);
+					if (matchingPrefix != null)
 					{
-						String key = purl.url().getProtocol() + "://" + matchingPhrase;
-
-						result = documentRepositoryByUrlStripped.get(key);
+						result = (MetaMetadata) matchingPrefix.getMappedObject();
 					}
 				}
 
@@ -687,7 +683,9 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 				ParsedURL urlPathTree = selector.getUrlPathTree();
 				if (urlPathTree != null)
 				{
-					urlPrefixCollection.add(urlPathTree);
+					PrefixPhrase pp	= urlPrefixCollection.add(urlPathTree);
+					pp.setMappedObject(metaMetadata);
+					
 					//TODO is this next line correct??? it looks wrong!
 					repositoryByUrlStripped.put(urlPathTree.toString(), metaMetadata);
 					metaMetadata.setMmSelectorType(MMSelectorType.LOCATION);
