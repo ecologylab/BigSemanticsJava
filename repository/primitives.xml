@@ -5,7 +5,7 @@
 	</meta_metadata>
 	
 	<meta_metadata name="clipping" dont_generate_class="true">
-		<scalar name="caption" style="h1" layer="11.0" comment="The caption of the image." scalar_type="String" />
+		<scalar name="caption" style="h1" layer="11.0" comment="The caption of the image." scalar_type="String"/>
 		<scalar name="context" layer="10.0" scalar_type="String" />
 		<scalar name="xpath" scalar_type="String" hide="true"/>
 		<composite name="source" type="document"/>
@@ -79,7 +79,7 @@
 			<suffix>bmp</suffix>
 		</selector>
 		<composite name="clipping">
-			<scalar name="caption" always_show="true" />
+			<scalar name="caption" always_show="true" navigates_to="image.location" />
 		</composite>
 		<scalar name="location" hide="true" layer="9.0" comment="Location of the image." scalar_type="ParsedURL" />
 		<scalar name="local_location" hide="true" comment="Relative location of local copy of image." scalar_type="File" />

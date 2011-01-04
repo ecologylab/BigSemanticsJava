@@ -95,6 +95,11 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 	private boolean						isDnd;
 	
 	/**
+	 * Indicates whether or not metadata has changed since last displayed.
+	 */
+	private boolean						metadataChanged;
+	
+	/**
 	 * This constructor should *only* be used when marshalled Metadata is read.
 	 */
 	public Metadata()
@@ -250,7 +255,7 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 
 			// "null" happens with mixins fieldAccessor b'coz getValueString() returns "null".
 			//TODO use MetaMetadataField.numNonDisplayedFields()
-			boolean isVisibleField = metaMetadataField.isAlwaysShow() || (hasVisibleNonNullField && !metaMetadataField.isHide());
+			boolean isVisibleField = !metaMetadataField.isHide() && (metaMetadataField.isAlwaysShow() || hasVisibleNonNullField);
 			if (isVisibleField)
 				size++;
 		}
@@ -654,5 +659,60 @@ implements MetadataBase, Iterable<MetadataFieldDescriptor>
 	public @interface mm_name
 	{
 		String value();
+	}
+	
+	public boolean hasMetadataChanged()
+	{
+		return metadataChanged;
+	}
+	
+	public void setMetadataChanged(boolean value)
+	{
+		this.metadataChanged = value;
+	}
+
+	/**
+	 * Iterator over fields to find all metadata fields that have changed.
+	 * 
+	 * @return Collection of fields that have changed since last displayed.
+	 */
+	public ArrayList<Metadata> findChangedMetadataFields()
+	{
+		ArrayList<Metadata> result = new ArrayList<Metadata>();
+		
+		ClassAndCollectionIterator iterator = this.metadataIterator();
+		while (iterator.hasNext())
+		{
+			MetadataBase fieldValue = iterator.next();
+			if (fieldValue instanceof Metadata)
+			{
+				final Metadata metadata = (Metadata) fieldValue;
+				if (metadata.hasMetadataChanged())
+					result.add(metadata);
+				
+				result.addAll(metadata.findChangedMetadataFields());
+			}
+		}
+		
+		return result;
+	}
+
+	/**
+	 * Lookup the value of a metadata field specified by "." delimited name used to navigate the meta-metadata tree.
+	 * 
+	 * @param fieldPath "." delimited path to metadata field
+	 * @return
+	 * @throws IllegalArgumentException
+	 * @throws IllegalAccessException
+	 */
+	public MetadataBase lookupMetadataValue(String fieldPath) throws IllegalArgumentException, IllegalAccessException
+	{
+		String[] split 						= fieldPath.split("\\.", 2);
+		MetaMetadataField mmField = metaMetadata.lookupChild(split[0]);
+		MetadataBase value 				= (MetadataBase) mmField.getMetadataFieldDescriptor().getField().get(this);
+		if (split.length > 1)
+			value = ((Metadata) value).lookupMetadataValue(split[1]);
+		
+		return value;
 	}
 }

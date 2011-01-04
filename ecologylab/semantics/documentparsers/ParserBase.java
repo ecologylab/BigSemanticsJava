@@ -128,6 +128,7 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 		// build the metadata object
 
 		Metadata populatedMetadata = populateMetadata();
+		populatedMetadata.setMetadataChanged(true);
 
 		try
 		{
