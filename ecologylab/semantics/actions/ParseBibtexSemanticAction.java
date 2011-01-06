@@ -45,7 +45,7 @@ public class ParseBibtexSemanticAction<IC extends InfoCollector, SAH extends Sem
 	@Override
 	public Object perform(Object obj)
 	{
-		String bibtexMmdName = getArgumentValue("bibtex_meta_metadata_name");
+		String bibtexMmdName = getArgumentValueName("bibtex_meta_metadata_name");
 		MetaMetadata bibtexMmd = infoCollector.metaMetaDataRepository().getByTagName(bibtexMmdName);
 		if (bibtexMmd == null)
 		{

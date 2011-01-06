@@ -113,17 +113,59 @@ public abstract class SemanticAction<IC extends InfoCollector, SAH extends Seman
 		return args != null && args.size() > 0;
 	}
 
-	public String getArgumentValue(String argName)
+	public String getArgumentValueName(String argName)
 	{
-		return (args != null && args.containsKey(argName)) ? args.get(argName).getValue() : null;
+		String result = null;
+		if (args != null)
+		{
+			Argument argument = args.get(argName);
+			if (argument != null) 
+			{
+				result	= argument.getValue();
+			}
+		}
+		return result;
+	}
+
+	public String getArgumentAltValueName(String argName)
+	{
+		String result = null;
+		if (args != null)
+		{
+			Argument argument = args.get(argName);
+			if (argument != null) 
+			{
+				result	= argument.getAltValue();
+			}
+		}
+		return result;
 	}
 
 	public Object getArgumentObject(String argName)
 	{
-		String objectName = getArgumentValue(argName);
-		if (objectName == null)
-			return null;
-		return semanticActionHandler.getSemanticActionVariableMap().get(objectName);
+		Object result			= null;
+		if (args != null)
+		{
+			Argument argument = args.get(argName);
+			if (argument != null)
+			{
+				String argumentValueName 					= argument.getValue();
+				if (argumentValueName != null)
+				{
+					Scope semanticActionVariableMap = semanticActionHandler.getSemanticActionVariableMap();
+					result = semanticActionVariableMap.get(argumentValueName);				
+					if (result == null)
+					{
+						argumentValueName 							= argument.getAltValue();
+						if (argumentValueName != null)
+						{
+							result = semanticActionVariableMap.get(argumentValueName);				
+						}					
+					}
+				}
+			}
+		}
+		return result;
 	}
 
 	public int getArgumentInteger(String argName, int defaultValue)

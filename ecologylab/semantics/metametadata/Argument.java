@@ -21,16 +21,22 @@ implements Mappable
 		super();
 	}
 	/**
+	 * The name of the argument
+	 */
+	@simpl_scalar
+	private String name;
+
+	/**
 	 * The value of the argument
 	 */
 	@simpl_scalar
 	private String value;
 
 	/**
-	 * The name of the argument
+	 * The value of the argument if the first value is null.
 	 */
 	@simpl_scalar
-	private String name;
+	private String altValue;
 
 	/**
 	 * The check to be performed for this argument.
@@ -51,6 +57,10 @@ implements Mappable
 		return value;
 	}
 
+	public String getAltValue()
+	{
+		return altValue;
+	}
 	/**
 	 * @param value
 	 *            the value to set
