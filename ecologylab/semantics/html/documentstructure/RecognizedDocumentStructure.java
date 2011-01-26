@@ -15,7 +15,7 @@ import ecologylab.generic.IntSlot;
 import ecologylab.generic.StringTools;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.html.DOMWalkInformationTagger;
-import ecologylab.semantics.html.HTMLElement;
+import ecologylab.semantics.html.HTMLElementTidy;
 import ecologylab.semantics.html.ImgElement;
 import ecologylab.semantics.html.ParagraphText;
 import ecologylab.semantics.html.TidyInterface;
@@ -334,7 +334,7 @@ implements HTMLAttributeNames
 	 * @param ina
 	 * @return
 	 */
-	protected ParsedURL findAnchorPURLforImgNode(TidyInterface htmlType, HTMLElement ina) 
+	protected ParsedURL findAnchorPURLforImgNode(TidyInterface htmlType, HTMLElementTidy ina) 
 	{
 		boolean isparentHref = ina.getNode().parent().element.equals("a"); 
 		ParsedURL anchorPurl = null;

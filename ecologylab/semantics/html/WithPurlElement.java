@@ -11,7 +11,7 @@ import ecologylab.net.ParsedURL;
  * @author andruid
  *
  */
-public class WithPurlElement extends HTMLElement
+public class WithPurlElement extends HTMLElementTidy
 {
 	ParsedURL			basePurl;
 	

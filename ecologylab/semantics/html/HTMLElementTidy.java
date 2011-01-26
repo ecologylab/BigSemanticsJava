@@ -19,7 +19,7 @@ import ecologylab.semantics.html.utils.StringBuilderUtils;
  * @author eunyee
  *
  */    
-public class HTMLElement
+public class HTMLElementTidy
 implements HTMLAttributeNames, ImageConstants
 {
 	public static final int	INDEX_NOT_CALCULATED	= -1;
@@ -36,12 +36,12 @@ implements HTMLAttributeNames, ImageConstants
 	
 	int			localXPathIndex	= INDEX_NOT_CALCULATED;
 	
-	public HTMLElement()
+	public HTMLElementTidy()
 	{
 		
 	}
 	
-	public HTMLElement(TdNode node)
+	public HTMLElementTidy(TdNode node)
 	{
 		this.node						= node;
 		addAttributes(node.attributes);

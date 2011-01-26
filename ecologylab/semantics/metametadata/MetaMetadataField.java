@@ -107,7 +107,6 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 
 	@simpl_scalar
 	protected String																			style;
-
 	/**
 	 * Specifies the order in which a field is displayed in relation to other fields.
 	 */
@@ -311,6 +310,11 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	public MetadataFieldDescriptor getMetadataFieldDescriptor()
 	{
 		return metadataFieldDescriptor;
+	}
+	
+	public String getStyle()
+	{
+		return style;
 	}
 
 	public String getName()

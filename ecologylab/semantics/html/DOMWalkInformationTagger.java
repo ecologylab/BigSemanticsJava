@@ -410,9 +410,9 @@ implements HTMLAttributeNames
 		currentNode			= null;
 	}
 
-	private static void recycle(Collection<? extends HTMLElement> nodeCollection)
+	private static void recycle(Collection<? extends HTMLElementTidy> nodeCollection)
 	{
-		for (HTMLElement thatNode: nodeCollection)
+		for (HTMLElementTidy thatNode: nodeCollection)
 			thatNode.recycle();
 	}
 
