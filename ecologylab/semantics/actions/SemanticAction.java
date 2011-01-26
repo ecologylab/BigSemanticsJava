@@ -280,9 +280,10 @@ public abstract class SemanticAction<IC extends InfoCollector, SAH extends Seman
 		ParsedURL purl = null;
 		Document metadata = (Document) getArgumentObject(DOCUMENT);
 		Metadata mixin		= (Metadata) getArgumentObject(MIXIN);
+		purl = (ParsedURL) getArgumentObject(CONTAINER_LINK);
 		if (metadata == null)
 		{
-			purl = (ParsedURL) getArgumentObject(CONTAINER_LINK);
+//			purl = (ParsedURL) getArgumentObject(CONTAINER_LINK);
 			if (purl == null)
 			{
 				Entity entity = (Entity) getArgumentObject(ENTITY);
