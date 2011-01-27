@@ -268,9 +268,12 @@ implements InfoCollector<AC>, SemanticsPrefs, ApplicationProperties, DocumentPar
 			this.seedSet = newSeeds;
 		else
 		{
-			for (Seed seed: newSeeds)
+			if (!newSeeds.isEmpty())
 			{
-				this.seedSet.add(seed, this);
+				for (Seed seed: newSeeds)
+				{
+					this.seedSet.add(seed, this);
+				}
 			}
 		}
 	}
