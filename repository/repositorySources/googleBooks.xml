@@ -28,16 +28,19 @@
 			<scalar name="location" hide="true" xpath="./@href" scalar_type="ParsedURL" />
 		</collection>	
 		<scalar name="about_the_author" layer="7.0" xpath="//div[@class='textmodulecontent']" scalar_type="String" />
-		<collection name="references_from_books" hide="true" xpath="//div[@id='citations_module_v']/div[1]/div/div/table/tr/td[2]" child_type="scholarly_article">
-			<scalar name="title" xpath="./div/h5" />
-			<scalar name="location" xpath=".//@href" />
-			<scalar name="author_list" xpath="./div/font/span/span[1]" />	
+		<collection name="references_from_books" hide="true" xpath="//div[@id='citations_module_v']/div[1]/div/div" child_type="scholarly_article">
+			<scalar name="title" xpath="./table/tr/td[2]/div/h5" />
+			<scalar name="location" xpath="./table/tr/td[2]/div/h5/a/@href" />
+			<collection name="authors" xpath="./table/tr/td[2]/div/font/span/span[1]/a>
+				<scalar name="name" xpath="." />
+				<scalar name="location" xpath="./@href" />	
+			</collection>
 		</collection>
-		<collection name="references_from_google_scholar" hide="true" xpath="//div[@id='citations_module_v']/div[2]//div" child_type="scholarly_article">
+		<!-- <collection name="references_from_google_scholar" hide="true" xpath="//div[@id='citations_module_v']/div[2]//div" child_type="scholarly_article">
 			<scalar name="title" xpath="//div[@id='citations_module_v']/div[2]//div/div//a" />
 			<scalar name="location" xpath="//div[@id='citations_module_v']/div[2]//div/h5//@href" />
 			<scalar name="author_list" xpath="//div[@id='citations_module_v']/div[2]//div/div/span[1]" />				
-		</collection>
+		</collection>-->
 		<scalar name="isbn" layer="5.0" xpath="//table[@id='metadata_content_table']/tr[contains(., 'ISBN')]" scalar_type="String">
 			<filter regex="ISBN" replace="" />
 		</scalar>
