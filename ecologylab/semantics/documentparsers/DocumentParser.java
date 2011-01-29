@@ -27,6 +27,7 @@ import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
+import ecologylab.semantics.metametadata.RedirectHandling;
 import ecologylab.semantics.seeding.Seed;
 import ecologylab.serialization.ElementState;
 
@@ -267,8 +268,11 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 				else
 				// redirect to a new url
 				{
+					Document metadata	=(Document) container.getMetadata();
+					MetaMetadata mm	= (MetaMetadata) metadata.getMetaMetadata();
+					RedirectHandling redirectHandling = mm.getRedirectHandling();
 
-					if (infoCollector.accept(connectionPURL))
+					if (metadata.isAlwaysAcceptRedirect() || infoCollector.accept(connectionPURL))
 					{
 						println("redirect: " + purl + " -> " + connectionPURL);
 						String domain = connectionPURL.domain();
@@ -287,24 +291,28 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 							// }
 							
 							/*
-							 * Unnecessary now because of how ecocache handles the acm gateway pages
+							 * Was unnecessary  because of how ecocache handles the acm gateway pages
+							 * But actually, we are not using ecocache :-(
 							 */
-							if (!Pref.lookupBoolean(CFPrefNames.USING_PROXY) && "acm.org".equals(domain) && "pdf".equals(connPURLSuffix))
+							if (/* !Pref.lookupBoolean(CFPrefNames.USING_PROXY) && */
+									"acm.org".equals(domain) && "pdf".equals(connPURLSuffix))
 							{
 								return true;
 							}
 							else
 							{
-								// get new MetaMetadata & metadata
-								Document oldMetadata	=(Document) container.getMetadata();
-								MetaMetadata newMetaMetadata	= infoCollector.getDocumentMM(connectionPURL);
-								newMetadata	= (Document) newMetaMetadata.constructMetadata();
+								// get new metadata
+								newMetadata	= infoCollector.constructDocument(connectionPURL);
 								container.setMetadata(newMetadata);
 //			done by resetPURL()					newMetadata.setLocation(oldMetadata.getLocation());
-								newMetadata.setQuery(oldMetadata.getQuery());
+								newMetadata.setQuery(metadata.getQuery());
+								metadata		= newMetadata;
 							}
 							// redirect the AbstractContainer object
-							container.resetPURL(connectionPURL);
+							if (redirectHandling == RedirectHandling.REDIRECT_FOLLOW_DONT_RESET_LOCATION)
+								container.addAdditionalPURL(connectionPURL);
+							else
+								container.resetPURL(connectionPURL);
 						}
 						// this is the only redirect case in which we continue
 						// processing

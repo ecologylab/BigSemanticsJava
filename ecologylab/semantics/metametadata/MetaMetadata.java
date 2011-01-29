@@ -31,6 +31,9 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 
 	@simpl_scalar
 	protected boolean					dontGenerateClass	= false;
+	
+	@simpl_scalar
+	protected	RedirectHandling redirectHandling;
 
 	/*
 	 * @xml_collection("meta_metadata_field") private ArrayList<MetaMetadataField>
@@ -320,6 +323,14 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 			super.compileToMetadataClass(packageAttr);
 		else
 			super.compileToMetadataClass(packageName);
+	}
+
+	/**
+	 * @return the redirectHandling
+	 */
+	public RedirectHandling getRedirectHandling()
+	{
+		return redirectHandling;
 	}
 
 }

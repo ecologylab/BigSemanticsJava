@@ -31,7 +31,7 @@
 		<collection name="references_from_books" hide="true" xpath="//div[@id='citations_module_v']/div[1]/div/div" child_type="scholarly_article">
 			<scalar name="title" xpath="./table/tr/td[2]/div/h5" />
 			<scalar name="location" xpath="./table/tr/td[2]/div/h5/a/@href" />
-			<collection name="authors" xpath="./table/tr/td[2]/div/font/span/span[1]/a>
+			<collection name="authors" xpath="./table/tr/td[2]/div/font/span/span[1]/a">
 				<scalar name="name" xpath="." />
 				<scalar name="location" xpath="./@href" />	
 			</collection>

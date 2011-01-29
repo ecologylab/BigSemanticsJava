@@ -21,6 +21,7 @@
 		<scalar name="issue" xpath="//div[@id='artiHead']/a[2]" scalar_type="String">
 			<filter regex="[\w\s\,]+(?=[I|i])" replace="" />
 		</scalar>
+		<!-- 
 		<scalar name="recieved" xpath="//div[@class='articleText'][1]" scalar_type="String">
 			<filter regex="\s\;\;" replace="" />
 		</scalar>
@@ -30,9 +31,10 @@
 		<scalar name="online" xpath="//div[@class='articleText'][3]" scalar_type="String">
 			<filter regex="\." replace="" />
 		</scalar>
-		<scalar name="pages" xpath="//div[@id='artiHead']" comment="The pages on which the article occurs in the publication" scalar_type="String">
+		<scalar name="pages" xpath="//div[@id='artiHead']" comment="The pages on which the article occurs in the publication">
 			<filter regex="[A-Za-z\s0-9-\,]+(?=[P|p]ages)" replace="" />
 		</scalar>		
+		 -->
 		<scalar name="doi" xpath="//a[@id='ddDoi']" comment="The digital object identifier of the article" scalar_type="String" />
 		<semantic_actions>
 			<get_field name="title" />

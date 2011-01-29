@@ -4,7 +4,6 @@
 		<scalar name="year_of_publication" is_facet="true" scalar_type="Int" />
 		<scalar name="archive_name" comment="Archive of conference or journal." scalar_type="String" />
 		<scalar name="archive" hide="true" comment="Url to the archive of conference or journal." scalar_type="ParsedURL" />
-		<scalar name="pages" layer="-1.0" navigates_to="table_of_contents" scalar_type="String" />
 		<scalar name="isbn" comment="" scalar_type="String" />
 	</meta_metadata>
 	
@@ -21,6 +20,10 @@
 			<scalar name="link" hide="true" scalar_type="ParsedURL" />
 		</collection>
 		<collection name="keywords" comment="Key Terms of the paper." child_type="tag"/>
+		<scalar name="pages" layer="-1.0" navigates_to="table_of_contents" scalar_type="String" />
 	</meta_metadata>
 	
+	<meta_metadata name="dx_doi" type="document" redirect_handling="REDIRECT_FOLLOW_DONT_RESET_LOCATION">
+		<selector url_path_tree="http://dx.doi.org"/>
+	</meta_metadata>
 </meta_metadata_repository>

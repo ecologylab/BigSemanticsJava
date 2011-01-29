@@ -39,7 +39,7 @@ public class Document extends ClippableMetadata
 	
 	
 	@mm_name("generation") 
-	@simpl_scalar MetadataInteger			generation;
+	@simpl_scalar MetadataInteger		generation;
 
 	/**
 	 * For debugging. Type of the structure recognized by information extraction.
@@ -47,7 +47,9 @@ public class Document extends ClippableMetadata
 
 	@mm_name("page_structure") 
 	@simpl_scalar
-	private MetadataString	pageStructure;
+	private MetadataString	        pageStructure;
+	
+	private boolean									alwaysAcceptRedirect;
 
 	/**
 	 * Occasionally, we want to navigate to somewhere other than the regular purl,
@@ -471,5 +473,21 @@ public class Document extends ClippableMetadata
 	{
 		this.query = query;
 		termVector().add(weight, query.termVector());
+	}
+
+	/**
+	 * @return the alwaysAcceptRedirects
+	 */
+	public boolean isAlwaysAcceptRedirect()
+	{
+		return alwaysAcceptRedirect;
+	}
+
+	/**
+	 * @param alwaysAcceptRedirects the alwaysAcceptRedirects to set
+	 */
+	public void setAlwaysAcceptRedirect(boolean alwaysAcceptRedirects)
+	{
+		this.alwaysAcceptRedirect = alwaysAcceptRedirects;
 	}
 }
