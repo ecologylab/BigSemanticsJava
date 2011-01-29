@@ -736,9 +736,10 @@ abstract public class Metadata extends ElementState implements MetadataBase,
 		{
 			while (fullIterator.hasNext())
 			{
-				MetaMetadataField mmdField = fullIterator.next();
+				MetaMetadataField mmdField 			= fullIterator.next();
+				final Metadata currentMetadata 	= fullIterator.currentMetadata();
 				MetadataFieldDescriptor childFD = mmdField.getMetadataFieldDescriptor();
-				FieldDescriptor navigatesFD = this.getFieldDescriptorByTagName(mmdField.getNavigatesTo());
+				FieldDescriptor navigatesFD 		= this.getFieldDescriptorByTagName(mmdField.getNavigatesTo());
 				if (!mmdField.isHide())
 				{
 					final int type = childFD.getType();
@@ -751,7 +752,8 @@ abstract public class Metadata extends ElementState implements MetadataBase,
 						empty.setCssClass("empty");
 						a.append(tr.open());
 						mmdField.lookupStyle();
-						childFD.appendHtmlValueAsAttribute(a, this, serializationContext, bold, mmdField.getNavigatesTo(), navigatesFD);
+						
+						childFD.appendHtmlValueAsAttribute(a, currentMetadata, serializationContext, bold, mmdField.getNavigatesTo(), navigatesFD);
 						a.append(Tr.close());
 						a.append(empty.open()).append(Tr.close());
 						bold = false;
@@ -788,7 +790,7 @@ abstract public class Metadata extends ElementState implements MetadataBase,
 							for (Object next : thatCollection)
 							{
 								if (isScalar)
-									childFD.appendHtmlValueAsAttribute(a, this, serializationContext, bold, mmdField.getNavigatesTo(), navigatesFD);
+									childFD.appendHtmlValueAsAttribute(a, currentMetadata, serializationContext, bold, mmdField.getNavigatesTo(), navigatesFD);
 								else if (next instanceof Metadata)
 								{
 									Metadata collectionSubElementState = (Metadata) next;		
