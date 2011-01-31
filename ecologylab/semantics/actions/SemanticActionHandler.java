@@ -126,7 +126,7 @@ public class SemanticActionHandler<C extends Container, IC extends InfoCollector
 		try
 		{
 			Object returnValue = action.perform(object);
-			if (action.getReturnObjectName() != null)
+			if (action.getReturnObjectName() != null && returnValue != null)
 			{
 				semanticActionVariableMap.put(action.getReturnObjectName(), returnValue);
 			}
