@@ -136,7 +136,11 @@ public class MyContainer extends Container<MyInfoCollector<MyContainer>>
 	@Override
 	public boolean queueDownload()
 	{
-		// TODO Auto-generated method stub
+		if (infoCollector.accept(purl()))
+		{
+			infoCollector.getDownloadMonitor().download(this, null);
+			return true;
+		}
 		return false;
 	}
 

@@ -244,15 +244,13 @@ public class MyInfoCollector<C extends MyContainer> extends Debug implements Inf
 	@Override
 	public MetaMetadata getDocumentMM(ParsedURL purl, String tagName)
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return mmdRepo.getDocumentMM(purl, tagName);
 	}
 
 	@Override
 	public MetaMetadata getDocumentMM(ParsedURL purl)
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return mmdRepo.getDocumentMM(purl);
 	}
 
 	@Override
