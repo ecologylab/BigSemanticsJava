@@ -7,7 +7,7 @@
 <listEntry value="1"/>
 </listAttribute>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="ecologylab.semantics.metametadata.test.MmTest"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="http://www.homedepot.com/Flooring-Tile-Stone-Tile-Ceramic-Accents-Borders-Trims/h_d1/N-5yc1vZ1xg8Zargc/R-100402036/h_d2/ProductDisplay?langId=-1&amp;storeId=10051&amp;catalogId=10053 http://www.homedepot.com/webapp/wcs/stores/servlet/ProductDisplay?storeId=10051&amp;productId=100671946&amp;langId=-1&amp;catalogId=10053 // http://www.overstock.com/Home-Garden/Hunter-Lugano-56-inch-Brushed-Nickel-Ceiling-Fan/2458203/product.html http://www.overstock.com/Home-Garden/Superior-Hard-Surface-and-Carpet-Rug-Pad-8-x-10/2663174/product.html http://remodelista.com/products/blancoprecision-super-single-bowl"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="http://www.amazon.com/gp/product/B003LPUYK2/ref=s9_hps_bw_ir03?pf_rd_m=ATVPDKIKX0DER&amp;pf_rd_s=center-7&amp;pf_rd_r=0F5VEDXEG6CPR3ZBPAM5&amp;pf_rd_t=101&amp;pf_rd_p=1281815282&amp;pf_rd_i=565098"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="ecologylabSemanticsExample"/>
 <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Xms320m -Xmx320m"/>
 </launchConfiguration>
