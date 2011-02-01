@@ -19,10 +19,10 @@
 	
 	<scalar name="price" xpath="//b[@class='priceLarge']" />
 	<scalar name="title" xpath="//span[@id='btAsinTitle']" />
-  <scalar name="iamge_url" xpath="//div[@id='prodImageCell']//img"
+  <scalar name="image_url" xpath="//td[@id='prodImageCell']//img/@src" />
 	<scalar name="overall_rating" xpath="//span[@class='asinReviewsSummary']//span[1]/@title" />
   
-  <collection name="reviews" xpath="//div[@class='content']/table/tr[2]/td[1]/div">
+  <collection name="reviews" xpath="//div[@class='content']/table/tr[2]/td[1]/div[position() &lt; last()-1]">
     <scalar name="rating" xpath="./div[2]/span/span[1]/@title" />
     <scalar name="content" xpath="." /> <!-- not concise! -->
   </collection>
