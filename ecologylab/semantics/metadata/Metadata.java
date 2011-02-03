@@ -40,7 +40,7 @@ import ecologylab.serialization.ElementState;
 import ecologylab.serialization.FieldDescriptor;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.ScalarUnmarshallingContext;
-import ecologylab.serialization.SerializationContext;
+import ecologylab.serialization.TranslationContext;
 import ecologylab.serialization.TranslationScope;
 import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.simpl_descriptor_classes;
@@ -720,7 +720,7 @@ abstract public class Metadata extends ElementState implements MetadataBase,
 		String value();
 	}
 	
-	public void renderHtml(Appendable a, SerializationContext serializationContext) throws IllegalArgumentException, IllegalAccessException, IOException
+	public void renderHtml(Appendable a, TranslationContext serializationContext) throws IllegalArgumentException, IllegalAccessException, IOException
 	{
 		MetadataClassDescriptor classDescriptor = this.getMetadataClassDescriptor();
 		MetaMetadataOneLevelNestingIterator fullIterator = fullNonRecursiveMetaMetadataIterator(null);
@@ -786,7 +786,7 @@ abstract public class Metadata extends ElementState implements MetadataBase,
 							Tr empty = new Tr();
 							empty.setCssClass("empty");
 							a.append(nestedTr.open());
-							if (childFD.isWrapped()) childFD.writeHtmlWrap(a, false);
+							if (childFD.isWrapped()) childFD.writeHtmlWrap(a, false, thatCollection.size());
 							for (Object next : thatCollection)
 							{
 								if (isScalar)
@@ -798,7 +798,7 @@ abstract public class Metadata extends ElementState implements MetadataBase,
 								}
 							}
 							if (childFD.isWrapped())
-								childFD.writeHtmlWrap(a, true);
+								childFD.writeHtmlWrap(a, true, thatCollection.size());
 							a.append(Tr.close());
 							a.append(empty.open()).append(Tr.close());
 						}
