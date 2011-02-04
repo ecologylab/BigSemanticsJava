@@ -6,7 +6,7 @@ package ecologylab.semantics.metadata.scalar.types;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
 import ecologylab.serialization.ScalarUnmarshallingContext;
-import ecologylab.serialization.SerializationContext;
+import ecologylab.serialization.TranslationContext;
 
 /**
  * @author andruid
@@ -47,7 +47,7 @@ public class MetadataParsedURLScalarType extends
 	}
 	
 	@Override
-	public String marshall(MetadataParsedURL instance, SerializationContext serializationContext)
+	public String marshall(MetadataParsedURL instance, TranslationContext serializationContext)
 	{
 		return operativeScalarType().marshall(instance.getValue(), serializationContext);
 	}
