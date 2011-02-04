@@ -27,6 +27,10 @@ public class MetaMetadataScalarField extends MetaMetadataField
 
 	@simpl_composite
 	protected RegexFilter	filter;
+	
+	@simpl_scalar
+	@xml_tag("as_composite_scalar")
+	private boolean				compositeScalar;
 
 	/**
 	 * for caching getMetaMetadataParser().
@@ -104,6 +108,11 @@ public class MetaMetadataScalarField extends MetaMetadataField
 			return filter.getReplace();
 		return null;
 	}
+	
+	public boolean isCompositeScalar()
+	{
+		return compositeScalar;
+	}
 
 	@Override
 	protected String getTypeName()
@@ -174,6 +183,12 @@ public class MetaMetadataScalarField extends MetaMetadataField
 	protected String getAnnotationsInJava()
 	{
 		StringBuilder appendable = new StringBuilder("@simpl_scalar");
+		
+		// @simpl_composite_as_scalar
+		if (isCompositeScalar())
+		{
+			appendable.append(" @simpl_composite_as_scalar");
+		}
 		
 		// @xml_tag
 		String tagDecl = getTagDecl();
