@@ -17,7 +17,7 @@
     <search_engine name="google_image" favicon="http://google.com/favicon.ico" description="" group="" show="false" url_prefix="http://www.google.com/images?sout=1&amp;q=" num_result_string="&amp;num=" start_string="&amp;start=" />
     <search_engine name="google_patents" favicon="http://google.com/favicon.ico" description="" group="" show="false" url_prefix="http://www.google.com/patents?q=" num_result_string="&amp;num=" start_string="&amp;start=" />
     <search_engine name="google_scholar" favicon="http://google.com/favicon.ico" description="" group="" show="false" url_prefix="http://scholar.google.com/scholar?q=" num_result_string="&amp;num=" start_string="&amp;start=" />
-  
+  	<search_engine name="google_books" favicon="http://google.com/favicon.ico" description="" group="" show="false" url_prefix="http://www.google.com/search?tbm=bks&q=" num_result_string="&amp;num=" start_string="&amp;start=" />
    
     <search_engine name="my_google_ecology0" favicon="http://google.com/favicon.ico" description="" group="" show="false" url_prefix="http://ecology0.csdl.tamu.edu/my_google/search?query=" num_result_string="&amp;resultsPerPage=" start_string="&amp;startIndex=" />
     <search_engine name="my_google" favicon="http://google.com/favicon.ico" description="" group="" show="false" url_prefix="http://staging.cs.tamu.edu:8080/my_google/search?query=" num_result_string="&amp;resultsPerPage=" start_string="&amp;startIndex=" />

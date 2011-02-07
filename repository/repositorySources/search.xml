@@ -90,6 +90,15 @@
     </semantic_actions>
   </meta_metadata>
 
+  <meta_metadata name="google_book_search" type="search" comment="The Google Books Search class" user_agent_name="opera_9" parser="xpath">
+    <selector url_stripped="http://books.google.com/books" />
+  	<collection name="search_results" xpath="///li[@class='g knavi']">
+      <scalar name="heading" xpath="./div/h3/a" />
+      <scalar name="snippet" xpath="div[@class='s']/table/tr/td[2]/div/table/tr/td" />
+      <scalar name="link" xpath="./div/h3/a/@href" />
+    </collection>  
+  </meta_metadata>
+
   <meta_metadata name="my_google_search" type="search" comment="The my_google Search class" user_agent_name="opera_9" parser="xpath">
     <selector url_stripped="http://staging.cs.tamu.edu:8080/my_google/search" />
     <collection name="search_results" xpath="//div[@class='result']">
