@@ -10,14 +10,14 @@
     <user_agent name="firefox_3_6_8" string="Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.2.8) Gecko/20100722 BTRS86393 Firefox/3.6.8 ( .NET CLR 3.5.30729; .NET4.0C)" />
     <user_agent name="firefox_2" string="Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.7) Gecko/20070914 Firefox/2.0.0.7" />
   </user_agents>
-  <search_engines>
   
+  <search_engines>
     <search_engine name="google" favicon="http://google.com/favicon.ico" description="" group="search_engines" show="true" url_prefix="http://www.google.com/search?hl=en&amp;q=" num_result_string="&amp;num=" start_string="&amp;start=" />
     <search_engine name="google_site_specific" favicon="http://google.com/favicon.ico" description="" group="" show="false" homogeneous="true" url_prefix="http://www.google.com/search?hl=en&amp;q=" num_result_string="&amp;num=" start_string="&amp;start=" />
     <search_engine name="google_image" favicon="http://google.com/favicon.ico" description="" group="" show="false" url_prefix="http://www.google.com/images?sout=1&amp;q=" num_result_string="&amp;num=" start_string="&amp;start=" />
     <search_engine name="google_patents" favicon="http://google.com/favicon.ico" description="" group="" show="false" url_prefix="http://www.google.com/patents?q=" num_result_string="&amp;num=" start_string="&amp;start=" />
     <search_engine name="google_scholar" favicon="http://google.com/favicon.ico" description="" group="" show="false" url_prefix="http://scholar.google.com/scholar?q=" num_result_string="&amp;num=" start_string="&amp;start=" />
-  	<search_engine name="google_books" favicon="http://google.com/favicon.ico" description="" group="" show="false" url_prefix="http://www.google.com/search?tbm=bks&q=" num_result_string="&amp;num=" start_string="&amp;start=" />
+  	<search_engine name="google_books" favicon="http://google.com/favicon.ico" description="" group="" show="false" url_prefix="http://www.google.com/search?tbm=bks&amp;q=" num_result_string="&amp;num=" start_string="&amp;start=" />
    
     <search_engine name="my_google_ecology0" favicon="http://google.com/favicon.ico" description="" group="" show="false" url_prefix="http://ecology0.csdl.tamu.edu/my_google/search?query=" num_result_string="&amp;resultsPerPage=" start_string="&amp;startIndex=" />
     <search_engine name="my_google" favicon="http://google.com/favicon.ico" description="" group="" show="false" url_prefix="http://staging.cs.tamu.edu:8080/my_google/search?query=" num_result_string="&amp;resultsPerPage=" start_string="&amp;startIndex=" />
@@ -44,10 +44,12 @@
     
     <search_engine name="citeseerx" favicon="http://citeseer.ist.psu.edu/favicon.ico" description="" group="other" show="true" url_prefix="http://citeseerx.ist.psu.edu/search?q=" start_string="&amp;start=" />
   </search_engines>
+  
   <named_styles>
     <named_style name="default" font_size="10" />
     <named_style name="h1" font_size="11" font_style="1" />
   </named_styles>
+  
   <sites>
     <site domain="google.com" min_download_interval="15" />
     <site domain="scholar.google.com" min_download_interval="15" />
