@@ -68,7 +68,10 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 				if (!(this instanceof MetaMetadataCollectionField))
 					inheritNonDefaultAttributes(inheritedMetaMetadata);
 				for (MetaMetadataField inheritedField : inheritedMetaMetadata.getChildMetaMetadata())
-					inheritForField(inheritedField);
+				{
+					if (this != inheritedField)
+						inheritForField(inheritedField);
+				}
 				inheritNonFieldComponentsFromMM(inheritedMetaMetadata);
 			}
 
