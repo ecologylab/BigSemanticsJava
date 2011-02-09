@@ -17,6 +17,7 @@ import ecologylab.generic.DispatchTarget;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.connectors.InfoCollector;
+import ecologylab.semantics.connectors.LinkedMetadataMonitor;
 import ecologylab.semantics.connectors.SeedPeer;
 import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.metadata.builtins.Document;
@@ -420,6 +421,13 @@ public class MyInfoCollector<C extends MyContainer> extends Debug implements Inf
 	@Override
 	public C getContainerForSearch(C ancestor, Document metadata, ParsedURL purl, Seed seed,
 			boolean reincarnate)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public LinkedMetadataMonitor getLinkedMetadataMonitor()
 	{
 		// TODO Auto-generated method stub
 		return null;
