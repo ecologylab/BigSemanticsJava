@@ -286,12 +286,35 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 			if (result == null)
 			{
 				if (this instanceof MetaMetadataCompositeField)
-					result = (Class<? extends Metadata>) ts.getClassByTag(((MetaMetadataCompositeField) this)
-							.getTypeOrName());
-				if (result == null)
 				{
-					// there is no class for this tag we can use class of meta-metadata it extends
-					result = (Class<? extends Metadata>) ts.getClassByTag(extendsAttribute);
+					MetaMetadataCompositeField mmcf = (MetaMetadataCompositeField) this;
+					
+					// if type= defined, use it
+					String type = mmcf.getType();
+					if (type != null)
+					{
+						result = (Class<? extends Metadata>) ts.getClassByTag(type);
+						if (result == null)
+						{
+							// the type name doesn't work, but we can try super mmd class
+							MetaMetadata superMmd = repository.getByTagName(type);
+							result = superMmd.getMetadataClass(ts);
+						}
+					}
+					
+					if (result == null)
+					{
+						// then try name
+						String name = mmcf.getName();
+						result = (Class<? extends Metadata>) ts.getClassByTag(name);
+					}
+					
+					if (result == null)
+					{
+						// if type and name don't work, try extends=
+						// there is no class for this tag we can use class of meta-metadata it extends
+						result = (Class<? extends Metadata>) ts.getClassByTag(extendsAttribute);
+					}
 				}
 			}
 			if (result != null)

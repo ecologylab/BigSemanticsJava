@@ -352,6 +352,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 
 		for (MetaMetadata metaMetadata : repositoryByTagName)
 		{
+			metaMetadata.setRepository(this);
 			metaMetadata.inheritMetaMetadata(this);
 			metaMetadata.getClassAndBindDescriptors(metadataTScope);
 			MetadataClassDescriptor metadataClassDescriptor = metaMetadata.getMetadataClassDescriptor();
