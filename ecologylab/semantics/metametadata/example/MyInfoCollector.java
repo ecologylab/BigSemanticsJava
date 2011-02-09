@@ -426,11 +426,4 @@ public class MyInfoCollector<C extends MyContainer> extends Debug implements Inf
 		return null;
 	}
 	
-	@Override
-	public LinkedMetadataMonitor getLinkedMetadataMonitor()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }
