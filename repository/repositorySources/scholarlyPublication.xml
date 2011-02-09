@@ -2,9 +2,15 @@
 
 	<meta_metadata name="source" extends="document" comment="Metadata related to where an article is published.">
 		<scalar name="year_of_publication" is_facet="true" scalar_type="Int" />
-		<scalar name="archive_name" comment="Archive of conference or journal." scalar_type="String" />
-		<scalar name="archive" hide="true" comment="Url to the archive of conference or journal." scalar_type="ParsedURL" />
-		<scalar name="isbn" comment="" scalar_type="String" />
+		<scalar name="archive_name" scalar_type="String" comment="Archive of conference or journal." />
+		<scalar name="archive" hide="true" scalar_type="ParsedURL" comment="Url to the archive of conference or journal." />
+		<scalar name="isbn" scalar_type="String" />
+		<scalar name="pages" scalar_type="String" />
+	</meta_metadata>
+	
+	<meta_metadata name="tag">
+		<scalar name="tag_name" scalar_type="String" navigates_to="link" />
+		<scalar name="link" hide="true" scalar_type="ParsedURL" />
 	</meta_metadata>
 	
 	<meta_metadata name="scholarly_article" extends="pdf">
@@ -15,10 +21,7 @@
 		<collection name="authors" shadows="author" comment="Set of authors." child_type="author" layer="8.0"/>
 		<collection name="references" comment="Papers cited by this paper." child_tag="reference" child_type="scholarly_article" child_entity="true" />
 		<collection name="citations" comment="Papers that cite this paper." child_tag="citation" child_type="scholarly_article" child_entity="true" />
-		<collection name="classifications" comment="The Classifications of this paper." child_type="tag">
-			<scalar name="tag_name" scalar_type="String" navigates_to="link" />
-			<scalar name="link" hide="true" scalar_type="ParsedURL" />
-		</collection>
+		<collection name="classifications" comment="The Classifications of this paper." child_type="tag" />
 		<collection name="keywords" comment="Key Terms of the paper." child_type="tag"/>
 		<scalar name="pages" layer="-1.0" navigates_to="table_of_contents" scalar_type="String" />
 	</meta_metadata>

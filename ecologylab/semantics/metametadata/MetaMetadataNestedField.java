@@ -71,6 +71,11 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 				{
 					if (this != inheritedField)
 						inheritForField(inheritedField);
+					String naturalId = inheritedField.getAsNaturalId();
+					if (naturalId != null)
+					{
+						inheritedMetaMetadata.addNaturalIdField(naturalId, inheritedField);
+					}
 				}
 				inheritNonFieldComponentsFromMM(inheritedMetaMetadata);
 			}

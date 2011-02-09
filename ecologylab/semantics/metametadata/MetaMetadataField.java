@@ -131,6 +131,12 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	 */
 	@simpl_scalar
 	protected String																			label;
+	
+	/**
+	 * The name of natural id if this field is used as one.
+	 */
+	@simpl_scalar
+	protected String																			asNaturalId;
 
 	// ///////////////////////////////// switches /////////////////////////////////
 
@@ -1211,6 +1217,11 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 			else
 				return FieldTypes.SCALAR;
 		}
+	}
+
+	public String getAsNaturalId()
+	{
+		return asNaturalId;
 	}
 
 }

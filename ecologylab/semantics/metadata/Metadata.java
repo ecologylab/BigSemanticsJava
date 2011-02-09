@@ -28,6 +28,7 @@ import ecologylab.semantics.metadata.builtins.DebugMetadata;
 import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
 import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.semantics.metametadata.ClassAndCollectionIterator;
+import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.metametadata.MetaMetadataField;
 import ecologylab.semantics.metametadata.MetaMetadataOneLevelNestingIterator;
@@ -874,6 +875,18 @@ abstract public class Metadata extends ElementState implements MetadataBase,
 			value = ((Metadata) value).lookupMetadataValue(split[1]);
 		
 		return value;
+	}
+	
+	public String getNaturalIdValue(String naturalId)
+	{
+		if (metaMetadata != null && metaMetadata instanceof MetaMetadata)
+		{
+			MetaMetadata mmd = (MetaMetadata) metaMetadata;
+			MetaMetadataField field = mmd.getNaturalIdField(naturalId);
+			MetadataFieldDescriptor fd = field.getMetadataFieldDescriptor();
+			return fd.getValueString(this);
+		}
+		return null;
 	}
 
 }

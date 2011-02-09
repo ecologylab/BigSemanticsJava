@@ -18,11 +18,16 @@
 		<scalar name="year" context_node="publisher_year" xpath=".">
 			<filter regex="[a-zA-Z, /-]*" replace="" />
 		</scalar>
+		<!--
 		<composite name="publisher" layer="9.1"  >
 			<scalar name="name" context_node="publisher_year" xpath=".">
 				<filter regex=", [0-9]+" replace="" />
 			</scalar>
 		</composite>
+		-->
+		<scalar name="publisher" layer="9.1" context_node="publisher_year" xpath=".">
+			<filter regex=", [0-9]+" replace="" />
+		</scalar>
 		
 		<scalar name="category" layer="9.3" xpath="//div[@class='bookinfo_sectionwrap']//div[3]/a" scalar_type="String" />
 		<scalar name="pages" layer="6.0" xpath="//td[@id='bookinfo']/div[3]/div[3]">

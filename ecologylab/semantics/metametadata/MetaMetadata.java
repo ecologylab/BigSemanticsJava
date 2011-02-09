@@ -5,6 +5,8 @@ package ecologylab.semantics.metametadata;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import ecologylab.generic.HashMapArrayList;
@@ -51,6 +53,8 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 
 	@simpl_scalar
 	private String						collectionOf;
+	
+	private Map<String, MetaMetadataField> naturalIds = new HashMap<String, MetaMetadataField>();
 	
 	// TranslationScope DEFAULT_METADATA_TRANSLATIONS = DefaultMetadataTranslationSpace.get();
 
@@ -333,4 +337,14 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 		return redirectHandling;
 	}
 
+	public void addNaturalIdField(String naturalId, MetaMetadataField inheritedField)
+	{
+		naturalIds.put(naturalId, inheritedField);
+	}
+	
+	public MetaMetadataField getNaturalIdField(String naturalId)
+	{
+		return naturalIds.get(naturalId);
+	}
+	
 }
