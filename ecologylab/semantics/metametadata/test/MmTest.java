@@ -8,6 +8,7 @@ import ecologylab.generic.DispatchTarget;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.generated.library.GeneratedMetadataTranslationScope;
 import ecologylab.semantics.metadata.Metadata;
+import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.metametadata.example.MyContainer;
 import ecologylab.semantics.metametadata.example.MyInfoCollector;
@@ -68,11 +69,28 @@ public class MmTest extends Debug implements DispatchTarget<MyContainer>
 				System.out.println();
 				System.out.println();
 				System.out.println();
+				
 				System.out.println("Parsed Meta-Metadata:");
 				System.out.print("\t");
 				metadata.serialize(System.out);
 				System.out.println();
 				System.out.println();
+				
+				MetaMetadata mmd = (MetaMetadata) metadata.getMetaMetadata();
+				if (!mmd.getNaturalIdFields().keySet().isEmpty())
+				{
+					System.out.print("Natural IDs:\t");
+					boolean first = true;
+					for (String idName : mmd.getNaturalIdFields().keySet())
+					{
+						String value = metadata.getNaturalIdValue(idName);
+						System.out.println((first ? "" : ", ") + idName + ": " + value);
+						first = false;
+					}
+					System.out.println();
+					System.out.println();
+				}
+				
 				System.out.println();
 			}
 			catch (SIMPLTranslationException e)
