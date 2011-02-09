@@ -24,7 +24,6 @@ import org.junit.Test;
 
 import ecologylab.generic.Debug;
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.generated.library.scholarlyPublication.AcmProceeding;
 import ecologylab.semantics.generated.library.search.SearchResult;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.builtins.Document;
@@ -367,6 +366,7 @@ public class DBUtil extends Debug implements DBInterface
 	 * 
 	 * cf. MonomorphicTutorial.class; PolymorphicTutorial.class; target -
 	 */
+	/*
 	@Test
 	public void testTranslationScopeSerialize() throws SIMPLTranslationException, IOException
 	{
@@ -424,6 +424,7 @@ public class DBUtil extends Debug implements DBInterface
 		ap1.serialize(System.out);
 		
 	}
+	*/
 
 	@Test
 	public void testConvertClassToByteArray() throws IOException

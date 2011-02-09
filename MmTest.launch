@@ -7,7 +7,7 @@
 <listEntry value="1"/>
 </listAttribute>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="ecologylab.semantics.metametadata.test.MmTest"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="http://www.amazon.com/gp/product/B003LPUYK2/ref=s9_hps_bw_ir03?pf_rd_m=ATVPDKIKX0DER&amp;pf_rd_s=center-7&amp;pf_rd_r=0F5VEDXEG6CPR3ZBPAM5&amp;pf_rd_t=101&amp;pf_rd_p=1281815282&amp;pf_rd_i=565098"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="http://portal.acm.org/results.cfm?query=faceted%20metadata"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="ecologylabSemanticsExample"/>
 <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Xms320m -Xmx320m"/>
 </launchConfiguration>
