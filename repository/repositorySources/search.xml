@@ -33,6 +33,7 @@
 	</meta_metadata>
 
 	<meta_metadata name="google_scholar_search_result" extends="search_result" comment="A google scholar search result" user_agent_name="opera_9" parser="xpath">
+    <url_generator type="search" engine="google_scholar" use_id="title" />
 		<scalar name="heading" as_natural_id="title" />
 		<scalar name="document_link" scalar_type="ParsedURL" hide="true" />
 		<scalar name="citations" scalar_type="Int" navigates_to="citations_link" />

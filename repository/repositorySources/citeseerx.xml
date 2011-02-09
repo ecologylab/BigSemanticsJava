@@ -29,6 +29,8 @@
 
 	<meta_metadata name="citeseerx_summary" extends="citeseerx_record" parser="xpath" comment="Summary page from CiteSeerX.">
 		<selector url_stripped="http://citeseerx.ist.psu.edu/viewdoc/summary" />
+    
+    <url_generator type="search" engine="citeseerx" use_id="title" />
 
 		<scalar name="abstract_field" xpath="//div[@id='main_content']/p" />
 		<composite name="source" xpath="//div[@id='right-sidebar']/div/div[2]/div[@class='content']">

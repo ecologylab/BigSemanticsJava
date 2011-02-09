@@ -28,6 +28,7 @@ import ecologylab.semantics.actions.SemanticAction;
 import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.actions.SemanticActionsKeyWords;
 import ecologylab.semantics.connectors.InfoCollector;
+import ecologylab.semantics.connectors.LinkedMetadataMonitor;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.DocumentParserTagNames;
 import ecologylab.semantics.metadata.Metadata;
@@ -157,12 +158,18 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 
 		// make sure termVector is built here
 		populatedMetadata.rebuildCompositeTermVector();
-
+		
+		// TODO set up linked metadata hooks if there is one
+		
 		if (populatedMetadata != null)
 			takeSemanticActions(populatedMetadata);
 
 		semanticActionHandler.recycle();
 		semanticActionHandler = null;
+		
+		// TODO check linked metadata hooks for potential associations
+		LinkedMetadataMonitor monitor = infoCollector.getLinkedMetadataMonitor();
+		
 	}
 
 	/**

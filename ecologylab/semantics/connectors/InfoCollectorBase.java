@@ -663,5 +663,13 @@ implements InfoCollector<AC>, SemanticsPrefs, ApplicationProperties, DocumentPar
 	{
 		return seedSet.seedDistributer(this);
 	}
+	
+	LinkedMetadataMonitor linkedMetadataMonitor = new LinkedMetadataMonitor();
+	
+	@Override
+	public LinkedMetadataMonitor getLinkedMetadataMonitor()
+	{
+		return linkedMetadataMonitor;
+	}
 
 }

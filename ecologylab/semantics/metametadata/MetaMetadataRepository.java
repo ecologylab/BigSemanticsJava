@@ -360,6 +360,19 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 																					// *this* map
 				repositoryByClassName.put(metadataClassDescriptor.getDescribedClass().getName(),
 						metaMetadata);
+			
+			if (metaMetadata.getLinkWiths() != null)
+			{
+				for (LinkWith lw : metaMetadata.getLinkWiths())
+				{
+					if (!lw.isReversed())
+					{
+						LinkWith r = lw.getReverse(metaMetadata.getTypeName());
+						MetaMetadata targetMmd = getByTagName(lw.getType());
+						targetMmd.addLinkWith(r);
+					}
+				}
+			}
 		}
 
 		initializeLocationBasedMaps();

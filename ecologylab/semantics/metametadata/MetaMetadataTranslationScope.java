@@ -52,6 +52,9 @@ public class MetaMetadataTranslationScope extends Debug
 		MetaMetadataSelector.class,
 		
 		DefVar.class,	// cannot be in NestedSemanticActionsTranslationScope because these are collected separtely in MetaMetadataField
+		
+		UrlGenerator.class,
+		LinkWith.class,
 	};
 
 	public static final TranslationScope BASE_TRANSLATIONS	= TranslationScope.get(BASE_NAME, BASE_CLASSES);

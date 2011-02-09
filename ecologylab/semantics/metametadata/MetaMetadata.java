@@ -61,6 +61,10 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 	
 	private Map<String, MetaMetadataField> naturalIds = new HashMap<String, MetaMetadataField>();
 	
+	@simpl_collection("link_with")
+	@simpl_nowrap
+	private ArrayList<LinkWith> linkWiths;
+	
 	// TranslationScope DEFAULT_METADATA_TRANSLATIONS = DefaultMetadataTranslationSpace.get();
 
 	public MetaMetadata()
@@ -365,6 +369,20 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 			}
 		}
 		return null;
+	}
+
+	public ArrayList<LinkWith> getLinkWiths()
+	{
+		return linkWiths;
+	}
+	
+	public void addLinkWith(LinkWith lw)
+	{
+		if (linkWiths == null)
+		{
+			linkWiths = new ArrayList<LinkWith>();
+		}
+		linkWiths.add(lw);
 	}
 	
 }
