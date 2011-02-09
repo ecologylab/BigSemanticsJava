@@ -9,7 +9,9 @@ import java.lang.annotation.Target;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
@@ -24,10 +26,12 @@ import org.w3c.dom.NodeList;
 import ecologylab.collections.Scope;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.connectors.LinkedMetadataMonitor;
 import ecologylab.semantics.metadata.builtins.DebugMetadata;
 import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
 import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.semantics.metametadata.ClassAndCollectionIterator;
+import ecologylab.semantics.metametadata.LinkWith;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.metametadata.MetaMetadataField;
@@ -57,19 +61,17 @@ import ecologylab.serialization.types.scalar.ScalarType;
  * @author sashikanth
  * 
  */
-@simpl_descriptor_classes(
-{ MetadataClassDescriptor.class, MetadataFieldDescriptor.class })
+@simpl_descriptor_classes({ MetadataClassDescriptor.class, MetadataFieldDescriptor.class })
 abstract public class Metadata extends ElementState implements MetadataBase,
 		Iterable<MetadataFieldDescriptor>
 {
 	@simpl_scalar
 	@xml_other_tags("meta_metadata_name")
 	@xml_tag("mm_name")
+	MetadataString												metaMetadataName;
 
-	MetadataString 											metaMetadataName;
-	
-	private MetaMetadataCompositeField	metaMetadata;
-	
+	private MetaMetadataCompositeField		metaMetadata;
+
 	public static final String						MIXIN_TRANSLATION_STRING	= "mixin_translations";
 
 	static Class[]												mixinClasses							=
@@ -121,8 +123,16 @@ abstract public class Metadata extends ElementState implements MetadataBase,
 	/**
 	 * Indicates whether or not metadata has changed since last displayed.
 	 */
-	private boolean						metadataChanged;
-	
+	private boolean												metadataChanged;
+
+	private Map<String, String>						cachedNaturalIdValues;
+
+	/**
+	 * a map from <link_with> type to linked Metadata. initial empty. no key indicates not yet tried
+	 * download and parse. having key but null value indicates tried but failed.
+	 */
+	private Map<String, Metadata>					linkedMetadata;
+
 	/**
 	 * This constructor should *only* be used when marshalled Metadata is read.
 	 */
@@ -284,8 +294,9 @@ abstract public class Metadata extends ElementState implements MetadataBase,
 
 			// "null" happens with mixins fieldAccessor b'coz getValueString() returns "null".
 
-			//TODO use MetaMetadataField.numNonDisplayedFields()
-			boolean isVisibleField = !metaMetadataField.isHide() && (metaMetadataField.isAlwaysShow() || hasVisibleNonNullField);
+			// TODO use MetaMetadataField.numNonDisplayedFields()
+			boolean isVisibleField = !metaMetadataField.isHide()
+					&& (metaMetadataField.isAlwaysShow() || hasVisibleNonNullField);
 
 			if (isVisibleField)
 				size++;
@@ -429,11 +440,9 @@ abstract public class Metadata extends ElementState implements MetadataBase,
 	{
 	}
 
-
 	public void hwSetContext(String context)
 	{
 	}
-
 
 	public ParsedURL getNavLocation()
 	{
@@ -478,9 +487,16 @@ abstract public class Metadata extends ElementState implements MetadataBase,
 
 	public void recycle()
 	{
+		if (metaMetadata != null)
+		{
+			MetaMetadataRepository repository = metaMetadata.getRepository();
+			LinkedMetadataMonitor monitor = repository.getLinkedMetadataMonitor();
+			monitor.removeMonitors(this);
+		}
+		
 		ClassAndCollectionIterator iterator = metadataIterator();
 
-		for(MetadataBase metadata = iterator.next(); iterator.hasNext(); metadata = iterator.next())
+		for (MetadataBase metadata = iterator.next(); iterator.hasNext(); metadata = iterator.next())
 		{
 			if (metadata != null)
 				metadata.recycle();
@@ -720,8 +736,9 @@ abstract public class Metadata extends ElementState implements MetadataBase,
 	{
 		String value();
 	}
-	
-	public void renderHtml(Appendable a, TranslationContext serializationContext) throws IllegalArgumentException, IllegalAccessException, IOException
+
+	public void renderHtml(Appendable a, TranslationContext serializationContext)
+			throws IllegalArgumentException, IllegalAccessException, IOException
 	{
 		MetadataClassDescriptor classDescriptor = this.getMetadataClassDescriptor();
 		MetaMetadataOneLevelNestingIterator fullIterator = fullNonRecursiveMetaMetadataIterator(null);
@@ -731,30 +748,32 @@ abstract public class Metadata extends ElementState implements MetadataBase,
 		Table table = new Table();
 		a.append(table.open());
 		boolean hasXmlText = classDescriptor.hasScalarFD();
-		if ((numElements==0) && !hasXmlText)
+		if ((numElements == 0) && !hasXmlText)
 			a.append(table.close());
 		else
 		{
 			while (fullIterator.hasNext())
 			{
-				MetaMetadataField mmdField 			= fullIterator.next();
-				final Metadata currentMetadata 	= fullIterator.currentMetadata();
+				MetaMetadataField mmdField = fullIterator.next();
+				final Metadata currentMetadata = fullIterator.currentMetadata();
 				MetadataFieldDescriptor childFD = mmdField.getMetadataFieldDescriptor();
-				FieldDescriptor navigatesFD 		= this.getFieldDescriptorByTagName(mmdField.getNavigatesTo());
+				FieldDescriptor navigatesFD = this.getFieldDescriptorByTagName(mmdField.getNavigatesTo());
 				if (!mmdField.isHide())
 				{
 					final int type = childFD.getType();
 					if (type == SCALAR)
 					{
-						if (mmdField.getStyle() != null && mmdField.getStyle().equals("h1")) bold = true;
+						if (mmdField.getStyle() != null && mmdField.getStyle().equals("h1"))
+							bold = true;
 						Tr tr = new Tr();
 						tr.setId(childFD.getTagName());
 						Tr empty = new Tr();
 						empty.setCssClass("empty");
 						a.append(tr.open());
 						mmdField.lookupStyle();
-						
-						childFD.appendHtmlValueAsAttribute(a, currentMetadata, serializationContext, bold, navigatesFD);
+
+						childFD.appendHtmlValueAsAttribute(a, currentMetadata, serializationContext, bold,
+								navigatesFD);
 						a.append(Tr.close());
 						a.append(empty.open()).append(Tr.close());
 						bold = false;
@@ -764,8 +783,9 @@ abstract public class Metadata extends ElementState implements MetadataBase,
 						Object thatReferenceObject = null;
 						Field childField = childFD.getField();
 						thatReferenceObject = childField.get(this);
-						if (thatReferenceObject == null) continue;
-						final boolean isScalar = (type==COLLECTION_SCALAR || type==MAP_SCALAR);
+						if (thatReferenceObject == null)
+							continue;
+						final boolean isScalar = (type == COLLECTION_SCALAR || type == MAP_SCALAR);
 						Collection thatCollection;
 						switch (type)
 						{
@@ -787,14 +807,16 @@ abstract public class Metadata extends ElementState implements MetadataBase,
 							Tr empty = new Tr();
 							empty.setCssClass("empty");
 							a.append(nestedTr.open());
-							if (childFD.isWrapped()) childFD.writeHtmlWrap(a, false, thatCollection.size());
+							if (childFD.isWrapped())
+								childFD.writeHtmlWrap(a, false, thatCollection.size());
 							for (Object next : thatCollection)
 							{
 								if (isScalar)
-									childFD.appendHtmlValueAsAttribute(a, currentMetadata, serializationContext, bold, navigatesFD);
+									childFD.appendHtmlValueAsAttribute(a, currentMetadata, serializationContext,
+											bold, navigatesFD);
 								else if (next instanceof Metadata)
 								{
-									Metadata collectionSubElementState = (Metadata) next;		
+									Metadata collectionSubElementState = (Metadata) next;
 									collectionSubElementState.renderHtml(a, serializationContext);
 								}
 							}
@@ -821,12 +843,11 @@ abstract public class Metadata extends ElementState implements MetadataBase,
 		a.append(table.close());
 	}
 
-	
 	public boolean hasMetadataChanged()
 	{
 		return metadataChanged;
 	}
-	
+
 	public void setMetadataChanged(boolean value)
 	{
 		this.metadataChanged = value;
@@ -840,7 +861,7 @@ abstract public class Metadata extends ElementState implements MetadataBase,
 	public ArrayList<Metadata> findChangedMetadataFields()
 	{
 		ArrayList<Metadata> result = new ArrayList<Metadata>();
-		
+
 		ClassAndCollectionIterator iterator = this.metadataIterator();
 		while (iterator.hasNext())
 		{
@@ -850,34 +871,53 @@ abstract public class Metadata extends ElementState implements MetadataBase,
 				final Metadata metadata = (Metadata) fieldValue;
 				if (metadata.hasMetadataChanged())
 					result.add(metadata);
-				
+
 				result.addAll(metadata.findChangedMetadataFields());
 			}
 		}
-		
+
 		return result;
 	}
 
 	/**
-	 * Lookup the value of a metadata field specified by "." delimited name used to navigate the meta-metadata tree.
+	 * Lookup the value of a metadata field specified by "." delimited name used to navigate the
+	 * meta-metadata tree.
 	 * 
-	 * @param fieldPath "." delimited path to metadata field
+	 * @param fieldPath
+	 *          "." delimited path to metadata field
 	 * @return
 	 * @throws IllegalArgumentException
 	 * @throws IllegalAccessException
 	 */
-	public MetadataBase lookupMetadataValue(String fieldPath) throws IllegalArgumentException, IllegalAccessException
+	public MetadataBase lookupMetadataValue(String fieldPath) throws IllegalArgumentException,
+			IllegalAccessException
 	{
-		String[] split 						= fieldPath.split("\\.", 2);
+		String[] split = fieldPath.split("\\.", 2);
 		MetaMetadataField mmField = metaMetadata.lookupChild(split[0]);
-		MetadataBase value 				= (MetadataBase) mmField.getMetadataFieldDescriptor().getField().get(this);
+		MetadataBase value = (MetadataBase) mmField.getMetadataFieldDescriptor().getField().get(this);
 		if (split.length > 1)
 			value = ((Metadata) value).lookupMetadataValue(split[1]);
-		
+
 		return value;
 	}
 	
 	public String getNaturalIdValue(String naturalId)
+	{
+		if (cachedNaturalIdValues == null)
+		{
+			cachedNaturalIdValues = new HashMap<String, String>();
+		}
+		if (cachedNaturalIdValues.containsKey(naturalId))
+			return cachedNaturalIdValues.get(naturalId);
+		else
+		{
+			String value = getNaturalIdValueHelper(naturalId);
+			cachedNaturalIdValues.put(naturalId, value);
+			return value;
+		}
+	}
+
+	private String getNaturalIdValueHelper(String naturalId)
 	{
 		MetaMetadataCompositeField mmcf = (MetaMetadataCompositeField) getMetaMetadata();
 		if (mmcf != null && mmcf instanceof MetaMetadata)
@@ -888,6 +928,20 @@ abstract public class Metadata extends ElementState implements MetadataBase,
 			return fd.getValueString(this);
 		}
 		return null;
+	}
+
+	public Metadata getLinkedMetadata(String name)
+	{
+		return linkedMetadata != null ? linkedMetadata.get(name) : null;
+	}
+
+	public void addLinkedMetadata(LinkWith lw, Metadata metadata)
+	{
+		if (linkedMetadata == null)
+		{
+			linkedMetadata = new HashMap<String, Metadata>();
+		}
+		linkedMetadata.put(lw.key(), metadata);
 	}
 
 }

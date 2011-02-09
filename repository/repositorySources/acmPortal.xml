@@ -47,8 +47,8 @@
 			<scalar name="tag_name" xpath="./span/child::text()" />
 		</collection>
     
-    <link_with name="citeseerx_info" type="citeseerx_summary" by_id="title" />
-    <link_with name="gscholar_info" type="google_scholar_search_result" by_id="title" />
+    <link_with name="citeseerx_summary" by_id="title" options="text" />
+    <link_with name="google_scholar_search_result" by_id="title" options="text" />
 		
 		<semantic_actions>
 			<set_field name="metadata_page">

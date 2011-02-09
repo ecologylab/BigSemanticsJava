@@ -1,61 +1,40 @@
 package ecologylab.semantics.connectors;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metametadata.LinkWith;
 import ecologylab.semantics.metametadata.MetaMetadata;
+import ecologylab.semantics.metametadata.MetaMetadataRepository;
 
 public class LinkedMetadataMonitor
 {
 
-	private static class MonitorRecord
-	{
-
-		public Metadata	object;
-
-		public LinkWith	link;
-
-	}
-
 	/**
-	 * meta-metadata types that are not monitored.
-	 */
-	private Set<String>																unmonitoredMetaMetadataTypeNames	= new HashSet<String>();
-
-	/**
-	 * map monitored class name to a collection of monitor records, each of which corresponds to a
+	 * map a monitored class name to a collection of monitor records, each of which corresponds to a
 	 * metadata object.
 	 */
-	private Map<String, Map<Metadata, MonitorRecord>>	monitorRecords										= new HashMap<String, Map<Metadata, MonitorRecord>>();
+	private Map<String, Map<Metadata, LinkWith>>	monitorRecords	= new HashMap<String, Map<Metadata, LinkWith>>();
 
-	/**
-	 * map sub class name to monitored base class name.
-	 */
-	private Map<String, String>												monitoredMetaMetadataTypeMapping	= new HashMap<String, String>();
+	public void registerName(String name)
+	{
+		if (!monitorRecords.containsKey(name))
+			monitorRecords.put(name, new HashMap<Metadata, LinkWith>());
+	}
 
 	public void addMonitors(Metadata object)
 	{
 		MetaMetadata mmd = (MetaMetadata) object.getMetaMetadata();
-		ArrayList<LinkWith> linkWiths = mmd.getLinkWiths();
-		if (linkWiths != null)
+		Map<String, LinkWith> linkWiths = mmd.getLinkWiths(); // linkWiths can't be null
+		for (String name : linkWiths.keySet())
 		{
-			for (LinkWith lw : linkWiths)
+			LinkWith lw = linkWiths.get(name);
+			Map<Metadata, LinkWith> collection = monitorRecords.get(lw.getName()); // collection can't be
+																																							// null
+			synchronized (collection)
 			{
-				MonitorRecord mr = new MonitorRecord();
-				mr.object = object;
-				mr.link = lw;
-
-				if (!monitorRecords.containsKey(lw.getType()))
-				{
-					monitorRecords.put(lw.getType(), new HashMap<Metadata, MonitorRecord>());
-				}
-				Map<Metadata, MonitorRecord> collection = monitorRecords.get(lw.getType());
-				collection.put(object, mr);
+				collection.put(object, lw);
 			}
 		}
 	}
@@ -63,44 +42,42 @@ public class LinkedMetadataMonitor
 	public void removeMonitors(Metadata object)
 	{
 		MetaMetadata mmd = (MetaMetadata) object.getMetaMetadata();
-		ArrayList<LinkWith> linkWiths = mmd.getLinkWiths();
-		if (linkWiths != null)
+		Map<String, LinkWith> linkWiths = mmd.getLinkWiths();
+		for (String name : linkWiths.keySet())
 		{
-			for (LinkWith lw : linkWiths)
+			LinkWith lw = linkWiths.get(name);
+			Map<Metadata, LinkWith> collection = monitorRecords.get(lw.getName());
+			synchronized (collection)
 			{
-				if (monitorRecords.containsKey(lw.getType()))
-				{
-					Map<Metadata, MonitorRecord> collection = monitorRecords.get(lw.getType());
-					collection.remove(object);
-				}
+				collection.remove(object);
 			}
 		}
 	}
 
-	public boolean link(Metadata parsedMetadata)
+	public boolean tryLink(MetaMetadataRepository repository, Metadata parsedMetadata)
 	{
-		MetaMetadata mmd = (MetaMetadata) parsedMetadata.getMetaMetadata();
-		String typeName = mmd.getType();
-		
-		// first check if we know that we don't need to monitor this class
-		if (unmonitoredMetaMetadataTypeNames.contains(typeName))
-		{
+		if (parsedMetadata == null)
 			return false;
-		}
-		
-		// assume we do need to monitor this. check if the type name is registered.
-		if (monitorRecords.containsKey(typeName))
+
+		MetaMetadata mmd = (MetaMetadata) parsedMetadata.getMetaMetadata();
+		String mmdName = mmd.getTypeName();
+
+		while (!monitorRecords.containsKey(mmdName))
 		{
-			Map<Metadata, MonitorRecord> records = monitorRecords.get(typeName);
-			for (Metadata object : records.keySet())
-			{
-				MonitorRecord mr = records.get(object);
-			}
+			if (mmdName == null || "metadata".equals(mmdName))
+				return false;
+			mmdName = mmd.getSuperMmdTypeName();
+			mmd = repository.getByTagName(mmdName);
 		}
-		
-		
-		
-		
+
+		Map<Metadata, LinkWith> records = monitorRecords.get(mmdName);
+		for (Metadata object : records.keySet())
+		{
+			LinkWith lw = records.get(object);
+			if (lw.tryLink(parsedMetadata, object))
+				return true;
+		}
+
 		return false;
 	}
 

@@ -43,6 +43,7 @@ import ecologylab.semantics.metametadata.MetaMetadataCollectionField;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.metametadata.MetaMetadataField;
 import ecologylab.semantics.metametadata.MetaMetadataNestedField;
+import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.metametadata.MetaMetadataScalarField;
 import ecologylab.serialization.DeserializationHookStrategy;
 import ecologylab.serialization.SIMPLTranslationException;
@@ -159,17 +160,16 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 		// make sure termVector is built here
 		populatedMetadata.rebuildCompositeTermVector();
 		
-		// TODO set up linked metadata hooks if there is one
+		MetaMetadataRepository repository = metaMetadata.getRepository();
+		LinkedMetadataMonitor monitor = repository.getLinkedMetadataMonitor();
+		monitor.addMonitors(populatedMetadata);
+		monitor.tryLink(repository, populatedMetadata);
 		
 		if (populatedMetadata != null)
 			takeSemanticActions(populatedMetadata);
 
 		semanticActionHandler.recycle();
 		semanticActionHandler = null;
-		
-		// TODO check linked metadata hooks for potential associations
-		LinkedMetadataMonitor monitor = infoCollector.getLinkedMetadataMonitor();
-		
 	}
 
 	/**

@@ -3,46 +3,32 @@ package ecologylab.semantics.metametadata;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.types.element.Mappable;
 
 @simpl_inherit
-public class LinkWith extends ElementState
+public class LinkWith extends ElementState implements Mappable<String>
 {
 
 	@simpl_scalar
-	private String				name;
+	private String		name;
 
 	@simpl_scalar
-	private String				type;
+	private String		byId;
 
 	@simpl_scalar
-	private String				byId;
+	private String		options;
 
-	private MetaMetadata	targetMmd;
+	private boolean		reverse	= false;
 
-	/**
-	 * indicate if this link is a generated reverse one.
-	 */
-	private boolean				reversed				= false;
+	private LinkWith	reverseLink;
 
-	/**
-	 * if the target metadata has been linked. note that it could be linked to null, which means the
-	 * target is not found but we tried.
-	 */
-	private boolean				linked					= false;
+	// runtime flags:
 
-	/**
-	 * the target metadata object. null value and linked==true indicates a failure.
-	 */
-	private Metadata			linkedMetadata	= null;
+	private boolean		optText;
 
 	public String getName()
 	{
 		return name;
-	}
-
-	public String getType()
-	{
-		return type;
 	}
 
 	public String getById()
@@ -50,66 +36,76 @@ public class LinkWith extends ElementState
 		return byId;
 	}
 
-	public boolean isReversed()
+	public boolean isReverse()
 	{
-		return reversed;
+		return reverse;
 	}
 
-	public MetaMetadata getTargetMetaMetadata(MetaMetadataRepository repository)
+	public void setReverse(boolean reverse)
 	{
-		if (targetMmd == null)
-		{
-			MetaMetadata mmd = repository.getByTagName(type);
-			assert mmd != null : "undefined meta-metadata type: " + type;
-			targetMmd = mmd;
-		}
-		return targetMmd;
+		this.reverse = reverse;
 	}
 
-	// note that synchronized is necessary on isLinked(), getLinkedMetadata() and setLinkedMetadata()
-	// for data consistency.
-	public synchronized boolean isLinked()
+	public LinkWith getReverseLink()
 	{
-		return linked;
+		return reverseLink;
 	}
 
-	public synchronized Metadata getLinkedMetadata()
+	public void setReverseLink(LinkWith lw)
 	{
-		return linkedMetadata;
+		reverseLink = lw;
+		lw.reverseLink = this;
 	}
 
-	public boolean canLink(Metadata metadata)
-	{
-		if (metadata != null)
-		{
-			MetaMetadataRepository repository = metadata.getMetaMetadata().getRepository();
-			MetaMetadata mmd = getTargetMetaMetadata(repository);
-			return mmd.getMetadataClass().isAssignableFrom(metadata.getClass());
-		}
-		return false;
-	}
-
-	public synchronized void setLinkedMetadata(Metadata metadata)
-	{
-		if (metadata != null)
-		{
-			linkedMetadata = metadata;
-			linked = true;
-		}
-	}
-
-	public LinkWith getReverse(String sourceMetaMetadataType)
+	public LinkWith createReverseLink(String sourceMetaMetadataName)
 	{
 		LinkWith lw = new LinkWith();
 
-		lw.name = name + "_reverse";
-		lw.type = sourceMetaMetadataType;
+		lw.name = sourceMetaMetadataName;
 		lw.byId = byId;
-		lw.reversed = true;
-		lw.linked = false;
-		lw.linkedMetadata = null;
+		lw.options = options;
+		lw.reverse = true;
+
+		reverseLink = lw;
+		lw.reverseLink = this;
 
 		return lw;
 	}
 
+	@Override
+	public String key()
+	{
+		return name;
+	}
+
+	public void processOptions()
+	{
+		if (options != null)
+		{
+			if ("text".equals(options))
+			{
+				optText = true;
+			}
+		}
+	}
+
+	public boolean tryLink(Metadata parsedMetadata, Metadata toMetadata)
+	{
+		String value = parsedMetadata.getNaturalIdValue(byId);
+		String baseValue = toMetadata.getNaturalIdValue(byId);
+
+		if (optText)
+		{
+			value = value.trim().replaceAll("\\s+", " ").toLowerCase();
+			baseValue = baseValue.trim().replaceAll("\\s+", " ").toLowerCase();
+		}
+
+		if (value != null && baseValue != null && value.equals(baseValue))
+		{
+			toMetadata.addLinkedMetadata(this, parsedMetadata);
+			parsedMetadata.addLinkedMetadata(getReverseLink(), toMetadata);
+			return true;
+		}
+		return false;
+	}
 }

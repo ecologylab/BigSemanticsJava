@@ -114,6 +114,4 @@ public interface InfoCollector<C extends Container>
 	
 	C getContainerForSearch(C ancestor, Document metadata, ParsedURL purl, Seed seed, boolean reincarnate);
 	
-	LinkedMetadataMonitor getLinkedMetadataMonitor();
-
 }

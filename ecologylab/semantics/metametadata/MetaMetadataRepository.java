@@ -8,6 +8,7 @@ import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -20,6 +21,7 @@ import ecologylab.generic.HashMapArrayList;
 import ecologylab.net.ParsedURL;
 import ecologylab.net.UserAgent;
 import ecologylab.semantics.connectors.CookieProcessing;
+import ecologylab.semantics.connectors.LinkedMetadataMonitor;
 import ecologylab.semantics.connectors.SemanticsSite;
 import ecologylab.semantics.metadata.DocumentParserTagNames;
 import ecologylab.semantics.metadata.Metadata;
@@ -361,14 +363,36 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 				repositoryByClassName.put(metadataClassDescriptor.getDescribedClass().getName(),
 						metaMetadata);
 			
-			if (metaMetadata.getLinkWiths() != null)
+			LinkedMetadataMonitor monitor = getLinkedMetadataMonitor();
+			String thisName = metaMetadata.getName();
+			Map<String, LinkWith> linkWiths = metaMetadata.getLinkWiths();
+			if (linkWiths != null)
 			{
-				for (LinkWith lw : metaMetadata.getLinkWiths())
+				for (String name : linkWiths.keySet())
 				{
-					if (!lw.isReversed())
+					LinkWith lw = linkWiths.get(name);
+					MetaMetadata targetMmd = getByTagName(lw.getName());
+					assert (targetMmd != null) : "mmd type not found: " + lw.getName();
+					
+					lw.processOptions();
+					monitor.registerName(lw.getName());
+					monitor.registerName(thisName);
+					
+					if (targetMmd.getLinkWiths() != null && targetMmd.getLinkWiths().containsKey(thisName))
 					{
-						LinkWith r = lw.getReverse(metaMetadata.getTypeName());
-						MetaMetadata targetMmd = getByTagName(lw.getType());
+						// if there is already a reverse link, just make sure the reverse link reference is set
+						LinkWith r = targetMmd.getLinkWiths().get(thisName);
+						if (!r.isReverse())
+						{
+							warning("not encouraging explicitly defining reverse links!");
+							r.setReverse(true);
+							lw.setReverseLink(r);
+						}
+					}
+					else
+					{
+						// if there isn't, create a new one
+						LinkWith r = lw.createReverseLink(thisName);
 						targetMmd.addLinkWith(r);
 					}
 				}
@@ -1019,4 +1043,12 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	{
 		initializeSelectors();
 	}
+	
+	LinkedMetadataMonitor linkedMetadataMonitor = new LinkedMetadataMonitor();
+	
+	public LinkedMetadataMonitor getLinkedMetadataMonitor()
+	{
+		return linkedMetadataMonitor;
+	}
+
 }
