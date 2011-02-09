@@ -902,39 +902,13 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		return defaultUserAgentString;
 	}
 
-	public String getSearchURL(String searchEngine)
+	public SearchEngine getSearchEngine(String engineName)
 	{
 		if (searchEngines != null)
 		{
-			return searchEngines.get(searchEngine).getUrlPrefix();
+			return searchEngines.get(engineName);
 		}
 		return null;
-	}
-
-	public String getSearchURLSufix(String searchEngine)
-	{
-		String returnVal = "";
-		if (searchEngines != null)
-		{
-			return searchEngines.get(searchEngine).getUrlSuffix();
-		}
-		return returnVal;
-	}
-
-	public String getNumResultString(String searchEngine)
-	{
-		String returnVal = "";
-		if (searchEngine != null)
-			return searchEngines.get(searchEngine).getNumResultString();
-		return returnVal;
-	}
-
-	public String getStartString(String searchEngine)
-	{
-		String returnVal = "";
-		if (searchEngine != null)
-			return searchEngines.get(searchEngine).getStartString();
-		return returnVal;
 	}
 
 	public String getName()

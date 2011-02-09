@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.generic.ReflectionTools;
+import ecologylab.net.ParsedURL;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
 import ecologylab.serialization.SIMPLTranslationException;
@@ -53,6 +54,10 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 
 	@simpl_scalar
 	private String						collectionOf;
+	
+	@simpl_collection("url_generator")
+	@simpl_nowrap
+	private ArrayList<UrlGenerator> urlGenerators;
 	
 	private Map<String, MetaMetadataField> naturalIds = new HashMap<String, MetaMetadataField>();
 	
@@ -337,14 +342,29 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 		return redirectHandling;
 	}
 
-	public void addNaturalIdField(String naturalId, MetaMetadataField inheritedField)
+	public void addNaturalIdField(String naturalId, MetaMetadataField childField)
 	{
-		naturalIds.put(naturalId, inheritedField);
+		naturalIds.put(naturalId, childField);
 	}
 	
-	public MetaMetadataField getNaturalIdField(String naturalId)
+	public Map<String, MetaMetadataField> getNaturalIdFields()
 	{
-		return naturalIds.get(naturalId);
+		return naturalIds;
+	}
+	
+	public ParsedURL generateUrl(String naturalId, String value)
+	{
+		if (urlGenerators != null)
+		{
+			for (UrlGenerator ug : urlGenerators)
+			{
+				if (ug.canGenerate(naturalId))
+				{
+					return ug.generate(getRepository(), naturalId, value);
+				}
+			}
+		}
+		return null;
 	}
 	
 }

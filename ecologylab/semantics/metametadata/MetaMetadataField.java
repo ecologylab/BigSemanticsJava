@@ -1050,6 +1050,16 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 					thatChild.getClassAndBindDescriptors(metadataTScope);
 				
 				bindDescriptorsFinished = true;
+				
+				if (this instanceof MetaMetadata)
+				{
+					MetaMetadata mmd = (MetaMetadata) this;
+					String naturalId = thatChild.getAsNaturalId();
+					if (naturalId != null)
+					{
+						mmd.addNaturalIdField(naturalId, thatChild);
+					}
+				}
 			}
 		}
 			// for (FieldDescriptor fieldDescriptor : allFieldDescriptorsByFieldName.values())

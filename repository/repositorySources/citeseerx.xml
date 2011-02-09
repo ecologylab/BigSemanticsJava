@@ -9,7 +9,7 @@
 
 	<meta_metadata name="citeseerx_record" extends="scholarly_article" comment="CiteSeerX record for an article.">
 		<scalar name="location" xpath="//div[@id='downloads']/a[@title='View or Download this document as PDF']/@href" />
-		<scalar name="title" xpath="//h1[@class='primaryheader']" navigates_to="metadata_page">
+		<scalar name="title" xpath="//h1[@class='primaryheader']" navigates_to="metadata_page" as_natural_id="title">
 			<filter regex="\[.*\]" replace="" />
 		</scalar>
 		<collection name="authors" xpath="//div[@id='introduction']/div[contains(@class, 'char_mediumvalue')]">
@@ -60,6 +60,7 @@
 			<set_field name="metadata_page">
 				<arg value="TRUE_PURL" name="value" />
 			</set_field>
+			
 			<get_field name="location" />
 			<if>
 				<not_null value="location" />

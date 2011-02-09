@@ -879,10 +879,11 @@ abstract public class Metadata extends ElementState implements MetadataBase,
 	
 	public String getNaturalIdValue(String naturalId)
 	{
-		if (metaMetadata != null && metaMetadata instanceof MetaMetadata)
+		MetaMetadataCompositeField mmcf = (MetaMetadataCompositeField) getMetaMetadata();
+		if (mmcf != null && mmcf instanceof MetaMetadata)
 		{
-			MetaMetadata mmd = (MetaMetadata) metaMetadata;
-			MetaMetadataField field = mmd.getNaturalIdField(naturalId);
+			MetaMetadata mmd = (MetaMetadata) mmcf;
+			MetaMetadataField field = mmd.getNaturalIdFields().get(naturalId);
 			MetadataFieldDescriptor fd = field.getMetadataFieldDescriptor();
 			return fd.getValueString(this);
 		}
