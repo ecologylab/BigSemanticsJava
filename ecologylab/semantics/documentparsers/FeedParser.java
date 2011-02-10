@@ -29,16 +29,15 @@ public class FeedParser
 		// TODO Auto-generated constructor stub
 	}
 
-	public FeedParser(InfoCollector infoCollector, SemanticActionHandler semanticActionHandler,
-			Feed feed)
+	public FeedParser(InfoCollector infoCollector, Feed feed)
 	{
-		super(infoCollector, semanticActionHandler);
+		super(infoCollector);
 		this.feed = feed;
 		getMetaMetadataAndContainerAndQueue(infoCollector,feed.getUrl(),feed,"xml");
 	}
 
 	@Override
-	public Document populateMetadata()
+	public Document populateMetadata(SemanticActionHandler handler)
 	{
 		return directBindingPopulateMetadata();
 	}

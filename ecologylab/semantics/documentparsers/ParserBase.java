@@ -24,7 +24,6 @@ import ecologylab.collections.Scope;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.generic.ReflectionTools;
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.actions.SemanticAction;
 import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.actions.SemanticActionsKeyWords;
 import ecologylab.semantics.connectors.InfoCollector;
@@ -58,65 +57,22 @@ import ecologylab.serialization.types.scalar.ScalarType;
  * @author amathur
  * 
  */
-public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarshallingContext,
-		SemanticActionsKeyWords, DeserializationHookStrategy<Metadata, MetadataFieldDescriptor>
+public abstract class ParserBase extends HTMLDOMParser
+		implements ScalarUnmarshallingContext, SemanticActionsKeyWords,
+		DeserializationHookStrategy<Metadata, MetadataFieldDescriptor>
 {
 
-	protected XPath	xpath;
+	protected XPath			xpath;
 
-	/**
-	 * True PURL for container
-	 */
-	ParsedURL				truePURL;	
+	protected ParsedURL	truePURL;
 
-	/**
-	 * 
-	 * @param infoCollector
-	 */
 	public ParserBase(InfoCollector infoCollector)
 	{
 		super(infoCollector);
 		xpath = XPathFactory.newInstance().newXPath();
 	}
 
-	public ParserBase(InfoCollector infoCollector,
-			SemanticActionHandler semanticActionHandler)
-	{
-		super(infoCollector, semanticActionHandler);
-		xpath = XPathFactory.newInstance().newXPath();
-	}
-
-	public abstract Document populateMetadata();
-
-	/**
-	 * Main method in which we take semantic actions
-	 * 
-	 * @param populatedMetadata
-	 */
-	protected void takeSemanticActions(Metadata populatedMetadata)
-	{
-		// get the semantic actions
-		ArrayList<? extends SemanticAction> semanticActions = metaMetadata.getSemanticActions();
-		addAdditionalParameters(populatedMetadata);
-
-		// handle the semantic actions sequentially
-		// FIXME: Throw semantic warning when no semantic actions exist
-		if (semanticActions == null)
-		{
-			System.out.println("[ParserBase] warning: no semantic actions exist");
-			return;
-		}
-
-		semanticActionHandler.preSemanticActionsHook(populatedMetadata);
-		for (int i = 0; i < semanticActions.size(); i++)
-		{
-			SemanticAction action = semanticActions.get(i);
-			debug("[ParserBase] semantic action: " + action.getActionName() + ", SA class: "
-					+ action.getClassName() + "\n");
-			semanticActionHandler.handleSemanticAction(action, this, infoCollector);
-		}
-		semanticActionHandler.postSemanticActionsHook(populatedMetadata);
-	}
+	public abstract Document populateMetadata(SemanticActionHandler handler);
 
 	/**
 	 * (1) Populate Metadata. (2) Rebuild composite term vector. (3) Take semantic actions.
@@ -124,12 +80,15 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 	protected final void postParse()
 	{
 		super.postParse();
-		instantiateMetaMetadataVariables();
 
+		// init
+		SemanticActionHandler handler = new SemanticActionHandler(infoCollector, this);
+		handler.getSemanticActionVariableMap().put(SemanticActionsKeyWords.PURLCONNECTION_MIME, purlConnection.mimeType());
+		instantiateMetaMetadataVariables(handler);
 		truePURL = container.purl();
-		// build the metadata object
 
-		Metadata populatedMetadata = populateMetadata();
+		// build the metadata object
+		Metadata populatedMetadata = populateMetadata(handler);
 		populatedMetadata.setMetadataChanged(true);
 
 		try
@@ -138,11 +97,6 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 			if (populatedMetadata != null)
 			{
 				debug(populatedMetadata.serialize());
-			}
-			else
-			{
-				warning("Couldn't parse metadata.");
-				return;
 			}
 		}
 		catch (Throwable e)
@@ -155,35 +109,22 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 		// FIXME -- should be able to get rid of this step here. its way too late!
 		// if the metametadata reference is null, assign the correct metametadata object to it.
 		if (populatedMetadata.getMetaMetadata() == null)
+		{
+			warning("meta-metadata not set after populating!!!!!");
 			populatedMetadata.setMetaMetadata(metaMetadata);
+		}
 
 		// make sure termVector is built here
 		populatedMetadata.rebuildCompositeTermVector();
-		
+
+		// process linked metadata
 		MetaMetadataRepository repository = metaMetadata.getRepository();
 		LinkedMetadataMonitor monitor = repository.getLinkedMetadataMonitor();
 		monitor.addMonitors(populatedMetadata);
 		monitor.tryLink(repository, populatedMetadata);
-		
+
 		if (populatedMetadata != null)
-			takeSemanticActions(populatedMetadata);
-
-		semanticActionHandler.recycle();
-		semanticActionHandler = null;
-	}
-
-	/**
-	 * Build the standard object instance map which can then be used via reflection.
-	 * 
-	 * @param populatedMetadata
-	 * @return
-	 */
-	private void addAdditionalParameters(Metadata populatedMetadata)
-	{
-		Scope<Object> param = semanticActionHandler.getSemanticActionVariableMap();
-		param.put(DOCUMENT_TYPE, this);
-		param.put(METADATA, populatedMetadata);
-		param.put(TRUE_PURL, truePURL);
+			handler.takeSemanticActions((MetaMetadata) metaMetadata, populatedMetadata);
 	}
 
 	/**
@@ -201,13 +142,13 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 	 * @param document
 	 *          The root of the document
 	 */
-	private void instantiateMetaMetadataVariables()
+	private void instantiateMetaMetadataVariables(SemanticActionHandler handler)
 	{
 		// get the list of all variable defintions
 		ArrayList<DefVar> defVars = metaMetadata.getDefVars();
 
 		// get the parameters
-		Scope<Object> parameters = semanticActionHandler.getSemanticActionVariableMap();
+		Scope<Object> parameters = handler.getSemanticActionVariableMap();
 		if (defVars != null)
 		{
 			// only if some variables are there we create a DOM[for diect binidng types for others DOM is
@@ -218,11 +159,11 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 				String xpathExpression = defVar.getXpath();
 				String node = defVar.getNode();
 				String name = defVar.getName();
-				QName type	= defVar.getType();
-				Node contextNode	= null;
+				QName type = defVar.getType();
+				Node contextNode = null;
 				try
 				{
-					if  (node == null)
+					if (node == null)
 					{
 						// apply the XPath on the document root.
 						contextNode = getDom();
@@ -281,10 +222,10 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 	}
 
 	protected Metadata recursiveExtraction(TranslationScope translationScope,
-			MetaMetadataField mmdField,
-			Metadata metadata, XPath xpath, Scope<Object> param, Node contextNode)
+			MetaMetadataField mmdField, Metadata metadata, XPath xpath, Scope<Object> param,
+			Node contextNode)
 	{
-//System.out.println("HEYHEY!\n" + ((org.w3c.tidy.DOMDocumentImpl) contextNode).adaptee);
+		// System.out.println("HEYHEY!\n" + ((org.w3c.tidy.DOMDocumentImpl) contextNode).adaptee);
 
 		return recursiveExtraction(translationScope, mmdField, metadata, xpath, param, contextNode,
 				null);
@@ -477,23 +418,23 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 			Node contextNode, MetaMetadataField mmdElement, String mmdElementName, XPath xpath,
 			Scope<Object> param, String xPathString, Map<String, String> fieldParserMap)
 	{
-		//TODO -- is this necessary?
+		// TODO -- is this necessary?
 		if (xPathString == null || xPathString.isEmpty())
 		{
 			// no xpath provided; we don't need to extract it
 			return;
 		}
-		
+
 		try
 		{
 			Metadata nestedMetadata = null;
 
 			// for nested objects xPath on context node will give only one node.
-			Node parentNode = //TODO (xPathString == null || xPathString.isEmpty()) ? contextNode :
-				(Node) xpath.evaluate(xPathString, contextNode, XPathConstants.NODE);
+			Node parentNode = // TODO (xPathString == null || xPathString.isEmpty()) ? contextNode :
+			(Node) xpath.evaluate(xPathString, contextNode, XPathConstants.NODE);
 
 			Class<? extends Metadata> metadataClass = mmdElement.getMetadataClass();
-			Class[] argClasses 	= new Class[] { MetaMetadataCompositeField.class };
+			Class[] argClasses = new Class[] { MetaMetadataCompositeField.class };
 			Object[] argObjects = new Object[] { (MetaMetadataCompositeField) mmdElement };
 			nestedMetadata = ReflectionTools.getInstance(metadataClass, argClasses, argObjects);
 			ReflectionTools.setFieldValue(metadata, mmdElement.getMetadataFieldDescriptor().getField(),
@@ -579,7 +520,8 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 			// loop over all the child meta-metadata fields of the collection meta-metadatafield
 			boolean collectionInstanceListInitialized = false;
 			// get the field from childField list which has the same name as this field
-			HashMapArrayList<String, MetaMetadataField> childMetaMetadata = mmdElement.getChildMetaMetadata();
+			HashMapArrayList<String, MetaMetadataField> childMetaMetadata = mmdElement
+					.getChildMetaMetadata();
 			if (childMetaMetadata != null)
 			{
 				// determine how many sub-nodes there
@@ -592,14 +534,16 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 				{
 					try
 					{
-						parentNodeList = (DTMNodeList) xpath.evaluate(parentXPathString, contextNode, XPathConstants.NODESET);
+						parentNodeList = (DTMNodeList) xpath.evaluate(parentXPathString, contextNode,
+								XPathConstants.NODESET);
 						debug("node list extracted.");
 					}
 					catch (XPathExpressionException e)
 					{
 						StringBuilder buffy = StringBuilderUtils.acquire();
 
-						buffy.append("################# ERROR IN EVALUATION OF A COLLECTION FIELD ########################\n");
+						buffy
+								.append("################# ERROR IN EVALUATION OF A COLLECTION FIELD ########################\n");
 						buffy.append("Field Name::\t").append(mmdElement.getName()).append("\n");
 						buffy.append("ContextNode::\t").append(contextNode).append("\n");
 						buffy.append("XPath Expression::\t").append(parentXPathString).append("\n");
@@ -613,29 +557,31 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 				}
 				else
 				{
-//					error("neither xpath nor field_parser specified!");
+					// error("neither xpath nor field_parser specified!");
 					// if no xpath is provided, we don't need to process this field
 					return;
 				}
-				
+
 				// initialize Metadata list -- they will be populated later
 				for (int j = 0; j < parentNodeListLength; j++)
 				{
 					// String childTag = mmdElement.determineCollectionChildType(); //getChildTag();
-					// MetaMetadata mmdForNewMetadata = mmdElement.metaMetadataRepository().getByTagName(childTag);
+					// MetaMetadata mmdForNewMetadata =
+					// mmdElement.metaMetadataRepository().getByTagName(childTag);
 					Class[] argClasses = new Class[] { MetaMetadataCompositeField.class }; // mmdForNewMetadata.getClass()
 					Object[] argObjects = new Object[] { mmdElement.getChildComposite() }; // mmdForNewMetadata
-					Metadata metadataInstance = (Metadata) ReflectionTools.getInstance(collectionChildClass, argClasses, argObjects);
+					Metadata metadataInstance = (Metadata) ReflectionTools.getInstance(collectionChildClass,
+							argClasses, argObjects);
 					collectionInstanceList.add(metadataInstance);
 				}
 				debug("Metadata list initialized.");
-				
+
 				// populate Metadata elements
 				for (MetaMetadataField childMetaMetadataField : childMetaMetadata)
 				{
 					if (childMetaMetadataField == null)
 						continue;
-					
+
 					// now we fill each instance
 					for (int m = 0; m < parentNodeListLength; m++)
 					{
@@ -742,14 +688,14 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 			// TODO right now we r using regular expressions just to replace the
 			// matching string we might use them for more better uses.
 			// get the replacement thing.
-			String replacementString	= field.getRegexReplacement();
+			String replacementString = field.getRegexReplacement();
 			if (replacementString == null)
-				replacementString				= "";
+				replacementString = "";
 			debug(String.format("regex replacement: regex=%s, replace=%s", regularExpression,
 						replacementString));
 
-				// Consecutively check for further matches. Replacing all with the replacementString
-				evaluation = matcher.replaceAll(replacementString);
+			// Consecutively check for further matches. Replacing all with the replacementString
+			evaluation = matcher.replaceAll(replacementString);
 		}
 
 		// // Now we apply the string prefix

@@ -29,13 +29,13 @@ public class DirectBindingParser
 		extends ParserBase
 {
 
-	public DirectBindingParser(InfoCollector infoCollector,SemanticActionHandler semanticActionHandler)
+	public DirectBindingParser(InfoCollector infoCollector)
 	{
-		super(infoCollector, semanticActionHandler);
+		super(infoCollector);
 	}
 
 	@Override
-	public Document populateMetadata()
+	public Document populateMetadata(SemanticActionHandler handler)
 	{
 		Document populatedMetadata	= directBindingPopulateMetadata();
 		container.setMetadata(populatedMetadata);

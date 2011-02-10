@@ -492,8 +492,11 @@ abstract public class Metadata extends ElementState implements MetadataBase,
 		if (metaMetadata != null)
 		{
 			MetaMetadataRepository repository = metaMetadata.getRepository();
-			LinkedMetadataMonitor monitor = repository.getLinkedMetadataMonitor();
-			monitor.removeMonitors(this);
+			if (repository != null)
+			{
+				LinkedMetadataMonitor monitor = repository.getLinkedMetadataMonitor();
+				monitor.removeMonitors(this);
+			}
 		}
 
 		ClassAndCollectionIterator iterator = metadataIterator();

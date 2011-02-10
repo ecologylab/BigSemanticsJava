@@ -102,8 +102,6 @@ public interface InfoCollector<C extends Container>
 
 	public SeedDistributor getResultDistributer();
 
-	SemanticActionHandler createSemanticActionHandler();
-
 	JFrame getJFrame();
 
 	public abstract SeedDistributor getSeedDistributor();

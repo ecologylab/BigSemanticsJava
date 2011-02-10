@@ -23,14 +23,9 @@ public class XPathParser< SA extends SemanticAction> extends
 		super(infoCollector);
 	}
 
-	public XPathParser(InfoCollector infoCollector,SemanticActionHandler semanticActionHandler)
-	{
-		super(infoCollector, semanticActionHandler);
-	}
-
 	@SuppressWarnings("unchecked")
 	@Override
-	public ecologylab.semantics.metadata.builtins.Document populateMetadata()
+	public ecologylab.semantics.metadata.builtins.Document populateMetadata(SemanticActionHandler handler)
 	{
 		/*
 		try
@@ -45,7 +40,7 @@ public class XPathParser< SA extends SemanticAction> extends
 		*/
 		
 		recursiveExtraction(getMetadataTranslationScope(), metaMetadata,
-					container.getMetadata(), xpath, semanticActionHandler.getSemanticActionVariableMap(), getDom());
+					container.getMetadata(), xpath, handler.getSemanticActionVariableMap(), getDom());
 
 		/*
 		try

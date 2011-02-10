@@ -25,12 +25,11 @@ import ecologylab.semantics.tools.GenericIterable;
  */
 // TODO Might want to implement lexical scoping in variables.
 public class SemanticActionHandler<C extends Container, IC extends InfoCollector<C>>
-		extends Debug implements SemanticActionStandardMethods, SemanticActionsKeyWords,
-		SemanticActionNamedArguments
+		extends Debug
+		implements SemanticActionStandardMethods, SemanticActionsKeyWords, SemanticActionNamedArguments
 {
-	IC infoCollector;
 
-	static final Scope<Object>						BUILT_IN_SCOPE	= new Scope<Object>();
+	static final Scope<Object>					BUILT_IN_SCOPE	= new Scope<Object>();
 
 	static
 	{
@@ -39,26 +38,58 @@ public class SemanticActionHandler<C extends Container, IC extends InfoCollector
 		BUILT_IN_SCOPE.put(NULL, null);
 	}
 
+	private IC													infoCollector;
+	
+	private DocumentParser documentParser;
+
 	/**
 	 * This is a map of return value and objects from semantic action. The key being the return_value
 	 * of the semantic action. TODO remane this also to some thing like objectMap or variableMap.
 	 */
-	protected Scope<Object>								semanticActionVariableMap;
+	private Scope<Object>								semanticActionVariableMap;
 
 	/**
 	 * Error handler for the semantic actions.
 	 */
-	protected SemanticActionErrorHandler	errorHandler;
+	private SemanticActionErrorHandler	errorHandler;
 
-	public SemanticActionHandler(IC infoCollector)
+	public SemanticActionHandler(IC infoCollector, DocumentParser documentParser)
 	{
-		this.infoCollector				= infoCollector;
+		this.infoCollector = infoCollector;
+		this.documentParser = documentParser;
 		semanticActionVariableMap = new Scope<Object>(BUILT_IN_SCOPE);
 	}
 
 	public Scope<Object> getSemanticActionVariableMap()
 	{
 		return semanticActionVariableMap;
+	}
+
+	public void takeSemanticActions(MetaMetadata metaMetadata, Metadata metadata)
+	{
+		// get the semantic actions
+		ArrayList<? extends SemanticAction> semanticActions = metaMetadata.getSemanticActions();
+		semanticActionVariableMap.put(DOCUMENT_TYPE, documentParser);
+		semanticActionVariableMap.put(METADATA, metadata);
+		semanticActionVariableMap.put(TRUE_PURL, documentParser.getTruePURL());
+
+		if (semanticActions == null)
+		{
+			System.out.println("[ParserBase] warning: no semantic actions exist");
+			return;
+		}
+
+		// handle the semantic actions sequentially
+		preSemanticActionsHook(metadata);
+		for (int i = 0; i < semanticActions.size(); i++)
+		{
+			SemanticAction action = semanticActions.get(i);
+			debug("[ParserBase] semantic action: " + action.getActionName() + ", SA class: " + action.getClassName() + "\n");
+			handleSemanticAction(action, documentParser, infoCollector);
+		}
+		postSemanticActionsHook(metadata);
+		
+		recycle();
 	}
 
 	/**
@@ -246,30 +277,6 @@ public class SemanticActionHandler<C extends Container, IC extends InfoCollector
 			}
 		}
 		return true;
-	}
-
-	/*********************** utilities used by semantic actions ************************/
-
-	/**
-	 * Create a container for a specific link.
-	 * 
-	 * @param container_link
-	 *          the link you want to create a container for.
-	 * 
-	 * @return The appropriate container for the URL, or null if there is an error.
-	 */
-	public C createContainer(SemanticAction action, DocumentParser parser, IC infoCollector)
-	{
-		ParsedURL purl = (ParsedURL) action
-				.getArgumentObject(SemanticActionNamedArguments.CONTAINER_LINK);
-		if (purl != null)
-		{
-			Container ancestor = parser.getContainer();
-			MetaMetadata mmd = infoCollector.metaMetaDataRepository().getDocumentMM(purl);
-			C container = infoCollector.getContainer((C) ancestor, null, mmd, purl, false, true, false);
-			return container;
-		}
-		return null;
 	}
 
 	/*********************** hooks ************************/

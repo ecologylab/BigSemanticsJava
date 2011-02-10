@@ -28,15 +28,7 @@ public abstract class LinksetParser
 	public LinksetParser(InfoCollector infoCollector)
 	{
 		super(infoCollector);
-		// TODO Auto-generated constructor stub
 	}
-
-	public LinksetParser(InfoCollector infoCollector,
-			SemanticActionHandler semanticActionHandler)
-	{
-		super(infoCollector, semanticActionHandler);
-	}
-
 
 	/**
 	 * @param infoCollector

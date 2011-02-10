@@ -46,11 +46,6 @@ implements TidyInterface, HTMLAttributeNames
 		super(infoCollector);
 	}
 	
-	public HTMLDOMImageTextParser(InfoCollector infoCollector,SemanticActionHandler semanticActionHandler)	// this is of type In
-	{
-		super(infoCollector, semanticActionHandler);
-	}
-	
 	boolean indexPage = false;
 	boolean contentPage = false;
 	HashMap<TdNode, String> tdNodeAnchorContextStringCache;

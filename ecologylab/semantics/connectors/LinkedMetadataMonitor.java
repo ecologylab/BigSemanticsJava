@@ -25,31 +25,44 @@ public class LinkedMetadataMonitor
 
 	public void addMonitors(Metadata object)
 	{
-		MetaMetadata mmd = (MetaMetadata) object.getMetaMetadata();
-		Map<String, LinkWith> linkWiths = mmd.getLinkWiths(); // linkWiths can't be null
-		for (String name : linkWiths.keySet())
+		if (object.getMetaMetadata() instanceof MetaMetadata)
 		{
-			LinkWith lw = linkWiths.get(name);
-			Map<Metadata, LinkWith> collection = monitorRecords.get(lw.getName()); // collection can't be
-																																							// null
-			synchronized (collection)
+			MetaMetadata mmd = (MetaMetadata) object.getMetaMetadata();
+			Map<String, LinkWith> linkWiths = mmd.getLinkWiths();
+			if (linkWiths != null)
 			{
-				collection.put(object, lw);
+				for (String name : linkWiths.keySet())
+				{
+					LinkWith lw = linkWiths.get(name);
+					Map<Metadata, LinkWith> collection = monitorRecords.get(lw.getName());
+					// collection can't be null
+					synchronized (collection)
+					{
+						collection.put(object, lw);
+					}
+				}
 			}
 		}
 	}
 
 	public void removeMonitors(Metadata object)
 	{
-		MetaMetadata mmd = (MetaMetadata) object.getMetaMetadata();
-		Map<String, LinkWith> linkWiths = mmd.getLinkWiths();
-		for (String name : linkWiths.keySet())
+		if (object.getMetaMetadata() instanceof MetaMetadata)
 		{
-			LinkWith lw = linkWiths.get(name);
-			Map<Metadata, LinkWith> collection = monitorRecords.get(lw.getName());
-			synchronized (collection)
+			MetaMetadata mmd = (MetaMetadata) object.getMetaMetadata();
+			Map<String, LinkWith> linkWiths = mmd.getLinkWiths();
+			if (linkWiths != null)
 			{
-				collection.remove(object);
+				for (String name : linkWiths.keySet())
+				{
+					LinkWith lw = linkWiths.get(name);
+					Map<Metadata, LinkWith> collection = monitorRecords.get(lw.getName());
+					// collection can't be null
+					synchronized (collection)
+					{
+						collection.remove(object);
+					}
+				}
 			}
 		}
 	}

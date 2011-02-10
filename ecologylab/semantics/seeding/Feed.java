@@ -56,8 +56,7 @@ public class Feed extends DocumentState
   @Override
 	public void performInternalSeedingSteps(InfoCollector infoCollector)
 	{
- 	 SemanticActionHandler actionHandler= infoCollector.createSemanticActionHandler();
-	 new FeedParser(infoCollector,actionHandler, this);
+	 new FeedParser(infoCollector, this);
 	}
   
 	/**

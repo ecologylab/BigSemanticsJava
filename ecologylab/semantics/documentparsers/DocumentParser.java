@@ -207,7 +207,6 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 			final Container container, final InfoCollector infoCollector)
 	{
 		final ParsedURL purl	= metadata.getLocation();
-		final SemanticActionHandler semanticActionHandler	= infoCollector.createSemanticActionHandler();
 		
 		DocumentParserConnectHelper documentParserConnectHelper = new DocumentParserConnectHelper()
 		{
@@ -226,7 +225,7 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 			{
 				MetaMetadata mmd = infoCollector.metaMetaDataRepository().getMMBySuffix(suffix);
 				if(mmd!=null)
-					result = getParserInstanceFromBindingMap(mmd.getParser(), infoCollector, semanticActionHandler);
+					result = getParserInstanceFromBindingMap(mmd.getParser(), infoCollector);
 				return (result != null);
 			}
 
@@ -366,13 +365,11 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 			String cacheValue = purlConnection.urlConnection().getHeaderField("X-Cache");
 			cacheHit = cacheValue != null && cacheValue.contains("HIT");
 
-			String mimeType = purlConnection.mimeType();
-			semanticActionHandler.getSemanticActionVariableMap().put(SemanticActionsKeyWords.PURLCONNECTION_MIME, mimeType);
-
 			if (metaMetadata.hasDefaultSuffixOrMimeSelector())
-			{	// see if we can find more specifc meta-metadata using mimeType
-				final MetaMetadataRepository metaMetaDataRepository = infoCollector.metaMetaDataRepository();
-				MetaMetadataCompositeField mimeMmd	= metaMetaDataRepository.getMMByMime(mimeType);
+			{ // see if we can find more specifc meta-metadata using mimeType
+				final MetaMetadataRepository repository = infoCollector.metaMetaDataRepository();
+				String mimeType = purlConnection.mimeType();
+				MetaMetadataCompositeField mimeMmd	= repository.getMMByMime(mimeType);
 				if (mimeMmd != null && !mimeMmd.equals(metaMetadata))
 				{	// new meta-metadata!
 					if (!mimeMmd.getMetadataClass().isAssignableFrom(metadata.getClass()))
@@ -390,7 +387,7 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 				String parserName = metaMetadata.getParser();
 				if (parserName == null)
 					parserName = SemanticActionsKeyWords.DEFAULT_PARSER;
-				result = getParserInstanceFromBindingMap(parserName, infoCollector, semanticActionHandler);
+				result = getParserInstanceFromBindingMap(parserName, infoCollector);
 			}
 		}
 		
@@ -402,41 +399,18 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 		return result;
 	}
 
-	
-	private static <DT extends DocumentParser> DT getParserInstanceFromBindingMap(String binding,InfoCollector infoCollector,
-																						SemanticActionHandler semanticActioHandler)
+	private static <DT extends DocumentParser> DT getParserInstanceFromBindingMap(String binding,
+			InfoCollector infoCollector)
 	{
-		 DT result = null;
-		 Class<? extends DT> documentTypeClass = (Class<? extends DT>) bindingParserMap.get(binding);
+		DT result = null;
+		Class<? extends DT> documentTypeClass = (Class<? extends DT>) bindingParserMap.get(binding);
 
-			Object[] constructorArgs = new Object[2];
-			constructorArgs[0] = infoCollector;
-			constructorArgs[1] = semanticActioHandler;
-			
-			result = ReflectionTools.getInstance(documentTypeClass,DEFAULT_DOCUMENTPARSER_ARG,constructorArgs);
-			return result;
-		 
-	}
-	
-	/*private static DocumentParser getParserFromBinding(MetaMetadata metaMetadata,
-			final InfoCollector infoCollector, SemanticActionHandler semanticActionHandler)
-	{
-		DocumentParser result	= null;
-		final String binding = metaMetadata.getBinding();
-		// either it a direct binding parser
-		if(SemanticActionsKeyWords.DIRECT_BINDING.equals(binding))
-		{
-			result = new MetaMetadataDirectBindingParser(semanticActionHandler, infoCollector);
-		}
-		//else it must be XPath parser only [Will be parsed using XPath expressions]
-		else if(SemanticActionsKeyWords.XPATH_BINDING.equals(binding))
-		{
-			result = new MetaMetadataXPathParser(semanticActionHandler,infoCollector);
-		}
-		// Add logic for any new parser binding here
+		Object[] constructorArgs = new Object[1];
+		constructorArgs[0] = infoCollector;
+
+		result = ReflectionTools.getInstance(documentTypeClass, DEFAULT_DOCUMENTPARSER_ARG, constructorArgs);
 		return result;
 	}
-*/
 
 	/**
 	 * Takes in the purl and returns the prefix purl
@@ -699,7 +673,7 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 
 	static final Class[]	DEFAULT_INFO_COLLECTOR_CLASS_ARG	= {InfoCollector.class};
 	
-	static final Class[]  DEFAULT_DOCUMENTPARSER_ARG         ={InfoCollector.class,SemanticActionHandler.class};
+	static final Class[]  DEFAULT_DOCUMENTPARSER_ARG        = {InfoCollector.class};
 	/**
 	 * Given one of our registries, and a key, do a lookup in the registry to obtain the Class
 	 * object for the DocumentType subclass corresponding to the key -- in that registry.

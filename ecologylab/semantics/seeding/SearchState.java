@@ -192,8 +192,7 @@ implements SemanticsPrefs, SearchEngineNames
    {
   	 //  	 InterestModel.expressInterest(query, interestLevel);
   	 //infoCollector.instantiateDocumentType(SEARCH_DOCUMENT_TYPE_REGISTRY, engine, this);		
-  	 SemanticActionHandler actionHandler= infoCollector.createSemanticActionHandler();
-  	 new SearchParser(infoCollector,actionHandler, engine, this);
+  	 new SearchParser(infoCollector, engine, this);
    }
 
 	/**

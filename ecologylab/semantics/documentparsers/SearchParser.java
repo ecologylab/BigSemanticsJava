@@ -50,23 +50,19 @@ public class SearchParser
 	 * @param infoCollector
 	 * @param semanticActionHandler
 	 */
-	public SearchParser(InfoCollector infoCollector,
-			SemanticActionHandler semanticActionHandler)
+	public SearchParser(InfoCollector infoCollector)
 	{
-		super(infoCollector,semanticActionHandler);
-	
-
+		super(infoCollector);
 	}
 
-	public SearchParser(InfoCollector infoCollector, String query, float bias,
-			int numResults, String engine)
+	public SearchParser(InfoCollector infoCollector, String query, float bias, int numResults, String engine)
 	{
 		this(new SearchState(query, engine, (short) 0, numResults, true), infoCollector, engine);
 	}
 
 	public SearchParser(SearchState searchSeed, InfoCollector infoCollector, String engine)
 	{
-		this(infoCollector, null, engine, searchSeed);
+		this(infoCollector, engine, searchSeed);
 	}
 
 	/**
@@ -75,10 +71,9 @@ public class SearchParser
 	 * @param semanticAction
 	 * @param searchURL
 	 */
-	public SearchParser(InfoCollector infoCollector,
-			SemanticActionHandler semanticActionHandler, String engine, SearchState searchSeed)
+	public SearchParser(InfoCollector infoCollector, String engine, SearchState searchSeed)
 	{
-		super(infoCollector, semanticActionHandler);
+		super(infoCollector);
 		this.engine = engine;
 		this.searchSeed = searchSeed;
 		this.searchURL = searchSeed.formSearchUrlBasedOnEngine();
@@ -129,7 +124,7 @@ public class SearchParser
 	}
 
 	@Override
-	public Document populateMetadata()
+	public Document populateMetadata(SemanticActionHandler handler)
 	{
 		Document populatedMetadata	= (Document) container.getMetadata();
 		
@@ -141,7 +136,7 @@ public class SearchParser
 		else if ("xpath".equals(metaMetadata.getParser()))
 		{
 			recursiveExtraction(getMetadataTranslationScope(), metaMetadata,
-					populatedMetadata, xpath, semanticActionHandler.getSemanticActionVariableMap(),getDom());
+					populatedMetadata, xpath, handler.getSemanticActionVariableMap(),getDom());
 			container.setMetadata(populatedMetadata);
 		}
 
