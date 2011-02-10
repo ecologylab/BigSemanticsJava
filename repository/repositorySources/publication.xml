@@ -8,19 +8,19 @@
 		<scalar name="isbn" scalar_type="String" />
 		<scalar name="year" scalar_type="Int" />
 		<collection name="subjects" child_type="subject">
-			<scalar name="subject" scalar_type="String" navigates_to="location" />
+			<scalar name="subject" as_composite_scalar="true" scalar_type="String" navigates_to="location" />
 			<scalar name="location" scalar_type="ParsedURL" hide="true" />
 		</collection>
 		<scalar name="about_the_authors" scalar_type="String" />
 		<collection name="common_terms" hide="true" child_type="term">
-			<scalar name="term" navigates_to="location" scalar_type="String" />
+			<scalar name="term" as_composite_scalar="true" navigates_to="location" scalar_type="String" />
 			<scalar name="location" hide="true" scalar_type="ParsedURL" />
 			<scalar name="frequency" scalar_type="Int" />
 		</collection>
 	</meta_metadata>
 
 	<meta_metadata name="author" extends="document" comment="An author of an article or creative work.">
-		<scalar name="name" navigates_to="location" is_facet="true" comment="" scalar_type="String" />
+		<scalar name="name" navigates_to="location" is_facet="true" as_composite_scalar="true" comment="" scalar_type="String" />
 		<scalar name="affiliation" comment="" scalar_type="String" />
 		<scalar name="location" hide="true" />
 		<scalar name="city" scalar_type="String" />
@@ -36,7 +36,7 @@
 	</meta_metadata>
 	
 	<meta_metadata name="publisher" extends="document" comment="A publishing company.">
-		<scalar name="name" navigates_to="location" is_face="true" scalar_type="String" />
+		<scalar name="name" as_composite_scalar="true" navigates_to="location" is_face="true" scalar_type="String" />
 		<scalar name="city" scalar_type="String" />
 	</meta_metadata>
 

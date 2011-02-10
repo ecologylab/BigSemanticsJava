@@ -24,11 +24,11 @@
       <collection name="anchors" comment="Anchors (links) in the paragraph, typically links to another Wikipedia article." child_type="anchor">
         <scalar name="link" scalar_type="ParsedURL" />
         <scalar name="anchor_text" scalar_type="String" />
-        <scalar name="target_title" scalar_type="String" />
+        <scalar name="target_title"  as_collection_scalar="true" scalar_type="String" />
       </collection>
     </collection>
     <collection name="categories" comment="Wikipedia Categories" child_type="category">
-      <scalar name="name" scalar_type="String" navigates_to="cat_link" />
+      <scalar name="name" as_collection_scalar="true" scalar_type="String" navigates_to="cat_link" />
       <scalar name="cat_link" hide="true" scalar_type="ParsedURL" />
     </collection>
     <collection name="thumbinners" hide="true" child_type="thumbinner">

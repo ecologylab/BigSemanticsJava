@@ -4,7 +4,7 @@
 	<selector name="flickr_nearby_selector" pref_name="flickr_nearby_type" default_pref="flickr_nearby" url_regex="^http://www.flickr.com/photos/[A-z0-9_@-]+/[0-9]+/nearby" domain="flickr.com" />
 
 	<meta_metadata name="flickr_tag" extends="metadata">
-		<scalar name="tag_name" navigates_to="tag_link" scalar_type="String" />
+		<scalar name="tag_name" as_composite_scalar="true" navigates_to="tag_link" scalar_type="String" />
 		<scalar name="tag_link" hide="true" scalar_type="ParsedURL" />
 	</meta_metadata>
 	<meta_metadata name="flickr_image" extends="image" comment="A Flickr Image">
@@ -16,7 +16,7 @@
 		<selector name="flickr_search_selector" />
 		<collection name="flickr_results" xpath="//div[@class='DetailResults']//div[@class='box']" child_type="flickr_image">
 			<composite name="clipping" xpath="." promote_children="true">
-				<scalar name="caption" xpath=".//h3[@class='PicTitle']" />
+				<scalar name="caption" as_composite_scalar="true" xpath=".//h3[@class='PicTitle']" />
 			</composite>
 			<scalar name="location" xpath=".//span//img/@src" />
 			<scalar name="browse_purl" xpath=".//span//a/@href" />
