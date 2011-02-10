@@ -69,6 +69,9 @@
 				<arg value="title" name="text" />
 			</create_and_visualize_text_surrogate>
 			
+      <get_linked_metadata name="citeseerx_summary" />
+      <get_linked_metadata name="google_scholar_search_result" />
+      
 			<get_field name="references" />
 			<if>
 				<not_null value="references" />
@@ -95,11 +98,6 @@
 					</parse_document>
 				</for_each>
 			</if>
-      
-      <!--
-      <get_linked_metadata name="citeseerx_info" />
-      <get_linked_metadata name="gscholar_info" />
-      -->
 		</semantic_actions>
 		
 	</meta_metadata>

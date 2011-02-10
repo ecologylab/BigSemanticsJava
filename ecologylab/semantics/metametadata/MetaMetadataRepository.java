@@ -384,7 +384,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 						LinkWith r = targetMmd.getLinkWiths().get(thisName);
 						if (!r.isReverse())
 						{
-							warning("not encouraging explicitly defining reverse links!");
+//							warning("not encouraging explicitly defining reverse links!");
 							r.setReverse(true);
 							lw.setReverseLink(r);
 						}

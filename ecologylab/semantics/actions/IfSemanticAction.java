@@ -40,5 +40,5 @@ class IfSemanticAction<IC extends InfoCollector, SAH extends SemanticActionHandl
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	
 }

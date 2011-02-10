@@ -126,7 +126,7 @@ public abstract class ParserBase extends HTMLDOMParser
 		if (populatedMetadata != null)
 			handler.takeSemanticActions((MetaMetadata) metaMetadata, populatedMetadata);
 	}
-
+	
 	/**
 	 * @return the metadataTranslationScope
 	 */
@@ -444,6 +444,10 @@ public abstract class ParserBase extends HTMLDOMParser
 			// nestedMetadata.setMetaMetadata(infoCollector.metaMetaDataRepository().getMM(nestedMetadata.getClass()));
 			recursiveExtraction(translationScope, mmdElement, nestedMetadata, xpath, param, parentNode,
 					fieldParserMap);
+		
+			MetaMetadataRepository repository = metaMetadata.getRepository();
+			LinkedMetadataMonitor monitor = repository.getLinkedMetadataMonitor();
+			monitor.tryLink(repository, nestedMetadata);
 		}
 		catch (Exception e)
 		{
@@ -633,12 +637,14 @@ public abstract class ParserBase extends HTMLDOMParser
 							}
 						}
 					}
-					/*
-					 * else { // else there are no extraction rules , just create a blank field for (int k =
-					 * 0; k < collectionInstanceList.size(); k++) { // FIXME -- andruid believes this line can
-					 * be removed! 9/2/09 collectionInstanceList.get(k).setByTagName(mfa.getTagName(), ""); }
-					 * }
-					 */
+				}
+				
+				MetaMetadataRepository repository = metaMetadata.getRepository();
+				LinkedMetadataMonitor monitor = repository.getLinkedMetadataMonitor();
+				for (int j = 0; j < collectionInstanceList.size(); ++j)
+				{
+					Metadata nestedMetadata = collectionInstanceList.get(j);
+					monitor.tryLink(repository, nestedMetadata);
 				}
 			}
 

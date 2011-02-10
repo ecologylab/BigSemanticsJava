@@ -130,7 +130,7 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 	private String typeName;
 	
 	@Override
-	protected String getTypeName()
+	public String getTypeName()
 	{
 		String result = typeName;
 		if (result == null)

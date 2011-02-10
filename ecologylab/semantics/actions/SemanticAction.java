@@ -396,4 +396,13 @@ public abstract class SemanticAction<IC extends InfoCollector, SAH extends Seman
 		return result;
 	}
 
+	static final int INIT = 0; // this action has not been started
+	static final int INTER = 10; // this action has been started but not yet finished
+	static final int FIN = 20; // this action has already been finished
+	
+	void setNestedActionState(String name, Object value)
+	{
+		
+	}
+	
 }

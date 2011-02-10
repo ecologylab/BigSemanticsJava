@@ -1210,6 +1210,8 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 		if (result == null)
 		{
 			MetaMetadataNestedField parent = (MetaMetadataNestedField) parent();
+			if (parent == null)
+				return null;
 			MetaMetadataNestedField toSearch = null;
 			if (parent instanceof MetaMetadata)
 			{

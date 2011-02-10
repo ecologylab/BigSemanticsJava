@@ -3,9 +3,11 @@ package ecologylab.semantics.connectors;
 import java.util.HashMap;
 import java.util.Map;
 
+import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metametadata.LinkWith;
 import ecologylab.semantics.metametadata.MetaMetadata;
+import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 
 public class LinkedMetadataMonitor
@@ -72,8 +74,19 @@ public class LinkedMetadataMonitor
 		if (parsedMetadata == null)
 			return false;
 
-		MetaMetadata mmd = (MetaMetadata) parsedMetadata.getMetaMetadata();
-		String mmdName = mmd.getTypeName();
+		MetaMetadata mmd;
+		String mmdName;
+		
+		if (parsedMetadata.getMetaMetadata() instanceof MetaMetadata)
+		{
+			mmd = (MetaMetadata) parsedMetadata.getMetaMetadata();
+			mmdName = mmd.getTypeName();
+		}
+		else
+		{
+			mmdName = parsedMetadata.getMetaMetadata().getTypeName();
+			mmd = repository.getByTagName(mmdName);
+		}
 
 		while (!monitorRecords.containsKey(mmdName))
 		{
@@ -88,7 +101,11 @@ public class LinkedMetadataMonitor
 		{
 			LinkWith lw = records.get(object);
 			if (lw.tryLink(parsedMetadata, object))
+			{
+				SemanticActionHandler handler = object.pendingSemanticActionHandler;
+				handler.takeSemanticActions();
 				return true;
+			}
 		}
 
 		return false;

@@ -1,11 +1,12 @@
 package ecologylab.semantics.actions;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import ecologylab.collections.Scope;
 import ecologylab.generic.Debug;
-import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.exceptions.ForLoopException;
 import ecologylab.semantics.actions.exceptions.IfActionException;
 import ecologylab.semantics.actions.exceptions.SemanticActionExecutionException;
@@ -29,7 +30,7 @@ public class SemanticActionHandler<C extends Container, IC extends InfoCollector
 		implements SemanticActionStandardMethods, SemanticActionsKeyWords, SemanticActionNamedArguments
 {
 
-	static final Scope<Object>					BUILT_IN_SCOPE	= new Scope<Object>();
+	static final Scope<Object>												BUILT_IN_SCOPE	= new Scope<Object>();
 
 	static
 	{
@@ -38,20 +39,28 @@ public class SemanticActionHandler<C extends Container, IC extends InfoCollector
 		BUILT_IN_SCOPE.put(NULL, null);
 	}
 
-	private IC													infoCollector;
-	
-	private DocumentParser documentParser;
+	private IC																				infoCollector;
+
+	private DocumentParser														documentParser;
 
 	/**
 	 * This is a map of return value and objects from semantic action. The key being the return_value
 	 * of the semantic action. TODO remane this also to some thing like objectMap or variableMap.
 	 */
-	private Scope<Object>								semanticActionVariableMap;
+	private Scope<Object>															semanticActionVariableMap;
+
+	private Map<SemanticAction, Map<String, Object>>	actionStates		= new HashMap<SemanticAction, Map<String, Object>>();
 
 	/**
 	 * Error handler for the semantic actions.
 	 */
-	private SemanticActionErrorHandler	errorHandler;
+	private SemanticActionErrorHandler								errorHandler;
+
+	boolean																						requestWaiting	= false;
+
+	MetaMetadata																			metaMetadata;
+
+	Metadata																					metadata;
 
 	public SemanticActionHandler(IC infoCollector, DocumentParser documentParser)
 	{
@@ -65,30 +74,45 @@ public class SemanticActionHandler<C extends Container, IC extends InfoCollector
 		return semanticActionVariableMap;
 	}
 
+	public void takeSemanticActions()
+	{
+		if (metaMetadata != null && metadata != null)
+			takeSemanticActions(metaMetadata, metadata);
+	}
+
 	public void takeSemanticActions(MetaMetadata metaMetadata, Metadata metadata)
 	{
-		// get the semantic actions
 		ArrayList<? extends SemanticAction> semanticActions = metaMetadata.getSemanticActions();
-		semanticActionVariableMap.put(DOCUMENT_TYPE, documentParser);
-		semanticActionVariableMap.put(METADATA, metadata);
-		semanticActionVariableMap.put(TRUE_PURL, documentParser.getTruePURL());
-
 		if (semanticActions == null)
 		{
 			System.out.println("[ParserBase] warning: no semantic actions exist");
 			return;
 		}
+		
+		if (requestWaiting)
+		{
+			requestWaiting = false;
+		}
+		else
+		{
+			this.metaMetadata = metaMetadata;
+			this.metadata = metadata;
 
-		// handle the semantic actions sequentially
-		preSemanticActionsHook(metadata);
+			semanticActionVariableMap.put(DOCUMENT_TYPE, documentParser);
+			semanticActionVariableMap.put(METADATA, metadata);
+			semanticActionVariableMap.put(TRUE_PURL, documentParser.getTruePURL());
+
+			preSemanticActionsHook(metadata);
+		}
 		for (int i = 0; i < semanticActions.size(); i++)
 		{
 			SemanticAction action = semanticActions.get(i);
-			debug("[ParserBase] semantic action: " + action.getActionName() + ", SA class: " + action.getClassName() + "\n");
 			handleSemanticAction(action, documentParser, infoCollector);
+			if (requestWaiting)
+				return;
 		}
 		postSemanticActionsHook(metadata);
-		
+
 		recycle();
 	}
 
@@ -103,13 +127,23 @@ public class SemanticActionHandler<C extends Container, IC extends InfoCollector
 	 */
 	public void handleSemanticAction(SemanticAction action, DocumentParser parser, IC infoCollector)
 	{
-		if (!checkConditionsIfAny(action))
-		{
-			if (!(action instanceof IfSemanticAction))
-				warning(String.format(
-						"Semantic action %s not taken since (some) pre-requisite conditions are not met",
-						action));
+		int state = getActionState(action, "state", SemanticAction.INIT);
+		if (state == SemanticAction.FIN || requestWaiting)
 			return;
+		debug("[ParserBase] semantic action: " + action.getActionName() + ", SA class: "
+				+ action.getClassName() + "\n");
+
+		// if this is a <if>, skip the check because we have cached the result
+		if (state == SemanticAction.INTER && action instanceof IfSemanticAction)
+		{
+			if (!checkConditionsIfAny(action))
+			{
+				if (!(action instanceof IfSemanticAction))
+					warning(String.format(
+							"Semantic action %s not taken since (some) pre-requisite conditions are not met",
+							action));
+				return;
+			}
 		}
 
 		action.setInfoCollector(infoCollector);
@@ -139,6 +173,11 @@ public class SemanticActionHandler<C extends Container, IC extends InfoCollector
 			System.out.println("The action " + actionName
 					+ " could not be executed. Please see the stack trace for errors.");
 		}
+		finally
+		{
+			if (!requestWaiting)
+				setActionState(action, "state", SemanticAction.FIN);
+		}
 	}
 
 	/**
@@ -156,7 +195,10 @@ public class SemanticActionHandler<C extends Container, IC extends InfoCollector
 
 		try
 		{
-			Object returnValue = action.perform(object);
+			Object returnValue = null;
+			returnValue = action.perform(object);
+			if (requestWaiting)
+				return;
 			if (action.getReturnObjectName() != null && returnValue != null)
 			{
 				semanticActionVariableMap.put(action.getReturnObjectName(), returnValue);
@@ -213,9 +255,17 @@ public class SemanticActionHandler<C extends Container, IC extends InfoCollector
 					end = Integer.parseInt(action.getEnd());
 				}
 
+				if (getActionState(action, "state", SemanticAction.INIT) == SemanticAction.INTER)
+				{
+					start = getActionState(action, "current_index", 0);
+				}
+
+				setActionState(action, "state", SemanticAction.INTER);
+
 				// start the loop over each object
 				for (int i = start; i < end; i++)
 				{
+					setActionState(action, "current_index", i);
 					Object item = gItr.get(i);
 					// put it in semantic action return value map
 					semanticActionVariableMap.put(action.getAs(), item);
@@ -229,7 +279,15 @@ public class SemanticActionHandler<C extends Container, IC extends InfoCollector
 
 					// now take all the actions nested inside for loop
 					for (SemanticAction nestedSemanticAction : nestedSemanticActions)
+					{
 						handleSemanticAction(nestedSemanticAction, parser, infoCollector);
+					}
+
+					if (requestWaiting)
+						break;
+
+					// at the end of each iteration clear flags so that we can do the next iteration
+					action.setNestedActionState("state", SemanticAction.INIT);
 				}
 			}
 		}
@@ -242,9 +300,20 @@ public class SemanticActionHandler<C extends Container, IC extends InfoCollector
 
 	public void handleIf(IfSemanticAction action, DocumentParser parser, IC infoCollector)
 	{
-		// conditions have been checked in handleSemanticActio()
+		// conditions have been checked in handleSemanticAction()
+
+		int state = getActionState(action, "state", SemanticAction.INIT);
+		if (state == SemanticAction.INTER)
+		{
+			if (!getActionState(action, "condition_true", false))
+				;
+			return;
+		}
+
 		try
 		{
+			setActionState(action, "state", SemanticAction.INTER);
+			setActionState(action, "condition_true", true);
 			ArrayList<SemanticAction> nestedSemanticActions = action.getNestedSemanticActionList();
 			for (SemanticAction nestedSemanticAction : nestedSemanticActions)
 				handleSemanticAction(nestedSemanticAction, parser, infoCollector);
@@ -297,6 +366,26 @@ public class SemanticActionHandler<C extends Container, IC extends InfoCollector
 	{
 		semanticActionVariableMap.clear();
 		semanticActionVariableMap = null;
+	}
+
+	public <T> T getActionState(SemanticAction action, String name, T defaultValue)
+	{
+		if (actionStates.containsKey(action))
+		{
+			Map<String, Object> states = actionStates.get(action);
+			Object state = states.get(name);
+			if (state != null)
+				return (T) state;
+		}
+		return defaultValue;
+	}
+
+	public <T> void setActionState(SemanticAction action, String name, T value)
+	{
+		if (!actionStates.containsKey(action))
+			actionStates.put(action, new HashMap<String, Object>());
+		Map<String, Object> states = actionStates.get(action);
+		states.put(name, value);
 	}
 
 }

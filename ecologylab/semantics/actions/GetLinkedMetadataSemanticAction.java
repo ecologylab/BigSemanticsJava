@@ -1,6 +1,10 @@
 package ecologylab.semantics.actions;
 
+import ecologylab.net.ParsedURL;
+import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.metadata.Metadata;
+import ecologylab.semantics.metametadata.LinkWith;
+import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.serialization.simpl_inherit;
 import ecologylab.serialization.ElementState.xml_tag;
 
@@ -8,7 +12,7 @@ import ecologylab.serialization.ElementState.xml_tag;
 @xml_tag(SemanticActionStandardMethods.GET_LINKED_METADATA)
 public class GetLinkedMetadataSemanticAction extends SemanticAction
 {
-	
+
 	@Override
 	public String getActionName()
 	{
@@ -32,12 +36,25 @@ public class GetLinkedMetadataSemanticAction extends SemanticAction
 			Metadata linkedMetadata = metadata.getLinkedMetadata(name);
 			if (linkedMetadata == null)
 			{
-				// wait ...
-				
+				if (metadata.getMetaMetadata() instanceof MetaMetadata)
+				{
+					MetaMetadata thisMmd = (MetaMetadata) metadata.getMetaMetadata();
+					LinkWith lw = thisMmd.getLinkWiths().get(name);
+					MetaMetadata mmd = infoCollector.metaMetaDataRepository().getByTagName(name);
+					if (mmd != null)
+					{
+						String id = lw.getById();
+						ParsedURL purl = mmd.generateUrl(id, metadata.getNaturalIdValue(id));
+						Container container = infoCollector.getContainer(null, null, mmd, purl, false, false, false);
+						container.queueDownload();
+						metadata.pendingSemanticActionHandler = semanticActionHandler;
+						semanticActionHandler.requestWaiting = true;
+					}
+				}
 			}
 			return linkedMetadata;
 		}
 		return null;
 	}
-
+	
 }

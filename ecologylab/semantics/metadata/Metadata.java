@@ -26,6 +26,7 @@ import org.w3c.dom.NodeList;
 import ecologylab.collections.Scope;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.connectors.LinkedMetadataMonitor;
 import ecologylab.semantics.metadata.builtins.DebugMetadata;
 import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
@@ -925,16 +926,24 @@ abstract public class Metadata extends ElementState implements MetadataBase,
 	private String getNaturalIdValueHelper(String naturalId)
 	{
 		MetaMetadataCompositeField mmcf = (MetaMetadataCompositeField) getMetaMetadata();
-		if (mmcf != null && mmcf instanceof MetaMetadata)
+		if (mmcf == null)
+			return null;
+		
+		MetaMetadata mmd;
+		if (mmcf instanceof MetaMetadata)
 		{
-			MetaMetadata mmd = (MetaMetadata) mmcf;
-			MetaMetadataField field = mmd.getNaturalIdFields().get(naturalId);
-			MetadataFieldDescriptor fd = field.getMetadataFieldDescriptor();
-			return fd.getValueString(this);
+			mmd = (MetaMetadata) mmcf;
 		}
-		return null;
+		else
+		{
+			String mmdName = mmcf.getTypeName();
+			mmd = repository.getByTagName(mmdName);
+		}
+		MetaMetadataField field = mmd.getNaturalIdFields().get(naturalId);
+		MetadataFieldDescriptor fd = field.getMetadataFieldDescriptor();
+		return fd.getValueString(this);
 	}
-
+	
 	public Metadata getLinkedMetadata(String name)
 	{
 		if (linkedMetadata != null)
@@ -961,5 +970,7 @@ abstract public class Metadata extends ElementState implements MetadataBase,
 			linkedMetadata.put(lw.key(), metadata);
 		}
 	}
+	
+	public SemanticActionHandler pendingSemanticActionHandler;
 
 }

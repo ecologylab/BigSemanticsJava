@@ -1,7 +1,6 @@
 package ecologylab.semantics.actions;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 import org.junit.Test;
 
@@ -69,29 +68,43 @@ public class ChooseSemanticAction<IC extends InfoCollector, SAH extends Semantic
 	@Override
 	public Object perform(Object obj)
 	{
-		for (IfSemanticAction aCase : cases)
+		int selectedCaseIndex = -1;
+		int state = (Integer) semanticActionHandler.getActionState(this, "state", INIT);
+		if (state == INIT)
 		{
+			state = INTER;
+
+			if (cases != null)
+				for (int i = 0; i < cases.size(); ++i)
+				{
+					if (semanticActionHandler.checkConditionsIfAny(cases.get(i)))
+					{
+						semanticActionHandler.setActionState(this, "select", i);
+						break;
+					}
+				}
+		}
+
+		if (selectedCaseIndex >= 0)
+		{
+			IfSemanticAction aCase = cases.get(selectedCaseIndex);
 			ArrayList<SemanticAction> nestedSemanticActions = aCase.getNestedSemanticActionList();
-
-			// check if all the flags are true
-			if (semanticActionHandler.checkConditionsIfAny(aCase))
+			for (SemanticAction nestedSemanticAction : nestedSemanticActions)
+				semanticActionHandler.handleSemanticAction(nestedSemanticAction, documentParser,
+						infoCollector);
+		}
+		else
+		{
+			if (otherwise != null)
 			{
-				// handle each of the nested action
-				for (SemanticAction nestedSemanticAction : nestedSemanticActions)
-					semanticActionHandler.handleSemanticAction(nestedSemanticAction, documentParser,
-							infoCollector);
-
-				// end processing following cases
-				return null;
+				ArrayList<SemanticAction> otherwiseActions = otherwise.getNestedSemanticActionList();
+				for (SemanticAction action : otherwiseActions)
+				{
+					semanticActionHandler.handleSemanticAction(action, documentParser, infoCollector);
+				}
 			}
 		}
 
-		// if none cases are executed
-		ArrayList<SemanticAction> otherwiseActions = otherwise.getNestedSemanticActionList();
-		for (SemanticAction action : otherwiseActions)
-		{
-			semanticActionHandler.handleSemanticAction(action, documentParser, infoCollector);
-		}
 		return null;
 	}
 
@@ -105,6 +118,24 @@ public class ChooseSemanticAction<IC extends InfoCollector, SAH extends Semantic
 		System.out.println(choose.cases);
 		System.out.println(choose.otherwise);
 		System.out.println(choose.serialize());
+	}
+
+	@Override
+	void setNestedActionState(String name, Object value)
+	{
+		if (cases != null)
+		{
+			for (IfSemanticAction aCase : cases)
+			{
+				semanticActionHandler.setActionState(aCase, name, value);
+				aCase.setNestedActionState(name, value);
+			}
+		}
+		if (otherwise != null)
+		{
+			semanticActionHandler.setActionState(otherwise, name, value);
+			otherwise.setNestedActionState(name, value);
+		}
 	}
 
 }

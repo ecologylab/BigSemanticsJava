@@ -46,4 +46,22 @@ public abstract class NestedSemanticAction<IC extends InfoCollector, SAH extends
 	{
 		this.nestedSemanticActionList = nestedSemanticActionList;
 	}
+
+	@Override
+	public String getActionName()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	void setNestedActionState(String name, Object value)
+	{
+		for (SemanticAction action : nestedSemanticActionList)
+		{
+			semanticActionHandler.setActionState(action, name, value);
+			action.setNestedActionState(name, value);
+		}
+	}
+	
 }
