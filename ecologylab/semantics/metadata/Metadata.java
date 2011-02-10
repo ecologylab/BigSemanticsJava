@@ -133,6 +133,8 @@ abstract public class Metadata extends ElementState implements MetadataBase,
 	 */
 	private Map<String, Metadata>					linkedMetadata;
 
+	private Object												lockLinkedMetadata				= new Object();
+
 	/**
 	 * This constructor should *only* be used when marshalled Metadata is read.
 	 */
@@ -493,7 +495,7 @@ abstract public class Metadata extends ElementState implements MetadataBase,
 			LinkedMetadataMonitor monitor = repository.getLinkedMetadataMonitor();
 			monitor.removeMonitors(this);
 		}
-		
+
 		ClassAndCollectionIterator iterator = metadataIterator();
 
 		for (MetadataBase metadata = iterator.next(); iterator.hasNext(); metadata = iterator.next())
@@ -900,7 +902,7 @@ abstract public class Metadata extends ElementState implements MetadataBase,
 
 		return value;
 	}
-	
+
 	public String getNaturalIdValue(String naturalId)
 	{
 		if (cachedNaturalIdValues == null)
@@ -932,16 +934,29 @@ abstract public class Metadata extends ElementState implements MetadataBase,
 
 	public Metadata getLinkedMetadata(String name)
 	{
-		return linkedMetadata != null ? linkedMetadata.get(name) : null;
+		if (linkedMetadata != null)
+		{
+			synchronized (linkedMetadata)
+			{
+				return linkedMetadata.get(name);
+			}
+		}
+		return null;
 	}
 
 	public void addLinkedMetadata(LinkWith lw, Metadata metadata)
 	{
 		if (linkedMetadata == null)
 		{
-			linkedMetadata = new HashMap<String, Metadata>();
+			synchronized (lockLinkedMetadata)
+			{
+				linkedMetadata = new HashMap<String, Metadata>();
+			}
 		}
-		linkedMetadata.put(lw.key(), metadata);
+		synchronized (linkedMetadata)
+		{
+			linkedMetadata.put(lw.key(), metadata);
+		}
 	}
 
 }

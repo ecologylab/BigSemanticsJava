@@ -68,7 +68,8 @@ public interface SemanticActionStandardMethods
 	/**
 	 * start a new search.
 	 */
-	public static String SEARCH = "search";
+	public static String	SEARCH															= "search";
+
 	/**
 	 * prevent info collector from obtaining info from a site.
 	 */
@@ -77,5 +78,7 @@ public interface SemanticActionStandardMethods
 	public static String	CREATE_SEMANTIC_ANCHOR							= "create_semantic_anchor";
 
 	public static String	EVALUATE_RANK_WEIGHT								= "eval_rank_wt";
+
+	public static String	GET_LINKED_METADATA									= "get_linked_metadata";
 
 }
