@@ -182,12 +182,6 @@ public class MyInfoCollector<C extends MyContainer> extends Debug implements Inf
 	}
 
 	@Override
-	public SemanticActionHandler createSemanticActionHandler()
-	{
-		return new SemanticActionHandler(this);
-	}
-
-	@Override
 	public void decreaseNumImageReferences()
 	{
 		// TODO Auto-generated method stub
