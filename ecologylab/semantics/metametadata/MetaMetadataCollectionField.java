@@ -186,18 +186,18 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 		return (kids != null && kids.size() > 0) ? kids.get(0).getChildMetaMetadata() : null;
 	}
 	
-	@Override
-	protected void inheritNonDefaultAttributes(MetaMetadataField inheritFrom)
-	{
-		super.inheritNonDefaultAttributes(inheritFrom);
-		
-		MetaMetadataCompositeField composite = getChildComposite();
-		if (composite != null && composite.getName() == null)
-		{
-			MetaMetadataCompositeField childComposite = ((MetaMetadataCollectionField) inheritFrom).getChildComposite();
-			composite.setName(childComposite != null ? childComposite.getName() : this.childType);
-		}
-	}
+//	@Override
+//	protected void inheritNonDefaultAttributes(MetaMetadataField inheritFrom)
+//	{
+//		super.inheritNonDefaultAttributes(inheritFrom);
+//		
+//		MetaMetadataCompositeField composite = getChildComposite();
+//		if (composite != null && composite.getName() == null)
+//		{
+//			MetaMetadataCompositeField childComposite = ((MetaMetadataCollectionField) inheritFrom).getChildComposite();
+//			composite.setName(childComposite != null ? childComposite.getName() : this.childType);
+//		}
+//	}
 	
 	@Override
 	public HashMapArrayList<String, MetaMetadataField> initializeChildMetaMetadata()
@@ -231,7 +231,10 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 	 */
 	public void deserializationPostHook()
 	{
-		MetaMetadataCompositeField composite = new MetaMetadataCompositeField(determineCollectionChildType(), kids);
+		final String childType = determineCollectionChildType();
+		MetaMetadataCompositeField composite = new MetaMetadataCompositeField(childType, kids);
+		composite.setParent(this);
+		composite.setType(childType);
 		if (kids != null)
 		{
 			kids.clear();

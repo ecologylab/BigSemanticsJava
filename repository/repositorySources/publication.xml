@@ -1,9 +1,8 @@
-<meta_metadata_repository name="scholarlyPublication" package="ecologylab.semantics.generated.library.publication">
+<meta_metadata_repository name="publication" package="ecologylab.semantics.generated.library.publication">
 
 	<meta_metadata name="publication" extends="document" comment="A publication.">
-		<scalar name="title" scalar_type="String" />
 		<collection name="authors" child_type="author" />
-		<scalar name="publisher" scalar_type="String" />
+		<composite name="publisher" type="publisher" />
 		<scalar name="pages" scalar_type="String" />
 		<scalar name="isbn" scalar_type="String" />
 		<scalar name="year" scalar_type="Int" />
@@ -12,7 +11,7 @@
 			<scalar name="location" scalar_type="ParsedURL" hide="true" />
 		</collection>
 		<scalar name="about_the_authors" scalar_type="String" />
-		<collection name="common_terms" hide="true" child_type="term">
+		<collection name="common_terms" child_type="term">
 			<scalar name="term" as_composite_scalar="true" navigates_to="location" scalar_type="String" />
 			<scalar name="location" hide="true" scalar_type="ParsedURL" />
 			<scalar name="frequency" scalar_type="Int" />
@@ -26,7 +25,7 @@
 		<scalar name="city" scalar_type="String" />
 	</meta_metadata>
 	
-	<meta_metadata name="general_book" extends="publication">
+	<meta_metadata name="book" extends="publication">
 		<collection name="editors" child_type="author" />
 		<scalar name="edition" scalar_type="String" />
 		<collection name="table_of_contents" child_type="publication">
@@ -35,7 +34,7 @@
 		<scalar name="cover_image" scalar_type="ParsedURL" hide="true" />
 	</meta_metadata>
 	
-	<meta_metadata name="publisher" extends="document" comment="A publishing company.">
+	<meta_metadata name="publisher" comment="A publishing company.">
 		<scalar name="name" as_composite_scalar="true" navigates_to="location" is_face="true" scalar_type="String" />
 		<scalar name="city" scalar_type="String" />
 	</meta_metadata>

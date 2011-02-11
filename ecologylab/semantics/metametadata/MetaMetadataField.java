@@ -163,6 +163,8 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 
 	protected boolean																			inheritMetaMetadataFinished	= false;
 	
+	protected boolean																			inheritInProcess						= false;
+	
 	private boolean																				fieldInherited							= false;
 	
 	private boolean																				bindDescriptorsFinished			= false;
@@ -297,7 +299,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 						if (result == null)
 						{
 							// the type name doesn't work, but we can try super mmd class
-							MetaMetadata superMmd = repository.getByTagName(type);
+							MetaMetadata superMmd = getRepository().getByTagName(type);
 							result = superMmd.getMetadataClass(ts);
 						}
 					}

@@ -44,7 +44,7 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 	 */
 	public void inheritMetaMetadata(MetaMetadataRepository repository)
 	{
-		if (!inheritMetaMetadataFinished)
+		if (!inheritMetaMetadataFinished && !inheritInProcess)
 		{
 			/**************************************************************************************
 			 * Inheritance works here in a top-down manner: first we know the type or extends of a
@@ -53,8 +53,8 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 			 * recursively.
 			 **************************************************************************************/
 			
-			inheritMetaMetadataFinished = true;
-
+			inheritInProcess = true;
+		
 			/*
 			 * tagName will be type / extends attribute for <composite>, or child_type attribute for
 			 * <collection>
@@ -69,7 +69,7 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 					inheritNonDefaultAttributes(inheritedMetaMetadata);
 				for (MetaMetadataField inheritedField : inheritedMetaMetadata.getChildMetaMetadata())
 				{
-					if (this != inheritedField)
+					if (this != inheritedField && !inheritedField.inheritInProcess)
 						inheritForField(inheritedField);
 				}
 				inheritNonFieldComponentsFromMM(inheritedMetaMetadata);
@@ -85,6 +85,9 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 
 				sortForDisplay();
 			}
+			
+			inheritInProcess 						= false;
+			inheritMetaMetadataFinished = true;
 		}
 	}
 

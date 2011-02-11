@@ -3,7 +3,7 @@
 
 <meta_metadata name="nsdl_service" extends="metadata" tag="NSDLSearchService" parser="direct">
 	<composite name="search_results" tag="SearchResults">
-		<collection name="results" child_type="nsdl_document" tag="this_should_be_document"> <!-- fix me!!! -->
+		<collection name="results" child_type="nsdl_document" comment="this_should_be_document"> <!-- fix me!!! -->
 			<composite name="header">
 				<scalar name="resource_identifier" tag="resourceIdentifier" scalar_type="ParsedURL"/>
 			</composite>

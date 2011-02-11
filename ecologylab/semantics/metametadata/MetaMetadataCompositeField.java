@@ -237,4 +237,9 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField
 		return mmSelectorType == MMSelectorType.DEFAULT || mmSelectorType == MMSelectorType.SUFFIX_OR_MIME;
 	}
 	
+	public void setType(String type)
+	{
+		this.type = type;
+	}
+	
 }

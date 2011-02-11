@@ -746,18 +746,18 @@ abstract public class Metadata extends ElementState implements MetadataBase,
 	public void renderHtml(Appendable a, TranslationContext serializationContext)
 			throws IllegalArgumentException, IllegalAccessException, IOException
 	{
-		MetadataClassDescriptor classDescriptor = this.getMetadataClassDescriptor();
-		MetaMetadataOneLevelNestingIterator fullIterator = fullNonRecursiveMetaMetadataIterator(null);
-		ArrayList<MetadataFieldDescriptor> elements = classDescriptor.elementFieldDescriptors();
-		boolean bold = false;
-		int numElements = elements.size();
-		Table table = new Table();
-		a.append(table.open());
+		MetadataClassDescriptor classDescriptor 					= this.getMetadataClassDescriptor();
+		MetaMetadataOneLevelNestingIterator fullIterator 	= fullNonRecursiveMetaMetadataIterator(null);
+		
+		boolean bold 																			= false;
+		int numElements 																	= numberOfVisibleFields();
+		
 		boolean hasXmlText = classDescriptor.hasScalarFD();
-		if ((numElements == 0) && !hasXmlText)
-			a.append(table.close());
-		else
+		if (numElements > 0 || hasXmlText)
 		{
+			Table table = new Table();
+			a.append(table.open());
+			
 			while (fullIterator.hasNext())
 			{
 				MetaMetadataField mmdField = fullIterator.next();
@@ -769,29 +769,34 @@ abstract public class Metadata extends ElementState implements MetadataBase,
 					final int type = childFD.getType();
 					if (type == SCALAR)
 					{
-						if (mmdField.getStyle() != null && mmdField.getStyle().equals("h1"))
-							bold = true;
-						Tr tr = new Tr();
-						tr.setId(childFD.getTagName());
-						Tr empty = new Tr();
-						empty.setCssClass("empty");
-						a.append(tr.open());
-						mmdField.lookupStyle();
-
-						childFD.appendHtmlValueAsAttribute(a, currentMetadata, serializationContext, bold,
-								navigatesFD);
-						a.append(Tr.close());
-						a.append(empty.open()).append(Tr.close());
-						bold = false;
+						if (!childFD.getScalarType().isDefaultValue(childFD.getField(), currentMetadata))
+						{
+							if (mmdField.getStyle() != null && mmdField.getStyle().equals("h1")) 
+								bold = true;
+							
+							Tr tr = new Tr();
+							tr.setId(childFD.getTagName());
+//							Tr empty = new Tr();
+//							empty.setCssClass("empty");
+							a.append(tr.open());
+							mmdField.lookupStyle();
+							
+							childFD.appendHtmlValueAsAttribute(a, currentMetadata, serializationContext, bold, navigatesFD);
+							a.append(Tr.close());
+//							a.append(empty.open()).append(Tr.close());
+							bold = false;
+						}
 					}
 					else
 					{
-						Object thatReferenceObject = null;
-						Field childField = childFD.getField();
-						thatReferenceObject = childField.get(this);
-						if (thatReferenceObject == null)
+						Object thatReferenceObject 	= null;
+						Field childField 						= childFD.getField();
+						thatReferenceObject 				= childField.get(this);
+						
+						if (thatReferenceObject == null) 
 							continue;
-						final boolean isScalar = (type == COLLECTION_SCALAR || type == MAP_SCALAR);
+						
+						final boolean isScalar 			= (type==COLLECTION_SCALAR || type==MAP_SCALAR);
 						Collection thatCollection;
 						switch (type)
 						{
@@ -810,8 +815,8 @@ abstract public class Metadata extends ElementState implements MetadataBase,
 						{
 							Tr nestedTr = new Tr();
 							nestedTr.setCssClass("nested");
-							Tr empty = new Tr();
-							empty.setCssClass("empty");
+//							Tr empty = new Tr();
+//							empty.setCssClass("empty");
 							a.append(nestedTr.open());
 							if (childFD.isWrapped())
 								childFD.writeHtmlWrap(a, false, thatCollection.size());
@@ -829,24 +834,24 @@ abstract public class Metadata extends ElementState implements MetadataBase,
 							if (childFD.isWrapped())
 								childFD.writeHtmlWrap(a, true, thatCollection.size());
 							a.append(Tr.close());
-							a.append(empty.open()).append(Tr.close());
+//							a.append(empty.open()).append(Tr.close());
 						}
 						else if (thatReferenceObject instanceof Metadata)
 						{
-							Tr tr = new Tr();
-							Tr empty = new Tr();
-							empty.setCssClass("empty");
-							Metadata nestedMD = (Metadata) thatReferenceObject;
-							a.append(tr.open());
-							nestedMD.renderHtml(a, serializationContext);
-							a.append(Tr.close());
-							a.append(empty.open()).append(Tr.close());
+//							Tr tr = new Tr();
+////							Tr empty = new Tr();
+////							empty.setCssClass("empty");
+//							Metadata nestedMD = (Metadata) thatReferenceObject;
+//							a.append(tr.open());
+//							nestedMD.renderHtml(a, serializationContext);
+//							a.append(Tr.close());
+//							a.append(empty.open()).append(Tr.close());
 						}
 					}
 				}
 			}
+			a.append(table.close());
 		}
-		a.append(table.close());
 	}
 
 	public boolean hasMetadataChanged()
