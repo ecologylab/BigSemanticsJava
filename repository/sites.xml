@@ -1,0 +1,10 @@
+<meta_metadata_repository name="agents_engines_styles_sites" package="ecologylab.semantics.generated.library" default_user_agent_name="chrome_2">
+  <sites>
+    <site domain="google.com" min_download_interval="15" />
+    <site domain="scholar.google.com" min_download_interval="15" />
+    <site domain="nytimes.com" min_download_interval=".5" />
+    <site domain="acm.org" min_download_interval="20" />
+    <site domain="bing.net" min_download_interval=".125" />
+    <site domain="wikipedia.org" min_download_interval="5" ignore_semantic_boost="true" />
+  </sites>
+</meta_metadata_repository>
