@@ -87,6 +87,13 @@ public class LinkedMetadataMonitor
 			mmdName = parsedMetadata.getMetaMetadata().getTypeName();
 			mmd = repository.getByTagName(mmdName);
 		}
+		
+		if (mmd == null)
+		{
+			// maybe it's defined inline -- we need a solution for this kind of inline definition thing!
+			// currently you can't do metadata linking on inline-defined meta_metadata classes
+			return false;
+		}
 
 		while (!monitorRecords.containsKey(mmdName))
 		{
@@ -95,7 +102,7 @@ public class LinkedMetadataMonitor
 			mmdName = mmd.getSuperMmdTypeName();
 			mmd = repository.getByTagName(mmdName);
 		}
-
+		
 		Map<Metadata, LinkWith> records = monitorRecords.get(mmdName);
 		for (Metadata object : records.keySet())
 		{
