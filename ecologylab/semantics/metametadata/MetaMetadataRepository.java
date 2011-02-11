@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
 import ecologylab.appframework.types.prefs.Pref;
 import ecologylab.collections.PrefixCollection;
 import ecologylab.collections.PrefixPhrase;
+import ecologylab.concurrent.DownloadMonitor;
 import ecologylab.generic.Debug;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.net.ParsedURL;
@@ -75,11 +76,11 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 
 	@simpl_nowrap
 	@simpl_collection("cookie_processing")
-	ArrayList<CookieProcessing> cookieProcessors;
-	
+	ArrayList<CookieProcessing>																	cookieProcessors;
+
 	/**
 	 * The keys for this hashmap are the values within TypeTagNames. This map is filled out
-	 * automatically, by translateFromXML(). It contains  bindings, for all subtypes.
+	 * automatically, by translateFromXML(). It contains bindings, for all subtypes.
 	 */
 	@simpl_map("meta_metadata")
 	@simpl_nowrap
@@ -135,6 +136,8 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 
 	@simpl_map("site")
 	HashMap<String, SemanticsSite>															sites;
+
+	public DownloadMonitor																			downloadMonitor;
 
 	static
 	{
@@ -234,9 +237,9 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 				result.integrateRepositoryWithThis(file, metaMetadataTScope);
 		}
 
-		//We might want to do this only if we have some policies worth enforcing.
+		// We might want to do this only if we have some policies worth enforcing.
 		ParsedURL.cookieManager.setCookiePolicy(CookieProcessing.semanticsCookiePolicy);
-		
+
 		// FIXME -- get rid of this?!
 		Metadata.setRepository(result);
 
@@ -358,11 +361,13 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 			metaMetadata.inheritMetaMetadata(this);
 			metaMetadata.getClassAndBindDescriptors(metadataTScope);
 			MetadataClassDescriptor metadataClassDescriptor = metaMetadata.getMetadataClassDescriptor();
-			if (metaMetadata.getType() == null && metadataClassDescriptor != null) // don't put restatements of the same base type into
-																					// *this* map
+			if (metaMetadata.getType() == null && metadataClassDescriptor != null) // don't put
+																																							// restatements of the
+																																							// same base type into
+				// *this* map
 				repositoryByClassName.put(metadataClassDescriptor.getDescribedClass().getName(),
 						metaMetadata);
-			
+
 			LinkedMetadataMonitor monitor = getLinkedMetadataMonitor();
 			String thisName = metaMetadata.getName();
 			Map<String, LinkWith> linkWiths = metaMetadata.getLinkWiths();
@@ -373,18 +378,18 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 					LinkWith lw = linkWiths.get(name);
 					MetaMetadata targetMmd = getByTagName(lw.getName());
 					assert (targetMmd != null) : "mmd type not found: " + lw.getName();
-					
+
 					lw.processOptions();
 					monitor.registerName(lw.getName());
 					monitor.registerName(thisName);
-					
+
 					if (targetMmd.getLinkWiths() != null && targetMmd.getLinkWiths().containsKey(thisName))
 					{
 						// if there is already a reverse link, just make sure the reverse link reference is set
 						LinkWith r = targetMmd.getLinkWiths().get(thisName);
 						if (!r.isReverse())
 						{
-//							warning("not encouraging explicitly defining reverse links!");
+							// warning("not encouraging explicitly defining reverse links!");
 							r.setReverse(true);
 							lw.setReverseLink(r);
 						}
@@ -447,15 +452,15 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 
 		return (tag == null) ? null : repositoryByTagName.get(tag);
 	}
-	
+
 	public MetaMetadataCompositeField getMM(Class<? extends Metadata> parentClass, String fieldName)
 	{
 		MetaMetadataCompositeField result = null;
-		MetaMetadata parentMM 						= getMM(parentClass);
-		
+		MetaMetadata parentMM = getMM(parentClass);
+
 		if (parentMM != null)
 			result = (MetaMetadataCompositeField) parentMM.lookupChild(fieldName);
-		
+
 		return result;
 	}
 
@@ -517,7 +522,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 
 				if (result == null)
 				{
-					PrefixPhrase matchingPrefix	= urlPrefixCollection.getMatchingPrefix(purl);
+					PrefixPhrase matchingPrefix = urlPrefixCollection.getMatchingPrefix(purl);
 					if (matchingPrefix != null)
 					{
 						result = (MetaMetadata) matchingPrefix.getMappedObject();
@@ -674,8 +679,9 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	}
 
 	/**
-	 * Initializes HashMaps for MetaMetadata selectors by URL or pattern. Uses the ClippableDocument and Document
-	 * base classes to ensure that maps are only filled with appropriate matching MetaMetadata.
+	 * Initializes HashMaps for MetaMetadata selectors by URL or pattern. Uses the ClippableDocument
+	 * and Document base classes to ensure that maps are only filled with appropriate matching
+	 * MetaMetadata.
 	 */
 	private void initializeLocationBasedMaps()
 	{
@@ -695,7 +701,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 			if (Image.class.isAssignableFrom(metadataClass))
 			{
 				repositoryByUrlStripped = imageRepositoryByUrlStripped;
-				repositoryByPattern 		= imageRepositoryByPattern;
+				repositoryByPattern = imageRepositoryByPattern;
 			}
 			else if (Document.class.isAssignableFrom(metadataClass))
 			{
@@ -721,10 +727,10 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 				ParsedURL urlPathTree = selector.getUrlPathTree();
 				if (urlPathTree != null)
 				{
-					PrefixPhrase pp	= urlPrefixCollection.add(urlPathTree);
+					PrefixPhrase pp = urlPrefixCollection.add(urlPathTree);
 					pp.setMappedObject(metaMetadata);
-					
-					//TODO is this next line correct??? it looks wrong!
+
+					// TODO is this next line correct??? it looks wrong!
 					repositoryByUrlStripped.put(urlPathTree.toString(), metaMetadata);
 					metaMetadata.setMmSelectorType(MMSelectorType.LOCATION);
 				}
@@ -1039,13 +1045,35 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		}
 	}
 
+	/**
+	 * This method makes MetaMetadata objects with no user agent inherit from the repository they are inside of.
+	 */
+	private void initializeAgents()
+	{
+		if (repositoryByTagName != null)
+		{
+			for (MetaMetadata m : repositoryByTagName)
+			{
+				if (m != null)
+				{
+					if (m.getUserAgentName() == null)
+					{
+						m.userAgentName = this.defaultUserAgentName;
+						m.userAgentString = this.defaultUserAgentString;
+					}
+				}
+			}
+		}
+	}
+
 	protected void deserializationPostHook()
 	{
 		initializeSelectors();
+		initializeAgents();
 	}
-	
-	LinkedMetadataMonitor linkedMetadataMonitor = new LinkedMetadataMonitor();
-	
+
+	LinkedMetadataMonitor	linkedMetadataMonitor	= new LinkedMetadataMonitor();
+
 	public LinkedMetadataMonitor getLinkedMetadataMonitor()
 	{
 		return linkedMetadataMonitor;
