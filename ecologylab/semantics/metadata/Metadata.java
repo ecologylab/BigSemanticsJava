@@ -62,7 +62,8 @@ import ecologylab.serialization.types.scalar.ScalarType;
  * @author sashikanth
  * 
  */
-@simpl_descriptor_classes({ MetadataClassDescriptor.class, MetadataFieldDescriptor.class })
+@simpl_descriptor_classes(
+{ MetadataClassDescriptor.class, MetadataFieldDescriptor.class })
 abstract public class Metadata extends ElementState implements MetadataBase,
 		Iterable<MetadataFieldDescriptor>
 {
@@ -746,18 +747,18 @@ abstract public class Metadata extends ElementState implements MetadataBase,
 	public void renderHtml(Appendable a, TranslationContext serializationContext)
 			throws IllegalArgumentException, IllegalAccessException, IOException
 	{
-		MetadataClassDescriptor classDescriptor 					= this.getMetadataClassDescriptor();
-		MetaMetadataOneLevelNestingIterator fullIterator 	= fullNonRecursiveMetaMetadataIterator(null);
-		
-		boolean bold 																			= false;
-		int numElements 																	= numberOfVisibleFields();
-		
+		MetadataClassDescriptor classDescriptor = this.getMetadataClassDescriptor();
+		MetaMetadataOneLevelNestingIterator fullIterator = fullNonRecursiveMetaMetadataIterator(null);
+
+		boolean bold = false;
+		int numElements = numberOfVisibleFields();
+
 		boolean hasXmlText = classDescriptor.hasScalarFD();
 		if (numElements > 0 || hasXmlText)
 		{
 			Table table = new Table();
 			a.append(table.open());
-			
+
 			while (fullIterator.hasNext())
 			{
 				MetaMetadataField mmdField = fullIterator.next();
@@ -771,32 +772,30 @@ abstract public class Metadata extends ElementState implements MetadataBase,
 					{
 						if (!childFD.getScalarType().isDefaultValue(childFD.getField(), currentMetadata))
 						{
-							if (mmdField.getStyle() != null && mmdField.getStyle().equals("h1")) 
+							if (mmdField.getStyle() != null && mmdField.getStyle().equals("h1"))
 								bold = true;
-							
+
 							Tr tr = new Tr();
 							tr.setId(childFD.getTagName());
-//							Tr empty = new Tr();
-//							empty.setCssClass("empty");
 							a.append(tr.open());
 							mmdField.lookupStyle();
-							
-							childFD.appendHtmlValueAsAttribute(a, currentMetadata, serializationContext, bold, navigatesFD);
+
+							childFD.appendHtmlValueAsAttribute(a, currentMetadata, serializationContext, bold,
+									navigatesFD);
 							a.append(Tr.close());
-//							a.append(empty.open()).append(Tr.close());
 							bold = false;
 						}
 					}
 					else
 					{
-						Object thatReferenceObject 	= null;
-						Field childField 						= childFD.getField();
-						thatReferenceObject 				= childField.get(this);
-						
-						if (thatReferenceObject == null) 
+						Object thatReferenceObject = null;
+						Field childField = childFD.getField();
+						thatReferenceObject = childField.get(this);
+
+						if (thatReferenceObject == null)
 							continue;
-						
-						final boolean isScalar 			= (type==COLLECTION_SCALAR || type==MAP_SCALAR);
+
+						final boolean isScalar = (type == COLLECTION_SCALAR || type == MAP_SCALAR);
 						Collection thatCollection;
 						switch (type)
 						{
@@ -813,39 +812,69 @@ abstract public class Metadata extends ElementState implements MetadataBase,
 
 						if ((thatCollection != null) && (thatCollection.size() != 0))
 						{
+							int i = 0;
 							Tr nestedTr = new Tr();
 							nestedTr.setCssClass("nested");
-//							Tr empty = new Tr();
-//							empty.setCssClass("empty");
 							a.append(nestedTr.open());
 							if (childFD.isWrapped())
 								childFD.writeHtmlWrap(a, false, thatCollection.size());
 							for (Object next : thatCollection)
 							{
+								Span compositeAsScalarSpan = new Span();
+								compositeAsScalarSpan.setCssClass("composite_as_scalar");
+								a.append(compositeAsScalarSpan.open());
+								ElementState nestedES = (ElementState) next;
+								FieldDescriptor compositeAsScalarFD = nestedES.classDescriptor()
+										.getScalarValueFieldDescripotor();
 								if (isScalar)
 									childFD.appendHtmlValueAsAttribute(a, currentMetadata, serializationContext,
 											bold, navigatesFD);
-								else if (next instanceof Metadata)
+								else if (compositeAsScalarFD != null)
+								{
+									compositeAsScalarFD.appendHtmlCollectionCompositeAttribute(a, nestedES, i == 0);
+								}
+								i++;
+								a.append(compositeAsScalarSpan.close());
+							}
+							for (Object next : thatCollection)
+							{
+								if (next instanceof Metadata)
 								{
 									Metadata collectionSubElementState = (Metadata) next;
 									collectionSubElementState.renderHtml(a, serializationContext);
 								}
+
 							}
 							if (childFD.isWrapped())
 								childFD.writeHtmlWrap(a, true, thatCollection.size());
 							a.append(Tr.close());
-//							a.append(empty.open()).append(Tr.close());
 						}
 						else if (thatReferenceObject instanceof Metadata)
 						{
-//							Tr tr = new Tr();
-////							Tr empty = new Tr();
-////							empty.setCssClass("empty");
-//							Metadata nestedMD = (Metadata) thatReferenceObject;
-//							a.append(tr.open());
-//							nestedMD.renderHtml(a, serializationContext);
-//							a.append(Tr.close());
-//							a.append(empty.open()).append(Tr.close());
+							Tr tr = new Tr();
+							tr.setCssClass("nested");
+							a.append(tr.open());
+							Metadata nestedMD = (Metadata) thatReferenceObject;
+							ElementState nestedES = (ElementState) thatReferenceObject;
+							FieldDescriptor compositeAsScalarFD = nestedES.classDescriptor()
+									.getScalarValueFieldDescripotor();
+
+							childFD.writeHtmlWrap(a, false, 0);
+
+							if (compositeAsScalarFD != null)
+							{
+								Span compositeAsScalarSpan = new Span();
+								compositeAsScalarSpan.setCssClass("composite_as_scalar");
+								a.append(compositeAsScalarSpan.open());
+								compositeAsScalarFD.appendHtmlValueAsAttribute(a, thatReferenceObject,
+										serializationContext, bold, navigatesFD);
+								a.append(compositeAsScalarSpan.close());
+							}
+								
+
+							nestedMD.renderHtml(a, serializationContext);
+							childFD.writeHtmlWrap(a, true, 0);
+							a.append(Tr.close());
 						}
 					}
 				}
@@ -933,7 +962,7 @@ abstract public class Metadata extends ElementState implements MetadataBase,
 		MetaMetadataCompositeField mmcf = (MetaMetadataCompositeField) getMetaMetadata();
 		if (mmcf == null)
 			return null;
-		
+
 		MetaMetadata mmd;
 		if (mmcf instanceof MetaMetadata)
 		{
@@ -948,7 +977,7 @@ abstract public class Metadata extends ElementState implements MetadataBase,
 		MetadataFieldDescriptor fd = field.getMetadataFieldDescriptor();
 		return fd.getValueString(this);
 	}
-	
+
 	public Metadata getLinkedMetadata(String name)
 	{
 		if (linkedMetadata != null)
@@ -975,7 +1004,7 @@ abstract public class Metadata extends ElementState implements MetadataBase,
 			linkedMetadata.put(lw.key(), metadata);
 		}
 	}
-	
-	public SemanticActionHandler pendingSemanticActionHandler;
+
+	public SemanticActionHandler	pendingSemanticActionHandler;
 
 }

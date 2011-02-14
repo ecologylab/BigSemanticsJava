@@ -28,7 +28,7 @@
       </collection>
     </collection>
     <collection name="categories" comment="Wikipedia Categories" child_type="category">
-      <scalar name="name" as_collection_scalar="true" scalar_type="String" navigates_to="cat_link" />
+      <scalar name="name" scalar_type="String" navigates_to="cat_link" />
       <scalar name="cat_link" hide="true" scalar_type="ParsedURL" />
     </collection>
     <collection name="thumbinners" hide="true" child_type="thumbinner">
@@ -52,7 +52,7 @@
       </collection>
     </collection>
     <collection name="categories" xpath="//div[@id='mw-normal-catlinks']//a[starts-with(@href,'/wiki/Category:')]" child_type="category" promote_children="true">
-      <scalar name="name" xpath="string(.)" />
+      <scalar name="name"  as_collection_scalar="true" xpath="string(.)" />
       <scalar name="cat_link" xpath="./@href" />
     </collection>
     <collection name="thumbinners" xpath="//div[@class='thumbinner']" child_type="thumbinner">
