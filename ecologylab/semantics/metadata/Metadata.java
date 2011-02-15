@@ -859,21 +859,21 @@ abstract public class Metadata extends ElementState implements MetadataBase,
 							FieldDescriptor compositeAsScalarFD = nestedES.classDescriptor()
 									.getScalarValueFieldDescripotor();
 
-							childFD.writeHtmlWrap(a, false, 0);
-
 							if (compositeAsScalarFD != null)
 							{
+								childFD.writeCompositeHtmlWrap(a, false);
+
 								Span compositeAsScalarSpan = new Span();
 								compositeAsScalarSpan.setCssClass("composite_as_scalar");
 								a.append(compositeAsScalarSpan.open());
-								compositeAsScalarFD.appendHtmlValueAsAttribute(a, thatReferenceObject,
-										serializationContext, bold, navigatesFD);
+								compositeAsScalarFD.appendHtmlCollectionCompositeAttribute(a, nestedES, true);
 								a.append(compositeAsScalarSpan.close());
-							}
-								
 
-							nestedMD.renderHtml(a, serializationContext);
-							childFD.writeHtmlWrap(a, true, 0);
+								childFD.writeCompositeHtmlWrap(a, true);
+							}
+							else
+								nestedMD.renderHtml(a, serializationContext);
+
 							a.append(Tr.close());
 						}
 					}
