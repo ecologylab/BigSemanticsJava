@@ -13,6 +13,8 @@ import ecologylab.serialization.ElementState.xml_tag;
 public class MetaMetadataCollectionField extends MetaMetadataNestedField
 {
 
+	public static final String	UNRESOLVED_NAME	= "&UNRESOLVED_NAME";
+
 	@simpl_scalar
 	protected String	childTag;
 
@@ -232,7 +234,7 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 	public void deserializationPostHook()
 	{
 		final String childType = determineCollectionChildType();
-		MetaMetadataCompositeField composite = new MetaMetadataCompositeField(childType, kids);
+		MetaMetadataCompositeField composite = new MetaMetadataCompositeField(childType != null ? childType : UNRESOLVED_NAME, kids);
 		composite.setParent(this);
 		composite.setType(childType);
 		if (kids != null)

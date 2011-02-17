@@ -627,6 +627,20 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 
 		// *do not* override fields in here with fields from super classes.
 		MetaMetadataField fieldToInheritTo = childMetaMetadata.get(fieldName);
+		
+		if (fieldToInheritTo instanceof MetaMetadataCollectionField)
+		{
+			MetaMetadataCompositeField childComposite = ((MetaMetadataCollectionField) fieldToInheritTo).getChildComposite();
+			MetaMetadataCompositeField inheritedChildComposite = ((MetaMetadataCollectionField) fieldToInheritFrom).getChildComposite();
+			
+			if (MetaMetadataCollectionField.UNRESOLVED_NAME == childComposite.getName())
+			{
+				fieldToInheritTo.kids.remove(MetaMetadataCollectionField.UNRESOLVED_NAME);
+				childComposite.inheritNonDefaultAttributes(fieldToInheritFrom);
+				childComposite.setName(inheritedChildComposite.getName());
+				fieldToInheritTo.kids.put(childComposite.getName(), childComposite);
+			}
+		}
 
 		if (fieldToInheritTo == null)
 		{
