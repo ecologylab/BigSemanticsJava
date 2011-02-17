@@ -747,18 +747,41 @@ abstract public class Metadata extends ElementState implements MetadataBase,
 	public void renderHtml(Appendable a, TranslationContext serializationContext)
 			throws IllegalArgumentException, IllegalAccessException, IOException
 	{
+		renderHtml(a, serializationContext, false);
+	}
+
+	public void renderHtml(Appendable a, TranslationContext serializationContext, boolean recursing)
+			throws IllegalArgumentException, IllegalAccessException, IOException
+	{
 		MetadataClassDescriptor classDescriptor = this.getMetadataClassDescriptor();
 		MetaMetadataOneLevelNestingIterator fullIterator = fullNonRecursiveMetaMetadataIterator(null);
 
 		boolean bold = false;
 		int numElements = numberOfVisibleFields();
-
 		boolean hasXmlText = classDescriptor.hasScalarFD();
+		
+
 		if (numElements > 0 || hasXmlText)
 		{
 			Table table = new Table();
 			a.append(table.open());
-
+			if (recursing && numElements > 1)
+			{
+				Tr tr = new Tr();
+				Td buttonTd = new Td();
+				Td td = new Td();
+				Table compositeTable = new Table();
+				String button = "&nbsp;<input type=\"image\" class=\"composite\" " +
+						"src=\"http://ecologylab.net/cf/compositionIncludes/button.jpg\" value=\"\" />&nbsp;";
+				buttonTd.setCssClass("metadata_field_name");
+				td.setCssClass("nested_field_value");
+				a.append(tr.open());
+				a.append(buttonTd.open());
+				a.append(button);
+				a.append(Td.close());
+				a.append(td.open());
+				a.append(compositeTable.open());
+			}
 			while (fullIterator.hasNext())
 			{
 				MetaMetadataField mmdField = fullIterator.next();
@@ -817,12 +840,11 @@ abstract public class Metadata extends ElementState implements MetadataBase,
 							nestedTr.setCssClass("nested");
 							a.append(nestedTr.open());
 							if (childFD.isWrapped())
-								childFD.writeHtmlWrap(a, false, thatCollection.size());
+								childFD
+										.writeHtmlWrap(a, false, thatCollection.size(), mmdField.getDisplayedLabel());
 							for (Object next : thatCollection)
 							{
-								Span compositeAsScalarSpan = new Span();
-								compositeAsScalarSpan.setCssClass("composite_as_scalar");
-								a.append(compositeAsScalarSpan.open());
+
 								ElementState nestedES = (ElementState) next;
 								FieldDescriptor compositeAsScalarFD = nestedES.classDescriptor()
 										.getScalarValueFieldDescripotor();
@@ -831,22 +853,25 @@ abstract public class Metadata extends ElementState implements MetadataBase,
 											bold, navigatesFD);
 								else if (compositeAsScalarFD != null)
 								{
+									Span compositeAsScalarSpan = new Span();
+									compositeAsScalarSpan.setCssClass("composite_as_scalar");
+									a.append(compositeAsScalarSpan.open());
 									compositeAsScalarFD.appendHtmlCollectionCompositeAttribute(a, nestedES, i == 0);
+									a.append(compositeAsScalarSpan.close());
 								}
 								i++;
-								a.append(compositeAsScalarSpan.close());
 							}
 							for (Object next : thatCollection)
 							{
 								if (next instanceof Metadata)
 								{
 									Metadata collectionSubElementState = (Metadata) next;
-									collectionSubElementState.renderHtml(a, serializationContext);
+									collectionSubElementState.renderHtml(a, serializationContext, true);
 								}
 
 							}
 							if (childFD.isWrapped())
-								childFD.writeHtmlWrap(a, true, thatCollection.size());
+								childFD.writeHtmlWrap(a, true, thatCollection.size(), mmdField.getDisplayedLabel());
 							a.append(Tr.close());
 						}
 						else if (thatReferenceObject instanceof Metadata)
@@ -861,7 +886,7 @@ abstract public class Metadata extends ElementState implements MetadataBase,
 
 							if (compositeAsScalarFD != null)
 							{
-								childFD.writeCompositeHtmlWrap(a, false);
+								childFD.writeCompositeHtmlWrap(a, false, mmdField.getDisplayedLabel());
 
 								Span compositeAsScalarSpan = new Span();
 								compositeAsScalarSpan.setCssClass("composite_as_scalar");
@@ -869,17 +894,18 @@ abstract public class Metadata extends ElementState implements MetadataBase,
 								compositeAsScalarFD.appendHtmlCollectionCompositeAttribute(a, nestedES, true);
 								a.append(compositeAsScalarSpan.close());
 
-								childFD.writeCompositeHtmlWrap(a, true);
+								childFD.writeCompositeHtmlWrap(a, true, mmdField.getDisplayedLabel());
 							}
 							else
-								nestedMD.renderHtml(a, serializationContext);
+								nestedMD.renderHtml(a, serializationContext, true);
 
 							a.append(Tr.close());
 						}
 					}
 				}
 			}
-			a.append(table.close());
+			if (recursing && numElements > 1) a.append(Table.close()).append(Td.close()).append(Tr.close());
+			a.append(Table.close());
 		}
 	}
 
