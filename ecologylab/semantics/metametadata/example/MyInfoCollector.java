@@ -15,13 +15,11 @@ import ecologylab.concurrent.DownloadMonitor;
 import ecologylab.generic.Debug;
 import ecologylab.generic.DispatchTarget;
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.connectors.InfoCollector;
-import ecologylab.semantics.connectors.LinkedMetadataMonitor;
 import ecologylab.semantics.connectors.SeedPeer;
+import ecologylab.semantics.connectors.SemanticsSessionObjectNames;
 import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.metadata.builtins.Document;
-import ecologylab.semantics.metadata.scalar.types.MetadataScalarScalarType;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
@@ -30,7 +28,6 @@ import ecologylab.semantics.seeding.Seed;
 import ecologylab.semantics.seeding.SeedDistributor;
 import ecologylab.semantics.seeding.SeedSet;
 import ecologylab.semantics.tools.MetaMetadataCompiler;
-import ecologylab.serialization.ElementState;
 import ecologylab.serialization.TranslationScope;
 
 /**
@@ -50,7 +47,8 @@ import ecologylab.serialization.TranslationScope;
  * @author quyin
  * 
  */
-public class MyInfoCollector<C extends MyContainer> extends Debug implements InfoCollector<C>
+public class MyInfoCollector<C extends MyContainer> extends Debug 
+implements InfoCollector<C>, SemanticsSessionObjectNames
 {
 	
 	public final static int								DEFAULT_COUNT_DOWNLOAD_THREAD	= 1;
@@ -69,6 +67,8 @@ public class MyInfoCollector<C extends MyContainer> extends Debug implements Inf
 	protected DownloadMonitor							downloadMonitor;
 
 	private Logger												logger;
+
+	Scope sessionScope	= new Scope();
 
 	static
 	{
@@ -104,6 +104,7 @@ public class MyInfoCollector<C extends MyContainer> extends Debug implements Inf
 		mmdRepo.bindMetadataClassDescriptorsToMetaMetadata(metadataTranslationScope);
 
 		rejectDomains = new HashSet<String>();
+		sessionScope.put(INFO_COLLECTOR, this);
 	}
 
 	/**
@@ -350,12 +351,11 @@ public class MyInfoCollector<C extends MyContainer> extends Debug implements Inf
 		// TODO Auto-generated method stub
 
 	}
-
+	
 	@Override
 	public Scope sessionScope()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return sessionScope;
 	}
 
 	@Override
