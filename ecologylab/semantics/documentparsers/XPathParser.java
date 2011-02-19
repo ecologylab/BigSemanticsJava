@@ -14,10 +14,10 @@ import ecologylab.semantics.metadata.builtins.Document;
  * 
  */
 @SuppressWarnings("rawtypes")
-public class XPathParser< SA extends SemanticAction> extends
-		ParserBase implements SemanticActionsKeyWords
+public class XPathParser<SA extends SemanticAction> extends ParserBase implements
+		SemanticActionsKeyWords
 {
-	
+
 	public XPathParser(InfoCollector infoCollector)
 	{
 		super(infoCollector);
@@ -25,35 +25,10 @@ public class XPathParser< SA extends SemanticAction> extends
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public ecologylab.semantics.metadata.builtins.Document populateMetadata(SemanticActionHandler handler)
+	public Document populateMetadata(SemanticActionHandler handler)
 	{
-		/*
-		try
-		{
-			SimpleTimer.get("populating.log").startTiming(getContainer());
-		}
-		catch (IOException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		*/
-		
-		recursiveExtraction(getMetadataTranslationScope(), metaMetadata,
-					container.getMetadata(), xpath, handler.getSemanticActionVariableMap(), getDom());
-
-		/*
-		try
-		{
-			SimpleTimer.get("populating.log").finishTiming(getContainer());
-		}
-		catch (IOException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		*/
-		
-		return (Document)container.getMetadata();
+		recursiveExtraction(metaMetadata, container.getMetadata(), getDom(), null,
+				handler.getSemanticActionVariableMap());
+		return (Document) container.getMetadata();
 	}
 }

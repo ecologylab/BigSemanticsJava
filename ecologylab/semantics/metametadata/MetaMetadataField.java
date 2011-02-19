@@ -137,6 +137,9 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	 */
 	@simpl_scalar
 	protected String																			asNaturalId;
+	
+	@simpl_scalar
+	protected boolean																			required = false;
 
 	// ///////////////////////////////// switches /////////////////////////////////
 
@@ -1273,6 +1276,11 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	public String getAsNaturalId()
 	{
 		return asNaturalId;
+	}
+	
+	public boolean isRequired()
+	{
+		return required;
 	}
 
 }
