@@ -55,6 +55,7 @@ public class MyContainer extends Container<MyInfoCollector<MyContainer>>
 		super(progenitor, infoCollector);
 		this.infoCollector = infoCollector;
 		this.metadata = (Document) infoCollector.constructDocument(purl);
+		this.debug("MetaMetadata: " + this.metadata.getMetaMetadata());
 		if (progenitor != null && progenitor instanceof MyContainer)
 			this.dispatchTarget = ((MyContainer) progenitor).dispatchTarget;
 
