@@ -258,8 +258,13 @@ abstract public class Metadata extends ElementState implements MetadataBase,
 	{
 		return numberOfVisibleFields();
 	}
-
+	
 	public int numberOfVisibleFields()
+	{
+		return numberOfVisibleFields(true);
+	}
+
+	public int numberOfVisibleFields(boolean considerAlwaysShow)
 	{
 		int size = 0;
 
@@ -300,7 +305,7 @@ abstract public class Metadata extends ElementState implements MetadataBase,
 
 			// TODO use MetaMetadataField.numNonDisplayedFields()
 			boolean isVisibleField = !metaMetadataField.isHide()
-					&& (metaMetadataField.isAlwaysShow() || hasVisibleNonNullField);
+					&& ((considerAlwaysShow && metaMetadataField.isAlwaysShow()) || hasVisibleNonNullField);
 
 			if (isVisibleField)
 				size++;
@@ -747,24 +752,28 @@ abstract public class Metadata extends ElementState implements MetadataBase,
 	public void renderHtml(Appendable a, TranslationContext serializationContext)
 			throws IllegalArgumentException, IllegalAccessException, IOException
 	{
-		renderHtml(a, serializationContext, false);
+		renderHtml(a, serializationContext, false, true);
 	}
 
-	public void renderHtml(Appendable a, TranslationContext serializationContext, boolean recursing)
+	public void renderHtml(Appendable a, TranslationContext serializationContext, boolean recursing, boolean encapsulateInTable)
 			throws IllegalArgumentException, IllegalAccessException, IOException
 	{
 		MetadataClassDescriptor classDescriptor = this.getMetadataClassDescriptor();
 		MetaMetadataOneLevelNestingIterator fullIterator = fullNonRecursiveMetaMetadataIterator(null);
 
 		boolean bold = false;
-		int numElements = numberOfVisibleFields();
+		int numElements = numberOfVisibleFields(false);
 		boolean hasXmlText = classDescriptor.hasScalarFD();
 		
 
 		if (numElements > 0 || hasXmlText)
 		{
-			Table table = new Table();
-			a.append(table.open());
+			if (encapsulateInTable)
+			{
+				Table table = new Table();
+				a.append(table.open());
+			}
+			
 			if (recursing && numElements > 1)
 			{
 				Tr tr = new Tr();
@@ -774,10 +783,13 @@ abstract public class Metadata extends ElementState implements MetadataBase,
 				String button = "&nbsp;<input type=\"image\" class=\"composite\" " +
 						"src=\"http://ecologylab.net/cf/compositionIncludes/button.jpg\" value=\"\" />&nbsp;";
 				buttonTd.setCssClass("metadata_field_name");
+				
+					
 				td.setCssClass("nested_field_value");
 				a.append(tr.open());
 				a.append(buttonTd.open());
 				a.append(button);
+				a.append(metaMetadata.getDisplayedLabel());
 				a.append(Td.close());
 				a.append(td.open());
 				a.append(compositeTable.open());
@@ -804,7 +816,7 @@ abstract public class Metadata extends ElementState implements MetadataBase,
 							mmdField.lookupStyle();
 
 							childFD.appendHtmlValueAsAttribute(a, currentMetadata, serializationContext, bold,
-									navigatesFD);
+									navigatesFD, mmdField.getDisplayedLabel());
 							a.append(Tr.close());
 							bold = false;
 						}
@@ -850,7 +862,7 @@ abstract public class Metadata extends ElementState implements MetadataBase,
 										.getScalarValueFieldDescripotor();
 								if (isScalar)
 									childFD.appendHtmlValueAsAttribute(a, currentMetadata, serializationContext,
-											bold, navigatesFD);
+											bold, navigatesFD, null);
 								else if (compositeAsScalarFD != null)
 								{
 									Span compositeAsScalarSpan = new Span();
@@ -866,7 +878,7 @@ abstract public class Metadata extends ElementState implements MetadataBase,
 								if (next instanceof Metadata)
 								{
 									Metadata collectionSubElementState = (Metadata) next;
-									collectionSubElementState.renderHtml(a, serializationContext, true);
+									collectionSubElementState.renderHtml(a, serializationContext, true, true);
 								}
 
 							}
@@ -897,15 +909,17 @@ abstract public class Metadata extends ElementState implements MetadataBase,
 								childFD.writeCompositeHtmlWrap(a, true, mmdField.getDisplayedLabel());
 							}
 							else
-								nestedMD.renderHtml(a, serializationContext, true);
+								nestedMD.renderHtml(a, serializationContext, true, false);
 
 							a.append(Tr.close());
 						}
 					}
 				}
 			}
-			if (recursing && numElements > 1) a.append(Table.close()).append(Td.close()).append(Tr.close());
-			a.append(Table.close());
+			if (recursing && numElements > 1) 
+				a.append(Table.close()).append(Td.close()).append(Tr.close());
+			if (encapsulateInTable)
+				a.append(Table.close());
 		}
 	}
 
