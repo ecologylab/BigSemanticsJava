@@ -7,6 +7,7 @@ import ecologylab.net.MimeType;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.html.documentstructure.ImageConstants;
 import ecologylab.semantics.metadata.scalar.MetadataFile;
+import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.serialization.simpl_inherit;
 
@@ -20,7 +21,7 @@ implements MimeType, ImageConstants
 {
 	@mm_name("local_location") 
 	@simpl_scalar
-	private MetadataFile	localLocation;
+	private MetadataParsedURL	localLocation;
 	
 	static final HashMap<String, Integer>		mimeTypeToIndexMap		= new HashMap<String, Integer>(15);
 
@@ -62,24 +63,30 @@ implements MimeType, ImageConstants
 	 * Lazy Evaluation for localLocation
 	 **/
 
-	public MetadataFile localLocation()
+	public MetadataParsedURL localLocation()
 	{
 		return this.localLocation;
 	}
 	
-	public File getLocalLocationFile()
+	public ParsedURL getLocalLocationPurl()
 	{
 		return (localLocation != null) ? localLocation.getValue() : null;
+	}
+	
+	public File getLocalLocationAsFile()
+	{
+		ParsedURL localLocationPurl = getLocalLocationPurl();
+		return (localLocationPurl != null) ? localLocationPurl.file() : null;
 	}
 
 	/**
 	 * Sets the localLocation directly
 	 **/
 
-	public void setLocalLocation(File localLocationFile)
+	public void setLocalLocation(ParsedURL localLocationFile)
 	{
 		if (this.localLocation == null)
-			this.localLocation = new MetadataFile(localLocationFile);
+			this.localLocation = new MetadataParsedURL(localLocationFile);
 		else
 			this.localLocation.setValue(localLocationFile);
 	}
