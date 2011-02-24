@@ -6,8 +6,7 @@ package ecologylab.semantics.connectors;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.Vector;
+import java.util.HashSet;
 
 import javax.swing.JFrame;
 
@@ -15,14 +14,12 @@ import ecologylab.appframework.ApplicationEnvironment;
 import ecologylab.appframework.ApplicationProperties;
 import ecologylab.appframework.EnvironmentGeneric;
 import ecologylab.appframework.PropertiesAndDirectories;
-import ecologylab.appframework.types.prefs.Pref;
 import ecologylab.appframework.types.prefs.PrefBoolean;
 import ecologylab.collections.PrefixCollection;
 import ecologylab.collections.PrefixPhrase;
 import ecologylab.collections.Scope;
 import ecologylab.concurrent.DownloadMonitor;
 import ecologylab.generic.Debug;
-import ecologylab.generic.HashMapWriteSynch;
 import ecologylab.generic.StringTools;
 import ecologylab.io.Assets;
 import ecologylab.io.AssetsRoot;
@@ -63,7 +60,7 @@ implements InfoCollector<AC>, SemanticsPrefs, ApplicationProperties, DocumentPar
 	/**
 	 * Hashtable of domains the information space author doesn't want any information elements from.
 	 */
-	protected HashMapWriteSynch<String, String>	rejectDomains									= new HashMapWriteSynch<String, String>();
+	protected HashSet<String>	rejectDomains									= new HashSet<String>();
 
 	/**
 	 * A count of seeds whose downloading failed. Used during startup, to determine whether it is time
@@ -437,7 +434,7 @@ implements InfoCollector<AC>, SemanticsPrefs, ApplicationProperties, DocumentPar
 		boolean result = domain != null;
 		if (result)
 		{
-			result = rejectDomains.get(domain) == null;
+			result = rejectDomains.contains(domain);
 		}
 		if (result)
 		{
@@ -569,7 +566,7 @@ implements InfoCollector<AC>, SemanticsPrefs, ApplicationProperties, DocumentPar
 
 	public Collection<String> rejectDomainsCollection()
 	{
-		return rejectDomains.keySet();
+		return rejectDomains;
 	}
 
 	protected boolean seedsArePending()
@@ -639,7 +636,7 @@ implements InfoCollector<AC>, SemanticsPrefs, ApplicationProperties, DocumentPar
 			String domain	= StringTools.domain(siteAddr);
 			if (domain != null)
 			{
-				rejectDomains.put(domain, domain);
+				rejectDomains.add(domain);
 				println("-- rejecting all web addresses from domain "+domain+ " --");
 			}
 		}
