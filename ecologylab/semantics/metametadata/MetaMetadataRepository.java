@@ -138,6 +138,10 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	HashMap<String, SemanticsSite>															sites;
 
 	public DownloadMonitor																			downloadMonitor;
+	
+	static MetaMetadata																					baseDocumentMM;
+
+	static MetaMetadata																					baseImageMM;
 
 	static
 	{
@@ -242,7 +246,10 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 
 		// FIXME -- get rid of this?!
 		Metadata.setRepository(result);
-
+		
+		baseDocumentMM	= result.getByTagName(DOCUMENT_TAG);
+		baseImageMM			= result.getByTagName(IMAGE_TAG);
+		
 		return result;
 	}
 
@@ -1077,6 +1084,22 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	public LinkedMetadataMonitor getLinkedMetadataMonitor()
 	{
 		return linkedMetadataMonitor;
+	}
+
+	/**
+	 * @return the baseDocumentMM
+	 */
+	public static MetaMetadata getBaseDocumentMM()
+	{
+		return baseDocumentMM;
+	}
+
+	/**
+	 * @return the baseImageMM
+	 */
+	public static MetaMetadata getBaseImageMM()
+	{
+		return baseImageMM;
 	}
 
 }
