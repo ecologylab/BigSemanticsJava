@@ -434,7 +434,7 @@ implements InfoCollector<AC>, SemanticsPrefs, ApplicationProperties, DocumentPar
 		boolean result = domain != null;
 		if (result)
 		{
-			result = rejectDomains.contains(domain);
+			result = !rejectDomains.contains(domain);
 		}
 		if (result)
 		{
