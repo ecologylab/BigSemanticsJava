@@ -520,6 +520,7 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 		ArrayList elements = new ArrayList();
 		Class[] argClasses = new Class[] { MetaMetadataCompositeField.class };
 		Object[] argObjects = new Object[] { mmdField.getChildComposite() };
+		String[] fieldParserContextValues = null;
 		for (int i = 0; i < size; ++i)
 		{
 			Node thisNode = (nodeList == null) ? null : nodeList.item(i);
@@ -535,9 +536,12 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 			}
 			else
 			{
-				String value = thisNode.getNodeValue();
-				if (value == null)
+				String value = null;
+				if (thisNode != null)
+					value = thisNode.getNodeValue();
+				if (thisFieldParserContext != null)
 				{
+					assert thisFieldParserContext.size() == 1;
 					Iterator<String> iter = thisFieldParserContext.values().iterator();
 					if (iter.hasNext())
 						value = iter.next();
