@@ -7,7 +7,7 @@
 <listEntry value="1"/>
 </listAttribute>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="ecologylab.semantics.metametadata.test.MmTest"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="http://www.sciencedirect.com/science?_ob=ArticleURL&amp;_udi=B6WN5-4NGKTJP-5&amp;_user=9336118&amp;_coverDate=05%2F31%2F2007&amp;_rdoc=1&amp;_fmt=high&amp;_orig=search&amp;_origin=search&amp;_sort=d&amp;_docanchor=&amp;view=c&amp;_acct=C000049198&amp;_version=1&amp;_urlVersion=0&amp;_userid=9336118&amp;md5=c2374cc028e805b063f40b1300d51f4d&amp;searchtype=a http://www.sciencedirect.com/science?_ob=ArticleURL&amp;_udi=B758F-4TTNCG9-1&amp;_user=952835&amp;_coverDate=11%2F30%2F2008&amp;_rdoc=1&amp;_fmt=high&amp;_orig=search&amp;_origin=search&amp;_sort=d&amp;_docanchor=&amp;view=c&amp;_acct=C000049198&amp;_version=1&amp;_urlVersion=0&amp;_userid=952835&amp;md5=3ee5cd63d43f2def8830b09615b88141&amp;searchtype=a http://www.sciencedirect.com/science?_ob=ArticleURL&amp;_udi=B758F-51F7PSH-1&amp;_user=9336118&amp;_coverDate=03%2F31%2F2011&amp;_rdoc=3&amp;_fmt=high&amp;_orig=browse&amp;_origin=browse&amp;_zone=rslt_list_item&amp;_srch=doc-info%28%23toc%2312925%232011%23999909998%232908772%23FLA%23display%23Volume%29&amp;_cdi=12925&amp;_sort=d&amp;_docanchor=&amp;_ct=6&amp;_acct=C000049198&amp;_version=1&amp;_urlVersion=0&amp;_userid=9336118&amp;md5=dce0d01e78406b64fff471e98cf28637&amp;searchtype=a#bib0180"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="http://www.imdb.com/title/tt1464540/"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="ecologylabSemanticsExample"/>
 <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Xms320m -Xmx320m"/>
 </launchConfiguration>
