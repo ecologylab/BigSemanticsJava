@@ -14,6 +14,11 @@
 
 	<meta_metadata name="imdb_title" extends="document" comment="IMDB metadata" parser="xpath">
 		<selector url_path_tree="http://www.imdb.com/title/" />
+    
+    <!-- for testing scalar collections
+    <collection name="title_photo_urls" xpath="//div[@class='mediastrip']//img/@src" child_scalar_type="ParsedURL" child_tag="title_photo_url" />
+    -->
+    
 		<scalar name="title" xpath="//h1[@class='header']">
 <!--			<filter regex="More [a-zA-Z\s&amp;;#0-9\-]*" replace="" />-->
 		</scalar>
@@ -58,6 +63,7 @@
 		<collection name="title_photos" hide="true" xpath="//div[@class='mediastrip']//img/@src" child_type="image">
 			<scalar name="location" xpath="." />
 		</collection>
+    
 		<scalar name="poster_img" hide="true" xpath="//td[@id='img_primary']//img/@src" scalar_type="ParsedURL" />
 
 		<semantic_actions>

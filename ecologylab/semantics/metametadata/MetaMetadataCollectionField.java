@@ -27,6 +27,9 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 	@simpl_scalar
 	protected boolean	childEntity	= false;
 
+	@simpl_scalar
+	protected String	childScalarType;
+	
 	/**
 	 * Specifies adding @simpl_nowrap to the collection object in cases where items in the collection
 	 * are not wrapped inside a tag.
@@ -65,12 +68,23 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 
 	public String getChildTag()
 	{
-		return (childTag != null) ? childTag : childType;
+		if (childTag != null)
+			return childTag;
+		if (childType != null)
+			return childType;
+		if (childScalarType != null)
+			return "Metadata" + childScalarType;
+		return null;
 	}
 
 	public String getChildType()
 	{
 		return childType;
+	}
+
+	public String getChildScalarType()
+	{
+		return childScalarType;
 	}
 
 	public boolean isNoWrap()
@@ -243,6 +257,11 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 			kids.put(composite.getName(), composite);
 		}
 		composite.setPromoteChildren(this.shouldPromoteChildren());
+	}
+
+	public boolean isCollectionOfScalars()
+	{
+		return childScalarType != null;
 	}
 
 }

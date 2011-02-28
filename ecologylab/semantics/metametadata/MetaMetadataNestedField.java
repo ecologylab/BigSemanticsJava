@@ -149,6 +149,8 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 				MetaMetadataCollectionField mmcf = (MetaMetadataCollectionField) this;
 				if (mmcf.childType != null)
 					result = mmcf.childType;
+				else if (mmcf.childScalarType != null)
+					result = "Metadata" + mmcf.childScalarType;
 			}
 			
 			if (result == null)

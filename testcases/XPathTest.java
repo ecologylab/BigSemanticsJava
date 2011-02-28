@@ -42,18 +42,18 @@ public class XPathTest
 	private static final String	FLICKR_XPATH	= "//html/head/link[2]/@href";
 	private static final String	FLICKR_CHILD_XPATH	= ".";
 
-	private static final String	IMDB	= "file:///S:/currentResearchers/sashikanth/IMDBFromEclipse-withCookie-ActorPage.html";
+	private static final String	IMDB	= "http://www.imdb.com/title/tt1464540/";
 	///div[@id='filmo-head-Actor']/following-sibling::*
-	private static final String	IMDB_XPATH	= "//div[@id='filmo-head-Actor']/following-sibling::div[1]";
-	private static final String	IMDB_CHILD_XPATH	= "./child::text()";
+	private static final String	IMDB_XPATH	= "//div[@class='mediastrip']//img/@src";
+	private static final String	IMDB_CHILD_XPATH	= ".";
 	
 	private static final String GOOGLE_BOOKS = "http://books.google.com/books?id=fu5HtixRje8C&dq=o%27reilly&source=gbs_navlinks_s";
 	private static final String GOOGLE_BOOKS_XPATH = "//div[@id='citations_module_v']/div[2]//div";
 	private static final String GOOGLE_BOOKS_CHILD_XPATH = "./div/a";
 	
-	private static final String	LOCATION		= GOOGLE_BOOKS;
-	private static final String	XPATH				= GOOGLE_BOOKS_XPATH;
-	private static final String	CHILD_XPATH	= GOOGLE_BOOKS_CHILD_XPATH;
+	private static final String	LOCATION		= IMDB;
+	private static final String	XPATH				= IMDB_XPATH;
+	private static final String	CHILD_XPATH	= IMDB_CHILD_XPATH;
 	
 	private static final ParsedURL PURL = ParsedURL.getAbsolute(LOCATION);
 

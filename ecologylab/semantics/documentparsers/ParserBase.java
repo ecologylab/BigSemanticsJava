@@ -3,6 +3,7 @@ package ecologylab.semantics.documentparsers;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -30,9 +31,12 @@ import ecologylab.semantics.connectors.LinkedMetadataMonitor;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.DocumentParserTagNames;
 import ecologylab.semantics.metadata.Metadata;
+import ecologylab.semantics.metadata.MetadataBase;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
 import ecologylab.semantics.metadata.builtins.Document;
+import ecologylab.semantics.metadata.scalar.MetadataScalarTranslationScope;
+import ecologylab.semantics.metadata.scalar.types.MetadataScalarScalarType;
 import ecologylab.semantics.metametadata.DefVar;
 import ecologylab.semantics.metametadata.FieldParser;
 import ecologylab.semantics.metametadata.FieldParserElement;
@@ -48,6 +52,7 @@ import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.ScalarUnmarshallingContext;
 import ecologylab.serialization.TranslationScope;
 import ecologylab.serialization.XMLTools;
+import ecologylab.serialization.types.scalar.TypeRegistry;
 
 /**
  * This is the base class for the all the document type which we create using meta-metadata.
@@ -495,9 +500,16 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 		// get class of elements in the collection
 		TranslationScope tscope = getMetadataTranslationScope();
 		Class elementClass = null;
+		MetadataScalarScalarType scalarType = null;
 		if (mmdField.isChildEntity())
 		{
 			elementClass = tscope.getClassByTag(DocumentParserTagNames.ENTITY);
+		}
+		else if (mmdField.isCollectionOfScalars())
+		{
+			TranslationScope scalarTS = MetadataScalarTranslationScope.get();
+			elementClass = scalarTS.getClassBySimpleName("Metadata" + mmdField.getChildScalarType());
+			scalarType = (MetadataScalarScalarType) TypeRegistry.getType(elementClass);
 		}
 		else
 		{
@@ -505,18 +517,39 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 		}
 
 		// build the result list and populate
-		ArrayList<Metadata> elements = new ArrayList<Metadata>();
+		ArrayList elements = new ArrayList();
 		Class[] argClasses = new Class[] { MetaMetadataCompositeField.class };
 		Object[] argObjects = new Object[] { mmdField.getChildComposite() };
 		for (int i = 0; i < size; ++i)
 		{
-			Metadata element = (Metadata) ReflectionTools.getInstance(elementClass, argClasses,
-					argObjects);
 			Node thisNode = (nodeList == null) ? null : nodeList.item(i);
 			Map<String, String> thisFieldParserContext = (fieldParserContextList == null) ? null
 					: fieldParserContextList.get(i);
-			if (recursiveExtraction(mmdField, element, thisNode, thisFieldParserContext, params))
-				elements.add(element);
+			
+			if (!mmdField.isCollectionOfScalars())
+			{
+				Metadata element;
+				element = (Metadata) ReflectionTools.getInstance(elementClass, argClasses, argObjects);
+				if (recursiveExtraction(mmdField, element, thisNode, thisFieldParserContext, params))
+					elements.add(element);
+			}
+			else
+			{
+				String value = thisNode.getNodeValue();
+				if (value == null)
+				{
+					Iterator<String> iter = thisFieldParserContext.values().iterator();
+					if (iter.hasNext())
+						value = iter.next();
+				}
+				if (value != null)
+				{
+					MetadataBase element;
+					element = (MetadataBase) scalarType.getInstance(value, null, this);
+					if (element != null)
+						elements.add(element);
+				}
+			}
 		}
 
 		// if more than 0 elements are extracted, assign the collection back

@@ -634,14 +634,17 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 		if (fieldToInheritTo instanceof MetaMetadataCollectionField)
 		{
 			MetaMetadataCompositeField childComposite = ((MetaMetadataCollectionField) fieldToInheritTo).getChildComposite();
-			MetaMetadataCompositeField inheritedChildComposite = ((MetaMetadataCollectionField) fieldToInheritFrom).getChildComposite();
-			
-			if (MetaMetadataCollectionField.UNRESOLVED_NAME == childComposite.getName())
+			if (childComposite != null)
 			{
-				fieldToInheritTo.kids.remove(MetaMetadataCollectionField.UNRESOLVED_NAME);
-				childComposite.inheritNonDefaultAttributes(inheritedChildComposite);
-				childComposite.setName(inheritedChildComposite.getName());
-				fieldToInheritTo.kids.put(childComposite.getName(), childComposite);
+				MetaMetadataCompositeField inheritedChildComposite = ((MetaMetadataCollectionField) fieldToInheritFrom).getChildComposite();
+				
+				if (MetaMetadataCollectionField.UNRESOLVED_NAME == childComposite.getName())
+				{
+					fieldToInheritTo.kids.remove(MetaMetadataCollectionField.UNRESOLVED_NAME);
+					childComposite.inheritNonDefaultAttributes(inheritedChildComposite);
+					childComposite.setName(inheritedChildComposite.getName());
+					fieldToInheritTo.kids.put(childComposite.getName(), childComposite);
+				}
 			}
 		}
 
@@ -657,9 +660,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 
 		if (!fieldToInheritTo.fieldInherited)
 		{
-
-			HashMapArrayList<String, MetaMetadataField> inheritedChildMetaMetadata = fieldToInheritFrom
-			.getChildMetaMetadata();
+			HashMapArrayList<String, MetaMetadataField> inheritedChildMetaMetadata = fieldToInheritFrom.getChildMetaMetadata();
 			if (inheritedChildMetaMetadata != null)
 			{
 				for (MetaMetadataField grandChildMetaMetadataField : inheritedChildMetaMetadata)
