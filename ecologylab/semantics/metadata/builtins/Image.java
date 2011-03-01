@@ -23,16 +23,6 @@ implements MimeType, ImageConstants
 	@simpl_scalar
 	private MetadataParsedURL	localLocation;
 	
-	static final HashMap<String, Integer>		mimeTypeToIndexMap		= new HashMap<String, Integer>(15);
-
-	static
-	{
-		mimeTypeToIndexMap.put("image/jpeg", JPG);
-		mimeTypeToIndexMap.put("image/pjpeg", JPG);
-		mimeTypeToIndexMap.put("image/gif", GIF);
-		mimeTypeToIndexMap.put("image/png", PNG);
-	}
-
 	/**
 	 * Number of images that we parsed with an alt-text.
 	 */
@@ -50,6 +40,15 @@ implements MimeType, ImageConstants
 		super(metaMetadata);
 	}
 
+	/**
+	 * Construct an instance of this, the base document type, and set its location.
+	 * 
+	 * @param location
+	 */
+	public Image(ParsedURL location)
+	{
+		super(location);
+	}
 
 	@Override
 	public void hwSetNavLocation(ParsedURL navLocation)
@@ -96,16 +95,5 @@ implements MimeType, ImageConstants
 	{
 		return true;
 	}
-	
 
-	/**
-	 * Get index indicating mimeType. May be used for designRole() and in weighting.
-	 * 
-	 * @param parsedURL
-	 */
-	public static int mimeIndexFromMimeType ( String mimeType )
-	{
-		return Image.mimeTypeToIndexMap.get(mimeType);
-//		return (mimeSlot != null) ? mimeSlot.ge : UNKNOWN_MIME;
-	}
 }
