@@ -1,15 +1,15 @@
 package ecologylab.semantics.html.documentstructure;
 
-import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.concurrent.ConcurrentHashMap;
 
-import ecologylab.collections.ConcurrentHashMapArrayList;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.model.text.CompositeTermVector;
 import ecologylab.semantics.model.text.ITermVector;
 
 
 @SuppressWarnings("serial")
-public class SemanticInLinks extends ConcurrentHashMapArrayList<ParsedURL, SemanticAnchor>
+public class SemanticInLinks extends ConcurrentHashMap<ParsedURL, SemanticAnchor> implements Iterable<SemanticAnchor>
 {
 	CompositeTermVector semanticInlinkCollection;
 	
@@ -81,5 +81,11 @@ public class SemanticInLinks extends ConcurrentHashMapArrayList<ParsedURL, Seman
 			meanSig += a.getSignificance(); 
 		meanSig /= this.size();
 		return meanSig;
+	}
+
+	@Override
+	public Iterator<SemanticAnchor> iterator() 
+	{
+		return values().iterator();
 	}
 }
