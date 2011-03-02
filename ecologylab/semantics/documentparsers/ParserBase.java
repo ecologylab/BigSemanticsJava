@@ -35,7 +35,6 @@ import ecologylab.semantics.metadata.MetadataBase;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
 import ecologylab.semantics.metadata.builtins.Document;
-import ecologylab.semantics.metadata.scalar.MetadataScalarTranslationScope;
 import ecologylab.semantics.metadata.scalar.types.MetadataScalarScalarType;
 import ecologylab.semantics.metametadata.DefVar;
 import ecologylab.semantics.metametadata.FieldParser;
@@ -52,6 +51,7 @@ import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.ScalarUnmarshallingContext;
 import ecologylab.serialization.TranslationScope;
 import ecologylab.serialization.XMLTools;
+import ecologylab.serialization.types.scalar.ScalarType;
 import ecologylab.serialization.types.scalar.TypeRegistry;
 
 /**
@@ -507,9 +507,19 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 		}
 		else if (mmdField.isCollectionOfScalars())
 		{
-			TranslationScope scalarTS = MetadataScalarTranslationScope.get();
-			elementClass = scalarTS.getClassBySimpleName("Metadata" + mmdField.getChildScalarType());
-			scalarType = (MetadataScalarScalarType) TypeRegistry.getType(elementClass);
+			// registered at MetadataScalarScalarType.init()
+			String registeredTypeName = "Metadata" + mmdField.getChildScalarType() + "ScalarType";
+			ScalarType theScalarType = TypeRegistry.getType(registeredTypeName);
+			if (theScalarType != null && theScalarType instanceof MetadataScalarScalarType)
+			{
+				scalarType = (MetadataScalarScalarType) theScalarType;
+				elementClass = scalarType.getTypeClass();
+			}
+			else
+			{
+				// error!
+				error("child_scalar_type not registered, or not metadata: " + mmdField + ": " + registeredTypeName);
+			}
 		}
 		else
 		{
