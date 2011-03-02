@@ -22,7 +22,6 @@ import ecologylab.serialization.simpl_inherit;
 @simpl_inherit
 public class SemanticsSite extends BasicSite
 {
-
 	static HashMapWriteSynch2Args<String, SemanticsSite, InfoCollector>	allSites	= new HashMapWriteSynch2Args<String, SemanticsSite, InfoCollector>(50);
 
 	/**
@@ -91,19 +90,6 @@ public class SemanticsSite extends BasicSite
 		// TODO Auto-generated constructor stub
 	}
 
-	/**
-	 * Is left uninitialized, because we want to store subclasses of SemanticSite (CfSite)
-	 *  
-	 */
-	static  ValueFactory2 siteValueFactory;//	 = new ValueFactory2<String, SemanticSite, InfoCollector>()
-//	{
-//		public SemanticSite createValue(String domain, InfoCollector infoCollector)
-//		{
-//			return new SemanticSite(domain);
-//		}
-//	};
-	
-	
 	public static SemanticsSite getSite(ParsedURL purl, InfoCollector infoCollector)
 	{
 		return getSite(purl.domain(), infoCollector);
@@ -159,7 +145,7 @@ public class SemanticsSite extends BasicSite
 		}
 		else
 		{
-			SemanticsSite result	= allSites.getOrCreateAndPutIfNew(domain, infoCollector, siteValueFactory);
+			SemanticsSite result	= allSites.getOrCreateAndPutIfNew(domain, infoCollector);
 			return result;
 		}
 	}
@@ -170,9 +156,9 @@ public class SemanticsSite extends BasicSite
 	 * 
 	 * @param siteValueFactory
 	 */
-	public static void setSiteValueFactory(ValueFactory2<String, ? extends SemanticsSite, InfoCollector> siteValueFactory)
+	public static void setSiteValueFactory(ValueFactory2<String, SemanticsSite, InfoCollector> siteValueFactory)
 	{
-		SemanticsSite.siteValueFactory = siteValueFactory;
+		allSites.setFactory(siteValueFactory);
 	}
 	
 	public void enteringComposition()
