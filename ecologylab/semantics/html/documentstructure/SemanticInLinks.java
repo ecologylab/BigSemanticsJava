@@ -23,7 +23,8 @@ public class SemanticInLinks extends ConcurrentHashMapArrayList<ParsedURL, Seman
 		while (--index >= 0)
 		{
 			SemanticAnchor semanticAnchor		= remove(index);
-			semanticAnchor.recycle();
+			if (semanticAnchor != null)
+				semanticAnchor.recycle();
 		}
 		clear();
 		
