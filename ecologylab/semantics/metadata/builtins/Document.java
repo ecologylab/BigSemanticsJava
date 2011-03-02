@@ -6,11 +6,11 @@ package ecologylab.semantics.metadata.builtins;
  **/
 
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.scalar.MetadataInteger;
 import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
 import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
+import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.serialization.Hint;
 import ecologylab.serialization.simpl_inherit;
 
@@ -73,6 +73,18 @@ public class Document extends ClippableMetadata
 	public Document(MetaMetadataCompositeField metaMetadata)
 	{
 		super(metaMetadata);
+	}
+
+	
+	/**
+	 * Construct an instance of this, the base document type, and set its location.
+	 * 
+	 * @param location
+	 */
+	public Document(ParsedURL location)
+	{
+		super(MetaMetadataRepository.getBaseDocumentMM());
+		setLocation(location);
 	}
 
 	/**
