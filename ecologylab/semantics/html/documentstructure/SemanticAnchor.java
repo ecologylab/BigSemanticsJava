@@ -53,14 +53,13 @@ public class SemanticAnchor implements TermVectorFeature
 		else if(!fromSemanticAction && fromContentBody)
 			this.significance	= CONTENT_BODY_SIGNIFICANCE;
 		else
-			this.significance	= NO_SPECIAL_SIGNIFICANCE;
-			
+			this.significance	= NO_SPECIAL_SIGNIFICANCE;		
 		
-		if(anchorContexts == null)
-			return;
-		
-		for(AnchorContext anchorContext : anchorContexts)
-			addAnchorContextToTV(anchorContext);
+		if(anchorContexts != null)
+		{
+			for(AnchorContext anchorContext : anchorContexts)
+				addAnchorContextToTV(anchorContext);
+		}
 	}
 
 

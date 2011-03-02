@@ -2,16 +2,14 @@ package ecologylab.semantics.html.documentstructure;
 
 import java.util.ArrayList;
 
-import com.sun.org.apache.bcel.internal.generic.NEWARRAY;
-
+import ecologylab.collections.ConcurrentHashMapArrayList;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.model.text.CompositeTermVector;
 import ecologylab.semantics.model.text.ITermVector;
-import ecologylab.semantics.model.text.TermVectorWeightStrategy;
 
 
 @SuppressWarnings("serial")
-public class SemanticInLinks extends ArrayList<SemanticAnchor>
+public class SemanticInLinks extends ConcurrentHashMapArrayList<ParsedURL, SemanticAnchor>
 {
 	CompositeTermVector semanticInlinkCollection;
 	
@@ -47,11 +45,11 @@ public class SemanticInLinks extends ArrayList<SemanticAnchor>
 		return result;
 	}
 	
-	@Override
 	public synchronized boolean add(SemanticAnchor newAnchor)
 	{
-		semanticInlinkCollection().add(newAnchor.significance, newAnchor.termVector());
-		super.add(newAnchor);
+		SemanticAnchor oldAnchor	= putIfAbsent(newAnchor.sourcePurl(), newAnchor);
+		if (oldAnchor == null)	//TODO -- should we count and incorporate new terms?!
+			semanticInlinkCollection().add(newAnchor.significance, newAnchor.termVector());
 		return true;
 	}
 
@@ -62,28 +60,13 @@ public class SemanticInLinks extends ArrayList<SemanticAnchor>
 	public double getWeight(ITermVector weightingVector)
 	{
 		double idfDot = this.semanticInlinkCollection().idfDot(weightingVector);
-		ArrayList<ParsedURL> sourcePurls = new ArrayList<ParsedURL>();
 		for(SemanticAnchor anchor : this)
 		{
-			//Only boost weight from unique purls.
-			//This is possibly causing us to crawl through a sitemap,
-			// in the cases where the links are found across pages.
-			if(!sourcePurls.contains(anchor.sourcePurl))
-				idfDot += anchor.getSignificance();
-			sourcePurls.add(anchor.sourcePurl);
-		}
-		
+			idfDot += anchor.getSignificance();
+		}	
 		return idfDot;
 	}
 
-	public boolean containsPurl(ParsedURL purl)
-	{
-		for(SemanticAnchor anchor : this)
-			if(anchor.sourcePurl == purl)
-				return true;
-		return false;
-	}
-	
 	/**
 	 * Returns 1 if no links exist, else the mean of the significance's of its contents
 	 * @return
