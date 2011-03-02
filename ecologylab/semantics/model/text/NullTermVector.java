@@ -143,4 +143,11 @@ public class NullTermVector implements ITermVector
 		// TODO Auto-generated method stub
 		
 	}
+	
+	@Override
+	public boolean isRecycled() 
+	{
+		return false;
+	}
+
 }
