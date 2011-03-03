@@ -17,8 +17,10 @@ import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.html.ImgElement;
 import ecologylab.semantics.html.ParagraphText;
 import ecologylab.semantics.html.documentstructure.AnchorContext;
+import ecologylab.semantics.html.documentstructure.LinkType;
 import ecologylab.semantics.html.documentstructure.RecognizedDocumentStructure;
 import ecologylab.semantics.html.documentstructure.SemanticAnchor;
+import ecologylab.semantics.html.documentstructure.SemanticInLinks;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.MetaMetadata;
@@ -279,7 +281,7 @@ public class HTMLDOMParser<C extends Container, IC extends InfoCollector<C>>
 			ArrayList<AnchorContext> anchorContextsPerHref = hashedAnchorContexts.get(hrefPurl);
 
 			SemanticAnchor semanticAnchor = new SemanticAnchor(hrefPurl, anchorContextsPerHref, false, 1,
-					purl(), fromContentBody, false);
+					purl(), fromContentBody, false, LinkType.WILD);
 			// generateCanidateContainerFromContext(aggregated,container, false);
 			createContainerFromSemanticAnchor(container, hrefPurl, semanticAnchor);
 		}
@@ -300,14 +302,27 @@ public class HTMLDOMParser<C extends Container, IC extends InfoCollector<C>>
 			Container hrefContainer = infoCollector.getContainer(container, null, metaMetadata, hrefPurl,
 					false, false, false);
 
-			if (hrefContainer == null)
+			if (hrefContainer == null || hrefContainer.recycled())
+			{
+				debug(" hrefContainer is null or recycled: " + hrefContainer);
 				return; // Should actually raise an exception, but this could happen when a container is not
-								// meant to be reincarnated
-
-			hrefContainer.addSemanticInLink(semanticAnchor, container);
-
-			container.setInArticleBody(semanticAnchor.fromContentBody());
-			container.addCandidateContainer(hrefContainer);
+						// meant to be reincarnated
+			}
+				
+			
+			SemanticInLinks semanticInLinks = hrefContainer.semanticInLinks();
+			if(semanticInLinks != null && !semanticInLinks.contains(semanticAnchor.sourcePurl()))
+				hrefContainer.addSemanticInLink(semanticAnchor, container);
+			else
+				System.out.println("--- Ignoring cyclicly adding inlink to: " + hrefContainer + " from container.");
+			if(!hrefContainer.isDownloadDone())
+			{
+				container.setInArticleBody(semanticAnchor.fromContentBody());
+				container.addCandidateContainer(hrefContainer);
+			}
+			else
+				System.out.println("Download is already done on " + hrefContainer + " . Not adding as candidate container for: " + container);
+			
 		}
 	}
 

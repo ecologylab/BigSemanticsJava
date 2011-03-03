@@ -44,7 +44,7 @@
 				<for_each collection="flickr_tags" as="tag">
 					<get_field object="tag" name="tag_link" />
 					<get_field object="tag" name="tag_name" />
-					<parse_document>
+					<parse_document link_type="TRUSTED_SEMANTICS">
 						<arg value="tag_name" name="anchor_text" />
 						<arg value="tag_link" name="container_link" />
 					</parse_document>
@@ -86,7 +86,7 @@
 			<for_each collection="flickr_tags" as="tag">
 				<get_field object="tag" name="tag_link" />
 				<get_field object="tag" name="tag_name" />
-				<parse_document>
+				<parse_document link_type="TRUSTED_SEMANTICS">
 					<arg value="tag_name" name="anchor_text" />
 					<arg value="tag_link" name="container_link" />
 				</parse_document>
@@ -112,7 +112,7 @@
 			<for_each collection="flickr_link_set" as="result">
 				<get_field object="result" name="link" />
 				<get_field object="result" name="title" />
-				<parse_document now="true">
+				<parse_document now="true" >
 					<arg value="title" name="anchor_text" />
 					<arg value="link" name="container_link" />
 				</parse_document>
@@ -184,7 +184,7 @@
 				<for_each collection="flickr_tags" as="tag">
 					<get_field object="tag" name="tag_link" />
 					<get_field object="tag" name="tag_name" />
-					<parse_document>
+					<parse_document link_type="TRUSTED_SEMANTICS">
 						<arg value="tag_name" name="anchor_text" />
 						<arg value="tag_link" name="container_link" />
 					</parse_document>

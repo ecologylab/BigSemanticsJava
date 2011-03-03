@@ -8,6 +8,7 @@ import java.io.IOException;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.InfoCollector;
+import ecologylab.semantics.html.documentstructure.LinkType;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.serialization.Hint;
 import ecologylab.serialization.simpl_inherit;
@@ -27,6 +28,10 @@ class ParseDocumentSemanticAction<IC extends InfoCollector, SAH extends Semantic
 	@simpl_hints(Hint.XML_ATTRIBUTE)
 	protected boolean	now										= false;
 
+	@simpl_scalar
+	@simpl_hints(Hint.XML_ATTRIBUTE)
+	protected LinkType linkType									= LinkType.WILD;
+	
 	/**
 	 * This attribute is meant to be used when we only require the top document to actually be sent to
 	 * the infoCollector. It requires two strings

@@ -77,7 +77,7 @@
           <if>
             <not_null value="anchor_text" />
             <not_null value="link" />
-            <parse_document only_pick_top_documents="true" number_of_top_documents="5">
+            <parse_document only_pick_top_documents="true" number_of_top_documents="5" >
            	  <arg name="anchor_text" 				value="anchor_text" />
               <!-- <arg value="paragraph_text" name="anchor_context" />-->
               <arg name="container_link" 			value="link" />

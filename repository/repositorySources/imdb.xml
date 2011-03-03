@@ -93,7 +93,7 @@
 				</eval_rank_wt>
 				<get_field object="c" name="actor" />
 				<get_field object="actor" name="gist" />
-				<parse_document>
+				<parse_document link_type="TRUSTED_SEMANTICS">
 					<arg value="true" name="citation_sig" />
 					<arg value="gist" name="anchor_text" />
 					<arg value="rankWt" name="sig_value" />
@@ -173,7 +173,7 @@
 					</eval_rank_wt>
 					<get_field object="tit" name="location" />
 					<get_field object="tit" name="gist" />
-					<parse_document>
+					<parse_document link_type="TRUSTED_SEMANTICS">
 						<arg value="true" name="citation_sig" />
 						<arg value="gist" name="anchor_text" />
 						<arg value="rankWt" name="sig_value" />
@@ -191,7 +191,7 @@
 					</eval_rank_wt>
 					<get_field object="tit" name="location" />
 					<get_field object="tit" name="gist" />
-					<parse_document>
+					<parse_document link_type="TRUSTED_SEMANTICS">
 						<arg value="true" name="citation_sig" />
 						<arg value="gist" name="anchor_text" />
 						<arg value="rankWt" name="sig_value" />
@@ -251,7 +251,7 @@
 			<for_each collection="results" as="result">
 				<get_field object="result" name="location" />
 				<get_field object="result" name="title" />
-				<parse_document>
+				<parse_document link_type="TRUSTED_SEMANTICS">
 					<arg value="title" name="anchor_text" />
 					<arg value="location" name="container_link" />
 				</parse_document>

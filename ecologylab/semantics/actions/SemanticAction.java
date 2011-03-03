@@ -11,6 +11,7 @@ import ecologylab.net.ParsedURL;
 import ecologylab.semantics.connectors.Container;
 import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.documentparsers.DocumentParser;
+import ecologylab.semantics.html.documentstructure.LinkType;
 import ecologylab.semantics.html.documentstructure.SemanticAnchor;
 import ecologylab.semantics.html.documentstructure.SemanticInLinks;
 import ecologylab.semantics.metadata.Metadata;
@@ -269,7 +270,9 @@ public abstract class SemanticAction<IC extends InfoCollector, SAH extends Seman
 		return (parent == null) ? null : getMetaMetadata(parent);
 	}
 
-	public Container createContainer(DocumentParser documentParser)
+
+	
+	public Container createContainer(DocumentParser documentParser, LinkType linkType)
 	{
 		Container outlinkContainer = null;
 		// get the ancestor container
@@ -281,6 +284,8 @@ public abstract class SemanticAction<IC extends InfoCollector, SAH extends Seman
 		Document metadata = (Document) getArgumentObject(DOCUMENT);
 		Metadata mixin		= (Metadata) getArgumentObject(MIXIN);
 		outlinkPurl = (ParsedURL) getArgumentObject(CONTAINER_LINK);
+		
+		
 		if (metadata == null)
 		{
 //			purl = (ParsedURL) getArgumentObject(CONTAINER_LINK);
@@ -351,8 +356,8 @@ public abstract class SemanticAction<IC extends InfoCollector, SAH extends Seman
 					//By default use the boost, unless explicitly stated in this site's MMD
 					boolean useSemanticBoost = !outlinkContainer.site().ignoreSemanticBoost();
 					SemanticAnchor semanticAnchor = new SemanticAnchor(outlinkPurl, null, citationSignificance,
-							significanceVal, documentParser.purl(), false, useSemanticBoost);// this is not fromContentBody,
-																																		// but is fromSemanticActions
+							significanceVal, documentParser.purl(), false, useSemanticBoost, linkType);// this is not fromContentBody,
+																							// but is fromSemanticActions
 					if(ignoreContextForTv)
 						semanticAnchor.addAnchorContextToTV(anchorText, null);
 					else
@@ -361,7 +366,7 @@ public abstract class SemanticAction<IC extends InfoCollector, SAH extends Seman
 				}
 				else
 				{
-					debug("Ignoring inlink, because ancestor contains the same: ancestor -- purl :: " + sourceContainer + " -- " + outlinkPurl);
+					debug("Ignoring inlink, because ancestor contains the same, we don't want cycles in the graph just yet: sourceContainer -- outlinkPurl :: " + sourceContainer + " -- " + outlinkPurl);
 				}
 			}
 			// adding the return value to map
@@ -381,15 +386,16 @@ public abstract class SemanticAction<IC extends InfoCollector, SAH extends Seman
 	 * Lookup the container in the named arguments map, and return it if its there. Otherwise, use
 	 * location and metadata arguments from that map to create the container.
 	 * @param documentParser
+	 * @param linkType Changes to significanceVal based on LinkType
 	 * 
 	 * @return
 	 */
-	public Container getOrCreateContainer(DocumentParser documentParser)
+	public Container getOrCreateContainer(DocumentParser documentParser, LinkType linkType)
 	{
 		Container result	= (Container) getArgumentObject(CONTAINER);
 		if (result == null)
 		{
-			result					= createContainer(documentParser);
+			result					= createContainer(documentParser, linkType);
 			if (result == null)
 				result				= documentParser.getContainer();
 		}

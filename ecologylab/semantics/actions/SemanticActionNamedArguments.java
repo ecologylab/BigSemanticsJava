@@ -103,4 +103,5 @@ public interface SemanticActionNamedArguments
 	 */
 	public static final String	VALUE									= "value";
 
+	public static final String  LINK_TYPE						= "link_type";									
 }

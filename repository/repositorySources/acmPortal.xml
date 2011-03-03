@@ -55,10 +55,12 @@
 				<arg value="TRUE_PURL" name="value" />
 			</set_field>
 			
+			
 			<get_field name="location" />
 			<if>
 				<not_null value="location" />
-				<parse_document now="true">
+				<!--  -->
+				<parse_document now="true" >
 					<arg value="metadata" name="document" />
 					<arg value="location" name="container_link" />
 				</parse_document>
@@ -77,7 +79,7 @@
 				<not_null value="references" />
 				<for_each collection="references" as="ref">
 					<get_field object="ref" name="gist" />
-					<parse_document>
+					<parse_document link_type="TRUSTED_SEMANTICS">
 						<arg value="true" name="citation_sig" />
 						<arg value="gist" name="anchor_text" />
 						<arg value="ref" name="entity" />
@@ -91,7 +93,7 @@
 				<for_each collection="citations" as="cit">
 					<get_field object="cit" name="location" />
 					<get_field object="cit" name="gist" />
-					<parse_document>
+					<parse_document link_type="TRUSTED_SEMANTICS">
 						<arg value="true" name="citation_sig" />
 						<arg value="gist" name="anchor_text" />
 						<arg value="cit" name="entity" />
@@ -120,7 +122,7 @@
 				<for_each collection="proceedings" as="proceeding">
 					<get_field object="proceeding" name="link" />
 					<get_field object="proceeding" name="heading" />
-					<parse_document>
+					<parse_document link_type="TRUSTED_SEMANTICS">
 						<arg value="heading" name="anchor_text" />
 						<arg value="link" name="container_link" />
 					</parse_document>
@@ -132,7 +134,7 @@
 				<for_each collection="papers" as="paper">
 					<get_field object="paper" name="link" />
 					<get_field object="paper" name="heading" />
-					<parse_document>
+					<parse_document link_type="TRUSTED_SEMANTICS">
 						<arg value="heading" name="anchor_text" />
 						<arg value="link" name="container_link" />
 					</parse_document>
@@ -165,7 +167,7 @@
 				<for_each collection="search_results" as="result">
 					<get_field object="result" name="heading" />
 					<get_field object="result" name="link" />
-					<parse_document>
+					<parse_document link_type="TRUSTED_SEMANTICS">
 						<arg name="anchor_text" value="heading" />
 						<arg name="container_link" value="link" />
 					</parse_document>

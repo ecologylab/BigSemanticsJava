@@ -17,18 +17,18 @@ import ecologylab.semantics.model.text.TermVectorFeature;
 public class SemanticAnchor implements TermVectorFeature
 {
 	static final int		NO_SPECIAL_SIGNIFICANCE		= 1;
-	static final float	CONTENT_BODY_SIGNIFICANCE = 1.5f;
-	static final int		SAME_DOMAIN_SIGNIFICANCE	= 2;
-	static final int		CITATION_SIGNIFICANCE			= 4;
+	static final float		CONTENT_BODY_SIGNIFICANCE 	= 1.5f;
+	static final float		SAME_DOMAIN_SIGNIFICANCE	= .5f;
+	static final int		CITATION_SIGNIFICANCE		= 4;
 	
 	/**
 	 * hrefPurl of the container pointing to this container. <br>
 	 */
-	protected ParsedURL sourcePurl;
-	TermVector 					tv;
+	protected ParsedURL 	sourcePurl;
+	TermVector 				tv;
 	private boolean 		fromContentBody;
 	private boolean			fromSemanticAction;
-	public float					significance;
+	public float			significance;
 	
 	public static final Double TEXT_OVER_CONTEXT_EMPHASIS_FACTOR	= 3.0;
 	
@@ -39,19 +39,27 @@ public class SemanticAnchor implements TermVectorFeature
 			float significanceVal, 
 			ParsedURL sourcePurl,
 			boolean fromContentBody, 
-			boolean fromSemanticAction)
+			boolean fromSemanticAction,
+			LinkType linkType)
 	{
-		this.sourcePurl 					= sourcePurl;
-		this.fromContentBody 			= fromContentBody;
+		this.sourcePurl 			= sourcePurl;
+		this.fromContentBody 		= fromContentBody;
 		this.fromSemanticAction 	= fromSemanticAction;
-		tv 												= new TermVector();
+		tv 							= new TermVector();
 		
 		if (citationSignificance)
-			this.significance	= CITATION_SIGNIFICANCE*significanceVal;
-		else if (sourcePurl != null && sourcePurl.domain().equals(href.domain()))
-			this.significance	= SAME_DOMAIN_SIGNIFICANCE;
+			this.significance	= CITATION_SIGNIFICANCE * significanceVal;
+		else if(sourcePurl != null && sourcePurl.domain().equals(href.domain()))
+		{
+			if (linkType == LinkType.WILD)
+				this.significance	= SAME_DOMAIN_SIGNIFICANCE * significanceVal;
+			//else if (linkType == LinkType.TRUSTED_SEMANTICS)
+			//Do not decrease domain significance for trusted semantic sources.			
+		}
+		
+
 		else if(!fromSemanticAction && fromContentBody)
-			this.significance	= CONTENT_BODY_SIGNIFICANCE;
+			this.significance	= CONTENT_BODY_SIGNIFICANCE * significanceVal;
 		else
 			this.significance	= NO_SPECIAL_SIGNIFICANCE;		
 		
