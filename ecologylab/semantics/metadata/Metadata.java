@@ -779,7 +779,10 @@ abstract public class Metadata extends ElementState implements MetadataBase,
 				Tr tr = new Tr();
 				Td buttonTd = new Td();
 				Td td = new Td();
+				Div div = new Div();
+				div.setCssClass("metadata_text");
 				Table compositeTable = new Table();
+				compositeTable.setCssClass("nested_table");
 				String button = "&nbsp;<input type=\"image\" class=\"composite\" " +
 						"src=\"http://ecologylab.net/cf/compositionIncludes/button.jpg\" value=\"\" />&nbsp;";
 				buttonTd.setCssClass("metadata_field_name");
@@ -788,8 +791,10 @@ abstract public class Metadata extends ElementState implements MetadataBase,
 				td.setCssClass("nested_field_value");
 				a.append(tr.open());
 				a.append(buttonTd.open());
+				a.append(div.open());
 				a.append(button);
 				a.append(metaMetadata.getDisplayedLabel());
+				a.append(div.close());
 				a.append(Td.close());
 				a.append(td.open());
 				a.append(compositeTable.open());
