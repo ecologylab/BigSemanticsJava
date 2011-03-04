@@ -296,6 +296,9 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 							if (/* !Pref.lookupBoolean(CFPrefNames.USING_PROXY) && */
 									"acm.org".equals(domain) && "pdf".equals(connPURLSuffix))
 							{
+								MetaMetadata pdfMetaMetadata = infoCollector.metaMetaDataRepository().getMMBySuffix(connPURLSuffix);
+								newMetadata = (Document) pdfMetaMetadata.constructMetadata();
+								newMetadata.setLocation(connectionPURL);
 								return true;
 							}
 							else
