@@ -46,9 +46,12 @@ public class GetLinkedMetadataSemanticAction extends SemanticAction
 						String id = lw.getById();
 						ParsedURL purl = mmd.generateUrl(id, metadata.getNaturalIdValue(id));
 						Container container = infoCollector.getContainer(null, null, mmd, purl, false, false, false);
-						container.queueDownload();
-						metadata.pendingSemanticActionHandler = semanticActionHandler;
-						semanticActionHandler.requestWaiting = true;
+						if (container != null) // container could be null if it is already recycled
+						{
+							container.queueDownload();
+							metadata.pendingSemanticActionHandler = semanticActionHandler;
+							semanticActionHandler.requestWaiting = true;
+						}
 					}
 				}
 			}
