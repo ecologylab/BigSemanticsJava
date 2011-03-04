@@ -62,17 +62,6 @@ public class DocumentState extends Seed
 	}
 
 	/**
-	 * Check the validity of this seed.
-	 */
-	public boolean isActive()
-	{
-		if (url == null)
-			return false;
-
-		return true;
-	}
-
-	/**
 	 * Bring this seed into the agent or directly into the composition.
 	 * 
 	 * @param objectRegistry		Context passed between services calls.
@@ -80,27 +69,30 @@ public class DocumentState extends Seed
 	 */
 	public void performInternalSeedingSteps(InfoCollector infoCollector)
 	{
- 		// get a Container object associated with this, associate a seed, and initiate download
- 		println("-- processing document seed: " + url);
- 		infoCollector.traversable(url);
- 		// strangely enough, a file document seed can have a parentContainer!
- 		File file					= url.file();
- 		Container parentContainer	= null;
- 		if (file != null)
- 		{
-			File parent				= file.getParentFile();	// the directory the file lives in
-			ParsedURL parentPURL	= new ParsedURL(parent);
-			parentContainer	= infoCollector.getContainer(null, null, InfoCollectorBase.DOCUMENT_META_METADATA, parentPURL, false, false, false);
- 		}
- 		Container container =infoCollector.getContainer(parentContainer, null, null, url, false, false, true);
- 		if(query != null)
- 		{
- 			container.setQuery(query);
- 			InterestModel.expressInterest(query, (short)3);
- 		}
- 		container.queueDownload();
-// 		getContainerDownloadIfNeeded(parentContainer, url, this, 
-// 				(dropPoint != null), justcrawl, justmedia);
+		if (url != null)
+		{
+	 		// get a Container object associated with this, associate a seed, and initiate download
+	 		println("-- processing document seed: " + url);
+	 		infoCollector.traversable(url);
+	 		// strangely enough, a file document seed can have a parentContainer!
+	 		File file					= url.file();
+	 		Container parentContainer	= null;
+	 		if (file != null)
+	 		{
+				File parent				= file.getParentFile();	// the directory the file lives in
+				ParsedURL parentPURL	= new ParsedURL(parent);
+				parentContainer	= infoCollector.getContainer(null, null, InfoCollectorBase.DOCUMENT_META_METADATA, parentPURL, false, false, false);
+	 		}
+	 		Container container =infoCollector.getContainer(parentContainer, null, null, url, false, false, true);
+	 		if(query != null)
+	 		{
+	 			container.setQuery(query);
+	 			InterestModel.expressInterest(query, (short)3);
+	 		}
+	 		container.queueDownload();
+	// 		getContainerDownloadIfNeeded(parentContainer, url, this, 
+	// 				(dropPoint != null), justcrawl, justmedia);
+		}
 	}
  	
  	/**
