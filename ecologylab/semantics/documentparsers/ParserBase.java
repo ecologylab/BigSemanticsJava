@@ -78,7 +78,7 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 	/**
 	 * @return the metadataTranslationScope
 	 */
-	public final TranslationScope getMetadataTranslationScope()
+	public TranslationScope getMetadataTranslationScope()
 	{
 		return container.getGeneratedMetadataTranslationScope();
 	}
