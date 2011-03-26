@@ -99,7 +99,7 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 		truePURL = getDocument().getLocation();
 
 		// build the metadata object
-		Metadata populatedMetadata = populateMetadata(handler);
+		Document populatedMetadata = populateMetadata(handler);
 		populatedMetadata.setMetadataChanged(true);
 
 		try
@@ -116,20 +116,23 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 			e.printStackTrace();
 			return null;
 		}
-
-		// FIXME -- should be able to get rid of this step here. its way too late!
-		// if the metametadata reference is null, assign the correct metametadata object to it.
-		if (populatedMetadata.getMetaMetadata() == null)
-		{
-			warning("meta-metadata not set after populating!!!!!");
-			populatedMetadata.setMetaMetadata(metaMetadata);
-		}
-
-		// make sure termVector is built here
-		populatedMetadata.rebuildCompositeTermVector();
-
 		if (populatedMetadata != null)
-			handler.takeSemanticActions((MetaMetadata) metaMetadata, populatedMetadata);
+		{
+
+			// FIXME -- should be able to get rid of this step here. its way too late!
+			// if the metametadata reference is null, assign the correct metametadata object to it.
+			if (populatedMetadata.getMetaMetadata() == null)
+			{
+				warning("meta-metadata not set after populating!!!!!");
+				populatedMetadata.setMetaMetadata(metaMetadata);
+			}
+	
+			// make sure termVector is built here
+			populatedMetadata.rebuildCompositeTermVector();
+	
+				handler.takeSemanticActions((MetaMetadata) metaMetadata, populatedMetadata);
+		}
+		return  populatedMetadata;
 	}
 
 	/**
