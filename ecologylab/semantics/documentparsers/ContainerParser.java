@@ -1,8 +1,8 @@
 package ecologylab.semantics.documentparsers;
 
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.connectors.DocumentClosure;
 import ecologylab.semantics.connectors.NewInfoCollector;
-import ecologylab.semantics.connectors.old.OldContainerI;
 import ecologylab.semantics.seeding.SearchState;
 import ecologylab.semantics.seeding.SeedDistributor;
 
@@ -62,7 +62,7 @@ extends DocumentParser
 	 * @param resultPURL
 	 * @param resultContainer
 	 */
-	protected void queueResult(ParsedURL resultPURL, OldContainerI resultContainer)
+	protected void queueResult(ParsedURL resultPURL, DocumentClosure resultContainer)
 	{
 		if (!resultContainer.downloadHasBeenQueued())
 		{
@@ -84,7 +84,7 @@ extends DocumentParser
 		}
 	}
 	
-	protected void queueSearchRequest(OldContainerI searchContainer)
+	protected void queueSearchRequest(DocumentClosure searchContainer)
 	{
 		// Because the only time infoCollector is set is when a seedset is created in SeedSetType and XMLRestType.
 //	    if (infoCollector == null && searchContainer!=null && searchContainer.getInfoCollector() != null)

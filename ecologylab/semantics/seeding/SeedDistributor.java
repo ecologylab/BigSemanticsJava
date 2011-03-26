@@ -9,7 +9,8 @@ import java.util.Queue;
 
 import ecologylab.generic.Debug;
 import ecologylab.generic.Generic;
-import ecologylab.semantics.connectors.old.InfoCollector;
+import ecologylab.semantics.connectors.DocumentClosure;
+import ecologylab.semantics.connectors.NewInfoCollector;
 import ecologylab.semantics.connectors.old.OldContainerI;
 
 /**
@@ -42,7 +43,7 @@ import ecologylab.semantics.connectors.old.OldContainerI;
  * @author andruid
  * @param <slice>
  */
-public class SeedDistributor<AC extends OldContainerI> extends Debug implements Runnable
+public class SeedDistributor extends Debug implements Runnable
 {
 
 	public static interface DistributeCallBack<C extends QandDownloadable>
@@ -72,7 +73,7 @@ public class SeedDistributor<AC extends OldContainerI> extends Debug implements 
 	 */
 	private static final int																MAX_NUM_SEARCHES_PROCESSING				= 2;
 
-	private InfoCollector																		infoCollector;
+	private NewInfoCollector																infoCollector;
 
 	/**
 	 * number of searches that we have to queue and process in total
@@ -94,7 +95,7 @@ public class SeedDistributor<AC extends OldContainerI> extends Debug implements 
 	 * a waiting list for search requests, in case that there are already MAX_NUM_SEARCHES_PROCESSING
 	 * searches in processing.
 	 */
-	private final Queue<AC>																	waitingSearches										= new LinkedList<AC>();
+	private final Queue<DocumentClosure>										waitingSearches										= new LinkedList<DocumentClosure>();
 
 	/**
 	 * the comparator to decide the order of search results to be processed. can be customized through
@@ -119,14 +120,14 @@ public class SeedDistributor<AC extends OldContainerI> extends Debug implements 
 
 	private boolean																					stopFlag;
 
-	public SeedDistributor(InfoCollector infoCollector, Comparator<QandDownloadable> comparator)
+	public SeedDistributor(NewInfoCollector infoCollector, Comparator<QandDownloadable> comparator)
 	{
 		this.infoCollector = infoCollector;
 		this.comparator = comparator;
 		this.queuedResults = new PriorityQueue<QandDownloadable>(INIT_CAPACITY, comparator);
 	}
 
-	public SeedDistributor(InfoCollector infoCollector)
+	public SeedDistributor(NewInfoCollector infoCollector)
 	{
 		this(infoCollector, new Comparator<QandDownloadable>()
 		{
@@ -148,7 +149,7 @@ public class SeedDistributor<AC extends OldContainerI> extends Debug implements 
 	 * 
 	 * @param searchContainer
 	 */
-	public void queueSearchRequest(AC searchContainer)
+	public void queueSearchRequest(DocumentClosure searchContainer)
 	{
 		debug("search request: " + searchContainer);
 		numSearchesToQueue++;
@@ -176,7 +177,7 @@ public class SeedDistributor<AC extends OldContainerI> extends Debug implements 
 	 * 
 	 * @param searchContainer
 	 */
-	public void downloadSearchRequest(AC searchContainer)
+	public void downloadSearchRequest(DocumentClosure searchContainer)
 	{
 		debug("queueing search request to DownloadMonitor: " + searchContainer);
 		searchContainer.queueDownload();
@@ -194,7 +195,7 @@ public class SeedDistributor<AC extends OldContainerI> extends Debug implements 
 	 * @param searchNum
 	 * @param numResults
 	 */
-	public void doneQueueing(OldContainerI searchContainer)
+	public void doneQueueing(DocumentClosure searchContainer)
 	{
 		debug("search parsed: " + searchContainer);
 		numSearchesProcessing--;
@@ -272,7 +273,7 @@ public class SeedDistributor<AC extends OldContainerI> extends Debug implements 
 		int r = -1;
 		if (downloadable instanceof OldContainerI)
 		{
-			OldContainerI container = (OldContainerI) downloadable;
+			DocumentClosure container = (DocumentClosure) downloadable;
 			r = container.searchResult() == null ? -2 : container.searchResult().resultNum();
 		}
 		return r;
@@ -280,13 +281,13 @@ public class SeedDistributor<AC extends OldContainerI> extends Debug implements 
 
 	private static String getQuery(QandDownloadable downloadable)
 	{
-		String q = null;
-		if (downloadable instanceof OldContainerI)
+		String query = null;
+		if (downloadable instanceof DocumentClosure)
 		{
-			OldContainerI container = (OldContainerI) downloadable;
-			q = container.getSeed() == null ? null : container.getSeed().getQuery();
+			DocumentClosure container = (DocumentClosure) downloadable;
+			query = container.getQuery();
 		}
-		return q == null ? "" : q;
+		return query == null ? "" : query;
 	}
 
 	/**
@@ -370,7 +371,7 @@ public class SeedDistributor<AC extends OldContainerI> extends Debug implements 
 				{
 					if (waitingSearches.size() > 0)
 					{
-						AC search = waitingSearches.poll();
+						DocumentClosure search = waitingSearches.poll();
 						downloadSearchRequest(search);
 					}
 				}

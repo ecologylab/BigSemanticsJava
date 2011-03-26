@@ -7,8 +7,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import ecologylab.collections.Scope;
-import ecologylab.semantics.connectors.old.InfoCollector;
-import ecologylab.semantics.connectors.old.OldContainerI;
+import ecologylab.semantics.connectors.NewInfoCollector;
 import ecologylab.semantics.namesandnums.SemanticsSessionObjectNames;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.TranslationScope;
@@ -90,9 +89,9 @@ public class SeedSet<S extends Seed> extends ElementState
 	 */
 	SeedSet					parentSeedSet;
 
-	public <C extends OldContainerI> SeedDistributor<C> seedDistributer(InfoCollector infoCollector)
+	public SeedDistributor seedDistributer(NewInfoCollector infoCollector)
 	{
-		SeedDistributor<C> result = resultDistributer;
+		SeedDistributor result = resultDistributer;
 
 		if (result == null)
 		{
@@ -102,7 +101,7 @@ public class SeedSet<S extends Seed> extends ElementState
 				// result.moreSearches(numSearches);
 			}
 			else
-				result = new SeedDistributor<C>(infoCollector);
+				result = new SeedDistributor(infoCollector);
 			this.resultDistributer = result;
 		}
 
@@ -183,7 +182,7 @@ public class SeedSet<S extends Seed> extends ElementState
 		if (size() == 0)
 			return;
 
-		InfoCollector infoCollector = (InfoCollector) scope.get(INFO_COLLECTOR);
+		NewInfoCollector infoCollector = (NewInfoCollector) scope.get(INFO_COLLECTOR);
 
 		infoCollector.trackFirstSeedSet(this);
 		infoCollector.setPlayOnStart(true);
@@ -325,7 +324,7 @@ public class SeedSet<S extends Seed> extends ElementState
 			}
 			else
 			{
-				InfoCollector infoCollector = (InfoCollector) clientConnectionScope.get(INFO_COLLECTOR);
+				NewInfoCollector infoCollector = (NewInfoCollector) clientConnectionScope.get(INFO_COLLECTOR);
 				JFrame jframe = infoCollector.getJFrame();
 
 				if (jframe != null)
@@ -342,7 +341,7 @@ public class SeedSet<S extends Seed> extends ElementState
 			break;
 		case SeedCf.MULTIPLE_REQUESTSTS_REPLACE:
 			debug("handleMoreSeeds(REPLACE) " + clientConnectionScope.dump());
-			InfoCollector infoCollector = (InfoCollector) clientConnectionScope.get(INFO_COLLECTOR);
+			NewInfoCollector infoCollector = (NewInfoCollector) clientConnectionScope.get(INFO_COLLECTOR);
 			infoCollector.clear();
 			performSeeding(clientConnectionScope);
 			break;
@@ -354,7 +353,7 @@ public class SeedSet<S extends Seed> extends ElementState
 		}
 	}
 
-	public void add(S seed, InfoCollector infoCollector)
+	public void add(S seed, NewInfoCollector infoCollector)
 	{
 		if (seed != null)
 			if (seeds == null)

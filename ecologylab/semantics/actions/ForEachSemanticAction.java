@@ -3,9 +3,8 @@
  */
 package ecologylab.semantics.actions;
 
-import ecologylab.semantics.connectors.old.InfoCollector;
-import ecologylab.serialization.ElementState.xml_tag;
 import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.ElementState.xml_tag;
 
 /**
  * @author amathur
@@ -13,8 +12,8 @@ import ecologylab.serialization.simpl_inherit;
  */
 @simpl_inherit
 public @xml_tag(SemanticActionStandardMethods.FOR_EACH)
-class ForEachSemanticAction<IC extends InfoCollector, SAH extends SemanticActionHandler> extends
-		NestedSemanticAction<IC, SAH>
+class ForEachSemanticAction
+extends NestedSemanticAction
 {
 
 	/**

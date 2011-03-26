@@ -25,10 +25,13 @@ implements TidyInterface
 		parse();
 	}
 	
+	@Override
 	public Document doParse()
 	{
 		taggedDoc = new DOMFragmentInformationTagger(tidy.getConfiguration(), null, this);
 		taggedDoc.generateCollections(this);
+		
+		return null;
 	}
 	
 	public InputStream inputStream()

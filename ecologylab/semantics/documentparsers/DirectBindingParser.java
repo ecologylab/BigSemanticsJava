@@ -33,6 +33,7 @@ public class DirectBindingParser
 		return populatedMetadata;
 	}
 
+	//FIXME - i don't think this is ever called.
 	@Override
 	protected org.w3c.dom.Document createDom()
 	{

@@ -4,7 +4,7 @@
 package ecologylab.semantics.documentparsers;
 
 import ecologylab.semantics.actions.SemanticActionHandler;
-import ecologylab.semantics.connectors.old.InfoCollector;
+import ecologylab.semantics.connectors.NewInfoCollector;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.seeding.Feed;
 import ecologylab.semantics.seeding.Seed;
@@ -19,13 +19,13 @@ public class FeedParser
 	
 	private Feed feed;
 
-	public FeedParser(InfoCollector infoCollector)
+	public FeedParser(NewInfoCollector infoCollector)
 	{
 		super(infoCollector);
 		// TODO Auto-generated constructor stub
 	}
 
-	public FeedParser(InfoCollector infoCollector, Feed feed)
+	public FeedParser(NewInfoCollector infoCollector, Feed feed)
 	{
 		super(infoCollector);
 		this.feed = feed;

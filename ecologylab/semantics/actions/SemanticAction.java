@@ -8,7 +8,7 @@ import java.util.HashMap;
 
 import ecologylab.collections.Scope;
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.connectors.old.InfoCollector;
+import ecologylab.semantics.connectors.NewInfoCollector;
 import ecologylab.semantics.connectors.old.OldContainerI;
 import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.html.documentstructure.LinkType;
@@ -42,7 +42,7 @@ import ecologylab.serialization.ElementState;
  * 
  */
 
-public abstract class SemanticAction<IC extends InfoCollector, SAH extends SemanticActionHandler>
+public abstract class SemanticAction
 		extends ElementState
 		implements SemanticActionNamedArguments
 {
@@ -80,7 +80,7 @@ public abstract class SemanticAction<IC extends InfoCollector, SAH extends Seman
 
 	protected NewInfoCollector				infoCollector;
 
-	protected SAH											semanticActionHandler;
+	protected SemanticActionHandler		semanticActionHandler;
 
 	protected DocumentParser					documentParser;
 
@@ -202,7 +202,7 @@ public abstract class SemanticAction<IC extends InfoCollector, SAH extends Seman
 		this.infoCollector = infoCollector;
 	}
 
-	public void setSemanticActionHandler(SAH handler)
+	public void setSemanticActionHandler(SemanticActionHandler handler)
 	{
 		this.semanticActionHandler = handler;
 	}

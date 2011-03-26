@@ -2,8 +2,8 @@ package ecologylab.semantics.seeding;
 
 import ecologylab.collections.Scope;
 import ecologylab.generic.ReflectionTools;
-import ecologylab.semantics.connectors.old.InfoCollector;
-import ecologylab.semantics.connectors.old.OldContainerI;
+import ecologylab.semantics.connectors.DocumentClosure;
+import ecologylab.semantics.connectors.NewInfoCollector;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.namesandnums.CFPrefNames;
 import ecologylab.serialization.ElementState;
@@ -13,7 +13,7 @@ import ecologylab.serialization.ElementState;
  * 
  * @author andruid, robinson
  */
-abstract public class Seed<AC extends OldContainerI> extends ElementState implements CFPrefNames
+abstract public class Seed extends ElementState implements CFPrefNames
 {
     public static final String          TRAVERSABLE                  = "traversable";
     public static final String          UNTRAVERSABLE                = "untraversable";
@@ -36,7 +36,7 @@ abstract public class Seed<AC extends OldContainerI> extends ElementState implem
 
     protected SeedDistributor            	seedDistributer;
     
-    protected		InfoCollector							infoCollector;
+    protected		NewInfoCollector					infoCollector;
     
     protected 	SeedPeer									seedPeer;
     
@@ -62,7 +62,7 @@ abstract public class Seed<AC extends OldContainerI> extends ElementState implem
      * 
      * @param infoProcessor
      */
-    public void initialize(InfoCollector infoProcessor)
+    public void initialize(NewInfoCollector infoProcessor)
     {
     		this.infoCollector	= infoProcessor;
     		
@@ -74,7 +74,7 @@ abstract public class Seed<AC extends OldContainerI> extends ElementState implem
      * 
      * @param infoProcessor
      */
-    public void initialize(SeedPeer ancestor, InfoCollector infoProcessor)
+    public void initialize(SeedPeer ancestor, NewInfoCollector infoProcessor)
     {
     		initialize(infoProcessor);
     		
@@ -99,7 +99,7 @@ abstract public class Seed<AC extends OldContainerI> extends ElementState implem
 //FIXME        this.parent = ancestor;
     }
 
-    abstract public void performInternalSeedingSteps(InfoCollector infoCollector);
+    abstract public void performInternalSeedingSteps(NewInfoCollector infoCollector);
     
     /**
      * This sets the infoCollector for the seed, and then hands off the internal seeding processing to the
@@ -107,7 +107,7 @@ abstract public class Seed<AC extends OldContainerI> extends ElementState implem
      * 
      * @param	infoCollector	Must be non-null!
      */
-    public final void performSeedingSteps(InfoCollector infoCollector)
+    public final void performSeedingSteps(NewInfoCollector infoCollector)
     {
     	// desparately seeking non-null InfoCollector
     	if (infoCollector != null)
@@ -146,7 +146,7 @@ abstract public class Seed<AC extends OldContainerI> extends ElementState implem
     
     abstract public boolean setValue(String value);
 
-    public void setInfoCollector(InfoCollector infoCollector)
+    public void setInfoCollector(NewInfoCollector infoCollector)
     {
         this.infoCollector = infoCollector;
     }
@@ -199,7 +199,7 @@ abstract public class Seed<AC extends OldContainerI> extends ElementState implem
     /**
      * @return Returns the ResultDistributer.
      */
-    public <C extends OldContainerI> SeedDistributor<C> seedDistributer(InfoCollector infoCollector)
+    public SeedDistributor seedDistributer(NewInfoCollector infoCollector)
     {
     	if (seedDistributer != null)
     		return seedDistributer;
@@ -208,7 +208,7 @@ abstract public class Seed<AC extends OldContainerI> extends ElementState implem
     		return null;
 
     	SeedSet seedSet 						= seedSet();
-    	SeedDistributor<C> result	= null;
+    	SeedDistributor result	= null;
     	if (seedSet != null)
     	{
     		result										= seedSet.seedDistributer(infoCollector);
@@ -241,14 +241,14 @@ abstract public class Seed<AC extends OldContainerI> extends ElementState implem
    * 
    * @param container
    */
-  public void bindToContainer(OldContainerI container)
+  public void bindToContainer(DocumentClosure container)
   {
       if(container == null)
       {
       	System.out.println("See Why I am Null here");
       }
-  		container.setBias(bias);
-      container.setAsTrueSeed(this);
+//  		container.setBias(bias);
+      container.getDocument().setAsTrueSeed(this);
   }
 
   public boolean isRejectable()
@@ -281,7 +281,7 @@ abstract public class Seed<AC extends OldContainerI> extends ElementState implem
    * 
    * @param container
    */
-	public void queueSeedOrRegularContainer(AC container)
+	public void queueSeedOrRegularContainer(DocumentClosure container)
 	{
 		SeedDistributor seedDistributer = seedDistributer(infoCollector);
 		if (seedDistributer != null)

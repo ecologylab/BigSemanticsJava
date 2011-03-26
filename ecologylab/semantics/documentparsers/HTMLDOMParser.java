@@ -13,7 +13,6 @@ import ecologylab.generic.StringTools;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.connectors.NewInfoCollector;
 import ecologylab.semantics.connectors.old.AbstractImgElement;
-import ecologylab.semantics.connectors.old.OldContainerI;
 import ecologylab.semantics.html.ImgElement;
 import ecologylab.semantics.html.ParagraphText;
 import ecologylab.semantics.html.documentstructure.AnchorContext;
@@ -201,7 +200,7 @@ public class HTMLDOMParser
 				if (title != null)
 				{
 					XMLTools.unescapeXML(title);
-					container.hwSetTitle(StringTools.toString(title));
+					getDocument().hwSetTitle(StringTools.toString(title));
 					StringBuilderUtils.release(title);
 				}
 				break;
@@ -332,7 +331,7 @@ public class HTMLDOMParser
 	{
 		if (SHOW_PAGE_STRUCTURE_PREF.value())
 		{
-			Document metadata = (Document) container.getMetadata();
+			Document metadata = getDocument();
 			if (metadata != null)
 				metadata.setPageStructure(pageType.getSimpleName());
 			else

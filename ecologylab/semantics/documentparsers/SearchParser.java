@@ -7,6 +7,7 @@ import ecologylab.generic.DispatchTarget;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.actions.SemanticActionsKeyWords;
+import ecologylab.semantics.connectors.DocumentClosure;
 import ecologylab.semantics.connectors.NewInfoCollector;
 import ecologylab.semantics.connectors.old.OldContainerI;
 import ecologylab.semantics.metadata.DocumentParserTagNames;
@@ -19,7 +20,7 @@ import ecologylab.semantics.seeding.SearchState;
  * 
  */
 public class SearchParser
-		extends LinksetParser implements CFPrefNames, DispatchTarget<OldContainerI>,
+		extends LinksetParser implements CFPrefNames, DispatchTarget<DocumentClosure>,
 		SemanticActionsKeyWords
 {
 
@@ -71,10 +72,11 @@ public class SearchParser
 	 */
 	private void setQuery(SearchState searchSeed)
 	{
-		if (container != null)
-			container.setQuery(searchSeed.getQuery());
+		Document document	= getDocument();
+		if (document != null)
+			document.setQuery(searchSeed.getQuery());
 		else
-			warning("WEIRD problem: this.container == null! might have been recycled.");
+			warning("WEIRD problem: this.document == null! might have been recycled.");
 	}
 
 		
@@ -86,49 +88,30 @@ public class SearchParser
 	@Override
 	public Document populateMetadata(SemanticActionHandler handler)
 	{
-		Document populatedMetadata	= (Document) container.getMetadata();
+		Document populatedMetadata	= getDocument();
 		
 		//FIXME use overrides instead of constants here!!!!!!!!!!
-		if ("direct".equals(metaMetadata.getParser()))
+		if (DIRECT_BINDING_PARSER.equals(metaMetadata.getParser()))
 		{
 			populatedMetadata				= directBindingPopulateMetadata();
+			
+			//FIXME -- copy values like query from original metadata to the new one!!!
 		}
-		else if ("xpath".equals(metaMetadata.getParser()))
+		else if (XPATH_PARSER.equals(metaMetadata.getParser()))
 		{
 			recursiveExtraction(metaMetadata, populatedMetadata, getDom(), null, handler.getSemanticActionVariableMap());
-			container.setMetadata(populatedMetadata);
+//			container.setMetadata(populatedMetadata);
 		}
 
 		return populatedMetadata;
 	}
 
 	@Override
-	public void delivery(OldContainerI downloadedContainer)
+	public void delivery(DocumentClosure downloadedContainer)
 	{
 		super.delivery(downloadedContainer);
 		if (searchSeed != null)
 			searchSeed.incrementNumResultsBy(searchSeed.numResults());
 	}
-/*	protected void createDOMandParse(ParsedURL purl)
-	{
-		if ("direct".equals(metaMetadata.getBinding()))
-		{
-			// only in the case of direct binding we need to find the DOM as tidy DOM is useless
-			org.w3c.dom.Document document = ElementState.buildDOM(purl);
-			semanticActionHandler.getParameter().addParameter(SemanticActionsKeyWords.DOCUMENT_ROOT_NODE,
-					document);
-		}
-	}*/
 
-	/*public boolean shouldUnpauseCrawler()
-	{
-		ResultDistributer aggregator = this.searchSeed.resultDistributer(infoCollector);
-		return aggregator.checkIfAllSearchesOver();
-	}
-
-	public void takeSemanticActions(M populatedMetadata)
-	{
-		super.takeSemanticActions(populatedMetadata);
-		}
-*/
-	}
+}

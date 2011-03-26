@@ -1,15 +1,14 @@
 package ecologylab.semantics.actions;
 
-import ecologylab.semantics.connectors.old.InfoCollector;
 import ecologylab.semantics.seeding.SearchState;
 import ecologylab.semantics.seeding.SeedSet;
-import ecologylab.serialization.ElementState.xml_tag;
 import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.ElementState.xml_tag;
 
 @simpl_inherit
 @xml_tag(SemanticActionStandardMethods.SEARCH)
-public class SearchSemanticAction<IC extends InfoCollector, SAH extends SemanticActionHandler>
-		extends SemanticAction<IC, SAH>
+public class SearchSemanticAction
+		extends SemanticAction
 {
 
 	protected static final String	ARG_QUERY	= "query";

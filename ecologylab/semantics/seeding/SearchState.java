@@ -3,6 +3,7 @@ package ecologylab.semantics.seeding;
 import java.io.File;
 
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.connectors.NewInfoCollector;
 import ecologylab.semantics.connectors.old.InfoCollector;
 import ecologylab.semantics.documentparsers.SearchParser;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
@@ -98,7 +99,7 @@ implements SemanticsPrefs
    * @param engine
    * @param noAggregator TODO
     */
-   public SearchState(InfoCollector infoProcessor, String query, String engine, boolean noAggregator)
+   public SearchState(NewInfoCollector infoProcessor, String query, String engine, boolean noAggregator)
    {
 	   this(query, engine);
 	   this.noAggregator	= noAggregator;
@@ -158,7 +159,7 @@ implements SemanticsPrefs
     * @param infoCollector TODO
     */
    @Override
-   public void performInternalSeedingSteps(InfoCollector infoCollector)
+   public void performInternalSeedingSteps(NewInfoCollector infoCollector)
    {
   	 //  	 InterestModel.expressInterest(query, interestLevel);
   	 //infoCollector.instantiateDocumentType(SEARCH_DOCUMENT_TYPE_REGISTRY, engine, this);		

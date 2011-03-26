@@ -15,8 +15,8 @@ import ecologylab.serialization.simpl_inherit;
  */
 @simpl_inherit
 public @xml_tag(SemanticActionStandardMethods.IF)
-class IfSemanticAction<IC extends InfoCollector, SAH extends SemanticActionHandler> extends
-		NestedSemanticAction<IC, SAH>
+class IfSemanticAction 
+extends	NestedSemanticAction
 {
 
 	@Override

@@ -74,6 +74,10 @@ public class Document extends Metadata
 	 */
 	private Seed										seed;
 	
+	/**
+	 * Indicates that this Document is a truly a seed, not just one
+	 * that is associated into a Seed's inverted index.
+	 */
 	private boolean									isTrueSeed;
 
 	/**

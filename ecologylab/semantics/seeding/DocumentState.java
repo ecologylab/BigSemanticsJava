@@ -4,7 +4,7 @@ import java.awt.Point;
 import java.io.File;
 
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.connectors.old.InfoCollector;
+import ecologylab.semantics.connectors.NewInfoCollector;
 import ecologylab.semantics.connectors.old.InfoCollectorBase;
 import ecologylab.semantics.connectors.old.OldContainerI;
 import ecologylab.semantics.metadata.builtins.Document;
@@ -68,7 +68,7 @@ public class DocumentState extends Seed
 	 * @param objectRegistry		Context passed between services calls.
 	 * @param infoCollector TODO
 	 */
-	public void performInternalSeedingSteps(InfoCollector infoCollector)
+	public void performInternalSeedingSteps(NewInfoCollector infoCollector)
 	{
 		if (url != null)
 		{
@@ -86,7 +86,7 @@ public class DocumentState extends Seed
 	 		}
 	 		OldContainerI container =infoCollector.getContainer(parentContainer, null, null, url, false, false, true);
 	 		document	= (Document) container.getMetadata();
-	 		if(query != null)
+	 		if (query != null)
 	 		{
 	 			container.setQuery(query);
 	 			InterestModel.expressInterest(query, (short)3);

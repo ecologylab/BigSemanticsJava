@@ -26,6 +26,7 @@ import ecologylab.collections.WeightSet;
 import ecologylab.concurrent.DownloadMonitor;
 import ecologylab.generic.Debug;
 import ecologylab.generic.Generic;
+import ecologylab.generic.StringTools;
 import ecologylab.generic.ThreadMaster;
 import ecologylab.io.Assets;
 import ecologylab.io.AssetsRoot;
@@ -44,6 +45,7 @@ import ecologylab.semantics.model.text.TermVector;
 import ecologylab.semantics.model.text.TermVectorWeightStrategy;
 import ecologylab.semantics.namesandnums.SemanticsAssetVersions;
 import ecologylab.semantics.seeding.Seed;
+import ecologylab.semantics.seeding.SeedPeer;
 import ecologylab.semantics.seeding.SeedSet;
 import ecologylab.semantics.seeding.SemanticsPrefs;
 import ecologylab.serialization.TranslationScope;
@@ -1200,5 +1202,24 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 		return metadataTranslationScope;
 	}
 
+	public SeedPeer constructSeedPeer(Seed seed)
+	{
+		return null;
+//		return DASHBOARD_ENABLED ? new SeedPeerDashboardOperand(seed, this) : null;
+	}
+
+	public void reject(String siteAddr)
+	{
+		if (siteAddr != null)
+		{
+			String domain	= StringTools.domain(siteAddr);
+			if (domain != null)
+			{
+				rejectDomains.add(domain);
+				println("-- rejecting all web addresses from domain "+domain+ " --");
+			}
+		}
+	}
+	
 
 }

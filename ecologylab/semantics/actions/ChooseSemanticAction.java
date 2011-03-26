@@ -4,21 +4,20 @@ import java.util.ArrayList;
 
 import org.junit.Test;
 
-import ecologylab.semantics.connectors.old.InfoCollector;
 import ecologylab.semantics.metametadata.MetaMetadataTranslationScope;
-import ecologylab.serialization.ElementState.xml_tag;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.ElementState.xml_tag;
 
 @simpl_inherit
 @xml_tag(SemanticActionStandardMethods.CHOOSE)
-public class ChooseSemanticAction<IC extends InfoCollector, SAH extends SemanticActionHandler>
-		extends SemanticAction<IC, SAH>
+public class ChooseSemanticAction
+		extends SemanticAction
 {
 
 	@simpl_inherit
-	public static class Otherwise<IC extends InfoCollector, SAH extends SemanticActionHandler>
-			extends NestedSemanticAction<IC, SAH>
+	public static class Otherwise
+			extends NestedSemanticAction
 	{
 		@Override
 		public String getActionName()

@@ -1,8 +1,7 @@
 package ecologylab.semantics.actions;
 
-import ecologylab.semantics.connectors.old.InfoCollector;
-import ecologylab.serialization.ElementState.xml_tag;
 import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.ElementState.xml_tag;
 
 /**
  * By default, this method prevent the InfoCollector from collecting information from the specified
@@ -11,8 +10,8 @@ import ecologylab.serialization.simpl_inherit;
  */
 @simpl_inherit
 public @xml_tag(SemanticActionStandardMethods.BACK_OFF_FROM_SITE)
-class BackOffFromSiteSemanticAction<IC extends InfoCollector, SAH extends SemanticActionHandler>
-		extends SemanticAction<IC, SAH> implements SemanticActionStandardMethods
+class BackOffFromSiteSemanticAction
+		extends SemanticAction implements SemanticActionStandardMethods
 {
 	
 	@simpl_scalar

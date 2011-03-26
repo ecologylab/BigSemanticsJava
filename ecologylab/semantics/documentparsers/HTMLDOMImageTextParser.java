@@ -11,8 +11,7 @@ import org.w3c.tidy.TdNode;
 
 import ecologylab.generic.StringTools;
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.connectors.old.InfoCollector;
-import ecologylab.semantics.connectors.old.OldContainerI;
+import ecologylab.semantics.connectors.NewInfoCollector;
 import ecologylab.semantics.html.AElement;
 import ecologylab.semantics.html.DOMWalkInformationTagger;
 import ecologylab.semantics.html.ImgElement;
@@ -41,7 +40,7 @@ public class HTMLDOMImageTextParser
 extends HTMLDOMParser
 implements TidyInterface, HTMLAttributeNames
 {
-	public HTMLDOMImageTextParser(InfoCollector infoCollector)	// this is of type In
+	public HTMLDOMImageTextParser(NewInfoCollector infoCollector)	// this is of type In
 	{
 		super(infoCollector);
 	}
@@ -93,6 +92,8 @@ implements TidyInterface, HTMLAttributeNames
 		taggedDoc.recycle();
 		if (fromContentBody)
 			taggedContentnode.recycle();
+		
+		return null;
 	}
 
 	

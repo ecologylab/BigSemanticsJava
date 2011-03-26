@@ -3,9 +3,8 @@
  */
 package ecologylab.semantics.actions;
 
-import ecologylab.semantics.connectors.old.InfoCollector;
-import ecologylab.serialization.ElementState.xml_tag;
 import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.ElementState.xml_tag;
 
 /**
  * Semantic action to evualte weight basesd on rank.
@@ -14,8 +13,8 @@ import ecologylab.serialization.simpl_inherit;
  */
 @simpl_inherit
 public @xml_tag(SemanticActionStandardMethods.EVALUATE_RANK_WEIGHT)
-class EvaluateRankWeight<IC extends InfoCollector, SAH extends SemanticActionHandler> extends
-		SemanticAction<IC, SAH>
+class EvaluateRankWeight
+extends SemanticAction
 {
 
 	public static final double	TRANSFER_FUNC_CENTER	= .5; // the bend of the sigmoid

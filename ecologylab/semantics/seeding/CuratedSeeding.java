@@ -2,7 +2,7 @@ package ecologylab.semantics.seeding;
 
 import java.io.File;
 
-import ecologylab.semantics.connectors.old.InfoCollector;
+import ecologylab.semantics.connectors.NewInfoCollector;
 import ecologylab.semantics.namesandnums.SemanticsSessionObjectNames;
 import ecologylab.serialization.simpl_inherit;
 
@@ -51,7 +51,7 @@ implements SemanticsSessionObjectNames
 	 * @param objectRegistry		Context passed between services calls.
 	 * @param infoCollector TODO
 	 */
-	public void performInternalSeedingSteps(InfoCollector infoCollector)
+	public void performInternalSeedingSteps(NewInfoCollector infoCollector)
 	{
 		final SeedSet<?> ss	= CuratedSeedSets.lookup(name);
 		

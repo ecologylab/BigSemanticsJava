@@ -8,10 +8,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ecologylab.generic.ReflectionTools;
-import ecologylab.semantics.connectors.old.InfoCollector;
-import ecologylab.serialization.ElementState.xml_tag;
 import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.ElementState.xml_tag;
 
 /**
  * @author amathur
@@ -19,8 +18,8 @@ import ecologylab.serialization.simpl_inherit;
  */
 @simpl_inherit
 public @xml_tag(SemanticActionStandardMethods.GET_FIELD_ACTION)
-class GetFieldSemanticAction<IC extends InfoCollector, SAH extends SemanticActionHandler> extends
-		SemanticAction<IC, SAH>
+class GetFieldSemanticAction
+extends SemanticAction
 {
 
 	private static Map<String, Method>	cachedGetterMethods	= new HashMap<String, Method>();

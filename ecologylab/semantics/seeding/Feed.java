@@ -3,8 +3,7 @@
  */
 package ecologylab.semantics.seeding;
 
-import ecologylab.net.ParsedURL;
-import ecologylab.semantics.connectors.old.InfoCollector;
+import ecologylab.semantics.connectors.NewInfoCollector;
 import ecologylab.semantics.documentparsers.FeedParser;
 
 /**
@@ -33,7 +32,7 @@ public class Feed extends DocumentState
   }
   
   @Override
-	public void performInternalSeedingSteps(InfoCollector infoCollector)
+	public void performInternalSeedingSteps(NewInfoCollector infoCollector)
 	{
 	 new FeedParser(infoCollector, this);
 	}

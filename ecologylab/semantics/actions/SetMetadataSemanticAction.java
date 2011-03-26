@@ -3,11 +3,9 @@
  */
 package ecologylab.semantics.actions;
 
-import ecologylab.semantics.connectors.old.ContentElement;
-import ecologylab.semantics.connectors.old.InfoCollector;
 import ecologylab.semantics.metadata.Metadata;
-import ecologylab.serialization.ElementState.xml_tag;
 import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.ElementState.xml_tag;
 
 /**
  * @author amathur
@@ -15,8 +13,8 @@ import ecologylab.serialization.simpl_inherit;
  */
 @simpl_inherit
 public @xml_tag(SemanticActionStandardMethods.SET_METADATA)
-class SetMetadataSemanticAction<IC extends InfoCollector, SAH extends SemanticActionHandler>
-		extends SemanticAction<IC, SAH>
+class SetMetadataSemanticAction
+		extends SemanticAction
 {
 
 	@Override

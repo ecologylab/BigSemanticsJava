@@ -18,8 +18,8 @@ import ecologylab.serialization.simpl_inherit;
  */
 
 @simpl_inherit
-public abstract class NestedSemanticAction<IC extends InfoCollector, SAH extends SemanticActionHandler>
-		extends SemanticAction<IC, SAH>
+public abstract class NestedSemanticAction
+		extends SemanticAction
 {
 
 	/**

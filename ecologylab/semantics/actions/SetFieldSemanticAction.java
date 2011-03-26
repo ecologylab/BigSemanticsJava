@@ -6,19 +6,18 @@ package ecologylab.semantics.actions;
 import java.lang.reflect.Method;
 
 import ecologylab.generic.ReflectionTools;
-import ecologylab.semantics.connectors.old.InfoCollector;
-import ecologylab.serialization.ElementState.xml_tag;
 import ecologylab.serialization.Hint;
 import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.ElementState.xml_tag;
 
 /**
  * @author amathur
  */
 @simpl_inherit
 @xml_tag(SemanticActionStandardMethods.SET_FIELD_ACTION)
-public class SetFieldSemanticAction<IC extends InfoCollector, SAH extends SemanticActionHandler>
-		extends SemanticAction<IC, SAH> implements SemanticActionStandardMethods
+public class SetFieldSemanticAction
+		extends SemanticAction implements SemanticActionStandardMethods
 {
 
 	public static final String	VALUE	= "value";

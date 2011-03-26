@@ -13,7 +13,6 @@ import ecologylab.collections.SetElement;
 import ecologylab.concurrent.DownloadMonitor;
 import ecologylab.generic.DispatchTarget;
 import ecologylab.generic.MathTools;
-import ecologylab.io.BasicSite;
 import ecologylab.io.Downloadable;
 import ecologylab.net.ConnectionHelper;
 import ecologylab.net.PURLConnection;
@@ -29,7 +28,10 @@ import ecologylab.semantics.metametadata.RedirectHandling;
 import ecologylab.semantics.model.text.ITermVector;
 import ecologylab.semantics.model.text.TermVectorFeature;
 import ecologylab.semantics.namesandnums.CFPrefNames;
+import ecologylab.semantics.seeding.QandDownloadable;
 import ecologylab.semantics.seeding.SearchResult;
+import ecologylab.semantics.seeding.Seed;
+import ecologylab.semantics.seeding.SeedDistributor;
 
 /**
  * New Container object. Mostly just a closure around Document.
@@ -39,7 +41,7 @@ import ecologylab.semantics.seeding.SearchResult;
  *
  */
 public class DocumentClosure<D extends Document> extends SetElement
-implements TermVectorFeature, Downloadable
+implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>
 {
 	D												document;
 	
@@ -70,12 +72,6 @@ implements TermVectorFeature, Downloadable
 	 * web crawler, providing that they are traversable() and of the right mime types.
 	 */
 	boolean					crawlLinks		= true;
-	
-	/**
-	 * Indicates that this Container is a truly a seed, not just one
-	 * that is associated into a Seed's inverted index.
-	 */
-	private boolean			isTrueSeed;
 
 	/**
 	 * Indicates that this Container is processed via drag and drop.
@@ -102,6 +98,8 @@ implements TermVectorFeature, Downloadable
 	private		NewInfoCollector	infoCollector;
 	
 	DocumentLocationMap<D>			documentLocationMap;
+	
+	DownloadStatus							downloadStatus;
 	
 	/**
 	 * 
@@ -631,19 +629,8 @@ implements TermVectorFeature, Downloadable
 	{
 		// GoogleSearch, SearchResults are all seeds
 		return isDnd ? infoCollector.getDndDownloadMonitor() : 
-			isTrueSeed ? 
+			isSeed() ? 
 				infoCollector.getSeedingDownloadMonitor(): infoCollector.getCrawlerDownloadMonitor();
-	}
-
-	DispatchTarget dispatchTarget = null;
-	DispatchTarget dispatchTarget()
-	{
-		return dispatchTarget;
-	}
-
-	public void setDispatchTarget(DispatchTarget dispatchTarget)
-	{
-		this.dispatchTarget = dispatchTarget;
 	}
 
 	
@@ -731,6 +718,50 @@ implements TermVectorFeature, Downloadable
 		return document == null ? "recycled" : document.getLocation().toString();
 	}
 
+	/**
+	 * Keeps state about the search process, if this Container is a search result;
+	 */
+	@Override
+	public SearchResult searchResult()
+	{
+		return searchResult;
+	}
+	/**
+	 * 
+	 * @param resultDistributer
+	 * @param searchNum			Index into the total number of (seeding) searches specified and being aggregated.
+	 * @param resultNum		Result number among those returned by google.
+	 */
+	public void setSearchResult(SeedDistributor resultDistributer, int resultNum)
+	{
+		searchResult	= new SearchResult(resultDistributer, resultNum);
+	}
+	public SeedDistributor resultDistributer()
+	{
+		return (searchResult == null) ? null : searchResult.resultDistributer();
+	}
 
+	
+	@Override
+	public void setDispatchTarget(DispatchTarget<DocumentClosure> dispatchTarget)
+	{
+		this.dispatchTarget = dispatchTarget;
+	}
 
+	DispatchTarget<DocumentClosure> 			dispatchTarget;
+	
+	DispatchTarget<DocumentClosure> dispatchTarget()
+	{
+		return dispatchTarget;
+	}
+
+	public String getQuery()
+	{
+		return document != null ? document.getQuery() : null;
+	}
+
+	public Seed getSeed()
+	{
+		return document != null ? document.getSeed() : null;
+	}
 }

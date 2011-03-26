@@ -4,13 +4,12 @@
 package ecologylab.semantics.actions;
 
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.connectors.old.InfoCollector;
 import ecologylab.semantics.connectors.old.OldContainerI;
 import ecologylab.semantics.html.documentstructure.LinkType;
 import ecologylab.semantics.metametadata.MetaMetadata;
-import ecologylab.serialization.ElementState.xml_tag;
 import ecologylab.serialization.Hint;
 import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.ElementState.xml_tag;
 
 /**
  * @author amathur
@@ -18,8 +17,8 @@ import ecologylab.serialization.simpl_inherit;
  */
 @simpl_inherit
 public @xml_tag(SemanticActionStandardMethods.PARSE_DOCUMENT)
-class ParseDocumentSemanticAction<IC extends InfoCollector, SAH extends SemanticActionHandler>
-		extends SemanticAction<IC, SAH>
+class ParseDocumentSemanticAction
+		extends SemanticAction
 {
 
 	@simpl_scalar
