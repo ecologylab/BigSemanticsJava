@@ -7,7 +7,7 @@ import ecologylab.generic.DispatchTarget;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.actions.SemanticActionsKeyWords;
-import ecologylab.semantics.connectors.old.InfoCollector;
+import ecologylab.semantics.connectors.NewInfoCollector;
 import ecologylab.semantics.connectors.old.OldContainerI;
 import ecologylab.semantics.metadata.DocumentParserTagNames;
 import ecologylab.semantics.metadata.builtins.Document;
@@ -35,7 +35,7 @@ public class SearchParser
 	 * @param infoCollector
 	 * @param semanticActionHandler
 	 */
-	public SearchParser(InfoCollector infoCollector)
+	public SearchParser(NewInfoCollector infoCollector)
 	{
 		super(infoCollector);
 	}
@@ -45,7 +45,7 @@ public class SearchParser
 	 * @param semanticAction
 	 * @param searchURL
 	 */
-	public SearchParser(InfoCollector infoCollector, SearchState searchSeed)
+	public SearchParser(NewInfoCollector infoCollector, SearchState searchSeed)
 	{
 		super(infoCollector);
 

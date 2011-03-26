@@ -10,8 +10,7 @@ import ecologylab.generic.Debug;
 import ecologylab.semantics.actions.exceptions.ForLoopException;
 import ecologylab.semantics.actions.exceptions.IfActionException;
 import ecologylab.semantics.actions.exceptions.SemanticActionExecutionException;
-import ecologylab.semantics.connectors.old.InfoCollector;
-import ecologylab.semantics.connectors.old.OldContainerI;
+import ecologylab.semantics.connectors.NewInfoCollector;
 import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metametadata.MetaMetadata;
@@ -25,7 +24,7 @@ import ecologylab.semantics.tools.GenericIterable;
  * @author amathur
  */
 // TODO Might want to implement lexical scoping in variables.
-public class SemanticActionHandler<C extends OldContainerI, IC extends InfoCollector<C>>
+public class SemanticActionHandler
 		extends Debug
 		implements SemanticActionStandardMethods, SemanticActionsKeyWords, SemanticActionNamedArguments
 {
@@ -39,7 +38,7 @@ public class SemanticActionHandler<C extends OldContainerI, IC extends InfoColle
 		BUILT_IN_SCOPE.put(NULL, null);
 	}
 
-	private IC																				infoCollector;
+	private NewInfoCollector																				infoCollector;
 
 	private DocumentParser														documentParser;
 
@@ -62,7 +61,7 @@ public class SemanticActionHandler<C extends OldContainerI, IC extends InfoColle
 
 	Metadata																					metadata;
 
-	public SemanticActionHandler(IC infoCollector, DocumentParser documentParser)
+	public SemanticActionHandler(NewInfoCollector infoCollector, DocumentParser documentParser)
 	{
 		this.infoCollector = infoCollector;
 		this.documentParser = documentParser;
@@ -125,7 +124,7 @@ public class SemanticActionHandler<C extends OldContainerI, IC extends InfoColle
 	 * @param parser
 	 * @param infoCollector
 	 */
-	public void handleSemanticAction(SemanticAction action, DocumentParser parser, IC infoCollector)
+	public void handleSemanticAction(SemanticAction action, DocumentParser parser, NewInfoCollector infoCollector)
 	{
 		int state = getActionState(action, "state", SemanticAction.INIT);
 		if (state == SemanticAction.FIN || requestWaiting)
@@ -211,7 +210,7 @@ public class SemanticActionHandler<C extends OldContainerI, IC extends InfoColle
 	}
 
 	public synchronized void handleForLoop(ForEachSemanticAction action, DocumentParser parser,
-			IC infoCollector)
+			NewInfoCollector infoCollector)
 	{
 		try
 		{
@@ -298,7 +297,7 @@ public class SemanticActionHandler<C extends OldContainerI, IC extends InfoColle
 		}
 	}
 
-	public void handleIf(IfSemanticAction action, DocumentParser parser, IC infoCollector)
+	public void handleIf(IfSemanticAction action, DocumentParser parser, NewInfoCollector infoCollector)
 	{
 		// conditions have been checked in handleSemanticAction()
 

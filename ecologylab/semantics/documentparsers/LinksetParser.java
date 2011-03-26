@@ -5,7 +5,7 @@ package ecologylab.semantics.documentparsers;
 
 import ecologylab.generic.DispatchTarget;
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.connectors.old.InfoCollector;
+import ecologylab.semantics.connectors.NewInfoCollector;
 import ecologylab.semantics.connectors.old.OldContainerI;
 import ecologylab.semantics.seeding.Seed;
 import ecologylab.semantics.seeding.SeedDistributor;
@@ -21,7 +21,7 @@ public abstract class LinksetParser
 		extends ParserBase implements DispatchTarget<OldContainerI>
 {
 
-	public LinksetParser(InfoCollector infoCollector)
+	public LinksetParser(NewInfoCollector infoCollector)
 	{
 		super(infoCollector);
 	}
@@ -31,7 +31,7 @@ public abstract class LinksetParser
 	 * @param seed
 	 * @param defaultTag TODO
 	 */
-	protected void getMetaMetadataAndContainerAndQueue(InfoCollector infoCollector, ParsedURL purl, Seed seed, String defaultTag)
+	protected void getMetaMetadataAndContainerAndQueue(NewInfoCollector infoCollector, ParsedURL purl, Seed seed, String defaultTag)
 	{
 		OldContainerI container = infoCollector.getContainer(null, null, metaMetadata, purl, false, false, false);
 		setContainer(container);

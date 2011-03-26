@@ -26,22 +26,12 @@ import ecologylab.collections.WeightSet;
 import ecologylab.concurrent.DownloadMonitor;
 import ecologylab.generic.Debug;
 import ecologylab.generic.Generic;
-import ecologylab.generic.ReflectionTools;
 import ecologylab.generic.ThreadMaster;
 import ecologylab.io.Assets;
 import ecologylab.io.AssetsRoot;
 import ecologylab.io.Files;
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.actions.SemanticActionsKeyWords;
-import ecologylab.semantics.connectors.old.InfoCollector;
 import ecologylab.semantics.connectors.old.OldContainerI;
-import ecologylab.semantics.documentparsers.DirectBindingParser;
-import ecologylab.semantics.documentparsers.DocumentParser;
-import ecologylab.semantics.documentparsers.FeedParser;
-import ecologylab.semantics.documentparsers.HTMLDOMImageTextParser;
-import ecologylab.semantics.documentparsers.XPathParser;
-import ecologylab.semantics.html.documentstructure.SemanticAnchor;
-import ecologylab.semantics.html.documentstructure.SemanticInLinks;
 import ecologylab.semantics.metadata.DocumentParserTagNames;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.builtins.Document;
@@ -56,6 +46,7 @@ import ecologylab.semantics.namesandnums.SemanticsAssetVersions;
 import ecologylab.semantics.seeding.Seed;
 import ecologylab.semantics.seeding.SeedSet;
 import ecologylab.semantics.seeding.SemanticsPrefs;
+import ecologylab.serialization.TranslationScope;
 
 /**
  * @author andruid
@@ -103,10 +94,15 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 	TNGGlobalCollections																globalCollections;
 	
 	MetaMetadataRepository															metaMetadataRepository;
+	
+	TranslationScope																		metadataTranslationScope;
 
-	public NewInfoCollector(Scope sessionScope)
+
+	public NewInfoCollector(MetaMetadataRepository metaMetadataRepository, TranslationScope metadataTranslationScope, Scope sessionScope)
 	{
 		super();
+		this.metaMetadataRepository				= metaMetadataRepository;
+		this.metadataTranslationScope			= metadataTranslationScope;
 
 		TermVector piv 	= InterestModel.getPIV(); 
 		piv.addObserver(this);
@@ -152,7 +148,7 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 	
 	public NewInfoCollector()
 	{
-		this(new Scope());
+		this(null, null, new Scope());
 	}	
 	
 	InteractiveSpace														interactiveSpace;
@@ -1194,5 +1190,15 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
   	return (guiBridge != null) ? guiBridge.getAppropriateFontIndex() : -1;
   }
   
+	public MetaMetadataRepository getMetaMetadataRepository()
+	{
+		return metaMetadataRepository;
+	}
+
+	public TranslationScope getMetadataTranslationScope()
+	{
+		return metadataTranslationScope;
+	}
+
 
 }

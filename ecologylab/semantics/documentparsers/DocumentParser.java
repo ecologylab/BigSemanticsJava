@@ -108,7 +108,7 @@ abstract public class DocumentParser
 		this.infoCollector = infoCollector;
 	}
 	
-	public abstract void parse ( ) throws IOException;
+	public abstract Document parse ( ) throws IOException;
 
 
 	/**
@@ -118,7 +118,7 @@ abstract public class DocumentParser
 	 * @param metadata TODO
 	 * @param infoCollector
 	 */
-	protected void fillValues ( PURLConnection purlConnection, Document metadata, NewInfoCollector infoCollector )
+	public void fillValues ( PURLConnection purlConnection, Document metadata, NewInfoCollector infoCollector )
 	{
 		this.purlConnection = purlConnection;
 		setInfoCollector(infoCollector);

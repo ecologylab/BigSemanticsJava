@@ -4,26 +4,28 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.connectors.old.InfoCollector;
-import ecologylab.semantics.connectors.old.OldContainerI;
+import ecologylab.semantics.connectors.NewInfoCollector;
 import ecologylab.semantics.html.DOMFragmentInformationTagger;
 import ecologylab.semantics.html.ImgElement;
 import ecologylab.semantics.html.TidyInterface;
+import ecologylab.semantics.metadata.builtins.Document;
 
-public class HTMLFragmentDOMParser<C extends OldContainerI> extends HTMLDOMParser<C, InfoCollector<C>> implements TidyInterface
+public class HTMLFragmentDOMParser
+extends HTMLDOMParser
+implements TidyInterface
 {
 
 	InputStream fragmentStream;
 	public DOMFragmentInformationTagger taggedDoc;
 	
-	public HTMLFragmentDOMParser(InfoCollector<C> infoCollector, InputStream inputStream)
+	public HTMLFragmentDOMParser(NewInfoCollector infoCollector, InputStream inputStream)
 	{
 		super(infoCollector);
 		fragmentStream = inputStream;
 		parse();
 	}
 	
-	public void postParse()
+	public Document doParse()
 	{
 		taggedDoc = new DOMFragmentInformationTagger(tidy.getConfiguration(), null, this);
 		taggedDoc.generateCollections(this);

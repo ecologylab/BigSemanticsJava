@@ -27,7 +27,7 @@ import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.actions.SemanticActionsKeyWords;
 import ecologylab.semantics.connectors.LinkedMetadataMonitor;
-import ecologylab.semantics.connectors.old.InfoCollector;
+import ecologylab.semantics.connectors.NewInfoCollector;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.DocumentParserTagNames;
 import ecologylab.semantics.metadata.Metadata;
@@ -69,19 +69,12 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 
 	protected ParsedURL	truePURL;
 
-	public ParserBase(InfoCollector infoCollector)
+	public ParserBase(NewInfoCollector infoCollector)
 	{
 		super(infoCollector);
 		xpath = XPathFactory.newInstance().newXPath();
 	}
 
-	/**
-	 * @return the metadataTranslationScope
-	 */
-	public TranslationScope getMetadataTranslationScope()
-	{
-		return container.getGeneratedMetadataTranslationScope();
-	}
 
 	/**
 	 * populate associated metadata with the container and handler.
@@ -94,16 +87,16 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 	/**
 	 * (1) Populate Metadata. (2) Rebuild composite term vector. (3) Take semantic actions.
 	 */
-	protected final void postParse()
+	protected final Document doParse()
 	{
-		super.postParse();
+		super.doParse();
 
 		// init
 		SemanticActionHandler handler = new SemanticActionHandler(infoCollector, this);
 		handler.getSemanticActionVariableMap().put(SemanticActionsKeyWords.PURLCONNECTION_MIME,
 				purlConnection.mimeType());
 		instantiateMetaMetadataVariables(handler);
-		truePURL = container.location();
+		truePURL = getDocument().getLocation();
 
 		// build the metadata object
 		Metadata populatedMetadata = populateMetadata(handler);
@@ -111,7 +104,7 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 
 		try
 		{
-			debug("Metadata parsed from: " + container.location());
+			debug("Metadata parsed from: " + getDocument().getLocation());
 			if (populatedMetadata != null)
 			{
 				debug(populatedMetadata.serialize());
@@ -121,7 +114,7 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return;
+			return null;
 		}
 
 		// FIXME -- should be able to get rid of this step here. its way too late!
@@ -498,7 +491,7 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 		int size = helper.getListSize();
 
 		// get class of elements in the collection
-		TranslationScope tscope = getMetadataTranslationScope();
+		TranslationScope tscope = infoCollector.getMetadataTranslationScope();
 		Class elementClass = null;
 		MetadataScalarScalarType scalarType = null;
 		if (mmdField.isChildEntity())
@@ -724,7 +717,7 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 		Document populatedMetadata = null;
 		try
 		{
-			populatedMetadata = (Document) getMetadataTranslationScope()
+			populatedMetadata = (Document) infoCollector.getMetadataTranslationScope()
 					.deserialize(purlConnection, this);
 			populatedMetadata.serialize(System.out);
 			System.out.println();

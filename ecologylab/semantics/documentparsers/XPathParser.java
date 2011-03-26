@@ -3,10 +3,9 @@
  */
 package ecologylab.semantics.documentparsers;
 
-import ecologylab.semantics.actions.SemanticAction;
 import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.actions.SemanticActionsKeyWords;
-import ecologylab.semantics.connectors.old.InfoCollector;
+import ecologylab.semantics.connectors.NewInfoCollector;
 import ecologylab.semantics.metadata.builtins.Document;
 
 /**
@@ -18,7 +17,7 @@ public class XPathParser extends ParserBase implements
 		SemanticActionsKeyWords
 {
 
-	public XPathParser(InfoCollector infoCollector)
+	public XPathParser(NewInfoCollector infoCollector)
 	{
 		super(infoCollector);
 	}

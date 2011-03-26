@@ -27,6 +27,7 @@ import ecologylab.semantics.html.documentstructure.RecognizedDocumentStructure;
 import ecologylab.semantics.html.documentstructure.TextOnlyPage;
 import ecologylab.semantics.html.utils.HTMLAttributeNames;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
+import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.serialization.XMLTools;
 
 
@@ -36,8 +37,8 @@ import ecologylab.serialization.XMLTools;
  * @author eunyee
  *
  */
-public class HTMLDOMImageTextParser<C extends OldContainerI>
-extends HTMLDOMParser<C, InfoCollector<C>>
+public class HTMLDOMImageTextParser
+extends HTMLDOMParser
 implements TidyInterface, HTMLAttributeNames
 {
 	public HTMLDOMImageTextParser(InfoCollector infoCollector)	// this is of type In
@@ -64,7 +65,7 @@ implements TidyInterface, HTMLAttributeNames
 //		}	
 //	}
 	@Override
-	protected void postParse()
+	protected Document doParse()
 	{
 		DOMWalkInformationTagger taggedDoc = new DOMWalkInformationTagger(tidy.getConfiguration(), purlConnection.getPurl(), this);
 		// this function actually traverse the dom tree

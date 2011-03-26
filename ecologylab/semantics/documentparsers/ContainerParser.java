@@ -44,11 +44,6 @@ extends DocumentParser
 		  this.searchSeed			= searchSeed;
 	}
 
-	protected C container()
-	{
-		return container;
-	}
-
 	/**
 	 * Return true if this DocumentType is a Container.
 	 * 

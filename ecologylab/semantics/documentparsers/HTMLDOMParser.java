@@ -11,8 +11,8 @@ import ecologylab.appframework.types.prefs.PrefBoolean;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.generic.StringTools;
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.connectors.NewInfoCollector;
 import ecologylab.semantics.connectors.old.AbstractImgElement;
-import ecologylab.semantics.connectors.old.InfoCollector;
 import ecologylab.semantics.connectors.old.OldContainerI;
 import ecologylab.semantics.html.ImgElement;
 import ecologylab.semantics.html.ParagraphText;
@@ -44,7 +44,7 @@ public class HTMLDOMParser
 
 	protected Tidy								tidy	= new Tidy();
 
-	public HTMLDOMParser(IC infoCollector)
+	public HTMLDOMParser(NewInfoCollector infoCollector)
 	{
 		super(infoCollector);
 		tidy.setQuiet(true);
@@ -84,9 +84,9 @@ public class HTMLDOMParser
 	 * Andruid says: NEVER override this method when you parse HTML. Instead, override postParse().
 	 */
 	@Override
-	public void parse()
+	public final Document parse()
 	{
-		// HTMLDOMParser domParser = new HTMLDOMParser();
+		Document result	= null;
 		try
 		{
 			// we dont build a tidy for for direct binding
@@ -97,22 +97,23 @@ public class HTMLDOMParser
 
 			// SimpleTimer.get("fetching_and_rendering.log").finishTiming(getContainer());
 
-			postParse();
+			doParse();
 		}
 		catch (Exception e)
 		{
-			debug("ERROR: while parsing document - " + getContainer().location());
+			debug("ERROR: while parsing document - " + getDocument().location());
 			e.printStackTrace();
 		}
 		finally
 		{
 			recycle();
 		}
+		return null;
 	}
 
-	protected void postParse()
+	protected Document doParse()
 	{
-
+		return null;
 	}
 
 	public void recycle()

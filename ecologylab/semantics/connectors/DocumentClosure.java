@@ -182,7 +182,12 @@ implements TermVectorFeature, Downloadable
 			if (documentParser.downloadingMessageOnConnect())
 				infoCollector.displayStatus("Downloading " + location(), 2);
 
-			documentParser.parse();
+			Document result	= documentParser.parse();
+			if (result != null && result != document)
+			{
+				// need to swap!
+				
+			}
 			parsing					= false;
 									
 		 	if(Pref.lookupBoolean(CFPrefNames.CRAWL_CAREFULLY) && !documentParser.cacheHit) //infoCollector.getCrawlingSlow() && 
@@ -725,21 +730,7 @@ implements TermVectorFeature, Downloadable
 	{
 		return document == null ? "recycled" : document.getLocation().toString();
 	}
-	
-	/**
-	 * Free resources associated with the connection.
-	 */
-	public void connectionRecycle ( )
-	{
-		// parsing done. now free resources asap to avert leaking and memory fragmentation
-		// (this is a known problem w java.net.HttpURLConnection)
-		PURLConnection purlConnection = this.purlConnection;
-		if (purlConnection != null)
-		{
-			purlConnection.recycle();
-			this.purlConnection = null;
-		}
-	}
+
 
 
 }

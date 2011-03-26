@@ -19,7 +19,7 @@ public class DirectBindingParser
 		extends ParserBase
 {
 
-	public DirectBindingParser(InfoCollector infoCollector)
+	public DirectBindingParser(NewInfoCollector infoCollector)
 	{
 		super(infoCollector);
 	}

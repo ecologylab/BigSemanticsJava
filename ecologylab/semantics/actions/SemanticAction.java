@@ -78,7 +78,7 @@ public abstract class SemanticAction<IC extends InfoCollector, SAH extends Seman
 	@simpl_scalar
 	private String										error;
 
-	protected IC											infoCollector;
+	protected NewInfoCollector				infoCollector;
 
 	protected SAH											semanticActionHandler;
 
@@ -197,7 +197,7 @@ public abstract class SemanticAction<IC extends InfoCollector, SAH extends Seman
 		this.error = error;
 	}
 
-	public void setInfoCollector(IC infoCollector)
+	public void setInfoCollector(NewInfoCollector infoCollector)
 	{
 		this.infoCollector = infoCollector;
 	}
