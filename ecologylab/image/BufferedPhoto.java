@@ -4,7 +4,7 @@
 package ecologylab.image;
 
 import java.awt.Dimension;
-import java.awt.image.*;
+import java.awt.image.BufferedImage;
 
 /*
  * Create this constructor for Buffered Images, which do not need to download. 

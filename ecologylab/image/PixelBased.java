@@ -703,7 +703,7 @@ implements Downloadable
 		return purl.url();
 	}
 	/* return ParsedURL */
-	public ParsedURL purl()
+	public ParsedURL location()
 	{
 		return purl;
 	}

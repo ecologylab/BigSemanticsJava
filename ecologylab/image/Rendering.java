@@ -17,7 +17,6 @@ import java.awt.image.SampleModel;
 import java.awt.image.SinglePixelPackedSampleModel;
 import java.awt.image.WritableRaster;
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 
 import ecologylab.generic.Colors;
 import ecologylab.generic.Debug;
@@ -160,7 +159,7 @@ implements Colors
 			BufferedImage newImage	= createNewBufferedImage(dataBuffer);			
 			this.bufferedImage		= newImage;
 			
-			debug("fixPixels() copying!! " + pixelBased.purl());
+			debug("fixPixels() copying!! " + pixelBased.location());
 			ImageTools.copyImage(oldImage, newImage);
 			
 			// now that the copy is done, we can do the flush()!

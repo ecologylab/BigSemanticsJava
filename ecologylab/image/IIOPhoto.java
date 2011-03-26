@@ -6,7 +6,6 @@ package ecologylab.image;
 
 import java.awt.Dimension;
 import java.awt.GraphicsConfiguration;
-import java.awt.Transparency;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.DataBuffer;
@@ -23,7 +22,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
-import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -33,15 +31,12 @@ import javax.imageio.ImageReader;
 import javax.imageio.ImageTypeSpecifier;
 import javax.imageio.stream.ImageInputStream;
 
-import ecologylab.appframework.EnvironmentGeneric;
 import ecologylab.collections.CollectionTools;
-import ecologylab.concurrent.DownloadMonitor;
 import ecologylab.generic.DispatchTarget;
 import ecologylab.io.Assets;
 import ecologylab.io.AssetsRoot;
 import ecologylab.io.BasicSite;
 import ecologylab.io.Downloadable;
-import ecologylab.io.Files;
 import ecologylab.net.ConnectionAdapter;
 import ecologylab.net.PURLConnection;
 import ecologylab.net.ParsedURL;
