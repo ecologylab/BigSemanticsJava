@@ -4,14 +4,22 @@ import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.model.text.CompositeTermVector;
 import ecologylab.semantics.model.text.ITermVector;
 
+//TODO -- make serializable!
 
 @SuppressWarnings("serial")
 public class SemanticInLinks extends ConcurrentHashMap<ParsedURL, SemanticAnchor> implements Iterable<SemanticAnchor>
 {
-	CompositeTermVector semanticInlinkCollection;
+	private CompositeTermVector semanticInlinkCollection;
+	
+	private Document 	ancestor;
+	
+	private int				generation;
+	
+	private boolean		fromSemanticAction;
 	
 	public SemanticInLinks()
 	{
@@ -49,8 +57,16 @@ public class SemanticInLinks extends ConcurrentHashMap<ParsedURL, SemanticAnchor
 	public synchronized boolean add(SemanticAnchor newAnchor)
 	{
 		SemanticAnchor oldAnchor	= putIfAbsent(newAnchor.sourcePurl(), newAnchor);
-		if (oldAnchor == null)	//TODO -- should we count and incorporate new terms?!
-			semanticInlinkCollection().add(newAnchor.significance, newAnchor.termVector());
+		if (oldAnchor == null)	
+		{
+			semanticInlinkCollection().add(newAnchor.getSignificance(), newAnchor.termVector());
+			if (newAnchor.fromSemanticAction())
+				fromSemanticAction	= true;
+		}
+		else
+		{
+			//TODO -- should we count and incorporate new terms?!
+		}
 		return true;
 	}
 
@@ -87,5 +103,26 @@ public class SemanticInLinks extends ConcurrentHashMap<ParsedURL, SemanticAnchor
 	public Iterator<SemanticAnchor> iterator() 
 	{
 		return values().iterator();
+	}
+
+	/**
+	 * @return the ancestor
+	 */
+	public Document getAncestor()
+	{
+		return ancestor;
+	}
+
+	/**
+	 * @return the generation
+	 */
+	public int getGeneration()
+	{
+		return generation;
+	}
+	
+	public int getEffectiveGeneration()
+	{
+		return fromSemanticAction ? (ancestor != null ? ancestor.getGeneration() : 0) : generation;
 	}
 }

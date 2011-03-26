@@ -1,7 +1,6 @@
-package ecologylab.semantics.connectors;
+package ecologylab.semantics.connectors.old;
 
 import ecologylab.collections.SetElement;
-import ecologylab.generic.ReflectionTools;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.model.text.TermVectorFeature;
 

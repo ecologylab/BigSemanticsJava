@@ -3,7 +3,6 @@
  */
 package ecologylab.semantics.metadata.scalar.types;
 
-import ecologylab.semantics.metadata.scalar.MetadataInteger;
 import ecologylab.semantics.metadata.scalar.MetadataStringBuilder;
 import ecologylab.serialization.ScalarUnmarshallingContext;
 

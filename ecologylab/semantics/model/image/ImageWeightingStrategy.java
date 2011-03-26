@@ -1,7 +1,7 @@
 package ecologylab.semantics.model.image;
 
 import ecologylab.collections.WeightingStrategy;
-import ecologylab.semantics.connectors.AbstractImgElement;
+import ecologylab.semantics.connectors.old.AbstractImgElement;
 
 /**
  * This strategy uses mediaWeight from AbstractImgElement to sort all the elements in the set.

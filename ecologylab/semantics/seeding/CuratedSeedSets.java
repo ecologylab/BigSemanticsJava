@@ -5,9 +5,8 @@ import java.util.ArrayList;
 
 import ecologylab.appframework.ApplicationEnvironment;
 import ecologylab.io.Assets;
-import ecologylab.semantics.connectors.CFPrefNames;
-import ecologylab.semantics.connectors.InfoCollectorBase;
-import ecologylab.semantics.connectors.SemanticsAssetVersions;
+import ecologylab.semantics.namesandnums.CFPrefNames;
+import ecologylab.semantics.namesandnums.SemanticsAssetVersions;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.TranslationScope;
@@ -34,6 +33,7 @@ implements CFPrefNames
 		super();
 	}
 	
+	//TODO -- don't use getElementStateById; instead use @simpl_map
 	public static SeedSet lookup(String id)
 	{
 		if (singleton == null)

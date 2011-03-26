@@ -1,7 +1,7 @@
 /**
  * 
  */
-package ecologylab.semantics.connectors;
+package ecologylab.semantics.connectors.old;
 
 import java.io.IOException;
 
@@ -13,7 +13,6 @@ import ecologylab.semantics.html.ParagraphText;
 import ecologylab.semantics.html.documentstructure.SemanticAnchor;
 import ecologylab.semantics.html.documentstructure.SemanticInLinks;
 import ecologylab.semantics.metadata.builtins.Document;
-import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.seeding.QandDownloadable;
 import ecologylab.semantics.seeding.SearchResult;
 import ecologylab.semantics.seeding.Seed;
@@ -24,7 +23,7 @@ import ecologylab.serialization.TranslationScope;
  * @author andruid
  * 
  */
-public abstract class Container<IC extends InfoCollector> extends ContentElement<Document>
+public abstract class OldContainerI<IC extends InfoCollector> extends ContentElement<Document>
 implements QandDownloadable
 {
 	DocumentParser 	parser;
@@ -33,13 +32,13 @@ implements QandDownloadable
 	
 //	Container				ancestor;
 	
-	public Container(ContentElement progenitor, IC infoCollector)
+	public OldContainerI(ContentElement progenitor, IC infoCollector)
 	{
 		super(progenitor);
 		this.infoCollector	= infoCollector;
 	}
 
-	public abstract void  redirectInlinksTo(Container redirectedAbstractContainer);
+	public abstract void  redirectInlinksTo(OldContainerI redirectedAbstractContainer);
 
 	/**
 	 * This method performs the downloading action. It first calls the DocumentParser.connect() method
@@ -53,7 +52,7 @@ implements QandDownloadable
 		// calls connect to find the right parser, then calls the infocollector to download the content
 		// also process the semantic actions
 		
-		parser = DocumentParser.connect(purl(), this, infoCollector);
+		parser = DocumentParser.connect(location(), this, infoCollector);
 		if (parser != null)
 			parser.parse();
 	}
@@ -66,7 +65,7 @@ implements QandDownloadable
 	{
 		return parser;
 	}
-	public abstract ParsedURL purl();
+	public abstract ParsedURL location();
 
 	abstract public TranslationScope getGeneratedMetadataTranslationScope();
 
@@ -135,15 +134,13 @@ implements QandDownloadable
 	
 	abstract public int numLocalCandidates();
 	
-	abstract public boolean addSemanticInLink(SemanticAnchor newAnchor, Container srcContainer);
+	abstract public boolean addSemanticInLink(SemanticAnchor newAnchor, OldContainerI srcContainer);
 	
-	abstract public void addCandidateContainer (Container newContainer );
+	abstract public void addCandidateContainer (OldContainerI newContainer );
 	
 	public abstract boolean isSeed();
 	
 	public abstract Seed getSeed();
-	
-	abstract public void setInArticleBody(boolean value);
 	
 	abstract public BasicSite site();
 	
@@ -152,7 +149,7 @@ implements QandDownloadable
 		return null;
 	}
 
-	public Container ancestor()
+	public OldContainerI ancestor()
 	{
 		return null;
 	}

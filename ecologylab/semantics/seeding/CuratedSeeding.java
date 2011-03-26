@@ -2,8 +2,8 @@ package ecologylab.semantics.seeding;
 
 import java.io.File;
 
-import ecologylab.semantics.connectors.InfoCollector;
-import ecologylab.semantics.connectors.SemanticsSessionObjectNames;
+import ecologylab.semantics.connectors.old.InfoCollector;
+import ecologylab.semantics.namesandnums.SemanticsSessionObjectNames;
 import ecologylab.serialization.simpl_inherit;
 
 /**
@@ -76,23 +76,6 @@ implements SemanticsSessionObjectNames
 		return name;
 	}
 
-	/**
-	 * @return
-	 */
-	public String categoryString()
-	{
-		// TODO Auto-generated method stub
-		return "curated_seeding";
-	}
-
-	/**
-	 * @param value
-	 */
-	public void setCategory(String value)
-	{
-	// TODO Auto-generated method stub
-
-	}
 
 	/**
 	 * @param value
@@ -104,14 +87,6 @@ implements SemanticsSessionObjectNames
 		return false;
 	}
 
-	/**
-	 * @return
-	 */
-	public String detailedCategoryString()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	public boolean canChangeVisibility()
 	{

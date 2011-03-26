@@ -1,12 +1,12 @@
 /**
  * 
  */
-package ecologylab.semantics.connectors;
+package ecologylab.semantics.seeding;
 
 import java.util.ArrayList;
 
 import ecologylab.collections.Scope;
-import ecologylab.semantics.seeding.Seed;
+import ecologylab.semantics.connectors.old.OldContainerI;
 
 /**
  * Encapsulates application-specific funtionality that must be associated with each Seed.
@@ -14,7 +14,7 @@ import ecologylab.semantics.seeding.Seed;
  * @author andruid
  *
  */
-abstract public class SeedPeer<SP extends SeedPeer, C extends Container, I, T, S>
+abstract public class SeedPeer<SP extends SeedPeer, C extends OldContainerI, I, T, S>
 {
 	Seed						seed;
 	

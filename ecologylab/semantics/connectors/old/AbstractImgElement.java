@@ -1,4 +1,4 @@
-package ecologylab.semantics.connectors;
+package ecologylab.semantics.connectors.old;
 
 import ecologylab.collections.AbstractSetElement;
 import ecologylab.generic.IFeatureVector;

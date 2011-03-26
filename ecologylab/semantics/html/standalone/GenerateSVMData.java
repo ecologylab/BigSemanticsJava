@@ -1,17 +1,9 @@
 package ecologylab.semantics.html.standalone;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
 
 import org.w3c.tidy.DOMDocumentImpl;
 import org.w3c.tidy.Out;
@@ -21,9 +13,6 @@ import org.w3c.tidy.TdNode;
 
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.html.DOMWalkInformationTagger;
-import ecologylab.serialization.ElementState;
-import ecologylab.serialization.SIMPLTranslationException;
-import ecologylab.serialization.TranslationScope;
 
 
 /**

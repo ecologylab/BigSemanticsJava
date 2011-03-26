@@ -1,6 +1,6 @@
 package ecologylab.semantics.metadata.scalar.types;
 
-import ecologylab.semantics.metadata.builtins.Image;
+import ecologylab.semantics.metadata.builtins.ImageClipping;
 import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.ScalarUnmarshallingContext;
@@ -27,7 +27,7 @@ public class MetadataStringScalarType extends MetadataScalarScalarType<MetadataS
 	{
 		MetadataScalarScalarType.init();
 		
-		Image i	= new Image();
+		ImageClipping i	= new ImageClipping();
 		i.setCaption("a nice caption.");
 		i.setContext("A much, much longer context");
 		

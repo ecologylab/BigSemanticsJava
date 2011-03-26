@@ -23,7 +23,7 @@ public class SemanticInLinksWeightStrategy extends TermVectorWeightStrategy<Sema
 	@Override
 	public double getWeight(SemanticAnchor anchor)
 	{
-		return super.getWeight(anchor) * anchor.significance;
+		return super.getWeight(anchor) * anchor.getSignificance();
 	}
 
 }

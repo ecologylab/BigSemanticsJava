@@ -16,7 +16,7 @@ import java.util.zip.ZipInputStream;
 import ecologylab.appframework.ApplicationProperties;
 import ecologylab.collections.CollectionTools;
 import ecologylab.io.Assets;
-import ecologylab.semantics.connectors.SemanticsAssetVersions;
+import ecologylab.semantics.namesandnums.SemanticsAssetVersions;
 
 public class TermDictionary implements ApplicationProperties
 {

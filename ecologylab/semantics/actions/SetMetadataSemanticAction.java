@@ -3,13 +3,11 @@
  */
 package ecologylab.semantics.actions;
 
-import java.util.Map;
-
-import ecologylab.semantics.connectors.ContentElement;
-import ecologylab.semantics.connectors.InfoCollector;
+import ecologylab.semantics.connectors.old.ContentElement;
+import ecologylab.semantics.connectors.old.InfoCollector;
 import ecologylab.semantics.metadata.Metadata;
-import ecologylab.serialization.simpl_inherit;
 import ecologylab.serialization.ElementState.xml_tag;
+import ecologylab.serialization.simpl_inherit;
 
 /**
  * @author amathur

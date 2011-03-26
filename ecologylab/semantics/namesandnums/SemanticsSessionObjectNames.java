@@ -1,4 +1,4 @@
-package ecologylab.semantics.connectors;
+package ecologylab.semantics.namesandnums;
 
 import ecologylab.oodss.distributed.common.SessionObjects;
 

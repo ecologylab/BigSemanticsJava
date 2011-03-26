@@ -7,7 +7,6 @@ import java.lang.reflect.Field;
 
 import ecologylab.generic.ReflectionTools;
 import ecologylab.semantics.metadata.scalar.MetadataScalarBase;
-import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.serialization.ScalarUnmarshallingContext;
 import ecologylab.serialization.types.scalar.ReferenceType;
 import ecologylab.serialization.types.scalar.ScalarType;

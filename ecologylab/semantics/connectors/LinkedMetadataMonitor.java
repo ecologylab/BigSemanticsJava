@@ -7,7 +7,6 @@ import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metametadata.LinkWith;
 import ecologylab.semantics.metametadata.MetaMetadata;
-import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 
 public class LinkedMetadataMonitor

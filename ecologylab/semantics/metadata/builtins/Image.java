@@ -1,12 +1,10 @@
 package ecologylab.semantics.metadata.builtins;
 
 import java.io.File;
-import java.util.HashMap;
 
 import ecologylab.net.MimeType;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.html.documentstructure.ImageConstants;
-import ecologylab.semantics.metadata.scalar.MetadataFile;
 import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.serialization.simpl_inherit;

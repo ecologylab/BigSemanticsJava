@@ -3,10 +3,10 @@ package ecologylab.semantics.metametadata;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.DocumentParserTagNames;
+import ecologylab.serialization.ElementState.xml_tag;
 import ecologylab.serialization.TranslationScope;
 import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.simpl_inherit;
-import ecologylab.serialization.ElementState.xml_tag;
 
 @simpl_inherit
 @xml_tag("collection")

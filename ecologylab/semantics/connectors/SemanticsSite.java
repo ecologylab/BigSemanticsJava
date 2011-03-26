@@ -3,14 +3,14 @@
  */
 package ecologylab.semantics.connectors;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.HashMap;
+import java.awt.Color;
+import java.util.concurrent.ConcurrentHashMap;
 
-import ecologylab.generic.HashMapWriteSynch2Args;
-import ecologylab.generic.ValueFactory2;
+import ecologylab.generic.Colors;
+import ecologylab.generic.Palette;
 import ecologylab.io.BasicSite;
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.serialization.simpl_inherit;
 
 /**
@@ -21,8 +21,9 @@ import ecologylab.serialization.simpl_inherit;
  */
 @simpl_inherit
 public class SemanticsSite extends BasicSite
+implements Colors
 {
-	static HashMapWriteSynch2Args<String, SemanticsSite, InfoCollector>	allSites	= new HashMapWriteSynch2Args<String, SemanticsSite, InfoCollector>(50);
+	static ConcurrentHashMap<String, SemanticsSite> allSites	= new ConcurrentHashMap(50);
 
 	/**
 	 * true if any Container from this Site is a Seed.
@@ -34,13 +35,7 @@ public class SemanticsSite extends BasicSite
 	static final double MAX_SURROGATES_FROM_SITE = 25.0;
 	
 	static final double NON_SEED_FACTOR						= .25;
-	
-	/**
-	 * For counting images that function visually, not spacers, headers,
-	 * and nav.
-	 */
-	protected int			numImgs = 0;
-	protected int			numText = 0;
+
 
 	int								downloadsInProgress;
 	
@@ -67,19 +62,17 @@ public class SemanticsSite extends BasicSite
 	private int	numSurrogatesFromSite	= 1;
 
 	private int	numContainers;
-	
-	private static final String 	ROUTER_PREFIX = "http://csdll.cs.tamu.edu:9080";
-	//TODO un-hard code the 48 in the next line!
-	private static final int 	ROUTER_PREFIX_OFFSET = 48;
-
 
 	/**
 	 * 
 	 * @param domain
+	 * @param infoCollector TODO
 	 */
-	public SemanticsSite(String domain)
+	public SemanticsSite(String domain, NewInfoCollector infoCollector)
 	{
 		this.domain = domain;
+		strokeHue		= nextStrokeHue();
+		fontIndex		= infoCollector.getAppropriateFontIndex();
 	}
 	
 	/**
@@ -87,123 +80,31 @@ public class SemanticsSite extends BasicSite
 	 */
 	public SemanticsSite()
 	{
-		// TODO Auto-generated constructor stub
+
 	}
 
-	public static SemanticsSite getSite(ParsedURL purl, InfoCollector infoCollector)
-	{
-		return getSite(purl.domain(), infoCollector);
-	}
 
-	public static SemanticsSite getSite(Container container, InfoCollector infoCollector)
+	public static SemanticsSite getOrConstruct(Document document, NewInfoCollector infoCollector) 
 	{
-		ParsedURL parsedURL	= container.purl();
-
+		ParsedURL parsedURL	= document.getLocation();
+		String domain				= parsedURL.domain();
 		SemanticsSite result	= null;
-
-		if (parsedURL != null)
+		if (domain != null)
 		{
-			if( parsedURL.toString().startsWith(ROUTER_PREFIX))
+			result							= allSites.get(domain);
+			if (result == null) 
 			{
-				try
+				// record does not yet exist
+				SemanticsSite newRec	= new SemanticsSite(domain, infoCollector);
+				result = allSites.putIfAbsent(domain, newRec);
+				if (result == null)
 				{
-					// hack for user studies that use the router
-					parsedURL = new ParsedURL(new URL("http://"+parsedURL.toString().substring(ROUTER_PREFIX_OFFSET)));
-				} catch (MalformedURLException e)
-				{
-					e.printStackTrace();
+					// put succeeded, use new value
+					result = newRec;
 				}
-			}
-			String domain = parsedURL.domain();   	
-			if( domain == null )
-			{
-			}
-			else
-			{
-				result		= getSite(domain, infoCollector);
-				if (container.isSeed())
-					result.isSeed	= true;
-				
-				result.addToIndex(container);
 			}
 		}
 		return result;
-	}
-	
-	/**
-	 * @param domain    a String already parsed by StringTools. Must not be null.
-	 * @param infoCollector TODO
-	 * @return a <code>Site</code>, either a new one, or a matching
-	 *    existing one.
-	 */
-	public static SemanticsSite getSite(String domain, InfoCollector infoCollector)
-	{
-		if (domain == null)
-		{
-			println("domain is null ?? ");
-			return null;
-		}
-		else
-		{
-			SemanticsSite result	= allSites.getOrCreateAndPutIfNew(domain, infoCollector);
-			return result;
-		}
-	}
-	
-
-	/**
-	 * Set the mechanism for instantiating new Site objects, in case you want to use a subclass.
-	 * 
-	 * @param siteValueFactory
-	 */
-	public static void setSiteValueFactory(ValueFactory2<String, SemanticsSite, InfoCollector> siteValueFactory)
-	{
-		allSites.setFactory(siteValueFactory);
-	}
-	
-	public void enteringComposition()
-	{
-		numElementsInComposition++;
-	}
-
-	public void exitingComposition()
-	{
-		numElementsInComposition--;
-	}
-	
-	/**
-	 * Insert a Container into the inverted index. This maintains a list of sites, and their 
-	 * associated containers. 
-	 * 
-	 * @param container
-	 */
-	protected void addToIndex(Container container)
-	{
-	}
-
-	/**
-	 * Remove Container from inverted index, except this doesn't keep one, so do nothing.
-	 * 
-	 * @param container
-	 */
-	public void removeFromIndex(Container container)
-	{
-	}
-
-	/**
-	 * For use only by cm.state for restoring saved values.
-	 */
-	public void setDomain(String domain)
-	{
-		this.domain	= domain;
-	}
-
-	/**
-	 * removes itself from the allSites hash so it can be recreated if needs be
-	 */
-	protected void removeFromGlobal()
-	{
-		allSites.remove(this.domain());
 	}
 
 	public void newCandidateImage (boolean inArticleBody )
@@ -300,23 +201,120 @@ public class SemanticsSite extends BasicSite
 	{
 		return isSeed;
 	}
-	
-	/* return number of elements per site */
-	public int numElements()
-	{
-		return (numImgs+numText);
-	}
-	public int numImgs()
-	{
-		return numImgs;
-	}
-	public int numTexts()
-	{
-		return numText;
-	}
+
 	
 	public static void addSite(SemanticsSite site)
 	{
 		allSites.put(site.domain(), site);
 	}
+	
+	
+	
+	///////////////////////////////////////// text color stuff //////////////////////////////////////////////////////
+	private float		strokeHue;
+	private int			fontIndex;
+
+	final Color[] strokeColors			= new Color[MAX_GENERATIONS];
+
+	static final int 			MAX_INTENSITY	= 1024;
+
+	static float strokeHues[] = 
+	{
+		YELLOW, GREEN, BLUE, RED, ORANGE, MAGENTA,
+		YELLOW_GREEN, RED_ORANGE, BLUE_MAGENTA, CYAN, YELLOW_ORANGE, RED_MAGENTA
+	};
+	static int 	nextStrokeHue	= 0;
+
+	static final float MIN_STROKE_VALUE	= .8f;
+	static final float MAX_STROKE_VALUE	= 1.0f;
+	static final float STEP_STROKE_VALUE	= .005f;
+
+	static final float MIN_STROKE_SAT	= .35f;
+	static final float MAX_STROKE_SAT	= .7f;
+	static final float STEP_STROKE_SAT	= .05f;
+
+	private static float nextStrokeHue()
+	{
+		float result	= strokeHues[nextStrokeHue++];
+		nextStrokeHue    %= strokeHues.length;
+		//	  println("nextStrokeHue="+nextStrokeHue+"\n");
+		return result;
+	}
+
+	public Color getStrokeColor(int generation)
+	{
+		Color result		= null;
+		if (generation < MAX_GENERATIONS)
+			result			= strokeColors[generation];
+		// comment out for too many printouts during buzz which makes interaction really bad
+		// -- eunyee 
+		//	  else
+		//		  debug("WEIRD: generation="+generation);
+		if (result == null)
+		{
+			result			= calculateStrokeColor(generation);
+			//debug("strokeColor(0)="+result);
+			if (generation < MAX_GENERATIONS)
+				strokeColors[generation] = result;
+		}	  
+		return result;
+	}
+	private Color calculateStrokeColor(int generation)
+	{
+		float strokeSat	= MAX_STROKE_SAT - generation*STEP_STROKE_SAT;
+		if (strokeSat < MIN_STROKE_SAT)
+			strokeSat	= MIN_STROKE_SAT;
+		float strokeValue	= MAX_STROKE_VALUE - generation*STEP_STROKE_VALUE;
+		if (strokeValue < MIN_STROKE_VALUE)
+			strokeValue	= MIN_STROKE_VALUE;
+
+		float strokeHue	= this.strokeHue;
+
+
+		if ((strokeHue == MAGENTA) || (strokeHue == GREEN))
+		{
+			strokeSat  -= .1f;
+		}
+		else if ((strokeHue == RED) ||
+				(strokeHue == BLUE_MAGENTA))
+		{
+			strokeSat  -= .18f;
+		}
+		else if (strokeHue == BLUE)
+		{
+			strokeSat  -= .25f;
+		}
+
+		return Palette.hsvColor(strokeHue, strokeSat, strokeValue);
+	}
+
+	public int fontIndex()
+	{
+		return fontIndex;
+	}
+
+	public float strokeHue()
+	{
+		return strokeHue;
+	}
+	/**
+	 * For use only by cm.state for restoring saved values.
+	 */
+	public void setStrokeHue(float strokeHue)
+	{
+		this.strokeHue	= strokeHue;
+	}
+	/**
+	 * For use only by cm.state for restoring saved values.
+	 */
+	public void setFontIndex(int fontIndex)
+	{
+		this.fontIndex	= fontIndex;
+	}
+
+	public String toString()
+	{
+		return "SemanticsSite: " + domain;
+	}
+
 }

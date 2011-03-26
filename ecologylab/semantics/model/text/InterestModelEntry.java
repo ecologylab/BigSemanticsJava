@@ -4,7 +4,6 @@ import java.util.Map.Entry;
 
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.types.element.Mappable;
-import ecologylab.serialization.types.scalar.ScalarType;
 
 public class InterestModelEntry extends ElementState
 implements Mappable<String>

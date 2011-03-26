@@ -3,12 +3,8 @@
  */
 package ecologylab.semantics.seeding;
 
-import ecologylab.semantics.connectors.InfoCollector;
-import ecologylab.semantics.documentparsers.DocumentParser;
-import ecologylab.serialization.ElementState;
+import ecologylab.semantics.connectors.old.InfoCollector;
 import ecologylab.serialization.Hint;
-import ecologylab.serialization.SIMPLTranslationException;
-import ecologylab.serialization.TranslationScope;
 
 /**
  * 
@@ -26,35 +22,6 @@ public class InlineSeed extends Seed
 	{
 
 	}
-
-	/* (non-Javadoc)
-	 * @see cf.state.Seed#setCategory(java.lang.String)
-	 */
-	@Override
-	public void setCategory(String value)
-	{
-		// TODO Auto-generated method stub
-
-	}
-
-	/* (non-Javadoc)
-	 * @see cf.gui.dashboard.DashboardOperand#categoryString()
-	 */
-	public String categoryString()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see cf.gui.dashboard.DashboardOperand#detailedCategoryString()
-	 */
-	public String detailedCategoryString()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	/* (non-Javadoc)
 	 * @see cf.gui.dashboard.DashboardOperand#isDeletable()
 	 */

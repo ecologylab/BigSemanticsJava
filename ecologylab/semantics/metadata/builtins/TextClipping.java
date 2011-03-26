@@ -1,6 +1,5 @@
 package ecologylab.semantics.metadata.builtins;
 
-import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.serialization.simpl_inherit;
@@ -10,7 +9,7 @@ import ecologylab.serialization.simpl_inherit;
  **/
 
 @simpl_inherit
-public class Text extends ClippableMetadata
+public class TextClipping extends Clipping
 {
 
 	@simpl_scalar
@@ -20,7 +19,7 @@ public class Text extends ClippableMetadata
 	 * Constructor
 	 **/
 
-	public Text()
+	public TextClipping()
 	{
 		super();
 	}
@@ -29,7 +28,7 @@ public class Text extends ClippableMetadata
 	 * Constructor
 	 **/
 
-	public Text(MetaMetadataCompositeField metaMetadata)
+	public TextClipping(MetaMetadataCompositeField metaMetadata)
 	{
 		super(metaMetadata);
 	}

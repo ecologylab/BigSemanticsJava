@@ -1,18 +1,14 @@
 package ecologylab.semantics.html.documentstructure;
 
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.TreeMap;
 
 import org.w3c.tidy.TdNode;
 
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.html.HTMLElementTidy;
 import ecologylab.semantics.html.ImgElement;
 import ecologylab.semantics.html.ParagraphText;
 import ecologylab.semantics.html.TidyInterface;
-import ecologylab.semantics.html.utils.StringBuilderUtils;
-import ecologylab.serialization.XMLTools;
 
 
 /**

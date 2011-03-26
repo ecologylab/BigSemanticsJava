@@ -1,10 +1,10 @@
 package ecologylab.semantics.actions;
 
-import ecologylab.semantics.connectors.InfoCollector;
+import ecologylab.semantics.connectors.old.InfoCollector;
 import ecologylab.semantics.seeding.SearchState;
 import ecologylab.semantics.seeding.SeedSet;
-import ecologylab.serialization.simpl_inherit;
 import ecologylab.serialization.ElementState.xml_tag;
+import ecologylab.serialization.simpl_inherit;
 
 @simpl_inherit
 @xml_tag(SemanticActionStandardMethods.SEARCH)

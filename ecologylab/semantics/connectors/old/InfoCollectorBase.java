@@ -1,7 +1,7 @@
 /**
  * 
  */
-package ecologylab.semantics.connectors;
+package ecologylab.semantics.connectors.old;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -31,6 +31,7 @@ import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
+import ecologylab.semantics.namesandnums.SemanticsAssetVersions;
 import ecologylab.semantics.seeding.Seed;
 import ecologylab.semantics.seeding.SeedDistributor;
 import ecologylab.semantics.seeding.SeedSet;
@@ -40,8 +41,8 @@ import ecologylab.semantics.seeding.SemanticsPrefs;
  * @author amathur
  * 
  */
-public abstract class InfoCollectorBase<AC extends Container> extends	Debug 
-implements InfoCollector<AC>, SemanticsPrefs, ApplicationProperties, DocumentParserTagNames
+public abstract class InfoCollectorBase<AC extends OldContainerI> extends	Debug 
+implements SemanticsPrefs, ApplicationProperties, DocumentParserTagNames, InfoCollector<AC>
 {
 
 	/**
@@ -155,7 +156,7 @@ implements InfoCollector<AC>, SemanticsPrefs, ApplicationProperties, DocumentPar
 	 * 
 	 * It sometimes gets paused by GoogleSearch to promote downloading of search results.
 	 */
-	protected static final DownloadMonitor			crawlerDownloadMonitor				= new DownloadMonitor<Container>("WebCrawler", NUM_CRAWLER_DOWNLOAD_THREADS, 0);
+	protected static final DownloadMonitor			crawlerDownloadMonitor				= new DownloadMonitor<OldContainerI>("WebCrawler", NUM_CRAWLER_DOWNLOAD_THREADS, 0);
 
 	static final int														NUM_SEEDING_DOWNLOAD_THREADS	= 4;
 
@@ -163,12 +164,12 @@ implements InfoCollector<AC>, SemanticsPrefs, ApplicationProperties, DocumentPar
 	 * This is the <code>DownloadMonitor</code> used by to process drag and drop operations. It gets
 	 * especially high priority, in order to provide rapid response to the user.
 	 */
-	protected static final DownloadMonitor			dndDownloadMonitor						= new DownloadMonitor<Container>("Dnd", InfoCollectorBase.NUM_SEEDING_DOWNLOAD_THREADS, 6);
+	protected static final DownloadMonitor			dndDownloadMonitor						= new DownloadMonitor<OldContainerI>("Dnd", InfoCollectorBase.NUM_SEEDING_DOWNLOAD_THREADS, 6);
 
 	/**
 	 * This is the <code>DownloadMonitor</code> used by seeds. It never gets paused.
 	 */
-	protected static final DownloadMonitor			seedingDownloadMonitor				= new DownloadMonitor<Container>("Seeding", InfoCollectorBase.NUM_SEEDING_DOWNLOAD_THREADS, 1);
+	protected static final DownloadMonitor			seedingDownloadMonitor				= new DownloadMonitor<OldContainerI>("Seeding", InfoCollectorBase.NUM_SEEDING_DOWNLOAD_THREADS, 1);
 
 	//
 	static final Object													SEEDING_STATE_LOCK = new Object();
@@ -219,6 +220,10 @@ implements InfoCollector<AC>, SemanticsPrefs, ApplicationProperties, DocumentPar
 		IMAGE_META_METADATA								= META_METADATA_REPOSITORY.getByTagName(IMAGE_TAG);
 	}
 
+	public InfoCollectorBase()
+	{
+		this(new Scope());
+	}
 	public InfoCollectorBase(Scope sessionScope)
 	{
 		super();
@@ -231,70 +236,6 @@ implements InfoCollector<AC>, SemanticsPrefs, ApplicationProperties, DocumentPar
 		println("");
 	}
 
-	public SeedDistributor getResultDistributer()
-	{
-		return seedSet.seedDistributer(this);
-	}
-
-	public SeedSet getSeedSet()
-	{
-		SeedSet result = this.seedSet;
-		if (result == null)
-		{
-			result = new SeedSet();
-			this.seedSet = result;
-		}
-		return result;
-	}
-
-	public void setSeedSet(SeedSet seedSet)
-	{
-		this.seedSet = seedSet;
-	}
-	
-	public void clearSeedSet()
-	{
-		if(seedSet != null)
-			seedSet.clear();
-	}
-	
-	public void addSeeds(SeedSet<? extends Seed> newSeeds)
-	{
-		
-		if (this.seedSet == null)
-			this.seedSet = newSeeds;
-		else
-		{
-			if (!newSeeds.isEmpty())
-			{
-				for (Seed seed: newSeeds)
-				{
-					this.seedSet.add(seed, this);
-				}
-			}
-		}
-	}
-
-	public void getMoreSeedResults()
-	{
-		if (seedSet != null)
-		{
-			System.out.println(this + ".getMoreSeedResults()!!! " + seedSet.getStartingResultNum());
-			seedSet.performNextSeeding(sessionScope);
-		}
-		// for (ecologylab.oodss.messages.cf.Seed s : seedSet)
-		// if (s instanceof SearchState)
-		// {
-		// SearchState searchState = (SearchState) s;
-		// if(!searchState.recentlyCreated())
-		// {
-		// searchState.performNextSearch(this);
-		// }
-		// else
-		// debug("Not hitting poor Search engine. Might do so later.");
-		// }
-
-	}
 
 	/**
 	 * @return Returns the Session Scope.
@@ -381,11 +322,6 @@ implements InfoCollector<AC>, SemanticsPrefs, ApplicationProperties, DocumentPar
 	public Document constructDocument(ParsedURL purl)
 	{
 		return META_METADATA_REPOSITORY.constructDocument(purl);
-	}
-	
-	public JFrame getJFrame()
-	{
-		return (JFrame) sessionScope().get(SessionObjects.TOP_LEVEL);
 	}
 
 	/**
@@ -655,10 +591,72 @@ implements InfoCollector<AC>, SemanticsPrefs, ApplicationProperties, DocumentPar
 		return null;
 	}
 	
+	
+	
+	public SeedDistributor getResultDistributer()
+	{
+		return seedSet.seedDistributer(this);
+	}
+
+	public SeedSet getSeedSet()
+	{
+		SeedSet result = this.seedSet;
+		if (result == null)
+		{
+			result = new SeedSet();
+			this.seedSet = result;
+		}
+		return result;
+	}
+
+	public void setSeedSet(SeedSet seedSet)
+	{
+		this.seedSet = seedSet;
+	}
+	
+	public void clearSeedSet()
+	{
+		if(seedSet != null)
+			seedSet.clear();
+	}
+	
+	public void addSeeds(SeedSet<? extends Seed> newSeeds)
+	{
+		
+		if (this.seedSet == null)
+			this.seedSet = newSeeds;
+		else
+		{
+			if (!newSeeds.isEmpty())
+			{
+				for (Seed seed: newSeeds)
+				{
+					this.seedSet.add(seed, this);
+				}
+			}
+		}
+	}
+
+	public void getMoreSeedResults()
+	{
+		if (seedSet != null)
+		{
+			System.out.println(this + ".getMoreSeedResults()!!! " + seedSet.getStartingResultNum());
+			seedSet.performNextSeeding(sessionScope);
+		}
+	}
+
+	
 	@Override
 	public SeedDistributor getSeedDistributor()
 	{
 		return seedSet.seedDistributer(this);
 	}
 	
+	
+	public JFrame getJFrame()
+	{
+		return (JFrame) sessionScope().get(SessionObjects.TOP_LEVEL);
+	}
+
 }

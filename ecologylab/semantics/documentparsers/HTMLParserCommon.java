@@ -3,18 +3,16 @@ package ecologylab.semantics.documentparsers;
 import java.util.HashMap;
 
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.connectors.Container;
-import ecologylab.semantics.connectors.InfoCollector;
+import ecologylab.semantics.connectors.NewInfoCollector;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.model.TextChunkBase;
 import ecologylab.semantics.model.text.utils.Filter;
 import ecologylab.semantics.seeding.SemanticsPrefs;
-import ecologylab.serialization.ElementState;
 
 
 
-public abstract class HTMLParserCommon<C extends Container, IC extends InfoCollector<C>>
-extends ContainerParser<C, IC, ElementState> implements SemanticsPrefs
+public abstract class HTMLParserCommon
+extends ContainerParser implements SemanticsPrefs
 {
 
 	private	boolean 	isFile = false;
@@ -25,25 +23,15 @@ extends ContainerParser<C, IC, ElementState> implements SemanticsPrefs
 
 	protected boolean 	bold;
 	protected boolean 	italic;
-	/**
-	 * Number of links inside this page. Used to measure if it is a
-	 * content page, or a link collection.
-	 */
-	protected int 			numLinks;
-
-	protected int 			numTokensNoLink;
-
-	protected int 			maxTokensNoLink;
 
 	protected TextChunkBase	textChunk = null;
 
 	protected boolean 		addingLinkWords;
 
-	protected boolean		gotHttpColon;
 	/** <code>Filter</code> that recognizes junk images from URL */
 	public static final Filter 		filter			= new Filter();	// url filtering
 
-	public HTMLParserCommon(IC infoCollector)
+	public HTMLParserCommon(NewInfoCollector infoCollector)
 	{
 		super(infoCollector);
 	}
@@ -71,8 +59,6 @@ extends ContainerParser<C, IC, ElementState> implements SemanticsPrefs
 	protected void newImg(ParsedURL parsedURL, String alt, int width,
 			int height, boolean isMap) 
 	{
-		gotHttpColon		= false;
-
 		if (container != null)
 			container.createImageElementAndAddToPools(parsedURL, alt, width, height, isMap, currentAnchorHref);
 	}
@@ -101,19 +87,13 @@ extends ContainerParser<C, IC, ElementState> implements SemanticsPrefs
 
 	protected void newAHref(ParsedURL hrefPurl)
 	{
-		gotHttpColon		= false;
-
 		if (currentAnchorHref == null)
 		{
-			if (numTokensNoLink > maxTokensNoLink)
-				maxTokensNoLink	= numTokensNoLink;
-			numTokensNoLink	= 0;
 		}
 		// add for the container and href. 
 		if (hrefPurl != null)
 		{	
 			currentAnchorHref		= hrefPurl;
-			numLinks++;
 			//This seems wrong. We generate containers in HTMLDomParser 
 			//processHref(hrefPurl);
 		}
@@ -129,8 +109,6 @@ extends ContainerParser<C, IC, ElementState> implements SemanticsPrefs
 	 */
 	public ParsedURL processNewHref(String urlString) 
 	{
-		gotHttpColon		= false;
-
 		ParsedURL result = buildAndFilterPurl(urlString);
 		
 		if (result != null)
@@ -168,7 +146,7 @@ extends ContainerParser<C, IC, ElementState> implements SemanticsPrefs
 	protected ParsedURL buildPurl(String urlString)
 	{
 		return (container != null) ?
-				container.purl().createFromHTML(urlString, isSearchPage()) :
+				container.location().createFromHTML(urlString, isSearchPage()) :
 					// remove hash but not remove args. 
 					ParsedURL.createFromHTML(null, urlString, false);
 	}
@@ -214,8 +192,6 @@ extends ContainerParser<C, IC, ElementState> implements SemanticsPrefs
 
 	public void closeHref() 
 	{
-		gotHttpColon		= false;
-
 		currentAnchorHref		= null;
 
 		if (addingLinkWords && (textChunk != null))

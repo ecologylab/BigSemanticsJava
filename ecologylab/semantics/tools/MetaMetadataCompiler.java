@@ -14,7 +14,6 @@ import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.metametadata.MetaMetadataTranslationScope;
 import ecologylab.serialization.SIMPLTranslationException;
-import ecologylab.serialization.XMLTools;
 
 /**
  * @author andruid

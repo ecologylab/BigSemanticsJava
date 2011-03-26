@@ -34,6 +34,7 @@
 			<get_field name="search_results" />
 			<for_each collection="search_results" as="res">
 				<get_field object="res" name="link" />
+				<!-- is a ResultDistributor created for each of these???? -->
 				<parse_document now="true">
 					<arg value="link" name="container_link" />
 				</parse_document>

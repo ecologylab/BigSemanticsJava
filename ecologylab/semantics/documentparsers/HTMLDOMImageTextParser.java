@@ -11,9 +11,8 @@ import org.w3c.tidy.TdNode;
 
 import ecologylab.generic.StringTools;
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.actions.SemanticActionHandler;
-import ecologylab.semantics.connectors.Container;
-import ecologylab.semantics.connectors.InfoCollector;
+import ecologylab.semantics.connectors.old.InfoCollector;
+import ecologylab.semantics.connectors.old.OldContainerI;
 import ecologylab.semantics.html.AElement;
 import ecologylab.semantics.html.DOMWalkInformationTagger;
 import ecologylab.semantics.html.ImgElement;
@@ -37,7 +36,7 @@ import ecologylab.serialization.XMLTools;
  * @author eunyee
  *
  */
-public class HTMLDOMImageTextParser<C extends Container>
+public class HTMLDOMImageTextParser<C extends OldContainerI>
 extends HTMLDOMParser<C, InfoCollector<C>>
 implements TidyInterface, HTMLAttributeNames
 {

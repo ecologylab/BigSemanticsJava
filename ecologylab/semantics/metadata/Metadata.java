@@ -14,16 +14,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import javax.xml.namespace.QName;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
-import ecologylab.collections.Scope;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionHandler;
@@ -44,14 +34,16 @@ import ecologylab.semantics.seeding.SearchState;
 import ecologylab.semantics.seeding.Seed;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.FieldDescriptor;
-import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.ScalarUnmarshallingContext;
 import ecologylab.serialization.TranslationContext;
 import ecologylab.serialization.TranslationScope;
 import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.simpl_descriptor_classes;
-import ecologylab.serialization.library.html.*;
-import ecologylab.serialization.types.scalar.ScalarType;
+import ecologylab.serialization.library.html.Div;
+import ecologylab.serialization.library.html.Span;
+import ecologylab.serialization.library.html.Table;
+import ecologylab.serialization.library.html.Td;
+import ecologylab.serialization.library.html.Tr;
 
 /**
  * This is the new metadata class that is the base class for the meta-metadata system. It contains

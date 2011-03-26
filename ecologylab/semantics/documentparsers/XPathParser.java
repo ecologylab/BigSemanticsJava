@@ -6,7 +6,7 @@ package ecologylab.semantics.documentparsers;
 import ecologylab.semantics.actions.SemanticAction;
 import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.actions.SemanticActionsKeyWords;
-import ecologylab.semantics.connectors.InfoCollector;
+import ecologylab.semantics.connectors.old.InfoCollector;
 import ecologylab.semantics.metadata.builtins.Document;
 
 /**
@@ -14,7 +14,7 @@ import ecologylab.semantics.metadata.builtins.Document;
  * 
  */
 @SuppressWarnings("rawtypes")
-public class XPathParser<SA extends SemanticAction> extends ParserBase implements
+public class XPathParser extends ParserBase implements
 		SemanticActionsKeyWords
 {
 
@@ -27,8 +27,9 @@ public class XPathParser<SA extends SemanticAction> extends ParserBase implement
 	@Override
 	public Document populateMetadata(SemanticActionHandler handler)
 	{
-		recursiveExtraction(metaMetadata, container.getMetadata(), getDom(), null,
+		Document document = getDocument();
+		recursiveExtraction(metaMetadata, document, getDom(), null,
 				handler.getSemanticActionVariableMap());
-		return (Document) container.getMetadata();
+		return document;
 	}
 }

@@ -5,14 +5,10 @@ package ecologylab.semantics.documentparsers;
 
 import ecologylab.generic.DispatchTarget;
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.actions.SemanticActionHandler;
-import ecologylab.semantics.connectors.Container;
-import ecologylab.semantics.connectors.InfoCollector;
-import ecologylab.semantics.metadata.Metadata;
-import ecologylab.semantics.metametadata.MetaMetadata;
+import ecologylab.semantics.connectors.old.InfoCollector;
+import ecologylab.semantics.connectors.old.OldContainerI;
 import ecologylab.semantics.seeding.Seed;
 import ecologylab.semantics.seeding.SeedDistributor;
-import ecologylab.serialization.ElementState;
 
 /**
  * This is the base class for all seeds which bascially return a collection of links to be
@@ -22,7 +18,7 @@ import ecologylab.serialization.ElementState;
  * 
  */
 public abstract class LinksetParser
-		extends ParserBase implements DispatchTarget<Container>
+		extends ParserBase implements DispatchTarget<OldContainerI>
 {
 
 	public LinksetParser(InfoCollector infoCollector)
@@ -37,7 +33,7 @@ public abstract class LinksetParser
 	 */
 	protected void getMetaMetadataAndContainerAndQueue(InfoCollector infoCollector, ParsedURL purl, Seed seed, String defaultTag)
 	{
-		Container container = infoCollector.getContainer(null, null, metaMetadata, purl, false, false, false);
+		OldContainerI container = infoCollector.getContainer(null, null, metaMetadata, purl, false, false, false);
 		setContainer(container);
 		container.presetDocumentType(this);
 		container.setDispatchTarget(this);
@@ -50,7 +46,7 @@ public abstract class LinksetParser
 	/**
 	 * call doneQueueing() to notify seed distributor
 	 */
-	public void delivery(Container downloadedContainer)
+	public void delivery(OldContainerI downloadedContainer)
 	{
 		Seed seed = downloadedContainer.getSeed();
 		if (seed != null)

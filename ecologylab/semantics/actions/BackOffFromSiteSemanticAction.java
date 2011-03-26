@@ -1,8 +1,8 @@
 package ecologylab.semantics.actions;
 
-import ecologylab.semantics.connectors.InfoCollector;
-import ecologylab.serialization.simpl_inherit;
+import ecologylab.semantics.connectors.old.InfoCollector;
 import ecologylab.serialization.ElementState.xml_tag;
+import ecologylab.serialization.simpl_inherit;
 
 /**
  * By default, this method prevent the InfoCollector from collecting information from the specified

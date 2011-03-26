@@ -18,16 +18,19 @@ public class BaseSeedTranslations extends Debug
 	
 	public static final Class	TRANSLATIONS[]	= 
 	{ 
-		SeedCf.class,
-
-		SeedSet.class,
 		Seed.class,
+		SeedSet.class,
+		
 		DocumentState.class,
 		SearchState.class,
 		InlineSeed.class,
 		Feed.class,
 		Crawler.class,
 		CuratedSeeding.class,
+		DeliciousState.class,
+
+		SeedCf.class,
+
 	};
 
 	/**

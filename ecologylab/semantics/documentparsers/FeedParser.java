@@ -3,15 +3,11 @@
  */
 package ecologylab.semantics.documentparsers;
 
-import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionHandler;
-import ecologylab.semantics.connectors.InfoCollector;
-import ecologylab.semantics.metadata.Metadata;
+import ecologylab.semantics.connectors.old.InfoCollector;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.seeding.Feed;
 import ecologylab.semantics.seeding.Seed;
-import ecologylab.serialization.SIMPLTranslationException;
-import ecologylab.serialization.TranslationScope;
 
 /**
  * @author andruid

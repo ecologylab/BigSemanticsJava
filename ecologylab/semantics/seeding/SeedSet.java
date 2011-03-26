@@ -7,10 +7,9 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import ecologylab.collections.Scope;
-import ecologylab.semantics.connectors.Container;
-import ecologylab.semantics.connectors.InfoCollector;
-import ecologylab.semantics.connectors.SeedPeer;
-import ecologylab.semantics.connectors.SemanticsSessionObjectNames;
+import ecologylab.semantics.connectors.old.InfoCollector;
+import ecologylab.semantics.connectors.old.OldContainerI;
+import ecologylab.semantics.namesandnums.SemanticsSessionObjectNames;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.TranslationScope;
 import ecologylab.serialization.simpl_inherit;
@@ -91,7 +90,7 @@ public class SeedSet<S extends Seed> extends ElementState
 	 */
 	SeedSet					parentSeedSet;
 
-	public <C extends Container> SeedDistributor<C> seedDistributer(InfoCollector infoCollector)
+	public <C extends OldContainerI> SeedDistributor<C> seedDistributer(InfoCollector infoCollector)
 	{
 		SeedDistributor<C> result = resultDistributer;
 

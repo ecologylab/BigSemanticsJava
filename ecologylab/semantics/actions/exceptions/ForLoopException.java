@@ -2,7 +2,6 @@ package ecologylab.semantics.actions.exceptions;
 
 import ecologylab.collections.Scope;
 import ecologylab.semantics.actions.ForEachSemanticAction;
-import ecologylab.semantics.actions.SemanticAction;
 
 public class ForLoopException extends SemanticActionExecutionException
 {

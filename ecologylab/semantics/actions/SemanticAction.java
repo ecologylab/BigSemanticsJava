@@ -8,8 +8,8 @@ import java.util.HashMap;
 
 import ecologylab.collections.Scope;
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.connectors.Container;
-import ecologylab.semantics.connectors.InfoCollector;
+import ecologylab.semantics.connectors.old.InfoCollector;
+import ecologylab.semantics.connectors.old.OldContainerI;
 import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.html.documentstructure.LinkType;
 import ecologylab.semantics.html.documentstructure.SemanticAnchor;
@@ -272,11 +272,11 @@ public abstract class SemanticAction<IC extends InfoCollector, SAH extends Seman
 
 
 	
-	public Container createContainer(DocumentParser documentParser, LinkType linkType)
+	public OldContainerI createContainer(DocumentParser documentParser, LinkType linkType)
 	{
-		Container outlinkContainer = null;
+		OldContainerI outlinkContainer = null;
 		// get the ancestor container
-		Container sourceContainer = documentParser.getContainer();
+		OldContainerI sourceContainer = documentParser.getContainer();
 
 		// get the seed. Non null only for search types .
 		Seed seed = documentParser.getSeed();
@@ -355,8 +355,12 @@ public abstract class SemanticAction<IC extends InfoCollector, SAH extends Seman
 				{
 					//By default use the boost, unless explicitly stated in this site's MMD
 					boolean useSemanticBoost = !outlinkContainer.site().ignoreSemanticBoost();
-					SemanticAnchor semanticAnchor = new SemanticAnchor(outlinkPurl, null, citationSignificance,
-							significanceVal, documentParser.purl(), false, useSemanticBoost, linkType);// this is not fromContentBody,
+					if (citationSignificance)
+						linkType	= LinkType.CITATION_SEMANTIC_ACTION;
+					else if (useSemanticBoost && linkType == LinkType.OTHER_SEMANTIC_ACTION)
+						linkType	= LinkType.SITE_BOOSTED_SEMANTIC_ACTION;
+					SemanticAnchor semanticAnchor = new SemanticAnchor(linkType, outlinkPurl, null,
+							documentParser.purl(), significanceVal);// this is not fromContentBody,
 																							// but is fromSemanticActions
 					if(ignoreContextForTv)
 						semanticAnchor.addAnchorContextToTV(anchorText, null);
@@ -390,9 +394,9 @@ public abstract class SemanticAction<IC extends InfoCollector, SAH extends Seman
 	 * 
 	 * @return
 	 */
-	public Container getOrCreateContainer(DocumentParser documentParser, LinkType linkType)
+	public OldContainerI getOrCreateContainer(DocumentParser documentParser, LinkType linkType)
 	{
-		Container result	= (Container) getArgumentObject(CONTAINER);
+		OldContainerI result	= (OldContainerI) getArgumentObject(CONTAINER);
 		if (result == null)
 		{
 			result					= createContainer(documentParser, linkType);

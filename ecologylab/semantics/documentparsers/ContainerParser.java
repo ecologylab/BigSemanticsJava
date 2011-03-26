@@ -1,11 +1,10 @@
 package ecologylab.semantics.documentparsers;
 
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.connectors.Container;
-import ecologylab.semantics.connectors.InfoCollector;
-import ecologylab.semantics.seeding.SeedDistributor;
+import ecologylab.semantics.connectors.NewInfoCollector;
+import ecologylab.semantics.connectors.old.OldContainerI;
 import ecologylab.semantics.seeding.SearchState;
-import ecologylab.serialization.ElementState;
+import ecologylab.semantics.seeding.SeedDistributor;
 
 
 /**
@@ -16,7 +15,8 @@ import ecologylab.serialization.ElementState;
  * 
  * @author andruid
  */
-abstract public class ContainerParser<C extends Container, IC extends InfoCollector<C>, ES extends ElementState> extends DocumentParser<C, IC, ES>
+abstract public class ContainerParser
+extends DocumentParser
 {
 	/**
 	 * Number of search results that we've processed so far, from the search engine.
@@ -28,7 +28,7 @@ abstract public class ContainerParser<C extends Container, IC extends InfoCollec
 	 */
 	protected SearchState 				searchSeed;
 
-	public ContainerParser(IC infoCollector)
+	public ContainerParser(NewInfoCollector infoCollector)
 	{
 		super(infoCollector);
 	}
@@ -38,7 +38,7 @@ abstract public class ContainerParser<C extends Container, IC extends InfoCollec
 	 * @param searchSeed TODO
 	 * @param infoCollector
 	 */
-	public ContainerParser(SearchState searchSeed, IC infoCollector)
+	public ContainerParser(SearchState searchSeed, NewInfoCollector infoCollector)
 	{   
 		  super(infoCollector);
 		  this.searchSeed			= searchSeed;
@@ -67,7 +67,7 @@ abstract public class ContainerParser<C extends Container, IC extends InfoCollec
 	 * @param resultPURL
 	 * @param resultContainer
 	 */
-	protected void queueResult(ParsedURL resultPURL, Container resultContainer)
+	protected void queueResult(ParsedURL resultPURL, OldContainerI resultContainer)
 	{
 		if (!resultContainer.downloadHasBeenQueued())
 		{
@@ -89,7 +89,7 @@ abstract public class ContainerParser<C extends Container, IC extends InfoCollec
 		}
 	}
 	
-	protected void queueSearchRequest(Container searchContainer)
+	protected void queueSearchRequest(OldContainerI searchContainer)
 	{
 		// Because the only time infoCollector is set is when a seedset is created in SeedSetType and XMLRestType.
 //	    if (infoCollector == null && searchContainer!=null && searchContainer.getInfoCollector() != null)

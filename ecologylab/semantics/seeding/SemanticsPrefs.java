@@ -3,7 +3,7 @@ package ecologylab.semantics.seeding;
 import ecologylab.appframework.types.prefs.Pref;
 import ecologylab.appframework.types.prefs.PrefBoolean;
 import ecologylab.appframework.types.prefs.PrefInt;
-import ecologylab.semantics.connectors.CFPrefNames;
+import ecologylab.semantics.namesandnums.CFPrefNames;
 
 public interface SemanticsPrefs extends CFPrefNames
 {

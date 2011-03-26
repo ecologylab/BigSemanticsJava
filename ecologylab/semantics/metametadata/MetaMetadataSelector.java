@@ -6,8 +6,6 @@ import java.util.regex.Pattern;
 import ecologylab.net.ParsedURL;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.simpl_inherit;
-import ecologylab.serialization.ElementState.simpl_collection;
-import ecologylab.serialization.ElementState.simpl_nowrap;
 import ecologylab.serialization.types.element.Mappable;
 
 /**

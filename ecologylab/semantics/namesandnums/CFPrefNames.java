@@ -1,7 +1,5 @@
-package ecologylab.semantics.connectors;
+package ecologylab.semantics.namesandnums;
 
-import ecologylab.appframework.types.prefs.Pref;
-import ecologylab.appframework.types.prefs.PrefBoolean;
 
 /**
  * combinFormation-specific set of reusable String constants for getting properties from the environment.

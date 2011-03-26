@@ -1,12 +1,12 @@
 package ecologylab.semantics.actions;
 
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.connectors.Container;
+import ecologylab.semantics.connectors.old.OldContainerI;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metametadata.LinkWith;
 import ecologylab.semantics.metametadata.MetaMetadata;
-import ecologylab.serialization.simpl_inherit;
 import ecologylab.serialization.ElementState.xml_tag;
+import ecologylab.serialization.simpl_inherit;
 
 @simpl_inherit
 @xml_tag(SemanticActionStandardMethods.GET_LINKED_METADATA)
@@ -45,7 +45,7 @@ public class GetLinkedMetadataSemanticAction extends SemanticAction
 					{
 						String id = lw.getById();
 						ParsedURL purl = mmd.generateUrl(id, metadata.getNaturalIdValue(id));
-						Container container = infoCollector.getContainer(null, null, mmd, purl, false, false, false);
+						OldContainerI container = infoCollector.getContainer(null, null, mmd, purl, false, false, false);
 						if (container != null) // container could be null if it is already recycled
 						{
 							container.queueDownload();

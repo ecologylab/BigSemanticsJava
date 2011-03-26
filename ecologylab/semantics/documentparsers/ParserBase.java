@@ -26,8 +26,8 @@ import ecologylab.generic.ReflectionTools;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.actions.SemanticActionsKeyWords;
-import ecologylab.semantics.connectors.InfoCollector;
 import ecologylab.semantics.connectors.LinkedMetadataMonitor;
+import ecologylab.semantics.connectors.old.InfoCollector;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.DocumentParserTagNames;
 import ecologylab.semantics.metadata.Metadata;
@@ -103,7 +103,7 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 		handler.getSemanticActionVariableMap().put(SemanticActionsKeyWords.PURLCONNECTION_MIME,
 				purlConnection.mimeType());
 		instantiateMetaMetadataVariables(handler);
-		truePURL = container.purl();
+		truePURL = container.location();
 
 		// build the metadata object
 		Metadata populatedMetadata = populateMetadata(handler);
@@ -111,7 +111,7 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 
 		try
 		{
-			debug("Metadata parsed from: " + container.purl());
+			debug("Metadata parsed from: " + container.location());
 			if (populatedMetadata != null)
 			{
 				debug(populatedMetadata.serialize());

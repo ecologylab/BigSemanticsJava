@@ -10,7 +10,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import ecologylab.appframework.types.prefs.Pref;
-import ecologylab.appframework.types.prefs.PrefBoolean;
 import ecologylab.generic.FeatureVector;
 import ecologylab.generic.IFeatureVector;
 import ecologylab.generic.StringTools;

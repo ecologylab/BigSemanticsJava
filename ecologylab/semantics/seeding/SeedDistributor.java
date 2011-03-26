@@ -8,10 +8,9 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 
 import ecologylab.generic.Debug;
-import ecologylab.generic.DispatchTarget;
 import ecologylab.generic.Generic;
-import ecologylab.semantics.connectors.Container;
-import ecologylab.semantics.connectors.InfoCollector;
+import ecologylab.semantics.connectors.old.InfoCollector;
+import ecologylab.semantics.connectors.old.OldContainerI;
 
 /**
  * now how SeedDistributor works:
@@ -43,7 +42,7 @@ import ecologylab.semantics.connectors.InfoCollector;
  * @author andruid
  * @param <slice>
  */
-public class SeedDistributor<AC extends Container> extends Debug implements Runnable
+public class SeedDistributor<AC extends OldContainerI> extends Debug implements Runnable
 {
 
 	public static interface DistributeCallBack<C extends QandDownloadable>
@@ -195,7 +194,7 @@ public class SeedDistributor<AC extends Container> extends Debug implements Runn
 	 * @param searchNum
 	 * @param numResults
 	 */
-	public void doneQueueing(Container searchContainer)
+	public void doneQueueing(OldContainerI searchContainer)
 	{
 		debug("search parsed: " + searchContainer);
 		numSearchesProcessing--;
@@ -271,9 +270,9 @@ public class SeedDistributor<AC extends Container> extends Debug implements Runn
 	private static int getRank(QandDownloadable downloadable)
 	{
 		int r = -1;
-		if (downloadable instanceof Container)
+		if (downloadable instanceof OldContainerI)
 		{
-			Container container = (Container) downloadable;
+			OldContainerI container = (OldContainerI) downloadable;
 			r = container.searchResult() == null ? -2 : container.searchResult().resultNum();
 		}
 		return r;
@@ -282,9 +281,9 @@ public class SeedDistributor<AC extends Container> extends Debug implements Runn
 	private static String getQuery(QandDownloadable downloadable)
 	{
 		String q = null;
-		if (downloadable instanceof Container)
+		if (downloadable instanceof OldContainerI)
 		{
-			Container container = (Container) downloadable;
+			OldContainerI container = (OldContainerI) downloadable;
 			q = container.getSeed() == null ? null : container.getSeed().getQuery();
 		}
 		return q == null ? "" : q;

@@ -14,11 +14,13 @@ import ecologylab.semantics.model.text.TermVectorFeature;
  * @author andruid
  *
  */
+
+//TODO -- make serializable!
 public class SemanticAnchor implements TermVectorFeature
 {
-	static final int		NO_SPECIAL_SIGNIFICANCE		= 1;
+	static final float		NO_SPECIAL_SIGNIFICANCE		= 1;
 	static final float		CONTENT_BODY_SIGNIFICANCE 	= 1.5f;
-	static final float		SAME_DOMAIN_SIGNIFICANCE	= .5f;
+	static final float		SAME_DOMAIN_SIGNIFICANCE_PENALTY	= .5f;
 	static final int		CITATION_SIGNIFICANCE		= 4;
 	
 	/**
@@ -26,43 +28,53 @@ public class SemanticAnchor implements TermVectorFeature
 	 */
 	protected ParsedURL 	sourcePurl;
 	TermVector 				tv;
-	private boolean 		fromContentBody;
-	private boolean			fromSemanticAction;
-	public float			significance;
+	
+	//FIXME -- these fields must be merged!!!
+	LinkType 						linkType;	
+	
+	private float			significance;
 	
 	public static final Double TEXT_OVER_CONTEXT_EMPHASIS_FACTOR	= 3.0;
 	
 	
-	public SemanticAnchor(ParsedURL href, 
+	/**
+	 * 
+	 * @param linkType
+	 * @param destinationPurl				The linked destination document that this refers to.
+	 * @param anchorContexts
+	 * @param sourcePurl			The source document that this link originated from.
+	 * @param significanceVal
+	 */
+	public SemanticAnchor(LinkType linkType, 
+			ParsedURL destinationPurl, 
 			ArrayList<AnchorContext> anchorContexts, 
-			boolean citationSignificance, 
-			float significanceVal, 
-			ParsedURL sourcePurl,
-			boolean fromContentBody, 
-			boolean fromSemanticAction,
-			LinkType linkType)
+			ParsedURL sourcePurl, 
+			float significanceVal)
 	{
-		this.sourcePurl 			= sourcePurl;
-		this.fromContentBody 		= fromContentBody;
-		this.fromSemanticAction 	= fromSemanticAction;
+		this.sourcePurl 				= sourcePurl;
+		this.linkType						= linkType;
 		tv 							= new TermVector();
 		
-		if (citationSignificance)
-			this.significance	= CITATION_SIGNIFICANCE * significanceVal;
-		else if(sourcePurl != null && sourcePurl.domain().equals(href.domain()))
+		switch (linkType)
 		{
-			if (linkType == LinkType.WILD)
-				this.significance	= SAME_DOMAIN_SIGNIFICANCE * significanceVal;
-			//else if (linkType == LinkType.TRUSTED_SEMANTICS)
-			//Do not decrease domain significance for trusted semantic sources.			
+		case CITATION_SEMANTIC_ACTION:
+			this.significance	= CITATION_SIGNIFICANCE * significanceVal;
+			break;
+		case WILD_CONTENT_BODY:
+			this.significance	= CONTENT_BODY_SIGNIFICANCE;
+			//TODO should there be some (but less) penalty here if same domain?
+			break;
+		case WILD:
+			if (sourcePurl != null && sourcePurl.domain().equals(destinationPurl.domain()))
+			{
+				this.significance	= SAME_DOMAIN_SIGNIFICANCE_PENALTY;
+				break;
+			}
+		default:
+			this.significance				= NO_SPECIAL_SIGNIFICANCE;
+			break;
 		}
-		
 
-		else if(!fromSemanticAction && fromContentBody)
-			this.significance	= CONTENT_BODY_SIGNIFICANCE * significanceVal;
-		else
-			this.significance	= NO_SPECIAL_SIGNIFICANCE;		
-		
 		if(anchorContexts != null)
 		{
 			for(AnchorContext anchorContext : anchorContexts)
@@ -115,18 +127,13 @@ public class SemanticAnchor implements TermVectorFeature
 		return significance;
 	}
 	
-	public boolean fromContentBody()
+	public ParsedURL sourcePurl()
 	{
-		return fromContentBody;
+		return sourcePurl;
 	}
 	
 	public boolean fromSemanticAction()
 	{
-		return fromSemanticAction;
-	}
-	
-	public ParsedURL sourcePurl()
-	{
-		return sourcePurl;
+		return linkType == LinkType.TRUSTED_SEMANTIC_ACTION || linkType == LinkType.SITE_BOOSTED_SEMANTIC_ACTION;
 	}
 }

@@ -3,10 +3,11 @@
  */
 package ecologylab.semantics.metadata.builtins;
 
-import ecologylab.semantics.html.documentstructure.ImageFeatures;
+import ecologylab.semantics.connectors.DocumentClosure;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
+import ecologylab.serialization.Hint;
 
 /**
  * Mix-in for adding the context of a clipping to the description of a Document.
@@ -17,17 +18,16 @@ import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 public class Clipping extends Metadata
 {
 	/**
-	 * Explicit description of the clipped media in the source document.
-	 */
-	@mm_name("caption") 
-	@simpl_scalar private
-	MetadataString					caption;
-
-	/**
 	 * Text connected to the clipping in the source document.
 	 */
 	@simpl_scalar
 	private MetadataString	context;
+
+	/**
+	 * Text connected to the clipping in the source document.
+	 */
+	@simpl_scalar @simpl_hints(Hint.XML_LEAF_CDATA)
+	private MetadataString	contextHtml;
 
 	/**
 	 * Location of the clipping in the source document.
@@ -47,8 +47,9 @@ public class Clipping extends Metadata
 	@simpl_composite
 	private Document				outlink;
 	
+	private DocumentClosure				outlinkClosure;
 
-	static int							numWithCaption;
+	protected static int							numWithCaption;
 	/**
 	 * Total number of images we have created within this session
 	 */
@@ -111,62 +112,6 @@ public class Clipping extends Metadata
 	}
 
 	
-	public MetadataString caption()
-	{
-		MetadataString result = this.caption;
-		if (result == null)
-		{
-			result = new MetadataString();
-			this.caption = result;
-		}
-		return result;
-	}
-
-	public String getCaption()
-	{
-		return caption == null ? null : caption.getValue();
-	}
-
-	public void setCaption(String captionString)
-	{
-		MetadataString caption = this.caption();
-		caption.setValue(captionString);
-	}
-	
-	public void hwSetCaption(String caption)
-	{
-		if (caption != null)
-		{
-			this.setCaption(caption);
-			rebuildCompositeTermVector();
-		}
-	}
-
-	/**
-	 * Derive cFMetadata from the HTML <code>alt</code> attribute,
-	 * or the filename. This is to be executed when we construct <code>this</code>
-	 * initially.
-	 */  
-	public void setCaptionIfGood(String newCandidateCaption)
-	{
-		if (!ImageFeatures.altIsBogus(newCandidateCaption))
-		{
-			numWithCaption++;
-			hwSetCaption(newCandidateCaption);
-		}
-	}
-
-	/**
-	 * Derive further cFMetadata from an HTML <code>alt</code> attribute.
-	 * This is to be executed subsequent to initital construction, in case we
-	 * encounter additional references to this (in HTML).
-	 */
-	public void setCaptionIfEmpty(String newCandidateCaption)
-	{
-		if (isNullCaption())
-			setCaptionIfGood(newCandidateCaption);
-	}
-
 	/**
 	 * used for deriving statistics that track how many images
 	 * on the web have alt text.
@@ -178,28 +123,7 @@ public class Clipping extends Metadata
 	}
 
 
-//	/**
-//	 * Derive further cFMetadata from an HTML <code>alt</code> attribute.
-//	 * This is to be executed subsequent to initital construction, in case we
-//	 * encounter additional references to this (in HTML).
-//	 */
-//	public void refineMetadata(Image newMetadata)
-//	{
-//		if (newMetadata != null)
-//		{
-//			setCaptionIfEmpty(newMetadata.getCaption());
-//			if (isNullContext() && !newMetadata.isNullContext())
-//			{
-//				hwSetContext(newMetadata.getContext());
-//			}
-//		}
-//	}
-	public boolean isNullCaption()
-	{
-		return caption == null || caption.getValue() == null;
-	}
-
-	public boolean isNullContext()
+public boolean isNullContext()
 	{
 		return context == null || context.getValue() == null;
 	}
@@ -238,6 +162,77 @@ public class Clipping extends Metadata
 		this.xpath().setValue(context);
 	}
 
+	/**
+	 * @return the outlinkContainer
+	 */
+	public DocumentClosure getOutlinkClosure()
+	{
+		return outlinkClosure;
+	}
 
+	/**
+	 * @param outlinkContainer the outlinkContainer to set
+	 */
+	public void setOutlinkClosure(DocumentClosure outlinkClosure)
+	{
+		this.outlinkClosure = outlinkClosure;
+	}
+
+	/**
+	 * @return the contextHtml
+	 */
+	public MetadataString getContextHtml()
+	{
+		return contextHtml;
+	}
+
+	/**
+	 * @return the source
+	 */
+	public Document getSource()
+	{
+		return source;
+	}
+
+	/**
+	 * @return the outlink
+	 */
+	public Document getOutlink()
+	{
+		return outlink;
+	}
+
+	/**
+	 * @return the numWithCaption
+	 */
+	public static int getNumWithCaption()
+	{
+		return numWithCaption;
+	}
+
+	/**
+	 * @return the numConstructed
+	 */
+	public static int getNumConstructed()
+	{
+		return numConstructed;
+	}
+
+	/**
+	 * Called to free resources associated with this MediaElement. Removes references to this from
+	 * the associated <code>Container</code>, as well as freeing resources directly associated (such
+	 * as pixel buffers).
+	 * <p>
+	 * Checks to make sure that element is not on screen before it does anything. Then, calls
+	 * {@link #doRecycle() doRecycle()}. That is the method that really frees resources. It is the
+	 * one that derived classes need to override. This is why the routine is being declared final.
+	 */
+	public final synchronized void recycle (boolean unconditional )
+	{
+		source	= null;
+		outlink	= null;
+		outlinkClosure	= null;
+		super.recycle();
+	}
 
 }

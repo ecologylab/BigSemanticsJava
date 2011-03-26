@@ -4,7 +4,7 @@
 package ecologylab.semantics.seeding;
 
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.connectors.InfoCollector;
+import ecologylab.semantics.connectors.old.InfoCollector;
 
 /**
  * Specification of a directive to the agent or otherwise to compositon space services.
@@ -38,13 +38,6 @@ public class Crawler extends Seed
 	public Crawler()
 	{
 		super();
-	}
-	
-	public Crawler(String value, String action)
-	{
-		super();
-		this.setValue(value);
-		this.setCategory(action);
 	}
 	
 	/**
@@ -124,34 +117,8 @@ public class Crawler extends Seed
 	{
 		return (domain != null) ? domain : url.toString();
 	}
-	
-	/**
-	 * The category the dashboard uses to show.
-	 * 
-	 * @return	The search category.
-	 */
-	public String categoryString()
-	{
-		return (action != null) ? action : new String("");
-	}
 
-	/**
-	 * @param actionTypeString
-	 */
-	public void setCategory(String actionTypeString)
-	{
-		action = actionTypeString;
-	}
-	
-	/**
-	 * Not used but necessary.
-	 * 
-	 * @return	The search engine category.
-	 */
-	public String detailedCategoryString()
-	{
-		return (action != null) ? action : new String("");
-	}
+
 	
 	public ParsedURL purl()
 	{

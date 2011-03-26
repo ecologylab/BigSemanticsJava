@@ -1,26 +1,22 @@
 package ecologylab.semantics.metametadata;
 
+import java.util.HashMap;
+
 import ecologylab.generic.HashMapArrayList;
-import ecologylab.serialization.ElementState;
+import ecologylab.serialization.ElementState.simpl_map;
+import ecologylab.serialization.ElementState.simpl_nowrap;
+import ecologylab.serialization.ElementState.simpl_scalar;
 
-public class SearchEngines extends ElementState
-{
-	@simpl_map("search_engine") private HashMapArrayList<String, SearchEngine> searchEngine;
-
-	/**
-	 * @return the searchEngine
-	 */
-	public final HashMapArrayList<String, SearchEngine> getSearchEngine()
-	{
-		return searchEngine;
-	}
+public class SearchEngines extends HashMap<String, SearchEngine>
+{	
+	@simpl_scalar private String defaultEngine;
 
 	/**
-	 * @param searchEngine the searchEngine to set
+	 * @return the defaultEngine
 	 */
-	public final void setSearchEngine(HashMapArrayList<String, SearchEngine> searchEngine)
+	public String getDefaultEngine()
 	{
-		this.searchEngine = searchEngine;
+		return defaultEngine;
 	} 
 	
 }

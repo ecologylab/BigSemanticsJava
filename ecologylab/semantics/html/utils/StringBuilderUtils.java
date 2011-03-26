@@ -5,7 +5,7 @@ package ecologylab.semantics.html.utils;
 
 import org.w3c.tidy.TdNode;
 
-import ecologylab.generic.StringBuilderPool;
+import ecologylab.generic.StringBuilderBaseUtils;
 import ecologylab.generic.StringTools;
 
 /**
@@ -13,23 +13,8 @@ import ecologylab.generic.StringTools;
  *
  * @author andruid 
  */
-public class StringBuilderUtils
+public class StringBuilderUtils extends StringBuilderBaseUtils
 {
-
-	/**
-	 * string builder pool to parse link metadata
-	 */
-	private static final StringBuilderPool stringBuilderPool = new StringBuilderPool(30, 512);
-	
-	public static StringBuilder acquire()
-	{
-		return stringBuilderPool.acquire();
-	}
-	public static void release(StringBuilder buffy)
-	{
-		stringBuilderPool.release(buffy);
-	}
-	
 	/**
 	 * Trim whitespace off of the buffer referred to through pointers in the TdNode.
 	 * If result is not empty, then decode the resulting text into a StringBuilder.

@@ -5,9 +5,6 @@ package ecologylab.semantics.metadata.builtins;
 
 import ecologylab.generic.Debug;
 import ecologylab.semantics.metadata.Metadata;
-import ecologylab.semantics.metadata.scalar.MetadataInteger;
-import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
-import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.serialization.TranslationScope;
 
 /**
@@ -23,9 +20,9 @@ public class MetadataBuiltinsTranslationScope extends Debug
 		Document.class, 
 		Entity.class,
 		Clipping.class,
-		ClippableMetadata.class, 
 		Image.class, 
-		Text.class,
+		ImageClipping.class,
+		TextClipping.class,
 		Surrogate.class,
 		DebugMetadata.class,
 

@@ -4,8 +4,7 @@
 package ecologylab.semantics.seeding;
 
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.actions.SemanticActionHandler;
-import ecologylab.semantics.connectors.InfoCollector;
+import ecologylab.semantics.connectors.old.InfoCollector;
 import ecologylab.semantics.documentparsers.FeedParser;
 
 /**
@@ -27,26 +26,6 @@ public class Feed extends DocumentState
 	{
 
 	}
-
-	/**
-	 * @param purlString
-	 * @param action
-	 */
-	public Feed(String purlString, String action)
-	{
-		super(purlString, action);
-	}
-
-	/**
-	 * @param purl
-	 */
-	public Feed(ParsedURL purl)
-	{
-		super(purl);
-		// TODO Auto-generated constructor stub
-	}
-
-	
 
   protected boolean useDistributor()
   {

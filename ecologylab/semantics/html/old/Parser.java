@@ -4,11 +4,15 @@
  */
 package ecologylab.semantics.html.old;
 
-import java.net.*;
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringBufferInputStream;
+import java.net.URLConnection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
-import ecologylab.generic.*;
+import ecologylab.generic.IntSlot;
 import ecologylab.net.ParsedURL;
 import ecologylab.serialization.XMLTools;
 

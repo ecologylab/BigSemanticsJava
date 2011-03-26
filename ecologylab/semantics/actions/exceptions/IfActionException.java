@@ -3,7 +3,6 @@ package ecologylab.semantics.actions.exceptions;
 import java.util.ArrayList;
 
 import ecologylab.collections.Scope;
-import ecologylab.semantics.actions.IfSemanticAction;
 import ecologylab.semantics.actions.NestedSemanticAction;
 import ecologylab.semantics.actions.SemanticAction;
 

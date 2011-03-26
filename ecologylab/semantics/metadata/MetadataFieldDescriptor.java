@@ -6,7 +6,6 @@ package ecologylab.semantics.metadata;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.regex.Pattern;
 
 import ecologylab.semantics.gui.EditValueEvent;
 import ecologylab.semantics.gui.EditValueListener;
@@ -16,7 +15,6 @@ import ecologylab.serialization.ElementState;
 import ecologylab.serialization.FieldDescriptor;
 import ecologylab.serialization.ScalarUnmarshallingContext;
 import ecologylab.serialization.XMLTools;
-import ecologylab.serialization.ElementState.simpl_scalar;
 
 /**
  * @author andruid

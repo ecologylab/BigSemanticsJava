@@ -3,19 +3,9 @@
  */
 package ecologylab.semantics.documentparsers;
 
-import ecologylab.net.ParsedURL;
-import ecologylab.semantics.actions.SemanticAction;
 import ecologylab.semantics.actions.SemanticActionHandler;
-import ecologylab.semantics.actions.SemanticActionsKeyWords;
-import ecologylab.semantics.connectors.InfoCollector;
-import ecologylab.semantics.metadata.Metadata;
-import ecologylab.semantics.metadata.MetadataClassDescriptor;
+import ecologylab.semantics.connectors.old.InfoCollector;
 import ecologylab.semantics.metadata.builtins.Document;
-import ecologylab.semantics.metametadata.MetaMetadata;
-import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
-import ecologylab.semantics.metametadata.MetaMetadataField;
-import ecologylab.serialization.DeserializationHookStrategy;
-import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.XMLTools;
 
 /**

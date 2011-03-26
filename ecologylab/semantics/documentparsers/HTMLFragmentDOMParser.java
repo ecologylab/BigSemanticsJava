@@ -4,13 +4,13 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.connectors.Container;
-import ecologylab.semantics.connectors.InfoCollector;
+import ecologylab.semantics.connectors.old.InfoCollector;
+import ecologylab.semantics.connectors.old.OldContainerI;
 import ecologylab.semantics.html.DOMFragmentInformationTagger;
 import ecologylab.semantics.html.ImgElement;
 import ecologylab.semantics.html.TidyInterface;
 
-public class HTMLFragmentDOMParser<C extends Container> extends HTMLDOMParser<C, InfoCollector<C>> implements TidyInterface
+public class HTMLFragmentDOMParser<C extends OldContainerI> extends HTMLDOMParser<C, InfoCollector<C>> implements TidyInterface
 {
 
 	InputStream fragmentStream;

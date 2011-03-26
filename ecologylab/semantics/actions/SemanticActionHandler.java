@@ -10,8 +10,8 @@ import ecologylab.generic.Debug;
 import ecologylab.semantics.actions.exceptions.ForLoopException;
 import ecologylab.semantics.actions.exceptions.IfActionException;
 import ecologylab.semantics.actions.exceptions.SemanticActionExecutionException;
-import ecologylab.semantics.connectors.Container;
-import ecologylab.semantics.connectors.InfoCollector;
+import ecologylab.semantics.connectors.old.InfoCollector;
+import ecologylab.semantics.connectors.old.OldContainerI;
 import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metametadata.MetaMetadata;
@@ -25,7 +25,7 @@ import ecologylab.semantics.tools.GenericIterable;
  * @author amathur
  */
 // TODO Might want to implement lexical scoping in variables.
-public class SemanticActionHandler<C extends Container, IC extends InfoCollector<C>>
+public class SemanticActionHandler<C extends OldContainerI, IC extends InfoCollector<C>>
 		extends Debug
 		implements SemanticActionStandardMethods, SemanticActionsKeyWords, SemanticActionNamedArguments
 {

@@ -4,8 +4,8 @@
 package ecologylab.semantics.seeding;
 
 import ecologylab.appframework.types.prefs.PrefElementState;
-import ecologylab.serialization.simpl_inherit;
 import ecologylab.serialization.ElementState.xml_other_tags;
+import ecologylab.serialization.simpl_inherit;
 
 /**
  * @author andruid

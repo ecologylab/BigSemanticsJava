@@ -3,9 +3,9 @@ package ecologylab.semantics.actions;
 import org.junit.Test;
 
 import ecologylab.semantics.metametadata.MetaMetadataTranslationScope;
+import ecologylab.serialization.ElementState.xml_tag;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.simpl_inherit;
-import ecologylab.serialization.ElementState.xml_tag;
 
 @simpl_inherit
 @xml_tag("not")

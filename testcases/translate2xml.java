@@ -1,10 +1,8 @@
 package testcases;
 
 import java.io.File;
-import java.io.IOException;
 
 import ecologylab.semantics.metadata.builtins.Image;
-import ecologylab.semantics.metametadata.MetaMetadataTranslationScope;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.TranslationScope;
 

@@ -2,19 +2,14 @@ package ecologylab.semantics.seeding;
 
 import java.io.File;
 
-import ecologylab.collections.Scope;
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.actions.SemanticActionHandler;
-import ecologylab.semantics.connectors.InfoCollector;
-import ecologylab.semantics.connectors.SearchEngineNames;
-import ecologylab.semantics.connectors.SeedPeer;
+import ecologylab.semantics.connectors.old.InfoCollector;
 import ecologylab.semantics.documentparsers.SearchParser;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.metametadata.SearchEngine;
 import ecologylab.semantics.model.text.InterestModel;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.simpl_inherit;
-import ecologylab.serialization.library.dc.Dc;
 
 /**
  * {@link Seed Seed} element that directs combinFormation to perform a search.
@@ -24,10 +19,8 @@ import ecologylab.serialization.library.dc.Dc;
  */
 @simpl_inherit
 public class SearchState extends Seed
-implements SemanticsPrefs, SearchEngineNames
+implements SemanticsPrefs
 {
-	private static final float	NO_BIAS												= 1.0f;
-	
 	private static final short	DEFAULT_SEARCH_INTEREST_LEVEL	= (short) 2;
 	
 	public static final int			NUM_IMAGE_RESULTS							= 40;
@@ -51,11 +44,6 @@ implements SemanticsPrefs, SearchEngineNames
     */
    @simpl_scalar protected boolean			isMovers;
    
-   /**
-    * For any query that allows searching on DC fields.
-    */
-   @simpl_composite protected Dc 				dc; 
-   
    private int				numResults		= NUM_SEARCH_RESULTS.value();
    
    /**
@@ -66,15 +54,11 @@ implements SemanticsPrefs, SearchEngineNames
     */
    @simpl_scalar
    private int				currentFirstResultIndex;
-
-   private int				searchType;
    
    /** 
     * how many results we have actually seen
     */
    private int numResultsFrom = 0;
-   
-   private String			site;
    
    /**
     * Initial level of interest in this seed.
@@ -85,8 +69,6 @@ implements SemanticsPrefs, SearchEngineNames
     * Among the searches that were specified (as part of seeding), which one is this?
     */
    private int				searchNum;
-   
-   private boolean		generatingTermDictionary;
    
    public SearchState()
    {
@@ -99,7 +81,7 @@ implements SemanticsPrefs, SearchEngineNames
    }
    public SearchState(String query, String engine, short interestLevel)
    {
-  	 this(query, engine, interestLevel, YAHOO_IMAGE.equals(engine) ? NUM_IMAGE_RESULTS : NUM_SEARCH_RESULTS.value());
+  	 this(query, engine, interestLevel, engine != null && engine.contains("image") ? NUM_IMAGE_RESULTS : NUM_SEARCH_RESULTS.value());
    }
    public SearchState(String query, String engine, short interestLevel, int numResults)
    {
@@ -109,30 +91,18 @@ implements SemanticsPrefs, SearchEngineNames
 	   this.interestLevel			= interestLevel;
 	   this.numResults				= numResults;
    }
-   public SearchState(String query, String engine, short interestLevel, int numResults, boolean generatingTermDictionary)
-   {
-  	 this(query, engine, interestLevel, numResults);
-	   this.noAggregator				= generatingTermDictionary;
-	   this.generatingTermDictionary	= generatingTermDictionary;
-   }
    
    /**
     * this is when we do a buzz, etc search, and seeds are created because they are a result.
-    * 
-    * @param ancestor the original seed (i.e. the seed that spawned this one)
-    * @param query
-    * @param engine
+   * @param query
+   * @param engine
+   * @param noAggregator TODO
     */
-   public SearchState(SeedPeer ancestor, InfoCollector infoProcessor, String query, String engine)
+   public SearchState(InfoCollector infoProcessor, String query, String engine, boolean noAggregator)
    {
 	   this(query, engine);
-	   //FIXME -- process ancestor
+	   this.noAggregator	= noAggregator;
 	   initialize(infoProcessor);
-   }
-
-   public static SearchState getGoogleSearchState(String query, int numResults)
-   {
-  	 return new SearchState(query, GOOGLE);
    }
 
    /**
@@ -159,7 +129,7 @@ implements SemanticsPrefs, SearchEngineNames
 		   error("Can't process search seed with null engine.");
 		   return false;
 	   }
-	   if (((query == null) || (query.length()<=0) ) && !DELICIOUS.equals(engine)) // delicious handles empty queries nicely
+	   if (((query == null) || (query.length()<=0) ) && !DeliciousState.DELICIOUS.equals(engine)) // delicious handles empty queries nicely
 	   {
 		   try
 		   {
@@ -192,7 +162,7 @@ implements SemanticsPrefs, SearchEngineNames
    {
   	 //  	 InterestModel.expressInterest(query, interestLevel);
   	 //infoCollector.instantiateDocumentType(SEARCH_DOCUMENT_TYPE_REGISTRY, engine, this);		
-  	 new SearchParser(infoCollector, engine, this);
+  	 new SearchParser(infoCollector, this);
    }
 
 	/**
@@ -227,25 +197,6 @@ implements SemanticsPrefs, SearchEngineNames
 	{
 		return query;
 	}
-	/**
-	 * The category the dashboard uses to show.
-	 * 
-	 * @return	The search category.
-	 */
-	public String categoryString()
-	{
-		return SEARCH;
-	}
-	
-	/**
-	 * The category the dashboard uses to show.
-	 * 
-	 * @return	The search engine category.
-	 */
-	public String detailedCategoryString()
-	{
-		return engine.toString();
-	}
 	
 	/**
 	 * @return Returns the initialIntensity.
@@ -275,24 +226,12 @@ implements SemanticsPrefs, SearchEngineNames
 	{
 		return searchNum;
 	}
-	
-	public int searchType()
-	{
-		return searchType;
-	}
-	
+
 	protected boolean noAggregator()
 	{
 		return this.noAggregator || (seedSet() == null);
 	}
 	
-	/**
-	 * @return Returns the siteString.
-	 */
-	public String siteString()
-	{
-		return site;
-	}
 	/**
 	 * @param query The query to set.
 	 */
@@ -302,13 +241,6 @@ implements SemanticsPrefs, SearchEngineNames
 		return true;
 	}
 	
-	/**
-	 * @param engineTypeString
-	 */
-	public void setCategory(String engineTypeString)
-	{
-		this.engine = engineTypeString;
-	}
 	/**
 	 * @return Returns the firstResult.
 	 */
@@ -327,6 +259,11 @@ implements SemanticsPrefs, SearchEngineNames
 		 return currentFirstResultIndex;
 	}
 	
+	public void setResultSetNum(int n)
+	{
+		currentFirstResultIndex	= n * numResults;
+	}
+	
 	/**
 	 * @param queueInsteadOfImmediate The queueInsteadOfImmediate to set.
 	 */
@@ -340,13 +277,7 @@ implements SemanticsPrefs, SearchEngineNames
 	public String creator()
 	{
 		return creator;
-	}
-	
-	public boolean generatingTermDictionary()
-	{
-		return generatingTermDictionary;
-	}
-	
+	}	
 	
 	/**
 	 * @return true if specified that the user wants to see the most popular tagged 
@@ -445,16 +376,6 @@ implements SemanticsPrefs, SearchEngineNames
 	public boolean isHomogenousSeed()
 	{
 		return (query != null && query.contains("site:"));
-	}
-	
-	public void setDcQuery(Dc dcQuery)
-	{
-		this.dc = dcQuery;
-	}
-	
-	public Dc getDcQuery()
-	{
-		return dc;
 	}
 
 	static final File	testFile	= new File("config/preferences/katrinaLocationAware.xml");

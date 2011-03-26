@@ -1,7 +1,5 @@
 package ecologylab.semantics.html.standalone;
 
-import java.io.InputStream;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.TreeMap;
 
@@ -9,14 +7,11 @@ import org.w3c.dom.Document;
 import org.w3c.tidy.AttVal;
 import org.w3c.tidy.DOMDocumentImpl;
 import org.w3c.tidy.DOMNodeImpl;
-import org.w3c.tidy.Lexer;
 import org.w3c.tidy.Out;
 import org.w3c.tidy.OutImpl;
 import org.w3c.tidy.StreamIn;
 import org.w3c.tidy.TdNode;
 import org.w3c.tidy.Tidy;
-
-import sun.io.ByteToCharASCII;
 
 import ecologylab.generic.StringTools;
 import ecologylab.net.PURLConnection;

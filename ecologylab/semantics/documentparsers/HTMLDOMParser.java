@@ -11,9 +11,9 @@ import ecologylab.appframework.types.prefs.PrefBoolean;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.generic.StringTools;
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.connectors.AbstractImgElement;
-import ecologylab.semantics.connectors.Container;
-import ecologylab.semantics.connectors.InfoCollector;
+import ecologylab.semantics.connectors.old.AbstractImgElement;
+import ecologylab.semantics.connectors.old.InfoCollector;
+import ecologylab.semantics.connectors.old.OldContainerI;
 import ecologylab.semantics.html.ImgElement;
 import ecologylab.semantics.html.ParagraphText;
 import ecologylab.semantics.html.documentstructure.AnchorContext;
@@ -33,8 +33,8 @@ import ecologylab.serialization.XMLTools;
  * @author eunyee
  * 
  */
-public class HTMLDOMParser<C extends Container, IC extends InfoCollector<C>>
-		extends HTMLParserCommon<C, IC>
+public class HTMLDOMParser
+		extends HTMLParserCommon
 {
 
 	/**
@@ -101,7 +101,7 @@ public class HTMLDOMParser<C extends Container, IC extends InfoCollector<C>>
 		}
 		catch (Exception e)
 		{
-			debug("ERROR: while parsing document - " + getContainer().purl());
+			debug("ERROR: while parsing document - " + getContainer().location());
 			e.printStackTrace();
 		}
 		finally
@@ -280,8 +280,8 @@ public class HTMLDOMParser<C extends Container, IC extends InfoCollector<C>>
 		{
 			ArrayList<AnchorContext> anchorContextsPerHref = hashedAnchorContexts.get(hrefPurl);
 
-			SemanticAnchor semanticAnchor = new SemanticAnchor(hrefPurl, anchorContextsPerHref, false, 1,
-					purl(), fromContentBody, false, LinkType.WILD);
+			SemanticAnchor semanticAnchor = new SemanticAnchor(fromContentBody ? LinkType.WILD_CONTENT_BODY : LinkType.WILD, hrefPurl, anchorContextsPerHref, purl(),
+					1);
 			// generateCanidateContainerFromContext(aggregated,container, false);
 			createContainerFromSemanticAnchor(container, hrefPurl, semanticAnchor);
 		}
@@ -299,7 +299,7 @@ public class HTMLDOMParser<C extends Container, IC extends InfoCollector<C>>
 
 			MetaMetadataRepository mmdRepository = infoCollector.metaMetaDataRepository();
 			MetaMetadata metaMetadata = mmdRepository.getDocumentMM(hrefPurl);
-			Container hrefContainer = infoCollector.getContainer(container, null, metaMetadata, hrefPurl,
+			OldContainerI hrefContainer = infoCollector.getContainer(container, null, metaMetadata, hrefPurl,
 					false, false, false);
 
 			if (hrefContainer == null || hrefContainer.recycled())
@@ -317,7 +317,6 @@ public class HTMLDOMParser<C extends Container, IC extends InfoCollector<C>>
 				System.out.println("--- Ignoring cyclicly adding inlink to: " + hrefContainer + " from container.");
 			if(!hrefContainer.isDownloadDone())
 			{
-				container.setInArticleBody(semanticAnchor.fromContentBody());
 				container.addCandidateContainer(hrefContainer);
 			}
 			else

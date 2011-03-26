@@ -1,10 +1,8 @@
 package ecologylab.semantics.actions;
 
-import java.util.Map;
-
-import ecologylab.semantics.connectors.InfoCollector;
-import ecologylab.serialization.simpl_inherit;
+import ecologylab.semantics.connectors.old.InfoCollector;
 import ecologylab.serialization.ElementState.xml_tag;
+import ecologylab.serialization.simpl_inherit;
 
 /**
  * needs to be implemented by the client.

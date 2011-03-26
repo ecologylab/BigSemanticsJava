@@ -8,6 +8,10 @@ package ecologylab.semantics.html.documentstructure;
  */
 public enum LinkType 
 {
-	TRUSTED_SEMANTICS,
+	CITATION_SEMANTIC_ACTION,
+	TRUSTED_SEMANTIC_ACTION,
+	SITE_BOOSTED_SEMANTIC_ACTION,
+	OTHER_SEMANTIC_ACTION,
+	WILD_CONTENT_BODY,
 	WILD
 }

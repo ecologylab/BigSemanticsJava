@@ -2,7 +2,6 @@ package ecologylab.semantics.model.text;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Observer;
 import java.util.Set;
 

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package ecologylab.semantics.connectors;
+package ecologylab.semantics.namesandnums;
 
 import ecologylab.appframework.ApplicationEnvironment;
 import ecologylab.appframework.EnvironmentGeneric;

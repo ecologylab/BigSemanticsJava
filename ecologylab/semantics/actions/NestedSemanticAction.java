@@ -5,7 +5,7 @@ package ecologylab.semantics.actions;
 
 import java.util.ArrayList;
 
-import ecologylab.semantics.connectors.InfoCollector;
+import ecologylab.semantics.connectors.old.InfoCollector;
 import ecologylab.serialization.simpl_inherit;
 
 /**

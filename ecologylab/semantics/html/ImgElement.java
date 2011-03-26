@@ -3,12 +3,9 @@
  */
 package ecologylab.semantics.html;
 
-import java.util.HashMap;
-
 import org.w3c.tidy.TdNode;
 
 import ecologylab.generic.Generic;
-import ecologylab.generic.StringTools;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.html.documentstructure.ImageFeatures;
 

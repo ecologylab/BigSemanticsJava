@@ -4,7 +4,7 @@
  */
 package ecologylab.semantics.model.text.utils;
 
-import ecologylab.generic.*;
+import ecologylab.generic.Debug;
 import ecologylab.net.ParsedURL;
 
 /**

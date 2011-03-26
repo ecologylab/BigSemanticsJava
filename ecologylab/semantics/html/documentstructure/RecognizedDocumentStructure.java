@@ -7,10 +7,8 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import org.w3c.tidy.AttVal;
-import org.w3c.tidy.Lexer;
 import org.w3c.tidy.TdNode;
 
-import ecologylab.generic.Generic;
 import ecologylab.generic.IntSlot;
 import ecologylab.generic.StringTools;
 import ecologylab.net.ParsedURL;

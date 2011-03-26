@@ -1,4 +1,4 @@
-package ecologylab.semantics.connectors;
+package ecologylab.semantics.connectors.old;
 
 import ecologylab.net.ParsedURL;
 
@@ -8,9 +8,9 @@ import ecologylab.net.ParsedURL;
  *
  * @author andruid
  */
-public interface Hyperlink<C extends Container>
+public interface Hyperlink<C extends OldContainerI>
 {
-	public ParsedURL purl();
+	public ParsedURL location();
 	
 	/**
 	 * 

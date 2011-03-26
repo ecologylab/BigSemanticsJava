@@ -1,7 +1,7 @@
 /**
  * 
  */
-package ecologylab.semantics.connectors;
+package ecologylab.semantics.connectors.old;
 
 import java.io.File;
 
@@ -9,9 +9,7 @@ import javax.swing.JFrame;
 
 import ecologylab.collections.Scope;
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.documentparsers.DocumentParser;
-import ecologylab.semantics.html.documentstructure.SemanticInLinks;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
@@ -19,13 +17,14 @@ import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.seeding.SearchState;
 import ecologylab.semantics.seeding.Seed;
 import ecologylab.semantics.seeding.SeedDistributor;
+import ecologylab.semantics.seeding.SeedPeer;
 import ecologylab.semantics.seeding.SeedSet;
 
 /**
  * @author andruid
  * 
  */
-public interface InfoCollector<C extends Container>
+public interface InfoCollector<C extends OldContainerI>
 {
 	void displayStatus(String message);
 
@@ -66,8 +65,6 @@ public interface InfoCollector<C extends Container>
 	void setPlayOnStart(boolean b);
 
 	void clear();
-
-	void instantiateDocumentType(Scope registry, String key, SearchState searchState);
 
 	void reject(String domain);
 

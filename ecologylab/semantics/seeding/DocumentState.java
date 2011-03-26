@@ -4,9 +4,10 @@ import java.awt.Point;
 import java.io.File;
 
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.connectors.Container;
-import ecologylab.semantics.connectors.InfoCollector;
-import ecologylab.semantics.connectors.InfoCollectorBase;
+import ecologylab.semantics.connectors.old.InfoCollector;
+import ecologylab.semantics.connectors.old.InfoCollectorBase;
+import ecologylab.semantics.connectors.old.OldContainerI;
+import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.model.text.InterestModel;
 import ecologylab.serialization.simpl_inherit;
 
@@ -52,7 +53,7 @@ public class DocumentState extends Seed
 	public DocumentState(String purlString, String action)
 	{
 		super();
-		this.setCategory(action);
+		this.action	= action;
 		this.setValue(purlString);
 	}
 	
@@ -76,14 +77,15 @@ public class DocumentState extends Seed
 	 		infoCollector.traversable(url);
 	 		// strangely enough, a file document seed can have a parentContainer!
 	 		File file					= url.file();
-	 		Container parentContainer	= null;
+	 		OldContainerI parentContainer	= null;
 	 		if (file != null)
 	 		{
 				File parent				= file.getParentFile();	// the directory the file lives in
 				ParsedURL parentPURL	= new ParsedURL(parent);
 				parentContainer	= infoCollector.getContainer(null, null, InfoCollectorBase.DOCUMENT_META_METADATA, parentPURL, false, false, false);
 	 		}
-	 		Container container =infoCollector.getContainer(parentContainer, null, null, url, false, false, true);
+	 		OldContainerI container =infoCollector.getContainer(parentContainer, null, null, url, false, false, true);
+	 		document	= (Document) container.getMetadata();
 	 		if(query != null)
 	 		{
 	 			container.setQuery(query);
@@ -104,33 +106,7 @@ public class DocumentState extends Seed
  	{
  		return (url != null) ? url.toString() : new String("");
  	}
- 	/**
-	 * The category the dashboard uses to show.
-	 * 
-	 * @return	The search category.
-	 */
-	public String categoryString()
-	{
-		return (action != null) ? action : DOCS_FEEDS;
-	}
-	
-	/**
-	 * Not used but necessary.
-	 * 
-	 * @return	The search engine category.
-	 */
-	public String detailedCategoryString()
-	{
-		return (action != null) ? action : DOCS_FEEDS;
-	}
-	
-	/**
-	 * @param actionTypeString
-	 */
-	public void setCategory(String actionTypeString)
-	{
-		action = actionTypeString;
-	}
+
 	
 	/**
 	 * Set the value of the purl field, if the String is valid.

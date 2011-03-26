@@ -2,10 +2,10 @@ package ecologylab.semantics.seeding;
 
 import ecologylab.collections.Scope;
 import ecologylab.generic.ReflectionTools;
-import ecologylab.semantics.connectors.CFPrefNames;
-import ecologylab.semantics.connectors.Container;
-import ecologylab.semantics.connectors.InfoCollector;
-import ecologylab.semantics.connectors.SeedPeer;
+import ecologylab.semantics.connectors.old.InfoCollector;
+import ecologylab.semantics.connectors.old.OldContainerI;
+import ecologylab.semantics.metadata.builtins.Document;
+import ecologylab.semantics.namesandnums.CFPrefNames;
 import ecologylab.serialization.ElementState;
 
 /**
@@ -13,7 +13,7 @@ import ecologylab.serialization.ElementState;
  * 
  * @author andruid, robinson
  */
-abstract public class Seed<AC extends Container> extends ElementState implements CFPrefNames
+abstract public class Seed<AC extends OldContainerI> extends ElementState implements CFPrefNames
 {
     public static final String          TRAVERSABLE                  = "traversable";
     public static final String          UNTRAVERSABLE                = "untraversable";
@@ -21,9 +21,9 @@ abstract public class Seed<AC extends Container> extends ElementState implements
 
     /**
      * When set, indicates that the seed should be processed without using a
-     * {@link SeedDistributor ResultDistributer}.
+     * {@link SeedDistributor ResultDistributer}. This is done, for example in synthesizeSearch().
+     * Whenever a Seed is constructed via S.IM.PL Serialization, noAggregator is false.
      */
-    // FIXME it seems that we can get rid of noAggregator since it is always set to true 
     protected boolean                     noAggregator;
 
     protected boolean                     queueInsteadOfImmediate;
@@ -41,6 +41,8 @@ abstract public class Seed<AC extends Container> extends ElementState implements
     protected 	SeedPeer									seedPeer;
     
     private			boolean										active	= true;
+    
+    Document	document;
 
     
     
@@ -140,10 +142,6 @@ abstract public class Seed<AC extends Container> extends ElementState implements
   	}
 
     
-    abstract public String categoryString();
-
-    abstract public String detailedCategoryString();
-    
     abstract public String valueString();
     
     abstract public boolean setValue(String value);
@@ -163,15 +161,6 @@ abstract public class Seed<AC extends Container> extends ElementState implements
      */
     public void setupNumResults()
     {}
-
-   
-    /**
-     * @param category
-     *            The category (WEB_SITE, TRAVERSABLE, etc..) to be set for the seed. if you are
-     *            setting the category for a SEARCH, then this value is what engine you want to use
-     *            (GOOGLE, FLICKR, etc..)
-     */
-    public abstract void setCategory(String value);
  
     /**
      * @return Returns the bias.
@@ -210,7 +199,7 @@ abstract public class Seed<AC extends Container> extends ElementState implements
     /**
      * @return Returns the ResultDistributer.
      */
-    public <C extends Container> SeedDistributor<C> seedDistributer(InfoCollector infoCollector)
+    public <C extends OldContainerI> SeedDistributor<C> seedDistributer(InfoCollector infoCollector)
     {
     	if (seedDistributer != null)
     		return seedDistributer;
@@ -252,7 +241,7 @@ abstract public class Seed<AC extends Container> extends ElementState implements
    * 
    * @param container
    */
-  public void bindToContainer(Container container)
+  public void bindToContainer(OldContainerI container)
   {
       if(container == null)
       {

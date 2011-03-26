@@ -64,7 +64,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	private HashMap<String, UserAgent>													userAgents;
 
 	@simpl_map("search_engine")
-	private HashMap<String, SearchEngine>												searchEngines;
+	private SearchEngines																				searchEngines;
 
 	@simpl_map("named_style")
 	private HashMap<String, NamedStyle>													namedStyles;
@@ -1102,4 +1102,8 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		return baseImageMM;
 	}
 
+	public String getDefaultSearchEngine()
+	{
+		return searchEngines != null ? searchEngines.getDefaultEngine() : "bing";
+	}
 }

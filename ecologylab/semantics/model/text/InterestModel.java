@@ -3,10 +3,7 @@ package ecologylab.semantics.model.text;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import ecologylab.appframework.types.prefs.Pref;
-import ecologylab.appframework.types.prefs.PrefBoolean;
 import ecologylab.generic.IFeatureVector;
-import ecologylab.semantics.connectors.CFPrefNames;
 import ecologylab.semantics.seeding.SemanticsPrefs;
 import ecologylab.serialization.ElementState;
 

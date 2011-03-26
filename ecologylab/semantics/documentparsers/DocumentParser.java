@@ -9,7 +9,6 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
 
-import ecologylab.appframework.types.prefs.Pref;
 import ecologylab.collections.PrefixCollection;
 import ecologylab.collections.Scope;
 import ecologylab.generic.Debug;
@@ -18,11 +17,10 @@ import ecologylab.io.BasicSite;
 import ecologylab.net.ConnectionHelper;
 import ecologylab.net.PURLConnection;
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.actions.SemanticActionsKeyWords;
-import ecologylab.semantics.connectors.CFPrefNames;
-import ecologylab.semantics.connectors.Container;
-import ecologylab.semantics.connectors.InfoCollector;
+import ecologylab.semantics.connectors.NewInfoCollector;
+import ecologylab.semantics.connectors.old.InfoCollector;
+import ecologylab.semantics.connectors.old.OldContainerI;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
@@ -48,10 +46,9 @@ import ecologylab.serialization.ElementState;
  * @author andruid
  * @author eunyee
  */
-abstract public class DocumentParser<C extends Container, IC extends InfoCollector<C>, ES extends ElementState>
+abstract public class DocumentParser
 		extends Debug
 {
-
 	/**
 	 * All information about the connection. Filled out by the connect() method.
 	 */
@@ -63,22 +60,11 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 	 */
 	protected MetaMetadataCompositeField	metaMetadata;
 	
-	private Document										metadata;
+	private Document										document;
 	
-	public static boolean 					cacheHit = false;
+	public boolean 					cacheHit = false;
 
-	/**
-	 * Associated Container object.
-	 * Filled out by the connect() method.
-	 */
-	protected C						container;
-
-	protected IC					infoCollector;
-
-	protected static final class DocumentTypeRegistry extends Scope<DocumentParser>
-	{
-
-	}
+	protected NewInfoCollector					infoCollector;
 
 	protected static final Scope<Class<? extends DocumentParser>>	registryByMimeType	= new Scope<Class<? extends DocumentParser>>();
 
@@ -97,19 +83,13 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 		bindingParserMap.put(SemanticActionsKeyWords.DEFAULT_PARSER, HTMLDOMImageTextParser.class);
 		
 	}
-	/**
-	 * Prefix Collection for the documenttypes like ACMPortal type... Matches
-	 * http://portal.acm.org/citation.cfm?...
-	 */
-	protected static final PrefixCollection						prefixCollection	= new PrefixCollection(
-																							'/',
-																							true);
 
 	/**
 	 * Keys are DocumentType class names without package names, returned by Class.getSimpleName().
 	 */
 	protected static final Scope<Class<? extends DocumentParser>>	registryByClassName	= new Scope<Class<? extends DocumentParser>>();
 
+	
 	/**
 	 * DocumentType constructor
 	 * 
@@ -123,334 +103,31 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 	 * 
 	 * @param infoCollector
 	 */
-	protected DocumentParser ( IC infoCollector )
+	protected DocumentParser ( NewInfoCollector infoCollector )
 	{
 		this.infoCollector = infoCollector;
 	}
 	
 	public abstract void parse ( ) throws IOException;
 
-	/**
-	 * Optional parse method takes an an XML DOM represented as an ElementState as input.
-	 * 
-	 * @param es
-	 */
-	public void parse(ES es)
-	{
-		
-	}
-
-	/**
-	 * Call parse() and then the postParseHook().
-	 * 
-	 * @param elementState
-	 */
-	public final void performParse(ES elementState)
-	{
-		parse(elementState);
-		postParseHook();
-	}
-
-	/**
-	 * Called after parsing.
-	 */
-	public void postParseHook()
-	{
-	}
-
-	/**
-	 * Optional parse method takes an XML DOM represented as an org.w3c.Document as input.
-	 * @param dom
-	 */
-	public void parse(org.w3c.dom.Document dom)
-	{
-		
-		
-	}
-
-	interface DocumentParserConnectHelper extends ConnectionHelper
-	{
-		DocumentParser getResult ( );
-		boolean hadRedirect();
-		Document newMetadata();
-	}
-
-	public static<C extends Container, IC extends InfoCollector<C>> DocumentParser connect(final ParsedURL purl,
-			final Container<IC> container, final IC infoCollector)
-	{
-		{
-			Document metadata			= container.getMetadata();
-			if (metadata == null)
-			{
-				MetaMetadataCompositeField metaMetadata = infoCollector.metaMetaDataRepository().getDocumentMM(purl);
-				metadata						= (Document) ((MetaMetadata) metaMetadata).constructMetadata();
-			}
-			return connect(metadata, container, infoCollector);
-		}
-		
-	}
-	/**
-	 * Open a connection to the URL. Read the header, but not the content. Look at if the path exists,
-	 * if there is a redirect, and the mime type. If there is a redirect, process it.
-	 * <p/>
-	 * Create an InputStream. Using reflection (Class.newInstance()), create the appropriate
-	 * DocumentParser, based on that mimeType, using the allTypes HashMap. Return it.
-	 * 
-	 * This method returns the parser using one of the cases:
-	 * 1) Use URL based look up and find meta-metadata and use binding if (direct or xpath)
-	 *    to find the parser.
-	 * 2) Else find meta-metadata using URL suffix and mime type and make a direct binding parser.
-	 * 3) If still parser is null and binding is also null, use in-build tables to find the parser.
-	 * @param metadata TODO
-	 */
-	public static DocumentParser connect(Document metadata, 
-			final Container container, final InfoCollector infoCollector)
-	{
-		final ParsedURL purl	= metadata.getLocation();
-		
-		DocumentParserConnectHelper documentParserConnectHelper = new DocumentParserConnectHelper()
-		{
-			DocumentParser	result;
-			boolean hadRedirect = false;
-			Document newMetadata;
-
-			public void handleFileDirectory(File file)
-			{
-				// result = new FileDirectoryType(file, container,
-				// infoCollector);
-				result = infoCollector.newFileDirectoryType(file);
-			}
-
-			public boolean parseFilesWithSuffix(String suffix)
-			{
-				MetaMetadata mmd = infoCollector.metaMetaDataRepository().getMMBySuffix(suffix);
-				if(mmd!=null)
-					result = getParserInstanceFromBindingMap(mmd.getParser(), infoCollector);
-				return (result != null);
-			}
-
-			public void displayStatus(String message)
-			{
-				infoCollector.displayStatus(message);
-			}
-
-			public void badResult()
-			{
-				if (result != null)
-				{
-					result.recycle();
-					result = null;
-				}
-			}
-
-			public boolean processRedirect(URL connectionURL) throws Exception
-			{
-				ParsedURL connectionPURL = new ParsedURL(connectionURL);
-				hadRedirect = true;
-				displayStatus("redirecting: " + purl + " > " + connectionURL);
-				Container redirectedAbstractContainer = infoCollector.lookupAbstractContainer(connectionPURL);
-				if (redirectedAbstractContainer != null)	// existing container
-				{
-					// the redirected url has been visited already.
-					// add this url into the redirected AbstractContainers's
-					// additionalURLs.
-					if (container != null)
-						container.redirectInlinksTo(redirectedAbstractContainer);
-
-					redirectedAbstractContainer.addAdditionalPURL(purl);
-					
-					redirectedAbstractContainer.performDownload();
-
-					// we dont need the new container object that was passed in
-					// TODO recycle it!
-				}
-				else
-				// redirect to a new url
-				{
-					Document metadata	=(Document) container.getMetadata();
-					MetaMetadata mm	= (MetaMetadata) metadata.getMetaMetadata();
-					RedirectHandling redirectHandling = mm.getRedirectHandling();
-
-					if (metadata.isAlwaysAcceptRedirect() || infoCollector.accept(connectionPURL))
-					{
-						println("redirect: " + purl + " -> " + connectionPURL);
-						String domain = connectionPURL.domain();
-						String connPURLSuffix = connectionPURL.suffix();
-						// add entry to GlobalCollections containersHash
-						if (container != null)
-						{
-							// FIXME:hack for acmPortal pdf containers.
-							// The redirected URL has a timeout...which creates
-							// a problem while
-							// opening the saved xml.
-							// if(connectionPURL.toString().startsWith(
-							// "http://delivery.acm.org"))
-							// {
-							// return true;
-							// }
-							
-							/*
-							 * Was unnecessary  because of how ecocache handles the acm gateway pages
-							 * But actually, we are not using ecocache :-(
-							 */
-							if (/* !Pref.lookupBoolean(CFPrefNames.USING_PROXY) && */
-									"acm.org".equals(domain) && "pdf".equals(connPURLSuffix))
-							{
-								MetaMetadata pdfMetaMetadata = infoCollector.metaMetaDataRepository().getMMBySuffix(connPURLSuffix);
-								newMetadata = (Document) pdfMetaMetadata.constructMetadata();
-								newMetadata.setLocation(connectionPURL);
-								return true;
-							}
-							else
-							{
-								// get new metadata
-								newMetadata	= infoCollector.constructDocument(connectionPURL);
-								container.setMetadata(newMetadata);
-//			done by resetPURL()					newMetadata.setLocation(oldMetadata.getLocation());
-								newMetadata.setQuery(metadata.getQuery());
-								metadata		= newMetadata;
-							}
-							// redirect the AbstractContainer object
-							if (redirectHandling == RedirectHandling.REDIRECT_FOLLOW_DONT_RESET_LOCATION)
-								container.addAdditionalPURL(connectionPURL);
-							else
-								container.resetPURL(connectionPURL);
-						}
-						// this is the only redirect case in which we continue
-						// processing
-						return true;
-					}
-					else
-						println("rejecting redirect: " + purl + " -> " + connectionPURL);
-				}
-				return false;
-			}
-
-			public DocumentParser getResult()
-			{
-				return result;
-			}
-			
-			public boolean hadRedirect()
-			{
-				return this.hadRedirect;
-			}
-			public Document newMetadata()
-			{
-				return this.newMetadata;
-			}
-		};
-
-		assert(metadata != null);
-		MetaMetadataCompositeField metaMetadata = metadata.getMetaMetadata();
-		// then try to create a connection using the PURL
-		String userAgentString	= (metaMetadata == null) ? null : metaMetadata.getUserAgentString();
-		PURLConnection purlConnection = purl.connect(documentParserConnectHelper, userAgentString);
-		DocumentParser result 	= documentParserConnectHelper.getResult();
-		//FIXME -- need to access new
-		Document newMetadata		= documentParserConnectHelper.newMetadata();
-		if (newMetadata != null)	// in case it changed while we were parsing
-		{
-			metadata							= newMetadata;
-			metaMetadata 					= newMetadata.getMetaMetadata();
-		}
-		// check for a parser that was discovered while processing a re-direct
-		
-		BasicSite site = container.site();
-
-		// if a parser was preset for this container, use it
-		if ((result == null) && (container != null))
-			result = container.getDocumentParser();
-	
-		// if we made PURL connection but could not find parser using container
-		if ((purlConnection != null) && (!purl.isFile()))
-		{
-			String cacheValue = purlConnection.urlConnection().getHeaderField("X-Cache");
-			cacheHit = cacheValue != null && cacheValue.contains("HIT");
-
-			if (metaMetadata.hasDefaultSuffixOrMimeSelector())
-			{ // see if we can find more specifc meta-metadata using mimeType
-				final MetaMetadataRepository repository = infoCollector.metaMetaDataRepository();
-				String mimeType = purlConnection.mimeType();
-				MetaMetadataCompositeField mimeMmd	= repository.getMMByMime(mimeType);
-				if (mimeMmd != null && !mimeMmd.equals(metaMetadata))
-				{	// new meta-metadata!
-					if (!mimeMmd.getMetadataClass().isAssignableFrom(metadata.getClass()))
-					{	// more specifc so we need new metadata!
-						Document mimeMetadata	= (Document) ((MetaMetadata) mimeMmd).constructMetadata();
-						container.setMetadata(mimeMetadata);
-					}
-					metaMetadata	= mimeMmd;
-				}
-			}
-			// if we haven't got a DocumentParser here, using the binding hint; if we already have one,
-			// it is very likely a predefined one, e.g. MetaMetadataSearchParser
-			if (result == null)
-			{
-				String parserName = metaMetadata.getParser();
-				if (parserName == null)
-					parserName = SemanticActionsKeyWords.DEFAULT_PARSER;
-				result = getParserInstanceFromBindingMap(parserName, infoCollector);
-			}
-		}
-		
-		if (result != null)
-		{
-			result.fillValues(purlConnection, metadata, container, infoCollector);
-		}
-		
-		return result;
-	}
-
-	private static <DT extends DocumentParser> DT getParserInstanceFromBindingMap(String binding,
-			InfoCollector infoCollector)
-	{
-		DT result = null;
-		Class<? extends DT> documentTypeClass = (Class<? extends DT>) bindingParserMap.get(binding);
-
-		Object[] constructorArgs = new Object[1];
-		constructorArgs[0] = infoCollector;
-
-		result = ReflectionTools.getInstance(documentTypeClass, DEFAULT_DOCUMENTPARSER_ARG, constructorArgs);
-		return result;
-	}
-
-	/**
-	 * Takes in the purl and returns the prefix purl
-	 * 
-	 * @param purl
-	 * @return
-	 */
-	public static ParsedURL getLookupPurl ( ParsedURL purl )
-	{
-		// FIXME -- this was an awful kludge
-		// if(prefixCollection.match(purl.toString(), '?'))
-		// {
-		// return ACMPortalType.PURL;
-		// }
-		// else
-		return purl;
-	}
 
 	/**
 	 * Fill out the instance of this resulting from a succcessful connect().
 	 * 
 	 * @param purlConnection
 	 * @param metadata TODO
-	 * @param container
 	 * @param infoCollector
 	 */
-	protected void fillValues ( PURLConnection purlConnection, Document metadata, C container, IC infoCollector )
+	protected void fillValues ( PURLConnection purlConnection, Document metadata, NewInfoCollector infoCollector )
 	{
 		this.purlConnection = purlConnection;
-		setContainer(container);
 		setInfoCollector(infoCollector);
 		setMetadata(metadata);
 	}
 
 	protected void setMetadata(Document metadata)
 	{
-		this.metadata			= metadata;
+		this.document			= metadata;
 		this.metaMetadata	= metadata.getMetaMetadata();
 	}
 	/**
@@ -486,7 +163,6 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 	public void recycle ( )
 	{
 		connectionRecycle();
-		container = null;
 		infoCollector = null;
 	}
 
@@ -554,22 +230,13 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 		purlConnection = new PURLConnection(purl(), null, inputStream);
 	}
 
-	/**
-	 * Set the container of this documentType object.
-	 * 
-	 * @param container
-	 */
-	public void setContainer ( C container )
-	{
-		this.container = container;
-	}
 
 	/**
 	 * Set the infoCollector of this documentType object.
 	 * 
 	 * @param infoCollector
 	 */
-	public void setInfoCollector ( IC infoCollector )
+	public void setInfoCollector ( NewInfoCollector infoCollector )
 	{
 		this.infoCollector = infoCollector;
 	}
@@ -582,7 +249,7 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 	 */
 	public ParsedURL purl ( )
 	{
-		return purlConnection != null ? purlConnection.getPurl() : (container != null) ? container.purl() : null;
+		return purlConnection != null ? purlConnection.getPurl() : (document != null) ? document.getLocation() : null;
 	}
 
 	public String toString ( )
@@ -652,6 +319,23 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 				registryBySuffix, suffix, infoCollector);
 	}
 */
+
+	/**
+	 * Filter description cFMetadata for junk
+	 * 
+	 * @return true if the stuff is worth using
+	 */
+	public static boolean isNonJunkDescription ( String description )
+	{
+		// println("isNonJunkDescription("+description);
+		return (description != null) && !description.startsWith("Find breaking")
+				&& // nytimes
+				!description.startsWith("Read full")
+				&& // cnn
+				!description.startsWith("CNN.com") && !description.startsWith("Visit BBC")
+				&& !description.startsWith("Flickr is almost certainly");
+	}
+
 	/**
 	 * Find the DocumentType class that corresponds to the documentTypeSimpleName, and construct a
 	 * fresh instance of that type.
@@ -674,9 +358,9 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 		return registryByMimeType.containsKey(mimeType);
 	}
 
-	static final Class[]	DEFAULT_INFO_COLLECTOR_CLASS_ARG	= {InfoCollector.class};
+//	static final Class[]	DEFAULT_INFO_COLLECTOR_CLASS_ARG	= {InfoCollector.class};
 	
-	static final Class[]  DEFAULT_DOCUMENTPARSER_ARG        = {InfoCollector.class};
+	static final Class[]  DEFAULT_DOCUMENTPARSER_ARG        = {NewInfoCollector.class};
 	/**
 	 * Given one of our registries, and a key, do a lookup in the registry to obtain the Class
 	 * object for the DocumentType subclass corresponding to the key -- in that registry.
@@ -689,34 +373,33 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 	 * @return an instance of the DocumentType subclass that corresponds to the key, in the
 	 *         specified registry.
 	 */
-	public static <DT extends DocumentParser> DT getInstanceFromRegistry (
-			Scope<Class<? extends DT>> thatRegistry, String key, InfoCollector infoCollector )
+	public static DocumentParser getInstanceFromRegistry (
+			Scope<Class<? extends DocumentParser>> thatRegistry, String key, InfoCollector infoCollector )
 	{
-		DT result = null;
-		Class<? extends DT> documentTypeClass = thatRegistry.get(key);
+		DocumentParser result = null;
+		Class<? extends DocumentParser> documentTypeClass = thatRegistry.get(key);
 
 		Object[] constructorArgs = new Object[1];
 		constructorArgs[0] = infoCollector;
 
 		result = ReflectionTools.getInstance(documentTypeClass, infoCollector.getMyClassArg(), constructorArgs);
 		if (result == null)
-			result = ReflectionTools.getInstance(documentTypeClass, DEFAULT_INFO_COLLECTOR_CLASS_ARG, constructorArgs);
+			result = ReflectionTools.getInstance(documentTypeClass, DEFAULT_DOCUMENTPARSER_ARG, constructorArgs);
 //		if (result == null)
 //			throw new RuntimeException("Registry lookup worked, but constructor matching failed :-( :-( :-(");
 		return result;
 	}
 
-	public static <DT extends DocumentParser> DT getInstanceFromRegistry (
-			Scope<Class<? extends DT>> thatRegistry, String key, Class<?>[] parameterTypes,
-			Object[] args )
+	public static DocumentParser getInstanceFromRegistry (Scope<Class<? extends DocumentParser>> thatRegistry, 
+			String key, Class<?>[] parameterTypes, Object[] args )
 	{
-		DT result = null;
-		Class<? extends DT> documentTypeClass = thatRegistry.get(key);
+		DocumentParser result = null;
+		Class<? extends DocumentParser> documentTypeClass = thatRegistry.get(key);
 		if (documentTypeClass != null)
 		{
 			if ((parameterTypes == null) || (args == null))
 			{
-				result = getInstance(documentTypeClass);
+				result = getDocumentParserInstance(documentTypeClass);
 			}
 			else
 			{
@@ -726,54 +409,30 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 		return result;
 	}
 
-	/**
-	 * Filter description cFMetadata for junk
-	 * 
-	 * @return true if the stuff is worth using
-	 */
-	public static boolean isNonJunkDescription ( String description )
-	{
-		// println("isNonJunkDescription("+description);
-		return (description != null) && !description.startsWith("Find breaking")
-				&& // nytimes
-				!description.startsWith("Read full")
-				&& // cnn
-				!description.startsWith("CNN.com") && !description.startsWith("Visit BBC")
-				&& !description.startsWith("Flickr is almost certainly");
-	}
-
-	/**
-	 * Obtain an instance of an information extractor, based on a URL that takes arguments, if one
-	 * is available. (The ParsedURL arguments, found after ? in the URL, are ignored for the
-	 * matching.)
-	 * 
-	 * @param key
-	 * @param thatMap
-	 * @return
-	 */
-	public static DocumentParser getInstanceFromMap ( ParsedURL purl,
-			HashMap<String, Class<? extends DocumentParser>> thatMap )
+  
+	public static DocumentParser getParserInstanceFromBindingMap(String binding,
+			InfoCollector infoCollector)
 	{
 		DocumentParser result = null;
-		Class<? extends DocumentParser> documentTypeClass = thatMap.get(purl
-				.noAnchorNoQueryPageString());
-
-		result = ReflectionTools.getInstance(documentTypeClass);
-		return result;
-	}
-
-	public static DocumentParser getInstanceFromMap ( ParsedURL purl,
-			HashMap<String, Class<? extends DocumentParser>> thatMap, InfoCollector infoCollector )
-	{
-		DocumentParser result = null;
-		Class<? extends DocumentParser> documentTypeClass = thatMap.get(purl
-				.noAnchorNoQueryPageString());
+		Class<? extends DocumentParser> documentTypeClass = (Class<? extends DocumentParser>) bindingParserMap.get(binding);
 
 		Object[] constructorArgs = new Object[1];
 		constructorArgs[0] = infoCollector;
 
-		result = ReflectionTools.getInstance(documentTypeClass, infoCollector
-				.getMyClassArg(), constructorArgs);
+		result = ReflectionTools.getInstance(documentTypeClass, DEFAULT_DOCUMENTPARSER_ARG, constructorArgs);
+		return result;
+	}
+
+	public static DocumentParser getParserInstanceFromBindingMap(String binding,
+			NewInfoCollector infoCollector)
+	{
+		DocumentParser result = null;
+		Class<? extends DocumentParser> documentTypeClass = (Class<? extends DocumentParser>) bindingParserMap.get(binding);
+
+		Object[] constructorArgs = new Object[1];
+		constructorArgs[0] = infoCollector;
+
+		result = ReflectionTools.getInstance(documentTypeClass, DEFAULT_DOCUMENTPARSER_ARG, constructorArgs);
 		return result;
 	}
 
@@ -783,9 +442,9 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 	 * @param thatClass
 	 * @return
 	 */
-	public static <DT extends DocumentParser> DT getInstance ( Class<? extends DT> thatClass )
+	public static DocumentParser getDocumentParserInstance ( Class<? extends DocumentParser> thatClass )
 	{
-		DT result = null;
+		DocumentParser result = null;
 		if (thatClass != null)
 		{
 			try
@@ -824,13 +483,9 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 	{
 		return false;
 	}
-	
-	public C getContainer()
-	{
-		return container;
-	}
 
-	public IC getInfoCollector()
+
+	public NewInfoCollector getInfoCollector()
 	{
 		return infoCollector;
 	}
@@ -842,7 +497,7 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 
 	public ParsedURL getTruePURL()
 	{
-		return container.purl();
+		return document.getLocation();
 	}
 	
 	/**
@@ -862,6 +517,14 @@ abstract public class DocumentParser<C extends Container, IC extends InfoCollect
 	public boolean doesDirectBinding()
 	{
 		return false;
+	}
+
+	/**
+	 * @return the document
+	 */
+	public Document getDocument()
+	{
+		return document;
 	}
 
 }

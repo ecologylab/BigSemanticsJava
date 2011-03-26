@@ -6,7 +6,6 @@ package ecologylab.semantics.metadata.builtins;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
-import ecologylab.serialization.ElementState.simpl_scalar;
 
 /**
  * @author andruid

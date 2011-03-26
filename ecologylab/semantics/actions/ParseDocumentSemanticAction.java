@@ -3,16 +3,14 @@
  */
 package ecologylab.semantics.actions;
 
-import java.io.IOException;
-
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.connectors.Container;
-import ecologylab.semantics.connectors.InfoCollector;
+import ecologylab.semantics.connectors.old.InfoCollector;
+import ecologylab.semantics.connectors.old.OldContainerI;
 import ecologylab.semantics.html.documentstructure.LinkType;
 import ecologylab.semantics.metametadata.MetaMetadata;
+import ecologylab.serialization.ElementState.xml_tag;
 import ecologylab.serialization.Hint;
 import ecologylab.serialization.simpl_inherit;
-import ecologylab.serialization.ElementState.xml_tag;
 
 /**
  * @author amathur
@@ -30,7 +28,7 @@ class ParseDocumentSemanticAction<IC extends InfoCollector, SAH extends Semantic
 
 	@simpl_scalar
 	@simpl_hints(Hint.XML_ATTRIBUTE)
-	protected LinkType linkType									= LinkType.WILD;
+	protected LinkType linkType									= LinkType.OTHER_SEMANTIC_ACTION;
 	
 	/**
 	 * This attribute is meant to be used when we only require the top document to actually be sent to
@@ -73,9 +71,9 @@ class ParseDocumentSemanticAction<IC extends InfoCollector, SAH extends Semantic
 		ParsedURL purl = (ParsedURL) getArgumentObject(SemanticActionNamedArguments.CONTAINER_LINK);
 		if (purl != null)
 		{
-			Container ancestor = documentParser.getContainer();
+			OldContainerI ancestor = documentParser.getContainer();
 			MetaMetadata mmd = infoCollector.metaMetaDataRepository().getDocumentMM(purl);
-			Container container = infoCollector.getContainer(ancestor, null, mmd, purl, false, true, false);
+			OldContainerI container = infoCollector.getContainer(ancestor, null, mmd, purl, false, true, false);
 			if (container != null)
 				container.queueDownload();
 		}

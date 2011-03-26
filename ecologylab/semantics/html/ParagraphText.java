@@ -2,7 +2,6 @@ package ecologylab.semantics.html;
 
 import org.w3c.tidy.TdNode;
 
-import ecologylab.generic.StringBuilderPool;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.model.text.TermVector;
 import ecologylab.serialization.XMLTools;

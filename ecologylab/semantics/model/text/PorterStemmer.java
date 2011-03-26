@@ -34,7 +34,6 @@ package ecologylab.semantics.model.text;
 
 */
 
-import java.io.*;
 
 /**
   * Stemmer, implementing the Porter Stemming Algorithm

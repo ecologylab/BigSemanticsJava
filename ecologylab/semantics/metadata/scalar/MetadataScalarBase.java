@@ -3,11 +3,8 @@ package ecologylab.semantics.metadata.scalar;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import ecologylab.generic.OneLevelNestingIterator;
-import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataBase;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
-import ecologylab.serialization.ElementState;
 
 abstract
 public class MetadataScalarBase<T> implements MetadataBase

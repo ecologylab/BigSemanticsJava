@@ -6,7 +6,6 @@ package ecologylab.semantics.html.documentstructure;
 import java.util.regex.Pattern;
 
 import ecologylab.generic.StringTools;
-import ecologylab.semantics.html.HTMLElementTidy;
 import ecologylab.semantics.html.utils.HTMLAttributeNames;
 
 /**
