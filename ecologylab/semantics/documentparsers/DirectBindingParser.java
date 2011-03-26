@@ -4,7 +4,7 @@
 package ecologylab.semantics.documentparsers;
 
 import ecologylab.semantics.actions.SemanticActionHandler;
-import ecologylab.semantics.connectors.old.InfoCollector;
+import ecologylab.semantics.connectors.NewInfoCollector;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.serialization.XMLTools;
 
@@ -28,7 +28,7 @@ public class DirectBindingParser
 	public Document populateMetadata(SemanticActionHandler handler)
 	{
 		Document populatedMetadata	= directBindingPopulateMetadata();
-		container.setMetadata(populatedMetadata);
+//		container.setMetadata(populatedMetadata);
 		
 		return populatedMetadata;
 	}
