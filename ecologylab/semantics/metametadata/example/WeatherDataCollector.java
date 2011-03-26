@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
 
+import ecologylab.concurrent.DownloadMonitor;
 import ecologylab.generic.Debug;
 import ecologylab.generic.DispatchTarget;
 import ecologylab.net.ParsedURL;

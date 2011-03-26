@@ -3,19 +3,14 @@
  */
 package ecologylab.semantics.metametadata.example;
 
-import java.io.IOException;
-
 import ecologylab.generic.DispatchTarget;
 import ecologylab.io.BasicSite;
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.connectors.AbstractImgElement;
-import ecologylab.semantics.connectors.Container;
-import ecologylab.semantics.connectors.ContentElement;
+import ecologylab.semantics.connectors.old.ContentElement;
+import ecologylab.semantics.connectors.old.OldContainerI;
 import ecologylab.semantics.documentparsers.DocumentParser;
-import ecologylab.semantics.html.ParagraphText;
 import ecologylab.semantics.html.documentstructure.SemanticAnchor;
 import ecologylab.semantics.metadata.builtins.Document;
-import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.model.text.ITermVector;
 import ecologylab.semantics.seeding.SearchResult;
 import ecologylab.semantics.seeding.Seed;
@@ -38,7 +33,7 @@ import ecologylab.serialization.TranslationScope;
  * 
  * @author quyin
  */
-public class MyContainer extends Container<MyInfoCollector<MyContainer>>
+public class MyContainer extends OldContainerI<MyInfoCollector<MyContainer>>
 {
 
 	protected MyInfoCollector	infoCollector;
@@ -70,14 +65,14 @@ public class MyContainer extends Container<MyInfoCollector<MyContainer>>
 	}
 
 	@Override
-	public void addCandidateContainer(Container newContainer)
+	public void addCandidateContainer(OldContainerI newContainer)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public boolean addSemanticInLink(SemanticAnchor newAnchor, Container srcContainer)
+	public boolean addSemanticInLink(SemanticAnchor newAnchor, OldContainerI srcContainer)
 	{
 		// TODO Auto-generated method stub
 		return false;
@@ -127,7 +122,7 @@ public class MyContainer extends Container<MyInfoCollector<MyContainer>>
 
 	// new
 	@Override
-	public ParsedURL purl()
+	public ParsedURL location()
 	{
 		if (getMetadata() == null)
 			return null;
@@ -137,7 +132,7 @@ public class MyContainer extends Container<MyInfoCollector<MyContainer>>
 	@Override
 	public boolean queueDownload()
 	{
-		if (infoCollector.accept(purl()))
+		if (infoCollector.accept(location()))
 		{
 			infoCollector.getDownloadMonitor().download(this, null);
 			return true;
@@ -146,7 +141,7 @@ public class MyContainer extends Container<MyInfoCollector<MyContainer>>
 	}
 
 	@Override
-	public void redirectInlinksTo(Container redirectedAbstractContainer)
+	public void redirectInlinksTo(OldContainerI redirectedAbstractContainer)
 	{
 		// TODO Auto-generated method stub
 
@@ -183,13 +178,6 @@ public class MyContainer extends Container<MyInfoCollector<MyContainer>>
 	public void setDispatchTarget(DispatchTarget dispatchTarget)
 	{
 		this.dispatchTarget = dispatchTarget;
-	}
-
-	@Override
-	public void setInArticleBody(boolean value)
-	{
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -282,7 +270,7 @@ public class MyContainer extends Container<MyInfoCollector<MyContainer>>
 	}
 
 	@Override
-	public Container container()
+	public OldContainerI container()
 	{
 		// TODO Auto-generated method stub
 		return null;
@@ -299,7 +287,7 @@ public class MyContainer extends Container<MyInfoCollector<MyContainer>>
 	public String toString()
 	{
 		if (cachedToString == null)
-			cachedToString = getClassName() + "[" + purl() + "]"; 
+			cachedToString = getClassName() + "[" + location() + "]"; 
 		return cachedToString;
 	}
 

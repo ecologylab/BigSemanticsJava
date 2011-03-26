@@ -7,8 +7,8 @@ import java.net.MalformedURLException;
 
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticAction;
-import ecologylab.serialization.simpl_inherit;
 import ecologylab.serialization.ElementState.xml_tag;
+import ecologylab.serialization.simpl_inherit;
 
 /**
  * This semantic action is used to save weather images to local drive, as an example of reusing

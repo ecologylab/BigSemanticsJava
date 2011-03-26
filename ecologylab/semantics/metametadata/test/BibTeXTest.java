@@ -10,12 +10,11 @@ import ecologylab.generic.DispatchTarget;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.generated.library.GeneratedMetadataTranslationScope;
 import ecologylab.semantics.metadata.Metadata;
-import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.metametadata.example.MyContainer;
 import ecologylab.semantics.metametadata.example.MyInfoCollector;
-import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.ElementState.FORMAT;
+import ecologylab.serialization.SIMPLTranslationException;
 
 public class BibTeXTest extends Debug implements DispatchTarget<MyContainer>
 {
