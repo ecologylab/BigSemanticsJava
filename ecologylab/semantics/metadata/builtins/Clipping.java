@@ -3,7 +3,6 @@
  */
 package ecologylab.semantics.metadata.builtins;
 
-import ecologylab.semantics.connectors.DocumentClosure;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
@@ -26,6 +25,7 @@ public class Clipping extends Metadata
 	/**
 	 * Text connected to the clipping in the source document.
 	 */
+	//TODO use html context -- need methods to strip tags to set regular context from it.
 	@simpl_scalar @simpl_hints(Hint.XML_LEAF_CDATA)
 	private MetadataString	contextHtml;
 

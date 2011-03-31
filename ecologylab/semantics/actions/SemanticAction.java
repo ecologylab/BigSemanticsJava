@@ -16,6 +16,7 @@ import ecologylab.semantics.html.documentstructure.SemanticAnchor;
 import ecologylab.semantics.html.documentstructure.SemanticInLinks;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.builtins.Document;
+import ecologylab.semantics.metadata.builtins.DocumentClosure;
 import ecologylab.semantics.metadata.builtins.Entity;
 import ecologylab.semantics.metametadata.Argument;
 import ecologylab.semantics.metametadata.MetaMetadata;
@@ -272,118 +273,94 @@ public abstract class SemanticAction
 
 
 	
-	public OldContainerI createContainer(DocumentParser documentParser, LinkType linkType)
+	public Document getOrCreateDocument(DocumentParser documentParser, LinkType linkType)
 	{
-		OldContainerI outlinkContainer = null;
+		Document result = (Document) getArgumentObject(DOCUMENT);
 		// get the ancestor container
-		OldContainerI sourceContainer = documentParser.getContainer();
+		Document sourceDocument = documentParser.getDocument();
 
 		// get the seed. Non null only for search types .
-		Seed seed = documentParser.getSeed();
-		ParsedURL outlinkPurl = null;
-		Document metadata = (Document) getArgumentObject(DOCUMENT);
-		Metadata mixin		= (Metadata) getArgumentObject(MIXIN);
-		outlinkPurl = (ParsedURL) getArgumentObject(CONTAINER_LINK);
+		Seed seed = documentParser.getSeed();					
 		
-		
-		if (metadata == null)
+		if (result == null)
 		{
-//			purl = (ParsedURL) getArgumentObject(CONTAINER_LINK);
-			if (outlinkPurl == null)
-			{
-				Entity entity = (Entity) getArgumentObject(ENTITY);
-				if (entity != null)
-				{
-					outlinkPurl = entity.key();
-					metadata = (Document) entity.getLinkedDocument();
-				}
-			}
+			ParsedURL outlinkPurl	= (ParsedURL) getArgumentObject(CONTAINER_LINK);
+			result								= infoCollector.getGlobalDocumentMap().getOrCreate(outlinkPurl);
 		}
-		if (outlinkPurl == null && metadata != null)
-			outlinkPurl = metadata.getLocation();
 
-		// FIXME check for some weird case when entity has nothing.
-		if (outlinkPurl != null)
+		if (!result.isRecycled())
 		{
-			boolean containerIsOld;
-			synchronized (infoCollector.globalCollectionContainersLock())
-			{
-				containerIsOld = infoCollector.aContainerExistsFor(outlinkPurl);
-				if (seed == null)
-					outlinkContainer = infoCollector.getContainer(sourceContainer, metadata, null, outlinkPurl, false, false, false);
-				else
-				{
-					// Avoid recycling containers.
-					// We trust GlobalCollections has had a good reason to discard the container.
-					outlinkContainer 	= infoCollector.getContainerForSearch(sourceContainer, metadata, outlinkPurl, seed, true);
-				}
-				if (outlinkContainer != null)
-					metadata				= (Document) outlinkContainer.getMetadata();
-				if (mixin != null && metadata != null)
-					metadata.addMixin(mixin);
-			}
+			Metadata mixin				= (Metadata) getArgumentObject(MIXIN);
+			if (mixin != null)
+				result.addMixin(mixin);
 			
+			if (seed != null)
+			{
+				seed.bindToDocument(result);
+			}
+
 			String anchorText = (String) getArgumentObject(ANCHOR_TEXT);
 			// create anchor text from Document title if there is none passed in directly, and we won't
 			// be setting metadata
-			if (containerIsOld && anchorText == null && metadata != null)
-				anchorText = metadata.getTitle();
+			if (anchorText == null)
+				anchorText = result.getTitle();
 
+			// work to avoid honey pots!
 			String anchorContextString 		= (String) getArgumentObject(ANCHOR_CONTEXT);
 			boolean citationSignificance	= getArgumentBoolean(CITATION_SIGNIFICANCE, false);
 			float significanceVal 				= getArgumentFloat(SIGNIFICANCE_VALUE, 1);
 			boolean traversable 					= getArgumentBoolean(TRAVERSABLE, true);
 			boolean ignoreContextForTv 		= getArgumentBoolean(IGNORE_CONTEXT_FOR_TV, false);
 			
+			ParsedURL location						= result.getLocation();
+			
 			if (traversable)
-				infoCollector.traversable(outlinkPurl);
+				infoCollector.traversable(location);
 
-			if (outlinkContainer != null)
+			boolean anchorIsInSource = false;
+			if (sourceDocument != null)
 			{
-				boolean anchorIsInSource = false;
-				if (sourceContainer != null)
+				// Chain the significance from the ancestor
+				SemanticInLinks sourceInLinks = sourceDocument.getSemanticInlinks();
+				if (sourceInLinks != null)
 				{
-					// Chain the significance from the ancestor
-					SemanticInLinks sourceInLinks = sourceContainer.semanticInLinks();
-					if (sourceInLinks != null)
-					{
-						significanceVal *= sourceInLinks.meanSignificance();
-						anchorIsInSource = sourceInLinks.containsKey(outlinkPurl);
-					}
-				}
-				if(! anchorIsInSource)
-				{
-					//By default use the boost, unless explicitly stated in this site's MMD
-					boolean useSemanticBoost = !outlinkContainer.site().ignoreSemanticBoost();
-					if (citationSignificance)
-						linkType	= LinkType.CITATION_SEMANTIC_ACTION;
-					else if (useSemanticBoost && linkType == LinkType.OTHER_SEMANTIC_ACTION)
-						linkType	= LinkType.SITE_BOOSTED_SEMANTIC_ACTION;
-					SemanticAnchor semanticAnchor = new SemanticAnchor(linkType, outlinkPurl, null,
-							documentParser.purl(), significanceVal);// this is not fromContentBody,
-																							// but is fromSemanticActions
-					if(ignoreContextForTv)
-						semanticAnchor.addAnchorContextToTV(anchorText, null);
-					else
-						semanticAnchor.addAnchorContextToTV(anchorText, anchorContextString);
-					outlinkContainer.addSemanticInLink(semanticAnchor, sourceContainer);
-				}
-				else
-				{
-					debug("Ignoring inlink, because ancestor contains the same, we don't want cycles in the graph just yet: sourceContainer -- outlinkPurl :: " + sourceContainer + " -- " + outlinkPurl);
+					significanceVal *= sourceInLinks.meanSignificance();
+					anchorIsInSource = sourceInLinks.containsKey(location);
 				}
 			}
-			// adding the return value to map
-			Scope semanticActionVariableMap = semanticActionHandler.getSemanticActionVariableMap();
-			if(semanticActionVariableMap != null)
-				semanticActionVariableMap.put(getReturnObjectName(), outlinkContainer);
+			if(! anchorIsInSource)
+			{
+				//By default use the boost, unless explicitly stated in this site's MMD
+				boolean useSemanticBoost = !result.getSite().ignoreSemanticBoost();
+				if (citationSignificance)
+					linkType	= LinkType.CITATION_SEMANTIC_ACTION;
+				else if (useSemanticBoost && linkType == LinkType.OTHER_SEMANTIC_ACTION)
+					linkType	= LinkType.SITE_BOOSTED_SEMANTIC_ACTION;
+				SemanticAnchor semanticAnchor = new SemanticAnchor(linkType, location, null,
+						sourceDocument.getLocation(), significanceVal);// this is not fromContentBody,
+				// but is fromSemanticActions
+				if(ignoreContextForTv)
+					semanticAnchor.addAnchorContextToTV(anchorText, null);
+				else
+					semanticAnchor.addAnchorContextToTV(anchorText, anchorContextString);
+				result.addSemanticInlink(semanticAnchor, sourceDocument);
+			}
 			else
-				error("semanticActionVariableMap is null !! Not frequently reproducible either. Place a breakpoint here to try fixing it next time.");
-			// set flags if any
-			// setFlagIfAny(action, localContainer);
+			{
+				debug("Ignoring inlink, because ancestor contains the same, we don't want cycles in the graph just yet: sourceContainer -- outlinkPurl :: " + sourceDocument + " -- " + location);
+			}
 		}
+		// adding the return value to map
+		Scope semanticActionVariableMap = semanticActionHandler.getSemanticActionVariableMap();
+		if(semanticActionVariableMap != null)
+			semanticActionVariableMap.put(getReturnObjectName(), result);
+		else
+			error("semanticActionVariableMap is null !! Not frequently reproducible either. Place a breakpoint here to try fixing it next time.");
+		// set flags if any
+		// setFlagIfAny(action, localContainer);
+
 		// return the value. Right now no need for it. Later it might be used.
-		return outlinkContainer;
+		return result;
 	}
 
 	/**
@@ -394,17 +371,17 @@ public abstract class SemanticAction
 	 * 
 	 * @return
 	 */
-	public OldContainerI getOrCreateContainer(DocumentParser documentParser, LinkType linkType)
-	{
-		OldContainerI result	= (OldContainerI) getArgumentObject(CONTAINER);
-		if (result == null)
-		{
-			result					= createContainer(documentParser, linkType);
-			if (result == null)
-				result				= documentParser.getContainer();
-		}
-		return result;
-	}
+//	public OldContainerI getOrCreateContainer(DocumentParser documentParser, LinkType linkType)
+//	{
+//		OldContainerI result	= (OldContainerI) getArgumentObject(CONTAINER);
+//		if (result == null)
+//		{
+//			result					= getOrCreateDocument(documentParser, linkType);
+//			if (result == null)
+//				result				= documentParser.getContainer();
+//		}
+//		return result;
+//	}
 
 	static final int INIT = 0; // this action has not been started
 	static final int INTER = 10; // this action has been started but not yet finished

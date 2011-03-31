@@ -317,7 +317,7 @@ public class HTMLDOMParser
 				System.out.println("--- Ignoring cyclicly adding inlink to: " + hrefContainer + " from container.");
 			if(!hrefContainer.isDownloadDone())
 			{
-				container.addCandidateContainer(hrefContainer);
+				container.addCandidateOutlink(hrefContainer);
 			}
 			else
 				System.out.println("Download is already done on " + hrefContainer + " . Not adding as candidate container for: " + container);

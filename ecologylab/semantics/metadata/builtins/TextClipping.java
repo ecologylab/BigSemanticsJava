@@ -23,6 +23,12 @@ public class TextClipping extends Clipping
 	{
 		super();
 	}
+	
+	public TextClipping(String context)
+	{
+		super();
+		setContext(context);
+	}
 
 	/**
 	 * Constructor

@@ -12,7 +12,6 @@ public class SemanticActionTranslationScope
 		ChooseSemanticAction.Otherwise.class,
 		CreateAndVisualizeImgSurrogateSemanticAction.class,
 		CreateAndVisualizeTextSurrogateSemanticAction.class,
-		CreateSemanticAnchorSemanticAction.class,
 		EvaluateRankWeight.class,
 		ForEachSemanticAction.class,
 		GetFieldSemanticAction.class,

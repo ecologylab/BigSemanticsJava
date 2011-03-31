@@ -2,9 +2,9 @@ package ecologylab.semantics.seeding;
 
 import ecologylab.collections.Scope;
 import ecologylab.generic.ReflectionTools;
-import ecologylab.semantics.connectors.DocumentClosure;
 import ecologylab.semantics.connectors.NewInfoCollector;
 import ecologylab.semantics.metadata.builtins.Document;
+import ecologylab.semantics.metadata.builtins.DocumentClosure;
 import ecologylab.semantics.namesandnums.CFPrefNames;
 import ecologylab.serialization.ElementState;
 
@@ -243,14 +243,23 @@ abstract public class Seed extends ElementState implements CFPrefNames
    */
   public void bindToContainer(DocumentClosure container)
   {
-      if(container == null)
-      {
-      	System.out.println("See Why I am Null here");
-      }
-//  		container.setBias(bias);
-      container.getDocument().setAsTrueSeed(this);
+  	assert(container != null);
+//      {
+//      	System.out.println("See Why I am Null here");
+//      }
+//      else
+  	bindToDocument(container.getDocument());
   }
-
+  /**
+   * Do stuff in the DocumentType constructor to setup this Container.
+   * 
+   * @param container
+   */
+  public void bindToDocument(Document document)
+  {
+  	assert(document != null);
+  	document.setAsTrueSeed(this);
+  }
   public boolean isRejectable()
   {
   	return true;

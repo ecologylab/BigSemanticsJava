@@ -4,6 +4,7 @@
 package ecologylab.semantics.connectors;
 
 import ecologylab.semantics.metadata.builtins.Document;
+import ecologylab.semantics.metadata.builtins.DocumentClosure;
 import ecologylab.semantics.model.text.ITermVector;
 
 public class DownloadContainerWeightingStrategy extends ContainerWeightingStrategy

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package ecologylab.semantics.connectors;
+package ecologylab.semantics.metadata.builtins;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,9 +18,12 @@ import ecologylab.net.ConnectionHelper;
 import ecologylab.net.PURLConnection;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionsKeyWords;
+import ecologylab.semantics.connectors.DocumentLocationMap;
+import ecologylab.semantics.connectors.DownloadStatus;
+import ecologylab.semantics.connectors.NewInfoCollector;
+import ecologylab.semantics.connectors.SemanticsSite;
 import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.html.documentstructure.SemanticInLinks;
-import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
@@ -95,20 +98,19 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>
 	private final Object QUEUE_DOWNLOAD_LOCK		= new Object();
 	private final Object PERFORM_DOWNLOAD_LOCK		= new Object();   
 	
-	private		NewInfoCollector	infoCollector;
+	protected		NewInfoCollector	infoCollector;
 	
-	DocumentLocationMap<D>			documentLocationMap;
 	
-	DownloadStatus							downloadStatus;
+	DownloadStatus							downloadStatus	= DownloadStatus.UNPROCESSED;
 	
 	/**
 	 * 
 	 */
-	public DocumentClosure(D document, NewInfoCollector infoCollector, DocumentLocationMap<D> documentLocationMap)
+	public DocumentClosure(D document, NewInfoCollector infoCollector, SemanticInLinks semanticInlinks)
 	{
 		this.document							= document;
 		this.infoCollector				= infoCollector;
-		this.documentLocationMap	= documentLocationMap;
+		this.semanticInlinks			= semanticInlinks;
 	}
 
 	/////////////////////// methods for downloadable //////////////////////////
@@ -176,6 +178,7 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>
 		{
 			// container or not (it could turn out to be an image or some other mime type), parse the baby!
 			parsing					= true;
+			downloadStatus	= DownloadStatus.PARSING;
 
 			if (documentParser.downloadingMessageOnConnect())
 				infoCollector.displayStatus("Downloading " + location(), 2);
@@ -278,9 +281,10 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>
 					result = null;
 				}
 			}
-
+			
 			public boolean processRedirect(URL connectionURL) throws Exception
 			{
+				DocumentLocationMap<? extends Document>	documentLocationMap	= document.getDocumentLocationMap();
 				ParsedURL connectionPURL = new ParsedURL(connectionURL);
 				hadRedirect = true;
 				displayStatus("redirecting: " + originalPurl + " > " + connectionURL);
@@ -462,6 +466,7 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>
 	public void downloadAndParseDone()
 	{
 		downloadDone	= true;
+		downloadStatus	= DownloadStatus.DONE;
 		SemanticsSite site	= getSite();
 		if (site != null)
 			site.endDownload();
@@ -503,7 +508,14 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>
 	
 	public void recycle(boolean unconditional)
 	{
+		recycle();
+	}
+	
+	public void recycle()
+	{
+		downloadStatus	= DownloadStatus.RECYCLED;
 		
+		//TODO -- recycle the thang!
 	}
 	public boolean recycled()
 	{
@@ -541,7 +553,7 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>
 		{
 			Document ancestor	= document.getAncestor();
 			if (ancestor != null)
-				result					= ancestor.getDownloadClosure();
+				result					= ancestor.getDocumentClosure();
 		}
 		return  result;
 	}
@@ -568,7 +580,7 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>
 		final boolean result = !filteredOut(); // true!
 		if (result)
 		{
-			SemanticsSite site					= SemanticsSite.getOrConstruct(getDocument(), infoCollector);
+			SemanticsSite site					= document.getSite();
 			if (site != null)
 				site.beginDownload();
 			
@@ -588,6 +600,7 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>
 			if (downloadHasBeenQueued)
 				return false;
 			downloadHasBeenQueued		= true;
+			downloadStatus					= DownloadStatus.QUEUED;
 			return true;
 		}
 	}
@@ -668,6 +681,7 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>
 		parsing					= false;
 		downloadDone		= true;
 		bad							= true;
+		downloadStatus	= DownloadStatus.IOERROR;
 
 		SemanticsSite site	= getSite();
 		site.incrementNumTimeouts();

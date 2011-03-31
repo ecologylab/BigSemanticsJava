@@ -36,6 +36,7 @@ import ecologylab.semantics.connectors.old.OldContainerI;
 import ecologylab.semantics.metadata.DocumentParserTagNames;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.builtins.Document;
+import ecologylab.semantics.metadata.builtins.DocumentClosure;
 import ecologylab.semantics.metadata.builtins.ImageClipping;
 import ecologylab.semantics.metadata.builtins.TextClipping;
 import ecologylab.semantics.metametadata.MetaMetadata;
@@ -54,7 +55,7 @@ import ecologylab.serialization.TranslationScope;
  * @author andruid
  *
  */
-public class NewInfoCollector extends Debug
+public class NewInfoCollector extends TNGGlobalCollections
 implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, DocumentParserTagNames, Runnable
 {
 
@@ -93,8 +94,6 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 	
 	GuiBridge																						guiBridge;
 	
-	TNGGlobalCollections																globalCollections;
-	
 	MetaMetadataRepository															metaMetadataRepository;
 	
 	TranslationScope																		metadataTranslationScope;
@@ -102,7 +101,7 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 
 	public NewInfoCollector(MetaMetadataRepository metaMetadataRepository, TranslationScope metadataTranslationScope, Scope sessionScope)
 	{
-		super();
+		super(metaMetadataRepository);
 		this.metaMetadataRepository				= metaMetadataRepository;
 		this.metadataTranslationScope			= metadataTranslationScope;
 
@@ -144,8 +143,7 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 		println("");
 		
 		//TODO -- initialize MetaMetadataRepository
-		
-		globalCollections	= new TNGGlobalCollections(metaMetadataRepository);
+
 	}
 	
 	public NewInfoCollector()
@@ -1221,5 +1219,5 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 		}
 	}
 	
-
+	
 }

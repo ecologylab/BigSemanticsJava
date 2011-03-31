@@ -4,6 +4,7 @@ import java.io.File;
 
 import ecologylab.net.MimeType;
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.connectors.DocumentLocationMap;
 import ecologylab.semantics.html.documentstructure.ImageConstants;
 import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
@@ -94,4 +95,13 @@ implements MimeType, ImageConstants
 		return true;
 	}
 
+	/**
+	 * Needed in case of a redirect or direct binding, in which cases, the map will need updating
+	 * for this's location.
+	 */
+	@Override
+	DocumentLocationMap<? extends Image> getDocumentLocationMap()
+	{
+		return infoCollector.getGlobalImageMap();
+	}
 }

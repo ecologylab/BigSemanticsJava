@@ -7,12 +7,18 @@ package ecologylab.semantics.model;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import ecologylab.appframework.types.prefs.Pref;
+import ecologylab.generic.StringBuilderPool;
 import ecologylab.generic.StringTools;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
+import ecologylab.semantics.model.text.Term;
+import ecologylab.semantics.model.text.TermDictionary;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.simpl_inherit;
 import ecologylab.serialization.types.scalar.ScalarType;
@@ -67,6 +73,18 @@ class TextChunkBase<T extends TextToken> extends ElementState implements
 	public static final int						CENTER										= 1;
 
 	public static final int						RIGHT											= 2;
+
+	/**
+	 * The maximum number of words for a text surrogate.
+	 */
+	public static final int				MAX_WORDS							= 9;
+
+	/**
+	 * The minimum number of words for a text surrogate.
+	 */
+	public static final int					MIN_WORDS							= 5;
+	
+	private static StringBuilderPool sbp = new StringBuilderPool(25);
 
 	static HashMap<String, String[]>	garbageFilterMap					= new HashMap<String, String[]>();
 
@@ -221,6 +239,8 @@ class TextChunkBase<T extends TextToken> extends ElementState implements
 	 */
 	public abstract TextChunkBase<T> newTextChunk(boolean doUnderlineArg, CharSequence untokenized,
 			ScalarType scalarType);
+
+	public abstract TextChunkBase<T> newTextChunk();
 
 	/**
 	 * Create a new constituent TextToken of the correct subtype.
@@ -641,12 +661,18 @@ class TextChunkBase<T extends TextToken> extends ElementState implements
 	{
 		if (!recycled)
 		{
+			recycled		= true;
 			if (namedStyle != null)
 				namedStyle.recycle();
-			namedStyle = null;
-			recycled = true;
-			string = null;
+			namedStyle 	= null;
+			string 			= null;
 			super.recycle();
+			int last 		= size() - 1;
+			for (int i = last; i >= 0; i--)
+			{
+				T tt = remove(i);
+				tt.recycle();
+			}
 		}
 	}
 
@@ -671,7 +697,6 @@ class TextChunkBase<T extends TextToken> extends ElementState implements
 	}
 
 	static final String	TEST_STRING	= "Querying Web Metadata: Native Score\nManagement and Text Support\nin Databases\nG\n¨\nULTEKIN\n¨\nOZSOYO\n?\nGLU\nCase Western Reserve University\nISMAIL SENG\n¨\nOR ALTING\n¨\nOVDE\nBilkent Universit";
-
 	
 	public T get(int i)
 	{
@@ -711,4 +736,198 @@ class TextChunkBase<T extends TextToken> extends ElementState implements
 		if (tokens != null)
 			tokens.clear();
 	}
+
+	/**
+	 * Calculates the weight of a text chunk by summing all of the term weights contained in this
+	 * chunk.
+	 * 
+	 * @param chunk
+	 *          a chunk of text
+	 * @return sum of weights of all terms in the specified chunk
+	 */
+	protected final float getWeight()
+	{
+		float weight = 0;
+		for (int i = 0; i < this.size(); i++)
+		{
+			T cfTextToken = this.get(i);
+			String tokenString = cfTextToken.string();
+			if (tokenString.length() > 1)		//  ignore 1 character strings. they are not valuable.
+			{
+				Term xterm = cfTextToken.xterm();
+				double w = xterm.idf();
+				weight += w;
+			}
+		}
+		return weight;
+	}
+
+	public final float getAvgWeight()
+	{
+		int size = size();
+		if (size == 0)
+		{
+			return 0;
+		}
+		return getWeight() / size;
+	}
+	
+	/**
+	 * Returns a subchunk of a chunk where the subchunk contains the <code>begin</code>th word to the
+	 * <code>end</code>th word.
+	 * 
+	 * @param chunk
+	 *          a text chunk
+	 * @param begin
+	 *          the index in chunk of the first word to be in the subchunk
+	 * @param end
+	 *          the index in chunk of the last word to be in the subchunk
+	 * @return a subchunk of the specified chunk
+	 */
+	public final TextChunkBase<T> getSubchunk(int begin, int end)
+	{
+		TextChunkBase<T> subchunk = this.newTextChunk();
+		for (int i = begin; i <= end; i++)
+		{
+			if (!TermDictionary.mostObviousStopWordTerms.containsKey(removeNonAlpha(get(i).string()))
+					|| !subchunk.isEmpty())
+			{
+				subchunk.add(get(i));
+			}
+		}
+		int lastI = subchunk.size() - 1;
+		while (lastI >= 0
+				&& TermDictionary.mostObviousStopWordTerms.containsKey(removeNonAlpha(subchunk.get(lastI).string())))
+		{
+			subchunk.remove(lastI);
+			lastI--;
+		}
+		return subchunk;
+	}
+
+	private static final String removeNonAlpha(String s)
+	{
+		StringBuilder buff = sbp.acquire();
+		char c;
+		for (int i = 0; i < s.length(); i++)
+		{
+			c = s.charAt(i);
+			if (Character.isLetter(c))
+				buff.append(Character.toLowerCase(c));
+		}
+		return sbp.releaseAndGetString(buff);
+	}
+
+	/**
+	 * Retrieves the sentence from the context with the highest average term weight.
+	 * 
+	 * @param context
+	 *          a text chunk
+	 * @return sentence with the highest average term weight
+	 */
+	public final TextChunkBase<T> getSentence()
+	{
+		List<TextChunkBase<T>> sentences = new LinkedList<TextChunkBase<T>>();
+		for (int i = 0; i < this.size();)
+		{
+			TextChunkBase<T> sentence = newTextChunk();
+			int j = 0;
+			boolean sentenceHasEmailAddr	= false;	// cleaned-up by andruid, jon, sashi 5/20/2010
+			while ((i + j) < size())
+			{
+				T token = get(i + j);
+				if (token.contains('@'))							// look out for email addresses. discard any sentence that seems to contain one.
+					sentenceHasEmailAddr	= true;
+				if (!sentenceHasEmailAddr)
+					sentence.add(token);
+				if (token.endsWithTerminal())
+				{
+					break;
+				}
+				j++;
+			}
+			i += j + 1;
+			if (!sentenceHasEmailAddr && sentence.size() > 0)
+			{
+				sentences.add(sentence);
+			}
+		}
+
+		int maxI = 0;
+		if (sentences.size() == 0)
+			return this;
+		float maxVal = sentences.get(0).getAvgWeight();
+		for (int i = 1; i < sentences.size(); i++)
+		{
+			float val = sentences.get(i).getAvgWeight();
+			if (val > maxVal)
+			{
+				maxVal = val;
+				maxI = i;
+			}
+		}
+		TextChunkBase<T> sentence = sentences.get(maxI);
+		return sentence;
+	}
+
+	/**
+	 * Trim phatSurrogate for visualization part
+	 * 
+	 * @param semanticText
+	 * 						Boolean to increase the maximum size of text surrogates
+	 * 						set true for metaMetaData semantic action text, false for all else.
+	 * @return	The skinny chunk, a short phrase from a larger context, which we may show to the user.
+	 */
+	public TextChunkBase<T> trimPhatChunk(boolean semanticText)
+	{
+		// Set text length max and min bound from prefs
+		float modifier = Pref.lookupFloat("text_length_modifier", 1);
+		int maxLength = Math.round(MAX_WORDS * modifier);
+		int minLength = Math.round(MIN_WORDS * modifier);		
+		
+		// Find the sentence in the context with highest average weight
+		TextChunkBase<T> sentence 	= this.getSentence();
+		int sentenceSize 			= sentence.size();
+		
+		int sizeIncrease = (semanticText) ? 3 : 0;		
+		
+		if (sentenceSize > (maxLength + sizeIncrease))
+		{
+			// Shorten the sentence by examining all contiguous sub-sentences between MIN_WORDS and
+			// MAX_WORDS lengths. The sub-sentence with the highest average value is the winner.
+			TextChunkBase<T> maxChunk 	= null;
+			float maxVal 					= Float.NEGATIVE_INFINITY;
+			for (int i = 0; i <= (sentenceSize - minLength); i++)
+			{
+				for (int j = (minLength - 1); j < (maxLength + sizeIncrease); j++)
+				{
+					if ((i + j) >= sentenceSize)
+					{
+						break;
+					}
+					TextChunkBase<T> chunk = sentence.getSubchunk(i, i + j);
+					float val = chunk.getAvgWeight();
+					if (val > maxVal)
+					{
+						maxVal = val;
+						maxChunk = chunk;
+					}
+				}
+			}
+			if (maxChunk != null && maxChunk.size() > 0)
+			{
+				maxChunk.get(0).setDelimsBefore("");
+			}
+			return maxChunk;
+		}
+		// Removes most obvious stop words off the front of a sentence
+		sentence = sentence.getSubchunk(0, sentenceSize - 1);
+		if (sentence.size() > 0)
+		{
+			sentence.get(0).setDelimsBefore("");
+		}
+		return sentence;
+	}
+
+
 }

@@ -5,9 +5,13 @@
 package ecologylab.semantics.model;
 
 import java.net.URL;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 import ecologylab.generic.StringBuilderPool;
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.model.text.Term;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.Hint;
 import ecologylab.serialization.simpl_inherit;
@@ -382,4 +386,75 @@ class TextToken extends ElementState
 	{
 		return string == null ? false : string.indexOf(c) >= 0;
 	}
+	
+	public Term xterm()
+	{
+		return null;
+	}
+	
+	public static final Set<String>	TERMINAL_PUNCTUATION	= new HashSet<String>();
+	static
+	{
+		TERMINAL_PUNCTUATION.add(".");
+		TERMINAL_PUNCTUATION.add(".\"");
+		TERMINAL_PUNCTUATION.add("?");
+		TERMINAL_PUNCTUATION.add("?\"");
+		TERMINAL_PUNCTUATION.add("!");
+	}
+
+	public static final Set<String>	TERMINAL_EXCEPTIONS		= new HashSet<String>();
+	static
+	{
+		TERMINAL_EXCEPTIONS.add("i.e.");
+		TERMINAL_EXCEPTIONS.add("e.g.");
+		TERMINAL_EXCEPTIONS.add("mr.");
+		TERMINAL_EXCEPTIONS.add("mrs.");
+		TERMINAL_EXCEPTIONS.add("ms.");
+		TERMINAL_EXCEPTIONS.add("jr.");
+		TERMINAL_EXCEPTIONS.add("sr.");
+		TERMINAL_EXCEPTIONS.add("sgt.");
+		TERMINAL_EXCEPTIONS.add("u.s.");
+		TERMINAL_EXCEPTIONS.add("corp.");
+		TERMINAL_EXCEPTIONS.add("inc.");
+		TERMINAL_EXCEPTIONS.add("co.");
+		TERMINAL_EXCEPTIONS.add("jan.");
+		TERMINAL_EXCEPTIONS.add("feb.");
+		TERMINAL_EXCEPTIONS.add("mar.");
+		TERMINAL_EXCEPTIONS.add("apr.");
+		// No need for May
+		TERMINAL_EXCEPTIONS.add("jun.");
+		TERMINAL_EXCEPTIONS.add("jul.");
+		TERMINAL_EXCEPTIONS.add("aug.");
+		TERMINAL_EXCEPTIONS.add("sep.");
+		TERMINAL_EXCEPTIONS.add("oct.");
+		TERMINAL_EXCEPTIONS.add("nov.");
+		TERMINAL_EXCEPTIONS.add("dec.");
+	}
+	
+	protected static Pattern	HONORIFIC_MATCHER	= Pattern.compile("(\\p{Upper}\\.)+");
+
+	public boolean endsWithTerminal()
+	{
+		String string = this.string();
+		if (!TERMINAL_EXCEPTIONS.contains(string.toLowerCase())
+				&& !HONORIFIC_MATCHER.matcher(string).matches())
+		{
+			return endsWith(TERMINAL_PUNCTUATION);
+		}
+		return false;
+	}
+
+	private boolean endsWith(java.util.Collection<String> endings)
+	{
+		String string = this.string();
+		for (String ending : endings)
+		{
+			if (string.endsWith(ending))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
 }

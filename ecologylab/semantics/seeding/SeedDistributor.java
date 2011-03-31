@@ -9,9 +9,9 @@ import java.util.Queue;
 
 import ecologylab.generic.Debug;
 import ecologylab.generic.Generic;
-import ecologylab.semantics.connectors.DocumentClosure;
 import ecologylab.semantics.connectors.NewInfoCollector;
 import ecologylab.semantics.connectors.old.OldContainerI;
+import ecologylab.semantics.metadata.builtins.DocumentClosure;
 
 /**
  * now how SeedDistributor works:
@@ -46,9 +46,9 @@ import ecologylab.semantics.connectors.old.OldContainerI;
 public class SeedDistributor extends Debug implements Runnable
 {
 
-	public static interface DistributeCallBack<C extends QandDownloadable>
+	public static interface DistributorContinuation<QaD extends QandDownloadable>
 	{
-		void distribute(C result);
+		void distribute(QaD result);
 	}
 
 	/**
@@ -110,7 +110,7 @@ public class SeedDistributor extends Debug implements Runnable
 	 */
 	private final PriorityQueue<QandDownloadable>						queuedResults;
 
-	private final Map<QandDownloadable, DistributeCallBack>	callbackMap												= new HashMap<QandDownloadable, SeedDistributor.DistributeCallBack>();
+	private final Map<QandDownloadable, DistributorContinuation>	callbackMap												= new HashMap<QandDownloadable, SeedDistributor.DistributorContinuation>();
 
 	private long																						lastSearchTimestamp;
 
@@ -221,7 +221,7 @@ public class SeedDistributor extends Debug implements Runnable
 	 * @param resultContainer
 	 * @param callback
 	 */
-	public void queueResult(QandDownloadable resultContainer, DistributeCallBack callback)
+	public void queueResult(QandDownloadable resultContainer, DistributorContinuation callback)
 	{
 		synchronized (queuedResults)
 		{

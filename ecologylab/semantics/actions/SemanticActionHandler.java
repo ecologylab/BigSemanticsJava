@@ -97,8 +97,9 @@ public class SemanticActionHandler
 			this.metaMetadata = metaMetadata;
 			this.metadata = metadata;
 
+			//FIXME -- should not have SemanticActionsKeyWords && SemanticActionsNamedArguments as separate sets !!!
 			semanticActionVariableMap.put(DOCUMENT_TYPE, documentParser);
-			semanticActionVariableMap.put(METADATA, metadata);
+			semanticActionVariableMap.put(SemanticActionsKeyWords.METADATA, metadata);
 			semanticActionVariableMap.put(TRUE_PURL, documentParser.getTruePURL());
 
 			preSemanticActionsHook(metadata);

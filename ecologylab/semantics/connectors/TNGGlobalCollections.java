@@ -15,8 +15,8 @@ import ecologylab.semantics.metametadata.MetaMetadataRepository;
  */
 public class TNGGlobalCollections extends Debug
 {
-	final DocumentLocationMap<Document>		allDocuments;
-	final DocumentLocationMap<Image>			allImages;
+	final DocumentLocationMap<? extends Document>		allDocuments;
+	final DocumentLocationMap<? extends Image>			allImages;
 	
 	static public final Document 	RECYCLED_DOCUMENT	= new Document(ParsedURL.getAbsolute("http://recycled.document"));
 	static public final Document 	UNDEFINED_DOCUMENT= new Document(ParsedURL.getAbsolute("http://undefined.document"));
@@ -76,4 +76,12 @@ public class TNGGlobalCollections extends Debug
 
 	}
 
+	public DocumentLocationMap<? extends Document> getGlobalDocumentMap()
+	{
+		return allDocuments;
+	}
+	public DocumentLocationMap<? extends Image> getGlobalImageMap()
+	{
+		return allImages;
+	}
 }

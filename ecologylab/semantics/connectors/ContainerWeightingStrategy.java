@@ -3,6 +3,7 @@
  */
 package ecologylab.semantics.connectors;
 import ecologylab.semantics.html.documentstructure.SemanticInLinks;
+import ecologylab.semantics.metadata.builtins.DocumentClosure;
 import ecologylab.semantics.model.text.ITermVector;
 import ecologylab.semantics.model.text.TermVectorWeightStrategy;
 

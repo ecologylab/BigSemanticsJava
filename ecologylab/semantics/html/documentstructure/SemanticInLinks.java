@@ -54,7 +54,7 @@ public class SemanticInLinks extends ConcurrentHashMap<ParsedURL, SemanticAnchor
 		return result;
 	}
 	
-	public synchronized boolean add(SemanticAnchor newAnchor)
+	public synchronized boolean add(SemanticAnchor newAnchor, Document source)
 	{
 		SemanticAnchor oldAnchor	= putIfAbsent(newAnchor.sourcePurl(), newAnchor);
 		if (oldAnchor == null)	
@@ -67,7 +67,21 @@ public class SemanticInLinks extends ConcurrentHashMap<ParsedURL, SemanticAnchor
 		{
 			//TODO -- should we count and incorporate new terms?!
 		}
+		add(source);
 		return true;
+	}
+
+	/**
+	 * @param source
+	 */
+	public void add(Document source)
+	{
+		int sourceBasedGeneration	= source.getGeneration() + 1;
+		if (sourceBasedGeneration < generation || ancestor == null)
+		{
+			generation	= sourceBasedGeneration;
+			ancestor		= source;
+		}
 	}
 
 	/**

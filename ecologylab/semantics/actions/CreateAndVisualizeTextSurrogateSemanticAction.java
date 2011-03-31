@@ -1,6 +1,8 @@
 package ecologylab.semantics.actions;
 
-import ecologylab.semantics.connectors.old.InfoCollector;
+import ecologylab.semantics.metadata.builtins.Document;
+import ecologylab.semantics.metadata.builtins.TextClipping;
+import ecologylab.semantics.model.text.SemanticTextChunk;
 import ecologylab.serialization.ElementState.xml_tag;
 import ecologylab.serialization.simpl_inherit;
 
@@ -11,8 +13,8 @@ import ecologylab.serialization.simpl_inherit;
  */
 @simpl_inherit
 public @xml_tag(SemanticActionStandardMethods.CREATE_AND_VISUALIZE_TEXT_SURROGATE)
-class CreateAndVisualizeTextSurrogateSemanticAction<IC extends InfoCollector, SAH extends SemanticActionHandler>
-		extends SemanticAction<IC, SAH> implements SemanticActionStandardMethods
+class CreateAndVisualizeTextSurrogateSemanticAction
+		extends SemanticAction implements SemanticActionStandardMethods
 {
 
 	@Override
@@ -31,8 +33,30 @@ class CreateAndVisualizeTextSurrogateSemanticAction<IC extends InfoCollector, SA
 	@Override
 	public Object perform(Object obj)
 	{
-		// TODO Auto-generated method stub
+		boolean isSemanticText	= getArgumentBoolean(SemanticActionNamedArguments.SEMANTIC_TEXT, false);
+		String context 					= (String) getArgumentObject(SemanticActionNamedArguments.TEXT);
+//		String conText	= (String) getArgumentObject(SemanticActionNamedArguments.CONTEXT);
+		//TODO use html context -- need methods to strip tags to set regular context from it.
+		String htmlContext			= (String) getArgumentObject(SemanticActionNamedArguments.HTML_CONTEXT);
+
+		if (context != null)
+		{
+			TextClipping textClipping	= new TextClipping(context);
+			
+			Document document			= documentParser.getDocument();
+			
+			//FIXME -- should this be done here, or later?!!!
+			SemanticTextChunk chunk = new SemanticTextChunk(context);			
+			SemanticTextChunk trimmedChunk	= (SemanticTextChunk) chunk.trimPhatChunk(isSemanticText);
+			textClipping.setText(trimmedChunk.string());
+			chunk.recycle();
+			trimmedChunk.recycle();
+			
+			document.addCandidateTextClipping(textClipping);
+		}
+		
 		return null;
 	}
+
 
 }

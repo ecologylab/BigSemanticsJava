@@ -94,6 +94,10 @@ public interface SemanticActionNamedArguments
 	 */
 	public static final String	TEXT									= "text";
 
+	public static final String	CONTEXT								= "context";
+
+	public static final String	HTML_CONTEXT					= "html_context";
+
 	public static final String	SEMANTIC_TEXT					= "semantic_text";
 
 	public static final String	DOMAIN								= "domain";
@@ -104,4 +108,10 @@ public interface SemanticActionNamedArguments
 	public static final String	VALUE									= "value";
 
 	public static final String  LINK_TYPE						= "link_type";									
+	
+	// parse_document
+	public static final String RANK 			= "rank";
+	
+	public static final String METADATA 	= "metadata";
+
 }
