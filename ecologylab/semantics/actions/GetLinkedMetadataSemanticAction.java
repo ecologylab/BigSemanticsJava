@@ -1,11 +1,11 @@
 package ecologylab.semantics.actions;
 
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.connectors.old.OldContainerI;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.LinkWith;
 import ecologylab.semantics.metametadata.MetaMetadata;
+import ecologylab.semantics.old.OldContainerI;
 import ecologylab.serialization.ElementState.xml_tag;
 import ecologylab.serialization.simpl_inherit;
 

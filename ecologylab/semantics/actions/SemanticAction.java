@@ -9,7 +9,6 @@ import java.util.HashMap;
 import ecologylab.collections.Scope;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.connectors.NewInfoCollector;
-import ecologylab.semantics.connectors.old.OldContainerI;
 import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.html.documentstructure.LinkType;
 import ecologylab.semantics.html.documentstructure.SemanticAnchor;
@@ -20,6 +19,7 @@ import ecologylab.semantics.metadata.builtins.DocumentClosure;
 import ecologylab.semantics.metadata.builtins.Entity;
 import ecologylab.semantics.metametadata.Argument;
 import ecologylab.semantics.metametadata.MetaMetadata;
+import ecologylab.semantics.old.OldContainerI;
 import ecologylab.semantics.seeding.Seed;
 import ecologylab.serialization.ElementState;
 
