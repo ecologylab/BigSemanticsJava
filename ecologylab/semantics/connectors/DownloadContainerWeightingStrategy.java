@@ -25,7 +25,7 @@ public class DownloadContainerWeightingStrategy extends ContainerWeightingStrate
 		Document metadata	= e.getDocument();
 		if (metadata == null)
 		{
-			error("null metadata! yikes!!! " + e.initialPURL);
+			error("null metadata! yikes!!! " + e.getInitialPURL());
 			return RECYCLED_WEIGHT;
 		}
 		boolean isDefaultMetadata	= Document.class == metadata.getClass();
@@ -33,7 +33,7 @@ public class DownloadContainerWeightingStrategy extends ContainerWeightingStrate
 										? ALREADY_DOWNLOADING_WEIGHT 
 										: super.getWeight(e);
 		
-		e.cachedWeight = weight;
+//		e.cachedWeight = weight;
 		return weight;
 	}
 

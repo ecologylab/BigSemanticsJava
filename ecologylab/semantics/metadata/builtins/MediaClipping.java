@@ -29,9 +29,11 @@ public class MediaClipping<ME extends Document> extends Clipping
 	{
 		
 	}
-	public MediaClipping(ME clippedMedia, Document source, Document outlink)
+	public MediaClipping(ME clippedMedia, Document source, Document outlink, String caption, String context)
 	{
-		super(source, outlink);
+		super(source, outlink, context);
+		if (caption != null)
+			setCaption(caption);
 //		this.clippedMedia			= clippedMedia;
 	}
 	

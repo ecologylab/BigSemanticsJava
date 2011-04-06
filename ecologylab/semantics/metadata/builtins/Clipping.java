@@ -72,13 +72,15 @@ public class Clipping extends Metadata
 		this();
 		this.source	= source;
 	}
-	public Clipping(Document source, Document outlink)
+	public Clipping(Document source, Document outlink, String context)
 	{
 		this(source);
 		if (outlink.isDownloadDone())
 			this.outlink				= outlink;
 		else
 			this.outlinkClosure	= outlink.getOrConstructClosure();
+		if (context != null)
+			setContext(context);
 	}
 	/**
 	 * @param metaMetadata
@@ -184,14 +186,6 @@ public boolean isNullContext()
 	public DocumentClosure getOutlinkClosure()
 	{
 		return outlinkClosure;
-	}
-
-	/**
-	 * @param outlinkContainer the outlinkContainer to set
-	 */
-	public void setOutlinkClosure(DocumentClosure outlinkClosure)
-	{
-		this.outlinkClosure = outlinkClosure;
 	}
 
 	/**

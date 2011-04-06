@@ -113,5 +113,19 @@ implements MimeType, ImageConstants
 		return new ImageClosure(this, semanticInlinks);
 	}
 
-
+	/**
+	 * Construct an ImageClipping object.
+	 * @param source
+	 * @param outlink
+	 * @param caption TODO
+	 * @param context TODO
+	 * @return
+	 */
+	public ImageClipping constructClipping(Document source, Document outlink, String caption, String context)
+	{
+		ImageClipping result	= new ImageClipping(this, source, outlink, caption, context);
+		this.addClipping(result);
+		
+		return result;
+	}
 }

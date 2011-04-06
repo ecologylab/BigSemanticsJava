@@ -293,59 +293,51 @@ public class SeedSet<S extends Seed> extends ElementState
 		this.description = description;
 	}
 
-	private int handleMoreSeedsDialogue(JFrame jFrame)
+	private int handleMoreSeedsDialogue(NewInfoCollector infoCollector)
 	{
 		String seedText = "";
 		for (int i = 0; i < size(); i++)
 			seedText += "        " + ((Seed) get(i)).valueString() + "\n";
 		if (!"".equals(seedText))
 			seedText += "\n";
-		int selectedOption = JOptionPane.showOptionDialog(jFrame,
-				"combinFormation has received a new set of seeds:\n" +
-						seedText +
-						"\t- Do you want to mix these new seeds with the already existing seeds?\n" +
-						"\t- Do you want to replace the current seeds with these new seeds?\n" +
-						"\t- Do you want to ignore these new seeds?", "Warning",
-				JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
-				null, SeedCf.MULTIPLE_REQUESTSTS_DIALOG_OPTIONS,
-				SeedCf.MULTIPLE_REQUESTSTS_DIALOG_OPTIONS[0]);
-		return selectedOption + 1;
+		String optionsMessage = "combinFormation has received a new set of seeds:\n" +
+				seedText +
+				"\t- Do you want to mix these new seeds with the already existing seeds?\n" +
+				"\t- Do you want to replace the current seeds with these new seeds?\n" +
+				"\t- Do you want to ignore these new seeds?";
+		
+		return infoCollector.showOptionsDialog(optionsMessage, "Warning", SeedCf.MULTIPLE_REQUESTS_DIALOG_OPTIONS, 0);
 	}
 
 	public void handleMoreSeeds(Scope clientConnectionScope, int selectedOption)
 	{
-		if (selectedOption == SeedCf.MULTIPLE_REQUESTSTS_ASK_USER)
+		if (selectedOption == SeedCf.MULTIPLE_REQUESTS_ASK_USER)
 		// if (true)
 		{
 			if (size() == 0)
 			{
-				selectedOption = SeedCf.MULTIPLE_REQUESTSTS_IGNORE;
+				selectedOption = SeedCf.MULTIPLE_REQUESTS_IGNORE;
 				debug("Received seeding request with 0 seeds. Ignoring!");
 			}
 			else
 			{
 				NewInfoCollector infoCollector = (NewInfoCollector) clientConnectionScope.get(INFO_COLLECTOR);
-				JFrame jframe = infoCollector.getJFrame();
-
-				if (jframe != null)
-				{
-					jframe.toFront();
-					selectedOption = handleMoreSeedsDialogue(jframe);
-				}
+				
+				selectedOption = handleMoreSeedsDialogue(infoCollector);
 			}
 		}
 		switch (selectedOption)
 		{
-		case SeedCf.MULTIPLE_REQUESTSTS_MIX:
+		case SeedCf.MULTIPLE_REQUESTS_MIX:
 			performSeeding(clientConnectionScope);
 			break;
-		case SeedCf.MULTIPLE_REQUESTSTS_REPLACE:
+		case SeedCf.MULTIPLE_REQUESTS_REPLACE:
 			debug("handleMoreSeeds(REPLACE) " + clientConnectionScope.dump());
 			NewInfoCollector infoCollector = (NewInfoCollector) clientConnectionScope.get(INFO_COLLECTOR);
 			infoCollector.clear();
 			performSeeding(clientConnectionScope);
 			break;
-		case SeedCf.MULTIPLE_REQUESTSTS_IGNORE:
+		case SeedCf.MULTIPLE_REQUESTS_IGNORE:
 		case JOptionPane.CLOSED_OPTION:
 			debug("Ignoring multiple request.");
 			break;

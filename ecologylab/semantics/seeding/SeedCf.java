@@ -37,11 +37,11 @@ public class SeedCf extends RequestMessage
 	 */
 	@simpl_scalar protected	int	handleMultipleRequests;
 	
-	public static final String[] MULTIPLE_REQUESTSTS_DIALOG_OPTIONS = {  "ignore", "replace seeds", "mix seeds",    };
+	public static final String[] MULTIPLE_REQUESTS_DIALOG_OPTIONS = {  "ignore", "replace seeds", "mix seeds",    };
 	
-	// NOTE! These values, except for ASK_USER, are 1 more than the corresponding index into the MULTIPLE_REQUESTSTS_DIALOG_OPTIONS array.
+	// NOTE! These values, except for ASK_USER, are 1 more than the corresponding index into the MULTIPLE_REQUESTS_DIALOG_OPTIONS array.
 	
-	public static final int MULTIPLE_REQUESTSTS_IGNORE = 1, MULTIPLE_REQUESTSTS_REPLACE = 2, MULTIPLE_REQUESTSTS_MIX = 3, MULTIPLE_REQUESTSTS_ASK_USER = 0;
+	public static final int MULTIPLE_REQUESTS_IGNORE = 0, MULTIPLE_REQUESTS_REPLACE = 1, MULTIPLE_REQUESTS_MIX = 2, MULTIPLE_REQUESTS_ASK_USER = 99;
 	
 
 	/**

@@ -609,10 +609,6 @@ implements SemanticsPrefs, ApplicationProperties, DocumentParserTagNames, InfoCo
 		return result;
 	}
 
-	public void setSeedSet(SeedSet seedSet)
-	{
-		this.seedSet = seedSet;
-	}
 	
 	public void clearSeedSet()
 	{

@@ -9,17 +9,21 @@ import ecologylab.appframework.types.prefs.Pref;
 import ecologylab.appframework.types.prefs.PrefBoolean;
 import ecologylab.collections.PrioritizedPool;
 import ecologylab.collections.RunnablePool;
-import ecologylab.collections.WeightingStrategy;
+import ecologylab.collections.WeightSet;
 import ecologylab.concurrent.Monitor;
 import ecologylab.generic.ConsoleUtils;
 import ecologylab.generic.Generic;
 import ecologylab.semantics.metadata.builtins.ImageClosure;
+import ecologylab.semantics.model.text.TermVector;
+import ecologylab.semantics.model.text.TermVectorWeightStrategy;
 
 /**
+ * A PrioritizedPool of references to Media, like Images.
+ * A thread wakes up periodically and parses the top ranked one.
+ * 
  * @author andruid
- *
  */
-public class VisualPool extends PrioritizedPool<ImageClosure>
+public class MediaReferencesPool extends PrioritizedPool<ImageClosure>
 	implements Runnable, RunnablePool
 	{
 	/**
@@ -69,11 +73,17 @@ public class VisualPool extends PrioritizedPool<ImageClosure>
 	 * a menu entry.
 	 */
 	   PrefBoolean downloadImagesAutomatically	= Pref.usePrefBoolean("download_images_automatically", true);
-	   
-	   public VisualPool(NewInfoCollector infoCollector, WeightingStrategy<ImageClosure> weightStrategy)
+
+	   public MediaReferencesPool(int numSets, int maxSetSize, TermVector piv, NewInfoCollector infoCollector)
 	   {
-	      super(POOL_SIZE, infoCollector, weightStrategy);
+	      super();
 	      this.infoCollector	= infoCollector;
+	      
+	  		weightSets					= new WeightSet[numSets];
+	  		//TODO -- should there be a special weighting strategy here?!
+	  		for (int i = 0; i < numSets; i++)
+	  			weightSets[i]			= new WeightSet<ImageClosure>(maxSetSize, infoCollector, new TermVectorWeightStrategy(piv));  		
+	      	
 	   }
 
 	   /**

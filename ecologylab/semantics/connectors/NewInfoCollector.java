@@ -44,7 +44,9 @@ import ecologylab.semantics.model.text.InterestModel;
 import ecologylab.semantics.model.text.TermVector;
 import ecologylab.semantics.model.text.TermVectorWeightStrategy;
 import ecologylab.semantics.namesandnums.SemanticsAssetVersions;
+import ecologylab.semantics.namesandnums.SemanticsSessionObjectNames;
 import ecologylab.semantics.seeding.Seed;
+import ecologylab.semantics.seeding.SeedDistributor;
 import ecologylab.semantics.seeding.SeedPeer;
 import ecologylab.semantics.seeding.SeedSet;
 import ecologylab.semantics.seeding.SemanticsPrefs;
@@ -107,8 +109,10 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 		super(metaMetadataRepository);
 		this.metaMetadataRepository				= metaMetadataRepository;
 		this.metadataTranslationScope			= metadataTranslationScope;
-
-		TermVector piv 	= InterestModel.getPIV(); 
+		this.sessionScope									= sessionScope;
+		sessionScope.put(SemanticsSessionObjectNames.INFO_COLLECTOR, this);
+		
+		TermVector piv 										= InterestModel.getPIV(); 
 		piv.addObserver(this);
 		
 		//Similarly for text surrogates
@@ -127,14 +131,12 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 		candidateContainersPool 	= new PrioritizedPool<DocumentClosure>(containerWeightSets);
 		
 		
-		// Three pools for image visuals      
+		// Three pools for downloaded images      
 		WeightSet<ImageClosure>[] imageWeightSets	= new WeightSet[NUM_GENERATIONS_IN_MEDIA_POOL];
-		for (int i = 0; i < NUM_GENERATIONS_IN_CONTAINER_POOL; i++)
+		for (int i = 0; i < NUM_GENERATIONS_IN_MEDIA_POOL; i++)
 			imageWeightSets[i]	= new WeightSet<ImageClosure>(MAX_MEDIA_PER_GENERATION, this, new TermVectorWeightStrategy(piv));
 		candidateImagesPool = new PrioritizedPool<ImageClosure>(imageWeightSets);
 		
-
-		this.sessionScope = sessionScope;
 		finished		= false;
 		usualSleep	= 3000;
 		longSleep		= usualSleep * 5 / 2;
@@ -226,7 +228,7 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 	// Vector<String> untraversableURLStrings = new Vector<String>();
 	protected PrefixCollection									untraversablePrefixes					= new PrefixCollection();
 
-	private SeedSet														seedSet												= null;
+	private SeedSet															seedSet;
 
 	private final Scope													sessionScope;
 	
@@ -659,6 +661,18 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 		else
 			debug(message);
   }
+  
+  public int showOptionsDialog(String message, String title, String[] options, int initialOptionIndex)
+  {
+  	int result	= initialOptionIndex;
+		if (guiBridge != null)
+			result		= guiBridge.showOptionsDialog(message, title,options, initialOptionIndex);
+		else
+			debug("No GuiBridge, so not displaying: " + message + "\nReturning initial option.");
+		
+		return result;
+  }
+  
 
 	public void trackFirstSeedSet(SeedSet seedSet)
 	{
@@ -715,7 +729,10 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 		
 	}
 
-	
+	public boolean addCandidateDocument(Document document)
+	{
+		return addCandidateClosure(document.getOrConstructClosure());
+	}
 	public boolean addCandidateClosure(DocumentClosure candidate)
 	{
 		if (candidate != null)
@@ -755,7 +772,7 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 	{
 		// pressPlayWhenFirstMediaElementArrives();
 		imageClosure.setDispatchTarget(source);
-		visualPool.add(imageClosure);
+//		visualPool.add(imageClosure);
 //		imageClosure.s
 	}
 	public void removeCandidateContainer(DocumentClosure candidate)
@@ -1209,5 +1226,54 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 		}
 	}
 	
+	public SeedSet getSeedSet()
+	{
+		SeedSet result = this.seedSet;
+		if (result == null)
+		{
+			result = new SeedSet();
+			this.seedSet = result;
+		}
+		return result;
+	}
+
 	
+	public void clearSeedSet()
+	{
+		if(seedSet != null)
+			seedSet.clear();
+	}
+	
+	public void addSeeds(SeedSet<? extends Seed> newSeeds)
+	{
+		
+		if (this.seedSet == null)
+			this.seedSet = newSeeds;
+		else
+		{
+			if (!newSeeds.isEmpty())
+			{
+				for (Seed seed: newSeeds)
+				{
+					this.seedSet.add(seed, this);
+				}
+			}
+		}
+	}
+
+	public void getMoreSeedResults()
+	{
+		if (seedSet != null)
+		{
+			System.out.println(this + ".getMoreSeedResults()!!! " + seedSet.getStartingResultNum());
+			seedSet.performNextSeeding(sessionScope);
+		}
+	}
+
+	public SeedDistributor getSeedDistributor()
+	{
+		return seedSet.seedDistributer(this);
+	}
+	
+
 }

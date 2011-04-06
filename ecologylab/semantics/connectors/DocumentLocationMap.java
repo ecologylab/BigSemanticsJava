@@ -37,19 +37,44 @@ public class DocumentLocationMap<D extends Document> extends ConcurrentHashMap<P
 	 * @param location
 	 * @return
 	 */
-	public D getOrConstruct(ParsedURL id) 
+	public D getOrConstruct(ParsedURL location)
 	{
-    D result = this.get(id);
+    D result = this.get(location);
     if (result == null) 
     {
     	// record does not yet exist
-    	D newValue = mapHelper.constructValue(id);
-    	result = this.putIfAbsent(id, newValue);
+    	D newValue = mapHelper.constructValue(location);
+    	result = this.putIfAbsent(location, newValue);
     	if (result == null) 
     	{
     		// put succeeded, use new value
     		result = newValue;
     	}
+    }
+    return result;
+	}	
+	
+	public D getOrConstruct(MetaMetadata mmd, ParsedURL location)
+	{
+    D result = this.get(location);
+    if (result == null) 
+    {
+    	// record does not yet exist
+    	D newValue = mapHelper.constructValue(mmd, location);
+    	result = this.putIfAbsent(location, newValue);
+    	if (result == null) 
+    	{
+    		// put succeeded, use new value
+    		result = newValue;
+    	}
+    }
+    String inputName = mmd.getName();
+		String resultName = result.getMetaMetadata().getName();
+		if (!inputName.equals(resultName))
+    {
+    	System.err.println("DocumentLocationMap.getOrConstruct() ERROR: Meta-metadata inputName=" + inputName + " but resultName="+resultName + " for "+
+    			location);
+    	result	= null;
     }
     return result;
 	}	

@@ -91,7 +91,7 @@ implements DispatchTarget<ImageClosure>
 	 * Weighted collection of <code>ImageElement</code>s.
 	 * Contain elements that have not been transported to candidatePool. 
 	 */
-	private WeightSet<ImageClosure>	candidateImageClippings;
+	private WeightSet<ImageClosure>	candidateImageClosures;
 
 	/**
 	 * Weighted collection of <code>TextElement</code>s.
@@ -137,6 +137,9 @@ implements DispatchTarget<ImageClosure>
 	
 	/** Number of surrogates from this container in a candidate pool */
 	private int numSurrogatesFrom = 0;
+	
+	static public final Document 	RECYCLED_DOCUMENT	= new Document(ParsedURL.getAbsolute("http://recycled.document"));
+	static public final Document 	UNDEFINED_DOCUMENT= new Document(ParsedURL.getAbsolute("http://undefined.document"));
 
 	/**
 	 * Occasionally, we want to navigate to somewhere other than the regular purl,
@@ -636,21 +639,22 @@ implements DispatchTarget<ImageClosure>
 	public synchronized void perhapsAdditionalImageClosure()
 	{
 
-		ImageClosure imgElement = null;
-		if (candidateImageClippings != null)
-			imgElement = candidateImageClippings.maxSelect();
+		ImageClosure imageClosure = null;
+		if (candidateImageClosures != null)
+			imageClosure = candidateImageClosures.maxSelect();
 
-		if( imgElement!=null && imgElement.termVector() != null && !imgElement.termVector().isRecycled())
+		if (imageClosure!=null && imageClosure.termVector() != null && !imageClosure.termVector().isRecycled())
 		{
 			// If no surrogate has been delivered to the candidate pool from the container, 
 			// send it to the candidate pool without checking the media weight.
-			boolean goForIt		= numSurrogatesFrom==0;
+			boolean firstClipping = numSurrogatesFrom==0;
+			boolean goForIt				= firstClipping;
 			if (!goForIt)
 			{
 				goForIt = infoCollector.imagePoolsSize() < 2;	// we're starved for images so go for it!
 				if (!goForIt)
 				{
-					float adjustedWeight			= InterestModel.getInterestExpressedInTermVector(imgElement.termVector()) / (float) numSurrogatesFrom;
+					float adjustedWeight			= InterestModel.getInterestExpressedInTermVector(imageClosure.termVector()) / (float) numSurrogatesFrom;
 					
 					float meanImgPoolsWeight	= infoCollector.imagePoolsMean();
 					
@@ -660,14 +664,14 @@ implements DispatchTarget<ImageClosure>
 
 			if (goForIt)
 			{
-				infoCollector.a
-				if (!imgElement.queueDownload())
+				// if (firstClipping) else queue in MediaReferencesPool
+				
+				if (!imageClosure.queueDownload())
 					perhapsAdditionalImageClosure();
-				mostRecentImageWeight = InterestModel.getInterestExpressedInTermVector(imgElement.termVector());
 			}
 			else
 			{
-				imgElement.recycle(false);
+				imageClosure.recycle(false);
 				additionalImgSurrogatesActive	= false;
 				//recycle(false);
 			}
@@ -718,8 +722,8 @@ implements DispatchTarget<ImageClosure>
 		// free resources if nothing was collected
 //		if ((outlinks != null) && outlinks.isEmpty())
 //			outlinks		= null;
-		if ((candidateImageClippings != null) && candidateImageClippings.isEmpty())
-			candidateImageClippings	= null;
+		if ((candidateImageClosures != null) && candidateImageClosures.isEmpty())
+			candidateImageClosures	= null;
 		if ((candidateTextClippings != null) && candidateTextClippings.isEmpty())
 			candidateTextClippings	= null;
 
@@ -747,7 +751,7 @@ implements DispatchTarget<ImageClosure>
 	 */
 	private boolean hasEmptyElementCollections()
 	{
-		return ((candidateImageClippings == null) || (candidateImageClippings.size()==0)) &&
+		return ((candidateImageClosures == null) || (candidateImageClosures.size()==0)) &&
 				((candidateTextClippings == null) || (candidateTextClippings.size()==0));
 	}
 	
@@ -788,15 +792,15 @@ implements DispatchTarget<ImageClosure>
 	
 	public synchronized void tryToGetBetterImagesAfterInterestExpression(ImageClosure replaceMe)
 	{
-		if (candidateImageClippings == null || candidateImageClippings.size() == 0)
+		if (candidateImageClosures == null || candidateImageClosures.size() == 0)
 			return;
 		
-		ImageClosure aie = candidateImageClippings.maxPeek();
+		ImageClosure aie = candidateImageClosures.maxPeek();
 		if (InterestModel.getInterestExpressedInTermVector(aie.termVector()) > mostRecentImageWeight)
 		{
 			infoCollector.removeImageClippingFromPools(replaceMe);
 			perhapsAdditionalImageClosure();
-			candidateImageClippings.insert(replaceMe);
+			candidateImageClosures.insert(replaceMe);
 		}
 	}
 

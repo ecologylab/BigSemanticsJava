@@ -7,6 +7,7 @@ import ecologylab.generic.Debug;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.Image;
+import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 
 /**
@@ -18,9 +19,6 @@ public class TNGGlobalCollections extends Debug
 	final DocumentLocationMap<? extends Document>		allDocuments;
 	final DocumentLocationMap<? extends Image>			allImages;
 	
-	static public final Document 	RECYCLED_DOCUMENT	= new Document(ParsedURL.getAbsolute("http://recycled.document"));
-	static public final Document 	UNDEFINED_DOCUMENT= new Document(ParsedURL.getAbsolute("http://undefined.document"));
-
 	static public final Image 		RECYCLED_IMAGE		= new Image(ParsedURL.getAbsolute("http://recycled.image"));
 	static public final Image 		UNDEFINED_IMAGE		= new Image(ParsedURL.getAbsolute("http://undefined.image"));
 
@@ -40,15 +38,22 @@ public class TNGGlobalCollections extends Debug
 					}
 
 					@Override
+					public Document constructValue(MetaMetadata mmd, ParsedURL key)
+					{
+						// TODO Auto-generated method stub
+						return null;
+					}
+
+					@Override
 					public Document recycledValue()
 					{
-						return RECYCLED_DOCUMENT;
+						return Document.RECYCLED_DOCUMENT;
 					}
 
 					@Override
 					public Document undefinedValue()
 					{
-						return UNDEFINED_DOCUMENT;
+						return Document.UNDEFINED_DOCUMENT;
 					}
 				});
 		allImages	= new DocumentLocationMap<Image>(
@@ -71,6 +76,13 @@ public class TNGGlobalCollections extends Debug
 					public Image undefinedValue()
 					{
 						return UNDEFINED_IMAGE;
+					}
+
+					@Override
+					public Image constructValue(MetaMetadata mmd, ParsedURL key)
+					{
+						// TODO Auto-generated method stub
+						return null;
 					}
 				});
 

@@ -52,7 +52,7 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DC>
 
 	
 
-	double								cachedWeight;
+//	protected double								cachedWeight;
 	
 	ParsedURL						initialPURL;
 

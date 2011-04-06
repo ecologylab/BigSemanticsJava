@@ -3,10 +3,11 @@ package ecologylab.semantics.actions;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.connectors.old.OldContainerI;
 import ecologylab.semantics.metadata.Metadata;
+import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.LinkWith;
 import ecologylab.semantics.metametadata.MetaMetadata;
-import ecologylab.serialization.simpl_inherit;
 import ecologylab.serialization.ElementState.xml_tag;
+import ecologylab.serialization.simpl_inherit;
 
 @simpl_inherit
 @xml_tag(SemanticActionStandardMethods.GET_LINKED_METADATA)
@@ -39,16 +40,16 @@ public class GetLinkedMetadataSemanticAction extends SemanticAction
 				if (metadata.getMetaMetadata() instanceof MetaMetadata)
 				{
 					MetaMetadata thisMmd = (MetaMetadata) metadata.getMetaMetadata();
-					LinkWith lw = thisMmd.getLinkWiths().get(name);
-					MetaMetadata mmd = infoCollector.metaMetaDataRepository().getByTagName(name);
-					if (mmd != null)
+					LinkWith linkWith = thisMmd.getLinkWiths().get(name);
+					MetaMetadata linkedMmd = infoCollector.metaMetaDataRepository().getByTagName(name);
+					if (linkedMmd != null)
 					{
-						String id = lw.getById();
-						ParsedURL purl = mmd.generateUrl(id, metadata.getNaturalIdValue(id));
-						OldContainerI container = infoCollector.getContainer(null, null, mmd, purl, false, false, false);
-						if (container != null) // container could be null if it is already recycled
+						String id = linkWith.getById();
+						ParsedURL purl = linkedMmd.generateUrl(id, metadata.getNaturalIdValue(id));
+						Document linkedDocument	= (Document) infoCollector.getGlobalDocumentMap().getOrConstruct(linkedMmd, purl);
+						if (linkedDocument != null)
 						{
-							container.queueDownload();
+							linkedDocument.queueDownload();
 							metadata.pendingSemanticActionHandler = semanticActionHandler;
 							semanticActionHandler.requestWaiting = true;
 						}

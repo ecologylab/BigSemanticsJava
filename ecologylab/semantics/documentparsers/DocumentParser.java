@@ -81,6 +81,7 @@ abstract public class DocumentParser
 		bindingParserMap.put(SemanticActionsKeyWords.XPATH_PARSER,XPathParser.class);
 		bindingParserMap.put(SemanticActionsKeyWords.FEED_PARSER, FeedParser.class);
 		bindingParserMap.put(SemanticActionsKeyWords.DEFAULT_PARSER, HTMLDOMImageTextParser.class);
+		bindingParserMap.put(SemanticActionsKeyWords.IMAGE_PARSER, ImageParser.class);
 		
 	}
 

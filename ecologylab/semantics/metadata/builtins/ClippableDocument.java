@@ -54,7 +54,7 @@ public class ClippableDocument<ME extends Document> extends Document
 		}
 		return result;
 	}
-	public boolean addClipping(MediaClipping<ME> clipping)
+	protected boolean addClipping(MediaClipping<ME> clipping)
 	{
 		ArrayList<MediaClipping<ME>> clippings	= clippings();
 		clipping.setParent(this);

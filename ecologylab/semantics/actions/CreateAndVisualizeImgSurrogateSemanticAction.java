@@ -8,6 +8,7 @@ import ecologylab.semantics.documentparsers.SearchParser;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.Image;
 import ecologylab.semantics.metadata.builtins.ImageClipping;
+import ecologylab.semantics.metadata.builtins.ImageClosure;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.seeding.Seed;
 import ecologylab.semantics.seeding.SeedDistributor;
@@ -75,28 +76,27 @@ class CreateAndVisualizeImgSurrogateSemanticAction
 			if (hrefPURL != null & outlink == null)
 				outlink				= infoCollector.getGlobalDocumentMap().getOrConstruct(hrefPURL);
 			
-			ImageClipping imageClipping	= new ImageClipping(image, source, outlink);
+			ImageClipping imageClipping	= image.constructClipping(source, outlink, caption, null);
 			
 			SeedDistributor resultsDistributor = null;
 			// look out for error condition
 			SearchParser mmSearchParser = (documentParser instanceof SearchParser) ? (SearchParser) documentParser
 					: null;
+			ImageClosure imageClosure	= (ImageClosure) image.getOrConstructClosure();
 			if (mmSearchParser != null)
 			{
 				Seed seed = mmSearchParser.getSeed();
 				resultsDistributor = seed.seedDistributer(infoCollector);
 				if (resultsDistributor != null) // Case 1 - Image Search
 				{
-					imageElement.setSearchResult(infoCollector, resultsDistributor,
-							((SearchParser) documentParser).getResultSoFar());
-					resultsDistributor.queueResult(imageElement);
+					imageClosure.setSearchResult(resultsDistributor, ((SearchParser) documentParser).getResultSoFar());
+					resultsDistributor.queueResult(imageClosure);
 				}
 			}
 			if (resultsDistributor == null) // Case 2
 			{
-				container.addToCandidateLocalImages(imageElement);
-				imageElement.queueDownload();
-				container.queueDownload();
+				//TODO -- add to Document.allLocalImages() if we did that
+				imageClosure.queueDownload();
 			}
 			if (mmSearchParser != null)
 			{
@@ -104,16 +104,18 @@ class CreateAndVisualizeImgSurrogateSemanticAction
 				mmSearchParser.incrementResultSoFar();
 			}
 
-			return imageElement;
+			if (outlink != null)
+				infoCollector.addCandidateClosure(imageClipping.getOutlinkClosure());
+
+			return image;
 		}
 		else
 		{
 			MetaMetadata mm	= getMetaMetadata();
 			String mmString	= mm != null ? mm.getName() : "Couldn't getMetaMetadata()";
 			error("Can't createAndVisualizeImgSurrogate because null PURL: " + mmString
-					+ " - " + container.location());
+					+ " - " + source.location());
 		}
-
 		return null;
 	}
 
