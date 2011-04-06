@@ -1,6 +1,7 @@
 package ecologylab.semantics.model;
 
 import ecologylab.generic.Debug;
+import ecologylab.semantics.model.text.SemanticTextToken;
 import ecologylab.serialization.TranslationScope;
 
 public class TextTokenTranslations extends Debug
@@ -9,7 +10,7 @@ public class TextTokenTranslations extends Debug
 		
 	public static final Class	TRANSLATIONS[]	= 
 	{ 
-		TextToken.class
+		SemanticTextToken.class
 	};
 
 	/**

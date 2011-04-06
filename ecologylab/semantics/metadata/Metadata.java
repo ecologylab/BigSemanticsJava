@@ -30,6 +30,7 @@ import ecologylab.semantics.metametadata.MetaMetadataOneLevelNestingIterator;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.model.text.CompositeTermVector;
 import ecologylab.semantics.model.text.ITermVector;
+import ecologylab.semantics.model.text.TermVectorFeature;
 import ecologylab.semantics.seeding.SearchState;
 import ecologylab.semantics.seeding.Seed;
 import ecologylab.serialization.ElementState;
@@ -56,7 +57,7 @@ import ecologylab.serialization.library.html.Tr;
  */
 @simpl_descriptor_classes(
 { MetadataClassDescriptor.class, MetadataFieldDescriptor.class })
-abstract public class Metadata extends ElementState implements MetadataBase,
+abstract public class Metadata extends ElementState implements MetadataBase, TermVectorFeature,
 		Iterable<MetadataFieldDescriptor>
 {
 	@simpl_scalar

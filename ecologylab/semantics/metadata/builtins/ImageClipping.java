@@ -12,10 +12,12 @@ import java.awt.image.BufferedImage;
  */
 public class ImageClipping extends MediaClipping<Image>
 {
-	BufferedImage					sourceImage;
-	
-	public boolean downloadAndParse()
+	public ImageClipping()
 	{
-		return false;
+		
+	}
+	public ImageClipping(Image clippedMedia, Document source, Document outlink)
+	{
+		super(clippedMedia, source, outlink);
 	}
 }

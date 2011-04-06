@@ -37,7 +37,7 @@ public class DocumentLocationMap<D extends Document> extends ConcurrentHashMap<P
 	 * @param location
 	 * @return
 	 */
-	public D getOrCreate(ParsedURL id) 
+	public D getOrConstruct(ParsedURL id) 
 	{
     D result = this.get(id);
     if (result == null) 

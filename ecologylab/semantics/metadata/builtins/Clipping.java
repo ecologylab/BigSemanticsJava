@@ -6,7 +6,9 @@ package ecologylab.semantics.metadata.builtins;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
+import ecologylab.semantics.tools.MetaMetadataCompilerUtils;
 import ecologylab.serialization.Hint;
+import ecologylab.serialization.ElementState.simpl_scope;
 
 /**
  * Mix-in for adding the context of a clipping to the description of a Document.
@@ -39,12 +41,14 @@ public class Clipping extends Metadata
 	 * The source document.
 	 */
 	@simpl_composite
+	@simpl_scope(MetaMetadataCompilerUtils.GENERATED_METADATA_TRANSLATIONS)
 	private Document				source;
 	
 	/**
 	 * A hyperlinked Document.
 	 */
 	@simpl_composite
+	@simpl_scope(MetaMetadataCompilerUtils.GENERATED_METADATA_TRANSLATIONS)
 	private Document				outlink;
 	
 	private DocumentClosure				outlinkClosure;
@@ -63,7 +67,19 @@ public class Clipping extends Metadata
 	{
 		numConstructed++;
 	}
-
+	public Clipping(Document source)
+	{
+		this();
+		this.source	= source;
+	}
+	public Clipping(Document source, Document outlink)
+	{
+		this(source);
+		if (outlink.isDownloadDone())
+			this.outlink				= outlink;
+		else
+			this.outlinkClosure	= outlink.getOrConstructClosure();
+	}
 	/**
 	 * @param metaMetadata
 	 */

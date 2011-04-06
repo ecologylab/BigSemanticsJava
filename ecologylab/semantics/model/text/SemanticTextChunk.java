@@ -123,7 +123,6 @@ public class SemanticTextChunk extends TextChunkBase<SemanticTextToken>
 	@Override
 	public TextChunkBase<SemanticTextToken> newTextChunk()
 	{
-		// TODO Auto-generated method stub
 		return new SemanticTextChunk();
 	}
 }

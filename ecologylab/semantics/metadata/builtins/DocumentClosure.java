@@ -43,8 +43,8 @@ import ecologylab.semantics.seeding.SeedDistributor;
  * @author andruid
  *
  */
-public class DocumentClosure<D extends Document> extends SetElement
-implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>
+public class DocumentClosure<D extends Document, DC extends DocumentClosure> extends SetElement
+implements TermVectorFeature, Downloadable, QandDownloadable<DC>
 {
 	D												document;
 	
@@ -103,14 +103,28 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>
 	
 	DownloadStatus							downloadStatus	= DownloadStatus.UNPROCESSED;
 	
+	private DocumentParser			presetDocumentParser;
+	
 	/**
 	 * 
 	 */
-	public DocumentClosure(D document, NewInfoCollector infoCollector, SemanticInLinks semanticInlinks)
+	private DocumentClosure(D document, NewInfoCollector infoCollector, SemanticInLinks semanticInlinks)
 	{
+		super();
 		this.document							= document;
 		this.infoCollector				= infoCollector;
 		this.semanticInlinks			= semanticInlinks;
+	}
+
+	/**
+	 * Should only be called by Document.getOrCreateClosure().
+	 * 
+	 * @param document
+	 * @param semanticInlinks
+	 */
+	DocumentClosure(D document, SemanticInLinks semanticInlinks)
+	{
+		this(document, document.getInfoCollector(), semanticInlinks);
 	}
 
 	/////////////////////// methods for downloadable //////////////////////////
@@ -347,7 +361,7 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>
 						else
 						{
 							// get new metadata
-							newMetadata	= documentLocationMap.getOrCreate(connectionPURL);
+							newMetadata	= documentLocationMap.getOrConstruct(connectionPURL);
 
 							infoCollector.constructDocument(connectionPURL);
 							newMetadata.inheritValues(orignalDocument);
@@ -467,6 +481,8 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>
 	{
 		downloadDone	= true;
 		downloadStatus	= DownloadStatus.DONE;
+		document.setDownloadDone(true);
+		
 		SemanticsSite site	= getSite();
 		if (site != null)
 			site.endDownload();
@@ -545,18 +561,6 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>
 	{
 		return document;
 	}
-	
-	DocumentClosure getAncestorClosure()
-	{
-		DocumentClosure result = null;
-		if (document != null)
-		{
-			Document ancestor	= document.getAncestor();
-			if (ancestor != null)
-				result					= ancestor.getDocumentClosure();
-		}
-		return  result;
-	}
 
 	/**
 	 * Download if necessary, using the 
@@ -584,7 +588,7 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>
 			if (site != null)
 				site.beginDownload();
 			
-			downloadMonitor().download(this, dispatchTarget());
+			downloadMonitor().download((DC) this, dispatchTarget());
 		}
 		return result;
 	}
@@ -638,12 +642,12 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>
 	{
 		return isDnd;
 	}
-	protected DownloadMonitor downloadMonitor()
+	protected DownloadMonitor<DC> downloadMonitor()
 	{
 		// GoogleSearch, SearchResults are all seeds
-		return isDnd ? infoCollector.getDndDownloadMonitor() : 
+		return (DownloadMonitor<DC>) (isDnd ? NewInfoCollector.DND_DOWNLOAD_MONITOR : 
 			isSeed() ? 
-				infoCollector.getSeedingDownloadMonitor(): infoCollector.getCrawlerDownloadMonitor();
+		  NewInfoCollector.SEEDING_DOWNLOAD_MONITOR : NewInfoCollector.CRAWLER_DOWNLOAD_MONITOR);
 	}
 
 	
@@ -682,6 +686,7 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>
 		downloadDone		= true;
 		bad							= true;
 		downloadStatus	= DownloadStatus.IOERROR;
+		document.setDownloadDone(true);
 
 		SemanticsSite site	= getSite();
 		site.incrementNumTimeouts();
@@ -690,7 +695,7 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>
 		// have to do this by hand in the error case
 		if (dispatchTarget != null )
 		{
-			dispatchTarget.delivery(this);
+			dispatchTarget.delivery((DC) this);
 		}
 
 		// When timeout happens and download is not completed, there may have some mediaElements created 
@@ -757,14 +762,14 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>
 
 	
 	@Override
-	public void setDispatchTarget(DispatchTarget<DocumentClosure> dispatchTarget)
+	public void setDispatchTarget(DispatchTarget<DC> dispatchTarget)
 	{
 		this.dispatchTarget = dispatchTarget;
 	}
 
-	DispatchTarget<DocumentClosure> 			dispatchTarget;
+	DispatchTarget<DC> 			dispatchTarget;
 	
-	DispatchTarget<DocumentClosure> dispatchTarget()
+	DispatchTarget<DC> dispatchTarget()
 	{
 		return dispatchTarget;
 	}
@@ -778,4 +783,21 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>
 	{
 		return document != null ? document.getSeed() : null;
 	}
+
+	/**
+	 * @return the downloadStatus
+	 */
+	public DownloadStatus getDownloadStatus()
+	{
+		return downloadStatus;
+	}
+
+	/**
+	 * @param presetDocumentParser the presetDocumentParser to set
+	 */
+	public void setPresetDocumentParser(DocumentParser presetDocumentParser)
+	{
+		this.presetDocumentParser = presetDocumentParser;
+	}
+
 }

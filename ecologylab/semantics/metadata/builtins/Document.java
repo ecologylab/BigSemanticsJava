@@ -5,12 +5,12 @@ package ecologylab.semantics.metadata.builtins;
  * Metadata hierarchy. It is hand-authored in order to provide specific functionalities
  **/
 
-import java.util.ArrayList;
 import java.util.Vector;
 
 import ecologylab.collections.GenericElement;
 import ecologylab.collections.GenericWeightSet;
 import ecologylab.collections.WeightSet;
+import ecologylab.generic.DispatchTarget;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.connectors.ContainerWeightingStrategy;
 import ecologylab.semantics.connectors.DocumentLocationMap;
@@ -37,6 +37,7 @@ import ecologylab.serialization.simpl_inherit;
 
 @simpl_inherit
 public class Document extends Metadata
+implements DispatchTarget<ImageClosure>
 {
 	@mm_name("location") 
 	@simpl_scalar MetadataParsedURL	location;
@@ -67,11 +68,11 @@ public class Document extends Metadata
 	
 	private DocumentClosure					documentClosure;
 	
-	private SemanticInLinks					semanticInlinks;
+	SemanticInLinks									semanticInlinks;
 	
-	ArrayList<ImageClipping>				imageClippings;
-	
-	ArrayList<TextClipping>					textClippings;
+//	ArrayList<ImageClipping>				imageClippings;
+//	
+//	ArrayList<TextClipping>					textClippings;
 	
 	/**
 	 * Seed object associated with this, if this is a seed.
@@ -83,12 +84,14 @@ public class Document extends Metadata
 	 * that is associated into a Seed's inverted index.
 	 */
 	private boolean									isTrueSeed;
+	
+	private boolean									downloadDone;
 
 	/**
 	 * Weighted collection of <code>ImageElement</code>s.
 	 * Contain elements that have not been transported to candidatePool. 
 	 */
-	private GenericWeightSet<ImageClipping>	candidateImageClippings;
+	private WeightSet<ImageClosure>	candidateImageClippings;
 
 	/**
 	 * Weighted collection of <code>TextElement</code>s.
@@ -164,11 +167,12 @@ public class Document extends Metadata
 	 * 
 	 * @param location
 	 */
-	public Document(ParsedURL location)
+	protected Document(ParsedURL location)
 	{
 		super(MetaMetadataRepository.getBaseDocumentMM());
 		setLocation(location);
 	}
+
 
 	/**
 	 * Lazy Evaluation for title
@@ -544,7 +548,7 @@ public class Document extends Metadata
 	{
 		if (!newOutlink.isSeed())	// a seed is never a candidate
 		{
-			DocumentClosure documentClosure	= newOutlink.getOrCreateClosure();
+			DocumentClosure documentClosure	= newOutlink.getOrConstructClosure();
 			if (documentClosure != null)
 			{
 				if (candidateLocalOutlinks == null)
@@ -563,7 +567,7 @@ public class Document extends Metadata
 	 */
 	double mostRecentImageWeight = 0, mostRecentTextWeight = 0;
 	
-	public synchronized void perhapsAddAdditionalContainer ( )
+	public synchronized void perhapsAddAdditionalDocumentClosure ( )
 	{
 		if (candidateLocalOutlinks == null || candidateLocalOutlinks.size() == 0)
 		{
@@ -629,12 +633,12 @@ public class Document extends Metadata
 		else
 			additionalTextSurrogatesActive	= false;
 	}
-	public synchronized void perhapsAddAdditionalImgSurrogate()
+	public synchronized void perhapsAdditionalImageClosure()
 	{
 
-		ImageClipping imgElement = null;
+		ImageClosure imgElement = null;
 		if (candidateImageClippings != null)
-			imgElement = candidateImageClippings.maxGenericSelect();
+			imgElement = candidateImageClippings.maxSelect();
 
 		if( imgElement!=null && imgElement.termVector() != null && !imgElement.termVector().isRecycled())
 		{
@@ -656,8 +660,9 @@ public class Document extends Metadata
 
 			if (goForIt)
 			{
-				if (!imgElement.downloadAndParse())
-					perhapsAddAdditionalImgSurrogate();
+				infoCollector.a
+				if (!imgElement.queueDownload())
+					perhapsAdditionalImageClosure();
 				mostRecentImageWeight = InterestModel.getInterestExpressedInTermVector(imgElement.termVector());
 			}
 			else
@@ -671,7 +676,11 @@ public class Document extends Metadata
 			additionalImgSurrogatesActive	= false;
 	}
 	
-	
+	public void delivery(ImageClosure imageClosure)
+	{
+		mostRecentImageWeight = InterestModel.getInterestExpressedInTermVector(imageClosure.termVector());
+		perhapsAdditionalImageClosure();
+	}
 	
 	private void considerRecycling()
 	{
@@ -702,8 +711,8 @@ public class Document extends Metadata
 			additionalImgSurrogatesActive	= true;
 			additionalContainersActive	= true;
 			perhapsAddAdditionalTextSurrogate();
-			perhapsAddAdditionalImgSurrogate();
-			perhapsAddAdditionalContainer();
+			perhapsAdditionalImageClosure();
+			perhapsAddAdditionalDocumentClosure();
 		}
 		//TODO reconsider this -- call recycle()?!
 		// free resources if nothing was collected
@@ -777,16 +786,16 @@ public class Document extends Metadata
 		}
 	}
 	
-	public synchronized void tryToGetBetterImagesAfterInterestExpression(GenericElement<ImageClipping> replaceMe)
+	public synchronized void tryToGetBetterImagesAfterInterestExpression(ImageClosure replaceMe)
 	{
 		if (candidateImageClippings == null || candidateImageClippings.size() == 0)
 			return;
 		
-		GenericElement<ImageClipping> aie = candidateImageClippings.maxPeek();
-		if (InterestModel.getInterestExpressedInTermVector(aie.getGeneric().termVector()) > mostRecentImageWeight)
+		ImageClosure aie = candidateImageClippings.maxPeek();
+		if (InterestModel.getInterestExpressedInTermVector(aie.termVector()) > mostRecentImageWeight)
 		{
 			infoCollector.removeImageClippingFromPools(replaceMe);
-			perhapsAddAdditionalImgSurrogate();
+			perhapsAdditionalImageClosure();
 			candidateImageClippings.insert(replaceMe);
 		}
 	}
@@ -849,14 +858,6 @@ public class Document extends Metadata
 	{
 		return seed;
 	}
-
-	/**
-	 * @return the downloadClosure
-	 */
-	public DocumentClosure getDocumentClosure()
-	{
-		return documentClosure;
-	}
 	
 	final Object CREATE_CLOSURE_LOCK	= new Object();
 	
@@ -864,7 +865,7 @@ public class Document extends Metadata
 	 * 
 	 * @return A closure for this, or null, if this is not fit to be parsed.
 	 */
-	public DocumentClosure getOrCreateClosure()
+	public DocumentClosure getOrConstructClosure()
 	{
 		DocumentClosure result	= this.documentClosure;
 		if (result == null && !isRecycled())
@@ -877,12 +878,20 @@ public class Document extends Metadata
 					if (semanticInlinks == null)
 						semanticInlinks	= new SemanticInLinks();
 					
-					result	= new DocumentClosure(this, infoCollector, semanticInlinks);
+					result	= constructClosure();
 					this.documentClosure	= result;
 				}
 			}
 		}
 		return result.downloadStatus == DownloadStatus.RECYCLED ? null : result;
+	}
+
+	/**
+	 * @return
+	 */
+	protected DocumentClosure constructClosure()
+	{
+		return new DocumentClosure(this, semanticInlinks);
 	}
 
 	/**
@@ -975,10 +984,32 @@ public class Document extends Metadata
 	{
 		getSemanticInlinks().add(source);
 	}
+	
+	public boolean queueDownload()
+	{
+		DocumentClosure documentClosure	= getOrConstructClosure();
+		return documentClosure != null && documentClosure.queueDownload();
+	}
 //	@Override
 //	public void recycle()
 //	{
 //		super.recycle();
 //		downloadStatus							= 
 //	}
+
+	/**
+	 * @return the downloadDone
+	 */
+	public boolean isDownloadDone()
+	{
+		return downloadDone;
+	}
+
+	/**
+	 * @param downloadDone the downloadDone to set
+	 */
+	void setDownloadDone(boolean downloadDone)
+	{
+		this.downloadDone = downloadDone;
+	}
 }

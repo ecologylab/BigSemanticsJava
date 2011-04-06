@@ -11,6 +11,7 @@ import ecologylab.generic.Debug;
 import ecologylab.generic.Generic;
 import ecologylab.semantics.connectors.NewInfoCollector;
 import ecologylab.semantics.connectors.old.OldContainerI;
+import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
 
 /**
@@ -191,13 +192,13 @@ public class SeedDistributor extends Debug implements Runnable
 	/**
 	 * Called whenever a search is downloaded and parsed.
 	 * 
-	 * @param searchContainer
+	 * @param srcDocument
 	 * @param searchNum
 	 * @param numResults
 	 */
-	public void doneQueueing(DocumentClosure searchContainer)
+	public void doneQueueing(Document srcDocument)
 	{
-		debug("search parsed: " + searchContainer);
+		debug("search parsed: " + srcDocument);
 		numSearchesProcessing--;
 		numSearchesDone++;
 	}

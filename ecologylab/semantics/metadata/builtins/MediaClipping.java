@@ -5,6 +5,8 @@ package ecologylab.semantics.metadata.builtins;
 
 import ecologylab.semantics.html.documentstructure.ImageFeatures;
 import ecologylab.semantics.metadata.scalar.MetadataString;
+import ecologylab.semantics.tools.MetaMetadataCompilerUtils;
+import ecologylab.serialization.ElementState.simpl_scope;
 
 /**
  * @author andruid
@@ -19,10 +21,20 @@ public class MediaClipping<ME extends Document> extends Clipping
 	@simpl_scalar
 	private MetadataString	caption;
 	
-	@simpl_composite
-	ME											clippedMedia;
+//	@simpl_composite
+//	@simpl_scope(MetaMetadataCompilerUtils.GENERATED_METADATA_TRANSLATIONS)
+//	ME											clippedMedia;
 	
-
+	public MediaClipping()
+	{
+		
+	}
+	public MediaClipping(ME clippedMedia, Document source, Document outlink)
+	{
+		super(source, outlink);
+//		this.clippedMedia			= clippedMedia;
+	}
+	
 	public MetadataString caption()
 	{
 		MetadataString result = this.caption;

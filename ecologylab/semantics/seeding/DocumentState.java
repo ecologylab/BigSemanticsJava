@@ -5,8 +5,6 @@ import java.io.File;
 
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.connectors.NewInfoCollector;
-import ecologylab.semantics.connectors.old.InfoCollectorBase;
-import ecologylab.semantics.connectors.old.OldContainerI;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.model.text.InterestModel;
 import ecologylab.serialization.simpl_inherit;
@@ -25,6 +23,8 @@ public class DocumentState extends Seed
 	 * URL of the document or container specified for downloading and processing.
 	 */
 	@simpl_scalar		ParsedURL	url;
+	
+	Document									document;
 	
 	/**
 	 * If true, then no media should be collected from this document.
@@ -77,23 +77,19 @@ public class DocumentState extends Seed
 	 		infoCollector.traversable(url);
 	 		// strangely enough, a file document seed can have a parentContainer!
 	 		File file					= url.file();
-	 		OldContainerI parentContainer	= null;
+	 		document					= infoCollector.constructDocument(url);
 	 		if (file != null)
 	 		{
 				File parent				= file.getParentFile();	// the directory the file lives in
-				ParsedURL parentPURL	= new ParsedURL(parent);
-				parentContainer	= infoCollector.getContainer(null, null, InfoCollectorBase.DOCUMENT_META_METADATA, parentPURL, false, false, false);
+				Document parentDocument	= infoCollector.constructDocument(new ParsedURL(parent));
+		 		document.addInlink(parentDocument);
 	 		}
-	 		OldContainerI container =infoCollector.getContainer(parentContainer, null, null, url, false, false, true);
-	 		document	= (Document) container.getMetadata();
 	 		if (query != null)
 	 		{
-	 			container.setQuery(query);
+	 			document.setQuery(query);
 	 			InterestModel.expressInterest(query, (short)3);
 	 		}
-	 		container.queueDownload();
-	// 		getContainerDownloadIfNeeded(parentContainer, url, this, 
-	// 				(dropPoint != null), justcrawl, justmedia);
+	 		document.queueDownload();
 		}
 	}
  	

@@ -24,7 +24,6 @@ import ecologylab.collections.PrioritizedPool;
 import ecologylab.collections.Scope;
 import ecologylab.collections.WeightSet;
 import ecologylab.concurrent.DownloadMonitor;
-import ecologylab.generic.Debug;
 import ecologylab.generic.Generic;
 import ecologylab.generic.StringTools;
 import ecologylab.generic.ThreadMaster;
@@ -32,12 +31,12 @@ import ecologylab.io.Assets;
 import ecologylab.io.AssetsRoot;
 import ecologylab.io.Files;
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.connectors.old.OldContainerI;
 import ecologylab.semantics.metadata.DocumentParserTagNames;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
-import ecologylab.semantics.metadata.builtins.ImageClipping;
+import ecologylab.semantics.metadata.builtins.Image;
+import ecologylab.semantics.metadata.builtins.ImageClosure;
 import ecologylab.semantics.metadata.builtins.TextClipping;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
@@ -77,18 +76,22 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 	 */
 	static final int									MAX_MEDIA				= 3072;
 
+	public static final int			NUM_GENERATIONS_IN_MEDIA_POOL = 3; 
+
+	static final int						MAX_MEDIA_PER_GENERATION			= MAX_MEDIA / NUM_GENERATIONS_IN_MEDIA_POOL;
+
 	public static final int			NUM_GENERATIONS_IN_CONTAINER_POOL = 5; 
 	public static final int			MAX_PAGES_PER_GENERATION	= MAX_PAGES / NUM_GENERATIONS_IN_CONTAINER_POOL ;
 	/**
-	 * Contains 2 visual pools. The first holds the first image of each container
+	 * Contains 3 visual pools. The first holds the first image of each container
 	 */
-	private final GenericPrioritizedPool<ImageClipping> 						candidateImageClippingsPool;
+	private final PrioritizedPool<ImageClosure> 				candidateImagesPool;
 	
 	/**
 	 * Contains 2 FloatWeightSet pools. 
 	 * The first holds the first text surrogate of each container
 	 */
-	private final GenericPrioritizedPool<TextClipping> 	candidateTextElementsPool;
+	private final GenericPrioritizedPool<TextClipping> 	candidateTextClippingsPool;
 	
 	private final PrioritizedPool<DocumentClosure>			candidateContainersPool;
 	
@@ -107,39 +110,36 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 
 		TermVector piv 	= InterestModel.getPIV(); 
 		piv.addObserver(this);
-		// Three pools for image visuals      
-		VisualPool[] imgVisualPool = {	
-				new VisualPool(this,new TermVectorWeightStrategy(piv)), 
-				new VisualPool(this,new TermVectorWeightStrategy(piv)), 
-				new VisualPool(this,new TermVectorWeightStrategy(piv))
-		};
-		//Similarly for text surrogates
-		GenericWeightSet[] txtPool = { 
-				new GenericWeightSet<TextClipping>(MAX_MEDIA, this, new TermVectorWeightStrategy(piv)),
-				new GenericWeightSet<TextClipping>(MAX_MEDIA, this, new TermVectorWeightStrategy(piv)),
-				new GenericWeightSet<TextClipping>(MAX_MEDIA, this, new TermVectorWeightStrategy(piv))
-		};
-
-		//We could do this within a loop, but it's better to have these initializations explicit here.
 		
+		//Similarly for text surrogates
+		GenericWeightSet[] textWeightSets = { 
+				new GenericWeightSet<TextClipping>(MAX_MEDIA_PER_GENERATION, this, new TermVectorWeightStrategy(piv)),
+				new GenericWeightSet<TextClipping>(MAX_MEDIA_PER_GENERATION, this, new TermVectorWeightStrategy(piv)),
+				new GenericWeightSet<TextClipping>(MAX_MEDIA_PER_GENERATION, this, new TermVectorWeightStrategy(piv))
+		};
+		candidateTextClippingsPool = new GenericPrioritizedPool<TextClipping>(textWeightSets);
+
 		WeightSet<DocumentClosure>[] containerWeightSets = new WeightSet[NUM_GENERATIONS_IN_CONTAINER_POOL];
 		
 		for(int i = 0; i < NUM_GENERATIONS_IN_CONTAINER_POOL; i++)
 				containerWeightSets[i] = new WeightSet<DocumentClosure>(MAX_PAGES_PER_GENERATION, this, 
 					(TermVectorWeightStrategy) new DownloadContainerWeightingStrategy(piv));
-		
-		//Instantiate all the Prioritized Pools
-		candidateImageClippingsPool = new GenericPrioritizedPool<ImageClipping>(imgVisualPool);
-		candidateTextElementsPool = new GenericPrioritizedPool<TextClipping>(txtPool);
-		
 		candidateContainersPool 	= new PrioritizedPool<DocumentClosure>(containerWeightSets);
+		
+		
+		// Three pools for image visuals      
+		WeightSet<ImageClosure>[] imageWeightSets	= new WeightSet[NUM_GENERATIONS_IN_MEDIA_POOL];
+		for (int i = 0; i < NUM_GENERATIONS_IN_CONTAINER_POOL; i++)
+			imageWeightSets[i]	= new WeightSet<ImageClosure>(MAX_MEDIA_PER_GENERATION, this, new TermVectorWeightStrategy(piv));
+		candidateImagesPool = new PrioritizedPool<ImageClosure>(imageWeightSets);
+		
 
 		this.sessionScope = sessionScope;
-		finished = false;
-		usualSleep = 3000;
-		longSleep = usualSleep * 5 / 2;
+		finished		= false;
+		usualSleep	= 3000;
+		longSleep		= usualSleep * 5 / 2;
 
-		crawlerDownloadMonitor.setHurry(true);
+		CRAWLER_DOWNLOAD_MONITOR.setHurry(true);
 		println("");
 		
 		//TODO -- initialize MetaMetadataRepository
@@ -265,29 +265,32 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 	 * 
 	 * It sometimes gets paused by GoogleSearch to promote downloading of search results.
 	 */
-	protected static final DownloadMonitor			crawlerDownloadMonitor				= new DownloadMonitor<OldContainerI>("WebCrawler", NUM_CRAWLER_DOWNLOAD_THREADS, 0);
+	public static final DownloadMonitor<DocumentClosure>			CRAWLER_DOWNLOAD_MONITOR				= new DownloadMonitor<DocumentClosure>("WebCrawler", NUM_CRAWLER_DOWNLOAD_THREADS, 0);
 
 	static final int														NUM_SEEDING_DOWNLOAD_THREADS	= 4;
+	
+	static final int														DND_PRIORITY_BOOST						= 6;
 
 	/**
 	 * This is the <code>DownloadMonitor</code> used by to process drag and drop operations. It gets
 	 * especially high priority, in order to provide rapid response to the user.
 	 */
-	protected static final DownloadMonitor			dndDownloadMonitor						= new DownloadMonitor<OldContainerI>("Dnd", NUM_SEEDING_DOWNLOAD_THREADS, 6);
+	public static final DownloadMonitor<DocumentClosure>			DND_DOWNLOAD_MONITOR						= 
+		new DownloadMonitor<DocumentClosure>("Dnd", NUM_SEEDING_DOWNLOAD_THREADS, DND_PRIORITY_BOOST);
 
 	/**
 	 * This is the <code>DownloadMonitor</code> used by seeds. It never gets paused.
 	 */
-	protected static final DownloadMonitor			seedingDownloadMonitor				= new DownloadMonitor<OldContainerI>("Seeding", NUM_SEEDING_DOWNLOAD_THREADS, 1);
+	public static final DownloadMonitor<DocumentClosure>			SEEDING_DOWNLOAD_MONITOR				= new DownloadMonitor<DocumentClosure>("Seeding", NUM_SEEDING_DOWNLOAD_THREADS, 1);
 
 
  	static final int			NUM_DOWNLOAD_THREADS	= 2;
 
-	static final DownloadMonitor IMAGE_DOWNLOAD_MONITOR = //PixelBased.pixelBasedDownloadMonitor;
-			new DownloadMonitor("Images", NUM_DOWNLOAD_THREADS, 1);
+	public static final DownloadMonitor<ImageClosure> IMAGE_DOWNLOAD_MONITOR = //PixelBased.pixelBasedDownloadMonitor;
+			new DownloadMonitor<ImageClosure>("Images", NUM_DOWNLOAD_THREADS, 1);
 
-	public static final DownloadMonitor	highPriorityDownloadMonitor		=
-		new DownloadMonitor("ImagesHighPriority", NUM_DOWNLOAD_THREADS, 3);
+	public static final DownloadMonitor<ImageClosure>	IMAGE_DND_DOWNLOAD_MONITOR		=
+		new DownloadMonitor<ImageClosure>("ImagesHighPriority", NUM_DOWNLOAD_THREADS, DND_PRIORITY_BOOST);
 
 
 	//
@@ -424,7 +427,9 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 	 */
 	public Document constructDocument(ParsedURL purl)
 	{
-		return META_METADATA_REPOSITORY.constructDocument(purl);
+		Document result = META_METADATA_REPOSITORY.constructDocument(purl);
+		result.setInfoCollector(this);
+		return result;
 	}
 
 	/**
@@ -530,7 +535,7 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 			{
 				debug("beginSeeding() pause crawler");
 				duringSeeding = true;
-				crawlerDownloadMonitor.pause();
+				CRAWLER_DOWNLOAD_MONITOR.pause();
 				pause();
 			}
 		}
@@ -547,30 +552,10 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 			{
 				duringSeeding = false;
 				debug("endSeeding() unpause crawler");
-				crawlerDownloadMonitor.unpause();
+				CRAWLER_DOWNLOAD_MONITOR.unpause();
 				start();	// start thread *or* unpause()
 			}
 		}
-	}
-
-	public DownloadMonitor getCrawlerDownloadMonitor()
-	{
-		return crawlerDownloadMonitor;
-	}
-
-	public static DownloadMonitor seedingDownloadMonitor()
-	{
-		return seedingDownloadMonitor;
-	}
-
-	public static DownloadMonitor dndDownloadMonitor()
-	{
-		return dndDownloadMonitor;
-	}
-
-	public DownloadMonitor getDndDownloadMonitor()
-	{
-		return dndDownloadMonitor;
 	}
 
 	public void pauseDownloadMonitor()
@@ -580,17 +565,17 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 
 	public static DownloadMonitor crawlerDownloadMonitor()
 	{
-		return crawlerDownloadMonitor;
+		return CRAWLER_DOWNLOAD_MONITOR;
 	}
 
 	public void pauseCrawler()
 	{
-		crawlerDownloadMonitor.pause();
+		CRAWLER_DOWNLOAD_MONITOR.pause();
 	}
 
 	public DownloadMonitor getSeedingDownloadMonitor()
 	{
-		return seedingDownloadMonitor;
+		return SEEDING_DOWNLOAD_MONITOR;
 	}
 
 	public Collection<String> traversableURLStrings()
@@ -610,7 +595,7 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 
 	protected boolean seedsArePending()
 	{
-		return seedingDownloadMonitor.toDownloadSize() > 0;
+		return SEEDING_DOWNLOAD_MONITOR.toDownloadSize() > 0;
 	}
 
 	public int numSeeds()
@@ -766,7 +751,13 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 		return false;
 	}
 	
-
+	void addCandidateImageClosure(ImageClosure imageClosure, Document source)
+	{
+		// pressPlayWhenFirstMediaElementArrives();
+		imageClosure.setDispatchTarget(source);
+		visualPool.add(imageClosure);
+//		imageClosure.s
+	}
 	public void removeCandidateContainer(DocumentClosure candidate)
 	{
 		if (candidate != null && !candidate.downloadHasBeenQueued() )
@@ -836,17 +827,16 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 		synchronized(candidateContainersPool)
 		{
 			WeightSet<DocumentClosure>[] candidateSet = (WeightSet<DocumentClosure>[]) candidateContainersPool.getWeightSets();
+			int maxSize	= candidateContainersPool.maxSize();
+			ArrayList<DocumentClosure> removeContainers = new ArrayList<DocumentClosure>(maxSize);
+			ArrayList<DocumentClosure> insertContainers = new ArrayList<DocumentClosure>(maxSize);
 			for(WeightSet<DocumentClosure> candidates : candidateSet)
 			{
-				int size = candidates.size();
-				ArrayList<DocumentClosure> removeContainers = new ArrayList<DocumentClosure>(size);
-				ArrayList<DocumentClosure> insertContainers = new ArrayList<DocumentClosure>(size);
 				for (DocumentClosure c : candidates)
 				{
-					DocumentClosure ancestor	= c.getAncestorClosure();
-					if (ancestor != null && !(ancestor.recycled() || ancestor.isRecycling()))
+					Document ancestorDocument	= c.getDocument().getAncestor();
+					if (ancestorDocument != null && !(ancestorDocument.isRecycled() /*|| ancestor.isRecycling() */))
 					{
-						Document ancestorDocument = ancestor.getDocument();
 						if (ancestorDocument != null)
 						{
 							DocumentClosure d = ancestorDocument.swapNextBestOutlinkWith(c);
@@ -863,10 +853,12 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 					System.out.println("Swapping Containers:\n\tReplacing " + swapSize);
 				for (DocumentClosure c : removeContainers)
 					candidates.remove(c);
+				removeContainers.clear();
 				// Insertion directly into weighset is Ok, 
 				// because the replacement container will have the same generation
 				for (DocumentClosure c : insertContainers)
 					candidates.insert(c);	
+				insertContainers.clear();
 			}
 		}
 	}
@@ -876,27 +868,25 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 	 */
 	private void checkCandidatesForBetterImagesAndText()
 	{
-		synchronized (candidateImageClippingsPool)
+		synchronized (candidateImagesPool)
 		{
-			ArrayList<GenericElement<ImageClipping>> vlist = new ArrayList<GenericElement<ImageClipping>>(candidateImageClippingsPool.size());
-			for (GenericWeightSet<ImageClipping> ws : (GenericWeightSet<ImageClipping>[])candidateImageClippingsPool.getWeightSets())
-				for (GenericElement<ImageClipping> geImageClipping : ws)
-					vlist.add(geImageClipping);
-			for (GenericElement<ImageClipping> geImageClipping : vlist)
+//			ImageClosure[] poolCopy				= (ImageClosure[]) candidateImagesPool.toArray();
+			for (ImageClosure imageClosure : candidateImagesPool)
 			{
-				ImageClipping imageClipping	= geImageClipping.getGeneric();
-				Document sourceDocument		= imageClipping.getSource();
+				//TODO -- check among all source documents!!!
+				Image image								= imageClosure.getDocument();
+				Document sourceDocument		= image.getClippingSource();
 				if (sourceDocument != null)
-					sourceDocument.tryToGetBetterImagesAfterInterestExpression(geImageClipping);
+					sourceDocument.tryToGetBetterImagesAfterInterestExpression(imageClosure);
 			}
 		}
-		synchronized (candidateTextElementsPool)
+		synchronized (candidateTextClippingsPool)
 		{
-			ArrayList<GenericElement<TextClipping>> tlist = new ArrayList<GenericElement<TextClipping>>(candidateTextElementsPool.size());
-			for (GenericWeightSet<TextClipping> ws : (GenericWeightSet<TextClipping>[]) candidateTextElementsPool.getWeightSets())
-				for (GenericElement<TextClipping> i : ws)
-					tlist.add(i);
-			for (GenericElement<TextClipping> i : tlist)
+//			ArrayList<GenericElement<TextClipping>> tlist = new ArrayList<GenericElement<TextClipping>>(candidateTextClippingsPool.size());
+//			for (GenericWeightSet<TextClipping> ws : (GenericWeightSet<TextClipping>[]) candidateTextClippingsPool.getWeightSets())
+//				for (GenericElement<TextClipping> i : ws)
+//					tlist.add(i);
+			for (GenericElement<TextClipping> i : candidateTextClippingsPool)
 			{
 				TextClipping textClipping	= i.getGeneric();
 				Document sourceDocument		= textClipping.getSource();
@@ -908,12 +898,12 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 
 	public void removeTextClippingFromPools(GenericElement<TextClipping> replaceMe)
 	{
-		candidateTextElementsPool.remove(replaceMe);
+		candidateTextClippingsPool.remove(replaceMe);
 	}
 
-	public void removeImageClippingFromPools(GenericElement<ImageClipping> replaceMe)
+	public void removeImageClippingFromPools(ImageClosure replaceMe)
 	{
-		candidateImageClippingsPool.remove(replaceMe);
+		candidateImagesPool.remove(replaceMe);
 	}
 
 	/**
@@ -931,7 +921,7 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 	 */
 	public final int imagePoolsSize()
 	{
-		return candidateImageClippingsPool.size();
+		return candidateImagesPool.size();
 //		return candidateFirstImageVisualsPool.size() + candidateImageVisualsPool.size();
 	}
 	
@@ -954,7 +944,7 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 	 */
 	public final int candidateTextElementsSetSize()
 	{
-		return candidateTextElementsPool.size();
+		return candidateTextClippingsPool.size();
 //		return candidateFirstTextElementsSet.size() + candidateTextElementsSet.size();
 	}
 
@@ -962,7 +952,7 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 	
 	public boolean candidateTextElementsSetIsAlmostEmpty()
 	{
-		return candidateTextElementsPool.size() <= ALMOST_EMPTY_CANDIDATES_SET_THRESHOLD;
+		return candidateTextClippingsPool.size() <= ALMOST_EMPTY_CANDIDATES_SET_THRESHOLD;
 	}
 	/**
 	 * 
@@ -970,12 +960,12 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 	 */
 	public float candidateTextElementsSetsMean()
 	{
-		return candidateTextElementsPool.mean();
+		return candidateTextClippingsPool.mean();
 	}
 
 	public float imagePoolsMean()
 	{
-		return candidateImageClippingsPool.mean();
+		return candidateImagesPool.mean();
 	}
 
 
@@ -1023,8 +1013,8 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 			pause();
 			if (interactiveSpace != null)
 				interactiveSpace.pausePipeline();
-			candidateImageClippingsPool.pause();
-			crawlerDownloadMonitor.pause();
+			candidateImagesPool.pause();
+			CRAWLER_DOWNLOAD_MONITOR.pause();
 			IMAGE_DOWNLOAD_MONITOR.pause();
 			threadsExceptCompositionArePause = true;
 		}
@@ -1035,7 +1025,7 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 		if ((thread != null) && !collectingThreadsPaused)
 		{
 			collectingThreadsPaused	= true;
-			candidateImageClippingsPool.pause();
+			candidateImagesPool.pause();
 			pause();
 		}
 	}   
@@ -1044,7 +1034,7 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 		if (collectingThreadsPaused)
 		{
 			collectingThreadsPaused	= false;
-			candidateImageClippingsPool.unpause();
+			candidateImagesPool.unpause();
 			unpause();
 		}
 	}
@@ -1084,8 +1074,8 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 	{
 		threadsExceptCompositionArePause = false;
 
-		candidateImageClippingsPool.unpause();
-		crawlerDownloadMonitor.unpause();
+		candidateImagesPool.unpause();
+		CRAWLER_DOWNLOAD_MONITOR.unpause();
 		NewInfoCollector.IMAGE_DOWNLOAD_MONITOR.unpause();
 		unpause();
 	}
@@ -1099,11 +1089,11 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 			finished	= true;
 
 		stopCollectingAgents(kill);
-		dndDownloadMonitor.stop(kill);
+		DND_DOWNLOAD_MONITOR.stop(kill);
 
 		IMAGE_DOWNLOAD_MONITOR.stop(kill);
 		
-		highPriorityDownloadMonitor.stop(kill);
+		IMAGE_DND_DOWNLOAD_MONITOR.stop(kill);
 		// clear all the collections when the CF browser exits -- eunyee
 		//ThreadDebugger.clear();
 		clearGlobalCollections();
@@ -1121,12 +1111,12 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 	 */
 	public void stopCollectingAgents(boolean kill)
 	{
-		candidateImageClippingsPool.stop();
+		candidateImagesPool.stop();
 
 //		candidateImageVisualsPool.stop();
 //		candidateFirstImageVisualsPool.stop();
-		crawlerDownloadMonitor.stop(kill);
-		seedingDownloadMonitor.stop(kill); // stop seeding downloadMonitor
+		CRAWLER_DOWNLOAD_MONITOR.stop(kill);
+		SEEDING_DOWNLOAD_MONITOR.stop(kill); // stop seeding downloadMonitor
 	}
 	final Object startCrawlerSemaphore	= new Object();
 	//FIXME

@@ -75,15 +75,11 @@ class ParseDocumentSemanticAction
 		Document document = getOrCreateDocument(documentParser, linkType);
 
 //		ParsedURL purl = (ParsedURL) getArgumentObject(SemanticActionNamedArguments.CONTAINER_LINK);
-		
-		DocumentClosure documentClosure	= document.getOrCreateClosure();
-		if (documentClosure != null && !documentClosure.downloadHasBeenQueued())
-		{
-			Document source = documentParser.getDocument();
-			if (source != null)
-				document.addInlink(source);
-			documentClosure.queueDownload();
-		}
+		Document source = documentParser.getDocument();
+		if (source != null)
+			document.addInlink(source);
+		document.queueDownload();
+
 		return null;
 	}
 
@@ -149,7 +145,7 @@ class ParseDocumentSemanticAction
 			debugT(" Reached end of iterations with outlinks size (" /* + ancestor.numOutlinks() */ +").\n\t\tPicking " + numberOfTopDocuments + " top documents from outlinks of container: " + ancestor);
 			int numDocumentsRemaining = numberOfTopDocuments;
 			while(numDocumentsRemaining-- > 0)
-				ancestor.perhapsAddAdditionalContainer();
+				ancestor.perhapsAddAdditionalDocumentClosure();
 		}
 	}
 	
@@ -160,7 +156,7 @@ class ParseDocumentSemanticAction
 		// domains.]
 		if (document != null)
 		{
-			DocumentClosure documentClosure	= document.getOrCreateClosure();
+			DocumentClosure documentClosure	= document.getOrConstructClosure();
 			if (documentClosure == null)
 				warning("Can't parse " + document.getLocation() + " because null container." );
 			else if (!distributeSeedingResults(this, documentParser, documentClosure, null))
@@ -170,7 +166,7 @@ class ParseDocumentSemanticAction
 
 	protected void parseDocumentLater(Document document)
 	{
-		DocumentClosure documentClosure	= document.getOrCreateClosure();
+		DocumentClosure documentClosure	= document.getOrConstructClosure();
 		if (documentClosure == null || documentClosure.downloadHasBeenQueued())
 			warning("Can't parse " + document.getLocation() + " because null container or already queued." );
 		else if (!distributeSeedingResults(this, documentParser, documentClosure,

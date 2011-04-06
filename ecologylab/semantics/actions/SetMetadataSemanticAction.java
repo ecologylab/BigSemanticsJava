@@ -4,8 +4,8 @@
 package ecologylab.semantics.actions;
 
 import ecologylab.semantics.metadata.Metadata;
-import ecologylab.serialization.simpl_inherit;
 import ecologylab.serialization.ElementState.xml_tag;
+import ecologylab.serialization.simpl_inherit;
 
 /**
  * @author amathur
@@ -35,13 +35,9 @@ class SetMetadataSemanticAction
 	{
 		// get the argument
 		Metadata metadata = (Metadata) getArgumentObject(SemanticActionNamedArguments.FIELD_VALUE);
-		// get the object
-		ContentElement container = (ContentElement) obj;
-		// invoke the actual method
-		if (container != null)
-			container.setMetadata(metadata);
+		throw new RuntimeException("Andruid did not understand this case, and so did not implement it. Please show him this message!");
 
-		return null;
+//		return null;
 	}
 
 }

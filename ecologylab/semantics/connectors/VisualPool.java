@@ -7,20 +7,19 @@ import ecologylab.appframework.Memory;
 import ecologylab.appframework.OutOfMemoryErrorHandler;
 import ecologylab.appframework.types.prefs.Pref;
 import ecologylab.appframework.types.prefs.PrefBoolean;
-import ecologylab.collections.GenericElement;
-import ecologylab.collections.GenericWeightSet;
+import ecologylab.collections.PrioritizedPool;
 import ecologylab.collections.RunnablePool;
 import ecologylab.collections.WeightingStrategy;
 import ecologylab.concurrent.Monitor;
 import ecologylab.generic.ConsoleUtils;
 import ecologylab.generic.Generic;
-import ecologylab.semantics.metadata.builtins.ImageClipping;
+import ecologylab.semantics.metadata.builtins.ImageClosure;
 
 /**
  * @author andruid
  *
  */
-public class VisualPool extends GenericWeightSet<ImageClipping>
+public class VisualPool extends PrioritizedPool<ImageClosure>
 	implements Runnable, RunnablePool
 	{
 	/**
@@ -71,7 +70,7 @@ public class VisualPool extends GenericWeightSet<ImageClipping>
 	 */
 	   PrefBoolean downloadImagesAutomatically	= Pref.usePrefBoolean("download_images_automatically", true);
 	   
-	   public VisualPool(NewInfoCollector infoCollector, WeightingStrategy<GenericElement<ImageClipping>> weightStrategy)
+	   public VisualPool(NewInfoCollector infoCollector, WeightingStrategy<ImageClosure> weightStrategy)
 	   {
 	      super(POOL_SIZE, infoCollector, weightStrategy);
 	      this.infoCollector	= infoCollector;
@@ -191,19 +190,6 @@ public class VisualPool extends GenericWeightSet<ImageClipping>
 	  	 super.clear(doRecycle);
 	  	 unpause();
 	   }
-	   /**
-	    * Add the element to this.
-	    * Start the composition if this is the first element to arrive.
-	    * 
-	    * @param imgVisual
-	    */
-	   //FIXME -- implement signature and method!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	   synchronized void add(ImageClipping imgVisual)
-	   {
-//		   this.infoCollector.pressPlayWhenFirstMediaElementArrives();
-//		   debug("add(" + imgVisual);
-//		   insert(new VisualElement(imgVisual));
-	   }
 
 	   /**
 	    * Start the image collecting agent.
@@ -241,9 +227,9 @@ public class VisualPool extends GenericWeightSet<ImageClipping>
 	    * This can call prune(), so it shares the lock on <code>this</code> with prune().
 	    */
 	   //TODO -- get rid of this method?!
-	   public synchronized ImageClipping selectCandidate()
+	   public synchronized ImageClosure selectCandidate()
 	   {
-	  	 return pruneAndMaxGenericSelect();
+	  	 return pruneAndMaxSelect();
 	   }
 
 	/**

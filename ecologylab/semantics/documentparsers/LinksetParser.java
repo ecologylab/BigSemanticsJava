@@ -6,6 +6,7 @@ package ecologylab.semantics.documentparsers;
 import ecologylab.generic.DispatchTarget;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.connectors.NewInfoCollector;
+import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
 import ecologylab.semantics.seeding.Seed;
 import ecologylab.semantics.seeding.SeedDistributor;
@@ -18,7 +19,7 @@ import ecologylab.semantics.seeding.SeedDistributor;
  * 
  */
 public abstract class LinksetParser
-		extends ParserBase implements DispatchTarget<DocumentClosure>
+		extends ParserBase implements DispatchTarget<Document>
 {
 
 	public LinksetParser(NewInfoCollector infoCollector)
@@ -33,27 +34,31 @@ public abstract class LinksetParser
 	 */
 	protected void getMetaMetadataAndContainerAndQueue(NewInfoCollector infoCollector, ParsedURL purl, Seed seed, String defaultTag)
 	{
-		DocumentClosure container = infoCollector.getContainer(null, null, metaMetadata, purl, false, false, false);
-		setContainer(container);
-		container.presetDocumentType(this);
-		container.setDispatchTarget(this);
-		container.setAsTrueSeed(seed);
+		Document document								= infoCollector.getGlobalDocumentMap().getOrConstruct(purl);
+		DocumentClosure documentClosure	= document.getOrConstructClosure();
+		if (documentClosure != null)
+		{
+//			container.presetDocumentType(this);
+			documentClosure.setPresetDocumentParser(this);
+			documentClosure.setDispatchTarget(this);
+			document.setAsTrueSeed(seed);
 
-		seed.queueSeedOrRegularContainer(container);
+			seed.queueSeedOrRegularContainer(documentClosure);			
+		}
 	}
 
 
 	/**
 	 * call doneQueueing() to notify seed distributor
 	 */
-	public void delivery(DocumentClosure downloadedContainer)
+	public void delivery(Document sourceDocument)
 	{
-		Seed seed = downloadedContainer.getSeed();
+		Seed seed = sourceDocument.getSeed();
 		if (seed != null)
 		{
 			SeedDistributor aggregator = seed.seedDistributer(infoCollector);
 			if (aggregator != null)
-				aggregator.doneQueueing(downloadedContainer);
+				aggregator.doneQueueing(sourceDocument);
 		}
 	}
 	

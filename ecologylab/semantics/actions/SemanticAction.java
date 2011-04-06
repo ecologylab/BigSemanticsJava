@@ -285,9 +285,11 @@ public abstract class SemanticAction
 		if (result == null)
 		{
 			ParsedURL outlinkPurl	= (ParsedURL) getArgumentObject(CONTAINER_LINK);
-			result								= infoCollector.getGlobalDocumentMap().getOrCreate(outlinkPurl);
+			result								= infoCollector.getGlobalDocumentMap().getOrConstruct(outlinkPurl);
 		}
-
+		else
+			result.setInfoCollector(infoCollector);
+		
 		if (!result.isRecycled())
 		{
 			Metadata mixin				= (Metadata) getArgumentObject(MIXIN);
