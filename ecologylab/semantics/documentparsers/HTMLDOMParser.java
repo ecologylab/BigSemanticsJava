@@ -12,7 +12,6 @@ import ecologylab.generic.HashMapArrayList;
 import ecologylab.generic.StringTools;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.connectors.NewInfoCollector;
-import ecologylab.semantics.connectors.old.AbstractImgElement;
 import ecologylab.semantics.html.ImgElement;
 import ecologylab.semantics.html.ParagraphText;
 import ecologylab.semantics.html.documentstructure.AnchorContext;
@@ -24,6 +23,7 @@ import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
+import ecologylab.semantics.old.AbstractImgElement;
 import ecologylab.serialization.XMLTools;
 
 /**

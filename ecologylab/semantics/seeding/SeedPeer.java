@@ -6,7 +6,7 @@ package ecologylab.semantics.seeding;
 import java.util.ArrayList;
 
 import ecologylab.collections.Scope;
-import ecologylab.semantics.connectors.old.OldContainerI;
+import ecologylab.semantics.old.OldContainerI;
 
 /**
  * Encapsulates application-specific funtionality that must be associated with each Seed.

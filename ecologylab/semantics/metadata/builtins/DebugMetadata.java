@@ -3,9 +3,9 @@
  */
 package ecologylab.semantics.metadata.builtins;
 
-import ecologylab.semantics.connectors.old.InfoCollectorBase;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.scalar.MetadataStringBuilder;
+import ecologylab.semantics.old.InfoCollectorBase;
 import ecologylab.serialization.simpl_inherit;
 
 /**

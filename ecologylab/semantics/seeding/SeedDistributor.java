@@ -10,9 +10,9 @@ import java.util.Queue;
 import ecologylab.generic.Debug;
 import ecologylab.generic.Generic;
 import ecologylab.semantics.connectors.NewInfoCollector;
-import ecologylab.semantics.connectors.old.OldContainerI;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
+import ecologylab.semantics.old.OldContainerI;
 
 /**
  * now how SeedDistributor works:

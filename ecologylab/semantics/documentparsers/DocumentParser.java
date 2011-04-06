@@ -19,13 +19,13 @@ import ecologylab.net.PURLConnection;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionsKeyWords;
 import ecologylab.semantics.connectors.NewInfoCollector;
-import ecologylab.semantics.connectors.old.InfoCollector;
-import ecologylab.semantics.connectors.old.OldContainerI;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.metametadata.RedirectHandling;
+import ecologylab.semantics.old.InfoCollector;
+import ecologylab.semantics.old.OldContainerI;
 import ecologylab.semantics.seeding.Seed;
 import ecologylab.serialization.ElementState;
 

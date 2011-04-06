@@ -8,11 +8,11 @@ import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.actions.SemanticActionsKeyWords;
 import ecologylab.semantics.connectors.NewInfoCollector;
-import ecologylab.semantics.connectors.old.OldContainerI;
 import ecologylab.semantics.metadata.DocumentParserTagNames;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
 import ecologylab.semantics.namesandnums.CFPrefNames;
+import ecologylab.semantics.old.OldContainerI;
 import ecologylab.semantics.seeding.SearchState;
 
 /**
