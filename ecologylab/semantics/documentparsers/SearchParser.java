@@ -11,8 +11,8 @@ import ecologylab.semantics.connectors.NewInfoCollector;
 import ecologylab.semantics.metadata.DocumentParserTagNames;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
+import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.namesandnums.CFPrefNames;
-import ecologylab.semantics.old.OldContainerI;
 import ecologylab.semantics.seeding.SearchState;
 
 /**
@@ -20,7 +20,7 @@ import ecologylab.semantics.seeding.SearchState;
  * 
  */
 public class SearchParser
-		extends LinksetParser implements CFPrefNames, DispatchTarget<DocumentClosure>,
+		extends LinksetParser implements CFPrefNames,
 		SemanticActionsKeyWords
 {
 
@@ -88,22 +88,23 @@ public class SearchParser
 	@Override
 	public Document populateMetadata(SemanticActionHandler handler)
 	{
-		Document populatedMetadata	= getDocument();
+		Document resultingDocument	= getDocument();
 		
 		//FIXME use overrides instead of constants here!!!!!!!!!!
+		MetaMetadataCompositeField metaMetadata	= getMetaMetadata();
 		if (DIRECT_BINDING_PARSER.equals(metaMetadata.getParser()))
 		{
-			populatedMetadata				= directBindingPopulateMetadata();
+			resultingDocument				= directBindingPopulateMetadata();
 			
 			//FIXME -- copy values like query from original metadata to the new one!!!
 		}
 		else if (XPATH_PARSER.equals(metaMetadata.getParser()))
 		{
-			recursiveExtraction(metaMetadata, populatedMetadata, getDom(), null, handler.getSemanticActionVariableMap());
+			recursiveExtraction(metaMetadata, resultingDocument, getDom(), null, handler.getSemanticActionVariableMap());
 //			container.setMetadata(populatedMetadata);
 		}
 
-		return populatedMetadata;
+		return resultingDocument;
 	}
 
 	@Override

@@ -314,7 +314,7 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DC>
 
 					redirectedDocument.addAdditionalLocation(connectionPURL);
 					//TODO -- copy metadata from originalDocument?!!
-					
+					changeDocument(redirectedDocument);
 					//TODO -- reconnect
 					
 					// redirectedAbstractContainer.performDownload();
@@ -374,8 +374,8 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DC>
 						}
 						else
 							newMetadata.addAdditionalLocation(originalPurl);
-
-						DocumentClosure.this.document	= (D) newMetadata;
+						
+						changeDocument(newMetadata);
 
 						return true;
 					}
@@ -433,11 +433,8 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DC>
 				{	// new meta-metadata!
 					if (!mimeMmd.getMetadataClass().isAssignableFrom(document.getClass()))
 					{	// more specifc so we need new metadata!
-						Document mimeMetadata	= (Document) ((MetaMetadata) mimeMmd).constructMetadata();
-						mimeMetadata.inheritValues(document);
-						document.recycle();
-						document	= mimeMetadata;
-						this.document	= (D) document;
+						document	= (Document) ((MetaMetadata) mimeMmd).constructMetadata(); // set temporary on stack
+						changeDocument(document);
 					}
 					metaMetadata	= mimeMmd;
 				}
@@ -455,10 +452,20 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DC>
 		
 		if (result != null)
 		{
-			result.fillValues(purlConnection, document, infoCollector);
+			result.fillValues(purlConnection, this, infoCollector);
 		}
 		
 		return result;
+	}
+
+	public void changeDocument(Document newDocument) 
+	{
+		Document oldDocument	= document;
+		newDocument.inheritValues(oldDocument);
+		
+		semanticInlinks				= newDocument.semanticInlinks; // probably not needed, but just in case.
+		document							= (D) newDocument;
+		oldDocument.recycle();
 	}
 
 	

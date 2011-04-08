@@ -3,31 +3,21 @@
  */
 package ecologylab.semantics.documentparsers;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
-import java.util.HashMap;
 
-import ecologylab.collections.PrefixCollection;
 import ecologylab.collections.Scope;
 import ecologylab.generic.Debug;
 import ecologylab.generic.ReflectionTools;
-import ecologylab.io.BasicSite;
-import ecologylab.net.ConnectionHelper;
 import ecologylab.net.PURLConnection;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionsKeyWords;
 import ecologylab.semantics.connectors.NewInfoCollector;
 import ecologylab.semantics.metadata.builtins.Document;
-import ecologylab.semantics.metametadata.MetaMetadata;
+import ecologylab.semantics.metadata.builtins.DocumentClosure;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
-import ecologylab.semantics.metametadata.MetaMetadataRepository;
-import ecologylab.semantics.metametadata.RedirectHandling;
 import ecologylab.semantics.old.InfoCollector;
-import ecologylab.semantics.old.OldContainerI;
 import ecologylab.semantics.seeding.Seed;
-import ecologylab.serialization.ElementState;
 
 /**
  * Super class for all document types. This class obtains the connection to a document. A parse
@@ -54,13 +44,7 @@ abstract public class DocumentParser
 	 */
 	protected PURLConnection		purlConnection;
 
-	/**
-	 * Associated MetaMetadata object, which drives extraction and interaction.
-	 * Filled out by the connect() method.
-	 */
-	protected MetaMetadataCompositeField	metaMetadata;
-	
-	private Document										document;
+	protected DocumentClosure		documentClosure;
 	
 	public boolean 					cacheHit = false;
 
@@ -116,21 +100,16 @@ abstract public class DocumentParser
 	 * Fill out the instance of this resulting from a succcessful connect().
 	 * 
 	 * @param purlConnection
-	 * @param metadata TODO
+	 * @param documentClosure TODO
 	 * @param infoCollector
 	 */
-	public void fillValues ( PURLConnection purlConnection, Document metadata, NewInfoCollector infoCollector )
+	public void fillValues ( PURLConnection purlConnection, DocumentClosure documentClosure, NewInfoCollector infoCollector )
 	{
-		this.purlConnection = purlConnection;
+		this.purlConnection		= purlConnection;
+		this.documentClosure	= documentClosure;
 		setInfoCollector(infoCollector);
-		setMetadata(metadata);
 	}
 
-	protected void setMetadata(Document metadata)
-	{
-		this.document			= metadata;
-		this.metaMetadata	= metadata.getMetaMetadata();
-	}
 	/**
 	 * True if our analysis indicates the present AbstractContainer is an article, and not a
 	 * collection of links. This affects calls to getWeight() in the model!
@@ -250,6 +229,7 @@ abstract public class DocumentParser
 	 */
 	public ParsedURL purl ( )
 	{
+		Document document	= documentClosure.getDocument();
 		return purlConnection != null ? purlConnection.getPurl() : (document != null) ? document.getLocation() : null;
 	}
 
@@ -493,12 +473,14 @@ abstract public class DocumentParser
 
 	public MetaMetadataCompositeField getMetaMetadata()
 	{
-		return metaMetadata;
+		Document document	= documentClosure.getDocument();
+		return document == null ? null : document.getMetaMetadata();
 	}
 
 	public ParsedURL getTruePURL()
 	{
-		return document.getLocation();
+		Document document	= documentClosure.getDocument();
+		return document == null ? null : document.getLocation();
 	}
 	
 	/**
@@ -525,7 +507,7 @@ abstract public class DocumentParser
 	 */
 	public Document getDocument()
 	{
-		return document;
+		return documentClosure.getDocument();
 	}
 
 }

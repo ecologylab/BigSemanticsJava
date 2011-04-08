@@ -76,11 +76,14 @@ public class SemanticInLinks extends ConcurrentHashMap<ParsedURL, SemanticAnchor
 	 */
 	public void add(Document source)
 	{
-		int sourceBasedGeneration	= source.getGeneration() + 1;
-		if (sourceBasedGeneration < generation || ancestor == null)
+		if (source != null)
 		{
-			generation	= sourceBasedGeneration;
-			ancestor		= source;
+			int sourceBasedGeneration	= source.getGeneration() + 1;
+			if (sourceBasedGeneration < generation || ancestor == null)
+			{
+				generation	= sourceBasedGeneration;
+				ancestor		= source;
+			}
 		}
 	}
 
@@ -138,5 +141,13 @@ public class SemanticInLinks extends ConcurrentHashMap<ParsedURL, SemanticAnchor
 	public int getEffectiveGeneration()
 	{
 		return fromSemanticAction ? (ancestor != null ? ancestor.getGeneration() : 0) : generation;
+	}
+	
+	public void merge(SemanticInLinks oldInlinks)
+	{
+		for (SemanticAnchor inlink : oldInlinks)
+		{
+			add(inlink, null);
+		}
 	}
 }

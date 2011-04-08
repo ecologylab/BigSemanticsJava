@@ -27,10 +27,7 @@ public class DirectBindingParser
 	@Override
 	public Document populateMetadata(SemanticActionHandler handler)
 	{
-		Document populatedMetadata	= directBindingPopulateMetadata();
-//		container.setMetadata(populatedMetadata);
-		
-		return populatedMetadata;
+		return directBindingPopulateMetadata();
 	}
 
 	//FIXME - i don't think this is ever called.

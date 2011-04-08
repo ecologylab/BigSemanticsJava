@@ -118,7 +118,7 @@ abstract public class Metadata extends ElementState implements MetadataBase, Ter
 	/**
 	 * Indicates whether or not metadata has changed since last displayed.
 	 */
-	private boolean												metadataChanged;
+	private boolean												metadataChangedForDisplay;
 
 	private Map<String, String>						cachedNaturalIdValues;
 
@@ -923,12 +923,12 @@ abstract public class Metadata extends ElementState implements MetadataBase, Ter
 
 	public boolean hasMetadataChanged()
 	{
-		return metadataChanged;
+		return metadataChangedForDisplay;
 	}
 
 	public void setMetadataChanged(boolean value)
 	{
-		this.metadataChanged = value;
+		this.metadataChangedForDisplay = value;
 	}
 
 	/**

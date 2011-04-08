@@ -79,6 +79,10 @@ public class SemanticActionHandler
 			takeSemanticActions(metaMetadata, metadata);
 	}
 
+	public void takeSemanticActions(Metadata metadata)
+	{
+		takeSemanticActions((MetaMetadata) metadata.getMetaMetadata(), metadata);
+	}
 	public void takeSemanticActions(MetaMetadata metaMetadata, Metadata metadata)
 	{
 		ArrayList<? extends SemanticAction> semanticActions = metaMetadata.getSemanticActions();

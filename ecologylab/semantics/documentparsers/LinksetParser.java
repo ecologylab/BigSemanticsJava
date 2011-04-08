@@ -19,7 +19,7 @@ import ecologylab.semantics.seeding.SeedDistributor;
  * 
  */
 public abstract class LinksetParser
-		extends ParserBase implements DispatchTarget<Document>
+		extends ParserBase implements DispatchTarget<DocumentClosure>
 {
 
 	public LinksetParser(NewInfoCollector infoCollector)
@@ -51,14 +51,14 @@ public abstract class LinksetParser
 	/**
 	 * call doneQueueing() to notify seed distributor
 	 */
-	public void delivery(Document sourceDocument)
+	public void delivery(DocumentClosure sourceClosure)
 	{
-		Seed seed = sourceDocument.getSeed();
+		Seed seed = sourceClosure.getSeed();
 		if (seed != null)
 		{
 			SeedDistributor aggregator = seed.seedDistributer(infoCollector);
 			if (aggregator != null)
-				aggregator.doneQueueing(sourceDocument);
+				aggregator.doneQueueing(sourceClosure.getDocument());
 		}
 	}
 	

@@ -27,7 +27,7 @@ public class XPathParser extends ParserBase implements
 	public Document populateMetadata(SemanticActionHandler handler)
 	{
 		Document document = getDocument();
-		recursiveExtraction(metaMetadata, document, getDom(), null,
+		recursiveExtraction(getMetaMetadata(), document, getDom(), null,
 				handler.getSemanticActionVariableMap());
 		return document;
 	}

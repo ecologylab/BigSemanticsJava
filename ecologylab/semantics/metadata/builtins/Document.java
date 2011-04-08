@@ -466,7 +466,7 @@ implements DispatchTarget<ImageClosure>
 
 	public String getQuery()
 	{
-		return query().getValue();
+		return query == null ? null : query().getValue();
 	}
 
 	/**
@@ -961,11 +961,25 @@ implements DispatchTarget<ImageClosure>
 	 */
 	public void inheritValues(Document oldDocument)
 	{
-		this.semanticInlinks				= oldDocument.semanticInlinks;
-		oldDocument.semanticInlinks	= null;
-		this.query									= oldDocument.query;
+		SemanticInLinks oldInlinks = oldDocument.semanticInlinks;
+		if (semanticInlinks == null || semanticInlinks.size() == 0)
+		{
+			this.semanticInlinks				= oldInlinks;
+			oldDocument.semanticInlinks	= null;
+		}
+		else if (oldInlinks != null)
+			semanticInlinks.merge(oldInlinks);
+
+		String queryString					= this.getQuery();
+		if (queryString == null || queryString.length() == 0)
+			this.query									= oldDocument.query;
 		oldDocument.query						= null;
-		//TODO -- are there other values that should be propagated?!
+		
+		if (additionalLocations != null)
+			for (ParsedURL otherLocation : additionalLocations)
+				addAdditionalLocation(otherLocation);
+		
+		//TODO -- are there other values that should be propagated?! -- can use MetadataFieldDescriptors.
 	}
 	
 	public SemanticInLinks getSemanticInlinks()

@@ -99,15 +99,15 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 		truePURL = getDocument().getLocation();
 
 		// build the metadata object
-		Document populatedMetadata = populateMetadata(handler);
-		populatedMetadata.setMetadataChanged(true);
+		Document resultingMetadata = populateMetadata(handler);
+		resultingMetadata.setMetadataChanged(true);
 
 		try
 		{
 			debug("Metadata parsed from: " + getDocument().getLocation());
-			if (populatedMetadata != null)
+			if (resultingMetadata != null)
 			{
-				debug(populatedMetadata.serialize());
+				debug(resultingMetadata.serialize());
 			}
 		}
 		catch (Throwable e)
@@ -116,23 +116,14 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 			e.printStackTrace();
 			return null;
 		}
-		if (populatedMetadata != null)
+		if (resultingMetadata != null)
 		{
-
-			// FIXME -- should be able to get rid of this step here. its way too late!
-			// if the metametadata reference is null, assign the correct metametadata object to it.
-			if (populatedMetadata.getMetaMetadata() == null)
-			{
-				warning("meta-metadata not set after populating!!!!!");
-				populatedMetadata.setMetaMetadata(metaMetadata);
-			}
-	
 			// make sure termVector is built here
-			populatedMetadata.rebuildCompositeTermVector();
+			resultingMetadata.rebuildCompositeTermVector();
 	
-				handler.takeSemanticActions((MetaMetadata) metaMetadata, populatedMetadata);
+			handler.takeSemanticActions(resultingMetadata);
 		}
-		return  populatedMetadata;
+		return  resultingMetadata;
 	}
 
 	/**
@@ -145,7 +136,7 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 	private void instantiateMetaMetadataVariables(SemanticActionHandler handler)
 	{
 		// get the list of all variable defintions
-		ArrayList<DefVar> defVars = metaMetadata.getDefVars();
+		ArrayList<DefVar> defVars = getMetaMetadata().getDefVars();
 
 		// get the parameters
 		Scope<Object> parameters = handler.getSemanticActionVariableMap();
@@ -458,7 +449,7 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 			ReflectionTools.setFieldValue(metadata, javaField, thisMetadata);
 
 			// try to link result metadata
-			MetaMetadataRepository repository = metaMetadata.getRepository();
+			MetaMetadataRepository repository = infoCollector.getMetaMetadataRepository();
 			LinkedMetadataMonitor monitor = repository.getLinkedMetadataMonitor();
 			monitor.tryLink(repository, thisMetadata);
 
@@ -717,19 +708,21 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 	 */
 	protected Document directBindingPopulateMetadata()
 	{
-		Document populatedMetadata = null;
+		Document newDocument = null;
 		try
 		{
-			populatedMetadata = (Document) infoCollector.getMetadataTranslationScope()
+			newDocument = (Document) infoCollector.getMetadataTranslationScope()
 					.deserialize(purlConnection, this);
-			populatedMetadata.serialize(System.out);
+			newDocument.serialize(System.out);
+			documentClosure.changeDocument(newDocument);
+
 			System.out.println();
 		}
 		catch (SIMPLTranslationException e)
 		{
 			warning("Direct binding failed " + e);
 		}
-		return populatedMetadata;
+		return newDocument;
 	}
 
 	/**
@@ -778,8 +771,8 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 	{
 		if (deserializedMetadata.parent() == null)
 		{
-			MetaMetadataCompositeField deserializationMM = (MetaMetadata) deserializedMetadata
-					.getMetaMetadata();
+			MetaMetadataCompositeField deserializationMM	= (MetaMetadata) deserializedMetadata.getMetaMetadata();
+			MetaMetadataCompositeField metaMetadata				= getMetaMetadata();
 			if (bindMetaMetadataToMetadata(deserializationMM, metaMetadata))
 			{
 				metaMetadata = (MetaMetadata) deserializationMM;
