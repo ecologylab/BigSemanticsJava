@@ -12,6 +12,7 @@ import org.w3c.tidy.StreamIn;
 import org.w3c.tidy.TdNode;
 
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.documentparsers.HTMLDOMParser;
 import ecologylab.semantics.html.DOMWalkInformationTagger;
 
 
@@ -21,7 +22,7 @@ import ecologylab.semantics.html.DOMWalkInformationTagger;
  *
  */
 @Deprecated
-public class GenerateSVMData extends OldHTMLDOMParser
+public class GenerateSVMData extends HTMLDOMParser
 {
     public void pprint(org.w3c.dom.Document doc, OutputStream out, ParsedURL purl, String mainPartitionID)
     {

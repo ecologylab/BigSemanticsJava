@@ -9,12 +9,14 @@ import org.w3c.tidy.Out;
 import org.w3c.tidy.TdNode;
 
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.metadata.builtins.Image;
+import ecologylab.semantics.metadata.builtins.ImageClipping;
 import ecologylab.serialization.XMLTools;
 
 public class DOMFragmentInformationTagger extends DOMWalkInformationTagger
 {
 	
-	ArrayList<ImgElement> dndImages = new ArrayList<ImgElement>();
+	ArrayList<ImageClipping> dndImages = new ArrayList<ImageClipping>();
 	StringBuilder dndText = new StringBuilder();
 	ParsedURL containerPurl = null;
 
@@ -43,7 +45,7 @@ public class DOMFragmentInformationTagger extends DOMWalkInformationTagger
 		}
 		if( "img".equals(tagName) )
 		{   
-			
+			Image image		= infoCollector.
 			ImgElement imgElement = new ImgElement(node, purl);
 			dndImages.add(imgElement);
 		}

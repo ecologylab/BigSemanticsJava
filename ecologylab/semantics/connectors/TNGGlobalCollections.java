@@ -96,4 +96,12 @@ public class TNGGlobalCollections extends Debug
 	{
 		return allImages;
 	}
+	public Document getOrConstructDocument(ParsedURL location)
+	{
+		return location == null ? null : allDocuments.getOrConstruct(location);
+	}
+	public Image getOrConstructImage(ParsedURL location)
+	{
+		return location == null ? null : allImages.getOrConstruct(location);
+	}
 }

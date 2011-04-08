@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.connectors.NewInfoCollector;
+import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.model.TextChunkBase;
 import ecologylab.semantics.model.text.utils.Filter;
@@ -135,12 +136,13 @@ extends ContainerParser implements SemanticsPrefs
 	 */
 	protected boolean filterPurl(ParsedURL parsedURL)
 	{
+		Document document	= getDocument();
 		return (parsedURL != null && 
 				infoCollector.accept(parsedURL) && 
 				(!parsedURL.getName().startsWith("File:") && 
-					parsedURL.crawlable() && 
-					(container == null || parsedURL.isImg() || 
-					( container.crawlLinks()  && (isFile && parsedURL.isHTML()) || !isFile))));
+					parsedURL.crawlable() && !document.isJustCrawl() &&
+					(document == null || parsedURL.isImg() || 
+					(isFile && parsedURL.isHTML()) || !isFile)));
 	}
 
 	protected ParsedURL buildPurl(String urlString)

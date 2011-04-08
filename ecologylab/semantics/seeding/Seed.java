@@ -344,4 +344,15 @@ abstract public class Seed extends ElementState implements CFPrefNames
 	
 		return false;
 	}
+	
+	public boolean isJustCrawl()
+	{
+		return false;
+	}
+
+	public boolean isJustMedia()
+	{
+		return false;
+	}
+
 }

@@ -30,12 +30,13 @@ public class DocumentState extends Seed
 	 * If true, then no media should be collected from this document.
 	 * Rather, it will be treated as a collection of links, that will be fed to the focused web crawler agent.
 	 */
-	@simpl_scalar		boolean		justcrawl;
+	@simpl_scalar		boolean		justCrawl;
+
 	/**
 	 * If true, then no links should be collected from this document and fed to the focused web crawler agent.
 	 * Instead, only collect media to form image and text surrogates.
 	 */
-	@simpl_scalar		boolean		justmedia;
+	@simpl_scalar		boolean		justMedia;
 	
 	//action is just a placeholder, and doesn't do anything.
 	private String 		action;
@@ -169,5 +170,17 @@ public class DocumentState extends Seed
 	public boolean isHomogenousSeed()
 	{
 		return true;
+	}
+	
+	@Override
+	public boolean isJustCrawl()
+	{
+		return justCrawl;
+	}
+
+	@Override
+	public boolean isJustMedia()
+	{
+		return justMedia;
 	}
 }

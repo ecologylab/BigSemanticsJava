@@ -21,9 +21,12 @@ import ecologylab.semantics.html.documentstructure.SemanticAnchor;
 import ecologylab.semantics.html.documentstructure.SemanticInLinks;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.builtins.Document;
+import ecologylab.semantics.metadata.builtins.Image;
+import ecologylab.semantics.metadata.builtins.ImageClipping;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.old.AbstractImgElement;
+import ecologylab.semantics.old.OldContainerI;
 import ecologylab.serialization.XMLTools;
 
 /**
@@ -126,7 +129,7 @@ public class HTMLDOMParser
 	 * create image and text surrogates for this HTML document, and add these surrogates into the
 	 * localCollection in Container.
 	 */
-	public void newImgTxt(ImgElement imgNode, ParsedURL anchorHref)
+	public ImageClipping newImgTxt(ImgElement imgNode, ParsedURL anchorHref)
 	{
 		String alt = imgNode.getAlt();
 		int width = imgNode.getWidth();
@@ -138,6 +141,7 @@ public class HTMLDOMParser
 		if (anchorHref != null)
 			processHref(anchorHref);
 
+		ImageClipping result	= null;
 		if (srcPurl != null)
 		{
 			String textContext = imgNode.getTextContext();
@@ -146,38 +150,16 @@ public class HTMLDOMParser
 
 			if (alt != null)
 				alt = alt.trim();
-			AbstractImgElement imageElement = container.createImageElement(srcPurl, alt, width, height,
-					isMap, currentAnchorHref);
-
-			// add the imgElement to LocalCollection
-			if (imageElement != null)
-			{
-				// imgElement.addMetadataField(CONTEXT, textContext);
-				if (textContext != null)
-				{
-					// i am commenting this out bcause it has been done already in
-					// DOMWalkInformationTagger
-					textContext = textContext.trim();
-
-					// caption may be alt, but may have been filtered by ImgElement.deriveMetadata()
-					// Checking whether the mined textContext is exactly the same as the alt text.
-					// In that case, we don't want to display the redundant information.
-					if (!imageElement.isNullCaption())
-					{
-						String caption = imageElement.caption();
-						if (!textContext.equals(caption))
-							imageElement.hwSetContext(trimTooLongContext(textContext));
-					}
-				}
-
-				container.allocLocalCollections();
-
-				container.addToCandidateLocalImages(imageElement);
-			}
-
-			// Reset the currentAnchorHref
-			currentAnchorHref = null;
+			
+			Image image				= infoCollector.getOrConstructImage(srcPurl);
+			Document outlink	= infoCollector.getOrConstructDocument(anchorHref);
+			result						= image.constructClippingCandidate(getDocument(), outlink, imgNode.getAlt(), imgNode.getTextContext());
 		}
+
+		// Reset the currentAnchorHref
+		currentAnchorHref = null;
+
+		return result;
 	}
 
 	@Override
@@ -251,8 +233,6 @@ public class HTMLDOMParser
 	public void generateCandidateContainersFromContexts(ArrayList<AnchorContext> anchorContexts,
 			boolean fromContentBody)
 	{
-		C container = this.container();
-
 		HashMapArrayList<ParsedURL, ArrayList<AnchorContext>> hashedAnchorContexts = new HashMapArrayList<ParsedURL, ArrayList<AnchorContext>>();
 		for (AnchorContext anchorContext : anchorContexts)
 		{
@@ -261,7 +241,9 @@ public class HTMLDOMParser
 			if (destHref.isImg())
 			{ // The href associated is actually an image. Create a new img element and associate text to
 				// it.
-				newImg(destHref, anchorContext.getAnchorText(), 0, 0, false);
+				Image newImage					= infoCollector.getOrConstructImage(destHref);
+				Document sourceDocument	= getDocument();
+				newImage.constructClipping(sourceDocument, null, null, anchorContext.getAnchorText());
 				continue;
 			}
 

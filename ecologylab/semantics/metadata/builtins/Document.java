@@ -930,8 +930,15 @@ implements DispatchTarget<ImageClosure>
 		if (candidateTextClippings == null)
 			candidateTextClippings	=  new GenericWeightSet<TextClipping>(new TermVectorWeightStrategy(InterestModel.getPIV()));
 		candidateTextClippings.insert(textClipping);
-		
 	}
+	
+	public void addCandidateImage(Image image)
+	{
+		if (candidateImageClosures == null)
+			candidateImageClosures	=  new WeightSet<ImageClosure>(new TermVectorWeightStrategy(InterestModel.getPIV()));
+		candidateImageClosures.insert((ImageClosure) image.getOrConstructClosure());
+	}
+	
 	/**
 	 * @return the infoCollector
 	 */
@@ -1030,5 +1037,10 @@ implements DispatchTarget<ImageClosure>
 	void setDownloadDone(boolean downloadDone)
 	{
 		this.downloadDone = downloadDone;
+	}
+	
+	public boolean isJustCrawl()
+	{
+		return isTrueSeed && seed != null && seed.isJustCrawl();
 	}
 }

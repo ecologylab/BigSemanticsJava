@@ -8,6 +8,7 @@ import ecologylab.net.ParsedURL;
 import ecologylab.semantics.connectors.NewInfoCollector;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
+import ecologylab.semantics.seeding.DocumentState;
 import ecologylab.semantics.seeding.Seed;
 import ecologylab.semantics.seeding.SeedDistributor;
 
