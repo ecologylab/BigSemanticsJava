@@ -961,7 +961,8 @@ implements DispatchTarget<ImageClosure>
 	 */
 	public void inheritValues(Document oldDocument)
 	{
-		SemanticInLinks oldInlinks = oldDocument.semanticInlinks;
+		this.infoCollector					= oldDocument.infoCollector;
+		SemanticInLinks oldInlinks	= oldDocument.semanticInlinks;
 		if (semanticInlinks == null || semanticInlinks.size() == 0)
 		{
 			this.semanticInlinks				= oldInlinks;
