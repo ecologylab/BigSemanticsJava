@@ -41,18 +41,10 @@ class CreateAndVisualizeTextSurrogateSemanticAction
 
 		if (context != null)
 		{
-			TextClipping textClipping	= new TextClipping(context);
+			TextClipping textClipping	= new TextClipping(context, isSemanticText);
 			
-			Document document			= documentParser.getDocument();
-			
-			//FIXME -- should this be done here, or later?!!!
-			SemanticTextChunk chunk = new SemanticTextChunk(context);			
-			SemanticTextChunk trimmedChunk	= (SemanticTextChunk) chunk.trimPhatChunk(isSemanticText);
-			textClipping.setText(trimmedChunk.string());
-			chunk.recycle();
-			trimmedChunk.recycle();
-			
-			document.addCandidateTextClipping(textClipping);
+			Document sourceDocument		= documentParser.getDocument();
+			sourceDocument.addCandidateTextClipping(textClipping);
 		}
 		
 		return null;

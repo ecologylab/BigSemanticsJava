@@ -107,7 +107,7 @@ abstract public class DocumentParser
 	{
 		this.purlConnection		= purlConnection;
 		this.documentClosure	= documentClosure;
-		setInfoCollector(infoCollector);
+		this.infoCollector = infoCollector;
 	}
 
 	/**
@@ -208,17 +208,6 @@ abstract public class DocumentParser
 	{
 		// this.inputStream = inputStream;
 		purlConnection = new PURLConnection(purl(), null, inputStream);
-	}
-
-
-	/**
-	 * Set the infoCollector of this documentType object.
-	 * 
-	 * @param infoCollector
-	 */
-	public void setInfoCollector ( NewInfoCollector infoCollector )
-	{
-		this.infoCollector = infoCollector;
 	}
 
 	/**

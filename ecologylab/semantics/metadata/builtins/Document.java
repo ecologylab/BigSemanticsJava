@@ -927,16 +927,23 @@ implements DispatchTarget<ImageClosure>
 	}
 	public void addCandidateTextClipping(TextClipping textClipping)
 	{
-		if (candidateTextClippings == null)
-			candidateTextClippings	=  new GenericWeightSet<TextClipping>(new TermVectorWeightStrategy(InterestModel.getPIV()));
-		candidateTextClippings.insert(textClipping);
+		if (!isJustCrawl())
+		{
+			if (candidateTextClippings == null)
+				candidateTextClippings	=  new GenericWeightSet<TextClipping>(new TermVectorWeightStrategy(InterestModel.getPIV()));
+			candidateTextClippings.insert(textClipping);
+		}
 	}
 	
 	public void addCandidateImage(Image image)
 	{
-		if (candidateImageClosures == null)
-			candidateImageClosures	=  new WeightSet<ImageClosure>(new TermVectorWeightStrategy(InterestModel.getPIV()));
-		candidateImageClosures.insert((ImageClosure) image.getOrConstructClosure());
+		if (!isJustCrawl())
+		{
+			//FIXME -- look out for already downloaded!!!
+			if (candidateImageClosures == null)
+				candidateImageClosures	=  new WeightSet<ImageClosure>(new TermVectorWeightStrategy(InterestModel.getPIV()));
+			candidateImageClosures.insert((ImageClosure) image.getOrConstructClosure());
+		}
 	}
 	
 	/**
@@ -1042,5 +1049,29 @@ implements DispatchTarget<ImageClosure>
 	public boolean isJustCrawl()
 	{
 		return isTrueSeed && seed != null && seed.isJustCrawl();
+	}
+	
+	int sizeCandidateTextClippings()
+	{
+		return candidateTextClippings == null ? 0 : candidateTextClippings.size();
+	}
+	
+	int sizeCandidateImageClosures()
+	{
+		return candidateImageClosures == null ? 0 : candidateImageClosures.size();
+	}
+	
+	public int sizeLocalCandidates()
+	{
+		return sizeCandidateTextClippings() + sizeCandidateImageClosures();
+	}
+	
+	/**
+	 * Lookout for instances of the AnonymousDocument.
+	 * @return	false in the base class and most subs.
+	 */
+	public boolean isAnonymous()
+	{
+		return false;
 	}
 }

@@ -16,11 +16,12 @@ import ecologylab.semantics.metametadata.MetaMetadataRepository;
  */
 public class TNGGlobalCollections extends Debug
 {
-	final DocumentLocationMap<? extends Document>		allDocuments;
-	final DocumentLocationMap<? extends Image>			allImages;
+	final DocumentLocationMap<Document>		allDocuments;
+	final DocumentLocationMap<Image>			allImages;
 	
 	static public final Image 		RECYCLED_IMAGE		= new Image(ParsedURL.getAbsolute("http://recycled.image"));
 	static public final Image 		UNDEFINED_IMAGE		= new Image(ParsedURL.getAbsolute("http://undefined.image"));
+	static public final Image 		UN_INFORMATIVE_IMAGE = new Image(ParsedURL.getAbsolute("http://uninformative.image"));
 
 	/**
 	 * 
@@ -103,5 +104,16 @@ public class TNGGlobalCollections extends Debug
 	public Image getOrConstructImage(ParsedURL location)
 	{
 		return location == null ? null : allImages.getOrConstruct(location);
+	}
+	
+	public void registerUninformativeImage(ParsedURL key)
+	{
+		allImages.put(key, UN_INFORMATIVE_IMAGE);
+	}
+	
+	public void recycleImage(Image toRecycle)
+	{
+		allImages.put(toRecycle.getLocation(), RECYCLED_IMAGE);
+		toRecycle.recycle();
 	}
 }

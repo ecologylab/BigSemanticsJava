@@ -2,6 +2,7 @@ package ecologylab.semantics.metadata.builtins;
 
 import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
+import ecologylab.semantics.model.text.SemanticTextChunk;
 import ecologylab.serialization.simpl_inherit;
 
 /**
@@ -28,6 +29,17 @@ public class TextClipping extends Clipping
 	{
 		super();
 		setContext(context);
+	}
+
+	public TextClipping(String context, boolean isSemanticText)
+	{
+		this(context);
+
+		SemanticTextChunk chunk 				= new SemanticTextChunk(context);			
+		SemanticTextChunk trimmedChunk	= (SemanticTextChunk) chunk.trimPhatChunk(isSemanticText);
+		setText(trimmedChunk.string());
+		chunk.recycle();
+		trimmedChunk.recycle();
 	}
 
 	/**

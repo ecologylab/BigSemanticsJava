@@ -21,6 +21,32 @@ public class ClippableDocument<ME extends Document> extends Document
 	@simpl_classes(ImageClipping.class)
 	protected ArrayList<MediaClipping<ME>>		clippings;
 	
+ 	protected int			width;
+	
+	public int getWidth()
+	{
+		return width;
+	}
+
+	public void setWidth(int width)
+	{
+		this.width = width;
+	}
+
+	public int getHeight()
+	{
+		return height;
+	}
+
+	public void setHeight(int height)
+	{
+		this.height = height;
+	}
+
+	protected int			height;
+	
+	
+	
 	public static final int		INITIAL_CAPACITY	= 2;
 	
 	public ClippableDocument()

@@ -23,9 +23,9 @@ import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.Image;
 import ecologylab.semantics.metadata.builtins.ImageClipping;
+import ecologylab.semantics.metadata.builtins.TextClipping;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
-import ecologylab.semantics.old.AbstractImgElement;
 import ecologylab.semantics.old.OldContainerI;
 import ecologylab.serialization.XMLTools;
 
@@ -88,7 +88,6 @@ public class HTMLDOMParser
 	@Override
 	public final Document parse()
 	{
-		Document result	= null;
 		try
 		{
 			// we dont build a tidy for for direct binding
@@ -131,10 +130,10 @@ public class HTMLDOMParser
 	 */
 	public ImageClipping newImgTxt(ImgElement imgNode, ParsedURL anchorHref)
 	{
-		String alt = imgNode.getAlt();
-		int width = imgNode.getWidth();
-		int height = imgNode.getHeight();
-		boolean isMap = imgNode.isMap();
+		String alt	= imgNode.getAlt();
+		int width		= imgNode.getWidth();
+		int height	= imgNode.getHeight();
+		boolean isMap 		= imgNode.isMap();
 
 		ParsedURL srcPurl = imgNode.getSrc();
 
@@ -193,26 +192,23 @@ public class HTMLDOMParser
 	/**
 	 * Create TextElement and add to the localCollection in Container.
 	 */
-	// TODO -- take a BtringBuilder instead of a String. and use if efficiently!!!!!!
 	public void newTxt(ParagraphText paraText)
 	{
-		if ((paraText != null) && (paraText.length() > 0) && (container != null))
+		if ((paraText != null) && (paraText.length() > 0))
 		{
-			// container.createTextElementAndAddToCollections(contextChunk, contextString, userRequested)
-			container.createTextFromPhatContextAddToCollections(paraText);
+			StringBuilder buffy	= paraText.getBuffy();
+			if (buffy.indexOf("@") == -1 )	 // filter out paragraphs with email addresses
+			{
+				TextClipping textClipping	= new TextClipping(StringTools.toString(buffy), false);
+				
+				getDocument().addCandidateTextClipping(textClipping);
+			}
 		}
 	}
 
 	public int numCandidatesExtractedFrom()
 	{
-		return container.numLocalCandidates();
-	}
-
-	public void removeTheContainerFromCandidates(ParsedURL containerPURL)
-	{
-		C candidate = getInfoCollector().getContainer(container, null, null, containerPURL, false,
-				false, false);
-		getInfoCollector().removeCandidateContainer(candidate);
+		return getDocument().sizeLocalCandidates();
 	}
 
 	/**

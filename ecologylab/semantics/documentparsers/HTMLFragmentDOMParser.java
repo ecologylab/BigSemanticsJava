@@ -8,6 +8,7 @@ import ecologylab.semantics.connectors.NewInfoCollector;
 import ecologylab.semantics.html.DOMFragmentInformationTagger;
 import ecologylab.semantics.html.ImgElement;
 import ecologylab.semantics.html.TidyInterface;
+import ecologylab.semantics.metadata.builtins.AnonymousDocument;
 import ecologylab.semantics.metadata.builtins.Document;
 
 public class HTMLFragmentDOMParser
@@ -21,7 +22,9 @@ implements TidyInterface
 	public HTMLFragmentDOMParser(NewInfoCollector infoCollector, InputStream inputStream)
 	{
 		super(infoCollector);
-		fragmentStream = inputStream;
+		fragmentStream 											= inputStream;
+		AnonymousDocument anonymousDocument	= new AnonymousDocument();
+		this.documentClosure								= anonymousDocument.getOrConstructClosure();
 		parse();
 	}
 	
@@ -56,13 +59,5 @@ implements TidyInterface
 	public void setIndexPage()
 	{	
 	}
-	
-	/**
-	 * To make code navigation simpler around JTidy-parsers 
-	 */
-	@Override
-	public void newImgTxt(ImgElement imgNode, ParsedURL anchorHref)
-	{
-		super.newImgTxt(imgNode, anchorHref);
-	}
+
 }

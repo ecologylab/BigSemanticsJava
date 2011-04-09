@@ -4,7 +4,10 @@ import java.util.HashMap;
 
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.connectors.NewInfoCollector;
+import ecologylab.semantics.html.documentstructure.ImageFeatures;
 import ecologylab.semantics.metadata.builtins.Document;
+import ecologylab.semantics.metadata.builtins.Image;
+import ecologylab.semantics.metadata.builtins.ImageClipping;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.model.TextChunkBase;
 import ecologylab.semantics.model.text.utils.Filter;
@@ -60,8 +63,22 @@ extends ContainerParser implements SemanticsPrefs
 	protected void newImg(ParsedURL parsedURL, String alt, int width,
 			int height, boolean isMap) 
 	{
-		if (container != null)
-			container.createImageElementAndAddToPools(parsedURL, alt, width, height, isMap, currentAnchorHref);
+		int mimeIndex = parsedURL.mediaMimeIndex();
+
+		switch( ImageFeatures.designRole(width, height, mimeIndex, isMap))
+		{
+		case ImageFeatures.INFORMATIVE:
+		case ImageFeatures.UNKNOWN:
+			Image image	= new Image(parsedURL);
+			image.setWidth(width);
+			image.setHeight(height);
+			Document sourceDocument = getDocument();
+			image.constructClippingCandidate(sourceDocument, outlink, alt, context);
+			break;
+		case ImageFeatures.UN_INFORMATIVE:
+		default:
+			infoCollector.registerUninformativeImage(parsedURL);
+		}
 	}
 
 
@@ -147,10 +164,10 @@ extends ContainerParser implements SemanticsPrefs
 
 	protected ParsedURL buildPurl(String urlString)
 	{
-		return (container != null) ?
-				container.location().createFromHTML(urlString, isSearchPage()) :
-					// remove hash but not remove args. 
-					ParsedURL.createFromHTML(null, urlString, false);
+		Document sourceDocument	= getDocument();
+		return sourceDocument.isAnonymous() ? 
+				ParsedURL.createFromHTML(null, urlString, false) :
+			  sourceDocument.getLocation().createFromHTML(urlString, isSearchPage());
 	}
 
 	/**

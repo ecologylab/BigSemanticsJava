@@ -8,6 +8,7 @@ import org.w3c.tidy.TdNode;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.html.documentstructure.AnchorContext;
 import ecologylab.semantics.html.documentstructure.RecognizedDocumentStructure;
+import ecologylab.semantics.metadata.builtins.ImageClipping;
 
 
 /**
@@ -30,7 +31,7 @@ public interface TidyInterface
 	
 	public void closeHref();
 	
-	public void newImgTxt(ImgElement imgNode, ParsedURL anchorHref);
+	public ImageClipping newImgTxt(ImgElement imgNode, ParsedURL anchorHref);
 	
 	//TODO -- take a BtringBuilder instead of a String. and use if efficiently!!!!!!
 	public void newTxt(ParagraphText paraText);
