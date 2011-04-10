@@ -1,7 +1,6 @@
 package ecologylab.semantics.documentparsers;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import org.w3c.tidy.DOMNodeImpl;
 import org.w3c.tidy.TdNode;
@@ -22,7 +21,6 @@ import ecologylab.semantics.html.documentstructure.SemanticInLinks;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.Image;
-import ecologylab.semantics.metadata.builtins.ImageClipping;
 import ecologylab.semantics.metadata.builtins.TextClipping;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
@@ -125,49 +123,6 @@ public class HTMLDOMParser
 	}
 
 	/**
-	 * create image and text surrogates for this HTML document, and add these surrogates into the
-	 * localCollection in Container.
-	 */
-	public ImageClipping newImgTxt(ImgElement imgNode, ParsedURL anchorHref)
-	{
-		String alt	= imgNode.getAlt();
-		int width		= imgNode.getWidth();
-		int height	= imgNode.getHeight();
-		boolean isMap 		= imgNode.isMap();
-
-		ParsedURL srcPurl = imgNode.getSrc();
-
-		if (anchorHref != null)
-			processHref(anchorHref);
-
-		ImageClipping result	= null;
-		if (srcPurl != null)
-		{
-			String textContext = imgNode.getTextContext();
-			if (anchorHref != null)
-				currentAnchorHref = anchorHref;
-
-			if (alt != null)
-				alt = alt.trim();
-			
-			Image image				= infoCollector.getOrConstructImage(srcPurl);
-			Document outlink	= infoCollector.getOrConstructDocument(anchorHref);
-			result						= image.constructClippingCandidate(getDocument(), outlink, imgNode.getAlt(), imgNode.getTextContext());
-		}
-
-		// Reset the currentAnchorHref
-		currentAnchorHref = null;
-
-		return result;
-	}
-
-	@Override
-	public void newAHref(HashMap<String, String> attributesMap)
-	{
-		super.newAHref(attributesMap);
-	}
-
-	/**
 	 * Called when the parser see's the <code>&lt;title&gt; tag.
 	 */
 	public void setTitle(TdNode titleNode)
@@ -238,8 +193,7 @@ public class HTMLDOMParser
 			{ // The href associated is actually an image. Create a new img element and associate text to
 				// it.
 				Image newImage					= infoCollector.getOrConstructImage(destHref);
-				Document sourceDocument	= getDocument();
-				newImage.constructClipping(sourceDocument, null, null, anchorContext.getAnchorText());
+				newImage.constructClipping(getDocument(), null, null, anchorContext.getAnchorText());
 				continue;
 			}
 
@@ -258,48 +212,28 @@ public class HTMLDOMParser
 		{
 			ArrayList<AnchorContext> anchorContextsPerHref = hashedAnchorContexts.get(hrefPurl);
 
-			SemanticAnchor semanticAnchor = new SemanticAnchor(fromContentBody ? LinkType.WILD_CONTENT_BODY : LinkType.WILD, hrefPurl, anchorContextsPerHref, purl(),
-					1);
-			// generateCanidateContainerFromContext(aggregated,container, false);
-			createContainerFromSemanticAnchor(container, hrefPurl, semanticAnchor);
+			SemanticAnchor semanticAnchor = 
+				new SemanticAnchor(fromContentBody ? LinkType.WILD_CONTENT_BODY : LinkType.WILD, hrefPurl, anchorContextsPerHref, purl(), 1);
+
+			handleSemanticAnchor(semanticAnchor, hrefPurl);
 		}
 	}
 
-	protected void createContainerFromSemanticAnchor(C container, ParsedURL hrefPurl,
-			SemanticAnchor semanticAnchor)
+	protected void handleSemanticAnchor(SemanticAnchor semanticAnchor, ParsedURL hrefPurl)
 	{
-		if (hrefPurl != null && !hrefPurl.isNull())
+		if (hrefPurl != null && !hrefPurl.isNull() && infoCollector.accept(hrefPurl))
 		{
-			newAHref(hrefPurl); // Parser count maintenance.
-
-			if (!infoCollector.accept(hrefPurl))
-				return;
-
-			MetaMetadataRepository mmdRepository = infoCollector.metaMetaDataRepository();
-			MetaMetadata metaMetadata = mmdRepository.getDocumentMM(hrefPurl);
-			OldContainerI hrefContainer = infoCollector.getContainer(container, null, metaMetadata, hrefPurl,
-					false, false, false);
-
-			if (hrefContainer == null || hrefContainer.recycled())
+			Document hrefDocument		= infoCollector.getOrConstructDocument(hrefPurl);
+			if (hrefDocument == null || hrefDocument.isRecycled())
 			{
-				debug(" hrefContainer is null or recycled: " + hrefContainer);
+				warning("hrefDocument is null or recycled: " + hrefPurl);
 				return; // Should actually raise an exception, but this could happen when a container is not
 						// meant to be reincarnated
 			}
-				
+			Document sourceDocument	= getDocument();
 			
-			SemanticInLinks semanticInLinks = hrefContainer.semanticInLinks();
-			if(semanticInLinks != null && !semanticInLinks.contains(semanticAnchor.sourcePurl()))
-				hrefContainer.addSemanticInLink(semanticAnchor, container);
-			else
-				System.out.println("--- Ignoring cyclicly adding inlink to: " + hrefContainer + " from container.");
-			if(!hrefContainer.isDownloadDone())
-			{
-				container.addCandidateOutlink(hrefContainer);
-			}
-			else
-				System.out.println("Download is already done on " + hrefContainer + " . Not adding as candidate container for: " + container);
-			
+			hrefDocument.addSemanticInlink(semanticAnchor, sourceDocument);
+			sourceDocument.addCandidateOutlink(hrefDocument);			
 		}
 	}
 

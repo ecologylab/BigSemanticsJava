@@ -5,6 +5,7 @@ package ecologylab.semantics.metadata.builtins;
  * Metadata hierarchy. It is hand-authored in order to provide specific functionalities
  **/
 
+import java.util.ArrayList;
 import java.util.Vector;
 
 import ecologylab.collections.GenericElement;
@@ -198,7 +199,7 @@ implements DispatchTarget<ImageClosure>
 
 	public String getTitle()
 	{
-		return title().getValue();
+		return title == null ? null : title().getValue();
 	}
 
 	/**
@@ -263,7 +264,7 @@ implements DispatchTarget<ImageClosure>
 
 	public String getDescription()
 	{
-		return description().getValue();
+		return description == null ? null : description().getValue();
 	}
 
 	/**
@@ -549,13 +550,13 @@ implements DispatchTarget<ImageClosure>
 	//////////////////////////////////////// candidates loops state ////////////////////////////////////////////////////////////
 	public void addCandidateOutlink (Document newOutlink )
 	{
-		if (!newOutlink.isSeed())	// a seed is never a candidate
+		if (!newOutlink.isSeed() && !newOutlink.isDownloadDone())	// a seed is never a candidate
 		{
 			DocumentClosure documentClosure	= newOutlink.getOrConstructClosure();
-			if (documentClosure != null)
+			if (documentClosure != null && documentClosure.getDownloadStatus() == DownloadStatus.UNPROCESSED)
 			{
 				if (candidateLocalOutlinks == null)
-					candidateLocalOutlinks	=  new WeightSet<DocumentClosure>(new ContainerWeightingStrategy(InterestModel.getPIV()));
+					candidateLocalOutlinks			=  new WeightSet<DocumentClosure>(new ContainerWeightingStrategy(InterestModel.getPIV()));
 				candidateLocalOutlinks.insert(documentClosure);
 			}
 		}
@@ -707,7 +708,6 @@ implements DispatchTarget<ImageClosure>
 	
 	public void downloadAndParseDone()
 	{
-
 		// When downloadDone, add best surrogate and best container to infoCollector
 		if (documentParser != null)
 		{
@@ -718,14 +718,6 @@ implements DispatchTarget<ImageClosure>
 			perhapsAdditionalImageClosure();
 			perhapsAddAdditionalDocumentClosure();
 		}
-		//TODO reconsider this -- call recycle()?!
-		// free resources if nothing was collected
-//		if ((outlinks != null) && outlinks.isEmpty())
-//			outlinks		= null;
-		if ((candidateImageClosures != null) && candidateImageClosures.isEmpty())
-			candidateImageClosures	= null;
-		if ((candidateTextClippings != null) && candidateTextClippings.isEmpty())
-			candidateTextClippings	= null;
 
 		if ((documentParser != null) && documentParser.isContainer() && !isTotallyEmpty())	// add && !isEmpty() -- andruid 3/2/09
 		{	
@@ -736,6 +728,8 @@ implements DispatchTarget<ImageClosure>
 
 			// free only some resources
 			documentParser.connectionRecycle();
+			
+			//TODO -- completely recycle DocumentParser!?
 		}
 		else
 		{
@@ -975,6 +969,8 @@ implements DispatchTarget<ImageClosure>
 	 */
 	public void inheritValues(Document oldDocument)
 	{
+		getDocumentLocationMap().remap(oldDocument, this);
+		
 		this.infoCollector					= oldDocument.infoCollector;
 		SemanticInLinks oldInlinks	= oldDocument.semanticInlinks;
 		if (semanticInlinks == null || semanticInlinks.size() == 0)
@@ -984,6 +980,11 @@ implements DispatchTarget<ImageClosure>
 		}
 		else if (oldInlinks != null)
 			semanticInlinks.merge(oldInlinks);
+		
+		ArrayList<Metadata> oldMixins = oldDocument.getMixins();
+		if (oldMixins != null)
+			for (Metadata oldMixin : oldMixins)
+				addMixin(oldMixin);
 
 		String queryString					= this.getQuery();
 		if (queryString == null || queryString.length() == 0)
@@ -1073,5 +1074,24 @@ implements DispatchTarget<ImageClosure>
 	public boolean isAnonymous()
 	{
 		return false;
+	}
+	
+	void setRecycled()
+	{
+		DocumentLocationMap<? extends Document> documentLocationMap = getDocumentLocationMap();
+		documentLocationMap.setRecycled(getLocation());
+		if (additionalLocations != null)
+		{
+			for (ParsedURL additionalPURL : additionalLocations)
+				documentLocationMap.setRecycled(additionalPURL);
+		}
+	}
+
+	@Override
+	public void recycle()
+	{
+		super.recycle();
+		semanticInlinks.recycle();
+		semanticInlinks	= null;
 	}
 }

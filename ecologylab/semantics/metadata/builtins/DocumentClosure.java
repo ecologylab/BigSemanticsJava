@@ -95,8 +95,9 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DC>
 	 */
 	protected SearchResult	searchResult;
 
-	private final Object QUEUE_DOWNLOAD_LOCK		= new Object();
+	private final Object QUEUE_DOWNLOAD_LOCK			= new Object();
 	private final Object PERFORM_DOWNLOAD_LOCK		= new Object();   
+	private final Object DOCUMENT_LOCK						= new Object();   
 	
 	protected		NewInfoCollector	infoCollector;
 	
@@ -167,7 +168,7 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DC>
 	private void downloadAndParse()
 	throws IOException
 	{
-		if (recycled())
+		if (recycled() || document.isRecycled())
 		{
 			println("ERROR: Trying to downloadAndParse() page that's already recycled -- "+ location());
 			return;
@@ -223,21 +224,8 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DC>
 	{
 		DocumentParser getResult ( );
 		boolean hadRedirect();
-		Document newMetadata();
 	}
 
-//	private void connect()
-//	{
-//		{
-//			Document metadata			= document;
-//			if (metadata == null)
-//			{
-//				MetaMetadataCompositeField metaMetadata = infoCollector.metaMetaDataRepository().getDocumentMM(purl);
-//				metadata						= (Document) ((MetaMetadata) metaMetadata).constructMetadata();
-//			}
-//			return connect(metadata, container, infoCollector);
-//		}
-//	}
 	/**
 	 * Open a connection to the URL. Read the header, but not the content. Look at if the path exists,
 	 * if there is a redirect, and the mime type. If there is a redirect, process it.
@@ -256,19 +244,19 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DC>
 	{
 		assert(document != null);
 		final Document 	orignalDocument	= document;
-		final ParsedURL originalPurl		= document.getLocation();
+		final ParsedURL originalPURL		= document.getLocation();
 		
 		DocumentParserConnectHelper documentParserConnectHelper = new DocumentParserConnectHelper()
 		{
 			DocumentParser	result;
 			boolean 				hadRedirect = false;
-			Document 				newMetadata;
 
 			public void handleFileDirectory(File file)
 			{
 				// result = new FileDirectoryType(file, container,
 				// infoCollector);
 //				result = infoCollector.newFileDirectoryType(file);
+				warning("DocumentClosure.connect(): Need to implement handleFileDirectory().");
 			}
 
 			/**
@@ -276,9 +264,8 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DC>
 			 */
 			public boolean parseFilesWithSuffix(String suffix)
 			{
-				MetaMetadata mmd = infoCollector.metaMetaDataRepository().getMMBySuffix(suffix);
-				if (mmd!=null)
-					result = DocumentParser.getParserInstanceFromBindingMap(mmd.getParser(), infoCollector);
+				Document result = infoCollector.getMetaMetadataRepository().constructDocumentBySuffix(suffix);
+				changeDocument(result);
 				return (result != null);
 			}
 
@@ -289,19 +276,16 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DC>
 
 			public void badResult()
 			{
-				if (result != null)
-				{
-					result.recycle();
-					result = null;
-				}
+				orignalDocument.setRecycled();
+				orignalDocument.recycle();
 			}
 			
 			public boolean processRedirect(URL connectionURL) throws Exception
 			{
 				DocumentLocationMap<? extends Document>	documentLocationMap	= document.getDocumentLocationMap();
-				ParsedURL connectionPURL = new ParsedURL(connectionURL);
+				ParsedURL connectionPURL	= new ParsedURL(connectionURL);
 				hadRedirect = true;
-				displayStatus("redirecting: " + originalPurl + " > " + connectionURL);
+				displayStatus("redirecting: " + originalPURL + " > " + connectionURL);
 				Document redirectedDocument	= documentLocationMap.get(connectionPURL); // documentLocationMap.getOrCreate(connectionPURL);
 				//TODO -- what if redirectedDocument is already in the queue or being downloaded already?
 				if (redirectedDocument != null)	// existing document
@@ -330,7 +314,7 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DC>
 
 					if (document.isAlwaysAcceptRedirect() || infoCollector.accept(connectionPURL))
 					{
-						println("redirect: " + originalPurl + " -> " + connectionPURL);
+						println("redirect: " + originalPURL + " -> " + connectionPURL);
 						String domain 				= connectionPURL.domain();
 						String connPURLSuffix = connectionPURL.suffix();
 						// add entry to GlobalCollections containersHash
@@ -344,6 +328,7 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DC>
 						// {
 						// return true;
 						// }
+						Document 				newMetadata;
 
 						/*
 						 * Was unnecessary  because of how ecocache handles the acm gateway pages
@@ -360,27 +345,24 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DC>
 						}
 						else
 						{
-							// get new metadata
+							// regular get new metadata
 							newMetadata	= documentLocationMap.getOrConstruct(connectionPURL);
-
-							infoCollector.constructDocument(connectionPURL);
-							newMetadata.inheritValues(orignalDocument);
 						}
 
 						if (redirectHandling == RedirectHandling.REDIRECT_FOLLOW_DONT_RESET_LOCATION)
 						{
-							newMetadata.setLocation(originalPurl);
+							newMetadata.setLocation(originalPURL);
 							newMetadata.addAdditionalLocation(connectionPURL);
 						}
 						else
-							newMetadata.addAdditionalLocation(originalPurl);
+							newMetadata.addAdditionalLocation(originalPURL);
 						
 						changeDocument(newMetadata);
 
 						return true;
 					}
 					else
-						println("rejecting redirect: " + originalPurl + " -> " + connectionPURL);
+						println("rejecting redirect: " + originalPURL + " -> " + connectionPURL);
 				}
 				return false;
 			}
@@ -394,21 +376,16 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DC>
 			{
 				return this.hadRedirect;
 			}
-			public Document newMetadata()
-			{
-				return this.newMetadata;
-			}
 		};
 
 
 		MetaMetadataCompositeField metaMetadata = document.getMetaMetadata();
 		// then try to create a connection using the PURL
 		String userAgentString	= /* (metaMetadata == null) ? null : */ metaMetadata.getUserAgentString();
-		PURLConnection purlConnection = originalPurl.connect(documentParserConnectHelper, userAgentString);
-		DocumentParser result 	= documentParserConnectHelper.getResult();
-		
+		PURLConnection purlConnection = originalPURL.connect(documentParserConnectHelper, userAgentString);
 		Document document				= this.document;					// may have changed during redirect processing
 		metaMetadata						= document.getMetaMetadata();
+		
 
 		// check for a parser that was discovered while processing a re-direct
 		
@@ -419,7 +396,7 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DC>
 //			result = container.getDocumentParser();
 	
 		// if we made PURL connection but could not find parser using container
-		if ((purlConnection != null) && !originalPurl.isFile())
+		if ((purlConnection != null) && !originalPURL.isFile())
 		{
 			String cacheValue = purlConnection.urlConnection().getHeaderField("X-Cache");
 			cacheHit = cacheValue != null && cacheValue.contains("HIT");
@@ -439,16 +416,11 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DC>
 					metaMetadata	= mimeMmd;
 				}
 			}
-			// if we haven't got a DocumentParser here, using the binding hint; if we already have one,
-			// it is very likely a predefined one, e.g. MetaMetadataSearchParser
-			if (result == null)
-			{
-				String parserName = metaMetadata.getParser();
-				if (parserName == null)
-					parserName = SemanticActionsKeyWords.DEFAULT_PARSER;
-				result = DocumentParser.getParserInstanceFromBindingMap(parserName, infoCollector);
-			}
 		}
+		String parserName				= metaMetadata.getParser();	
+		if (parserName == null)			//FIXME Hook HTMLDOMImageText up to html mime-type & suffixes; drop defaultness of parser
+			parserName = SemanticActionsKeyWords.DEFAULT_PARSER;
+		DocumentParser result 	= DocumentParser.getParserInstanceFromBindingMap(parserName, infoCollector);
 		
 		if (result != null)
 		{
@@ -460,12 +432,15 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DC>
 
 	public void changeDocument(Document newDocument) 
 	{
-		Document oldDocument	= document;
-		newDocument.inheritValues(oldDocument);
-		
-		semanticInlinks				= newDocument.semanticInlinks; // probably not needed, but just in case.
-		document							= (D) newDocument;
-		oldDocument.recycle();
+		synchronized (DOCUMENT_LOCK)
+		{
+			Document oldDocument	= document;
+			this.document					= (D) newDocument;
+			
+			newDocument.inheritValues(oldDocument);	
+			semanticInlinks				= newDocument.semanticInlinks; // probably not needed, but just in case.
+			oldDocument.recycle();
+		}
 	}
 
 	
@@ -546,6 +521,7 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DC>
 		return document == null || document.isRecycled();
 	}
 	
+
 	@Override
 	public ParsedURL location()
 	{
@@ -566,7 +542,10 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DC>
 	 */
 	public D getDocument()
 	{
-		return document;
+		synchronized (DOCUMENT_LOCK)
+		{
+			return document;
+		}
 	}
 
 	/**

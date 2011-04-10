@@ -99,11 +99,26 @@ public class DocumentLocationMap<D extends Document> extends ConcurrentHashMap<P
 		return mapHelper.undefinedValue() == this.get(location);
 	}
 
-	//FIXME -- woefully inadequate!!!
-	public D substitute(D document)
+	/**
+	 * Change the mapped Document of reference for location to document.
+	 * Also make sure that newDocument's locations are mapped.
+	 * 
+	 * @param location		The location that gets a new mapping.
+	 * @param newDocument	The new document to be mapped to location.
+	 */
+	public void remap(ParsedURL location, Document newDocument)
 	{
-		this.put(document.getLocation(), document);
-		
-		return document;
+		put(location, (D) newDocument);
+		put(newDocument.getLocation(), (D) newDocument);	// just to make sure
+	}
+/**
+ * Change the mapped Document of reference for location to document.
+ * 
+ * @param oldDocument	The document no longer of record, but whose location is being mapped.
+ * @param newDocument	The new document to be mapped to location.
+ */
+	public void remap(Document oldDocument, Document newDocument)
+	{
+		remap(oldDocument.getLocation(), newDocument);
 	}
 }

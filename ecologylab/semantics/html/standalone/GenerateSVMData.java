@@ -22,7 +22,7 @@ import ecologylab.semantics.html.DOMWalkInformationTagger;
  *
  */
 @Deprecated
-public class GenerateSVMData extends HTMLDOMParser
+public class GenerateSVMData extends OldHTMLDOMParser
 {
     public void pprint(org.w3c.dom.Document doc, OutputStream out, ParsedURL purl, String mainPartitionID)
     {

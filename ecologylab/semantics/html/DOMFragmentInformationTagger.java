@@ -16,7 +16,7 @@ import ecologylab.serialization.XMLTools;
 public class DOMFragmentInformationTagger extends DOMWalkInformationTagger
 {
 	
-	ArrayList<ImageClipping> dndImages = new ArrayList<ImageClipping>();
+	ArrayList<ImgElement> dndImages = new ArrayList<ImgElement>();
 	StringBuilder dndText = new StringBuilder();
 	ParsedURL containerPurl = null;
 
@@ -45,8 +45,8 @@ public class DOMFragmentInformationTagger extends DOMWalkInformationTagger
 		}
 		if( "img".equals(tagName) )
 		{   
-			Image image		= infoCollector.
 			ImgElement imgElement = new ImgElement(node, purl);
+			
 			dndImages.add(imgElement);
 		}
 		else if ("body".equals(tagName))

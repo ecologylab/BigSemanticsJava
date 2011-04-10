@@ -12,7 +12,6 @@ import ecologylab.generic.Generic;
 import ecologylab.semantics.connectors.NewInfoCollector;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
-import ecologylab.semantics.old.OldContainerI;
 
 /**
  * now how SeedDistributor works:
@@ -272,11 +271,10 @@ public class SeedDistributor extends Debug implements Runnable
 	private static int getRank(QandDownloadable downloadable)
 	{
 		int r = -1;
-		if (downloadable instanceof OldContainerI)
-		{
-			DocumentClosure container = (DocumentClosure) downloadable;
-			r = container.searchResult() == null ? -2 : container.searchResult().resultNum();
-		}
+//		if (downloadable instanceof OldContainerI)
+		DocumentClosure container = (DocumentClosure) downloadable;
+		r = container.searchResult() == null ? -2 : container.searchResult().resultNum();
+
 		return r;
 	}
 

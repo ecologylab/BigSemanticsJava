@@ -27,6 +27,7 @@ import ecologylab.semantics.html.documentstructure.TextOnlyPage;
 import ecologylab.semantics.html.utils.HTMLAttributeNames;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.builtins.Document;
+import ecologylab.semantics.metadata.builtins.Image;
 import ecologylab.serialization.XMLTools;
 
 
@@ -357,15 +358,6 @@ implements TidyInterface, HTMLAttributeNames
 	public boolean isContentPage ( )
 	{
 		return contentPage;
-	}
-	
-	/**
-	 * To make code navigation simpler around JTidy-parsers 
-	 */
-	@Override
-	public void newImgTxt(ImgElement imgNode, ParsedURL anchorHref)
-	{
-		super.newImgTxt(imgNode, anchorHref);
 	}
 
 	@Override

@@ -4,10 +4,10 @@ import java.util.HashMap;
 
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.connectors.NewInfoCollector;
+import ecologylab.semantics.html.ImgElement;
 import ecologylab.semantics.html.documentstructure.ImageFeatures;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.Image;
-import ecologylab.semantics.metadata.builtins.ImageClipping;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.model.TextChunkBase;
 import ecologylab.semantics.model.text.utils.Filter;
@@ -20,10 +20,6 @@ extends ContainerParser implements SemanticsPrefs
 {
 
 	private	boolean 	isFile = false;
-	/**
-	 * context that begins with &lt;a href="...", and remains current until </a>
-	 */
-	protected ParsedURL currentAnchorHref;
 
 	protected boolean 	bold;
 	protected boolean 	italic;
@@ -81,61 +77,6 @@ extends ContainerParser implements SemanticsPrefs
 		}
 	}
 
-
-
-	public void newAHref(HashMap<String, String> attributesMap) 
-	{
-		newAHref(attributesMap.get("href"));
-	}
-
-	/**
-	 * Called by the Parser in response to the <code>href</code> attribute
-	 * of the <code>a</code> html element, or when processing other similar
-	 * elements, such <code>iframe</code>.
-	 * Forms the href from the argument and our context.
-	 * Performs statistics gathering housekeeping regarding tokens and links.
-	 */
-	public ParsedURL newAHref(String urlString) 
-	{
-		ParsedURL hrefPurl		= buildAndFilterPurl(urlString); // processNewHref(urlString);
-
-		newAHref(hrefPurl);
-		return hrefPurl;
-	}
-
-	protected void newAHref(ParsedURL hrefPurl)
-	{
-		if (currentAnchorHref == null)
-		{
-		}
-		// add for the container and href. 
-		if (hrefPurl != null)
-		{	
-			currentAnchorHref		= hrefPurl;
-			//This seems wrong. We generate containers in HTMLDomParser 
-			//processHref(hrefPurl);
-		}
-	}
-
-	/**
-	 * Create a ParsedURL from a urlString, in the context of this.
-	 * Used for processing the <code>href</code> attribute of the <code>a</code>
-	 * html element.
-	 * Check to make sure its crawlable (for example, that its not mailto:).
-	 * <p/>
-	 * Add to collections if appropriate.
-	 */
-	public ParsedURL processNewHref(String urlString) 
-	{
-		ParsedURL result = buildAndFilterPurl(urlString);
-		
-		if (result != null)
-		{
-			processHref(result);	// create the href container
-		}	
-		return result;
-	}
-
 	protected ParsedURL buildAndFilterPurl(String urlString)
 	{
 		ParsedURL result	= buildPurl(urlString);
@@ -181,17 +122,44 @@ extends ContainerParser implements SemanticsPrefs
 				newImg(hrefPurl, null, 0 , 0, false);
 			else 
 			{
-				//FIXME -- abhinav -- how do we look up MetaMetadata here?!
-				MetaMetadata metaMetadata	=infoCollector.metaMetaDataRepository().getDocumentMM(hrefPurl);
-
-//				CfContainer newContainer = abstractInfoCollector.getContainerWithoutQueuing(container, hrefPurl);
-//				if (newContainer != null)
-//					container.addCandidateContainer(newContainer);
-				infoCollector.getContainer(container, null, metaMetadata, hrefPurl, false, true, false);
+				Document hrefDocument	= infoCollector.getOrConstructDocument(hrefPurl);
+				getDocument().addCandidateOutlink(hrefDocument);
 			}
 		}
 	}
 
+	/**
+	 * create image and text surrogates for this HTML document, and add these surrogates into the
+	 * localCollection in Container.
+	 */
+	public Image newImgTxt(ImgElement imgNode, ParsedURL anchorHref)
+	{
+		String alt	= imgNode.getAlt();
+		int width		= imgNode.getWidth();
+		int height	= imgNode.getHeight();
+		boolean isMap 		= imgNode.isMap();
+
+		ParsedURL srcPurl = imgNode.getSrc();
+
+		if (anchorHref != null)
+			processHref(anchorHref);
+
+		Image result			= null;
+		if (srcPurl != null)
+		{
+			String textContext = imgNode.getTextContext();
+
+			if (alt != null)
+				alt = alt.trim();
+			
+			result						= infoCollector.getOrConstructImage(srcPurl);
+			Document outlink	= infoCollector.getOrConstructDocument(anchorHref);
+			result.constructClippingCandidate(getDocument(), outlink, imgNode.getAlt(), imgNode.getTextContext());
+		}
+
+		return result;
+	}
+	
 	private boolean isAd ( ParsedURL hrefPurl )
 	{
 		String lc			= hrefPurl.lc();
@@ -211,8 +179,6 @@ extends ContainerParser implements SemanticsPrefs
 
 	public void closeHref() 
 	{
-		currentAnchorHref		= null;
-
 		if (addingLinkWords && (textChunk != null))
 			textChunk.endLink();
 		addingLinkWords	= false;

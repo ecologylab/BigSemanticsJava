@@ -6,7 +6,9 @@ package ecologylab.semantics.seeding;
 import java.util.ArrayList;
 
 import ecologylab.collections.Scope;
-import ecologylab.semantics.old.OldContainerI;
+import ecologylab.semantics.metadata.builtins.DocumentClosure;
+import ecologylab.semantics.metadata.builtins.ImageClosure;
+import ecologylab.semantics.metadata.builtins.TextClipping;
 
 /**
  * Encapsulates application-specific funtionality that must be associated with each Seed.
@@ -14,7 +16,7 @@ import ecologylab.semantics.old.OldContainerI;
  * @author andruid
  *
  */
-abstract public class SeedPeer<SP extends SeedPeer, C extends OldContainerI, I, T, S>
+abstract public class SeedPeer<SP extends SeedPeer>
 {
 	Seed						seed;
 	
@@ -50,12 +52,12 @@ abstract public class SeedPeer<SP extends SeedPeer, C extends OldContainerI, I, 
 	
 	abstract public void notifyInterface(Scope scope, String key);
 	
-	abstract public void addToIndex(C container);
+	abstract public void addToIndex(DocumentClosure documentClosure);
 	
-	abstract public void addToIndexI(I imgElement);
+	abstract public void addToIndexI(ImageClosure imageClosure);
 	
-	abstract public void addToIndexT(T textElement);
+	abstract public void addToIndexT(TextClipping textClipping);
 	
-	abstract public void addToIndexS(S surrogate);
+//	abstract public void addToIndexS(S surrogate);
 
 }

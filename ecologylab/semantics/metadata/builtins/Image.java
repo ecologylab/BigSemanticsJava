@@ -27,8 +27,6 @@ implements MimeType, ImageConstants
 	 */
 	public static int		hasAlt;
 
-
-
 	public Image()
 	{
 

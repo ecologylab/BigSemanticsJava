@@ -81,13 +81,13 @@ implements HTMLAttributeNames
 		for(ImgElement imgElement : imgNodes)
 		{
 			TdNode imgNodeNode					= imgElement.getNode();
-			StringBuilder extractedCaptionTxt	= getLongestTxtinSubTree(imgNodeNode.grandParent(), null);
+			StringBuilder extractedContext	= getLongestTxtinSubTree(imgNodeNode.grandParent(), null);
 
 			// this if condition checks whether the nearest text to the image is substantial enough to form a surrogate. 
 			// TODO needs to check parent Href and Text informativity
-			if (extractedCaptionTxt != null)
+			if (extractedContext != null)
 			{
-				if ((extractedCaptionTxt.length()>10) && (!StringTools.contains(extractedCaptionTxt, "advertis")) )
+				if ((extractedContext.length()>10) && (!StringTools.contains(extractedContext, "advertis")) )
 				{
 					ParsedURL anchorPurl 			= findAnchorPURLforImgNode(htmlType, imgElement);
 	
@@ -96,13 +96,13 @@ implements HTMLAttributeNames
 					{
 						// TODO!! ask whether we should add this to the associateText or not.
 						//FIXME! -- push caption text through as StringBuilder!
-						imgElement.setTextContext(extractedCaptionTxt);
+						imgElement.setTextContext(extractedContext);
 	
 						htmlType.newAnchorImgTxt(imgElement, anchorPurl);
 						htmlType.removeTheContainerFromCandidates(anchorPurl);
 					}
 				}
-				StringBuilderUtils.release(extractedCaptionTxt);
+				StringBuilderUtils.release(extractedContext);
 			}
 		}
 	}

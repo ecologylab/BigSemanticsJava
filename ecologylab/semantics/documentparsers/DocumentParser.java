@@ -379,20 +379,6 @@ abstract public class DocumentParser
 		return result;
 	}
 
-  
-	public static DocumentParser getParserInstanceFromBindingMap(String binding,
-			InfoCollector infoCollector)
-	{
-		DocumentParser result = null;
-		Class<? extends DocumentParser> documentTypeClass = (Class<? extends DocumentParser>) bindingParserMap.get(binding);
-
-		Object[] constructorArgs = new Object[1];
-		constructorArgs[0] = infoCollector;
-
-		result = ReflectionTools.getInstance(documentTypeClass, DEFAULT_DOCUMENTPARSER_ARG, constructorArgs);
-		return result;
-	}
-
 	public static DocumentParser getParserInstanceFromBindingMap(String binding,
 			NewInfoCollector infoCollector)
 	{

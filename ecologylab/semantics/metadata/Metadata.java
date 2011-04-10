@@ -121,6 +121,8 @@ abstract public class Metadata extends ElementState implements MetadataBase, Ter
 	private boolean												metadataChangedForDisplay;
 
 	private Map<String, String>						cachedNaturalIdValues;
+	
+	private boolean												recycled;
 
 	/**
 	 * a map from <link_with> type to linked Metadata. initial empty. no key indicates not yet tried
@@ -464,7 +466,7 @@ abstract public class Metadata extends ElementState implements MetadataBase, Ter
 	 */
 	public ArrayList<Metadata> getMixins()
 	{
-		return mixins();
+		return mixins == null ? null : mixins();
 	}
 
 	/**
@@ -487,8 +489,13 @@ abstract public class Metadata extends ElementState implements MetadataBase, Ter
 		return null;
 	}
 
+	@Override
 	public void recycle()
 	{
+		if (recycled)
+			return;
+		recycled					= true;
+		
 		if (metaMetadata != null)
 		{
 			MetaMetadataRepository repository = metaMetadata.getRepository();
@@ -519,7 +526,7 @@ abstract public class Metadata extends ElementState implements MetadataBase, Ter
 
 	public boolean isRecycled()
 	{
-		return (termVector != null && termVector.isRecycled());
+		return recycled; // (termVector != null && termVector.isRecycled());
 	}
 
 	public MetaMetadataOneLevelNestingIterator fullNonRecursiveMetaMetadataIterator(

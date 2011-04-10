@@ -13,7 +13,7 @@ import ecologylab.semantics.model.text.ITermVector;
 @SuppressWarnings("serial")
 public class SemanticInLinks extends ConcurrentHashMap<ParsedURL, SemanticAnchor> implements Iterable<SemanticAnchor>
 {
-	private CompositeTermVector semanticInlinkCollection;
+	private CompositeTermVector compositeTermVector;
 	
 	private Document 	ancestor;
 	
@@ -36,19 +36,21 @@ public class SemanticInLinks extends ConcurrentHashMap<ParsedURL, SemanticAnchor
 		}
 		clear();
 		
-		if (semanticInlinkCollection != null)
-			semanticInlinkCollection.recycle();
-		
-		semanticInlinkCollection = null;
+		if (compositeTermVector != null)
+		{
+			compositeTermVector.recycle();
+			compositeTermVector	= null;
+		}
+		ancestor									= null;
 	}
 	
 	public CompositeTermVector semanticInlinkCollection()
 	{
-		CompositeTermVector result = semanticInlinkCollection;
+		CompositeTermVector result = compositeTermVector;
 		if (result == null)
 		{
-			semanticInlinkCollection = new CompositeTermVector();
-			result = semanticInlinkCollection;
+			compositeTermVector = new CompositeTermVector();
+			result = compositeTermVector;
 		}
 		
 		return result;

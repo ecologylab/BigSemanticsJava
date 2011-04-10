@@ -8,7 +8,7 @@ import org.w3c.tidy.TdNode;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.html.documentstructure.AnchorContext;
 import ecologylab.semantics.html.documentstructure.RecognizedDocumentStructure;
-import ecologylab.semantics.metadata.builtins.ImageClipping;
+import ecologylab.semantics.metadata.builtins.Image;
 
 
 /**
@@ -24,14 +24,12 @@ public interface TidyInterface
 	public void setBold(boolean on) ;
 	
 	public void setItalic(boolean on);
-	
-	public void newAHref(HashMap<String, String> attributesMap);
 
 	public void generateCandidateContainersFromContexts(ArrayList<AnchorContext> anchorContexts, boolean fromContentBody);
 	
 	public void closeHref();
 	
-	public ImageClipping newImgTxt(ImgElement imgNode, ParsedURL anchorHref);
+	public Image newImgTxt(ImgElement imgNode, ParsedURL anchorHref);
 	
 	//TODO -- take a BtringBuilder instead of a String. and use if efficiently!!!!!!
 	public void newTxt(ParagraphText paraText);

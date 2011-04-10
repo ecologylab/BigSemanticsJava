@@ -685,6 +685,18 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		return result;
 	}
 
+	public Document constructDocumentBySuffix(String suffix)
+	{
+		MetaMetadata metaMetadata = this.getMMBySuffix(suffix);
+		return metaMetadata == null ? null : (Document) metaMetadata.constructMetadata(metadataTScope);
+	}
+
+	public Document constructDocumentByMime(String mimeType)
+	{
+		MetaMetadata metaMetadata = this.getMMByMime(mimeType);
+		return metaMetadata == null ? null : (Document) metaMetadata.constructMetadata(metadataTScope);
+	}
+
 	/**
 	 * Initializes HashMaps for MetaMetadata selectors by URL or pattern. Uses the ClippableDocument
 	 * and Document base classes to ensure that maps are only filled with appropriate matching
