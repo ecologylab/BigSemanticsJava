@@ -45,6 +45,10 @@ public class ContentPage extends RecognizedDocumentStructure
        		associateImageTextSurrogate(htmlType, articleMain, paraTexts);
        		htmlType.setContent();
         }
+        else
+        {
+        	warning("Content Body but no parent, so not forming image-text surrogates.");
+        }
 	}
 	
 
