@@ -26,7 +26,7 @@ implements HTMLAttributeNames, ImageConstants
 	//FIXME -- get rid of this inefficient beast!
 	private HashMap<String, String> attributesMap;
 	
-	String	xPath;
+	String	xpath;
 	
 	String	cssClass;
 	
@@ -94,57 +94,20 @@ implements HTMLAttributeNames, ImageConstants
 		this.node = node;
 	}
 	
-	public int localXPathIndex()
+	public String xpath()
 	{
-		int result	= this.localXPathIndex;
-		if (result == INDEX_NOT_CALCULATED)
-		{
-			TdNode currentNode	= node;
-			result = localXPathIndex(currentNode);
-			this.localXPathIndex= result;
-		}
-		return result;
-	}
-
-	protected static int localXPathIndex(TdNode currentNode)
-	{
-		int result					= 0;
-		String tag					= currentNode.element;
-
-		while ((currentNode = currentNode.prev()) != null)
-		{
-			if (tag.equals(currentNode.element))
-				result++;
-		}
-		return result;
-	}
-	public String xPath()
-	{
-		String result	= this.xPath;
+		String result	= this.xpath;
 		if (result == null)
 		{
 			StringBuilder buffy	= StringBuilderUtils.acquire();
-			xPath(node, buffy);
+			node.xpath(buffy);
 			result							= StringTools.toString(buffy);
-			this.xPath					= result;
+			this.xpath					= result;
 			StringBuilderUtils.release(buffy);
 		}
 		return result;
 	}
-	public static void xPath(TdNode node, StringBuilder buffy)
-	{
-		TdNode parent = node.parent();
-		if (parent != null)
-		{
-			xPath(parent, buffy);
-			buffy.append('/').append(node.element);
-			int elementIndex = localXPathIndex(node);
-			buffy.append('[').append(elementIndex).append(']');
-		}
-		else
-			buffy.append('/');
-		
-	}
+
 	public TdNode getNode() 
 	{
 		return node;
