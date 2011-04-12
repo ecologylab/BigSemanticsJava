@@ -9,6 +9,7 @@ import java.util.TreeMap;
 import org.w3c.tidy.AttVal;
 import org.w3c.tidy.TdNode;
 
+import ecologylab.generic.Debug;
 import ecologylab.generic.IntSlot;
 import ecologylab.generic.StringTools;
 import ecologylab.net.ParsedURL;
@@ -37,7 +38,7 @@ import ecologylab.serialization.XMLTools;
  * @author eunyee
  * @author andruid
  */
-public class RecognizedDocumentStructure
+public class RecognizedDocumentStructure extends Debug
 implements HTMLAttributeNames
 {
 	static final int PARAGRAPH_COUNT_MINI_ARTICLE_THRESHOLD = 2;
@@ -483,6 +484,11 @@ implements HTMLAttributeNames
 		return informImgNodes;
 	}
 
+	@Override
+	public String toString()
+	{
+		return super.toString() + "[" + purl + "]";
+	}
 
 
 
