@@ -194,7 +194,10 @@ public class ImgElement extends WithPurlElement
 
 	public String toString()
 	{
-		String location	= src == null ? "" : src.toString();
-		return "ImgElement[" + width+","+height+"] " + location;
+		StringBuilder buffy		= new StringBuilder();
+		node.nodeString(buffy);
+		buffy.append('\n');
+		
+		return buffy.toString();
 	}
 }
