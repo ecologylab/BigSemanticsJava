@@ -115,7 +115,7 @@ implements DispatchTarget<ImageClosure>
 	 */
 	DocumentParser									documentParser;
 
-	protected		NewInfoCollector			infoCollector;
+	protected		NewInfoCollector		infoCollector;
 
 	
 	/** Number of surrogates from this container that are currently on screen */
@@ -128,6 +128,8 @@ implements DispatchTarget<ImageClosure>
 	private static final double	MIN_WEIGHT_THRESHOLD	= 0.;
 	
 	private boolean									alwaysAcceptRedirect;
+	
+	private boolean									useFirstCandidateWeight	= true;
 	
 	
 	//////////////////////////////////////// candidates loops state ////////////////////////////////////////////////////////////
@@ -562,6 +564,14 @@ implements DispatchTarget<ImageClosure>
 		}
 	}
 	
+	int clippingPoolPriority()
+	{
+		int result = useFirstCandidateWeight ? 
+				(isSeed() ? 0 : 1) : 2;
+		useFirstCandidateWeight		= false;
+				
+		return result;
+	}
 	/**
 	 * 
 	 * 1. First, only one surrogate goes to candidate pool. 
@@ -571,8 +581,11 @@ implements DispatchTarget<ImageClosure>
 	 */
 	double mostRecentImageWeight = 0, mostRecentTextWeight = 0;
 	
-	public synchronized void perhapsAddAdditionalDocumentClosure ( )
+	public synchronized void perhapsAddDocumentClosureToPool ( )
 	{
+		if (!infoCollector.isCollectCandidatesInPools())
+			return;
+		
 		if (candidateLocalOutlinks == null || candidateLocalOutlinks.size() == 0)
 		{
 			makeInactiveAndConsiderRecycling();
@@ -584,7 +597,7 @@ implements DispatchTarget<ImageClosure>
 		if(maxWeight > MIN_WEIGHT_THRESHOLD)
 		{
 			DocumentClosure candidate = candidateLocalOutlinks.maxSelect();
-			doRecycle = ! infoCollector.addCandidateClosure(candidate); // successful add means do not recycle
+			doRecycle = ! infoCollector.addClosureToPool(candidate); // successful add means do not recycle
 		}
 		else
 		{
@@ -592,7 +605,7 @@ implements DispatchTarget<ImageClosure>
 			debug("This container failed to provide a decent container so is going bye bye, max weight was " + maxWeight );
 		}
 			
-		if(doRecycle)
+		if (doRecycle)
 			makeInactiveAndConsiderRecycling();
 	}
 	
@@ -604,31 +617,35 @@ implements DispatchTarget<ImageClosure>
 	}
 
 
-	public synchronized void perhapsAddAdditionalTextSurrogate()
+	public synchronized void perhapsAddTextClippingToPool()
 	{
-		TextClipping textClipping = null;
+		if (!infoCollector.isCollectCandidatesInPools())
+			return;
+		
+		GenericElement<TextClipping> textClippingGE = null;
 		if (candidateTextClippings != null)
 		{
-			textClipping = candidateTextClippings.maxGenericSelect();
+			textClippingGE = candidateTextClippings.maxSelect();
 		}
-		if( textClipping!=null )
+		if( textClippingGE!=null )
 		{
 			// If no surrogate has been delivered to the candidate pool from the container, 
 			// send it to the candidate pool without checking the media weight. 
 			if( numSurrogatesFrom==0 )
-				infoCollector.addCandidateTextClipping(textClipping);
+				infoCollector.addTextClippingToPool(textClippingGE, clippingPoolPriority());
 			else
 			{
+				TextClipping textClipping	= textClippingGE.getGeneric();
 				float adjustedWeight 		= InterestModel.getInterestExpressedInTermVector(textClipping.termVector()) / (float) numSurrogatesFrom;
 				float meanTxtSetWeight	= infoCollector.candidateTextElementsSetsMean();
 				if ((adjustedWeight>=meanTxtSetWeight) || infoCollector.candidateTextElementsSetIsAlmostEmpty())
 				{
-					infoCollector.addCandidateTextClipping(textClipping);
+					infoCollector.addTextClippingToPool(textClippingGE, clippingPoolPriority());
 					mostRecentTextWeight = InterestModel.getInterestExpressedInTermVector(textClipping.termVector());
 				}
 				else
 				{
-					textClipping.recycle(false);
+					textClippingGE.recycle(false);
 					additionalTextSurrogatesActive	= false;
 					//recycle(false);
 				}
@@ -637,9 +654,11 @@ implements DispatchTarget<ImageClosure>
 		else
 			additionalTextSurrogatesActive	= false;
 	}
-	public synchronized void perhapsAdditionalImageClosure()
+	public synchronized void perhapsAddImageClosureToPool()
 	{
-
+		if (!infoCollector.isCollectCandidatesInPools())
+			return;
+		
 		ImageClosure imageClosure = null;
 		if (candidateImageClosures != null)
 			imageClosure = candidateImageClosures.maxSelect();
@@ -668,7 +687,7 @@ implements DispatchTarget<ImageClosure>
 				// if (firstClipping) else queue in MediaReferencesPool
 				
 				if (!imageClosure.queueDownload())
-					perhapsAdditionalImageClosure();
+					perhapsAddImageClosureToPool();
 			}
 			else
 			{
@@ -684,7 +703,7 @@ implements DispatchTarget<ImageClosure>
 	public void delivery(ImageClosure imageClosure)
 	{
 		mostRecentImageWeight = InterestModel.getInterestExpressedInTermVector(imageClosure.termVector());
-		perhapsAdditionalImageClosure();
+		perhapsAddImageClosureToPool();
 	}
 	
 	private void considerRecycling()
@@ -706,7 +725,7 @@ implements DispatchTarget<ImageClosure>
 	////////////////////////////////// Downloadable /////////////////////////////////////////////////////
 	
 	
-	public void downloadAndParseDone()
+	public void downloadAndParseDone(DocumentParser documentParser)
 	{
 		// When downloadDone, add best surrogate and best container to infoCollector
 		if (documentParser != null)
@@ -714,9 +733,9 @@ implements DispatchTarget<ImageClosure>
 			additionalTextSurrogatesActive	= true;
 			additionalImgSurrogatesActive	= true;
 			additionalContainersActive	= true;
-			perhapsAddAdditionalTextSurrogate();
-			perhapsAdditionalImageClosure();
-			perhapsAddAdditionalDocumentClosure();
+			perhapsAddTextClippingToPool();
+			perhapsAddImageClosureToPool();
+			perhapsAddDocumentClosureToPool();
 		}
 
 		if ((documentParser != null) && documentParser.isContainer() && !isTotallyEmpty())	// add && !isEmpty() -- andruid 3/2/09
@@ -777,7 +796,7 @@ implements DispatchTarget<ImageClosure>
 		if (InterestModel.getInterestExpressedInTermVector(te.getGeneric().termVector()) > mostRecentTextWeight)
 		{
 			infoCollector.removeTextClippingFromPools(replaceMe);
-			perhapsAddAdditionalTextSurrogate();
+			perhapsAddTextClippingToPool();
 			// perhapsAddAdditionalTextSurrogate could call recycle on this container
 			if (!this.isRecycled())
 				candidateTextClippings.insert(replaceMe);
@@ -793,7 +812,7 @@ implements DispatchTarget<ImageClosure>
 		if (InterestModel.getInterestExpressedInTermVector(aie.termVector()) > mostRecentImageWeight)
 		{
 			infoCollector.removeImageClippingFromPools(replaceMe);
-			perhapsAdditionalImageClosure();
+			perhapsAddImageClosureToPool();
 			candidateImageClosures.insert(replaceMe);
 		}
 	}

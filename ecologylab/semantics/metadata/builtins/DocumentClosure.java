@@ -104,7 +104,7 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DC>
 	
 	DownloadStatus							downloadStatus	= DownloadStatus.UNPROCESSED;
 	
-	private DocumentParser			presetDocumentParser;
+	private DocumentParser			documentParser;
 	
 	/**
 	 * 
@@ -179,8 +179,8 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DC>
 			return;
 		}
 
-		ParsedURL parsedURL 				= location();
-		DocumentParser documentParser	= connect();
+		ParsedURL parsedURL = location();
+		connect();					// evolves Document based on redirects & mime-type; sets the documentParser
 
 		if( parsedURL.getTimeout() )
 		{
@@ -238,9 +238,8 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DC>
 	 *    to find the parser.
 	 * 2) Else find meta-metadata using URL suffix and mime type and make a direct binding parser.
 	 * 3) If still parser is null and binding is also null, use in-build tables to find the parser.
-	 * @param metadata TODO
 	 */
-	private DocumentParser connect()
+	private void connect()
 	{
 		assert(document != null);
 		final Document 	orignalDocument	= document;
@@ -420,14 +419,14 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DC>
 		String parserName				= metaMetadata.getParser();	
 		if (parserName == null)			//FIXME Hook HTMLDOMImageText up to html mime-type & suffixes; drop defaultness of parser
 			parserName = SemanticActionsKeyWords.DEFAULT_PARSER;
-		DocumentParser result 	= DocumentParser.getParserInstanceFromBindingMap(parserName, infoCollector);
 		
-		if (result != null)
+		if (documentParser == null)
+			documentParser 	= DocumentParser.getParserInstanceFromBindingMap(parserName, infoCollector);
+		
+		if (documentParser != null)
 		{
-			result.fillValues(purlConnection, this, infoCollector);
+			documentParser.fillValues(purlConnection, this, infoCollector);
 		}
-		
-		return result;
 	}
 
 	public void changeDocument(Document newDocument) 
@@ -479,7 +478,7 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DC>
 		// When downloadDone, add best surrogate and best container to infoCollector
 		if (!bad)
 		{
-			document.downloadAndParseDone();
+			document.downloadAndParseDone(documentParser);
 		}
 		else
 		{
@@ -781,9 +780,9 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DC>
 	/**
 	 * @param presetDocumentParser the presetDocumentParser to set
 	 */
-	public void setPresetDocumentParser(DocumentParser presetDocumentParser)
+	public void setDocumentParser(DocumentParser presetDocumentParser)
 	{
-		this.presetDocumentParser = presetDocumentParser;
+		this.documentParser = presetDocumentParser;
 	}
 
 }

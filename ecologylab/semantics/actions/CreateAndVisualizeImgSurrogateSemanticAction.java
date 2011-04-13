@@ -105,7 +105,7 @@ class CreateAndVisualizeImgSurrogateSemanticAction
 			}
 
 			if (outlink != null)
-				infoCollector.addCandidateClosure(imageClipping.getOutlinkClosure());
+				infoCollector.addClosureToPool(imageClipping.getOutlinkClosure());
 
 			return image;
 		}

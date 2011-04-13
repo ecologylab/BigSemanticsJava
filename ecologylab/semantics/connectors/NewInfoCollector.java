@@ -102,15 +102,29 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 	MetaMetadataRepository															metaMetadataRepository;
 	
 	TranslationScope																		metadataTranslationScope;
+	
+	boolean																							collectCandidatesInPools;
 
 
-	public NewInfoCollector(MetaMetadataRepository metaMetadataRepository, TranslationScope metadataTranslationScope, Scope sessionScope)
+	public boolean isCollectCandidatesInPools()
+	{
+		return collectCandidatesInPools;
+	}
+
+	public NewInfoCollector(MetaMetadataRepository metaMetadataRepository, TranslationScope metadataTranslationScope)
+	{
+		this(metaMetadataRepository, metadataTranslationScope, new Scope(), false);
+	}
+
+	public NewInfoCollector(MetaMetadataRepository metaMetadataRepository, TranslationScope metadataTranslationScope, 
+			Scope sessionScope, boolean collectCandidatesInPools)
 	{
 		super(metaMetadataRepository);
 		this.metaMetadataRepository				= metaMetadataRepository;
 		this.metadataTranslationScope			= metadataTranslationScope;
 		this.sessionScope									= sessionScope;
 		sessionScope.put(SemanticsSessionObjectNames.INFO_COLLECTOR, this);
+		this.collectCandidatesInPools			= collectCandidatesInPools;
 		
 		TermVector piv 										= InterestModel.getPIV(); 
 		piv.addObserver(this);
@@ -150,7 +164,7 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 	
 	public NewInfoCollector()
 	{
-		this(null, null, new Scope());
+		this(null, null, new Scope(), false);
 	}	
 	
 	InteractiveSpace														interactiveSpace;
@@ -178,6 +192,8 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 	 * crawler. This makes startup fairer; otherwise, the first recorded seeds get too much priority.
 	 */
 	protected int																badSeeds;
+	
+	protected boolean														playOnStart;
 
 	/**
 	 * Priority to run at when we seem to have an overabundance of <code>MediaElement</code>s ready
@@ -682,7 +698,7 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 
 	public void setPlayOnStart(boolean b)
 	{
-		//TODO
+		this.playOnStart	= b;
 	}
 
 	public void clear()
@@ -715,25 +731,19 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 		this.isHeterogeneousSearchScenario	= b;
 	}
 
-
-	public DocumentClosure getContainerForSearch(DocumentClosure ancestor, Document metadata, ParsedURL purl, Seed seed,
-			boolean reincarnate)
+	public void addTextClippingToPool(GenericElement<TextClipping> textClippingGE, int poolPriority)
 	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public void addCandidateTextClipping(TextClipping textElement)
-	{
-		// TODO Auto-generated method stub
+		candidateTextClippingsPool.insert(textClippingGE, poolPriority);
 		
+		if (playOnStart && guiBridge != null)
+			guiBridge.pressPlayWhenFirstMediaArrives();
 	}
 
-	public boolean addCandidateDocument(Document document)
+	public boolean addDocumentToPool(Document document)
 	{
-		return addCandidateClosure(document.getOrConstructClosure());
+		return addClosureToPool(document.getOrConstructClosure());
 	}
-	public boolean addCandidateClosure(DocumentClosure candidate)
+	public boolean addClosureToPool(DocumentClosure candidate)
 	{
 		if (candidate != null)
 		{	
@@ -768,7 +778,7 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 		return false;
 	}
 	
-	void addCandidateImageClosure(ImageClosure imageClosure, Document source)
+	void addImageClosureToPool(ImageClosure imageClosure, Document source)
 	{
 		// pressPlayWhenFirstMediaElementArrives();
 		imageClosure.setDispatchTarget(source);

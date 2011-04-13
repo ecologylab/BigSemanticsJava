@@ -40,7 +40,7 @@ public abstract class LinksetParser
 		if (documentClosure != null)
 		{
 //			container.presetDocumentType(this);
-			documentClosure.setPresetDocumentParser(this);
+			documentClosure.setDocumentParser(this);
 			documentClosure.setDispatchTarget(this);
 			document.setAsTrueSeed(seed);
 

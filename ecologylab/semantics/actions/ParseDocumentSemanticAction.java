@@ -145,7 +145,7 @@ class ParseDocumentSemanticAction
 			debugT(" Reached end of iterations with outlinks size (" /* + ancestor.numOutlinks() */ +").\n\t\tPicking " + numberOfTopDocuments + " top documents from outlinks of container: " + ancestor);
 			int numDocumentsRemaining = numberOfTopDocuments;
 			while(numDocumentsRemaining-- > 0)
-				ancestor.perhapsAddAdditionalDocumentClosure();
+				ancestor.perhapsAddDocumentClosureToPool();
 		}
 	}
 	
@@ -175,11 +175,11 @@ class ParseDocumentSemanticAction
 			@Override
 			public void distribute(DocumentClosure result)
 			{
-				infoCollector.addCandidateClosure(result);	// ?? just curious: isn't result the same as documentClosure?!
+				infoCollector.addClosureToPool(result);	// ?? just curious: isn't result the same as documentClosure?!
 			}
 				}))
 		{
-			infoCollector.addCandidateClosure(documentClosure);
+			infoCollector.addClosureToPool(documentClosure);
 		}
 	}
 
