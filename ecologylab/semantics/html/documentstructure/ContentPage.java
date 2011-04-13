@@ -32,9 +32,10 @@ public class ContentPage extends RecognizedDocumentStructure
 	public void generateSurrogates(TdNode articleMain, ArrayList<ImgElement> imgNodes, int totalTxtLeng, 
 			TreeMap<Integer, ParagraphText> paraTexts, TidyInterface htmlType)
 	{
-    	// This is the case there is no article main, which means high probability to be an index page.
-        // Needs to author informative image and text surrogate in the whole document itself.
-		//FIXME -- andruid 4/7/2011 -- why is this call here ????????????
+		//FIXME -- andruid 4/7/2011 -- this is seriously wrong. i must rework soon!
+		// this, if anything, should be performed after associateImageTextSurrogate, and should act only on 
+		// the images not processed there!
+		
         recognizeImgSurrogateForOtherPages( imgNodes, totalTxtLeng, htmlType );	
         
         // This is the case that the page is a content page or an index-content page. 

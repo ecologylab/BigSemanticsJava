@@ -8,7 +8,6 @@ import ecologylab.semantics.documentparsers.SearchParser;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.metametadata.SearchEngine;
 import ecologylab.semantics.model.text.InterestModel;
-import ecologylab.semantics.old.InfoCollector;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.simpl_inherit;
 

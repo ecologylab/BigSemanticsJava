@@ -52,31 +52,6 @@ extends ContainerParser implements SemanticsPrefs
 		italic	= on;
 	}
 
-	/**
-	 * If we are collecting media, then try creating an ImgElement,
-	 * and adding it to collections.
-	 **/
-	protected void newImg(ParsedURL parsedURL, String alt, int width,
-			int height, boolean isMap) 
-	{
-		int mimeIndex = parsedURL.mediaMimeIndex();
-
-		switch( ImageFeatures.designRole(width, height, mimeIndex, isMap))
-		{
-		case ImageFeatures.INFORMATIVE:
-		case ImageFeatures.UNKNOWN:
-			Image image	= new Image(parsedURL);
-			image.setWidth(width);
-			image.setHeight(height);
-			Document sourceDocument = getDocument();
-			image.constructClippingCandidate(sourceDocument, outlink, alt, context);
-			break;
-		case ImageFeatures.UN_INFORMATIVE:
-		default:
-			infoCollector.registerUninformativeImage(parsedURL);
-		}
-	}
-
 	protected ParsedURL buildAndFilterPurl(String urlString)
 	{
 		ParsedURL result	= buildPurl(urlString);
@@ -112,51 +87,51 @@ extends ContainerParser implements SemanticsPrefs
 	}
 
 	/**
-	 * Add to collections if its accept-able -- in our web space.
+	 * add an image+text surrogate for this that was extracted from a different document. FIXME this
+	 * currently does the same thing as a surrogate extracted from this, but we might want to make a
+	 * special collection for these "anchor surrogates".
 	 */
-	protected void processHref(ParsedURL hrefPurl) 
+	public void newAnchorImgTxt(ImgElement imgNode, ParsedURL anchorHref)
 	{
-		if (!isAd(hrefPurl))
-		{
-			if (hrefPurl.isImg())
-				newImg(hrefPurl, null, 0 , 0, false);
-			else 
-			{
-				Document hrefDocument	= infoCollector.getOrConstructDocument(hrefPurl);
-				getDocument().addCandidateOutlink(hrefDocument);
-			}
-		}
+		newImgTxt(imgNode, anchorHref);
 	}
-
 	/**
 	 * create image and text surrogates for this HTML document, and add these surrogates into the
 	 * localCollection in Container.
 	 */
 	public Image newImgTxt(ImgElement imgNode, ParsedURL anchorHref)
 	{
-		String alt	= imgNode.getAlt();
-		int width		= imgNode.getWidth();
-		int height	= imgNode.getHeight();
-		boolean isMap 		= imgNode.isMap();
-
 		ParsedURL srcPurl = imgNode.getSrc();
-
-		if (anchorHref != null)
-			processHref(anchorHref);
 
 		Image result			= null;
 		if (srcPurl != null)
 		{
-			String textContext = imgNode.getTextContext();
+			int width			= imgNode.getWidth();
+			int height		= imgNode.getHeight();
+			int mimeIndex	= srcPurl.mediaMimeIndex();
+			boolean isMap = imgNode.isMap();
 
-			if (alt != null)
-				alt = alt.trim();
-			
-			result						= infoCollector.getOrConstructImage(srcPurl);
-			Document outlink	= infoCollector.getOrConstructDocument(anchorHref);
-			result.constructClippingCandidate(getDocument(), outlink, imgNode.getAlt(), imgNode.getTextContext());
+			switch (ImageFeatures.designRole(width, height, mimeIndex, isMap))
+			{
+			case ImageFeatures.INFORMATIVE:
+			case ImageFeatures.UNKNOWN:
+				String alt	= imgNode.getAlt();
+
+				if (alt != null)
+					alt = alt.trim();
+				
+				result						= infoCollector.getOrConstructImage(srcPurl);
+				result.setWidth(width);
+				result.setHeight(height);
+				
+				Document outlink	= infoCollector.getOrConstructDocument(anchorHref);
+				result.constructClippingCandidate(getDocument(), outlink, alt, imgNode.getTextContext());
+				break;
+			case ImageFeatures.UN_INFORMATIVE:
+			default:
+				infoCollector.registerUninformativeImage(srcPurl);
+			}
 		}
-
 		return result;
 	}
 	

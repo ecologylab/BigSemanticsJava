@@ -16,7 +16,6 @@ import ecologylab.semantics.connectors.NewInfoCollector;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
-import ecologylab.semantics.old.InfoCollector;
 import ecologylab.semantics.seeding.Seed;
 
 /**
@@ -318,7 +317,7 @@ abstract public class DocumentParser
 	 * @return an instance of the DocumentType subclass that corresponds to documentTypeSimpleName.
 	 */
 	public static DocumentParser getInstanceBySimpleName ( String documentTypeSimpleName,
-			InfoCollector infoCollector )
+			NewInfoCollector infoCollector )
 	{
 		return getInstanceFromRegistry(registryByClassName, documentTypeSimpleName, infoCollector);
 	}
@@ -327,8 +326,6 @@ abstract public class DocumentParser
 	{
 		return registryByMimeType.containsKey(mimeType);
 	}
-
-//	static final Class[]	DEFAULT_INFO_COLLECTOR_CLASS_ARG	= {InfoCollector.class};
 	
 	static final Class[]  DEFAULT_DOCUMENTPARSER_ARG        = {NewInfoCollector.class};
 	/**
@@ -344,7 +341,7 @@ abstract public class DocumentParser
 	 *         specified registry.
 	 */
 	public static DocumentParser getInstanceFromRegistry (
-			Scope<Class<? extends DocumentParser>> thatRegistry, String key, InfoCollector infoCollector )
+			Scope<Class<? extends DocumentParser>> thatRegistry, String key, NewInfoCollector infoCollector )
 	{
 		DocumentParser result = null;
 		Class<? extends DocumentParser> documentTypeClass = thatRegistry.get(key);
@@ -352,9 +349,7 @@ abstract public class DocumentParser
 		Object[] constructorArgs = new Object[1];
 		constructorArgs[0] = infoCollector;
 
-		result = ReflectionTools.getInstance(documentTypeClass, infoCollector.getMyClassArg(), constructorArgs);
-		if (result == null)
-			result = ReflectionTools.getInstance(documentTypeClass, DEFAULT_DOCUMENTPARSER_ARG, constructorArgs);
+		result = ReflectionTools.getInstance(documentTypeClass, DEFAULT_DOCUMENTPARSER_ARG, constructorArgs);
 //		if (result == null)
 //			throw new RuntimeException("Registry lookup worked, but constructor matching failed :-( :-( :-(");
 		return result;

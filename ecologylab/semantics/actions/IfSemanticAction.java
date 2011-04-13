@@ -3,9 +3,8 @@
  */
 package ecologylab.semantics.actions;
 
-import ecologylab.semantics.old.InfoCollector;
-import ecologylab.serialization.ElementState.xml_tag;
 import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.ElementState.xml_tag;
 
 /**
  * THE IF statement

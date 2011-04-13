@@ -45,9 +45,6 @@ implements TidyInterface, HTMLAttributeNames
 	{
 		super(infoCollector);
 	}
-	
-	boolean indexPage = false;
-	boolean contentPage = false;
 	HashMap<TdNode, String> tdNodeAnchorContextStringCache;
 //	@Override
 //	public void parse() 
@@ -338,28 +335,6 @@ implements TidyInterface, HTMLAttributeNames
   	return result;
   }
   
-	public void setContent ( )
-	{
-		contentPage = true;		
-	}
-
-	public void setIndexPage ( )
-	{
-		indexPage = true;
-	}
-
-	@Override
-	public boolean isIndexPage ( )
-	{
-		return indexPage;
-	}
-
-	@Override
-	public boolean isContentPage ( )
-	{
-		return contentPage;
-	}
-
 	@Override
 	public void recycle()
 	{

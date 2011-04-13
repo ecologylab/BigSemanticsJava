@@ -5,9 +5,8 @@ import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.LinkWith;
 import ecologylab.semantics.metametadata.MetaMetadata;
-import ecologylab.semantics.old.OldContainerI;
-import ecologylab.serialization.ElementState.xml_tag;
 import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.ElementState.xml_tag;
 
 @simpl_inherit
 @xml_tag(SemanticActionStandardMethods.GET_LINKED_METADATA)

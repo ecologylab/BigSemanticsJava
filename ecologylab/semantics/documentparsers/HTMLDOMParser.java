@@ -11,20 +11,16 @@ import ecologylab.generic.HashMapArrayList;
 import ecologylab.generic.StringTools;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.connectors.NewInfoCollector;
-import ecologylab.semantics.html.ImgElement;
 import ecologylab.semantics.html.ParagraphText;
+import ecologylab.semantics.html.TidyInterface;
 import ecologylab.semantics.html.documentstructure.AnchorContext;
 import ecologylab.semantics.html.documentstructure.LinkType;
 import ecologylab.semantics.html.documentstructure.RecognizedDocumentStructure;
 import ecologylab.semantics.html.documentstructure.SemanticAnchor;
-import ecologylab.semantics.html.documentstructure.SemanticInLinks;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.Image;
 import ecologylab.semantics.metadata.builtins.TextClipping;
-import ecologylab.semantics.metametadata.MetaMetadata;
-import ecologylab.semantics.metametadata.MetaMetadataRepository;
-import ecologylab.semantics.old.OldContainerI;
 import ecologylab.serialization.XMLTools;
 
 /**
@@ -35,6 +31,7 @@ import ecologylab.serialization.XMLTools;
  */
 public class HTMLDOMParser
 		extends HTMLParserCommon
+		implements TidyInterface
 {
 
 	/**
@@ -43,6 +40,10 @@ public class HTMLDOMParser
 	private org.w3c.dom.Document	dom;
 
 	protected Tidy								tidy	= new Tidy();
+
+	
+	boolean indexPage = false;
+	boolean contentPage = false;
 
 	public HTMLDOMParser(NewInfoCollector infoCollector)
 	{
@@ -167,16 +168,6 @@ public class HTMLDOMParser
 	}
 
 	/**
-	 * add an image+text surrogate for this that was extracted from a different document. FIXME this
-	 * currently does the same thing as a surrogate extracted from this, but we might want to make a
-	 * special collection for these "anchor surrogates".
-	 */
-	public void newAnchorImgTxt(ImgElement imgNode, ParsedURL anchorHref)
-	{
-		newImgTxt(imgNode, anchorHref);
-	}
-
-	/**
 	 * For each anchorContext: create purl and check to see Aggregates AnchorContext by their
 	 * destination hrefs. sets the metadata creates a container adds an outlink from the ancestor
 	 * 
@@ -267,5 +258,35 @@ public class HTMLDOMParser
 		else
 			return textContext;
 	}
+	@Override
+	public void setContent ( )
+	{
+		contentPage = true;		
+	}
+
+	@Override
+	public void setIndexPage ( )
+	{
+		indexPage = true;
+	}
+
+	@Override
+	public boolean isIndexPage ( )
+	{
+		return indexPage;
+	}
+
+	@Override
+	public boolean isContentPage ( )
+	{
+		return contentPage;
+	}
+
+	@Override
+	public void removeTheContainerFromCandidates(ParsedURL containerPURL)
+	{
+		warning("Not Implemented: removeTheContainerFromCandidates(" + containerPURL);
+	}
+
 
 }

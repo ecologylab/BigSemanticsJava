@@ -1,7 +1,6 @@
 package ecologylab.semantics.html;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import org.w3c.tidy.TdNode;
 
@@ -29,8 +28,6 @@ public interface TidyInterface
 	
 	public void closeHref();
 	
-	public Image newImgTxt(ImgElement imgNode, ParsedURL anchorHref);
-	
 	//TODO -- take a BtringBuilder instead of a String. and use if efficiently!!!!!!
 	public void newTxt(ParagraphText paraText);
 	
@@ -45,6 +42,8 @@ public interface TidyInterface
 	 * @param anchorHref
 	 */
 	public void newAnchorImgTxt(ImgElement imgNode, ParsedURL anchorHref);
+	
+	public Image newImgTxt(ImgElement imgNode, ParsedURL anchorHref);
 
 	public void setIndexPage ( );
 

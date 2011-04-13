@@ -1,7 +1,7 @@
 package ecologylab.semantics.model.image;
 
 import ecologylab.collections.WeightingStrategy;
-import ecologylab.semantics.old.AbstractImgElement;
+import ecologylab.semantics.metadata.builtins.ImageClosure;
 
 /**
  * This strategy uses mediaWeight from AbstractImgElement to sort all the elements in the set.
@@ -10,13 +10,13 @@ import ecologylab.semantics.old.AbstractImgElement;
  *
  * @param <E>
  */
-public class ImageWeightingStrategy<E extends AbstractImgElement> extends WeightingStrategy<E>
+public class ImageWeightingStrategy extends WeightingStrategy<ImageClosure>
 {
 
 	@Override
-	public double getWeight(E e)
+	public double getWeight(ImageClosure e)
 	{
-		return e.mediaWeight();
+		throw new RuntimeException("Not implemented.");
 	}
 
 }
