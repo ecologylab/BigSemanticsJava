@@ -20,7 +20,11 @@ import ecologylab.serialization.SIMPLTranslationException;
 public class NewMmTest extends Debug
 implements DispatchTarget<DocumentClosure>
 {
-
+	int numResults;
+	int currentResult;
+	
+	StringBuilder outputBuffy	= new StringBuilder(1024);
+	
 	/**
 	 * 
 	 */
@@ -31,9 +35,8 @@ implements DispatchTarget<DocumentClosure>
 
 	public void collect(String[] urlStrings)
 	{
-		// create the infoCollector
-//		MetaMetadataRepository repository = MetaMetadataRepository.load(new File(
-//				"../ecologylabSemantics/repository"));
+		numResults	= urlStrings.length;
+		
 		NewInfoCollector infoCollector = new NewInfoCollector(GeneratedMetadataTranslationScope.get());
 
 		// seed start urls
@@ -68,12 +71,15 @@ implements DispatchTarget<DocumentClosure>
 		Document document	= documentClosure.getDocument();
 		try
 		{
-			document.serialize(System.out);
+			document.serialize(outputBuffy);
+			outputBuffy.append("\n\n");
 		}
 		catch (SIMPLTranslationException e)
 		{
 			error("Could not serialize " + document);
 			e.printStackTrace();
 		}
+		if (++currentResult == numResults)
+			System.out.println("\n\n" + outputBuffy);
 	}
 }
