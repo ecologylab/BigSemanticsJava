@@ -3,6 +3,8 @@
  */
 package ecologylab.semantics.metametadata.test;
 
+import java.util.ArrayList;
+
 import ecologylab.concurrent.DownloadMonitor;
 import ecologylab.generic.Debug;
 import ecologylab.generic.DispatchTarget;
@@ -12,6 +14,9 @@ import ecologylab.semantics.generated.library.GeneratedMetadataTranslationScope;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
 import ecologylab.serialization.SIMPLTranslationException;
+import ecologylab.serialization.TranslationScope;
+import ecologylab.serialization.ElementState.FORMAT;
+import ecologylab.serialization.TranslationScope.GRAPH_SWITCH;
 
 /**
  * @author andruid
@@ -20,10 +25,9 @@ import ecologylab.serialization.SIMPLTranslationException;
 public class NewMmTest extends Debug
 implements DispatchTarget<DocumentClosure>
 {
-	int numResults;
+	ArrayList<DocumentClosure>	documentCollection	= new ArrayList<DocumentClosure>();
+
 	int currentResult;
-	
-	StringBuilder outputBuffy	= new StringBuilder(1024);
 	
 	/**
 	 * 
@@ -35,12 +39,9 @@ implements DispatchTarget<DocumentClosure>
 
 	public void collect(String[] urlStrings)
 	{
-		numResults	= urlStrings.length;
-		
 		NewInfoCollector infoCollector = new NewInfoCollector(GeneratedMetadataTranslationScope.get());
-
+		
 		// seed start urls
-		DownloadMonitor downloadMonitor	= null;
 		for (int i = 0; i < urlStrings.length; i++)
 		{
 			if ("//".equals(urlStrings[i]))
@@ -50,7 +51,15 @@ implements DispatchTarget<DocumentClosure>
 			}
 			ParsedURL thatPurl	= ParsedURL.getAbsolute(urlStrings[i]);
 			Document document		= infoCollector.getOrConstructDocument(thatPurl);
-			DocumentClosure documentClosure	= document.getOrConstructClosure();
+			DocumentClosure documentClosure = document.getOrConstructClosure();
+			if (documentClosure != null)	// super defensive -- make sure its not malformed or null or otherwise a mess
+				documentCollection.add(documentClosure);
+		}
+
+		DownloadMonitor downloadMonitor	= null;
+		// process documents after parsing command line so we now how many are really coming
+		for (DocumentClosure documentClosure: documentCollection)
+		{
 			documentClosure.setDispatchTarget(this);
 			if (downloadMonitor == null)
 				downloadMonitor		= documentClosure.downloadMonitor();
@@ -61,25 +70,31 @@ implements DispatchTarget<DocumentClosure>
 
 	public static void main(String[] args)
 	{
+		TranslationScope.graphSwitch	= GRAPH_SWITCH.ON;
 		NewMmTest mmTest	= new NewMmTest();
 		mmTest.collect(args);
 	}
 	
 	@Override
-	public void delivery(DocumentClosure documentClosure)
+	public void delivery(DocumentClosure incomingClosure)
 	{
-		Document document	= documentClosure.getDocument();
-		try
+		if (++currentResult == documentCollection.size())
 		{
-			document.serialize(outputBuffy);
-			outputBuffy.append("\n\n");
+			System.out.println("\n\n");
+			for (DocumentClosure documentClosure : documentCollection)
+			{
+				Document document	= documentClosure.getDocument();
+				try
+				{
+					document.serialize(System.out, FORMAT.XML);
+					System.out.println("\n");
+				}
+				catch (SIMPLTranslationException e)
+				{
+					error("Could not serialize " + document);
+					e.printStackTrace();
+				}
+			}
 		}
-		catch (SIMPLTranslationException e)
-		{
-			error("Could not serialize " + document);
-			e.printStackTrace();
-		}
-		if (++currentResult == numResults)
-			System.out.println("\n\n" + outputBuffy);
 	}
 }
