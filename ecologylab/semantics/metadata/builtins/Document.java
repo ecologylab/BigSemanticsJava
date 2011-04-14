@@ -57,7 +57,7 @@ implements DispatchTarget<ImageClosure>
 	private MetadataString					query;
 	
 	@simpl_collection("additional_location")
-	Vector<ParsedURL> 						additionalLocations;
+	ArrayList<ParsedURL> 						additionalLocations;
 
 	/**
 	 * For debugging. Type of the structure recognized by information extraction.
@@ -70,10 +70,6 @@ implements DispatchTarget<ImageClosure>
 	private DocumentClosure					documentClosure;
 	
 	SemanticInLinks									semanticInlinks;
-	
-//	ArrayList<ImageClipping>				imageClippings;
-//	
-//	ArrayList<TextClipping>					textClippings;
 	
 	/**
 	 * Seed object associated with this, if this is a seed.
@@ -100,6 +96,13 @@ implements DispatchTarget<ImageClosure>
 	 */
 	private GenericWeightSet<TextClipping>	candidateTextClippings;
 	
+	
+	@simpl_collection("image")
+	ArrayList<Image>								clippedImages;
+
+	@simpl_collection("text_clipping")
+	ArrayList<TextClipping>					textClippings;
+
 	private WeightSet<DocumentClosure>			candidateLocalOutlinks;
 	
 	SemanticsSite										site;
@@ -331,7 +334,7 @@ implements DispatchTarget<ImageClosure>
 
 	public ParsedURL getLocation()
 	{
-		return location().getValue();
+		return location == null ? null : location().getValue();
 	}
 
 	/**
@@ -978,7 +981,7 @@ implements DispatchTarget<ImageClosure>
 	public void addAdditionalLocation(ParsedURL newPurl)
 	{
 		if (additionalLocations == null)
-			additionalLocations	= new Vector<ParsedURL>(3);
+			additionalLocations	= new ArrayList<ParsedURL>(3);
 		additionalLocations.add(newPurl);
 	}
 	
@@ -1113,4 +1116,28 @@ implements DispatchTarget<ImageClosure>
 		semanticInlinks.recycle();
 		semanticInlinks	= null;
 	}
+	
+	@Override
+	protected void serializationPreHook()
+	{
+		if (clippedImages == null && candidateImageClosures != null && candidateImageClosures.size() > 0)
+		{
+			clippedImages	= new ArrayList<Image>(candidateImageClosures.size());
+			for (ImageClosure ic : candidateImageClosures)
+				clippedImages.add(ic.getDocument());
+		}
+		if (textClippings == null && candidateTextClippings != null && candidateTextClippings.size() > 0)
+		{
+			textClippings	= new ArrayList<TextClipping>(candidateTextClippings.size());
+			for (GenericElement<TextClipping>	textClippingGE  : candidateTextClippings)
+				textClippings.add(textClippingGE.getGeneric());
+		}
+	}
+	
+	@Override
+	public String toString()
+	{
+		return super.toString() + "[" + getLocation() + "]";
+	}
+
 }

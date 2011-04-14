@@ -6,12 +6,14 @@ package ecologylab.semantics.metadata.builtins;
 import ecologylab.semantics.html.documentstructure.ImageFeatures;
 import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.semantics.tools.MetaMetadataCompilerUtils;
+import ecologylab.serialization.simpl_inherit;
 import ecologylab.serialization.ElementState.simpl_scope;
 
 /**
  * @author andruid
  *
  */
+@simpl_inherit
 public class MediaClipping<ME extends Document> extends Clipping
 {
 	/**

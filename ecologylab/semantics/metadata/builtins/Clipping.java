@@ -89,7 +89,14 @@ public class Clipping extends Metadata
 	{
 		super(metaMetadata);
 	}
-
+	
+	@Override
+	protected void serializationPreHook()
+	{
+		if (outlinkClosure != null && !outlinkClosure.isRecycled())
+			outlink	= outlinkClosure.getDocument();
+	}
+	
 	public MetadataString context()
 	{
 		MetadataString result = this.context;

@@ -155,6 +155,7 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DC>
 			} catch (SocketTimeoutException e)
 			{
 				document.getSite().incrementNumTimeouts();
+				downloadStatus	= DownloadStatus.IOERROR;
 			}
 		}
 	}
@@ -165,7 +166,7 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DC>
 	 *  If that works, use the DocumentType to parse the PURLConnection's InputStream,
 	 *  or for FileDirectoryType, just the thing itself.
 	 */
-	private void downloadAndParse()
+	protected void downloadAndParse()
 	throws IOException
 	{
 		if (recycled() || document.isRecycled())
@@ -627,7 +628,7 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DC>
 	{
 		return isDnd;
 	}
-	protected DownloadMonitor<DC> downloadMonitor()
+	public DownloadMonitor<DC> downloadMonitor()
 	{
 		// GoogleSearch, SearchResults are all seeds
 		return (DownloadMonitor<DC>) (isDnd ? NewInfoCollector.DND_DOWNLOAD_MONITOR : 
@@ -785,4 +786,9 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DC>
 		this.documentParser = presetDocumentParser;
 	}
 
+	@Override
+	public String toString()
+	{
+		return super.toString() + "[" + document.getLocation() + "]";
+	}
 }

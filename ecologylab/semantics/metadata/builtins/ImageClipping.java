@@ -5,11 +5,14 @@ package ecologylab.semantics.metadata.builtins;
 
 import java.awt.image.BufferedImage;
 
+import ecologylab.serialization.simpl_inherit;
+
 
 /**
  * @author andruid
  *
  */
+@simpl_inherit
 public class ImageClipping extends MediaClipping<Image>
 {
 	public ImageClipping()

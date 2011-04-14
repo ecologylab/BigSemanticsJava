@@ -106,16 +106,20 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 	boolean																							collectCandidatesInPools;
 
 
-	public boolean isCollectCandidatesInPools()
+	public NewInfoCollector(TranslationScope metadataTranslationScope)
 	{
-		return collectCandidatesInPools;
+		this(META_METADATA_REPOSITORY, metadataTranslationScope);
 	}
-
 	public NewInfoCollector(MetaMetadataRepository metaMetadataRepository, TranslationScope metadataTranslationScope)
 	{
 		this(metaMetadataRepository, metadataTranslationScope, new Scope(), false);
 	}
 
+	public NewInfoCollector(TranslationScope metadataTranslationScope, 
+			Scope sessionScope, boolean collectCandidatesInPools)
+	{
+		this(META_METADATA_REPOSITORY, metadataTranslationScope, sessionScope, collectCandidatesInPools);
+	}
 	public NewInfoCollector(MetaMetadataRepository metaMetadataRepository, TranslationScope metadataTranslationScope, 
 			Scope sessionScope, boolean collectCandidatesInPools)
 	{
@@ -323,11 +327,6 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 	static final String	META_METADATA_REPOSITORY_DIR		= "repository";
 
 
-	/**
-	 * This is the xml file defining ALL the metaMetadata required
-	 * It resides in the ecologylabSemantics project.
-	 */
-	public static final String	METAMETADATA_REPOSITORY				= "repository";
 	public static final String 	SEMANTICS											= "semantics/";
 	
 	/**
@@ -1284,6 +1283,12 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 	{
 		return seedSet.seedDistributer(this);
 	}
+	
+	public boolean isCollectCandidatesInPools()
+	{
+		return collectCandidatesInPools;
+	}
+
 	
 
 }
