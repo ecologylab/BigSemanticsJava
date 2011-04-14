@@ -100,6 +100,8 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 	GuiBridge																						guiBridge;
 	
 	boolean																							collectCandidatesInPools;
+	
+	boolean																							acceptAll;
 
 
 	public NewInfoCollector(TranslationScope metaMetadataTranslations)
@@ -111,12 +113,13 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 		this(metadataTranslationScope, new Scope(), false);
 	}
 
-	public NewInfoCollector(TranslationScope metadataTranslationScope, Scope sessionScope, boolean collectCandidatesInPools)
+	public NewInfoCollector(TranslationScope metadataTranslationScope, Scope sessionScope, boolean collectCandidatesInPoolsButDontAcceptAll)
 	{
 		super(metadataTranslationScope);
 		this.sessionScope									= sessionScope;
 		sessionScope.put(SemanticsSessionObjectNames.INFO_COLLECTOR, this);
-		this.collectCandidatesInPools			= collectCandidatesInPools;
+		this.collectCandidatesInPools			= collectCandidatesInPoolsButDontAcceptAll;
+		this.acceptAll										= !collectCandidatesInPoolsButDontAcceptAll;
 		
 		TermVector piv 										= InterestModel.getPIV(); 
 		piv.addObserver(this);
@@ -585,6 +588,9 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 	 */
 	public boolean accept(ParsedURL purl)
 	{
+		if (acceptAll)
+			return true;
+		
 		boolean result	= !(purl.url().getProtocol().equals("https://"));
 		if (result)
 		{

@@ -56,8 +56,8 @@ implements DispatchTarget<ImageClosure>
 	@simpl_scalar @simpl_hints(Hint.XML_LEAF)
 	private MetadataString					query;
 	
-	@simpl_collection("additional_location")
-	ArrayList<ParsedURL> 						additionalLocations;
+	@simpl_collection("location")
+	ArrayList<MetadataParsedURL> 						additionalLocations;
 
 	/**
 	 * For debugging. Type of the structure recognized by information extraction.
@@ -990,9 +990,14 @@ implements DispatchTarget<ImageClosure>
 	
 	public void addAdditionalLocation(ParsedURL newPurl)
 	{
+		addAdditionalLocation(new MetadataParsedURL(newPurl));
+	}
+	
+	public void addAdditionalLocation(MetadataParsedURL newMPurl)
+	{
 		if (additionalLocations == null)
-			additionalLocations	= new ArrayList<ParsedURL>(3);
-		additionalLocations.add(newPurl);
+			additionalLocations	= new ArrayList<MetadataParsedURL>(3);
+		additionalLocations.add(newMPurl);
 	}
 	
 	/**
@@ -1027,8 +1032,9 @@ implements DispatchTarget<ImageClosure>
 			this.query									= oldDocument.query;
 		oldDocument.query						= null;
 		
-		if (additionalLocations != null)
-			for (ParsedURL otherLocation : additionalLocations)
+		ArrayList<MetadataParsedURL> oldAdditionalLocations = oldDocument.additionalLocations;
+		if (oldAdditionalLocations != null)
+			for (MetadataParsedURL otherLocation : oldAdditionalLocations)
 				addAdditionalLocation(otherLocation);
 		
 		//TODO -- are there other values that should be propagated?! -- can use MetadataFieldDescriptors.
@@ -1118,8 +1124,8 @@ implements DispatchTarget<ImageClosure>
 		documentLocationMap.setRecycled(getLocation());
 		if (additionalLocations != null)
 		{
-			for (ParsedURL additionalPURL : additionalLocations)
-				documentLocationMap.setRecycled(additionalPURL);
+			for (MetadataParsedURL additionalMPurl: additionalLocations)
+				documentLocationMap.setRecycled(additionalMPurl);
 		}
 	}
 

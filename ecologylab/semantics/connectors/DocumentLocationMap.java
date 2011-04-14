@@ -5,10 +5,9 @@ package ecologylab.semantics.connectors;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-import ecologylab.generic.Debug;
-import ecologylab.generic.HashMapWriteSynch;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.metadata.builtins.Document;
+import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
 import ecologylab.semantics.metametadata.MetaMetadata;
 
 /**
@@ -84,6 +83,11 @@ public class DocumentLocationMap<D extends Document> extends ConcurrentHashMap<P
 		this.put(location, mapHelper.recycledValue());
 	}
 	
+	public void setRecycled(MetadataParsedURL mPurl)
+	{
+		setRecycled(mPurl.getValue());
+	}
+	
 	public void setUndefined(ParsedURL location)
 	{
 		this.put(location, mapHelper.undefinedValue());
@@ -110,7 +114,7 @@ public class DocumentLocationMap<D extends Document> extends ConcurrentHashMap<P
 	{
 		put(location, (D) newDocument);
 		ParsedURL newDocumentLocation = newDocument.getLocation();
-		if (newDocumentLocation != null && newDocumentLocation != location)
+		if (!location.equals(newDocumentLocation))
 			put(newDocumentLocation, (D) newDocument);	// just to make sure
 	}
 /**

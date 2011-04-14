@@ -285,7 +285,7 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DC>
 				DocumentLocationMap<? extends Document>	documentLocationMap	= document.getDocumentLocationMap();
 				ParsedURL connectionPURL	= new ParsedURL(connectionURL);
 				hadRedirect = true;
-				displayStatus("redirecting: " + originalPURL + " > " + connectionURL);
+				displayStatus("try redirecting: " + originalPURL + " > " + connectionURL);
 				Document redirectedDocument	= documentLocationMap.get(connectionPURL); // documentLocationMap.getOrCreate(connectionPURL);
 				//TODO -- what if redirectedDocument is already in the queue or being downloaded already?
 				if (redirectedDocument != null)	// existing document
@@ -314,7 +314,7 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DC>
 
 					if (document.isAlwaysAcceptRedirect() || infoCollector.accept(connectionPURL))
 					{
-						println("redirect: " + originalPURL + " -> " + connectionPURL);
+						println("\tredirect: " + originalPURL + " -> " + connectionPURL);
 						String domain 				= connectionPURL.domain();
 						String connPURLSuffix = connectionPURL.suffix();
 						// add entry to GlobalCollections containersHash
