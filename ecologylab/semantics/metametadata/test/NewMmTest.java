@@ -29,7 +29,7 @@ implements DispatchTarget<DocumentClosure>
 		// TODO Auto-generated constructor stub
 	}
 
-	public void collect(String[] urls)
+	public void collect(String[] urlStrings)
 	{
 		// create the infoCollector
 //		MetaMetadataRepository repository = MetaMetadataRepository.load(new File(
@@ -38,14 +38,14 @@ implements DispatchTarget<DocumentClosure>
 
 		// seed start urls
 		DownloadMonitor downloadMonitor	= null;
-		for (int i = 0; i < urls.length; i++)
+		for (int i = 0; i < urlStrings.length; i++)
 		{
-			if ("//".equals(urls[i]))
+			if ("//".equals(urlStrings[i]))
 			{
 				System.err.println("Terminate due to //");
 				break;
 			}
-			ParsedURL thatPurl	= ParsedURL.getAbsolute(urls[i]);
+			ParsedURL thatPurl	= ParsedURL.getAbsolute(urlStrings[i]);
 			Document document		= infoCollector.getOrConstructDocument(thatPurl);
 			DocumentClosure documentClosure	= document.getOrConstructClosure();
 			documentClosure.setDispatchTarget(this);
@@ -59,7 +59,7 @@ implements DispatchTarget<DocumentClosure>
 	public static void main(String[] args)
 	{
 		NewMmTest mmTest	= new NewMmTest();
-		
+		mmTest.collect(args);
 	}
 	
 	@Override
