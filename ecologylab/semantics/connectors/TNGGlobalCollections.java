@@ -3,18 +3,18 @@
  */
 package ecologylab.semantics.connectors;
 
-import ecologylab.generic.Debug;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.Image;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
+import ecologylab.serialization.TranslationScope;
 
 /**
  * @author andruid
  *
  */
-public class TNGGlobalCollections extends Debug
+public class TNGGlobalCollections extends MetaMetadataRepositoryInit
 {
 	final DocumentLocationMap<Document>		allDocuments;
 	final DocumentLocationMap<Image>			allImages;
@@ -24,10 +24,13 @@ public class TNGGlobalCollections extends Debug
 	static public final Image 		UN_INFORMATIVE_IMAGE = new Image(ParsedURL.getAbsolute("http://uninformative.image"));
 
 	/**
+	 * @param metaMetadataTranslations TODO
 	 * 
 	 */
-	public TNGGlobalCollections(final MetaMetadataRepository repository)
+	public TNGGlobalCollections(TranslationScope metaMetadataTranslations)
 	{
+		super(metaMetadataTranslations);
+		
 		allDocuments	= new DocumentLocationMap<Document>(
 				new DocumentMapHelper<Document>()
 				{
@@ -35,7 +38,7 @@ public class TNGGlobalCollections extends Debug
 					@Override
 					public Document constructValue(ParsedURL key)
 					{
-						return repository.constructDocument(key);
+						return getMetaMetadataRepository().constructDocument(key);
 					}
 
 					@Override
@@ -64,7 +67,7 @@ public class TNGGlobalCollections extends Debug
 					@Override
 					public Image constructValue(ParsedURL key)
 					{
-						return repository.constructImage(key);
+						return getMetaMetadataRepository().constructImage(key);
 					}
 
 					@Override
@@ -96,14 +99,6 @@ public class TNGGlobalCollections extends Debug
 	public DocumentLocationMap<? extends Image> getGlobalImageMap()
 	{
 		return allImages;
-	}
-	public Document getOrConstructDocument(ParsedURL location)
-	{
-		return location == null ? null : allDocuments.getOrConstruct(location);
-	}
-	public Image getOrConstructImage(ParsedURL location)
-	{
-		return location == null ? null : allImages.getOrConstruct(location);
 	}
 	
 	public void registerUninformativeImage(ParsedURL key)

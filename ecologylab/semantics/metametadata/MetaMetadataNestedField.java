@@ -252,6 +252,11 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 				MetaMetadata mmd = (MetaMetadata) this;
 				String superMmdName = mmd.getSuperMmdTypeName();
 				MetaMetadata superMmd = getRepository().getByTagName(superMmdName);
+				if (superMmd == null)
+				{
+					error(mmd + " specifies " + superMmdName + " as parent, but no meta-metadata for this type has been declared.");
+					return null;
+				}
 				return superMmd.searchForChild(name);
 			}
 			else

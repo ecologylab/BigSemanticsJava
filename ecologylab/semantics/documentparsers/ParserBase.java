@@ -711,8 +711,7 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 		Document newDocument = null;
 		try
 		{
-			newDocument = (Document) infoCollector.getMetadataTranslationScope()
-					.deserialize(purlConnection, this);
+			newDocument = (Document) infoCollector.getMetadataTranslationScope().deserialize(purlConnection, this);
 			newDocument.serialize(System.out);
 			documentClosure.changeDocument(newDocument);
 

@@ -6,7 +6,6 @@ package ecologylab.semantics.metadata.builtins;
  **/
 
 import java.util.ArrayList;
-import java.util.Vector;
 
 import ecologylab.collections.GenericElement;
 import ecologylab.collections.GenericWeightSet;
@@ -16,6 +15,7 @@ import ecologylab.net.ParsedURL;
 import ecologylab.semantics.connectors.ContainerWeightingStrategy;
 import ecologylab.semantics.connectors.DocumentLocationMap;
 import ecologylab.semantics.connectors.DownloadStatus;
+import ecologylab.semantics.connectors.MetadataElement;
 import ecologylab.semantics.connectors.NewInfoCollector;
 import ecologylab.semantics.connectors.SemanticsSite;
 import ecologylab.semantics.documentparsers.DocumentParser;
@@ -97,9 +97,11 @@ implements DispatchTarget<ImageClosure>
 	private GenericWeightSet<TextClipping>	candidateTextClippings;
 	
 	
+	@mm_name("clipped_images") 
 	@simpl_collection("image")
 	ArrayList<Image>								clippedImages;
 
+	@mm_name("text_clippings") 
 	@simpl_collection("text_clipping")
 	ArrayList<TextClipping>					textClippings;
 
@@ -946,7 +948,15 @@ implements DispatchTarget<ImageClosure>
 		if (!isJustCrawl())
 		{
 			if (candidateTextClippings == null)
-				candidateTextClippings	=  new GenericWeightSet<TextClipping>(new TermVectorWeightStrategy(InterestModel.getPIV()));
+				candidateTextClippings	=  new GenericWeightSet<TextClipping>(new TermVectorWeightStrategy(InterestModel.getPIV()))
+				{
+					@Override
+					public boolean insert(TextClipping go)
+					{
+						return insert(new MetadataElement<TextClipping>(go));
+					}
+
+				};
 			candidateTextClippings.insert(textClipping);
 		}
 	}
@@ -991,8 +1001,12 @@ implements DispatchTarget<ImageClosure>
 	 */
 	public void inheritValues(Document oldDocument)
 	{
-		getDocumentLocationMap().remap(oldDocument, this);
-		
+		oldDocument.getDocumentLocationMap().remap(oldDocument, this);
+		if (location == null)
+		{
+			location									= oldDocument.location;
+			oldDocument.location			= null;
+		}
 		this.infoCollector					= oldDocument.infoCollector;
 		SemanticInLinks oldInlinks	= oldDocument.semanticInlinks;
 		if (semanticInlinks == null || semanticInlinks.size() == 0)
@@ -1113,8 +1127,11 @@ implements DispatchTarget<ImageClosure>
 	public void recycle()
 	{
 		super.recycle();
-		semanticInlinks.recycle();
-		semanticInlinks	= null;
+		if (semanticInlinks != null)
+		{
+			semanticInlinks.recycle();
+			semanticInlinks	= null;
+		}
 	}
 	
 	@Override

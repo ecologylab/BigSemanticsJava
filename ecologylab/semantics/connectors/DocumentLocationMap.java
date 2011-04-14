@@ -109,7 +109,9 @@ public class DocumentLocationMap<D extends Document> extends ConcurrentHashMap<P
 	public void remap(ParsedURL location, Document newDocument)
 	{
 		put(location, (D) newDocument);
-		put(newDocument.getLocation(), (D) newDocument);	// just to make sure
+		ParsedURL newDocumentLocation = newDocument.getLocation();
+		if (newDocumentLocation != null && newDocumentLocation != location)
+			put(newDocumentLocation, (D) newDocument);	// just to make sure
 	}
 /**
  * Change the mapped Document of reference for location to document.

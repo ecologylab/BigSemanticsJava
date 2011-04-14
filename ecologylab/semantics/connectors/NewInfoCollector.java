@@ -99,33 +99,21 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 	
 	GuiBridge																						guiBridge;
 	
-	MetaMetadataRepository															metaMetadataRepository;
-	
-	TranslationScope																		metadataTranslationScope;
-	
 	boolean																							collectCandidatesInPools;
 
 
-	public NewInfoCollector(TranslationScope metadataTranslationScope)
+	public NewInfoCollector(TranslationScope metaMetadataTranslations)
 	{
-		this(META_METADATA_REPOSITORY, metadataTranslationScope);
+		this(META_METADATA_REPOSITORY, metaMetadataTranslations);
 	}
 	public NewInfoCollector(MetaMetadataRepository metaMetadataRepository, TranslationScope metadataTranslationScope)
 	{
-		this(metaMetadataRepository, metadataTranslationScope, new Scope(), false);
+		this(metadataTranslationScope, new Scope(), false);
 	}
 
-	public NewInfoCollector(TranslationScope metadataTranslationScope, 
-			Scope sessionScope, boolean collectCandidatesInPools)
+	public NewInfoCollector(TranslationScope metadataTranslationScope, Scope sessionScope, boolean collectCandidatesInPools)
 	{
-		this(META_METADATA_REPOSITORY, metadataTranslationScope, sessionScope, collectCandidatesInPools);
-	}
-	public NewInfoCollector(MetaMetadataRepository metaMetadataRepository, TranslationScope metadataTranslationScope, 
-			Scope sessionScope, boolean collectCandidatesInPools)
-	{
-		super(metaMetadataRepository);
-		this.metaMetadataRepository				= metaMetadataRepository;
-		this.metadataTranslationScope			= metadataTranslationScope;
+		super(metadataTranslationScope);
 		this.sessionScope									= sessionScope;
 		sessionScope.put(SemanticsSessionObjectNames.INFO_COLLECTOR, this);
 		this.collectCandidatesInPools			= collectCandidatesInPools;
@@ -165,11 +153,6 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 		//TODO -- initialize MetaMetadataRepository
 
 	}
-	
-	public NewInfoCollector()
-	{
-		this(null, null, new Scope(), false);
-	}	
 	
 	InteractiveSpace														interactiveSpace;
 	/**
@@ -251,9 +234,6 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 	private SeedSet															seedSet;
 
 	private final Scope													sessionScope;
-	
-	protected static File												METAMETADATA_REPOSITORY_DIR_FILE;
-	protected static File												METAMETADATA_SITES_FILE;
 		
 	protected ArrayList<DownloadMonitor>				downloadMonitors							= new ArrayList<DownloadMonitor>();
 
@@ -320,45 +300,9 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 
 	protected boolean														duringSeeding;
 
-	// ++++++++++++++++++++++++++++++++++++++++ //
-	
-	static final File	LOCAL_META_METADATA_DIR_FILE		= new File(EnvironmentGeneric.codeBase().file(), "../ecologylabSemantics/");
-	
-	static final String	META_METADATA_REPOSITORY_DIR		= "repository";
-
-
-	public static final String 	SEMANTICS											= "semantics/";
-	
-	/**
-	 * 
-	 * The repository has the metaMetadatas of the document types. The repository is populated as the
-	 * documents are processed.
-	 */
-	protected static final MetaMetadataRepository		META_METADATA_REPOSITORY;
-	
-	public static final MetaMetadata								DOCUMENT_META_METADATA;
-	public static final MetaMetadata								PDF_META_METADATA;
-	public static final MetaMetadata								SEARCH_META_METADATA;
-	public static final MetaMetadata								IMAGE_META_METADATA;
-
 	public boolean 			isHeterogeneousSearchScenario = true;
-	
-	static
-	{
-		AssetsRoot mmAssetsRoot = new AssetsRoot(EnvironmentGeneric.configDir().getRelative(SEMANTICS), 
-				ApplicationEnvironment.runningInEclipse() ? Files.newFile(EnvironmentGeneric.codeBase().file(), "../ecologylabSemantics/repository") : Files.newFile(PropertiesAndDirectories.thisApplicationDir(), SEMANTICS + "/repository"));
 
-		METAMETADATA_REPOSITORY_DIR_FILE 	= Assets.getAsset(mmAssetsRoot, null, "repository", null, !USE_ASSETS_CACHE, SemanticsAssetVersions.METAMETADATA_ASSET_VERSION);
-		println("\t\t-- Reading meta_metadata from " + METAMETADATA_REPOSITORY_DIR_FILE);
-
-		META_METADATA_REPOSITORY 					= MetaMetadataRepository.load(METAMETADATA_REPOSITORY_DIR_FILE);
-		
-		DOCUMENT_META_METADATA						= META_METADATA_REPOSITORY.getByTagName(DOCUMENT_TAG);
-		PDF_META_METADATA									= META_METADATA_REPOSITORY.getByTagName(PDF_TAG);
-		SEARCH_META_METADATA							= META_METADATA_REPOSITORY.getByTagName(SEARCH_TAG);
-		IMAGE_META_METADATA								= META_METADATA_REPOSITORY.getByTagName(IMAGE_TAG);
-	}
-
+	// ++++++++++++++++++++++++++++++++++++++++ //
 
 	/**
 	 * @return Returns the Session Scope.
@@ -1205,16 +1149,6 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
   {
   	return (guiBridge != null) ? guiBridge.getAppropriateFontIndex() : -1;
   }
-  
-	public MetaMetadataRepository getMetaMetadataRepository()
-	{
-		return metaMetadataRepository;
-	}
-
-	public TranslationScope getMetadataTranslationScope()
-	{
-		return metadataTranslationScope;
-	}
 
 	public SeedPeer constructSeedPeer(Seed seed)
 	{
@@ -1289,6 +1223,21 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 		return collectCandidatesInPools;
 	}
 
-	
+	public Document getOrConstructDocument(ParsedURL location)
+	{
+		if (location == null)
+			return null;
+		Document result	= allDocuments.getOrConstruct(location);
+		result.setInfoCollector(this);
+		return result;
+	}
+	public Image getOrConstructImage(ParsedURL location)
+	{
+		if (location == null)
+			return null;
+		Image result	= allImages.getOrConstruct(location);
+		result.setInfoCollector(this);
+		return result;
+	}	
 
 }

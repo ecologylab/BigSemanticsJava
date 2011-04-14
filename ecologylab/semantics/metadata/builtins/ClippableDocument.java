@@ -3,6 +3,7 @@ package ecologylab.semantics.metadata.builtins;
 import java.util.ArrayList;
 
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.metadata.Metadata.mm_name;
 import ecologylab.semantics.metadata.scalar.MetadataInteger;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 
@@ -19,13 +20,16 @@ import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
  */
 public class ClippableDocument<ME extends Document> extends Document
 {
+	@mm_name("clippings") 
 	@simpl_collection
 	@simpl_classes(ImageClipping.class)
 	protected ArrayList<MediaClipping<ME>>	clippings;
 
+	@mm_name("width") 
 	@simpl_scalar
 	protected MetadataInteger								width;
 
+	@mm_name("height") 
 	@simpl_scalar
 	protected MetadataInteger								height;
 

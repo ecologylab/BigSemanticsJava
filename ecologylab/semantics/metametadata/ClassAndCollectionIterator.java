@@ -69,7 +69,10 @@ implements Iterator<MetadataBase>
         }
         MetadataFieldDescriptor mfd = firstNext.getMetadataFieldDescriptor();
         if (mfd == null)
+        {
         	firstNext.error("Can't find MetadataFieldDescriptor. This probably means that the MetaMetadata compiler was not run or encountered errors!");
+        	return null;
+        }
         MetadataBase md = (MetadataBase) mfd.getField().get((MetadataBase)metadata);
         currentObject = md;
         return md;

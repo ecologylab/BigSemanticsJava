@@ -45,7 +45,7 @@
 		<scalar name="local_location" hide="true" comment="Relative location of local copy of image." scalar_type="File" />
 	</meta_metadata>
 	
-	<meta_metadata name="document" extends="clippable_metadata" comment="The Document Class" parser="default" dont_generate_class="true">
+	<meta_metadata name="document" extends="metadata" comment="The Document Class" parser="default" dont_generate_class="true">
 		<selector>
 			<suffix>html</suffix>
 			<suffix>htm</suffix>
@@ -53,7 +53,6 @@
 		<scalar name="title" style="h1" layer="10.0" navigates_to="location" comment="The Title of the Document" scalar_type="String"  hint="XML_LEAF"/>
 		<scalar name="description" layer="9.0" scalar_type="String" />
 		<scalar name="location" always_show="true" layer="8.0" comment="The document's actual location." scalar_type="ParsedURL" />
-		<scalar name="generation" layer="7.0" scalar_type="Int" />
 		<scalar name="page_structure" layer="6.0" comment="For debugging. Type of the structure recognized by information extraction." scalar_type="String" />
 		<scalar name="query" layer="5.0" comment="The search query" scalar_type="String" />
 		

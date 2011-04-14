@@ -4,6 +4,7 @@
 package ecologylab.semantics.metadata.builtins;
 
 import ecologylab.semantics.metadata.Metadata;
+import ecologylab.semantics.metadata.Metadata.mm_name;
 import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.tools.MetaMetadataCompilerUtils;
@@ -42,6 +43,7 @@ public class Clipping extends Metadata
 	 */
 	@simpl_composite
 	@simpl_scope(MetaMetadataCompilerUtils.GENERATED_METADATA_TRANSLATIONS)
+	@mm_name("source") 
 	private Document				source;
 	
 	/**
@@ -49,6 +51,7 @@ public class Clipping extends Metadata
 	 */
 	@simpl_composite
 	@simpl_scope(MetaMetadataCompilerUtils.GENERATED_METADATA_TRANSLATIONS)
+	@mm_name("outlink") 
 	private Document				outlink;
 	
 	private DocumentClosure				outlinkClosure;
