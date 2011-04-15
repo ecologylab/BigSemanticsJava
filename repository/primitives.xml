@@ -57,8 +57,7 @@
 		<scalar name="query" layer="5.0" comment="The search query" scalar_type="String" />
 		
 		<collection name="additional_locations" child_scalar_type="ParsedURL"/>
-		<collection name="clipped_images" child_type="image"/>
-		<collection name="text_clippings" child_type="text_clipping"/>
+		<collection name="clippings" child_type="metadata"/>
 	</meta_metadata>
 	
 	

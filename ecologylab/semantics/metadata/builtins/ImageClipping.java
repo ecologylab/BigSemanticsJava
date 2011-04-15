@@ -21,6 +21,6 @@ public class ImageClipping extends MediaClipping<Image>
 	}
 	ImageClipping(Image clippedMedia, Document source, Document outlink, String caption, String context)
 	{
-		super(clippedMedia, source, outlink, null, null);
+		super(clippedMedia, source, outlink, caption, context);
 	}
 }

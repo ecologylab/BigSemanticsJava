@@ -114,7 +114,7 @@ public class DocumentLocationMap<D extends Document> extends ConcurrentHashMap<P
 	{
 		put(location, (D) newDocument);
 		ParsedURL newDocumentLocation = newDocument.getLocation();
-		if (!location.equals(newDocumentLocation))
+		if (newDocumentLocation != null && !location.equals(newDocumentLocation))
 			put(newDocumentLocation, (D) newDocument);	// just to make sure
 	}
 /**

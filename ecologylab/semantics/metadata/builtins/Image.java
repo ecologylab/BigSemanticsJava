@@ -128,8 +128,12 @@ implements MimeType, ImageConstants
 	}
 	public ImageClipping constructClippingCandidate(Document source, Document outlink, String caption, String context)
 	{
+		return constructClippingCandidate(source, source, outlink, caption, context);
+	}
+	public ImageClipping constructClippingCandidate(Document basis, Document source, Document outlink, String caption, String context)
+	{
 		ImageClipping result	= constructClipping(source, outlink, caption, context);
-		source.addCandidateImage(this);
+		basis.addCandidateImage(this);
 		return result;
 	}
 }

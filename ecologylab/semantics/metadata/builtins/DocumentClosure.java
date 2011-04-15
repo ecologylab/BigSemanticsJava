@@ -5,6 +5,7 @@ package ecologylab.semantics.metadata.builtins;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 
@@ -35,6 +36,8 @@ import ecologylab.semantics.seeding.QandDownloadable;
 import ecologylab.semantics.seeding.SearchResult;
 import ecologylab.semantics.seeding.Seed;
 import ecologylab.semantics.seeding.SeedDistributor;
+import ecologylab.serialization.SIMPLTranslationException;
+import ecologylab.serialization.ElementState.FORMAT;
 
 /**
  * New Container object. Mostly just a closure around Document.
@@ -790,5 +793,37 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DC>
 	public String toString()
 	{
 		return super.toString() + "[" + document.getLocation() + "]";
+	}
+	public void serialize(OutputStream stream)
+	{
+		serialize(stream, FORMAT.XML);
+	}
+	public void serialize(OutputStream stream, FORMAT format)
+	{
+		Document document	= getDocument();
+		try
+		{
+			document.serialize(stream, format);
+			System.out.println("\n");
+		}
+		catch (SIMPLTranslationException e)
+		{
+			error("Could not serialize " + document);
+			e.printStackTrace();
+		}
+	}
+	public void serialize(StringBuilder buffy)
+	{
+		Document document	= getDocument();
+		try
+		{
+			document.serialize(buffy);
+			System.out.println("\n");
+		}
+		catch (SIMPLTranslationException e)
+		{
+			error("Could not serialize " + document);
+			e.printStackTrace();
+		}
 	}
 }

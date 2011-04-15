@@ -59,7 +59,7 @@ public class ImageCollectionPage extends RecognizedDocumentStructure
 				}
 			}
 
-			ParsedURL anchorPurl = findAnchorPURLforImgNode(htmlType, imgElement);
+			ParsedURL anchorPurl = findAnchorPURL(imgElement);
 
 			// images in the image-collection pages won't have anchors
 			// If there is an anchor, it should be pointing to the bigger image.

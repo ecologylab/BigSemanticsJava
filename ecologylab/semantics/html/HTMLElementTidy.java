@@ -103,6 +103,7 @@ implements HTMLAttributeNames, ImageConstants
 			node.xpath(buffy);
 			result							= StringTools.toString(buffy);
 			this.xpath					= result;
+			buffy.setLength(0);
 			StringBuilderUtils.release(buffy);
 		}
 		return result;

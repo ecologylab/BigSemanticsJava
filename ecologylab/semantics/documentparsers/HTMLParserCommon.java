@@ -1,14 +1,12 @@
 package ecologylab.semantics.documentparsers;
 
-import java.util.HashMap;
-
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.connectors.NewInfoCollector;
 import ecologylab.semantics.html.ImgElement;
 import ecologylab.semantics.html.documentstructure.ImageFeatures;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.Image;
-import ecologylab.semantics.metametadata.MetaMetadata;
+import ecologylab.semantics.metadata.builtins.ImageClipping;
 import ecologylab.semantics.model.TextChunkBase;
 import ecologylab.semantics.model.text.utils.Filter;
 import ecologylab.semantics.seeding.SemanticsPrefs;
@@ -91,15 +89,24 @@ extends ContainerParser implements SemanticsPrefs
 	 * currently does the same thing as a surrogate extracted from this, but we might want to make a
 	 * special collection for these "anchor surrogates".
 	 */
-	public void newAnchorImgTxt(ImgElement imgNode, ParsedURL anchorHref)
+	public Image newAnchorImgTxt(ImgElement imgNode, ParsedURL anchorHref)
 	{
-		newImgTxt(imgNode, anchorHref);
+		Document outlink	= infoCollector.getOrConstructDocument(anchorHref);
+		Image result = newImgTxt(outlink, getDocument(), outlink, imgNode, anchorHref);
+		infoCollector.addImageToPool(result);
+		return result;
 	}
 	/**
 	 * create image and text surrogates for this HTML document, and add these surrogates into the
 	 * localCollection in Container.
 	 */
 	public Image newImgTxt(ImgElement imgNode, ParsedURL anchorHref)
+	{
+		Document outlink				= infoCollector.getOrConstructDocument(anchorHref);
+		Document sourceDocument = getDocument();
+		return newImgTxt(sourceDocument, sourceDocument, outlink, imgNode, anchorHref);
+	}
+	public Image newImgTxt(Document basisDocument, Document sourceDocument, Document outlink, ImgElement imgNode, ParsedURL anchorHref)
 	{
 		ParsedURL srcPurl = imgNode.getSrc();
 
@@ -124,8 +131,8 @@ extends ContainerParser implements SemanticsPrefs
 				result.setWidth(width);
 				result.setHeight(height);
 				
-				Document outlink	= infoCollector.getOrConstructDocument(anchorHref);
-				result.constructClippingCandidate(getDocument(), outlink, alt, imgNode.getTextContext());
+				ImageClipping clipping	= result.constructClippingCandidate(basisDocument, sourceDocument, outlink, alt, imgNode.getTextContext());
+				clipping.setXpath(imgNode.xpath());
 				break;
 			case ImageFeatures.UN_INFORMATIVE:
 			default:
@@ -135,10 +142,10 @@ extends ContainerParser implements SemanticsPrefs
 		return result;
 	}
 	
-	private boolean isAd ( ParsedURL hrefPurl )
+	public static boolean isAd ( ParsedURL hrefPurl )
 	{
 		String lc			= hrefPurl.lc();
-		boolean filterMatch	= !SemanticsPrefs.FILTER_OUT_ADS.value() && filter.match(lc);
+		boolean filterMatch	= SemanticsPrefs.FILTER_OUT_ADS.value() && filter.matchLc(lc);
 		return filterMatch;
 	}
 

@@ -25,33 +25,19 @@ public class ContentPage extends RecognizedDocumentStructure
 	}
 
 	/**
-	 * 1. Generate surrogates for other pages (with those image surrogates in the bottom or side of the pages)
-	 * 2. Generate Image+Text surrogate inside the ArticleMain body. 
+	 * This is the case that the page is a content page or an index-content page. 
+	 * 
+	 * 1. Generate Image+Text surrogate inside the ArticleMain body. 
+	 * 2. Generate surrogates for other pages (with those image surrogates in the bottom or side of the pages)
 	 */
 	@Override
-	public void generateSurrogates(TdNode articleMain, ArrayList<ImgElement> imgNodes, int totalTxtLeng, 
+	public void generateSurrogates(TdNode contentBody, ArrayList<ImgElement> imgNodes, int totalTxtLeng, 
 			TreeMap<Integer, ParagraphText> paraTexts, TidyInterface htmlType)
 	{
-		//FIXME -- andruid 4/7/2011 -- this is seriously wrong. i must rework soon!
-		// this, if anything, should be performed after associateImageTextSurrogate, and should act only on 
-		// the images not processed there!
-		
-        recognizeImgSurrogateForOtherPages( imgNodes, totalTxtLeng, htmlType );	
-        
-        // This is the case that the page is a content page or an index-content page. 
-        if( (articleMain!=null) && (articleMain.parent()!=null) /*&& (!articleMain.parent().equals(document))*/ )
-        {
-       		// Recursively add images inside the articleMain DOM into the imgNodes HashMap.
-       		findImgsInContentBodySubTree(articleMain.parent());
-       		associateImageTextSurrogate(htmlType, articleMain, paraTexts);
-       		htmlType.setContent();
-        }
-        else
-        {
-        	warning("Content Body but no parent, so not forming image-text surrogates.");
-        }
-	}
-	
+		findImgsInContentBodySubTree(contentBody.parent(), imgNodes); 
+		associateImageTextSurrogates(htmlType, contentBody, paraTexts);	// removes from imgNodes
+		htmlType.setContent();
 
-	
+		constructImgSurrogatesForOtherPages( imgNodes, totalTxtLeng, htmlType );	// act just on leftover img nodes
+	}
 }

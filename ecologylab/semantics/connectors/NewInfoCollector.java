@@ -688,6 +688,11 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 			guiBridge.pressPlayWhenFirstMediaArrives();
 	}
 
+	public void addImageToPool(Image image)
+	{
+		
+	}
+	
 	public boolean addDocumentToPool(Document document)
 	{
 		return addClosureToPool(document.getOrConstructClosure());

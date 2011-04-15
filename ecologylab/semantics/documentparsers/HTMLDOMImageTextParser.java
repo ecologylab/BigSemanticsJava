@@ -157,9 +157,8 @@ implements TidyInterface, HTMLAttributeNames
 	{
 		RecognizedDocumentStructure pageCategory = null;
 
-		if( contentBody!=null )
+		if ((contentBody!=null) && (contentBody.parent()!=null) /*&& (!articleMain.parent().equals(document))*/ )
 		{
-			// Content Pages
 			pageCategory = new ContentPage(purl());
 		}
 		else
@@ -170,7 +169,7 @@ implements TidyInterface, HTMLAttributeNames
 				// High probability to be an image-collection page
 				pageCategory = new ImageCollectionPage(purl());
 			}
-			else if( numImgNodes!=0 )
+			else if ( numImgNodes!=0 )
 			{
 				// Index Pages (include index-content pages)
 				//FIXME -- should also look at text only pages & especially use link ratio as a feature!!!!

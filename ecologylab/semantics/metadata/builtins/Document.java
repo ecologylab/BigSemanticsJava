@@ -97,13 +97,10 @@ implements DispatchTarget<ImageClosure>
 	private GenericWeightSet<TextClipping>	candidateTextClippings;
 	
 	
-	@mm_name("clipped_images") 
-	@simpl_collection("image")
-	ArrayList<Image>								clippedImages;
-
-	@mm_name("text_clippings") 
-	@simpl_collection("text_clipping")
-	ArrayList<TextClipping>					textClippings;
+	@mm_name("clippings") 
+	@simpl_collection
+	@simpl_classes({Image.class, TextClipping.class})
+	ArrayList<Metadata>							clippings;
 
 	private WeightSet<DocumentClosure>			candidateLocalOutlinks;
 	
@@ -1143,17 +1140,29 @@ implements DispatchTarget<ImageClosure>
 	@Override
 	protected void serializationPreHook()
 	{
-		if (clippedImages == null && candidateImageClosures != null && candidateImageClosures.size() > 0)
+		if (clippings == null)
 		{
-			clippedImages	= new ArrayList<Image>(candidateImageClosures.size());
-			for (ImageClosure ic : candidateImageClosures)
-				clippedImages.add(ic.getDocument());
-		}
-		if (textClippings == null && candidateTextClippings != null && candidateTextClippings.size() > 0)
-		{
-			textClippings	= new ArrayList<TextClipping>(candidateTextClippings.size());
-			for (GenericElement<TextClipping>	textClippingGE  : candidateTextClippings)
-				textClippings.add(textClippingGE.getGeneric());
+			int size	= 0;
+			boolean doImages	= false;
+			if  (candidateImageClosures != null)
+			{
+				size		 += candidateImageClosures.size();
+				doImages	= true;
+			}
+			if (candidateTextClippings != null)
+			{
+				size 		 += candidateTextClippings.size();
+				clippings	= new ArrayList<Metadata>(size);
+				for (GenericElement<TextClipping>	textClippingGE  : candidateTextClippings)
+					clippings.add(textClippingGE.getGeneric());
+			}
+			if (doImages)
+			{
+				if (clippings == null)
+					clippings	= new ArrayList<Metadata>(size);
+				for (ImageClosure ic : candidateImageClosures)
+					clippings.add(ic.getDocument());
+			}
 		}
 	}
 	

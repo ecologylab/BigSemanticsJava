@@ -65,7 +65,7 @@ public class ContentBodyRecognize extends OldHTMLDOMParser
 
 		if( articleMain!=null )
 		{
-			recPageType.findImgsInContentBodySubTree(articleMain.parent());
+//			recPageType.findImgsInContentBodySubTree(articleMain.parent(), imgNodes);
 			informativeImages();
 		}
 

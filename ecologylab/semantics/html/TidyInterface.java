@@ -41,7 +41,7 @@ public interface TidyInterface
 	 * @param attributesMap
 	 * @param anchorHref
 	 */
-	public void newAnchorImgTxt(ImgElement imgNode, ParsedURL anchorHref);
+	public Image newAnchorImgTxt(ImgElement imgNode, ParsedURL anchorHref);
 	
 	public Image newImgTxt(ImgElement imgNode, ParsedURL anchorHref);
 

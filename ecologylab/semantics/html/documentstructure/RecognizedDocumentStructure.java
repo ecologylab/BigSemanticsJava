@@ -13,6 +13,7 @@ import ecologylab.generic.Debug;
 import ecologylab.generic.IntSlot;
 import ecologylab.generic.StringTools;
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.documentparsers.HTMLParserCommon;
 import ecologylab.semantics.html.DOMWalkInformationTagger;
 import ecologylab.semantics.html.HTMLElementTidy;
 import ecologylab.semantics.html.ImgElement;
@@ -67,46 +68,11 @@ implements HTMLAttributeNames
 	public void generateSurrogates(TdNode articleMain, ArrayList<ImgElement> imgNodes, int totalTxtLeng, 
 			TreeMap<Integer, ParagraphText> paraTexts, TidyInterface htmlType)
 	{
-		recognizeImgSurrogateForOtherPages( imgNodes, totalTxtLeng, htmlType );
+		constructImgSurrogatesForOtherPages( imgNodes, totalTxtLeng, htmlType );
 
 		htmlType.setIndexPage();
 	}
 
-	/**
-	 * Recognize the image surrogate for the other page based on the link to the other document (checking mime type for the page)
-	 * and nearby text whether the text is informative and can be associated with the image for the image+text surrogate. 
-	 * 
-	 */
-	protected void recognizeImgSurrogateForOtherPages(ArrayList<ImgElement> imgNodes, int totalTxtLeng, TidyInterface htmlType)
-	{    	
-		for(ImgElement imgElement : imgNodes)
-		{
-			TdNode imgNodeNode					= imgElement.getNode();
-			StringBuilder extractedContext	= getLongestTxtinSubTree(imgNodeNode.grandParent(), null);
-
-			// this if condition checks whether the nearest text to the image is substantial enough to form a surrogate. 
-			// TODO needs to check parent Href and Text informativity
-			if (extractedContext != null)
-			{
-				if ((extractedContext.length()>10) && (!StringTools.contains(extractedContext, "advertis")) )
-				{
-					ParsedURL anchorPurl 			= findAnchorPURLforImgNode(htmlType, imgElement);
-	
-					// Check whether the anchor mimetype is not an image. 
-					if( (anchorPurl!=null) && !anchorPurl.isImg() )
-					{
-						// TODO!! ask whether we should add this to the associateText or not.
-						//FIXME! -- push caption text through as StringBuilder!
-						imgElement.setTextContext(extractedContext);
-	
-						htmlType.newAnchorImgTxt(imgElement, anchorPurl);
-						htmlType.removeTheContainerFromCandidates(anchorPurl);
-					}
-				}
-				StringBuilderUtils.release(extractedContext);
-			}
-		}
-	}
 
 	/**
 	 * Check whether there is an article part in the current document. 
@@ -232,7 +198,7 @@ implements HTMLAttributeNames
 	 * 
 	 */
 	//FIXME -- andruid: exactly what sorted order are the paraTexts in? why?
-	protected void associateImageTextSurrogate(TidyInterface htmlType, TdNode articleBody, TreeMap<Integer, ParagraphText> paraTexts)
+	protected void associateImageTextSurrogates(TidyInterface htmlType, TdNode articleBody, TreeMap<Integer, ParagraphText> paraTexts)
 	{	
 		for (ImgElement imgElement: imgNodesInContentBody) 
 		{  		
@@ -241,7 +207,7 @@ implements HTMLAttributeNames
 				final TdNode imageNodeNode = imgElement.getNode();
 				informImgNodes.add(imageNodeNode);
 
-				StringBuilder extractedCaption = getLongestTxtinSubTree(imageNodeNode.grandParent(), null);	// returns null in worst case
+				StringBuilder extractedCaption = getConnectedText(imageNodeNode, null);	// returns null in worst case
 				TermVector captionTV 		= null;
 				if (extractedCaption != null)
 				{
@@ -285,6 +251,7 @@ implements HTMLAttributeNames
 								if (captionDotTextContext > altDotTextContext)
 								{
 									imgElement.setAlt(StringTools.toString(extractedCaption));
+									imgElement.setExtractedCaption(pt.getBuffy().toString());
 									setAltToCaption									= true;
 								}
 								done															= true;
@@ -313,13 +280,7 @@ implements HTMLAttributeNames
 				if (altTextTV != null)
 					altTextTV.clear();
 
-				ParsedURL anchorPurl = findAnchorPURLforImgNode(htmlType, imgElement);
-
-				// removed by andruid 10/16/08
-				// 1) i dont see why we need to do this.
-				// 2) IT CREATES A RACE CONDITION WITH PRUNE, WHICH STOPS THE CRAWLER :-(
-				//        		if( anchorPurl!=null )
-				//        			htmlType.removeTheContainerFromCandidates(anchorPurl);
+				ParsedURL anchorPurl = findAnchorPURL(imgElement);
 
 				htmlType.newImgTxt(imgElement, anchorPurl);
 			} // if isInformImage
@@ -327,34 +288,72 @@ implements HTMLAttributeNames
 	}
 
 	/**
-	 * Check whether the image node has the anchor url or not, if so return it as ParsedURL. 
-	 *  
-	 * @param htmlType
-	 * @param ina
-	 * @return
+	 * Recognize the image surrogate for the other page based on the link to the other document (checking mime type for the page)
+	 * and nearby text whether the text is informative and can be associated with the image for the image+text surrogate. 
+	 * 
 	 */
-	protected ParsedURL findAnchorPURLforImgNode(TidyInterface htmlType, HTMLElementTidy ina) 
-	{
-		boolean isparentHref = ina.getNode().parent().element.equals("a"); 
-		ParsedURL anchorPurl = null;
-		if(isparentHref)
+	protected void constructImgSurrogatesForOtherPages(ArrayList<ImgElement> imgNodes, int totalTxtLeng, TidyInterface htmlType)
+	{    	
+		for (ImgElement imgElement : imgNodes)
 		{
-			AttVal parentHref = ina.getNode().parent().getAttrByName("href");
-			if( parentHref!=null )
+			if (HTMLParserCommon.isAd(imgElement.getSrc()))
+				continue;
+			
+			TdNode imgNodeNode							= imgElement.getNode();
+			//TODO -- can make this search for text context more comprehensive, while making sure to stay out of content body
+			StringBuilder extractedContext	= getLongestTxtinSubTree(imgNodeNode.grandParent(), null);
+			String alt											= imgElement.getAlt();
+			// this if condition checks whether the nearest text to the image is substantial enough to form a surrogate. 
+			// TODO needs to check parent Href and Text informativity
+			if (extractedContext != null || alt != null)
 			{
-				String parentHrefValue = parentHref.value;
-				//FIXME some idiot seems to have performed escape XML on these values :-(
-				// so unescape it here :-( :-( :-(
-				parentHrefValue				= XMLTools.unescapeXML(parentHrefValue);
-				anchorPurl = purl.createFromHTML(parentHrefValue);
-			}
-			else
-			{
-				// probably the case that the anchor is pointing to the section in the HTML page
-				// For example, <a name="">
+				boolean useContext = extractedContext != null && (extractedContext.length()>10) && (!StringTools.contains(extractedContext, "advertis"));
+				if ((alt != null && alt.length() > 10) || useContext)
+				{
+					ParsedURL anchorPurl 			= findAnchorPURL(imgElement);
+	
+					// Check whether the anchor mimetype is not an image. 
+					if( (anchorPurl!=null) && !anchorPurl.isImg() )
+					{
+						// TODO!! ask whether we should add this to the associateText or not.
+						//FIXME! -- push caption text through as StringBuilder!
+						if (useContext)
+							imgElement.setTextContext(extractedContext);
+	
+						htmlType.newAnchorImgTxt(imgElement, anchorPurl);
+//						htmlType.removeTheContainerFromCandidates(anchorPurl);
+					}
+				}
+				StringBuilderUtils.release(extractedContext);
 			}
 		}
-		return anchorPurl;
+	}
+	/**
+	 * Check whether the image node has the anchor url or not, if so return it as ParsedURL. 
+	 * @param ina
+	 *  
+	 * @return
+	 */
+	protected ParsedURL findAnchorPURL(HTMLElementTidy ina) 
+	{
+		TdNode aNode		= ina.getNode().parent();
+		ParsedURL result= null;
+		AttVal aHref		= null;
+
+		if ("a".equals(aNode.element))
+			aHref	= aNode.getAttrByName("href");
+		else
+		{
+			aNode					= aNode.parent();
+			aHref					= aNode.getAttrByName("href");
+		}
+		if (aHref != null)
+		{
+			String hrefValue = aHref.value;
+			hrefValue			= XMLTools.unescapeXML(hrefValue);
+			result				= purl.createFromHTML(hrefValue);
+		}
+		return result;
 	}
 
 
@@ -372,11 +371,26 @@ implements HTMLAttributeNames
 	 * Finding image nodes under the content body. 
 	 * 
 	 * @param contentBody
+	 * @param imgNodes TODO
 	 */
-	public void findImgsInContentBodySubTree(TdNode contentBody)
+	public void findImgsInContentBodySubTree(TdNode contentBody, ArrayList<ImgElement> imgNodes)
 	{
-		String nodeElementString = "img";
-		htmlNodesInContentBody(contentBody, nodeElementString, imgNodesInContentBody);
+		StringBuilder buffy				= StringBuilderUtils.acquire();
+		contentBody.xpath(buffy);
+		String contentBodyXpath		= buffy.toString();
+		StringBuilderUtils.release(buffy);
+		
+		int i											= imgNodes.size();
+		while (--i >= 0)
+		{
+			ImgElement imgNode			= imgNodes.get(i);
+			String imgXpath					= imgNode.xpath();
+			if (imgXpath.startsWith(contentBodyXpath))
+			{
+				imgNodes.remove(i);
+				imgNodesInContentBody.add(imgNode);
+			}
+		}
 	}
 
 	/**
@@ -401,6 +415,14 @@ implements HTMLAttributeNames
 		}
 	}
 
+	public static StringBuilder getConnectedText(TdNode node, StringBuilder textResult)
+	{
+		TdNode grandParent		= node.grandParent();
+		StringBuilder	result	= getLongestTxtinSubTree(grandParent, textResult);
+		if (result == null || result.length() > 5)
+			result							= getLongestTxtinSubTree(grandParent.parent(), textResult);
+		return result;
+	}
 	/**
 	 * check the texts under the DOM node that is passed as a parameter.
 	 * 
