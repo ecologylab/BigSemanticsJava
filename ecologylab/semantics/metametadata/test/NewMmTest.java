@@ -3,6 +3,7 @@
  */
 package ecologylab.semantics.metametadata.test;
 
+import java.io.OutputStream;
 import java.util.ArrayList;
 
 import ecologylab.concurrent.DownloadMonitor;
@@ -13,9 +14,7 @@ import ecologylab.semantics.connectors.NewInfoCollector;
 import ecologylab.semantics.generated.library.GeneratedMetadataTranslationScope;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
-import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.TranslationScope;
-import ecologylab.serialization.ElementState.FORMAT;
 import ecologylab.serialization.TranslationScope.GRAPH_SWITCH;
 
 /**
@@ -27,14 +26,17 @@ implements DispatchTarget<DocumentClosure>
 {
 	ArrayList<DocumentClosure>	documentCollection	= new ArrayList<DocumentClosure>();
 
-	int currentResult;
+	int 					currentResult;
 	
+	boolean				outputOneAtATime;
+	
+	OutputStream	outputStream;
 	/**
 	 * 
 	 */
-	public NewMmTest()
+	public NewMmTest(OutputStream	outputStream)
 	{
-		// TODO Auto-generated constructor stub
+		this.outputStream	= outputStream;
 	}
 
 	public void collect(String[] urlStrings)
@@ -71,30 +73,20 @@ implements DispatchTarget<DocumentClosure>
 	public static void main(String[] args)
 	{
 		TranslationScope.graphSwitch	= GRAPH_SWITCH.ON;
-		NewMmTest mmTest	= new NewMmTest();
+		NewMmTest mmTest	= new NewMmTest(System.out);
 		mmTest.collect(args);
 	}
 	
 	@Override
 	public void delivery(DocumentClosure incomingClosure)
 	{
-		if (++currentResult == documentCollection.size())
+		if (outputOneAtATime)
+			incomingClosure.serialize(outputStream);
+		else if (++currentResult == documentCollection.size())
 		{
 			System.out.println("\n\n");
 			for (DocumentClosure documentClosure : documentCollection)
-			{
-				Document document	= documentClosure.getDocument();
-				try
-				{
-					document.serialize(System.out, FORMAT.XML);
-					System.out.println("\n");
-				}
-				catch (SIMPLTranslationException e)
-				{
-					error("Could not serialize " + document);
-					e.printStackTrace();
-				}
-			}
+				documentClosure.serialize(System.out);
 		}
 	}
 }
