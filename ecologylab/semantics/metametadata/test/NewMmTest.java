@@ -31,6 +31,9 @@ implements DispatchTarget<DocumentClosure>
 	boolean				outputOneAtATime;
 	
 	OutputStream	outputStream;
+
+	DownloadMonitor downloadMonitor	= null;
+
 	/**
 	 * 
 	 */
@@ -58,7 +61,6 @@ implements DispatchTarget<DocumentClosure>
 				documentCollection.add(documentClosure);
 		}
 
-		DownloadMonitor downloadMonitor	= null;
 		// process documents after parsing command line so we now how many are really coming
 		for (DocumentClosure documentClosure: documentCollection)
 		{
@@ -67,7 +69,6 @@ implements DispatchTarget<DocumentClosure>
 				downloadMonitor		= documentClosure.downloadMonitor();
 			documentClosure.queueDownload();
 		}
-		downloadMonitor.requestStop();
 	}
 
 	public static void main(String[] args)
@@ -87,6 +88,7 @@ implements DispatchTarget<DocumentClosure>
 			System.out.println("\n\n");
 			for (DocumentClosure documentClosure : documentCollection)
 				documentClosure.serialize(System.out);
+			downloadMonitor.stop();
 		}
 	}
 }
