@@ -110,7 +110,7 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 				debug(resultingMetadata.serialize());
 			}
 		}
-		catch (Throwable e)
+		catch (Exception e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();

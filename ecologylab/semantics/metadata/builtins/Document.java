@@ -936,7 +936,8 @@ implements DispatchTarget<ImageClosure>
 		SemanticsSite result	= this.site;
 		if (result == null)
 		{
-			site	= SemanticsSite.getOrConstruct(this, infoCollector);
+			result		= SemanticsSite.getOrConstruct(this, infoCollector);
+			this.site	= result;
 		}
 		return result;
 	}

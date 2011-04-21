@@ -9,6 +9,7 @@ import java.util.HashMap;
 import ecologylab.collections.Scope;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.connectors.NewInfoCollector;
+import ecologylab.semantics.connectors.SemanticsSite;
 import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.html.documentstructure.LinkType;
 import ecologylab.semantics.html.documentstructure.SemanticAnchor;
@@ -282,12 +283,16 @@ public abstract class SemanticAction
 		if (result == null)
 		{
 			ParsedURL outlinkPurl	= (ParsedURL) getArgumentObject(CONTAINER_LINK);
-			result								= infoCollector.getGlobalDocumentMap().getOrConstruct(outlinkPurl);
+			if (outlinkPurl != null)
+				result							= infoCollector.getGlobalDocumentMap().getOrConstruct(outlinkPurl);
 		}
 		else
 			result.setInfoCollector(infoCollector);
 		
-		if (!result.isRecycled())
+		if (result == null)
+			result	= sourceDocument;	//direct binding?!
+		
+		if (result != null && !result.isRecycled())
 		{
 			Metadata mixin				= (Metadata) getArgumentObject(MIXIN);
 			if (mixin != null)
@@ -330,7 +335,8 @@ public abstract class SemanticAction
 			if(! anchorIsInSource)
 			{
 				//By default use the boost, unless explicitly stated in this site's MMD
-				boolean useSemanticBoost = !result.getSite().ignoreSemanticBoost();
+				SemanticsSite site = result.getSite();
+				boolean useSemanticBoost = !site.ignoreSemanticBoost();
 				if (citationSignificance)
 					linkType	= LinkType.CITATION_SEMANTIC_ACTION;
 				else if (useSemanticBoost && linkType == LinkType.OTHER_SEMANTIC_ACTION)
@@ -391,4 +397,19 @@ public abstract class SemanticAction
 		
 	}
 	
+	public SemanticActionHandler getSemanticActionHandler()
+	{
+		SemanticActionHandler result	= this.semanticActionHandler;
+		if (result == null)
+		{
+			ElementState parentES = parent();
+			if (parentES != null && parentES instanceof SemanticAction)
+			{
+				SemanticAction parent	= (SemanticAction) parentES;
+				result	= parent.getSemanticActionHandler();
+				this.semanticActionHandler	= result;
+			}
+		}
+		return result;
+	}
 }

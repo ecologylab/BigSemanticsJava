@@ -6,10 +6,11 @@ package ecologylab.semantics.actions;
 import java.lang.reflect.Method;
 
 import ecologylab.generic.ReflectionTools;
+import ecologylab.semantics.actions.exceptions.SemanticActionExecutionException;
+import ecologylab.serialization.ElementState.xml_tag;
 import ecologylab.serialization.Hint;
 import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.simpl_inherit;
-import ecologylab.serialization.ElementState.xml_tag;
 
 /**
  * @author amathur
@@ -44,24 +45,34 @@ public class SetFieldSemanticAction
 	public Object perform(Object obj)
 	{
 		String setterName = "set" + XMLTools.javaNameFromElementName(getReturnObjectName(), true);
-		Object value = semanticActionHandler.getSemanticActionVariableMap().get(valueName);
+		Object value = null;
+		if (valueName != null)
+			semanticActionHandler.getSemanticActionVariableMap().get(valueName);
 		if (value == null)
 		{
-			warning("no value specified.");
-			return null;
+			String errorMessage = valueName == null ? 
+				"Can't set_field name=\"" + getReturnObjectName() + "\" in " + obj + " because value=\"null\"" : 
+				"Can't set_field name=\"" + getReturnObjectName() + " in " + obj + "\" because there's no value bound to " + valueName;
+			throw new SemanticActionExecutionException(this, errorMessage);
 		}
 		
-		Method method = ReflectionTools.getMethod(obj.getClass(), setterName, new Class[] { value.getClass() });
-		try
-		{
-			method.invoke(obj, value);
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			error(String.format("set_field failed: object=%s, setter=%s, value=%s", obj, setterName,
-					value));
-		}
+		Class<? extends Object> valueClass = value.getClass();
+		Method method = ReflectionTools.getMethod(obj.getClass(), setterName, new Class[] { valueClass });
+		if (method != null)
+			try
+			{
+				method.invoke(obj, value);
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+				error(String.format("set_field failed: object=%s, setter=%s, value=%s", obj, setterName,
+						value));
+			}
+			else
+			{
+				throw new SemanticActionExecutionException(this, "set_field name=\"" + getReturnObjectName() + "\"\tCan't find set method in " + obj + "  for " + valueName + " of type " + valueClass + "");
+			}
 		return null;
 	}
 

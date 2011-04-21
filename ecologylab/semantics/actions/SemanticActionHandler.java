@@ -134,7 +134,7 @@ public class SemanticActionHandler
 		int state = getActionState(action, "state", SemanticAction.INIT);
 		if (state == SemanticAction.FIN || requestWaiting)
 			return;
-		debug("[ParserBase] semantic action: " + action.getActionName() + ", SA class: "
+		debug("["+parser+"] semantic action: " + action.getActionName() + ", SA class: "
 				+ action.getClassName() + "\n");
 
 		// if this is a <if>, skip the check because we have cached the result
@@ -210,6 +210,8 @@ public class SemanticActionHandler
 		}
 		catch (Exception e)
 		{
+			if (e instanceof SemanticActionExecutionException)
+				throw (RuntimeException) e;
 			throw new SemanticActionExecutionException(e, action, semanticActionVariableMap);
 		}
 	}
