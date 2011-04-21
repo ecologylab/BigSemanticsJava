@@ -47,7 +47,7 @@ public class SetFieldSemanticAction
 		String setterName = "set" + XMLTools.javaNameFromElementName(getReturnObjectName(), true);
 		Object value = null;
 		if (valueName != null)
-			semanticActionHandler.getSemanticActionVariableMap().get(valueName);
+			value	= semanticActionHandler.getSemanticActionVariableMap().get(valueName);
 		if (value == null)
 		{
 			String errorMessage = valueName == null ? 

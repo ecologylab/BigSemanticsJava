@@ -51,8 +51,8 @@
     <link_with name="google_scholar_search_result" by_id="title" options="text" />
 		
 		<semantic_actions>
-			<set_field name="metadata_page">
-				<arg value="TRUE_PURL" name="value" />
+			<set_field name="metadata_page" value="TRUE_PURL">
+				<!--arg value="TRUE_PURL" name="value" />  -->
 			</set_field>
 			
 			

@@ -52,8 +52,8 @@
 						<if>
 							<null value="location"/>
 							<get_field object="item" name="link"/>
-							<set_field name="location">
-								<arg value="link" name="value" />
+							<set_field name="location" value="link">
+								<!-- arg value="link" name="value" /> -->
 							</set_field>
 						</if>
 						<choose>
