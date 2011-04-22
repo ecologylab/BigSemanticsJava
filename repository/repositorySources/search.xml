@@ -1,12 +1,20 @@
 <meta_metadata_repository name="search" package="ecologylab.semantics.generated.library.search" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
-	<!-- +++++++++++++++++++++++++++++++++ More Specific Types - Search & its Children +++++++++++++++++++++++++++++++++ -->
+	<!-- +++++++++++++++++++++++++++++++++ More Specific Types - Search & its 
+		Children +++++++++++++++++++++++++++++++++ -->
 
 	<meta_metadata name="search_result" extends="metadata" comment="">
-		<scalar name="heading" scalar_type="String" comment="The heading of search result" hide="true" />
+		<!-- <scalar name="heading" scalar_type="String" comment="The heading of search result" hide="true" /> -->
+		<scalar name="heading" layer="10.0" scalar_type="String" navigates_to="link" comment="The heading of search result" />
 		<scalar name="snippet" scalar_type="String" comment="The snippet of search result" />
-		<scalar name="link" scalar_type="ParsedURL" comment="The link of the search result" hide="true" />
+		<!-- we need a preference system to deal with this kind of issue! - yin -->
+		<!-- <scalar name="link" scalar_type="ParsedURL" comment="The link of the search result" hide="true" /> -->
+		<scalar name="link" scalar_type="ParsedURL" comment="The link of the search result" />
 		<scalar name="link_other" scalar_type="ParsedURL" comment="Alternate link in search results" />
+    
+    <scalar name="engine" scalar_type="String" comment="The search engine used for this result" />
+    <scalar name="author" scalar_type="String" comment="The author of this item" />
+    <collection name="tags" child_type="tag" comment="Associated tags from the search engine, if exist" />
 	</meta_metadata>
 
 	<meta_metadata name="search" extends="document" comment="">
@@ -16,9 +24,9 @@
 	<meta_metadata name="google_search" type="search" comment="The google Search class" user_agent_name="opera_9" parser="xpath">
 		<selector url_stripped="http://www.google.com/search" />
 		<collection name="search_results" xpath="//div[@id='res']//div//ol/li[@*]">
-			<scalar name="heading" xpath="./h3/a" />
-			<scalar name="snippet" xpath="./div[1]" />
-			<scalar name="link" xpath="./h3/a/@href" />
+			<scalar name="heading" xpath=".//h3/a" />
+			<scalar name="snippet" xpath=".//div[@class='s']" />
+			<scalar name="link" xpath=".//h3/a/@href" />
 		</collection>
 		<semantic_actions>
 			<get_field name="search_results" />
@@ -33,7 +41,7 @@
 	</meta_metadata>
 
 	<meta_metadata name="google_scholar_search_result" extends="search_result" comment="A google scholar search result" user_agent_name="opera_9" parser="xpath">
-    <url_generator type="search" engine="google_scholar" use_id="title" />
+		<url_generator type="search" engine="google_scholar" use_id="title" />
 		<scalar name="heading" as_natural_id="title" />
 		<scalar name="document_link" scalar_type="ParsedURL" hide="true" />
 		<scalar name="citations" scalar_type="Int" navigates_to="citations_link" />
@@ -213,7 +221,8 @@
 		</semantic_actions>
 	</meta_metadata>
 
-	<!-- this definition of image might apply to many other XML-based search results. -->
+	<!-- this definition of image might apply to many other XML-based search 
+		results. -->
 	<meta_metadata name="image_in_search_result" extends="image" comment="Def of an image in a Bing image search result.">
 		<scalar name="caption" scalar_type="String" tag="mms:Title" /> <!-- shadows image.caption? -->
 		<scalar name="location" scalar_type="ParsedURL" tag="mms:Url" /> <!-- shadows image.location? -->
@@ -311,6 +320,46 @@
 				</if>
 			</for_each>
 		</semantic_actions>
+	</meta_metadata>
+
+	<meta_metadata name="slashdot_search" type="search" comment="The slashdot search class" user_agent_name="opera_9" parser="xpath">
+		<selector url_stripped="http://slashdot.org/index2.pl" />
+		<collection name="search_results" xpath="//div[@id='firehoselist']//h2[@class='story']">
+			<scalar name="heading" xpath=".//a" />
+			<scalar name="link" xpath=".//a/@href" />
+			<scalar name="snippet" xpath="./following-sibling::div[@class='hide'][1]//i" />
+			<scalar name="author" xpath="./following-sibling::div[@class='hide'][1]//a[@rel='nofollow']" />
+			<collection name="tags" xpath="./following-sibling::div[@class='grid_14'][1]//a[@class='popular tag']">
+    		<scalar name="tag_name" xpath="." />
+    		<scalar name="link" xpath="./@href" />
+      </collection>
+		</collection>
+	</meta_metadata>
+
+	<meta_metadata name="delicious_search" type="search" comment="The delicious search class" user_agent_name="opera_9" parser="xpath">
+		<selector url_stripped="http://www.delicious.com/search" />
+		<collection name="search_results" xpath="//div[@id='content']/ul/li">
+			<scalar name="heading" xpath=".//div/h4/a" />
+			<scalar name="link" xpath=".//div/h4/a/@href" />
+			<scalar name="author" xpath="./div/div[@class='meta']//span[1]" />
+			<collection name="tags" xpath="./div/div[@class='tagdisplay']//a">
+    		<scalar name="tag_name" xpath="." />
+    		<scalar name="link" xpath="./@href" />
+      </collection>
+		</collection>
+	</meta_metadata>
+	
+	<meta_metadata name="tumblr_search" type="search" comment="The tumblr search class" user_agent_name="opera_9" parser="xpath">
+		<selector url_path_tree="http://www.tumblr.com/tagged/" />
+		<collection name="search_results" xpath="//div[@id='left_column']//li">
+			<scalar name="heading" xpath=".//div[@class='post_title']" />
+			<scalar name="snippet" xpath=".//div[@class='post_content']" />
+			<scalar name="author" xpath="./div[@class='post_info']" />
+			<collection name="tags" xpath="./div[@class='footer_links with_tags ']//a">
+    		<scalar name="tag_name" xpath="." />
+    		<scalar name="link" xpath="./@href" />
+      </collection>
+		</collection>			
 	</meta_metadata>
 
 </meta_metadata_repository>

@@ -9,7 +9,7 @@
 
 	<meta_metadata name="citeseerx_record" extends="scholarly_article" comment="CiteSeerX record for an article.">
 		<scalar name="location" xpath="//div[@id='downloads']/a[@title='View or Download this document as PDF']/@href" />
-		<scalar name="title" xpath="//h1[@class='primaryheader']" navigates_to="metadata_page" as_natural_id="title">
+		<scalar name="title" xpath="//h1[@class='primaryheader']" navigates_to="metadata_page" as_natural_id="title" format="text">
 			<filter regex="(\(.*\))|(\[.*\])" replace="" />
 		</scalar>
 		<collection name="authors" xpath="//div[@id='introduction']/div[contains(@class, 'char_mediumvalue')]">
@@ -19,7 +19,7 @@
 			</scalar>
 		</collection>
 		<composite name="citation_info" xpath="//h1[@class='primaryheader']/a">
-			<field_parser name="regex_find" regex="(\d+) citations — (\d+) self" />
+			<field_parser name="regex_find" regex="(\d+) citations .* (\d+) self" />
 			<scalar name="total_citation" field_parser_key="$1" />
 			<scalar name="self_citation" field_parser_key="$2" />
 		</composite>
@@ -31,7 +31,7 @@
 		<selector url_stripped="http://citeseerx.ist.psu.edu/viewdoc/summary" />
     
     <url_generator type="search" engine="citeseerx" use_id="title" />
-
+    
 		<scalar name="abstract_field" xpath="//div[@id='main_content']/p" />
 		<composite name="source" xpath="//div[@id='right-sidebar']/div/div[2]/div[@class='content']">
 			<field_parser name="bibtex" />
@@ -41,6 +41,7 @@
 			<scalar name="isbn" field_parser_key="isbn" />
 		</composite>
 
+    <!-- CiteSeerX web page says these are citations, but actually they are references! -->
 		<collection name="references" xpath="//table[@class='citelist']//a">
 			<scalar name="location" xpath="./@href">
 				<filter regex=";jsessionid=[A-Za-z0-9]*" replace="" />
@@ -48,13 +49,15 @@
 			<scalar name="gist" xpath=".." />
 		</collection>
 
-		<scalar name="citation_page" scalar_type="ParsedURL" hide="true" xpath="//h1[@class='primaryheader']/a/@href">
+		<scalar name="citation_page" scalar_type="ParsedURL" xpath="//h1[@class='primaryheader']/a/@href" navigates_to="citation_page">
 			<filter regex=";jsessionid=[A-Za-z0-9]*" replace="" />
 		</scalar>
-		<scalar name="active_bibliography_page" scalar_type="ParsedURL" hide="true" xpath="//div[@id='conclusion']//a[2]/@href" comment="Papers that cite the same works.">
+		<scalar name="active_bibliography_page" scalar_type="ParsedURL" xpath="//div[@id='conclusion']//a[2]/@href"
+            navigates_to="active_bibliography_page" comment="Papers that cite the same works.">
 			<filter regex=";jsessionid=[A-Za-z0-9]*" replace="" />
 		</scalar>
-		<scalar name="cocitation_page" scalar_type="ParsedURL" hide="true" xpath="//div[@id='conclusion']//a[3]/@href" comment="Papers that are cited by the same works.">
+		<scalar name="cocitation_page" scalar_type="ParsedURL" xpath="//div[@id='conclusion']//a[3]/@href"
+            navigates_to="cocitation_page" comment="Papers that are cited by the same works.">
 			<filter regex=";jsessionid=[A-Za-z0-9]*" replace="" />
 		</scalar>
 
