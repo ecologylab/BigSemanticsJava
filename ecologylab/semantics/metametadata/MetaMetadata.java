@@ -24,8 +24,9 @@ import ecologylab.serialization.types.element.Mappable;
 public class MetaMetadata extends MetaMetadataCompositeField implements Mappable<String>
 {
 
-	@simpl_composite
-	MetaMetadataSelector			selector;
+	@simpl_collection("selector")
+	@simpl_nowrap
+	ArrayList<MetaMetadataSelector>			selectors;
 
 	@xml_tag("package")
 	@simpl_scalar
@@ -131,40 +132,6 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 	}
 
 	/**
-	 * @return the urlPattern
-	 */
-	public Pattern getUrlRegex()
-	{
-		return getSelector().getUrlRegex();
-	}
-
-	/**
-	 * @param urlPattern
-	 *          the urlPattern to set
-	 */
-	public void setUrlRegex(Pattern urlPattern)
-	{
-		getSelector().setUrlRegex(urlPattern);
-	}
-
-	/**
-	 * @return the domain
-	 */
-	public String getDomain()
-	{
-		return getSelector().getDomain();
-	}
-
-	/**
-	 * @param domain
-	 *          the domain to set
-	 */
-	public void setDomain(String domain)
-	{
-		getSelector().setDomain(domain);
-	}
-
-	/**
 	 * @return the packageAttribute
 	 */
 	public final String getPackageAttribute()
@@ -181,42 +148,42 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 	{
 		return userAgentName;
 	}
-
-	/**
-	 * @param mimeTypes
-	 *          the mimeTypes to set
-	 */
-	public void setMimeTypes(ArrayList<String> mimeTypes)
-	{
-		getSelector().setMimeTypes(mimeTypes);
-	}
-
+	
 	/**
 	 * @return the mimeTypes
 	 */
-	/**
-	 * @return
-	 */
 	public ArrayList<String> getMimeTypes()
 	{
-		return getSelector().getMimeTypes();
+		ArrayList<String> result = null;
+			
+		for( MetaMetadataSelector selector : getSelectors())
+		{
+			if (result == null)
+				result =  new ArrayList<String>();
+				
+			ArrayList<String> mimeTypes = selector.getMimeTypes();
+			if (mimeTypes != null)
+				result.addAll(mimeTypes);
+		}
+		
+		return result;
 	}
-
-	/**
-	 * @param suffixes
-	 *          the suffixes to set
-	 */
-	public void setSuffixes(ArrayList<String> suffixes)
-	{
-		getSelector().setSuffixes(suffixes);
-	}
-
-	/**
-	 * @return the suffixes
-	 */
+	
 	public ArrayList<String> getSuffixes()
 	{
-		return getSelector().getSuffixes();
+		ArrayList<String> result = null;
+			
+		for( MetaMetadataSelector selector : getSelectors())
+		{
+			if (result == null)
+				result =  new ArrayList<String>();
+				
+			ArrayList<String> suffixes = selector.getSuffixes();
+			if (suffixes != null)
+				result.addAll(suffixes);
+		}
+		
+		return result;
 	}
 
 	@Override
@@ -266,16 +233,19 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 //		}
 	}
 
-	public MetaMetadataSelector getSelector()
+	public ArrayList<MetaMetadataSelector> getSelectors()
 	{
-		if (selector == null)
+		if (selectors == null)
 			return MetaMetadataSelector.NULL_SELECTOR;
-		return selector;
+		return selectors;
 	}
 
-	public void setSelector(MetaMetadataSelector s)
+	public void addSelector(MetaMetadataSelector s)
 	{
-		selector = s;
+		if (selectors == null)
+			selectors = new ArrayList<MetaMetadataSelector>();
+		
+		selectors.add(s);
 	}
 
 	@Override

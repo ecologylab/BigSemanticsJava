@@ -67,6 +67,7 @@
 			</set_field>
 			
 			<get_field name="location" />
+      <!-- commented out for linking metadata paper. we should have a preference system for this!
 			<if>
 				<not_null value="location" />
 				<parse_document now="true">
@@ -74,6 +75,7 @@
 					<arg value="location" name="container_link" />
 				</parse_document>
 			</if>
+      -->
 
 			<get_field name="title" />
 			<create_and_visualize_text_surrogate>

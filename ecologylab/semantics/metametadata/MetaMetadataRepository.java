@@ -345,7 +345,19 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		if (destMap == null)
 			return false;
 		if (srcMap != null)
-			destMap.putAll(srcMap);
+		{
+			for (Object sourceMmdName : srcMap.keySet())
+			{
+				if (destMap.containsKey(sourceMmdName))
+				{
+					error("META-METADATA DEFINED TWICE: " + sourceMmdName);
+				}
+				else
+				{
+					destMap.put(sourceMmdName, srcMap.get(sourceMmdName));
+				}
+			}
+		}
 		return true;
 	}
 
@@ -386,7 +398,6 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 					MetaMetadata targetMmd = getByTagName(lw.getName());
 					assert (targetMmd != null) : "mmd type not found: " + lw.getName();
 
-					lw.processOptions();
 					monitor.registerName(lw.getName());
 					monitor.registerName(thisName);
 
@@ -734,48 +745,51 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 			// if something is there, then we need to check to see if it has its cf pref set
 			// if not, then if I am null then I win
 
-			MetaMetadataSelector selector = metaMetadata.getSelector();
-			ParsedURL strippedPurl = selector.getUrlStripped();
-			if (strippedPurl != null)
+			ArrayList<MetaMetadataSelector> selectors = metaMetadata.getSelectors();
+			for (MetaMetadataSelector selector : selectors)
 			{
-				repositoryByUrlStripped.put(strippedPurl.noAnchorNoQueryPageString(), metaMetadata);
-				metaMetadata.setMmSelectorType(MMSelectorType.LOCATION);
-			}
-			else
-			{
-				ParsedURL urlPathTree = selector.getUrlPathTree();
-				if (urlPathTree != null)
+				ParsedURL strippedPurl = selector.getUrlStripped();
+				if (strippedPurl != null)
 				{
-					PrefixPhrase pp = urlPrefixCollection.add(urlPathTree);
-					pp.setMappedObject(metaMetadata);
-
-					// TODO is this next line correct??? it looks wrong!
-					repositoryByUrlStripped.put(urlPathTree.toString(), metaMetadata);
+					repositoryByUrlStripped.put(strippedPurl.noAnchorNoQueryPageString(), metaMetadata);
 					metaMetadata.setMmSelectorType(MMSelectorType.LOCATION);
 				}
 				else
 				{
-					// use .pattern() for comparison
-					String domain = selector.getDomain();
-					if (domain != null)
+					ParsedURL urlPathTree = selector.getUrlPathTree();
+					if (urlPathTree != null)
 					{
-						Pattern urlPattern = selector.getUrlRegex();
-						if (urlPattern != null)
+						PrefixPhrase pp = urlPrefixCollection.add(urlPathTree);
+						pp.setMappedObject(metaMetadata);
+	
+						// TODO is this next line correct??? it looks wrong!
+						repositoryByUrlStripped.put(urlPathTree.toString(), metaMetadata);
+						metaMetadata.setMmSelectorType(MMSelectorType.LOCATION);
+					}
+					else
+					{
+						// use .pattern() for comparison
+						String domain = selector.getDomain();
+						if (domain != null)
 						{
-							ArrayList<RepositoryPatternEntry> bucket = repositoryByPattern.get(domain);
-							if (bucket == null)
+							Pattern urlPattern = selector.getUrlRegex();
+							if (urlPattern != null)
 							{
-								bucket = new ArrayList<RepositoryPatternEntry>(2);
-								repositoryByPattern.put(domain, bucket);
+								ArrayList<RepositoryPatternEntry> bucket = repositoryByPattern.get(domain);
+								if (bucket == null)
+								{
+									bucket = new ArrayList<RepositoryPatternEntry>(2);
+									repositoryByPattern.put(domain, bucket);
+								}
+								bucket.add(new RepositoryPatternEntry(urlPattern, metaMetadata));
+								metaMetadata.setMmSelectorType(MMSelectorType.LOCATION);
 							}
-							bucket.add(new RepositoryPatternEntry(urlPattern, metaMetadata));
-							metaMetadata.setMmSelectorType(MMSelectorType.LOCATION);
-						}
-						else
-						{
-							// domain only -- no pattern
-							documentRepositoryByDomain.put(domain, metaMetadata);
-							metaMetadata.setMmSelectorType(MMSelectorType.DOMAIN);
+							else
+							{
+								// domain only -- no pattern
+								documentRepositoryByDomain.put(domain, metaMetadata);
+								metaMetadata.setMmSelectorType(MMSelectorType.DOMAIN);
+							}
 						}
 					}
 				}
@@ -1024,18 +1038,23 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 						onlyCandidate = metaMetadata;
 						if (metaMetadata != null)
 						{
-							MetaMetadataSelector mSelector = metaMetadata.getSelector();
-							if (mSelector != null)
+							ArrayList<MetaMetadataSelector> mSelectors = metaMetadata.getSelectors();
+							for(int i=0; i < mSelectors.size(); i++)
 							{
-								if (mSelector.getName() != null)
+								MetaMetadataSelector mSelector = mSelectors.get(i);
+								if (mSelector != null)
 								{
-									if (mSelector.getName().equals(selector.getName()))
+									String mSelectorName = mSelector.getName();
+									if (mSelectorName != null)
 									{
-										numberOfMetametaData += 1;
-										if (metaMetadata.getName().equals(prefName))
+										if (mSelectorName.equals(selector.getName()))
 										{
-											metaMetadata.setSelector(selector);
-											prefNameMetaMetadataFound = true;
+											numberOfMetametaData += 1;
+											if (metaMetadata.getName().equals(prefName))
+											{
+												mSelectors.set(i, selector);
+												prefNameMetaMetadataFound = true;
+											}
 										}
 									}
 								}
@@ -1051,7 +1070,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 						}
 						else if (numberOfMetametaData == 1)
 						{
-							onlyCandidate.setSelector(selector);
+							onlyCandidate.addSelector(selector);
 						}
 						else if (numberOfMetametaData > 1)
 						{

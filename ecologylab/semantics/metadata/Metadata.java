@@ -131,6 +131,16 @@ abstract public class Metadata extends ElementState implements MetadataBase, Ter
 	private Map<String, Metadata>					linkedMetadata;
 
 	private Object												lockLinkedMetadata				= new Object();
+	
+	/**
+	 * a list of linked metadata, which is used for de/serialization. the map (linkedMetadata) is not
+	 * used for de/serialization because thek key really should not be meta-metadata type. instead,
+	 * this field serves as a surrogate for de/serialization. at runtime, whenever the map is updated
+	 * this field is updated accordingly. also, linkedMetadata will be initialized using this field
+	 * in lazy evaluation.
+	 */
+	@simpl_collection("linked_metadata")
+	private ArrayList<Metadata>						linkedMetadataList;
 
 	/**
 	 * This constructor should *only* be used when marshalled Metadata is read.
@@ -816,7 +826,7 @@ abstract public class Metadata extends ElementState implements MetadataBase, Ter
 								bold = true;
 
 							Tr tr = new Tr();
-							tr.setId(childFD.getTagName());
+							tr.setCssClass("mmd_" + childFD.getTagName());
 							a.append(tr.open());
 							mmdField.lookupStyle();
 
@@ -1020,33 +1030,67 @@ abstract public class Metadata extends ElementState implements MetadataBase, Ter
 		}
 		MetaMetadataField field = mmd.getNaturalIdFields().get(naturalId);
 		MetadataFieldDescriptor fd = field.getMetadataFieldDescriptor();
-		return fd.getValueString(this);
-	}
-
-	public Metadata getLinkedMetadata(String name)
-	{
-		if (linkedMetadata != null)
+		String valueString = fd.getValueString(this);
+		String format = field.getFormat();
+		if (format != null)
 		{
-			synchronized (linkedMetadata)
+			// built-in support for text format
+			if ("text".equals(format))
 			{
-				return linkedMetadata.get(name);
+				valueString = valueString.trim().replaceAll("[^a-zA-Z0-9]", " ").replaceAll("\\s+", " ").toLowerCase();
 			}
 		}
-		return null;
+		
+		return valueString;
 	}
-
-	public void addLinkedMetadata(LinkWith lw, Metadata metadata)
+	
+	private Map<String, Metadata> getLinkedMetadata()
 	{
 		if (linkedMetadata == null)
 		{
 			synchronized (lockLinkedMetadata)
 			{
-				linkedMetadata = new HashMap<String, Metadata>();
+				if (linkedMetadata == null)
+				{
+					Map<String, Metadata> linkedMetadata = new HashMap<String, Metadata>();
+					if (linkedMetadataList != null)
+					{
+						for (Metadata linkedMd : linkedMetadataList)
+						{
+							linkedMetadata.put(linkedMd.getMetaMetadata().getName(), linkedMd);
+						}
+					}
+					this.linkedMetadata = linkedMetadata;
+				}
 			}
 		}
-		synchronized (linkedMetadata)
+		return linkedMetadata;
+	}
+
+	public Set<String> getLinkedMetadataKeys()
+	{
+		synchronized (lockLinkedMetadata)
 		{
-			linkedMetadata.put(lw.key(), metadata);
+			return getLinkedMetadata().keySet();
+		}
+	}
+
+	public Metadata getLinkedMetadata(String name)
+	{
+		synchronized (lockLinkedMetadata)
+		{
+			return getLinkedMetadata().get(name);
+		}
+	}
+
+	public void addLinkedMetadata(LinkWith lw, Metadata metadata)
+	{
+		synchronized (lockLinkedMetadata)
+		{
+			getLinkedMetadata().put(lw.key(), metadata);
+			if (linkedMetadataList == null)
+				linkedMetadataList = new ArrayList<Metadata>();
+			linkedMetadataList.add(metadata);
 		}
 	}
 

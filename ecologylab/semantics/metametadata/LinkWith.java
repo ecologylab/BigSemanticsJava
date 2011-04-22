@@ -15,16 +15,9 @@ public class LinkWith extends ElementState implements Mappable<String>
 	@simpl_scalar
 	private String		byId;
 
-	@simpl_scalar
-	private String		options;
-
 	private boolean		reverse	= false;
 
 	private LinkWith	reverseLink;
-
-	// runtime flags:
-
-	private boolean		optText;
 
 	public String getName()
 	{
@@ -63,7 +56,6 @@ public class LinkWith extends ElementState implements Mappable<String>
 
 		lw.name = sourceMetaMetadataName;
 		lw.byId = byId;
-		lw.options = options;
 		lw.reverse = true;
 
 		reverseLink = lw;
@@ -78,27 +70,10 @@ public class LinkWith extends ElementState implements Mappable<String>
 		return name;
 	}
 
-	public void processOptions()
-	{
-		if (options != null)
-		{
-			if ("text".equals(options))
-			{
-				optText = true;
-			}
-		}
-	}
-
 	public boolean tryLink(Metadata parsedMetadata, Metadata toMetadata)
 	{
 		String value = parsedMetadata.getNaturalIdValue(byId);
 		String baseValue = toMetadata.getNaturalIdValue(byId);
-
-		if (optText)
-		{
-			value = value.trim().replaceAll("\\s+", " ").toLowerCase();
-			baseValue = baseValue.trim().replaceAll("\\s+", " ").toLowerCase();
-		}
 
 		if (value != null && baseValue != null && value.equals(baseValue))
 		{

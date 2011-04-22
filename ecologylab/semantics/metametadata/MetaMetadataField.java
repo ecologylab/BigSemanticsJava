@@ -138,8 +138,20 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	@simpl_scalar
 	protected String																			asNaturalId;
 	
+	/**
+	 * The format of this field. Used for normalization. Currently, only used with natural ids.
+	 */
+	@simpl_scalar
+	protected String																			format;
+	
+	/**
+	 * Indicate if this field is required for the upper level structure.
+	 */
 	@simpl_scalar
 	protected boolean																			required = false;
+	
+	@simpl_scalar
+	protected boolean																			dontSerialize = false;
 
 	// ///////////////////////////////// switches /////////////////////////////////
 
@@ -821,8 +833,11 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	public void compileToMemberDefinitions(Appendable appendable) throws IOException
 	{
 		MetaMetadataCompilerUtils.writeJavaDocComment(comment, appendable);
-		appendable.append(getAnnotationsInJava());
-		appendable.append("\n");
+		if (!dontSerialize())
+		{
+			appendable.append(getAnnotationsInJava());
+			appendable.append("\n");
+		}
 		appendable.append("private ");
 		appendable.append(getTypeNameInJava());
 		appendable.append("\t");
@@ -1282,6 +1297,16 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	public boolean isRequired()
 	{
 		return required;
+	}
+	
+	public String getFormat()
+	{
+		return format;
+	}
+	
+	public boolean dontSerialize()
+	{
+		return dontSerialize;
 	}
 
 }

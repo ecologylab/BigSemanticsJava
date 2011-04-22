@@ -9,6 +9,12 @@ import ecologylab.semantics.metametadata.LinkWith;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 
+/**
+ * Monitoring parsed metadata & composite fields for potential metadata links.
+ * 
+ * @author quyin
+ * 
+ */
 public class LinkedMetadataMonitor
 {
 
@@ -18,12 +24,24 @@ public class LinkedMetadataMonitor
 	 */
 	private Map<String, Map<Metadata, LinkWith>>	monitorRecords	= new HashMap<String, Map<Metadata, LinkWith>>();
 
+	/**
+	 * Register a meta-metadata wrapper name for monitoring.
+	 * 
+	 * @param name
+	 *          The monitored meta-metadata wrapper name.
+	 */
 	public void registerName(String name)
 	{
 		if (!monitorRecords.containsKey(name))
 			monitorRecords.put(name, new HashMap<Metadata, LinkWith>());
 	}
 
+	/**
+	 * Add a monitor for a metadata object which has &lt;link_with&gt; defined in its meta-metadata.
+	 * 
+	 * @param object
+	 *          The metadata object who wants to monitor a potential link.
+	 */
 	public void addMonitors(Metadata object)
 	{
 		if (object.getMetaMetadata() instanceof MetaMetadata)
@@ -46,6 +64,12 @@ public class LinkedMetadataMonitor
 		}
 	}
 
+	/**
+	 * Remove a monitor for a metadata object.
+	 * 
+	 * @param object
+	 *          The metadata object who wanted to monitor a link but don't now.
+	 */
 	public void removeMonitors(Metadata object)
 	{
 		if (object.getMetaMetadata() instanceof MetaMetadata)
@@ -68,6 +92,14 @@ public class LinkedMetadataMonitor
 		}
 	}
 
+	/**
+	 * When a new metadata object is parsed, try to link it with some monitoring metadata objects that
+	 * are waiting here.
+	 * 
+	 * @param repository
+	 * @param parsedMetadata
+	 * @return If the linking happens.
+	 */
 	public boolean tryLink(MetaMetadataRepository repository, Metadata parsedMetadata)
 	{
 		if (parsedMetadata == null)
@@ -75,18 +107,18 @@ public class LinkedMetadataMonitor
 
 		MetaMetadata mmd;
 		String mmdName;
-		
+
 		if (parsedMetadata.getMetaMetadata() instanceof MetaMetadata)
 		{
 			mmd = (MetaMetadata) parsedMetadata.getMetaMetadata();
-			mmdName = mmd.getTypeName();
+			mmdName = mmd.getName();
 		}
 		else
 		{
 			mmdName = parsedMetadata.getMetaMetadata().getTypeName();
 			mmd = repository.getByTagName(mmdName);
 		}
-		
+
 		if (mmd == null)
 		{
 			// maybe it's defined inline -- we need a solution for this kind of inline definition thing!
@@ -101,7 +133,7 @@ public class LinkedMetadataMonitor
 			mmdName = mmd.getSuperMmdTypeName();
 			mmd = repository.getByTagName(mmdName);
 		}
-		
+
 		Map<Metadata, LinkWith> records = monitorRecords.get(mmdName);
 		for (Metadata object : records.keySet())
 		{

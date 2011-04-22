@@ -48,7 +48,8 @@ public class MetaMetadataCompilerUtils
 		"ecologylab.serialization.TranslationScope",
 		"ecologylab.serialization.ElementState.xml_tag",
 		"ecologylab.semantics.metadata.builtins.*",
-		"ecologylab.semantics.metametadata.MetaMetadataRepository"
+		"ecologylab.semantics.metametadata.MetaMetadataRepository",
+		"ecologylab.semantics.tools.MetaMetadataCompilerUtils"
 	));
 	static
 	{
@@ -167,9 +168,8 @@ public class MetaMetadataCompilerUtils
 		MetaMetadataCompilerUtils.printWriter.print("\n};\n \n");
 		MetaMetadataCompilerUtils.printWriter
 				.print("public static TranslationScope get()\n{\n");
-		MetaMetadataCompilerUtils.printWriter.print("return TranslationScope.get(\""
-				+ GENERATED_METADATA_TRANSLATIONS
-				+ "\", MetadataBuiltinsTranslationScope.get(), TRANSLATIONS);\n}\n}");
+		MetaMetadataCompilerUtils.printWriter.print("return TranslationScope.get(MetaMetadataCompilerUtils.GENERATED_METADATA_TRANSLATIONS"
+				+ ", MetadataBuiltinsTranslationScope.get(), TRANSLATIONS);\n}\n}");
 
 		MetaMetadataCompilerUtils.printWriter.flush();
 	}

@@ -18,7 +18,7 @@ import ecologylab.serialization.types.element.Mappable;
 public @simpl_inherit
 class MetaMetadataSelector extends ElementState implements Mappable<String>
 {
-	public static final MetaMetadataSelector NULL_SELECTOR = new MetaMetadataSelector();
+	public static final ArrayList<MetaMetadataSelector> NULL_SELECTOR = new ArrayList<MetaMetadataSelector>();
 	
 	@simpl_scalar
 	private String											name;
