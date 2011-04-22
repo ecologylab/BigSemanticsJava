@@ -95,4 +95,9 @@
 		<scalar name="new_term_vector" ignore_in_term_vector="true" scalar_type="StringBuilder" />
 	</meta_metadata>
 	
+	<meta_metadata name="tag">
+		<scalar name="tag_name" scalar_type="String" navigates_to="link" />
+		<scalar name="link" hide="true" scalar_type="ParsedURL" />
+	</meta_metadata>
+	
 </meta_metadata_repository>
