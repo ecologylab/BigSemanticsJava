@@ -47,9 +47,13 @@ public class XPathTest
 	private static final String GOOGLE_BOOKS_XPATH = "//div[@id='citations_module_v']/div[2]//div";
 	private static final String GOOGLE_BOOKS_CHILD_XPATH = "./div/a";
 	
-	private static final String	LOCATION		= IMDB;
-	private static final String	XPATH				= IMDB_XPATH;
-	private static final String	CHILD_XPATH	= IMDB_CHILD_XPATH;
+	private static final String	SLASHDOT	= "http://slashdot.org/index2.pl?fhfilter=japan+earthquake";
+	private static final String	SLASHDOT_XPATH	= "//div[@id='firehoselist']//h2[@class='story'][1]/following-sibling::div[@class='grid_14'][1]//a[@class='popular tag']";
+	private static final String	SLASHDOT_CHILD_XPATH	= ".";
+	
+	private static final String	LOCATION		= SLASHDOT;
+	private static final String	XPATH				= SLASHDOT_XPATH;
+	private static final String	CHILD_XPATH	= SLASHDOT_CHILD_XPATH;
 	
 	private static final ParsedURL PURL = ParsedURL.getAbsolute(LOCATION);
 
