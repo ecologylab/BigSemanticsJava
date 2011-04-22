@@ -16,6 +16,4 @@ public interface GuiBridge
   public void displayStatus(String message, int ticks);
   
   public int showOptionsDialog(String message, String title, String[] options, int initialOptionIndex);
-  
-  public void pressPlayWhenFirstMediaArrives();
 }

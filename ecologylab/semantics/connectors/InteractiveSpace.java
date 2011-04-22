@@ -21,5 +21,7 @@ public interface InteractiveSpace
 	void restorePlayIfWasPlaying();
 
 	void unpausePipeline();
+  
+  public void pressPlayWhenFirstMediaArrives();
 	
 }

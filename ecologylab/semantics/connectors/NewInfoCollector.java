@@ -684,8 +684,8 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 	{
 		candidateTextClippingsPool.insert(textClippingGE, poolPriority);
 		
-		if (playOnStart && guiBridge != null)
-			guiBridge.pressPlayWhenFirstMediaArrives();
+		if (playOnStart && interactiveSpace != null)
+			interactiveSpace.pressPlayWhenFirstMediaArrives();
 	}
 
 	public void addImageToPool(Image image)
