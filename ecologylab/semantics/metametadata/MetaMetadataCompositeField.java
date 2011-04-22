@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.semantics.actions.SemanticAction;
 import ecologylab.semantics.actions.SemanticActionTranslationScope;
-import ecologylab.semantics.metadata.DocumentParserTagNames;
+import ecologylab.semantics.namesandnums.DocumentParserTagNames;
 import ecologylab.serialization.ElementState.xml_tag;
 import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.simpl_inherit;

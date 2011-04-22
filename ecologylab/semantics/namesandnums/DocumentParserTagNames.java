@@ -1,4 +1,4 @@
-package ecologylab.semantics.metadata;
+package ecologylab.semantics.namesandnums;
 
 public interface DocumentParserTagNames
 {

@@ -2,7 +2,7 @@ package ecologylab.semantics.metametadata;
 
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
-import ecologylab.semantics.metadata.DocumentParserTagNames;
+import ecologylab.semantics.namesandnums.DocumentParserTagNames;
 import ecologylab.serialization.ElementState.xml_tag;
 import ecologylab.serialization.TranslationScope;
 import ecologylab.serialization.XMLTools;
