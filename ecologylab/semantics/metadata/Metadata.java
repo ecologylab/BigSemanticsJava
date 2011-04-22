@@ -17,7 +17,7 @@ import java.util.Set;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionHandler;
-import ecologylab.semantics.connectors.LinkedMetadataMonitor;
+import ecologylab.semantics.collecting.LinkedMetadataMonitor;
 import ecologylab.semantics.metadata.builtins.DebugMetadata;
 import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
 import ecologylab.semantics.metadata.scalar.MetadataString;

@@ -4,7 +4,7 @@ import java.io.File;
 
 import ecologylab.net.MimeType;
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.connectors.DocumentLocationMap;
+import ecologylab.semantics.collecting.DocumentLocationMap;
 import ecologylab.semantics.html.documentstructure.ImageConstants;
 import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;

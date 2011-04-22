@@ -3,7 +3,7 @@
  */
 package ecologylab.semantics.seeding;
 
-import ecologylab.semantics.connectors.NewInfoCollector;
+import ecologylab.semantics.collecting.NewInfoCollector;
 import ecologylab.serialization.Hint;
 
 /**

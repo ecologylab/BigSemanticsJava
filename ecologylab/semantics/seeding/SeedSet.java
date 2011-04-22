@@ -7,7 +7,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import ecologylab.collections.Scope;
-import ecologylab.semantics.connectors.NewInfoCollector;
+import ecologylab.semantics.collecting.NewInfoCollector;
 import ecologylab.semantics.namesandnums.SemanticsSessionObjectNames;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.TranslationScope;

@@ -1,6 +1,6 @@
 package ecologylab.semantics.metadata.builtins;
 import ecologylab.concurrent.DownloadMonitor;
-import ecologylab.semantics.connectors.NewInfoCollector;
+import ecologylab.semantics.collecting.NewInfoCollector;
 import ecologylab.semantics.html.documentstructure.SemanticInLinks;
 
 /**

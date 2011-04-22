@@ -11,7 +11,7 @@ import org.w3c.tidy.TdNode;
 
 import ecologylab.generic.StringTools;
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.connectors.NewInfoCollector;
+import ecologylab.semantics.collecting.NewInfoCollector;
 import ecologylab.semantics.html.AElement;
 import ecologylab.semantics.html.DOMWalkInformationTagger;
 import ecologylab.semantics.html.ImgElement;

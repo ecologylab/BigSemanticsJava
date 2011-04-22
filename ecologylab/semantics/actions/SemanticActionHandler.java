@@ -10,7 +10,7 @@ import ecologylab.generic.Debug;
 import ecologylab.semantics.actions.exceptions.ForLoopException;
 import ecologylab.semantics.actions.exceptions.IfActionException;
 import ecologylab.semantics.actions.exceptions.SemanticActionExecutionException;
-import ecologylab.semantics.connectors.NewInfoCollector;
+import ecologylab.semantics.collecting.NewInfoCollector;
 import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metametadata.MetaMetadata;

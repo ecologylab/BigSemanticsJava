@@ -2,7 +2,7 @@ package ecologylab.semantics.seeding;
 
 import java.io.File;
 
-import ecologylab.semantics.connectors.NewInfoCollector;
+import ecologylab.semantics.collecting.NewInfoCollector;
 import ecologylab.semantics.namesandnums.SemanticsSessionObjectNames;
 import ecologylab.serialization.simpl_inherit;
 

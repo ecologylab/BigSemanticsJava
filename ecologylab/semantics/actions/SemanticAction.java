@@ -8,8 +8,8 @@ import java.util.HashMap;
 
 import ecologylab.collections.Scope;
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.connectors.NewInfoCollector;
-import ecologylab.semantics.connectors.SemanticsSite;
+import ecologylab.semantics.collecting.NewInfoCollector;
+import ecologylab.semantics.collecting.SemanticsSite;
 import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.html.documentstructure.LinkType;
 import ecologylab.semantics.html.documentstructure.SemanticAnchor;

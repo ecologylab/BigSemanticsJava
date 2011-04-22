@@ -4,7 +4,7 @@ import java.awt.Point;
 import java.io.File;
 
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.connectors.NewInfoCollector;
+import ecologylab.semantics.collecting.NewInfoCollector;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.model.text.InterestModel;
 import ecologylab.serialization.simpl_inherit;

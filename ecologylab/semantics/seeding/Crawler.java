@@ -4,7 +4,7 @@
 package ecologylab.semantics.seeding;
 
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.connectors.NewInfoCollector;
+import ecologylab.semantics.collecting.NewInfoCollector;
 
 /**
  * Specification of a directive to the agent or otherwise to compositon space services.

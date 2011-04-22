@@ -5,7 +5,7 @@ package ecologylab.semantics.documentparsers;
 
 import java.io.IOException;
 
-import ecologylab.semantics.connectors.NewInfoCollector;
+import ecologylab.semantics.collecting.NewInfoCollector;
 import ecologylab.semantics.metadata.builtins.Document;
 
 /**

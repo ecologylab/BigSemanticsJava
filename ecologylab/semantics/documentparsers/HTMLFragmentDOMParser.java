@@ -4,7 +4,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.connectors.NewInfoCollector;
+import ecologylab.semantics.collecting.NewInfoCollector;
 import ecologylab.semantics.html.DOMFragmentInformationTagger;
 import ecologylab.semantics.html.ImgElement;
 import ecologylab.semantics.html.TidyInterface;

@@ -10,7 +10,7 @@ import ecologylab.appframework.types.prefs.PrefBoolean;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.generic.StringTools;
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.connectors.NewInfoCollector;
+import ecologylab.semantics.collecting.NewInfoCollector;
 import ecologylab.semantics.html.ParagraphText;
 import ecologylab.semantics.html.TidyInterface;
 import ecologylab.semantics.html.documentstructure.AnchorContext;

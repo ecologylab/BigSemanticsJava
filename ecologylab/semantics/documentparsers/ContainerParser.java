@@ -1,7 +1,7 @@
 package ecologylab.semantics.documentparsers;
 
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.connectors.NewInfoCollector;
+import ecologylab.semantics.collecting.NewInfoCollector;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
 import ecologylab.semantics.seeding.SearchState;
 import ecologylab.semantics.seeding.SeedDistributor;

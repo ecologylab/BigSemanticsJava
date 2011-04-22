@@ -9,7 +9,7 @@ import java.util.Queue;
 
 import ecologylab.generic.Debug;
 import ecologylab.generic.Generic;
-import ecologylab.semantics.connectors.NewInfoCollector;
+import ecologylab.semantics.collecting.NewInfoCollector;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
 

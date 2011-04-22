@@ -2,7 +2,7 @@ package ecologylab.semantics.seeding;
 
 import ecologylab.collections.Scope;
 import ecologylab.generic.ReflectionTools;
-import ecologylab.semantics.connectors.NewInfoCollector;
+import ecologylab.semantics.collecting.NewInfoCollector;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
 import ecologylab.semantics.namesandnums.CFPrefNames;

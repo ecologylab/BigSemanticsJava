@@ -4,7 +4,7 @@
 package ecologylab.semantics.documentparsers;
 
 import ecologylab.semantics.actions.SemanticActionHandler;
-import ecologylab.semantics.connectors.NewInfoCollector;
+import ecologylab.semantics.collecting.NewInfoCollector;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.seeding.Feed;
 import ecologylab.semantics.seeding.Seed;
