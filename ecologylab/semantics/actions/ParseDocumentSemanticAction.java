@@ -76,7 +76,7 @@ class ParseDocumentSemanticAction
 
 //		ParsedURL purl = (ParsedURL) getArgumentObject(SemanticActionNamedArguments.CONTAINER_LINK);
 		Document source = documentParser.getDocument();
-		if (source != null)
+		if (source != null) 
 			document.addInlink(source);
 		document.queueDownload();
 
