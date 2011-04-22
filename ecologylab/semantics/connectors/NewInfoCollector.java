@@ -31,6 +31,8 @@ import ecologylab.io.Assets;
 import ecologylab.io.AssetsRoot;
 import ecologylab.io.Files;
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.gui.GuiBridge;
+import ecologylab.semantics.gui.InteractiveSpace;
 import ecologylab.semantics.metadata.DocumentParserTagNames;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.builtins.Document;

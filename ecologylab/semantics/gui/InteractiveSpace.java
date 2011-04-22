@@ -1,7 +1,7 @@
 /**
  * 
  */
-package ecologylab.semantics.connectors;
+package ecologylab.semantics.gui;
 
 /**
  * Wraps something like a CompositionSpace.
