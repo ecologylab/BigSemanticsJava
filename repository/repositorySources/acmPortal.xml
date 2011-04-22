@@ -6,7 +6,7 @@
     
     <url_generator type="search" engine="acm_portal" use_id="title" />
 		
-		<scalar name="title" xpath="//div[@class='large-text']" navigates_to="metadata_page" as_natural_id="title" />
+		<scalar name="title" xpath="//div[@class='large-text']" navigates_to="metadata_page" as_natural_id="title" format="text" />
 		<scalar name="location" xpath="//div[@id='divmain']//a[@name='FullTextPdf' or @name='FullTextPDF']/@href" />
 		<scalar name="abstract_field" label="abstract" xpath="//h1/a/span[contains(text(), 'ABSTRACT')]/ancestor::h1/following-sibling::div[@class='flatbody'][1]" />
 		
@@ -47,19 +47,17 @@
 			<scalar name="tag_name" xpath="./span/child::text()" />
 		</collection>
     
-    <link_with name="citeseerx_summary" by_id="title" options="text" />
-    <link_with name="google_scholar_search_result" by_id="title" options="text" />
+    <link_with name="citeseerx_summary" by_id="title"  />
+  <!--  <link_with name="google_scholar_search_result" by_id="title" /> -->
 		
 		<semantic_actions>
 			<set_field name="metadata_page" value="TRUE_PURL">
 				<!--arg value="TRUE_PURL" name="value" />  -->
 			</set_field>
 			
-			
 			<get_field name="location" />
 			<if>
 				<not_null value="location" />
-				<!--  -->
 				<parse_document now="true" >
 					<arg value="metadata" name="document" />
 					<arg value="location" name="container_link" />
