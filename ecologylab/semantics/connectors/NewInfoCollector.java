@@ -699,7 +699,7 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 	}
 	public boolean addClosureToPool(DocumentClosure candidate)
 	{
-		if (candidate != null)
+		if (candidate != null && collectCandidatesInPools)
 		{	
 			synchronized(candidate)
 			{
