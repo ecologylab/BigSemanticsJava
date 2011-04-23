@@ -17,7 +17,7 @@
     <collection name="tags" child_type="tag" comment="Associated tags from the search engine, if exist" />
 	</meta_metadata>
 
-	<meta_metadata name="search" extends="document" comment="">
+	<meta_metadata name="search" extends="compound_document" comment="">
 		<collection name="search_results" child_type="search_result" no_wrap="true" />
 	</meta_metadata>
 
@@ -51,7 +51,7 @@
 		<scalar name="versions_link" scalar_type="ParsedURL" hide="true" />
 	</meta_metadata>
 
-	<meta_metadata name="google_scholar_search" extends="document" comment="The google Search class" user_agent_name="opera_9" parser="xpath">
+	<meta_metadata name="google_scholar_search" extends="compound_document" comment="The google Search class" user_agent_name="opera_9" parser="xpath">
 		<selector url_stripped="http://scholar.google.com/scholar" />
 		<def_var name="links_row" xpath="//span[@class='gs_fl']" type="node" />
 		<def_var name="pub_row" xpath="//span[@class='gs_a']" type="node" />
@@ -143,7 +143,7 @@
 		<scalar name="height" tag="Height" scalar_type="Int" hint="XML_LEAF" />
 	</meta_metadata>
 
-	<meta_metadata name="yahoo_result" extends="document">
+	<meta_metadata name="yahoo_result" extends="compound_document">
 		<scalar name="title" scalar_type="String" tag="Title" hide="true" />
 		<scalar name="summary" scalar_type="String" tag="Summary" />
 		<scalar name="location" scalar_type="ParsedURL" tag="Url" hide="true" />
@@ -153,7 +153,7 @@
 		<composite name="thumbnail" tag="Thumbnail" type="yahoo_thumbnail" hide="true" />
 	</meta_metadata>
 
-	<meta_metadata name="yahoo_result_set" extends="document" comment="Yahoo Web Search Service" tag="ResultSet" parser="direct">
+	<meta_metadata name="yahoo_result_set" extends="compound_document" comment="Yahoo Web Search Service" tag="ResultSet" parser="direct">
 		<collection name="results" child_type="yahoo_result" no_wrap="true" comment="Collection of results for yahoo search" child_tag="Result">
 		</collection>
 	</meta_metadata>
@@ -245,16 +245,16 @@
 	</meta_metadata>
 
 	<!-- intermediate layers for source types. necessary for binding tags. -->
-	<meta_metadata name="bing_search_web_section" extends="document">
+	<meta_metadata name="bing_search_web_section" extends="compound_document">
 		<collection name="web_search_results" child_type="bing_web_search_result" tag="web:Results" child_tag="web:WebResult" no_wrap="false" />
 	</meta_metadata>
 
-	<meta_metadata name="bing_search_image_section" extends="document">
+	<meta_metadata name="bing_search_image_section" extends="compound_document">
 		<collection name="image_search_results" child_type="bing_image_search_result" tag="mms:Results" child_tag="mms:ImageResult" no_wrap="false" />
 	</meta_metadata>
 
 	<!-- Bing search. note that they put different types of search results (i.e. sources) into the same structure. -->
-	<meta_metadata name="bing_search" extends="document" tag="SearchResponse" parser="direct" user_agent_name="opera_9">
+	<meta_metadata name="bing_search" extends="compound_document" tag="SearchResponse" parser="direct" user_agent_name="opera_9">
 		<selector url_stripped="http://api.bing.net/xml.aspx" />
 
 		<composite name="web_section" type="bing_search_web_section" tag="web:Web" />

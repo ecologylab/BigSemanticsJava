@@ -3,7 +3,7 @@
 	
 	<cookie_processing domain="imdb.com" ignore_all_cookies="true" />
 	
-	<meta_metadata name="birth_detail" extends="document" comment="Metadata for storing details of birth (date and place) of people" parser="xpath" >
+	<meta_metadata name="birth_detail" extends="compound_document" comment="Metadata for storing details of birth (date and place) of people" parser="xpath" >
 		<scalar name="day_of_birth" navigates_to="day_of_birth_link" label="day of birth" scalar_type="String" />
 		<scalar name="year_of_birth" navigates_to="year_of_birth_link" label="year of birth" scalar_type="String" />
 		<scalar name="place_of_birth" navigates_to="place_of_birth_link" label="place of birth" scalar_type="String" />
@@ -12,7 +12,7 @@
 		<scalar name="place_of_birth_link" hide="true" scalar_type="ParsedURL" />
 	</meta_metadata>
 
-	<meta_metadata name="imdb_title" extends="document" comment="IMDB metadata" parser="xpath">
+	<meta_metadata name="imdb_title" extends="compound_document" comment="IMDB metadata" parser="xpath">
 		<selector url_path_tree="http://www.imdb.com/title/" />
     
     <!-- for testing scalar collections
@@ -103,7 +103,7 @@
 		</semantic_actions>
 	</meta_metadata>
 
-	<meta_metadata name="person_details" extends="document" comment="IMDB metadata" parser="xpath">
+	<meta_metadata name="person_details" extends="compound_document" comment="IMDB metadata" parser="xpath">
 		<selector url_path_tree="http://www.imdb.com/name/" />
 		<def_var name="bio_node" xpath="//td[@id='overview-top']/p" type="node" />
 <!--		<def_var name="trivia_node" xpath="//div[@class='info']/h5[starts-with(child::text(), 'Trivia:')]/.." type="node" />-->
@@ -221,7 +221,7 @@
 		</semantic_actions>
 	</meta_metadata>
 
-	<meta_metadata name="imdb_chart" extends="document" comment="IMDB chart" parser="xpath">
+	<meta_metadata name="imdb_chart" extends="compound_document" comment="IMDB chart" parser="xpath">
 		<selector url_path_tree="http://www.imdb.com/chart/" />
 		<collection name="results" xpath="//div[@id='main']/table//a" child_type="imdb_title">
 			<scalar name="title" xpath="./text()" />
@@ -240,7 +240,7 @@
 		</semantic_actions>
 	</meta_metadata>
 
-	<meta_metadata name="imdb_genre" extends="document" comment="IMDB genre" parser="xpath" >
+	<meta_metadata name="imdb_genre" extends="compound_document" comment="IMDB genre" parser="xpath" >
 		<selector url_path_tree="http://www.imdb.com/genre/" />
 		<collection name="results" xpath="//table[@class='results']//td[@class='title']/a" child_type="imdb_title">
 			<scalar name="title" xpath="./text()" />

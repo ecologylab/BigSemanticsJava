@@ -1,5 +1,5 @@
 <meta_metadata_repository name="delicious" package="ecologylab.semantics.generated.library" default_user_agent_name="chrome_2">
-	<meta_metadata name="delicious_homepage" extends="document" comment="Delicious home page class" parser="xpath">
+	<meta_metadata name="delicious_homepage" extends="compound_document" comment="Delicious home page class" parser="xpath">
 	<selector url_path_tree="http://delicious.com/" domain="delicious.com"/>
 	
 		<collection name="bookmarks" xpath="//ul[@id='bookmarklist']/li" child_type="bookmark">

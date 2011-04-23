@@ -1,7 +1,7 @@
 <meta_metadata_repository name="weather" package="ecologylab.semantics.generated.library" default_user_agent_name="chrome_2">
 
 	<!-- data structure definition for (general) weather report -->
-	<meta_metadata name="weather_report" extends="document" comment="The definition of weather report class.">
+	<meta_metadata name="weather_report" extends="compound_document" comment="The definition of weather report class.">
 		<scalar name="city" comment="The name of the city." scalar_type="String" />
 		<scalar name="weather" comment="The weather condition of the city, like sunny or cloudy." scalar_type="String" />
 		<scalar name="pic_url" comment="The URL of the picture indicating weather condition." scalar_type="ParsedURL" />

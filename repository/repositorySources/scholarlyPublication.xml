@@ -1,6 +1,6 @@
 <meta_metadata_repository name="scholarlyPublication" package="ecologylab.semantics.generated.library.scholarlyPublication">
 
-	<meta_metadata name="source" extends="document" comment="Metadata related to where an article is published.">
+	<meta_metadata name="source" extends="compound_document" comment="Metadata related to where an article is published.">
 		<scalar name="year_of_publication" is_facet="true" scalar_type="Int" />
 		<scalar name="archive_name" scalar_type="String" comment="Archive of conference or journal." />
 		<scalar name="archive" hide="true" scalar_type="ParsedURL" comment="Url to the archive of conference or journal." />

@@ -421,8 +421,8 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DC>
 			}
 		}
 		String parserName				= metaMetadata.getParser();	
-		if (parserName == null)			//FIXME Hook HTMLDOMImageText up to html mime-type & suffixes; drop defaultness of parser
-			parserName = SemanticActionsKeyWords.DEFAULT_PARSER;
+//		if (parserName == null)			//FIXME Hook HTMLDOMImageText up to html mime-type & suffixes; drop defaultness of parser
+//			parserName = SemanticActionsKeyWords.HTML_IMAGE_DOM_TEXT_PARSER;
 		
 		if (documentParser == null)
 			documentParser 	= DocumentParser.getParserInstanceFromBindingMap(parserName, infoCollector);

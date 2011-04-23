@@ -1,5 +1,5 @@
 <meta_metadata_repository name="restaurant" package="ecologylab.semantics.generated.library" default_user_agent_name="chrome_2">
-	<meta_metadata name="restaurant" extends="document" comment="The restaurant class">
+	<meta_metadata name="restaurant" extends="compound_document" comment="The restaurant class">
 		<scalar name="phone" comment="Phone number of the restaurant" scalar_type="String" />
 		<scalar name="pic" hide="true" comment="A picture from the restaurant" scalar_type="ParsedURL" />
 		<scalar name="link" comment="Link to the restaurant's website" scalar_type="ParsedURL" />

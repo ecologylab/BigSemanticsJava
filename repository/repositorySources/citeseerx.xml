@@ -1,6 +1,6 @@
 <meta_metadata_repository name="bib_managing" package="ecologylab.semantics.generated.library.bibManaging" default_user_agent_name="chrome_2">
 
-	<meta_metadata name="citation_info" extends="document" comment="Citation numbers.">
+	<meta_metadata name="citation_info" extends="compound_document" comment="Citation numbers.">
 		<scalar name="total_citation" scalar_type="Int" />
 		<scalar name="self_citation" scalar_type="Int" />
 	</meta_metadata>

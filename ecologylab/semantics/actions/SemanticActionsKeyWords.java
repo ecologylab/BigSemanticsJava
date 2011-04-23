@@ -62,7 +62,7 @@ public interface SemanticActionsKeyWords
 	
 	public static String  XPATH_PARSER							= "xpath";
 	
-	public static String  DEFAULT_PARSER						= "default";
+	public static String  HTML_IMAGE_DOM_TEXT_PARSER= "html_dom_image_text";
 	
 	public static String  FEED_PARSER								= "feed";
 	

@@ -17,7 +17,7 @@
 			</for_each>
 		</semantic_actions>
 	</meta_metadata>
-	<meta_metadata name="google_patent" extends="document" comment="Google Patents Class" user_agent_name="firefox_2" parser="xpath">
+	<meta_metadata name="google_patent" extends="compound_document" comment="Google Patents Class" user_agent_name="firefox_2" parser="xpath">
 		<selector url_path_tree="http://www.google.com/patents/about"/>
 		<scalar name="title" xpath="//div[@id='titlebar']/h1" />
 		<scalar name="inventor" xpath="//div[@id='titlebar']/span" scalar_type="String" />
@@ -79,7 +79,7 @@
 			</for_each>
 		</semantic_actions>
 	</meta_metadata>
-	<meta_metadata name="google_patent_image" extends="document" comment="Google Patents Image Class" user_agent_name="firefox_2" parser="xpath">
+	<meta_metadata name="google_patent_image" extends="compound_document" comment="Google Patents Image Class" user_agent_name="firefox_2" parser="xpath">
 		<selector url_regex="(?=http://www.google.com/patents\?id=)^((?!img).)*$" domain="google.com"/>
 		<scalar name="title" xpath="//div[@id='titlebar']/h1" />
 		<scalar name="inventor" xpath="//div[@id='titlebar']/span" scalar_type="String" />
@@ -96,7 +96,7 @@
 			</for_each>
 		</semantic_actions>
 	</meta_metadata>
-	<meta_metadata name="google_sorry" extends="document" parser="xpath">
+	<meta_metadata name="google_sorry" extends="compound_document" parser="xpath">
 		<selector url_regex="http://sorry.google.com" domain="google.com"/>
 		<semantic_actions>
 			<back_off_from_site domain="google.com" />

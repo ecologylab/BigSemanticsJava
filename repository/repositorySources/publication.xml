@@ -1,6 +1,6 @@
 <meta_metadata_repository name="publication" package="ecologylab.semantics.generated.library.publication">
 
-	<meta_metadata name="publication" extends="document" comment="A publication.">
+	<meta_metadata name="publication" extends="compound_document" comment="A publication.">
 		<collection name="authors" child_type="author" />
 		<composite name="publisher" type="publisher" />
 		<scalar name="pages" scalar_type="String" />
@@ -18,7 +18,7 @@
 		</collection>
 	</meta_metadata>
 
-	<meta_metadata name="author" extends="document" comment="An author of an article or creative work.">
+	<meta_metadata name="author" extends="compound_document" comment="An author of an article or creative work.">
 		<scalar name="name" navigates_to="location" is_facet="true" as_composite_scalar="true" comment="" scalar_type="String" />
 		<scalar name="affiliation" comment="" scalar_type="String" />
 		<scalar name="location" hide="true" />

@@ -23,7 +23,7 @@
 		<scalar name="text" scalar_type="String" />
 	</meta_metadata>
 	
-	<meta_metadata name="clippable_document"  dont_generate_class="true">
+	<meta_metadata name="clippable_document"  extends="document" dont_generate_class="true">
 		<collection name="clippings" child_type="media_clipping" promote_children="true"/>
 		<scalar name="width" scalar_type="integer"/>
 		<scalar name="height" scalar_type="integer"/>
@@ -45,15 +45,10 @@
 		<scalar name="local_location" hide="true" comment="Relative location of local copy of image." scalar_type="File" />
 	</meta_metadata>
 	
-	<meta_metadata name="document" extends="metadata" comment="The Document Class" parser="default" dont_generate_class="true">
-		<selector>
-			<suffix>html</suffix>
-			<suffix>htm</suffix>
-		</selector>
+	<meta_metadata name="document" extends="metadata" comment="The Document Class" dont_generate_class="true">
 		<scalar name="title" style="h1" layer="10.0" navigates_to="location" comment="The Title of the Document" scalar_type="String"  hint="XML_LEAF"/>
 		<scalar name="description" layer="9.0" scalar_type="String" />
 		<scalar name="location" always_show="true" layer="8.0" comment="The document's actual location." scalar_type="ParsedURL" />
-		<scalar name="page_structure" layer="6.0" comment="For debugging. Type of the structure recognized by information extraction." scalar_type="String" />
 		<scalar name="query" layer="5.0" comment="The search query" scalar_type="String" />
 		
 		<collection name="additional_locations" child_scalar_type="ParsedURL"/>
@@ -61,7 +56,24 @@
 	</meta_metadata>
 	
 	
-	<meta_metadata name="xml" type="document" dont_generate_class="true" comment="XML" parser="direct" user_agent_name="firefox_3_6_8">
+	<meta_metadata name="compound_document"  extends="document" dont_generate_class="true">
+		<scalar name="page_structure" layer="6.0" comment="For debugging. Type of the structure recognized by information extraction." scalar_type="String" />
+	</meta_metadata>
+	
+	<meta_metadata name="html" type="compound_document" dont_generate_class="true" parser="html_dom_image_text" user_agent_name="firefox_3_6_8">
+		<selector>
+			<mime_type>text/html</mime_type>
+			<suffix>htm</suffix>
+			<suffix>html</suffix>
+			<suffix>htmls</suffix>
+			<suffix>htx</suffix>
+			<suffix>shtml</suffix>
+			<suffix>ssi</suffix>
+			<suffix>acgi</suffix>
+		</selector>
+	</meta_metadata>
+	
+	<meta_metadata name="xml" type="compound_document" dont_generate_class="true" comment="XML" parser="direct" user_agent_name="firefox_3_6_8">
 		<selector>
 			<mime_type>text/xml</mime_type>
 			<mime_type>application/xml</mime_type>

@@ -42,7 +42,7 @@
 		</semantic_actions>
 	</meta_metadata>
 	
-	<meta_metadata name="google_trends" extends="document" comment="Google trends" parser="xpath">
+	<meta_metadata name="google_trends" extends="compound_document" comment="Google trends" parser="xpath">
 		<selector url_path_tree="http://www.google.com/trends"/>
 		<collection name="hot_searches" xpath="//table[@class='hotTerm']//a[not(@id)]" child_type="hot_search" no_wrap="true">
 			<scalar name="search" xpath="." scalar_type="String" />

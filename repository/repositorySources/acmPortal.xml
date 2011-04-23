@@ -103,7 +103,7 @@
 	</meta_metadata>
 	
 	<!--
-	<meta_metadata name="acm_proceeding" extends="document" parser="xpath">
+	<meta_metadata name="acm_proceeding" extends="compound_document" parser="xpath">
 		<selector url_stripped="http://portal.acm.org/toc.cfm" />
 		<collection name="proceedings" hide="true" xpath="//tr[@valign='top']/td[@class='small-text']/strong" child_type="search_result">
 			<scalar name="link" xpath="./a/@href" />

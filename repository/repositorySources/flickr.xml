@@ -12,7 +12,7 @@
 		<scalar name="browse_purl" hide="true" scalar_type="ParsedURL" />
 		<collection name="flickr_tags" child_type="flickr_tag" />
 	</meta_metadata>
-	<meta_metadata name="flickr_search" extends="document" comment="The flickr search class" parser="xpath">
+	<meta_metadata name="flickr_search" extends="compound_document" comment="The flickr search class" parser="xpath">
 		<selector name="flickr_search_selector" />
 		<collection name="flickr_results" xpath="//div[@class='DetailResults']//div[@class='box']" child_type="flickr_image">
 			<composite name="clipping" xpath="." promote_children="true">
@@ -53,7 +53,7 @@
 		</semantic_actions>
 	</meta_metadata>
 
-	<meta_metadata name="flickr_image_detail" extends="document" comment="A Flickr Image result page" parser="xpath">
+	<meta_metadata name="flickr_image_detail" extends="compound_document" comment="A Flickr Image result page" parser="xpath">
 		<def_var name="photoTD" xpath="//div[@id='meta']" type="node" />
 		<selector name="flickr_image_detail_selector" />
 		<scalar name="title" xpath="./h1" context_node="photoTD" />
@@ -99,7 +99,7 @@
 		<scalar name="title" navigates_to="link" comment="flickr_image_detail" scalar_type="String" />
 	</meta_metadata>
 
-	<meta_metadata name="flickr_author" extends="document" comment="All flickr photos of a particular user" parser="xpath">
+	<meta_metadata name="flickr_author" extends="compound_document" comment="All flickr photos of a particular user" parser="xpath">
 		<selector url_regex="http://www.flickr.com/photos/(?!tags)[A-z0-9_@-]+/$" domain="flickr.com" />
 		<collection name="flickr_link_set" xpath="//div[@class=&#39;Photo&#39;]" comment="Collection of all images of a user" child_type="flickr_link">
 			<scalar name="link" xpath="./span/a/@href" />
@@ -135,7 +135,7 @@
 		</semantic_actions>
 	</meta_metadata>
 
-	<meta_metadata name="flickr_tags" extends="document" comment="For flickr crawled tags" parser="xpath">
+	<meta_metadata name="flickr_tags" extends="compound_document" comment="For flickr crawled tags" parser="xpath">
 		<selector url_regex="http://www.flickr.com/photos/tags/[a-z0-9]+/*$" domain="flickr.com" />
 		<collection name="flickr_link_set" xpath="//span[@class='photo_container pc_t']" comment="Collection of all images of a user" child_type="flickr_link">
 			<scalar name="link" xpath="./a/@href" />
@@ -151,7 +151,7 @@
 		</semantic_actions>
 	</meta_metadata>
 
-	<meta_metadata name="flickr_search_two" extends="document" comment="The flickr search class" parser="xpath">
+	<meta_metadata name="flickr_search_two" extends="compound_document" comment="The flickr search class" parser="xpath">
 		<selector name="flickr_search_selector" />
 		<collection name="flickr_results" xpath="//div[@class='DetailResults']//div[@class='box']" child_type="flickr_image">
 			<composite name="clipping" xpath="." promote_children="true">
@@ -209,7 +209,7 @@
 	</meta_metadata>
 
 
-	<meta_metadata name="flickr_image_detail_two" extends="document" parser="xpath" comment="A Flickr Image result page">
+	<meta_metadata name="flickr_image_detail_two" extends="compound_document" parser="xpath" comment="A Flickr Image result page">
 		<selector name="flickr_image_detail_selector" />
 		<def_var name="photoTD" xpath="//div[@id='meta']" type="node" />
 

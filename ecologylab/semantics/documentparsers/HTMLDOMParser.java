@@ -18,6 +18,7 @@ import ecologylab.semantics.html.documentstructure.LinkType;
 import ecologylab.semantics.html.documentstructure.RecognizedDocumentStructure;
 import ecologylab.semantics.html.documentstructure.SemanticAnchor;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
+import ecologylab.semantics.metadata.builtins.CompoundDocument;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.Image;
 import ecologylab.semantics.metadata.builtins.TextClipping;
@@ -234,7 +235,7 @@ public class HTMLDOMParser
 	{
 		if (SHOW_PAGE_STRUCTURE_PREF.value())
 		{
-			Document metadata = getDocument();
+			CompoundDocument metadata = (CompoundDocument) getDocument();
 			if (metadata != null)
 				metadata.setPageStructure(pageType.getSimpleName());
 			else

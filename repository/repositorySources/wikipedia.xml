@@ -18,7 +18,7 @@
     </semantic_actions>
   </meta_metadata>
 
-  <meta_metadata name="wikipedia_page_type" extends="document" comment="An article on wikipedia" package="ecologylab.semantics.generated.library">
+  <meta_metadata name="wikipedia_page_type" extends="compound_document" comment="An article on wikipedia" package="ecologylab.semantics.generated.library">
     <collection name="paragraphs" comment="Paragraphs in the article." child_type="paragraph">
       <scalar name="paragraph_text" scalar_type="String" />
       <collection name="anchors" comment="Anchors (links) in the paragraph, typically links to another Wikipedia article." child_type="anchor">

@@ -1,7 +1,7 @@
 <meta_metadata_repository name="default"
 	package="ecologylab.semantics.generated.library.icdl">
 
-	<meta_metadata name="icdl_image_result" extends="document"
+	<meta_metadata name="icdl_image_result" 
 		comment="Thumbnail Image" tag="response"
 		package="ecologylab.semantics.generated.library.icdl" parser="direct">
 		<selector url_stripped="http://www.childrenslibrary.org/BookXMLResults" />
@@ -43,7 +43,7 @@
 		</semantic_actions>
 	</meta_metadata>
 
-	<meta_metadata name="icdl_book_preview" extends="document" parser="xpath"
+	<meta_metadata name="icdl_book_preview"  parser="xpath"
 		comment="ICDL About This Book Page">
 		<selector url_stripped="http://www.childrenslibrary.org/icdl/BookPreview" />
 

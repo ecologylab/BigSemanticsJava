@@ -1,6 +1,6 @@
 <meta_metadata_repository name="artwork" package="ecologylab.semantics.generated.library.artwork" default_user_agent_name="chrome_2">
 
-	<meta_metadata name="artwork" extends="document" comment="Artwork class">
+	<meta_metadata name="artwork" extends="compound_document" comment="Artwork class">
 		<collection name="artists" comment="Set of artists." child_type="artist" layer="9.5"/>
 		<scalar name="abstractField" comment="Abstract of the work." tag="abstract" label="abstract" scalar_type="String" />
 		<scalar name="medium" comment="Medium on which the work is done." scalar_type="String" layer="9.2" />
@@ -81,7 +81,7 @@
 		</semantic_actions>
 	</meta_metadata>
 	
-	<meta_metadata name="moma_list" extends="document" parser="xpath">
+	<meta_metadata name="moma_list" extends="compound_document" parser="xpath">
 		<selector url_regex="http://www.moma.org/collection/browse_results.php[\S]*template_id=6[\S]*" domain="moma.org" />
 		<collection name="artworks" child_type="moma_artwork" child_tag="moma_artwork" xpath="//ul[@id='thumbnail-view-items']/li/a" no_wrap="true">
 			<scalar name="location" xpath="./@href" />

@@ -23,7 +23,7 @@
 	<scalar name="height" scalar_type="Int" />
 </meta_metadata>
 
-<meta_metadata name="topic" extends="document" comment="For Collabartion with UVA's Cluster formation project.">
+<meta_metadata name="topic" extends="compound_document" comment="For Collabartion with UVA's Cluster formation project.">
 	<scalar name="content_keywords" scalar_type="StringBuilder" />
 	<scalar name="anchor_keywords" scalar_type="StringBuilder" />
 	<scalar name="url_keywords" scalar_type="StringBuilder" />

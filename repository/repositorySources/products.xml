@@ -1,6 +1,6 @@
 <meta_metadata_repository name="products" package="ecologylab.semantics.generated.library.products">
 
-<meta_metadata name="product" extends="document" parser="xpath">
+<meta_metadata name="product" extends="compound_document" parser="xpath">
 	<scalar name="location" hide="true" />
   
 	<scalar name="price" scalar_type="String"/>

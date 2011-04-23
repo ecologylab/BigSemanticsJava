@@ -58,14 +58,6 @@ implements DispatchTarget<ImageClosure>
 	
 	@simpl_collection("location")
 	ArrayList<MetadataParsedURL> 						additionalLocations;
-
-	/**
-	 * For debugging. Type of the structure recognized by information extraction.
-	 **/
-
-	@mm_name("page_structure") 
-	@simpl_scalar
-	private MetadataString	        pageStructure;
 	
 	private DocumentClosure					documentClosure;
 	
@@ -385,70 +377,6 @@ implements DispatchTarget<ImageClosure>
 		rebuildCompositeTermVector();
 	}
 
-
-	/**
-	 * Lazy Evaluation for pageStructure
-	 **/
-
-	public MetadataString pageStructure()
-	{
-		MetadataString result = this.pageStructure;
-		if (result == null)
-		{
-			result = new MetadataString();
-			this.pageStructure = result;
-		}
-		return result;
-	}
-
-	/**
-	 * Gets the value of the field pageStructure
-	 **/
-
-	public String getPageStructure()
-	{
-		return pageStructure().getValue();
-	}
-
-	/**
-	 * Sets the value of the field pageStructure
-	 **/
-
-	public void setPageStructure(String pageStructure)
-	{
-		this.pageStructure().setValue(pageStructure);
-	}
-
-	/**
-	 * The heavy weight setter method for field pageStructure
-	 **/
-
-	public void hwSetPageStructure(String pageStructure)
-	{
-		this.pageStructure().setValue(pageStructure);
-		rebuildCompositeTermVector();
-	}
-
-	/**
-	 * Sets the pageStructure directly
-	 **/
-
-	public void setPageStructureMetadata(MetadataString pageStructure)
-	{
-		this.pageStructure = pageStructure;
-	}
-
-	/**
-	 * Heavy Weight Direct setter method for pageStructure
-	 **/
-
-	public void hwSetPageStructureMetadata(MetadataString pageStructure)
-	{
-		if (this.pageStructure != null && this.pageStructure.getValue() != null && hasTermVector())
-			termVector().remove(this.pageStructure.termVector());
-		this.pageStructure = pageStructure;
-		rebuildCompositeTermVector();
-	}
 
 	/**
 	 * Lazy Evaluation for query
