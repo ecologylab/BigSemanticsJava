@@ -16,6 +16,8 @@ import ecologylab.serialization.TranslationScope;
  */
 public class TNGGlobalCollections extends MetaMetadataRepositoryInit
 {
+	/**
+	 */
 	final DocumentLocationMap<Document>		allDocuments;
 	final DocumentLocationMap<Image>			allImages;
 	
@@ -35,10 +37,17 @@ public class TNGGlobalCollections extends MetaMetadataRepositoryInit
 				new DocumentMapHelper<Document>()
 				{
 
+					/**
+					 * Construct a new Document, based on the ParsedURL.
+					 * If there is no special meta-metadata for the location, construct a CompoundDocument.
+					 * 
+					 * @param key
+					 * @return
+					 */
 					@Override
 					public Document constructValue(ParsedURL key)
 					{
-						return getMetaMetadataRepository().constructDocument(key);
+						return getMetaMetadataRepository().constructCompoundDocument(key);
 					}
 
 					@Override

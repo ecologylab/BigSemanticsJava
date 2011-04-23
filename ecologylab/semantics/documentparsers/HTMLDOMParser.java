@@ -222,7 +222,7 @@ public class HTMLDOMParser
 				return; // Should actually raise an exception, but this could happen when a container is not
 						// meant to be reincarnated
 			}
-			Document sourceDocument	= getDocument();
+			CompoundDocument sourceDocument	= getDocument();
 			
 			hrefDocument.addSemanticInlink(semanticAnchor, sourceDocument);
 			sourceDocument.addCandidateOutlink(hrefDocument);			

@@ -139,6 +139,7 @@ abstract public class Metadata extends ElementState implements MetadataBase, Ter
 	 * this field is updated accordingly. also, linkedMetadata will be initialized using this field
 	 * in lazy evaluation.
 	 */
+	@mm_name("linked_metadata_list")
 	@simpl_collection("linked_metadata")
 	private ArrayList<Metadata>						linkedMetadataList;
 

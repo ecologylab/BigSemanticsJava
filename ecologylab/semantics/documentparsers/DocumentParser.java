@@ -35,7 +35,7 @@ import ecologylab.semantics.seeding.Seed;
  * @author andruid
  * @author eunyee
  */
-abstract public class DocumentParser
+abstract public class DocumentParser<D extends Document>
 		extends Debug
 {
 	/**
@@ -475,9 +475,9 @@ abstract public class DocumentParser
 	/**
 	 * @return the document
 	 */
-	public Document getDocument()
+	public D getDocument()
 	{
-		return documentClosure.getDocument();
+		return (D) documentClosure.getDocument();
 	}
 
 }

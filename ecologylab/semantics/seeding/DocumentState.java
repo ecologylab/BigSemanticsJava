@@ -78,11 +78,11 @@ public class DocumentState extends Seed
 	 		infoCollector.traversable(url);
 	 		// strangely enough, a file document seed can have a parentContainer!
 	 		File file					= url.file();
-	 		document					= infoCollector.constructDocument(url);
+	 		document					= infoCollector.getOrConstructDocument(url);
 	 		if (file != null)
 	 		{
 				File parent				= file.getParentFile();	// the directory the file lives in
-				Document parentDocument	= infoCollector.constructDocument(new ParsedURL(parent));
+				Document parentDocument	= infoCollector.getOrConstructDocument(new ParsedURL(parent));
 		 		document.addInlink(parentDocument);
 	 		}
 	 		if (query != null)

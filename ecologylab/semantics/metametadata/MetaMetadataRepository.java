@@ -601,6 +601,11 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		return getDocumentMM(purl, DOCUMENT_TAG);
 	}
 
+	public MetaMetadata getCompoundDocumentMM(ParsedURL purl)
+	{
+		return getDocumentMM(purl, COMPOUND_DOCUMENT_TAG);
+	}
+
 	public MetaMetadata getMMBySuffix(String suffix)
 	{
 		return repositoryBySuffix.get(suffix);
@@ -691,6 +696,17 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	public Document constructDocument(ParsedURL purl)
 	{
 		MetaMetadata metaMetadata = getDocumentMM(purl);
+		Document result = (Document) metaMetadata.constructMetadata(metadataTScope);
+		result.setLocation(purl);
+		return result;
+	}
+
+	public Document constructCompoundDocument(ParsedURL purl)
+	{
+		if (purl.isImg())
+			return constructImage(purl);
+		
+		MetaMetadata metaMetadata = getCompoundDocumentMM(purl);
 		Document result = (Document) metaMetadata.constructMetadata(metadataTScope);
 		result.setLocation(purl);
 		return result;

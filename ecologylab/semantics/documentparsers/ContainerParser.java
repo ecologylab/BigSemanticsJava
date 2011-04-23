@@ -2,6 +2,7 @@ package ecologylab.semantics.documentparsers;
 
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.collecting.NewInfoCollector;
+import ecologylab.semantics.metadata.builtins.CompoundDocument;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
 import ecologylab.semantics.seeding.SearchState;
 import ecologylab.semantics.seeding.SeedDistributor;
@@ -16,7 +17,7 @@ import ecologylab.semantics.seeding.SeedDistributor;
  * @author andruid
  */
 abstract public class ContainerParser
-extends DocumentParser
+extends DocumentParser<CompoundDocument>
 {
 	/**
 	 * Number of search results that we've processed so far, from the search engine.

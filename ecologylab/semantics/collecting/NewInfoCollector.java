@@ -10,10 +10,7 @@ import java.util.HashSet;
 import java.util.Observable;
 import java.util.Observer;
 
-import ecologylab.appframework.ApplicationEnvironment;
 import ecologylab.appframework.ApplicationProperties;
-import ecologylab.appframework.EnvironmentGeneric;
-import ecologylab.appframework.PropertiesAndDirectories;
 import ecologylab.appframework.types.prefs.PrefBoolean;
 import ecologylab.collections.GenericElement;
 import ecologylab.collections.GenericPrioritizedPool;
@@ -27,13 +24,11 @@ import ecologylab.concurrent.DownloadMonitor;
 import ecologylab.generic.Generic;
 import ecologylab.generic.StringTools;
 import ecologylab.generic.ThreadMaster;
-import ecologylab.io.Assets;
-import ecologylab.io.AssetsRoot;
-import ecologylab.io.Files;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.gui.GuiBridge;
 import ecologylab.semantics.gui.InteractiveSpace;
 import ecologylab.semantics.metadata.Metadata;
+import ecologylab.semantics.metadata.builtins.CompoundDocument;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
 import ecologylab.semantics.metadata.builtins.Image;
@@ -45,7 +40,6 @@ import ecologylab.semantics.model.text.InterestModel;
 import ecologylab.semantics.model.text.TermVector;
 import ecologylab.semantics.model.text.TermVectorWeightStrategy;
 import ecologylab.semantics.namesandnums.DocumentParserTagNames;
-import ecologylab.semantics.namesandnums.SemanticsAssetVersions;
 import ecologylab.semantics.namesandnums.SemanticsSessionObjectNames;
 import ecologylab.semantics.seeding.Seed;
 import ecologylab.semantics.seeding.SeedDistributor;
@@ -379,23 +373,6 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 	public MetaMetadata getImageMM(ParsedURL purl)
 	{
 		return META_METADATA_REPOSITORY.getImageMM(purl);
-	}
-
-	
-	/**
-	 * Look-up MetaMetadata for this purl.
-	 * If there is no special MetaMetadata, use Document.
-	 * Construct Metadata of the correct subtype, base on the MetaMetadata.
-	 * Set its location field to purl.
-	 * 
-	 * @param purl
-	 * @return
-	 */
-	public Document constructDocument(ParsedURL purl)
-	{
-		Document result = META_METADATA_REPOSITORY.constructDocument(purl);
-		result.setInfoCollector(this);
-		return result;
 	}
 
 	/**
@@ -734,7 +711,7 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 		return false;
 	}
 	
-	void addImageClosureToPool(ImageClosure imageClosure, Document source)
+	void addImageClosureToPool(ImageClosure imageClosure, CompoundDocument source)
 	{
 		// pressPlayWhenFirstMediaElementArrives();
 		imageClosure.setDispatchTarget(source);
@@ -860,7 +837,7 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 				Image image								= imageClosure.getDocument();
 				Document sourceDocument		= image.getClippingSource();
 				if (sourceDocument != null)
-					sourceDocument.tryToGetBetterImagesAfterInterestExpression(imageClosure);
+					sourceDocument.tryToGetBetterImageAfterInterestExpression(imageClosure);
 			}
 		}
 		synchronized (candidateTextClippingsPool)

@@ -7,12 +7,13 @@ import java.io.IOException;
 
 import ecologylab.semantics.collecting.NewInfoCollector;
 import ecologylab.semantics.metadata.builtins.Document;
+import ecologylab.semantics.metadata.builtins.Image;
 
 /**
  * @author andruid
  *
  */
-public class ImageParser extends DocumentParser
+public class ImageParser extends DocumentParser<Image>
 {
 
 	/**
