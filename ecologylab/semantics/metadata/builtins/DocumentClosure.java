@@ -758,7 +758,7 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DC>
 
 	DispatchTarget<DC> 			dispatchTarget;
 	
-	DispatchTarget<DC> dispatchTarget()
+	public DispatchTarget<DC> dispatchTarget()
 	{
 		return dispatchTarget;
 	}

@@ -286,14 +286,14 @@ public abstract class SemanticAction
 			if (outlinkPurl != null)
 				result							= infoCollector.getGlobalDocumentMap().getOrConstruct(outlinkPurl);
 		}
-		else
-			result.setInfoCollector(infoCollector);
-		
+	
 		if (result == null)
 			result	= sourceDocument;	//direct binding?!
 		
 		if (result != null && !result.isRecycled())
 		{
+			result.setInfoCollector(infoCollector);
+			
 			Metadata mixin				= (Metadata) getArgumentObject(MIXIN);
 			if (mixin != null)
 				result.addMixin(mixin);

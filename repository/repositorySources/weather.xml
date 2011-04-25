@@ -14,15 +14,13 @@
 	<!-- a (specific) weather report meta-metadata definition for wunderground.com -->
 	<meta_metadata name="wu_weather_report" type="weather_report" parser="xpath">
 		<selector url_path_tree="http://www.wunderground.com/US/*/" domain="wunderground.com"/>
-		<scalar name="city" xpath="//table[@id='cityTable']//h1">
-			<filter regex=",\s*[\w\s]+" replace="" />
-		</scalar>
-		<scalar name="weather" xpath="//div[@id='curcondbox']//div[@class='b']" />
-		<scalar name="pic_url" xpath="//div[@id='curcondbox']//img[@class='condIcon']/@src" />
-		<scalar name="temperature" xpath="//div[@id='curcondbox']//span[@pwsvariable='tempf']/@value" />
-		<scalar name="humidity" xpath="//div[@id='curcondbox']//span[@pwsvariable='humidity']" />
-		<scalar name="wind" xpath="//div[@id='curcondbox']//span[@pwsvariable='windspeedmph']" />
-		<scalar name="dew_point" xpath="//div[@id='curcondbox']//span[@pwsvariable='dewptf']" />
+		<scalar name="city" xpath="//h1[@id='locationName']" />
+		<scalar name="weather" xpath="//div[@id='curCond']" />
+		<scalar name="pic_url" xpath="//div[@id='curIcon']//img[@class='condIcon']/@src" />
+		<scalar name="temperature" xpath="//div[@id='tempActual']" />
+		<scalar name="humidity" xpath="//div[@id='conds_details_moisture']//span[@pwsvariable='humidity']" />
+		<scalar name="wind" xpath="//div[@id='nowWind']//span[@id='windCompassSpeed']" />
+		<scalar name="dew_point" xpath="//div[@id='conds_details_temp']//span[@pwsvariable='dewptf']" />
 		
 		<semantic_actions>
 			<get_field name="city" />
