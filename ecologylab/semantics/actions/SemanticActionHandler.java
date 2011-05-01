@@ -210,6 +210,7 @@ public class SemanticActionHandler
 		}
 		catch (Exception e)
 		{
+			e.printStackTrace(); // only for debug
 			if (e instanceof SemanticActionExecutionException)
 				throw (RuntimeException) e;
 			throw new SemanticActionExecutionException(e, action, semanticActionVariableMap);

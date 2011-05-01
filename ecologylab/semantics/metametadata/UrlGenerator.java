@@ -91,6 +91,10 @@ public class UrlGenerator extends ElementState
 			{
 				return searchEngine.formSearchUrl(value, 0, 0);
 			}
+			else
+			{
+				warning("can't generate url because search engine not defined for " + engine);
+			}
 		}
 		else if (TYPE_PATTERN.equals(getType()) && naturalId.equals(getPatternInvolvedId()))
 		{

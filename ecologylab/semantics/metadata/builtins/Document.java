@@ -382,10 +382,19 @@ public class Document extends Metadata
 		getSemanticInlinks().add(source);
 	}
 	
-	public boolean queueDownload()
+	public boolean queueDownload(DispatchTarget dispatchTarget)
 	{
 		DocumentClosure documentClosure	= getOrConstructClosure();
-		return documentClosure != null && documentClosure.queueDownload();
+		if (documentClosure == null)
+			return false;
+		if (dispatchTarget != null)
+			documentClosure.setDispatchTarget(dispatchTarget);
+		return documentClosure.queueDownload();
+	}
+	
+	public boolean queueDownload()
+	{
+		return queueDownload(null);
 	}
 //	@Override
 //	public void recycle()

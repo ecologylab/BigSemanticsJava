@@ -56,6 +56,7 @@
 			</set_field>
 			
 			<get_field name="location" />
+			<!--
 			<if>
 				<not_null value="location" />
 				<parse_document now="true" >
@@ -63,13 +64,14 @@
 					<arg value="location" name="container_link" />
 				</parse_document>
 			</if>
+			-->
 			
 			<get_field name="title" />
 			<create_and_visualize_text_surrogate>
 				<arg value="title" name="text" />
 			</create_and_visualize_text_surrogate>
 			
-<!--      <get_linked_metadata name="citeseerx_summary" />-->
+      <get_linked_metadata name="citeseerx_summary" />
 <!--      <get_linked_metadata name="google_scholar_search_result" />-->
 <!--      -->
 <!--			<get_field name="references" />-->
