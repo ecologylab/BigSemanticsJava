@@ -4,7 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-public class MixedSearch
+public class MetaSearch
 {
 
 	public static String[]	engines	= {
