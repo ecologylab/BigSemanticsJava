@@ -73,20 +73,22 @@ class ParseDocumentSemanticAction
 
 	public Object performBasic(Object obj)
 	{
-		Document document = getOrCreateDocument(documentParser, linkType);
-
-//		ParsedURL purl = (ParsedURL) getArgumentObject(SemanticActionNamedArguments.CONTAINER_LINK);
-		Document source = documentParser.getDocument();
-		if (source != null)
+		if (isNow())
 		{
-			document.addInlink(source);
-			// if there is a source, we should re-use that dispatch target.
-			// e.g. search results from a search
-			DispatchTarget dispatchTarget = source.getOrConstructClosure().dispatchTarget();
-			document.getOrConstructClosure().setDispatchTarget(dispatchTarget);
+			Document document = getOrCreateDocument(documentParser, linkType);
+	
+	//		ParsedURL purl = (ParsedURL) getArgumentObject(SemanticActionNamedArguments.CONTAINER_LINK);
+			Document source = documentParser.getDocument();
+			if (source != null)
+			{
+				document.addInlink(source);
+				// if there is a source, we should re-use that dispatch target.
+				// e.g. search results from a search
+				DispatchTarget dispatchTarget = source.getOrConstructClosure().dispatchTarget();
+				document.getOrConstructClosure().setDispatchTarget(dispatchTarget);
+			}
+			document.queueDownload();
 		}
-		document.queueDownload();
-
 		return null;
 	}
 

@@ -45,7 +45,11 @@ public class GetLinkedMetadataSemanticAction extends SemanticAction
 					{
 						String id = linkWith.getById();
 						ParsedURL purl = linkedMmd.generateUrl(id, metadata.getNaturalIdValue(id));
-						Document linkedDocument	= (Document) infoCollector.getGlobalDocumentMap().getOrConstruct(linkedMmd, purl);
+						// the generated purl may not be associated with linkedMmd! e.g. linkedMmd is a
+						// citeseerx_summary, while generated purl is a citeseerx search.
+						Document linkedDocument	= (Document) infoCollector.getGlobalDocumentMap().getOrConstruct(//linkedMmd,
+								purl);
+						linkedDocument.setInfoCollector(infoCollector);
 						if (linkedDocument != null)
 						{
 							linkedDocument.queueDownload();

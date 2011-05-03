@@ -51,9 +51,7 @@
   <!--  <link_with name="google_scholar_search_result" by_id="title" /> -->
 		
 		<semantic_actions>
-			<set_field name="metadata_page" value="TRUE_PURL">
-				<!--arg value="TRUE_PURL" name="value" />  -->
-			</set_field>
+			<set_field name="metadata_page" value="TRUE_PURL" />
 			
 			<get_field name="location" />
 			<!--
@@ -73,33 +71,33 @@
 			
       <get_linked_metadata name="citeseerx_summary" />
 <!--      <get_linked_metadata name="google_scholar_search_result" />-->
-<!--      -->
-<!--			<get_field name="references" />-->
-<!--			<if>-->
-<!--				<not_null value="references" />-->
-<!--				<for_each collection="references" as="ref">-->
-<!--					<get_field object="ref" name="gist" />-->
-<!--					<parse_document link_type="TRUSTED_SEMANTICS">-->
-<!--						<arg value="true" name="citation_sig" />-->
-<!--						<arg value="gist" name="anchor_text" />-->
-<!--						<arg value="ref" name="entity" />-->
-<!--					</parse_document>-->
-<!--				</for_each>-->
-<!--			</if>-->
-<!--			-->
-<!--			<get_field name="citations" />-->
-<!--			<if>-->
-<!--				<not_null value="citations" />-->
-<!--				<for_each collection="citations" as="cit">-->
-<!--					<get_field object="cit" name="location" />-->
-<!--					<get_field object="cit" name="gist" />-->
-<!--					<parse_document link_type="TRUSTED_SEMANTICS">-->
-<!--						<arg value="true" name="citation_sig" />-->
-<!--						<arg value="gist" name="anchor_text" />-->
-<!--						<arg value="cit" name="entity" />-->
-<!--					</parse_document>-->
-<!--				</for_each>-->
-<!--			</if>-->
+
+			<get_field name="references" />
+			<if>
+				<not_null value="references" />
+				<for_each collection="references" as="ref">
+					<get_field object="ref" name="gist" />
+					<parse_document link_type="TRUSTED_SEMANTICS">
+						<arg value="true" name="citation_sig" />
+						<arg value="gist" name="anchor_text" />
+						<arg value="ref" name="entity" />
+					</parse_document>
+				</for_each>
+			</if>
+			
+			<get_field name="citations" />
+			<if>
+				<not_null value="citations" />
+				<for_each collection="citations" as="cit">
+					<get_field object="cit" name="location" />
+					<get_field object="cit" name="gist" />
+					<parse_document link_type="TRUSTED_SEMANTICS">
+						<arg value="true" name="citation_sig" />
+						<arg value="gist" name="anchor_text" />
+						<arg value="cit" name="entity" />
+					</parse_document>
+				</for_each>
+			</if>
 		</semantic_actions>
 		
 	</meta_metadata>

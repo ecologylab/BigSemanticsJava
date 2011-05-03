@@ -63,7 +63,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	@simpl_map("user_agent")
 	private HashMap<String, UserAgent>													userAgents;
 
-	@simpl_map("search_engine")
+	@simpl_composite
 	private SearchEngines																				searchEngines;
 
 	@simpl_map("named_style")
@@ -216,8 +216,13 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		for (File file : dir.listFiles(xmlFilter))
 		{
 			MetaMetadataRepository repos = readRepository(file, metaMetadataTScope);
+			SearchEngines thoseEngines	= repos.searchEngines;
 			if (result == null)
 				result = repos;
+			else if (thoseEngines != null)
+			{
+				result.searchEngines	= thoseEngines;
+			}
 			else
 				result.integrateRepositoryWithThis(repos);
 			// result.populateURLBaseMap();
@@ -303,8 +308,8 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 			this.userAgents = repository.userAgents;
 
 		// combine searchEngines
-		if (!combineMaps(repository.searchEngines, this.searchEngines))
-			this.searchEngines = repository.searchEngines;
+//		if (!combineMaps(repository.searchEngines, this.searchEngines))
+//			this.searchEngines = repository.searchEngines;
 
 		// combine namedStyles
 		if (!combineMaps(repository.namedStyles, this.namedStyles))

@@ -126,8 +126,9 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 			// make sure termVector is built here
 			resultingMetadata.rebuildCompositeTermVector();
 
-			LinkedMetadataMonitor monitor = infoCollector.metaMetaDataRepository().getLinkedMetadataMonitor();
-			monitor.tryLink(infoCollector.metaMetaDataRepository(), resultingMetadata);
+			MetaMetadataRepository metaMetaDataRepository = infoCollector.metaMetaDataRepository();
+			LinkedMetadataMonitor monitor = metaMetaDataRepository.getLinkedMetadataMonitor();
+			monitor.tryLink(metaMetaDataRepository, resultingMetadata);
 			monitor.addMonitors(resultingMetadata);
 		}
 
