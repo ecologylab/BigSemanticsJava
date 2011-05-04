@@ -21,7 +21,7 @@ div.footer {
 	font-family: monospace;
 }
 
-div#results {
+div#data {
 	width: 70%;
 	margin-top: 10px;
  	margin-bottom: 10px;
@@ -30,8 +30,9 @@ div#results {
 	padding: 5px;
 }
 
-div#results > table, div.linked_metadata > table {
-	margin-top: 80px;
+div#data > table, div.linked_metadata > table {
+	margin-top: 20px;
+	margin-bottom: 40px;
 	border-spacing: 4px;
 	border-radius: 10px;
 	background-color: #B4EEB4;
