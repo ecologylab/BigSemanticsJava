@@ -83,7 +83,7 @@ public class MmToHtmlTest extends NewMmTest
 		a.append("  </head>\n");
 		a.append("  <body>\n");
 		a.append("    <h1 class=\"header\">").append("Rendered HTML").append("</h1>\n");
-		a.append("    <div id=\"results\">\n");
+		a.append("    <div id=\"data\">\n");
 	}
 
 	public void appendFooter(Appendable a) throws IOException
