@@ -14,7 +14,9 @@
 	<!-- a (specific) weather report meta-metadata definition for wunderground.com -->
 	<meta_metadata name="wu_weather_report" type="weather_report" parser="xpath">
 		<selector url_path_tree="http://www.wunderground.com/US/*/" domain="wunderground.com"/>
-		<scalar name="city" xpath="//h1[@id='locationName']" />
+		<scalar name="city" xpath="//h1[@id='locationName']">
+		  <filter regex=", TX" replace="" />
+		</scalar>
 		<scalar name="weather" xpath="//div[@id='curCond']" />
 		<scalar name="pic_url" xpath="//div[@id='curIcon']//img[@class='condIcon']/@src" />
 		<scalar name="temperature" xpath="//div[@id='tempActual']" />
