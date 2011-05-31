@@ -61,7 +61,7 @@ public class MmToHtmlTest extends NewMmTest
 		{
 			Document document = documentClosure.getDocument();
 
-			document.renderHtml(print, document.createGraphContext());
+			document.serializeToHtml(print, document.createGraphContext());
 		}
 		appendFooter(print);
 		desktop.browse(uri);

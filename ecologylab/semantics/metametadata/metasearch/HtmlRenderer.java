@@ -47,7 +47,7 @@ public class HtmlRenderer
 		try
 		{
 			a.append("      ");
-			item.renderHtml(a, item.getMetaMetadata().createGraphContext());
+			item.serializeToHtml(a, item.getMetaMetadata().createGraphContext());
 			a.append("\n");
 			for (String linkedMetadataKey : item.getLinkedMetadataKeys())
 			{
@@ -55,7 +55,7 @@ public class HtmlRenderer
 				if (linkedMetadata != null)
 				{
 					a.append("      <div class=\"linked_metadata ").append(linkedMetadataKey).append("\">");
-					linkedMetadata.renderHtml(a, linkedMetadata.getMetaMetadata().createGraphContext());
+					linkedMetadata.serializeToHtml(a, linkedMetadata.getMetaMetadata().createGraphContext());
 					a.append("</div>\n");
 				}
 			}
