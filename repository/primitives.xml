@@ -19,7 +19,7 @@
 	</meta_metadata>
 
 	<meta_metadata name="media_clipping" extends="clipping" dont_generate_class="true">
-		<scalar name="caption" style="h1" layer="11.0" comment="The caption of the image." scalar_type="String"/>
+		<scalar name="caption" style="metadata_h1" layer="11.0" comment="The caption of the image." scalar_type="String"/>
 	</meta_metadata>
 	
 	<meta_metadata name="image_clipping" extends="media_clipping" dont_generate_class="true">
@@ -53,7 +53,7 @@
 	
 	
 	<meta_metadata name="compound_document"  extends="document" dont_generate_class="true">
-		<scalar name="title" style="h1" layer="10.0" navigates_to="location" comment="The Title of the Document" scalar_type="String"  hint="XML_LEAF"/>
+		<scalar name="title" style="metadata_h1" layer="10.0" navigates_to="location" comment="The Title of the Document" scalar_type="String"  hint="XML_LEAF"/>
 		<scalar name="description" layer="9.0" scalar_type="String" />
 		<scalar name="query" layer="5.0" comment="The search query" scalar_type="String" />
 		<scalar name="page_structure" layer="6.0" comment="For debugging. Type of the structure recognized by information extraction." scalar_type="String" />
