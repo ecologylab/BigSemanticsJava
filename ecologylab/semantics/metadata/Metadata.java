@@ -33,6 +33,7 @@ import ecologylab.semantics.model.text.ITermVector;
 import ecologylab.semantics.model.text.TermVectorFeature;
 import ecologylab.semantics.seeding.SearchState;
 import ecologylab.semantics.seeding.Seed;
+import ecologylab.semantics.tools.MetaMetadataCompilerUtils;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.FieldDescriptor;
 import ecologylab.serialization.SIMPLTranslationException;
@@ -84,7 +85,8 @@ abstract public class Metadata extends ElementState implements MetadataBase, Ter
 	 * Could help, for example, to support user annotation.
 	 */
 	@semantics_mixin
-	@simpl_collection("mixins")
+	@simpl_collection
+	@simpl_scope(MetaMetadataCompilerUtils.GENERATED_METADATA_TRANSLATIONS)
 	// @xml_scope(MIXIN_TRANSLATION_STRING)
 	@mm_name("mixins")
 	ArrayList<Metadata>										mixins;

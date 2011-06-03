@@ -1,0 +1,66 @@
+package testcases;
+
+import ecologylab.serialization.ClassDescriptor;
+import ecologylab.serialization.DeserializationHookStrategy;
+import ecologylab.serialization.ElementState;
+import ecologylab.serialization.FieldDescriptor;
+import ecologylab.serialization.SIMPLTranslationException;
+import ecologylab.serialization.TranslationScope;
+
+public class TestTranslationScopeDeSerialization extends TestTranslationScope
+{
+
+	static DeserializationHookStrategy	emptyStrategy;
+
+	static
+	{
+		emptyStrategy = new DeserializationHookStrategy()
+		{
+			@Override
+			public void deserializationPreHook(
+					ElementState e, FieldDescriptor fd)
+			{
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void deserializationPostHook(
+					ElementState e, FieldDescriptor fd)
+			{
+				// TODO Auto-generated method stub
+
+			}
+		};
+	}
+
+	/**
+	 * @param args
+	 * @throws SIMPLTranslationException
+	 */
+	public static void main(String[] args) throws SIMPLTranslationException
+	{
+		TranslationScope ts = get();
+
+		StringBuilder sb = new StringBuilder();
+		ts.serialize(sb);
+		String xml = sb.toString();
+		System.out.println();
+		System.out.println(xml);
+		System.out.println();
+		
+		xml = xml.replaceAll("TestDocument", "NewTestDocument");
+
+		TranslationScope tsts = TranslationScope.get(
+				"tscope_bootstrap",
+				TranslationScope.class,
+				ClassDescriptor.class,
+				FieldDescriptor.class);
+		TranslationScope newTs = (TranslationScope) tsts.deserialize(xml, emptyStrategy);
+		for (Class clazz : newTs.getAllClasses())
+		{
+			System.out.println(clazz);
+		}
+	}
+
+}

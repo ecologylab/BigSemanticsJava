@@ -20,6 +20,7 @@ import ecologylab.semantics.metametadata.Argument;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.seeding.Seed;
 import ecologylab.serialization.ElementState;
+import ecologylab.serialization.simpl_inherit;
 
 /**
  * This is the abstract class which defines the semantic action. All the semantic actions must
@@ -41,9 +42,8 @@ import ecologylab.serialization.ElementState;
  * 
  */
 
-public abstract class SemanticAction
-		extends ElementState
-		implements SemanticActionNamedArguments
+@simpl_inherit
+public abstract class SemanticAction extends ElementState implements SemanticActionNamedArguments
 {
 
 	@simpl_collection

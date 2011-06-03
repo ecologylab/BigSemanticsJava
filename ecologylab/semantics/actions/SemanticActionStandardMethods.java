@@ -80,5 +80,9 @@ public interface SemanticActionStandardMethods
 	public static String	EVALUATE_RANK_WEIGHT								= "eval_rank_wt";
 
 	public static String	GET_LINKED_METADATA									= "get_linked_metadata";
+	
+	public static String	RESELECT_METAMETADATA_AND_EXTRACT		= "reselect_meta_metadata_and_extract";
+	
+	public static String	ADD_MIXIN														= "add_mixin";
 
 }

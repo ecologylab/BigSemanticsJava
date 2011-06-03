@@ -5,7 +5,9 @@ package ecologylab.semantics.documentparsers;
 
 import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.collecting.NewInfoCollector;
+import ecologylab.semantics.metadata.builtins.CompoundDocument;
 import ecologylab.semantics.metadata.builtins.Document;
+import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.serialization.XMLTools;
 
 /**
@@ -15,8 +17,7 @@ import ecologylab.serialization.XMLTools;
  * @author amathur
  * 
  */
-public class DirectBindingParser
-		extends ParserBase
+public class DirectBindingParser extends ParserBase
 {
 
 	public DirectBindingParser(NewInfoCollector infoCollector)
@@ -25,12 +26,14 @@ public class DirectBindingParser
 	}
 
 	@Override
-	public Document populateMetadata(SemanticActionHandler handler)
+	public Document populateMetadata(CompoundDocument document,
+			MetaMetadataCompositeField metaMetadata, org.w3c.dom.Document DOM,
+			SemanticActionHandler handler)
 	{
 		return directBindingPopulateMetadata();
 	}
 
-	//FIXME - i don't think this is ever called.
+	// FIXME - i don't think this is ever called.
 	@Override
 	protected org.w3c.dom.Document createDom()
 	{

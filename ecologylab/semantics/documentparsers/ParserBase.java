@@ -33,6 +33,7 @@ import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataBase;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
+import ecologylab.semantics.metadata.builtins.CompoundDocument;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.scalar.types.MetadataScalarScalarType;
 import ecologylab.semantics.metametadata.DefVar;
@@ -75,36 +76,38 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 		xpath = XPathFactory.newInstance().newXPath();
 	}
 
-
 	/**
 	 * populate associated metadata with the container and handler.
+	 * @param dOM 
+	 * @param metaMetadata 
+	 * @param document 
 	 * 
 	 * @param handler
 	 * @return
 	 */
-	public abstract Document populateMetadata(SemanticActionHandler handler);
+	public abstract Document populateMetadata(
+			CompoundDocument document,
+			MetaMetadataCompositeField metaMetadata,
+			org.w3c.dom.Document DOM,
+			SemanticActionHandler handler);
 
-	/**
-	 * (1) Populate Metadata. (2) Rebuild composite term vector. (3) Take semantic actions.
-	 */
-	protected final Document doParse()
+	public final Document doParse(CompoundDocument document, MetaMetadataCompositeField metaMetadata, org.w3c.dom.Document DOM)
 	{
-		super.doParse();
-
 		// init
 		SemanticActionHandler handler = new SemanticActionHandler(infoCollector, this);
-		handler.getSemanticActionVariableMap().put(SemanticActionsKeyWords.PURLCONNECTION_MIME,
+		handler.getSemanticActionVariableMap().put(
+				SemanticActionsKeyWords.PURLCONNECTION_MIME,
 				purlConnection.mimeType());
 		instantiateMetaMetadataVariables(handler);
-		truePURL = getDocument().getLocation();
+		truePURL = document.getLocation();
 
 		// build the metadata object
-		Document resultingMetadata = populateMetadata(handler);
+		Document resultingMetadata = populateMetadata(document, metaMetadata, DOM, handler);
 		resultingMetadata.setMetadataChanged(true);
 
 		try
 		{
-			debug("Metadata parsed from: " + getDocument().getLocation());
+			debug("Metadata parsed from: " + document.getLocation());
 			if (resultingMetadata != null)
 			{
 				debug(resultingMetadata.serialize());
@@ -133,6 +136,15 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 		}
 
 		return  resultingMetadata;
+	}
+	
+	/**
+	 * (1) Populate Metadata. (2) Rebuild composite term vector. (3) Take semantic actions.
+	 */
+	public final Document doParse()
+	{
+		super.doParse();
+		return doParse(getDocument(), getMetaMetadata(), getDom());
 	}
 
 	/**

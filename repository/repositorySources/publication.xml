@@ -35,8 +35,20 @@
 	</meta_metadata>
 	
 	<meta_metadata name="publisher" comment="A publishing company.">
-		<scalar name="name" as_composite_scalar="true" navigates_to="location" is_face="true" scalar_type="String" />
+		<scalar name="name" as_composite_scalar="true" navigates_to="location" is_facet="true" scalar_type="String" />
 		<scalar name="city" scalar_type="String" />
+	</meta_metadata>
+	
+	<meta_metadata name="amazon_book" extends="book" parser="xpath">
+		<selector meta_metadata_name="amazon_product">
+			<field name="department" value="Books" />
+		</selector>
+		
+		<collection name="authors" xpath="//span[@class='contributorNameTrigger']">
+			<scalar name="name" xpath=".//a[1]" />
+			<scalar name="location" xpath=".//a[1]/@href" />
+		</collection>
+		<scalar name="cover_image" xpath="//td[@id='prodImageCell']//img/@src" />
 	</meta_metadata>
 
 </meta_metadata_repository>

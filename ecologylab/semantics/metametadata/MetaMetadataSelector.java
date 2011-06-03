@@ -1,10 +1,17 @@
 package ecologylab.semantics.metametadata;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.regex.Pattern;
 
+import ecologylab.generic.HashMapArrayList;
+import ecologylab.generic.ReflectionTools;
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.metadata.Metadata;
+import ecologylab.semantics.metadata.MetadataFieldDescriptor;
 import ecologylab.serialization.ElementState;
+import ecologylab.serialization.FieldDescriptor;
 import ecologylab.serialization.simpl_inherit;
 import ecologylab.serialization.types.element.Mappable;
 
@@ -55,7 +62,17 @@ class MetaMetadataSelector extends ElementState implements Mappable<String>
 	@simpl_collection("suffix")
 	@simpl_nowrap
 	private ArrayList<String>						suffixes;
-
+	
+	/* followings are used for selecting another meta-metadata according to a particular field */
+	
+	@simpl_scalar
+	@xml_tag("meta_metadata_name")
+	private String 											reselectMetaMetadataName;
+	
+	@simpl_nowrap
+	@simpl_map("field")
+	private HashMapArrayList<String, MetaMetadataSelectorReselectField> reselectFields;
+	
 	public MetaMetadataSelector()
 	{
 
@@ -171,4 +188,26 @@ class MetaMetadataSelector extends ElementState implements Mappable<String>
 	{
 		this.defaultPref = defaultPref;
 	}
+	
+	public String getReselectMetaMetadataName()
+	{
+		return reselectMetaMetadataName;
+	}
+
+	public boolean reselect(Metadata metadata)
+	{
+		if (reselectFields == null || reselectFields.isEmpty())
+			return false;
+		
+		for (String fieldName : reselectFields.keySet())
+		{
+			FieldDescriptor fd = metadata.getMetadataClassDescriptor().getFieldDescriptorByFieldName(fieldName);
+			String actualValue = fd.getValueString(metadata);
+			String expectedValue = reselectFields.get(fieldName).getValue();
+			if (!actualValue.equals(expectedValue))
+				return false;
+		}
+		return true;
+	}
+	
 }

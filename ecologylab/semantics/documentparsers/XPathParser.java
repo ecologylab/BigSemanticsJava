@@ -6,13 +6,14 @@ package ecologylab.semantics.documentparsers;
 import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.actions.SemanticActionsKeyWords;
 import ecologylab.semantics.collecting.NewInfoCollector;
+import ecologylab.semantics.metadata.builtins.CompoundDocument;
 import ecologylab.semantics.metadata.builtins.Document;
+import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 
 /**
  * @author amathur
  * 
  */
-@SuppressWarnings("rawtypes")
 public class XPathParser extends ParserBase implements
 		SemanticActionsKeyWords
 {
@@ -22,13 +23,11 @@ public class XPathParser extends ParserBase implements
 		super(infoCollector);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public Document populateMetadata(SemanticActionHandler handler)
+	public Document populateMetadata(CompoundDocument document, MetaMetadataCompositeField metaMetadata,
+			org.w3c.dom.Document DOM, SemanticActionHandler handler)
 	{
-		Document document = getDocument();
-		recursiveExtraction(getMetaMetadata(), document, getDom(), null,
-				handler.getSemanticActionVariableMap());
+		recursiveExtraction(metaMetadata, document, DOM, null, handler.getSemanticActionVariableMap());
 		return document;
 	}
 }

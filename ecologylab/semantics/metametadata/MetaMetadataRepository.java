@@ -279,8 +279,8 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		}
 		catch (SIMPLTranslationException e)
 		{
-			Debug.error("MetaMetadataRepository",
-					"translating repository source file " + file.getAbsolutePath());
+			Debug.error("MetaMetadataRepository", "translating repository source file " + file.getAbsolutePath());
+			e.printStackTrace();
 		}
 
 		return repos;
@@ -385,13 +385,13 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 			metaMetadata.inheritMetaMetadata(this);
 			metaMetadata.getClassAndBindDescriptors(metadataTScope);
 			MetadataClassDescriptor metadataClassDescriptor = metaMetadata.getMetadataClassDescriptor();
-			if (metaMetadata.getType() == null && metadataClassDescriptor != null) // don't put
-																																							// restatements of the
-																																							// same base type into
-				// *this* map
+			
+			// don't put restatements of the same base type into *this* map
+			if (metaMetadata.getType() == null && metadataClassDescriptor != null)
 				repositoryByClassName.put(metadataClassDescriptor.getDescribedClass().getName(),
 						metaMetadata);
 
+			// set up <link_with>
 			LinkedMetadataMonitor monitor = getLinkedMetadataMonitor();
 			String thisName = metaMetadata.getName();
 			Map<String, LinkWith> linkWiths = metaMetadata.getLinkWiths();
@@ -769,6 +769,17 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 			ArrayList<MetaMetadataSelector> selectors = metaMetadata.getSelectors();
 			for (MetaMetadataSelector selector : selectors)
 			{
+				String reselectMetaMetadataName = selector.getReselectMetaMetadataName();
+				if (reselectMetaMetadataName != null)
+				{
+					MetaMetadata reselectMetaMetadata = repositoryByTagName.get(reselectMetaMetadataName);
+					if (reselectMetaMetadata != null)
+					{
+						reselectMetaMetadata.addReselectEntry(selector, metaMetadata);
+					}
+					continue;
+				}
+				
 				ParsedURL strippedPurl = selector.getUrlStripped();
 				if (strippedPurl != null)
 				{

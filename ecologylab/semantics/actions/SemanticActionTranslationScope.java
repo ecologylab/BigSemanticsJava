@@ -21,6 +21,8 @@ public class SemanticActionTranslationScope
 		SetFieldSemanticAction.class,
 		SetMetadataSemanticAction.class,
 		GetLinkedMetadataSemanticAction.class,
+		ReselectAndExtractMetadataSemanticAction.class,
+		AddMixinSemanticAction.class,
 	};
 	
 	public static final TranslationScope get()

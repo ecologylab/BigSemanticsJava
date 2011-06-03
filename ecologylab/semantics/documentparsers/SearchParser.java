@@ -3,11 +3,11 @@
  */
 package ecologylab.semantics.documentparsers;
 
-import ecologylab.generic.DispatchTarget;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.actions.SemanticActionsKeyWords;
 import ecologylab.semantics.collecting.NewInfoCollector;
+import ecologylab.semantics.metadata.builtins.CompoundDocument;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
@@ -19,9 +19,7 @@ import ecologylab.semantics.seeding.SearchState;
  * @author amathur
  * 
  */
-public class SearchParser
-		extends LinksetParser implements CFPrefNames,
-		SemanticActionsKeyWords
+public class SearchParser extends LinksetParser implements CFPrefNames, SemanticActionsKeyWords
 {
 
 	/**
@@ -86,12 +84,13 @@ public class SearchParser
 	}
 
 	@Override
-	public Document populateMetadata(SemanticActionHandler handler)
+	public Document populateMetadata(CompoundDocument document,
+			MetaMetadataCompositeField metaMetadata, org.w3c.dom.Document DOM,
+			SemanticActionHandler handler)
 	{
-		Document resultingDocument	= getDocument();
+		Document resultingDocument	= document;
 		
 		//FIXME use overrides instead of constants here!!!!!!!!!!
-		MetaMetadataCompositeField metaMetadata	= getMetaMetadata();
 		if (DIRECT_BINDING_PARSER.equals(metaMetadata.getParser()))
 		{
 			resultingDocument				= directBindingPopulateMetadata();
@@ -100,7 +99,7 @@ public class SearchParser
 		}
 		else if (XPATH_PARSER.equals(metaMetadata.getParser()))
 		{
-			recursiveExtraction(metaMetadata, resultingDocument, getDom(), null, handler.getSemanticActionVariableMap());
+			recursiveExtraction(metaMetadata, resultingDocument, DOM, null, handler.getSemanticActionVariableMap());
 //			container.setMetadata(populatedMetadata);
 		}
 

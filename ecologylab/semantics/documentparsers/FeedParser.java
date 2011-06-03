@@ -5,7 +5,9 @@ package ecologylab.semantics.documentparsers;
 
 import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.collecting.NewInfoCollector;
+import ecologylab.semantics.metadata.builtins.CompoundDocument;
 import ecologylab.semantics.metadata.builtins.Document;
+import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.seeding.Feed;
 import ecologylab.semantics.seeding.Seed;
 
@@ -13,11 +15,10 @@ import ecologylab.semantics.seeding.Seed;
  * @author andruid
  * 
  */
-public class FeedParser
-		extends LinksetParser
+public class FeedParser extends LinksetParser
 {
-	
-	private Feed feed;
+
+	private Feed	feed;
 
 	public FeedParser(NewInfoCollector infoCollector)
 	{
@@ -29,11 +30,13 @@ public class FeedParser
 	{
 		super(infoCollector);
 		this.feed = feed;
-		getMetaMetadataAndContainerAndQueue(infoCollector,feed.getUrl(),feed,"xml");
+		getMetaMetadataAndContainerAndQueue(infoCollector, feed.getUrl(), feed, "xml");
 	}
 
 	@Override
-	public Document populateMetadata(SemanticActionHandler handler)
+	public Document populateMetadata(CompoundDocument document,
+			MetaMetadataCompositeField metaMetadata,
+			org.w3c.dom.Document DOM, SemanticActionHandler handler)
 	{
 		return directBindingPopulateMetadata();
 	}
@@ -43,4 +46,5 @@ public class FeedParser
 	{
 		return feed;
 	}
+
 }

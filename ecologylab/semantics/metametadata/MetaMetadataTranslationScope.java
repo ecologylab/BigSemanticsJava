@@ -3,8 +3,10 @@ package ecologylab.semantics.metametadata;
 import ecologylab.generic.Debug;
 import ecologylab.io.BasicSite;
 import ecologylab.net.UserAgent;
+import ecologylab.semantics.actions.AddMixinSemanticAction;
 import ecologylab.semantics.actions.ConditionTranslationScope;
 import ecologylab.semantics.actions.NestedSemanticAction;
+import ecologylab.semantics.actions.ReselectAndExtractMetadataSemanticAction;
 import ecologylab.semantics.actions.SemanticAction;
 import ecologylab.semantics.actions.SemanticActionTranslationScope;
 import ecologylab.semantics.collecting.CookieProcessing;
@@ -50,6 +52,7 @@ public class MetaMetadataTranslationScope extends Debug
 		MetaMetadataRepository.class, 
 		
 		MetaMetadataSelector.class,
+		MetaMetadataSelectorReselectField.class,
 		
 		DefVar.class,	// cannot be in NestedSemanticActionsTranslationScope because these are collected separtely in MetaMetadataField
 		

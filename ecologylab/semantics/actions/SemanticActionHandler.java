@@ -134,11 +134,13 @@ public class SemanticActionHandler
 		int state = getActionState(action, "state", SemanticAction.INIT);
 		if (state == SemanticAction.FIN || requestWaiting)
 			return;
-		debug("["+parser+"] semantic action: " + action.getActionName() + ", SA class: "
-				+ action.getClassName() + "\n");
+		debug("["+parser+"] semantic action: " + action.getActionName() + ", SA class: " + action.getClassName() + "\n");
+		
+		// here state must be INTER or INIT
 
-		// if this is a <if>, skip the check because we have cached the result
-		if (state == SemanticAction.INTER && action instanceof IfSemanticAction)
+		// if state == INIT, we check pre-conditions
+		// if state == INTER, because this must have been started, we skip checking pre-conditions
+		if (state == SemanticAction.INIT)
 		{
 			if (!checkConditionsIfAny(action))
 			{
@@ -148,6 +150,10 @@ public class SemanticActionHandler
 							action));
 				return;
 			}
+		}
+		else
+		{
+			debug("re-entering actions with pre-conditions; checking pre-conditions skipped: " + action.getActionName());
 		}
 
 		action.setInfoCollector(infoCollector);
@@ -309,18 +315,9 @@ public class SemanticActionHandler
 	{
 		// conditions have been checked in handleSemanticAction()
 
-		int state = getActionState(action, "state", SemanticAction.INIT);
-		if (state == SemanticAction.INTER)
-		{
-			if (!getActionState(action, "condition_true", false))
-				;
-			return;
-		}
-
 		try
 		{
 			setActionState(action, "state", SemanticAction.INTER);
-			setActionState(action, "condition_true", true);
 			ArrayList<SemanticAction> nestedSemanticActions = action.getNestedSemanticActionList();
 			for (SemanticAction nestedSemanticAction : nestedSemanticActions)
 				handleSemanticAction(nestedSemanticAction, parser, infoCollector);

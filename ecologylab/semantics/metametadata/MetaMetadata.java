@@ -7,11 +7,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import ecologylab.generic.ReflectionTools;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.metadata.Metadata;
+import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.TranslationScope;
@@ -26,17 +26,17 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 
 	@simpl_collection("selector")
 	@simpl_nowrap
-	ArrayList<MetaMetadataSelector>			selectors;
+	ArrayList<MetaMetadataSelector>					selectors;
 
 	@xml_tag("package")
 	@simpl_scalar
-	String										packageAttribute;
+	String																	packageAttribute;
 
 	@simpl_scalar
-	protected boolean					dontGenerateClass	= false;
-	
+	protected boolean												dontGenerateClass	= false;
+
 	@simpl_scalar
-	protected	RedirectHandling redirectHandling;
+	protected RedirectHandling							redirectHandling;
 
 	/*
 	 * @xml_collection("meta_metadata_field") private ArrayList<MetaMetadataField>
@@ -50,22 +50,24 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 	 */
 	@simpl_collection("mixins")
 	@simpl_nowrap
-	private ArrayList<String>	mixins;
+	private ArrayList<String>								mixins;
 
 	@simpl_scalar
-	private String						collectionOf;
-	
+	private String													collectionOf;
+
 	@simpl_collection("url_generator")
 	@simpl_nowrap
-	private ArrayList<UrlGenerator> urlGenerators;
-	
-	private Map<String, MetaMetadataField> naturalIds = new HashMap<String, MetaMetadataField>();
-	
+	private ArrayList<UrlGenerator>					urlGenerators;
+
+	private Map<String, MetaMetadataField>	naturalIds				= new HashMap<String, MetaMetadataField>();
+
 	@simpl_map("link_with")
 	@simpl_nowrap
-	private HashMap<String, LinkWith> linkWiths;
-	
+	private HashMap<String, LinkWith>				linkWiths;
+
 	// TranslationScope DEFAULT_METADATA_TRANSLATIONS = DefaultMetadataTranslationSpace.get();
+	
+	private Map<MetaMetadataSelector, MetaMetadata> reselectMap;
 
 	public MetaMetadata()
 	{
@@ -96,9 +98,9 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 
 		if (metadataClass != null)
 		{
-			Class[] argClasses	= new Class[]  { MetaMetadataCompositeField.class };
+			Class[] argClasses = new Class[] { MetaMetadataCompositeField.class };
 			Object[] argObjects = new Object[] { this };
-			
+
 			result = ReflectionTools.getInstance(metadataClass, argClasses, argObjects);
 			if (mixins != null && mixins.size() > 0)
 			{
@@ -148,41 +150,41 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 	{
 		return userAgentName;
 	}
-	
+
 	/**
 	 * @return the mimeTypes
 	 */
 	public ArrayList<String> getMimeTypes()
 	{
 		ArrayList<String> result = null;
-			
-		for( MetaMetadataSelector selector : getSelectors())
+
+		for (MetaMetadataSelector selector : getSelectors())
 		{
 			if (result == null)
-				result =  new ArrayList<String>();
-				
+				result = new ArrayList<String>();
+
 			ArrayList<String> mimeTypes = selector.getMimeTypes();
 			if (mimeTypes != null)
 				result.addAll(mimeTypes);
 		}
-		
+
 		return result;
 	}
-	
+
 	public ArrayList<String> getSuffixes()
 	{
 		ArrayList<String> result = null;
-			
-		for( MetaMetadataSelector selector : getSelectors())
+
+		for (MetaMetadataSelector selector : getSelectors())
 		{
 			if (result == null)
-				result =  new ArrayList<String>();
-				
+				result = new ArrayList<String>();
+
 			ArrayList<String> suffixes = selector.getSuffixes();
 			if (suffixes != null)
 				result.addAll(suffixes);
 		}
-		
+
 		return result;
 	}
 
@@ -224,13 +226,13 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 
 		test.serialize(System.out);
 
-//		File outputRoot = PropertiesAndDirectories.userDir();
-//
-//		for (MetaMetadata metaMetadata : test.values())
-//		{
-//			// metaMetadata.translateToMetadataClass();
-//			System.out.println('\n');
-//		}
+		// File outputRoot = PropertiesAndDirectories.userDir();
+		//
+		// for (MetaMetadata metaMetadata : test.values())
+		// {
+		// // metaMetadata.translateToMetadataClass();
+		// System.out.println('\n');
+		// }
 	}
 
 	public ArrayList<MetaMetadataSelector> getSelectors()
@@ -244,7 +246,7 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 	{
 		if (selectors == null)
 			selectors = new ArrayList<MetaMetadataSelector>();
-		
+
 		selectors.add(s);
 	}
 
@@ -266,7 +268,7 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 		// decorative
 		if (getType() != null)
 			return getType();
-		
+
 		// definitive
 		if (getExtendsAttribute() != null)
 			return getExtendsAttribute();
@@ -275,19 +277,19 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 	}
 
 	/**
-	 * this will always return null since meta-metadata doesn't inherit from any fields. 
+	 * this will always return null since meta-metadata doesn't inherit from any fields.
 	 */
 	@Override
 	protected MetaMetadataField getInheritedField()
 	{
 		return null;
 	}
-	
+
 	@Override
 	protected boolean checkForErrors()
 	{
 		MetaMetadata superMmd = (MetaMetadata) getInheritedField();
-		
+
 		return assertNotNull(getTypeName(), "meta-metadata type name must be specified.")
 				&& assertNotNull(getSuperMmdTypeName(), "can't resolve parent meta-metadata.")
 				&& assertNotNull(superMmd, "meta-metadata '%s' not found.", getSuperMmdTypeName());
@@ -319,12 +321,12 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 	{
 		naturalIds.put(naturalId, childField);
 	}
-	
+
 	public Map<String, MetaMetadataField> getNaturalIdFields()
 	{
 		return naturalIds;
 	}
-	
+
 	public ParsedURL generateUrl(String naturalId, String value)
 	{
 		if (urlGenerators != null)
@@ -344,7 +346,7 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 	{
 		return linkWiths;
 	}
-	
+
 	public void addLinkWith(LinkWith lw)
 	{
 		if (linkWiths == null)
@@ -354,4 +356,25 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 		linkWiths.put(lw.key(), lw);
 	}
 	
+	public Map<MetaMetadataSelector, MetaMetadata> getReselectMap()
+	{
+		return reselectMap;
+	}
+
+	public void addReselectEntry(MetaMetadataSelector selector, MetaMetadata mmd)
+	{
+		if (reselectMap == null)
+		{
+			reselectMap = new HashMap<MetaMetadataSelector, MetaMetadata>();
+		}
+		reselectMap.put(selector, mmd);
+	}
+	
+	public MetadataClassDescriptor createMetadataClassDescriptor()
+	{
+		MetadataClassDescriptor mcd = new MetadataClassDescriptor();
+		// TODO
+		return mcd;
+	}
+
 }

@@ -15,6 +15,7 @@ import ecologylab.semantics.actions.SemanticActionsKeyWords;
 import ecologylab.semantics.collecting.NewInfoCollector;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
+import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.seeding.Seed;
 
@@ -65,7 +66,6 @@ abstract public class DocumentParser<D extends Document>
 		bindingParserMap.put(SemanticActionsKeyWords.FEED_PARSER, FeedParser.class);
 		bindingParserMap.put(SemanticActionsKeyWords.HTML_IMAGE_DOM_TEXT_PARSER, HTMLDOMImageTextParser.class);
 		bindingParserMap.put(SemanticActionsKeyWords.IMAGE_PARSER, ImageParser.class);
-		
 	}
 
 	/**
@@ -93,10 +93,9 @@ abstract public class DocumentParser<D extends Document>
 	}
 	
 	public abstract Document parse ( ) throws IOException;
-
-
+	
 	/**
-	 * Fill out the instance of this resulting from a succcessful connect().
+	 * Fill out the instance of this resulting from a successful connect().
 	 * 
 	 * @param purlConnection
 	 * @param documentClosure TODO
@@ -478,6 +477,16 @@ abstract public class DocumentParser<D extends Document>
 	public D getDocument()
 	{
 		return (D) documentClosure.getDocument();
+	}
+	
+	public static DocumentParser get(MetaMetadata mmd, NewInfoCollector infoCollector)
+	{
+		String parserName = mmd.getParser();
+		if (parserName != null)
+		{
+			return DocumentParser.getParserInstanceFromBindingMap(parserName, infoCollector);
+		}
+		return null;
 	}
 
 }

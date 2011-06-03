@@ -30,9 +30,7 @@ import ecologylab.serialization.XMLTools;
  * @author eunyee
  * 
  */
-public class HTMLDOMParser
-		extends HTMLParserCommon
-		implements TidyInterface
+public class HTMLDOMParser extends HTMLParserCommon implements TidyInterface
 {
 
 	/**
@@ -53,7 +51,7 @@ public class HTMLDOMParser
 		tidy.setShowWarnings(false);
 	}
 
-	protected org.w3c.dom.Document getDom()
+	public org.w3c.dom.Document getDom()
 	{
 		org.w3c.dom.Document result = this.dom;
 		if (result == null)
