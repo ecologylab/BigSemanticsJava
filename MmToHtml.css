@@ -60,7 +60,7 @@ td {
 	border-radius: 10px;
 }
 
-td.metadata_field_name, td.metadata_field_name div.metadata_text {
+td.metadata_field_name, td.metadata_field_name div.metadata_text{
 	text-align: right;
 	min-width: 20%;
 	background-color: #BCD2EE;
@@ -73,3 +73,9 @@ td.metadata_field_name, td.metadata_field_name div.metadata_text {
 	font-size: 9pt;
  	color: green;
 }
+
+div.metadata_h1
+{
+	font-weight: bold;
+}
+
