@@ -24,6 +24,7 @@
 			<scalar name="summary" scalar_type="String" comment="image summary" />
 			<scalar name="img_url" scalar_type="ParsedURL" comment="raw parsed URL for extracting values 'url', 'referer_url'" />  <!-- type is 'String' and will be converted into ParsedURL in StringOperation -->
 			<scalar name="raw_property" scalar_type="String" comment="mime type should be extracted from this property" /> 
+			<scalar name="img_similar_url" scalar_type="String" /> 
 		</collection> 
 	</meta_metadata>
 	

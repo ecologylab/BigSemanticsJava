@@ -465,7 +465,7 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DC>
 	public void downloadAndParseDone()
 	{
 		downloadDone	= true;
-		downloadStatus	= DownloadStatus.DONE;
+		downloadStatus	= DownloadStatus.DOWNLOAD_DONE;
 		document.setDownloadDone(true);
 		
 		SemanticsSite site	= getSite();

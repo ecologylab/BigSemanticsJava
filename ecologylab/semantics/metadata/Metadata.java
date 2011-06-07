@@ -64,7 +64,7 @@ abstract public class Metadata extends ElementState implements MetadataBase, Ter
 		Iterable<MetadataFieldDescriptor>
 {
 	@simpl_scalar
-	@xml_other_tags("meta_metadata_name")
+//	@xml_other_tags("meta_metadata_name")
 	@xml_tag("mm_name")
 	MetadataString												metaMetadataName;
 
@@ -87,7 +87,6 @@ abstract public class Metadata extends ElementState implements MetadataBase, Ter
 	@semantics_mixin
 	@simpl_collection
 	@simpl_scope(MetaMetadataCompilerUtils.GENERATED_METADATA_TRANSLATIONS)
-	// @xml_scope(MIXIN_TRANSLATION_STRING)
 	@mm_name("mixins")
 	ArrayList<Metadata>										mixins;
 

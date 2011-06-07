@@ -61,6 +61,8 @@ public interface SemanticActionNamedArguments
 	 */
 	public static final String	DOCUMENT							= "document";
 	
+	public static final String	SOURCE_DOCUMENT				= "source_document";
+	
 	public static final String	MIXIN									= "mixin";
 
 	/**

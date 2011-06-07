@@ -4,12 +4,11 @@
 package ecologylab.semantics.metadata.builtins;
 
 import ecologylab.semantics.metadata.Metadata;
-import ecologylab.semantics.metadata.Metadata.mm_name;
 import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.tools.MetaMetadataCompilerUtils;
 import ecologylab.serialization.Hint;
-import ecologylab.serialization.ElementState.simpl_scope;
+import ecologylab.serialization.simpl_inherit;
 
 /**
  * Mix-in for adding the context of a clipping to the description of a Document.
@@ -17,6 +16,7 @@ import ecologylab.serialization.ElementState.simpl_scope;
  * 
  * @author andruid
  */
+@simpl_inherit
 public class Clipping extends Metadata
 {
 	/**

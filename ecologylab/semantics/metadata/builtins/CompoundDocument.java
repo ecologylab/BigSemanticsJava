@@ -15,17 +15,13 @@ import ecologylab.semantics.collecting.DownloadStatus;
 import ecologylab.semantics.collecting.MetadataElement;
 import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.metadata.Metadata;
-import ecologylab.semantics.metadata.Metadata.mm_name;
 import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.model.text.InterestModel;
 import ecologylab.semantics.model.text.TermVectorWeightStrategy;
 import ecologylab.semantics.seeding.Seed;
 import ecologylab.serialization.Hint;
-import ecologylab.serialization.ElementState.simpl_classes;
-import ecologylab.serialization.ElementState.simpl_collection;
-import ecologylab.serialization.ElementState.simpl_hints;
-import ecologylab.serialization.ElementState.simpl_scalar;
+import ecologylab.serialization.simpl_inherit;
 
 /**
  * A Document that can be broken down into clippings, including references to other documents.
@@ -33,6 +29,7 @@ import ecologylab.serialization.ElementState.simpl_scalar;
  * 
  * @author andruid
  */
+@simpl_inherit
 public class CompoundDocument extends Document
 implements DispatchTarget<ImageClosure>
 {
@@ -82,8 +79,9 @@ implements DispatchTarget<ImageClosure>
 	
 	@mm_name("clippings") 
 	@simpl_collection
-	@simpl_classes({Image.class, TextClipping.class})
-	ArrayList<Metadata>							clippings;
+	@simpl_classes({ImageClipping.class, TextClipping.class})
+//	ArrayList<Metadata>							clippings;
+	ArrayList<Clipping>								clippings;
 
 	private WeightSet<DocumentClosure>			candidateLocalOutlinks;
 	
@@ -618,7 +616,7 @@ implements DispatchTarget<ImageClosure>
 			// due to dynamic mime type type detection in connect(), 
 			// we didnt actually turn out to be a Container object.
 			// or, the parse didn't collect any information!
-			recycle();	// so free all resources, including connectionRecycle()
+//			recycle();	// so free all resources, including connectionRecycle()
 		}
 	}
 
@@ -706,30 +704,30 @@ implements DispatchTarget<ImageClosure>
 	@Override
 	protected void serializationPreHook()
 	{
-		if (clippings == null)
-		{
-			int size	= 0;
-			boolean doImages	= false;
-			if  (candidateImageClosures != null)
-			{
-				size		 += candidateImageClosures.size();
-				doImages	= true;
-			}
-			if (candidateTextClippings != null)
-			{
-				size 		 += candidateTextClippings.size();
-				clippings	= new ArrayList<Metadata>(size);
-				for (GenericElement<TextClipping>	textClippingGE  : candidateTextClippings)
-					clippings.add(textClippingGE.getGeneric());
-			}
-			if (doImages)
-			{
-				if (clippings == null)
-					clippings	= new ArrayList<Metadata>(size);
-				for (ImageClosure ic : candidateImageClosures)
-					clippings.add(ic.getDocument());
-			}
-		}
+//		if (clippings == null)
+//		{
+//			int size	= 0;
+//			boolean doImages	= false;
+//			if  (candidateImageClosures != null)
+//			{
+//				size		 += candidateImageClosures.size();
+//				doImages	= true;
+//			}
+//			if (candidateTextClippings != null)
+//			{
+//				size 		 += candidateTextClippings.size();
+//				clippings	= new ArrayList<Metadata>(size);
+//				for (GenericElement<TextClipping>	textClippingGE  : candidateTextClippings)
+//					clippings.add(textClippingGE.getGeneric());
+//			}
+//			if (doImages)
+//			{
+//				if (clippings == null)
+//					clippings	= new ArrayList<Metadata>(size);
+//				for (ImageClosure ic : candidateImageClosures)
+//					clippings.add(ic.getDocument());
+//			}
+//		}
 	}
 	
 	public void setAsTrueSeed(Seed seed)
@@ -778,8 +776,21 @@ implements DispatchTarget<ImageClosure>
 
 				};
 			candidateTextClippings.insert(textClipping);
+			clippings().add(textClipping);
 		}
 	}
+	
+	ArrayList<Clipping> clippings()
+	{
+		ArrayList<Clipping> result	= this.clippings;
+		if (result == null)
+		{
+			result										= new ArrayList<Clipping>();
+			this.clippings						= result;
+		}
+		return result;
+	}
+	
 	
 	@Override
 	public void addCandidateImage(Image image)
@@ -812,5 +823,13 @@ implements DispatchTarget<ImageClosure>
 		
 	}
 	
+	/**
+	 * Add to collection of clippings, representing our compound documentness.
+	 */
+	@Override
+	public void addClipping(Clipping clipping)
+	{
+		clippings().add(clipping);
+	}
 
 }

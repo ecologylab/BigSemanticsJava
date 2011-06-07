@@ -464,7 +464,9 @@ public class Document extends Metadata
 	public void downloadAndParseDone(DocumentParser documentParser)
 	{
 		if (documentParser == null)
-			recycle();
+		{
+//			recycle();
+		}
 		else
 		{
 			// free only some resources
@@ -515,5 +517,13 @@ public class Document extends Metadata
 	}
 	public void tryToGetBetterImageAfterInterestExpression(ImageClosure replaceMe)
 	{
+	}
+	
+	/**
+	 * Base class does not keep track of clippings, so does nothing.
+	 */
+	public void addClipping(Clipping clipping)
+	{
+		
 	}
 }

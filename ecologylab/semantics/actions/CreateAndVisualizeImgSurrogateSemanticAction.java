@@ -4,6 +4,7 @@
 package ecologylab.semantics.actions;
 
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.collecting.DocumentLocationMap;
 import ecologylab.semantics.documentparsers.SearchParser;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.Image;
@@ -42,7 +43,7 @@ class CreateAndVisualizeImgSurrogateSemanticAction
 	@Override
 	public Object perform(Object obj)
 	{
-		Document source					= documentParser.getDocument();
+		Document source					= resolveSourceDocument();
 
 		Image image 						= (Image) getArgumentObject(SemanticActionNamedArguments.METADATA);
 		if (image == null)
@@ -50,7 +51,7 @@ class CreateAndVisualizeImgSurrogateSemanticAction
 			ParsedURL imagePURL 	= (ParsedURL) getArgumentObject(SemanticActionNamedArguments.IMAGE_PURL);
 			if (imagePURL != null)
 			{
-				image								= infoCollector.getGlobalImageMap().get(imagePURL);
+				image								= infoCollector.getGlobalImageMap().getOrConstruct(imagePURL);
 				
 				//TODO -- if it already exists: (1) do we need to download??
 				//															(2) should we merge metadata
@@ -58,11 +59,12 @@ class CreateAndVisualizeImgSurrogateSemanticAction
 		}
 		else
 		{
-			image.setInfoCollector(infoCollector);
 			//TODO add to global collections?! if already there merge!
 		}
 		if (image != null)
 		{
+			image.setInfoCollector(infoCollector);
+
 			Document mixin				= (Document) getArgumentObject(SemanticActionNamedArguments.MIXIN);
 			if (mixin != null)
 				image.addMixin(mixin);
@@ -77,6 +79,7 @@ class CreateAndVisualizeImgSurrogateSemanticAction
 				outlink				= infoCollector.getGlobalDocumentMap().getOrConstruct(hrefPURL);
 			
 			ImageClipping imageClipping	= image.constructClipping(source, outlink, caption, null);
+			source.addClipping(imageClipping);
 			
 			SeedDistributor resultsDistributor = null;
 			// look out for error condition

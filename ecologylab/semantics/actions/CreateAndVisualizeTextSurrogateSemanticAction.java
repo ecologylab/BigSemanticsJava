@@ -43,7 +43,7 @@ class CreateAndVisualizeTextSurrogateSemanticAction
 		{
 			TextClipping textClipping	= new TextClipping(context, isSemanticText);
 			
-			Document sourceDocument		= documentParser.getDocument();
+			Document sourceDocument		= resolveSourceDocument();
 			sourceDocument.addCandidateTextClipping(textClipping);
 		}
 		

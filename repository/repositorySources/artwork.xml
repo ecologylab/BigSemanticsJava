@@ -34,11 +34,11 @@
 			<scalar name="location" xpath="./@href" hide="true" />
 		</collection>
 		<scalar name="status" scalar_type="String" xpath="//div[@class='status']/strong" />
-		<composite name="moma_deparment" type="document" xpath="//div[@class='item']/h4[contains(text(), 'Department:')]/../div/a" label="department">
+		<composite name="moma_deparment" type="compound_document" xpath="//div[@class='item']/h4[contains(text(), 'Department:')]/../div/a" label="department">
 			<scalar name="title" xpath="." label="name"/>
 			<scalar name="location" xpath="./@href" />
 		</composite>
-		<composite name="moma_classification" type="document" xpath="//div[@class='item']/h4[contains(text(), 'Classification:')]/../div/a" label="classification">
+		<composite name="moma_classification" type="compound_document" xpath="//div[@class='item']/h4[contains(text(), 'Classification:')]/../div/a" label="classification">
 			<scalar name="title" xpath="." label="name"/>
 			<scalar name="location" xpath="./@href" />
 		</composite>

@@ -33,11 +33,8 @@ class SetMetadataSemanticAction
 	@Override
 	public Object perform(Object obj)
 	{
-		// get the argument
-		Metadata metadata = (Metadata) getArgumentObject(SemanticActionNamedArguments.FIELD_VALUE);
-		throw new RuntimeException("Andruid did not understand this case, and so did not implement it. Please show him this message!");
 
-//		return null;
+		throw new RuntimeException("Andruid decided this is no longer part of semantics in tng. Instead, pass a source_document argument to parse_document or create_image_surrogate!");
 	}
 
 }

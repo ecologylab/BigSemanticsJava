@@ -6,6 +6,7 @@ import ecologylab.net.ParsedURL;
 import ecologylab.semantics.metadata.Metadata.mm_name;
 import ecologylab.semantics.metadata.scalar.MetadataInteger;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
+import ecologylab.serialization.simpl_inherit;
 
 /**
  * Image extends this, so that each image keeps track of all the clippings it is a participant itn.
@@ -18,6 +19,7 @@ import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
  * @param <ME>
  *          The underling Media type
  */
+@simpl_inherit
 public class ClippableDocument<ME extends Document> extends Document
 {
 	@mm_name("clippings") 

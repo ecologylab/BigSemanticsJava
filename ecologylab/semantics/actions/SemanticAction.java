@@ -269,13 +269,22 @@ public abstract class SemanticAction extends ElementState implements SemanticAct
 		return (parent == null) ? null : getMetaMetadata(parent);
 	}
 
-
+	/**
+	 * @return
+	 */
+	protected Document resolveSourceDocument()
+	{
+		Document sourceDocument = (Document) getArgumentObject(SOURCE_DOCUMENT);
+		if (sourceDocument == null)
+			documentParser.getDocument();
+		return sourceDocument;
+	}
 	
 	public Document getOrCreateDocument(DocumentParser documentParser, LinkType linkType)
 	{
 		Document result = (Document) getArgumentObject(DOCUMENT);
 		// get the ancestor container
-		Document sourceDocument = documentParser.getDocument();
+		Document sourceDocument = resolveSourceDocument();
 
 		// get the seed. Non null only for search types .
 		Seed seed = documentParser.getSeed();					

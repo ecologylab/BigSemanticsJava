@@ -306,7 +306,8 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 					else if (field instanceof MetaMetadataCollectionField)
 					{
 						MetaMetadataCollectionField mmcf = (MetaMetadataCollectionField) field;
-						suc = extractCollection(mmcf, metadata, contextNode, fieldParserContext, params);
+						if (mmcf != null)
+							suc = extractCollection(mmcf, metadata, contextNode, fieldParserContext, params);
 					}
 					else
 					{

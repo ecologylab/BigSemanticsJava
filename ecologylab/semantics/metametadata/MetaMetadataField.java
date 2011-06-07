@@ -604,6 +604,8 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 
 	public MetaMetadataField lookupChild(String name)
 	{
+		if (kids == null)
+			throw new RuntimeException("Can't find child " + name + " in " + this + " <- " + this.parent());
 		return kids.get(name);
 	}
 

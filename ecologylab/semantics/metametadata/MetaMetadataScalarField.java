@@ -229,6 +229,8 @@ public class MetaMetadataScalarField extends MetaMetadataField
 		String rst = scalarTypeInJava;
 		if (rst == null)
 		{
+			if (scalarType == null)
+				throw new RuntimeException("No scalar_type is defined " + this);
 			rst = scalarType.fieldTypeName();
 			if (rst.equals("int"))
 			{

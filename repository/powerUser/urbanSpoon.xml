@@ -1,5 +1,5 @@
 <meta_metadata_repository name="urban_spoon" package="ecologylab.semantics.generated.library.urbanspoon">
-	<meta_metadata name="urban_spoon_restaurant" extends="compound_document" comment="UrbanSpoon restaurant description page" type="restaurant" parser="xpath">
+	<meta_metadata name="urban_spoon_restaurant" comment="UrbanSpoon restaurant description page" type="restaurant" parser="xpath">
 		<selector url_path_tree="http://www.urbanspoon.com/r/"/>
 		
 		<scalar name="title" xpath="//div[@id='rest-main-block']/h1" />

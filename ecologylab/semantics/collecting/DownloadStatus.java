@@ -10,5 +10,5 @@ package ecologylab.semantics.collecting;
  */
 public enum DownloadStatus
 {
-	UNPROCESSED, QUEUED, PARSING, DONE, IOERROR, RECYCLED
+	UNPROCESSED, QUEUED, PARSING, DOWNLOAD_DONE, IOERROR, RECYCLED
 }
