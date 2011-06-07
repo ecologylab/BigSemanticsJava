@@ -828,7 +828,7 @@ abstract public class Metadata extends ElementState implements MetadataBase, Ter
 
 							Tr scalarTr = new Tr();
 							
-							scalarTr.setCssClass("mmd_" + childFD.getTagName());
+							scalarTr.setId("mmd_" + childFD.getTagName());
 
 							childFD.appendHtmlValueAsAttribute(currentMetadata, serializationContext, mmdField.getStyle(),
 									navigatesFD, mmdField.getDisplayedLabel(), scalarTr);
