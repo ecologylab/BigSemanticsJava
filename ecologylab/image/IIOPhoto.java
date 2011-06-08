@@ -95,45 +95,45 @@ implements Downloadable, Continuation<IIOPhoto>
 	/**
 	 * Most popular constructor.
 	 * @param purl			ParsedURL to download image from.
-	 * @param dispatchTarget	Call the delivery method on this object when
+	 * @param continuation	Call the delivery method on this object when
 	 *			download is complete.
 	 * @param graphicsConfiguration TODO
 	 */
-	public IIOPhoto(ParsedURL purl, Continuation<PixelBased> dispatchTarget, GraphicsConfiguration graphicsConfiguration)
+	public IIOPhoto(ParsedURL purl, Continuation<PixelBased> continuation, GraphicsConfiguration graphicsConfiguration)
 	{
-		this(purl, dispatchTarget, null, graphicsConfiguration, null);
+		this(purl, continuation, null, graphicsConfiguration, null);
 	}
 
 	/**
 	 * Most popular constructor.
 	 * @param purl			ParsedURL to download image from.
-	 * @param dispatchTarget	Call the delivery method on this object when
+	 * @param continuation	Call the delivery method on this object when
 	 *			download is complete.
 	 * @param graphicsConfiguration TODO
 	 */
-	public IIOPhoto(ParsedURL purl, Continuation<PixelBased> dispatchTarget, BasicSite basicSite,
+	public IIOPhoto(ParsedURL purl, Continuation<PixelBased> continuation, BasicSite basicSite,
 			GraphicsConfiguration graphicsConfiguration, Dimension maxDimension)
 	{
-		super(purl, dispatchTarget, basicSite, graphicsConfiguration, maxDimension);
+		super(purl, continuation, basicSite, graphicsConfiguration, maxDimension);
 	}
 
 	/**
 	 * @param base		base ParsedURL for forming the url to download image from.
 	 * @param relativeURL	path relative to the base URL for forming the
 	 *			url to download image from.
-	 * @param dispatchTarget Call the delivery method on this object when
+	 * @param continuation Call the delivery method on this object when
 	 *			download is complete.
 	 * @param graphicsConfiguration TODO
 	 */
-	public IIOPhoto(ParsedURL base, String relativeURL, Continuation<PixelBased> dispatchTarget, GraphicsConfiguration graphicsConfiguration)
+	public IIOPhoto(ParsedURL base, String relativeURL, Continuation<PixelBased> continuation, GraphicsConfiguration graphicsConfiguration)
 	throws MalformedURLException
 	{ 
-		this(ParsedURL.getRelative(base.url(), relativeURL, ""), dispatchTarget, graphicsConfiguration);
+		this(ParsedURL.getRelative(base.url(), relativeURL, ""), continuation, graphicsConfiguration);
 	}
 	public IIOPhoto(ParsedURL purl, PURLConnection purlConnection,
-			Continuation<PixelBased> dispatchTarget, GraphicsConfiguration graphicsConfiguration, Dimension maxDimension)
+			Continuation<PixelBased> continuation, GraphicsConfiguration graphicsConfiguration, Dimension maxDimension)
 	{
-		super(purl, dispatchTarget, graphicsConfiguration, maxDimension);
+		super(purl, continuation, graphicsConfiguration, maxDimension);
 
 		this.purlConnection		= purlConnection;
 		imageIORead(purlConnection);
@@ -150,7 +150,7 @@ implements Downloadable, Continuation<IIOPhoto>
 	{
 		boolean result	= !downloadStarted;
 		if (result)
-			downloadMonitor.download(this, dispatchTarget);
+			downloadMonitor.download(this, continuation);
 		return result;
 	}
 
@@ -160,7 +160,7 @@ implements Downloadable, Continuation<IIOPhoto>
 	 * may already be here 
 	 *(in cache), or may require net transfer.
 	 * 
-	 * Results in a call of DispatchTarget.delivery() sooner or later, hopefully
+	 * Results in a call of Continuation.callback() sooner or later, hopefully
 	 * in a new Thread.
 	 * Also in a notify(), if someone's in waitForReady();
 	 */
@@ -436,7 +436,7 @@ implements Downloadable, Continuation<IIOPhoto>
 	public void handleIoError()
 	{
 		//FIXME shouldn't this call handleTimeout() to free resources
-		//FIXME should this call delivery()???!
+		//FIXME should this call callback()???!
 		error("IOERROR");
 	}
 
@@ -511,19 +511,19 @@ implements Downloadable, Continuation<IIOPhoto>
 			cacheImage(filename, basisRendering.bufferedImage);
 	}
 
-	public static IIOPhoto getCachedIIOPhoto(String imagePath, Continuation<PixelBased> dispatchTarget, GraphicsConfiguration graphicsConfiguration)
+	public static IIOPhoto getCachedIIOPhoto(String imagePath, Continuation<PixelBased> continuation, GraphicsConfiguration graphicsConfiguration)
 	{
 		//FIXME need to make sure zip has been downloaded here
 		// if not, initiate download & wait for it!
 
 		File cachedInterfaceFile = Assets.getAsset(INTERFACE_ASSETS_ROOT, imagePath);
 		ParsedURL cachedImagePURL	= new ParsedURL(cachedInterfaceFile);
-		IIOPhoto result = new IIOPhoto(cachedImagePURL, dispatchTarget, graphicsConfiguration);
+		IIOPhoto result = new IIOPhoto(cachedImagePURL, continuation, graphicsConfiguration);
 		//		result.downloadWithHighPriority();
 		result.useHighPriorityDownloadMonitor();
 		result.download();
 		//		if (result.isDownloadDone())
-		//			result.delivery(dispatchTarget);
+		//			result.callback(dispatchTarget);
 		return result;
 	}
 

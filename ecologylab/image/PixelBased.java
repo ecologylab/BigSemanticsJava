@@ -61,7 +61,7 @@ implements Downloadable
 	/**
 	 * receives dispatch when download is complete, or timeout
 	 */
-	Continuation			dispatchTarget;
+	Continuation			continuation;
 
 	DownloadMonitor			downloadMonitor	= pixelBasedDownloadMonitor;
 
@@ -191,27 +191,27 @@ implements Downloadable
 	}
 	/**
 	 * Make a graphical object that consists of an array of pixels.
-	 * @param dispatchTarget	Entity to receive delivery() when
+	 * @param continuation	Entity to receive callback() when
 	 *				download is done.
 	 * @param graphicsConfiguration GraphicsConfiguration of the card we're using. Enables buffering images on the graphics card.
 	 * @param maxDimension		When set, used to force scaling, if necessary, of the pixels that we store.
 	 */
-	public PixelBased(ParsedURL purl, Continuation<PixelBased> dispatchTarget, GraphicsConfiguration graphicsConfiguration, Dimension maxDimension)
+	public PixelBased(ParsedURL purl, Continuation<PixelBased> continuation, GraphicsConfiguration graphicsConfiguration, Dimension maxDimension)
 	{
-		this(purl, dispatchTarget, null, graphicsConfiguration, maxDimension);
+		this(purl, continuation, null, graphicsConfiguration, maxDimension);
 	}
 	/**
 	 * Make a graphical object that consists of an array of pixels.
-	 * @param dispatchTarget	Entity to receive delivery() when
+	 * @param continuation	Entity to receive callback() when
 	 *				download is done.
 	 * @param graphicsConfiguration GraphicsConfiguration of the card we're using. Enables buffering images on the graphics card.
 	 * @param maxDimension		When set, used to force scaling, if necessary, of the pixels that we store.
 	 */
-	public PixelBased(ParsedURL purl, Continuation<PixelBased> dispatchTarget, BasicSite basicSite, 
+	public PixelBased(ParsedURL purl, Continuation<PixelBased> continuation, BasicSite basicSite, 
 										GraphicsConfiguration graphicsConfiguration, Dimension maxDimension)
 	{
 		this.purl								= purl;
-		this.dispatchTarget			= dispatchTarget;
+		this.continuation			= continuation;
 		this.basicSite					= basicSite;
 		this.graphicsConfiguration	= graphicsConfiguration;
 		this.maxDimension				= maxDimension;
@@ -614,7 +614,7 @@ implements Downloadable
 				timeBased		= false;	   // stop updates
 
 				purl				= null;
-				dispatchTarget	= null;
+				continuation	= null;
 				downloadMonitor	= null;
 				dimension		= null;
 				graphicsConfiguration	= null;
@@ -793,14 +793,14 @@ implements Downloadable
 		}
 	}
 	/**
-	 * Set the dispatchTarget, that receives delivery() when download is complete,
+	 * Set the dispatchTarget, that receives callback() when download is complete,
 	 * to what you like.
 	 * 
-	 * @param dispatchTarget The dispatchTarget to set.
+	 * @param continuation The dispatchTarget to set.
 	 */
-	public void setDispatchTarget(Continuation<PixelBased> dispatchTarget)
+	public void setDispatchTarget(Continuation<PixelBased> continuation)
 	{
-		this.dispatchTarget = dispatchTarget;
+		this.continuation = continuation;
 	}
 
 	/**
