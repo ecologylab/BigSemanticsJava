@@ -15,7 +15,7 @@ import java.net.URL;
 import ecologylab.concurrent.DownloadMonitor;
 import ecologylab.generic.ConsoleUtils;
 import ecologylab.generic.Debug;
-import ecologylab.generic.DispatchTarget;
+import ecologylab.generic.Continuation;
 import ecologylab.io.BasicSite;
 import ecologylab.io.Downloadable;
 import ecologylab.net.ParsedURL;
@@ -61,7 +61,7 @@ implements Downloadable
 	/**
 	 * receives dispatch when download is complete, or timeout
 	 */
-	DispatchTarget			dispatchTarget;
+	Continuation			dispatchTarget;
 
 	DownloadMonitor			downloadMonitor	= pixelBasedDownloadMonitor;
 
@@ -196,7 +196,7 @@ implements Downloadable
 	 * @param graphicsConfiguration GraphicsConfiguration of the card we're using. Enables buffering images on the graphics card.
 	 * @param maxDimension		When set, used to force scaling, if necessary, of the pixels that we store.
 	 */
-	public PixelBased(ParsedURL purl, DispatchTarget<PixelBased> dispatchTarget, GraphicsConfiguration graphicsConfiguration, Dimension maxDimension)
+	public PixelBased(ParsedURL purl, Continuation<PixelBased> dispatchTarget, GraphicsConfiguration graphicsConfiguration, Dimension maxDimension)
 	{
 		this(purl, dispatchTarget, null, graphicsConfiguration, maxDimension);
 	}
@@ -207,7 +207,7 @@ implements Downloadable
 	 * @param graphicsConfiguration GraphicsConfiguration of the card we're using. Enables buffering images on the graphics card.
 	 * @param maxDimension		When set, used to force scaling, if necessary, of the pixels that we store.
 	 */
-	public PixelBased(ParsedURL purl, DispatchTarget<PixelBased> dispatchTarget, BasicSite basicSite, 
+	public PixelBased(ParsedURL purl, Continuation<PixelBased> dispatchTarget, BasicSite basicSite, 
 										GraphicsConfiguration graphicsConfiguration, Dimension maxDimension)
 	{
 		this.purl								= purl;
@@ -798,7 +798,7 @@ implements Downloadable
 	 * 
 	 * @param dispatchTarget The dispatchTarget to set.
 	 */
-	public void setDispatchTarget(DispatchTarget<PixelBased> dispatchTarget)
+	public void setDispatchTarget(Continuation<PixelBased> dispatchTarget)
 	{
 		this.dispatchTarget = dispatchTarget;
 	}

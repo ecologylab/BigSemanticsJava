@@ -32,7 +32,7 @@ import javax.imageio.ImageTypeSpecifier;
 import javax.imageio.stream.ImageInputStream;
 
 import ecologylab.collections.CollectionTools;
-import ecologylab.generic.DispatchTarget;
+import ecologylab.generic.Continuation;
 import ecologylab.io.Assets;
 import ecologylab.io.AssetsRoot;
 import ecologylab.io.BasicSite;
@@ -73,7 +73,7 @@ import ecologylab.net.ParsedURL;
  */
 public class IIOPhoto
 extends PixelBased
-implements Downloadable, DispatchTarget<IIOPhoto>
+implements Downloadable, Continuation<IIOPhoto>
 {
 	PURLConnection	purlConnection;
 
@@ -99,7 +99,7 @@ implements Downloadable, DispatchTarget<IIOPhoto>
 	 *			download is complete.
 	 * @param graphicsConfiguration TODO
 	 */
-	public IIOPhoto(ParsedURL purl, DispatchTarget<PixelBased> dispatchTarget, GraphicsConfiguration graphicsConfiguration)
+	public IIOPhoto(ParsedURL purl, Continuation<PixelBased> dispatchTarget, GraphicsConfiguration graphicsConfiguration)
 	{
 		this(purl, dispatchTarget, null, graphicsConfiguration, null);
 	}
@@ -111,7 +111,7 @@ implements Downloadable, DispatchTarget<IIOPhoto>
 	 *			download is complete.
 	 * @param graphicsConfiguration TODO
 	 */
-	public IIOPhoto(ParsedURL purl, DispatchTarget<PixelBased> dispatchTarget, BasicSite basicSite,
+	public IIOPhoto(ParsedURL purl, Continuation<PixelBased> dispatchTarget, BasicSite basicSite,
 			GraphicsConfiguration graphicsConfiguration, Dimension maxDimension)
 	{
 		super(purl, dispatchTarget, basicSite, graphicsConfiguration, maxDimension);
@@ -125,13 +125,13 @@ implements Downloadable, DispatchTarget<IIOPhoto>
 	 *			download is complete.
 	 * @param graphicsConfiguration TODO
 	 */
-	public IIOPhoto(ParsedURL base, String relativeURL, DispatchTarget<PixelBased> dispatchTarget, GraphicsConfiguration graphicsConfiguration)
+	public IIOPhoto(ParsedURL base, String relativeURL, Continuation<PixelBased> dispatchTarget, GraphicsConfiguration graphicsConfiguration)
 	throws MalformedURLException
 	{ 
 		this(ParsedURL.getRelative(base.url(), relativeURL, ""), dispatchTarget, graphicsConfiguration);
 	}
 	public IIOPhoto(ParsedURL purl, PURLConnection purlConnection,
-			DispatchTarget<PixelBased> dispatchTarget, GraphicsConfiguration graphicsConfiguration, Dimension maxDimension)
+			Continuation<PixelBased> dispatchTarget, GraphicsConfiguration graphicsConfiguration, Dimension maxDimension)
 	{
 		super(purl, dispatchTarget, graphicsConfiguration, maxDimension);
 
@@ -504,14 +504,14 @@ implements Downloadable, DispatchTarget<IIOPhoto>
 	 * Notify us when a cachable image has been downloaded and should
 	 * then be cached to disk.
 	 */
-	public void delivery(IIOPhoto iioPhoto)
+	public void callback(IIOPhoto iioPhoto)
 	{
 		BufferedImage bufferedImage	= basisRendering.bufferedImage;
 		if (bufferedImage != null)
 			cacheImage(filename, basisRendering.bufferedImage);
 	}
 
-	public static IIOPhoto getCachedIIOPhoto(String imagePath, DispatchTarget<PixelBased> dispatchTarget, GraphicsConfiguration graphicsConfiguration)
+	public static IIOPhoto getCachedIIOPhoto(String imagePath, Continuation<PixelBased> dispatchTarget, GraphicsConfiguration graphicsConfiguration)
 	{
 		//FIXME need to make sure zip has been downloaded here
 		// if not, initiate download & wait for it!

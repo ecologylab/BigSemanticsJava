@@ -14,7 +14,7 @@ import java.net.MalformedURLException;
 import multivalent.std.adaptor.pdf.Dict;
 import multivalent.std.adaptor.pdf.Images;
 import multivalent.std.adaptor.pdf.PDFReader;
-import ecologylab.generic.DispatchTarget;
+import ecologylab.generic.Continuation;
 import ecologylab.io.BasicSite;
 import ecologylab.net.PURLConnection;
 import ecologylab.net.ParsedURL;
@@ -31,7 +31,7 @@ public class PDFIIOPhoto extends IIOPhoto
 	 * @param dispatchTarget
 	 * @param graphicsConfiguration
 	 */
-	public PDFIIOPhoto(ParsedURL purl, DispatchTarget<PixelBased> dispatchTarget,
+	public PDFIIOPhoto(ParsedURL purl, Continuation<PixelBased> dispatchTarget,
 			GraphicsConfiguration graphicsConfiguration)
 	{
 		super(purl, dispatchTarget, graphicsConfiguration);
@@ -45,7 +45,7 @@ public class PDFIIOPhoto extends IIOPhoto
 	 * @param graphicsConfiguration
 	 * @param maxDimension
 	 */
-	public PDFIIOPhoto(ParsedURL purl, DispatchTarget<PixelBased> dispatchTarget,
+	public PDFIIOPhoto(ParsedURL purl, Continuation<PixelBased> dispatchTarget,
 			BasicSite basicSite, GraphicsConfiguration graphicsConfiguration, Dimension maxDimension)
 	{
 		super(purl, dispatchTarget, basicSite, graphicsConfiguration, maxDimension);
@@ -59,7 +59,7 @@ public class PDFIIOPhoto extends IIOPhoto
 	 * @param graphicsConfiguration
 	 * @throws MalformedURLException
 	 */
-	public PDFIIOPhoto(ParsedURL base, String relativeURL, DispatchTarget<PixelBased> dispatchTarget,
+	public PDFIIOPhoto(ParsedURL base, String relativeURL, Continuation<PixelBased> dispatchTarget,
 			GraphicsConfiguration graphicsConfiguration) throws MalformedURLException
 	{
 		super(base, relativeURL, dispatchTarget, graphicsConfiguration);
@@ -74,7 +74,7 @@ public class PDFIIOPhoto extends IIOPhoto
 	 * @param maxDimension
 	 */
 	public PDFIIOPhoto(ParsedURL purl, PURLConnection purlConnection,
-			DispatchTarget<PixelBased> dispatchTarget, GraphicsConfiguration graphicsConfiguration,
+			Continuation<PixelBased> dispatchTarget, GraphicsConfiguration graphicsConfiguration,
 			Dimension maxDimension)
 	{
 		super(purl, purlConnection, dispatchTarget, graphicsConfiguration, maxDimension);
