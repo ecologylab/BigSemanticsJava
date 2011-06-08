@@ -420,7 +420,7 @@ public class SeedDistributor extends Debug implements Runnable
 	/**
 	 * (Currently for debugging only.)
 	@Override
-	public void delivery(AC o)
+	public void continuation(AC o)
 	{
 		if (!o.isRecycled())
 		{
