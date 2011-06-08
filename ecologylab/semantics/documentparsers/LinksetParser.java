@@ -3,7 +3,7 @@
  */
 package ecologylab.semantics.documentparsers;
 
-import ecologylab.generic.DispatchTarget;
+import ecologylab.generic.Continuation;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.collecting.NewInfoCollector;
 import ecologylab.semantics.metadata.builtins.Document;
@@ -20,7 +20,7 @@ import ecologylab.semantics.seeding.SeedDistributor;
  * 
  */
 public abstract class LinksetParser
-		extends ParserBase implements DispatchTarget<DocumentClosure>
+		extends ParserBase implements Continuation<DocumentClosure>
 {
 
 	public LinksetParser(NewInfoCollector infoCollector)
@@ -52,7 +52,7 @@ public abstract class LinksetParser
 	/**
 	 * call doneQueueing() to notify seed distributor
 	 */
-	public void delivery(DocumentClosure sourceClosure)
+	public void callback(DocumentClosure sourceClosure)
 	{
 		Seed seed = sourceClosure.getSeed();
 		if (seed != null)

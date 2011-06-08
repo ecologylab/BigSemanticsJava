@@ -12,7 +12,7 @@ import java.net.URL;
 import ecologylab.appframework.types.prefs.Pref;
 import ecologylab.collections.SetElement;
 import ecologylab.concurrent.DownloadMonitor;
-import ecologylab.generic.DispatchTarget;
+import ecologylab.generic.Continuation;
 import ecologylab.generic.MathTools;
 import ecologylab.io.Downloadable;
 import ecologylab.net.ConnectionHelper;
@@ -684,7 +684,7 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DC>
 		// have to do this by hand in the error case
 		if (dispatchTarget != null )
 		{
-			dispatchTarget.delivery((DC) this);
+			dispatchTarget.callback((DC) this);
 		}
 
 		// When timeout happens and download is not completed, there may have some mediaElements created 
@@ -751,14 +751,14 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DC>
 
 	
 	@Override
-	public void setDispatchTarget(DispatchTarget<DC> dispatchTarget)
+	public void setDispatchTarget(Continuation<DC> dispatchTarget)
 	{
 		this.dispatchTarget = dispatchTarget;
 	}
 
-	DispatchTarget<DC> 			dispatchTarget;
+	Continuation<DC> 			dispatchTarget;
 	
-	public DispatchTarget<DC> dispatchTarget()
+	public Continuation<DC> dispatchTarget()
 	{
 		return dispatchTarget;
 	}

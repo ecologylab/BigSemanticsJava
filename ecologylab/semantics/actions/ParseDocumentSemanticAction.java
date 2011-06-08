@@ -3,7 +3,7 @@
  */
 package ecologylab.semantics.actions;
 
-import ecologylab.generic.DispatchTarget;
+import ecologylab.generic.Continuation;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.documentparsers.SearchParser;
@@ -84,7 +84,7 @@ class ParseDocumentSemanticAction
 				document.addInlink(source);
 				// if there is a source, we should re-use that dispatch target.
 				// e.g. search results from a search
-				DispatchTarget dispatchTarget = source.getOrConstructClosure().dispatchTarget();
+				Continuation dispatchTarget = source.getOrConstructClosure().dispatchTarget();
 				document.getOrConstructClosure().setDispatchTarget(dispatchTarget);
 			}
 			document.queueDownload();

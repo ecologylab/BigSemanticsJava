@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import ecologylab.collections.GenericElement;
 import ecologylab.collections.GenericWeightSet;
 import ecologylab.collections.WeightSet;
-import ecologylab.generic.DispatchTarget;
+import ecologylab.generic.Continuation;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.collecting.ContainerWeightingStrategy;
 import ecologylab.semantics.collecting.DownloadStatus;
@@ -31,7 +31,7 @@ import ecologylab.serialization.simpl_inherit;
  */
 @simpl_inherit
 public class CompoundDocument extends Document
-implements DispatchTarget<ImageClosure>
+implements Continuation<ImageClosure>
 {
 	/**
 	 * For debugging. Type of the structure recognized by information extraction.
@@ -561,7 +561,7 @@ implements DispatchTarget<ImageClosure>
 			additionalImgSurrogatesActive	= false;
 	}
 	
-	public void delivery(ImageClosure imageClosure)
+	public void callback(ImageClosure imageClosure)
 	{
 		mostRecentImageWeight = InterestModel.getInterestExpressedInTermVector(imageClosure.termVector());
 		perhapsAddImageClosureToPool();

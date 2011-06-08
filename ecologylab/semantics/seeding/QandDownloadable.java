@@ -3,7 +3,7 @@
  */
 package ecologylab.semantics.seeding;
 
-import ecologylab.generic.DispatchTarget;
+import ecologylab.generic.Continuation;
 import ecologylab.io.Downloadable;
 import ecologylab.net.ParsedURL;
 
@@ -16,7 +16,7 @@ public interface QandDownloadable<D> extends Downloadable
 {
 	public boolean queueDownload();
 	
-	public void setDispatchTarget(DispatchTarget<D> dispatchTarget);
+	public void setDispatchTarget(Continuation<D> dispatchTarget);
 	
 	/**
 	 * Get the ParsedURL that the Downloadable was initially created with.

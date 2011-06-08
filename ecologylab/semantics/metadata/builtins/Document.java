@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import ecologylab.collections.GenericElement;
 import ecologylab.collections.GenericWeightSet;
 import ecologylab.collections.WeightSet;
-import ecologylab.generic.DispatchTarget;
+import ecologylab.generic.Continuation;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.collecting.ContainerWeightingStrategy;
 import ecologylab.semantics.collecting.DocumentLocationMap;
@@ -382,7 +382,7 @@ public class Document extends Metadata
 		getSemanticInlinks().add(source);
 	}
 	
-	public boolean queueDownload(DispatchTarget dispatchTarget)
+	public boolean queueDownload(Continuation dispatchTarget)
 	{
 		DocumentClosure documentClosure	= getOrConstructClosure();
 		if (documentClosure == null)

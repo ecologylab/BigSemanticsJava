@@ -107,9 +107,9 @@ public class SearchParser extends LinksetParser implements CFPrefNames, Semantic
 	}
 
 	@Override
-	public void delivery(DocumentClosure downloadedContainer)
+	public void callback(DocumentClosure downloadedContainer)
 	{
-		super.delivery(downloadedContainer);
+		super.callback(downloadedContainer);
 		if (searchSeed != null)
 			searchSeed.incrementNumResultsBy(searchSeed.numResults());
 	}
