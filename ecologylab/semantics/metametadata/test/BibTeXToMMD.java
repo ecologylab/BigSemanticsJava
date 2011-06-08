@@ -2,27 +2,40 @@ package ecologylab.semantics.metametadata.test;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.OutputStream;
 
 import ecologylab.generic.Debug;
+import ecologylab.semantics.metadata.builtins.DocumentClosure;
+import ecologylab.serialization.ElementState.FORMAT;
+import ecologylab.serialization.TranslationScope;
+import ecologylab.serialization.TranslationScope.GRAPH_SWITCH;
 
-public class BibTeXToMMD extends Debug
+public class BibTeXToMMD extends NewMmTest
 {
+
+	public BibTeXToMMD(OutputStream outputStream)
+	{
+		super(outputStream);
+	}
+	
 	public static void main(String[] args)
 	{
-		for (int i=0; i <args.length; i++)
+		TranslationScope.graphSwitch	= GRAPH_SWITCH.ON;
+		BibTeXToMMD mmTest	= new BibTeXToMMD(System.out);
+		mmTest.collect(args);
+	}
+	
+	@Override
+	public void callback(DocumentClosure incomingClosure)
+	{
+		if (outputOneAtATime)
+			incomingClosure.serialize(outputStream, FORMAT.BIBTEX);
+		else if (++currentResult == documentCollection.size())
 		{
-			String fileName = args[i];
-			try
-			{
-				FileInputStream input = new FileInputStream(fileName);
-			}
-			catch (FileNotFoundException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			System.out.println("\n\n");
+			for (DocumentClosure documentClosure : documentCollection)
+				documentClosure.serialize(System.out, FORMAT.BIBTEX);
+			downloadMonitor.stop();
 		}
 	}
-
-
 }
