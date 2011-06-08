@@ -13,7 +13,7 @@ import java.util.ArrayList;
 
 import ecologylab.concurrent.DownloadMonitor;
 import ecologylab.generic.Debug;
-import ecologylab.generic.DispatchTarget;
+import ecologylab.generic.Continuation;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.collecting.NewInfoCollector;
 import ecologylab.semantics.generated.library.GeneratedMetadataTranslationScope;
@@ -95,7 +95,7 @@ public class MmToHtmlTest extends NewMmTest
 	}
 
 	@Override
-	public void delivery(DocumentClosure incomingClosure)
+	public void callback(DocumentClosure incomingClosure)
 	{
 		if (outputOneAtATime)
 			incomingClosure.serialize(outputStream);

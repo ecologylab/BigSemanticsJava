@@ -7,7 +7,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-import ecologylab.generic.DispatchTarget;
+import ecologylab.generic.Continuation;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.collecting.NewInfoCollector;
 import ecologylab.semantics.generated.library.GeneratedMetadataTranslationScope;
@@ -16,7 +16,7 @@ import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
 import ecologylab.semantics.metametadata.metasearch.HtmlRenderer;
 
-public class LinkingMetadata implements DispatchTarget<DocumentClosure>
+public class LinkingMetadata implements Continuation<DocumentClosure>
 {
 
 	private List<ScholarlyArticle>	collection	= new ArrayList<ScholarlyArticle>();
@@ -82,7 +82,7 @@ public class LinkingMetadata implements DispatchTarget<DocumentClosure>
 	}
 
 	@Override
-	public void delivery(DocumentClosure closure)
+	public void callback(DocumentClosure closure)
 	{
 		Document doc = closure.getDocument();
 		if (doc != null)

@@ -7,7 +7,7 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 
 import ecologylab.concurrent.DownloadMonitor;
-import ecologylab.generic.DispatchTarget;
+import ecologylab.generic.Continuation;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticAction;
 import ecologylab.semantics.collecting.NewInfoCollector;
@@ -16,7 +16,7 @@ import ecologylab.semantics.generated.library.WeatherReport;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
 
-public class NewWeatherDataCollector implements DispatchTarget<DocumentClosure>
+public class NewWeatherDataCollector implements Continuation<DocumentClosure>
 {
 	private OutputStream	out;
 
@@ -48,7 +48,7 @@ public class NewWeatherDataCollector implements DispatchTarget<DocumentClosure>
 	}
 
 	@Override
-	public void delivery(DocumentClosure o)
+	public void callback(DocumentClosure o)
 	{
 		Document doc = o.getDocument();
 		if (doc != null && doc instanceof WeatherReport)
