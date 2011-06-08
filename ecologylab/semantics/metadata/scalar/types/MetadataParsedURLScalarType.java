@@ -33,6 +33,12 @@ public class MetadataParsedURLScalarType extends
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	@Override
+	public String getJavaType() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 	@Override
 	public String getDbType() {
