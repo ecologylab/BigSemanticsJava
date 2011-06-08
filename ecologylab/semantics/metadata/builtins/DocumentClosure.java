@@ -404,7 +404,7 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DC>
 			String cacheValue = purlConnection.urlConnection().getHeaderField("X-Cache");
 			cacheHit = cacheValue != null && cacheValue.contains("HIT");
 
-			if (metaMetadata.hasDefaultSuffixOrMimeSelector())
+			if (metaMetadata.isGenericMetadata())
 			{ // see if we can find more specifc meta-metadata using mimeType
 				final MetaMetadataRepository repository = infoCollector.metaMetaDataRepository();
 				String mimeType = purlConnection.mimeType();
