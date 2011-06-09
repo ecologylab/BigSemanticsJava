@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import ecologylab.collections.Scope;
+import ecologylab.concurrent.DownloadMonitor;
 import ecologylab.generic.Debug;
 import ecologylab.generic.ReflectionTools;
 import ecologylab.net.PURLConnection;
@@ -486,6 +487,14 @@ abstract public class DocumentParser<D extends Document>
 			return DocumentParser.getParserInstanceFromBindingMap(parserName, infoCollector);
 		}
 		return null;
+	}
+
+	public DownloadMonitor<DocumentClosure> downloadMonitor(boolean isDnd, boolean isSeed)
+	{
+		// GoogleSearch, SearchResults are all seeds
+		return  (isDnd ? NewInfoCollector.DND_DOWNLOAD_MONITOR : 
+			isSeed ? 
+		  NewInfoCollector.SEEDING_DOWNLOAD_MONITOR : NewInfoCollector.CRAWLER_DOWNLOAD_MONITOR);
 	}
 
 }
