@@ -31,7 +31,7 @@ import ecologylab.serialization.simpl_inherit;
  */
 @simpl_inherit
 public class CompoundDocument extends Document
-implements Continuation<ImageClosure>
+implements Continuation<DocumentClosure>
 {
 	/**
 	 * For debugging. Type of the structure recognized by information extraction.
@@ -68,7 +68,7 @@ implements Continuation<ImageClosure>
 	 * Weighted collection of <code>ImageElement</code>s.
 	 * Contain elements that have not been transported to candidatePool. 
 	 */
-	private WeightSet<ImageClosure>	candidateImageClosures;
+	private WeightSet<DocumentClosure<Image>>	candidateImageClosures;
 
 	/**
 	 * Weighted collection of <code>TextElement</code>s.
@@ -520,7 +520,7 @@ implements Continuation<ImageClosure>
 		if (!infoCollector.isCollectCandidatesInPools())
 			return;
 		
-		ImageClosure imageClosure = null;
+		DocumentClosure<Image> imageClosure = null;
 		if (candidateImageClosures != null)
 			imageClosure = candidateImageClosures.maxSelect();
 
@@ -561,7 +561,7 @@ implements Continuation<ImageClosure>
 			additionalImgSurrogatesActive	= false;
 	}
 	
-	public void callback(ImageClosure imageClosure)
+	public void callback(DocumentClosure imageClosure)
 	{
 		mostRecentImageWeight = InterestModel.getInterestExpressedInTermVector(imageClosure.termVector());
 		perhapsAddImageClosureToPool();
@@ -666,12 +666,12 @@ implements Continuation<ImageClosure>
 	}
 	
 	@Override
-	public synchronized void tryToGetBetterImageAfterInterestExpression(ImageClosure replaceMe)
+	public synchronized void tryToGetBetterImageAfterInterestExpression(DocumentClosure<Image> replaceMe)
 	{
 		if (candidateImageClosures == null || candidateImageClosures.size() == 0)
 			return;
 		
-		ImageClosure aie = candidateImageClosures.maxPeek();
+		DocumentClosure<Image> aie = candidateImageClosures.maxPeek();
 		if (InterestModel.getInterestExpressedInTermVector(aie.termVector()) > mostRecentImageWeight)
 		{
 			infoCollector.removeImageClippingFromPools(replaceMe);
@@ -799,8 +799,8 @@ implements Continuation<ImageClosure>
 		{
 			//FIXME -- look out for already downloaded!!!
 			if (candidateImageClosures == null)
-				candidateImageClosures	=  new WeightSet<ImageClosure>(new TermVectorWeightStrategy(InterestModel.getPIV()));
-			candidateImageClosures.insert((ImageClosure) image.getOrConstructClosure());
+				candidateImageClosures	=  new WeightSet<DocumentClosure<Image>>(new TermVectorWeightStrategy(InterestModel.getPIV()));
+			candidateImageClosures.insert((DocumentClosure<Image>) image.getOrConstructClosure());
 		}
 	}
 	

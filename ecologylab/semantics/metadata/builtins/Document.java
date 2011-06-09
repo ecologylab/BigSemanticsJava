@@ -388,7 +388,7 @@ public class Document extends Metadata
 		if (documentClosure == null)
 			return false;
 		if (dispatchTarget != null)
-			documentClosure.setDispatchTarget(dispatchTarget);
+			documentClosure.setContinuation(dispatchTarget);
 		return documentClosure.queueDownload();
 	}
 	
@@ -515,7 +515,7 @@ public class Document extends Metadata
 	{
 		
 	}
-	public void tryToGetBetterImageAfterInterestExpression(ImageClosure replaceMe)
+	public void tryToGetBetterImageAfterInterestExpression(DocumentClosure<Image> replaceMe)
 	{
 	}
 	

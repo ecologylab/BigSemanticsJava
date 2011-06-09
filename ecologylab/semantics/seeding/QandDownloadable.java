@@ -16,7 +16,7 @@ public interface QandDownloadable<D> extends Downloadable
 {
 	public boolean queueDownload();
 	
-	public void setDispatchTarget(Continuation<D> dispatchTarget);
+	public void setContinuation(Continuation<D> dispatchTarget);
 	
 	/**
 	 * Get the ParsedURL that the Downloadable was initially created with.

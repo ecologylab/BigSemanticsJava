@@ -84,8 +84,8 @@ class ParseDocumentSemanticAction
 				document.addInlink(source);
 				// if there is a source, we should re-use that dispatch target.
 				// e.g. search results from a search
-				Continuation dispatchTarget = source.getOrConstructClosure().dispatchTarget();
-				document.getOrConstructClosure().setDispatchTarget(dispatchTarget);
+				Continuation dispatchTarget = source.getOrConstructClosure().continuation();
+				document.getOrConstructClosure().setContinuation(dispatchTarget);
 			}
 			document.queueDownload();
 		}

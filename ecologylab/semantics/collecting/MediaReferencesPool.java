@@ -13,7 +13,8 @@ import ecologylab.collections.WeightSet;
 import ecologylab.concurrent.Monitor;
 import ecologylab.generic.ConsoleUtils;
 import ecologylab.generic.Generic;
-import ecologylab.semantics.metadata.builtins.ImageClosure;
+import ecologylab.semantics.metadata.builtins.DocumentClosure;
+import ecologylab.semantics.metadata.builtins.Image;
 import ecologylab.semantics.model.text.TermVector;
 import ecologylab.semantics.model.text.TermVectorWeightStrategy;
 
@@ -23,7 +24,7 @@ import ecologylab.semantics.model.text.TermVectorWeightStrategy;
  * 
  * @author andruid
  */
-public class MediaReferencesPool extends PrioritizedPool<ImageClosure>
+public class MediaReferencesPool extends PrioritizedPool<DocumentClosure<Image>>
 	implements Runnable, RunnablePool
 	{
 	/**
@@ -82,7 +83,7 @@ public class MediaReferencesPool extends PrioritizedPool<ImageClosure>
 	  		weightSets					= new WeightSet[numSets];
 	  		//TODO -- should there be a special weighting strategy here?!
 	  		for (int i = 0; i < numSets; i++)
-	  			weightSets[i]			= new WeightSet<ImageClosure>(maxSetSize, infoCollector, new TermVectorWeightStrategy(piv));  		
+	  			weightSets[i]			= new WeightSet<DocumentClosure<Image>>(maxSetSize, infoCollector, new TermVectorWeightStrategy(piv));  		
 	      	
 	   }
 
@@ -237,7 +238,7 @@ public class MediaReferencesPool extends PrioritizedPool<ImageClosure>
 	    * This can call prune(), so it shares the lock on <code>this</code> with prune().
 	    */
 	   //TODO -- get rid of this method?!
-	   public synchronized ImageClosure selectCandidate()
+	   public synchronized DocumentClosure selectCandidate()
 	   {
 	  	 return pruneAndMaxSelect();
 	   }

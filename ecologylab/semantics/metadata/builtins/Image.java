@@ -103,13 +103,13 @@ implements MimeType, ImageConstants
 		return infoCollector.getGlobalImageMap();
 	}
 	
-	/**
-	 * @return
-	 */
-	protected DocumentClosure constructClosure()
-	{
-		return new ImageClosure(this, semanticInlinks);
-	}
+//	/**
+//	 * @return
+//	 */
+//	protected DocumentClosure constructClosure()
+//	{
+//		return new ImageClosure(this, semanticInlinks);
+//	}
 
 	/**
 	 * Construct an ImageClipping object.

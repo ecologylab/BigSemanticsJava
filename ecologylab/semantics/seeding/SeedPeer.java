@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 import ecologylab.collections.Scope;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
-import ecologylab.semantics.metadata.builtins.ImageClosure;
+import ecologylab.semantics.metadata.builtins.Image;
 import ecologylab.semantics.metadata.builtins.TextClipping;
 
 /**
@@ -54,7 +54,7 @@ abstract public class SeedPeer<SP extends SeedPeer>
 	
 	abstract public void addToIndex(DocumentClosure documentClosure);
 	
-	abstract public void addToIndexI(ImageClosure imageClosure);
+	abstract public void addToIndexI(DocumentClosure<Image> imageClosure);
 	
 	abstract public void addToIndexT(TextClipping textClipping);
 	

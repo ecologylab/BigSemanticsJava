@@ -4,12 +4,11 @@
 package ecologylab.semantics.actions;
 
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.collecting.DocumentLocationMap;
 import ecologylab.semantics.documentparsers.SearchParser;
 import ecologylab.semantics.metadata.builtins.Document;
+import ecologylab.semantics.metadata.builtins.DocumentClosure;
 import ecologylab.semantics.metadata.builtins.Image;
 import ecologylab.semantics.metadata.builtins.ImageClipping;
-import ecologylab.semantics.metadata.builtins.ImageClosure;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.seeding.Seed;
 import ecologylab.semantics.seeding.SeedDistributor;
@@ -85,7 +84,7 @@ class CreateAndVisualizeImgSurrogateSemanticAction
 			// look out for error condition
 			SearchParser mmSearchParser = (documentParser instanceof SearchParser) ? (SearchParser) documentParser
 					: null;
-			ImageClosure imageClosure	= (ImageClosure) image.getOrConstructClosure();
+			DocumentClosure imageClosure= image.getOrConstructClosure();
 			if (mmSearchParser != null)
 			{
 				Seed seed = mmSearchParser.getSeed();

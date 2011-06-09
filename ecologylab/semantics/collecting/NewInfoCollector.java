@@ -32,7 +32,6 @@ import ecologylab.semantics.metadata.builtins.CompoundDocument;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
 import ecologylab.semantics.metadata.builtins.Image;
-import ecologylab.semantics.metadata.builtins.ImageClosure;
 import ecologylab.semantics.metadata.builtins.TextClipping;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
@@ -83,7 +82,7 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 	/**
 	 * Contains 3 visual pools. The first holds the first image of each container
 	 */
-	private final PrioritizedPool<ImageClosure> 				candidateImagesPool;
+	private final PrioritizedPool<DocumentClosure<Image>> 				candidateImagesPool;
 	
 	/**
 	 * Contains 2 FloatWeightSet pools. 
@@ -91,7 +90,7 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 	 */
 	private final GenericPrioritizedPool<TextClipping> 	candidateTextClippingsPool;
 	
-	private final PrioritizedPool<DocumentClosure>			candidateContainersPool;
+	private final PrioritizedPool<DocumentClosure<?>>			candidateContainersPool;
 	
 	GuiBridge																						guiBridge;
 	
@@ -128,19 +127,19 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 		};
 		candidateTextClippingsPool = new GenericPrioritizedPool<TextClipping>(textWeightSets);
 
-		WeightSet<DocumentClosure>[] containerWeightSets = new WeightSet[NUM_GENERATIONS_IN_CONTAINER_POOL];
+		WeightSet<DocumentClosure<?>>[] containerWeightSets = new WeightSet[NUM_GENERATIONS_IN_CONTAINER_POOL];
 		
 		for(int i = 0; i < NUM_GENERATIONS_IN_CONTAINER_POOL; i++)
-				containerWeightSets[i] = new WeightSet<DocumentClosure>(MAX_PAGES_PER_GENERATION, this, 
+				containerWeightSets[i] = new WeightSet<DocumentClosure<?>>(MAX_PAGES_PER_GENERATION, this, 
 					(TermVectorWeightStrategy) new DownloadContainerWeightingStrategy(piv));
-		candidateContainersPool 	= new PrioritizedPool<DocumentClosure>(containerWeightSets);
+		candidateContainersPool 	= new PrioritizedPool<DocumentClosure<?>>(containerWeightSets);
 		
 		
 		// Three pools for downloaded images      
-		WeightSet<ImageClosure>[] imageWeightSets	= new WeightSet[NUM_GENERATIONS_IN_MEDIA_POOL];
+		WeightSet<DocumentClosure<Image>>[] imageWeightSets	= new WeightSet[NUM_GENERATIONS_IN_MEDIA_POOL];
 		for (int i = 0; i < NUM_GENERATIONS_IN_MEDIA_POOL; i++)
-			imageWeightSets[i]	= new WeightSet<ImageClosure>(MAX_MEDIA_PER_GENERATION, this, new TermVectorWeightStrategy(piv));
-		candidateImagesPool = new PrioritizedPool<ImageClosure>(imageWeightSets);
+			imageWeightSets[i]	= new WeightSet<DocumentClosure<Image>>(MAX_MEDIA_PER_GENERATION, this, new TermVectorWeightStrategy(piv));
+		candidateImagesPool = new PrioritizedPool<DocumentClosure<Image>>(imageWeightSets);
 		
 		finished		= false;
 		usualSleep	= 3000;
@@ -287,11 +286,11 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 
  	static final int			NUM_DOWNLOAD_THREADS	= 2;
 
-	public static final DownloadMonitor<ImageClosure> IMAGE_DOWNLOAD_MONITOR = //PixelBased.pixelBasedDownloadMonitor;
-			new DownloadMonitor<ImageClosure>("Images", NUM_DOWNLOAD_THREADS, 1);
+	public static final DownloadMonitor<DocumentClosure> IMAGE_DOWNLOAD_MONITOR = //PixelBased.pixelBasedDownloadMonitor;
+			new DownloadMonitor<DocumentClosure>("Images", NUM_DOWNLOAD_THREADS, 1);
 
-	public static final DownloadMonitor<ImageClosure>	IMAGE_DND_DOWNLOAD_MONITOR		=
-		new DownloadMonitor<ImageClosure>("ImagesHighPriority", NUM_DOWNLOAD_THREADS, DND_PRIORITY_BOOST);
+	public static final DownloadMonitor<DocumentClosure>	IMAGE_DND_DOWNLOAD_MONITOR		=
+		new DownloadMonitor<DocumentClosure>("ImagesHighPriority", NUM_DOWNLOAD_THREADS, DND_PRIORITY_BOOST);
 
 
 	//
@@ -711,10 +710,10 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 		return false;
 	}
 	
-	void addImageClosureToPool(ImageClosure imageClosure, CompoundDocument source)
+	void addImageClosureToPool(DocumentClosure<Image> imageClosure, CompoundDocument source)
 	{
 		// pressPlayWhenFirstMediaElementArrives();
-		imageClosure.setDispatchTarget(source);
+		imageClosure.setContinuation(source);
 //		visualPool.add(imageClosure);
 //		imageClosure.s
 	}
@@ -786,11 +785,11 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 		
 		synchronized(candidateContainersPool)
 		{
-			WeightSet<DocumentClosure>[] candidateSet = (WeightSet<DocumentClosure>[]) candidateContainersPool.getWeightSets();
+			WeightSet<DocumentClosure<?>>[] candidateSet = (WeightSet<DocumentClosure<?>>[]) candidateContainersPool.getWeightSets();
 			int maxSize	= candidateContainersPool.maxSize();
 			ArrayList<DocumentClosure> removeContainers = new ArrayList<DocumentClosure>(maxSize);
 			ArrayList<DocumentClosure> insertContainers = new ArrayList<DocumentClosure>(maxSize);
-			for(WeightSet<DocumentClosure> candidates : candidateSet)
+			for(WeightSet<DocumentClosure<?>> candidates : candidateSet)
 			{
 				for (DocumentClosure c : candidates)
 				{
@@ -831,7 +830,7 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 		synchronized (candidateImagesPool)
 		{
 //			ImageClosure[] poolCopy				= (ImageClosure[]) candidateImagesPool.toArray();
-			for (ImageClosure imageClosure : candidateImagesPool)
+			for (DocumentClosure<Image> imageClosure : candidateImagesPool)
 			{
 				//TODO -- check among all source documents!!!
 				Image image								= imageClosure.getDocument();
@@ -861,7 +860,7 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 		candidateTextClippingsPool.remove(replaceMe);
 	}
 
-	public void removeImageClippingFromPools(ImageClosure replaceMe)
+	public void removeImageClippingFromPools(DocumentClosure<Image> replaceMe)
 	{
 		candidateImagesPool.remove(replaceMe);
 	}

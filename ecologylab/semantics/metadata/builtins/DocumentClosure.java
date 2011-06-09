@@ -46,19 +46,17 @@ import ecologylab.serialization.ElementState.FORMAT;
  * @author andruid
  *
  */
-public class DocumentClosure<D extends Document, DC extends DocumentClosure> extends SetElement
-implements TermVectorFeature, Downloadable, QandDownloadable<DC>
+public class DocumentClosure<D extends Document> extends SetElement
+implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>
 {
-	D												document;
+	D															document;
 	
-	SemanticInLinks									semanticInlinks;
+	SemanticInLinks								semanticInlinks;
 
+	ParsedURL											initialPURL;
+
+	Continuation<DocumentClosure> continuation;
 	
-
-//	protected double								cachedWeight;
-	
-	ParsedURL						initialPURL;
-
 	/**
 	 * Means we tried to connect to the page and parse it.
 	 * The connect may have failed; in any case, we assume no need to try
@@ -184,14 +182,15 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DC>
 		}
 
 		ParsedURL parsedURL = location();
-		connect();					// evolves Document based on redirects & mime-type; sets the documentParser
+		PURLConnection purlConnection	= connect();					// evolves Document based on redirects & mime-type; sets the documentParser
 
-		if( parsedURL.getTimeout() )
-		{
+		if( purlConnection.getTimeout() )
 			handleTimeout();
+		if (!purlConnection.isGood())
+		{
+			recycle();
 			return;
 		}
-
 		if (!bad && (documentParser != null) && 
 				(documentParser.nullPURLConnectionOK() || (documentParser.purlConnection() != null)))
 		{
@@ -209,27 +208,20 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DC>
 				
 			}
 			parsing					= false;
+			downloadStatus	= DownloadStatus.DOWNLOAD_DONE;
 									
-		 	if(Pref.lookupBoolean(CFPrefNames.CRAWL_CAREFULLY) && !documentParser.cacheHit) //infoCollector.getCrawlingSlow() && 
-		 	{		 		
-			  	int waitTime = (Pref.lookupInt(CFPrefNames.MIN_WAIT_TIME) * 1000) + (MathTools.random(100)*((Pref.lookupInt(CFPrefNames.MAX_WAIT_TIME)-Pref.lookupInt(CFPrefNames.MIN_WAIT_TIME)) * 10));
-			 	System.out.println("Downloading slow, waiting: "+((float)waitTime/60000));
-				infoCollector.crawlerDownloadMonitor().pause(waitTime);
-		 	}
+//		 	if(Pref.lookupBoolean(CFPrefNames.CRAWL_CAREFULLY) && !documentParser.cacheHit) //infoCollector.getCrawlingSlow() && 
+//		 	{		 		
+//			  	int waitTime = (Pref.lookupInt(CFPrefNames.MIN_WAIT_TIME) * 1000) + (MathTools.random(100)*((Pref.lookupInt(CFPrefNames.MAX_WAIT_TIME)-Pref.lookupInt(CFPrefNames.MIN_WAIT_TIME)) * 10));
+//			 	System.out.println("Downloading slow, waiting: "+((float)waitTime/60000));
+//				infoCollector.crawlerDownloadMonitor().pause(waitTime);
+//		 	}
 			
 			
 		}
 		// else recycle() if errors like documentType == null in downloadDone()
 	}
 	
-	
-	
-	interface DocumentParserConnectHelper extends ConnectionHelper
-	{
-		DocumentParser getResult ( );
-		boolean hadRedirect();
-	}
-
 	/**
 	 * Open a connection to the URL. Read the header, but not the content. Look at if the path exists,
 	 * if there is a redirect, and the mime type. If there is a redirect, process it.
@@ -243,23 +235,17 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DC>
 	 * 2) Else find meta-metadata using URL suffix and mime type and make a direct binding parser.
 	 * 3) If still parser is null and binding is also null, use in-build tables to find the parser.
 	 */
-	private void connect()
+	private PURLConnection connect()
 	{
 		assert(document != null);
 		final Document 	orignalDocument	= document;
 		final ParsedURL originalPURL		= document.getLocation();
 		
-		DocumentParserConnectHelper documentParserConnectHelper = new DocumentParserConnectHelper()
+		ConnectionHelper documentParserConnectHelper = new ConnectionHelper()
 		{
-			DocumentParser	result;
-			boolean 				hadRedirect = false;
-
 			public void handleFileDirectory(File file)
 			{
-				// result = new FileDirectoryType(file, container,
-				// infoCollector);
-//				result = infoCollector.newFileDirectoryType(file);
-				warning("DocumentClosure.connect(): Need to implement handleFileDirectory().");
+					warning("DocumentClosure.connect(): Need to implement handleFileDirectory().");
 			}
 
 			/**
@@ -276,18 +262,11 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DC>
 			{
 				infoCollector.displayStatus(message);
 			}
-
-			public void badResult()
-			{
-				orignalDocument.setRecycled();
-				orignalDocument.recycle();
-			}
 			
 			public boolean processRedirect(URL connectionURL) throws Exception
 			{
 				DocumentLocationMap<? extends Document>	documentLocationMap	= document.getDocumentLocationMap();
 				ParsedURL connectionPURL	= new ParsedURL(connectionURL);
-				hadRedirect = true;
 				displayStatus("try redirecting: " + originalPURL + " > " + connectionURL);
 				Document redirectedDocument	= documentLocationMap.get(connectionPURL); // documentLocationMap.getOrCreate(connectionPURL);
 				//TODO -- what if redirectedDocument is already in the queue or being downloaded already?
@@ -369,16 +348,6 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DC>
 				}
 				return false;
 			}
-
-			public DocumentParser getResult()
-			{
-				return result;
-			}
-			
-			public boolean hadRedirect()
-			{
-				return this.hadRedirect;
-			}
 		};
 
 
@@ -386,51 +355,55 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DC>
 		// then try to create a connection using the PURL
 		String userAgentString	= /* (metaMetadata == null) ? null : */ metaMetadata.getUserAgentString();
 		PURLConnection purlConnection = originalPURL.connect(documentParserConnectHelper, userAgentString);
-		Document document				= this.document;					// may have changed during redirect processing
-		metaMetadata						= document.getMetaMetadata();
-		
-
-		// check for a parser that was discovered while processing a re-direct
-		
-		SemanticsSite site 					= document.getSite();
-
-		// if a parser was preset for this container, use it
-//		if ((result == null) && (container != null))
-//			result = container.getDocumentParser();
-	
-		// if we made PURL connection but could not find parser using container
-		if ((purlConnection != null) && !originalPURL.isFile())
+		if (purlConnection.isGood())
 		{
-			String cacheValue = purlConnection.urlConnection().getHeaderField("X-Cache");
-			cacheHit = cacheValue != null && cacheValue.contains("HIT");
-
-			if (metaMetadata.isGenericMetadata())
-			{ // see if we can find more specifc meta-metadata using mimeType
-				final MetaMetadataRepository repository = infoCollector.metaMetaDataRepository();
-				String mimeType = purlConnection.mimeType();
-				MetaMetadataCompositeField mimeMmd	= repository.getMMByMime(mimeType);
-				if (mimeMmd != null && !mimeMmd.equals(metaMetadata))
-				{	// new meta-metadata!
-					if (!mimeMmd.getMetadataClass().isAssignableFrom(document.getClass()))
-					{	// more specifc so we need new metadata!
-						document	= (Document) ((MetaMetadata) mimeMmd).constructMetadata(); // set temporary on stack
-						changeDocument(document);
+			Document document				= this.document;					// may have changed during redirect processing
+			metaMetadata						= document.getMetaMetadata();
+			
+	
+			// check for a parser that was discovered while processing a re-direct
+			
+			SemanticsSite site 					= document.getSite();
+	
+			// if a parser was preset for this container, use it
+	//		if ((result == null) && (container != null))
+	//			result = container.getDocumentParser();
+		
+			// if we made PURL connection but could not find parser using container
+			if ((purlConnection != null) && !originalPURL.isFile())
+			{
+				String cacheValue = purlConnection.urlConnection().getHeaderField("X-Cache");
+				cacheHit = cacheValue != null && cacheValue.contains("HIT");
+	
+				if (metaMetadata.isGenericMetadata())
+				{ // see if we can find more specifc meta-metadata using mimeType
+					final MetaMetadataRepository repository = infoCollector.metaMetaDataRepository();
+					String mimeType = purlConnection.mimeType();
+					MetaMetadataCompositeField mimeMmd	= repository.getMMByMime(mimeType);
+					if (mimeMmd != null && !mimeMmd.equals(metaMetadata))
+					{	// new meta-metadata!
+						if (!mimeMmd.getMetadataClass().isAssignableFrom(document.getClass()))
+						{	// more specifc so we need new metadata!
+							document	= (Document) ((MetaMetadata) mimeMmd).constructMetadata(); // set temporary on stack
+							changeDocument(document);
+						}
+						metaMetadata	= mimeMmd;
 					}
-					metaMetadata	= mimeMmd;
 				}
 			}
+			
+	//		String parserName				= metaMetadata.getParser();	
+	//		if (parserName == null)			//FIXME Hook HTMLDOMImageText up to html mime-type & suffixes; drop defaultness of parser
+	//			parserName = SemanticActionsKeyWords.HTML_IMAGE_DOM_TEXT_PARSER;
+			
+			if (documentParser == null)
+				documentParser = DocumentParser.get((MetaMetadata) metaMetadata, infoCollector);
+			if (documentParser != null)
+			{
+				documentParser.fillValues(purlConnection, this, infoCollector);
+			}
 		}
-		
-//		String parserName				= metaMetadata.getParser();	
-//		if (parserName == null)			//FIXME Hook HTMLDOMImageText up to html mime-type & suffixes; drop defaultness of parser
-//			parserName = SemanticActionsKeyWords.HTML_IMAGE_DOM_TEXT_PARSER;
-		
-		if (documentParser == null)
-			documentParser = DocumentParser.get((MetaMetadata) metaMetadata, infoCollector);
-		if (documentParser != null)
-		{
-			documentParser.fillValues(purlConnection, this, infoCollector);
-		}
+		return purlConnection;
 	}
 
 	public void changeDocument(Document newDocument) 
@@ -577,7 +550,7 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DC>
 			if (site != null)
 				site.beginDownload();
 			
-			downloadMonitor().download((DC) this, dispatchTarget());
+			downloadMonitor().download((DocumentClosure) this, continuation());
 		}
 		return result;
 	}
@@ -631,10 +604,10 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DC>
 	{
 		return isDnd;
 	}
-	public DownloadMonitor<DC> downloadMonitor()
+	public DownloadMonitor<DocumentClosure> downloadMonitor()
 	{
 		// GoogleSearch, SearchResults are all seeds
-		return (DownloadMonitor<DC>) (isDnd ? NewInfoCollector.DND_DOWNLOAD_MONITOR : 
+		return  (isDnd ? NewInfoCollector.DND_DOWNLOAD_MONITOR : 
 			isSeed() ? 
 		  NewInfoCollector.SEEDING_DOWNLOAD_MONITOR : NewInfoCollector.CRAWLER_DOWNLOAD_MONITOR);
 	}
@@ -682,9 +655,9 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DC>
 		site.endDownload();
 
 		// have to do this by hand in the error case
-		if (dispatchTarget != null )
+		if (continuation != null )
 		{
-			dispatchTarget.callback((DC) this);
+			continuation.callback(this);
 		}
 
 		// When timeout happens and download is not completed, there may have some mediaElements created 
@@ -751,16 +724,14 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DC>
 
 	
 	@Override
-	public void setDispatchTarget(Continuation<DC> dispatchTarget)
+	public void setContinuation(Continuation<DocumentClosure> continuation)
 	{
-		this.dispatchTarget = dispatchTarget;
+		this.continuation = continuation;
 	}
 
-	Continuation<DC> 			dispatchTarget;
-	
-	public Continuation<DC> dispatchTarget()
+	public Continuation<DocumentClosure> continuation()
 	{
-		return dispatchTarget;
+		return continuation;
 	}
 
 	public String getQuery()
