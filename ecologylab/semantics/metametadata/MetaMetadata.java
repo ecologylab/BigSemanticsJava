@@ -11,6 +11,7 @@ import java.util.Map;
 import ecologylab.generic.ReflectionTools;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.metadata.Metadata;
+import ecologylab.semantics.metadata.Metadata.mm_dont_inherit;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
 import ecologylab.serialization.SIMPLTranslationException;
@@ -33,9 +34,11 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 	String																	packageAttribute;
 
 	@simpl_scalar
+	@mm_dont_inherit
 	protected boolean												dontGenerateClass	= false;
 
 	@simpl_scalar
+	@mm_dont_inherit
 	protected boolean												builtIn;
 
 	@simpl_scalar

@@ -24,6 +24,8 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 {
 	final private boolean		isMixin;
 	
+	final private boolean		isInheritable;
+	
 	Method									hwSetMethod;
 	
 	/**
@@ -40,13 +42,14 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 		if (field != null)
 		{
 			isMixin							= field.isAnnotationPresent(Metadata.semantics_mixin.class);
-
+			isInheritable				= !field.isAnnotationPresent(Metadata.mm_dont_inherit.class);
 			//TODO -- for future expansion??? andruid 4/14/09
 //			hwSetMethod					= ReflectionTools.getMethod(thatClass, "hwSet", SET_METHOD_ARG);
 		}
 		else
 		{
 			isMixin							= false;
+			isInheritable				= true;
 		}
 		this.mmName						= deriveMmName();
 	}
@@ -54,7 +57,8 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 	public MetadataFieldDescriptor(ClassDescriptor baseClassDescriptor, FieldDescriptor wrappedFD, String wrapperTag)
 	{
 		super(baseClassDescriptor, wrappedFD, wrapperTag);
-		isMixin	= false;
+		isMixin				= false;
+		isInheritable	= true;
 	}
 	
 	public boolean isMixin() 
@@ -131,6 +135,11 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 	public String getMmName()
 	{
 		return mmName;
+	}
+	
+	public boolean isInheritable()
+	{
+		return isInheritable;
 	}
 
 

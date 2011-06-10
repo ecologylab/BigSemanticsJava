@@ -988,33 +988,36 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 
 	protected void inheritNonDefaultAttributes(MetaMetadataField inheritFrom)
 	{
-		ClassDescriptor<?, ? extends FieldDescriptor> classDescriptor = classDescriptor();
+		MetadataClassDescriptor classDescriptor = (MetadataClassDescriptor) classDescriptor();
 	
-		for (FieldDescriptor fieldDescriptor : classDescriptor)
+		for (MetadataFieldDescriptor fieldDescriptor : classDescriptor)
 		{
-			ScalarType scalarType = fieldDescriptor.getScalarType();
-			try
+			if (fieldDescriptor.isInheritable())
 			{
-				if (scalarType != null && scalarType.isDefaultValue(fieldDescriptor.getField(), this)
-						&& !scalarType.isDefaultValue(fieldDescriptor.getField(), inheritFrom))
+				ScalarType scalarType = fieldDescriptor.getScalarType();
+				try
 				{
-					Object value = fieldDescriptor.getField().get(inheritFrom);
-					fieldDescriptor.setField(this, value);
-					debug("inherit\t" + this.getName() + "." + fieldDescriptor.getFieldName() + "\t= "
-							+ value);
+					if (scalarType != null && scalarType.isDefaultValue(fieldDescriptor.getField(), this)
+							&& !scalarType.isDefaultValue(fieldDescriptor.getField(), inheritFrom))
+					{
+						Object value = fieldDescriptor.getField().get(inheritFrom);
+						fieldDescriptor.setField(this, value);
+						debug("inherit\t" + this.getName() + "." + fieldDescriptor.getFieldName() + "\t= "
+								+ value);
+					}
 				}
-			}
-			catch (IllegalArgumentException e)
-			{
-				// TODO Auto-generated catch block
-				debug(inheritFrom.getName() + " doesn't have field " + fieldDescriptor.getFieldName()
-						+ ", ignore it.");
-				e.printStackTrace();
-			}
-			catch (IllegalAccessException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				catch (IllegalArgumentException e)
+				{
+					// TODO Auto-generated catch block
+					debug(inheritFrom.getName() + " doesn't have field " + fieldDescriptor.getFieldName()
+							+ ", ignore it.");
+					e.printStackTrace();
+				}
+				catch (IllegalAccessException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 	}

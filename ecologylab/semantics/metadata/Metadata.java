@@ -762,6 +762,13 @@ abstract public class Metadata extends ElementState implements MetadataBase, Ter
 	{
 		String value();
 	}
+	
+	@Retention(RetentionPolicy.RUNTIME)
+	@Inherited
+	@Target(ElementType.FIELD)
+	public @interface mm_dont_inherit
+	{
+	}
 
 	public void serializeToHtml(Appendable a, TranslationContext serializationContext)
 			throws IllegalArgumentException, IllegalAccessException, IOException, SIMPLTranslationException
