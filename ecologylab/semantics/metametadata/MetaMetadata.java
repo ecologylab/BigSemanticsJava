@@ -219,7 +219,7 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 	@Override
 	public boolean isBuiltIn()
 	{
-		return !isCompositeMmdWithTypeDecl() && builtIn;
+		return builtIn;
 	}
 
 	public void setGenerateClass(boolean generateClass)
