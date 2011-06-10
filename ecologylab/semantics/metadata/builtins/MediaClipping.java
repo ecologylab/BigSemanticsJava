@@ -14,7 +14,7 @@ import ecologylab.serialization.ElementState.simpl_scope;
  *
  */
 @simpl_inherit
-public class MediaClipping<ME extends Document> extends Clipping
+public class MediaClipping<ME extends ClippableDocument> extends Clipping
 {
 	/**
 	 * Explicit description of the clipped media in the source document.
@@ -25,7 +25,8 @@ public class MediaClipping<ME extends Document> extends Clipping
 	
 //	@simpl_composite
 //	@simpl_scope(MetaMetadataCompilerUtils.GENERATED_METADATA_TRANSLATIONS)
-//	ME											clippedMedia;
+//	@mm_name("media")
+//	ME											media;
 	
 	public MediaClipping()
 	{
@@ -36,7 +37,7 @@ public class MediaClipping<ME extends Document> extends Clipping
 		super(source, outlink, context);
 		if (caption != null)
 			setCaption(caption);
-//		this.clippedMedia			= clippedMedia;
+//		this.media			= clippedMedia;
 	}
 	
 	public MetadataString caption()

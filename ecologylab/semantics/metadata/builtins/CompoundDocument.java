@@ -76,7 +76,9 @@ implements Continuation<DocumentClosure>
 	 */
 	private GenericWeightSet<TextClipping>	candidateTextClippings;
 	
-	
+	/**
+	 * Clippings that this document contains.
+	 */
 	@mm_name("clippings") 
 	@simpl_collection
 	@simpl_classes({ImageClipping.class, TextClipping.class})

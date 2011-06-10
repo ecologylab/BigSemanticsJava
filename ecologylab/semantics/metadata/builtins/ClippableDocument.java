@@ -20,8 +20,11 @@ import ecologylab.serialization.simpl_inherit;
  *          The underling Media type
  */
 @simpl_inherit
-public class ClippableDocument<ME extends Document> extends Document
+public class ClippableDocument<ME extends ClippableDocument> extends Document
 {
+	/**
+	 * Clippings based on this.
+	 */
 	@mm_name("clippings") 
 	@simpl_collection
 	@simpl_classes(ImageClipping.class)
