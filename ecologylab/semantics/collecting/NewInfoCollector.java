@@ -309,6 +309,11 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 	{
 		return sessionScope;
 	}
+	
+	public SemanticsSite getSite(Document document)
+	{
+		return metaMetaDataRepository().getSites().getOrConstruct(document, this);
+	}
 
 	public MetaMetadataRepository metaMetaDataRepository()
 	{

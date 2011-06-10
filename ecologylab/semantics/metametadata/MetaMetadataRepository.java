@@ -24,6 +24,7 @@ import ecologylab.net.UserAgent;
 import ecologylab.semantics.collecting.CookieProcessing;
 import ecologylab.semantics.collecting.LinkedMetadataMonitor;
 import ecologylab.semantics.collecting.SemanticsSite;
+import ecologylab.semantics.collecting.SemanticsSiteMap;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.builtins.Document;
@@ -135,7 +136,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	File																												file;
 
 	@simpl_map("site")
-	HashMap<String, SemanticsSite>															sites;
+	SemanticsSiteMap																						sites;
 
 	public DownloadMonitor																			downloadMonitor;
 	
@@ -345,7 +346,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 			this.repositoryByTagName = repositoryByTagName;
 	}
 
-	private boolean combineMaps(HashMap srcMap, HashMap destMap)
+	private boolean combineMaps(Map srcMap, Map destMap)
 	{
 		if (destMap == null)
 			return false;
@@ -1029,7 +1030,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		this.name = name;
 	}
 
-	public HashMap<String, SemanticsSite> getSites()
+	public SemanticsSiteMap getSites()
 	{
 		return sites;
 	}

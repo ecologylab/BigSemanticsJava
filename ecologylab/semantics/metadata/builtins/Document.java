@@ -293,7 +293,7 @@ public class Document extends Metadata
 		SemanticsSite result	= this.site;
 		if (result == null)
 		{
-			result		= SemanticsSite.getOrConstruct(this, infoCollector);
+			result		= infoCollector.getSite(this);
 			this.site	= result;
 		}
 		return result;

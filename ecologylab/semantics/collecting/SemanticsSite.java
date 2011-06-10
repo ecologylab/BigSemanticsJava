@@ -4,6 +4,7 @@
 package ecologylab.semantics.collecting;
 
 import java.awt.Color;
+import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 
 import ecologylab.generic.Colors;
@@ -23,7 +24,7 @@ import ecologylab.serialization.simpl_inherit;
 public class SemanticsSite extends BasicSite
 implements Colors
 {
-	static ConcurrentHashMap<String, SemanticsSite> allSites	= new ConcurrentHashMap(50);
+	//static ConcurrentHashMap<String, SemanticsSite> allSites	= new ConcurrentHashMap(50);
 
 	/**
 	 * true if any Container from this Site is a Seed.
@@ -78,30 +79,6 @@ implements Colors
 	public SemanticsSite()
 	{
 
-	}
-
-
-	public static SemanticsSite getOrConstruct(Document document, NewInfoCollector infoCollector) 
-	{
-		ParsedURL parsedURL	= document.getLocation();
-		String domain				= parsedURL.domain();
-		SemanticsSite result	= null;
-		if (domain != null)
-		{
-			result							= allSites.get(domain);
-			if (result == null) 
-			{
-				// record does not yet exist
-				SemanticsSite newRec	= new SemanticsSite(domain, infoCollector);
-				result = allSites.putIfAbsent(domain, newRec);
-				if (result == null)
-				{
-					// put succeeded, use new value
-					result = newRec;
-				}
-			}
-		}
-		return result;
 	}
 
 	public void newCandidateImage (boolean inArticleBody )
@@ -187,15 +164,7 @@ implements Colors
 	public boolean isSeed()
 	{
 		return isSeed;
-	}
-
-	
-	public static void addSite(SemanticsSite site)
-	{
-		allSites.put(site.domain(), site);
-	}
-	
-	
+	}	
 	
 	///////////////////////////////////////// text color stuff //////////////////////////////////////////////////////
 	private float		strokeHue;
