@@ -593,11 +593,6 @@ implements Downloadable
 	{
 		return Integer.toHexString(h) + " ";
 	}
-
-	public void recycleUnconditionally()
-	{
-		this.recycle();
-	}
 	
 	/**
 	 * Encourage resource relamation -- flush <code>Image</code> and 
@@ -855,20 +850,6 @@ implements Downloadable
 		return (/* originalDimension != null && */
 				dimension.width > basisRendering.width ||
 				dimension.height > basisRendering.height);
-	}
-	
-	/**
-	 * Check to find out if this should not be downloaded, even though it was queued, because conditions have changed
-	 * since then.
-	 * 
-	 * @return	true if there is a Site object, and there have been too many timeouts on stuff downloaded from that site.
-	 */
-	public boolean shouldCancel()
-	{
-		boolean result = (basicSite != null) && basicSite.tooManyTimeouts();
-		if (result)
-			warning("Consider cancelling this download because too many timeouts");
-		return result;
 	}
 	
 	public BufferedImage bufferedImage()
