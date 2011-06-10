@@ -52,7 +52,7 @@ public class HTMLDOMParser extends HTMLParserCommon implements TidyInterface
 		tidy.setShowWarnings(false);
 	}
 
-	public org.w3c.dom.Document getDom()
+	public org.w3c.dom.Document getDom() throws IOException
 	{
 		org.w3c.dom.Document result = this.dom;
 		if (result == null)
@@ -66,17 +66,21 @@ public class HTMLDOMParser extends HTMLParserCommon implements TidyInterface
 	/**
 	 * 
 	 * @return A bogus dom with a root element called empty.
+	 * @throws IOException 
 	 */
-	protected org.w3c.dom.Document createDom()
+	protected org.w3c.dom.Document createDom() throws IOException
 	{
-		return tidy.parseDOM(inputStream(), /* System.out */null);
+    TdNode document = tidy.parse(inputStream(), null, null);
+    return (document != null) ?
+        (org.w3c.dom.Document)document.getAdapter() :  null;
 	}
 
 	/**
 	 * 
 	 * @return The root node of the document, which should be <html>.
+	 * @throws IOException 
 	 */
-	public TdNode getRootNode()
+	public TdNode getRootNode() throws IOException
 	{
 		return ((DOMNodeImpl) getDom()).adaptee;
 	}

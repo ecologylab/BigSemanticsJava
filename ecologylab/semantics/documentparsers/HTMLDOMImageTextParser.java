@@ -1,5 +1,6 @@
 package ecologylab.semantics.documentparsers;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.TreeMap;
@@ -62,7 +63,7 @@ implements TidyInterface, HTMLAttributeNames
 //		}	
 //	}
 	@Override
-	protected Document doParse()
+	protected Document doParse() throws IOException
 	{
 		DOMWalkInformationTagger taggedDoc = new DOMWalkInformationTagger(tidy.getConfiguration(), purlConnection.getPurl(), this);
 		// this function actually traverse the dom tree

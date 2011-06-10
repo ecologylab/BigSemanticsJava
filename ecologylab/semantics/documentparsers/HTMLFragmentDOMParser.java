@@ -1,5 +1,6 @@
 package ecologylab.semantics.documentparsers;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
@@ -29,7 +30,7 @@ implements TidyInterface
 	}
 	
 	@Override
-	public Document doParse()
+	public Document doParse() throws IOException
 	{
 		taggedDoc = new DOMFragmentInformationTagger(tidy.getConfiguration(), null, this);
 		taggedDoc.generateCollections(this);

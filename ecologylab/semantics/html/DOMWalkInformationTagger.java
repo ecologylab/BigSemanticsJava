@@ -92,7 +92,7 @@ implements HTMLAttributeNames
 	{
 		generateCollections(((DOMNodeImpl)doc).adaptee);
 	}
-	public void generateCollections(HTMLDOMParser htmlDomParser)
+	public void generateCollections(HTMLDOMParser htmlDomParser) throws IOException
 	{
 		generateCollections(htmlDomParser.getRootNode());
 	}
