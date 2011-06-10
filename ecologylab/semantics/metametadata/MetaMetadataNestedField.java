@@ -2,6 +2,7 @@ package ecologylab.semantics.metametadata;
 
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.ElementState.simpl_scalar;
 
 @simpl_inherit
 public abstract class MetaMetadataNestedField extends MetaMetadataField
@@ -13,6 +14,9 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 	
 	@simpl_scalar
 	private boolean promoteChildren;
+	
+	@simpl_scalar
+	private boolean													polymorphicGlobal;
 
 	public MetaMetadataNestedField()
 	{
@@ -277,6 +281,14 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 	public void setPromoteChildren(boolean promoteChildren)
 	{
 		this.promoteChildren = promoteChildren;
+	}
+
+	/**
+	 * @return the polymorphicGlobal
+	 */
+	public boolean isPolymorphicGlobal()
+	{
+		return polymorphicGlobal;
 	}
 
 }

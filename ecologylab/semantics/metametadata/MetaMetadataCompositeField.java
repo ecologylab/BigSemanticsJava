@@ -234,7 +234,7 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField
 
 	public boolean isGenericMetadata()
 	{
-		return mmSelectorType == MMSelectorType.SUFFIX_OR_MIME;
+		return mmSelectorType == MMSelectorType.SUFFIX_OR_MIME || isBuiltIn();
 	}
 	
 	public void setType(String type)
@@ -242,4 +242,8 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField
 		this.type = type;
 	}
 	
+	public boolean isBuiltIn()
+	{
+		return false;
+	}
 }

@@ -36,6 +36,9 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 	protected boolean												dontGenerateClass	= false;
 
 	@simpl_scalar
+	protected boolean												builtIn;
+
+	@simpl_scalar
 	protected RedirectHandling							redirectHandling;
 
 	/*
@@ -197,12 +200,23 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 	public boolean isGenerateClass()
 	{
 		// we r not using getType as by default getType will give meta-metadata name
-		if ((this instanceof MetaMetadataCompositeField)
-				&& ((MetaMetadataCompositeField) this).type != null)
-		{
-			return false;
-		}
-		return !dontGenerateClass;
+
+		return !isCompositeMmdWithTypeDecl() && (!dontGenerateClass || !builtIn);
+	}
+
+	/**
+	 * @return
+	 */
+	public boolean isCompositeMmdWithTypeDecl()
+	{
+		return (this instanceof MetaMetadataCompositeField)
+				&& ((MetaMetadataCompositeField) this).type != null;
+	}
+
+	@Override
+	public boolean isBuiltIn()
+	{
+		return !isCompositeMmdWithTypeDecl() && builtIn;
 	}
 
 	public void setGenerateClass(boolean generateClass)
