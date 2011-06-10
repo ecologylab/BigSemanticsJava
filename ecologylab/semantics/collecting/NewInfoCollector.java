@@ -686,10 +686,7 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 		{	
 			synchronized(candidate)
 			{
-				if(!(	candidate.downloadHasBeenQueued() ||
-							candidate.recycled() || candidate.isRecycling() ||
-							candidate.isSeed())
-					)
+				if (candidate.isUnprocessed() && !candidate.isSeed())
 				{
 					Document document	= candidate.getDocument();
 					if (!exceedsLinkCountThresholds(document))
