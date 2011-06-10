@@ -1,17 +1,17 @@
 <meta_metadata_repository name="primitives" package="ecologylab.semantics.generated.library" default_user_agent_name="firefox_3_5">
 
-	<meta_metadata name="metadata" comment="The Metadata Class" dont_generate_class="true">
+	<meta_metadata name="metadata" comment="The Metadata Class" built_in="true">
 		<scalar name="meta_metadata_name" tag="mm_name" hide="true" ignore_in_term_vector="true" comment="Stores the name of the meta-metadata, and is used on restoring from XML." scalar_type="String" />
-		<collection name="mixins" child_type="metadata"/>
+		<collection name="mixins" child_type="metadata" polymorphic_global="true"/>
 	</meta_metadata>
 	
-	<meta_metadata name="document" extends="metadata" comment="The Document Class" dont_generate_class="true">
+	<meta_metadata name="document" extends="metadata" comment="The Document Class" built_in="true">
 		<scalar name="location" always_show="true" layer="8.0" comment="The document's actual location." scalar_type="ParsedURL" />
 		
 		<collection name="additional_locations" child_scalar_type="ParsedURL"/>
 	</meta_metadata>
 	
-	<meta_metadata name="clipping" extends="metadata" dont_generate_class="true">
+	<meta_metadata name="clipping" extends="metadata" built_in="true">
 		<scalar name="context" layer="10.0" scalar_type="String" />
 		<scalar name="context_html" scalar_type="String" />
 		<scalar name="xpath" scalar_type="String" hide="true"/>
@@ -19,24 +19,24 @@
 		<composite name="outlink" type="document"/>
 	</meta_metadata>
 
-	<meta_metadata name="media_clipping" extends="clipping" dont_generate_class="true">
+	<meta_metadata name="media_clipping" extends="clipping" built_in="true">
 		<scalar name="caption" style="metadata_h1" layer="11.0" comment="The caption of the image." scalar_type="String"/>
 	</meta_metadata>
 	
-	<meta_metadata name="image_clipping" extends="media_clipping" dont_generate_class="true">
+	<meta_metadata name="image_clipping" extends="media_clipping" built_in="true">
 	</meta_metadata>
 	
-	<meta_metadata name="text_clipping" extends="clipping" dont_generate_class="true">
+	<meta_metadata name="text_clipping" extends="clipping" built_in="true">
 		<scalar name="text" scalar_type="String" />
 	</meta_metadata>
 	
-	<meta_metadata name="clippable_document"  extends="document" dont_generate_class="true">
+	<meta_metadata name="clippable_document"  extends="document" built_in="true">
 		<collection name="clippings" child_type="media_clipping" promote_children="true"/>
 		<scalar name="width" scalar_type="integer"/>
 		<scalar name="height" scalar_type="integer"/>
 	</meta_metadata>
 	
-	<meta_metadata name="image" extends="clippable_document" comment="The Image Base Class" dont_generate_class="true">
+	<meta_metadata name="image" extends="clippable_document" comment="The Image Base Class" built_in="true">
 		<selector>
 			<mime_type>image/jpeg</mime_type>
 			<mime_type>image/png</mime_type>
@@ -53,7 +53,7 @@
 	</meta_metadata>
 	
 	
-	<meta_metadata name="compound_document"  extends="document" dont_generate_class="true">
+	<meta_metadata name="compound_document"  extends="document" built_in="true">
 		<scalar name="title" style="metadata_h1" layer="10.0" navigates_to="location" comment="The Title of the Document" scalar_type="String"  hint="XML_LEAF"/>
 		<scalar name="description" layer="9.0" scalar_type="String" />
 		<scalar name="query" layer="5.0" comment="The search query" scalar_type="String" />
