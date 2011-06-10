@@ -276,7 +276,7 @@ public abstract class SemanticAction extends ElementState implements SemanticAct
 	{
 		Document sourceDocument = (Document) getArgumentObject(SOURCE_DOCUMENT);
 		if (sourceDocument == null)
-			documentParser.getDocument();
+			sourceDocument				= documentParser.getDocument();
 		return sourceDocument;
 	}
 	
