@@ -46,7 +46,7 @@
 	<scalar name="price" xpath="//span[@class='cinza bigfont']/text()" >
 		<filter regex="Price: "/>
 	</scalar>
-	<scalar name="description" xpath="//span[@class='mce-content']//text()[1]" />
+	<scalar name="description" xpath="//span[@class='mce-content']/p[2]/font/text()" />
 	
 </meta_metadata>
 

@@ -25,13 +25,14 @@
 			<!--<collection name="categories" child_tag="category" scalar_type="String"/>   -->
 	</meta_metadata>
 	
+	<meta_metadata name="channel" extends="metadata">
+		<scalar name="title" scalar_type="String" />
+		<collection name="items" child_type="item" no_wrap="true"/>
+	</meta_metadata>
+	
 	<!-- THE RSS CLASS : RSS Type -->
 	<meta_metadata name="rss" extends="compound_document" comment="A news feed." parser="feed" user_agent_name="firefox_3_6_8">
-		<composite name="channel" extends="metadata">
-			<!-- this is a hack to make it generate a class -->
-			<scalar name="title" scalar_type="String" />
-			<collection name="items" child_type="item" no_wrap="true"/>
-		</composite>
+		<composite name="channel" type="channel"/>
 
 		<selector>
 			<suffix>rss</suffix> 
