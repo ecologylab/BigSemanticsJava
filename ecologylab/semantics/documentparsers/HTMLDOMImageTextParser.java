@@ -27,7 +27,6 @@ import ecologylab.semantics.html.documentstructure.RecognizedDocumentStructure;
 import ecologylab.semantics.html.documentstructure.TextOnlyPage;
 import ecologylab.semantics.html.utils.HTMLAttributeNames;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
-import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.Image;
 import ecologylab.serialization.XMLTools;
 
@@ -50,23 +49,8 @@ implements TidyInterface, HTMLAttributeNames
 	
 	DOMWalkInformationTagger taggedDoc;
 	
-//	@Override
-//	public void parse() 
-//	{   	
-//		HTMLDOMParser parser		= new HTMLDOMParser();
-//		try
-//		{  
-//			// Call HTML DOM Parser that creates pretty DOM and extracts Image and Text surrogates
-//			parser.parse(purlConnection(), this);
-//		} 
-//		catch (Exception e) 
-//		{
-//			debug("ERROR: while reading - " + e.getMessage());
-//			e.printStackTrace();
-//		}	
-//	}
 	@Override
-	protected Document doParse() throws IOException
+	protected void performParse() throws IOException
 	{
 		DOMWalkInformationTagger taggedDoc = new DOMWalkInformationTagger(tidy.getConfiguration(), purlConnection.getPurl(), this);
 		// this function actually traverse the dom tree
@@ -96,8 +80,6 @@ implements TidyInterface, HTMLAttributeNames
 		
 		if (fromContentBody)
 			taggedContentNode.recycle();
-		
-		return null;
 	}
 
 	

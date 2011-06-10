@@ -90,7 +90,7 @@ abstract public class DocumentParser<D extends Document>
 		this.infoCollector = infoCollector;
 	}
 	
-	public abstract Document parse ( ) throws IOException;
+	public abstract void parse ( ) throws IOException;
 	
 	/**
 	 * Fill out the instance of this resulting from a successful connect().

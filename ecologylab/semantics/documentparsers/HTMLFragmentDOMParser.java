@@ -10,7 +10,6 @@ import ecologylab.semantics.html.DOMFragmentInformationTagger;
 import ecologylab.semantics.html.ImgElement;
 import ecologylab.semantics.html.TidyInterface;
 import ecologylab.semantics.metadata.builtins.AnonymousDocument;
-import ecologylab.semantics.metadata.builtins.Document;
 
 public class HTMLFragmentDOMParser
 extends HTMLDOMParser
@@ -30,12 +29,10 @@ implements TidyInterface
 	}
 	
 	@Override
-	public Document doParse() throws IOException
+	public void performParse() throws IOException
 	{
 		taggedDoc = new DOMFragmentInformationTagger(tidy.getConfiguration(), null, this);
 		taggedDoc.generateCollections(this);
-		
-		return null;
 	}
 	
 	public InputStream inputStream()

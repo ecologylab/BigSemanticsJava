@@ -31,7 +31,7 @@ import ecologylab.serialization.XMLTools;
  * @author eunyee
  * 
  */
-public class HTMLDOMParser extends HTMLParserCommon implements TidyInterface
+public abstract class HTMLDOMParser extends HTMLParserCommon implements TidyInterface
 {
 
 	/**
@@ -89,19 +89,11 @@ public class HTMLDOMParser extends HTMLParserCommon implements TidyInterface
 	 * Andruid says: NEVER override this method when you parse HTML. Instead, override postParse().
 	 */
 	@Override
-	public final Document parse()
+	public final void parse()
 	{
 		try
 		{
-			// we dont build a tidy for for direct binding
-			// Uncomment System.out to print parsed page to console.
-			// if(metaMetadata == null || !"direct".equals(metaMetadata.getParser()))
-			// document = tidy.parseDOM(inputStream(), /*System.out*/ null );
-			// getDom();
-
-			// SimpleTimer.get("fetching_and_rendering.log").finishTiming(getContainer());
-
-			doParse();
+			performParse();
 		}
 		catch (Exception e)
 		{
@@ -112,13 +104,9 @@ public class HTMLDOMParser extends HTMLParserCommon implements TidyInterface
 		{
 			recycle();
 		}
-		return null;
 	}
 
-	protected Document doParse() throws IOException
-	{
-		return null;
-	}
+	abstract protected void performParse() throws IOException;
 
 	public void recycle()
 	{

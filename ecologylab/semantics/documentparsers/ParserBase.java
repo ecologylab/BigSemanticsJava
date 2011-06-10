@@ -143,10 +143,10 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 	 * (1) Populate Metadata. (2) Rebuild composite term vector. (3) Take semantic actions.
 	 * @throws IOException 
 	 */
-	public final Document doParse() throws IOException
+	@Override
+	public final void performParse() throws IOException
 	{
-		super.doParse();
-		return doParse(getDocument(), getMetaMetadata(), getDom());
+		doParse(getDocument(), getMetaMetadata(), getDom());
 	}
 
 	/**
