@@ -394,14 +394,17 @@ implements HTMLAttributeNames
 		return allAnchorNodes;
 	}
 	
-	public void recycle()
+	public synchronized void recycle()
 	{
-		for (ParagraphText pt: paragraphTextsTMap.values())
+		if (paragraphTextsTMap != null)
 		{
-				pt.recycle();
+			for (ParagraphText pt: paragraphTextsTMap.values())
+			{
+					pt.recycle();
+			}
+			paragraphTextsTMap.clear();
+			paragraphTextsTMap	= null;
 		}
-		paragraphTextsTMap.clear();
-		
 		recycle(allImgNodes);
 		allImgNodes			= null;
 		recycle(allAnchorNodes);
@@ -412,8 +415,11 @@ implements HTMLAttributeNames
 
 	private static void recycle(Collection<? extends HTMLElementTidy> nodeCollection)
 	{
-		for (HTMLElementTidy thatNode: nodeCollection)
-			thatNode.recycle();
+		if (nodeCollection != null)
+		{
+			for (HTMLElementTidy thatNode: nodeCollection)
+				thatNode.recycle();
+		}
 	}
 
 	public TreeMap<Integer, ParagraphText> getParagraphTextsTMap()

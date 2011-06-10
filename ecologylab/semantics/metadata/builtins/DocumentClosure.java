@@ -48,20 +48,29 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>, S
 {
 	D															document;
 	
-	SemanticInLinks								semanticInlinks;
+	private PURLConnection				purlConnection;
 
+	private DocumentParser				documentParser;
+	
+	/**
+	 * This is tracked mainly for debugging, so we can see what pURL was fed into the meta-metadata address resolver machine.
+	 */
 	ParsedURL											initialPURL;
+
+	SemanticInLinks								semanticInlinks;
 
 	Continuation<DocumentClosure> continuation;
 	
-	/**
-	 * Means we tried to connect to the page and parse it.
-	 * The connect may have failed; in any case, we assume no need to try
-	 * connecting to this one again. It may be in process now. It may be finished successfully.
-	 */
-	private boolean			downloadStarted;
+	DownloadStatus								downloadStatus	= DownloadStatus.UNPROCESSED;
+	
+	protected		NewInfoCollector	infoCollector;
+	
 
-	private boolean			downloadHasBeenQueued;
+	/**
+	 * Keeps state about the search process, if this is encapsulates a search result;
+	 */
+	protected SearchResult	searchResult;
+
 
 	/**
 	 * If true (the normal case), then any MediaElements encountered will be added
@@ -78,32 +87,11 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>, S
 	 * Indicates that this Container is processed via drag and drop.
 	 */
 	private boolean			isDnd;
-
-	boolean							downloadDone;
-	/** Status variable set to true while document is being parsed*/
-	boolean							parsing;
-
-	boolean 						recycling;
 	
 	private boolean 		cacheHit = false;
 
-	/**
-	 * Keeps state about the search process, if this is encapsulates a search result;
-	 */
-	protected SearchResult	searchResult;
-
-	private final Object QUEUE_DOWNLOAD_LOCK			= new Object();
-	private final Object PERFORM_DOWNLOAD_LOCK		= new Object();   
+	private final Object DOWNLOAD_STATUS_LOCK			= new Object();
 	private final Object DOCUMENT_LOCK						= new Object();   
-	
-	protected		NewInfoCollector	infoCollector;
-	
-	
-	DownloadStatus							downloadStatus	= DownloadStatus.UNPROCESSED;
-	
-	private DocumentParser			documentParser;
-	
-	private PURLConnection			purlConnection;
 	
 	/**
 	 * 
@@ -131,67 +119,49 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>, S
 	/**
 	 * Called by DownloadMonitor to initiate download, and cleanup afterward.
 	 * NO OTHER OBJECT SHOULD EVER CALL THIS METHOD!
+	 * 
+	 * Actually download the document and parse it.
+	 * Connect to the purl. Figure out the appropriate Meta-Metadata and DocumentType.
+	 * Process redirects as needed.
 	 */
+	@Override
 	public void performDownload()
 	throws IOException
 	{
-		synchronized (PERFORM_DOWNLOAD_LOCK)
+		synchronized (DOWNLOAD_STATUS_LOCK)
 		{
-			if (downloadStarted)
+			if (!(downloadStatus == DownloadStatus.QUEUED || downloadStatus == DownloadStatus.UNPROCESSED))
 				return;
-			downloadStarted	= true;
+			downloadStatus	= DownloadStatus.CONNECTING;
 		}
 		if (infoCollector == null)	// this should NEVER happen!!!!!!!!!!!!!!!!!!!!
 		{
-			error("Cant downloadAndParse: InfoCollector= null.");
-		}
-		else
-		{
-			document.setInfoCollector(infoCollector);
-			try
+			NewInfoCollector documentInfoCollector = document.getInfoCollector();
+			if (documentInfoCollector == null)
 			{
-				downloadAndParse();
-			} catch (SocketTimeoutException e)
-			{
-				document.getSite().countTimeout(null);
-				downloadStatus	= DownloadStatus.IOERROR;
+				error("Cant downloadAndParse: InfoCollector= null.");
+				return;
 			}
+			infoCollector	= documentInfoCollector;
 		}
-	}
-
-	/**
-	 *  Actually download the document and parse it.
-	 *  Connect to the purl. Figure out the appropriate DocumentType.
-	 *  If that works, use the DocumentType to parse the PURLConnection's InputStream,
-	 *  or for FileDirectoryType, just the thing itself.
-	 */
-	protected void downloadAndParse()
-	throws IOException
-	{
+		document.setInfoCollector(infoCollector);
+		
 		if (recycled() || document.isRecycled())
 		{
 			println("ERROR: Trying to downloadAndParse() page that's already recycled -- "+ location());
 			return;
 		}
-		if (downloadDone)
-		{
-			error("Trying to downloadAndParse() page that's already download done.");
-			return;
-		}
 
-		downloadStatus	= DownloadStatus.CONNECTING;
 		ParsedURL location = location();
 		connect();					// evolves Document based on redirects & mime-type; sets the documentParser
 
 		if (purlConnection.isGood() && documentParser != null)
 		{
 			// container or not (it could turn out to be an image or some other mime type), parse the baby!
-			parsing					= true;
 			downloadStatus	= DownloadStatus.PARSING;
 			if (documentParser.downloadingMessageOnConnect())
 				infoCollector.displayStatus("Downloading " + location(), 2);
 
-			//TODO -- detect errors here and set DownloadStatus accordingly
 			documentParser.parse();
 			
 			downloadStatus	= DownloadStatus.DOWNLOAD_DONE;
@@ -451,44 +421,49 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>, S
 		return (document == null) ? null : document.getSite();
 	}
 	
-	public boolean isRecycling()
-	{
-		return recycling;
-	}
-	
-	public void recycle(boolean unconditional)
-	{
-		recycle();
-	}
-	
-
 	@Override
-	public synchronized void recycle()
+	public void recycle()
 	{
-		if (downloadStatus != DownloadStatus.RECYCLED)
-		{
-			downloadStatus	= DownloadStatus.RECYCLED;
-			
-			if (documentParser != null)
-				documentParser.recycle();
-			
-			purlConnection.recycle();
-			
-			semanticInlinks	= null;
-			
-			initialPURL			= null;
-			
-			continuation		= null;
-			
-			//??? should we recycle Document here ???
-		}
+		recycle(false);
 	}
+	@Override
+	public synchronized void recycle(boolean recycleDocument)
+	{
+		synchronized (DOWNLOAD_STATUS_LOCK)
+		{
+			if (downloadStatus == DownloadStatus.RECYCLED)
+				return;
+			downloadStatus	= DownloadStatus.RECYCLED;
+		}
+		
+		if (documentParser != null)
+			documentParser.recycle();
+
+		purlConnection.recycle();
+
+		semanticInlinks	= null;
+
+		initialPURL			= null;
+
+		continuation		= null;
+			
+		//??? should we recycle Document here -- under what circumstances???
+		if (recycleDocument)
+			document.recycle();
+	}
+	@Override
 	public boolean recycled()
 	{
 		Document document = this.document;
 		return document == null || document.isRecycled();
 	}
 	
+	@Override
+	public boolean isRecycled()
+	{
+		return document == null || document.isRecycled();
+	}
+
 
 	@Override
 	public ParsedURL location()
@@ -525,6 +500,7 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>, S
 	 * 
 	 * @return	true if the Container is actually queued for download. false if it was previously, if its been recycled, or if it is muted.
 	 */
+	@Override
 	public boolean queueDownload()
 	{
 		if (recycled())
@@ -550,11 +526,10 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>, S
 	 */
 	private boolean testAndSetQueueDownload()
 	{
-		synchronized (QUEUE_DOWNLOAD_LOCK)
+		synchronized (DOWNLOAD_STATUS_LOCK)
 		{
-			if (downloadHasBeenQueued)
+			if (downloadStatus != DownloadStatus.UNPROCESSED)
 				return false;
-			downloadHasBeenQueued		= true;
 			downloadStatus					= DownloadStatus.QUEUED;
 			return true;
 		}
@@ -562,22 +537,13 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>, S
 	/**
 	 * Test state variable inside of QUEUE_DOWNLOAD_LOCK.
 	 * 
-	 * @return true if result has already been queued, so it should not be operated on further.
+	 * @return true if result has already been queued, connected to, downloaded, ... so it should not be operated on further.
 	 */
 	public boolean downloadHasBeenQueued()
 	{
-		synchronized (QUEUE_DOWNLOAD_LOCK)
+		synchronized (DOWNLOAD_STATUS_LOCK)
 		{
-			return downloadHasBeenQueued;
-		}
-	}
-
-
-	public void cancelDownload()
-	{
-		if (downloadHasBeenQueued)
-		{
-
+			return downloadStatus != DownloadStatus.UNPROCESSED;
 		}
 	}
 
@@ -622,20 +588,14 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>, S
 	/**
 	 * Called by DownloadMonitor in case a timeout happens.
 	 */
+	@Override
 	public void handleIoError()
 	{
-		parsing					= false;
-		downloadDone		= true;
 		downloadStatus	= DownloadStatus.IOERROR;
 		document.setDownloadDone(true);
+		documentParser.handleIoError();
 
 		recycle();
-	}
-
-	@Override
-	public boolean isRecycled()
-	{
-		return document == null || document.isRecycled();
 	}
 
 	@Override
@@ -694,7 +654,15 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>, S
 	 */
 	public DownloadStatus getDownloadStatus()
 	{
-		return downloadStatus;
+		synchronized (DOWNLOAD_STATUS_LOCK)
+		{
+			return downloadStatus;
+		}
+	}
+	
+	public boolean isUnprocessed()
+	{
+		return getDownloadStatus() == DownloadStatus.UNPROCESSED;
 	}
 
 	/**

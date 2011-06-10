@@ -47,6 +47,9 @@ implements TidyInterface, HTMLAttributeNames
 		super(infoCollector);
 	}
 	HashMap<TdNode, String> tdNodeAnchorContextStringCache;
+	
+	DOMWalkInformationTagger taggedDoc;
+	
 //	@Override
 //	public void parse() 
 //	{   	
@@ -70,7 +73,7 @@ implements TidyInterface, HTMLAttributeNames
 		taggedDoc.generateCollections(getDom());
 		
 		TdNode contentBody = getContentBody(taggedDoc);
-		DOMWalkInformationTagger taggedContentnode = walkAndTagDom(contentBody, this);
+		DOMWalkInformationTagger taggedContentNode = walkAndTagDom(contentBody, this);
 		
 		extractImageTextSurrogates(taggedDoc, contentBody);
 		
@@ -79,9 +82,9 @@ implements TidyInterface, HTMLAttributeNames
 		ArrayList<AnchorContext> anchorContexts = null;
 		//This document's purl
 		ParsedURL purl = purl();
-		boolean fromContentBody = taggedContentnode != null;
+		boolean fromContentBody = taggedContentNode != null;
 		if (fromContentBody)
-			anchorContexts = buildAnchorContexts(taggedContentnode.getAllAnchorNodes(), purl, true);
+			anchorContexts = buildAnchorContexts(taggedContentNode.getAllAnchorNodes(), purl, true);
 		else
 			anchorContexts = buildAnchorContexts(taggedDoc.getAllAnchorNodes(), purl, false);
 		
@@ -89,8 +92,10 @@ implements TidyInterface, HTMLAttributeNames
   	
   	anchorContexts.clear();
 		taggedDoc.recycle();
+		taggedDoc	= null;
+		
 		if (fromContentBody)
-			taggedContentnode.recycle();
+			taggedContentNode.recycle();
 		
 		return null;
 	}
@@ -336,12 +341,17 @@ implements TidyInterface, HTMLAttributeNames
   }
   
 	@Override
-	public void recycle()
+	public synchronized void recycle()
 	{
 		if (this.tdNodeAnchorContextStringCache != null)
 		{
 			this.tdNodeAnchorContextStringCache.clear();
 			this.tdNodeAnchorContextStringCache = null;
+		}
+		if (taggedDoc != null)
+		{
+			taggedDoc.recycle();
+			taggedDoc	= null;
 		}
 		super.recycle();
 	}

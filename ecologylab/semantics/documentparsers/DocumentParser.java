@@ -53,12 +53,9 @@ abstract public class DocumentParser<D extends Document>
 
 	protected static final Scope<Class<? extends DocumentParser>>	registryByMimeType	= new Scope<Class<? extends DocumentParser>>();
 
-	protected static final Scope<Class<? extends DocumentParser>>	registryBySuffix	= new Scope<Class<? extends DocumentParser>>();
+	protected static final Scope<Class<? extends DocumentParser>>	registryBySuffix		= new Scope<Class<? extends DocumentParser>>();
 	
-	public static final Scope<Class<? extends DocumentParser>> bindingParserMap   = new Scope<Class<? extends DocumentParser>>();
-
-	// private static final ClassRegistry<? extends DocumentType> rbs = new
-	// ClassRegistry<? extends DocumentType>();
+	public static final Scope<Class<? extends DocumentParser>> bindingParserMap   		= new Scope<Class<? extends DocumentParser>>();
 
 	static
 	{
@@ -121,28 +118,18 @@ abstract public class DocumentParser<D extends Document>
 	}
 
 	/**
-	 * Free resources associated with the connection.
-	 */
-	public void connectionRecycle ( )
-	{
-		// parsing done. now free resources asap to avert leaking and memory fragmentation
-		// (this is a known problem w java.net.HttpURLConnection)
-		PURLConnection purlConnection = this.purlConnection;
-		if (purlConnection != null)
-		{
-			purlConnection.recycle();
-			this.purlConnection = null;
-		}
-	}
-
-	/**
 	 * Free resources.
 	 * 
 	 */
 	public void recycle ( )
 	{
-		connectionRecycle();
-		infoCollector = null;
+		if (purlConnection != null)
+		{
+			purlConnection.recycle();
+			purlConnection	= null;
+		}
+		infoCollector 		= null;
+		documentClosure		= null;
 	}
 
 	/**
@@ -176,7 +163,7 @@ abstract public class DocumentParser<D extends Document>
 
 	public void handleIoError ( )
 	{
-
+		recycle();
 	}
 
 	public PURLConnection purlConnection ( )

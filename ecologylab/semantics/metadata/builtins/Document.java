@@ -8,14 +8,10 @@ package ecologylab.semantics.metadata.builtins;
 import java.util.ArrayList;
 
 import ecologylab.collections.GenericElement;
-import ecologylab.collections.GenericWeightSet;
-import ecologylab.collections.WeightSet;
 import ecologylab.generic.Continuation;
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.collecting.ContainerWeightingStrategy;
 import ecologylab.semantics.collecting.DocumentLocationMap;
 import ecologylab.semantics.collecting.DownloadStatus;
-import ecologylab.semantics.collecting.MetadataElement;
 import ecologylab.semantics.collecting.NewInfoCollector;
 import ecologylab.semantics.collecting.SemanticsSite;
 import ecologylab.semantics.documentparsers.DocumentParser;
@@ -23,13 +19,8 @@ import ecologylab.semantics.html.documentstructure.SemanticAnchor;
 import ecologylab.semantics.html.documentstructure.SemanticInLinks;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
-import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
-import ecologylab.semantics.model.text.InterestModel;
-import ecologylab.semantics.model.text.TermVectorWeightStrategy;
-import ecologylab.semantics.seeding.Seed;
-import ecologylab.serialization.Hint;
 import ecologylab.serialization.simpl_inherit;
 
 /**
@@ -515,5 +506,20 @@ public class Document extends Metadata
 	public void addClipping(Clipping clipping)
 	{
 		
+	}
+	
+	public String getLocationsString()
+	{
+		String result;
+		if (additionalLocations == null || additionalLocations.size() == 0)
+			result	= location.toString();
+		else
+		{
+			StringBuilder buffy	= new StringBuilder(location.toString()).append(',');
+			for (MetadataParsedURL otherLocation : additionalLocations)
+				buffy.append(otherLocation.toString());
+			result	= buffy.toString();
+		}
+		return result;
 	}
 }
