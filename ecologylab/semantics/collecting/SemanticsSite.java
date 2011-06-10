@@ -35,9 +35,6 @@ implements Colors
 	static final double MAX_SURROGATES_FROM_SITE = 25.0;
 	
 	static final double NON_SEED_FACTOR						= .25;
-
-
-	int								downloadsInProgress;
 	
 	int numElementsInComposition;
 
@@ -169,23 +166,13 @@ implements Colors
 		numContainers++;
 	}
 
-	public synchronized void beginDownload()
-	{
-		downloadsInProgress++;
-	}
-
-	public synchronized void endDownload()
-	{
-		downloadsInProgress--;
-	}
-
 	/**
 	 *  
 	 * @return true when this site has downloadables in the download monitor
 	 */
 	public synchronized boolean hasQueuedDownloadables()
 	{
-		return downloadsInProgress > 0;
+		return downloadsQueuedOrInProgress > 0;
 	}
 
 	/**
