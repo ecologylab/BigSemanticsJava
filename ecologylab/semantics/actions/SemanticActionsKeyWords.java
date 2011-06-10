@@ -64,6 +64,8 @@ public interface SemanticActionsKeyWords
 	
 	public static String  HTML_IMAGE_DOM_TEXT_PARSER= "html_dom_image_text";
 	
+	public static String  FILE_DIRECTORY_PARSER			= "file_directory";
+	
 	public static String  FEED_PARSER								= "feed";
 	
 	public static String	PDF_PARSER								= "pdf";
