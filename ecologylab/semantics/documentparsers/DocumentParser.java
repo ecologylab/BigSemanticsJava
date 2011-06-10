@@ -66,6 +66,7 @@ abstract public class DocumentParser<D extends Document>
 		bindingParserMap.put(SemanticActionsKeyWords.XPATH_PARSER,XPathParser.class);
 		bindingParserMap.put(SemanticActionsKeyWords.FEED_PARSER, FeedParser.class);
 		bindingParserMap.put(SemanticActionsKeyWords.HTML_IMAGE_DOM_TEXT_PARSER, HTMLDOMImageTextParser.class);
+		bindingParserMap.put(SemanticActionsKeyWords.PDF_PARSER, PdfParser.class);
 	}
 
 	/**
@@ -172,20 +173,6 @@ abstract public class DocumentParser<D extends Document>
 		return (purlConnection == null) ? null : purlConnection.inputStream();
 	}
 
-	/**
-	 * Return true if this DocumentType is a AbstractContainer.
-	 * 
-	 * @return The default response is false.
-	 */
-	public boolean isContainer ( )
-	{
-		return false;
-	}
-
-	public boolean nullPURLConnectionOK ( )
-	{
-		return false;
-	}
 
 	public void handleIoError ( )
 	{

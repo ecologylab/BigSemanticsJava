@@ -463,17 +463,7 @@ public class Document extends Metadata
 	
 	public void downloadAndParseDone(DocumentParser documentParser)
 	{
-		if (documentParser == null)
-		{
-//			recycle();
-		}
-		else
-		{
-			// free only some resources
-			documentParser.connectionRecycle();
-			
-			//TODO -- completely recycle DocumentParser!?
-		}
+
 	}
 	
 	///////////////////////////////// Covers for methods in CompoundDocument that actually do something /////////////////////////////////

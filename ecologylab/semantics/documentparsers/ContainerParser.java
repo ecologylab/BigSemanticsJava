@@ -44,16 +44,6 @@ extends DocumentParser<CompoundDocument>
 		  super(infoCollector);
 		  this.searchSeed			= searchSeed;
 	}
-
-	/**
-	 * Return true if this DocumentType is a Container.
-	 * 
-	 * @return	true.
-	 */
-	public boolean isContainer()
-	{
-		return true;
-	}
 	
 	/**
 	 * Queue a Result Container for download, if needed.

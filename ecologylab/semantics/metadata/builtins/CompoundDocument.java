@@ -599,15 +599,12 @@ implements Continuation<DocumentClosure>
 			perhapsAddDocumentClosureToPool();
 		}
 
-		if ((documentParser != null) && documentParser.isContainer() && !isTotallyEmpty())	// add && !isEmpty() -- andruid 3/2/09
+		if ((documentParser != null) && !isTotallyEmpty())	// add && !isEmpty() -- andruid 3/2/09
 		{	
 			if (documentParser.isIndexPage())
 				site.newIndexPage();
 			if (documentParser.isContentPage())
 				site.newContentPage();
-
-			// free only some resources
-			documentParser.connectionRecycle();
 			
 			//TODO -- completely recycle DocumentParser!?
 		}

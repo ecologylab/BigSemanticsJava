@@ -814,7 +814,16 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 				throw new RuntimeException("Can't find composite child meta-metadata for " + mmName + " amidst "+ mfd +
 						"\n\tThis probably means there is a conflict between the meta-metadata repository and the runtime."+
 						"\n\tProgrammer: Have you Changed the fields in built-in Metadata subclasses without updating primitives.xml???!");
-			MetaMetadataCompositeField childMMComposite = childMMNested.metaMetadataCompositeField();
+			MetaMetadataCompositeField childMMComposite = null;
+			if (childMMNested.isPolymorphicGlobal())
+			{
+				String tagName = deserializedMetadata.classDescriptor().getTagName();
+				childMMComposite	= infoCollector.getMetaMetadataRepository().getByTagName(tagName);
+			}
+			else
+			{
+				childMMComposite	= childMMNested.metaMetadataCompositeField();
+			}
 			deserializedMetadata.setMetaMetadata(childMMComposite);
 			currentMMstack.push(childMMComposite);
 		}
