@@ -20,10 +20,10 @@ import ecologylab.semantics.tools.MetaMetadataCompiler;
 import ecologylab.semantics.tools.MetaMetadataCompilerUtils;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.ElementState;
-import ecologylab.serialization.FieldDescriptor;
 import ecologylab.serialization.FieldTypes;
 import ecologylab.serialization.TranslationScope;
 import ecologylab.serialization.XMLTools;
+import ecologylab.serialization.simpl_descriptor_classes;
 import ecologylab.serialization.simpl_inherit;
 import ecologylab.serialization.types.element.Mappable;
 import ecologylab.serialization.types.scalar.ScalarType;
@@ -35,6 +35,8 @@ import ecologylab.textformat.NamedStyle;
  * 
  */
 @simpl_inherit
+@simpl_descriptor_classes(
+		{ MetaMetadataClassDescriptor.class, MetaMetadataFieldDescriptor.class })
 public abstract class MetaMetadataField extends ElementState implements Mappable<String>,
 		PackageSpecifier, Iterable<MetaMetadataField>
 {
@@ -988,9 +990,9 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 
 	protected void inheritNonDefaultAttributes(MetaMetadataField inheritFrom)
 	{
-		MetadataClassDescriptor classDescriptor = (MetadataClassDescriptor) classDescriptor();
+		MetaMetadataClassDescriptor classDescriptor = (MetaMetadataClassDescriptor) classDescriptor();
 	
-		for (MetadataFieldDescriptor fieldDescriptor : classDescriptor)
+		for (MetaMetadataFieldDescriptor fieldDescriptor : classDescriptor)
 		{
 			if (fieldDescriptor.isInheritable())
 			{
