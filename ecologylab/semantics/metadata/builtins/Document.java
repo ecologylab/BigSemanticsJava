@@ -15,6 +15,7 @@ import ecologylab.semantics.collecting.DownloadStatus;
 import ecologylab.semantics.collecting.NewInfoCollector;
 import ecologylab.semantics.collecting.SemanticsSite;
 import ecologylab.semantics.documentparsers.DocumentParser;
+import ecologylab.semantics.documentparsers.ParserResult;
 import ecologylab.semantics.html.documentstructure.SemanticAnchor;
 import ecologylab.semantics.html.documentstructure.SemanticInLinks;
 import ecologylab.semantics.metadata.Metadata;
@@ -44,19 +45,22 @@ public class Document extends Metadata
 
 	SemanticsSite										site;
 	
-	/** State from retrieval & interaction */
-	protected int										badImages;
-	
-	boolean 												sameDomainAsPrevious;
-	
+	protected		NewInfoCollector		infoCollector;
+
 	/**
 	 * documentType object for each document type 
 	 * such as HTMLType, PDFType. 
 	 */
 	DocumentParser									documentParser;
 
-	protected		NewInfoCollector		infoCollector;
-
+	ParserResult										parserResult;
+	
+	
+	/** State from retrieval & interaction */
+	protected int										badImages;
+	
+	boolean 												sameDomainAsPrevious;
+	
 	private boolean									alwaysAcceptRedirect;
 	
 	static public final Document 	RECYCLED_DOCUMENT	= new Document(ParsedURL.getAbsolute("http://recycled.document"));
@@ -431,13 +435,18 @@ public class Document extends Metadata
 	}
 
 	@Override
-	public void recycle()
+	public synchronized void recycle()
 	{
 		super.recycle();
 		if (semanticInlinks != null)
 		{
 			semanticInlinks.recycle();
 			semanticInlinks	= null;
+		}
+		if (parserResult != null)
+		{
+			parserResult.recycle();
+			parserResult		= null;
 		}
 	}
 	
@@ -521,5 +530,21 @@ public class Document extends Metadata
 			result	= buffy.toString();
 		}
 		return result;
+	}
+
+	/**
+	 * @return the parserResult
+	 */
+	public Object getParserResult()
+	{
+		return parserResult;
+	}
+
+	/**
+	 * @param parserResult the parserResult to set
+	 */
+	public void setParserResult(ParserResult parserResult)
+	{
+		this.parserResult = parserResult;
 	}
 }
