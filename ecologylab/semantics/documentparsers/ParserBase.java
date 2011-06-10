@@ -1,6 +1,7 @@
 package ecologylab.semantics.documentparsers;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -89,9 +90,9 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 			CompoundDocument document,
 			MetaMetadataCompositeField metaMetadata,
 			org.w3c.dom.Document DOM,
-			SemanticActionHandler handler);
+			SemanticActionHandler handler) throws IOException;
 
-	public final Document doParse(CompoundDocument document, MetaMetadataCompositeField metaMetadata, org.w3c.dom.Document DOM)
+	public final Document doParse(CompoundDocument document, MetaMetadataCompositeField metaMetadata, org.w3c.dom.Document DOM) throws IOException
 	{
 		// init
 		SemanticActionHandler handler = new SemanticActionHandler(infoCollector, this);
@@ -140,8 +141,9 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 	
 	/**
 	 * (1) Populate Metadata. (2) Rebuild composite term vector. (3) Take semantic actions.
+	 * @throws IOException 
 	 */
-	public final Document doParse()
+	public final Document doParse() throws IOException
 	{
 		super.doParse();
 		return doParse(getDocument(), getMetaMetadata(), getDom());
@@ -727,8 +729,9 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 
 	/**
 	 * @return Document subclass metadata resulting from s.im.pl deserialization of the input stream.
+	 * @throws IOException 
 	 */
-	protected Document directBindingPopulateMetadata()
+	protected Document directBindingPopulateMetadata() throws IOException
 	{
 		Document newDocument = null;
 		try

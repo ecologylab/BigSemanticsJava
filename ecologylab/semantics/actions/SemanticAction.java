@@ -3,6 +3,7 @@
  */
 package ecologylab.semantics.actions;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -229,8 +230,9 @@ public abstract class SemanticAction extends ElementState implements SemanticAct
 	 * @param obj
 	 *          The object the action operates on.
 	 * @return The result of this semantic action (if any), or null.
+	 * @throws IOException 
 	 */
-	public abstract Object perform(Object obj);
+	public abstract Object perform(Object obj) throws IOException;
 
 	/**
 	 * Register a user defined semantic action to the system. This method should be called before

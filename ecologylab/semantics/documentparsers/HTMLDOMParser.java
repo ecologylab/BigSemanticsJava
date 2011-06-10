@@ -1,5 +1,6 @@
 package ecologylab.semantics.documentparsers;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import org.w3c.tidy.DOMNodeImpl;
@@ -110,7 +111,7 @@ public class HTMLDOMParser extends HTMLParserCommon implements TidyInterface
 		return null;
 	}
 
-	protected Document doParse()
+	protected Document doParse() throws IOException
 	{
 		return null;
 	}

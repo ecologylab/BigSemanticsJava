@@ -1,5 +1,6 @@
 package ecologylab.semantics.actions;
 
+import java.io.IOException;
 import java.util.Map;
 
 import ecologylab.semantics.documentparsers.DocumentParser;
@@ -31,7 +32,7 @@ public class ReselectAndExtractMetadataSemanticAction extends SemanticAction
 	}
 
 	@Override
-	public Object perform(Object obj)
+	public Object perform(Object obj) throws IOException
 	{
 		CompoundDocument doc = (CompoundDocument) obj;
 		MetaMetadata mmd = (MetaMetadata) doc.getMetaMetadata();
