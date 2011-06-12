@@ -812,13 +812,15 @@ implements Continuation<DocumentClosure>
 	{
 		super.inheritValues(oldDocument);
 		
-		CompoundDocument oldCompound= (CompoundDocument) oldDocument;
-		
-		String queryString					= this.getQuery();
-		if (queryString == null || queryString.length() == 0)
-			this.query									= oldCompound.query;
-		oldCompound.query						= null;
-		
+		if (oldDocument instanceof Document)
+		{
+			CompoundDocument oldCompound= (CompoundDocument) oldDocument;
+			
+			String queryString					= this.getQuery();
+			if (queryString == null || queryString.length() == 0)
+				this.query									= oldCompound.query;
+			oldCompound.query						= null;
+		}
 		
 	}
 	
