@@ -99,11 +99,12 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 	public boolean isNewClass()
 	{
 		// if indicated by the author explicitly, do not generate a class
-		if (this instanceof MetaMetadata && !((MetaMetadata) this).isGenerateClass())
-			return false;
+		boolean isGenerateClass = this instanceof MetaMetadata && ((MetaMetadata) this).isGenerateClass();
 		
-		// otherwise
-		return getTypeDefinition() == this;
+		boolean typeDefinitionIsThis	= getTypeDefinition() == this;
+		
+		boolean result 								= !isGenerateClass && typeDefinitionIsThis;
+		return result;
 	}
 
 	/**

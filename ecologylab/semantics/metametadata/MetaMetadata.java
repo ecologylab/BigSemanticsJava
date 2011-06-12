@@ -204,7 +204,13 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 	{
 		// we r not using getType as by default getType will give meta-metadata name
 
-		return !isCompositeMmdWithTypeDecl() && (!dontGenerateClass || !builtIn);
+		boolean compositeMmdWithTypeDecl = isCompositeMmdWithTypeDecl();
+		boolean dontGenerateOrBuiltin = dontGenerateClass || builtIn;
+		boolean hasExtends	= extendsAttribute != null;
+		
+//		boolean result = compositeMmdWithTypeDecl && !dontGenerateOrBuiltin;
+		boolean result = hasExtends && !builtIn && !dontGenerateClass;
+		return result;
 	}
 
 	/**

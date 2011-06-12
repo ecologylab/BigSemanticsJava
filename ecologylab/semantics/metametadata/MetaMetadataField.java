@@ -16,6 +16,7 @@ import ecologylab.generic.HashMapArrayList;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
+import ecologylab.semantics.metadata.Metadata.mm_dont_inherit;
 import ecologylab.semantics.tools.MetaMetadataCompiler;
 import ecologylab.semantics.tools.MetaMetadataCompilerUtils;
 import ecologylab.serialization.ClassDescriptor;
@@ -81,6 +82,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 
 	@xml_tag("extends")
 	@simpl_scalar
+	@mm_dont_inherit
 	protected String																			extendsAttribute;
 	
 	@simpl_scalar
