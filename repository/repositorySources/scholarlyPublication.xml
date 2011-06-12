@@ -20,15 +20,15 @@
 		<scalar name="pages" layer="-1.0" navigates_to="table_of_contents" scalar_type="String" />
 	</meta_metadata>
 	
-	<meta_metadata name="dx_doi" type="document" redirect_handling="REDIRECT_FOLLOW_DONT_RESET_LOCATION">
+	<meta_metadata name="dx_doi" type="document" dont_generate_class="true" redirect_handling="REDIRECT_FOLLOW_DONT_RESET_LOCATION">
 		<selector url_path_tree="http://dx.doi.org"/>
 	</meta_metadata>
 	
-	<meta_metadata name="ingeta_connect" type="document" redirect_handling="REDIRECT_FOLLOW_DONT_RESET_LOCATION">
+	<meta_metadata name="ingeta_connect" type="document" dont_generate_class="true" redirect_handling="REDIRECT_FOLLOW_DONT_RESET_LOCATION">
 		<selector url_path_tree="http://www.ingentaconnect.com"/>
 	</meta_metadata>
 	
-	<meta_metadata name="informa_world" type="scholarly_article" parser="xpath">
+	<meta_metadata name="informa_world" type="scholarly_article" dont_generate_class="true" parser="xpath">
 		<selector url_stripped="http://www.informaworld.com/smpp/content~db=all" />
 		
 		<scalar name="title" xpath="//div[@id='breadcrumb']/text()[5]" />

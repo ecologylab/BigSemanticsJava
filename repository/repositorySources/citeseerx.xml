@@ -123,7 +123,7 @@
 
 
 
-	<meta_metadata name="citeseerx_similar" type="citeseerx_record" parser="xpath" comment="Citation or co-citation page from CiteSeerX.">
+	<meta_metadata name="citeseerx_similar" type="citeseerx_record" parser="xpath" dont_generate_class="true" comment="Citation or co-citation page from CiteSeerX.">
 		<selector url_stripped="http://citeseerx.ist.psu.edu/viewdoc/similar" />
 
 		<collection name="citations" xpath="//table[@class='citelist']//a">
@@ -155,7 +155,7 @@
 		<scalar name="citation_info" scalar_type="String" />
 	</meta_metadata>
 
-	<meta_metadata name="citeseerx_search" type="search" parser="xpath" comment="CiteSeerX search using keywords.">
+	<meta_metadata name="citeseerx_search" extends="search" parser="xpath" comment="CiteSeerX search using keywords.">
 		<selector url_stripped="http://citeseerx.ist.psu.edu/search" />
 
 		<collection name="search_results" child_type="citeseerx_search_result" xpath="//div[@class='searchresult'][1]/div">
@@ -180,7 +180,7 @@
 
 
 
-	<meta_metadata name="citeseerx_citing" type="citeseerx_search" parser="xpath" comment="CiteSeerX citing results.">
+	<meta_metadata name="citeseerx_citing" type="citeseerx_search" dont_generate_class="true" parser="xpath" comment="CiteSeerX citing results.">
 		<selector url_stripped="http://citeseerx.ist.psu.edu/showciting" />
 
 		<semantic_actions>

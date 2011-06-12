@@ -252,7 +252,7 @@
 		</semantic_actions>
 	</meta_metadata>
 
-	<meta_metadata name="flickr_nearby" type="search" comment="Searching from a photo for nearby photos" parser="xpath">
+	<meta_metadata name="flickr_nearby" type="search" dont_generate_class="true" comment="Searching from a photo for nearby photos" parser="xpath">
 		<selector name="flickr_nearby_selector" />
 		<collection name="search_results" xpath="//span[@class='photo_container pc_m']">
 			<scalar name="link" xpath="./a/@href">

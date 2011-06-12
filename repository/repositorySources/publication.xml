@@ -34,7 +34,7 @@
 		<scalar name="cover_image" scalar_type="ParsedURL" hide="true" />
 	</meta_metadata>
 	
-	<meta_metadata name="publisher" comment="A publishing company.">
+	<meta_metadata name="publisher" extends="metadata" comment="A publishing company.">
 		<scalar name="name" as_composite_scalar="true" navigates_to="location" is_facet="true" scalar_type="String" />
 		<scalar name="city" scalar_type="String" />
 	</meta_metadata>

@@ -1,6 +1,6 @@
 <meta_metadata_repository name="yahoo_buzz" package="ecologylab.semantics.generated.library.buzz">
 
-	<meta_metadata name="yahoo_buzz" comment="Yahoo Buzz." type="rss" parser="direct">
+	<meta_metadata name="yahoo_buzz" comment="Yahoo Buzz." dont_generate_class="true" type="rss" parser="direct">
 		<selector url_path_tree="http://buzzlog.buzz.yahoo.com/feeds/"/>
     <composite name="channel">
       <collection name="items" child_type="item" no_wrap="true">
@@ -23,7 +23,7 @@
 		</semantic_actions>
 	</meta_metadata>
 	
-	<meta_metadata name="yahoo_buzz_search" comment="Yahoo buzz search" type="search" parser="xpath">
+	<meta_metadata name="yahoo_buzz_search" comment="Yahoo buzz search" type="search" dont_generate_class="true" parser="xpath">
 		<selector url_path_tree="http://buzz.yahoo.com/search"/>
 		<collection name="search_results" xpath="//div[contains(@class, 'searchListContainer')]//div[contains(@class, 'searchArticleItem')]/dl">
 			<scalar name="heading" xpath="./dt/a" />

@@ -32,8 +32,8 @@
 	
 	<meta_metadata name="clippable_document"  extends="document" built_in="true">
 		<collection name="clippings" child_type="media_clipping" promote_children="true"/>
-		<scalar name="width" scalar_type="integer"/>
-		<scalar name="height" scalar_type="integer"/>
+		<scalar name="width" scalar_type="Integer"/>
+		<scalar name="height" scalar_type="Integer"/>
 	</meta_metadata>
 	
 	<meta_metadata name="image" extends="clippable_document" comment="The Image Base Class" built_in="true">
@@ -74,7 +74,7 @@
 		</selector>
 	</meta_metadata>
 	
-	<meta_metadata name="xml" type="compound_document" dont_generate_class="true" comment="XML" parser="direct" user_agent_name="firefox_3_6_8">
+	<meta_metadata name="xml" type="document"  parser="direct" dont_generate_class="true" user_agent_name="firefox_3_6_8">
 		<selector>
 			<mime_type>text/xml</mime_type>
 			<mime_type>application/xml</mime_type>
@@ -87,7 +87,7 @@
 		<scalar name="gist" navigates_to="location" comment="Initial text that describes the document before its downloaded." scalar_type="String" />
 	</meta_metadata>
 	
-	<meta_metadata name="pdf" type="compound_document" comment="The PDF class." parser="pdf">
+	<meta_metadata name="pdf" type="compound_document" dont_generate_class="true" comment="The PDF class." parser="pdf">
 		<selector>
 			<mime_type>application/pdf</mime_type>
 			<mime_type>application/x-pdf</mime_type>
@@ -107,11 +107,11 @@
 		<scalar name="creationdate" comment="Creation date of the document" scalar_type="String" />	
 	</meta_metadata>
 	
-	<meta_metadata name="debug_metadata" dont_generate_class="true">
+	<meta_metadata name="debug_metadata" built_in="true">
 		<scalar name="new_term_vector" ignore_in_term_vector="true" scalar_type="StringBuilder" />
 	</meta_metadata>
 	
-	<meta_metadata name="tag">
+	<meta_metadata name="tag" extends="metadata">
 		<scalar name="tag_name" scalar_type="String" navigates_to="link" />
 		<scalar name="link" hide="true" scalar_type="ParsedURL" />
 	</meta_metadata>

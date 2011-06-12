@@ -39,7 +39,7 @@
 		<scalar name="description" scalar_type="String" context_node="description_node" xpath="." />
 		<collection name="anchors" child_type="anchor" xpath = "//div[starts-with(@id, 'text-')]//a" >
 			<scalar name="link"  scalar_type="ParsedURL" xpath="./@href" />
-			<scalar name="anchor_text" as_collection_scalar="true" scalar_type="String" xpath="string(.)" />
+			<scalar name="anchor_text" scalar_type="String" xpath="string(.)" />
 		</collection>
 		<!-- <collection name="related_stories" child_type="slashdot_article" xpath="">
 			<scalar name="title" xpath="" />
