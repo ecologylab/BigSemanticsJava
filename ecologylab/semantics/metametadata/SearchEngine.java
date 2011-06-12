@@ -24,6 +24,8 @@ public class SearchEngine extends ElementState implements Mappable<String>
 	
 	@simpl_scalar private String startString;
 	
+	@simpl_scalar private boolean homogeneous;
+	
 	//these are used in the cf web interface
 	
 	@simpl_scalar private String group;
