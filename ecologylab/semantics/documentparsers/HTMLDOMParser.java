@@ -87,26 +87,10 @@ public abstract class HTMLDOMParser extends HTMLParserCommon implements TidyInte
 
 	/**
 	 * Andruid says: NEVER override this method when you parse HTML. Instead, override postParse().
+	 * @throws IOException 
 	 */
 	@Override
-	public final void parse()
-	{
-		try
-		{
-			performParse();
-		}
-		catch (Exception e)
-		{
-			debug("ERROR: while parsing document - " + getDocument().location());
-			e.printStackTrace();
-		}
-		finally
-		{
-			recycle();
-		}
-	}
-
-	abstract protected void performParse() throws IOException;
+	abstract public void parse() throws IOException;
 
 	public void recycle()
 	{

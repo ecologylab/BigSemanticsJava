@@ -25,11 +25,10 @@ implements TidyInterface
 		fragmentStream 											= inputStream;
 		AnonymousDocument anonymousDocument	= new AnonymousDocument();
 		this.documentClosure								= anonymousDocument.getOrConstructClosure();
-		parse();
 	}
 	
 	@Override
-	public void performParse() throws IOException
+	public void parse() throws IOException
 	{
 		taggedDoc = new DOMFragmentInformationTagger(tidy.getConfiguration(), null, this);
 		taggedDoc.generateCollections(this);

@@ -34,7 +34,6 @@ import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataBase;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
-import ecologylab.semantics.metadata.builtins.CompoundDocument;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.scalar.types.MetadataScalarScalarType;
 import ecologylab.semantics.metametadata.DefVar;
@@ -87,12 +86,12 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 	 * @return
 	 */
 	public abstract Document populateMetadata(
-			CompoundDocument document,
+			Document document,
 			MetaMetadataCompositeField metaMetadata,
 			org.w3c.dom.Document DOM,
 			SemanticActionHandler handler) throws IOException;
 
-	public final Document doParse(CompoundDocument document, MetaMetadataCompositeField metaMetadata, org.w3c.dom.Document DOM) throws IOException
+	public final Document parse(Document document, MetaMetadataCompositeField metaMetadata, org.w3c.dom.Document DOM) throws IOException
 	{
 		// init
 		SemanticActionHandler handler = new SemanticActionHandler(infoCollector, this);
@@ -144,9 +143,9 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 	 * @throws IOException 
 	 */
 	@Override
-	public final void performParse() throws IOException
+	public void parse() throws IOException
 	{
-		doParse(getDocument(), getMetaMetadata(), getDom());
+		parse(getDocument(), getMetaMetadata(), getDom());
 	}
 
 	/**

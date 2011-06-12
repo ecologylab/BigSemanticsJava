@@ -50,7 +50,7 @@ implements TidyInterface, HTMLAttributeNames
 	DOMWalkInformationTagger taggedDoc;
 	
 	@Override
-	protected void performParse() throws IOException
+	public void parse() throws IOException
 	{
 		DOMWalkInformationTagger taggedDoc = new DOMWalkInformationTagger(tidy.getConfiguration(), purlConnection.getPurl(), this);
 		// this function actually traverse the dom tree

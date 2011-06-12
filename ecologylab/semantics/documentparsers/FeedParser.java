@@ -7,7 +7,6 @@ import java.io.IOException;
 
 import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.collecting.NewInfoCollector;
-import ecologylab.semantics.metadata.builtins.CompoundDocument;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.seeding.Feed;
@@ -36,7 +35,7 @@ public class FeedParser extends LinksetParser
 	}
 
 	@Override
-	public Document populateMetadata(CompoundDocument document,
+	public Document populateMetadata(Document document,
 			MetaMetadataCompositeField metaMetadata,
 			org.w3c.dom.Document DOM, SemanticActionHandler handler) throws IOException
 	{
