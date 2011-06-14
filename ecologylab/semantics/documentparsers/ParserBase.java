@@ -123,16 +123,18 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 		{
 			// make sure termVector is built here
 			resultingMetadata.rebuildCompositeTermVector();
-	
+			resultingMetadata.serializeOut("Before semantic actions");
 			handler.takeSemanticActions(resultingMetadata);
 
 			// make sure termVector is built here
 			resultingMetadata.rebuildCompositeTermVector();
 
+			resultingMetadata.serializeOut("Before linked metadata");
 			MetaMetadataRepository metaMetaDataRepository = infoCollector.metaMetaDataRepository();
 			LinkedMetadataMonitor monitor = metaMetaDataRepository.getLinkedMetadataMonitor();
 			monitor.tryLink(metaMetaDataRepository, resultingMetadata);
 			monitor.addMonitors(resultingMetadata);
+			resultingMetadata.serializeOut("After linked metadata");
 		}
 
 		return  resultingMetadata;
@@ -737,6 +739,7 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 		{
 			newDocument = (Document) infoCollector.getMetadataTranslationScope().deserialize(purlConnection, this);
 			newDocument.serialize(System.out);
+			System.out.println();
 			documentClosure.changeDocument(newDocument);
 
 			System.out.println();

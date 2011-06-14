@@ -404,6 +404,7 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>, S
 			this.document					= (D) newDocument;
 			
 			newDocument.inheritValues(oldDocument);	
+			newDocument.serializeOut("After changeDocument()");
 			semanticInlinks				= newDocument.semanticInlinks; // probably not needed, but just in case.
 			oldDocument.recycle();
 		}
