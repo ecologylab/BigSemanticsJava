@@ -7,9 +7,9 @@ import java.io.OutputStream;
 
 import org.w3c.tidy.DOMDocumentImpl;
 import org.w3c.tidy.Out;
-import org.w3c.tidy.OutImpl;
+import org.w3c.tidy.OutJavaImpl;
 import org.w3c.tidy.StreamIn;
-import org.w3c.tidy.TdNode;
+import org.w3c.tidy.Node;
 
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.documentparsers.HTMLDOMParser;
@@ -26,16 +26,16 @@ public class GenerateSVMData extends OldHTMLDOMParser
 {
     public void pprint(org.w3c.dom.Document doc, OutputStream out, ParsedURL purl, String mainPartitionID)
     {
-        Out o = new OutImpl();
-        TdNode document;
+        Out o = new OutJavaImpl(this.getConfiguration(), null);
+        Node document;
 
         if (!(doc instanceof DOMDocumentImpl)) {
             return;
         }
         document = ((DOMDocumentImpl)doc).adaptee;
 
-        o.state = StreamIn.FSM_ASCII;
-        o.encoding = configuration.CharEncoding;
+//        o.state = StreamIn.FSM_ASCII;
+//        o.encoding = configuration.CharEncoding;
 
   //      if (out != null)
   //      {
@@ -51,8 +51,8 @@ public class GenerateSVMData extends OldHTMLDOMParser
 			pprint.setFileOutputStream(outFile);
 			
 	        
-	        o.out = out;
-	        if (configuration.XmlTags)
+//	        o.out = out;
+	        if (configuration.xmlTags)
 	            pprint.printXMLTree(o, (short)0, 0, null, document);
 	        else
 	            pprint.printTree(o, (short)0, 0, null, document);

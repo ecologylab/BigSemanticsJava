@@ -3,7 +3,7 @@
  */
 package ecologylab.semantics.html;
 
-import org.w3c.tidy.TdNode;
+import org.w3c.tidy.Node;
 
 import ecologylab.generic.Generic;
 import ecologylab.net.ParsedURL;
@@ -38,7 +38,7 @@ public class ImgElement extends WithPurlElement
 	 * @param node
 	 * @param basePurl TODO
 	 */
-	public ImgElement(TdNode node, ParsedURL basePurl)
+	public ImgElement(Node node, ParsedURL basePurl)
 	{
 		super(node, basePurl);
 		int i = 0;

@@ -3,7 +3,7 @@
  */
 package ecologylab.semantics.html.utils;
 
-import org.w3c.tidy.TdNode;
+import org.w3c.tidy.Node;
 
 import ecologylab.generic.StringBuilderBaseUtils;
 import ecologylab.generic.StringTools;
@@ -30,7 +30,7 @@ public class StringBuilderUtils extends StringBuilderBaseUtils
 	 * 
 	 * @return						null if no work to do because length < minLength after trim, or a buffer with the decoded result.
 	 */
-  public static StringBuilder trimAndDecodeUTF8(StringBuilder result, TdNode childNode)
+  public static StringBuilder trimAndDecodeUTF8(StringBuilder result, Node childNode)
   {
   	return trimAndDecodeUTF8(result, childNode, 0, false);
   }
@@ -52,7 +52,7 @@ public class StringBuilderUtils extends StringBuilderBaseUtils
 	 * 
 	 * @return						null if no work to do because length < minLength after trim, or a buffer with the decoded result.
 	 */
-  public static StringBuilder trimAndDecodeUTF8(StringBuilder result, TdNode childNode, int minLength)
+  public static StringBuilder trimAndDecodeUTF8(StringBuilder result, Node childNode, int minLength)
   {
   	return trimAndDecodeUTF8(result, childNode, minLength, false);
   }
@@ -76,7 +76,7 @@ public class StringBuilderUtils extends StringBuilderBaseUtils
 	 * 
 	 * @return						null if no work to do because length < minLength after trim, or a buffer with the decoded result.
 	 */
-  public static StringBuilder trimAndDecodeUTF8(StringBuilder result, TdNode childNode, int minLength, boolean appendNoClear)
+  public static StringBuilder trimAndDecodeUTF8(StringBuilder result, Node childNode, int minLength, boolean appendNoClear)
   {
 		byte[] textarray	= childNode.textarray();
 		

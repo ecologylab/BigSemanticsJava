@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import org.w3c.tidy.DOMNodeImpl;
-import org.w3c.tidy.TdNode;
+import org.w3c.tidy.Node;
 import org.w3c.tidy.Tidy;
 
 import ecologylab.appframework.types.prefs.PrefBoolean;
@@ -70,7 +70,7 @@ public abstract class HTMLDOMParser extends HTMLParserCommon implements TidyInte
 	 */
 	protected org.w3c.dom.Document createDom() throws IOException
 	{
-    TdNode document = tidy.parse(inputStream(), null, null);
+    Node document = tidy.parse(inputStream(), null, null);
     return (document != null) ?
         (org.w3c.dom.Document)document.getAdapter() :  null;
 	}
@@ -80,7 +80,7 @@ public abstract class HTMLDOMParser extends HTMLParserCommon implements TidyInte
 	 * @return The root node of the document, which should be <html>.
 	 * @throws IOException 
 	 */
-	public TdNode getRootNode() throws IOException
+	public Node getRootNode() throws IOException
 	{
 		return ((DOMNodeImpl) getDom()).adaptee;
 	}
@@ -102,12 +102,12 @@ public abstract class HTMLDOMParser extends HTMLParserCommon implements TidyInte
 	/**
 	 * Called when the parser see's the <code>&lt;title&gt; tag.
 	 */
-	public void setTitle(TdNode titleNode)
+	public void setTitle(Node titleNode)
 	{
 		StringBuilder title = null;
-		for (TdNode node = titleNode.content(); node != null; node = node.next())
+		for (Node node = titleNode.content(); node != null; node = node.next())
 		{
-			if (node.type == TdNode.TextNode)
+			if (node.type == Node.TEXT_NODE)
 			{
 				title = StringBuilderUtils.trimAndDecodeUTF8(title, node, 0, true);
 				if (title != null)

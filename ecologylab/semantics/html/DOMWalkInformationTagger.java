@@ -10,11 +10,11 @@ import org.w3c.tidy.AttVal;
 import org.w3c.tidy.Configuration;
 import org.w3c.tidy.DOMNodeImpl;
 import org.w3c.tidy.Lexer;
+import org.w3c.tidy.Node;
 import org.w3c.tidy.Out;
-import org.w3c.tidy.OutImpl;
+import org.w3c.tidy.OutJavaImpl;
 import org.w3c.tidy.PPrint;
 import org.w3c.tidy.StreamIn;
-import org.w3c.tidy.TdNode;
 
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.documentparsers.HTMLDOMParser;
@@ -50,7 +50,7 @@ implements HTMLAttributeNames
 	/**
 	 * Current DOM node that is being processed
 	 */
-	protected TdNode				currentNode		= null;
+	protected Node				currentNode		= null;
 
 	/**
 	 * Keep track of the text length in this page to recognize the page type. 
@@ -85,8 +85,8 @@ implements HTMLAttributeNames
 		super(configuration);
 		this.purl						= purl;
 		this.tidyInterface 	= tidyInterface;
-		state 							= StreamIn.FSM_ASCII;
-		encoding 						= configuration.CharEncoding;
+//		state 							= StreamIn.FSM_ASCII;
+//		encoding 						= configuration.CharEncoding;
 	}
 	public void generateCollections(org.w3c.dom.Document doc)
 	{
@@ -96,11 +96,11 @@ implements HTMLAttributeNames
 	{
 		generateCollections(htmlDomParser.getRootNode());
 	}
-	public void generateCollections(TdNode rootTdNode)
+	public void generateCollections(Node rootTdNode)
 	{
-		Out jtidyPrettyOutput 			= new OutImpl();
-		jtidyPrettyOutput.state 		= StreamIn.FSM_ASCII;
-		jtidyPrettyOutput.encoding	= configuration.CharEncoding;
+		Out jtidyPrettyOutput 			= new OutJavaImpl(configuration, null);
+//		jtidyPrettyOutput.state 		= StreamIn.FSM_ASCII;
+//		jtidyPrettyOutput.encoding	= configuration.CharEncoding;
 
 		printTree(jtidyPrettyOutput, (short)0, 0, null, rootTdNode);
 		flushLine(jtidyPrettyOutput, 0);	
@@ -110,7 +110,7 @@ implements HTMLAttributeNames
 	 * This method is called when it sees the Starting-Tag while walking through DOM
 	 */
 	@Override
-	protected void printTag(Lexer lexer, Out fout, short mode, int indent, TdNode node)
+	protected void printTag(Lexer lexer, Out fout, short mode, int indent, Node node)
 	{
 		String tagName = node.element;
 
@@ -162,7 +162,7 @@ implements HTMLAttributeNames
 	 * This method is called when it sees the Ending-Tag while walking through DOM
 	 */
 	@Override
-	protected void printEndTag(Out fout, short mode, int indent, TdNode node)
+	protected void printEndTag(short mode, int indent, Node node)
 	{
 		String tag = node.element;
 
@@ -195,10 +195,10 @@ implements HTMLAttributeNames
 		}
 
 		//		 We need to delete a link to the file write part at the end -- EUNYEE
-		super.printEndTag(fout, mode, indent, node);	
+		super.printEndTag(mode, indent, node);	
 	}
 
-	private void closeBlock(TdNode blockNode)
+	private void closeBlock(Node blockNode)
 	{
 		addCompletedPara(blockNode);
 
@@ -207,7 +207,7 @@ implements HTMLAttributeNames
 	}
 
 	@Override
-	protected void outterSupport(TdNode node, short mode)
+	protected void outterSupport(Node node, short mode)
 	{
 		super.outterSupport(node, mode);
 		this.currentNode = node;
@@ -282,9 +282,9 @@ implements HTMLAttributeNames
 	 * 
 	 * @param blockNode
 	 */
-	protected void addCompletedPara(TdNode blockNode)
+	protected void addCompletedPara(Node blockNode)
 	{
-		TdNode node	= currentNode;
+		Node node	= currentNode;
 		if (!currentParagraphText.hasText())
 		{
 			StringBuilder longestTxtinSubTree = RecognizedDocumentStructure.getLongestTxtinSubTree(blockNode, null);
@@ -332,7 +332,7 @@ implements HTMLAttributeNames
 			currentParagraphText.recycle();
 	}
 
-	public boolean underAHref(TdNode node)
+	public boolean underAHref(Node node)
 	{
 		if(node.grandParent().element.equals("a") || node.parent().element.equals("a"))
 			return true;
@@ -366,7 +366,7 @@ implements HTMLAttributeNames
 		return eID;
 	}
 
-	void checkInPartitionID(TdNode node, int wordSize, int aWordSize)
+	void checkInPartitionID(Node node, int wordSize, int aWordSize)
 	{
 		String nodeID = node.parent().getAttrByName("tag_id").value;
 		String data = "";
@@ -427,7 +427,7 @@ implements HTMLAttributeNames
 		return paragraphTextsTMap;
 	}
 
-	public static StringBuilder getTextInSubTree(TdNode node, boolean recurse)
+	public static StringBuilder getTextInSubTree(Node node, boolean recurse)
 	{
 		return getTextInSubTree(node, recurse, null);
 	}
@@ -442,16 +442,16 @@ implements HTMLAttributeNames
 	 * @return
 	 */
 	//FIXME -- why is text in anchor node not included?
-	public static StringBuilder getTextInSubTree(TdNode node, boolean recurse, StringBuilder result)
+	public static StringBuilder getTextInSubTree(Node node, boolean recurse, StringBuilder result)
 	{
-		for (TdNode childNode	= node.content(); childNode != null; childNode = childNode.next())
+		for (Node childNode	= node.content(); childNode != null; childNode = childNode.next())
 		{
 			if (recurse && (childNode.element!=null) && (!childNode.element.equals("script")))
 			{
 				//Recursive call with the childNode
 				result = getTextInSubTree(childNode, true, result);
 			}	
-			else if (childNode.type == TdNode.TextNode )
+			else if (childNode.type == Node.TEXT_NODE )
 			{
 				int length	= 0;
 				if (result != null)

@@ -7,10 +7,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.w3c.tidy.DOMDocumentImpl;
+import org.w3c.tidy.Node;
 import org.w3c.tidy.Out;
-import org.w3c.tidy.OutImpl;
+import org.w3c.tidy.OutJavaImpl;
 import org.w3c.tidy.StreamIn;
-import org.w3c.tidy.TdNode;
 
 import ecologylab.net.PURLConnection;
 import ecologylab.net.ParsedURL;
@@ -33,31 +33,31 @@ public class ArticlePageRecognize extends OldHTMLDOMParser
      */
     public void pprint(org.w3c.dom.Document doc, OutputStream out, ParsedURL purl)
     {
-        Out o = new OutImpl();
-        TdNode document;
+        Out o = new OutJavaImpl(this.getConfiguration(), null);
+        Node document;
 
         if (!(doc instanceof DOMDocumentImpl)) {
             return;
         }
         document = ((DOMDocumentImpl)doc).adaptee;
 
-        o.state = StreamIn.FSM_ASCII;
-        o.encoding = configuration.CharEncoding;
+//        o.state = StreamIn.FSM_ASCII;
+//        o.encoding = configuration.CharEncoding;
 
   //      if (out != null)
   //      {
         	// Instantiate PPrint constructor that connects to combinFormation
         DOMWalkInformationTagger pprint = new DOMWalkInformationTagger(configuration, purl, null);
         
-        o.out = out;
-        if (configuration.XmlTags)
+//        o.out = out;
+        if (configuration.xmlTags)
             pprint.printXMLTree(o, (short)0, 0, null, document);
         else
             pprint.printTree(o, (short)0, 0, null, document);
 
         pprint.flushLine(o, 0);
         
-        TdNode articleMain = RecognizedDocumentStructure.recognizeContentBody(pprint);
+        Node articleMain = RecognizedDocumentStructure.recognizeContentBody(pprint);
 //System.out.println("ArticleMain: " + articleMain );
 
         if( articleMain == null )

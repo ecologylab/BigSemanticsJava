@@ -3,7 +3,7 @@ package ecologylab.semantics.html;
 import java.util.HashMap;
 
 import org.w3c.tidy.AttVal;
-import org.w3c.tidy.TdNode;
+import org.w3c.tidy.Node;
 
 import ecologylab.generic.Generic;
 import ecologylab.generic.StringTools;
@@ -21,7 +21,7 @@ public class HTMLElementTidy
 implements HTMLAttributeNames, ImageConstants
 {
 	public static final int	INDEX_NOT_CALCULATED	= -1;
-	protected	TdNode 			node;
+	protected	Node 			node;
 	
 	//FIXME -- get rid of this inefficient beast!
 	private HashMap<String, String> attributesMap;
@@ -39,7 +39,7 @@ implements HTMLAttributeNames, ImageConstants
 		
 	}
 	
-	public HTMLElementTidy(TdNode node)
+	public HTMLElementTidy(Node node)
 	{
 		this.node						= node;
 		addAttributes(node.attributes);
@@ -89,7 +89,7 @@ implements HTMLAttributeNames, ImageConstants
 		return value != null && "true".equals(value);
 	}
 	
-	public void setNode(TdNode node) 
+	public void setNode(Node node) 
 	{
 		this.node = node;
 	}
@@ -109,7 +109,7 @@ implements HTMLAttributeNames, ImageConstants
 		return result;
 	}
 
-	public TdNode getNode() 
+	public Node getNode() 
 	{
 		return node;
 	}

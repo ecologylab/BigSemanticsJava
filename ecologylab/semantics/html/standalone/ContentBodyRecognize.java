@@ -11,10 +11,10 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 
 import org.w3c.tidy.DOMDocumentImpl;
+import org.w3c.tidy.Node;
 import org.w3c.tidy.Out;
-import org.w3c.tidy.OutImpl;
+import org.w3c.tidy.OutJavaImpl;
 import org.w3c.tidy.StreamIn;
-import org.w3c.tidy.TdNode;
 
 import ecologylab.net.PURLConnection;
 import ecologylab.net.ParsedURL;
@@ -35,33 +35,33 @@ public class ContentBodyRecognize extends OldHTMLDOMParser
 		return super.parse(purlConnection);
 	}
 
-	public TdNode pprint(org.w3c.dom.Document doc, OutputStream out, ParsedURL purl)
+	public Node pprint(org.w3c.dom.Document doc, OutputStream out, ParsedURL purl)
 	{
-		Out o = new OutImpl();
-		TdNode document;
+		Out o = new OutJavaImpl(this.getConfiguration(), null);
+		Node document;
 
 		if (!(doc instanceof DOMDocumentImpl)) {
 			return null;
 		}
 		document = ((DOMDocumentImpl)doc).adaptee;
 
-		o.state = StreamIn.FSM_ASCII;
-		o.encoding = configuration.CharEncoding;
+//		o.state = StreamIn.FSM_ASCII;
+//		o.encoding = configuration.CharEncoding;
 
 		//      if (out != null)
 			//      {
 			// Instantiate PPrint constructor that connects to combinFormation
 		DOMWalkInformationTagger pprint = new DOMWalkInformationTagger(configuration, purl, null);
 
-		o.out = out;
-		if (configuration.XmlTags)
+//		o.out = out;
+		if (configuration.xmlTags)
 			pprint.printXMLTree(o, (short)0, 0, null, document);
 		else
 			pprint.printTree(o, (short)0, 0, null, document);
 
 		pprint.flushLine(o, 0);
 
-		TdNode articleMain = RecognizedDocumentStructure.recognizeContentBody(pprint);
+		Node articleMain = RecognizedDocumentStructure.recognizeContentBody(pprint);
 
 		if( articleMain!=null )
 		{
@@ -215,7 +215,7 @@ System.out.println("informTextID : " + informTextID);
 				ParsedURL labelPurl	= purl.getRelative("label.xml");
 				System.out.println(purl.toString());
 				PURLConnection purlConnection	= purl.connect();
-				TdNode contentBodyNode = cbr.pprint( cbr.parseDOM(purlConnection.inputStream(), null), null, purl); 
+				Node contentBodyNode = cbr.pprint( cbr.parseDOM(purlConnection.inputStream(), null), null, purl); 
 				PURLConnection labelConnection	= labelPurl.connect();
 				try
 				{

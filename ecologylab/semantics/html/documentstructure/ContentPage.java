@@ -3,7 +3,7 @@ package ecologylab.semantics.html.documentstructure;
 import java.util.ArrayList;
 import java.util.TreeMap;
 
-import org.w3c.tidy.TdNode;
+import org.w3c.tidy.Node;
 
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.html.ImgElement;
@@ -31,7 +31,7 @@ public class ContentPage extends RecognizedDocumentStructure
 	 * 2. Generate surrogates for other pages (with those image surrogates in the bottom or side of the pages)
 	 */
 	@Override
-	public void generateSurrogates(TdNode contentBody, ArrayList<ImgElement> imgNodes, int totalTxtLeng, 
+	public void generateSurrogates(Node contentBody, ArrayList<ImgElement> imgNodes, int totalTxtLeng, 
 			TreeMap<Integer, ParagraphText> paraTexts, TidyInterface htmlType)
 	{
 		findImgsInContentBodySubTree(contentBody.parent(), imgNodes); 

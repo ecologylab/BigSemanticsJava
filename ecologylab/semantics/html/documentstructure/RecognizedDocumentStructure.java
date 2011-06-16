@@ -7,7 +7,7 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import org.w3c.tidy.AttVal;
-import org.w3c.tidy.TdNode;
+import org.w3c.tidy.Node;
 
 import ecologylab.generic.Debug;
 import ecologylab.generic.IntSlot;
@@ -65,7 +65,7 @@ implements HTMLAttributeNames
 	 * @param paraTexts  
 	 * @param htmlType
 	 */
-	public void generateSurrogates(TdNode articleMain, ArrayList<ImgElement> imgNodes, int totalTxtLeng, 
+	public void generateSurrogates(Node articleMain, ArrayList<ImgElement> imgNodes, int totalTxtLeng, 
 			TreeMap<Integer, ParagraphText> paraTexts, TidyInterface htmlType)
 	{
 		constructImgSurrogatesForOtherPages( imgNodes, totalTxtLeng, htmlType );
@@ -81,27 +81,27 @@ implements HTMLAttributeNames
 	 * @param taggedDoc
 	 * @return
 	 */
-	public static TdNode recognizeContentBody(DOMWalkInformationTagger taggedDoc) 
+	public static Node recognizeContentBody(DOMWalkInformationTagger taggedDoc) 
 	{
-		TdNode grandParent	= null;
-		TdNode ggParent 		= null;
+		Node grandParent	= null;
+		Node ggParent 		= null;
 
 		/*
 		 * grandParent node with the count information.
 		 * 
 		 */
-		HashMap<TdNode, IntSlot> grandParentChildCounts = new HashMap<TdNode, IntSlot>(); 
+		HashMap<Node, IntSlot> grandParentChildCounts = new HashMap<Node, IntSlot>(); 
 
 		/*
 		 * grand-grandParent node with the count information.
 		 */
-		HashMap<TdNode, IntSlot> greatGrandParentChildCounts = new HashMap<TdNode, IntSlot>();
+		HashMap<Node, IntSlot> greatGrandParentChildCounts = new HashMap<Node, IntSlot>();
 
 		// get linearlized from TreeMap
 		Collection<ParagraphText> paragrphTextsValues = taggedDoc.getParagraphTextsTMap().values();
 		for(ParagraphText pt : paragrphTextsValues)
 		{
-			TdNode parent	= pt.getNode().parent();
+			Node parent	= pt.getNode().parent();
 			grandParent 	= parent.parent();
 			ggParent 		= grandParent.parent();
 
@@ -127,7 +127,7 @@ implements HTMLAttributeNames
 		}
 //		Object[] paragraphTextsArray = paragrphTextsValues.toArray();
 
-		TdNode articleMainNode = findArticleMainNode(taggedDoc, grandParentChildCounts /*, paragraphTextsArray */);
+		Node articleMainNode = findArticleMainNode(taggedDoc, grandParentChildCounts /*, paragraphTextsArray */);
 
 		// if no common grandParent, look for common greatGrandParent. 
 		if( articleMainNode == null )
@@ -147,13 +147,13 @@ implements HTMLAttributeNames
 	 * @param paragraphTextsArray
 	 * @return
 	 */
-	private static TdNode findArticleMainNode(DOMWalkInformationTagger taggedDoc,
-			HashMap<TdNode, IntSlot> ancestorChildCounts /* , Object[] paragraphTextsArray */) 
+	private static Node findArticleMainNode(DOMWalkInformationTagger taggedDoc,
+			HashMap<Node, IntSlot> ancestorChildCounts /* , Object[] paragraphTextsArray */) 
 	{
-		TdNode articleMainNode = null;
+		Node articleMainNode = null;
 
-		Set<TdNode> grandParents = ancestorChildCounts.keySet();
-		for (TdNode grandParentNode : grandParents)
+		Set<Node> grandParents = ancestorChildCounts.keySet();
+		for (Node grandParentNode : grandParents)
 		{
 			IntSlot tint 	= ancestorChildCounts.get(grandParentNode);
 
@@ -198,13 +198,13 @@ implements HTMLAttributeNames
 	 * 
 	 */
 	//FIXME -- andruid: exactly what sorted order are the paraTexts in? why?
-	protected void associateImageTextSurrogates(TidyInterface htmlType, TdNode articleBody, TreeMap<Integer, ParagraphText> paraTexts)
+	protected void associateImageTextSurrogates(TidyInterface htmlType, Node articleBody, TreeMap<Integer, ParagraphText> paraTexts)
 	{	
 		for (ImgElement imgElement: imgNodesInContentBody) 
 		{  		
 			if (imgElement.isInformativeImage())
 			{
-				final TdNode imageNodeNode = imgElement.getNode();
+				final Node imageNodeNode = imgElement.getNode();
 				informImgNodes.add(imageNodeNode);
 
 				StringBuilder extractedCaption = getConnectedText(imageNodeNode, null);	// returns null in worst case
@@ -221,7 +221,7 @@ implements HTMLAttributeNames
 				while (!done && (paraTexts.size() > 0))
 				{
 					ParagraphText pt 	= paraTexts.remove(paraTexts.lastKey());	// get longest remaining paragraph
-					TdNode textNode 	= pt.getNode();
+					Node textNode 	= pt.getNode();
 					if (textNode.grandParent().equals(articleBody) || 
 							textNode.greatGrandParent().equals(articleBody) )
 					{
@@ -299,7 +299,7 @@ implements HTMLAttributeNames
 			if (HTMLParserCommon.isAd(imgElement.getSrc()))
 				continue;
 			
-			TdNode imgNodeNode							= imgElement.getNode();
+			Node imgNodeNode							= imgElement.getNode();
 			//TODO -- can make this search for text context more comprehensive, while making sure to stay out of content body
 			StringBuilder extractedContext	= getLongestTxtinSubTree(imgNodeNode.grandParent(), null);
 			String alt											= imgElement.getAlt();
@@ -336,7 +336,7 @@ implements HTMLAttributeNames
 	 */
 	protected ParsedURL findAnchorPURL(HTMLElementTidy ina) 
 	{
-		TdNode aNode		= ina.getNode().parent();
+		Node aNode		= ina.getNode().parent();
 		ParsedURL result= null;
 		AttVal aHref		= null;
 
@@ -360,7 +360,7 @@ implements HTMLAttributeNames
 	/**
 	 * All the article images that determined informative.
 	 */
-	private ArrayList<TdNode> informImgNodes		= new ArrayList<TdNode>();    
+	private ArrayList<Node> informImgNodes		= new ArrayList<Node>();    
 
 	/**
 	 * All the image nodes under the sub-tree of the ArticleMain node.
@@ -373,7 +373,7 @@ implements HTMLAttributeNames
 	 * @param contentBody
 	 * @param imgNodes TODO
 	 */
-	public void findImgsInContentBodySubTree(TdNode contentBody, ArrayList<ImgElement> imgNodes)
+	public void findImgsInContentBodySubTree(Node contentBody, ArrayList<ImgElement> imgNodes)
 	{
 		StringBuilder buffy				= StringBuilderUtils.acquire();
 		contentBody.xpath(buffy);
@@ -400,11 +400,11 @@ implements HTMLAttributeNames
 	 * @param nodeElementString
 	 * @param nodesInContentBody
 	 */
-	private void htmlNodesInContentBody(TdNode contentBody,
+	private void htmlNodesInContentBody(Node contentBody,
 			String nodeElementString,
 			ArrayList<ImgElement> nodesInContentBody)
 	{
-		for (TdNode contentNode = contentBody.content(); contentNode != null; contentNode = contentNode.next())
+		for (Node contentNode = contentBody.content(); contentNode != null; contentNode = contentNode.next())
 		{
 			htmlNodesInContentBody(contentNode, nodeElementString, nodesInContentBody);
 			if( contentNode.element!=null && contentNode.element.equals(nodeElementString) )
@@ -415,9 +415,9 @@ implements HTMLAttributeNames
 		}
 	}
 
-	public static StringBuilder getConnectedText(TdNode node, StringBuilder textResult)
+	public static StringBuilder getConnectedText(Node node, StringBuilder textResult)
 	{
-		TdNode grandParent		= node.grandParent();
+		Node grandParent		= node.grandParent();
 		StringBuilder	result	= getLongestTxtinSubTree(grandParent, textResult);
 		if (result == null || result.length() > 5)
 			result							= getLongestTxtinSubTree(grandParent.parent(), textResult);
@@ -428,16 +428,16 @@ implements HTMLAttributeNames
 	 * 
 	 * @param parent node of the image node is passed in to the parameter. 
 	 */
-	public static StringBuilder getLongestTxtinSubTree(TdNode node, StringBuilder textResult)
+	public static StringBuilder getLongestTxtinSubTree(Node node, StringBuilder textResult)
 	{
-		for (TdNode childNode	= node.content(); childNode != null; childNode = childNode.next())
+		for (Node childNode	= node.content(); childNode != null; childNode = childNode.next())
 		{
 			if( (childNode.element!=null) && (!childNode.element.equals("script")))
 			{
 				//Recursive call with the childNode
 				textResult = getLongestTxtinSubTree(childNode, textResult);
 			}	
-			else if (childNode.type == TdNode.TextNode )
+			else if (childNode.type == Node.TEXT_NODE )
 			{
 				int curLength	= (textResult == null) ? 0 : textResult.length();
 				textResult		= StringBuilderUtils.trimAndDecodeUTF8(textResult, childNode, curLength);
@@ -446,12 +446,12 @@ implements HTMLAttributeNames
 		return textResult;
 	}
 
-	protected boolean checkLinkIn(TdNode parentNode, TdNode currentNode)
+	protected boolean checkLinkIn(Node parentNode, Node currentNode)
 	{
 		//  	System.out.println("Parent Node : " + parentNode.element + " : " + currentNode );
 		//  	System.out.println("\nCurrentNode: " + parentNode.element );
-		TdNode temp = parentNode.content();
-		TdNode prevNode = null;
+		Node temp = parentNode.content();
+		Node prevNode = null;
 		while( temp != null )
 		{
 			/*
@@ -501,7 +501,7 @@ implements HTMLAttributeNames
 		return imgNodesInContentBody;
 	}
 
-	public ArrayList<TdNode> getInformImgNodes() 
+	public ArrayList<Node> getInformImgNodes() 
 	{
 		return informImgNodes;
 	}

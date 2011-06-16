@@ -2,7 +2,7 @@ package ecologylab.semantics.html;
 
 import java.util.ArrayList;
 
-import org.w3c.tidy.TdNode;
+import org.w3c.tidy.Node;
 
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.html.documentstructure.AnchorContext;
@@ -18,7 +18,7 @@ import ecologylab.semantics.metadata.builtins.Image;
  */
 public interface TidyInterface
 {
-	public void setTitle(TdNode node);
+	public void setTitle(Node node);
 	
 	public void setBold(boolean on) ;
 	

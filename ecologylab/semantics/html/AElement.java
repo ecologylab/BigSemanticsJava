@@ -3,7 +3,7 @@
  */
 package ecologylab.semantics.html;
 
-import org.w3c.tidy.TdNode;
+import org.w3c.tidy.Node;
 
 import ecologylab.net.ParsedURL;
 
@@ -20,7 +20,7 @@ public class AElement extends WithPurlElement
 	 * @param node
 	 * @param purl TODO
 	 */
-	public AElement(TdNode node, ParsedURL purl)
+	public AElement(Node node, ParsedURL purl)
 	{
 		super(node, purl);
 	}

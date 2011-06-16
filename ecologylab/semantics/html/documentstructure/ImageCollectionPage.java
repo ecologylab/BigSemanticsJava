@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.TreeMap;
 
-import org.w3c.tidy.TdNode;
+import org.w3c.tidy.Node;
 
 import ecologylab.generic.StringTools;
 import ecologylab.net.ParsedURL;
@@ -31,7 +31,7 @@ public class ImageCollectionPage extends RecognizedDocumentStructure
 	 * Generate surrogates for the images inside the image-collection pages.
 	 */
 	@Override
-	public void generateSurrogates(TdNode articleMain, ArrayList<ImgElement> imgElements, int totalTxtLeng, 
+	public void generateSurrogates(Node articleMain, ArrayList<ImgElement> imgElements, int totalTxtLeng, 
 			TreeMap<Integer, ParagraphText> paraTextMap, TidyInterface htmlType)
 	{
 		Collection<ParagraphText> paraTextsC	= paraTextMap.values();
@@ -45,7 +45,7 @@ public class ImageCollectionPage extends RecognizedDocumentStructure
 			
 			if (altText == null)
 			{
-				final TdNode imageNodeNode 	= imgElement.getNode();
+				final Node imageNodeNode 	= imgElement.getNode();
 				StringBuilder extractedCaption = getLongestTxtinSubTree(imageNodeNode.grandParent(), null);	// returns null in worst case
 				if (extractedCaption == null)
 					extractedCaption = getLongestTxtinSubTree(imageNodeNode.greatGrandParent(), null);	// returns null in worst case
@@ -73,20 +73,20 @@ public class ImageCollectionPage extends RecognizedDocumentStructure
 			else // if (anchorPurl.isHTML() || anchorPurl.isPDF() || anchorPurl.isRSS())
 			{
 				// TODO find the anchorContext for this purl
-				TdNode parent		= imgElement.getNode().parent();
-				TdNode gParent	= parent.parent();
-				TdNode ggParent	= gParent.parent();
+				Node parent		= imgElement.getNode().parent();
+				Node gParent	= parent.parent();
+				Node ggParent	= gParent.parent();
 				for (ParagraphText paraText : paraTexts)
 				{
-					TdNode paraTextNode	= paraText.getElementNode();
-					TdNode contextNode	= null;
+					Node paraTextNode	= paraText.getElementNode();
+					Node contextNode	= null;
 					if (paraTextNode == parent)
 						contextNode				= parent;
 					else if (paraTextNode == gParent)
 						contextNode				= gParent;
 					else if (paraTextNode == ggParent)
 						contextNode				= ggParent;
-					else for (TdNode childNode	= paraTextNode.content(); childNode != null; childNode = childNode.next())
+					else for (Node childNode	= paraTextNode.content(); childNode != null; childNode = childNode.next())
 					{
 						if (paraTextNode == childNode)
 						{

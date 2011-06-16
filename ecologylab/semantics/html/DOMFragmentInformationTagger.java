@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import org.w3c.tidy.AttVal;
 import org.w3c.tidy.Configuration;
 import org.w3c.tidy.Lexer;
+import org.w3c.tidy.Node;
 import org.w3c.tidy.Out;
-import org.w3c.tidy.TdNode;
 
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.metadata.builtins.Image;
@@ -27,7 +27,7 @@ public class DOMFragmentInformationTagger extends DOMWalkInformationTagger
 	}
 	
 	@Override
-	protected void printTag(Lexer lexer, Out fout, short mode, int indent, TdNode node)
+	protected void printTag(Lexer lexer, Out fout, short mode, int indent, Node node)
 	{
 		String tagName = node.element;
 		if (containerPurl == null)

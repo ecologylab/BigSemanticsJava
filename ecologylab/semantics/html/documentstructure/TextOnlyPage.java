@@ -3,7 +3,7 @@ package ecologylab.semantics.html.documentstructure;
 import java.util.ArrayList;
 import java.util.TreeMap;
 
-import org.w3c.tidy.TdNode;
+import org.w3c.tidy.Node;
 
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.html.ImgElement;
@@ -33,7 +33,7 @@ public class TextOnlyPage extends RecognizedDocumentStructure
 	 * Generate only text surrogates 
 	 */
 	@Override
-	public void generateSurrogates(TdNode articleMain, ArrayList<ImgElement> imgNodes, int totalTxtLeng, 
+	public void generateSurrogates(Node articleMain, ArrayList<ImgElement> imgNodes, int totalTxtLeng, 
 			TreeMap<Integer, ParagraphText> paraTexts, TidyInterface htmlType)
 	{
 		int count	= 0;

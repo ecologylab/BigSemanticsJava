@@ -6,9 +6,9 @@ import java.util.HashMap;
 import java.util.TreeMap;
 
 import org.w3c.tidy.AttVal;
+import org.w3c.tidy.Node;
 import org.w3c.tidy.Out;
-import org.w3c.tidy.OutImpl;
-import org.w3c.tidy.TdNode;
+import org.w3c.tidy.OutJavaImpl;
 
 import ecologylab.generic.StringTools;
 import ecologylab.net.ParsedURL;
@@ -45,7 +45,7 @@ implements TidyInterface, HTMLAttributeNames
 	{
 		super(infoCollector);
 	}
-	HashMap<TdNode, String> tdNodeAnchorContextStringCache;
+	HashMap<Node, String> tdNodeAnchorContextStringCache;
 	
 	DOMWalkInformationTagger taggedDoc;
 	
@@ -56,7 +56,7 @@ implements TidyInterface, HTMLAttributeNames
 		// this function actually traverse the dom tree
 		taggedDoc.generateCollections(getDom());
 		
-		TdNode contentBody = getContentBody(taggedDoc);
+		Node contentBody = getContentBody(taggedDoc);
 		DOMWalkInformationTagger taggedContentNode = walkAndTagDom(contentBody, this);
 		
 		extractImageTextSurrogates(taggedDoc, contentBody);
@@ -89,13 +89,13 @@ implements TidyInterface, HTMLAttributeNames
 	 * @param htmlType
 	 * @return
 	 */
-	public DOMWalkInformationTagger walkAndTagDom(TdNode tdNode, TidyInterface htmlType)
+	public DOMWalkInformationTagger walkAndTagDom(Node tdNode, TidyInterface htmlType)
 	{
 		// note that content body could be null if it is not a content page
 		if (tdNode == null)
 			return null;
 		
-		Out jtidyPrettyOutput = new OutImpl();
+		Out jtidyPrettyOutput = new OutJavaImpl(tidy.getConfiguration(), null);
 
 		DOMWalkInformationTagger domTagger = new DOMWalkInformationTagger(tidy.getConfiguration(), purlConnection.getPurl(), htmlType);
 		domTagger.generateCollections(tdNode);
@@ -112,7 +112,7 @@ implements TidyInterface, HTMLAttributeNames
 	 * 
 	 * historically was called as pprint() in JTidy. 
 	 */
-	public void extractImageTextSurrogates(DOMWalkInformationTagger taggedDoc, TdNode contentBody)
+	public void extractImageTextSurrogates(DOMWalkInformationTagger taggedDoc, Node contentBody)
 	{
 
 		//System.out.println("\n\ncontentBody = " + contentBody);       
@@ -125,9 +125,9 @@ implements TidyInterface, HTMLAttributeNames
 	 * @param taggedDoc
 	 * @return
 	 */
-	private TdNode getContentBody(DOMWalkInformationTagger taggedDoc)
+	private Node getContentBody(DOMWalkInformationTagger taggedDoc)
 	{
-		TdNode contentBody = RecognizedDocumentStructure.recognizeContentBody(taggedDoc);
+		Node contentBody = RecognizedDocumentStructure.recognizeContentBody(taggedDoc);
 		return contentBody;
 	}
 	
@@ -141,7 +141,7 @@ implements TidyInterface, HTMLAttributeNames
 	 * @param imgNodes
 	 */
 	private void recognizeDocumentStructureToGenerateSurrogate(DOMWalkInformationTagger domWalkInfoTagger,
-			TdNode contentBody, ArrayList<ImgElement> imgNodes) 
+			Node contentBody, ArrayList<ImgElement> imgNodes) 
 	{
 		RecognizedDocumentStructure pageCategory = null;
 
@@ -223,17 +223,17 @@ implements TidyInterface, HTMLAttributeNames
 	 */
 	public AnchorContext constructAnchorContext(AElement aElement, ParsedURL sourcePurl, boolean fromContentBody)
 	{
-		TdNode anchorNodeNode 				  = aElement.getNode();
+		Node anchorNodeNode 				  = aElement.getNode();
 		ParsedURL href 									= aElement.getHref();
 		if (href != null)
 		{
 			//Cache TdNode-AnchorContext getTextInSubTree.
-			TdNode parent 							  = anchorNodeNode.parent();
+			Node parent 							  = anchorNodeNode.parent();
 			//FIXME -- this routine drops all sorts of significant stuff because it does not concatenate across tags.
 			StringBuilder anchorContext = null;
 			
 			if(tdNodeAnchorContextStringCache == null)
-				tdNodeAnchorContextStringCache = new HashMap<TdNode, String>();
+				tdNodeAnchorContextStringCache = new HashMap<Node, String>();
 
 			String anchorContextString	= tdNodeAnchorContextStringCache.get(parent);
 			if(anchorContextString == null)
@@ -266,7 +266,7 @@ implements TidyInterface, HTMLAttributeNames
 
 
 	
-  public static StringBuilder getTextInSubTree(TdNode node, boolean recurse)
+  public static StringBuilder getTextInSubTree(Node node, boolean recurse)
   {
   	return getTextinSubTree(node, recurse, null);
   }
@@ -280,16 +280,16 @@ implements TidyInterface, HTMLAttributeNames
    * @param te
    * @return
    */
-  public static StringBuilder getTextinSubTree(TdNode node, boolean recurse, StringBuilder result)
+  public static StringBuilder getTextinSubTree(Node node, boolean recurse, StringBuilder result)
   {
-  	for (TdNode childNode	= node.content(); childNode != null; childNode = childNode.next())
+  	for (Node childNode	= node.content(); childNode != null; childNode = childNode.next())
   	{
 			if (recurse && (childNode.element!=null) && (!childNode.element.equals("script")))
 			{
 				//Recursive call with the childNode
 				result = getTextinSubTree(childNode, true, result);
 			}	
-			else if (childNode.type == TdNode.TextNode )
+			else if (childNode.type == Node.TEXT_NODE )
   		{
   			int length	= 0;
 				if (result != null)

@@ -7,10 +7,10 @@ import org.w3c.dom.Document;
 import org.w3c.tidy.AttVal;
 import org.w3c.tidy.DOMDocumentImpl;
 import org.w3c.tidy.DOMNodeImpl;
+import org.w3c.tidy.Node;
 import org.w3c.tidy.Out;
-import org.w3c.tidy.OutImpl;
+import org.w3c.tidy.OutJavaImpl;
 import org.w3c.tidy.StreamIn;
-import org.w3c.tidy.TdNode;
 import org.w3c.tidy.Tidy;
 
 import ecologylab.generic.StringTools;
@@ -115,12 +115,12 @@ implements HTMLAttributeNames
 	 * @param htmlType
 	 * @return
 	 */
-	public DOMWalkInformationTagger walkAndTagDom(TdNode rootTdNode, TidyInterface htmlType)
+	public DOMWalkInformationTagger walkAndTagDom(Node rootTdNode, TidyInterface htmlType)
 	{
-		Out jtidyPrettyOutput = new OutImpl();
+		Out jtidyPrettyOutput = new OutJavaImpl(this.getConfiguration(), null);
 
-		jtidyPrettyOutput.state = StreamIn.FSM_ASCII;
-		jtidyPrettyOutput.encoding = configuration.CharEncoding;
+//		jtidyPrettyOutput.state = StreamIn.FSM_ASCII;
+//		jtidyPrettyOutput.encoding = configuration.CharEncoding;
 
 		DOMWalkInformationTagger domTagger = new DOMWalkInformationTagger(configuration, purlConnection.getPurl(), htmlType);
 
@@ -141,7 +141,7 @@ implements HTMLAttributeNames
 	public void extractImageTextSurrogates(DOMWalkInformationTagger taggedDoc, TidyInterface htmlType)
 	{
 
-		TdNode contentBody = RecognizedDocumentStructure.recognizeContentBody(taggedDoc);
+		Node contentBody = RecognizedDocumentStructure.recognizeContentBody(taggedDoc);
 		//System.out.println("\n\ncontentBody = " + contentBody);       
 		ArrayList<ImgElement> imgNodes = taggedDoc.getAllImgNodes();
 
@@ -160,7 +160,7 @@ implements HTMLAttributeNames
 	 * @param imgNodes
 	 */
 	private void recognizeDocumentStructureToGenerateSurrogate(TidyInterface htmlType,
-			DOMWalkInformationTagger domWalkInfoTagger, TdNode contentBody,
+			DOMWalkInformationTagger domWalkInfoTagger, Node contentBody,
 			ArrayList<ImgElement> imgNodes) 
 	{
 		RecognizedDocumentStructure pageCategory = null;
@@ -242,11 +242,11 @@ implements HTMLAttributeNames
 	 */
 	public AnchorContext constructAnchorContext(AElement aElement, ParsedURL sourcePurl)
 	{
-		TdNode anchorNodeNode 				  = aElement.getNode();
+		Node anchorNodeNode 				  = aElement.getNode();
 		ParsedURL href 									= aElement.getHref();
 		if (href != null)
 		{
-			TdNode parent 							  = anchorNodeNode.parent();
+			Node parent 							  = anchorNodeNode.parent();
 			//FIXME -- this routine drops all sorts of significant stuff because it does not concatenate across tags.
 			StringBuilder anchorContext 	= getTextInSubTree(parent, false);
 			
@@ -276,7 +276,7 @@ implements HTMLAttributeNames
 		return null;
 	}
 	
-  public static StringBuilder getTextInSubTree(TdNode node, boolean recurse)
+  public static StringBuilder getTextInSubTree(Node node, boolean recurse)
   {
   	return getTextinSubTree(node, recurse, null);
   }
@@ -291,16 +291,16 @@ implements HTMLAttributeNames
    * @return
    */
 	//FIXME -- why is text in anchor node not included?
-  public static StringBuilder getTextinSubTree(TdNode node, boolean recurse, StringBuilder result)
+  public static StringBuilder getTextinSubTree(Node node, boolean recurse, StringBuilder result)
   {
-  	for (TdNode childNode	= node.content(); childNode != null; childNode = childNode.next())
+  	for (Node childNode	= node.content(); childNode != null; childNode = childNode.next())
   	{
 			if (recurse && (childNode.element!=null) && (!childNode.element.equals("script")))
 			{
 				//Recursive call with the childNode
 				result = getTextinSubTree(childNode, true, result);
 			}	
-			else if (childNode.type == TdNode.TextNode )
+			else if (childNode.type == Node.TEXT_NODE )
   		{
   			int length	= 0;
 				if (result != null)

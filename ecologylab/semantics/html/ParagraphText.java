@@ -1,6 +1,6 @@
 package ecologylab.semantics.html;
 
-import org.w3c.tidy.TdNode;
+import org.w3c.tidy.Node;
 
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.model.text.TermVector;
@@ -15,19 +15,19 @@ import ecologylab.serialization.XMLTools;
 public class ParagraphText
 {
 	private StringBuilder	buffy;
-	private TdNode 			node;
+	private Node 			node;
 	
 	public ParagraphText()
 	{
 //		ptext = new String();
 	}
 	
-	public TdNode getNode()
+	public Node getNode()
 	{
 		return node;
 	}
 
-	public void setNode(TdNode node)
+	public void setNode(Node node)
 	{
 		this.node = node;
 	}
@@ -98,14 +98,14 @@ public class ParagraphText
 		}
 	}
 	
-	public TdNode getElementNode()
+	public Node getElementNode()
 	{
-		for (TdNode thisNode = node; thisNode != null; thisNode = thisNode.parent())
+		for (Node thisNode = node; thisNode != null; thisNode = thisNode.parent())
 		{
 			switch (thisNode.type)
 			{
-			case TdNode.StartTag:
-			case TdNode.StartEndTag:
+			case Node.START_TAG:
+			case Node.START_END_TAG:
 				return thisNode;
 			}
 		}
