@@ -535,7 +535,7 @@ public class Document extends Metadata
 	/**
 	 * @return the parserResult
 	 */
-	public Object getParserResult()
+	public ParserResult getParserResult()
 	{
 		return parserResult;
 	}
