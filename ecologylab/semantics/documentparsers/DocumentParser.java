@@ -50,6 +50,8 @@ abstract public class DocumentParser<D extends Document>
 	public boolean 					cacheHit = false;
 
 	protected NewInfoCollector					infoCollector;
+	
+	private static boolean			inited;
 
 	protected static final Scope<Class<? extends DocumentParser>>	registryByMimeType	= new Scope<Class<? extends DocumentParser>>();
 
@@ -59,11 +61,19 @@ abstract public class DocumentParser<D extends Document>
 
 	static
 	{
-		bindingParserMap.put(SemanticActionsKeyWords.DIRECT_BINDING_PARSER,DirectBindingParser.class);
-		bindingParserMap.put(SemanticActionsKeyWords.XPATH_PARSER,XPathParser.class);
-		bindingParserMap.put(SemanticActionsKeyWords.FEED_PARSER, FeedParser.class);
-		bindingParserMap.put(SemanticActionsKeyWords.HTML_IMAGE_DOM_TEXT_PARSER, HTMLDOMImageTextParser.class);
-		bindingParserMap.put(SemanticActionsKeyWords.PDF_PARSER, PdfParser.class);
+		init();
+	}
+
+	public static void init()
+	{
+		if (!inited)
+		{
+			bindingParserMap.put(SemanticActionsKeyWords.DIRECT_BINDING_PARSER,DirectBindingParser.class);
+			bindingParserMap.put(SemanticActionsKeyWords.XPATH_PARSER,XPathParser.class);
+			bindingParserMap.put(SemanticActionsKeyWords.FEED_PARSER, FeedParser.class);
+			bindingParserMap.put(SemanticActionsKeyWords.HTML_IMAGE_DOM_TEXT_PARSER, HTMLDOMImageTextParser.class);
+			bindingParserMap.put(SemanticActionsKeyWords.PDF_PARSER, PdfParser.class);
+		}
 	}
 
 	/**
