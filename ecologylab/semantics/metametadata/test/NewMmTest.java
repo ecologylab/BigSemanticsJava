@@ -28,11 +28,13 @@ implements Continuation<DocumentClosure>
 
 	int 					currentResult;
 	
-	boolean				outputOneAtATime;
+	protected boolean				outputOneAtATime;
 	
 	OutputStream	outputStream;
 
 	DownloadMonitor downloadMonitor	= null;
+	
+	NewInfoCollector infoCollector;
 
 	/**
 	 * 
@@ -40,12 +42,12 @@ implements Continuation<DocumentClosure>
 	public NewMmTest(OutputStream	outputStream)
 	{
 		this.outputStream	= outputStream;
+		
+		infoCollector = new NewInfoCollector(GeneratedMetadataTranslationScope.get());
 	}
 
 	public void collect(String[] urlStrings)
-	{
-		NewInfoCollector infoCollector = new NewInfoCollector(GeneratedMetadataTranslationScope.get());
-		
+	{		
 		// seed start urls
 		for (int i = 0; i < urlStrings.length; i++)
 		{
@@ -60,6 +62,7 @@ implements Continuation<DocumentClosure>
 			if (documentClosure != null)	// super defensive -- make sure its not malformed or null or otherwise a mess
 				documentCollection.add(documentClosure);
 		}
+		postParse(documentCollection.size());
 
 		// process documents after parsing command line so we now how many are really coming
 		for (DocumentClosure documentClosure: documentCollection)
@@ -70,6 +73,11 @@ implements Continuation<DocumentClosure>
 			documentClosure.queueDownload();
 		}
 	}
+	
+	protected void postParse(int size)
+	{
+		
+	}
 
 	public static void main(String[] args)
 	{
@@ -79,16 +87,21 @@ implements Continuation<DocumentClosure>
 	}
 	
 	@Override
-	public void callback(DocumentClosure incomingClosure)
+	public synchronized void callback(DocumentClosure incomingClosure)
 	{
 		if (outputOneAtATime)
-			incomingClosure.serialize(outputStream);
+			output(incomingClosure);
 		else if (++currentResult == documentCollection.size())
 		{
 			System.out.println("\n\n");
 			for (DocumentClosure documentClosure : documentCollection)
-				documentClosure.serialize(System.out);
+				output(documentClosure);
 			downloadMonitor.stop();
 		}
+	}
+
+	protected void output(DocumentClosure incomingClosure)
+	{
+		incomingClosure.serialize(outputStream);
 	}
 }
