@@ -1,7 +1,12 @@
 package ecologylab.semantics.html;
 
+import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.TreeMap;
@@ -15,6 +20,7 @@ import org.w3c.tidy.Out;
 import org.w3c.tidy.OutJavaImpl;
 import org.w3c.tidy.PPrint;
 import org.w3c.tidy.StreamIn;
+import org.w3c.tidy.StreamInJavaImpl;
 
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.documentparsers.HTMLDOMParser;
@@ -98,11 +104,11 @@ implements HTMLAttributeNames
 	}
 	public void generateCollections(Node rootTdNode)
 	{
-		Out jtidyPrettyOutput 			= new OutJavaImpl(configuration, null);
-//		jtidyPrettyOutput.state 		= StreamIn.FSM_ASCII;
-//		jtidyPrettyOutput.encoding	= configuration.CharEncoding;
+		Writer a = new StringWriter();
+		Out jtidyPrettyOutput 			= new OutJavaImpl(configuration, a);
 
-		printTree(jtidyPrettyOutput, (short)0, 0, null, rootTdNode);
+	  Lexer lexer = new Lexer(new StreamInJavaImpl(null, 0), configuration, null);
+		printTree(jtidyPrettyOutput, (short)0, 0, lexer, rootTdNode);
 		flushLine(jtidyPrettyOutput, 0);	
 	}
 
