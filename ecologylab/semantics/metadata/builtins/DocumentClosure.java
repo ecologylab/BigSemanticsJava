@@ -333,6 +333,7 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>, S
 			}
 			else
 			{
+				purlConnection.fileConnect();
 				// we already have the correct meta-metadata, having used suffix to construct.
 			}
 		}
