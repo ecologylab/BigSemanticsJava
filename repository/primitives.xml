@@ -36,7 +36,7 @@
 		<scalar name="height" scalar_type="Integer"/>
 	</meta_metadata>
 	
-	<meta_metadata name="image" extends="clippable_document" comment="The Image Base Class" built_in="true">
+	<meta_metadata name="image" extends="clippable_document" comment="The Image Base Class" built_in="true" parser="image">
 		<selector>
 			<mime_type>image/jpeg</mime_type>
 			<mime_type>image/png</mime_type>
