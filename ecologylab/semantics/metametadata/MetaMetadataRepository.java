@@ -195,7 +195,9 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	public static MetaMetadataRepository load(File dir)
 	{
 		if (!dir.exists())
-			println("ERROR - MetaMetadataRepository directory does not exist : " + dir + "\n");
+		{
+			throw new RuntimeException("MetaMetadataRepository directory does not exist : " + dir.getAbsolutePath());
+		}
 		else
 			println("MetaMetadataRepository directory : " + dir + "\n");
 
