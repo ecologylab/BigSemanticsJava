@@ -34,7 +34,7 @@ implements Continuation<DocumentClosure>
 
 	DownloadProcessor downloadMonitor	= null;
 	
-	NewInfoCollector infoCollector;
+	protected NewInfoCollector infoCollector;
 
 	/**
 	 * 
