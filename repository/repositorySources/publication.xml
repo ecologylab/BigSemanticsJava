@@ -1,8 +1,8 @@
 <meta_metadata_repository name="publication" package="ecologylab.semantics.generated.library.publication">
 
 	<meta_metadata name="publication" extends="compound_document" comment="A publication.">
-		<collection name="authors" child_type="author" />
-		<composite name="publisher" type="publisher" />
+		<collection name="authors" child_type="author" schema_org_itemprop="author"/>
+		<composite name="publisher" type="publisher" schema_org_itemprop="publisher"/>
 		<scalar name="pages" scalar_type="String" />
 		<scalar name="isbn" scalar_type="String" />
 		<scalar name="year" scalar_type="Int" />
@@ -18,10 +18,10 @@
 		</collection>
 	</meta_metadata>
 
-	<meta_metadata name="author" extends="compound_document" comment="An author of an article or creative work.">
-		<scalar name="name" navigates_to="location" is_facet="true" as_composite_scalar="true" comment="" scalar_type="String" />
-		<scalar name="affiliation" comment="" scalar_type="String" />
-		<scalar name="location" hide="true" />
+	<meta_metadata name="author" extends="compound_document" schema_org_itemtype="http://schema.org/Person" comment="An author of an article or creative work.">
+		<scalar name="name" navigates_to="location" is_facet="true" as_composite_scalar="true" comment="" schema_org_itemprop="name" scalar_type="String" />
+		<scalar name="affiliation" comment="" scalar_type="String" schema_org_itemprop="affiliation"/>
+		<scalar name="location" hide="true" schema_org_itemprop="url"/>
 		<scalar name="city" scalar_type="String" />
 	</meta_metadata>
 	

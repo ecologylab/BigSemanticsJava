@@ -6,6 +6,7 @@ import ecologylab.generic.HashMapArrayList;
 import ecologylab.semantics.actions.SemanticAction;
 import ecologylab.semantics.actions.SemanticActionTranslationScope;
 import ecologylab.semantics.namesandnums.DocumentParserTagNames;
+import ecologylab.serialization.ElementState.simpl_scalar;
 import ecologylab.serialization.ElementState.xml_tag;
 import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.simpl_inherit;
@@ -40,6 +41,9 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField
 	@simpl_collection("def_var")
 	@simpl_nowrap
 	private ArrayList<DefVar>					defVars;
+
+	@simpl_scalar
+	protected String									schemaOrgItemType;
 
 	
 	private MMSelectorType						mmSelectorType	= MMSelectorType.DEFAULT;
@@ -245,5 +249,13 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField
 	public boolean isBuiltIn()
 	{
 		return false;
+	}
+
+	/**
+	 * @return the schemaOrgItemType
+	 */
+	public String getSchemaOrgItemType()
+	{
+		return schemaOrgItemType;
 	}
 }

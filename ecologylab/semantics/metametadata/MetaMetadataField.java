@@ -87,6 +87,9 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	
 	@simpl_scalar
 	protected String																			fieldParserKey;
+	
+	@simpl_scalar
+	protected String																			schemaOrgItemprop;
 
 	@simpl_map
 	@simpl_classes(
@@ -1316,6 +1319,14 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	public boolean dontSerialize()
 	{
 		return dontSerialize;
+	}
+
+	/**
+	 * @return the schemaOrgItemprop
+	 */
+	public String getSchemaOrgItemprop()
+	{
+		return schemaOrgItemprop;
 	}
 
 }

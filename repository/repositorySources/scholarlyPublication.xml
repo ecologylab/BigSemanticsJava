@@ -8,7 +8,7 @@
 		<scalar name="pages" scalar_type="String" />
 	</meta_metadata>
 	
-	<meta_metadata name="scholarly_article" extends="compound_document">
+	<meta_metadata name="scholarly_article" extends="compound_document" schema_org_itemtype="http://schema.org/Article">
 		<scalar name="metadata_page" shadows="location" comment="citation.cfm" scalar_type="ParsedURL" />
 		<scalar name="abstract_field" shadows="summary" comment="" tag="abstract" scalar_type="String" label="abstract" layer="9.0"/>
 		<composite name="source" comment="Metadata related to where this article was published." type="source" layer="7.0"/>
