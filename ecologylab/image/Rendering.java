@@ -272,11 +272,11 @@ implements Colors
 		switch(imageType(referenceImage))
 		{
 		case BufferedImage.TYPE_INT_RGB: 
-			bitMasks = IIOPhoto.RGB_MASKS;
+			bitMasks = PixelBased.RGB_MASKS;
 			break;
 		case BufferedImage.TYPE_INT_ARGB:
 		default:
-			bitMasks = IIOPhoto.ARGB_MASKS;
+			bitMasks = PixelBased.ARGB_MASKS;
 		}
 		return new SinglePixelPackedSampleModel(DataBuffer.TYPE_INT, width, height, bitMasks);
 	}

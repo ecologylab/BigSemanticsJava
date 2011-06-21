@@ -146,10 +146,6 @@ extends PixelBased
 
 	/////////////////////// methods for downloadable //////////////////////////
 
-	static final int[] ARGB_MASKS			= { 0xff0000, 0xff00, 0xff, 0xff000000, };
-	static final int[] RGB_MASKS				= { 0xff0000, 0xff00, 0xff,  };
-	static final int[] RGB_BANDS				= { 0, 1, 2  };
-
 	/**
 	 * Obtain a PURLConnection from the purl, unless we already have one,
 	 * in which case do nothing.

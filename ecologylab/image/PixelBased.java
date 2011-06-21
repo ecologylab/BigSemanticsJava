@@ -41,6 +41,15 @@ implements Downloadable
 
 	protected static final PackedColorModel	RGB_MODEL	= new DirectColorModel(24, 0xff0000, 0xff00, 0xff, 0);
 
+
+	protected static final int[]	ARGB_MASKS	= { 0xff0000, 0xff00, 0xff, 0xff000000, };
+
+
+	protected static final int[]	RGB_MASKS	= { 0xff0000, 0xff00, 0xff,  };
+
+
+	static final int[]	RGB_BANDS	= { 0, 1, 2  };
+
 	/**
 	 * Net location of the whatever might get downloaded.
 	 * Change from URL to ParsedURL.

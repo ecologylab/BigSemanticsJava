@@ -116,7 +116,7 @@ public class AlphaGradientRendering extends Rendering
 	}
 	protected SampleModel getSampleModel(BufferedImage referenceImage)
 	{
-		return new SinglePixelPackedSampleModel(DataBuffer.TYPE_INT, width, height, IIOPhoto.ARGB_MASKS);
+		return new SinglePixelPackedSampleModel(DataBuffer.TYPE_INT, width, height, PixelBased.ARGB_MASKS);
 	}
 	public void paint(Graphics g, int x, int y)
 	{
