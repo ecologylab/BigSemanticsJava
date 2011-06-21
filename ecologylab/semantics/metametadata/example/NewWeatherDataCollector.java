@@ -6,8 +6,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 
-import ecologylab.concurrent.DownloadMonitor;
 import ecologylab.generic.Continuation;
+import ecologylab.io.DownloadProcessor;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticAction;
 import ecologylab.semantics.collecting.NewInfoCollector;
@@ -43,7 +43,7 @@ public class NewWeatherDataCollector implements Continuation<DocumentClosure>
 
 		// request the download monitor to stop (after all the downloads are handled),
 		// so we can exit gracefully.
-		DownloadMonitor downloadMonitor = downloadClosure.downloadMonitor();
+		DownloadProcessor downloadMonitor = downloadClosure.downloadMonitor();
 		downloadMonitor.requestStop();
 	}
 

@@ -6,9 +6,9 @@ package ecologylab.semantics.metametadata.test;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
-import ecologylab.concurrent.DownloadMonitor;
-import ecologylab.generic.Debug;
 import ecologylab.generic.Continuation;
+import ecologylab.generic.Debug;
+import ecologylab.io.DownloadProcessor;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.collecting.NewInfoCollector;
 import ecologylab.semantics.generated.library.GeneratedMetadataTranslationScope;
@@ -32,7 +32,7 @@ implements Continuation<DocumentClosure>
 	
 	OutputStream	outputStream;
 
-	DownloadMonitor downloadMonitor	= null;
+	DownloadProcessor downloadMonitor	= null;
 	
 	NewInfoCollector infoCollector;
 
