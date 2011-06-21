@@ -9,6 +9,8 @@ import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.awt.image.DirectColorModel;
+import java.awt.image.PackedColorModel;
 import java.io.IOException;
 import java.net.URL;
 
@@ -34,52 +36,18 @@ implements Downloadable
 	public static final int	NO_ALPHA_RADIUS		= -1;
 
 
-	static final int			NUM_DOWNLOAD_THREADS	= 2;
+	protected static final DirectColorModel	ARGB_MODEL	= new DirectColorModel(32, 0x00ff0000, 0x0000ff00, 0xff, 0xff000000);
 
-	public static final DownloadMonitor	pixelBasedDownloadMonitor		=
-		new DownloadMonitor<IIOPhoto>("IIOPhotoPixelBased", NUM_DOWNLOAD_THREADS, 1);
 
-	public static final DownloadMonitor	highPriorityDownloadMonitor		=
-		new DownloadMonitor<IIOPhoto>("IIOPhotoHighPriority", NUM_DOWNLOAD_THREADS, 3);
+	protected static final PackedColorModel	RGB_MODEL	= new DirectColorModel(24, 0xff0000, 0xff00, 0xff, 0);
 
 	/**
 	 * Net location of the whatever might get downloaded.
 	 * Change from URL to ParsedURL.
 	 */
 	ParsedURL				purl;
-	
-	/**
-	 * Used to potentially cancel a download.
-	 */
-	BasicSite				basicSite;
-
-	/**
-	 * If true, problems with download.
-	 */
-	boolean					bad;
-
-	/**
-	 * receives dispatch when download is complete, or timeout
-	 */
-	Continuation			continuation;
-
-	DownloadMonitor			downloadMonitor	= pixelBasedDownloadMonitor;
-
-	/**
-	 * Describes the graphics card we will be displayed on.
-	 */
-	GraphicsConfiguration	graphicsConfiguration;
-
-	/**
-	 * True for animated gifs, and other time based images, such as movies.
-	 */
-	public boolean			timeBased;
 
 	boolean					recycled;
-
-	/////////////////////// state for downloadable media //////////////////////////
-	boolean					downloadDone;
-	boolean					downloadStarted;
 
 	/**
 	 * Don't run grab() more than once.
@@ -146,42 +114,11 @@ implements Downloadable
 		constructedCount++;
 	}
 	
-	/**
-	 * Make a graphical object that consists of an array of pixels.
-	 * @param continuation	Entity to receive callback() when
-	 *				download is done.
-	 * @param graphicsConfiguration GraphicsConfiguration of the card we're using. Enables buffering images on the graphics card.
-	 * @param maxDimension		When set, used to force scaling, if necessary, of the pixels that we store.
-	 */
-	public PixelBased(ParsedURL purl, Continuation<PixelBased> continuation, GraphicsConfiguration graphicsConfiguration, Dimension maxDimension)
-	{
-		this(purl, continuation, null, graphicsConfiguration, maxDimension);
-	}
-	/**
-	 * Make a graphical object that consists of an array of pixels.
-	 * @param continuation	Entity to receive callback() when
-	 *				download is done.
-	 * @param graphicsConfiguration GraphicsConfiguration of the card we're using. Enables buffering images on the graphics card.
-	 * @param maxDimension		When set, used to force scaling, if necessary, of the pixels that we store.
-	 */
-	public PixelBased(ParsedURL purl, Continuation<PixelBased> continuation, BasicSite basicSite, 
-										GraphicsConfiguration graphicsConfiguration, Dimension maxDimension)
-	{
-		this.purl								= purl;
-		this.continuation			= continuation;
-		this.basicSite					= basicSite;
-		this.graphicsConfiguration	= graphicsConfiguration;
-
-		constructedCount++;
-	}
-
 	protected void initializeRenderings(Rendering rendering)
 	{
 		dimension					= new Dimension(rendering.width, rendering.height);
 		basisRendering		= rendering;
 		currentRendering	= rendering;
-	  downloadStarted	= true;	 
-		downloadDone			= true;
 	}
 
 
@@ -229,8 +166,6 @@ implements Downloadable
 	 */
 	public boolean acquirePixelsIfNecessary()
 	{
-		if (bad || timeBased)	 // dont do any imageProc on animateds
-			return false;
 		// no need to fixPixels() more than once!
 		if (grabbed)
 			return true;
@@ -573,13 +508,10 @@ implements Downloadable
 			{
 				//debug("recycle()");
 				recycled			= true;
-				timeBased		= false;	   // stop updates
 
 				purl				= null;
-				continuation	= null;
-				downloadMonitor	= null;
+
 				dimension		= null;
-				graphicsConfiguration	= null;
 				
 				if (unprocessedRendering != null)
 				{
@@ -656,110 +588,11 @@ implements Downloadable
 	{
 		return shortURL(purl.url());
 	}
-	public boolean bad()
-	{
-		return bad;
-	}
 
 	/* return ParsedURL */
 	public ParsedURL location()
 	{
 		return purl;
-	}
-
-	public static void stopDownloadMonitor()
-	{
-		if (pixelBasedDownloadMonitor != null)
-			pixelBasedDownloadMonitor.stop();
-	}
-/////////////////////// methods for downloadable //////////////////////////
-	public synchronized boolean handleTimeout()
-	{
-		error("TIMEOUT while downloading");
-		return true;
-	}
-	/**
-	 * Manipulate state here, then use super to report ERROR.
-	 */
-	public synchronized void error(String msg)
-	{
-		bad			= true;
-		downloadDone	= true;
-		// does its own dispatching
-		super.error(msg);
-	}
-	public boolean isDownloadDone()
-	{
-		return downloadDone;
-	}
-	public boolean isDownloadStarted()
-	{
-		return downloadStarted;
-	}
-	/**
-	 * For outside callers to initiate download of the media.
-	 * Contrasts with performDownload(), which in some cases, happens later,
-.* in a DownloadMonitor thread.
-	 * 
-	 * @return false -- if the download is already in progress, and doesnt
-	 * need to be executed.
-	 */
-	public boolean download()
-	{
-		return false;
-	}
-	/**
-	 * Set an alternative DownloadMonitor for downloading this PixelBased.
-	 * 
-	 * @param downloadMonitor
-	 */
-	public void setDownloadMonitor(DownloadMonitor downloadMonitor)
-	{
-		this.downloadMonitor	= downloadMonitor;
-	}   
-	/**
-	 * Use a high priority DownloadMonitor when downloading this PixelBased.
-	 * 
-	 * @param downloadMonitor
-	 */
-	public void useHighPriorityDownloadMonitor()
-	{
-		this.downloadMonitor	= highPriorityDownloadMonitor;
-	}
-	/**
-	 * Call to notify the object that its download is completed;
-	 *
-	 */
-	synchronized public void downloadAndParseDone()
-	{
-		notifyAll();
-	}
-	public void waitForDownload()
-	{
-		synchronized (this)
-		{
-			if (!downloadDone)
-			{
-				try
-				{
-					wait();
-				} catch (InterruptedException e)
-				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		}
-	}
-	/**
-	 * Set the dispatchTarget, that receives callback() when download is complete,
-	 * to what you like.
-	 * 
-	 * @param continuation The dispatchTarget to set.
-	 */
-	public void setDispatchTarget(Continuation<PixelBased> continuation)
-	{
-		this.continuation = continuation;
 	}
 
 	/**

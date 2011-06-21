@@ -10,9 +10,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferInt;
-import java.awt.image.DirectColorModel;
 import java.awt.image.IndexColorModel;
-import java.awt.image.PackedColorModel;
 import java.awt.image.Raster;
 import java.awt.image.SampleModel;
 import java.awt.image.SinglePixelPackedSampleModel;
@@ -148,11 +146,6 @@ extends PixelBased
 
 	/////////////////////// methods for downloadable //////////////////////////
 
-	static final DirectColorModel ARGB_MODEL	= new DirectColorModel(32, 0x00ff0000, 0x0000ff00, 0xff, 0xff000000);
-
-	//static final DirectColorModel RGB_MODEL	= new DirectColorModel(32, 0xff0000, 0x00ff00, 0xff);
-	static final PackedColorModel RGB_MODEL	= new DirectColorModel(24, 0xff0000, 0xff00, 0xff, 0);
-
 	static final int[] ARGB_MASKS			= { 0xff0000, 0xff00, 0xff, 0xff000000, };
 	static final int[] RGB_MASKS				= { 0xff0000, 0xff00, 0xff,  };
 	static final int[] RGB_BANDS				= { 0, 1, 2  };
@@ -245,21 +238,21 @@ extends PixelBased
 	 * Notify us when a cachable image has been downloaded and should
 	 * then be cached to disk.
 	 */
-	public void callback(IIOPhoto iioPhoto)
+	public void callback(PixelBased iioPhoto)
 	{
 		BufferedImage bufferedImage	= basisRendering.bufferedImage;
 		if (bufferedImage != null)
 			cacheImage(filename, basisRendering.bufferedImage);
 	}
 
-	public static IIOPhoto getCachedIIOPhoto(String imagePath, Continuation<PixelBased> continuation, GraphicsConfiguration graphicsConfiguration)
+	public static PixelBased getCachedIIOPhoto(String imagePath, Continuation<PixelBased> continuation, GraphicsConfiguration graphicsConfiguration)
 	{
 		//FIXME need to make sure zip has been downloaded here
 		// if not, initiate download & wait for it!
 
 		File cachedInterfaceFile = Assets.getAsset(INTERFACE_ASSETS_ROOT, imagePath);
 		ParsedURL cachedImagePURL	= new ParsedURL(cachedInterfaceFile);
-		IIOPhoto result = new IIOPhoto(cachedImagePURL, continuation, graphicsConfiguration);
+		PixelBased result = new IIOPhoto(cachedImagePURL, continuation, graphicsConfiguration);
 		//		result.downloadWithHighPriority();
 		result.useHighPriorityDownloadMonitor();
 		result.download();

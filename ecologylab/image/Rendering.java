@@ -259,11 +259,11 @@ implements Colors
 		switch(imageType(referenceImage))
 		{
 		case BufferedImage.TYPE_INT_RGB: 
-			return IIOPhoto.RGB_MODEL;
+			return PixelBased.RGB_MODEL;
 		
 		case BufferedImage.TYPE_INT_ARGB:
 		default:
-			return IIOPhoto.ARGB_MODEL;
+			return PixelBased.ARGB_MODEL;
 		}
 	}
 	protected SampleModel getSampleModel(BufferedImage referenceImage, int width, int height)

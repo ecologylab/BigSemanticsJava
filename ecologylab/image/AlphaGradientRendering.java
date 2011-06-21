@@ -112,7 +112,7 @@ public class AlphaGradientRendering extends Rendering
    }
 	protected ColorModel getColorModel(BufferedImage referenceImage)
 	{
-		return IIOPhoto.ARGB_MODEL;
+		return PixelBased.ARGB_MODEL;
 	}
 	protected SampleModel getSampleModel(BufferedImage referenceImage)
 	{
