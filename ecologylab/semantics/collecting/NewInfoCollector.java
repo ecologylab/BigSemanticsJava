@@ -24,6 +24,7 @@ import ecologylab.concurrent.DownloadMonitor;
 import ecologylab.generic.Generic;
 import ecologylab.generic.StringTools;
 import ecologylab.generic.ThreadMaster;
+import ecologylab.io.DownloadProcessor;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.gui.GuiBridge;
 import ecologylab.semantics.gui.InteractiveSpace;
@@ -1231,4 +1232,10 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 		return result;
 	}	
 
+	public DownloadMonitor<DocumentClosure> downloadMonitor(boolean isImage, boolean isDnd, boolean isSeed)
+	{
+		return  isImage ? (isDnd ? IMAGE_DND_DOWNLOAD_MONITOR : IMAGE_DOWNLOAD_MONITOR) :
+				(isDnd ? DND_DOWNLOAD_MONITOR : 
+			isSeed ? SEEDING_DOWNLOAD_MONITOR : CRAWLER_DOWNLOAD_MONITOR);
+	}
 }

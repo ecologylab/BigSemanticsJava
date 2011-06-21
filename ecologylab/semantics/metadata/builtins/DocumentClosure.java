@@ -6,12 +6,11 @@ package ecologylab.semantics.metadata.builtins;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.SocketTimeoutException;
 import java.net.URL;
 
 import ecologylab.collections.SetElement;
-import ecologylab.concurrent.DownloadMonitor;
 import ecologylab.generic.Continuation;
+import ecologylab.io.DownloadProcessor;
 import ecologylab.io.Downloadable;
 import ecologylab.net.ConnectionHelperJustRemote;
 import ecologylab.net.PURLConnection;
@@ -562,12 +561,9 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>, S
 	{
 		return isDnd;
 	}
-	public DownloadMonitor<DocumentClosure> downloadMonitor()
+	public DownloadProcessor<DocumentClosure> downloadMonitor()
 	{
-		// GoogleSearch, SearchResults are all seeds
-		return  (isDnd ? NewInfoCollector.DND_DOWNLOAD_MONITOR : 
-			isSeed() ? 
-		  NewInfoCollector.SEEDING_DOWNLOAD_MONITOR : NewInfoCollector.CRAWLER_DOWNLOAD_MONITOR);
+		return  infoCollector.downloadMonitor(document.isImage(), isDnd, isSeed());
 	}
 
 	
