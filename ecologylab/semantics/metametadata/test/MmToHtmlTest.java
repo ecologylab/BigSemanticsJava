@@ -27,7 +27,7 @@ public class MmToHtmlTest extends NewMmTest
 {
 	PrintStream	print;
 
-	public MmToHtmlTest(OutputStream outputStream)
+	public MmToHtmlTest(OutputStream outputStream) throws SIMPLTranslationException
 	{
 		super(outputStream);
 		outputOneAtATime = false;
@@ -47,8 +47,16 @@ public class MmToHtmlTest extends NewMmTest
 	public static void main(String[] args)
 	{
 		TranslationScope.graphSwitch = GRAPH_SWITCH.ON;
-		MmToHtmlTest test = new MmToHtmlTest(System.out);
-		test.collect(args);
+		MmToHtmlTest test;
+		try
+		{
+			test = new MmToHtmlTest(System.out);
+			test.collect(args);
+		}
+		catch (SIMPLTranslationException e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	public void generateHtml() throws IllegalArgumentException, IllegalAccessException, IOException,

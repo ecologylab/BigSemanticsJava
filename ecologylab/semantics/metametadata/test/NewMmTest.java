@@ -6,14 +6,15 @@ package ecologylab.semantics.metametadata.test;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
+import ecologylab.appframework.ApplicationEnvironment;
 import ecologylab.generic.Continuation;
-import ecologylab.generic.Debug;
 import ecologylab.io.DownloadProcessor;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.collecting.NewInfoCollector;
 import ecologylab.semantics.generated.library.GeneratedMetadataTranslationScope;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
+import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.TranslationScope;
 import ecologylab.serialization.TranslationScope.GRAPH_SWITCH;
 
@@ -21,7 +22,7 @@ import ecologylab.serialization.TranslationScope.GRAPH_SWITCH;
  * @author andruid
  *
  */
-public class NewMmTest extends Debug
+public class NewMmTest extends ApplicationEnvironment
 implements Continuation<DocumentClosure>
 {
 	ArrayList<DocumentClosure>	documentCollection	= new ArrayList<DocumentClosure>();
@@ -36,11 +37,18 @@ implements Continuation<DocumentClosure>
 	
 	protected NewInfoCollector infoCollector;
 
-	/**
-	 * 
-	 */
-	public NewMmTest(OutputStream	outputStream)
+
+	public NewMmTest(OutputStream	outputStream) throws SIMPLTranslationException
 	{
+		this("NewMmTest", outputStream);
+	}
+	public NewMmTest(String appName) throws SIMPLTranslationException
+	{
+		this(appName, System.out);
+	}
+	public NewMmTest(String appName, OutputStream	outputStream) throws SIMPLTranslationException
+	{
+		super(appName);
 		this.outputStream	= outputStream;
 		
 		infoCollector = new NewInfoCollector(GeneratedMetadataTranslationScope.get());
@@ -82,8 +90,17 @@ implements Continuation<DocumentClosure>
 	public static void main(String[] args)
 	{
 		TranslationScope.graphSwitch	= GRAPH_SWITCH.ON;
-		NewMmTest mmTest	= new NewMmTest(System.out);
-		mmTest.collect(args);
+		NewMmTest mmTest;
+		try
+		{
+			mmTest = new NewMmTest(System.out);
+			mmTest.collect(args);
+		}
+		catch (SIMPLTranslationException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	@Override

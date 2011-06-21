@@ -7,13 +7,14 @@ import java.io.OutputStream;
 import ecologylab.generic.Debug;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
 import ecologylab.serialization.ElementState.FORMAT;
+import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.TranslationScope;
 import ecologylab.serialization.TranslationScope.GRAPH_SWITCH;
 
 public class BibTeXToMMD extends NewMmTest
 {
 
-	public BibTeXToMMD(OutputStream outputStream)
+	public BibTeXToMMD(OutputStream outputStream) throws SIMPLTranslationException
 	{
 		super(outputStream);
 	}
@@ -21,8 +22,16 @@ public class BibTeXToMMD extends NewMmTest
 	public static void main(String[] args)
 	{
 		TranslationScope.graphSwitch	= GRAPH_SWITCH.ON;
-		BibTeXToMMD mmTest	= new BibTeXToMMD(System.out);
-		mmTest.collect(args);
+		BibTeXToMMD mmTest;
+		try
+		{
+			mmTest = new BibTeXToMMD(System.out);
+			mmTest.collect(args);
+		}
+		catch (SIMPLTranslationException e)
+		{
+			e.printStackTrace();
+		}
 	}
 	
 	@Override
