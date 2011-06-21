@@ -441,7 +441,8 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>, S
 		if (documentParser != null)
 			documentParser.recycle();
 
-		purlConnection.recycle();
+		if (purlConnection != null)
+			purlConnection.recycle();
 
 		semanticInlinks	= null;
 
