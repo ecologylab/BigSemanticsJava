@@ -123,11 +123,6 @@ implements Downloadable
 
 	protected Dimension		originalDimension;
 
-	/**
-	 * Maximum dimensions of pixels to store. When set, causes scaling when creating our BufferedImage
-	 */
-	protected Dimension			maxDimension;
-
 	//////////////////////// for debugging ////////////////////////////////
 
 	boolean					scaled;
@@ -136,18 +131,50 @@ implements Downloadable
 
 
 	/////////////////////// constructors //////////////////////////
+	public PixelBased(BufferedImage bufferedImage)
+	{
+		this(bufferedImage, new Dimension(bufferedImage.getWidth(), bufferedImage.getHeight()));
+	}
 	public PixelBased(BufferedImage bufferedImage, Dimension maxDimension)
 	{
 		Rendering rendering	= new Rendering(this, bufferedImage, null, null);
-		this.maxDimension		= maxDimension;
 
-		rendering = scaleRenderingUnderMaxDimension(rendering, rendering.width, rendering.height);
+		rendering = scaleRenderingUnderMaxDimension(rendering, rendering.width, rendering.height, maxDimension);
 
 		initializeRenderings(rendering);
  
 		constructedCount++;
 	}
 	
+	/**
+	 * Make a graphical object that consists of an array of pixels.
+	 * @param continuation	Entity to receive callback() when
+	 *				download is done.
+	 * @param graphicsConfiguration GraphicsConfiguration of the card we're using. Enables buffering images on the graphics card.
+	 * @param maxDimension		When set, used to force scaling, if necessary, of the pixels that we store.
+	 */
+	public PixelBased(ParsedURL purl, Continuation<PixelBased> continuation, GraphicsConfiguration graphicsConfiguration, Dimension maxDimension)
+	{
+		this(purl, continuation, null, graphicsConfiguration, maxDimension);
+	}
+	/**
+	 * Make a graphical object that consists of an array of pixels.
+	 * @param continuation	Entity to receive callback() when
+	 *				download is done.
+	 * @param graphicsConfiguration GraphicsConfiguration of the card we're using. Enables buffering images on the graphics card.
+	 * @param maxDimension		When set, used to force scaling, if necessary, of the pixels that we store.
+	 */
+	public PixelBased(ParsedURL purl, Continuation<PixelBased> continuation, BasicSite basicSite, 
+										GraphicsConfiguration graphicsConfiguration, Dimension maxDimension)
+	{
+		this.purl								= purl;
+		this.continuation			= continuation;
+		this.basicSite					= basicSite;
+		this.graphicsConfiguration	= graphicsConfiguration;
+
+		constructedCount++;
+	}
+
 	protected void initializeRenderings(Rendering rendering)
 	{
 		dimension					= new Dimension(rendering.width, rendering.height);
@@ -159,7 +186,7 @@ implements Downloadable
 
 
 	protected Rendering scaleRenderingUnderMaxDimension(Rendering rendering,
-			int width, int height) 
+			int width, int height, Dimension maxDimension) 
 	{
 		if( maxDimension!= null )
 		{
@@ -189,66 +216,6 @@ implements Downloadable
 		}
 		return rendering;
 	}
-	/**
-	 * Make a graphical object that consists of an array of pixels.
-	 * @param continuation	Entity to receive callback() when
-	 *				download is done.
-	 * @param graphicsConfiguration GraphicsConfiguration of the card we're using. Enables buffering images on the graphics card.
-	 * @param maxDimension		When set, used to force scaling, if necessary, of the pixels that we store.
-	 */
-	public PixelBased(ParsedURL purl, Continuation<PixelBased> continuation, GraphicsConfiguration graphicsConfiguration, Dimension maxDimension)
-	{
-		this(purl, continuation, null, graphicsConfiguration, maxDimension);
-	}
-	/**
-	 * Make a graphical object that consists of an array of pixels.
-	 * @param continuation	Entity to receive callback() when
-	 *				download is done.
-	 * @param graphicsConfiguration GraphicsConfiguration of the card we're using. Enables buffering images on the graphics card.
-	 * @param maxDimension		When set, used to force scaling, if necessary, of the pixels that we store.
-	 */
-	public PixelBased(ParsedURL purl, Continuation<PixelBased> continuation, BasicSite basicSite, 
-										GraphicsConfiguration graphicsConfiguration, Dimension maxDimension)
-	{
-		this.purl								= purl;
-		this.continuation			= continuation;
-		this.basicSite					= basicSite;
-		this.graphicsConfiguration	= graphicsConfiguration;
-		this.maxDimension				= maxDimension;
-
-		constructedCount++;
-	}
-	/**
-	 * Make a new graphical object that consists of an array of pixels,
-	 * using one that already exists as the basis.
-	 * 
-	 * Make sure to only call this after the predecessor has finished
-	 * download and delivery!
-	 * @param graphicsConfiguration TODO
-	 */   
-	public PixelBased(PixelBased predecessor, GraphicsConfiguration graphicsConfiguration)
-	{
-		this.graphicsConfiguration	= graphicsConfiguration;
-		downloadDone	= true;
-
-		purl			= predecessor.purl;
-		bad				= predecessor.bad;
-		recycled		= predecessor.recycled;
-		basisRendering	= predecessor.basisRendering;
-
-		Rendering basisRendering	= predecessor.basisRendering;
-		if (basisRendering == null)
-			throw new RuntimeException("Error creating clone for "+predecessor);
-
-		dimension		= new Dimension(basisRendering.width, basisRendering.height);
-
-		unprocessedRendering	= new Rendering(this, basisRendering.bufferedImage, null, null);
-
-		//noProcState.hookup(); // make this the ImageState used for rendering
-		this.setCurrentRendering(unprocessedRendering);
-		constructedCount++;
-	}
-
 //////////////////////from regular Image -> int[] pixels /////////////////////
 	/**
 	 * If possible, grab the image into memory. This is required for all
@@ -693,10 +660,7 @@ implements Downloadable
 	{
 		return bad;
 	}
-	public URL url()
-	{
-		return purl.url();
-	}
+
 	/* return ParsedURL */
 	public ParsedURL location()
 	{

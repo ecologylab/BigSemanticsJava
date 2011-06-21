@@ -73,7 +73,6 @@ import ecologylab.net.ParsedURL;
  */
 public class IIOPhoto
 extends PixelBased
-implements Downloadable, Continuation<IIOPhoto>
 {
 	PURLConnection	purlConnection;
 
@@ -130,14 +129,7 @@ implements Downloadable, Continuation<IIOPhoto>
 	{ 
 		this(ParsedURL.getRelative(base.url(), relativeURL, ""), continuation, graphicsConfiguration);
 	}
-	public IIOPhoto(ParsedURL purl, PURLConnection purlConnection,
-			Continuation<PixelBased> continuation, GraphicsConfiguration graphicsConfiguration, Dimension maxDimension)
-	{
-		super(purl, continuation, graphicsConfiguration, maxDimension);
 
-		this.purlConnection		= purlConnection;
-		imageIORead(purlConnection);
-	}
 	/**
 	 * For outside callers to initiate download of the media.
 	 * Contrasts with performDownload(), which in some cases, happens later,
@@ -155,40 +147,6 @@ implements Downloadable, Continuation<IIOPhoto>
 	}
 
 	/////////////////////// methods for downloadable //////////////////////////
-	/**
-	 * Called by the DowloadMonitor to request Image "download". The Image
-	 * may already be here 
-	 *(in cache), or may require net transfer.
-	 * 
-	 * Results in a call of Continuation.callback() sooner or later, hopefully
-	 * in a new Thread.
-	 * Also in a notify(), if someone's in waitForReady();
-	 */
-	public void performDownload()
-	{
-		if (!downloadStarted)
-		{
-			downloadStarted	= true;
-			PURLConnection purlConnection	= getPURLConnection();
-			if (purlConnection != null)
-			{
-				Rendering initialState	= imageIORead(purlConnection);
-				if (initialState == null)
-				{
-					return; //Normal pathway for errors during image read
-				}
-				initializeRenderings(initialState);
-			}
-			else
-			{
-				// recycle resources when the timeout happens.
-				if( purl.getTimeout() )
-					handleTimeout();
-
-				error("Can't connect.");
-			}
-		}
-	}
 
 	static final DirectColorModel ARGB_MODEL	= new DirectColorModel(32, 0x00ff0000, 0x0000ff00, 0xff, 0xff000000);
 
@@ -222,223 +180,6 @@ implements Downloadable, Continuation<IIOPhoto>
 	}
 
 	public static final int MIN_DIM	= 10;
-
-	protected Rendering imageIORead(PURLConnection purlConnection)
-	{
-		return imageIORead(purlConnection.inputStream());
-	}
-	protected Rendering imageIORead(InputStream		inputStream)
-	{
-		Rendering		result						= null;
-		BufferedImage	bufferedImage		= null;
-		try
-		{
-			imageInputStream	= ImageIO.createImageInputStream(inputStream);
-			if ((imageInputStream == null) || timedOut)
-				error("Cant open ImageInputStream for " + timedOut+" "+purl);
-			else
-			{
-				Iterator<ImageReader> imageReadersIterator		= ImageIO.getImageReaders(imageInputStream);
-				if (!imageReadersIterator.hasNext() || timedOut)
-					error("Cant get reader for " +timedOut+" "+ purl);
-				else
-				{
-					imageReader	= (ImageReader) imageReadersIterator.next();
-					String formatName	= imageReader.getFormatName();
-					imageReader.setInput(imageInputStream, true, true);
-					ImageReadParam param	= imageReader.getDefaultReadParam();
-					int width		= imageReader.getWidth(0);
-					int height	= imageReader.getHeight(0);
-
-					if ((width > MIN_DIM) && (height > MIN_DIM))
-					{
-						// try to setup the BufferedImage we use for the read to be structured
-						// the way we like the data -- as an array of int[].
-						// this means trying to find out about the image's structure,
-						// in particular, if its rgb -- 3 color "bands", or argb alread -- 4 bands
-						int readImageType	= -1;
-						//TODO this line is creating byte arrays :-(
-						ImageTypeSpecifier rawImageType	= imageReader.getRawImageType(0);
-						// try to find out directly from ImageIO about the file's header
-						if (rawImageType != null) // unfortunately this doesnt seem to work much for URLConnection images
-						{
-							int rawNumBands	= rawImageType.getNumBands();
-							switch (rawNumBands)
-							{
-							case 4:
-								readImageType= BufferedImage.TYPE_INT_ARGB;
-								break;
-							case 3:
-								readImageType= BufferedImage.TYPE_INT_RGB;
-								break;
-							default:
-								if (rawImageType.getColorModel() instanceof IndexColorModel)
-								{
-//									readImageType= BufferedImage.TYPE_BYTE_INDEXED;
-								}
-								break;
-							}
-							//debug("gotRawImageType! numBands="+rawNumBands+ " readImageType="+readImageType);
-						}
-						// look in the URL itself
-						else if (purl.isNoAlpha())
-						{
-							readImageType	= BufferedImage.TYPE_INT_RGB;
-						}
-						// catch server-side content mime type setting for images from a repository
-						else if (noAlphaBySuffixMap.containsKey(formatName))
-						{
-							readImageType	= BufferedImage.TYPE_INT_RGB;
-						}
-						int[] 			pixels			= null;
-						DataBufferInt	dataBuffer		= null;
-						if (readImageType != -1)
-						{
-							ColorModel	cm;
-							int[]		masks;
-							if (readImageType == BufferedImage.TYPE_INT_RGB)
-							{
-								cm		= RGB_MODEL;
-								masks	= RGB_MASKS;
-								//param.setDestinationBands(RGB_BANDS);
-							}
-							else
-							{
-								cm		= ARGB_MODEL;
-								masks	= ARGB_MASKS;
-							}
-							SampleModel		sm		= new SinglePixelPackedSampleModel(DataBuffer.TYPE_INT, width, height, masks);
-							int numPixels				= width*height;
-							pixels							= new int[numPixels];
-							dataBuffer					= new DataBufferInt(pixels, numPixels);
-							WritableRaster	wr	= Raster.createWritableRaster(sm, dataBuffer, null);
-							bufferedImage				= new BufferedImage(cm, wr, false, null);
-							/*
-						 if (graphicsConfiguration != null)
-						 {
-						 int transparency = (readImageType == BufferedImage.TYPE_INT_ARGB) ?
-						 Transparency.TRANSLUCENT : Transparency.OPAQUE;
-						 bufferedImage =
-						 graphicsConfiguration.createCompatibleImage(width, height, transparency);
-						 }
-						 else
-						 bufferedImage		= new BufferedImage(width, height, readImageType);
-							 */
-							param.setDestination(bufferedImage);
-						}
-						// read, using the BufferedImage we made, or the default
-						// if we set result in the line above, we'll just get it back, so no problem.
-						bufferedImage			= imageReader.read(0, param);
-						if (readImageType == -1)
-						{
-							
-						}
-						
-						if (bufferedImage == null)
-							error("Cant read from imageReader for " + purl);
-						else
-						{
-							result				= new Rendering(this, bufferedImage, dataBuffer, pixels);
-							result				= scaleRenderingUnderMaxDimension(result, width, height);
-						}
-						while (imageReadersIterator.hasNext())
-						{
-							ImageReader nextReader	= (ImageReader) imageReadersIterator.next();
-							debug("COOL: Freeing resources on additional readers! " + nextReader);
-							nextReader.reset();
-							nextReader.dispose();
-						}
-					}
-					// desparate attempts to reduce referentiality :-)
-					param.setDestination(null);
-					param.setSourceBands(null);
-					param.setDestinationBands(null);
-					param.setDestinationType(null);
-					param.setController(null);
-				}
-			}
-		} catch (SocketTimeoutException e)
-		{
-			bad 			= true;
-			timedOut 		= true;
-			handleTimeout();
-			error("imageIORead() " + e);
-		} catch (Exception e)
-		{
-			bad 			= true;
-			error("ERROR caught while reading image: " + e);
-//			if (e instanceof NullPointerException)
-				e.printStackTrace();
-			recycle();
-		}
-		finally
-		{
-			freeImageIOResources();
-		}
-
-		return (timedOut || bad) ? null : result;
-	}
-
-	private boolean freeImageIOResources()
-	{
-		boolean result			= false;
-		if (imageReader != null)
-		{
-			imageReader.reset();  // release all resources and set to initial state
-			imageReader.dispose();
-			imageReader			= null;
-			result				= true;
-		}
-		if (imageInputStream != null)
-		{
-			try
-			{
-				imageInputStream.flush();
-				imageInputStream.close();
-				imageInputStream= null;
-				result			= true;
-			} catch (IOException e)
-			{
-				e.printStackTrace();
-			}
-			this.imageInputStream= null;
-		}
-		if (purlConnection != null)
-		{
-			purlConnection.recycle();
-			purlConnection	= null;
-		}
-		return result;
-	}
-
-	/**
-	 * @return false when the thing could not be stopped and a new thread started.
-	 */
-	public synchronized boolean handleTimeout()
-	{
-		if (!downloadDone)
-		{
-			if (!timedOut)
-				timedOut				= true;
-			else
-				weird("handleTimeout() handleTimeout() called again");
-
-			bad						= true;
-			if (imageReader != null)
-				imageReader.abort();
-
-			freeImageIOResources();
-			super.error("TIMEOUT while downloading image.");
-			recycle();
-		}
-		return true;
-	}
-	public void handleIoError()
-	{
-		//FIXME shouldn't this call handleTimeout() to free resources
-		//FIXME should this call callback()???!
-		error("IOERROR");
-	}
 
 	/**
 	 * 
