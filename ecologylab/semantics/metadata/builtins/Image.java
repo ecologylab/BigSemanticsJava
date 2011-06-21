@@ -87,6 +87,12 @@ implements MimeType, ImageConstants
 			this.localLocation.setValue(localLocationFile);
 	}
 	
+	/**
+	 * Convenience method for type checking related to Image-ness.
+	 * Implementation for Image and its subclasses:
+	 * 
+	 * @return	true
+	 */
 	@Override
 	public boolean isImage()
 	{
