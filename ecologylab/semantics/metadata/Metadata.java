@@ -749,7 +749,12 @@ abstract public class Metadata extends ElementState implements MetadataBase, Ter
 		return classDescriptor().getFieldDescriptorsByFieldName();
 	}
 
-	// FIXME -- get rid of these hacks when Image extends Document
+	/**
+	 * Convenience method for type checking related to Image-ness.
+	 * Base implementation:
+	 * 
+	 * @return	false
+	 */
 	public boolean isImage()
 	{
 		return false;
