@@ -760,6 +760,11 @@ abstract public class Metadata extends ElementState implements MetadataBase, Ter
 		return false;
 	}
 
+	public boolean isGui()
+	{
+		return false;
+	}
+
 	@Retention(RetentionPolicy.RUNTIME)
 	@Inherited
 	@Target(ElementType.FIELD)
