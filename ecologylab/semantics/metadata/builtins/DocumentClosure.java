@@ -563,7 +563,7 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>, S
 	}
 	public DownloadProcessor<DocumentClosure> downloadMonitor()
 	{
-		return  infoCollector.downloadMonitor(document.isImage(), isDnd, isSeed());
+		return  infoCollector.downloadProcessor(document.isImage(), isDnd, isSeed(), document.isGui());
 	}
 
 	
