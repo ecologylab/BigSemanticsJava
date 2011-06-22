@@ -592,7 +592,8 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>, S
 	{
 		downloadStatus	= DownloadStatus.IOERROR;
 		document.setDownloadDone(true);
-		documentParser.handleIoError();
+		if (documentParser != null)
+			documentParser.handleIoError();
 
 		recycle();
 	}
