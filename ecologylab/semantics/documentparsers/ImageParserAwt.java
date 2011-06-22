@@ -85,7 +85,13 @@ public class ImageParserAwt extends DocumentParser<Image>
 	@Override
 	public void parse() throws IOException
 	{
-		getDocument().setParserResult(new ImageParserAwtResult(imageIORead(inputStream())));
+		Image image = getDocument();
+		BufferedImage bufferedImage = imageIORead(inputStream());
+		image.setParserResult(new ImageParserAwtResult(bufferedImage));
+		image.setWidth(bufferedImage.getWidth());
+		image.setHeight(bufferedImage.getHeight());
+		
+		//TODO for jpegs, extract EXIF metadata here
 	}
 
 	public static final int MIN_DIM	= 10;
