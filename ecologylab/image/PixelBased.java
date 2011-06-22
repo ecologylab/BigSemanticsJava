@@ -451,8 +451,13 @@ implements Downloadable
 ////////////////////////sundry services ////////////////////////////////
 	public Cursor createCustomCursor(Point point, String name)
 	{
+		return createCustomCursor(basisRendering.bufferedImage, point, name);
+	}
+
+	public static Cursor createCustomCursor(BufferedImage bufferedImage, Point point, String name)
+	{
 		Toolkit kit		= Toolkit.getDefaultToolkit();
-		return kit.createCustomCursor(basisRendering.bufferedImage, point, name);
+		return kit.createCustomCursor(bufferedImage, point, name);
 	}
 
 ////////////////////////rendering ////////////////////////////////
