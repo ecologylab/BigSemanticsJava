@@ -1041,7 +1041,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 
 	private MetaMetadataRepository findRepository()
 	{
-		ElementState parent = parent();
+		ElementState parent = parents().firstElement();
 		while (parent != null && !(parent instanceof MetaMetadataRepository))
 			parent = parent.parent();
 		if (parent == null)
