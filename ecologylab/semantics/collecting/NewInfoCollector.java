@@ -11,6 +11,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 import ecologylab.appframework.ApplicationProperties;
+import ecologylab.appframework.SimpleDownloadProcessor;
 import ecologylab.appframework.types.prefs.PrefBoolean;
 import ecologylab.collections.GenericElement;
 import ecologylab.collections.GenericPrioritizedPool;
@@ -293,6 +294,8 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 	public static final DownloadMonitor<DocumentClosure>	IMAGE_DND_DOWNLOAD_MONITOR		=
 		new DownloadMonitor<DocumentClosure>("ImagesHighPriority", NUM_DOWNLOAD_THREADS, DND_PRIORITY_BOOST);
 
+	public static final SimpleDownloadProcessor<DocumentClosure>	ASSETS_DOWNLOAD_PROCESSOR	=
+		new SimpleDownloadProcessor<DocumentClosure>();
 
 	//
 	static final Object													SEEDING_STATE_LOCK = new Object();
@@ -1232,9 +1235,10 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 		return result;
 	}	
 
-	public DownloadMonitor<DocumentClosure> downloadMonitor(boolean isImage, boolean isDnd, boolean isSeed)
+	public DownloadProcessor<DocumentClosure> downloadProcessor(boolean isImage, boolean isDnd, boolean isSeed, boolean isGui)
 	{
-		return  isImage ? (isDnd ? IMAGE_DND_DOWNLOAD_MONITOR : IMAGE_DOWNLOAD_MONITOR) :
+		return isGui ? ASSETS_DOWNLOAD_PROCESSOR :
+			isImage ? (isDnd ? IMAGE_DND_DOWNLOAD_MONITOR : IMAGE_DOWNLOAD_MONITOR) :
 				(isDnd ? DND_DOWNLOAD_MONITOR : 
 			isSeed ? SEEDING_DOWNLOAD_MONITOR : CRAWLER_DOWNLOAD_MONITOR);
 	}
