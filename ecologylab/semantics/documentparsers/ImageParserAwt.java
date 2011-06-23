@@ -16,7 +16,6 @@ import java.awt.image.SinglePixelPackedSampleModel;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Date;
 import java.util.Iterator;
 
 import javax.imageio.ImageIO;
@@ -31,15 +30,16 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.drew.metadata.Metadata;
-import com.drew.metadata.MetadataException;
 import com.drew.metadata.exif.ExifDirectory;
 import com.drew.metadata.exif.ExifReader;
+import com.drew.metadata.exif.GpsDirectory;
 
 import ecologylab.concurrent.DownloadMonitor;
+import ecologylab.generic.ReflectionTools;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionsKeyWords;
 import ecologylab.semantics.collecting.NewInfoCollector;
+import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
 import ecologylab.semantics.metadata.builtins.Image;
 
@@ -53,6 +53,7 @@ public class ImageParserAwt extends DocumentParser<Image>
 	ImageInputStream	imageInputStream;
 	ImageReader				imageReader;
 
+	static Class mixinClass;
 	
 	static final DirectColorModel ARGB_MODEL	= new DirectColorModel(32, 0x00ff0000, 0x0000ff00, 0xff, 0xff000000);
 
@@ -88,6 +89,7 @@ public class ImageParserAwt extends DocumentParser<Image>
 	public ImageParserAwt(NewInfoCollector infoCollector)
 	{
 		super(infoCollector);
+		mixinClass	= infoCollector.getMetadataTranslationScope().getClassByTag("camera_settings");
 	}
 
 /**
@@ -125,9 +127,6 @@ public class ImageParserAwt extends DocumentParser<Image>
 			{
 				imageReader	= (ImageReader) imageReadersIterator.next();
 				imageReader.setInput(imageInputStream, true, true);
-				String formatName			= imageReader.getFormatName();
-				if ("JPEG".equals(formatName))
-					readMetadata();
 				
 				ImageReadParam param	= imageReader.getDefaultReadParam();
 				int width		= imageReader.getWidth(0);
@@ -224,6 +223,9 @@ public class ImageParserAwt extends DocumentParser<Image>
 						nextReader.dispose();
 					}
 				}
+				String formatName			= imageReader.getFormatName();
+				if ("JPEG".equals(formatName))
+					readMetadata();
 				// desparate attempts to reduce referentiality :-)
 				param.setDestination(null);
 				param.setSourceBands(null);
@@ -243,8 +245,8 @@ public class ImageParserAwt extends DocumentParser<Image>
 
 		String name						= metadata.getNativeMetadataFormatName();
 		IIOMetadataNode node	=(IIOMetadataNode) metadata.getAsTree(name);
-		printTree(node);
-		seekExifTag(node, "unknown");
+//		printTree(node);
+		seekExifBlock(node);
 //		seekExifTag(node, "Date and Time");
 //		seekExifTag(node, "Manufacturer");
 //		seekExifTag(node, "Model");
@@ -253,64 +255,93 @@ public class ImageParserAwt extends DocumentParser<Image>
 //		byte[] exif						=(byte[]) exifNode.getUserObject();
 //		byte[] iptc						=(byte[]) iptcNode.getUserObject();
 	}
+	
+	public static String	EXIF_ELEMENT_TAG_NAME	= "unknown";
 	/**
 	 * @param node
 	 * @param exifTag
 	 */
-	public void seekExifTag(IIOMetadataNode node, String exifTag)
+	public void seekExifBlock(IIOMetadataNode node)
 	{
-		NodeList nodeList			= node.getElementsByTagName(exifTag);
-		for (int i=0; i<nodeList.getLength(); i++)
+		NodeList unknownElements			= node.getElementsByTagName(EXIF_ELEMENT_TAG_NAME);
+		for (int i=0; i<unknownElements.getLength(); i++)
 		{
-			System.out.println("EUREKA! found tag: " + exifTag);
-			IIOMetadataNode foundNode			= (IIOMetadataNode) nodeList.item(i);
-      NamedNodeMap attrMap = foundNode.getAttributes();
-      for (int j = 0; j < attrMap.getLength(); j++) 
-      {
-        Node attr = attrMap.item(j);
-        String attrName = attr.getNodeName();
-        String attrValue = attr.getNodeValue();
-				if ("MarkerTag".equals(attrName) && ("225".equals(attrValue) || "237".equals(attrValue)))
-				{
-					byte[] exifSegment	= (byte[]) foundNode.getUserObject();
-        	System.out.println("EUREKA EURKEA! found EXIF valued node!	" + attrValue);
-          final com.drew.metadata.Metadata exifMetadata = new Metadata();
-        	new ExifReader(exifSegment).extract(exifMetadata);
-        	com.drew.metadata.Directory exifDirectory = exifMetadata.getDirectory(ExifDirectory.class);
-        	try
-					{	// http://www.awaresystems.be/imaging/tiff/tifftags/privateifd/exif.html
-						Date originalDate		= null;
-						if (exifDirectory.containsTag(EXIF_TAG_ORIGINAL_DATE))
-						{
-							originalDate			= exifDirectory.getDate(EXIF_TAG_ORIGINAL_DATE);
-							System.out.println("originalDate = " + originalDate);
-						}
-						String userComment	= exifDirectory.getString(0x9286);
-						
-						String shutterSpeed	= exifDirectory.getString(0x9201);
-						
-						String gpsLattitude	= exifDirectory.getString(0x02);
-						System.out.println("gpsLattitude = " + gpsLattitude);
-						
-						Iterator<com.drew.metadata.Tag> tagList = exifDirectory.getTagIterator();
-						while (tagList.hasNext())
-						{
-							com.drew.metadata.Tag tag	= tagList.next();
-							System.out.print(tag);
-							if (tag.toString().toLowerCase().contains("gps"))
-								System.out.println("EUREKA EURKEA EUREKA! GPS: " + tag + ", ");
-						}
-						System.out.println();
-						int qq = 33;
-					}
-					catch (MetadataException e)
-					{
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
+			IIOMetadataNode foundNode			= (IIOMetadataNode) unknownElements.item(i);
+			if ("225".equals(foundNode.getAttribute("MarkerTag")))
+			{
+	      boolean mixedIn			= false;
+				byte[] exifSegment	= (byte[]) foundNode.getUserObject();
+				
+        final com.drew.metadata.Metadata exifMetadata = new com.drew.metadata.Metadata();
+      	new ExifReader(exifSegment).extract(exifMetadata);
+      	com.drew.metadata.Directory exifDirectory = exifMetadata.getDirectory(ExifDirectory.class);
+      	
+      	if (ORIG_DATE_FEATURE.extractDate(getDocument(), exifDirectory) == null)
+      		DATE_FEATURE.extractDate(getDocument(), exifDirectory);
+      	
+      	if (!mixedIn && CAMERA_MODEL_FEATURE.getStringValue(exifDirectory) != null)
+      	{
+      		if (mixinClass != null)
+      		{
+      			Metadata cameraMixin	= ReflectionTools.getInstance(mixinClass);
+      			extractMixin(exifDirectory, EXIF_METADATA_NAME_TAG_PAIRS, cameraMixin);
+      			getDocument().addMixin(cameraMixin);
+      		}
+      	}
+			
+//    	Iterator<com.drew.metadata.Tag> exifList = printDirectory(exifDirectory);
+      	com.drew.metadata.Directory gpsDirectory = exifMetadata.getDirectory(GpsDirectory.class);
+      	Iterator<com.drew.metadata.Tag> gpsList = printDirectory(gpsDirectory);
+      	int qq = 33;
       }
 		}
+	}
+	static final MetadataExifFeature	DATE_FEATURE	= new MetadataExifFeature("creation_date", ExifDirectory.TAG_DATETIME);
+	static final MetadataExifFeature	ORIG_DATE_FEATURE	= new MetadataExifFeature("creation_date", ExifDirectory.TAG_DATETIME_ORIGINAL);
+	
+	static final MetadataExifFeature	CAMERA_MODEL_FEATURE	= new MetadataExifFeature("model", ExifDirectory.TAG_MODEL);
+
+	// // http://www.awaresystems.be/imaging/tiff/tifftags/privateifd/exif.html
+	public static final MetadataExifFeature EXIF_METADATA_NAME_TAG_PAIRS[]	=
+	{
+		CAMERA_MODEL_FEATURE,
+		new MetadataExifFeature("orientation", ExifDirectory.TAG_ORIENTATION),
+		new MetadataExifFeature("resolution", ExifDirectory.TAG_X_RESOLUTION),
+		new MetadataExifFeature("exposure_time", ExifDirectory.TAG_EXPOSURE_TIME),
+		new MetadataExifFeature("aperture", ExifDirectory.TAG_APERTURE),
+		new MetadataExifFeature("shutter_speed", ExifDirectory.TAG_SHUTTER_SPEED),
+		new MetadataExifFeature("subject_distance", ExifDirectory.TAG_SUBJECT_DISTANCE),
+	};
+	
+	public void extractMixin(com.drew.metadata.Directory exifDir, MetadataExifFeature[] features, ecologylab.semantics.metadata.Metadata result)
+	{
+		for (MetadataExifFeature feature: features)
+		{
+			feature.extractString(result, exifDir);
+		}
+	}
+	public static String getString(com.drew.metadata.Directory dir, int tag)
+	{
+		String result	= null;
+		
+		return result;
+	}
+	/**
+	 * @param exifDirectory
+	 * @return
+	 */
+	public Iterator<com.drew.metadata.Tag> printDirectory(com.drew.metadata.Directory exifDirectory)
+	{
+		Iterator<com.drew.metadata.Tag> tagList = exifDirectory.getTagIterator();
+		while (tagList.hasNext())
+		{
+			com.drew.metadata.Tag tag	= tagList.next();
+			System.out.print(tag + " | ");
+//			if (tag.toString().toLowerCase().contains("gps"))
+//				System.out.println("EUREKA EURKEA EUREKA! GPS: " + tag + ", ");
+		}
+		System.out.println();
+		return tagList;
 	}
   public static void printTree(Node doc) 
   {
