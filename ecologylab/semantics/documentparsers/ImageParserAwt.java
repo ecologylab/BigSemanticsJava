@@ -16,14 +16,24 @@ import java.awt.image.SinglePixelPackedSampleModel;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.SocketTimeoutException;
 import java.util.Iterator;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReadParam;
 import javax.imageio.ImageReader;
 import javax.imageio.ImageTypeSpecifier;
+import javax.imageio.metadata.IIOMetadata;
+import javax.imageio.metadata.IIOMetadataNode;
 import javax.imageio.stream.ImageInputStream;
+
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import com.drew.metadata.Directory;
+import com.drew.metadata.Metadata;
+import com.drew.metadata.exif.ExifDirectory;
+import com.drew.metadata.exif.ExifReader;
 
 import ecologylab.concurrent.DownloadMonitor;
 import ecologylab.net.ParsedURL;
@@ -112,8 +122,10 @@ public class ImageParserAwt extends DocumentParser<Image>
 			else
 			{
 				imageReader	= (ImageReader) imageReadersIterator.next();
-//				String formatName			= imageReader.getFormatName();
 				imageReader.setInput(imageInputStream, true, true);
+				String formatName			= imageReader.getFormatName();
+				if ("JPEG".equals(formatName))
+					readMetadata();
 				
 				ImageReadParam param	= imageReader.getDefaultReadParam();
 				int width		= imageReader.getWidth(0);
@@ -222,6 +234,96 @@ public class ImageParserAwt extends DocumentParser<Image>
 
 		return bufferedImage;
 	}
+	
+	private void readMetadata() throws IOException
+	{
+		IIOMetadata metadata	= imageReader.getImageMetadata(0);
+
+		String name						= metadata.getNativeMetadataFormatName();
+		IIOMetadataNode node	=(IIOMetadataNode) metadata.getAsTree(name);
+		printTree(node);
+		seekExifTag(node, "unknown");
+//		seekExifTag(node, "Date and Time");
+//		seekExifTag(node, "Manufacturer");
+//		seekExifTag(node, "Model");
+//		IIOMetadataNode exifNode	=findUnknownMarkerTag(node, 0xE1);
+//		IIOMetadataNode iptcNode	=findUnknownMarkerTag(node, 0xED);
+//		byte[] exif						=(byte[]) exifNode.getUserObject();
+//		byte[] iptc						=(byte[]) iptcNode.getUserObject();
+	}
+	/**
+	 * @param node
+	 * @param exifTag
+	 */
+	public void seekExifTag(IIOMetadataNode node, String exifTag)
+	{
+		NodeList nodeList			= node.getElementsByTagName(exifTag);
+		for (int i=0; i<nodeList.getLength(); i++)
+		{
+			System.out.println("EUREKA! found tag: " + exifTag);
+			IIOMetadataNode foundNode			= (IIOMetadataNode) nodeList.item(i);
+      NamedNodeMap attrMap = foundNode.getAttributes();
+      for (int j = 0; j < attrMap.getLength(); j++) 
+      {
+        Node attr = attrMap.item(j);
+        String attrName = attr.getNodeName();
+        String attrValue = attr.getNodeValue();
+				if ("MarkerTag".equals(attrName) && "225".equals(attrValue))
+				{
+					byte[] exifSegment	= (byte[]) foundNode.getUserObject();
+        	System.out.println("EUREKA EURKEA! found EXIF valued node!");
+          final com.drew.metadata.Metadata exifMetadata = new Metadata();
+        	new ExifReader(exifSegment).extract(exifMetadata);
+        	com.drew.metadata.Directory exifDirectory = exifMetadata.getDirectory(ExifDirectory.class);
+        	System.out.println(exifDirectory);
+				}
+      }
+		}
+	}
+  public static void printTree(Node doc) 
+  {
+  	printTree(doc, 0);
+  }
+  public static void printTree(Node node, int level) 
+  {
+    try 
+    {
+    	for (int i=0; i< level; i++)
+    		System.out.print('\t');
+    	
+      System.out.print("<" + node.getNodeName());
+      NamedNodeMap attrMap = node.getAttributes();
+      for (int i = 0; i < attrMap.getLength(); i++) 
+      {
+        Node attr = attrMap.item(i);
+        String attrName = attr.getNodeName();
+				System.out.print(" " + attrName + "=\"" + attr.getNodeValue() + '"');
+      }
+      String value	= node.getNodeValue();
+      if (value != null)
+      	System.out.print(value);
+      System.out.print(">");
+
+      NodeList nl = node.getChildNodes();
+      int numChildren = nl.getLength();
+      if (numChildren > 0)
+      {
+        System.out.print("\n");
+				for (int i = 0; i < numChildren; i++) 
+	      {
+	        Node childNode = nl.item(i);
+	        printTree(childNode, level + 1);
+	      }
+	    	for (int i=0; i< level; i++)
+	    		System.out.print('\t');
+      }
+      System.out.println("</" + node.getNodeName() + ">");
+    } catch (Throwable e) 
+    {
+      System.out.println("Cannot print!! " + e.getMessage());
+    }
+  }
+
 	
 	@Override
 	public synchronized void recycle()
