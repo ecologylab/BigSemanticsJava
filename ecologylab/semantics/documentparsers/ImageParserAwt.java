@@ -53,7 +53,7 @@ public class ImageParserAwt extends DocumentParser<Image>
 	ImageInputStream	imageInputStream;
 	ImageReader				imageReader;
 
-	static Class mixinClass;
+	static Class cameraClass, gpsClass;
 	
 	static final DirectColorModel ARGB_MODEL	= new DirectColorModel(32, 0x00ff0000, 0x0000ff00, 0xff, 0xff000000);
 
@@ -89,7 +89,8 @@ public class ImageParserAwt extends DocumentParser<Image>
 	public ImageParserAwt(NewInfoCollector infoCollector)
 	{
 		super(infoCollector);
-		mixinClass	= infoCollector.getMetadataTranslationScope().getClassByTag("camera_settings");
+		cameraClass	= infoCollector.getMetadataTranslationScope().getClassByTag("camera_settings");
+		gpsClass		= infoCollector.getMetadataTranslationScope().getClassByTag("gps_location");
 	}
 
 /**
@@ -268,24 +269,28 @@ public class ImageParserAwt extends DocumentParser<Image>
 				
         final com.drew.metadata.Metadata exifMetadata = new com.drew.metadata.Metadata();
       	new ExifReader(exifSegment).extract(exifMetadata);
-      	com.drew.metadata.Directory exifDirectory = exifMetadata.getDirectory(ExifDirectory.class);
+      	com.drew.metadata.Directory exifDir = exifMetadata.getDirectory(ExifDirectory.class);
       	
-      	if (!dated && ORIG_DATE_FEATURE.extractDate(getDocument(), exifDirectory) == null)
+      	if (!dated && ORIG_DATE_FEATURE.extractDate(getDocument(), exifDir) == null)
       	{
       		dated		= true;
-      		DATE_FEATURE.extractDate(getDocument(), exifDirectory);
+      		DATE_FEATURE.extractDate(getDocument(), exifDir);
       	}
-      	if (!mixedIn && (mixinClass != null) && CAMERA_MODEL_FEATURE.getStringValue(exifDirectory) != null)
+      	if (!mixedIn && (cameraClass != null) && CAMERA_MODEL_FEATURE.getStringValue(exifDir) != null)
       	{
       		mixedIn	= true;
-      		Metadata cameraMixin	= ReflectionTools.getInstance(mixinClass);
-      		extractMixin(exifDirectory, EXIF_METADATA_NAME_TAG_PAIRS, cameraMixin);
-      		getDocument().addMixin(cameraMixin);
+//      		Metadata cameraMixin	= ReflectionTools.getInstance(cameraClass);
+//      		extractMetadata(exifDirectory, EXIF_METADATA_FEATURES, cameraMixin);
+      		extractMixin(exifDir, EXIF_METADATA_FEATURES, cameraClass);
       	}
-			
+      	com.drew.metadata.Directory gpsDir = exifMetadata.getDirectory(GpsDirectory.class);
+      	String gpsLatitudeString = GPS_LATITUDE_FEATURE.getStringValue(gpsDir);
+				if (gpsClass != null && gpsLatitudeString != null)
+      	{
+      		extractMixin(gpsDir, GPS_METADATA_FEATURES, gpsClass);
+      	}
 //    	Iterator<com.drew.metadata.Tag> exifList = printDirectory(exifDirectory);
-      	com.drew.metadata.Directory gpsDirectory = exifMetadata.getDirectory(GpsDirectory.class);
-      	Iterator<com.drew.metadata.Tag> gpsList = printDirectory(gpsDirectory);
+      	Iterator<com.drew.metadata.Tag> gpsList = printDirectory(gpsDir);
       	int qq = 33;
       }
 		}
@@ -296,7 +301,7 @@ public class ImageParserAwt extends DocumentParser<Image>
 	static final MetadataExifFeature	CAMERA_MODEL_FEATURE	= new MetadataExifFeature("model", ExifDirectory.TAG_MODEL);
 
 	// // http://www.awaresystems.be/imaging/tiff/tifftags/privateifd/exif.html
-	public static final MetadataExifFeature EXIF_METADATA_NAME_TAG_PAIRS[]	=
+	public static final MetadataExifFeature EXIF_METADATA_FEATURES[]	=
 	{
 		CAMERA_MODEL_FEATURE,
 		new MetadataExifFeature("orientation", ExifDirectory.TAG_ORIENTATION),
@@ -306,12 +311,24 @@ public class ImageParserAwt extends DocumentParser<Image>
 		new MetadataExifFeature("shutter_speed", ExifDirectory.TAG_SHUTTER_SPEED),
 		new MetadataExifFeature("subject_distance", ExifDirectory.TAG_SUBJECT_DISTANCE),
 	};
-	
-	public void extractMixin(com.drew.metadata.Directory exifDir, MetadataExifFeature[] features, ecologylab.semantics.metadata.Metadata result)
+
+	public static final MetadataExifFeature GPS_LATITUDE_FEATURE		= new MetadataExifFeature("latitude", GpsDirectory.TAG_GPS_LATITUDE);
+	public static final MetadataExifFeature GPS_METADATA_FEATURES[]	=
+	{
+		GPS_LATITUDE_FEATURE,
+		new MetadataExifFeature("longitude", GpsDirectory.TAG_GPS_LONGITUDE),
+	};
+	public void extractMixin(com.drew.metadata.Directory dir, MetadataExifFeature[] features, Class<Metadata> metadataClass)
+	{
+		Metadata mixin	= ReflectionTools.getInstance(metadataClass);
+		extractMetadata(dir, features, mixin);
+		getDocument().addMixin(mixin);
+	}
+	public void extractMetadata(com.drew.metadata.Directory dir, MetadataExifFeature[] features, ecologylab.semantics.metadata.Metadata metadata)
 	{
 		for (MetadataExifFeature feature: features)
 		{
-			feature.extractString(result, exifDir);
+			feature.extractString(metadata, dir);
 		}
 	}
 	public static String getString(com.drew.metadata.Directory dir, int tag)
