@@ -123,7 +123,7 @@ public class Document extends Metadata
 
 	public ParsedURL getLocation()
 	{
-		return location == null ? null : location().getValue();
+		return location == null ? null : location.getValue();
 	}
 
 	/**
@@ -132,15 +132,18 @@ public class Document extends Metadata
 
 	public void setLocation(ParsedURL location)
 	{
-		this.location().setValue(location);
-		
-		Document ancestor	=  getAncestor();
-		if (ancestor != null)
+		if (location != null)
 		{
-			ParsedURL ancestorLocation = ancestor.getLocation();
-			String domain = location.domain();
-			sameDomainAsPrevious =
-				(ancestorLocation != null && domain != null && domain.equals(ancestorLocation.domain()));
+			this.location().setValue(location);
+			
+			Document ancestor	=  getAncestor();
+			if (ancestor != null)
+			{
+				ParsedURL ancestorLocation = ancestor.getLocation();
+				String domain = location.domain();
+				sameDomainAsPrevious =
+					(ancestorLocation != null && domain != null && domain.equals(ancestorLocation.domain()));
+			}
 		}
 	}
 
@@ -150,8 +153,7 @@ public class Document extends Metadata
 
 	public void hwSetLocation(ParsedURL location)
 	{
-		this.location().setValue(location);
-		rebuildCompositeTermVector();
+		setLocation(location);
 	}
 
 	/**
