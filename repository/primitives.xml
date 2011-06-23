@@ -48,7 +48,7 @@
 			<suffix>png</suffix>
 			<suffix>bmp</suffix>
 		</selector>
-		<scalar name="location" hide="true" layer="9.0" comment="Location of the image."/>
+		<scalar name="location" hide="false" layer="9.0" comment="Location of the image."/>
 		<scalar name="local_location" hide="true" comment="Relative location of local copy of image." scalar_type="File" />
 		<scalar name="creation_date" scalar_type="Date" />
 	</meta_metadata>
