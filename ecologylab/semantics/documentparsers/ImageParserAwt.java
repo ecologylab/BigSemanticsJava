@@ -16,6 +16,7 @@ import java.awt.image.SinglePixelPackedSampleModel;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Date;
 import java.util.Iterator;
 
 import javax.imageio.ImageIO;
@@ -30,8 +31,8 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
+import com.drew.metadata.MetadataException;
 import com.drew.metadata.exif.ExifDirectory;
 import com.drew.metadata.exif.ExifReader;
 
@@ -48,6 +49,7 @@ import ecologylab.semantics.metadata.builtins.Image;
  */
 public class ImageParserAwt extends DocumentParser<Image>
 {
+	private static final int	EXIF_TAG_ORIGINAL_DATE	= 0x9003;
 	ImageInputStream	imageInputStream;
 	ImageReader				imageReader;
 
@@ -268,14 +270,44 @@ public class ImageParserAwt extends DocumentParser<Image>
         Node attr = attrMap.item(j);
         String attrName = attr.getNodeName();
         String attrValue = attr.getNodeValue();
-				if ("MarkerTag".equals(attrName) && "225".equals(attrValue))
+				if ("MarkerTag".equals(attrName) && ("225".equals(attrValue) || "237".equals(attrValue)))
 				{
 					byte[] exifSegment	= (byte[]) foundNode.getUserObject();
-        	System.out.println("EUREKA EURKEA! found EXIF valued node!");
+        	System.out.println("EUREKA EURKEA! found EXIF valued node!	" + attrValue);
           final com.drew.metadata.Metadata exifMetadata = new Metadata();
         	new ExifReader(exifSegment).extract(exifMetadata);
         	com.drew.metadata.Directory exifDirectory = exifMetadata.getDirectory(ExifDirectory.class);
-        	System.out.println(exifDirectory);
+        	try
+					{	// http://www.awaresystems.be/imaging/tiff/tifftags/privateifd/exif.html
+						Date originalDate		= null;
+						if (exifDirectory.containsTag(EXIF_TAG_ORIGINAL_DATE))
+						{
+							originalDate			= exifDirectory.getDate(EXIF_TAG_ORIGINAL_DATE);
+							System.out.println("originalDate = " + originalDate);
+						}
+						String userComment	= exifDirectory.getString(0x9286);
+						
+						String shutterSpeed	= exifDirectory.getString(0x9201);
+						
+						String gpsLattitude	= exifDirectory.getString(0x02);
+						System.out.println("gpsLattitude = " + gpsLattitude);
+						
+						Iterator<com.drew.metadata.Tag> tagList = exifDirectory.getTagIterator();
+						while (tagList.hasNext())
+						{
+							com.drew.metadata.Tag tag	= tagList.next();
+							System.out.print(tag);
+							if (tag.toString().toLowerCase().contains("gps"))
+								System.out.println("EUREKA EURKEA EUREKA! GPS: " + tag + ", ");
+						}
+						System.out.println();
+						int qq = 33;
+					}
+					catch (MetadataException e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
       }
 		}
