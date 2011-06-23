@@ -50,10 +50,11 @@ public class SetFieldSemanticAction
 			value	= semanticActionHandler.getSemanticActionVariableMap().get(valueName);
 		if (value == null)
 		{
-			String errorMessage = valueName == null ? 
-				"Can't set_field name=\"" + getReturnObjectName() + "\" in " + obj + " because value=\"null\"" : 
-				"Can't set_field name=\"" + getReturnObjectName() + " in " + obj + "\" because there's no value bound to " + valueName;
-			throw new SemanticActionExecutionException(this, errorMessage);
+			return null;
+//			String errorMessage = valueName == null ? 
+//				"Can't set_field name=\"" + getReturnObjectName() + "\" in " + obj + " because value=\"null\"" : 
+//				"Can't set_field name=\"" + getReturnObjectName() + " in " + obj + "\" because there's no value bound to " + valueName;
+//			throw new SemanticActionExecutionException(this, errorMessage);
 		}
 		
 		Class<? extends Object> valueClass = value.getClass();
