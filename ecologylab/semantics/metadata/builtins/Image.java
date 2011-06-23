@@ -1,11 +1,13 @@
 package ecologylab.semantics.metadata.builtins;
 
 import java.io.File;
+import java.util.Date;
 
 import ecologylab.net.MimeType;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.collecting.DocumentLocationMap;
 import ecologylab.semantics.html.documentstructure.ImageConstants;
+import ecologylab.semantics.metadata.scalar.MetadataDate;
 import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.serialization.simpl_inherit;
@@ -21,6 +23,10 @@ implements MimeType, ImageConstants
 	@mm_name("local_location") 
 	@simpl_scalar
 	private MetadataParsedURL	localLocation;
+	
+	@mm_name("creation_date") 
+	@simpl_scalar
+	private MetadataDate	creationDate;
 	
 	/**
 	 * Number of images that we parsed with an alt-text.
@@ -87,6 +93,46 @@ implements MimeType, ImageConstants
 			this.localLocation.setValue(localLocationFile);
 	}
 	
+
+	/**
+	 * Lazy Evaluation for creationDate
+	 **/
+
+	public MetadataDate creationDate()
+	{
+		MetadataDate result = this.creationDate;
+		if (result == null)
+		{
+			result = new MetadataDate();
+			this.creationDate = result;
+		}
+		return result;
+	}
+
+	public Date getCreationDate()
+	{
+		return creationDate == null ? null : creationDate.getValue();
+	}
+
+	/**
+	 * Sets the creationDate directly
+	 **/
+
+	public void setCreationDate(Date date)
+	{
+		if (date != null)
+			creationDate().setValue(date);
+	}
+	
+	/**
+	 * Does not actually rebuildCompositeTermVector() as date should never contribute to it.
+	 * @param date
+	 */
+	public void hwSetCreationDate(Date date)
+	{
+		setCreationDate(date);
+	}
+
 	/**
 	 * Convenience method for type checking related to Image-ness.
 	 * Implementation for Image and its subclasses:
