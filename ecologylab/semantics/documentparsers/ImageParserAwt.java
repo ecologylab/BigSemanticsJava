@@ -246,13 +246,7 @@ public class ImageParserAwt extends DocumentParser<Image>
 		String name						= metadata.getNativeMetadataFormatName();
 		IIOMetadataNode node	=(IIOMetadataNode) metadata.getAsTree(name);
 //		printTree(node);
-		seekExifBlock(node);
-//		seekExifTag(node, "Date and Time");
-//		seekExifTag(node, "Manufacturer");
-//		seekExifTag(node, "Model");
-//		IIOMetadataNode exifNode	=findUnknownMarkerTag(node, 0xE1);
-//		IIOMetadataNode iptcNode	=findUnknownMarkerTag(node, 0xED);
-//		byte[] exif						=(byte[]) exifNode.getUserObject();
+		extractMetadataFeatures(node);
 //		byte[] iptc						=(byte[]) iptcNode.getUserObject();
 	}
 	
@@ -261,32 +255,32 @@ public class ImageParserAwt extends DocumentParser<Image>
 	 * @param node
 	 * @param exifTag
 	 */
-	public void seekExifBlock(IIOMetadataNode node)
+	public void extractMetadataFeatures(IIOMetadataNode node)
 	{
 		NodeList unknownElements			= node.getElementsByTagName(EXIF_ELEMENT_TAG_NAME);
 		for (int i=0; i<unknownElements.getLength(); i++)
 		{
-			IIOMetadataNode foundNode			= (IIOMetadataNode) unknownElements.item(i);
-			if ("225".equals(foundNode.getAttribute("MarkerTag")))
+			IIOMetadataNode foundUnknownNode			= (IIOMetadataNode) unknownElements.item(i);
+			if ("225".equals(foundUnknownNode.getAttribute("MarkerTag")))
 			{
-	      boolean mixedIn			= false;
-				byte[] exifSegment	= (byte[]) foundNode.getUserObject();
+	      boolean mixedIn			= false, dated = false;
+				byte[] 	exifSegment	= (byte[]) foundUnknownNode.getUserObject();
 				
         final com.drew.metadata.Metadata exifMetadata = new com.drew.metadata.Metadata();
       	new ExifReader(exifSegment).extract(exifMetadata);
       	com.drew.metadata.Directory exifDirectory = exifMetadata.getDirectory(ExifDirectory.class);
       	
-      	if (ORIG_DATE_FEATURE.extractDate(getDocument(), exifDirectory) == null)
-      		DATE_FEATURE.extractDate(getDocument(), exifDirectory);
-      	
-      	if (!mixedIn && CAMERA_MODEL_FEATURE.getStringValue(exifDirectory) != null)
+      	if (!dated && ORIG_DATE_FEATURE.extractDate(getDocument(), exifDirectory) == null)
       	{
-      		if (mixinClass != null)
-      		{
-      			Metadata cameraMixin	= ReflectionTools.getInstance(mixinClass);
-      			extractMixin(exifDirectory, EXIF_METADATA_NAME_TAG_PAIRS, cameraMixin);
-      			getDocument().addMixin(cameraMixin);
-      		}
+      		dated		= true;
+      		DATE_FEATURE.extractDate(getDocument(), exifDirectory);
+      	}
+      	if (!mixedIn && (mixinClass != null) && CAMERA_MODEL_FEATURE.getStringValue(exifDirectory) != null)
+      	{
+      		mixedIn	= true;
+      		Metadata cameraMixin	= ReflectionTools.getInstance(mixinClass);
+      		extractMixin(exifDirectory, EXIF_METADATA_NAME_TAG_PAIRS, cameraMixin);
+      		getDocument().addMixin(cameraMixin);
       	}
 			
 //    	Iterator<com.drew.metadata.Tag> exifList = printDirectory(exifDirectory);
