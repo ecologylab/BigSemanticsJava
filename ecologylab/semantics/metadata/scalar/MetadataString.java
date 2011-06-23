@@ -82,4 +82,15 @@ public class MetadataString extends MetadataScalarBase<String>
 			termVector	= null;
 		}
 	}
+	
+	/**
+	 * String scalar fields, by type, should contribute to the CompositeTermVector.
+	 * This can, of course, be overridden in a meta_metadata field description.
+	 */
+	@Override
+	public boolean ignoreInTermVector()
+	{
+		return false;
+	}
+
 }

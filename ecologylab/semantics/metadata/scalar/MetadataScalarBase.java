@@ -67,6 +67,18 @@ public class MetadataScalarBase<T> implements MetadataBase
 	{
 		return false;
 	}
+	
+	/**
+	 * In general, scalar fields, by type, should not contribute to the CompositeTermVector.
+	 * The obvious exceptions are Strings.
+	 */
+	@Override
+	public boolean ignoreInTermVector()
+	{
+		return true;
+	}
+
+
  	
  	public static final ArrayList<MetadataFieldDescriptor>	EMPTY_FD_ARRAY_LIST	= new ArrayList<MetadataFieldDescriptor>(0);
  	

@@ -75,4 +75,15 @@ public class MetadataStringBuilder extends MetadataScalarBase<StringBuilder>
 	{
 		return value == null ? "" : value.toString();
 	}
+	
+	/**
+	 * String scalar fields, by type, should contribute to the CompositeTermVector.
+	 * This can, of course, be overridden in a meta_metadata field description.
+	 */
+	@Override
+	public boolean ignoreInTermVector()
+	{
+		return false;
+	}
+
 }

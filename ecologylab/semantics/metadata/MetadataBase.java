@@ -45,8 +45,16 @@ extends Iterable<MetadataFieldDescriptor>
 	/**
 	 * Determine if the Metadata has any entries.
 	 * @return	True if there are Metadata entries.
+	 * @deprecated -- Does not seem to be substantially used. -- Andruid 6/22/11
 	 */
 	public boolean hasCompositeTermVector();
+	
+	/**
+	 * Says that a type should never contribute terms.
+	 * 
+	 * @return
+	 */
+	public boolean ignoreInTermVector();
 
   	/**
   	 * 

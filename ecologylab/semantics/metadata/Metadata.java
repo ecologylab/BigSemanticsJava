@@ -424,13 +424,23 @@ abstract public class Metadata extends ElementState implements MetadataBase, Ter
 
 			MetaMetadataField currentMMField = i.getCurrentMMField();
 			if (mb != null && !currentMMField.isIgnoreInTermVector()
-					&& !(mb instanceof MetadataParsedURL))
+					&& !mb.ignoreInTermVector())
 			{
 				tv.add(mb.termVector());
 			}
 		}
 		return (termVector = tv);
 	}
+	
+	/**
+	 * In general, Metadata objects should contribute to the CompositeTermVector.
+	 */
+	@Override
+	public boolean ignoreInTermVector()
+	{
+		return false;
+	}
+
 
 	public ParsedURL getLocation()
 	{
