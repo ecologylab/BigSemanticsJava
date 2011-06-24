@@ -10,6 +10,7 @@ import ecologylab.appframework.types.prefs.PrefBoolean;
 import ecologylab.collections.PrioritizedPool;
 import ecologylab.collections.RunnablePool;
 import ecologylab.collections.WeightSet;
+import ecologylab.concurrent.DownloadMonitor;
 import ecologylab.concurrent.Monitor;
 import ecologylab.generic.ConsoleUtils;
 import ecologylab.generic.Generic;
@@ -48,9 +49,9 @@ public class MediaReferencesPool extends PrioritizedPool<DocumentClosure<Image>>
 
 	   boolean				paused;
 	   
-	   static final int	LOW_PRIORITY	= NewInfoCollector.IMAGE_DOWNLOAD_MONITOR.lowPriority();
-//     PixelBased.pixelBasedDownloadMonitor.lowPriority();
-
+	   private static final DownloadMonitor<DocumentClosure>	REGULAR_IMAGE_DOWNLOAD_MONITOR	= NewInfoCollector.regularImageDownloadMonitor();
+	   
+	   public static final int LOW_PRIORITY	= REGULAR_IMAGE_DOWNLOAD_MONITOR.lowPriority();
 
 	   public static final int MID_PRIORITY	= LOW_PRIORITY + 1;
 	   public static final int HIGH_PRIORITY= MID_PRIORITY + 1;;
@@ -130,7 +131,7 @@ public class MediaReferencesPool extends PrioritizedPool<DocumentClosure<Image>>
 			
 				 int sleep = adjustPriorityAndSleepTime();
 				 
-				 NewInfoCollector.IMAGE_DOWNLOAD_MONITOR.waitIfTooManyPending();
+				 REGULAR_IMAGE_DOWNLOAD_MONITOR.waitIfTooManyPending();
 				 
 				 if (!Memory.reclaimIfLow())
 				 {
@@ -174,7 +175,7 @@ public class MediaReferencesPool extends PrioritizedPool<DocumentClosure<Image>>
 	   {
 		   int size	= size();
 		   int sleep	= 
-			   (size < 6) && (NewInfoCollector.IMAGE_DOWNLOAD_MONITOR.waitingToDownload() < 4) ? EMPTY_SLEEP : 
+			   (size < 6) && (REGULAR_IMAGE_DOWNLOAD_MONITOR.waitingToDownload() < 4) ? EMPTY_SLEEP : 
 				   (size < 15) ? MID_SLEEP : 
 					   (size < 30) ? FULL_SLEEP : EXTRA_SLEEP;
 		   if (thread != null)
