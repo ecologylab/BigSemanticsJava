@@ -1,6 +1,7 @@
 package ecologylab.semantics.metametadata.linking;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -14,7 +15,7 @@ import ecologylab.semantics.generated.library.GeneratedMetadataTranslationScope;
 import ecologylab.semantics.generated.library.scholarlyPublication.ScholarlyArticle;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
-import ecologylab.semantics.metametadata.metasearch.HtmlRenderer;
+import ecologylab.semantics.metadata.output.HtmlRenderer;
 
 public class LinkingMetadata implements Continuation<DocumentClosure>
 {
@@ -24,61 +25,31 @@ public class LinkingMetadata implements Continuation<DocumentClosure>
 	private int											count				= 0;
 
 	private Object									countLock		= new Object();
+	
+	HtmlRenderer 										renderer;
 
 	public void collect(List<String> urls) throws IOException
 	{
-		count = urls.size();
-
-		// create the infoCollector
-		NewInfoCollector infoCollector = new NewInfoCollector(GeneratedMetadataTranslationScope.get());
-
-		// seed start urls
-		for (String url : urls)
-		{
-			ParsedURL seedUrl = ParsedURL.getAbsolute(url);
-			Document doc = infoCollector.getOrConstructDocument(seedUrl);
-			doc.queueDownload(this);
-		}
-		infoCollector.requestStopDownloadMonitors();
-
-		PrintWriter writer = new PrintWriter("linking_metadata.html");
-
-		synchronized (countLock)
-		{
-			if (count > 0)
-			{
-				try
-				{
-					countLock.wait(1000 * 60 * 60 * 14); // wait for 14 hours at most
-				}
-				catch (InterruptedException e)
-				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		}
-
-		try
-		{
-			Thread.sleep(1000 * 30); // wait for half a minute for possible linking
-		}
-		catch (InterruptedException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
 		String title = "Linking ACM Portal and CiteSeerX";
 		String header = title;
 		String styleSheet = "linking_metadata.css";
 		String javascript = "linking_metadata.js";
-		HtmlRenderer renderer = new HtmlRenderer(title, header, styleSheet, javascript);
-		renderer.appendHeader(writer);
-		for (ScholarlyArticle article : collection)
-			renderer.appendItem(article, writer);
-		renderer.appendFooter(writer);
-		writer.close();
+		renderer = new HtmlRenderer(new File("linking_metadata.html"), title, header, styleSheet, javascript);
+		if (!renderer.isBad())
+		{
+			count = urls.size();
+	
+			// create the infoCollector
+			NewInfoCollector infoCollector = new NewInfoCollector(GeneratedMetadataTranslationScope.get());
+	
+			// seed start urls
+			for (String url : urls)
+			{
+				ParsedURL seedUrl = ParsedURL.getAbsolute(url);
+				Document doc = infoCollector.getOrConstructDocument(seedUrl);
+				doc.queueDownload(this);
+			}
+		}
 	}
 
 	@Override
@@ -93,7 +64,13 @@ public class LinkingMetadata implements Continuation<DocumentClosure>
 		{
 			count--;
 			if (count == 0)
-				countLock.notify();
+			{
+				for (ScholarlyArticle article : collection)
+					renderer.appendMetadata(article);
+				
+				renderer.close();
+				closure.getInfoCollector().stopDownloadMonitors(false);
+			}
 		}
 	}
 

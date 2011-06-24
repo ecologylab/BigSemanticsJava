@@ -1,8 +1,10 @@
 package ecologylab.semantics.metametadata.metasearch;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.PrintWriter;
+
+import ecologylab.semantics.metadata.output.HtmlRenderer;
 
 public class MetaSearch
 {
@@ -33,26 +35,14 @@ public class MetaSearch
 		{
 			urls[i] = engines[i] + term;
 		}
-		
-		try
+
+
+		HtmlRenderer renderer = new HtmlRenderer(new File(outFilePath), "Search results", "Search results for <i>" + query + "</i>");
+
+		if (!renderer.isBad())
 		{
-			final PrintWriter writer = new PrintWriter(outFilePath);
-			String title = "Search results";
-			String header = "Search results for <i>" + query + "</i>";
-			HtmlRenderer renderer = new HtmlRenderer(title, header, "mixed_search.css", "linking_metadata.js") {
-				@Override
-				public void appendFooter(Appendable a) throws IOException
-				{
-					super.appendFooter(a);
-					writer.close();
-				}
-			};
-			SearchDispatcher searchDispatcher = new SearchDispatcher(renderer, writer);
+			SearchDispatcher searchDispatcher = new SearchDispatcher(renderer);
 			searchDispatcher.search(urls);
-		}
-		catch (FileNotFoundException e)
-		{
-			System.err.println("FileNotFoundException: " + e.getMessage());
 		}
 	}
 
