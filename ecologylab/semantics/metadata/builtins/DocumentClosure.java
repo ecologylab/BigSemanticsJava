@@ -710,4 +710,12 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>, S
 			e.printStackTrace();
 		}
 	}
+
+	/**
+	 * @return the infoCollector
+	 */
+	public NewInfoCollector getInfoCollector()
+	{
+		return infoCollector;
+	}
 }
