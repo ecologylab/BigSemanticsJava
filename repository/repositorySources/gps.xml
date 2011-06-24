@@ -4,6 +4,8 @@
 	
 		<scalar name="latitude" scalar_type="String"/>
 		<scalar name="longitude" scalar_type="String"/>
+		<scalar name="altitude" scalar_type="String"/>
+		<scalar name="satellites" scalar_type="String"/>
 			
 	</meta_metadata>
 
