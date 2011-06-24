@@ -473,12 +473,4 @@ abstract public class DocumentParser<D extends Document>
 		return null;
 	}
 
-	public DownloadMonitor<DocumentClosure> downloadMonitor(boolean isDnd, boolean isSeed)
-	{
-		// GoogleSearch, SearchResults are all seeds
-		return  (isDnd ? NewInfoCollector.DND_DOWNLOAD_MONITOR : 
-			isSeed ? 
-		  NewInfoCollector.SEEDING_DOWNLOAD_MONITOR : NewInfoCollector.CRAWLER_DOWNLOAD_MONITOR);
-	}
-
 }
