@@ -447,11 +447,4 @@ public class ImageParserAwt extends DocumentParser<Image>
 		super.error("TIMEOUT while downloading image.");
 		recycle();
 	}
-	
-	@Override
-	public DownloadMonitor<DocumentClosure> downloadMonitor(boolean isDnd, boolean isSeed)
-	{
-		return  isDnd ? NewInfoCollector.IMAGE_DND_DOWNLOAD_MONITOR : NewInfoCollector.IMAGE_DOWNLOAD_MONITOR;
-	}
-
 }
