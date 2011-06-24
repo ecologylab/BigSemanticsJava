@@ -2,7 +2,7 @@
 
 	<meta_metadata name="metadata" comment="The Metadata Class" built_in="true">
 		<scalar name="meta_metadata_name" tag="mm_name" hide="true" ignore_in_term_vector="true" comment="Stores the name of the meta-metadata, and is used on restoring from XML." scalar_type="String" />
-		<collection name="mixins" child_type="metadata" polymorphic_global="true"/>
+		<collection name="mixins" child_type="metadata" promote_children="true" polymorphic_global="true"/>
 	</meta_metadata>
 	
 	<meta_metadata name="document" extends="metadata" comment="The Document Class" built_in="true">
@@ -21,6 +21,7 @@
 
 	<meta_metadata name="media_clipping" extends="clipping" built_in="true">
 		<scalar name="caption" style="metadata_h1" layer="11.0" comment="The caption of the image." scalar_type="String"/>
+		<composite name="media" />
 	</meta_metadata>
 	
 	<meta_metadata name="image_clipping" extends="media_clipping" built_in="true">
@@ -31,7 +32,7 @@
 	</meta_metadata>
 	
 	<meta_metadata name="clippable_document"  extends="document" built_in="true">
-		<collection name="clippings" child_type="media_clipping" promote_children="true"/>
+		<collection name="clippings" child_type="media_clipping" promote_children="true" comment="Clippings based on this."/>
 		<scalar name="width" scalar_type="Integer"/>
 		<scalar name="height" scalar_type="Integer"/>
 	</meta_metadata>
@@ -48,7 +49,7 @@
 			<suffix>png</suffix>
 			<suffix>bmp</suffix>
 		</selector>
-		<scalar name="location" hide="false" layer="9.0" comment="Location of the image."/>
+		<scalar name="location" layer="9.0" comment="Location of the image."/>
 		<scalar name="local_location" hide="true" comment="Relative location of local copy of image." scalar_type="File" />
 		<scalar name="creation_date" scalar_type="Date" />
 	</meta_metadata>
@@ -59,7 +60,7 @@
 		<scalar name="description" layer="9.0" scalar_type="String" schema_org_itemprop="description"/>
 		<scalar name="query" layer="5.0" comment="The search query" scalar_type="String" />
 		<scalar name="page_structure" layer="6.0" comment="For debugging. Type of the structure recognized by information extraction." scalar_type="String" />
-		<collection name="clippings" child_type="clipping"/>
+		<collection name="clippings" child_type="clipping" comment="Clippings that this document contains."/>
 	</meta_metadata>
 	
 	<meta_metadata name="html" type="compound_document" dont_generate_class="true" parser="html_dom_image_text" user_agent_name="firefox_3_6_8">

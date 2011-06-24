@@ -558,7 +558,7 @@ abstract public class Metadata extends ElementState implements MetadataBase, Ter
 	{
 		MetaMetadataField firstMetaMetadataField = (metaMetadataField != null) ? metaMetadataField
 				: metaMetadata;
-		return new MetaMetadataOneLevelNestingIterator(firstMetaMetadataField, this, mixins);
+		return new MetaMetadataOneLevelNestingIterator(firstMetaMetadataField, this);
 	}
 
 	public ClassAndCollectionIterator metadataIterator()

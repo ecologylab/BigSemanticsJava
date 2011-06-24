@@ -21,13 +21,11 @@ public class MetaMetadataOneLevelNestingIterator extends OneLevelNestingIterator
 	private Metadata currentMetadata 					= null;
 	
 	
-	public MetaMetadataOneLevelNestingIterator(MetaMetadataField firstObject, Metadata firstMetadata, ArrayList<Metadata> mixinMetadatas)
+	public MetaMetadataOneLevelNestingIterator(MetaMetadataField firstObject, Metadata firstMetadata)
 	{
-		super(firstObject, createMixinCollectionIterator(mixinMetadatas));
+		super(firstObject);
 		
 		currentMetadata = firstMetadata;
-		if (mixinMetadatas != null)
-			nextMetadatas = mixinMetadatas.iterator();
 	}
 
 	@Override
@@ -47,21 +45,4 @@ public class MetaMetadataOneLevelNestingIterator extends OneLevelNestingIterator
 	{
 		return currentMetadata;
 	}
-	
-	private static Iterator<? extends MetaMetadataField> createMixinCollectionIterator(ArrayList<Metadata> mixinMetadatas)
-	{
-		ArrayList<MetaMetadataCompositeField> mixinMetaMetadatas = null;
-		if (mixinMetadatas != null)
-		{
-			mixinMetaMetadatas = new ArrayList<MetaMetadataCompositeField>();
-			for (Metadata metadata : mixinMetadatas)
-				mixinMetaMetadatas.add(metadata.getMetaMetadata());
-			
-			return mixinMetaMetadatas.iterator();
-		}
-		else
-			return null;
-		
-	}
-
 }
