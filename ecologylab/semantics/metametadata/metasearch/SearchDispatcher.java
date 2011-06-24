@@ -50,7 +50,7 @@ public class SearchDispatcher extends Debug implements Continuation<DocumentClos
 			Document doc = infoCollector.getOrConstructDocument(seedUrl);
 			doc.queueDownload(this);
 		}
-		NewInfoCollector.CRAWLER_DOWNLOAD_MONITOR.requestStop();
+		infoCollector.requestStopDownloadMonitors();
 	}
 
 	@Override

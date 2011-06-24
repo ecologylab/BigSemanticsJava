@@ -39,7 +39,7 @@ public class LinkingMetadata implements Continuation<DocumentClosure>
 			Document doc = infoCollector.getOrConstructDocument(seedUrl);
 			doc.queueDownload(this);
 		}
-		NewInfoCollector.CRAWLER_DOWNLOAD_MONITOR.requestStop();
+		infoCollector.requestStopDownloadMonitors();
 
 		PrintWriter writer = new PrintWriter("linking_metadata.html");
 
