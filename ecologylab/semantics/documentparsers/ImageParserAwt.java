@@ -317,6 +317,8 @@ public class ImageParserAwt extends DocumentParser<Image>
 	{
 		GPS_LATITUDE_FEATURE,
 		new MetadataExifFeature("longitude", GpsDirectory.TAG_GPS_LONGITUDE),
+		new MetadataExifFeature("altitude", GpsDirectory.TAG_GPS_ALTITUDE),
+		new MetadataExifFeature("satellites", GpsDirectory.TAG_GPS_SATELLITES),
 	};
 	public void extractMixin(com.drew.metadata.Directory dir, MetadataExifFeature[] features, Class<Metadata> metadataClass)
 	{
