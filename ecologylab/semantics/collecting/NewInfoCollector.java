@@ -147,11 +147,8 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 		usualSleep	= 3000;
 		longSleep		= usualSleep * 5 / 2;
 
-		CRAWLER_DOWNLOAD_MONITOR.setHurry(true);
+		DOWNLOAD_MONITORS[REGULAR_DOCUMENT_DOWNLOAD_MONITOR].setHurry(true);
 		println("");
-		
-		//TODO -- initialize MetaMetadataRepository
-
 	}
 	
 	InteractiveSpace														interactiveSpace;
@@ -261,38 +258,66 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 
 	static final int														NUM_CRAWLER_DOWNLOAD_THREADS	= 2;
 
+	static final int														NUM_SEEDING_DOWNLOAD_THREADS	= 4;
+	
+ 	static final int														NUM_IMAGE_DOWNLOAD_THREADS		= 2;
+
+ 	static final int														DND_PRIORITY_BOOST						= 6;
+	
+	public static final int										REGULAR_DOCUMENT_DOWNLOAD_MONITOR					= 0;
+	
+	public static final int										DND_DOCUMENT_DOWNLOAD_MONITOR			= 1;
+	
+	public static final int										SEEDING_DOCUMENT_DOWNLOAD_MONITOR	= 2;
+	
+	public static final int										REGULAR_IMAGE_DOWNLOAD_MONITOR						= 3;
+	
+	public static final int										DND_IMAGE_DOWNLOAD_MONITOR				= 4;
+	
+	public static final int										NUM_DOWNLOAD_MONITORS							= DND_IMAGE_DOWNLOAD_MONITOR + 1;
+	
+	private static final DownloadMonitor<DocumentClosure>[]	DOWNLOAD_MONITORS	= new DownloadMonitor[NUM_DOWNLOAD_MONITORS];
+	
+	static
+	{
+		DOWNLOAD_MONITORS[REGULAR_DOCUMENT_DOWNLOAD_MONITOR]			= new DownloadMonitor<DocumentClosure>("Documents Regular", NUM_CRAWLER_DOWNLOAD_THREADS, 0);
+		
+		DOWNLOAD_MONITORS[DND_DOCUMENT_DOWNLOAD_MONITOR]	= new DownloadMonitor<DocumentClosure>("Documents Highest Priority", NUM_SEEDING_DOWNLOAD_THREADS, DND_PRIORITY_BOOST);
+		
+		DOWNLOAD_MONITORS[SEEDING_DOCUMENT_DOWNLOAD_MONITOR]	= new DownloadMonitor<DocumentClosure>("Documents Seeding", NUM_SEEDING_DOWNLOAD_THREADS, 1);
+		
+		DOWNLOAD_MONITORS[REGULAR_IMAGE_DOWNLOAD_MONITOR]							= new DownloadMonitor<DocumentClosure>("Images Regular", NUM_IMAGE_DOWNLOAD_THREADS, 1);
+		
+		DOWNLOAD_MONITORS[DND_IMAGE_DOWNLOAD_MONITOR]					= new DownloadMonitor<DocumentClosure>("Images High Priority", NUM_IMAGE_DOWNLOAD_THREADS, DND_PRIORITY_BOOST);
+	};
+	
 	/**
 	 * This <code>DownloadMonitor</code> is used by the web crawler (i.e.,
 	 * {@link CfInfoCollector#run() ContentIntegrator.run()}).
 	 * 
 	 * It sometimes gets paused by GoogleSearch to promote downloading of search results.
 	 */
-	public static final DownloadMonitor<DocumentClosure>			CRAWLER_DOWNLOAD_MONITOR				= new DownloadMonitor<DocumentClosure>("WebCrawler", NUM_CRAWLER_DOWNLOAD_THREADS, 0);
-
-	static final int														NUM_SEEDING_DOWNLOAD_THREADS	= 4;
-	
-	static final int														DND_PRIORITY_BOOST						= 6;
+//	public static final DownloadMonitor<DocumentClosure>			DOCUMENT_DOWNLOAD_MONITOR				= new DownloadMonitor<DocumentClosure>("Regular Documents", NUM_CRAWLER_DOWNLOAD_THREADS, 0);
 
 	/**
 	 * This is the <code>DownloadMonitor</code> used by to process drag and drop operations. It gets
 	 * especially high priority, in order to provide rapid response to the user.
 	 */
-	public static final DownloadMonitor<DocumentClosure>			DND_DOWNLOAD_MONITOR						= 
-		new DownloadMonitor<DocumentClosure>("Dnd", NUM_SEEDING_DOWNLOAD_THREADS, DND_PRIORITY_BOOST);
+//	public static final DownloadMonitor<DocumentClosure>			DND_DOCUMENTS_DOWNLOAD_MONITOR						= 
+//		new DownloadMonitor<DocumentClosure>("Dnd Documents", NUM_SEEDING_DOWNLOAD_THREADS, DND_PRIORITY_BOOST);
 
 	/**
 	 * This is the <code>DownloadMonitor</code> used by seeds. It never gets paused.
 	 */
-	public static final DownloadMonitor<DocumentClosure>			SEEDING_DOWNLOAD_MONITOR				= new DownloadMonitor<DocumentClosure>("Seeding", NUM_SEEDING_DOWNLOAD_THREADS, 1);
+//	public static final DownloadMonitor<DocumentClosure>			SEEDING_DOWNLOAD_MONITOR				= new DownloadMonitor<DocumentClosure>("Seeding Documents", NUM_SEEDING_DOWNLOAD_THREADS, 1);
 
 
- 	static final int			NUM_DOWNLOAD_THREADS	= 2;
 
-	public static final DownloadMonitor<DocumentClosure> IMAGE_DOWNLOAD_MONITOR = //PixelBased.pixelBasedDownloadMonitor;
-			new DownloadMonitor<DocumentClosure>("Images", NUM_DOWNLOAD_THREADS, 1);
+//	public static final DownloadMonitor<DocumentClosure> IMAGE_DOWNLOAD_MONITOR = //PixelBased.pixelBasedDownloadMonitor;
+//			new DownloadMonitor<DocumentClosure>("Images", NUM_DOWNLOAD_THREADS, 1);
 
-	public static final DownloadMonitor<DocumentClosure>	IMAGE_DND_DOWNLOAD_MONITOR		=
-		new DownloadMonitor<DocumentClosure>("ImagesHighPriority", NUM_DOWNLOAD_THREADS, DND_PRIORITY_BOOST);
+//	public static final DownloadMonitor<DocumentClosure>	DND_IMAGE_DOWNLOAD_MONITOR		=
+//		new DownloadMonitor<DocumentClosure>("ImagesHighPriority", NUM_DOWNLOAD_THREADS, DND_PRIORITY_BOOST);
 
 	public static final SimpleDownloadProcessor<DocumentClosure>	ASSETS_DOWNLOAD_PROCESSOR	=
 		new SimpleDownloadProcessor<DocumentClosure>();
@@ -486,7 +511,7 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 			{
 				debug("beginSeeding() pause crawler");
 				duringSeeding = true;
-				CRAWLER_DOWNLOAD_MONITOR.pause();
+				DOWNLOAD_MONITORS[REGULAR_DOCUMENT_DOWNLOAD_MONITOR].pause();
 				pause();
 			}
 		}
@@ -503,30 +528,10 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 			{
 				duringSeeding = false;
 				debug("endSeeding() unpause crawler");
-				CRAWLER_DOWNLOAD_MONITOR.unpause();
+				DOWNLOAD_MONITORS[REGULAR_DOCUMENT_DOWNLOAD_MONITOR].unpause();
 				start();	// start thread *or* unpause()
 			}
 		}
-	}
-
-	public void pauseDownloadMonitor()
-	{
-		crawlerDownloadMonitor().pause();
-	}
-
-	public static DownloadMonitor crawlerDownloadMonitor()
-	{
-		return CRAWLER_DOWNLOAD_MONITOR;
-	}
-
-	public void pauseCrawler()
-	{
-		CRAWLER_DOWNLOAD_MONITOR.pause();
-	}
-
-	public DownloadMonitor getSeedingDownloadMonitor()
-	{
-		return SEEDING_DOWNLOAD_MONITOR;
 	}
 
 	public Collection<String> traversableURLStrings()
@@ -544,9 +549,9 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 		return rejectDomains;
 	}
 
-	protected boolean seedsArePending()
+	public boolean seedsArePending()
 	{
-		return SEEDING_DOWNLOAD_MONITOR.toDownloadSize() > 0;
+		return DOWNLOAD_MONITORS[SEEDING_DOCUMENT_DOWNLOAD_MONITOR].toDownloadSize() > 0;
 	}
 
 	public int numSeeds()
@@ -979,8 +984,9 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 			if (interactiveSpace != null)
 				interactiveSpace.pausePipeline();
 			candidateImagesPool.pause();
-			CRAWLER_DOWNLOAD_MONITOR.pause();
-			IMAGE_DOWNLOAD_MONITOR.pause();
+			
+			pauseRegularDownloadMonitors();
+
 			threadsExceptCompositionArePause = true;
 		}
 		return needToPause;
@@ -1040,8 +1046,8 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 		threadsExceptCompositionArePause = false;
 
 		candidateImagesPool.unpause();
-		CRAWLER_DOWNLOAD_MONITOR.unpause();
-		NewInfoCollector.IMAGE_DOWNLOAD_MONITOR.unpause();
+		
+		unpauseRegularDownloadMonitors();
 		unpause();
 	}
 	public void stop()
@@ -1054,11 +1060,9 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 			finished	= true;
 
 		stopCollectingAgents(kill);
-		DND_DOWNLOAD_MONITOR.stop(kill);
-
-		IMAGE_DOWNLOAD_MONITOR.stop(kill);
 		
-		IMAGE_DND_DOWNLOAD_MONITOR.stop(kill);
+		stopDownloadMonitors(kill);
+
 		// clear all the collections when the CF browser exits -- eunyee
 		//ThreadDebugger.clear();
 		clearGlobalCollections();
@@ -1080,8 +1084,7 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 
 //		candidateImageVisualsPool.stop();
 //		candidateFirstImageVisualsPool.stop();
-		CRAWLER_DOWNLOAD_MONITOR.stop(kill);
-		SEEDING_DOWNLOAD_MONITOR.stop(kill); // stop seeding downloadMonitor
+		stopDownloadMonitors(kill);
 	}
 	final Object startCrawlerSemaphore	= new Object();
 	//FIXME
@@ -1237,9 +1240,43 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 
 	public DownloadProcessor<DocumentClosure> downloadProcessor(boolean isImage, boolean isDnd, boolean isSeed, boolean isGui)
 	{
-		return isGui ? ASSETS_DOWNLOAD_PROCESSOR :
-			isImage ? (isDnd ? IMAGE_DND_DOWNLOAD_MONITOR : IMAGE_DOWNLOAD_MONITOR) :
-				(isDnd ? DND_DOWNLOAD_MONITOR : 
-			isSeed ? SEEDING_DOWNLOAD_MONITOR : CRAWLER_DOWNLOAD_MONITOR);
+		DownloadProcessor<DocumentClosure> result;
+		if (isGui)
+			result	= ASSETS_DOWNLOAD_PROCESSOR;
+		else
+		{
+			int downloadMonitorIndex	= isImage ? (isDnd ? DND_IMAGE_DOWNLOAD_MONITOR : REGULAR_IMAGE_DOWNLOAD_MONITOR) :
+				(isDnd ? DND_DOCUMENT_DOWNLOAD_MONITOR : 
+					isSeed ? SEEDING_DOCUMENT_DOWNLOAD_MONITOR : REGULAR_DOCUMENT_DOWNLOAD_MONITOR);
+			result	= DOWNLOAD_MONITORS[downloadMonitorIndex];
+		}
+		return result;
+	}
+	
+	public void requestStopDownloadMonitors()
+	{
+		for (DownloadMonitor<DocumentClosure> downloadMonitor: DOWNLOAD_MONITORS)
+			downloadMonitor.requestStop();
+	}
+	public void stopDownloadMonitors(boolean kill)
+	{
+		for (DownloadMonitor<DocumentClosure> downloadMonitor: DOWNLOAD_MONITORS)
+			downloadMonitor.stop(kill);
+	}
+	
+	public void pauseRegularDownloadMonitors()
+	{
+		DOWNLOAD_MONITORS[REGULAR_DOCUMENT_DOWNLOAD_MONITOR].pause();
+		DOWNLOAD_MONITORS[REGULAR_IMAGE_DOWNLOAD_MONITOR].pause();
+	}
+	public void unpauseRegularDownloadMonitors()
+	{
+		DOWNLOAD_MONITORS[REGULAR_DOCUMENT_DOWNLOAD_MONITOR].unpause();
+		DOWNLOAD_MONITORS[REGULAR_IMAGE_DOWNLOAD_MONITOR].unpause();
+	}
+	
+	public static DownloadMonitor<DocumentClosure> regularImageDownloadMonitor()
+	{
+		return DOWNLOAD_MONITORS[REGULAR_IMAGE_DOWNLOAD_MONITOR];
 	}
 }
