@@ -96,7 +96,7 @@ class ParseDocumentSemanticAction
 	public Object perform(Object obj)
 	{
 		//TODO -- add pref to choose performFull!
-		return performBasic(obj);
+		return infoCollector.isCollectCandidatesInPools() ? performBasic(obj) : null;
 	}
 
 	public Object performFull(Object obj)
