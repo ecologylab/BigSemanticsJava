@@ -16,8 +16,6 @@ public interface QandDownloadable<D> extends Downloadable
 {
 	public boolean queueDownload();
 	
-	public void setContinuation(Continuation<D> dispatchTarget);
-	
 	/**
 	 * Get the ParsedURL that the Downloadable was initially created with.
 	 * This could change due to server-side re-directs, or, as in ACM Portal, through semantic actions
