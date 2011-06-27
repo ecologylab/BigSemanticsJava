@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URL;
+import java.util.ArrayList;
 
 import ecologylab.collections.SetElement;
 import ecologylab.generic.Continuation;
@@ -32,8 +33,8 @@ import ecologylab.semantics.seeding.QandDownloadable;
 import ecologylab.semantics.seeding.SearchResult;
 import ecologylab.semantics.seeding.Seed;
 import ecologylab.semantics.seeding.SeedDistributor;
-import ecologylab.serialization.ElementState.FORMAT;
 import ecologylab.serialization.SIMPLTranslationException;
+import ecologylab.serialization.ElementState.FORMAT;
 
 /**
  * New Container object. Mostly just a closure around Document.
@@ -43,7 +44,7 @@ import ecologylab.serialization.SIMPLTranslationException;
  *
  */
 public class DocumentClosure<D extends Document> extends SetElement
-implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>, SemanticActionsKeyWords
+implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>, SemanticActionsKeyWords, Continuation<DocumentClosure>
 {
 	D															document;
 	
@@ -58,7 +59,7 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>, S
 
 	SemanticInLinks								semanticInlinks;
 
-	Continuation<DocumentClosure> continuation;
+	ArrayList<Continuation<DocumentClosure>> continuations;
 	
 	DownloadStatus								downloadStatus	= DownloadStatus.UNPROCESSED;
 	
@@ -447,7 +448,8 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>, S
 
 		initialPURL			= null;
 
-		continuation		= null;
+		continuations.clear();	
+		continuations		= null;
 			
 		//??? should we recycle Document here -- under what circumstances???
 		if (recycleDocument)
@@ -517,7 +519,7 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>, S
 				return false;	
 			delete();				// remove from candidate pools! (invokes deleteHook as well)  
 			
-			downloadMonitor().download((DocumentClosure) this, continuation());
+			downloadMonitor().download((DocumentClosure) this, continuations == null ? null : this);
 		}
 		return result;
 	}
@@ -627,16 +629,38 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>, S
 		return (searchResult == null) ? null : searchResult.resultDistributer();
 	}
 
-	
-	@Override
-	public void setContinuation(Continuation<DocumentClosure> continuation)
+
+	private ArrayList<Continuation<DocumentClosure>> continuations()
 	{
-		this.continuation = continuation;
+		ArrayList<Continuation<DocumentClosure>> result	= continuations;
+		if (result == null)
+		{
+			result							= new ArrayList<Continuation<DocumentClosure>>(2);
+			this.continuations	= result;
+		}
+		return result;
+	}
+	
+	public void addContinuation(Continuation<DocumentClosure> continuation)
+	{
+		continuations().add(continuation);
+	}
+	public void addContinuationBefore(Continuation<DocumentClosure> continuation)
+	{
+		continuations().add(0, continuation);
+	}	
+
+	public void addContinuations(ArrayList<Continuation<DocumentClosure>> incomingContinuations)
+	{
+		ArrayList<Continuation<DocumentClosure>> continuations = continuations();
+		
+		for (Continuation<DocumentClosure> continuation: incomingContinuations)
+			continuations.add(continuation);
 	}
 
-	public Continuation<DocumentClosure> continuation()
+	public ArrayList<Continuation<DocumentClosure>> getContinuations()
 	{
-		return continuation;
+		return continuations;
 	}
 
 	public String getQuery()
@@ -717,5 +741,20 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>, S
 	public NewInfoCollector getInfoCollector()
 	{
 		return infoCollector;
+	}
+
+	/**
+	 * Dispatch all of our registered callbacks.
+	 */
+	@Override
+	public void callback(DocumentClosure o)
+	{
+		if (continuations == null)
+			return;
+		
+		for (Continuation<DocumentClosure> continuation: continuations)
+		{
+			continuation.callback(o);
+		}
 	}
 }
