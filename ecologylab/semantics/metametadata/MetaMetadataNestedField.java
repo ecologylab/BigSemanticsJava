@@ -10,14 +10,14 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 	
 	@simpl_composite
 	@xml_tag("field_parser")
-	private FieldParserElement fieldParserElement;
+	private FieldParserElement	fieldParserElement;
 	
 	@simpl_scalar
-	private boolean promoteChildren;
+	private boolean							promoteChildren;		// if children should be displayed at this level
 	
 	@simpl_scalar
-	private boolean													polymorphicGlobal;
-
+	private boolean							polymorphicGlobal;
+	
 	public MetaMetadataNestedField()
 	{
 		// TODO Auto-generated constructor stub
@@ -57,6 +57,9 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 			 * recursively.
 			 **************************************************************************************/
 			
+			// inheritInProcess prevents infinite loops, e.g. when A.b refers B while B.a refers A, then
+			// when you initialize A.b you will have to initialize A.b.a and you will have to initialize
+			// A.b.a.b ...
 			inheritInProcess = true;
 		
 			/*

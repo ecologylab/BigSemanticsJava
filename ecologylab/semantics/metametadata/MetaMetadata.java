@@ -10,6 +10,7 @@ import java.util.Map;
 
 import ecologylab.generic.ReflectionTools;
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.collecting.LinkedMetadataMonitor;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.Metadata.mm_dont_inherit;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
@@ -70,6 +71,9 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 	@simpl_map("link_with")
 	@simpl_nowrap
 	private HashMap<String, LinkWith>				linkWiths;
+	
+	@simpl_scalar
+	protected String												schemaOrgItemtype;
 
 	// TranslationScope DEFAULT_METADATA_TRANSLATIONS = DefaultMetadataTranslationSpace.get();
 	
@@ -303,7 +307,7 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 	 * this will always return null since meta-metadata doesn't inherit from any fields.
 	 */
 	@Override
-	protected MetaMetadataField getInheritedField()
+	public MetaMetadataField getInheritedField()
 	{
 		return null;
 	}
@@ -379,6 +383,46 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 		linkWiths.put(lw.key(), lw);
 	}
 	
+	void setUpLinkWith(MetaMetadataRepository repository)
+	{
+		LinkedMetadataMonitor monitor = repository.getLinkedMetadataMonitor();
+		if (linkWiths != null)
+		{
+			for (String lwName : linkWiths.keySet())
+			{
+				LinkWith lw = linkWiths.get(lwName);
+				MetaMetadata targetMmd = this.getRepository().getByTagName(lw.getName());
+				if (targetMmd != null)
+				{
+					monitor.registerName(lw.getName());
+					monitor.registerName(name);
+	
+					if (targetMmd.getLinkWiths() != null && targetMmd.getLinkWiths().containsKey(name))
+					{
+						// if there is already a reverse link, just make sure the reverse link reference is set
+						LinkWith r = targetMmd.getLinkWiths().get(name);
+						if (!r.isReverse())
+						{
+							// warning("not encouraging explicitly defining reverse links!");
+							r.setReverse(true);
+							lw.setReverseLink(r);
+						}
+					}
+					else
+					{
+						// if there isn't, create a new one
+						LinkWith r = lw.createReverseLink(name);
+						targetMmd.addLinkWith(r);
+					}
+				}
+				else
+				{
+					error("link_with: meta-metadata not found: " + lw.getName());
+				}
+			}
+		}
+	}
+
 	public Map<MetaMetadataSelector, MetaMetadata> getReselectMap()
 	{
 		return reselectMap;

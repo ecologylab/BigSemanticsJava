@@ -395,39 +395,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 						metaMetadata);
 
 			// set up <link_with>
-			LinkedMetadataMonitor monitor = getLinkedMetadataMonitor();
-			String thisName = metaMetadata.getName();
-			Map<String, LinkWith> linkWiths = metaMetadata.getLinkWiths();
-			if (linkWiths != null)
-			{
-				for (String name : linkWiths.keySet())
-				{
-					LinkWith lw = linkWiths.get(name);
-					MetaMetadata targetMmd = getByTagName(lw.getName());
-					assert (targetMmd != null) : "mmd type not found: " + lw.getName();
-
-					monitor.registerName(lw.getName());
-					monitor.registerName(thisName);
-
-					if (targetMmd.getLinkWiths() != null && targetMmd.getLinkWiths().containsKey(thisName))
-					{
-						// if there is already a reverse link, just make sure the reverse link reference is set
-						LinkWith r = targetMmd.getLinkWiths().get(thisName);
-						if (!r.isReverse())
-						{
-							// warning("not encouraging explicitly defining reverse links!");
-							r.setReverse(true);
-							lw.setReverseLink(r);
-						}
-					}
-					else
-					{
-						// if there isn't, create a new one
-						LinkWith r = lw.createReverseLink(thisName);
-						targetMmd.addLinkWith(r);
-					}
-				}
-			}
+			metaMetadata.setUpLinkWith(this);
 		}
 
 		initializeLocationBasedMaps();

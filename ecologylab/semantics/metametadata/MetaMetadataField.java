@@ -210,6 +210,12 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	 */
 	private String packageName = null;
 	
+	
+	/**
+	 * for caching getInheritedField().
+	 */
+	private MetaMetadataField inheritedField = null;
+	
 	public MetaMetadataField()
 	{
 
@@ -993,6 +999,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 		appendable.append("\tthis.").append(fieldName).append(" = ").append(fieldName).append(";\n}\n");
 	}
 
+	// FIXME the name should really be inheritUnspecifiedAttributes
 	protected void inheritNonDefaultAttributes(MetaMetadataField inheritFrom)
 	{
 		MetaMetadataClassDescriptor classDescriptor = (MetaMetadataClassDescriptor) classDescriptor();
@@ -1244,14 +1251,9 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	abstract protected MetaMetadataNestedField getTypeDefinition();
 	
 	/**
-	 * for caching getInheritedField().
-	 */
-	private MetaMetadataField inheritedField = null;
-	
-	/**
 	 * @return the meta-metadata field object from which this field inherits.
 	 */
-	protected MetaMetadataField getInheritedField()
+	public MetaMetadataField getInheritedField()
 	{
 		MetaMetadataField result = inheritedField;
 		if (result == null)

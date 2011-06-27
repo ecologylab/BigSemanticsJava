@@ -28,6 +28,9 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 	protected boolean	childEntity	= false;
 
 	@simpl_scalar
+	protected String	childExtends;
+	
+	@simpl_scalar
 	protected String	childScalarType;
 	
 	/**
