@@ -724,7 +724,7 @@ implements Observer, ThreadMaster, SemanticsPrefs, ApplicationProperties, Docume
 	void addImageClosureToPool(DocumentClosure<Image> imageClosure, CompoundDocument source)
 	{
 		// pressPlayWhenFirstMediaElementArrives();
-		imageClosure.setContinuation(source);
+		imageClosure.addContinuation(source);
 //		visualPool.add(imageClosure);
 //		imageClosure.s
 	}

@@ -3,6 +3,8 @@
  */
 package ecologylab.semantics.actions;
 
+import java.util.ArrayList;
+
 import ecologylab.generic.Continuation;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.documentparsers.DocumentParser;
@@ -84,8 +86,8 @@ class ParseDocumentSemanticAction
 				document.addInlink(source);
 				// if there is a source, we should re-use that dispatch target.
 				// e.g. search results from a search
-				Continuation dispatchTarget = source.getOrConstructClosure().continuation();
-				document.getOrConstructClosure().setContinuation(dispatchTarget);
+				ArrayList<Continuation<DocumentClosure>> continuations = source.getOrConstructClosure().getContinuations();
+				document.getOrConstructClosure().addContinuations(continuations);
 			}
 			document.queueDownload();
 		}

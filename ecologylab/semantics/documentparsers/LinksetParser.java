@@ -41,7 +41,7 @@ public abstract class LinksetParser
 		{
 //			container.presetDocumentType(this);
 			documentClosure.setDocumentParser(this);
-			documentClosure.setContinuation(this);
+			documentClosure.addContinuation(this);
 			document.setAsTrueSeed(seed);
 
 			seed.queueSeedOrRegularContainer(documentClosure);			

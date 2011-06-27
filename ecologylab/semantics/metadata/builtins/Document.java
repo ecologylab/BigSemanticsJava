@@ -385,7 +385,7 @@ public class Document extends Metadata
 		if (documentClosure == null)
 			return false;
 		if (dispatchTarget != null)
-			documentClosure.setContinuation(dispatchTarget);
+			documentClosure.addContinuation(dispatchTarget);
 		return documentClosure.queueDownload();
 	}
 	
