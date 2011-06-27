@@ -38,7 +38,7 @@ public class NewWeatherDataCollector implements Continuation<DocumentClosure>
 		ParsedURL seedUrl = ParsedURL.getAbsolute(seedUrlStr);
 		Document seedDoc = infoCollector.getOrConstructDocument(seedUrl);
 		DocumentClosure downloadClosure = seedDoc.getOrConstructClosure();
-		downloadClosure.setContinuation(this);
+		downloadClosure.addContinuation(this);
 		downloadClosure.queueDownload();
 
 		// request the download monitor to stop (after all the downloads are handled),

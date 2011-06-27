@@ -75,7 +75,7 @@ implements Continuation<DocumentClosure>
 		// process documents after parsing command line so we now how many are really coming
 		for (DocumentClosure documentClosure: documentCollection)
 		{
-			documentClosure.setContinuation(this);
+			documentClosure.addContinuation(this);
 			if (downloadMonitor == null)
 				downloadMonitor		= documentClosure.downloadMonitor();
 			documentClosure.queueDownload();
