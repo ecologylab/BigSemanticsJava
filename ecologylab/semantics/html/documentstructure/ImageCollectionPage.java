@@ -3,14 +3,16 @@ package ecologylab.semantics.html.documentstructure;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.TreeMap;
+import java.util.jar.Attributes.Name;
 
-import org.w3c.tidy.Node;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import ecologylab.generic.StringTools;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.html.ImgElement;
 import ecologylab.semantics.html.ParagraphText;
-import ecologylab.semantics.html.TidyInterface;
+import ecologylab.semantics.html.DOMParserInterface;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.serialization.XMLTools;
 
@@ -32,7 +34,7 @@ public class ImageCollectionPage extends RecognizedDocumentStructure
 	 */
 	@Override
 	public void generateSurrogates(Node articleMain, ArrayList<ImgElement> imgElements, int totalTxtLeng, 
-			TreeMap<Integer, ParagraphText> paraTextMap, TidyInterface htmlType)
+			TreeMap<Integer, ParagraphText> paraTextMap, DOMParserInterface htmlType)
 	{
 		Collection<ParagraphText> paraTextsC	= paraTextMap.values();
 		ParagraphText[] paraTexts	= new ParagraphText[paraTextsC.size()];
@@ -46,9 +48,9 @@ public class ImageCollectionPage extends RecognizedDocumentStructure
 			if (altText == null)
 			{
 				final Node imageNodeNode 	= imgElement.getNode();
-				StringBuilder extractedCaption = getLongestTxtinSubTree(imageNodeNode.grandParent(), null);	// returns null in worst case
+				StringBuilder extractedCaption = getLongestTxtinSubTree(imageNodeNode.getParentNode().getParentNode(), null);	// returns null in worst case
 				if (extractedCaption == null)
-					extractedCaption = getLongestTxtinSubTree(imageNodeNode.greatGrandParent(), null);	// returns null in worst case
+					extractedCaption = getLongestTxtinSubTree(imageNodeNode.getParentNode().getParentNode().getParentNode(), null);	// returns null in worst case
 								
 				if (extractedCaption != null)
 				{
@@ -73,21 +75,23 @@ public class ImageCollectionPage extends RecognizedDocumentStructure
 			else // if (anchorPurl.isHTML() || anchorPurl.isPDF() || anchorPurl.isRSS())
 			{
 				// TODO find the anchorContext for this purl
-				Node parent		= imgElement.getNode().parent();
-				Node gParent	= parent.parent();
-				Node ggParent	= gParent.parent();
+				Node parent		= imgElement.getNode().getParentNode();
+				Node gParent	= parent.getParentNode();
+				Node ggParent	= gParent.getParentNode();
 				for (ParagraphText paraText : paraTexts)
 				{
 					Node paraTextNode	= paraText.getElementNode();
+					NodeList children = paraTextNode.getChildNodes();
 					Node contextNode	= null;
 					if (paraTextNode == parent)
 						contextNode				= parent;
 					else if (paraTextNode == gParent)
 						contextNode				= gParent;
 					else if (paraTextNode == ggParent)
-						contextNode				= ggParent;
-					else for (Node childNode	= paraTextNode.content(); childNode != null; childNode = childNode.next())
+						contextNode				= ggParent;					
+					else for (int j=0; j<children.getLength(); j++)
 					{
+						Node childNode = children.item(j);
 						if (paraTextNode == childNode)
 						{
 							contextNode			= childNode;

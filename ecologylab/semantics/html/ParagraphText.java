@@ -1,6 +1,6 @@
 package ecologylab.semantics.html;
 
-import org.w3c.tidy.Node;
+import org.w3c.dom.Node;
 
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.model.text.TermVector;
@@ -27,9 +27,9 @@ public class ParagraphText
 		return node;
 	}
 
-	public void setNode(Node node)
+	public void setNode(Node blockNode)
 	{
-		this.node = node;
+		this.node = blockNode;
 	}
 
 //TODO -- get rid of this visibility, because it is prone to creating memory leaks.
@@ -100,12 +100,11 @@ public class ParagraphText
 	
 	public Node getElementNode()
 	{
-		for (Node thisNode = node; thisNode != null; thisNode = thisNode.parent())
+		for (Node thisNode = node; thisNode != null; thisNode = thisNode.getParentNode())
 		{
-			switch (thisNode.type)
+			switch (thisNode.getNodeType())
 			{
-			case Node.START_TAG:
-			case Node.START_END_TAG:
+			case Node.ELEMENT_NODE:
 				return thisNode;
 			}
 		}

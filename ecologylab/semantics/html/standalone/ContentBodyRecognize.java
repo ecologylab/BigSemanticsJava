@@ -8,13 +8,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.StringWriter;
 import java.net.MalformedURLException;
 
-import org.w3c.tidy.DOMDocumentImpl;
-import org.w3c.tidy.Node;
-import org.w3c.tidy.Out;
-import org.w3c.tidy.OutJavaImpl;
-import org.w3c.tidy.StreamIn;
+import org.w3c.dom.Node;
 
 import ecologylab.net.PURLConnection;
 import ecologylab.net.ParsedURL;
@@ -37,13 +34,14 @@ public class ContentBodyRecognize extends OldHTMLDOMParser
 
 	public Node pprint(org.w3c.dom.Document doc, OutputStream out, ParsedURL purl)
 	{
-		Out o = new OutJavaImpl(this.getConfiguration(), null);
+//		Out o = new OutJavaImpl(this.getConfiguration(), null);
+		StringWriter o = new StringWriter();
 		Node document;
 
-		if (!(doc instanceof DOMDocumentImpl)) {
-			return null;
-		}
-		document = ((DOMDocumentImpl)doc).adaptee;
+//		if (!(doc instanceof DOMDocumentImpl)) {
+//			return null;
+//		}
+		document = doc.getDocumentElement();
 
 //		o.state = StreamIn.FSM_ASCII;
 //		o.encoding = configuration.CharEncoding;
@@ -51,15 +49,15 @@ public class ContentBodyRecognize extends OldHTMLDOMParser
 		//      if (out != null)
 			//      {
 			// Instantiate PPrint constructor that connects to combinFormation
-		DOMWalkInformationTagger pprint = new DOMWalkInformationTagger(configuration, purl, null);
+		DOMWalkInformationTagger pprint = new DOMWalkInformationTagger(purl, null);
 
 //		o.out = out;
-		if (configuration.xmlTags)
-			pprint.printXMLTree(o, (short)0, 0, null, document);
-		else
-			pprint.printTree(o, (short)0, 0, null, document);
+//		if (configuration.xmlTags)
+//			pprint.printXMLTree(o, (short)0, 0, null, document);
+//		else
+			pprint.printTree(document, o);
 
-		pprint.flushLine(o, 0);
+		pprint.flushLine(o);
 
 		Node articleMain = RecognizedDocumentStructure.recognizeContentBody(pprint);
 
@@ -87,7 +85,7 @@ public class ContentBodyRecognize extends OldHTMLDOMParser
 			aspectRatio 				= (aspectRatio>1.0) ?  (float)1.0/aspectRatio : aspectRatio;
 
 			String altStr 			= imgElement.getAlt();
-			boolean parentHref 	= imgElement.getNode().parent().element.equals("a");  		
+			boolean parentHref 	= imgElement.getNode().getParentNode().getNodeName().equals("a");  		
 			boolean articleImg 	= true;
 
 			// Advertisement Keyword in the "alt" value
@@ -220,9 +218,9 @@ System.out.println("informTextID : " + informTextID);
 				try
 				{
 					if ((labelConnection != null) && (labelConnection.urlConnection().getContent()!=null) 
-							&& (contentBodyNode!=null) && (contentBodyNode.getAttrByName("tag_id")!=null) )
+							&& (contentBodyNode!=null) && (contentBodyNode.getAttributes().getNamedItem("tag_id")!=null) )
 					{
-						String returnVal=cbr.getContentBody(labelPurl, contentBodyNode.getAttrByName("tag_id").value);
+						String returnVal=cbr.getContentBody(labelPurl, contentBodyNode.getAttributes().getNamedItem("tag_id").getNodeValue());
 						if( returnVal.equals("no") )
 							System.out.println("WHY NOT THIS!!!!!!!!!!! " + purl);
 					}

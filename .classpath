@@ -3,7 +3,6 @@
 	<classpathentry excluding="doc/|ecologylab/semantics/library/DcDocument.java|ecologylab/semantics/library/Dlms.java|ecologylab/semantics/library/Document.java|ecologylab/semantics/library/Icdl.java|ecologylab/semantics/library/Nsdl.java|ecologylab/semantics/library/Pdf.java|ecologylab/semantics/library/Rss.java|ecologylab/semantics/library/Search.java|ecologylab/semantics/library/deprecated/|ecologylab/semantics/library/deprecated/DcDocument.java|ecologylab/semantics/library/deprecated/Dlms.java|ecologylab/semantics/library/deprecated/Icdl.java|ecologylab/semantics/library/deprecated/Nsdl.java|ecologylab/semantics/library/deprecated/Pdf.java|ecologylab/semantics/library/deprecated/Rss.java|repository/" kind="src" path=""/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/ecologylabFundamental"/>
-	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/jtidy"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="output" path=""/>
 </classpath>

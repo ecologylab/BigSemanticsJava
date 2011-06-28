@@ -4,12 +4,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.StringWriter;
 
-import org.w3c.tidy.DOMDocumentImpl;
-import org.w3c.tidy.Out;
-import org.w3c.tidy.OutJavaImpl;
-import org.w3c.tidy.StreamIn;
-import org.w3c.tidy.Node;
+import org.w3c.dom.Node;
 
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.documentparsers.HTMLDOMParser;
@@ -26,13 +23,9 @@ public class GenerateSVMData extends OldHTMLDOMParser
 {
     public void pprint(org.w3c.dom.Document doc, OutputStream out, ParsedURL purl, String mainPartitionID)
     {
-        Out o = new OutJavaImpl(this.getConfiguration(), null);
-        Node document;
+//        Out o = new OutJavaImpl(this.getConfiguration(), null);
+        Node document = null;
 
-        if (!(doc instanceof DOMDocumentImpl)) {
-            return;
-        }
-        document = ((DOMDocumentImpl)doc).adaptee;
 
 //        o.state = StreamIn.FSM_ASCII;
 //        o.encoding = configuration.CharEncoding;
@@ -40,7 +33,7 @@ public class GenerateSVMData extends OldHTMLDOMParser
   //      if (out != null)
   //      {
         	// Instantiate PPrint constructor that connects to combinFormation
-        DOMWalkInformationTagger pprint = new DOMWalkInformationTagger(configuration, purl, null);
+        DOMWalkInformationTagger pprint = new DOMWalkInformationTagger(purl, null);
         
         // To generate SVM data 
         pprint.setPartitionID(mainPartitionID);
@@ -49,15 +42,15 @@ public class GenerateSVMData extends OldHTMLDOMParser
 		try {
 			outFile = new FileOutputStream("svmData.csv", true);
 			pprint.setFileOutputStream(outFile);
-			
+			StringWriter o = new StringWriter();
 	        
 //	        o.out = out;
-	        if (configuration.xmlTags)
-	            pprint.printXMLTree(o, (short)0, 0, null, document);
-	        else
-	            pprint.printTree(o, (short)0, 0, null, document);
+//	        if (configuration.xmlTags)
+//	            pprint.printXMLTree(o, (short)0, 0, null, document);
+//	        else
+	            pprint.printTree(document, o);
 
-	        pprint.flushLine(o, 0);
+	        pprint.flushLine(o);
 	        
 	        outFile.close();
 	        

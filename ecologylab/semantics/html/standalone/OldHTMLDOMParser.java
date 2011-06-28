@@ -1,17 +1,15 @@
 package ecologylab.semantics.html.standalone;
 
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.TreeMap;
 
 import org.w3c.dom.Document;
-import org.w3c.tidy.AttVal;
-import org.w3c.tidy.DOMDocumentImpl;
-import org.w3c.tidy.DOMNodeImpl;
-import org.w3c.tidy.Node;
-import org.w3c.tidy.Out;
-import org.w3c.tidy.OutJavaImpl;
-import org.w3c.tidy.StreamIn;
-import org.w3c.tidy.Tidy;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
 
 import ecologylab.generic.StringTools;
 import ecologylab.net.PURLConnection;
@@ -20,7 +18,7 @@ import ecologylab.semantics.html.AElement;
 import ecologylab.semantics.html.DOMWalkInformationTagger;
 import ecologylab.semantics.html.ImgElement;
 import ecologylab.semantics.html.ParagraphText;
-import ecologylab.semantics.html.TidyInterface;
+import ecologylab.semantics.html.DOMParserInterface;
 import ecologylab.semantics.html.documentstructure.AnchorContext;
 import ecologylab.semantics.html.documentstructure.ContentPage;
 import ecologylab.semantics.html.documentstructure.ImageCollectionPage;
@@ -28,6 +26,7 @@ import ecologylab.semantics.html.documentstructure.ImageFeatures;
 import ecologylab.semantics.html.documentstructure.IndexPage;
 import ecologylab.semantics.html.documentstructure.RecognizedDocumentStructure;
 import ecologylab.semantics.html.documentstructure.TextOnlyPage;
+import ecologylab.semantics.html.dom.IDOMProvider;
 import ecologylab.semantics.html.utils.HTMLAttributeNames;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.serialization.XMLTools;
@@ -46,10 +45,11 @@ import ecologylab.serialization.XMLTools;
  *
  */
 @Deprecated
-public class OldHTMLDOMParser extends Tidy
-implements HTMLAttributeNames
+public class OldHTMLDOMParser
+implements HTMLAttributeNames, IDOMProvider
 {
 	PURLConnection purlConnection;
+	IDOMProvider provider;
 
 	/**
 	 * because Tidy extends Serializable
@@ -72,7 +72,7 @@ implements HTMLAttributeNames
 	public org.w3c.dom.Document parse(PURLConnection purlConnection)
 	{
 		this.purlConnection		= purlConnection;
-		return parseDOM(purlConnection.inputStream(), null);
+		return provider.parseDOM(purlConnection.inputStream(), null);
 	}
 
 	/**
@@ -81,15 +81,10 @@ implements HTMLAttributeNames
 	 * @param in
 	 * @param htmlType
 	 */
-	public void parse(PURLConnection purlConnection, TidyInterface htmlType)
+	public void parse(PURLConnection purlConnection, DOMParserInterface htmlType)
 	{
 		Document parsedDoc = parse(purlConnection);
 
-		if (!(parsedDoc instanceof DOMDocumentImpl)) 
-		{
-			//Does this ever happen anymore?
-			return;
-		}
 		
 		DOMWalkInformationTagger taggedDoc = walkAndTagDom(parsedDoc, htmlType);
 		
@@ -105,31 +100,27 @@ implements HTMLAttributeNames
 		taggedDoc.recycle();
 	}
 
-	public DOMWalkInformationTagger walkAndTagDom(org.w3c.dom.Node doc, TidyInterface htmlType)
-	{
-		return walkAndTagDom(((DOMNodeImpl)doc).adaptee, htmlType);
-	}
 	/**
 	 * This is the walk of the dom that calls print tree, and the parser methods such as closeHref etc.
 	 * @param doc
 	 * @param htmlType
 	 * @return
 	 */
-	public DOMWalkInformationTagger walkAndTagDom(Node rootTdNode, TidyInterface htmlType)
+	public DOMWalkInformationTagger walkAndTagDom(Node rootTdNode, DOMParserInterface htmlType)
 	{
-		Out jtidyPrettyOutput = new OutJavaImpl(this.getConfiguration(), null);
 
 //		jtidyPrettyOutput.state = StreamIn.FSM_ASCII;
 //		jtidyPrettyOutput.encoding = configuration.CharEncoding;
 
-		DOMWalkInformationTagger domTagger = new DOMWalkInformationTagger(configuration, purlConnection.getPurl(), htmlType);
+		DOMWalkInformationTagger domTagger = new DOMWalkInformationTagger(purlConnection.getPurl(), htmlType);
 
+		StringWriter writer = new StringWriter();
 		// walk through the HTML document object.
 		// gather all paragraphText and image objects in the data structure.
 		//FIXME -- get rid of this call and object!
-		domTagger.printTree(jtidyPrettyOutput, (short)0, 0, null, rootTdNode);
+		domTagger.printTree(rootTdNode, writer);
 
-		domTagger.flushLine(jtidyPrettyOutput, 0);
+		domTagger.flushLine(writer);
 		return domTagger;
 	}
 
@@ -138,7 +129,7 @@ implements HTMLAttributeNames
 	 * 
 	 * historically was called as pprint() in JTidy. 
 	 */
-	public void extractImageTextSurrogates(DOMWalkInformationTagger taggedDoc, TidyInterface htmlType)
+	public void extractImageTextSurrogates(DOMWalkInformationTagger taggedDoc, DOMParserInterface htmlType)
 	{
 
 		Node contentBody = RecognizedDocumentStructure.recognizeContentBody(taggedDoc);
@@ -159,7 +150,7 @@ implements HTMLAttributeNames
 	 * @param contentBody
 	 * @param imgNodes
 	 */
-	private void recognizeDocumentStructureToGenerateSurrogate(TidyInterface htmlType,
+	private void recognizeDocumentStructureToGenerateSurrogate(DOMParserInterface htmlType,
 			DOMWalkInformationTagger domWalkInfoTagger, Node contentBody,
 			ArrayList<ImgElement> imgNodes) 
 	{
@@ -246,7 +237,7 @@ implements HTMLAttributeNames
 		ParsedURL href 									= aElement.getHref();
 		if (href != null)
 		{
-			Node parent 							  = anchorNodeNode.parent();
+			Node parent 							  = anchorNodeNode.getParentNode();
 			//FIXME -- this routine drops all sorts of significant stuff because it does not concatenate across tags.
 			StringBuilder anchorContext 	= getTextInSubTree(parent, false);
 			
@@ -293,14 +284,16 @@ implements HTMLAttributeNames
 	//FIXME -- why is text in anchor node not included?
   public static StringBuilder getTextinSubTree(Node node, boolean recurse, StringBuilder result)
   {
-  	for (Node childNode	= node.content(); childNode != null; childNode = childNode.next())
+  	NodeList children = node.getChildNodes();
+  	for (int i=0; i<children.getLength(); i++)
   	{
-			if (recurse && (childNode.element!=null) && (!childNode.element.equals("script")))
+  		Node childNode = children.item(i);
+			if (recurse && (childNode.getNodeName()!=null) && (!childNode.getNodeName().equals("script")))
 			{
 				//Recursive call with the childNode
 				result = getTextinSubTree(childNode, true, result);
 			}	
-			else if (childNode.type == Node.TEXT_NODE )
+			else if (childNode.getNodeType() == Node.TEXT_NODE )
   		{
   			int length	= 0;
 				if (result != null)
@@ -313,10 +306,10 @@ implements HTMLAttributeNames
   			if ((result != null) && (length == result.length()))
   					result.setLength(length - 1);	// take the space off if nothing was appended
   		} 
-  		else if ("img".equals(childNode.element))
+  		else if ("img".equals(childNode.getNodeName()))
   		{
-  			AttVal altAtt	= childNode.getAttrByName(ALT);
-  			String alt		= (altAtt != null) ? altAtt.value : null;
+  			Node altAtt	= childNode.getAttributes().getNamedItem(ALT);
+  			String alt		= (altAtt != null) ? altAtt.getNodeValue() : null;
   			if (!ImageFeatures.altIsBogus(alt))
   			{
   				if (result == null)
@@ -337,4 +330,32 @@ implements HTMLAttributeNames
   {
   	return purlConnection.getPurl();
   }
+
+	@Override
+	public void setQuiet(boolean b)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setShowWarnings(boolean b)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public org.w3c.dom.Node parse(InputStream in, String file, OutputStream out)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Document parseDOM(InputStream inputStream, OutputStream out)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

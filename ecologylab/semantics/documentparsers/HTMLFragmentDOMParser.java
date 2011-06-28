@@ -8,12 +8,12 @@ import ecologylab.net.ParsedURL;
 import ecologylab.semantics.collecting.NewInfoCollector;
 import ecologylab.semantics.html.DOMFragmentInformationTagger;
 import ecologylab.semantics.html.ImgElement;
-import ecologylab.semantics.html.TidyInterface;
+import ecologylab.semantics.html.DOMParserInterface;
 import ecologylab.semantics.metadata.builtins.AnonymousDocument;
 
 public class HTMLFragmentDOMParser
 extends HTMLDOMParser
-implements TidyInterface
+implements DOMParserInterface
 {
 
 	InputStream fragmentStream;
@@ -30,8 +30,8 @@ implements TidyInterface
 	@Override
 	public void parse() throws IOException
 	{
-		taggedDoc = new DOMFragmentInformationTagger(tidy.getConfiguration(), null, this);
-		taggedDoc.generateCollections(this);
+		taggedDoc = new DOMFragmentInformationTagger(null, this);
+		taggedDoc.generateCollectionsFromRoot(this.getRootNode());
 	}
 	
 	public InputStream inputStream()

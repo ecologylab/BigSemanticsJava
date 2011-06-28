@@ -22,7 +22,9 @@ import ecologylab.semantics.collecting.DownloadStatus;
 import ecologylab.semantics.collecting.NewInfoCollector;
 import ecologylab.semantics.collecting.SemanticsSite;
 import ecologylab.semantics.documentparsers.DocumentParser;
+import ecologylab.semantics.documentparsers.HTMLDOMParser;
 import ecologylab.semantics.html.documentstructure.SemanticInLinks;
+import ecologylab.semantics.html.dom.IDOMProvider;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
@@ -62,6 +64,8 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>, S
 	ArrayList<Continuation<DocumentClosure>> continuations;
 	
 	DownloadStatus								downloadStatus	= DownloadStatus.UNPROCESSED;
+	
+	IDOMProvider 									provider;
 	
 	protected		NewInfoCollector	infoCollector;
 	
@@ -123,8 +127,10 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>, S
 	 * Actually download the document and parse it.
 	 * Connect to the purl. Figure out the appropriate Meta-Metadata and DocumentType.
 	 * Process redirects as needed.
+	 * @throws IOException 
 	 */
-	@Override
+
+
 	public void performDownload()
 	throws IOException
 	{
@@ -388,6 +394,10 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>, S
 		if (documentParser != null)
 		{
 			documentParser.fillValues(purlConnection, this, infoCollector);
+			if (documentParser instanceof HTMLDOMParser)
+			{
+				((HTMLDOMParser) documentParser).setProvider(provider);
+			}
 		}
 		else
 			warning("No DocumentParser found");
@@ -741,6 +751,11 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>, S
 	public NewInfoCollector getInfoCollector()
 	{
 		return infoCollector;
+	}
+
+	public void setProvider(IDOMProvider provider)
+	{
+		this.provider = provider;
 	}
 
 	/**

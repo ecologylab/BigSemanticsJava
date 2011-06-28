@@ -5,10 +5,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.TreeMap;
 
-import org.w3c.tidy.AttVal;
-import org.w3c.tidy.Node;
-import org.w3c.tidy.Out;
-import org.w3c.tidy.OutJavaImpl;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+
 
 import ecologylab.generic.StringTools;
 import ecologylab.net.ParsedURL;
@@ -17,7 +18,7 @@ import ecologylab.semantics.html.AElement;
 import ecologylab.semantics.html.DOMWalkInformationTagger;
 import ecologylab.semantics.html.ImgElement;
 import ecologylab.semantics.html.ParagraphText;
-import ecologylab.semantics.html.TidyInterface;
+import ecologylab.semantics.html.DOMParserInterface;
 import ecologylab.semantics.html.documentstructure.AnchorContext;
 import ecologylab.semantics.html.documentstructure.ContentPage;
 import ecologylab.semantics.html.documentstructure.ImageCollectionPage;
@@ -39,7 +40,7 @@ import ecologylab.serialization.XMLTools;
  */
 public class HTMLDOMImageTextParser
 extends HTMLDOMParser
-implements TidyInterface, HTMLAttributeNames
+implements DOMParserInterface, HTMLAttributeNames
 {
 	public HTMLDOMImageTextParser(NewInfoCollector infoCollector)	// this is of type In
 	{
@@ -52,7 +53,7 @@ implements TidyInterface, HTMLAttributeNames
 	@Override
 	public void parse() throws IOException
 	{
-		DOMWalkInformationTagger taggedDoc = new DOMWalkInformationTagger(tidy.getConfiguration(), purlConnection.getPurl(), this);
+		DOMWalkInformationTagger taggedDoc = new DOMWalkInformationTagger(purlConnection.getPurl(), this);
 		// this function actually traverse the dom tree
 		taggedDoc.generateCollections(getDom());
 		
@@ -89,16 +90,14 @@ implements TidyInterface, HTMLAttributeNames
 	 * @param htmlType
 	 * @return
 	 */
-	public DOMWalkInformationTagger walkAndTagDom(Node tdNode, TidyInterface htmlType)
+	public DOMWalkInformationTagger walkAndTagDom(Node contentBody, DOMParserInterface htmlType)
 	{
 		// note that content body could be null if it is not a content page
-		if (tdNode == null)
+		if (contentBody == null)
 			return null;
 		
-		Out jtidyPrettyOutput = new OutJavaImpl(tidy.getConfiguration(), null);
-
-		DOMWalkInformationTagger domTagger = new DOMWalkInformationTagger(tidy.getConfiguration(), purlConnection.getPurl(), htmlType);
-		domTagger.generateCollections(tdNode);
+		DOMWalkInformationTagger domTagger = new DOMWalkInformationTagger(purlConnection.getPurl(), htmlType);
+		domTagger.generateCollectionsFromRoot(contentBody);
 		// walk through the HTML document object.
 		// gather all paragraphText and image objects in the data structure.
 		//FIXME -- get rid of this call and object!
@@ -145,7 +144,7 @@ implements TidyInterface, HTMLAttributeNames
 	{
 		RecognizedDocumentStructure pageCategory = null;
 
-		if ((contentBody!=null) && (contentBody.parent()!=null) /*&& (!articleMain.parent().equals(document))*/ )
+		if ((contentBody!=null) && (contentBody.getParentNode()!=null) /*&& (!articleMain.parent().equals(document))*/ )
 		{
 			pageCategory = new ContentPage(purl());
 		}
@@ -228,7 +227,7 @@ implements TidyInterface, HTMLAttributeNames
 		if (href != null)
 		{
 			//Cache TdNode-AnchorContext getTextInSubTree.
-			Node parent 							  = anchorNodeNode.parent();
+			Node parent 							  = anchorNodeNode.getParentNode();
 			//FIXME -- this routine drops all sorts of significant stuff because it does not concatenate across tags.
 			StringBuilder anchorContext = null;
 			
@@ -282,14 +281,16 @@ implements TidyInterface, HTMLAttributeNames
    */
   public static StringBuilder getTextinSubTree(Node node, boolean recurse, StringBuilder result)
   {
-  	for (Node childNode	= node.content(); childNode != null; childNode = childNode.next())
+  	NodeList children = node.getChildNodes();
+  	for (int i=0; i<children.getLength(); i++)
   	{
-			if (recurse && (childNode.element!=null) && (!childNode.element.equals("script")))
+  		Node childNode = children.item(i);
+			if (recurse && (childNode.getNodeName()!=null) && (!childNode.getNodeName().equals("script")))
 			{
 				//Recursive call with the childNode
 				result = getTextinSubTree(childNode, true, result);
 			}	
-			else if (childNode.type == Node.TEXT_NODE )
+			else if (childNode.getNodeType() == Node.TEXT_NODE )
   		{
   			int length	= 0;
 				if (result != null)
@@ -299,13 +300,13 @@ implements TidyInterface, HTMLAttributeNames
 				}
   			result			= StringBuilderUtils.trimAndDecodeUTF8(result, childNode, 0, true);
   			
-  			if ((result != null) && (length == result.length()))
+  			if ((result != null) && (length == result.length()) && (length > 0))
   					result.setLength(length - 1);	// take the space off if nothing was appended
   		} 
-  		else if ("img".equals(childNode.element))
+  		else if ("img".equals(childNode.getNodeName()))
   		{
-  			AttVal altAtt	= childNode.getAttrByName(ALT);
-  			String alt		= (altAtt != null) ? altAtt.value : null;
+  			Node altAtt	= childNode.getAttributes().getNamedItem(ALT);
+  			String alt		= (altAtt != null) ? altAtt.getNodeValue() : null;
   			if (!ImageFeatures.altIsBogus(alt))
   			{
   				if (result == null)

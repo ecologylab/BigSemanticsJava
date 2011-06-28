@@ -3,6 +3,8 @@ package ecologylab.semantics.actions;
 import java.io.IOException;
 import java.util.Map;
 
+import org.w3c.dom.Node;
+
 import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.documentparsers.ParserBase;
 import ecologylab.semantics.metadata.builtins.CompoundDocument;
@@ -51,7 +53,7 @@ public class ReselectAndExtractMetadataSemanticAction extends SemanticAction
 						CompoundDocument newDoc = (CompoundDocument) newMmd.constructMetadata();
 						newDoc.setLocation(doc.getLocation());
 						ParserBase newParserBase = (ParserBase) newParser;
-						org.w3c.dom.Document DOM = ((ParserBase) documentParser).getDom();
+						Node DOM = ((ParserBase) documentParser).getDom();
 						newParserBase.parse(newDoc, newMmd, DOM);
 
 						DocumentClosure closure = doc.getOrConstructClosure();

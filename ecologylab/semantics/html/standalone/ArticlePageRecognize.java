@@ -3,14 +3,11 @@ package ecologylab.semantics.html.standalone;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.w3c.tidy.DOMDocumentImpl;
-import org.w3c.tidy.Node;
-import org.w3c.tidy.Out;
-import org.w3c.tidy.OutJavaImpl;
-import org.w3c.tidy.StreamIn;
+import org.w3c.dom.Node;
 
 import ecologylab.net.PURLConnection;
 import ecologylab.net.ParsedURL;
@@ -33,13 +30,14 @@ public class ArticlePageRecognize extends OldHTMLDOMParser
      */
     public void pprint(org.w3c.dom.Document doc, OutputStream out, ParsedURL purl)
     {
-        Out o = new OutJavaImpl(this.getConfiguration(), null);
+//        Out o = new OutJavaImpl(this.getConfiguration(), null);
+    	StringWriter o = new StringWriter();
         Node document;
 
-        if (!(doc instanceof DOMDocumentImpl)) {
-            return;
-        }
-        document = ((DOMDocumentImpl)doc).adaptee;
+//        if (!(doc instanceof DOMDocumentImpl)) {
+//            return;
+//        }
+        document = doc.getDocumentElement();
 
 //        o.state = StreamIn.FSM_ASCII;
 //        o.encoding = configuration.CharEncoding;
@@ -47,15 +45,15 @@ public class ArticlePageRecognize extends OldHTMLDOMParser
   //      if (out != null)
   //      {
         	// Instantiate PPrint constructor that connects to combinFormation
-        DOMWalkInformationTagger pprint = new DOMWalkInformationTagger(configuration, purl, null);
+        DOMWalkInformationTagger pprint = new DOMWalkInformationTagger(purl, null);
         
 //        o.out = out;
-        if (configuration.xmlTags)
-            pprint.printXMLTree(o, (short)0, 0, null, document);
-        else
-            pprint.printTree(o, (short)0, 0, null, document);
+//        if (configuration.xmlTags)
+//            pprint.printXMLTree(o, (short)0, 0, null, document);
+//        else
+            pprint.printTree(document, o);
 
-        pprint.flushLine(o, 0);
+        pprint.flushLine(o);
         
         Node articleMain = RecognizedDocumentStructure.recognizeContentBody(pprint);
 //System.out.println("ArticleMain: " + articleMain );

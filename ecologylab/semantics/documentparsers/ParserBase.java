@@ -88,10 +88,10 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 	public abstract Document populateMetadata(
 			Document document,
 			MetaMetadataCompositeField metaMetadata,
-			org.w3c.dom.Document DOM,
+			Node dOM,
 			SemanticActionHandler handler) throws IOException;
 
-	public final Document parse(Document document, MetaMetadataCompositeField metaMetadata, org.w3c.dom.Document DOM) throws IOException
+	public final Document parse(Document document, MetaMetadataCompositeField metaMetadata, org.w3c.dom.Node DOM) throws IOException
 	{
 		// init
 		SemanticActionHandler handler = new SemanticActionHandler(infoCollector, this);

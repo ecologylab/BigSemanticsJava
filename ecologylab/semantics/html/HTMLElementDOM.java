@@ -2,8 +2,8 @@ package ecologylab.semantics.html;
 
 import java.util.HashMap;
 
-import org.w3c.tidy.AttVal;
-import org.w3c.tidy.Node;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 
 import ecologylab.generic.Generic;
 import ecologylab.generic.StringTools;
@@ -17,7 +17,7 @@ import ecologylab.semantics.html.utils.StringBuilderUtils;
  * @author eunyee
  *
  */    
-public class HTMLElementTidy
+public class HTMLElementDOM
 implements HTMLAttributeNames, ImageConstants
 {
 	public static final int	INDEX_NOT_CALCULATED	= -1;
@@ -34,15 +34,15 @@ implements HTMLAttributeNames, ImageConstants
 	
 	int			localXPathIndex	= INDEX_NOT_CALCULATED;
 	
-	public HTMLElementTidy()
+	public HTMLElementDOM()
 	{
 		
 	}
 	
-	public HTMLElementTidy(Node node)
+	public HTMLElementDOM(Node node)
 	{
 		this.node						= node;
-		addAttributes(node.attributes);
+		addAttributes(node.getAttributes());
 	}
 	
 	protected void setAttribute(String key, String value)
@@ -93,22 +93,45 @@ implements HTMLAttributeNames, ImageConstants
 	{
 		this.node = node;
 	}
-	
+
 	public String xpath()
 	{
-		String result	= this.xpath;
+		String result = this.xpath;
 		if (result == null)
 		{
-			StringBuilder buffy	= StringBuilderUtils.acquire();
-			node.xpath(buffy);
-			result							= StringTools.toString(buffy);
-			this.xpath					= result;
+			StringBuilder buffy = StringBuilderUtils.acquire();
+			xpath(buffy, node);
+			result = StringTools.toString(buffy);
+			this.xpath = result;
 			buffy.setLength(0);
 			StringBuilderUtils.release(buffy);
 		}
+
 		return result;
 	}
 
+	public void xpath(StringBuilder buffy, Node xpathNode)
+	{
+		if (xpathNode.getParentNode() != null && node.getParentNode().getNodeName() != null)
+			xpath(buffy, xpathNode.getParentNode());
+		thisNodeXPath(buffy);
+	}
+
+	public void thisNodeXPath(StringBuilder buffy)
+	{
+		buffy.append('/').append(node.getNodeName());
+		int count = 1;
+		Node prev = node.getPreviousSibling();
+		while (prev != null)
+		{
+			if (node.getNodeName().equals(prev.getNodeName()))
+				count++;
+			prev = prev.getPreviousSibling();
+		}
+		if (count > 1)
+			buffy.append('[').append(count).append(']');
+	}
+	
 	public Node getNode() 
 	{
 		return node;
@@ -117,12 +140,12 @@ implements HTMLAttributeNames, ImageConstants
 	/**
 	 * Create HashMap of attributes from tidy AttVal linked list of them.
 	 */
-	protected void addAttributes(AttVal attr)
+	protected void addAttributes(NamedNodeMap attributes)
 	{
-		while (attr != null)
+		for (int i=0; i<attributes.getLength(); i++)
 		{
-			setAttribute(attr.attribute, attr.value);
-			attr					= attr.next;
+			Node attr = attributes.item(i);
+			setAttribute(attr.getNodeName(), attr.getNodeValue());
 		}
 	}
 
@@ -133,8 +156,7 @@ implements HTMLAttributeNames, ImageConstants
 			attributesMap.clear();
 			attributesMap	= null;
 		}
-		if (node != null)
-			node.recycle();
+
 		node					= null;
 	}
 

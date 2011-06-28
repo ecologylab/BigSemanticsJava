@@ -5,6 +5,8 @@ package ecologylab.semantics.documentparsers;
 
 import java.io.IOException;
 
+import org.w3c.dom.Node;
+
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.actions.SemanticActionsKeyWords;
@@ -86,7 +88,7 @@ public class SearchParser extends LinksetParser implements CFPrefNames, Semantic
 
 	@Override
 	public Document populateMetadata(Document document,
-			MetaMetadataCompositeField metaMetadata, org.w3c.dom.Document DOM,
+			MetaMetadataCompositeField metaMetadata, org.w3c.dom.Node DOM,
 			SemanticActionHandler handler) throws IOException
 	{
 		Document resultingDocument	= document;

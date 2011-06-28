@@ -3,9 +3,8 @@ package ecologylab.semantics.documentparsers;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import org.w3c.tidy.DOMNodeImpl;
-import org.w3c.tidy.Node;
-import org.w3c.tidy.Tidy;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import ecologylab.appframework.types.prefs.PrefBoolean;
 import ecologylab.generic.HashMapArrayList;
@@ -13,11 +12,12 @@ import ecologylab.generic.StringTools;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.collecting.NewInfoCollector;
 import ecologylab.semantics.html.ParagraphText;
-import ecologylab.semantics.html.TidyInterface;
+import ecologylab.semantics.html.DOMParserInterface;
 import ecologylab.semantics.html.documentstructure.AnchorContext;
 import ecologylab.semantics.html.documentstructure.LinkType;
 import ecologylab.semantics.html.documentstructure.RecognizedDocumentStructure;
 import ecologylab.semantics.html.documentstructure.SemanticAnchor;
+import ecologylab.semantics.html.dom.IDOMProvider;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.builtins.CompoundDocument;
 import ecologylab.semantics.metadata.builtins.Document;
@@ -31,15 +31,15 @@ import ecologylab.serialization.XMLTools;
  * @author eunyee
  * 
  */
-public abstract class HTMLDOMParser extends HTMLParserCommon implements TidyInterface
+public abstract class HTMLDOMParser extends HTMLParserCommon implements DOMParserInterface
 {
 
 	/**
 	 * Root DOM of the current document
 	 */
-	private org.w3c.dom.Document	dom;
+	private org.w3c.dom.Node	dom;
 
-	protected Tidy								tidy	= new Tidy();
+	protected IDOMProvider				provider;
 
 	
 	boolean indexPage = false;
@@ -48,13 +48,12 @@ public abstract class HTMLDOMParser extends HTMLParserCommon implements TidyInte
 	public HTMLDOMParser(NewInfoCollector infoCollector)
 	{
 		super(infoCollector);
-		tidy.setQuiet(true);
-		tidy.setShowWarnings(false);
 	}
 
-	public org.w3c.dom.Document getDom() throws IOException
+
+	public org.w3c.dom.Node getDom() throws IOException
 	{
-		org.w3c.dom.Document result = this.dom;
+		org.w3c.dom.Node result = this.dom;
 		if (result == null)
 		{
 			result = createDom();
@@ -68,11 +67,10 @@ public abstract class HTMLDOMParser extends HTMLParserCommon implements TidyInte
 	 * @return A bogus dom with a root element called empty.
 	 * @throws IOException 
 	 */
-	protected org.w3c.dom.Document createDom() throws IOException
+	protected org.w3c.dom.Node createDom() throws IOException
 	{
-    Node document = tidy.parse(inputStream(), null, null);
-    return (document != null) ?
-        (org.w3c.dom.Document)document.getAdapter() :  null;
+    org.w3c.dom.Node document = provider.parse(inputStream(), null, null);
+    return document;
 	}
 
 	/**
@@ -82,7 +80,7 @@ public abstract class HTMLDOMParser extends HTMLParserCommon implements TidyInte
 	 */
 	public Node getRootNode() throws IOException
 	{
-		return ((DOMNodeImpl) getDom()).adaptee;
+		return ((org.w3c.dom.Document) getDom()).getDocumentElement();
 	}
 
 	/**
@@ -95,7 +93,7 @@ public abstract class HTMLDOMParser extends HTMLParserCommon implements TidyInte
 	public void recycle()
 	{
 		dom = null;
-		tidy = null;
+		provider = null;
 		super.recycle();
 	}
 
@@ -105,9 +103,11 @@ public abstract class HTMLDOMParser extends HTMLParserCommon implements TidyInte
 	public void setTitle(Node titleNode)
 	{
 		StringBuilder title = null;
-		for (Node node = titleNode.content(); node != null; node = node.next())
+		NodeList children = titleNode.getChildNodes();
+		for (int i=0; i<children.getLength(); i++)
 		{
-			if (node.type == Node.TEXT_NODE)
+			Node node = children.item(i);
+			if (node.getNodeType() == Node.TEXT_NODE)
 			{
 				title = StringBuilderUtils.trimAndDecodeUTF8(title, node, 0, true);
 				if (title != null)
@@ -256,6 +256,13 @@ public abstract class HTMLDOMParser extends HTMLParserCommon implements TidyInte
 	public boolean isContentPage ( )
 	{
 		return contentPage;
+	}
+
+	public void setProvider(IDOMProvider provider)
+	{
+		this.provider = provider;
+		provider.setQuiet(true);
+		provider.setShowWarnings(false);
 	}
 
 	@Override

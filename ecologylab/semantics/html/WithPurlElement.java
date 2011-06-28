@@ -3,7 +3,7 @@
  */
 package ecologylab.semantics.html;
 
-import org.w3c.tidy.Node;
+import org.w3c.dom.Node;
 
 import ecologylab.net.ParsedURL;
 
@@ -11,7 +11,7 @@ import ecologylab.net.ParsedURL;
  * @author andruid
  *
  */
-public class WithPurlElement extends HTMLElementTidy
+public class WithPurlElement extends HTMLElementDOM
 {
 	ParsedURL			basePurl;
 	
@@ -26,7 +26,7 @@ public class WithPurlElement extends HTMLElementTidy
 		super();
 		this.node			= node;
 		this.basePurl	= basePurl;
-		addAttributes(node.attributes);
+		addAttributes(node.getAttributes());
 	}
 
 }

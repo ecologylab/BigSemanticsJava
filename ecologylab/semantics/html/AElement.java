@@ -3,7 +3,7 @@
  */
 package ecologylab.semantics.html;
 
-import org.w3c.tidy.Node;
+import org.w3c.dom.Node;
 
 import ecologylab.net.ParsedURL;
 

@@ -3,12 +3,12 @@ package ecologylab.semantics.html.documentstructure;
 import java.util.ArrayList;
 import java.util.TreeMap;
 
-import org.w3c.tidy.Node;
+import org.w3c.dom.Node;
 
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.html.ImgElement;
 import ecologylab.semantics.html.ParagraphText;
-import ecologylab.semantics.html.TidyInterface;
+import ecologylab.semantics.html.DOMParserInterface;
 
 
 /**
@@ -32,9 +32,9 @@ public class ContentPage extends RecognizedDocumentStructure
 	 */
 	@Override
 	public void generateSurrogates(Node contentBody, ArrayList<ImgElement> imgNodes, int totalTxtLeng, 
-			TreeMap<Integer, ParagraphText> paraTexts, TidyInterface htmlType)
+			TreeMap<Integer, ParagraphText> paraTexts, DOMParserInterface htmlType)
 	{
-		findImgsInContentBodySubTree(contentBody.parent(), imgNodes); 
+		findImgsInContentBodySubTree(contentBody.getParentNode(), imgNodes); 
 		associateImageTextSurrogates(htmlType, contentBody, paraTexts);	// removes from imgNodes
 		htmlType.setContent();
 

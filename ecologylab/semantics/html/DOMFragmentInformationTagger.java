@@ -2,11 +2,7 @@ package ecologylab.semantics.html;
 
 import java.util.ArrayList;
 
-import org.w3c.tidy.AttVal;
-import org.w3c.tidy.Configuration;
-import org.w3c.tidy.Lexer;
-import org.w3c.tidy.Node;
-import org.w3c.tidy.Out;
+import org.w3c.dom.Node;
 
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.metadata.builtins.Image;
@@ -20,22 +16,21 @@ public class DOMFragmentInformationTagger extends DOMWalkInformationTagger
 	StringBuilder dndText = new StringBuilder();
 	ParsedURL containerPurl = null;
 
-	public DOMFragmentInformationTagger(Configuration configuration, ParsedURL purl,
-			TidyInterface tidyInterface)
+	public DOMFragmentInformationTagger(ParsedURL purl, DOMParserInterface tidyInterface)
 	{
-		super(configuration, purl, tidyInterface);
+		super(purl, tidyInterface);
 	}
 	
 	@Override
-	protected void printTag(Lexer lexer, Out fout, short mode, int indent, Node node)
+	public void printTag(Node node)
 	{
-		String tagName = node.element;
+		String tagName = node.getNodeName();
 		if (containerPurl == null)
 		{
-			AttVal container = node.getAttrByName("container");
+			Node container = node.getAttributes().getNamedItem("container");
 			if (container != null)
 			{
-				String containerValue = container.value;
+				String containerValue = container.getNodeValue();
 				if (containerValue != null && containerValue.length() > 0)
 				{
 					containerValue= XMLTools.unescapeXML(containerValue);

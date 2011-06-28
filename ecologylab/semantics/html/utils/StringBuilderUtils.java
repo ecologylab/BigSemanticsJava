@@ -3,7 +3,8 @@
  */
 package ecologylab.semantics.html.utils;
 
-import org.w3c.tidy.Node;
+import org.w3c.dom.Node;
+import org.w3c.dom.Text;
 
 import ecologylab.generic.StringBuilderBaseUtils;
 import ecologylab.generic.StringTools;
@@ -76,23 +77,32 @@ public class StringBuilderUtils extends StringBuilderBaseUtils
 	 * 
 	 * @return						null if no work to do because length < minLength after trim, or a buffer with the decoded result.
 	 */
+  
+  //FIXME - textarray(), start(), end()
   public static StringBuilder trimAndDecodeUTF8(StringBuilder result, Node childNode, int minLength, boolean appendNoClear)
   {
-		byte[] textarray	= childNode.textarray();
+		byte[] textarray	= null;
 		
-		int start				 	= childNode.start();
-		int end 					= childNode.end();
+		if (childNode instanceof Text)
+		{
+			textarray = childNode.getNodeValue().getBytes();
+		}
+		else
+			textarray = childNode.getNodeName().getBytes();
 		
-		// trim in place				
-		while (Character.isWhitespace((char) textarray[start]) && (start < end))
-		{
-			start++;
-		}
-		while (Character.isWhitespace((char) textarray[end - 1]) && (start < end))
-		{
-			end--;
-		}
-		int length	= end-start;
+//		int start				 	= childNode.start();
+//		int end 					= childNode.end();
+//		
+//		// trim in place				
+//		while (Character.isWhitespace((char) textarray[start]) && (start < end))
+//		{
+//			start++;
+//		}
+//		while (Character.isWhitespace((char) textarray[end - 1]) && (start < end))
+//		{
+//			end--;
+//		}
+		int length	= textarray.length;
 		if (length > minLength)
 		{
 			if (!((length >= 4) && (textarray[0] == '<') &&
@@ -103,7 +113,7 @@ public class StringBuilderUtils extends StringBuilderBaseUtils
 				else if (!appendNoClear)
 					StringTools.clear(result);
 
-				StringTools.decodeUTF8(result, textarray, start, length);
+				StringTools.decodeUTF8(result, textarray, 0, length);
 			}
 		}
 		return result;

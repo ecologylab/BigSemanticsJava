@@ -5,6 +5,8 @@ package ecologylab.semantics.documentparsers;
 
 import java.io.IOException;
 
+import org.w3c.dom.Node;
+
 import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.collecting.NewInfoCollector;
 import ecologylab.semantics.metadata.builtins.Document;
@@ -28,7 +30,7 @@ public class DirectBindingParser extends ParserBase
 
 	@Override
 	public Document populateMetadata(Document document,
-			MetaMetadataCompositeField metaMetadata, org.w3c.dom.Document DOM,
+			MetaMetadataCompositeField metaMetadata, org.w3c.dom.Node DOM,
 			SemanticActionHandler handler)
 	 throws IOException
 	{

@@ -3,12 +3,12 @@ package ecologylab.semantics.html.documentstructure;
 import java.util.ArrayList;
 import java.util.TreeMap;
 
-import org.w3c.tidy.Node;
+import org.w3c.dom.Node;
 
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.html.ImgElement;
 import ecologylab.semantics.html.ParagraphText;
-import ecologylab.semantics.html.TidyInterface;
+import ecologylab.semantics.html.DOMParserInterface;
 
 
 /**
@@ -34,7 +34,7 @@ public class TextOnlyPage extends RecognizedDocumentStructure
 	 */
 	@Override
 	public void generateSurrogates(Node articleMain, ArrayList<ImgElement> imgNodes, int totalTxtLeng, 
-			TreeMap<Integer, ParagraphText> paraTexts, TidyInterface htmlType)
+			TreeMap<Integer, ParagraphText> paraTexts, DOMParserInterface htmlType)
 	{
 		int count	= 0;
 		while (!paraTexts.isEmpty() && count++<MAX_TEXT_SURROGATES)
@@ -45,7 +45,7 @@ public class TextOnlyPage extends RecognizedDocumentStructure
 		}
 	}
 
-	private void generateTextSurrogate(ParagraphText paraText, TidyInterface htmlType)
+	private void generateTextSurrogate(ParagraphText paraText, DOMParserInterface htmlType)
 	{
 		if (paraText.length()>MIN_PARA_TEXT_LENGTH)
 		{

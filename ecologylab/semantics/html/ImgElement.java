@@ -3,7 +3,8 @@
  */
 package ecologylab.semantics.html;
 
-import org.w3c.tidy.Node;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 
 import ecologylab.generic.Generic;
 import ecologylab.net.ParsedURL;
@@ -41,8 +42,6 @@ public class ImgElement extends WithPurlElement
 	public ImgElement(Node node, ParsedURL basePurl)
 	{
 		super(node, basePurl);
-		int i = 0;
-		int j = i + 1;
 	}
 
 	@Override
@@ -195,7 +194,22 @@ public class ImgElement extends WithPurlElement
 	public String toString()
 	{
 		StringBuilder buffy		= new StringBuilder();
-		node.nodeString(buffy);
+		if (node.getNodeType() == Node.TEXT_NODE)
+		{
+			buffy.append(node.getNodeValue());
+		}
+		else
+		{
+			buffy.append('<').append(node.getNodeName());
+			NamedNodeMap attributes = node.getAttributes();
+			for (int i=0; i<attributes.getLength(); i++)
+			{
+				Node attr = attributes.item(i);
+				buffy.append(' ').append(attr.getNodeName()).append('=').append('"').append(attr.getNodeValue()).append('"');
+			}
+			buffy.append('>');
+		}
+
 		buffy.append('\n');
 		
 		return buffy.toString();

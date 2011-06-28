@@ -6,8 +6,8 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.TreeMap;
 
-import org.w3c.tidy.AttVal;
-import org.w3c.tidy.Node;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import ecologylab.generic.Debug;
 import ecologylab.generic.IntSlot;
@@ -15,10 +15,10 @@ import ecologylab.generic.StringTools;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.documentparsers.HTMLParserCommon;
 import ecologylab.semantics.html.DOMWalkInformationTagger;
-import ecologylab.semantics.html.HTMLElementTidy;
+import ecologylab.semantics.html.HTMLElementDOM;
 import ecologylab.semantics.html.ImgElement;
 import ecologylab.semantics.html.ParagraphText;
-import ecologylab.semantics.html.TidyInterface;
+import ecologylab.semantics.html.DOMParserInterface;
 import ecologylab.semantics.html.utils.HTMLAttributeNames;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.model.text.TermVector;
@@ -66,7 +66,7 @@ implements HTMLAttributeNames
 	 * @param htmlType
 	 */
 	public void generateSurrogates(Node articleMain, ArrayList<ImgElement> imgNodes, int totalTxtLeng, 
-			TreeMap<Integer, ParagraphText> paraTexts, TidyInterface htmlType)
+			TreeMap<Integer, ParagraphText> paraTexts, DOMParserInterface htmlType)
 	{
 		constructImgSurrogatesForOtherPages( imgNodes, totalTxtLeng, htmlType );
 
@@ -101,9 +101,9 @@ implements HTMLAttributeNames
 		Collection<ParagraphText> paragrphTextsValues = taggedDoc.getParagraphTextsTMap().values();
 		for(ParagraphText pt : paragrphTextsValues)
 		{
-			Node parent	= pt.getNode().parent();
-			grandParent 	= parent.parent();
-			ggParent 		= grandParent.parent();
+			Node parent	= pt.getNode().getParentNode();
+			grandParent 	= parent.getParentNode();
+			ggParent 		= grandParent.getParentNode();
 
 			// FIXME: Refactor the below method
 			//identify common grandParent
@@ -198,7 +198,7 @@ implements HTMLAttributeNames
 	 * 
 	 */
 	//FIXME -- andruid: exactly what sorted order are the paraTexts in? why?
-	protected void associateImageTextSurrogates(TidyInterface htmlType, Node articleBody, TreeMap<Integer, ParagraphText> paraTexts)
+	protected void associateImageTextSurrogates(DOMParserInterface htmlType, Node articleBody, TreeMap<Integer, ParagraphText> paraTexts)
 	{	
 		for (ImgElement imgElement: imgNodesInContentBody) 
 		{  		
@@ -222,8 +222,8 @@ implements HTMLAttributeNames
 				{
 					ParagraphText pt 	= paraTexts.remove(paraTexts.lastKey());	// get longest remaining paragraph
 					Node textNode 	= pt.getNode();
-					if (textNode.grandParent().equals(articleBody) || 
-							textNode.greatGrandParent().equals(articleBody) )
+					if (textNode.getParentNode().getParentNode().equals(articleBody) || 
+							textNode.getParentNode().getParentNode().getParentNode().equals(articleBody) )
 					{
 //						if (pt.hasText()) // should be no longer necessary -- andruid 8/09
 //						{
@@ -292,7 +292,7 @@ implements HTMLAttributeNames
 	 * and nearby text whether the text is informative and can be associated with the image for the image+text surrogate. 
 	 * 
 	 */
-	protected void constructImgSurrogatesForOtherPages(ArrayList<ImgElement> imgNodes, int totalTxtLeng, TidyInterface htmlType)
+	protected void constructImgSurrogatesForOtherPages(ArrayList<ImgElement> imgNodes, int totalTxtLeng, DOMParserInterface htmlType)
 	{    	
 		for (ImgElement imgElement : imgNodes)
 		{
@@ -301,7 +301,7 @@ implements HTMLAttributeNames
 			
 			Node imgNodeNode							= imgElement.getNode();
 			//TODO -- can make this search for text context more comprehensive, while making sure to stay out of content body
-			StringBuilder extractedContext	= getLongestTxtinSubTree(imgNodeNode.grandParent(), null);
+			StringBuilder extractedContext	= getLongestTxtinSubTree(imgNodeNode.getParentNode().getParentNode(), null);
 			String alt											= imgElement.getAlt();
 			// this if condition checks whether the nearest text to the image is substantial enough to form a surrogate. 
 			// TODO needs to check parent Href and Text informativity
@@ -334,22 +334,22 @@ implements HTMLAttributeNames
 	 *  
 	 * @return
 	 */
-	protected ParsedURL findAnchorPURL(HTMLElementTidy ina) 
+	protected ParsedURL findAnchorPURL(HTMLElementDOM ina) 
 	{
-		Node aNode		= ina.getNode().parent();
+		Node aNode		= ina.getNode().getParentNode();
 		ParsedURL result= null;
-		AttVal aHref		= null;
+		Node aHref		= null;
 
-		if ("a".equals(aNode.element))
-			aHref	= aNode.getAttrByName("href");
+		if ("a".equals(aNode.getNodeName()))
+			aHref	= aNode.getAttributes().getNamedItem("href");
 		else
 		{
-			aNode					= aNode.parent();
-			aHref					= aNode.getAttrByName("href");
+			aNode					= aNode.getParentNode();
+			aHref					= aNode.getAttributes().getNamedItem("href");
 		}
 		if (aHref != null)
 		{
-			String hrefValue = aHref.value;
+			String hrefValue = aHref.getNodeValue();
 			hrefValue			= XMLTools.unescapeXML(hrefValue);
 			result				= purl.createFromHTML(hrefValue);
 		}
@@ -373,10 +373,11 @@ implements HTMLAttributeNames
 	 * @param contentBody
 	 * @param imgNodes TODO
 	 */
+	
 	public void findImgsInContentBodySubTree(Node contentBody, ArrayList<ImgElement> imgNodes)
 	{
 		StringBuilder buffy				= StringBuilderUtils.acquire();
-		contentBody.xpath(buffy);
+		xpath(buffy, contentBody);
 		String contentBodyXpath		= buffy.toString();
 		StringBuilderUtils.release(buffy);
 		
@@ -392,7 +393,28 @@ implements HTMLAttributeNames
 			}
 		}
 	}
+	
+	public void xpath(StringBuilder buffy, Node node)
+	{
+		if (node.getParentNode() != null && node.getParentNode().getNodeName() != null)
+			xpath(buffy, node.getParentNode());
+		thisNodeXPath(buffy, node);
+	}
 
+	public void thisNodeXPath(StringBuilder buffy, Node node)
+	{
+		buffy.append('/').append(node.getNodeName());
+		int count = 1;
+		Node prev = node.getPreviousSibling();
+		while (prev != null)
+		{
+			if (node.getNodeName().equals(prev.getNodeName()))
+				count++;
+			prev = prev.getPreviousSibling();
+		}
+		if (count > 1)
+			buffy.append('[').append(count).append(']');
+	}
 	/**
 	 * Common method to find a particular html node based on nodeElementString 
 	 * that adds to either hrefNodesInContentBody or imgNodesInContentBody
@@ -404,10 +426,12 @@ implements HTMLAttributeNames
 			String nodeElementString,
 			ArrayList<ImgElement> nodesInContentBody)
 	{
-		for (Node contentNode = contentBody.content(); contentNode != null; contentNode = contentNode.next())
+		NodeList children = contentBody.getChildNodes();
+		for (int i=0; i<children.getLength(); i++)
 		{
+			Node contentNode = children.item(i);
 			htmlNodesInContentBody(contentNode, nodeElementString, nodesInContentBody);
-			if( contentNode.element!=null && contentNode.element.equals(nodeElementString) )
+			if( contentNode.getNodeName()!=null && contentNode.getNodeName().equals(nodeElementString) )
 			{
 				ImgElement ina = new ImgElement(contentNode, purl);
 				nodesInContentBody.add(ina);
@@ -417,10 +441,10 @@ implements HTMLAttributeNames
 
 	public static StringBuilder getConnectedText(Node node, StringBuilder textResult)
 	{
-		Node grandParent		= node.grandParent();
+		Node grandParent		= node.getParentNode().getParentNode();
 		StringBuilder	result	= getLongestTxtinSubTree(grandParent, textResult);
 		if (result == null || result.length() > 5)
-			result							= getLongestTxtinSubTree(grandParent.parent(), textResult);
+			result							= getLongestTxtinSubTree(grandParent.getParentNode(), textResult);
 		return result;
 	}
 	/**
@@ -428,16 +452,18 @@ implements HTMLAttributeNames
 	 * 
 	 * @param parent node of the image node is passed in to the parameter. 
 	 */
-	public static StringBuilder getLongestTxtinSubTree(Node node, StringBuilder textResult)
+	public static StringBuilder getLongestTxtinSubTree(Node blockNode, StringBuilder textResult)
 	{
-		for (Node childNode	= node.content(); childNode != null; childNode = childNode.next())
+		NodeList children = blockNode.getChildNodes();
+		for (int i=0; i<children.getLength(); i++)
 		{
-			if( (childNode.element!=null) && (!childNode.element.equals("script")))
+			Node childNode = children.item(i);
+			if( (childNode.getNodeType() != Node.TEXT_NODE) && (childNode.getNodeName()!=null) && (!childNode.getNodeName().equals("script")))
 			{
 				//Recursive call with the childNode
 				textResult = getLongestTxtinSubTree(childNode, textResult);
 			}	
-			else if (childNode.type == Node.TEXT_NODE )
+			else if (childNode.getNodeType() == Node.TEXT_NODE )
 			{
 				int curLength	= (textResult == null) ? 0 : textResult.length();
 				textResult		= StringBuilderUtils.trimAndDecodeUTF8(textResult, childNode, curLength);
@@ -450,7 +476,7 @@ implements HTMLAttributeNames
 	{
 		//  	System.out.println("Parent Node : " + parentNode.element + " : " + currentNode );
 		//  	System.out.println("\nCurrentNode: " + parentNode.element );
-		Node temp = parentNode.content();
+		Node temp = parentNode.getFirstChild();
 		Node prevNode = null;
 		while( temp != null )
 		{
@@ -459,11 +485,11 @@ implements HTMLAttributeNames
 			if( temp.element != null )    		
 				System.out.println("NODE:" + temp.element);
 			 */
-			if( (prevNode!=null) && (prevNode.element!=null) && (prevNode.element.equals("a")) )
+			if( (prevNode!=null) && (prevNode.getNodeName()!=null) && (prevNode.getNodeName().equals("a")) )
 				return true;
 
 			prevNode = temp;
-			temp = temp.next();
+			temp = temp.getFirstChild();
 		}
 		return false;
 	}
