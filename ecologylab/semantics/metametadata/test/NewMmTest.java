@@ -6,6 +6,8 @@ package ecologylab.semantics.metametadata.test;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
+import org.w3c.tidy.Tidy;
+
 import ecologylab.appframework.ApplicationEnvironment;
 import ecologylab.generic.Continuation;
 import ecologylab.io.DownloadProcessor;
@@ -67,6 +69,7 @@ implements Continuation<DocumentClosure>
 			ParsedURL thatPurl	= ParsedURL.getAbsolute(urlStrings[i]);
 			Document document		= infoCollector.getOrConstructDocument(thatPurl);
 			DocumentClosure documentClosure = document.getOrConstructClosure();
+			documentClosure.setProvider(new Tidy());
 			if (documentClosure != null)	// super defensive -- make sure its not malformed or null or otherwise a mess
 				documentCollection.add(documentClosure);
 		}
