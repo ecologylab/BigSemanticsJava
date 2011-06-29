@@ -72,6 +72,7 @@ public class MmToHtmlTest extends NewMmTest
 			document.serializeToHtml(print, document.createGraphContext());
 		}
 		appendFooter(print);
+		print.close();
 		desktop.browse(uri);
 
 	}
@@ -107,7 +108,7 @@ public class MmToHtmlTest extends NewMmTest
 	{
 		if (outputOneAtATime)
 			incomingClosure.serialize(outputStream);
-		else if (++currentResult == documentCollection.size())
+		else if (++currentResult >= documentCollection.size())
 		{
 			System.out.println("\n\n");
 			try
