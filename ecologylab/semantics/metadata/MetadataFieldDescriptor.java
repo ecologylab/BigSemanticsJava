@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import ecologylab.semantics.gui.EditValueEvent;
 import ecologylab.semantics.gui.EditValueListener;
 import ecologylab.semantics.gui.EditValueNotifier;
+import ecologylab.semantics.metametadata.MetaMetadataCollectionField;
 import ecologylab.semantics.metametadata.MetaMetadataField;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.ElementState;
@@ -70,6 +71,12 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 		super(tagName, comment, type, elementClassDescriptor, declaringClassDescriptor, fieldName, scalarType, xmlHint, fieldType);
 		this.definingMmdField = definingMmdField;
 		this.isMixin = false;
+		
+		if (definingMmdField instanceof MetaMetadataCollectionField)
+		{
+			String childTag = ((MetaMetadataCollectionField) definingMmdField).getChildTag();
+			this.setCollectionOrMapTagName(childTag);
+		}
 	}
 
 	public boolean isMixin() 

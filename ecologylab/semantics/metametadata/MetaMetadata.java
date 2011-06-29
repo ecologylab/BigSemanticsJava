@@ -8,8 +8,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.sun.org.apache.xml.internal.serialize.ElementState;
-
 import ecologylab.generic.ReflectionTools;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.collecting.LinkedMetadataMonitor;

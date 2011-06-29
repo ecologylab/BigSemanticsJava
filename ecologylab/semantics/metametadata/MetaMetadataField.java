@@ -1366,6 +1366,21 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 			{
 				// FIXME this part is still problematic, need more test cases to drive development.
 				// javaTypeName: not correct for collections; inheritedMmd may not have a metadata class; polymorphism; etc.
+				
+				Boolean wrapped = null;
+				if (this instanceof MetaMetadataCollectionField)
+				{
+					MetaMetadataCollectionField coll = (MetaMetadataCollectionField) this;
+					if (coll.isNoWrap())
+					{
+						wrapped = false;
+						tagName = null;
+					}
+					else
+					{
+						wrapped = true;
+					}
+				}
 				MetaMetadataNestedField nested = (MetaMetadataNestedField) this;
 				MetaMetadata inheritedMmd = nested.getInheritedMmd();
 				MetadataClassDescriptor fieldCd = inheritedMmd.generateMetadataClassDescriptor();
@@ -1380,19 +1395,8 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 						null,
 						null,
 						javaTypeName);
-				
-				if (this instanceof MetaMetadataCollectionField)
-				{
-					MetaMetadataCollectionField coll = (MetaMetadataCollectionField) this;
-					if (coll.isNoWrap())
-					{
-						fd.setWrapped(false);
-					}
-					else
-					{
-						fd.setWrapped(true);
-					}
-				}
+				if (wrapped != null)
+					fd.setWrapped(wrapped);
 			}
 		}
 		return fd;
