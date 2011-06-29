@@ -1,10 +1,11 @@
 /**
  * 
  */
-package ecologylab.semantics.metadata.builtins;
+package ecologylab.semantics.metadata.builtins.old;
 
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.metadata.Metadata;
+import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
 import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;

@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.semantics.actions.SemanticAction;
 import ecologylab.semantics.actions.SemanticActionTranslationScope;
-import ecologylab.semantics.namesandnums.DocumentParserTagNames;
-import ecologylab.serialization.ElementState.simpl_scalar;
 import ecologylab.serialization.ElementState.xml_tag;
 import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.simpl_inherit;
@@ -21,9 +19,6 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField
 	 */
 	@simpl_scalar
 	protected String									type;
-
-	@simpl_scalar
-	protected boolean									entity					= false;
 
 	@simpl_scalar
 	protected String									userAgentName;
@@ -55,7 +50,7 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField
 
 	public MetaMetadataCompositeField()
 	{
-		// TODO Auto-generated constructor stub
+		
 	}
 
 	public MetaMetadataCompositeField(String name, HashMapArrayList<String, MetaMetadataField> kids)
@@ -96,11 +91,6 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField
 		return type;
 	}
 
-	public boolean isEntity()
-	{
-		return entity;
-	}
-
 	public String getTypeOrName()
 	{
 		if (type != null)
@@ -111,31 +101,12 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField
 
 	public String getTagForTranslationScope()
 	{
-		return entity == true ? DocumentParserTagNames.ENTITY : tag != null ? tag : name;
+		return tag != null ? tag : name;
 	}
 
 	protected String getMetaMetadataTagToInheritFrom()
 	{
-		if (isEntity())
-			return DocumentParserTagNames.ENTITY;
-		else if (type != null)
-			return type;
-		else
-			return null;
-		// return name;
-	}
-
-	/**
-	 * Does this declaration declare a new field, rather than referring to a previously declared
-	 * field?
-	 * 
-	 * @return true if there is a scalar_type attribute declared.
-	 */
-	protected boolean isNewDeclaration()
-	{
-		if (entity)
-			return true;
-		return super.isNewDeclaration();
+		return type != null ? type : null;
 	}
 
 	/**
@@ -150,7 +121,6 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField
 
 	public String getParser()
 	{
-		// TODO Auto-generated method stub
 		return parser;
 	}
 
@@ -213,15 +183,7 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField
 		String rst = typeNameInJava;
 		if (rst == null)
 		{
-			String fieldType = XMLTools.classNameFromElementName(getTypeOrName());
-			if (isEntity())
-			{
-				rst = "Entity<" + fieldType + ">";
-			}
-			else
-			{
-				rst = fieldType;
-			}
+			rst = XMLTools.classNameFromElementName(getTypeOrName());
 			typeNameInJava = rst;
 		}
 		return typeNameInJava;

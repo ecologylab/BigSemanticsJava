@@ -293,7 +293,7 @@ public abstract class SemanticAction extends ElementState implements SemanticAct
 		
 		if (result == null)
 		{
-			ParsedURL outlinkPurl	= (ParsedURL) getArgumentObject(CONTAINER_LINK);
+			ParsedURL outlinkPurl	= (ParsedURL) getArgumentObject(LOCATION);
 			if (outlinkPurl != null)
 				result							= infoCollector.getGlobalDocumentMap().getOrConstruct(outlinkPurl);
 		}

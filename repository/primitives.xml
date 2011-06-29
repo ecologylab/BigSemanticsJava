@@ -84,11 +84,6 @@
 		</selector>
 	</meta_metadata>
 	
-	<meta_metadata name="entity" extends="metadata" comment="Reference to a nested document." dont_generate_class="true">
-		<scalar name="location" hide="true" comment="The document's actual location." scalar_type="ParsedURL" />
-		<scalar name="gist" navigates_to="location" comment="Initial text that describes the document before its downloaded." scalar_type="String" />
-	</meta_metadata>
-	
 	<meta_metadata name="pdf" type="compound_document" dont_generate_class="true" comment="The PDF class." parser="pdf">
 		<selector>
 			<mime_type>application/pdf</mime_type>

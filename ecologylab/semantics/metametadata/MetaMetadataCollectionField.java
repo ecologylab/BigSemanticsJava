@@ -2,7 +2,6 @@ package ecologylab.semantics.metametadata;
 
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
-import ecologylab.semantics.namesandnums.DocumentParserTagNames;
 import ecologylab.serialization.ElementState.xml_tag;
 import ecologylab.serialization.TranslationScope;
 import ecologylab.serialization.XMLTools;
@@ -16,38 +15,35 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 	public static final String	UNRESOLVED_NAME	= "&UNRESOLVED_NAME";
 
 	@simpl_scalar
-	protected String	childTag;
+	protected String						childTag;
 
 	/**
 	 * The type for collection children.
 	 */
 	@simpl_scalar
-	protected String	childType;
-	
-	@simpl_scalar
-	protected boolean	childEntity	= false;
+	protected String						childType;
 
 	@simpl_scalar
-	protected String	childExtends;
-	
+	protected String						childExtends;
+
 	@simpl_scalar
-	protected String	childScalarType;
-	
+	protected String						childScalarType;
+
 	/**
 	 * Specifies adding @simpl_nowrap to the collection object in cases where items in the collection
 	 * are not wrapped inside a tag.
 	 */
 	@simpl_scalar
-	protected boolean	noWrap;
+	protected boolean						noWrap;
 
 	/**
 	 * for caching getTypeNameInJava().
 	 */
-	private String typeNameInJava = null;
+	private String							typeNameInJava	= null;
 
 	public MetaMetadataCollectionField()
 	{
-		// TODO Auto-generated constructor stub
+		
 	}
 
 	public MetaMetadataCollectionField(MetaMetadataField mmf)
@@ -100,11 +96,6 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 		return noWrap;
 	}
 
-	public boolean isChildEntity()
-	{
-		return childEntity;
-	}
-
 	@Deprecated
 	@Override
 	public String getAnnotationsInJava()
@@ -150,8 +141,7 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 		{
 			String typeName = getTypeName();
 			String className = XMLTools.classNameFromElementName(typeName);
-			String genericPart = isChildEntity() ? "Entity<" + className + ">" : className;
-			rst = "ArrayList<" + genericPart + ">";
+			rst = "ArrayList<" + className + ">";
 			typeNameInJava = rst;
 		}
 		return typeNameInJava;
@@ -159,7 +149,7 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 
 	public String determineCollectionChildType()
 	{
-		return (!childEntity) ? childType : DocumentParserTagNames.ENTITY;
+		return getChildType();
 	}
 	
 	/**
@@ -184,18 +174,13 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 	public String getTagForTranslationScope()
 	{
 		// FIXME: seems broken when rewriting collection xpath without re-indicating child_type
-		return childEntity == true ? DocumentParserTagNames.ENTITY : childType != null ? childType : tag != null ? tag : name;
+		return childType != null ? childType : tag != null ? tag : name;
 	}
 
 	@Override
 	protected String getMetaMetadataTagToInheritFrom()
 	{
-		if (childEntity)
-			return  DocumentParserTagNames.ENTITY;
-		else if (childType != null)
-			return childType;
-		else
-			return null;
+		return childType != null ? childType : null;
 	}
 	
 	/**
@@ -234,7 +219,7 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 	public HashMapArrayList<String, MetaMetadataField> initializeChildMetaMetadata()
 	{
 		kids = new HashMapArrayList<String, MetaMetadataField>();
-		MetaMetadataCompositeField composite = new MetaMetadataCompositeField(determineCollectionChildType(), null);
+		MetaMetadataCompositeField composite = new MetaMetadataCompositeField(getChildType(), null);
 		kids.put(composite.getName(), composite);
 		
 		return composite.getChildMetaMetadata();
@@ -262,7 +247,7 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 	 */
 	public void deserializationPostHook()
 	{
-		final String childType = determineCollectionChildType();
+		final String childType = getChildType();
 		MetaMetadataCompositeField composite = new MetaMetadataCompositeField(childType != null ? childType : UNRESOLVED_NAME, kids);
 		composite.setParent(this);
 		composite.setType(childType);

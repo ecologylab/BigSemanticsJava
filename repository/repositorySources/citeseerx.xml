@@ -1,6 +1,6 @@
 <meta_metadata_repository name="bib_managing" package="ecologylab.semantics.generated.library.bibManaging" default_user_agent_name="chrome_2">
 
-	<meta_metadata name="citation_info" extends="compound_document" comment="Citation numbers.">
+	<meta_metadata name="citation_info" extends="metadata" comment="Citation numbers.">
 		<scalar name="total_citation" scalar_type="Int" />
 		<scalar name="self_citation" scalar_type="Int" />
 	</meta_metadata>
@@ -32,21 +32,22 @@
     
     <url_generator type="search" engine="citeseerx" use_id="title" />
     
-		<scalar name="abstract_field" xpath="//div[@id='main_content']/p" />
 		<composite name="source" xpath="//div[@id='right-sidebar']/div/div[2]/div[@class='content']">
 			<field_parser name="bibtex" />
-			<scalar name="year_of_publication" field_parser_key="year" />
 			<scalar name="archive_name" field_parser_key="booktitle" />
+			<scalar name="year_of_publication" field_parser_key="year" />
 			<scalar name="pages" field_parser_key="pages" />
 			<scalar name="isbn" field_parser_key="isbn" />
 		</composite>
 
+		<scalar name="abstract_field" xpath="//div[@id='main_content']/p" />
+		
     <!-- CiteSeerX web page says these are citations, but actually they are references! -->
 		<collection name="references" xpath="//table[@class='citelist']//a">
 			<scalar name="location" xpath="./@href">
 				<filter regex=";jsessionid=[A-Za-z0-9]*" replace="" />
 			</scalar>
-			<scalar name="gist" xpath=".." />
+			<scalar name="description" xpath=".." />
 		</collection>
 
 		<scalar name="citation_page" scalar_type="ParsedURL" xpath="//h1[@class='primaryheader']/a/@href" navigates_to="citation_page">
@@ -62,20 +63,15 @@
 		</scalar>
 
 		<semantic_actions>
-			<set_field name="metadata_page">
-				<arg value="TRUE_PURL" name="value" />
-			</set_field>
-			
 			<get_field name="location" />
-      <!-- commented out for linking metadata paper. we should have a preference system for this!
+			<set_field name="metadata_page" value="location" />
 			<if>
 				<not_null value="location" />
 				<parse_document now="true">
 					<arg value="metadata" name="document" />
-					<arg value="location" name="container_link" />
+					<arg value="location" name="location" />
 				</parse_document>
 			</if>
-      -->
 
 			<get_field name="title" />
 			<create_and_visualize_text_surrogate>
@@ -86,10 +82,10 @@
 			<if>
 				<not_null value="references" />
 				<for_each collection="references" as="ref">
-					<get_field object="ref" name="gist" />
+					<get_field object="ref" name="description" />
 					<parse_document>
 						<arg value="true" name="citation_sig" />
-						<arg value="gist" name="anchor_text" />
+						<arg value="description" name="anchor_text" />
 						<arg value="ref" name="entity" />
 					</parse_document>
 				</for_each>
@@ -99,7 +95,7 @@
 			<if>
 				<not_null value="citation_page" />
 				<parse_document>
-					<arg value="citation_page" name="container_link" />
+					<arg value="citation_page" name="location" />
 				</parse_document>
 			</if>
 
@@ -107,7 +103,7 @@
 			<if>
 				<not_null value="active_bibliography_page" />
 				<parse_document>
-					<arg name="container_link" value="active_bibliography_page" />
+					<arg name="location" value="active_bibliography_page" />
 				</parse_document>
 			</if>
 
@@ -115,7 +111,7 @@
 			<if>
 				<not_null value="cocitation_page" />
 				<parse_document>
-					<arg value="cocitation_page" name="container_link" />
+					<arg value="cocitation_page" name="location" />
 				</parse_document>
 			</if>
 		</semantic_actions>
@@ -130,7 +126,7 @@
 			<scalar name="location" xpath="./@href">
 				<filter regex=";jsessionid=[A-Za-z0-9]*" replace="" />
 			</scalar>
-			<scalar name="gist" xpath=".." />
+			<scalar name="description" xpath=".." />
 		</collection>
 
 		<semantic_actions>
@@ -138,10 +134,10 @@
 			<if>
 				<not_null value="citations" />
 				<for_each collection="citations" as="cite">
-					<get_field object="cite" name="gist" />
+					<get_field object="cite" name="description" />
 					<parse_document>
 						<arg value="true" name="citation_sig" />
-						<arg value="gist" name="anchor_text" />
+						<arg value="description" name="anchor_text" />
 						<arg value="cite" name="entity" />
 					</parse_document>
 				</for_each>
@@ -172,7 +168,7 @@
 			<for_each collection="search_results" as="res">
 				<get_field name="link" object="res" />
 				<parse_document now="true">
-					<arg name="container_link" value="link" />
+					<arg name="location" value="link" />
 				</parse_document>
 			</for_each>
 		</semantic_actions>
@@ -188,7 +184,7 @@
 			<for_each collection="search_results" as="res">
 				<get_field name="link" object="res" />
 				<parse_document>
-					<arg name="container_link" value="link" />
+					<arg name="location" value="link" />
 				</parse_document>
 			</for_each>
 		</semantic_actions>

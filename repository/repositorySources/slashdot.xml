@@ -17,7 +17,7 @@
 					<get_field object="i" name="title" />
 					<parse_document>
 						<not_null value="link" />
-						<arg value="link" name="container_link" />
+						<arg value="link" name="location" />
 						<arg value="title" name="anchor_text" />
 					</parse_document>
 				</for_each>
@@ -57,7 +57,7 @@
 					<parse_document>
 						<arg value="anchor_text" name="anchor_text" />
 						<arg value="description" name="anchor_context" />
-						<arg value="link" name="container_link" />
+						<arg value="link" name="location" />
 					</parse_document>
 				</if>
 			</for_each>

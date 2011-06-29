@@ -12,7 +12,7 @@
       <for_each collection="search_results" as="res">
         <get_field object="res" name="link" />
         <parse_document now="true">
-          <arg value="link" name="container_link" />
+          <arg value="link" name="location" />
         </parse_document>
       </for_each>
     </semantic_actions>
@@ -80,7 +80,7 @@
             <parse_document only_pick_top_documents="true" number_of_top_documents="5" >
            	  <arg name="anchor_text" 				value="anchor_text" />
               <!-- <arg value="paragraph_text" name="anchor_context" />-->
-              <arg name="container_link" 			value="link" />
+              <arg name="location" 			value="link" />
               <arg name="ignore_context_for_tv"		value="true"  />
               <arg name="current_index"				value="cur_anchor_index" />
               <arg name="size"						value="anchor_list_size" />

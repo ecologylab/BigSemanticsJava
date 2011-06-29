@@ -12,7 +12,7 @@
 				<get_field object="result" name="link" />
 				<parse_document now="true">
 					<arg value="heading" name="anchor_text" />
-					<arg value="link" name="container_link" />
+					<arg value="link" name="location" />
 				</parse_document>
 			</for_each>
 		</semantic_actions>
@@ -42,7 +42,7 @@
 			<for_each collection="pic_links" as="pic">
 				<get_field object="pic" name="link" />
 				<parse_document now="true">
-					<arg value="link" name="container_link" />
+					<arg value="link" name="location" />
 				</parse_document>
 			</for_each>
 			<get_field name="abstract_field" />
@@ -65,7 +65,7 @@
 				<get_field object="cit" name="link" />
 				<parse_document>
 					<arg value="heading" name="anchor_text" />
-					<arg value="link" name="container_link" />
+					<arg value="link" name="location" />
 				</parse_document>
 			</for_each>
 			<get_field name="referenced_bys" />
@@ -74,7 +74,7 @@
 				<get_field object="ref" name="link" />
 				<parse_document>
 					<arg value="heading" name="anchor_text" />
-					<arg value="link" name="container_link" />
+					<arg value="link" name="location" />
 				</parse_document>
 			</for_each>
 		</semantic_actions>

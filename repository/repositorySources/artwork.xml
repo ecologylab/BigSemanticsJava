@@ -94,7 +94,7 @@
 <!-- 			<for_each collection="artworks" as="artwork"> -->
 <!-- 				<get_field name="location" object="artwork" /> -->
 <!-- 				<parse_document now="true"> -->
-<!-- 					<arg value="location" name="container_link" /> -->
+<!-- 					<arg value="location" name="location" /> -->
 <!-- 					<arg value="artwork" name="document" /> -->
 <!-- 				</parse_document> -->
 <!-- 			</for_each> -->

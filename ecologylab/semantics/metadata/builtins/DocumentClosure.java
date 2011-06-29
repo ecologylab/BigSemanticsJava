@@ -458,7 +458,8 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>, S
 
 		initialPURL			= null;
 
-		continuations.clear();	
+		if (continuations != null)
+			continuations.clear();	
 		continuations		= null;
 			
 		//??? should we recycle Document here -- under what circumstances???

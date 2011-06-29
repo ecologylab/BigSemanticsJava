@@ -46,7 +46,6 @@ import ecologylab.semantics.metametadata.MetaMetadataField;
 import ecologylab.semantics.metametadata.MetaMetadataNestedField;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.metametadata.MetaMetadataScalarField;
-import ecologylab.semantics.namesandnums.DocumentParserTagNames;
 import ecologylab.serialization.DeserializationHookStrategy;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.ScalarUnmarshallingContext;
@@ -513,11 +512,7 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 		TranslationScope tscope = infoCollector.getMetadataTranslationScope();
 		Class elementClass = null;
 		MetadataScalarScalarType scalarType = null;
-		if (mmdField.isChildEntity())
-		{
-			elementClass = tscope.getClassByTag(DocumentParserTagNames.ENTITY);
-		}
-		else if (mmdField.isCollectionOfScalars())
+		if (mmdField.isCollectionOfScalars())
 		{
 			// registered at MetadataScalarScalarType.init()
 			String registeredTypeName = "Metadata" + mmdField.getChildScalarType() + "ScalarType";
@@ -535,7 +530,7 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 		}
 		else
 		{
-			elementClass = tscope.getClassByTag(mmdField.determineCollectionChildType());
+			elementClass = tscope.getClassByTag(mmdField.getChildType());
 		}
 
 		// build the result list and populate

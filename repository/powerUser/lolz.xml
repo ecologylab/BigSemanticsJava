@@ -10,7 +10,7 @@
 			</create_and_visualize_img_surrogate>
 			<get_field name="might_like" />
 			<parse_document>
-				<arg value="might_like" name="container_link" />
+				<arg value="might_like" name="location" />
 			</parse_document>
 		</semantic_actions>
 	</meta_metadata>
@@ -25,7 +25,7 @@
 			</create_and_visualize_img_surrogate>
 			<get_field name="might_like" />
 			<parse_document>
-				<arg value="might_like" name="container_link" />
+				<arg value="might_like" name="location" />
 			</parse_document>
 		</semantic_actions>
 	</meta_metadata>
@@ -40,7 +40,7 @@
 			</create_and_visualize_img_surrogate>
 			<get_field name="might_like" />
 			<parse_document>
-				<arg value="might_like" name="container_link" />
+				<arg value="might_like" name="location" />
 			</parse_document>
 		</semantic_actions>
 	</meta_metadata>
@@ -55,7 +55,7 @@
 			</create_and_visualize_img_surrogate>
 			<get_field name="might_like" />
 			<parse_document>
-				<arg value="might_like" name="container_link" />
+				<arg value="might_like" name="location" />
 			</parse_document>
 		</semantic_actions>
 	</meta_metadata>
@@ -70,7 +70,7 @@
 			</create_and_visualize_img_surrogate>
 			<get_field name="might_like" />
 			<parse_document>
-				<arg value="might_like" name="container_link" />
+				<arg value="might_like" name="location" />
 			</parse_document>
 		</semantic_actions>
 	</meta_metadata>
@@ -85,7 +85,7 @@
 			</create_and_visualize_img_surrogate>
 			<get_field name="might_like" />
 			<parse_document>
-				<arg value="might_like" name="container_link" />
+				<arg value="might_like" name="location" />
 			</parse_document>
 		</semantic_actions>
 	</meta_metadata>
@@ -100,7 +100,7 @@
 			</create_and_visualize_img_surrogate>
 			<get_field name="might_like" />
 			<parse_document>
-				<arg value="might_like" name="container_link" />
+				<arg value="might_like" name="location" />
 			</parse_document>
 		</semantic_actions>
 	</meta_metadata>
@@ -115,7 +115,7 @@
 			</create_and_visualize_img_surrogate>
 			<get_field name="might_like" />
 			<parse_document>
-				<arg value="might_like" name="container_link" />
+				<arg value="might_like" name="location" />
 			</parse_document>
 		</semantic_actions>
 	</meta_metadata>
@@ -130,7 +130,7 @@
 			</create_and_visualize_img_surrogate>
 			<get_field name="might_like" />
 			<parse_document>
-				<arg value="might_like" name="container_link" />
+				<arg value="might_like" name="location" />
 			</parse_document>
 		</semantic_actions>
 	</meta_metadata>
@@ -145,7 +145,7 @@
 			</create_and_visualize_img_surrogate>
 			<get_field name="might_like" />
 			<parse_document>
-				<arg value="might_like" name="container_link" />
+				<arg value="might_like" name="location" />
 			</parse_document>
 		</semantic_actions>
 	</meta_metadata>
@@ -160,7 +160,7 @@
 			</create_and_visualize_img_surrogate>
 			<get_field name="might_like" />
 			<parse_document>
-				<arg value="might_like" name="container_link" />
+				<arg value="might_like" name="location" />
 			</parse_document>
 		</semantic_actions>
 	</meta_metadata>

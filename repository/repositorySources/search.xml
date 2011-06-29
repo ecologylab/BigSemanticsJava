@@ -33,7 +33,7 @@
 			<for_each collection="search_results" as="res">
 				<get_field object="res" name="link" />
 				<parse_document now="true">
-					<arg value="link" name="container_link" />
+					<arg value="link" name="location" />
 					<arg value="res" name="mixin" />
 				</parse_document>
 			</for_each>
@@ -80,7 +80,7 @@
 				<if>
 					<not_null value="document_link" />
 					<parse_document now="true">
-						<arg value="document_link" name="container_link" />
+						<arg value="document_link" name="location" />
 						<arg value="res" name="mixin" />
 					</parse_document>
 				</if>
@@ -90,11 +90,11 @@
 						<not_null value="link" />
 					</and>
 					<parse_document now="true">
-						<arg value="link" name="container_link" />
+						<arg value="link" name="location" />
 					</parse_document>
 				</if>
 				<parse_document now="true">
-					<arg value="link" name="container_link" />
+					<arg value="link" name="location" />
 				</parse_document>
 			</for_each>
 		</semantic_actions>
@@ -112,7 +112,7 @@
 			<for_each collection="search_results" as="res">
 				<get_field object="res" name="link" />
 				<parse_document now="true">
-					<arg value="link" name="container_link" />
+					<arg value="link" name="location" />
 				</parse_document>
 			</for_each>
 		</semantic_actions>
@@ -130,7 +130,7 @@
 			<for_each collection="search_results" as="res">
 				<get_field object="res" name="link" />
 				<parse_document now="true">
-					<arg value="link" name="container_link" />
+					<arg value="link" name="location" />
 					<arg value="res" name="mixin" />
 				</parse_document>
 			</for_each>
@@ -166,7 +166,7 @@
 				<get_field object="result" name="location" />
 
 				<parse_document now="true">
-					<arg value="location" name="container_link" />
+					<arg value="location" name="location" />
 					<arg value="result" name="mixin" />
 				</parse_document>
 			</for_each>
@@ -186,7 +186,7 @@
 					<arg name="image_purl" value="location" />
 					<arg name="caption" value="summary" alt_value="title" />
 					<!-- <arg value="result" name="mixin" /> -->
-					<arg name="container_link" value="referer_url" />
+					<arg name="location" value="referer_url" />
 				</create_and_visualize_img_surrogate>
 			</for_each>
 		</semantic_actions>
@@ -213,7 +213,7 @@
 					<otherwise>
 						<parse_document now="true">
 							<arg value="result" name="mixin" />
-							<arg value="location" name="container_link" />
+							<arg value="location" name="location" />
 						</parse_document>
 					</otherwise>
 				</choose>
@@ -269,7 +269,7 @@
 					<not_null value="web_search_results" />
 					<get_field name="link" object="result" />
 					<parse_document now="true">
-						<arg value="link" name="container_link" />
+						<arg value="link" name="location" />
 						<arg value="result" name="mixin" />
 					</parse_document>
 				</for_each>
@@ -314,7 +314,7 @@
 				<if>
 					<not_null value="link" />
 					<parse_document now="true">
-						<arg value="link" name="container_link" />
+						<arg value="link" name="location" />
 						<arg value="res" name="mixin" />
 					</parse_document>
 				</if>

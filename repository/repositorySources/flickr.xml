@@ -42,7 +42,7 @@
 <!-- 					<get_field object="tag" name="tag_name" /> -->
 <!-- 					<parse_document link_type="TRUSTED_SEMANTICS"> -->
 <!-- 						<arg value="tag_name" name="anchor_text" /> -->
-<!-- 						<arg value="tag_link" name="container_link" /> -->
+<!-- 						<arg value="tag_link" name="location" /> -->
 <!-- 					</parse_document> -->
 <!-- 				</for_each> -->
 <!-- 			</for_each> -->
@@ -75,7 +75,7 @@
 				<get_field object="tag" name="tag_name" />
 				<parse_document link_type="TRUSTED_SEMANTICS">
 					<arg value="tag_name" name="anchor_text" />
-					<arg value="tag_link" name="container_link" />
+					<arg value="tag_link" name="location" />
 				</parse_document>
 			</for_each>
 		</semantic_actions>
@@ -101,7 +101,7 @@
 				<get_field object="result" name="title" />
 				<parse_document now="true" >
 					<arg value="title" name="anchor_text" />
-					<arg value="link" name="container_link" />
+					<arg value="link" name="location" />
 				</parse_document>
 			</for_each>
 		</semantic_actions>
@@ -116,7 +116,7 @@
 			<for_each collection="flickr_link_set" as="result">
 				<get_field object="result" name="link" />
 				<parse_document now="true">
-					<arg value="link" name="container_link" />
+					<arg value="link" name="location" />
 				</parse_document>
 			</for_each>
 		</semantic_actions>
@@ -132,7 +132,7 @@
 			<for_each collection="flickr_link_set" as="result">
 				<get_field object="result" name="link" />
 				<parse_document now="true">
-					<arg value="link" name="container_link" />
+					<arg value="link" name="location" />
 				</parse_document>
 			</for_each>
 		</semantic_actions>
@@ -171,7 +171,7 @@
 					<parse_document link_type="TRUSTED_SEMANTICS">
 						<arg value="result" name="source_document" />
 						<arg value="tag_name" name="anchor_text" />
-						<arg value="tag_link" name="container_link" />
+						<arg value="tag_link" name="location" />
 					</parse_document>
 				</for_each>
 			</for_each>
@@ -270,11 +270,11 @@
 			<for_each collection="search_results" as="res">
 				<get_field object="res" name="link" />
 				<parse_document now="true">
-					<arg value="link" name="container_link" />
+					<arg value="link" name="location" />
 				</parse_document>
 				<get_field object="res" name="link_other" />
 				<parse_document now="true">
-					<arg value="link_other" name="container_link" />
+					<arg value="link_other" name="location" />
 				</parse_document>
 			</for_each>
 		</semantic_actions>
@@ -301,7 +301,7 @@
 			<for_each collection="search_results" as="res">
 				<get_field object="res" name="link" />
 				<parse_document now="true">
-					<arg value="link" name="container_link" />
+					<arg value="link" name="location" />
 				</parse_document>
 			</for_each>
 
@@ -309,7 +309,7 @@
 			<for_each collection="flickr_tags" as="res">
 				<get_field object="res" name="tag_link" />
 				<parse_document now="true">
-					<arg value="tag_link" name="container_link" />
+					<arg value="tag_link" name="location" />
 				</parse_document>
 			</for_each>
 		</semantic_actions>

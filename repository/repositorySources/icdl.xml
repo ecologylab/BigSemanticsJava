@@ -33,7 +33,7 @@
 					<create_and_visualize_img_surrogate
 						name="cover_page_surrogate">
 						<arg name="image_purl" value="cover" />
-						<arg name="container_link" value="bookurl" />
+						<arg name="location" value="bookurl" />
 						<arg name="caption" value="booktitle" />
 						<arg name="width" value="width" />
 						<arg name="height" value="height" />

@@ -36,7 +36,7 @@
 				<get_field object="res" name="link" />
 				<!-- is a ResultDistributor created for each of these???? -->
 				<parse_document now="true">
-					<arg value="link" name="container_link" />
+					<arg value="link" name="location" />
 				</parse_document>
 			</for_each>
 		</semantic_actions>

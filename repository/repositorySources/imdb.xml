@@ -26,11 +26,11 @@
 		<scalar name="year_released" style="h1" layer="9.5" xpath="//h1[@class='header']//a" label="year released" scalar_type="String" />
 		<scalar name="rating" xpath="//span[@class='rating-rating']" scalar_type="String" />
 		<collection name="directors" layer="9.0" xpath="//td[@id='overview-top']//div[@class='txt-block'][contains(.,'Director')]//a" 
-				child_type="person_details" child_entity="true">
+				child_type="person_details">
 			<scalar name="location" xpath="./@href" />
 			<scalar name="gist" xpath="." label="name" />
 		</collection>
-		<collection name="writers" layer="8.5" xpath="//td[@id='overview-top']//div[@class='txt-block'][contains(.,'Writer')]//a" child_type="person_details" child_entity="true">
+		<collection name="writers" layer="8.5" xpath="//td[@id='overview-top']//div[@class='txt-block'][contains(.,'Writer')]//a" child_type="person_details">
 			<scalar name="location" xpath="./@href" />
 			<scalar name="gist" xpath="." label="name" />
 		</collection>
@@ -51,11 +51,11 @@
 			<filter regex="Taglines:|See more" replace="" />
 		</scalar>
 		<collection name="cast" layer="8.0" xpath="//table[@class='cast_list']//tr[@class='odd' or @class='even']" child_type="cast_member">
-			<composite name="actor" xpath="td[@class='name']" type="person_details" entity="true">
+			<composite name="actor" xpath="td[@class='name']" type="person_details">
 				<scalar name="gist" xpath="string(.)" label="name" />
 				<scalar name="location" xpath="./a/@href" />
 			</composite>
-			<composite name="character" xpath="td[@class='character']" type="person_details" entity="true">
+			<composite name="character" xpath="td[@class='character']" type="person_details">
 				<scalar name="gist" xpath="string(.)" label="name" />
 				<scalar name="location" xpath="./div/a/@href" />
 			</composite>
@@ -129,35 +129,35 @@
 <!--		<scalar name="alternate_names" xpath="//div[@class='info']/h5[starts-with(child::text(), 'Alternate Names:')]/.." scalar_type="String">-->
 <!--			<filter regex="Alternate Names:" replace="" />-->
 <!--		</scalar>-->
-		<collection name="titles_as_actor" xpath="//div[@id='filmo-head-Actor']/following-sibling::div[1]//b/a" child_type="imdb_title" child_entity="true">
+		<collection name="titles_as_actor" xpath="//div[@id='filmo-head-Actor']/following-sibling::div[1]//b/a" child_type="imdb_title">
 			<scalar name="gist" xpath="./child::text()" />
 			<scalar name="location" xpath="./@href" />
 		</collection>
-		<collection name="titles_as_actress" xpath="//div[@id='filmo-head-Actress']/following-sibling::div[1]//b/a" child_type="imdb_title" child_entity="true">
+		<collection name="titles_as_actress" xpath="//div[@id='filmo-head-Actress']/following-sibling::div[1]//b/a" child_type="imdb_title">
 			<scalar name="gist" xpath="./child::text()" />
 			<scalar name="location" xpath="./@href" />
 		</collection>
-		<collection name="titles_as_director" xpath="//div[@id='filmo-head-Director']/following-sibling::div[1]//b/a" child_type="imdb_title" child_entity="true">
+		<collection name="titles_as_director" xpath="//div[@id='filmo-head-Director']/following-sibling::div[1]//b/a" child_type="imdb_title">
 			<scalar name="gist" xpath="./child::text()" />
 			<scalar name="location" xpath="./@href" />
 		</collection>
-		<collection name="titles_for_soundtrack" xpath="//div[@id='filmo-head-Soundtrack']/following-sibling::div[1]//b/a" child_type="imdb_title" child_entity="true">
+		<collection name="titles_for_soundtrack" xpath="//div[@id='filmo-head-Soundtrack']/following-sibling::div[1]//b/a" child_type="imdb_title">
 			<scalar name="gist" xpath="./child::text()" />
 			<scalar name="location" xpath="./@href" />
 		</collection>
-		<collection name="titles_as_producer" xpath="//div[@id='filmo-head-Producer']/following-sibling::div[1]//b/a" child_type="imdb_title" child_entity="true">
+		<collection name="titles_as_producer" xpath="//div[@id='filmo-head-Producer']/following-sibling::div[1]//b/a" child_type="imdb_title">
 			<scalar name="gist" xpath="./child::text()" />
 			<scalar name="location" xpath="./@href" />
 		</collection>
-		<collection name="titles_thanked_in" xpath="//div[@id='filmo-head-Thanks']/following-sibling::div[1]//b/a" child_type="imdb_title" child_entity="true">
+		<collection name="titles_thanked_in" xpath="//div[@id='filmo-head-Thanks']/following-sibling::div[1]//b/a" child_type="imdb_title">
 			<scalar name="gist" xpath="./child::text()" />
 			<scalar name="location" xpath="./@href" />
 		</collection>
-		<collection name="titles_as_self" xpath="//div[@id='filmo-head-Self']/following-sibling::div[1]//b/a" child_type="imdb_title" child_entity="true">
+		<collection name="titles_as_self" xpath="//div[@id='filmo-head-Self']/following-sibling::div[1]//b/a" child_type="imdb_title">
 			<scalar name="gist" xpath="./child::text()" />
 			<scalar name="location" xpath="./@href" />
 		</collection>
-<!--		<collection name="titles_in_development" xpath="//div[@id='filmo-head-Actor']/following-sibling::div[1]//b/a" child_type="imdb_title" child_entity="true">-->
+<!--		<collection name="titles_in_development" xpath="//div[@id='filmo-head-Actor']/following-sibling::div[1]//b/a" child_type="imdb_title">-->
 <!--			<scalar name="gist" xpath="./child::text()" />-->
 <!--			<scalar name="location" xpath="./@href" />-->
 <!--		</collection>-->
@@ -234,7 +234,7 @@
 				<get_field object="result" name="title" />
 				<parse_document>
 					<arg value="title" name="anchor_text" />
-					<arg value="location" name="container_link" />
+					<arg value="location" name="location" />
 				</parse_document>
 			</for_each>
 		</semantic_actions>
@@ -253,7 +253,7 @@
 				<get_field object="result" name="title" />
 				<parse_document link_type="TRUSTED_SEMANTICS">
 					<arg value="title" name="anchor_text" />
-					<arg value="location" name="container_link" />
+					<arg value="location" name="location" />
 				</parse_document>
 			</for_each>
 		</semantic_actions>

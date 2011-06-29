@@ -71,7 +71,7 @@
 							<otherwise>
 								<parse_document now="true">
 									<arg value="item" name="mixin" />
-									<arg value="location" name="container_link" />
+									<arg value="location" name="location" />
 								</parse_document>
 							</otherwise>
 						</choose>

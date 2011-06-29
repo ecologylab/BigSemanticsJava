@@ -12,7 +12,7 @@
 			<for_each collection="search_results" as="res">
 				<get_field object="res" name="link" />
 				<parse_document now="true">
-					<arg value="link" name="container_link" />  
+					<arg value="link" name="location" />  
 				</parse_document>
 			</for_each>
 		</semantic_actions>

@@ -95,7 +95,7 @@
 		        <if>
 		    		<not_null value="location" />
 		        	<parse_document now="true">
-						<arg value="location" name="container_link" />
+						<arg value="location" name="location" />
 		        	</parse_document>
 		        </if>
 			</for_each>	

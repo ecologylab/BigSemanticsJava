@@ -16,7 +16,7 @@
 				</create_and_visualize_img_surrogate>
 				<get_field object="mark" name="link" />
 				<parse_document>
-					<arg value="link" name="container_link" />
+					<arg value="link" name="location" />
 				</parse_document>
 			</for_each>
 		</semantic_actions>
