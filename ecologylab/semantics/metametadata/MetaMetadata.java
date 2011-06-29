@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.sun.org.apache.xml.internal.serialize.ElementState;
+
 import ecologylab.generic.ReflectionTools;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.collecting.LinkedMetadataMonitor;
@@ -15,8 +17,10 @@ import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.Metadata.mm_dont_inherit;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
+import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.TranslationScope;
+import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.types.element.Mappable;
 
 /**
@@ -442,6 +446,33 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 		MetadataClassDescriptor mcd = new MetadataClassDescriptor();
 		// TODO
 		return mcd;
+	}
+	
+	public MetadataClassDescriptor generateMetadataClassDescriptor()
+	{
+		MetadataClassDescriptor cd = this.getMetadataClassDescriptor();
+		if (cd == null)
+		{
+			ClassDescriptor superCd = this.getInheritedMmd().generateMetadataClassDescriptor();
+			cd = new MetadataClassDescriptor(
+					this.getName(),
+					this.getComment(),
+					this.packageName(),
+					XMLTools.classNameFromElementName(this.getName()),
+					superCd,
+					null);
+			this.setMetadataClassDescriptor(cd);
+			
+			for (MetaMetadataField f : this.getChildMetaMetadata())
+			{
+				if (f.parent() == this)
+				{
+					MetadataFieldDescriptor fd = f.generateMetadataFieldDescriptor(cd);
+					cd.addMetadataFieldDescriptor(fd);
+				}
+			}
+		}
+		return cd;
 	}
 
 }

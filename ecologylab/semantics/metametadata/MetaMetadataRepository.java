@@ -29,6 +29,7 @@ import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.Image;
+import ecologylab.semantics.metadata.builtins.MetadataBuiltinsTranslationScope;
 import ecologylab.semantics.metadata.scalar.types.MetadataScalarScalarType;
 import ecologylab.semantics.namesandnums.DocumentParserTagNames;
 import ecologylab.serialization.ElementState;
@@ -260,6 +261,11 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		
 		return result;
 	}
+	
+	public static MetaMetadataRepository readRepository(File file)
+	{
+		return readRepository(file, MetaMetadataTranslationScope.get());
+	}
 
 	/**
 	 * Load MetaMetadataRepository from one file.
@@ -367,6 +373,28 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 			}
 		}
 		return true;
+	}
+
+	public TranslationScope traverseAndGenerateTranslationScope()
+	{
+		TranslationScope metadataBuiltInTScope = MetadataBuiltinsTranslationScope.get();
+		TranslationScope ts = TranslationScope.get("meta-metadata-repository", new TranslationScope[] {metadataBuiltInTScope});
+		for (MetaMetadata metaMetadata : repositoryByTagName)
+		{
+			if (!metaMetadata.isGenerateClass())
+				metaMetadata.bindClassDescriptor(metaMetadata.getMetadataClass(ts), ts);
+		}
+		for (MetaMetadata metaMetadata : repositoryByTagName)
+		{
+			if (metaMetadata.isGenerateClass())
+			{
+				metaMetadata.setRepository(this);
+				metaMetadata.inheritMetaMetadata(this);
+				MetadataClassDescriptor cd = metaMetadata.generateMetadataClassDescriptor();
+				ts.addTranslation(cd);
+			}
+		}
+		return ts;
 	}
 
 	/**

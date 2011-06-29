@@ -192,12 +192,19 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField
 		return semanticActions;
 	}
 
+	@Deprecated
 	@Override
-	protected String getAnnotationsInJava()
+	public String getAnnotationsInJava()
 	{
 		String tagDecl = getTagDecl();
 		return "@simpl_composite" + (tagDecl.length() > 0 ? (" " + tagDecl) : "")
 					 + " @mm_name(\"" + getName() + "\")";
+	}
+
+	@Override
+	public String getAdditionalAnnotationsInJava()
+	{
+		return " @mm_name(\"" + getName() + "\")";
 	}
 
 	@Override
@@ -258,4 +265,5 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField
 	{
 		return schemaOrgItemType;
 	}
+
 }

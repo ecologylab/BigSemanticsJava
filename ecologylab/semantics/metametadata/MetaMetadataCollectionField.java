@@ -84,6 +84,11 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 	{
 		return childType;
 	}
+	
+	public String getChildExtends()
+	{
+		return childExtends;
+	}
 
 	public String getChildScalarType()
 	{
@@ -100,8 +105,9 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 		return childEntity;
 	}
 
+	@Deprecated
 	@Override
-	protected String getAnnotationsInJava()
+	public String getAnnotationsInJava()
 	{
 		StringBuilder annotations = StringBuilderUtils.acquire();
 		
@@ -128,6 +134,12 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 		annotations.append(" @mm_name(\"" + getName() + "\")");
 		
 		return annotations.toString();
+	}
+
+	@Override
+	public String getAdditionalAnnotationsInJava()
+	{
+		return " @mm_name(\"" + getName() + "\")";
 	}
 
 	@Override

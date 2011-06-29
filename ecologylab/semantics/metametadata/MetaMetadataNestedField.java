@@ -18,6 +18,12 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 	@simpl_scalar
 	private boolean							polymorphicGlobal;
 	
+	/**
+	 * the mmd used by another mmd (type/extends), a composite (type/extends) or a collection
+	 * (child_type/child_extends).
+	 */
+	private MetaMetadata				inheritedMmd;
+	
 	public MetaMetadataNestedField()
 	{
 		// TODO Auto-generated constructor stub
@@ -33,6 +39,16 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 	{
 		super(copy, name);
 		// TODO Auto-generated constructor stub
+	}
+	
+	public MetaMetadata getInheritedMmd()
+	{
+		return inheritedMmd;
+	}
+	
+	protected void setInheritedMmd(MetaMetadata inheritedMmd)
+	{
+		this.inheritedMmd = inheritedMmd;
 	}
 	
 	public FieldParserElement getFieldParserElement()
@@ -70,6 +86,7 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 			MetaMetadata inheritedMetaMetadata = repository.getByTagName(tagName);
 			if (inheritedMetaMetadata != null)
 			{
+				this.setInheritedMmd(inheritedMetaMetadata);
 				inheritedMetaMetadata.inheritMetaMetadata(repository);
 				// <collection> should not inherit attributes from its child_type
 				if (!(this instanceof MetaMetadataCollectionField))

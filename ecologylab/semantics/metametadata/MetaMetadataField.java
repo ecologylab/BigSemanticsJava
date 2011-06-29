@@ -362,6 +362,11 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	{
 		return metadataClassDescriptor;
 	}
+	
+	protected void setMetadataClassDescriptor(MetadataClassDescriptor cd)
+	{
+		this.metadataClassDescriptor = cd;
+	}
 
 	/**
 	 * @return the metadataFieldDescriptor
@@ -860,11 +865,10 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 		appendable.append(";\n\n");
 	}
 	
-	/**
-	 * generate java annotation string. since annotation string will be used for only once, it
-	 * does not need to be cached.
-	 */
-	abstract protected String getAnnotationsInJava();
+	@Deprecated
+	abstract public String getAnnotationsInJava();
+	
+	abstract public String getAdditionalAnnotationsInJava();
 
 	private String fieldNameInJava = null;
 	private String capFieldNameInJava = null;
@@ -999,7 +1003,6 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 		appendable.append("\tthis.").append(fieldName).append(" = ").append(fieldName).append(";\n}\n");
 	}
 
-	// FIXME the name should really be inheritUnspecifiedAttributes
 	protected void inheritNonDefaultAttributes(MetaMetadataField inheritFrom)
 	{
 		MetaMetadataClassDescriptor classDescriptor = (MetaMetadataClassDescriptor) classDescriptor();
@@ -1297,7 +1300,12 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 			if (this instanceof MetaMetadataCompositeField)
 				return FieldTypes.COMPOSITE_ELEMENT;
 			else if (this instanceof MetaMetadataCollectionField)
+			{
+				MetaMetadataCollectionField coll = (MetaMetadataCollectionField) this;
+				if (coll.getChildScalarType() != null)
+					return FieldTypes.COLLECTION_SCALAR;
 				return FieldTypes.COLLECTION_ELEMENT;
+			}
 			else
 				return FieldTypes.SCALAR;
 		}
@@ -1329,6 +1337,65 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	public String getSchemaOrgItemprop()
 	{
 		return schemaOrgItemprop;
+	}
+
+	public MetadataFieldDescriptor generateMetadataFieldDescriptor(MetadataClassDescriptor contextCd)
+	{
+		MetadataFieldDescriptor fd = this.getMetadataFieldDescriptor();
+		if (fd == null)
+		{
+			String tagName = this.resolveTag();
+			String fieldName = this.getFieldNameInJava(false);
+				String javaTypeName = this.getTypeNameInJava();
+			if (this instanceof MetaMetadataScalarField)
+			{
+				MetaMetadataScalarField scalar = (MetaMetadataScalarField) this;
+				fd = new MetadataFieldDescriptor(
+						this,
+						tagName,
+						this.getComment(), 
+						this.getFieldType(),
+						null,
+						contextCd,
+						fieldName,
+						scalar.getScalarType(),
+						scalar.getHint(),
+						javaTypeName);
+			}
+			else
+			{
+				// FIXME this part is still problematic, need more test cases to drive development.
+				// javaTypeName: not correct for collections; inheritedMmd may not have a metadata class; polymorphism; etc.
+				MetaMetadataNestedField nested = (MetaMetadataNestedField) this;
+				MetaMetadata inheritedMmd = nested.getInheritedMmd();
+				MetadataClassDescriptor fieldCd = inheritedMmd.generateMetadataClassDescriptor();
+				fd = new MetadataFieldDescriptor(
+						this,
+						tagName,
+						this.getComment(),
+						this.getFieldType(),
+						fieldCd,
+						contextCd,
+						fieldName,
+						null,
+						null,
+						javaTypeName);
+				
+				if (this instanceof MetaMetadataCollectionField)
+				{
+					MetaMetadataCollectionField coll = (MetaMetadataCollectionField) this;
+					if (coll.isNoWrap())
+					{
+						fd.setWrapped(false);
+					}
+					else
+					{
+						fd.setWrapped(true);
+					}
+				}
+			}
+		}
+		return fd;
 	}
 
 }

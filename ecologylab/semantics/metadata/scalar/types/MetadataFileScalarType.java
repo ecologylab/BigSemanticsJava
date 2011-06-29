@@ -55,11 +55,11 @@ public class MetadataFileScalarType extends MetadataScalarScalarType<MetadataFil
 		return operativeScalarType().marshall(instance.getValue(), serializationContext);
 	}
 	
-	@Override
-	public String getJavaType()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
+//	@Override
+//	public String getJavaType()
+//	{
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
 
 }

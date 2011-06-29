@@ -3,6 +3,7 @@ package ecologylab.semantics.metametadata;
 import java.io.IOException;
 
 import ecologylab.semantics.documentparsers.ParserBase;
+import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.tools.MetaMetadataCompilerUtils;
 import ecologylab.serialization.ElementState.xml_tag;
 import ecologylab.serialization.Hint;
@@ -180,7 +181,7 @@ public class MetaMetadataScalarField extends MetaMetadataField
 	}
 
 	@Override
-	protected String getAnnotationsInJava()
+	public String getAnnotationsInJava()
 	{
 		StringBuilder appendable = new StringBuilder("@simpl_scalar");
 		
@@ -210,6 +211,32 @@ public class MetaMetadataScalarField extends MetaMetadataField
 		}
 		
 		return appendable.toString();
+	}
+
+	@Override
+	public String getAdditionalAnnotationsInJava()
+	{
+		StringBuilder appendable = StringBuilderUtils.acquire();
+		
+		// @simpl_composite_as_scalar
+		if (isCompositeScalar())
+		{
+			appendable.append(" @").append(simpl_composite_as_scalar.class.getSimpleName());
+		}
+		
+		// @filter
+		if (filter != null && getMetaMetadataParser().equals(ParserBase.DIRECT_BINDING_PARSER))
+		{
+			String regex = filter.getJavaRegex();
+			String replace = filter.getJavaReplace();
+			appendable.append(String.format(" @simpl_filter(regex=\"%s\", replace=\"%s\")", regex, replace));
+			appendable.append(" @").append(simpl_filter.class.getSimpleName()).append("(regex=\"");
+			appendable.append(regex).append(", replace=\"").append(replace).append("\")");
+		}
+		
+		String annotations = appendable.toString();
+		StringBuilderUtils.release(appendable);
+		return annotations;
 	}
 
 	@Override

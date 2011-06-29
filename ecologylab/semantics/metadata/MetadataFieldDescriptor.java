@@ -10,11 +10,14 @@ import java.util.ArrayList;
 import ecologylab.semantics.gui.EditValueEvent;
 import ecologylab.semantics.gui.EditValueListener;
 import ecologylab.semantics.gui.EditValueNotifier;
+import ecologylab.semantics.metametadata.MetaMetadataField;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.FieldDescriptor;
+import ecologylab.serialization.Hint;
 import ecologylab.serialization.ScalarUnmarshallingContext;
 import ecologylab.serialization.XMLTools;
+import ecologylab.serialization.types.scalar.ScalarType;
 
 /**
  * @author andruid
@@ -22,18 +25,22 @@ import ecologylab.serialization.XMLTools;
  */
 public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor implements EditValueNotifier
 {
-	final private boolean		isMixin;
 	
-	Method									hwSetMethod;
-	
+	final private boolean									isMixin;
+
+	Method																hwSetMethod;
+
 	/**
-	 * The name in the MetaMetadataComposite field whose declaration resulted in the generation of this.
+	 * The name in the MetaMetadataComposite field whose declaration resulted in the generation of
+	 * this.
 	 */
 	@simpl_scalar
-	private String					mmName;
-	
-	private ArrayList<EditValueListener> editValueListeners = new ArrayList<EditValueListener>();
-	
+	private String												mmName;
+
+	private ArrayList<EditValueListener>	editValueListeners	= new ArrayList<EditValueListener>();
+
+	private MetaMetadataField							definingMmdField;
+
 	public MetadataFieldDescriptor(ClassDescriptor declaringClassDescriptor, Field field, int annotationType) // String nameSpacePrefix
 	{
 		super(declaringClassDescriptor, field, annotationType);
@@ -56,6 +63,15 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 		isMixin				= false;
 	}
 	
+	public MetadataFieldDescriptor(MetaMetadataField definingMmdField, String tagName, String comment, int type, ClassDescriptor elementClassDescriptor,
+			ClassDescriptor declaringClassDescriptor, String fieldName, ScalarType scalarType,
+			Hint xmlHint, String fieldType)
+	{
+		super(tagName, comment, type, elementClassDescriptor, declaringClassDescriptor, fieldName, scalarType, xmlHint, fieldType);
+		this.definingMmdField = definingMmdField;
+		this.isMixin = false;
+	}
+
 	public boolean isMixin() 
 	{
 		return isMixin;
@@ -131,4 +147,28 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 	{
 		return mmName;
 	}
+	
+	/**
+	 * get the (defining) meta-metadata field object. currently, only used by the compiler.
+	 *  
+	 * @return
+	 */
+	public MetaMetadataField getDefiningMmdField()
+	{
+		return definingMmdField;
+	}
+	
+	public String toString()
+	{
+		String name = getFieldName(); if (name == null) name = "NO_FIELD";
+		return this.getClassName() + "[" + name + " < " + declaringClassDescriptor.getDescribedClass()
+				+ " type=0x" + Integer.toHexString(getType()) + "]";
+	}
+	
+	@Override
+	public void setWrapped(boolean wrapped)
+	{
+		super.setWrapped(wrapped);
+	}
+
 }
