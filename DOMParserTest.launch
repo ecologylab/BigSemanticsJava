@@ -7,7 +7,7 @@
 <listEntry value="1"/>
 </listAttribute>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="ecologylab.semantics.metametadata.test.NewMmTest"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="http://news.blogs.cnn.com/2011/06/15/unrest-middle-east-and-north-africa-country-by-country-3/?hpt=wo_c2"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="http://news.blogs.cnn.com/2011/06/15/unrest-middle-east-and-north-africa-country-by-country-3/?hpt=wo_c2 http://en.wikipedia.org/wiki/Texas_A%26M_University"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="ecologylabSemanticsExample"/>
 <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Xms320m -Xmx320m"/>
 </launchConfiguration>
