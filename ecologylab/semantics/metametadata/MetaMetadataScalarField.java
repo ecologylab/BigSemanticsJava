@@ -56,24 +56,6 @@ public class MetaMetadataScalarField extends MetaMetadataField
 		
 	}
 
-	public MetaMetadataScalarField(MetaMetadataField mmf)
-	{
-		this.name = mmf.name;
-		this.hide = mmf.hide;
-		this.alwaysShow = mmf.alwaysShow;
-		this.style = mmf.style;
-		this.layer = mmf.layer;
-		this.xpath = mmf.xpath;
-		this.navigatesTo = mmf.navigatesTo;
-		this.shadows = mmf.shadows;
-		this.isFacet = mmf.isFacet;
-		this.ignoreInTermVector = mmf.ignoreInTermVector;
-		this.comment = mmf.comment;
-		this.contextNode = mmf.contextNode;
-		this.tag = mmf.tag;
-		this.kids = mmf.kids;
-	}
-
 	/**
 	 * @return the scalarType
 	 */

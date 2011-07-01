@@ -37,13 +37,6 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 	@simpl_scalar
 	protected String									userAgentString;
 
-	@simpl_scalar
-	private String										parser					= null;
-
-	@simpl_collection
-	@simpl_scope(SemanticActionTranslationScope.SEMANTIC_ACTION_TRANSLATION_SCOPE)
-	private ArrayList<SemanticAction>	semanticActions;
-
 	@simpl_collection("def_var")
 	@simpl_nowrap
 	private ArrayList<DefVar>					defVars;
@@ -121,11 +114,6 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 		return this;
 	}
 
-	public String getParser()
-	{
-		return parser;
-	}
-
 	public String getUserAgentString()
 	{
 		if (userAgentString == null)
@@ -138,30 +126,11 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 	}
 
 	/**
-	 * 
-	 */
-	protected void inheritSemanticActionsFromMM(MetaMetadata inheritedMetaMetadata)
-	{
-		if (semanticActions == null)
-		{
-			semanticActions = inheritedMetaMetadata.getSemanticActions();
-		}
-	}
-
-	/**
 	 * @return the defVars
 	 */
 	public final ArrayList<DefVar> getDefVars()
 	{
 		return defVars;
-	}
-
-	/**
-	 * @return the semanticActions
-	 */
-	public ArrayList<SemanticAction> getSemanticActions()
-	{
-		return semanticActions;
 	}
 
 	@Deprecated
@@ -244,7 +213,9 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 				if (MetaMetadata.isRootMetaMetadata(thisMmd))
 				{
 					for (MetaMetadataField f : this.getChildMetaMetadata())
+					{
 						f.setDeclaringMmd(thisMmd);
+					}
 					inheritFinished = true;
 					return;
 				}
@@ -253,7 +224,6 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 			// init
 			inheritInProcess = true;
 			MetaMetadataRepository repository = getRepository();
-			this.setPackageAttribute(repository.getPackageName());
 			
 			// find and prepare inheritedMmd
 			MetaMetadata inheritedMmd = findInheritedMetaMetadata(repository);
@@ -313,7 +283,7 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 					if (f instanceof MetaMetadataNestedField)
 					{
 						f.setRepository(repository);
-						((MetaMetadataNestedField) f).setPackageAttribute(this.getPackageAttribute());
+						((MetaMetadataNestedField) f).setPackageName(this.packageName());
 						((MetaMetadataNestedField) f).inheritMetaMetadata();
 					}
 					this.setGenerateClassDescriptor(true);
@@ -417,7 +387,7 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 		
 		MetaMetadata generatedMmd = new MetaMetadata();
 		generatedMmd.setName(generatedName);
-		generatedMmd.setPackageAttribute(this.getPackageAttribute());
+		generatedMmd.setPackageName(this.packageName());
 		generatedMmd.setType(null);
 		generatedMmd.setInheritedMmd(inheritedMmd);
 		generatedMmd.setExtendsAttribute(inheritedMmd.getName());

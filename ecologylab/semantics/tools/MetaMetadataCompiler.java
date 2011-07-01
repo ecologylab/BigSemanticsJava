@@ -76,7 +76,7 @@ public class MetaMetadataCompiler extends ApplicationEnvironment
 		// be generated.
 		for (MetaMetadata metaMetadata : metaMetadataRepository.values())
 		{
-			String packageAttribute = metaMetadata.getPackageAttribute();
+			String packageAttribute = metaMetadata.packageName();
 			if (packageAttribute != null && metaMetadata.isGenerateClass())
 				MetaMetadataCompilerUtils.importTargets.add(packageAttribute + ".*");
 		}

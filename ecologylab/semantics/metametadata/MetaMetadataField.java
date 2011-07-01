@@ -37,7 +37,7 @@ import ecologylab.textformat.NamedStyle;
  */
 @simpl_inherit
 @simpl_descriptor_classes({ MetaMetadataClassDescriptor.class, MetaMetadataFieldDescriptor.class })
-public abstract class MetaMetadataField extends ElementState implements Mappable<String>, PackageSpecifier, Iterable<MetaMetadataField>
+public abstract class MetaMetadataField extends ElementState implements Mappable<String>, Iterable<MetaMetadataField>
 {
 
 	static class LayerComparator implements Comparator<MetaMetadataField>
@@ -54,11 +54,9 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 
 	static LayerComparator																LAYER_COMPARATOR				= new LayerComparator();
 
-	static ArrayList<MetaMetadataField>										EMPTY_COLLECTION				= new ArrayList<MetaMetadataField>(
-																																										0);
+	static ArrayList<MetaMetadataField>										EMPTY_COLLECTION				= new ArrayList<MetaMetadataField>(0);
 
-	static Iterator<MetaMetadataField>										EMPTY_ITERATOR					= EMPTY_COLLECTION
-																																										.iterator();
+	static Iterator<MetaMetadataField>										EMPTY_ITERATOR					= EMPTY_COLLECTION.iterator();
 
 	MetadataFieldDescriptor																metadataFieldDescriptor;
 
@@ -206,11 +204,6 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	protected MetadataClassDescriptor											metadataClassDescriptor;
 
 	String																								toString;
-
-	/**
-	 * for caching packageName().
-	 */
-	private String																				packageName							= null;
 
 	/**
 	 * for caching getInheritedField().
@@ -552,20 +545,6 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	public String key()
 	{
 		return name;
-	}
-
-	public String packageName()
-	{
-		String result = packageName;
-		if (result != null)
-			return result;
-		ElementState parent = parent();
-		if ((parent != null) && (parent instanceof PackageSpecifier))
-		{
-			return ((PackageSpecifier) parent).packageName();
-		}
-		else
-			return null;
 	}
 
 	public String toString()

@@ -277,13 +277,16 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	public static MetaMetadataRepository readRepository(File file, TranslationScope metaMetadataTScope)
 	{
 		MetaMetadataRepository repos = null;
-		println("MetaMetadataRepository read:\t" + new File(file.getParent()).getName() + "/"
-				+ file.getName());
+		println("MetaMetadataRepository read:\t" + new File(file.getParent()).getName() + "/" + file.getName());
 
 		try
 		{
 			repos = (MetaMetadataRepository) metaMetadataTScope.deserialize(file);
 			repos.file = file;
+			HashMapArrayList<String, MetaMetadata> mmdTagMap = repos.repositoryByTagName;
+			if (mmdTagMap != null)
+				for (MetaMetadata mmd : mmdTagMap.values())
+					mmd.setPackageName(repos.packageName());
 			repos.initializeSuffixAndMimeBasedMaps();
 		}
 		catch (SIMPLTranslationException e)
@@ -344,8 +347,8 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 			{
 				metaMetadata.setParent(this);
 				metaMetadata.file = repository.file;
-				if (metaMetadata.getPackageAttribute() == null)
-					metaMetadata.setPackageAttribute(repository.packageAttribute);
+				if (metaMetadata.packageName() == null)
+					metaMetadata.setPackageName(repository.packageAttribute);
 			}
 		}
 
@@ -419,7 +422,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		for (MetaMetadata metaMetadata : repositoryByTagName)
 		{
 			metaMetadata.setRepository(this);
-			metaMetadata.inheritMetaMetadata();
+			metaMetadata.inheritMetaMetadata(this);
 			metaMetadata.getClassAndBindDescriptors(metadataTScope);
 			MetadataClassDescriptor metadataClassDescriptor = metaMetadata.getMetadataClassDescriptor();
 			
@@ -955,14 +958,6 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	public TranslationScope metadataTranslationScope()
 	{
 		return metadataTScope;
-	}
-
-	/**
-	 * @return the packageName
-	 */
-	public String getPackageName()
-	{
-		return packageAttribute;
 	}
 
 	/**

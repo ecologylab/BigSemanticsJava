@@ -130,11 +130,6 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 		return typeNameInJava;
 	}
 
-//	public String determineCollectionChildType()
-//	{
-//		return getChildType();
-//	}
-	
 	/**
 	 * @return the tag
 	 */
@@ -185,16 +180,6 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 		return (kids != null && kids.size() > 0) ? kids.get(0).getChildMetaMetadata() : null;
 	}
 	
-//	@Override
-//	public HashMapArrayList<String, MetaMetadataField> initializeChildMetaMetadata()
-//	{
-//		kids = new HashMapArrayList<String, MetaMetadataField>();
-//		MetaMetadataCompositeField composite = new MetaMetadataCompositeField(getChildType(), null);
-//		kids.put(composite.getName(), composite);
-//		
-//		return composite.getChildMetaMetadata();
-//	}
-	
 	public MetaMetadataCompositeField getChildComposite()
 	{
 		return (kids != null && kids.size() > 0) ? (MetaMetadataCompositeField) kids.get(0) : null;
@@ -237,11 +222,9 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 		composite.setParent(this);
 		composite.setType(childType);
 		composite.setExtendsAttribute(this.childExtends);
-		if (kids != null)
-		{
-			kids.clear();
-			kids.put(composite.getName(), composite);
-		}
+		
+		kids.clear();
+		kids.put(composite.getName(), composite);
 		composite.setPromoteChildren(this.shouldPromoteChildren());
 	}
 
@@ -255,15 +238,18 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 	{
 		MetaMetadataCompositeField childComposite = this.getChildComposite();
 		
-		if (childComposite.getName().equals(UNRESOLVED_NAME))
-			childComposite.setName(this.childType == null ? this.name : this.childType);
-		
-		MetaMetadataCollectionField inheritedField = (MetaMetadataCollectionField) this.getInheritedField();
-		if (inheritedField != null)
-			childComposite.setInheritedField(inheritedField.getChildComposite());
-		
-		childComposite.inheritMetaMetadata();
-		this.setInheritedMmd(childComposite.getInheritedMmd());
+		if (childComposite != null)
+		{
+			if (childComposite.getName().equals(UNRESOLVED_NAME))
+				childComposite.setName(this.childType == null ? this.name : this.childType);
+			
+			MetaMetadataCollectionField inheritedField = (MetaMetadataCollectionField) this.getInheritedField();
+			if (inheritedField != null)
+				childComposite.setInheritedField(inheritedField.getChildComposite());
+			
+			childComposite.inheritMetaMetadata();
+			this.setInheritedMmd(childComposite.getInheritedMmd());
+		}
 	}
 
 	@Override

@@ -11,6 +11,8 @@ import java.util.Map;
 import ecologylab.collections.Scope;
 import ecologylab.generic.ReflectionTools;
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.actions.SemanticAction;
+import ecologylab.semantics.actions.SemanticActionTranslationScope;
 import ecologylab.semantics.collecting.LinkedMetadataMonitor;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.Metadata.mm_dont_inherit;
@@ -31,6 +33,13 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 	@simpl_collection("selector")
 	@simpl_nowrap
 	ArrayList<MetaMetadataSelector>									selectors;
+
+	@simpl_scalar
+	private String																	parser						= null;
+
+	@simpl_collection
+	@simpl_scope(SemanticActionTranslationScope.SEMANTIC_ACTION_TRANSLATION_SCOPE)
+	private ArrayList<SemanticAction>								semanticActions;
 
 	@simpl_scalar
 	@mm_dont_inherit
@@ -80,6 +89,19 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 	protected MetaMetadata(MetaMetadataField copy, String name)
 	{
 		super(copy, name);
+	}
+
+	public String getParser()
+	{
+		return parser;
+	}
+
+	/**
+	 * @return the semanticActions
+	 */
+	public ArrayList<SemanticAction> getSemanticActions()
+	{
+		return semanticActions;
 	}
 
 	public Metadata constructMetadata()
@@ -321,7 +343,7 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 	@Override
 	public void compileToMetadataClass(String packageName) throws IOException
 	{
-		String packageAttr = getPackageAttribute();
+		String packageAttr = packageName();
 		if (packageAttr != null)
 			super.compileToMetadataClass(packageAttr);
 		else
@@ -436,10 +458,17 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 	 */
 	protected void inheritNonFieldComponents(MetaMetadata inheritedMmd)
 	{
-		// perhaps inherit semantic actions
-		
+		inheritSemanticActions(inheritedMmd);
 	}
 	
+	protected void inheritSemanticActions(MetaMetadata inheritedMmd)
+	{
+		if (semanticActions == null)
+		{
+			semanticActions = inheritedMmd.getSemanticActions();
+		}
+	}
+
 	void inheritInlineMmds(MetaMetadata other)
 	{
 		if (other.getInlineMmds() != null)
@@ -464,7 +493,7 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 				MetadataClassDescriptor cd = new MetadataClassDescriptor(
 						this.getName(),
 						this.getComment(),
-						this.getPackageAttribute(),
+						this.packageName(),
 						XMLTools.classNameFromElementName(this.getName()),
 						superCd,
 						null);

@@ -1,11 +1,10 @@
 package ecologylab.semantics.metametadata;
 
-import ecologylab.collections.Scope;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.serialization.simpl_inherit;
 
 @simpl_inherit
-public abstract class MetaMetadataNestedField extends MetaMetadataField
+public abstract class MetaMetadataNestedField extends MetaMetadataField implements PackageSpecifier
 {
 	
 	@simpl_composite
@@ -21,7 +20,7 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 
 	@xml_tag("package")
 	@simpl_scalar
-	String											packageAttribute;
+	String											packageName;
 
 	/**
 	 * the mmd used by this nested field. corresponding attributes: (child_)type/extends. could be a
@@ -51,14 +50,14 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 	/**
 	 * @return the packageAttribute
 	 */
-	public final String getPackageAttribute()
+	public final String packageName()
 	{
-		return packageAttribute;
+		return packageName;
 	}
 
-	final void setPackageAttribute(String pa)
+	void setPackageName(String packageName)
 	{
-		packageAttribute = pa;
+		this.packageName = packageName;
 	}
 
 	public MetaMetadata getInheritedMmd()
@@ -79,7 +78,11 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 	abstract protected String getMetaMetadataTagToInheritFrom();
 	
 	/**
-	 * prerequisites: for meta-metadata: type/extends set; for fields: attributes inherited & declaringMmd set; for both: parent element inheritedMmd set.
+	 * prerequisites:<br>
+	 * <ul>
+	 *   <li>for meta-metadata: name & type/extends set;</li>
+	 *   <li>for fields: attributes inherited & declaringMmd set;</li>
+	 *   <li>for both: parent element inheritedMmd set.</li>
 	 * <p>
 	 * consequences:<br>
 	 * <ul>

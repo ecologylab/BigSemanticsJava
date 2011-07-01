@@ -13,6 +13,7 @@ import ecologylab.semantics.actions.SemanticActionsKeyWords;
 import ecologylab.semantics.collecting.NewInfoCollector;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
+import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.namesandnums.CFPrefNames;
 import ecologylab.semantics.namesandnums.DocumentParserTagNames;
@@ -93,14 +94,25 @@ public class SearchParser extends LinksetParser implements CFPrefNames, Semantic
 	{
 		Document resultingDocument	= document;
 		
+		MetaMetadata mmd = null;
+		// FIXME with the new inheritance and inilne MMD processing, this should always be true
+		if (metaMetadata instanceof MetaMetadata)
+		{
+			mmd = (MetaMetadata) metaMetadata;
+		}
+		else
+		{
+			warning("Not a MetaMetadata: " + metaMetadata + ": something wrong with the inheritance and inline MMD processing!");
+		}
+		
 		//FIXME use overrides instead of constants here!!!!!!!!!!
-		if (DIRECT_BINDING_PARSER.equals(metaMetadata.getParser()))
+		if (DIRECT_BINDING_PARSER.equals(mmd.getParser()))
 		{
 			resultingDocument				= directBindingPopulateMetadata();
 			
 			//FIXME -- copy values like query from original metadata to the new one!!!
 		}
-		else if (XPATH_PARSER.equals(metaMetadata.getParser()))
+		else if (XPATH_PARSER.equals(mmd.getParser()))
 		{
 			recursiveExtraction(metaMetadata, resultingDocument, DOM, null, handler.getSemanticActionVariableMap());
 //			container.setMetadata(populatedMetadata);
