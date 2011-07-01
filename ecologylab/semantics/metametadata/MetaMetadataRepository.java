@@ -44,6 +44,8 @@ import ecologylab.textformat.NamedStyle;
 public class MetaMetadataRepository extends ElementState implements PackageSpecifier,
 		DocumentParserTagNames
 {
+	private static final String	META_METADATA_COMPILER_TSCOPE	= "meta-metadata-compiler-tscope";
+
 	private static final String																	FIREFOX_3_6_4_AGENT_STRING			= "Mozilla/5.0 (Windows; U; Windows NT 6.1; ru; rv:1.9.2.4) Gecko/20100513 Firefox/3.6.4";
 
 	private static final String																	DEFAULT_STYLE_NAME							= "default";
@@ -372,11 +374,16 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		}
 		return true;
 	}
-
+	
 	public TranslationScope traverseAndGenerateTranslationScope()
 	{
+		return traverseAndGenerateTranslationScope(META_METADATA_COMPILER_TSCOPE);
+	}
+
+	public TranslationScope traverseAndGenerateTranslationScope(String TSName)
+	{
 		TranslationScope metadataBuiltInTScope = MetadataBuiltinsTranslationScope.get();
-		TranslationScope ts = TranslationScope.get("meta-metadata-repository", new TranslationScope[] {metadataBuiltInTScope});
+		TranslationScope ts = TranslationScope.get(TSName, new TranslationScope[] {metadataBuiltInTScope});
 		for (MetaMetadata metaMetadata : repositoryByTagName)
 		{
 			if (metaMetadata.isBuiltIn())
