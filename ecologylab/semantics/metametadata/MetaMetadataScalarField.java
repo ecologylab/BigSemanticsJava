@@ -6,6 +6,7 @@ import ecologylab.semantics.documentparsers.ParserBase;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
+import ecologylab.semantics.metametadata.exceptions.MetaMetadataException;
 import ecologylab.semantics.tools.MetaMetadataCompilerUtils;
 import ecologylab.serialization.ElementState.xml_tag;
 import ecologylab.serialization.FieldTypes;
@@ -241,7 +242,7 @@ public class MetaMetadataScalarField extends MetaMetadataField
 		if (rst == null)
 		{
 			if (scalarType == null)
-				throw new RuntimeException("No scalar_type is defined " + this);
+				throw new MetaMetadataException("No scalar_type is defined " + this);
 			rst = scalarType.fieldTypeName();
 			if (rst.equals("int"))
 			{

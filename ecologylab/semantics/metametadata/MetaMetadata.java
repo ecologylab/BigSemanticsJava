@@ -238,6 +238,13 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 	{
 		return inlineMmds;
 	}
+	
+	public MetaMetadata getInlineMmd(String name)
+	{
+		if (inlineMmds != null)
+			return inlineMmds.get(name);
+		return null;
+	}
 
 	public void addInlineMmd(String name, MetaMetadata generatedMmd)
 	{

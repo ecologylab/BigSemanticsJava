@@ -5,9 +5,11 @@ import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
 import ecologylab.serialization.ElementState.xml_tag;
+import ecologylab.serialization.FieldTypes;
 import ecologylab.serialization.TranslationScope;
 import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.types.scalar.ScalarType;
 
 @simpl_inherit
 @xml_tag("collection")
@@ -29,7 +31,7 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 	protected String						childExtends;
 
 	@simpl_scalar
-	protected String						childScalarType;
+	protected ScalarType				childScalarType;
 
 	/**
 	 * Specifies adding @simpl_nowrap to the collection object in cases where items in the collection
@@ -54,8 +56,6 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 			return childTag;
 		if (childType != null)
 			return childType;
-		if (childScalarType != null)
-			return "metadata_" + childScalarType;
 		return null;
 	}
 
@@ -69,7 +69,7 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 		return childExtends;
 	}
 
-	public String getChildScalarType()
+	public ScalarType getChildScalarType()
 	{
 		return childScalarType;
 	}
@@ -123,7 +123,7 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 		if (rst == null)
 		{
 			String typeName = getTypeName();
-			String className = XMLTools.classNameFromElementName(typeName);
+			String className = "Metadata" + XMLTools.classNameFromElementName(typeName);
 			rst = "ArrayList<" + className + ">";
 			typeNameInJava = rst;
 		}
@@ -202,6 +202,10 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 	 */
 	public void deserializationPostHook()
 	{
+		int typeCode = this.getFieldType();
+		if (typeCode == FieldTypes.COLLECTION_SCALAR)
+			return;
+		
 		String childType = getChildType();
 		String childCompositeName = childType != null ? childType : UNRESOLVED_NAME;
 		final MetaMetadataCollectionField thisField = this;
@@ -218,11 +222,16 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 			{
 				thisField.childExtends = newExtends;
 			}
+			
+			@Override
+			protected void tagChanged(String newTag)
+			{
+				thisField.childTag = newTag;
+			}
 		};
 		composite.setParent(this);
 		composite.setType(childType);
 		composite.setExtendsAttribute(this.childExtends);
-		
 		kids.clear();
 		kids.put(composite.getName(), composite);
 		composite.setPromoteChildren(this.shouldPromoteChildren());
@@ -236,19 +245,31 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 	@Override
 	public void inheritMetaMetadata()
 	{
-		MetaMetadataCompositeField childComposite = this.getChildComposite();
-		
-		if (childComposite != null)
+		int typeCode = this.getFieldType();
+		switch (typeCode)
 		{
+		case FieldTypes.COLLECTION_ELEMENT:
+		{
+			MetaMetadataCompositeField childComposite = this.getChildComposite();
+			// child_type may have a new value from inheritedField
 			if (childComposite.getName().equals(UNRESOLVED_NAME))
 				childComposite.setName(this.childType == null ? this.name : this.childType);
-			
+			// set inheritedField for childComposite, if this has an inheritedField set
 			MetaMetadataCollectionField inheritedField = (MetaMetadataCollectionField) this.getInheritedField();
 			if (inheritedField != null)
 				childComposite.setInheritedField(inheritedField.getChildComposite());
-			
+			// set inheritedMmd for this field, using childComposite
 			childComposite.inheritMetaMetadata();
 			this.setInheritedMmd(childComposite.getInheritedMmd());
+			break;
+		}
+		case FieldTypes.COLLECTION_SCALAR:
+		{
+			MetaMetadataField inheritedField = this.getInheritedField();
+			if (inheritedField != null)
+				this.inheritAttributes(inheritedField);
+			break;
+		}
 		}
 	}
 
@@ -265,20 +286,46 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 			if (!wrapped)
 				tagName = null;
 			
-			MetaMetadata inheritedMmd = this.getInheritedMmd();
-			assert inheritedMmd != null : "IMPOSSIBLE: inheritedMmd == null: something wrong in the inheritance process!";
-			MetadataClassDescriptor fieldCd = inheritedMmd.getMetadataClassDescriptor();
-			fd = new MetadataFieldDescriptor(
-					this,
-					tagName,
-					this.getComment(),
-					this.getFieldType(),
-					fieldCd,
-					contextCd,
-					fieldName,
-					null,
-					null,
-					javaTypeName);
+			int typeCode = this.getFieldType();
+			switch (typeCode)
+			{
+			case FieldTypes.COLLECTION_ELEMENT:
+			{
+				MetaMetadata inheritedMmd = this.getInheritedMmd();
+				assert inheritedMmd != null : "IMPOSSIBLE: inheritedMmd == null: something wrong in the inheritance process!";
+				MetadataClassDescriptor fieldCd = inheritedMmd.getMetadataClassDescriptor();
+				fd = new MetadataFieldDescriptor(
+						this,
+						tagName,
+						this.getComment(),
+						typeCode,
+						fieldCd,
+						contextCd,
+						fieldName,
+						null,
+						null,
+						javaTypeName);
+				break;
+			}
+			case FieldTypes.COLLECTION_SCALAR:
+			{
+				if (this.kids.size() > 0)
+					warning("Ignoring nested fields inside " + this + " because child_scalar_type specified ...");
+				
+				ScalarType scalarType = this.getChildScalarType();
+				fd = new MetadataFieldDescriptor(
+						this,
+						tagName,
+						this.getComment(),
+						typeCode,
+						null,
+						contextCd,
+						fieldName,
+						scalarType,
+						null,
+						javaTypeName);
+			}
+			}
 			fd.setWrapped(wrapped);
 		}
 		return fd;

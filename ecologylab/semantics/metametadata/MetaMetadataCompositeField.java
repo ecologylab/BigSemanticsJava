@@ -51,6 +51,11 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 	 */
 	private String										typeNameInJava	= null;
 	
+	/**
+	 * (cached scopeMmd).
+	 */
+	private MetaMetadata							scopeMmd = null;
+	
 	public MetaMetadataCompositeField()
 	{
 		
@@ -92,6 +97,12 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 	{
 		this.extendsAttribute = extendsAttribute;
 		extendsChanged(extendsAttribute);
+	}
+	
+	public void setTag(String tag)
+	{
+		super.setTag(tag);
+		tagChanged(tag);
 	}
 
 	public String getTagForTranslationScope()
@@ -314,8 +325,7 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 					// could be an inline mmd type
 					// this must not be meta-metadata; MetaMetadata.isInlineDefinition() returns false
 					MetaMetadata scopeMmd = getScopeMmd();
-					Scope<MetaMetadata> inlineMmds = scopeMmd.getInlineMmds();
-					inheritedMmd = inlineMmds == null ? null : inlineMmds.get(inheritedMmdName);
+					inheritedMmd = scopeMmd == null ? null : scopeMmd.getInlineMmd(inheritedMmdName);
 					if (inheritedMmd == null)
 						throw new MetaMetadataException("meta-metadata not found: " + inheritedMmdName);
 				}
@@ -326,6 +336,7 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 				repository.addMetaMetadata(generatedMmd);
 				this.setType(generatedMmd.getName());
 				this.setExtendsAttribute(null);
+				this.setTag(previousName);
 				
 				// put generatedMmd in to current scope
 				MetaMetadata scopeMmd = getScopeMmd();
@@ -349,7 +360,12 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 				}
 				inheritedMmd = repository.getByTagName(inheritedMmdName);
 				if (inheritedMmd == null)
-					throw new MetaMetadataException("meta-metadata not found: " + inheritedMmdName);
+				{
+					MetaMetadata scopeMmd = getScopeMmd();
+					inheritedMmd = scopeMmd == null ? null : scopeMmd.getInlineMmd(inheritedMmdName);
+				}
+				if (inheritedMmd == null)
+					throw new MetaMetadataException("meta-metadata not found: " + inheritedMmdName + " (if you want to define new types inline, you need to specify extends/child_extends)");
 				
 				// process normal mmd / field
 				this.setInheritedMmd(inheritedMmd);
@@ -361,12 +377,14 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 
 	private MetaMetadata getScopeMmd()
 	{
-		MetaMetadataNestedField parent = (MetaMetadataNestedField) this.parent();
-		MetaMetadata scopeMmd = null;
-		if (parent instanceof MetaMetadata)
-			scopeMmd = (MetaMetadata) parent;
-		else
-			scopeMmd = parent.getDeclaringMmd();
+		if (scopeMmd == null)
+		{
+			MetaMetadataNestedField parent = (MetaMetadataNestedField) this.parent();
+			if (parent instanceof MetaMetadata)
+				scopeMmd = (MetaMetadata) parent;
+			else
+				scopeMmd = parent.getDeclaringMmd();
+		}
 		return scopeMmd;
 	}
 
@@ -415,6 +433,11 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 	}
 	
 	protected void extendsChanged(String newExtends)
+	{
+		
+	}
+	
+	protected void tagChanged(String newTag)
 	{
 		
 	}

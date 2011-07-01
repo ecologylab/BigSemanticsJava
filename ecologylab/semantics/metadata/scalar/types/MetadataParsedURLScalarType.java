@@ -34,11 +34,10 @@ public class MetadataParsedURLScalarType extends
 		return null;
 	}
 	
-//	@Override
-//	public String getJavaType() {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
+	@Override
+	public String getJavaType() {
+		return MetadataParsedURL.class.getSimpleName();
+	}
 
 	@Override
 	public String getDbType() {

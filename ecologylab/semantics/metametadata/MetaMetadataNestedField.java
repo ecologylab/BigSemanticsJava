@@ -216,7 +216,7 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 				if (mmcf.childType != null)
 					result = mmcf.childType;
 				else if (mmcf.childScalarType != null)
-					result = "Metadata" + mmcf.childScalarType;
+					result = mmcf.childScalarType.getJavaType();
 			}
 			
 			if (result == null)

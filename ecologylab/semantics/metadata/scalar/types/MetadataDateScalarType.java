@@ -49,11 +49,10 @@ public class MetadataDateScalarType extends MetadataScalarScalarType<MetadataDat
 		return null;
 	}
 
-//	@Override
-//	public String getJavaType()
-//	{
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
+	@Override
+	public String getJavaType()
+	{
+		return MetadataDate.class.getSimpleName();
+	}
 
 }

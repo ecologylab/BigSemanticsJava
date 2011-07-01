@@ -48,11 +48,10 @@ public class MetadataStringScalarType extends MetadataScalarScalarType<MetadataS
 		return null;
 	}
 	
-//	@Override
-//	public String getJavaType() {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
+	@Override
+	public String getJavaType() {
+		return MetadataString.class.getSimpleName();
+	}
 
 	@Override
 	public String getDbType() {

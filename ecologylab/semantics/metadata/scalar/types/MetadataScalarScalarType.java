@@ -189,10 +189,4 @@ public abstract class MetadataScalarScalarType<M, T> extends ReferenceType<M>
 		return true;
 	}
 	
-	@Override
-	public String getJavaType()
-	{
-		return this.getTypeClass().getSimpleName();
-	}
-
 }

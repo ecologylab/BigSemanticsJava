@@ -515,8 +515,7 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 		if (mmdField.isCollectionOfScalars())
 		{
 			// registered at MetadataScalarScalarType.init()
-			String registeredTypeName = "Metadata" + mmdField.getChildScalarType() + "ScalarType";
-			ScalarType theScalarType = TypeRegistry.getType(registeredTypeName);
+			ScalarType theScalarType = mmdField.getChildScalarType();
 			if (theScalarType != null && theScalarType instanceof MetadataScalarScalarType)
 			{
 				scalarType = (MetadataScalarScalarType) theScalarType;
@@ -525,7 +524,7 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 			else
 			{
 				// error!
-				error("child_scalar_type not registered, or not metadata: " + mmdField + ": " + registeredTypeName);
+				throw new RuntimeException("child_scalar_type not specified or registered: " + mmdField);
 			}
 		}
 		else
