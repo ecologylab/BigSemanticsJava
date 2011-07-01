@@ -15,6 +15,7 @@ import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.Metadata.mm_dont_inherit;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
+import ecologylab.semantics.metametadata.exceptions.MetaMetadataException;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.TranslationScope;
@@ -30,27 +31,22 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 
 	@simpl_collection("selector")
 	@simpl_nowrap
-	ArrayList<MetaMetadataSelector>					selectors;
+	ArrayList<MetaMetadataSelector>									selectors;
 
 	@xml_tag("package")
 	@simpl_scalar
-	String																	packageAttribute;
+	String																					packageAttribute;
 
 	@simpl_scalar
 	@mm_dont_inherit
-	protected boolean												dontGenerateClass	= false;
+	protected boolean																dontGenerateClass	= false;
 
 	@simpl_scalar
 	@mm_dont_inherit
-	protected boolean												builtIn;
+	protected boolean																builtIn;
 
 	@simpl_scalar
-	protected RedirectHandling							redirectHandling;
-
-	/*
-	 * @xml_collection("meta_metadata_field") private ArrayList<MetaMetadataField>
-	 * metaMetadataFieldList;
-	 */
+	protected RedirectHandling											redirectHandling;
 
 	/**
 	 * Mixins are needed so that we can have objects of multiple metadata classes in side a single
@@ -59,27 +55,25 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 	 */
 	@simpl_collection("mixins")
 	@simpl_nowrap
-	private ArrayList<String>								mixins;
+	private ArrayList<String>												mixins;
 
 	@simpl_scalar
-	private String													collectionOf;
+	private String																	collectionOf;
 
 	@simpl_collection("url_generator")
 	@simpl_nowrap
-	private ArrayList<UrlGenerator>					urlGenerators;
+	private ArrayList<UrlGenerator>									urlGenerators;
 
-	private Map<String, MetaMetadataField>	naturalIds				= new HashMap<String, MetaMetadataField>();
+	private Map<String, MetaMetadataField>					naturalIds				= new HashMap<String, MetaMetadataField>();
 
 	@simpl_map("link_with")
 	@simpl_nowrap
-	private HashMap<String, LinkWith>				linkWiths;
-	
-	@simpl_scalar
-	protected String												schemaOrgItemtype;
+	private HashMap<String, LinkWith>								linkWiths;
 
-	// TranslationScope DEFAULT_METADATA_TRANSLATIONS = DefaultMetadataTranslationSpace.get();
-	
-	private Map<MetaMetadataSelector, MetaMetadata> reselectMap;
+	@simpl_scalar
+	protected String																schemaOrgItemtype;
+
+	private Map<MetaMetadataSelector, MetaMetadata>	reselectMap;
 
 	public MetaMetadata()
 	{
@@ -439,38 +433,62 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 		reselectMap.put(selector, mmd);
 	}
 	
-	public MetadataClassDescriptor createMetadataClassDescriptor()
+	/**
+	 * Hook overrided by MetaMetadata class
+	 * 
+	 * @param inheritedMmd
+	 */
+	protected void inheritNonFieldComponentsFromMM(MetaMetadata inheritedMmd)
 	{
-		MetadataClassDescriptor mcd = new MetadataClassDescriptor();
-		// TODO
-		return mcd;
+		// perhaps inherit semantic actions
 	}
-	
-	public MetadataClassDescriptor generateMetadataClassDescriptor()
+
+	protected boolean isInlineDefinition()
 	{
-		MetadataClassDescriptor cd = this.getMetadataClassDescriptor();
-		if (cd == null)
+		return false;
+	}
+
+	void findOrGenerateMetadataClassDescriptor(TranslationScope tscope)
+	{
+		if (this.metadataClassDescriptor == null)
 		{
-			ClassDescriptor superCd = this.getInheritedMmd().generateMetadataClassDescriptor();
-			cd = new MetadataClassDescriptor(
-					this.getName(),
-					this.getComment(),
-					this.packageName(),
-					XMLTools.classNameFromElementName(this.getName()),
-					superCd,
-					null);
-			this.setMetadataClassDescriptor(cd);
-			
-			for (MetaMetadataField f : this.getChildMetaMetadata())
+			this.inheritMetaMetadata();
+			MetaMetadata inheritedMmd = this.getInheritedMmd();
+			inheritedMmd.findOrGenerateMetadataClassDescriptor(tscope);
+			MetadataClassDescriptor superCd = inheritedMmd.getMetadataClassDescriptor();
+			if (this.isGenerateClassDescriptor())
 			{
-				if (f.parent() == this)
+				MetadataClassDescriptor cd = new MetadataClassDescriptor(
+						this.getName(),
+						this.getComment(),
+						this.packageName(),
+						XMLTools.classNameFromElementName(this.getName()),
+						superCd,
+						null);
+				// setting this early allows referring to the same class in fields
+				this.metadataClassDescriptor = cd;
+
+				for (MetaMetadataField f : this.getChildMetaMetadata())
 				{
-					MetadataFieldDescriptor fd = f.generateMetadataFieldDescriptor(cd);
-					cd.addMetadataFieldDescriptor(fd);
+					if (f.getDeclaringMmd() == this)
+					{
+						MetadataFieldDescriptor fd = f.findOrGenerateMetadataFieldDescriptor(cd);
+						cd.addMetadataFieldDescriptor(fd);
+					}
 				}
+				
+				tscope.addTranslation(cd);
+			}
+			else
+			{
+				this.metadataClassDescriptor = superCd;
 			}
 		}
-		return cd;
+	}
+	
+	static boolean isRootMetaMetadata(MetaMetadata mmd)
+	{
+		return mmd.getName().equals("metadata");
 	}
 
 }

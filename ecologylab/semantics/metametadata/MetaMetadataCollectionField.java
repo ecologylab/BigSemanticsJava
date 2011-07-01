@@ -2,6 +2,8 @@ package ecologylab.semantics.metametadata;
 
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
+import ecologylab.semantics.metadata.MetadataClassDescriptor;
+import ecologylab.semantics.metadata.MetadataFieldDescriptor;
 import ecologylab.serialization.ElementState.xml_tag;
 import ecologylab.serialization.TranslationScope;
 import ecologylab.serialization.XMLTools;
@@ -46,25 +48,6 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 		
 	}
 
-	public MetaMetadataCollectionField(MetaMetadataField mmf)
-	{
-		this.name = mmf.name;
-		this.extendsAttribute = mmf.extendsAttribute;
-		this.hide = mmf.hide;
-		this.alwaysShow = mmf.alwaysShow;
-		this.style = mmf.style;
-		this.layer = mmf.layer;
-		this.xpath = mmf.xpath;
-		this.navigatesTo = mmf.navigatesTo;
-		this.shadows = mmf.shadows;
-		this.isFacet = mmf.isFacet;
-		this.ignoreInTermVector = mmf.ignoreInTermVector;
-		this.comment = mmf.comment;
-		this.contextNode = mmf.contextNode;
-		this.tag = mmf.tag;
-		this.kids = mmf.kids;
-	}
-
 	public String getChildTag()
 	{
 		if (childTag != null)
@@ -72,7 +55,7 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 		if (childType != null)
 			return childType;
 		if (childScalarType != null)
-			return "Metadata" + childScalarType;
+			return "metadata_" + childScalarType;
 		return null;
 	}
 
@@ -147,10 +130,10 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 		return typeNameInJava;
 	}
 
-	public String determineCollectionChildType()
-	{
-		return getChildType();
-	}
+//	public String determineCollectionChildType()
+//	{
+//		return getChildType();
+//	}
 	
 	/**
 	 * @return the tag
@@ -203,27 +186,14 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 	}
 	
 //	@Override
-//	protected void inheritNonDefaultAttributes(MetaMetadataField inheritFrom)
+//	public HashMapArrayList<String, MetaMetadataField> initializeChildMetaMetadata()
 //	{
-//		super.inheritNonDefaultAttributes(inheritFrom);
+//		kids = new HashMapArrayList<String, MetaMetadataField>();
+//		MetaMetadataCompositeField composite = new MetaMetadataCompositeField(getChildType(), null);
+//		kids.put(composite.getName(), composite);
 //		
-//		MetaMetadataCompositeField composite = getChildComposite();
-//		if (composite != null && composite.getName() == null)
-//		{
-//			MetaMetadataCompositeField childComposite = ((MetaMetadataCollectionField) inheritFrom).getChildComposite();
-//			composite.setName(childComposite != null ? childComposite.getName() : this.childType);
-//		}
+//		return composite.getChildMetaMetadata();
 //	}
-	
-	@Override
-	public HashMapArrayList<String, MetaMetadataField> initializeChildMetaMetadata()
-	{
-		kids = new HashMapArrayList<String, MetaMetadataField>();
-		MetaMetadataCompositeField composite = new MetaMetadataCompositeField(getChildType(), null);
-		kids.put(composite.getName(), composite);
-		
-		return composite.getChildMetaMetadata();
-	}
 	
 	public MetaMetadataCompositeField getChildComposite()
 	{
@@ -248,7 +218,7 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 	public void deserializationPostHook()
 	{
 		final String childType = getChildType();
-		MetaMetadataCompositeField composite = new MetaMetadataCompositeField(childType != null ? childType : UNRESOLVED_NAME, kids);
+		MetaMetadataCompositeField composite = new MetaMetadataCompositeField(childType != null ? childType : UNRESOLVED_NAME, childExtends, kids);
 		composite.setParent(this);
 		composite.setType(childType);
 		if (kids != null)
@@ -262,6 +232,46 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 	public boolean isCollectionOfScalars()
 	{
 		return childScalarType != null;
+	}
+
+	@Override
+	public void inheritMetaMetadata()
+	{
+		MetaMetadataCompositeField childComposite = this.getChildComposite();
+		childComposite.inheritMetaMetadata();
+		this.setInheritedMmd(childComposite.getInheritedMmd());
+	}
+
+	@Override
+	public MetadataFieldDescriptor findOrGenerateMetadataFieldDescriptor(MetadataClassDescriptor contextCd)
+	{
+		MetadataFieldDescriptor fd = this.getMetadataFieldDescriptor();
+		if (fd == null)
+		{
+			String tagName = this.resolveTag();
+			String fieldName = this.getFieldNameInJava(false);
+			String javaTypeName = this.getTypeNameInJava();
+			boolean wrapped = !this.isNoWrap();
+			if (!wrapped)
+				tagName = null;
+			
+			MetaMetadata inheritedMmd = this.getInheritedMmd();
+			assert inheritedMmd != null : "IMPOSSIBLE: inheritedMmd == null: something wrong in the inheritance process!";
+			MetadataClassDescriptor fieldCd = inheritedMmd.getMetadataClassDescriptor();
+			fd = new MetadataFieldDescriptor(
+					this,
+					tagName,
+					this.getComment(),
+					this.getFieldType(),
+					fieldCd,
+					contextCd,
+					fieldName,
+					null,
+					null,
+					javaTypeName);
+			fd.setWrapped(wrapped);
+		}
+		return fd;
 	}
 
 }

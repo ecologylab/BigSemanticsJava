@@ -36,10 +36,8 @@ import ecologylab.textformat.NamedStyle;
  * 
  */
 @simpl_inherit
-@simpl_descriptor_classes(
-		{ MetaMetadataClassDescriptor.class, MetaMetadataFieldDescriptor.class })
-public abstract class MetaMetadataField extends ElementState implements Mappable<String>,
-		PackageSpecifier, Iterable<MetaMetadataField>
+@simpl_descriptor_classes({ MetaMetadataClassDescriptor.class, MetaMetadataFieldDescriptor.class })
+public abstract class MetaMetadataField extends ElementState implements Mappable<String>, PackageSpecifier, Iterable<MetaMetadataField>
 {
 
 	static class LayerComparator implements Comparator<MetaMetadataField>
@@ -54,11 +52,13 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 
 	}
 
-	static LayerComparator																LAYER_COMPARATOR						= new LayerComparator();
+	static LayerComparator																LAYER_COMPARATOR				= new LayerComparator();
 
-	static ArrayList<MetaMetadataField>	EMPTY_COLLECTION	= new ArrayList<MetaMetadataField>(0);
+	static ArrayList<MetaMetadataField>										EMPTY_COLLECTION				= new ArrayList<MetaMetadataField>(
+																																										0);
 
-	static Iterator<MetaMetadataField>	EMPTY_ITERATOR		= EMPTY_COLLECTION.iterator();
+	static Iterator<MetaMetadataField>										EMPTY_ITERATOR					= EMPTY_COLLECTION
+																																										.iterator();
 
 	MetadataFieldDescriptor																metadataFieldDescriptor;
 
@@ -66,6 +66,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	protected String																			name;
 
 	@simpl_scalar
+	@mm_dont_inherit
 	protected String																			comment;
 
 	@simpl_scalar
@@ -80,23 +81,18 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	@simpl_scalar
 	protected String																			contextNode;
 
-	@xml_tag("extends")
-	@simpl_scalar
-	@mm_dont_inherit
-	protected String																			extendsAttribute;
-	
 	@simpl_scalar
 	protected String																			fieldParserKey;
-	
+
 	@simpl_scalar
 	protected String																			schemaOrgItemprop;
 
+	// initializing kids here seems a waste of space, but I would argue for this because this field
+	// will get created during the inheritance process anyway. -- yin
 	@simpl_map
-	@simpl_classes(
-	{ MetaMetadataField.class, MetaMetadataScalarField.class, MetaMetadataCompositeField.class,
-			MetaMetadataCollectionField.class, })
+	@simpl_classes({ MetaMetadataField.class, MetaMetadataScalarField.class, MetaMetadataCompositeField.class, MetaMetadataCollectionField.class, })
 	@simpl_nowrap
-	protected HashMapArrayList<String, MetaMetadataField>	kids;
+	protected HashMapArrayList<String, MetaMetadataField>	kids = new HashMapArrayList<String, MetaMetadataField>();
 
 	// ///////////////////////////////// visualization fields /////////////////////////////////
 
@@ -114,6 +110,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 
 	@simpl_scalar
 	protected String																			style;
+
 	/**
 	 * Specifies the order in which a field is displayed in relation to other fields.
 	 */
@@ -138,27 +135,27 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	 */
 	@simpl_scalar
 	protected String																			label;
-	
+
 	/**
 	 * The name of natural id if this field is used as one.
 	 */
 	@simpl_scalar
 	protected String																			asNaturalId;
-	
+
 	/**
 	 * The format of this field. Used for normalization. Currently, only used with natural ids.
 	 */
 	@simpl_scalar
 	protected String																			format;
-	
+
 	/**
 	 * Indicate if this field is required for the upper level structure.
 	 */
 	@simpl_scalar
-	protected boolean																			required = false;
-	
+	protected boolean																			required								= false;
+
 	@simpl_scalar
-	protected boolean																			dontSerialize = false;
+	protected boolean																			dontSerialize						= false;
 
 	// ///////////////////////////////// switches /////////////////////////////////
 
@@ -167,55 +164,61 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 
 	@simpl_scalar
 	protected boolean																			ignoreInTermVector;
-	
+
 	// ///////////////////////////////// members /////////////////////////////////
 
 	HashSet<String>																				nonDisplayedFieldNames;
 
 	File																									file;
 
-	private boolean																				fieldsSortedForDisplay			= false;
+	private boolean																				fieldsSortedForDisplay	= false;
 
-	private String																				displayedLabel							= null;
+	private String																				displayedLabel					= null;
 
 	/**
 	 * The Meta-Metadata repository object.
 	 */
 	private MetaMetadataRepository												repository;
 
-	protected boolean																			inheritMetaMetadataFinished	= false;
-	
-	protected boolean																			inheritInProcess						= false;
-	
-	private boolean																				fieldInherited							= false;
-	
-	private boolean																				bindDescriptorsFinished			= false;
+	protected boolean																			inheritFinished					= false;
+
+	/**
+	 * inheritInProcess prevents infinite loops, e.g. when A.b refers B while B.a refers A, then when
+	 * you initialize A.b you will have to initialize A.b.a and you will have to initialize A.b.a.b
+	 * ...
+	 */
+	protected boolean																			inheritInProcess				= false;
+
+	private boolean																				fieldInherited					= false;
+
+	private boolean																				bindDescriptorsFinished	= false;
 
 	/**
 	 * Class of the Metadata object that corresponds to this. Non-null for nested and collection
 	 * fields. Null for scalar fields.
 	 */
-	private Class<? extends Metadata>	metadataClass;
+	private Class<? extends Metadata>											metadataClass;
 
 	/**
 	 * Class descriptor for the Metadata object that corresponds to this. Non-null for nested and
 	 * collection fields. Null for scalar fields.
 	 */
-	protected MetadataClassDescriptor	metadataClassDescriptor;
+	protected MetadataClassDescriptor											metadataClassDescriptor;
 
-	String	toString;
-	
+	String																								toString;
+
 	/**
 	 * for caching packageName().
 	 */
-	private String packageName = null;
-	
-	
+	private String																				packageName							= null;
+
 	/**
 	 * for caching getInheritedField().
 	 */
-	private MetaMetadataField inheritedField = null;
-	
+	private MetaMetadataField															inheritedField					= null;
+
+	private MetaMetadata																	declaringMmd						= null;
+
 	public MetaMetadataField()
 	{
 
@@ -269,14 +272,6 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 			displayedLabel = result;
 		}
 		return result;
-	}
-
-	/**
-	 * @return the extendsAttribute
-	 */
-	public String getExtendsAttribute()
-	{
-		return extendsAttribute;
 	}
 
 	public String getFieldParserKey()
@@ -339,11 +334,11 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 						result = (Class<? extends Metadata>) ts.getClassByTag(name);
 					}
 					
-					if (result == null)
+					if (result == null && this instanceof MetaMetadataCompositeField)
 					{
 						// if type and name don't work, try extends=
 						// there is no class for this tag we can use class of meta-metadata it extends
-						result = (Class<? extends Metadata>) ts.getClassByTag(extendsAttribute);
+						result = (Class<? extends Metadata>) ts.getClassByTag(((MetaMetadataCompositeField)this).getExtendsAttribute());
 					}
 				}
 			}
@@ -584,11 +579,11 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 		return result;
 	}
 
-	public HashMapArrayList<String, MetaMetadataField> initializeChildMetaMetadata()
-	{
-		this.kids = new HashMapArrayList<String, MetaMetadataField>();
-		return this.kids;
-	}
+//	public HashMapArrayList<String, MetaMetadataField> initializeChildMetaMetadata()
+//	{
+//		this.kids = new HashMapArrayList<String, MetaMetadataField>();
+//		return this.kids;
+//	}
 
 	/**
 	 * check for errors.
@@ -648,6 +643,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	 * 
 	 * @param fieldToInheritFrom
 	 */
+	@Deprecated
 	void inheritForField(MetaMetadataField fieldToInheritFrom)
 	{
 
@@ -655,10 +651,10 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 		// this is for the case when meta_metadata has no meta_metadata fields of its own. It just
 		// inherits from super class.
 		HashMapArrayList<String, MetaMetadataField> childMetaMetadata = getChildMetaMetadata();
-		if (childMetaMetadata == null)
-		{
-			childMetaMetadata = initializeChildMetaMetadata();
-		}
+//		if (childMetaMetadata == null)
+//		{
+//			childMetaMetadata = initializeChildMetaMetadata();
+//		}
 
 		// *do not* override fields in here with fields from super classes.
 		MetaMetadataField fieldToInheritTo = childMetaMetadata.get(fieldName);
@@ -673,7 +669,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 				if (MetaMetadataCollectionField.UNRESOLVED_NAME == childComposite.getName())
 				{
 					fieldToInheritTo.kids.remove(MetaMetadataCollectionField.UNRESOLVED_NAME);
-					childComposite.inheritNonDefaultAttributes(inheritedChildComposite);
+					childComposite.inheritAttributes(inheritedChildComposite);
 					childComposite.setName(inheritedChildComposite.getName());
 					fieldToInheritTo.kids.put(childComposite.getName(), childComposite);
 				}
@@ -687,7 +683,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 		}
 		else
 		{			
-			fieldToInheritTo.inheritNonDefaultAttributes(fieldToInheritFrom);
+			fieldToInheritTo.inheritAttributes(fieldToInheritFrom);
 		}
 
 		if (!fieldToInheritTo.fieldInherited)
@@ -823,7 +819,8 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 			p.println(tagDecl);
 
 		// Write class declaration
-		String extendsAttribute = getExtendsAttribute();
+//		String extendsAttribute = getExtendsAttribute();
+		String extendsAttribute = null;
 		String extendsName = extendsAttribute == null ? "Metadata" : XMLTools.classNameFromElementName(extendsAttribute);
 		p.println("public class " + className + "\nextends " + extendsName + "\n{\n");
 
@@ -1003,7 +1000,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 		appendable.append("\tthis.").append(fieldName).append(" = ").append(fieldName).append(";\n}\n");
 	}
 
-	protected void inheritNonDefaultAttributes(MetaMetadataField inheritFrom)
+	public void inheritAttributes(MetaMetadataField inheritFrom)
 	{
 		MetaMetadataClassDescriptor classDescriptor = (MetaMetadataClassDescriptor) classDescriptor();
 	
@@ -1037,16 +1034,6 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 				}
 			}
 		}
-	}
-
-	/**
-	 * Hook overrided by MetaMetadata class
-	 * 
-	 * @param inheritedMetaMetadata
-	 */
-	protected void inheritNonFieldComponentsFromMM(MetaMetadata inheritedMetaMetadata)
-	{
-		// MetaMetadataFields don't have semantic actions.
 	}
 
 	private MetaMetadataRepository findRepository()
@@ -1258,37 +1245,42 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	 */
 	public MetaMetadataField getInheritedField()
 	{
-		MetaMetadataField result = inheritedField;
-		if (result == null)
-		{
-			MetaMetadataNestedField parent = (MetaMetadataNestedField) parent();
-			if (parent == null)
-				return null;
-			MetaMetadataNestedField toSearch = null;
-			if (parent instanceof MetaMetadata)
-			{
-				MetaMetadata parentMmd = (MetaMetadata) parent;
-				String parentSuperMmdName = parentMmd.getSuperMmdTypeName();
-				MetaMetadata parentSuperMmd = getRepository().getByTagName(parentSuperMmdName);
-				if (parentSuperMmd != null)
-					toSearch = parentSuperMmd;
-			}
-			else
-			{
-				MetaMetadataNestedField parentDef = parent.getTypeDefinition();
-				// parentDef == null indicates that a new mmd type is defined inline
-				if (parentDef == null)
-					return null;
-				toSearch = parentDef;
-			}
-			
-			if (toSearch != null)
-				result = toSearch.searchForChild(getName());
-			
-			if (result != this)
-				inheritedField = result;
-		}
+//		MetaMetadataField result = inheritedField;
+//		if (result == null)
+//		{
+//			MetaMetadataNestedField parent = (MetaMetadataNestedField) parent();
+//			if (parent == null)
+//				return null;
+//			MetaMetadataNestedField toSearch = null;
+//			if (parent instanceof MetaMetadata)
+//			{
+//				MetaMetadata parentMmd = (MetaMetadata) parent;
+//				String parentSuperMmdName = parentMmd.getSuperMmdTypeName();
+//				MetaMetadata parentSuperMmd = getRepository().getByTagName(parentSuperMmdName);
+//				if (parentSuperMmd != null)
+//					toSearch = parentSuperMmd;
+//			}
+//			else
+//			{
+//				MetaMetadataNestedField parentDef = parent.getTypeDefinition();
+//				// parentDef == null indicates that a new mmd type is defined inline
+//				if (parentDef == null)
+//					return null;
+//				toSearch = parentDef;
+//			}
+//			
+//			if (toSearch != null)
+//				result = toSearch.searchForChild(getName());
+//			
+//			if (result != this)
+//				inheritedField = result;
+//		}
 		return inheritedField;
+	}
+	
+	void setInheritedField(MetaMetadataField inheritedField)
+	{
+		this.inheritedField = inheritedField;
 	}
 	
 	public int getFieldType()
@@ -1339,67 +1331,16 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 		return schemaOrgItemprop;
 	}
 
-	public MetadataFieldDescriptor generateMetadataFieldDescriptor(MetadataClassDescriptor contextCd)
+	public MetaMetadata getDeclaringMmd()
 	{
-		MetadataFieldDescriptor fd = this.getMetadataFieldDescriptor();
-		if (fd == null)
-		{
-			String tagName = this.resolveTag();
-			String fieldName = this.getFieldNameInJava(false);
-				String javaTypeName = this.getTypeNameInJava();
-			if (this instanceof MetaMetadataScalarField)
-			{
-				MetaMetadataScalarField scalar = (MetaMetadataScalarField) this;
-				fd = new MetadataFieldDescriptor(
-						this,
-						tagName,
-						this.getComment(), 
-						this.getFieldType(),
-						null,
-						contextCd,
-						fieldName,
-						scalar.getScalarType(),
-						scalar.getHint(),
-						javaTypeName);
-			}
-			else
-			{
-				// FIXME this part is still problematic, need more test cases to drive development.
-				// javaTypeName: not correct for collections; inheritedMmd may not have a metadata class; polymorphism; etc.
-				
-				Boolean wrapped = null;
-				if (this instanceof MetaMetadataCollectionField)
-				{
-					MetaMetadataCollectionField coll = (MetaMetadataCollectionField) this;
-					if (coll.isNoWrap())
-					{
-						wrapped = false;
-						tagName = null;
-					}
-					else
-					{
-						wrapped = true;
-					}
-				}
-				MetaMetadataNestedField nested = (MetaMetadataNestedField) this;
-				MetaMetadata inheritedMmd = nested.getInheritedMmd();
-				MetadataClassDescriptor fieldCd = inheritedMmd.generateMetadataClassDescriptor();
-				fd = new MetadataFieldDescriptor(
-						this,
-						tagName,
-						this.getComment(),
-						this.getFieldType(),
-						fieldCd,
-						contextCd,
-						fieldName,
-						null,
-						null,
-						javaTypeName);
-				if (wrapped != null)
-					fd.setWrapped(wrapped);
-			}
-		}
-		return fd;
+		return declaringMmd;
 	}
 
+	void setDeclaringMmd(MetaMetadata declaringMmd)
+	{
+		this.declaringMmd = declaringMmd;
+	}
+
+	abstract public MetadataFieldDescriptor findOrGenerateMetadataFieldDescriptor(MetadataClassDescriptor contextCd);
+	
 }

@@ -4,8 +4,11 @@ import java.io.IOException;
 
 import ecologylab.semantics.documentparsers.ParserBase;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
+import ecologylab.semantics.metadata.MetadataClassDescriptor;
+import ecologylab.semantics.metadata.MetadataFieldDescriptor;
 import ecologylab.semantics.tools.MetaMetadataCompilerUtils;
 import ecologylab.serialization.ElementState.xml_tag;
+import ecologylab.serialization.FieldTypes;
 import ecologylab.serialization.Hint;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.simpl_inherit;
@@ -56,7 +59,6 @@ public class MetaMetadataScalarField extends MetaMetadataField
 	public MetaMetadataScalarField(MetaMetadataField mmf)
 	{
 		this.name = mmf.name;
-		this.extendsAttribute = mmf.extendsAttribute;
 		this.hide = mmf.hide;
 		this.alwaysShow = mmf.alwaysShow;
 		this.style = mmf.style;
@@ -530,6 +532,31 @@ public class MetaMetadataScalarField extends MetaMetadataField
 		MetaMetadataScalarField m = (MetaMetadataScalarField) MetaMetadataTranslationScope.get()
 				.deserializeCharSequence(xml);
 		System.out.println(m);
+	}
+
+	@Override
+	public MetadataFieldDescriptor findOrGenerateMetadataFieldDescriptor(MetadataClassDescriptor contextCd)
+	{
+		MetadataFieldDescriptor fd = this.metadataFieldDescriptor;
+		if (fd == null)
+		{
+			String tagName = this.resolveTag();
+			String fieldName = this.getFieldNameInJava(false);
+			String javaTypeName = this.getTypeNameInJava();
+			fd = new MetadataFieldDescriptor(
+					this,
+					tagName,
+					this.getComment(),
+					FieldTypes.SCALAR,
+					null,
+					contextCd,
+					fieldName,
+					this.getScalarType(),
+					this.getHint(),
+					javaTypeName);
+			this.metadataFieldDescriptor = fd;
+		}
+		return fd;
 	}
 
 }

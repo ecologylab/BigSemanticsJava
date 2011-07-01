@@ -23,7 +23,6 @@ import ecologylab.net.ParsedURL;
 import ecologylab.net.UserAgent;
 import ecologylab.semantics.collecting.CookieProcessing;
 import ecologylab.semantics.collecting.LinkedMetadataMonitor;
-import ecologylab.semantics.collecting.SemanticsSite;
 import ecologylab.semantics.collecting.SemanticsSiteMap;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
@@ -381,18 +380,16 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		TranslationScope ts = TranslationScope.get("meta-metadata-repository", new TranslationScope[] {metadataBuiltInTScope});
 		for (MetaMetadata metaMetadata : repositoryByTagName)
 		{
-			if (!metaMetadata.isGenerateClass())
+			if (metaMetadata.isBuiltIn())
 				metaMetadata.bindClassDescriptor(metaMetadata.getMetadataClass(ts), ts);
 		}
+		
+		// class descriptors could be more than meta-metadatas! need another way to collect these.
 		for (MetaMetadata metaMetadata : repositoryByTagName)
 		{
-			if (metaMetadata.isGenerateClass())
-			{
-				metaMetadata.setRepository(this);
-				metaMetadata.inheritMetaMetadata(this);
-				MetadataClassDescriptor cd = metaMetadata.generateMetadataClassDescriptor();
-				ts.addTranslation(cd);
-			}
+			metaMetadata.setRepository(this);
+			metaMetadata.inheritMetaMetadata();
+			metaMetadata.findOrGenerateMetadataClassDescriptor(ts);
 		}
 		return ts;
 	}
@@ -413,7 +410,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		for (MetaMetadata metaMetadata : repositoryByTagName)
 		{
 			metaMetadata.setRepository(this);
-			metaMetadata.inheritMetaMetadata(this);
+			metaMetadata.inheritMetaMetadata();
 			metaMetadata.getClassAndBindDescriptors(metadataTScope);
 			MetadataClassDescriptor metadataClassDescriptor = metaMetadata.getMetadataClassDescriptor();
 			

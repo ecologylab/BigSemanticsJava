@@ -2,7 +2,6 @@ package ecologylab.semantics.metametadata;
 
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.serialization.simpl_inherit;
-import ecologylab.serialization.ElementState.simpl_scalar;
 
 @simpl_inherit
 public abstract class MetaMetadataNestedField extends MetaMetadataField
@@ -19,10 +18,12 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 	private boolean							polymorphicGlobal;
 	
 	/**
-	 * the mmd used by another mmd (type/extends), a composite (type/extends) or a collection
-	 * (child_type/child_extends).
+	 * the mmd used by this nested field. corresponding attributes: (child_)type/extends.
+	 * could be a generated one for inline definitions.
 	 */
 	private MetaMetadata				inheritedMmd;
+	
+	private boolean							generateClassDescriptor = false;
 	
 	public MetaMetadataNestedField()
 	{
@@ -57,14 +58,17 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 	}
 
 	abstract protected String getMetaMetadataTagToInheritFrom();
+	
+	abstract public void inheritMetaMetadata();
 
 	//FIXME -- make it work for type graphs!!!
 	/**
 	 * Bind field declarations through the extends and type keywords.
 	 */
+	@Deprecated
 	public void inheritMetaMetadata(MetaMetadataRepository repository)
 	{
-		if (!inheritMetaMetadataFinished && !inheritInProcess)
+		if (!inheritFinished && !inheritInProcess)
 		{
 			/**************************************************************************************
 			 * Inheritance works here in a top-down manner: first we know the type or extends of a
@@ -90,13 +94,16 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 				inheritedMetaMetadata.inheritMetaMetadata(repository);
 				// <collection> should not inherit attributes from its child_type
 				if (!(this instanceof MetaMetadataCollectionField))
-					inheritNonDefaultAttributes(inheritedMetaMetadata);
+					inheritAttributes(inheritedMetaMetadata);
 				for (MetaMetadataField inheritedField : inheritedMetaMetadata.getChildMetaMetadata())
 				{
 					if (this != inheritedField && !inheritedField.inheritInProcess)
 						inheritForField(inheritedField);
 				}
-				inheritNonFieldComponentsFromMM(inheritedMetaMetadata);
+				if (this instanceof MetaMetadata)
+				{
+					((MetaMetadata) this).inheritNonFieldComponentsFromMM(inheritedMetaMetadata);
+				}
 			}
 
 			if (kids != null)
@@ -111,10 +118,10 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 			}
 			
 			inheritInProcess 						= false;
-			inheritMetaMetadataFinished = true;
+			inheritFinished = true;
 		}
 	}
-
+	
 	@Override
 	public boolean isNewClass()
 	{
@@ -310,6 +317,16 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 	public boolean isPolymorphicGlobal()
 	{
 		return polymorphicGlobal;
+	}
+	
+	public boolean isGenerateClassDescriptor()
+	{
+		return generateClassDescriptor;
+	}
+
+	public void setGenerateClassDescriptor(boolean generateClassDescriptor)
+	{
+		this.generateClassDescriptor = generateClassDescriptor;
 	}
 
 }

@@ -5,6 +5,10 @@ import java.util.ArrayList;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.semantics.actions.SemanticAction;
 import ecologylab.semantics.actions.SemanticActionTranslationScope;
+import ecologylab.semantics.metadata.Metadata.mm_dont_inherit;
+import ecologylab.semantics.metadata.MetadataClassDescriptor;
+import ecologylab.semantics.metadata.MetadataFieldDescriptor;
+import ecologylab.semantics.metametadata.exceptions.MetaMetadataException;
 import ecologylab.serialization.ElementState.xml_tag;
 import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.simpl_inherit;
@@ -19,6 +23,11 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField
 	 */
 	@simpl_scalar
 	protected String									type;
+
+	@xml_tag("extends")
+	@simpl_scalar
+	@mm_dont_inherit
+	protected String									extendsAttribute;
 
 	@simpl_scalar
 	protected String									userAgentName;
@@ -47,37 +56,21 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField
 	 * for caching getTypeNameInJava().
 	 */
 	private String										typeNameInJava	= null;
-
+	
+	
 	public MetaMetadataCompositeField()
 	{
 		
 	}
 
-	public MetaMetadataCompositeField(String name, HashMapArrayList<String, MetaMetadataField> kids)
+	MetaMetadataCompositeField(String typeName, String extendsName, HashMapArrayList<String, MetaMetadataField> kids)
 	{
-		this.name = name;
+		this.name = typeName;
+		this.type = typeName;
+		this.extendsAttribute = extendsName;
 		this.kids = new HashMapArrayList<String, MetaMetadataField>();
 		if (kids != null)
 			this.kids.putAll(kids);
-	}
-
-	public MetaMetadataCompositeField(MetaMetadataField mmf)
-	{
-		this.name = mmf.name;
-		this.extendsAttribute = mmf.extendsAttribute;
-		this.hide = mmf.hide;
-		this.alwaysShow = mmf.alwaysShow;
-		this.style = mmf.style;
-		this.layer = mmf.layer;
-		this.xpath = mmf.xpath;
-		this.navigatesTo = mmf.navigatesTo;
-		this.shadows = mmf.shadows;
-		this.isFacet = mmf.isFacet;
-		this.ignoreInTermVector = mmf.ignoreInTermVector;
-		this.comment = mmf.comment;
-		this.contextNode = mmf.contextNode;
-		this.tag = mmf.tag;
-		this.kids = mmf.kids;
 	}
 
 	public MetaMetadataCompositeField(MetaMetadataField copy, String name)
@@ -97,6 +90,11 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField
 			return type;
 		else
 			return getName();
+	}
+
+	public String getExtendsAttribute()
+	{
+		return extendsAttribute;
 	}
 
 	public String getTagForTranslationScope()
@@ -226,6 +224,165 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField
 	public String getSchemaOrgItemType()
 	{
 		return schemaOrgItemType;
+	}
+
+	/**
+	 * prerequisites: type/extends defined.
+	 * <p>
+	 * consequences:<br>
+	 * <ul>
+	 *   <li>if this is a MetaMetadata object, attributes inherited from inheritedMmd;</li>
+	 *   <li>inheritedMmd set;</li>
+	 *   <li>(first-level) fields inherited from inheritedMmd;</li>
+	 *   <li>inheritedField and declaringMmd set for all (first-level) fields;</li>
+	 *   <li>for all (first-level) fields, attributes inherited from their inheritedField. (enabling recursion)</li>
+	 * </ul>
+	 */
+	public void inheritMetaMetadata()
+	{
+		if (!inheritFinished && !inheritInProcess)
+		{
+			debug("inheriting " + this.toString());
+			
+			if (this instanceof MetaMetadata)
+			{
+				MetaMetadata thisMmd = (MetaMetadata) this;
+				if (MetaMetadata.isRootMetaMetadata(thisMmd))
+				{
+					for (MetaMetadataField f : this.getChildMetaMetadata())
+						f.setDeclaringMmd(thisMmd);
+					inheritFinished = true;
+					return;
+				}
+			}
+			
+			inheritInProcess = true;
+			MetaMetadataRepository repository = getRepository();
+			
+			if (this.isInlineDefinition())
+			{
+				MetaMetadata generatedMmd = this.generateMetaMetadata();
+				generatedMmd.inheritMetaMetadata(); // this will set generateClassDescriptor to true if necessary
+				this.setInheritedMmd(generatedMmd);
+				this.setGenerateClassDescriptor(false);
+				return;
+			}
+
+			// find inheritedMmd:
+			String inheritedMmdName = this.getType();
+			if (inheritedMmdName == null)
+			{
+				inheritedMmdName = this.getExtendsAttribute();
+				if (inheritedMmdName == null)
+					throw new MetaMetadataException("no type / extends defined for " + this.getName());
+				this.setGenerateClassDescriptor(true);
+			}
+			MetaMetadata inheritedMmd = repository.getByTagName(inheritedMmdName);
+			if (inheritedMmd == null)
+				throw new MetaMetadataException("meta-metadata not found: " + inheritedMmdName);
+			this.setInheritedMmd(inheritedMmd);
+			
+			debug("inheritedMmd for " + this + ": " + inheritedMmd);
+
+			// prepare inheritedMmd
+			inheritedMmd.setRepository(repository);
+			inheritedMmd.inheritMetaMetadata();
+
+			// inherit attributes if it is a MetaMetadata object
+			if (this instanceof MetaMetadata)
+			{
+				this.inheritAttributes(inheritedMmd);
+				// initialize declaringMmd to this
+				for (MetaMetadataField field : this.getChildMetaMetadata())
+					field.setDeclaringMmd((MetaMetadata) this);
+			}
+
+			// inherit fields (with attributes) from inheritedMmd
+			for (MetaMetadataField field : inheritedMmd.getChildMetaMetadata())
+			{
+				if (field instanceof MetaMetadataNestedField)
+					((MetaMetadataNestedField) field).inheritMetaMetadata();
+
+				String fieldName = field.getName();
+				MetaMetadataField fieldLocal = this.getChildMetaMetadata().get(fieldName);
+				if (fieldLocal == null)
+				{
+					this.getChildMetaMetadata().put(fieldName, field);
+				}
+				else
+				{
+					debug("inheriting field: " + fieldLocal);
+					fieldLocal.setInheritedField(field);
+					fieldLocal.setDeclaringMmd(field.getDeclaringMmd());
+					fieldLocal.inheritAttributes(field);
+				}
+			}
+			
+			// marking declaringMmd for newly defined fields
+			for (MetaMetadataField f : this.getChildMetaMetadata())
+			{
+				if (f.getDeclaringMmd() == this)
+				{
+					if (!(this instanceof MetaMetadata))
+					{
+						// this must be a nested field w/o extends/child_extends (or we would have processed it
+						// as inline mmd), but actually defines new fields 
+						throw new MetaMetadataException("to define new fields inline, you need to specify extends!");
+					}
+					
+					if (f instanceof MetaMetadataNestedField)
+						((MetaMetadataNestedField) f).inheritMetaMetadata();
+					this.setGenerateClassDescriptor(true);
+				}
+			}
+			
+			sortForDisplay();
+			if (this instanceof MetaMetadata)
+			{
+				((MetaMetadata) this).inheritNonFieldComponentsFromMM(inheritedMmd);
+			}
+			inheritInProcess = false;
+			inheritFinished = true;
+		}
+	}
+
+	protected MetaMetadata generateMetaMetadata()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	protected boolean isInlineDefinition()
+	{
+		return this.extendsAttribute != null;
+	}
+
+	@Override
+	public MetadataFieldDescriptor findOrGenerateMetadataFieldDescriptor(MetadataClassDescriptor contextCd)
+	{
+		MetadataFieldDescriptor fd = this.getMetadataFieldDescriptor();
+		if (fd == null)
+		{
+			String tagName = this.resolveTag();
+			String fieldName = this.getFieldNameInJava(false);
+			String javaTypeName = this.getTypeNameInJava();
+
+			MetaMetadata inheritedMmd = this.getInheritedMmd();
+			assert inheritedMmd != null : "IMPOSSIBLE: inheritedMmd == null: something wrong in the inheritance process!";
+			MetadataClassDescriptor fieldCd = inheritedMmd.getMetadataClassDescriptor();
+			fd = new MetadataFieldDescriptor(
+						this,
+						tagName,
+						this.getComment(),
+						this.getFieldType(),
+						fieldCd,
+						contextCd,
+						fieldName,
+						null,
+						null,
+						javaTypeName);
+		}
+		return fd;
 	}
 
 }
