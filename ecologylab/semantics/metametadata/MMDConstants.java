@@ -1,0 +1,10 @@
+package ecologylab.semantics.metametadata;
+
+public interface MMDConstants
+{
+
+	public static String	ROOT_MMD_NAME			= "metadata";
+
+	public static String	MMD_PREFIX_INLINE	= "mmd_inline_";
+
+}

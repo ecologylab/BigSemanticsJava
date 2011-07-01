@@ -1011,7 +1011,8 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 				ScalarType scalarType = fieldDescriptor.getScalarType();
 				try
 				{
-					if (scalarType != null && scalarType.isDefaultValue(fieldDescriptor.getField(), this)
+					if (scalarType != null
+							&& scalarType.isDefaultValue(fieldDescriptor.getField(), this)
 							&& !scalarType.isDefaultValue(fieldDescriptor.getField(), inheritFrom))
 					{
 						Object value = fieldDescriptor.getField().get(inheritFrom);
@@ -1022,10 +1023,8 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 				}
 				catch (IllegalArgumentException e)
 				{
-					// TODO Auto-generated catch block
-					debug(inheritFrom.getName() + " doesn't have field " + fieldDescriptor.getFieldName()
-							+ ", ignore it.");
-					e.printStackTrace();
+					debug(inheritFrom.getName() + " doesn't have field " + fieldDescriptor.getFieldName() + ", ignore it.");
+//					e.printStackTrace();
 				}
 				catch (IllegalAccessException e)
 				{

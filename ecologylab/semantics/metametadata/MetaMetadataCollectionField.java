@@ -217,10 +217,26 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 	 */
 	public void deserializationPostHook()
 	{
-		final String childType = getChildType();
-		MetaMetadataCompositeField composite = new MetaMetadataCompositeField(childType != null ? childType : UNRESOLVED_NAME, childExtends, kids);
+		String childType = getChildType();
+		String childCompositeName = childType != null ? childType : UNRESOLVED_NAME;
+		final MetaMetadataCollectionField thisField = this;
+		MetaMetadataCompositeField composite = new MetaMetadataCompositeField(childCompositeName, kids)
+		{
+			@Override
+			protected void typeChanged(String newType)
+			{
+				thisField.childType = newType;
+			}
+
+			@Override
+			protected void extendsChanged(String newExtends)
+			{
+				thisField.childExtends = newExtends;
+			}
+		};
 		composite.setParent(this);
 		composite.setType(childType);
+		composite.setExtendsAttribute(this.childExtends);
 		if (kids != null)
 		{
 			kids.clear();
@@ -238,6 +254,14 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 	public void inheritMetaMetadata()
 	{
 		MetaMetadataCompositeField childComposite = this.getChildComposite();
+		
+		if (childComposite.getName().equals(UNRESOLVED_NAME))
+			childComposite.setName(this.childType == null ? this.name : this.childType);
+		
+		MetaMetadataCollectionField inheritedField = (MetaMetadataCollectionField) this.getInheritedField();
+		if (inheritedField != null)
+			childComposite.setInheritedField(inheritedField.getChildComposite());
+		
 		childComposite.inheritMetaMetadata();
 		this.setInheritedMmd(childComposite.getInheritedMmd());
 	}

@@ -119,8 +119,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 
 	private HashMap<String, MetaMetadata>												repositoryBySuffix							= new HashMap<String, MetaMetadata>();
 
-	private PrefixCollection																		urlPrefixCollection							= new PrefixCollection(
-																																																	'/');
+	private PrefixCollection																		urlPrefixCollection							= new PrefixCollection('/');
 
 	// /////////rm s00n private HashMap<String, MetaMetadataSelector> selectorsByName = new
 	// HashMap<String, MetaMetadataSelector>();
@@ -384,8 +383,11 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 				metaMetadata.bindClassDescriptor(metaMetadata.getMetadataClass(ts), ts);
 		}
 		
+		// make another copy because we may add new meta-metadata (from inline definitions) to repositoryByTagName
+		ArrayList<MetaMetadata> mmds = new ArrayList<MetaMetadata>(repositoryByTagName.values());
+		
 		// class descriptors could be more than meta-metadatas! need another way to collect these.
-		for (MetaMetadata metaMetadata : repositoryByTagName)
+		for (MetaMetadata metaMetadata : mmds)
 		{
 			metaMetadata.setRepository(this);
 			metaMetadata.inheritMetaMetadata();
@@ -1165,4 +1167,10 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	{
 		return searchEngines != null ? searchEngines.getDefaultEngine() : "bing";
 	}
+
+	public void addMetaMetadata(MetaMetadata generatedMmd)
+	{
+		repositoryByTagName.put(generatedMmd.getName(), generatedMmd);
+	}
+	
 }

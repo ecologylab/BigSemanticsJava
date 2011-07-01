@@ -1,5 +1,6 @@
 package ecologylab.semantics.metametadata;
 
+import ecologylab.collections.Scope;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.serialization.simpl_inherit;
 
@@ -10,20 +11,25 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 	@simpl_composite
 	@xml_tag("field_parser")
 	private FieldParserElement	fieldParserElement;
-	
+
 	@simpl_scalar
-	private boolean							promoteChildren;		// if children should be displayed at this level
-	
+	private boolean							promoteChildren;									// if children should be
+																																// displayed at this level
+
 	@simpl_scalar
 	private boolean							polymorphicGlobal;
-	
+
+	@xml_tag("package")
+	@simpl_scalar
+	String											packageAttribute;
+
 	/**
-	 * the mmd used by this nested field. corresponding attributes: (child_)type/extends.
-	 * could be a generated one for inline definitions.
+	 * the mmd used by this nested field. corresponding attributes: (child_)type/extends. could be a
+	 * generated one for inline definitions.
 	 */
 	private MetaMetadata				inheritedMmd;
-	
-	private boolean							generateClassDescriptor = false;
+
+	private boolean							generateClassDescriptor	= false;
 	
 	public MetaMetadataNestedField()
 	{
@@ -42,6 +48,19 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 		// TODO Auto-generated constructor stub
 	}
 	
+	/**
+	 * @return the packageAttribute
+	 */
+	public final String getPackageAttribute()
+	{
+		return packageAttribute;
+	}
+
+	final void setPackageAttribute(String pa)
+	{
+		packageAttribute = pa;
+	}
+
 	public MetaMetadata getInheritedMmd()
 	{
 		return inheritedMmd;
@@ -59,6 +78,18 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 
 	abstract protected String getMetaMetadataTagToInheritFrom();
 	
+	/**
+	 * prerequisites: for meta-metadata: type/extends set; for fields: attributes inherited & declaringMmd set; for both: parent element inheritedMmd set.
+	 * <p>
+	 * consequences:<br>
+	 * <ul>
+	 *   <li>if this is a MetaMetadata object, attributes inherited from inheritedMmd;</li>
+	 *   <li>inheritedMmd set;</li>
+	 *   <li>(first-level) fields inherited from inheritedMmd;</li>
+	 *   <li>inheritedField and declaringMmd set for all (first-level) fields;</li>
+	 *   <li>for all (first-level) fields, attributes inherited from their inheritedField. (enabling recursion)</li>
+	 * </ul>
+	 */
 	abstract public void inheritMetaMetadata();
 
 	//FIXME -- make it work for type graphs!!!
@@ -102,7 +133,7 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 				}
 				if (this instanceof MetaMetadata)
 				{
-					((MetaMetadata) this).inheritNonFieldComponentsFromMM(inheritedMetaMetadata);
+					((MetaMetadata) this).inheritNonFieldComponents(inheritedMetaMetadata);
 				}
 			}
 
@@ -328,5 +359,5 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 	{
 		this.generateClassDescriptor = generateClassDescriptor;
 	}
-
+	
 }

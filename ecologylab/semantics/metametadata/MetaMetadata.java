@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import ecologylab.collections.Scope;
 import ecologylab.generic.ReflectionTools;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.collecting.LinkedMetadataMonitor;
@@ -15,8 +16,6 @@ import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.Metadata.mm_dont_inherit;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
-import ecologylab.semantics.metametadata.exceptions.MetaMetadataException;
-import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.TranslationScope;
 import ecologylab.serialization.XMLTools;
@@ -26,16 +25,12 @@ import ecologylab.serialization.types.element.Mappable;
  * @author damaraju
  * 
  */
-public class MetaMetadata extends MetaMetadataCompositeField implements Mappable<String>
+public class MetaMetadata extends MetaMetadataCompositeField implements Mappable<String>, MMDConstants
 {
 
 	@simpl_collection("selector")
 	@simpl_nowrap
 	ArrayList<MetaMetadataSelector>									selectors;
-
-	@xml_tag("package")
-	@simpl_scalar
-	String																					packageAttribute;
 
 	@simpl_scalar
 	@mm_dont_inherit
@@ -74,6 +69,8 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 	protected String																schemaOrgItemtype;
 
 	private Map<MetaMetadataSelector, MetaMetadata>	reselectMap;
+
+	private Scope<MetaMetadata>											inlineMmds				= null;
 
 	public MetaMetadata()
 	{
@@ -137,19 +134,6 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 	public String getCollectionOf()
 	{
 		return collectionOf;
-	}
-
-	/**
-	 * @return the packageAttribute
-	 */
-	public final String getPackageAttribute()
-	{
-		return packageAttribute;
-	}
-
-	final void setPackageAttribute(String pa)
-	{
-		packageAttribute = pa;
 	}
 
 	public String getUserAgentName()
@@ -226,6 +210,18 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 	public boolean isBuiltIn()
 	{
 		return builtIn;
+	}
+
+	public Scope<MetaMetadata> getInlineMmds()
+	{
+		return inlineMmds;
+	}
+
+	public void addInlineMmd(String name, MetaMetadata generatedMmd)
+	{
+		if (inlineMmds == null)
+			inlineMmds = new Scope<MetaMetadata>();
+		inlineMmds.put(name, generatedMmd);
 	}
 
 	public void setGenerateClass(boolean generateClass)
@@ -438,9 +434,16 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 	 * 
 	 * @param inheritedMmd
 	 */
-	protected void inheritNonFieldComponentsFromMM(MetaMetadata inheritedMmd)
+	protected void inheritNonFieldComponents(MetaMetadata inheritedMmd)
 	{
 		// perhaps inherit semantic actions
+		
+	}
+	
+	void inheritInlineMmds(MetaMetadata other)
+	{
+		if (other.getInlineMmds() != null)
+			this.inlineMmds = new Scope<MetaMetadata>(other.getInlineMmds());
 	}
 
 	protected boolean isInlineDefinition()
@@ -461,7 +464,7 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 				MetadataClassDescriptor cd = new MetadataClassDescriptor(
 						this.getName(),
 						this.getComment(),
-						this.packageName(),
+						this.getPackageAttribute(),
 						XMLTools.classNameFromElementName(this.getName()),
 						superCd,
 						null);
@@ -483,12 +486,20 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 			{
 				this.metadataClassDescriptor = superCd;
 			}
+			
+			if (inlineMmds != null)
+			{
+				for (MetaMetadata inlineMmd : inlineMmds.values())
+				{
+					inlineMmd.findOrGenerateMetadataClassDescriptor(tscope);
+				}
+			}
 		}
 	}
 	
 	static boolean isRootMetaMetadata(MetaMetadata mmd)
 	{
-		return mmd.getName().equals("metadata");
+		return mmd.getName().equals(ROOT_MMD_NAME);
 	}
 
 }
