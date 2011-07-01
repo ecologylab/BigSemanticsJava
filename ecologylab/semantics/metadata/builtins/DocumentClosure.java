@@ -20,6 +20,7 @@ import ecologylab.semantics.actions.SemanticActionsKeyWords;
 import ecologylab.semantics.collecting.DocumentLocationMap;
 import ecologylab.semantics.collecting.DownloadStatus;
 import ecologylab.semantics.collecting.NewInfoCollector;
+import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.collecting.SemanticsSite;
 import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.documentparsers.HTMLDOMParser;
@@ -69,6 +70,7 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>, S
 	
 	protected		NewInfoCollector	infoCollector;
 	
+	protected		SemanticsSessionScope	semanticsScope;
 
 	/**
 	 * Keeps state about the search process, if this is encapsulates a search result;

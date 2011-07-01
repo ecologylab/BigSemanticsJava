@@ -13,6 +13,7 @@ import ecologylab.net.ParsedURL;
 import ecologylab.semantics.collecting.DocumentLocationMap;
 import ecologylab.semantics.collecting.DownloadStatus;
 import ecologylab.semantics.collecting.NewInfoCollector;
+import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.collecting.SemanticsSite;
 import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.documentparsers.ParserResult;
@@ -44,6 +45,8 @@ public class Document extends Metadata
 	private boolean									downloadDone;
 
 	SemanticsSite										site;
+	
+	protected		SemanticsSessionScope	semanticsScope;
 	
 	protected		NewInfoCollector		infoCollector;
 
