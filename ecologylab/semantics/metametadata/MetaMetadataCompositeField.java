@@ -353,6 +353,7 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 				// process inline mmds
 				String previousName = this.getTypeOrName();
 				MetaMetadata generatedMmd = this.generateMetaMetadata(previousName, inheritedMmd);
+				repository.addMetaMetadata(generatedMmd);
 				this.setType(generatedMmd.getName());
 				this.setExtendsAttribute(null);
 				
