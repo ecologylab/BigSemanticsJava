@@ -12,7 +12,7 @@ import ecologylab.appframework.ApplicationEnvironment;
 import ecologylab.generic.Continuation;
 import ecologylab.io.DownloadProcessor;
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.collecting.NewInfoCollector;
+import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.generated.library.GeneratedMetadataTranslationScope;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
@@ -37,7 +37,7 @@ implements Continuation<DocumentClosure>
 
 	DownloadProcessor downloadMonitor	= null;
 	
-	protected NewInfoCollector infoCollector;
+	protected SemanticsSessionScope infoCollector;
 
 
 	public NewMmTest(OutputStream	outputStream) throws SIMPLTranslationException
@@ -53,7 +53,7 @@ implements Continuation<DocumentClosure>
 		super(appName);
 		this.outputStream	= outputStream;
 		
-		infoCollector = new NewInfoCollector(GeneratedMetadataTranslationScope.get());
+		infoCollector = new SemanticsSessionScope(GeneratedMetadataTranslationScope.get());
 	}
 
 	public void collect(String[] urlStrings)

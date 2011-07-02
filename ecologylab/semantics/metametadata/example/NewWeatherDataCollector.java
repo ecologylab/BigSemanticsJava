@@ -10,7 +10,7 @@ import ecologylab.generic.Continuation;
 import ecologylab.io.DownloadProcessor;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticAction;
-import ecologylab.semantics.collecting.NewInfoCollector;
+import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.generated.library.GeneratedMetadataTranslationScope;
 import ecologylab.semantics.generated.library.WeatherReport;
 import ecologylab.semantics.metadata.builtins.Document;
@@ -31,7 +31,7 @@ public class NewWeatherDataCollector implements Continuation<DocumentClosure>
 		SemanticAction.register(SaveImageSemanticAction.class);
 
 		// create the infoCollector
-		NewInfoCollector infoCollector = new NewInfoCollector(GeneratedMetadataTranslationScope.get());
+		SemanticsSessionScope infoCollector = new SemanticsSessionScope(GeneratedMetadataTranslationScope.get());
 
 		// seeding start url
 		String seedUrlStr = "http://www.google.com/search?q=texas+site%3Awww.wunderground.com";

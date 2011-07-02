@@ -1,7 +1,7 @@
 package ecologylab.semantics.metametadata.test;
 
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.collecting.NewInfoCollector;
+import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.generated.library.GeneratedMetadataTranslationScope;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.serialization.SIMPLTranslationException;
@@ -9,7 +9,7 @@ import ecologylab.serialization.SIMPLTranslationException;
 public class TestReselect
 {
 
-	static void download(ParsedURL purl, NewInfoCollector infoCollector)
+	static void download(ParsedURL purl, SemanticsSessionScope infoCollector)
 	{
 		Document doc = infoCollector.getOrConstructDocument(purl);
 		doc.queueDownload();
@@ -20,7 +20,7 @@ public class TestReselect
 		ParsedURL url1 = ParsedURL.getAbsolute("http://www.amazon.com/gp/product/1118013689/"); // book
 		ParsedURL url2 = ParsedURL.getAbsolute("http://www.amazon.com/gp/product/B004Z6NWAU"); // electronic
 
-		NewInfoCollector infoCollector = new NewInfoCollector(GeneratedMetadataTranslationScope.get());
+		SemanticsSessionScope infoCollector = new SemanticsSessionScope(GeneratedMetadataTranslationScope.get());
 		download(url1, infoCollector);
 		download(url2, infoCollector);
 
@@ -34,7 +34,7 @@ public class TestReselect
 			e.printStackTrace();
 		}
 
-		infoCollector.stop();
+		infoCollector.getDownloadMonitors().stop(false);
 
 		try
 		{

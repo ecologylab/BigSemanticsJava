@@ -10,7 +10,7 @@ import java.util.List;
 
 import ecologylab.generic.Continuation;
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.collecting.NewInfoCollector;
+import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.generated.library.GeneratedMetadataTranslationScope;
 import ecologylab.semantics.generated.library.scholarlyPublication.ScholarlyArticle;
 import ecologylab.semantics.metadata.builtins.Document;
@@ -40,7 +40,7 @@ public class LinkingMetadata implements Continuation<DocumentClosure>
 			count = urls.size();
 	
 			// create the infoCollector
-			NewInfoCollector infoCollector = new NewInfoCollector(GeneratedMetadataTranslationScope.get());
+			SemanticsSessionScope infoCollector = new SemanticsSessionScope(GeneratedMetadataTranslationScope.get());
 	
 			// seed start urls
 			for (String url : urls)
@@ -69,7 +69,7 @@ public class LinkingMetadata implements Continuation<DocumentClosure>
 					renderer.appendMetadata(article);
 				
 				renderer.close();
-				closure.getInfoCollector().stopDownloadMonitors(false);
+				closure.getInfoCollector().getDownloadMonitors().stop(false);
 			}
 		}
 	}

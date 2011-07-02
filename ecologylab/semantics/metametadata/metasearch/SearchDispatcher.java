@@ -7,7 +7,7 @@ import java.util.List;
 import ecologylab.generic.Debug;
 import ecologylab.generic.Continuation;
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.collecting.NewInfoCollector;
+import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.generated.library.GeneratedMetadataTranslationScope;
 import ecologylab.semantics.generated.library.search.Search;
 import ecologylab.semantics.generated.library.search.SearchResult;
@@ -37,7 +37,7 @@ public class SearchDispatcher extends Debug implements Continuation<DocumentClos
 	public void search(String[] urls)
 	{
 		// create the infoCollector
-		NewInfoCollector infoCollector = new NewInfoCollector(GeneratedMetadataTranslationScope.get());
+		SemanticsSessionScope infoCollector = new SemanticsSessionScope(GeneratedMetadataTranslationScope.get());
 
 		// seed start urls
 		totalCount = urls.length;
@@ -108,7 +108,7 @@ public class SearchDispatcher extends Debug implements Continuation<DocumentClos
 					i++;
 				}
 				renderer.close();
-				closure.getInfoCollector().stopDownloadMonitors(false);
+				closure.getInfoCollector().getDownloadMonitors().stop(false);
 			}
 		}
 	}
