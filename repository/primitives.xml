@@ -8,7 +8,7 @@
 	<meta_metadata name="document" extends="metadata" comment="The Document Class" built_in="true">
 		<scalar name="location" always_show="true" layer="8.0" comment="The document's actual location." scalar_type="ParsedURL" schema_org_itemprop="url"/>
 		
-		<collection name="additional_locations" child_scalar_type="ParsedURL"/>
+		<collection name="additional_locations" child_scalar_type="ParsedURL" child_tag="location"/>
 	</meta_metadata>
 	
 	<meta_metadata name="clipping" extends="metadata" built_in="true">
