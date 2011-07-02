@@ -3,7 +3,7 @@
  */
 package ecologylab.semantics.seeding;
 
-import ecologylab.semantics.collecting.NewInfoCollector;
+import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.documentparsers.FeedParser;
 
 /**
@@ -32,7 +32,7 @@ public class Feed extends DocumentState
   }
   
   @Override
-	public void performInternalSeedingSteps(NewInfoCollector infoCollector)
+	public void performInternalSeedingSteps(SemanticsSessionScope infoCollector)
 	{
 	 new FeedParser(infoCollector, this);
 	}

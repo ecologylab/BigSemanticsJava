@@ -6,7 +6,7 @@ package ecologylab.semantics.documentparsers;
 import java.io.IOException;
 
 import ecologylab.semantics.actions.SemanticActionHandler;
-import ecologylab.semantics.collecting.NewInfoCollector;
+import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.seeding.Feed;
@@ -21,13 +21,13 @@ public class FeedParser extends LinksetParser
 
 	private Feed	feed;
 
-	public FeedParser(NewInfoCollector infoCollector)
+	public FeedParser(SemanticsSessionScope infoCollector)
 	{
 		super(infoCollector);
 		// TODO Auto-generated constructor stub
 	}
 
-	public FeedParser(NewInfoCollector infoCollector, Feed feed)
+	public FeedParser(SemanticsSessionScope infoCollector, Feed feed)
 	{
 		super(infoCollector);
 		this.feed = feed;

@@ -9,7 +9,7 @@ import java.util.HashMap;
 
 import ecologylab.collections.Scope;
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.collecting.NewInfoCollector;
+import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.collecting.SemanticsSite;
 import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.html.documentstructure.LinkType;
@@ -78,7 +78,7 @@ public abstract class SemanticAction extends ElementState implements SemanticAct
 	@simpl_scalar
 	private String										error;
 
-	protected NewInfoCollector				infoCollector;
+	protected SemanticsSessionScope				infoCollector;
 
 	protected SemanticActionHandler		semanticActionHandler;
 
@@ -197,7 +197,7 @@ public abstract class SemanticAction extends ElementState implements SemanticAct
 		this.error = error;
 	}
 
-	public void setInfoCollector(NewInfoCollector infoCollector)
+	public void setInfoCollector(SemanticsSessionScope infoCollector)
 	{
 		this.infoCollector = infoCollector;
 	}
@@ -295,7 +295,7 @@ public abstract class SemanticAction extends ElementState implements SemanticAct
 		{
 			ParsedURL outlinkPurl	= (ParsedURL) getArgumentObject(LOCATION);
 			if (outlinkPurl != null)
-				result							= infoCollector.getGlobalDocumentMap().getOrConstruct(outlinkPurl);
+				result							= infoCollector.getOrConstructDocument(outlinkPurl);
 		}
 	
 		if (result == null)
@@ -330,7 +330,7 @@ public abstract class SemanticAction extends ElementState implements SemanticAct
 			ParsedURL location						= result.getLocation();
 			
 			if (traversable)
-				infoCollector.traversable(location);
+				infoCollector.getSeeding().traversable(location);
 
 			boolean anchorIsInSource = false;
 			if (sourceDocument != null)

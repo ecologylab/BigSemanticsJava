@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import ecologylab.generic.Continuation;
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.collecting.Crawler;
 import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.documentparsers.SearchParser;
 import ecologylab.semantics.html.documentstructure.LinkType;
@@ -98,7 +99,7 @@ class ParseDocumentSemanticAction
 	public Object perform(Object obj)
 	{
 		//TODO -- add pref to choose performFull!
-		return infoCollector.isCollectCandidatesInPools() ? performBasic(obj) : null;
+		return infoCollector.hasCrawler() ? performBasic(obj) : null;
 	}
 
 	public Object performFull(Object obj)
@@ -178,19 +179,26 @@ class ParseDocumentSemanticAction
 	protected void parseDocumentLater(Document document)
 	{
 		DocumentClosure documentClosure	= document.getOrConstructClosure();
+		
 		if (documentClosure == null || documentClosure.downloadHasBeenQueued())
 			warning("Can't parse " + document.getLocation() + " because null container or already queued." );
-		else if (!distributeSeedingResults(this, documentParser, documentClosure,
-				new DistributorContinuation<DocumentClosure>()
-				{
-			@Override
-			public void distribute(DocumentClosure result)
-			{
-				infoCollector.addClosureToPool(result);	// ?? just curious: isn't result the same as documentClosure?!
-			}
-				}))
+		else 
 		{
-			infoCollector.addClosureToPool(documentClosure);
+			final Crawler crawler	= infoCollector.getCrawler();
+			if (!distributeSeedingResults(this, documentParser, documentClosure,
+					new DistributorContinuation<DocumentClosure>()
+					{
+				@Override
+				public void distribute(DocumentClosure result)
+				{
+					if (crawler != null)
+						crawler.addClosureToPool(result);	// ?? just curious: isn't result the same as documentClosure?!
+				}
+					}))
+			{
+				if (crawler != null)
+					crawler.addClosureToPool(documentClosure);
+			}
 		}
 	}
 

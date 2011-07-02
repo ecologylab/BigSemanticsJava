@@ -12,9 +12,10 @@ import ecologylab.generic.Continuation;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.collecting.DocumentLocationMap;
 import ecologylab.semantics.collecting.DownloadStatus;
-import ecologylab.semantics.collecting.NewInfoCollector;
 import ecologylab.semantics.collecting.SemanticsSessionScope;
+import ecologylab.semantics.collecting.SemanticsGlobalScope;
 import ecologylab.semantics.collecting.SemanticsSite;
+import ecologylab.semantics.collecting.TNGGlobalCollections;
 import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.documentparsers.ParserResult;
 import ecologylab.semantics.html.documentstructure.SemanticAnchor;
@@ -46,9 +47,9 @@ public class Document extends Metadata
 
 	SemanticsSite										site;
 	
-	protected		SemanticsSessionScope	semanticsScope;
+	protected		SemanticsGlobalScope	semanticsScope;
 	
-	protected		NewInfoCollector		infoCollector;
+	protected		SemanticsSessionScope		infoCollector;
 
 	/**
 	 * documentType object for each document type 
@@ -271,14 +272,6 @@ public class Document extends Metadata
 	}
 
 	/**
-	 * Needed in case of a redirect or direct binding, in which cases, the map will need updating
-	 * for this's location.
-	 */
-	DocumentLocationMap<? extends Document> getDocumentLocationMap()
-	{
-		return infoCollector.getGlobalDocumentMap();
-	}
-	/**
 	 * @param documentClosure the downloadClosure to set
 	 */
 //	void setDownloadClosure(DocumentClosure downloadClosure)
@@ -293,7 +286,7 @@ public class Document extends Metadata
 		SemanticsSite result	= this.site;
 		if (result == null)
 		{
-			result		= infoCollector.getSite(this);
+			result		= infoCollector.getMetaMetadataRepository().getSite(this, infoCollector);
 			this.site	= result;
 		}
 		return result;
@@ -301,7 +294,7 @@ public class Document extends Metadata
 	/**
 	 * @return the infoCollector
 	 */
-	public NewInfoCollector getInfoCollector()
+	public SemanticsSessionScope getInfoCollector()
 	{
 		return infoCollector;
 	}
@@ -309,7 +302,7 @@ public class Document extends Metadata
 	/**
 	 * @param infoCollector the infoCollector to set
 	 */
-	public void setInfoCollector(NewInfoCollector infoCollector)
+	public void setInfoCollector(SemanticsSessionScope infoCollector)
 	{
 		this.infoCollector = infoCollector;
 	}
@@ -332,7 +325,7 @@ public class Document extends Metadata
 	 */
 	public void inheritValues(Document oldDocument)
 	{
-		oldDocument.getDocumentLocationMap().remap(oldDocument, this);
+		oldDocument.getInfoCollector().getGlobalCollection().remap(oldDocument, this);
 		if (location == null)
 		{
 			location									= oldDocument.location;
@@ -430,12 +423,12 @@ public class Document extends Metadata
 	
 	void setRecycled()
 	{
-		DocumentLocationMap<? extends Document> documentLocationMap = getDocumentLocationMap();
-		documentLocationMap.setRecycled(getLocation());
+		TNGGlobalCollections globalCollection = infoCollector.getGlobalCollection();
+		globalCollection.setRecycled(getLocation());
 		if (additionalLocations != null)
 		{
 			for (MetadataParsedURL additionalMPurl: additionalLocations)
-				documentLocationMap.setRecycled(additionalMPurl);
+				globalCollection.setRecycled(additionalMPurl.getValue());
 		}
 	}
 
@@ -510,7 +503,7 @@ public class Document extends Metadata
 	{
 		
 	}
-	public void tryToGetBetterImageAfterInterestExpression(DocumentClosure<Image> replaceMe)
+	public void tryToGetBetterImageAfterInterestExpression(DocumentClosure replaceMe)
 	{
 	}
 	

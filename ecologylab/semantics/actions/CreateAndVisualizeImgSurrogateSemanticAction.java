@@ -50,7 +50,7 @@ class CreateAndVisualizeImgSurrogateSemanticAction
 			ParsedURL imagePURL 	= (ParsedURL) getArgumentObject(SemanticActionNamedArguments.IMAGE_PURL);
 			if (imagePURL != null)
 			{
-				image								= infoCollector.getGlobalImageMap().getOrConstruct(imagePURL);
+				image								= infoCollector.getOrConstructImage(imagePURL);
 				
 				//TODO -- if it already exists: (1) do we need to download??
 				//															(2) should we merge metadata
@@ -75,7 +75,7 @@ class CreateAndVisualizeImgSurrogateSemanticAction
 			ParsedURL hrefPURL 		= (ParsedURL) getArgumentObject(SemanticActionNamedArguments.HREF);
 			Document outlink 			= (Document) getArgumentObject(SemanticActionNamedArguments.HREF_METADATA);
 			if (hrefPURL != null & outlink == null)
-				outlink				= infoCollector.getGlobalDocumentMap().getOrConstruct(hrefPURL);
+				outlink				= infoCollector.getOrConstructDocument(hrefPURL);
 			
 			ImageClipping imageClipping	= image.constructClipping(source, outlink, caption, null);
 			source.addClipping(imageClipping);
@@ -105,9 +105,6 @@ class CreateAndVisualizeImgSurrogateSemanticAction
 				// FIXME -- is this enough to do if a search fails????!
 				mmSearchParser.incrementResultSoFar();
 			}
-
-			if (outlink != null)
-				infoCollector.addClosureToPool(imageClipping.getOutlinkClosure());
 
 			return image;
 		}

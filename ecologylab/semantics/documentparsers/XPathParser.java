@@ -9,7 +9,7 @@ import org.w3c.dom.Node;
 
 import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.actions.SemanticActionsKeyWords;
-import ecologylab.semantics.collecting.NewInfoCollector;
+import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 
@@ -21,7 +21,7 @@ public class XPathParser extends ParserBase implements
 		SemanticActionsKeyWords
 {
 
-	public XPathParser(NewInfoCollector infoCollector)
+	public XPathParser(SemanticsSessionScope infoCollector)
 	{
 		super(infoCollector);
 	}

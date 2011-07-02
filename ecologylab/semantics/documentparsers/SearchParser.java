@@ -10,7 +10,7 @@ import org.w3c.dom.Node;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.actions.SemanticActionsKeyWords;
-import ecologylab.semantics.collecting.NewInfoCollector;
+import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
 import ecologylab.semantics.metametadata.MetaMetadata;
@@ -38,7 +38,7 @@ public class SearchParser extends LinksetParser implements CFPrefNames, Semantic
 	 * @param infoCollector
 	 * @param semanticActionHandler
 	 */
-	public SearchParser(NewInfoCollector infoCollector)
+	public SearchParser(SemanticsSessionScope infoCollector)
 	{
 		super(infoCollector);
 	}
@@ -48,7 +48,7 @@ public class SearchParser extends LinksetParser implements CFPrefNames, Semantic
 	 * @param semanticAction
 	 * @param searchURL
 	 */
-	public SearchParser(NewInfoCollector infoCollector, SearchState searchSeed)
+	public SearchParser(SemanticsSessionScope infoCollector, SearchState searchSeed)
 	{
 		super(infoCollector);
 

@@ -4,7 +4,7 @@ import java.awt.Point;
 import java.io.File;
 
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.collecting.NewInfoCollector;
+import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.model.text.InterestModel;
 import ecologylab.serialization.simpl_inherit;
@@ -69,13 +69,13 @@ public class DocumentState extends Seed
 	 * @param objectRegistry		Context passed between services calls.
 	 * @param infoCollector TODO
 	 */
-	public void performInternalSeedingSteps(NewInfoCollector infoCollector)
+	public void performInternalSeedingSteps(SemanticsSessionScope infoCollector)
 	{
 		if (url != null)
 		{
 	 		// get a Container object associated with this, associate a seed, and initiate download
 	 		println("-- processing document seed: " + url);
-	 		infoCollector.traversable(url);
+	 		infoCollector.getSeeding().traversable(url);
 	 		// strangely enough, a file document seed can have a parentContainer!
 	 		File file					= url.file();
 	 		document					= infoCollector.getOrConstructDocument(url);

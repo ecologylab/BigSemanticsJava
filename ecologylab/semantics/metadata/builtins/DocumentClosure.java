@@ -19,8 +19,8 @@ import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionsKeyWords;
 import ecologylab.semantics.collecting.DocumentLocationMap;
 import ecologylab.semantics.collecting.DownloadStatus;
-import ecologylab.semantics.collecting.NewInfoCollector;
 import ecologylab.semantics.collecting.SemanticsSessionScope;
+import ecologylab.semantics.collecting.SemanticsGlobalScope;
 import ecologylab.semantics.collecting.SemanticsSite;
 import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.documentparsers.HTMLDOMParser;
@@ -46,10 +46,10 @@ import ecologylab.serialization.ElementState.FORMAT;
  * @author andruid
  *
  */
-public class DocumentClosure<D extends Document> extends SetElement
+public class DocumentClosure extends SetElement
 implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>, SemanticActionsKeyWords, Continuation<DocumentClosure>
 {
-	D															document;
+	Document											document;
 	
 	private PURLConnection				purlConnection;
 
@@ -68,9 +68,9 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>, S
 	
 	IDOMProvider 									provider;
 	
-	protected		NewInfoCollector	infoCollector;
+	protected		SemanticsSessionScope	infoCollector;
 	
-	protected		SemanticsSessionScope	semanticsScope;
+	protected		SemanticsGlobalScope	semanticsScope;
 
 	/**
 	 * Keeps state about the search process, if this is encapsulates a search result;
@@ -102,7 +102,7 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>, S
 	/**
 	 * 
 	 */
-	private DocumentClosure(D document, NewInfoCollector infoCollector, SemanticInLinks semanticInlinks)
+	private DocumentClosure(Document document, SemanticsSessionScope infoCollector, SemanticInLinks semanticInlinks)
 	{
 		super();
 		this.document							= document;
@@ -116,7 +116,7 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>, S
 	 * @param document
 	 * @param semanticInlinks
 	 */
-	DocumentClosure(D document, SemanticInLinks semanticInlinks)
+	DocumentClosure(Document document, SemanticInLinks semanticInlinks)
 	{
 		this(document, document.getInfoCollector(), semanticInlinks);
 	}
@@ -144,7 +144,7 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>, S
 		}
 		if (infoCollector == null)	// this should NEVER happen!!!!!!!!!!!!!!!!!!!!
 		{
-			NewInfoCollector documentInfoCollector = document.getInfoCollector();
+			SemanticsSessionScope documentInfoCollector = document.getInfoCollector();
 			if (documentInfoCollector == null)
 			{
 				error("Cant downloadAndParse: InfoCollector= null.");
@@ -240,10 +240,9 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>, S
 			
 			public boolean processRedirect(URL connectionURL) throws IOException
 			{
-				DocumentLocationMap<? extends Document>	documentLocationMap	= document.getDocumentLocationMap();
 				ParsedURL connectionPURL	= new ParsedURL(connectionURL);
 				displayStatus("try redirecting: " + originalPURL + " > " + connectionURL);
-				Document redirectedDocument	= documentLocationMap.get(connectionPURL); // documentLocationMap.getOrCreate(connectionPURL);
+				Document redirectedDocument	= infoCollector.getOrConstructDocument(connectionPURL); // documentLocationMap.getOrCreate(connectionPURL);
 				//TODO -- what if redirectedDocument is already in the queue or being downloaded already?
 				if (redirectedDocument != null)	// existing document
 				{	// the redirected url has been visited already.
@@ -295,7 +294,7 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>, S
 						if (/* !Pref.lookupBoolean(CFPrefNames.USING_PROXY) && */
 								"acm.org".equals(domain) && "pdf".equals(connPURLSuffix))
 						{
-							MetaMetadata pdfMetaMetadata = infoCollector.metaMetaDataRepository().getMMBySuffix(connPURLSuffix);
+							MetaMetadata pdfMetaMetadata = infoCollector.getMetaMetadataRepository().getMMBySuffix(connPURLSuffix);
 							newMetadata = (Document) pdfMetaMetadata.constructMetadata();
 							newMetadata.setLocation(connectionPURL);
 							return true;
@@ -303,7 +302,7 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>, S
 						else
 						{
 							// regular get new metadata
-							newMetadata	= documentLocationMap.getOrConstruct(connectionPURL);
+							newMetadata	= infoCollector.getOrConstructDocument(connectionPURL);
 						}
 
 						if (redirectHandling == RedirectHandling.REDIRECT_FOLLOW_DONT_RESET_LOCATION)
@@ -371,7 +370,7 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>, S
 		
 					if (metaMetadata.isGenericMetadata())
 					{ // see if we can find more specifc meta-metadata using mimeType
-						final MetaMetadataRepository repository = infoCollector.metaMetaDataRepository();
+						final MetaMetadataRepository repository = infoCollector.getMetaMetadataRepository();
 						String mimeType = purlConnection.mimeType();
 						MetaMetadataCompositeField mimeMmd	= repository.getMMByMime(mimeType);
 						if (mimeMmd != null && !mimeMmd.equals(metaMetadata))
@@ -414,7 +413,7 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>, S
 		synchronized (DOCUMENT_LOCK)
 		{
 			Document oldDocument	= document;
-			this.document					= (D) newDocument;
+			this.document					= newDocument;
 			
 			newDocument.inheritValues(oldDocument);	
 			newDocument.serializeOut("After changeDocument()");
@@ -500,7 +499,7 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>, S
 	/**
 	 * @return the document
 	 */
-	public D getDocument()
+	public Document getDocument()
 	{
 		synchronized (DOCUMENT_LOCK)
 		{
@@ -578,7 +577,7 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>, S
 	}
 	public DownloadProcessor<DocumentClosure> downloadMonitor()
 	{
-		return  infoCollector.downloadProcessor(document.isImage(), isDnd, isSeed(), document.isGui());
+		return  infoCollector.getDownloadMonitors().downloadProcessor(document.isImage(), isDnd, isSeed(), document.isGui());
 	}
 
 	
@@ -751,7 +750,7 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>, S
 	/**
 	 * @return the infoCollector
 	 */
-	public NewInfoCollector getInfoCollector()
+	public SemanticsSessionScope getInfoCollector()
 	{
 		return infoCollector;
 	}

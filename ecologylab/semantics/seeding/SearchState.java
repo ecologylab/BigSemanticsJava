@@ -3,7 +3,7 @@ package ecologylab.semantics.seeding;
 import java.io.File;
 
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.collecting.NewInfoCollector;
+import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.documentparsers.SearchParser;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.metametadata.SearchEngine;
@@ -98,7 +98,7 @@ implements SemanticsPrefs
    * @param engine
    * @param noAggregator TODO
     */
-   public SearchState(NewInfoCollector infoProcessor, String query, String engine, boolean noAggregator)
+   public SearchState(SemanticsSessionScope infoProcessor, String query, String engine, boolean noAggregator)
    {
 	   this(query, engine);
 	   this.noAggregator	= noAggregator;
@@ -158,7 +158,7 @@ implements SemanticsPrefs
     * @param infoCollector TODO
     */
    @Override
-   public void performInternalSeedingSteps(NewInfoCollector infoCollector)
+   public void performInternalSeedingSteps(SemanticsSessionScope infoCollector)
    {
   	 //  	 InterestModel.expressInterest(query, interestLevel);
   	 //infoCollector.instantiateDocumentType(SEARCH_DOCUMENT_TYPE_REGISTRY, engine, this);		
@@ -459,7 +459,7 @@ implements SemanticsPrefs
 	 */
 	public ParsedURL formSearchUrlBasedOnEngine()
 	{
-		MetaMetadataRepository repository = infoCollector.metaMetaDataRepository();
+		MetaMetadataRepository repository = infoCollector.getMetaMetadataRepository();
 		SearchEngine searchEngine = repository.getSearchEngine(engine);
 		return searchEngine.formSearchUrl(getQuery(), numResults(), currentFirstResultIndex);
 	}

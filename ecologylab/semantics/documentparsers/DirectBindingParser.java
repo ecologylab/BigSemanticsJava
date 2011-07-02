@@ -8,7 +8,7 @@ import java.io.IOException;
 import org.w3c.dom.Node;
 
 import ecologylab.semantics.actions.SemanticActionHandler;
-import ecologylab.semantics.collecting.NewInfoCollector;
+import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.serialization.XMLTools;
@@ -23,7 +23,7 @@ import ecologylab.serialization.XMLTools;
 public class DirectBindingParser extends ParserBase
 {
 
-	public DirectBindingParser(NewInfoCollector infoCollector)
+	public DirectBindingParser(SemanticsSessionScope infoCollector)
 	{
 		super(infoCollector);
 	}

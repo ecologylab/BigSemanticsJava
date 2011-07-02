@@ -28,7 +28,7 @@ import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.actions.SemanticActionsKeyWords;
 import ecologylab.semantics.collecting.LinkedMetadataMonitor;
-import ecologylab.semantics.collecting.NewInfoCollector;
+import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataBase;
@@ -69,7 +69,7 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 
 	protected ParsedURL	truePURL;
 
-	public ParserBase(NewInfoCollector infoCollector)
+	public ParserBase(SemanticsSessionScope infoCollector)
 	{
 		super(infoCollector);
 		xpath = XPathFactory.newInstance().newXPath();
@@ -129,7 +129,7 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 			resultingMetadata.rebuildCompositeTermVector();
 
 			resultingMetadata.serializeOut("Before linked metadata");
-			MetaMetadataRepository metaMetaDataRepository = infoCollector.metaMetaDataRepository();
+			MetaMetadataRepository metaMetaDataRepository = infoCollector.getMetaMetadataRepository();
 			LinkedMetadataMonitor monitor = metaMetaDataRepository.getLinkedMetadataMonitor();
 			monitor.tryLink(metaMetaDataRepository, resultingMetadata);
 			monitor.addMonitors(resultingMetadata);

@@ -3,11 +3,11 @@ package ecologylab.semantics.seeding;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import ecologylab.collections.Scope;
-import ecologylab.semantics.collecting.NewInfoCollector;
+import ecologylab.semantics.collecting.SemanticsSessionScope;
+import ecologylab.semantics.collecting.Seeding;
 import ecologylab.semantics.namesandnums.SemanticsSessionObjectNames;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.TranslationScope;
@@ -89,7 +89,7 @@ public class SeedSet<S extends Seed> extends ElementState
 	 */
 	SeedSet					parentSeedSet;
 
-	public SeedDistributor seedDistributer(NewInfoCollector infoCollector)
+	public SeedDistributor seedDistributer(SemanticsSessionScope infoCollector)
 	{
 		SeedDistributor result = resultDistributer;
 
@@ -182,12 +182,14 @@ public class SeedSet<S extends Seed> extends ElementState
 		if (size() == 0)
 			return;
 
-		NewInfoCollector infoCollector = (NewInfoCollector) scope.get(INFO_COLLECTOR);
+		SemanticsSessionScope infoCollector = (SemanticsSessionScope) scope.get(INFO_COLLECTOR);
+		
+		Seeding seeding	= infoCollector.getSeeding();
 
-		infoCollector.trackFirstSeedSet(this);
-		infoCollector.setPlayOnStart(true);
+		seeding.trackFirstSeedSet(this);
+		seeding.setPlayOnStart(true);
 
-		infoCollector.beginSeeding();
+		seeding.beginSeeding();
 
 		numSearches = 0; // reset each time performSeeding is called
 
@@ -238,7 +240,7 @@ public class SeedSet<S extends Seed> extends ElementState
 
 		if (aSeedingIsPerformed && shouldEndSeeding)
 		{
-			infoCollector.endSeeding();
+			seeding.endSeeding();
 			seedDistributer(infoCollector).stop();
 		}
 	}
@@ -293,7 +295,7 @@ public class SeedSet<S extends Seed> extends ElementState
 		this.description = description;
 	}
 
-	private int handleMoreSeedsDialogue(NewInfoCollector infoCollector)
+	private int handleMoreSeedsDialogue(SemanticsSessionScope infoCollector)
 	{
 		String seedText = "";
 		for (int i = 0; i < size(); i++)
@@ -321,7 +323,7 @@ public class SeedSet<S extends Seed> extends ElementState
 			}
 			else
 			{
-				NewInfoCollector infoCollector = (NewInfoCollector) clientConnectionScope.get(INFO_COLLECTOR);
+				SemanticsSessionScope infoCollector = (SemanticsSessionScope) clientConnectionScope.get(INFO_COLLECTOR);
 				
 				selectedOption = handleMoreSeedsDialogue(infoCollector);
 			}
@@ -333,7 +335,7 @@ public class SeedSet<S extends Seed> extends ElementState
 			break;
 		case SeedCf.MULTIPLE_REQUESTS_REPLACE:
 			debug("handleMoreSeeds(REPLACE) " + clientConnectionScope.dump());
-			NewInfoCollector infoCollector = (NewInfoCollector) clientConnectionScope.get(INFO_COLLECTOR);
+			SemanticsSessionScope infoCollector = (SemanticsSessionScope) clientConnectionScope.get(INFO_COLLECTOR);
 			infoCollector.clear();
 			performSeeding(clientConnectionScope);
 			break;
@@ -345,7 +347,7 @@ public class SeedSet<S extends Seed> extends ElementState
 		}
 	}
 
-	public void add(S seed, NewInfoCollector infoCollector)
+	public void add(S seed, SemanticsSessionScope infoCollector)
 	{
 		if (seed != null)
 			if (seeds == null)
@@ -367,6 +369,8 @@ public class SeedSet<S extends Seed> extends ElementState
 		}
 		seed.setSeedSet(this);
 
+		Seeding seeding	= infoCollector.getSeeding();
+
 		// Test for hetero/homogeneity
 		Iterator iterator = iterator();
 		while (iterator.hasNext())
@@ -374,7 +378,7 @@ public class SeedSet<S extends Seed> extends ElementState
 			Seed s = (Seed) iterator.next();
 			if (size() == 1)
 			{
-				infoCollector.setHeterogeneousSearchScenario(!s.isHomogenousSeed());
+				seeding.setHeterogeneousSearchScenario(!s.isHomogenousSeed());
 				break;
 			}
 			else
@@ -383,7 +387,7 @@ public class SeedSet<S extends Seed> extends ElementState
 				// Even if one isn't homogeneous, scenario is hetero
 				if (!s.isHomogenousSeed())
 				{
-					infoCollector.setHeterogeneousSearchScenario(true);
+					seeding.setHeterogeneousSearchScenario(true);
 					break;
 				}
 			}

@@ -23,6 +23,8 @@ import ecologylab.net.ParsedURL;
 import ecologylab.net.UserAgent;
 import ecologylab.semantics.collecting.CookieProcessing;
 import ecologylab.semantics.collecting.LinkedMetadataMonitor;
+import ecologylab.semantics.collecting.SemanticsSessionScope;
+import ecologylab.semantics.collecting.SemanticsSite;
 import ecologylab.semantics.collecting.SemanticsSiteMap;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
@@ -137,7 +139,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	File																												file;
 
 	@simpl_map("site")
-	SemanticsSiteMap																						sites;
+	private SemanticsSiteMap																		sites;
 
 	public DownloadMonitor																			downloadMonitor;
 	
@@ -1027,6 +1029,11 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	public void setName(String name)
 	{
 		this.name = name;
+	}
+
+	public SemanticsSite getSite(Document document, SemanticsSessionScope semanticsSessionScope)
+	{
+		return sites.getOrConstruct(document, semanticsSessionScope);
 	}
 
 	public SemanticsSiteMap getSites()

@@ -1,9 +1,10 @@
 package ecologylab.semantics.documentparsers;
 
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.collecting.NewInfoCollector;
+import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.html.ImgElement;
 import ecologylab.semantics.html.documentstructure.ImageFeatures;
+import ecologylab.semantics.metadata.builtins.CompoundDocument;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.Image;
 import ecologylab.semantics.metadata.builtins.ImageClipping;
@@ -29,7 +30,7 @@ extends ContainerParser implements SemanticsPrefs
 	/** <code>Filter</code> that recognizes junk images from URL */
 	public static final Filter 		filter			= new Filter();	// url filtering
 
-	public HTMLParserCommon(NewInfoCollector infoCollector)
+	public HTMLParserCommon(SemanticsSessionScope infoCollector)
 	{
 		super(infoCollector);
 	}
@@ -68,6 +69,7 @@ extends ContainerParser implements SemanticsPrefs
 	protected boolean filterPurl(ParsedURL parsedURL)
 	{
 		Document document	= getDocument();
+		//FIXME -- should we depend on Seeding here?? or do this in post-processing for CompoundDocumentParserCrawlerResult??
 		return (parsedURL != null && 
 				infoCollector.accept(parsedURL) && 
 				(!parsedURL.getName().startsWith("File:") && 
@@ -91,9 +93,12 @@ extends ContainerParser implements SemanticsPrefs
 	 */
 	public Image newAnchorImgTxt(ImgElement imgNode, ParsedURL anchorHref)
 	{
-		Document outlink	= infoCollector.getOrConstructDocument(anchorHref);
+		CompoundDocument outlink	= (CompoundDocument) infoCollector.getOrConstructDocument(anchorHref);
 		Image result = newImgTxt(outlink, getDocument(), outlink, imgNode, anchorHref);
-		infoCollector.addImageToPool(result);
+		if (result != null)
+		{
+			result.constructClipping(getDocument(), outlink, imgNode.getAlt(), imgNode.getTextContext());
+		}
 		return result;
 	}
 	/**
@@ -136,7 +141,7 @@ extends ContainerParser implements SemanticsPrefs
 				break;
 			case ImageFeatures.UN_INFORMATIVE:
 			default:
-				infoCollector.registerUninformativeImage(srcPurl);
+				infoCollector.getGlobalCollection().registerUninformativeImage(srcPurl);
 			}
 		}
 		return result;

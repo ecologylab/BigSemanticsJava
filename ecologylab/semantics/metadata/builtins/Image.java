@@ -145,16 +145,6 @@ implements MimeType, ImageConstants
 		return true;
 	}
 	
-	/**
-	 * Needed in case of a redirect or direct binding, in which cases, the map will need updating
-	 * for this's location.
-	 */
-	@Override
-	DocumentLocationMap<? extends Image> getDocumentLocationMap()
-	{
-		return infoCollector.getGlobalImageMap();
-	}
-	
 //	/**
 //	 * @return
 //	 */

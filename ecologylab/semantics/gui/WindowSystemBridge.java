@@ -7,7 +7,7 @@ package ecologylab.semantics.gui;
  * @author andruid
  *
  */
-public interface GuiBridge
+public interface WindowSystemBridge
 {
   public int getAppropriateFontIndex();
   

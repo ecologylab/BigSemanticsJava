@@ -15,7 +15,7 @@ import ecologylab.semantics.metadata.builtins.Document;
 public class SemanticsSiteMap extends ConcurrentHashMap<String, SemanticsSite>
 {
 	
-	public SemanticsSite getOrConstruct(Document document, NewInfoCollector infoCollector) 
+	public SemanticsSite getOrConstruct(Document document, SemanticsSessionScope infoCollector) 
 	{
 		ParsedURL parsedURL	= document.getLocation();
 		String domain				= parsedURL.domain();

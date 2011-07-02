@@ -10,7 +10,7 @@ import ecologylab.generic.Debug;
 import ecologylab.semantics.actions.exceptions.ForLoopException;
 import ecologylab.semantics.actions.exceptions.IfActionException;
 import ecologylab.semantics.actions.exceptions.SemanticActionExecutionException;
-import ecologylab.semantics.collecting.NewInfoCollector;
+import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metametadata.MetaMetadata;
@@ -38,7 +38,7 @@ public class SemanticActionHandler
 		BUILT_IN_SCOPE.put(NULL, null);
 	}
 
-	private NewInfoCollector																				infoCollector;
+	private SemanticsSessionScope																				infoCollector;
 
 	private DocumentParser														documentParser;
 
@@ -61,7 +61,7 @@ public class SemanticActionHandler
 
 	Metadata																					metadata;
 
-	public SemanticActionHandler(NewInfoCollector infoCollector, DocumentParser documentParser)
+	public SemanticActionHandler(SemanticsSessionScope infoCollector, DocumentParser documentParser)
 	{
 		this.infoCollector = infoCollector;
 		this.documentParser = documentParser;
@@ -129,7 +129,7 @@ public class SemanticActionHandler
 	 * @param parser
 	 * @param infoCollector
 	 */
-	public void handleSemanticAction(SemanticAction action, DocumentParser parser, NewInfoCollector infoCollector)
+	public void handleSemanticAction(SemanticAction action, DocumentParser parser, SemanticsSessionScope infoCollector)
 	{
 		int state = getActionState(action, "state", SemanticAction.INIT);
 		if (state == SemanticAction.FIN || requestWaiting)
@@ -224,7 +224,7 @@ public class SemanticActionHandler
 	}
 
 	public synchronized void handleForLoop(ForEachSemanticAction action, DocumentParser parser,
-			NewInfoCollector infoCollector)
+			SemanticsSessionScope infoCollector)
 	{
 		try
 		{
@@ -311,7 +311,7 @@ public class SemanticActionHandler
 		}
 	}
 
-	public void handleIf(IfSemanticAction action, DocumentParser parser, NewInfoCollector infoCollector)
+	public void handleIf(IfSemanticAction action, DocumentParser parser, SemanticsSessionScope infoCollector)
 	{
 		// conditions have been checked in handleSemanticAction()
 

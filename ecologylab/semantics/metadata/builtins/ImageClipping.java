@@ -23,4 +23,10 @@ public class ImageClipping extends MediaClipping<Image>
 	{
 		super(clippedMedia, source, outlink, caption, context);
 	}
+	
+	@Override
+	public boolean isImage()
+	{
+		return true;
+	}
 }

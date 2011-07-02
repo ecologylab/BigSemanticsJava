@@ -13,7 +13,7 @@ import ecologylab.generic.ReflectionTools;
 import ecologylab.net.PURLConnection;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionsKeyWords;
-import ecologylab.semantics.collecting.NewInfoCollector;
+import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
 import ecologylab.semantics.metametadata.MetaMetadata;
@@ -49,7 +49,7 @@ abstract public class DocumentParser<D extends Document>
 	
 	public boolean 					cacheHit = false;
 
-	protected NewInfoCollector					infoCollector;
+	protected SemanticsSessionScope					infoCollector;
 	
 	private static boolean			inited;
 
@@ -95,7 +95,7 @@ abstract public class DocumentParser<D extends Document>
 	 * 
 	 * @param infoCollector
 	 */
-	protected DocumentParser ( NewInfoCollector infoCollector )
+	protected DocumentParser ( SemanticsSessionScope infoCollector )
 	{
 		this.infoCollector = infoCollector;
 	}
@@ -109,7 +109,7 @@ abstract public class DocumentParser<D extends Document>
 	 * @param documentClosure TODO
 	 * @param infoCollector
 	 */
-	public void fillValues ( PURLConnection purlConnection, DocumentClosure documentClosure, NewInfoCollector infoCollector )
+	public void fillValues ( PURLConnection purlConnection, DocumentClosure documentClosure, SemanticsSessionScope infoCollector )
 	{
 		this.purlConnection		= purlConnection;
 		this.documentClosure	= documentClosure;
@@ -300,7 +300,7 @@ abstract public class DocumentParser<D extends Document>
 	 * @return an instance of the DocumentType subclass that corresponds to documentTypeSimpleName.
 	 */
 	public static DocumentParser getInstanceBySimpleName ( String documentTypeSimpleName,
-			NewInfoCollector infoCollector )
+			SemanticsSessionScope infoCollector )
 	{
 		return getInstanceFromRegistry(registryByClassName, documentTypeSimpleName, infoCollector);
 	}
@@ -310,7 +310,7 @@ abstract public class DocumentParser<D extends Document>
 		return registryByMimeType.containsKey(mimeType);
 	}
 	
-	static final Class[]  DEFAULT_DOCUMENTPARSER_ARG        = {NewInfoCollector.class};
+	static final Class[]  DEFAULT_DOCUMENTPARSER_ARG        = {SemanticsSessionScope.class};
 	/**
 	 * Given one of our registries, and a key, do a lookup in the registry to obtain the Class
 	 * object for the DocumentType subclass corresponding to the key -- in that registry.
@@ -324,7 +324,7 @@ abstract public class DocumentParser<D extends Document>
 	 *         specified registry.
 	 */
 	public static DocumentParser getInstanceFromRegistry (
-			Scope<Class<? extends DocumentParser>> thatRegistry, String key, NewInfoCollector infoCollector )
+			Scope<Class<? extends DocumentParser>> thatRegistry, String key, SemanticsSessionScope infoCollector )
 	{
 		DocumentParser result = null;
 		Class<? extends DocumentParser> documentTypeClass = thatRegistry.get(key);
@@ -358,7 +358,7 @@ abstract public class DocumentParser<D extends Document>
 	}
 
 	public static DocumentParser getParserInstanceFromBindingMap(String binding,
-			NewInfoCollector infoCollector)
+			SemanticsSessionScope infoCollector)
 	{
 		DocumentParser result = null;
 		Class<? extends DocumentParser> documentTypeClass = (Class<? extends DocumentParser>) bindingParserMap.get(binding);
@@ -419,7 +419,7 @@ abstract public class DocumentParser<D extends Document>
 	}
 
 
-	public NewInfoCollector getInfoCollector()
+	public SemanticsSessionScope getInfoCollector()
 	{
 		return infoCollector;
 	}
@@ -463,7 +463,7 @@ abstract public class DocumentParser<D extends Document>
 		return (D) documentClosure.getDocument();
 	}
 	
-	public static DocumentParser get(MetaMetadata mmd, NewInfoCollector infoCollector)
+	public static DocumentParser get(MetaMetadata mmd, SemanticsSessionScope infoCollector)
 	{
 		String parserName = mmd.getParser();
 		if (parserName != null)

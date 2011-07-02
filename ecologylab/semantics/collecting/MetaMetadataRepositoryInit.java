@@ -9,6 +9,7 @@ import ecologylab.appframework.ApplicationEnvironment;
 import ecologylab.appframework.ApplicationProperties;
 import ecologylab.appframework.EnvironmentGeneric;
 import ecologylab.appframework.PropertiesAndDirectories;
+import ecologylab.collections.Scope;
 import ecologylab.generic.Debug;
 import ecologylab.io.Assets;
 import ecologylab.io.AssetsRoot;
@@ -23,7 +24,7 @@ import ecologylab.serialization.TranslationScope;
  * @author andruid
  *
  */
-public class MetaMetadataRepositoryInit extends Debug
+public class MetaMetadataRepositoryInit extends Scope<Object>
 implements DocumentParserTagNames, ApplicationProperties
 {
 	static final String	META_METADATA_REPOSITORY_DIR		= "repository";
@@ -45,7 +46,8 @@ implements DocumentParserTagNames, ApplicationProperties
 	public static final MetaMetadata								PDF_META_METADATA;
 	public static final MetaMetadata								SEARCH_META_METADATA;
 	public static final MetaMetadata								IMAGE_META_METADATA;
-	
+	public static final MetaMetadata								DEBUG_META_METADATA;
+
 	static
 	{
 		if (ApplicationEnvironment.isInUse() && !ApplicationEnvironment.runningInEclipse())
@@ -58,7 +60,7 @@ implements DocumentParserTagNames, ApplicationProperties
 		else
 			METAMETADATA_REPOSITORY_DIR_FILE 	= new File("../ecologylabSemantics/repository");
 		
-		println("\t\t-- Reading meta_metadata from " + METAMETADATA_REPOSITORY_DIR_FILE);
+		Debug.println("\t\t-- Reading meta_metadata from " + METAMETADATA_REPOSITORY_DIR_FILE);
 
 		META_METADATA_REPOSITORY 					= MetaMetadataRepository.load(METAMETADATA_REPOSITORY_DIR_FILE);
 		
@@ -66,6 +68,7 @@ implements DocumentParserTagNames, ApplicationProperties
 		PDF_META_METADATA									= META_METADATA_REPOSITORY.getByTagName(PDF_TAG);
 		SEARCH_META_METADATA							= META_METADATA_REPOSITORY.getByTagName(SEARCH_TAG);
 		IMAGE_META_METADATA								= META_METADATA_REPOSITORY.getByTagName(IMAGE_TAG);
+		DEBUG_META_METADATA								= META_METADATA_REPOSITORY.getByTagName(DEBUG_TAG);
 	}
 
 	
@@ -73,7 +76,12 @@ implements DocumentParserTagNames, ApplicationProperties
 	
 	private TranslationScope																		metadataTranslationScope;
 	
-	public MetaMetadataRepositoryInit(TranslationScope metadataTranslationScope)
+	/**
+	 * This constructor should only be called from SemanticsScope's constructor!
+	 * 
+	 * @param metadataTranslationScope
+	 */
+	protected MetaMetadataRepositoryInit(TranslationScope metadataTranslationScope)
 	{
 		META_METADATA_REPOSITORY.bindMetadataClassDescriptorsToMetaMetadata(metadataTranslationScope);
 		this.metadataTranslationScope	= metadataTranslationScope;

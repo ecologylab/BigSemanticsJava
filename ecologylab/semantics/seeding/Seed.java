@@ -2,7 +2,7 @@ package ecologylab.semantics.seeding;
 
 import ecologylab.collections.Scope;
 import ecologylab.generic.ReflectionTools;
-import ecologylab.semantics.collecting.NewInfoCollector;
+import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
 import ecologylab.semantics.namesandnums.CFPrefNames;
@@ -36,7 +36,7 @@ abstract public class Seed extends ElementState implements CFPrefNames
 
     protected SeedDistributor            	seedDistributer;
     
-    protected		NewInfoCollector					infoCollector;
+    protected		SemanticsSessionScope					infoCollector;
     
     protected 	SeedPeer									seedPeer;
     
@@ -62,11 +62,11 @@ abstract public class Seed extends ElementState implements CFPrefNames
      * 
      * @param infoProcessor
      */
-    public void initialize(NewInfoCollector infoProcessor)
+    public void initialize(SemanticsSessionScope infoProcessor)
     {
     		this.infoCollector	= infoProcessor;
     		
-    		seedPeer						= infoProcessor.constructSeedPeer(this);
+    		seedPeer						= infoProcessor.getSeeding().constructSeedPeer(this);
     }
 
     /**
@@ -74,7 +74,7 @@ abstract public class Seed extends ElementState implements CFPrefNames
      * 
      * @param infoProcessor
      */
-    public void initialize(SeedPeer ancestor, NewInfoCollector infoProcessor)
+    public void initialize(SeedPeer ancestor, SemanticsSessionScope infoProcessor)
     {
     		initialize(infoProcessor);
     		
@@ -99,7 +99,7 @@ abstract public class Seed extends ElementState implements CFPrefNames
 //FIXME        this.parent = ancestor;
     }
 
-    abstract public void performInternalSeedingSteps(NewInfoCollector infoCollector);
+    abstract public void performInternalSeedingSteps(SemanticsSessionScope infoCollector);
     
     /**
      * This sets the infoCollector for the seed, and then hands off the internal seeding processing to the
@@ -107,7 +107,7 @@ abstract public class Seed extends ElementState implements CFPrefNames
      * 
      * @param	infoCollector	Must be non-null!
      */
-    public final void performSeedingSteps(NewInfoCollector infoCollector)
+    public final void performSeedingSteps(SemanticsSessionScope infoCollector)
     {
     	// desparately seeking non-null InfoCollector
     	if (infoCollector != null)
@@ -117,7 +117,7 @@ abstract public class Seed extends ElementState implements CFPrefNames
     	if (infoCollector == null)
     		throw new RuntimeException("Null InfoCollector passed to performSeedingSteps() in " + this);
 
-    	seedPeer	= infoCollector.constructSeedPeer(this);
+    	seedPeer	= infoCollector.getSeeding().constructSeedPeer(this);
     	performInternalSeedingSteps(infoCollector);
     	
     	// TODO there is an ancestor for this seed now, so we will have also ADD THIS (ie.. this
@@ -146,7 +146,7 @@ abstract public class Seed extends ElementState implements CFPrefNames
     
     abstract public boolean setValue(String value);
 
-    public void setInfoCollector(NewInfoCollector infoCollector)
+    public void setInfoCollector(SemanticsSessionScope infoCollector)
     {
         this.infoCollector = infoCollector;
     }
@@ -199,7 +199,7 @@ abstract public class Seed extends ElementState implements CFPrefNames
     /**
      * @return Returns the ResultDistributer.
      */
-    public SeedDistributor seedDistributer(NewInfoCollector infoCollector)
+    public SeedDistributor seedDistributer(SemanticsSessionScope infoCollector)
     {
     	if (seedDistributer != null)
     		return seedDistributer;

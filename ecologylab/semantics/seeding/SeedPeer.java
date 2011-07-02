@@ -54,7 +54,7 @@ abstract public class SeedPeer<SP extends SeedPeer>
 	
 	abstract public void addToIndex(DocumentClosure documentClosure);
 	
-	abstract public void addToIndexI(DocumentClosure<Image> imageClosure);
+	abstract public void addToIndexI(DocumentClosure imageClosure);
 	
 	abstract public void addToIndexT(TextClipping textClipping);
 	

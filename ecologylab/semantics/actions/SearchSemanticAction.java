@@ -39,9 +39,9 @@ public class SearchSemanticAction
 		SearchState search = new SearchState(query, engine);
 		search.initialize(infoCollector);
 		SeedSet seedSet = new SeedSet();
-		seedSet.setParentSeedSet(infoCollector.getSeedSet());
+		seedSet.setParentSeedSet(infoCollector.getSeeding().getSeedSet());
 		seedSet.add(search, infoCollector);
-		seedSet.performSeeding(infoCollector.sessionScope(), true);
+		seedSet.performSeeding(infoCollector, true);
 		return null;
 	}
 }

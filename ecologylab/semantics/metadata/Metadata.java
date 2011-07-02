@@ -768,6 +768,17 @@ abstract public class Metadata extends ElementState implements MetadataBase, Ter
 		return false;
 	}
 
+	/**
+	 * Convenience method for type checking related to CompoundDocument-ness.
+	 * Base implementation:
+	 * 
+	 * @return	false
+	 */
+	public boolean isCompoundDocument()
+	{
+		return false;
+	}
+
 	public boolean isGui()
 	{
 		return false;

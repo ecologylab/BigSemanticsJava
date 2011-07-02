@@ -68,7 +68,7 @@ implements Continuation<DocumentClosure>
 	 * Weighted collection of <code>ImageElement</code>s.
 	 * Contain elements that have not been transported to candidatePool. 
 	 */
-	private WeightSet<DocumentClosure<Image>>	candidateImageClosures;
+	private WeightSet<DocumentClosure>	candidateImageClosures;
 
 	/**
 	 * Weighted collection of <code>TextElement</code>s.
@@ -446,7 +446,7 @@ implements Continuation<DocumentClosure>
 	@Override
 	public synchronized void perhapsAddDocumentClosureToPool ( )
 	{
-		if (!infoCollector.isCollectCandidatesInPools())
+		if (!infoCollector.hasCrawler())
 			return;
 		
 		if (candidateLocalOutlinks == null || candidateLocalOutlinks.size() == 0)
@@ -460,7 +460,7 @@ implements Continuation<DocumentClosure>
 		if(maxWeight > MIN_WEIGHT_THRESHOLD)
 		{
 			DocumentClosure candidate = candidateLocalOutlinks.maxSelect();
-			doRecycle = ! infoCollector.addClosureToPool(candidate); // successful add means do not recycle
+			doRecycle = ! infoCollector.getCrawler().addClosureToPool(candidate); // successful add means do not recycle
 		}
 		else
 		{
@@ -482,7 +482,7 @@ implements Continuation<DocumentClosure>
 
 	public synchronized void perhapsAddTextClippingToPool()
 	{
-		if (!infoCollector.isCollectCandidatesInPools())
+		if (!infoCollector.hasCrawler())
 			return;
 		
 		GenericElement<TextClipping> textClippingGE = null;
@@ -495,15 +495,15 @@ implements Continuation<DocumentClosure>
 			// If no surrogate has been delivered to the candidate pool from the container, 
 			// send it to the candidate pool without checking the media weight. 
 			if( numSurrogatesFrom==0 )
-				infoCollector.addTextClippingToPool(textClippingGE, clippingPoolPriority());
+				infoCollector.getCrawler().addTextClippingToPool(textClippingGE, clippingPoolPriority());
 			else
 			{
 				TextClipping textClipping	= textClippingGE.getGeneric();
 				float adjustedWeight 		= InterestModel.getInterestExpressedInTermVector(textClipping.termVector()) / (float) numSurrogatesFrom;
-				float meanTxtSetWeight	= infoCollector.candidateTextElementsSetsMean();
-				if ((adjustedWeight>=meanTxtSetWeight) || infoCollector.candidateTextElementsSetIsAlmostEmpty())
+				float meanTxtSetWeight	= infoCollector.getCrawler().candidateTextElementsSetsMean();
+				if ((adjustedWeight>=meanTxtSetWeight) || infoCollector.getCrawler().candidateTextElementsSetIsAlmostEmpty())
 				{
-					infoCollector.addTextClippingToPool(textClippingGE, clippingPoolPriority());
+					infoCollector.getCrawler().addTextClippingToPool(textClippingGE, clippingPoolPriority());
 					mostRecentTextWeight = InterestModel.getInterestExpressedInTermVector(textClipping.termVector());
 				}
 				else
@@ -519,10 +519,10 @@ implements Continuation<DocumentClosure>
 	}
 	public synchronized void perhapsAddImageClosureToPool()
 	{
-		if (!infoCollector.isCollectCandidatesInPools())
+		if (!infoCollector.hasCrawler())
 			return;
 		
-		DocumentClosure<Image> imageClosure = null;
+		DocumentClosure imageClosure = null;
 		if (candidateImageClosures != null)
 			imageClosure = candidateImageClosures.maxSelect();
 
@@ -534,12 +534,12 @@ implements Continuation<DocumentClosure>
 			boolean goForIt				= firstClipping;
 			if (!goForIt)
 			{
-				goForIt = infoCollector.imagePoolsSize() < 2;	// we're starved for images so go for it!
+				goForIt = infoCollector.getCrawler().imagePoolsSize() < 2;	// we're starved for images so go for it!
 				if (!goForIt)
 				{
 					float adjustedWeight			= InterestModel.getInterestExpressedInTermVector(imageClosure.termVector()) / (float) numSurrogatesFrom;
 					
-					float meanImgPoolsWeight	= infoCollector.imagePoolsMean();
+					float meanImgPoolsWeight	= infoCollector.getCrawler().imagePoolsMean();
 					
 					goForIt										= adjustedWeight >= meanImgPoolsWeight;
 				}
@@ -648,6 +648,12 @@ implements Continuation<DocumentClosure>
 	}
 	
 	@Override
+	public boolean isCompoundDocument()
+	{
+		return true;
+	}
+
+	@Override
 	public synchronized void tryToGetBetterTextAfterInterestExpression(GenericElement<TextClipping> replaceMe)
 	{
 		if (candidateTextClippings == null || candidateTextClippings.size() == 0)
@@ -656,7 +662,7 @@ implements Continuation<DocumentClosure>
 		GenericElement<TextClipping> te = candidateTextClippings.maxPeek();
 		if (InterestModel.getInterestExpressedInTermVector(te.getGeneric().termVector()) > mostRecentTextWeight)
 		{
-			infoCollector.removeTextClippingFromPools(replaceMe);
+			infoCollector.getCrawler().removeTextClippingFromPools(replaceMe);
 			perhapsAddTextClippingToPool();
 			// perhapsAddAdditionalTextSurrogate could call recycle on this container
 			if (!this.isRecycled())
@@ -664,16 +670,15 @@ implements Continuation<DocumentClosure>
 		}
 	}
 	
-	@Override
-	public synchronized void tryToGetBetterImageAfterInterestExpression(DocumentClosure<Image> replaceMe)
+	public synchronized void tryToGetBetterImageAfterInterestExpression(DocumentClosure replaceMe)
 	{
 		if (candidateImageClosures == null || candidateImageClosures.size() == 0)
 			return;
 		
-		DocumentClosure<Image> aie = candidateImageClosures.maxPeek();
+		DocumentClosure aie = candidateImageClosures.maxPeek();
 		if (InterestModel.getInterestExpressedInTermVector(aie.termVector()) > mostRecentImageWeight)
 		{
-			infoCollector.removeImageClippingFromPools(replaceMe);
+			infoCollector.getCrawler().removeImageClippingFromPools(replaceMe);
 			perhapsAddImageClosureToPool();
 			candidateImageClosures.insert(replaceMe);
 		}
@@ -798,8 +803,8 @@ implements Continuation<DocumentClosure>
 		{
 			//FIXME -- look out for already downloaded!!!
 			if (candidateImageClosures == null)
-				candidateImageClosures	=  new WeightSet<DocumentClosure<Image>>(new TermVectorWeightStrategy(InterestModel.getPIV()));
-			candidateImageClosures.insert((DocumentClosure<Image>) image.getOrConstructClosure());
+				candidateImageClosures	=  new WeightSet<DocumentClosure>(new TermVectorWeightStrategy(InterestModel.getPIV()));
+			candidateImageClosures.insert((DocumentClosure) image.getOrConstructClosure());
 		}
 	}
 	
@@ -831,6 +836,14 @@ implements Continuation<DocumentClosure>
 	public void addClipping(Clipping clipping)
 	{
 		clippings().add(clipping);
+	}
+
+	/**
+	 * @return the clippings
+	 */
+	public ArrayList<Clipping> getClippings()
+	{
+		return clippings;
 	}
 
 }

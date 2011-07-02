@@ -25,7 +25,7 @@ import ecologylab.semantics.model.text.TermVectorWeightStrategy;
  * 
  * @author andruid
  */
-public class MediaReferencesPool extends PrioritizedPool<DocumentClosure<Image>> implements
+public class MediaReferencesPool extends PrioritizedPool<DocumentClosure> implements
 		Runnable, RunnablePool
 {
 	/**
@@ -51,11 +51,11 @@ public class MediaReferencesPool extends PrioritizedPool<DocumentClosure<Image>>
 	 */
 	int																										sleep;
 
-	private NewInfoCollector															infoCollector;
+	private SemanticsSessionScope															infoCollector;
 
 	boolean																								paused;
 
-	private static final DownloadMonitor<DocumentClosure>	REGULAR_IMAGE_DOWNLOAD_MONITOR	= NewInfoCollector
+	private static final DownloadMonitor<DocumentClosure>	REGULAR_IMAGE_DOWNLOAD_MONITOR	= SemanticsDownloadMonitors
 																																														.regularImageDownloadMonitor();
 
 	public static final int																LOW_PRIORITY										= REGULAR_IMAGE_DOWNLOAD_MONITOR
@@ -87,7 +87,7 @@ public class MediaReferencesPool extends PrioritizedPool<DocumentClosure<Image>>
 																																																true);
 
 	public MediaReferencesPool(int numSets, int maxSetSize, TermVector piv,
-			NewInfoCollector infoCollector)
+			SemanticsSessionScope infoCollector)
 	{
 		super();
 		this.infoCollector = infoCollector;
@@ -95,7 +95,7 @@ public class MediaReferencesPool extends PrioritizedPool<DocumentClosure<Image>>
 		weightSets = new WeightSet[numSets];
 		// TODO -- should there be a special weighting strategy here?!
 		for (int i = 0; i < numSets; i++)
-			weightSets[i] = new WeightSet<DocumentClosure<Image>>(maxSetSize, infoCollector,
+			weightSets[i] = new WeightSet<DocumentClosure>(maxSetSize, infoCollector.getCrawler(),
 					new TermVectorWeightStrategy(piv));
 
 	}

@@ -11,11 +11,11 @@ import ecologylab.semantics.metadata.builtins.Image;
  *
  * @param <E>
  */
-public class ImageWeightingStrategy extends WeightingStrategy<DocumentClosure<Image>>
+public class ImageWeightingStrategy extends WeightingStrategy<DocumentClosure>
 {
 
 	@Override
-	public double getWeight(DocumentClosure<Image> e)
+	public double getWeight(DocumentClosure e)
 	{
 		throw new RuntimeException("Not implemented.");
 	}

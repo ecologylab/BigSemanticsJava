@@ -4,6 +4,8 @@
 package ecologylab.semantics.documentparsers;
 
 import ecologylab.generic.Debug;
+import ecologylab.semantics.metadata.builtins.Clipping;
+import ecologylab.semantics.metadata.builtins.CompoundDocument;
 
 /**
  * All state related to the crawler, and associated with a single CompoundDocument.
@@ -28,4 +30,21 @@ public class CompoundDocumentParserCrawlerResult extends Debug implements Parser
 
 	}
 
+	public void derive(CompoundDocument compoundDocument)
+	{
+		for (Clipping clipping: compoundDocument.getClippings())
+		{
+			if (clipping.isImage())
+			{
+				
+			}
+			else
+			{	// text clipping
+				
+			}
+		}
+//		if (outlink != null)
+//			infoCollector.addClosureToPool(imageClipping.getOutlinkClosure());
+		
+	}
 }

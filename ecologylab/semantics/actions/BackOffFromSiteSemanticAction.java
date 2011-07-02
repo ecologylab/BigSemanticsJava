@@ -32,7 +32,7 @@ class BackOffFromSiteSemanticAction
 	@Override
 	public Object perform(Object obj)
 	{
-		infoCollector.reject(domain);
+		infoCollector.getSeeding().reject(domain);
 		return null;
 	}
 

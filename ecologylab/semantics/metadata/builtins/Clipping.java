@@ -153,8 +153,12 @@ public class Clipping extends Metadata
 		return (int) (100.0f * (float) numWithCaption / ((float) numConstructed));
 	}
 
+	public boolean isImage()
+	{
+		return false;
+	}
 
-public boolean isNullContext()
+	public boolean isNullContext()
 	{
 		return context == null || context.getValue() == null;
 	}

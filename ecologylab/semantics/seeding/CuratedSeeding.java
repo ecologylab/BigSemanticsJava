@@ -2,7 +2,7 @@ package ecologylab.semantics.seeding;
 
 import java.io.File;
 
-import ecologylab.semantics.collecting.NewInfoCollector;
+import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.namesandnums.SemanticsSessionObjectNames;
 import ecologylab.serialization.simpl_inherit;
 
@@ -51,21 +51,21 @@ implements SemanticsSessionObjectNames
 	 * @param objectRegistry		Context passed between services calls.
 	 * @param infoCollector TODO
 	 */
-	public void performInternalSeedingSteps(NewInfoCollector infoCollector)
+	public void performInternalSeedingSteps(SemanticsSessionScope infoCollector)
 	{
 		final SeedSet<?> ss	= CuratedSeedSets.lookup(name);
 		
 		infoCollector.displayStatus("Downloading curated collection: " + name);
 		
 		final File curatedFile	= new File(name + ".xml");
-		infoCollector.setCurrentFileFromUntitled(curatedFile);
+		infoCollector.getSeeding().setCurrentFileFromUntitled(curatedFile);
 
 		// In case for replace seed with the curated-seeds, SeedSet is reused. 
 		// So, old resultDistributer is used without getting reset. 
 		// Maybe there is better place to reset ResultDistributer -- eunyee
 		ss.resetResultDistributer();
 
-		ss.performSeeding(infoCollector.sessionScope());
+		ss.performSeeding(infoCollector);
 	}
 
 	/**

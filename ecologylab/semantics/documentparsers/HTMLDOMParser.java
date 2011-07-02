@@ -10,7 +10,7 @@ import ecologylab.appframework.types.prefs.PrefBoolean;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.generic.StringTools;
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.collecting.NewInfoCollector;
+import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.html.ParagraphText;
 import ecologylab.semantics.html.DOMParserInterface;
 import ecologylab.semantics.html.documentstructure.AnchorContext;
@@ -45,7 +45,7 @@ public abstract class HTMLDOMParser extends HTMLParserCommon implements DOMParse
 	boolean indexPage = false;
 	boolean contentPage = false;
 
-	public HTMLDOMParser(NewInfoCollector infoCollector)
+	public HTMLDOMParser(SemanticsSessionScope infoCollector)
 	{
 		super(infoCollector);
 	}
@@ -188,6 +188,7 @@ public abstract class HTMLDOMParser extends HTMLParserCommon implements DOMParse
 
 	protected void handleSemanticAnchor(SemanticAnchor semanticAnchor, ParsedURL hrefPurl)
 	{
+		//FIXME -- should we depend on Seeding here?? or do this in post-processing for CompoundDocumentParserCrawlerResult??
 		if (hrefPurl != null && !hrefPurl.isNull() && infoCollector.accept(hrefPurl))
 		{
 			Document hrefDocument		= infoCollector.getOrConstructDocument(hrefPurl);

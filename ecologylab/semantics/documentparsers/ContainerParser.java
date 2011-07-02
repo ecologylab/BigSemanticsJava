@@ -1,7 +1,7 @@
 package ecologylab.semantics.documentparsers;
 
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.collecting.NewInfoCollector;
+import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.metadata.builtins.CompoundDocument;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
 import ecologylab.semantics.seeding.SearchState;
@@ -29,7 +29,7 @@ extends DocumentParser<CompoundDocument>
 	 */
 	protected SearchState 				searchSeed;
 
-	public ContainerParser(NewInfoCollector infoCollector)
+	public ContainerParser(SemanticsSessionScope infoCollector)
 	{
 		super(infoCollector);
 	}
@@ -39,7 +39,7 @@ extends DocumentParser<CompoundDocument>
 	 * @param searchSeed TODO
 	 * @param infoCollector
 	 */
-	public ContainerParser(SearchState searchSeed, NewInfoCollector infoCollector)
+	public ContainerParser(SearchState searchSeed, SemanticsSessionScope infoCollector)
 	{   
 		  super(infoCollector);
 		  this.searchSeed			= searchSeed;
