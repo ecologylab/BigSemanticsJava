@@ -24,6 +24,8 @@ import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
+import ecologylab.semantics.seeding.SearchState;
+import ecologylab.semantics.seeding.Seed;
 import ecologylab.serialization.simpl_inherit;
 
 /**
@@ -67,6 +69,22 @@ public class Document extends Metadata
 	
 	private boolean									alwaysAcceptRedirect;
 	
+	/**
+	 * Seed object associated with this, if this is a seed.
+	 */
+	private Seed													seed;
+
+	/**
+	 * Indicates that this Container is a truly a seed, not just one that is associated into a Seed's
+	 * inverted index.
+	 */
+	private boolean												isTrueSeed;
+
+	/**
+	 * Indicates that this Container is processed via drag and drop.
+	 */
+	private boolean												isDnd;
+
 	static public final Document 	RECYCLED_DOCUMENT	= new Document(ParsedURL.getAbsolute("http://recycled.document"));
 	static public final Document 	UNDEFINED_DOCUMENT= new Document(ParsedURL.getAbsolute("http://undefined.document"));
 
@@ -545,4 +563,68 @@ public class Document extends Metadata
 	{
 		this.parserResult = parserResult;
 	}
+	
+	/**
+	 * @return the seed
+	 */
+	public Seed getSeed()
+	{
+		return seed;
+	}
+
+	/**
+	 * @param seed
+	 *          the seed to set
+	 */
+	public void setSeed(Seed seed)
+	{
+		this.seed = seed;
+	}
+
+	/**
+	 * If this Container was a search, the index number of that search among the searches being
+	 * aggregated at one time. Otherwise, -1.
+	 * 
+	 * @return The search index number or -1 if not a search.
+	 */
+	public int searchNum()
+	{
+		if (isTrueSeed && (seed instanceof SearchState))
+		{
+			return ((SearchState) seed).searchNum();
+		}
+		return -1;
+	}
+
+	/**
+	 * Called for true seed Containers. Calling this method does more than bind the Seed object with
+	 * the Container in the model. It also sets the crucial isSeed flag, establishing that this
+	 * Container is truly a Seed.
+	 * <p/>
+	 * NB: The seed object will also be bound with ancestors of the Container.
+	 * 
+	 * @param seed
+	 */
+	public void setAsTrueSeed(Seed seed)
+	{
+		// associateSeed(seed);
+		this.seed = seed;
+		isTrueSeed = true;
+	}
+
+	/**
+	 * Indicate that this Container is being processed via DnD.
+	 * 
+	 */
+	void setDnd()
+	{
+		isDnd = true;
+	}
+
+	public boolean isDnd()
+	{
+		return isDnd;
+	}
+
+
 }
