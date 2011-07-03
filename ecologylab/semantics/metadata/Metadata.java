@@ -71,12 +71,6 @@ abstract public class Metadata extends ElementState implements MetadataBase, Ter
 	// FIXME with the new inheritance and inline MMD processing, this will always be a MetaMetadata!
 	private MetaMetadataCompositeField		metaMetadata;
 
-	public static final String						MIXIN_TRANSLATION_STRING	= "mixin_translations";
-
-	static Class[]												mixinClasses							= { DebugMetadata.class };
-
-	static TranslationScope								MIXIN_TRANSLATIONS				= TranslationScope.get(MIXIN_TRANSLATION_STRING, mixinClasses);
-
 	/**
 	 * Allows combining instantiated Metadata subclass declarations without hierarchy.
 	 * 
