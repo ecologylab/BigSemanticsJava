@@ -644,16 +644,6 @@ abstract public class Metadata extends ElementState implements MetadataBase, Ter
 
 	}
 
-	/**
-	 * Only use this accessor, in order to maintain future code compatability.
-	 * 
-	 * @return
-	 */
-	public static MetaMetadataRepository repository()
-	{
-		return repository;
-	}
-
 	@Override
 	public boolean hasCompositeTermVector()
 	{
