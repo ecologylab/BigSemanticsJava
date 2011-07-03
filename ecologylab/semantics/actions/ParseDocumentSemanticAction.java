@@ -186,14 +186,14 @@ class ParseDocumentSemanticAction
 		{
 			final Crawler crawler	= infoCollector.getCrawler();
 			if (!distributeSeedingResults(this, documentParser, documentClosure,
-					new DistributorContinuation<DocumentClosure>()
+					new DistributorContinuation()
 					{
-				@Override
-				public void distribute(DocumentClosure result)
-				{
-					if (crawler != null)
-						crawler.addClosureToPool(result);	// ?? just curious: isn't result the same as documentClosure?!
-				}
+					@Override
+					public void distribute(DocumentClosure result)
+					{
+						if (crawler != null)
+							crawler.addClosureToPool(result);	// ?? just curious: isn't result the same as documentClosure?!
+					}
 					}))
 			{
 				if (crawler != null)

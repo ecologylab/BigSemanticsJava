@@ -46,9 +46,9 @@ import ecologylab.semantics.metadata.builtins.DocumentClosure;
 public class SeedDistributor extends Debug implements Runnable
 {
 
-	public static interface DistributorContinuation<QaD extends QandDownloadable>
+	public static interface DistributorContinuation
 	{
-		void distribute(QaD result);
+		void distribute(DocumentClosure result);
 	}
 
 	/**
@@ -102,15 +102,15 @@ public class SeedDistributor extends Debug implements Runnable
 	 * constructor. by default, search results will be ordered according to their ranks in the search
 	 * result list.
 	 */
-	private final Comparator<QandDownloadable>							comparator;
+	private final Comparator<DocumentClosure>							comparator;
 
 	/**
 	 * The priority queue holding (weighted) search results waiting for downloading and parsing. Note
 	 * that PriorityQueue is not synchronized.
 	 */
-	private final PriorityQueue<QandDownloadable>						queuedResults;
+	private final PriorityQueue<DocumentClosure>						queuedResults;
 
-	private final Map<QandDownloadable, DistributorContinuation>	callbackMap												= new HashMap<QandDownloadable, SeedDistributor.DistributorContinuation>();
+	private final Map<DocumentClosure, DistributorContinuation>	callbackMap												= new HashMap<DocumentClosure, SeedDistributor.DistributorContinuation>();
 
 	private long																						lastSearchTimestamp;
 
@@ -120,20 +120,20 @@ public class SeedDistributor extends Debug implements Runnable
 
 	private boolean																					stopFlag;
 
-	public SeedDistributor(SemanticsSessionScope infoCollector, Comparator<QandDownloadable> comparator)
+	public SeedDistributor(SemanticsSessionScope infoCollector, Comparator<DocumentClosure> comparator)
 	{
 		this.infoCollector = infoCollector;
 		this.comparator = comparator;
-		this.queuedResults = new PriorityQueue<QandDownloadable>(INIT_CAPACITY, comparator);
+		this.queuedResults = new PriorityQueue<DocumentClosure>(INIT_CAPACITY, comparator);
 	}
 
 	public SeedDistributor(SemanticsSessionScope infoCollector)
 	{
-		this(infoCollector, new Comparator<QandDownloadable>()
+		this(infoCollector, new Comparator<DocumentClosure>()
 		{
 
 			@Override
-			public int compare(QandDownloadable o1, QandDownloadable o2)
+			public int compare(DocumentClosure o1, DocumentClosure o2)
 			{
 				int i1 = getRank(o1);
 				int i2 = getRank(o2);
@@ -208,7 +208,7 @@ public class SeedDistributor extends Debug implements Runnable
 	 * 
 	 * @param resultContainer
 	 */
-	public void queueResult(QandDownloadable resultContainer)
+	public void queueResult(DocumentClosure resultContainer)
 	{
 		queueResult(resultContainer, null);
 	}
@@ -221,7 +221,7 @@ public class SeedDistributor extends Debug implements Runnable
 	 * @param resultContainer
 	 * @param callback
 	 */
-	public void queueResult(QandDownloadable resultContainer, DistributorContinuation callback)
+	public void queueResult(DocumentClosure resultContainer, DistributorContinuation callback)
 	{
 		synchronized (queuedResults)
 		{
@@ -247,7 +247,7 @@ public class SeedDistributor extends Debug implements Runnable
 			{
 				if (queuedResults.size() > 0)
 				{
-					QandDownloadable downloadable = queuedResults.poll();
+					DocumentClosure downloadable = queuedResults.poll();
 					String query = getQuery(downloadable);
 					int rank = getRank(downloadable);
 					debug(String.format("sending container to DownloadMonitor: [%s:%d]%s", query, rank,
@@ -268,7 +268,7 @@ public class SeedDistributor extends Debug implements Runnable
 		}
 	}
 
-	private static int getRank(QandDownloadable downloadable)
+	private static int getRank(DocumentClosure downloadable)
 	{
 		int r = -1;
 //		if (downloadable instanceof OldContainerI)
@@ -278,7 +278,7 @@ public class SeedDistributor extends Debug implements Runnable
 		return r;
 	}
 
-	private static String getQuery(QandDownloadable downloadable)
+	private static String getQuery(DocumentClosure downloadable)
 	{
 		String query = null;
 		if (downloadable instanceof DocumentClosure)

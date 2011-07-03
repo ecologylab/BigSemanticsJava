@@ -17,10 +17,9 @@ import ecologylab.net.ConnectionHelperJustRemote;
 import ecologylab.net.PURLConnection;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionsKeyWords;
-import ecologylab.semantics.collecting.DocumentLocationMap;
 import ecologylab.semantics.collecting.DownloadStatus;
-import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.collecting.SemanticsGlobalScope;
+import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.collecting.SemanticsSite;
 import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.documentparsers.HTMLDOMParser;
@@ -32,7 +31,6 @@ import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.metametadata.RedirectHandling;
 import ecologylab.semantics.model.text.ITermVector;
 import ecologylab.semantics.model.text.TermVectorFeature;
-import ecologylab.semantics.seeding.QandDownloadable;
 import ecologylab.semantics.seeding.SearchResult;
 import ecologylab.semantics.seeding.Seed;
 import ecologylab.semantics.seeding.SeedDistributor;
@@ -47,7 +45,7 @@ import ecologylab.serialization.ElementState.FORMAT;
  *
  */
 public class DocumentClosure extends SetElement
-implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>, SemanticActionsKeyWords, Continuation<DocumentClosure>
+implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuation<DocumentClosure>
 {
 	Document											document;
 	
@@ -516,7 +514,6 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>, S
 	 * 
 	 * @return	true if the Container is actually queued for download. false if it was previously, if its been recycled, or if it is muted.
 	 */
-	@Override
 	public boolean queueDownload()
 	{
 		if (recycled())
@@ -621,7 +618,6 @@ implements TermVectorFeature, Downloadable, QandDownloadable<DocumentClosure>, S
 	/**
 	 * Keeps state about the search process, if this Container is a search result;
 	 */
-	@Override
 	public SearchResult searchResult()
 	{
 		return searchResult;
