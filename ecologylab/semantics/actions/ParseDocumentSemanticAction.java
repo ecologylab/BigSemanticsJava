@@ -207,7 +207,7 @@ class ParseDocumentSemanticAction
 	 * 
 	 * @param action
 	 * @param documentParser
-	 * @param infoCollector
+	 * @param semanticsSessionScope
 	 * @param resultContainer
 	 * @return true if a seeding result is distributed; false if not applicable (e.g. a normal page).
 	 */

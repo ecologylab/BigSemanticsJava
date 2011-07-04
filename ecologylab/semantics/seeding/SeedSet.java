@@ -135,7 +135,7 @@ public class SeedSet<S extends Seed> extends ElementState
 	 * Update parameters for next result set. Set time stamp to now. Perform the resulting search by
 	 * using the engine as a key .
 	 * 
-	 * @param infoCollector
+	 * @param semanticsSessionScope
 	 */
 	public void performNextSeeding(Scope scope)
 	{

@@ -51,7 +51,7 @@ public class Document extends Metadata
 	
 	protected		SemanticsGlobalScope	semanticsScope;
 	
-	protected		SemanticsSessionScope		infoCollector;
+	protected		SemanticsSessionScope		semanticsSessionScope;
 
 	/**
 	 * documentType object for each document type 
@@ -304,7 +304,7 @@ public class Document extends Metadata
 		SemanticsSite result	= this.site;
 		if (result == null)
 		{
-			result		= infoCollector.getMetaMetadataRepository().getSite(this, infoCollector);
+			result		= semanticsSessionScope.getMetaMetadataRepository().getSite(this, semanticsSessionScope);
 			this.site	= result;
 		}
 		return result;
@@ -312,17 +312,17 @@ public class Document extends Metadata
 	/**
 	 * @return the infoCollector
 	 */
-	public SemanticsSessionScope getInfoCollector()
+	public SemanticsSessionScope getSemanticsSessionScope()
 	{
-		return infoCollector;
+		return semanticsSessionScope;
 	}
 
 	/**
-	 * @param infoCollector the infoCollector to set
+	 * @param semanticsSessionScope the infoCollector to set
 	 */
-	public void setInfoCollector(SemanticsSessionScope infoCollector)
+	public void setSemanticsSessionScope(SemanticsSessionScope semanticsSessionScope)
 	{
-		this.infoCollector = infoCollector;
+		this.semanticsSessionScope = semanticsSessionScope;
 	}
 	
 	public void addAdditionalLocation(ParsedURL newPurl)
@@ -343,13 +343,13 @@ public class Document extends Metadata
 	 */
 	public void inheritValues(Document oldDocument)
 	{
-		oldDocument.getInfoCollector().getGlobalCollection().remap(oldDocument, this);
+		oldDocument.getSemanticsSessionScope().getGlobalCollection().remap(oldDocument, this);
 		if (location == null)
 		{
 			location									= oldDocument.location;
 			oldDocument.location			= null;
 		}
-		this.infoCollector					= oldDocument.infoCollector;
+		this.semanticsSessionScope					= oldDocument.semanticsSessionScope;
 		SemanticInLinks oldInlinks	= oldDocument.semanticInlinks;
 		if (semanticInlinks == null || semanticInlinks.size() == 0)
 		{
@@ -441,7 +441,7 @@ public class Document extends Metadata
 	
 	void setRecycled()
 	{
-		TNGGlobalCollections globalCollection = infoCollector.getGlobalCollection();
+		TNGGlobalCollections globalCollection = semanticsSessionScope.getGlobalCollection();
 		globalCollection.setRecycled(getLocation());
 		if (additionalLocations != null)
 		{
@@ -483,9 +483,6 @@ public class Document extends Metadata
 	}
 	
 	///////////////////////////////// Covers for methods in CompoundDocument that actually do something /////////////////////////////////
-	public void addCandidateImage(Image image)
-	{
-	}
 	
 	public boolean isSeed()
 	{
@@ -506,9 +503,7 @@ public class Document extends Metadata
 	public void perhapsAddDocumentClosureToPool ( )
 	{
 	}
-	public void addCandidateTextClipping(TextClipping textClipping)
-	{
-	}
+
 	public String getTitle()
 	{
 		return null;

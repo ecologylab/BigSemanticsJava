@@ -49,7 +49,7 @@ public class GetLinkedMetadataSemanticAction extends SemanticAction
 						// citeseerx_summary, while generated purl is a citeseerx search.
 						Document linkedDocument	= (Document) infoCollector.getOrConstructDocument(purl);
 
-						linkedDocument.setInfoCollector(infoCollector);
+						linkedDocument.setSemanticsSessionScope(infoCollector);
 						if (linkedDocument != null)
 						{
 							linkedDocument.queueDownload();

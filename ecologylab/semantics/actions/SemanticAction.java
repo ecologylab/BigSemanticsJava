@@ -303,7 +303,7 @@ public abstract class SemanticAction extends ElementState implements SemanticAct
 		
 		if (result != null && !result.isRecycled())
 		{
-			result.setInfoCollector(infoCollector);
+			result.setSemanticsSessionScope(infoCollector);
 			
 			Metadata mixin				= (Metadata) getArgumentObject(MIXIN);
 			if (mixin != null)

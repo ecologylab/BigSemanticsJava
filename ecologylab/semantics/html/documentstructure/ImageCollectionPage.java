@@ -66,10 +66,10 @@ public class ImageCollectionPage extends RecognizedDocumentStructure
 			// images in the image-collection pages won't have anchors
 			// If there is an anchor, it should be pointing to the bigger image.
 			if (anchorPurl == null)
-				htmlType.newImgTxt(imgElement, null);
+				htmlType.constructImageClipping(imgElement, null);
 			else if ((anchorPurl != null) && anchorPurl.isImg())
 			{
-				htmlType.newImgTxt(imgElement, anchorPurl);
+				htmlType.constructImageClipping(imgElement, anchorPurl);
 				htmlType.removeTheContainerFromCandidates(anchorPurl);
 			}
 			else // if (anchorPurl.isHTML() || anchorPurl.isPDF() || anchorPurl.isRSS())
@@ -106,7 +106,7 @@ public class ImageCollectionPage extends RecognizedDocumentStructure
 				
 				//TODO: sashi - Do something with the tv and InterestModel 
 				//if(altText == null && extractedCaption == null )
-				htmlType.newImgTxt(imgElement, anchorPurl);
+				htmlType.constructImageClipping(imgElement, anchorPurl);
 			}
 			imgElement.recycle();
 		}

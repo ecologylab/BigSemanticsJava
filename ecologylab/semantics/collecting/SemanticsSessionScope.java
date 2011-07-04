@@ -31,6 +31,9 @@ implements SemanticsPrefs, ApplicationProperties, DocumentParserTagNames
 	private InteractiveSpace										interactiveSpace;
 	
 	private final Seeding												seeding;
+	
+	//TODO
+	// ConcurrentHashSet<ParsedURL> visitedDocuments;
 
 	
 	public SemanticsSessionScope(TranslationScope metaMetadataTranslations)
@@ -49,8 +52,10 @@ implements SemanticsPrefs, ApplicationProperties, DocumentParserTagNames
 		this.crawler											= crawler;
 		this.seeding											= new Seeding(this);
 		if (crawler != null)
+		{
+			crawler.semanticsSessionScope		= this;
 			crawler.setSeeding(seeding);
-		
+		}
 		Debug.println("");
 	}
 
@@ -116,7 +121,7 @@ implements SemanticsPrefs, ApplicationProperties, DocumentParserTagNames
 		if (location == null)
 			return null;
 		Document result	= globalCollection.getOrConstruct(location);
-		result.setInfoCollector(this);
+		result.setSemanticsSessionScope(this);
 		return result;
 	}
 	public Image getOrConstructImage(ParsedURL location)
@@ -129,7 +134,7 @@ implements SemanticsPrefs, ApplicationProperties, DocumentParserTagNames
 		if (constructDocument.isImage())
 		{
 			result	= (Image) constructDocument;
-			result.setInfoCollector(this);
+			result.setSemanticsSessionScope(this);
 		}
 		return result;
 	}	

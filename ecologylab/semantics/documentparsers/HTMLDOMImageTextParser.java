@@ -173,7 +173,7 @@ implements DOMParserInterface, HTMLAttributeNames
 		// No Informative images are in this document. Form surrogate only with text.  	
 		// We cannot tell whether the images in the pages are informative or not until downloading all, thus this is the case after we 
 		// look through all the images in the page and determine no image is worth displaying.
-		if( (numCandidatesExtractedFrom()==0) && (paragraphTextsTMap.size()>0) )
+		if( (numExtractedClippings()==0) && (paragraphTextsTMap.size()>0) )
 		{
 			pageCategory = new TextOnlyPage(purl());
 			pageCategory.generateSurrogates(contentBody, imgNodes, domWalkInfoTagger.getTotalTxtLength(), paragraphTextsTMap, this);

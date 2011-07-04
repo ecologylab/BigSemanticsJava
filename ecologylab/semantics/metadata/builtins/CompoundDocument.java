@@ -11,10 +11,11 @@ import ecologylab.collections.WeightSet;
 import ecologylab.generic.Continuation;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.collecting.ContainerWeightingStrategy;
+import ecologylab.semantics.collecting.Crawler;
 import ecologylab.semantics.collecting.DownloadStatus;
 import ecologylab.semantics.collecting.MetadataElement;
+import ecologylab.semantics.documentparsers.CompoundDocumentParserCrawlerResult;
 import ecologylab.semantics.documentparsers.DocumentParser;
-import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.model.text.InterestModel;
@@ -31,8 +32,11 @@ import ecologylab.serialization.simpl_inherit;
  */
 @simpl_inherit
 public class CompoundDocument extends Document
-implements Continuation<DocumentClosure>
 {
+	private static final String	CONTENT_PAGE	= "content_page";
+
+	private static final String	INDEX_PAGE	= "index_page";
+
 	/**
 	 * For debugging. Type of the structure recognized by information extraction.
 	 **/
@@ -65,28 +69,13 @@ implements Continuation<DocumentClosure>
 	private boolean									isTrueSeed;
 
 	/**
-	 * Weighted collection of <code>ImageElement</code>s.
-	 * Contain elements that have not been transported to candidatePool. 
-	 */
-	private WeightSet<DocumentClosure>	candidateImageClosures;
-
-	/**
-	 * Weighted collection of <code>TextElement</code>s.
-	 * Contain elements that have not been transported to candidatePool.
-	 */
-	private GenericWeightSet<TextClipping>	candidateTextClippings;
-	
-	/**
 	 * Clippings that this document contains.
 	 */
 	@mm_name("clippings") 
 	@simpl_collection
 	@simpl_classes({ImageClipping.class, TextClipping.class})
-//	ArrayList<Metadata>							clippings;
 	ArrayList<Clipping>								clippings;
 
-	private WeightSet<DocumentClosure>			candidateLocalOutlinks;
-	
 
 	
 	/** Number of surrogates from this container that are currently on screen */
@@ -95,21 +84,6 @@ implements Continuation<DocumentClosure>
 	
 	/** Total number of surrogates that have ever been on screen from this container */
 	int						totalVisualized;
-
-	private static final double	MIN_WEIGHT_THRESHOLD	= 0.;
-	
-	private boolean									useFirstCandidateWeight	= true;
-	
-	
-	//////////////////////////////////////// candidates loops state ////////////////////////////////////////////////////////////
-	
-	boolean								additionalContainersActive;
-	private boolean				additionalImgSurrogatesActive;
-	private boolean				additionalTextSurrogatesActive;
-	
-	/** Number of surrogates from this container in a candidate pool */
-	private int numSurrogatesFrom = 0;
-	
 
 	/**
 	 * 
@@ -135,6 +109,12 @@ implements Continuation<DocumentClosure>
 	{
 		super(location);
 		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	public boolean isCompoundDocument()
+	{
+		return true;
 	}
 
 	
@@ -410,179 +390,6 @@ implements Continuation<DocumentClosure>
 		termVector().add(weight, query.termVector());
 	}
 
-	//////////////////////////////////////// candidates loops state ////////////////////////////////////////////////////////////
-	@Override
-	public void addCandidateOutlink (Document newOutlink )
-	{
-		if (!newOutlink.isSeed() && !newOutlink.isDownloadDone())	// a seed is never a candidate
-		{
-			DocumentClosure documentClosure	= newOutlink.getOrConstructClosure();
-			if (documentClosure != null && documentClosure.getDownloadStatus() == DownloadStatus.UNPROCESSED)
-			{
-				if (candidateLocalOutlinks == null)
-					candidateLocalOutlinks			=  new WeightSet<DocumentClosure>(new ContainerWeightingStrategy(InterestModel.getPIV()));
-				candidateLocalOutlinks.insert(documentClosure);
-			}
-		}
-	}
-	
-	int clippingPoolPriority()
-	{
-		int result = useFirstCandidateWeight ? 
-				(isSeed() ? 0 : 1) : 2;
-		useFirstCandidateWeight		= false;
-				
-		return result;
-	}
-	/**
-	 * 
-	 * 1. First, only one surrogate goes to candidate pool. 
-	 * 2. Good looking surrogates, number of surrogates from current container, and users' interest 
-	 *    expression will determine to bring more surrogates from current container to the candidate pool.
-	 * @param getText 
-	 */
-	double mostRecentImageWeight = 0, mostRecentTextWeight = 0;
-	
-	@Override
-	public synchronized void perhapsAddDocumentClosureToPool ( )
-	{
-		if (!infoCollector.hasCrawler())
-			return;
-		
-		if (candidateLocalOutlinks == null || candidateLocalOutlinks.size() == 0)
-		{
-			makeInactiveAndConsiderRecycling();
-			return;
-		}
-		
-		double maxWeight = candidateLocalOutlinks.maxWeight();
-		boolean doRecycle = true;
-		if(maxWeight > MIN_WEIGHT_THRESHOLD)
-		{
-			DocumentClosure candidate = candidateLocalOutlinks.maxSelect();
-			doRecycle = ! infoCollector.getCrawler().addClosureToPool(candidate); // successful add means do not recycle
-		}
-		else
-		{
-			//Debug only
-			debug("This container failed to provide a decent container so is going bye bye, max weight was " + maxWeight );
-		}
-			
-		if (doRecycle)
-			makeInactiveAndConsiderRecycling();
-	}
-	
-	
-	private void makeInactiveAndConsiderRecycling()
-	{
-		additionalContainersActive = false;
-		recycle();
-	}
-
-
-	public synchronized void perhapsAddTextClippingToPool()
-	{
-		if (!infoCollector.hasCrawler())
-			return;
-		
-		GenericElement<TextClipping> textClippingGE = null;
-		if (candidateTextClippings != null)
-		{
-			textClippingGE = candidateTextClippings.maxSelect();
-		}
-		if( textClippingGE!=null )
-		{
-			// If no surrogate has been delivered to the candidate pool from the container, 
-			// send it to the candidate pool without checking the media weight. 
-			if( numSurrogatesFrom==0 )
-				infoCollector.getCrawler().addTextClippingToPool(textClippingGE, clippingPoolPriority());
-			else
-			{
-				TextClipping textClipping	= textClippingGE.getGeneric();
-				float adjustedWeight 		= InterestModel.getInterestExpressedInTermVector(textClipping.termVector()) / (float) numSurrogatesFrom;
-				float meanTxtSetWeight	= infoCollector.getCrawler().candidateTextElementsSetsMean();
-				if ((adjustedWeight>=meanTxtSetWeight) || infoCollector.getCrawler().candidateTextElementsSetIsAlmostEmpty())
-				{
-					infoCollector.getCrawler().addTextClippingToPool(textClippingGE, clippingPoolPriority());
-					mostRecentTextWeight = InterestModel.getInterestExpressedInTermVector(textClipping.termVector());
-				}
-				else
-				{
-					textClippingGE.recycle(false);
-					additionalTextSurrogatesActive	= false;
-					//recycle(false);
-				}
-			}
-		}
-		else
-			additionalTextSurrogatesActive	= false;
-	}
-	public synchronized void perhapsAddImageClosureToPool()
-	{
-		if (!infoCollector.hasCrawler())
-			return;
-		
-		DocumentClosure imageClosure = null;
-		if (candidateImageClosures != null)
-			imageClosure = candidateImageClosures.maxSelect();
-
-		if (imageClosure!=null && imageClosure.termVector() != null && !imageClosure.termVector().isRecycled())
-		{
-			// If no surrogate has been delivered to the candidate pool from the container, 
-			// send it to the candidate pool without checking the media weight.
-			boolean firstClipping = numSurrogatesFrom==0;
-			boolean goForIt				= firstClipping;
-			if (!goForIt)
-			{
-				goForIt = infoCollector.getCrawler().imagePoolsSize() < 2;	// we're starved for images so go for it!
-				if (!goForIt)
-				{
-					float adjustedWeight			= InterestModel.getInterestExpressedInTermVector(imageClosure.termVector()) / (float) numSurrogatesFrom;
-					
-					float meanImgPoolsWeight	= infoCollector.getCrawler().imagePoolsMean();
-					
-					goForIt										= adjustedWeight >= meanImgPoolsWeight;
-				}
-			}
-
-			if (goForIt)
-			{
-				// if (firstClipping) else queue in MediaReferencesPool
-				
-				if (!imageClosure.queueDownload())
-					perhapsAddImageClosureToPool();
-			}
-			else
-			{
-				imageClosure.recycle(false);
-				additionalImgSurrogatesActive	= false;
-				//recycle(false);
-			}
-		}
-		else
-			additionalImgSurrogatesActive	= false;
-	}
-	
-	public void callback(DocumentClosure imageClosure)
-	{
-		mostRecentImageWeight = InterestModel.getInterestExpressedInTermVector(imageClosure.termVector());
-		perhapsAddImageClosureToPool();
-	}
-	
-	private void considerRecycling()
-	{
-		if (additionalContainersActive || additionalImgSurrogatesActive || additionalTextSurrogatesActive)
-			debug("DIDNT RECYCLE AFTER CONSIDERATION.\nCONTAINERS_ACTIVE: " 
-					+ additionalContainersActive
-					+ "\tTEXT_SURROGATES_ACTIVE: "
-					+ additionalTextSurrogatesActive
-					+ "\tIMAGE_SURROGATES_ACTIVE: "
-					+ additionalImgSurrogatesActive);
-		else
-			recycle();
-	}
-	
-
 	
 	
 	////////////////////////////////// Downloadable /////////////////////////////////////////////////////
@@ -590,24 +397,27 @@ implements Continuation<DocumentClosure>
 	
 	public void downloadAndParseDone(DocumentParser documentParser)
 	{
-		// When downloadDone, add best surrogate and best container to infoCollector
-		if (documentParser != null)
-		{
-			additionalTextSurrogatesActive	= true;
-			additionalImgSurrogatesActive	= true;
-			additionalContainersActive	= true;
-			perhapsAddTextClippingToPool();
-			perhapsAddImageClosureToPool();
-			perhapsAddDocumentClosureToPool();
-		}
-
-		if ((documentParser != null) && !isTotallyEmpty())	// add && !isEmpty() -- andruid 3/2/09
+		if (clippings != null && clippings.size() > 0)
 		{	
 			if (documentParser.isIndexPage())
+			{
 				site.newIndexPage();
-			if (documentParser.isContentPage())
+				setPageStructure(INDEX_PAGE);
+			}
+			else if (documentParser.isContentPage())
+			{
 				site.newContentPage();
-			
+				setPageStructure(CONTENT_PAGE);
+			}
+
+			// When downloadDone, add best surrogate and best container to infoCollector
+			Crawler crawler	= semanticsSessionScope.getCrawler();
+			if (documentParser != null && crawler != null)
+			{
+				CompoundDocumentParserCrawlerResult	crawlerResult	= crawler.constructCompoundDocumentParserResult(this, isJustCrawl());
+				crawlerResult.collect();
+			}
+
 			//TODO -- completely recycle DocumentParser!?
 		}
 		else
@@ -615,72 +425,7 @@ implements Continuation<DocumentClosure>
 			// due to dynamic mime type type detection in connect(), 
 			// we didnt actually turn out to be a Container object.
 			// or, the parse didn't collect any information!
-//			recycle();	// so free all resources, including connectionRecycle()
-		}
-	}
-
-	/**
-	 * @return	true if there are no MediaElements that this Container is tracking
-	 */
-	private boolean hasEmptyElementCollections()
-	{
-		return ((candidateImageClosures == null) || (candidateImageClosures.size()==0)) &&
-				((candidateTextClippings == null) || (candidateTextClippings.size()==0));
-	}
-	
-	private boolean isTotallyEmpty()
-	{
-		return hasEmptyElementCollections() /* && ((outlinks == null) || (outlinks.size() == 0)) */
-		;
-	}
-
-	@Override
-	public DocumentClosure swapNextBestOutlinkWith(DocumentClosure c)
-	{
-		
-		if (candidateLocalOutlinks == null || candidateLocalOutlinks.size() == 0)
-			return null;
-		synchronized(candidateLocalOutlinks)
-		{
-			candidateLocalOutlinks.insert(c);
-			return candidateLocalOutlinks.maxSelect();
-		}
-	}
-	
-	@Override
-	public boolean isCompoundDocument()
-	{
-		return true;
-	}
-
-	@Override
-	public synchronized void tryToGetBetterTextAfterInterestExpression(GenericElement<TextClipping> replaceMe)
-	{
-		if (candidateTextClippings == null || candidateTextClippings.size() == 0)
-			return;
-		
-		GenericElement<TextClipping> te = candidateTextClippings.maxPeek();
-		if (InterestModel.getInterestExpressedInTermVector(te.getGeneric().termVector()) > mostRecentTextWeight)
-		{
-			infoCollector.getCrawler().removeTextClippingFromPools(replaceMe);
-			perhapsAddTextClippingToPool();
-			// perhapsAddAdditionalTextSurrogate could call recycle on this container
-			if (!this.isRecycled())
-				candidateTextClippings.insert(replaceMe);
-		}
-	}
-	
-	public synchronized void tryToGetBetterImageAfterInterestExpression(DocumentClosure replaceMe)
-	{
-		if (candidateImageClosures == null || candidateImageClosures.size() == 0)
-			return;
-		
-		DocumentClosure aie = candidateImageClosures.maxPeek();
-		if (InterestModel.getInterestExpressedInTermVector(aie.termVector()) > mostRecentImageWeight)
-		{
-			infoCollector.getCrawler().removeImageClippingFromPools(replaceMe);
-			perhapsAddImageClosureToPool();
-			candidateImageClosures.insert(replaceMe);
+			//			recycle();	// so free all resources, including connectionRecycle()
 		}
 	}
 
@@ -688,21 +433,6 @@ implements Continuation<DocumentClosure>
 	public boolean isJustCrawl()
 	{
 		return isTrueSeed && seed != null && seed.isJustCrawl();
-	}
-	
-	int sizeCandidateTextClippings()
-	{
-		return candidateTextClippings == null ? 0 : candidateTextClippings.size();
-	}
-	
-	int sizeCandidateImageClosures()
-	{
-		return candidateImageClosures == null ? 0 : candidateImageClosures.size();
-	}
-	
-	public int sizeLocalCandidates()
-	{
-		return sizeCandidateTextClippings() + sizeCandidateImageClosures();
 	}
 	
 	@Override
@@ -764,26 +494,6 @@ implements Continuation<DocumentClosure>
 		return seed;
 	}
 	
-	@Override
-	public void addCandidateTextClipping(TextClipping textClipping)
-	{
-		if (!isJustCrawl())
-		{
-			if (candidateTextClippings == null)
-				candidateTextClippings	=  new GenericWeightSet<TextClipping>(new TermVectorWeightStrategy(InterestModel.getPIV()))
-				{
-					@Override
-					public boolean insert(TextClipping go)
-					{
-						return insert(new MetadataElement<TextClipping>(go));
-					}
-
-				};
-			candidateTextClippings.insert(textClipping);
-			clippings().add(textClipping);
-		}
-	}
-	
 	ArrayList<Clipping> clippings()
 	{
 		ArrayList<Clipping> result	= this.clippings;
@@ -793,19 +503,6 @@ implements Continuation<DocumentClosure>
 			this.clippings						= result;
 		}
 		return result;
-	}
-	
-	
-	@Override
-	public void addCandidateImage(Image image)
-	{
-		if (!isJustCrawl())
-		{
-			//FIXME -- look out for already downloaded!!!
-			if (candidateImageClosures == null)
-				candidateImageClosures	=  new WeightSet<DocumentClosure>(new TermVectorWeightStrategy(InterestModel.getPIV()));
-			candidateImageClosures.insert((DocumentClosure) image.getOrConstructClosure());
-		}
 	}
 	
 	/**
@@ -844,6 +541,15 @@ implements Continuation<DocumentClosure>
 	public ArrayList<Clipping> getClippings()
 	{
 		return clippings;
+	}
+	
+	/**
+	 * 
+	 * @return	The number of Clippings that have been collected, if any.
+	 */
+	public int numClippings()
+	{
+		return clippings == null ? 0 : clippings.size();
 	}
 
 }

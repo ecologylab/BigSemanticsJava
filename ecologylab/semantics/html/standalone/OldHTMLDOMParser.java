@@ -186,7 +186,7 @@ implements HTMLAttributeNames, IDOMProvider
 		// No Informative images are in this document. Form surrogate only with text.  	
 		// We cannot tell whether the images in the pages are informative or not until downloding all, thus this is the case after we 
 		// look through all the images in the page and determine no image is worth displaying.
-		if( (htmlType.numCandidatesExtractedFrom()==0) && (paragraphTextsTMap.size()>0) )
+		if( (htmlType.numExtractedClippings()==0) && (paragraphTextsTMap.size()>0) )
 		{
 			pageCategory = new TextOnlyPage(purl());
 			pageCategory.generateSurrogates(contentBody, imgNodes, domWalkInfoTagger.getTotalTxtLength(), paragraphTextsTMap, htmlType);

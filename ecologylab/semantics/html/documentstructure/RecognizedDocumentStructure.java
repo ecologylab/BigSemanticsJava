@@ -282,7 +282,7 @@ implements HTMLAttributeNames
 
 				ParsedURL anchorPurl = findAnchorPURL(imgElement);
 
-				htmlType.newImgTxt(imgElement, anchorPurl);
+				htmlType.constructImageClipping(imgElement, anchorPurl);
 			} // if isInformImage
 		} // for each imageNode in content body
 	}
@@ -320,7 +320,7 @@ implements HTMLAttributeNames
 						if (useContext)
 							imgElement.setTextContext(extractedContext);
 	
-						htmlType.newAnchorImgTxt(imgElement, anchorPurl);
+						htmlType.constructAnchorImageClipping(imgElement, anchorPurl);
 //						htmlType.removeTheContainerFromCandidates(anchorPurl);
 					}
 				}

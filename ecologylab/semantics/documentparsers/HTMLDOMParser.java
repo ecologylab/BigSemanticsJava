@@ -124,7 +124,7 @@ public abstract class HTMLDOMParser extends HTMLParserCommon implements DOMParse
 	/**
 	 * Create TextElement and add to the localCollection in Container.
 	 */
-	public void newTxt(ParagraphText paraText)
+	public void constructTextClipping(ParagraphText paraText)
 	{
 		if ((paraText != null) && (paraText.length() > 0))
 		{
@@ -133,14 +133,14 @@ public abstract class HTMLDOMParser extends HTMLParserCommon implements DOMParse
 			{
 				TextClipping textClipping	= new TextClipping(StringTools.toString(buffy), false);
 				
-				getDocument().addCandidateTextClipping(textClipping);
+				getDocument().addClipping(textClipping);
 			}
 		}
 	}
 
-	public int numCandidatesExtractedFrom()
+	public int numExtractedClippings()
 	{
-		return getDocument().sizeLocalCandidates();
+		return getDocument().numClippings();
 	}
 
 	/**

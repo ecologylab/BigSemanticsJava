@@ -7,14 +7,13 @@ import org.w3c.dom.Node;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.html.documentstructure.AnchorContext;
 import ecologylab.semantics.html.documentstructure.RecognizedDocumentStructure;
-import ecologylab.semantics.metadata.builtins.Image;
+import ecologylab.semantics.metadata.builtins.ImageClipping;
 
 
 /**
- * JTidy (DOM) parser interface. 
+ * Interface for connecting our DOMImageText extraction code to various DOM Parsers, starting w Tidy.
  * 
- * @author eunyee
- *
+ * @author eunyee, aaron, andruid
  */
 public interface DOMParserInterface
 {
@@ -28,22 +27,28 @@ public interface DOMParserInterface
 	
 	public void closeHref();
 	
-	//TODO -- take a BtringBuilder instead of a String. and use if efficiently!!!!!!
-	public void newTxt(ParagraphText paraText);
+	/**
+	 * Construct a TextClipping, with text not associated with an ImageClipping.
+	 * Associate with this.
+	 * 
+	 * @param paraText
+	 */
+	public void constructTextClipping(ParagraphText paraText);
 	
-	public int numCandidatesExtractedFrom();
+	public int numExtractedClippings();
 	
 	public void removeTheContainerFromCandidates(ParsedURL containerPURL);
 	
-	/**
-	 * a surrogate for the other container.
-	 * 
-	 * @param attributesMap
-	 * @param anchorHref
-	 */
-	public Image newAnchorImgTxt(ImgElement imgNode, ParsedURL anchorHref);
+/**
+ * Construct a clipping for a different Document.
+ * 
+ * @param imgNode
+ * @param anchorHref
+ * @return
+ */
+	public ImageClipping constructAnchorImageClipping(ImgElement imgNode, ParsedURL anchorHref);
 	
-	public Image newImgTxt(ImgElement imgNode, ParsedURL anchorHref);
+	public ImageClipping constructImageClipping(ImgElement imgNode, ParsedURL anchorHref);
 
 	public void setIndexPage ( );
 

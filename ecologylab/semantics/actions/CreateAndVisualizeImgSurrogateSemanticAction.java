@@ -62,7 +62,7 @@ class CreateAndVisualizeImgSurrogateSemanticAction
 		}
 		if (image != null)
 		{
-			image.setInfoCollector(infoCollector);
+			image.setSemanticsSessionScope(infoCollector);
 
 			Document mixin				= (Document) getArgumentObject(SemanticActionNamedArguments.MIXIN);
 			if (mixin != null)

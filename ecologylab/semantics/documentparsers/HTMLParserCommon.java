@@ -91,31 +91,38 @@ extends ContainerParser implements SemanticsPrefs
 	 * currently does the same thing as a surrogate extracted from this, but we might want to make a
 	 * special collection for these "anchor surrogates".
 	 */
-	public Image newAnchorImgTxt(ImgElement imgNode, ParsedURL anchorHref)
+	public ImageClipping constructAnchorImageClipping(ImgElement imgNode, ParsedURL anchorHref)
 	{
 		CompoundDocument outlink	= (CompoundDocument) infoCollector.getOrConstructDocument(anchorHref);
-		Image result = newImgTxt(outlink, getDocument(), outlink, imgNode, anchorHref);
-		if (result != null)
-		{
-			result.constructClipping(getDocument(), outlink, imgNode.getAlt(), imgNode.getTextContext());
-		}
-		return result;
+		
+		return constructImageClipping(getDocument(), outlink, null, imgNode);
 	}
 	/**
 	 * create image and text surrogates for this HTML document, and add these surrogates into the
 	 * localCollection in Container.
 	 */
-	public Image newImgTxt(ImgElement imgNode, ParsedURL anchorHref)
+	public ImageClipping constructImageClipping(ImgElement imgNode, ParsedURL anchorHref)
 	{
 		Document outlink				= infoCollector.getOrConstructDocument(anchorHref);
 		Document sourceDocument = getDocument();
-		return newImgTxt(sourceDocument, sourceDocument, outlink, imgNode, anchorHref);
+		return constructImageClipping(sourceDocument, sourceDocument, outlink, imgNode);
 	}
-	public Image newImgTxt(Document basisDocument, Document sourceDocument, Document outlink, ImgElement imgNode, ParsedURL anchorHref)
+	/**
+	 * Construct an ImageClipping, associating it properly in the hypermedia graph.
+	 * 
+	 * @param basisDocument		The CompoundDocument to add the clipping to. 
+	 * @param sourceDocument	The CompoundDocument to be listed as the Clipping's source. The one it is a surrogate for.
+	 * 												Usually the same as basisDocument, but for a surrogate for X, found in Y, instead uses outlink here.
+	 * @param outlink					The Document to be listed as the Clipping's href destination.
+	 * @param imgNode					Representation of the source HTML + textContext and additional extractedCaption.
+	 * 
+	 * @return
+	 */
+	public ImageClipping constructImageClipping(Document basisDocument, Document sourceDocument, Document outlink, ImgElement imgNode)
 	{
 		ParsedURL srcPurl = imgNode.getSrc();
 
-		Image result			= null;
+		ImageClipping result			= null;
 		if (srcPurl != null)
 		{
 			int width			= imgNode.getWidth();
@@ -132,12 +139,12 @@ extends ContainerParser implements SemanticsPrefs
 				if (alt != null)
 					alt = alt.trim();
 				
-				result						= infoCollector.getOrConstructImage(srcPurl);
-				result.setWidth(width);
-				result.setHeight(height);
+				Image image						= infoCollector.getOrConstructImage(srcPurl);
+				image.setWidth(width);
+				image.setHeight(height);
 				
-				ImageClipping clipping	= result.constructClippingCandidate(basisDocument, sourceDocument, outlink, alt, imgNode.getTextContext());
-				clipping.setXpath(imgNode.xpath());
+				result	= image.constructClipping(basisDocument, sourceDocument, outlink, alt, imgNode.getTextContext());
+				result.setXpath(imgNode.xpath());
 				break;
 			case ImageFeatures.UN_INFORMATIVE:
 			default:

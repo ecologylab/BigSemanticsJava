@@ -9,18 +9,16 @@ import java.util.Observer;
 
 import ecologylab.appframework.types.prefs.PrefBoolean;
 import ecologylab.collections.GenericElement;
-import ecologylab.collections.GenericPrioritizedPool;
-import ecologylab.collections.GenericWeightSet;
 import ecologylab.collections.PrioritizedPool;
 import ecologylab.collections.WeightSet;
 import ecologylab.generic.Debug;
 import ecologylab.generic.Generic;
 import ecologylab.generic.ThreadMaster;
+import ecologylab.semantics.documentparsers.CompoundDocumentParserCrawlerResult;
 import ecologylab.semantics.gui.InteractiveSpace;
 import ecologylab.semantics.metadata.builtins.CompoundDocument;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
-import ecologylab.semantics.metadata.builtins.Image;
 import ecologylab.semantics.metadata.builtins.TextClipping;
 import ecologylab.semantics.model.text.InterestModel;
 import ecologylab.semantics.model.text.TermVector;
@@ -29,17 +27,14 @@ import ecologylab.semantics.seeding.SemanticsPrefs;
 
 /**
  * Crawler will encapsulate all state regarding web crawling. 
- * This means WeightSets and PriorizedPools of candidate unparsed simple Document + CompoundDocument objects. 
- * The Crawler will also maintain a new map of locations for Document objects the user has already seen. 
- * CrawlerWithImages will extend Crawler live in the ecologylabImage project. 
- * It will include a pool of downloaded images.
+ * This means WeightSets and PriorizedPools of candidate unparsed simple Document + CompoundDocument objects.
  * 
  * @author andruid
  */
 public class Crawler extends Debug
 implements Observer, ThreadMaster, Runnable, SemanticsPrefs
 {
-	SemanticsSessionScope													semanticsSessionScope;
+	protected SemanticsSessionScope						semanticsSessionScope;
 	
 	Seeding																		seeding;
 	
@@ -76,30 +71,10 @@ implements Observer, ThreadMaster, Runnable, SemanticsPrefs
 	// static final int MAX_PAGES = 2048;
 	static final int									MAX_PAGES				= 4096;																			// 3072;
 
-	/**
-	 * When the {@link #candidateTextSet candidateTextSet} and the {@link #candidateImgSet
-	 * candidateImgSet} have more entries than this, they will be pruned.
-	 */
-	static final int									MAX_MEDIA				= 3072;
-
-	public static final int			NUM_GENERATIONS_IN_MEDIA_POOL = 3; 
-
-	static final int						MAX_MEDIA_PER_GENERATION			= MAX_MEDIA / NUM_GENERATIONS_IN_MEDIA_POOL;
-
 	public static final int			NUM_GENERATIONS_IN_CONTAINER_POOL = 5; 
 	public static final int			MAX_PAGES_PER_GENERATION	= MAX_PAGES / NUM_GENERATIONS_IN_CONTAINER_POOL ;
-	/**
-	 * Contains 3 visual pools. The first holds the first image of each container
-	 */
-	private final PrioritizedPool<DocumentClosure> 				candidateImagesPool;
-	
-	/**
-	 * Contains 2 FloatWeightSet pools. 
-	 * The first holds the first text surrogate of each container
-	 */
-	private final GenericPrioritizedPool<TextClipping> 	candidateTextClippingsPool;
-	
-	private final PrioritizedPool<DocumentClosure>			candidateContainersPool;
+
+	private final PrioritizedPool<DocumentClosure>			candidateDocumentClosuresPool;
 	
 
 	/**
@@ -125,8 +100,8 @@ implements Observer, ThreadMaster, Runnable, SemanticsPrefs
 	protected final int													longSleep;
 
 	/**
-	 * Controls whether or not we periodically automatically download the Containers associated with
-	 * hrefs that have been discovered. In other words, controls whether or not we crawl at all. Set
+	 * Controls whether or not we periodically automatically download the DocumentClosures associated with
+	 * outlinks that have been discovered. In other words, controls whether or not we crawl at all. Set
 	 * as a preference at runtime, and via a menu entry.
 	 */
 	protected PrefBoolean												downloadLinksAutomatically		= CRAWL;
@@ -144,6 +119,18 @@ implements Observer, ThreadMaster, Runnable, SemanticsPrefs
 	 */
 	protected int																count;
 
+	protected boolean														collectingImages;
+	
+	public boolean isCollectingImages()
+	{
+		return collectingImages;
+	}
+
+	public boolean isCollectingText()
+	{
+		return collectingText;
+	}
+	protected boolean														collectingText;
 
 	/**
 	 * 
@@ -153,27 +140,13 @@ implements Observer, ThreadMaster, Runnable, SemanticsPrefs
 		TermVector piv 										= InterestModel.getPIV(); 
 		piv.addObserver(this);
 		
-		//Similarly for text surrogates
-		GenericWeightSet[] textWeightSets = { 
-				new GenericWeightSet<TextClipping>(MAX_MEDIA_PER_GENERATION, this, new TermVectorWeightStrategy(piv)),
-				new GenericWeightSet<TextClipping>(MAX_MEDIA_PER_GENERATION, this, new TermVectorWeightStrategy(piv)),
-				new GenericWeightSet<TextClipping>(MAX_MEDIA_PER_GENERATION, this, new TermVectorWeightStrategy(piv))
-		};
-		candidateTextClippingsPool = new GenericPrioritizedPool<TextClipping>(textWeightSets);
-
 		WeightSet<DocumentClosure>[] containerWeightSets = new WeightSet[NUM_GENERATIONS_IN_CONTAINER_POOL];
 		
 		for(int i = 0; i < NUM_GENERATIONS_IN_CONTAINER_POOL; i++)
 				containerWeightSets[i] = new WeightSet<DocumentClosure>(MAX_PAGES_PER_GENERATION, this, 
 					(TermVectorWeightStrategy) new DownloadContainerWeightingStrategy(piv));
-		candidateContainersPool 	= new PrioritizedPool<DocumentClosure>(containerWeightSets);
+		candidateDocumentClosuresPool 	= new PrioritizedPool<DocumentClosure>(containerWeightSets);
 		
-		
-		// Three pools for downloaded images      
-		WeightSet<DocumentClosure>[] imageWeightSets	= new WeightSet[NUM_GENERATIONS_IN_MEDIA_POOL];
-		for (int i = 0; i < NUM_GENERATIONS_IN_MEDIA_POOL; i++)
-			imageWeightSets[i]	= new WeightSet<DocumentClosure>(MAX_MEDIA_PER_GENERATION, this, new TermVectorWeightStrategy(piv));
-		candidateImagesPool = new PrioritizedPool<DocumentClosure>(imageWeightSets);
 		
 		finished		= false;
 		usualSleep	= 3000;
@@ -188,10 +161,6 @@ implements Observer, ThreadMaster, Runnable, SemanticsPrefs
 	 */
 	public void stopCollectingAgents(boolean kill)
 	{
-		candidateImagesPool.stop();
-
-//		candidateImageVisualsPool.stop();
-//		candidateFirstImageVisualsPool.stop();
 		semanticsSessionScope.getDownloadMonitors().stop(kill);
 	}
 	final Object startCrawlerSemaphore	= new Object();
@@ -243,10 +212,10 @@ implements Observer, ThreadMaster, Runnable, SemanticsPrefs
 	private void checkCandidateAncestorsForBetterOutlinks()
 	{
 		
-		synchronized(candidateContainersPool)
+		synchronized(candidateDocumentClosuresPool)
 		{
-			WeightSet<DocumentClosure>[] candidateSet = (WeightSet<DocumentClosure>[]) candidateContainersPool.getWeightSets();
-			int maxSize	= candidateContainersPool.maxSize();
+			WeightSet<DocumentClosure>[] candidateSet = (WeightSet<DocumentClosure>[]) candidateDocumentClosuresPool.getWeightSets();
+			int maxSize	= candidateDocumentClosuresPool.maxSize();
 			ArrayList<DocumentClosure> removeContainers = new ArrayList<DocumentClosure>(maxSize);
 			ArrayList<DocumentClosure> insertContainers = new ArrayList<DocumentClosure>(maxSize);
 			for(WeightSet<DocumentClosure> candidates : candidateSet)
@@ -283,115 +252,66 @@ implements Observer, ThreadMaster, Runnable, SemanticsPrefs
 	}
 	
 	/**
-	 * Replace images in the candidates with possible better ones from their containers.
+	 * Blank implementation in base class.
+	 * 
+	 * @param replaceMe		TextClipping to remove
 	 */
-	private void checkCandidatesForBetterImagesAndText()
-	{
-		synchronized (candidateImagesPool)
-		{
-//			ImageClosure[] poolCopy				= (ImageClosure[]) candidateImagesPool.toArray();
-			for (DocumentClosure imageClosure : candidateImagesPool)
-			{
-				//TODO -- check among all source documents!!!
-				Image image								= (Image) imageClosure.getDocument();
-				Document sourceDocument		= image.getClippingSource();
-				if (sourceDocument != null && sourceDocument.isCompoundDocument())
-					sourceDocument.tryToGetBetterImageAfterInterestExpression(imageClosure);
-			}
-		}
-		synchronized (candidateTextClippingsPool)
-		{
-//			ArrayList<GenericElement<TextClipping>> tlist = new ArrayList<GenericElement<TextClipping>>(candidateTextClippingsPool.size());
-//			for (GenericWeightSet<TextClipping> ws : (GenericWeightSet<TextClipping>[]) candidateTextClippingsPool.getWeightSets())
-//				for (GenericElement<TextClipping> i : ws)
-//					tlist.add(i);
-			for (GenericElement<TextClipping> i : candidateTextClippingsPool)
-			{
-				TextClipping textClipping	= i.getGeneric();
-				Document sourceDocument		= textClipping.getSource();
-				if (sourceDocument != null)
-					sourceDocument.tryToGetBetterTextAfterInterestExpression(i);
-			}
-		}
-	}
-
 	public void removeTextClippingFromPools(GenericElement<TextClipping> replaceMe)
 	{
-		candidateTextClippingsPool.remove(replaceMe);
+		
 	}
 
+	/**
+	 * Blank implementation in base class.
+	 * 
+	 * @param replaceMe		Image to Remove
+	 */
 	public void removeImageClippingFromPools(DocumentClosure replaceMe)
 	{
-		candidateImagesPool.remove(replaceMe);
+		
 	}
 
 	/**
-	 * The number of potential candidate <code>MediaElement</code>s that
-	 * could be displayed. Includes those not yet and those already downloaded.
+	 * Always return 0 here in the base class.
 	 */
-	public int countPotentialMediaToDisplay()
+	public int imagePoolsSize()
 	{
-		return  candidateTextElementsSetSize() + numberOfImageReferences() +  imagePoolsSize();
+		return 0;
 	}
 
 	/**
-	 * Number of display-able <code>ImgElement</code>s that could be displayed.
-	 * @param useCached 
-	 */
-	public final int imagePoolsSize()
-	{
-		return candidateImagesPool.size();
-//		return candidateFirstImageVisualsPool.size() + candidateImageVisualsPool.size();
-	}
-	
-	/**
-	 * Number of images references.
-	 */
-	private int numImageReferences = 0;
-
-	
-	/**
-	 * Number of candidate <code>ImgElement</code>s that could be downloaded.
-	 */
-	public final int numberOfImageReferences()
-	{
-		return numImageReferences;
-	}
-
-	/**
-	 * Number of candidate <code>TextElement</code>s that could be displayed.
-	 */
-	public final int candidateTextElementsSetSize()
-	{
-		return candidateTextClippingsPool.size();
-//		return candidateFirstTextElementsSet.size() + candidateTextElementsSet.size();
-	}
-
-	public static final int ALMOST_EMPTY_CANDIDATES_SET_THRESHOLD	= 5;
-	
-	public boolean candidateTextElementsSetIsAlmostEmpty()
-	{
-		return candidateTextClippingsPool.size() <= ALMOST_EMPTY_CANDIDATES_SET_THRESHOLD;
-	}
-	/**
+	 * Used to assess how much need we have for more TextClippings.
 	 * 
-	 * @return	Weighted mean of the members of the candidateFirstTextElementsSet and the candidateTextElementsSet.
+	 * @return	false	in base class implementation.
 	 */
-	public float candidateTextElementsSetsMean()
+	public boolean candidateTextClippingsSetIsAlmostEmpty()
 	{
-		return candidateTextClippingsPool.mean();
+		return false;
+	}
+	
+	/**
+	 * Collects TextClipping based on its weight and if it is the first representative for that CompoundDocument.
+	 * @param numSurrogatesCollectedFromCompoundDocument	
+	 * @param clippingPoolPriority TODO
+	 * @param textClipping	TextClipping to potentially collect
+	 * 
+	 * @return	always false in this base class implementation, because we do not collect TextClippings.
+	 */
+	public boolean collectTextClippingIfWorthwhile(GenericElement<TextClipping> textClippingGE, int numSurrogatesCollectedFromCompoundDocument, int clippingPoolPriority)
+	{
+		return false;
 	}
 
-	public float imagePoolsMean()
-	{
-		return candidateImagesPool.mean();
-	}
-
+	/**
+	 * This is an Observer of changes in the TermVectors, which change when the interest model changes.
+	 * 
+	 * When the interest model changes, we iterate through candidate DocumentClosures to see if they have a better link
+	 * to contribute to our global crawler state.
+	 */
 	@Override
 	public void update(Observable o, Object arg)
 	{
 		checkCandidateAncestorsForBetterOutlinks();
-		checkCandidatesForBetterImagesAndText();
 	}
 	public void increaseNumImageReferences()
 	{
@@ -405,18 +325,14 @@ implements Observer, ThreadMaster, Runnable, SemanticsPrefs
 		
 	}
 
+	/**
+	 * Base class implementation does nothing.
+	 * @param textClippingGE
+	 * @param poolPriority
+	 */
 	public void addTextClippingToPool(GenericElement<TextClipping> textClippingGE, int poolPriority)
 	{
-		candidateTextClippingsPool.insert(textClippingGE, poolPriority);
-		
-		InteractiveSpace interactiveSpace	= semanticsSessionScope.getInteractiveSpace();
-		if (seeding.isPlayOnStart() && interactiveSpace != null)
-			interactiveSpace.pressPlayWhenFirstMediaArrives();
-	}
-
-	public void addImageToPool(Image image)
-	{
-		
+	
 	}
 	
 	public boolean addDocumentToPool(Document document)
@@ -435,18 +351,14 @@ implements Observer, ThreadMaster, Runnable, SemanticsPrefs
 					if (!exceedsLinkCountThresholds(document))
 					{
 						int generation 		= document.getEffectiveGeneration();
-						int maxPoolNum	= candidateContainersPool.numWeightSets() - 1;
+						int maxPoolNum	= candidateDocumentClosuresPool.numWeightSets() - 1;
 						if (generation > maxPoolNum)
 							generation		= maxPoolNum;
-						//Very temporary console noise. Please tell me to remove this, if i haven't already
-						 //currentThread = Thread.currentThread();
-						// Thread.dumpStack();
 						
 						debugT("---\t---\t---\tAdding Container to candidateContainersPool: " + candidate 
-								/* +  " ancestor=[" + candidate.ancestor() + "]" */);
+								/* +  " ancestor=[" + candidate.ancestor() + "]" */);					
 						
-						
-						candidateContainersPool.insert(candidate, generation);
+						candidateDocumentClosuresPool.insert(candidate, generation);
 						return true;
 					}
 				}
@@ -455,28 +367,16 @@ implements Observer, ThreadMaster, Runnable, SemanticsPrefs
 		return false;
 	}
 	
-	void addImageClosureToPool(DocumentClosure imageClosure, CompoundDocument source)
-	{
-		// pressPlayWhenFirstMediaElementArrives();
-		imageClosure.addContinuation(source);
-//		visualPool.add(imageClosure);
-//		imageClosure.s
-	}
-	public void removeCandidateContainer(DocumentClosure candidate)
-	{
-		if (candidate != null && !candidate.downloadHasBeenQueued() )
-		{
-			candidateContainersPool.remove(candidate);
-		}
-	}
-
-	public int count()
-	{
-		return count;
-	}
+//	public void removeCandidateContainer(DocumentClosure candidate)
+//	{
+//		if (candidate != null && !candidate.downloadHasBeenQueued() )
+//		{
+//			candidateContainersPool.remove(candidate);
+//		}
+//	}
 
 	/**
-	 * Determines whether a given <code>Container</code> exceeds the <code>linkCount</code> thresholds.
+	 * Determines whether a given <code>Document</code> exceeds the <code>linkCount</code> thresholds.
 	 * Crawling too many links without seeing that the user is interested tends to lead to noisy content.
 	 * <p/>
 	 * Current thresholds are as follows:
@@ -570,7 +470,7 @@ implements Observer, ThreadMaster, Runnable, SemanticsPrefs
 
 			if (interactiveSpace != null)
 				interactiveSpace.pausePipeline();
-			candidateImagesPool.pause();
+			pauseImageCollecting();
 			
 			semanticsSessionScope.getDownloadMonitors().pauseRegularDownloadMonitors();
 
@@ -583,7 +483,7 @@ implements Observer, ThreadMaster, Runnable, SemanticsPrefs
 		if ((thread != null) && !collectingThreadsPaused)
 		{
 			collectingThreadsPaused	= true;
-			candidateImagesPool.pause();
+			pauseImageCollecting();
 			pause();
 		}
 	}   
@@ -592,9 +492,29 @@ implements Observer, ThreadMaster, Runnable, SemanticsPrefs
 		if (collectingThreadsPaused)
 		{
 			collectingThreadsPaused	= false;
-			candidateImagesPool.unpause();
+			unpauseImageCollecting();
 			unpause();
 		}
+	}
+	
+	/**
+	 * Pause the candidate Images collecting thread.
+	 * 
+	 * Base class implementation does nothing.
+	 */
+	protected void pauseImageCollecting()
+	{
+		
+	}
+	
+	/**
+	 * Unpause the candidate Images collecting thread.
+	 * 
+	 * Base class implementation does nothing.
+	 */
+	protected void unpauseImageCollecting()
+	{
+		
 	}
 	
 	public String getThreadStatuses()
@@ -634,7 +554,7 @@ implements Observer, ThreadMaster, Runnable, SemanticsPrefs
 	{
 		threadsExceptCompositionArePause = false;
 
-		candidateImagesPool.unpause();
+		unpauseImageCollecting();
 		
 		semanticsSessionScope.getDownloadMonitors().unpauseRegularDownloadMonitors();
 		unpause();
@@ -654,12 +574,16 @@ implements Observer, ThreadMaster, Runnable, SemanticsPrefs
 
 		// clear all the collections when the CF browser exits -- eunyee
 		//ThreadDebugger.clear();
-		clearGlobalCollections();
+		clearCollections();
 	}
 	
-	public void clearGlobalCollections()
+	/**
+	 * Clear the candidateDocumentClosuresPool.
+	 * 
+	 */
+	public void clearCollections()
 	{
-		//TODO
+		candidateDocumentClosuresPool.clear();
 	}
 
 	public boolean isOn()
@@ -713,5 +637,17 @@ implements Observer, ThreadMaster, Runnable, SemanticsPrefs
 		this.seeding = seeding;
 	}
 
-
+	/**
+	 * Construct a CompoundDocument ParserResult object of type that matches this crawler.
+	 * 
+	 * @param compoundDocument	Document that is parsed.
+	 * @param justCrawl					True if we should not collect Images and TextClippings, even if we could.
+	 * 
+	 * @return	CompoundDocumentParserCrawlerResult
+	 */
+	public CompoundDocumentParserCrawlerResult 
+	constructCompoundDocumentParserResult(CompoundDocument compoundDocument, boolean justCrawl)
+	{
+		return new CompoundDocumentParserCrawlerResult(compoundDocument);
+	}
 }

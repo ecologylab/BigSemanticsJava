@@ -51,7 +51,7 @@ public class TextOnlyPage extends RecognizedDocumentStructure
 		{
 			paraText.unescapeXML();
 			// Creates a TextElement using the buffy in paraText
-			htmlType.newTxt(paraText);//, paraTexts.node );
+			htmlType.constructTextClipping(paraText);//, paraTexts.node );
 		}
 	}
 }

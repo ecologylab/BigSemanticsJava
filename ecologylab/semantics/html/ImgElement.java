@@ -11,7 +11,7 @@ import ecologylab.net.ParsedURL;
 import ecologylab.semantics.html.documentstructure.ImageFeatures;
 
 /**
- * HTMLElement that corresponds to the img tag.
+ * HTMLElement that corresponds to the img tag + our textContext and extractedCaption.
  * 
  * @author andruid
  *

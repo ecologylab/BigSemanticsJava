@@ -155,27 +155,39 @@ implements MimeType, ImageConstants
 
 	/**
 	 * Construct an ImageClipping object.
-	 * @param source
-	 * @param outlink
-	 * @param caption TODO
-	 * @param context TODO
-	 * @return
+	 * 
+	 * @param sourceDocument	The CompoundDocument to be listed as the Clipping's source. The one it is a surrogate for.
+	 * 												Usually the same as basisDocument, but for a surrogate for X, found in Y, instead uses outlink here.
+	 * @param outlink					The Document to be listed as the Clipping's href destination.
+	 * @param caption					Caption text extracted from basisDocument.
+	 * @param context					Larger paragraph of contextualizing text extracted from basisDocument.
+	 * 
+	 * @return								New ImageClipping.
 	 */
-	public ImageClipping constructClipping(Document source, Document outlink, String caption, String context)
+	public ImageClipping constructClipping(Document sourceDocument, Document outlink, String caption, String context)
 	{
-		ImageClipping result	= new ImageClipping(this, source, outlink, caption, context);
+		ImageClipping result	= new ImageClipping(this, sourceDocument, outlink, caption, context);
 		this.addClipping(result);
 		
 		return result;
 	}
-	public ImageClipping constructClippingCandidate(Document source, Document outlink, String caption, String context)
+
+	/**
+	 * Construct an ImageClipping object. Add it to the basis's Collection<Clipping>.
+	 * 
+	 * @param basisDocument		The CompoundDocument to add the clipping to. 
+	 * @param sourceDocument	The CompoundDocument to be listed as the Clipping's source. The one it is a surrogate for.
+	 * 												Usually the same as basisDocument, but for a surrogate for X, found in Y, instead uses outlink here.
+	 * @param outlink					The Document to be listed as the Clipping's href destination.
+	 * @param caption					Caption text extracted from basisDocument.
+	 * @param context					Larger paragraph of contextualizing text extracted from basisDocument.
+	 * 
+	 * @return								New ImageClipping.
+	 */
+	public ImageClipping constructClipping(Document basisDocument, Document sourceDocument, Document outlink, String caption, String context)
 	{
-		return constructClippingCandidate(source, source, outlink, caption, context);
-	}
-	public ImageClipping constructClippingCandidate(Document basis, Document source, Document outlink, String caption, String context)
-	{
-		ImageClipping result	= constructClipping(source, outlink, caption, context);
-		basis.addCandidateImage(this);
+		ImageClipping result	= constructClipping(sourceDocument, outlink, caption, context);
+		basisDocument.addClipping(result);
 		return result;
 	}
 }
