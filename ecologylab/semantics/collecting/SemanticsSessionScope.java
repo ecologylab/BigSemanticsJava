@@ -4,11 +4,12 @@
 package ecologylab.semantics.collecting;
 
 import ecologylab.appframework.ApplicationProperties;
+import ecologylab.collections.ConcurrentHashSet;
 import ecologylab.collections.Scope;
 import ecologylab.generic.Debug;
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.gui.WindowSystemBridge;
 import ecologylab.semantics.gui.InteractiveSpace;
+import ecologylab.semantics.gui.WindowSystemBridge;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.Image;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
@@ -26,14 +27,13 @@ implements SemanticsPrefs, ApplicationProperties, DocumentParserTagNames
 {
 	private final Crawler												crawler;
 	
-	private  WindowSystemBridge													guiBridge;
+	private  WindowSystemBridge									guiBridge;
 	
 	private InteractiveSpace										interactiveSpace;
 	
 	private final Seeding												seeding;
 	
-	//TODO
-	// ConcurrentHashSet<ParsedURL> visitedDocuments;
+	private ConcurrentHashSet<ParsedURL> 				visitedLocations	= new ConcurrentHashSet<ParsedURL>(DocumentLocationMap.NUM_DOCUMENTS);
 
 	
 	public SemanticsSessionScope(TranslationScope metaMetadataTranslations)
@@ -172,4 +172,8 @@ implements SemanticsPrefs, ApplicationProperties, DocumentParserTagNames
 		return seeding;
 	}
 
+	public boolean isLocationNew(ParsedURL location)
+	{
+		return visitedLocations.add(location);
+	}
 }
