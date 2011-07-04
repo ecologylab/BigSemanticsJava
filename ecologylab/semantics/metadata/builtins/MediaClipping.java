@@ -23,11 +23,12 @@ public class MediaClipping<ME extends ClippableDocument> extends Clipping
 	@simpl_scalar
 	private MetadataString	caption;
 	
-//	@simpl_composite
-//	@simpl_scope(MetaMetadataCompilerUtils.GENERATED_METADATA_TRANSLATIONS)
-//	@mm_name("media")
-//	ME											media;
+	@simpl_composite
+	@simpl_scope(MetaMetadataCompilerUtils.GENERATED_METADATA_TRANSLATIONS)
+	@mm_name("media")
+	private ME							media;
 	
+
 	public MediaClipping()
 	{
 		
@@ -101,4 +102,8 @@ public class MediaClipping<ME extends ClippableDocument> extends Clipping
 		return caption == null || caption.getValue() == null;
 	}
 
+	public ME getMedia()
+	{
+		return media;
+	}
 }
