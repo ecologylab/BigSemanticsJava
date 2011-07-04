@@ -108,7 +108,7 @@ public class SearchDispatcher extends Debug implements Continuation<DocumentClos
 					i++;
 				}
 				renderer.close();
-				closure.getInfoCollector().getDownloadMonitors().stop(false);
+				closure.getSemanticsSessionScope().getDownloadMonitors().stop(false);
 			}
 		}
 	}
