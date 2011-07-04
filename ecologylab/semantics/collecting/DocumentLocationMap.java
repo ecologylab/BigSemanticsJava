@@ -18,12 +18,13 @@ public class DocumentLocationMap<D extends Document> extends ConcurrentHashMap<P
 {
 	DocumentMapHelper<D> 									mapHelper;
 
+	public static int 										NUM_DOCUMENTS	= 1024;
 	/**
 	 * 
 	 */
 	public DocumentLocationMap(DocumentMapHelper<D> mapHelper)
 	{
-		super();
+		super(NUM_DOCUMENTS);
 //		this							= new ConcurrentHashMap<ParsedURL, D>();
 		this.mapHelper	= mapHelper;
 	}
