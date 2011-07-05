@@ -17,15 +17,20 @@ import ecologylab.serialization.TranslationScope;
  * 
  * The SemanticsSessionScope will include references to Crossroads and to Crawler, if there is one. 
  * I believe it is also where we store state related to Seeding. 
- * A subclass, InteractiveSemanticsSessionScope, will also include a reference to the AWTBridge. 
- * A likely further subclass is CfSemanticsSessionScope.
  * 
  * @author andruid
  */
 public class SemanticsGlobalScope extends MetaMetadataRepositoryInit
 {
+	/**
+	 * Maps locations to Document Metadata subclasses. 
+	 * Constructs these Document instances as needed using the MetaMetadataRepository.
+	 */
 	final protected TNGGlobalCollections				globalCollection;
 	
+	/**
+	 * Pool of DownloadMonitors used for parsing Documents of various types.
+	 */
 	final private		SemanticsDownloadMonitors		downloadMonitors;
 	
 	public SemanticsGlobalScope(TranslationScope metadataTScope)
@@ -46,6 +51,8 @@ public class SemanticsGlobalScope extends MetaMetadataRepositoryInit
 	}
 
 	/**
+	 * Pool of DownloadMonitors used for parsing Documents of various types.
+	 * 
 	 * @return the downloadMonitors
 	 */
 	public SemanticsDownloadMonitors getDownloadMonitors()

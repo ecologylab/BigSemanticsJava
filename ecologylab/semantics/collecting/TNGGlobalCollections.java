@@ -5,17 +5,22 @@ package ecologylab.semantics.collecting;
 
 import ecologylab.generic.Debug;
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.Image;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 
 /**
+ * Singleton class, this master maps ParsedURLs to Document Metadata subclasses.
+ * 
  * @author andruid
- *
  */
 public class TNGGlobalCollections extends Debug
 {
+	/**
+	 * Singleton instance because we only allow construction of one of this.
+	 */
 	private static TNGGlobalCollections singleton;
 	
 	public static final synchronized TNGGlobalCollections getSingleton(final MetaMetadataRepository repository)
@@ -48,23 +53,30 @@ public class TNGGlobalCollections extends Debug
 				{
 
 					/**
-					 * Construct a new Document, based on the ParsedURL.
+					 * Construct a new Document, based on the ParsedURL, and lookup in the MetaMetadataRepository.
 					 * If there is no special meta-metadata for the location, construct a CompoundDocument.
+					 * Either way, set its location.
 					 * 
-					 * @param key
-					 * @return
+					 * @param location	Location of the Document to construct. Fed to MetaMetadata selectors maps.
+					 * 
+					 * @return					Newly constructed Document (subclass), based on the location.
 					 */
 					@Override
-					public Document constructValue(ParsedURL key)
+					public Document constructValue(ParsedURL location)
 					{
-						return repository.constructCompoundDocument(key);
+						return repository.constructCompoundDocument(location);
 					}
-
+					/**
+					 * Construct a new Document, using the supplied MetaMetadata.
+					 * Set its location.
+					 * 
+					 */
 					@Override
-					public Document constructValue(MetaMetadata mmd, ParsedURL key)
+					public Document constructValue(MetaMetadata mmd, ParsedURL location)
 					{
-						// TODO Auto-generated method stub
-						return null;
+						Document document = (Document) mmd.constructMetadata();
+						document.setLocation(location);
+						return document;
 					}
 
 					@Override
@@ -80,35 +92,51 @@ public class TNGGlobalCollections extends Debug
 					}
 				});
 	}
-
-	public DocumentLocationMap<? extends Document> getGlobalDocumentMap()
-	{
-		return allDocuments;
-	}
-	
-	public void registerUninformativeImage(ParsedURL key)
-	{
-		allDocuments.put(key, UN_INFORMATIVE_IMAGE);
-	}
-	
-	public void recycleDocument(Document toRecycle)
-	{
-		Document recycledThang = toRecycle.isImage() ? RECYCLED_IMAGE : Document.RECYCLED_DOCUMENT;
-		allDocuments.put(toRecycle.getLocation(), recycledThang);
-		toRecycle.recycle();
-	}
-	
+	/**
+	 * Basic operation on the DocumentLocationMap.
+	 * Get from Map if possible. If necessary, construct anew and add to map before returning.
+	 * 
+	 * @param location	Location to get Document Metadata (subclass) for.
+	 * 
+	 * @return					Associated Document Metadata (subclass).
+	 */
 	public Document getOrConstruct(ParsedURL location)
 	{
 		return allDocuments.getOrConstruct(location);
 	}
+
+	/**
+	 * Put a special entry into the DocumentLocationMap for the passed in location, 
+	 * saying that it refers to an uninformative image that should be forever ignored.
+	 * 
+	 * @param location	Location to ignore.
+	 */
+	public void registerUninformativeImage(ParsedURL location)
+	{
+		allDocuments.put(location, UN_INFORMATIVE_IMAGE);
+	}
+	
+/**
+ * Replace the entry (if there was one), or simply set, if this is first reference
+ * for this location to the generic RECYCLED_DOCUMENT metadata.
+ * 
+ * @param location	Location that is being recycled.
+ */
+	public void setRecycled(ParsedURL location)
+	{
+		allDocuments.setRecycled(location);
+	}
+
+	/**
+	 * For registering an alternative Document subclass for a location.
+	 * Typically performed because on connect(), a more specific type (subclass) is selected from the MetaMetadataRepository.
+	 * 
+	 * @param oldDocument
+	 * @param newDocument
+	 */
 	public void remap(Document oldDocument, Document newDocument)
 	{
 		allDocuments.remap(oldDocument, newDocument);
 	}
 	
-	public void setRecycled(ParsedURL location)
-	{
-		allDocuments.setRecycled(location);
-	}
 }

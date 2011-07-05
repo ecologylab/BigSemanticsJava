@@ -21,8 +21,10 @@ import ecologylab.semantics.namesandnums.SemanticsAssetVersions;
 import ecologylab.serialization.TranslationScope;
 
 /**
+ * Initializes the MetaMetadataRepository, using its standard location in the /repository directory of the ecologylabSemantics project,
+ * or its associated zip file in the Assets cache.
+ * 
  * @author andruid
- *
  */
 public class MetaMetadataRepositoryInit extends Scope<Object>
 implements DocumentParserTagNames, ApplicationProperties

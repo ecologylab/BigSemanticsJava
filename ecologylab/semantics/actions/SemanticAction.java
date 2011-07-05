@@ -9,6 +9,7 @@ import java.util.HashMap;
 
 import ecologylab.collections.Scope;
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.collecting.Seeding;
 import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.collecting.SemanticsSite;
 import ecologylab.semantics.documentparsers.DocumentParser;
@@ -330,8 +331,11 @@ public abstract class SemanticAction extends ElementState implements SemanticAct
 			ParsedURL location						= result.getLocation();
 			
 			if (traversable)
-				infoCollector.getSeeding().traversable(location);
-
+			{
+				Seeding seeding = infoCollector.getSeeding();
+				if (seeding != null)
+					seeding.traversable(location);
+			}
 			boolean anchorIsInSource = false;
 			if (sourceDocument != null)
 			{

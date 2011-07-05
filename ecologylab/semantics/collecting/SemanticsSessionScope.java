@@ -5,7 +5,6 @@ package ecologylab.semantics.collecting;
 
 import ecologylab.appframework.ApplicationProperties;
 import ecologylab.collections.ConcurrentHashSet;
-import ecologylab.collections.Scope;
 import ecologylab.generic.Debug;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.gui.InteractiveSpace;
@@ -19,8 +18,16 @@ import ecologylab.semantics.seeding.SemanticsPrefs;
 import ecologylab.serialization.TranslationScope;
 
 /**
+ * The fundamental Crossroads of the S.IM.PL Semantics session. 
+ * Contains references to all major objects specific to the session, including 
+ * 		VisitedLocationsMap, Crawler, Seeding, WindowSystemBridge, and InteractiveSpace.
+ * <p/>
+ * Also, by inheritance, refers to GlobalCollections, MetaMetadataRepository, and SemanticsDownloadMonitors.
+ * <p/>
+ * When this was called InfoCollector, all of the functionality of these objects was moshed together in this.
+ * Now, they are broken out.
+ * 
  * @author andruid
- *
  */
 public class SemanticsSessionScope extends SemanticsGlobalScope
 implements SemanticsPrefs, ApplicationProperties, DocumentParserTagNames
@@ -35,22 +42,26 @@ implements SemanticsPrefs, ApplicationProperties, DocumentParserTagNames
 	
 	private ConcurrentHashSet<ParsedURL> 				visitedLocations	= new ConcurrentHashSet<ParsedURL>(DocumentLocationMap.NUM_DOCUMENTS);
 
-	
+	/**
+	 * Construct with no Crawler, and empty Seeding.
+	 * 
+	 * @param metaMetadataTranslations	Generated MetadataTranslationScope.
+	 */
 	public SemanticsSessionScope(TranslationScope metaMetadataTranslations)
 	{
-		this(META_METADATA_REPOSITORY, metaMetadataTranslations);
+		this(metaMetadataTranslations, null);
 	}
-	public SemanticsSessionScope(MetaMetadataRepository metaMetadataRepository, TranslationScope metadataTranslationScope)
+	public SemanticsSessionScope(TranslationScope metadataTranslationScope, Crawler crawler)
 	{
-		this(metadataTranslationScope, new Scope(), null);
+		this(metadataTranslationScope, new Seeding(), crawler);
 	}
-
-	public SemanticsSessionScope(TranslationScope metadataTranslationScope, Scope sessionScope, Crawler crawler)
+	public SemanticsSessionScope(TranslationScope metadataTranslationScope, Seeding seeding, Crawler crawler)
 	{
 		super(metadataTranslationScope);
 		this.put(SemanticsSessionObjectNames.INFO_COLLECTOR, this);	//TODO make this unnecessary; its a band-aid on old code
 		this.crawler											= crawler;
-		this.seeding											= new Seeding(this);
+		this.seeding											= seeding;
+		seeding.setSemanticsSessionScope(this);
 		if (crawler != null)
 		{
 			crawler.semanticsSessionScope		= this;
@@ -147,7 +158,7 @@ implements SemanticsPrefs, ApplicationProperties, DocumentParserTagNames
 	 */
 	public boolean accept(ParsedURL purl)
 	{
-		return !isAcceptAll() && seeding.accept(purl);
+		return isAcceptAll() || seeding.accept(purl);
 	}
 	/**
 	 * @return the crawler
@@ -160,9 +171,14 @@ implements SemanticsPrefs, ApplicationProperties, DocumentParserTagNames
 	{
 		return crawler != null;
 	}
+	/**
+	 * True if all links should be accepted, without checking their traversability.
+	 * This is true if there is no Crawler, or no Seeding, 
+	 * @return
+	 */
 	public boolean isAcceptAll()
 	{
-		return crawler == null;
+		return crawler == null || seeding == null;
 	}
 	/**
 	 * @return the seeding

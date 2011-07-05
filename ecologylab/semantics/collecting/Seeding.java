@@ -29,11 +29,19 @@ implements SemanticsPrefs
 {
 	private SemanticsSessionScope 	semanticsSessionScope;
 	
-	private Crawler						crawler;
+	private Crawler									crawler;
 	/**
 	 * 
 	 */
+	public Seeding()
+	{
+		
+	}
 	public Seeding(SemanticsSessionScope semanticsSessionScope)
+	{
+		setSemanticsSessionScope(semanticsSessionScope);
+	}
+	public void setSemanticsSessionScope(SemanticsSessionScope semanticsSessionScope)
 	{
 		this.semanticsSessionScope	= semanticsSessionScope;
 		this.crawler								= semanticsSessionScope.getCrawler();
