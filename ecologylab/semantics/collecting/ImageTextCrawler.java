@@ -263,7 +263,7 @@ public class ImageTextCrawler extends Crawler
 		candidateTextClippingElementsPool.insert(textClippingGE, poolPriority);
 		
 		InteractiveSpace interactiveSpace	= semanticsSessionScope.getInteractiveSpace();
-		if (seeding.isPlayOnStart() && interactiveSpace != null)
+		if (seeding != null && seeding.isPlayOnStart() && interactiveSpace != null)
 			interactiveSpace.pressPlayWhenFirstMediaArrives();
 	}
 	
