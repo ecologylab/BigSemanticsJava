@@ -86,7 +86,7 @@ implements ParserResult
 	 *    expression will determine to bring more surrogates from current container to the candidate pool.
 	 * @param getText 
 	 */
-	public synchronized void perhapsAddDocumentClosureToPool ( )
+	protected synchronized void perhapsAddOutlinkClosureToCrawler ( )
 	{
 		if (candidateLocalOutlinks == null || candidateLocalOutlinks.size() == 0)
 		{
@@ -145,12 +145,10 @@ implements ParserResult
 	{
 		for (Clipping clipping: compoundDocument.getClippings())
 		{
-			
+			collect(clipping);
 		}
 		
 		initiateCollecting();
-
-		//TODO -- completely recycle DocumentParser!?
 	}
 
 	/**
@@ -159,7 +157,7 @@ implements ParserResult
 	protected void initiateCollecting()
 	{
 		crawlingOutlinks	= true;
-		perhapsAddDocumentClosureToPool();
+		perhapsAddOutlinkClosureToCrawler();
 	}
 	
 	protected void collect(Clipping clipping)
@@ -172,12 +170,16 @@ implements ParserResult
 			if (outlink != null)
 				outlinkClosure							= outlink.getOrConstructClosure();
 		}
-		if (outlinkClosure != null)
-			crawler.addClosureToPool(outlinkClosure);	//FIXME!!!
-		
+		if (outlinkClosure != null && semanticsSessionScope.isLocationNew(outlinkClosure.location()))
+			crawler.addClosureToPool(outlinkClosure);
 	}
 	
 	protected boolean isEmpty()
+	{
+		return outlinksIsEmpty();
+	}
+
+	protected boolean outlinksIsEmpty()
 	{
 		return ((candidateLocalOutlinks == null) || (candidateLocalOutlinks.size() == 0));
 	}
@@ -185,9 +187,9 @@ implements ParserResult
 	public DocumentClosure swapNextBestOutlinkWith(DocumentClosure c)
 	{
 		
-		if (candidateLocalOutlinks == null || candidateLocalOutlinks.size() == 0)
+		if (outlinksIsEmpty())
 			return null;
-		synchronized(candidateLocalOutlinks)
+		synchronized (candidateLocalOutlinks)
 		{
 			candidateLocalOutlinks.insert(c);
 			return candidateLocalOutlinks.maxSelect();

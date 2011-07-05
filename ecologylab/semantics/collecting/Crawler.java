@@ -209,9 +209,8 @@ implements Observer, ThreadMaster, Runnable, SemanticsPrefs
 	/**
 	 * 
 	 */
-	private void checkCandidateAncestorsForBetterOutlinks()
+	private void checkCandidatesParserResultsForBetterOutlinks()
 	{
-		
 		synchronized(candidateDocumentClosuresPool)
 		{
 			WeightSet<DocumentClosure>[] candidateSet = (WeightSet<DocumentClosure>[]) candidateDocumentClosuresPool.getWeightSets();
@@ -225,9 +224,10 @@ implements Observer, ThreadMaster, Runnable, SemanticsPrefs
 					Document ancestorDocument	= c.getDocument().getAncestor();
 					if (ancestorDocument != null && !(ancestorDocument.isRecycled() /*|| ancestor.isRecycling() */))
 					{
-						if (ancestorDocument != null)
+						CompoundDocumentParserCrawlerResult crawlerResult	= (CompoundDocumentParserCrawlerResult) ancestorDocument.getParserResult();
+						if (crawlerResult != null)
 						{
-							DocumentClosure d = ancestorDocument.swapNextBestOutlinkWith(c);
+							DocumentClosure d = crawlerResult.swapNextBestOutlinkWith(c);
 							if (d != null && c != d)
 							{
 								removeContainers.add(c);
@@ -311,7 +311,7 @@ implements Observer, ThreadMaster, Runnable, SemanticsPrefs
 	@Override
 	public void update(Observable o, Object arg)
 	{
-		checkCandidateAncestorsForBetterOutlinks();
+		checkCandidatesParserResultsForBetterOutlinks();
 	}
 	public void increaseNumImageReferences()
 	{

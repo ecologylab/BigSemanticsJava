@@ -172,6 +172,13 @@ implements SemanticsPrefs, ApplicationProperties, DocumentParserTagNames
 		return seeding;
 	}
 
+	/**
+	 * Add element to visitedLocations set if it wasn't there already.
+	 * 
+	 * @param	location	Location to test for membership in visitedLocations and add if it was absent.
+	 * 
+	 * @return	true if the visitedLocations set changed, that is, if the location was new.
+	 */
 	public boolean isLocationNew(ParsedURL location)
 	{
 		return visitedLocations.add(location);

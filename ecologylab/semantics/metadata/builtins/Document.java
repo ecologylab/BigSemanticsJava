@@ -508,17 +508,6 @@ public class Document extends Metadata
 	{
 		return null;
 	}
-	public DocumentClosure swapNextBestOutlinkWith(DocumentClosure c)
-	{
-		return null;
-	}
-	public  void tryToGetBetterTextAfterInterestExpression(GenericElement<TextClipping> replaceMe)
-	{
-		
-	}
-	public void tryToGetBetterImageAfterInterestExpression(DocumentClosure replaceMe)
-	{
-	}
 	
 	/**
 	 * Base class does not keep track of clippings, so does nothing.
