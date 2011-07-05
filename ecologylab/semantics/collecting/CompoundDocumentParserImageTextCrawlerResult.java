@@ -50,37 +50,6 @@ implements Continuation<DocumentClosure>
 	public CompoundDocumentParserImageTextCrawlerResult(CompoundDocument compoundDocument)
 	{
 		super(compoundDocument);
-		// TODO Auto-generated constructor stub
-	}
-
-	public synchronized void tryToGetBetterTextAfterInterestExpression(GenericElement<TextClipping> replaceMe)
-	{
-		if (candidateTextClippings == null || candidateTextClippings.size() == 0)
-			return;
-		
-		GenericElement<TextClipping> te = candidateTextClippings.maxPeek();
-		if (InterestModel.getInterestExpressedInTermVector(te.getGeneric().termVector()) > mostRecentTextWeight)
-		{
-			crawler.removeTextClippingFromPools(replaceMe);
-			perhapsAddTextClippingToCrawler();
-			// perhapsAddAdditionalTextSurrogate could call recycle on this container
-			if (!this.isRecycled())
-				candidateTextClippings.insert(replaceMe);
-		}
-	}
-	
-	public synchronized void tryToGetBetterImageAfterInterestExpression(DocumentClosure replaceMe)
-	{
-		if (candidateImageClosures == null || candidateImageClosures.size() == 0)
-			return;
-		
-		DocumentClosure aie = candidateImageClosures.maxPeek();
-		if (InterestModel.getInterestExpressedInTermVector(aie.termVector()) > mostRecentImageWeight)
-		{
-			crawler.removeImageClippingFromPools(replaceMe);
-			perhapsAddImageClosureToCrawler();
-			candidateImageClosures.insert(replaceMe);
-		}
 	}
 
 	int sizeCandidateTextClippings()
@@ -98,7 +67,7 @@ implements Continuation<DocumentClosure>
 		return sizeCandidateTextClippings() + sizeCandidateImageClosures();
 	}
 	
-	public synchronized void perhapsAddTextClippingToCrawler()
+	protected synchronized void perhapsAddTextClippingToCrawler()
 	{
 		GenericElement<TextClipping> textClippingGE = null;
 		if (candidateTextClippings != null)
@@ -133,7 +102,7 @@ implements Continuation<DocumentClosure>
 	{
 		return numSurrogatesFrom==0;
 	}
-	public synchronized void perhapsAddImageClosureToCrawler()
+	protected synchronized void perhapsAddImageClosureToCrawler()
 	{
 		DocumentClosure imageClosure = null;
 		if (candidateImageClosures != null)
@@ -234,6 +203,36 @@ implements Continuation<DocumentClosure>
 		super.initiateCollecting();
 	}
 	
+	public synchronized void tryToGetBetterTextAfterInterestExpression(GenericElement<TextClipping> replaceMe)
+	{
+		if (candidateTextClippings == null || candidateTextClippings.size() == 0)
+			return;
+		
+		GenericElement<TextClipping> te = candidateTextClippings.maxPeek();
+		if (InterestModel.getInterestExpressedInTermVector(te.getGeneric().termVector()) > mostRecentTextWeight)
+		{
+			crawler.removeTextClippingFromPools(replaceMe);
+			perhapsAddTextClippingToCrawler();
+			// perhapsAddAdditionalTextSurrogate could call recycle on this container
+			if (!this.isRecycled())
+				candidateTextClippings.insert(replaceMe);
+		}
+	}
+	
+	public synchronized void tryToGetBetterImageAfterInterestExpression(DocumentClosure replaceMe)
+	{
+		if (candidateImageClosures == null || candidateImageClosures.size() == 0)
+			return;
+		
+		DocumentClosure aie = candidateImageClosures.maxPeek();
+		if (InterestModel.getInterestExpressedInTermVector(aie.termVector()) > mostRecentImageWeight)
+		{
+			crawler.removeImageClippingFromPools(replaceMe);
+			perhapsAddImageClosureToCrawler();
+			candidateImageClosures.insert(replaceMe);
+		}
+	}
+
 
 	/**
 	 * @return	true if there are no MediaElements that this Container is tracking

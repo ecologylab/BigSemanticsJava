@@ -50,7 +50,7 @@ public class ImageTextCrawler extends Crawler
 	 * Contains 2 FloatWeightSet pools. 
 	 * The first holds the first text surrogate of each container
 	 */
-	private final GenericPrioritizedPool<TextClipping> 	candidateTextClippingsPool;
+	private final GenericPrioritizedPool<TextClipping> 	candidateTextClippingElementsPool;
 	
 
 	/**
@@ -70,7 +70,7 @@ public class ImageTextCrawler extends Crawler
 				new GenericWeightSet<TextClipping>(MAX_MEDIA_PER_GENERATION, this, new TermVectorWeightStrategy(piv)),
 				new GenericWeightSet<TextClipping>(MAX_MEDIA_PER_GENERATION, this, new TermVectorWeightStrategy(piv))
 		};
-		candidateTextClippingsPool = new GenericPrioritizedPool<TextClipping>(textWeightSets);
+		candidateTextClippingElementsPool = new GenericPrioritizedPool<TextClipping>(textWeightSets);
 
 		// Three pools for downloaded images      
 		WeightSet<DocumentClosure>[] imageWeightSets	= new WeightSet[NUM_GENERATIONS_IN_MEDIA_POOL];
@@ -91,32 +91,39 @@ public class ImageTextCrawler extends Crawler
 	/**
 	 * Replace images in the candidates with possible better ones from their containers.
 	 */
-	private void checkCandidatesForBetterImagesAndText()
+	private void checkCandidatesParserResultsForBetterImagesAndText()
 	{
 		synchronized (candidateImagesPool)
 		{
-//			ImageClosure[] poolCopy				= (ImageClosure[]) candidateImagesPool.toArray();
 			for (DocumentClosure imageClosure : candidateImagesPool)
 			{
 				//TODO -- check among all source documents!!!
 				Image image								= (Image) imageClosure.getDocument();
 				Document sourceDocument		= image.getClippingSource();
 				if (sourceDocument != null && sourceDocument.isCompoundDocument())
-					sourceDocument.tryToGetBetterImageAfterInterestExpression(imageClosure);
+				{
+					CompoundDocumentParserImageTextCrawlerResult crawlerResult	= (CompoundDocumentParserImageTextCrawlerResult) sourceDocument.getParserResult();
+					if (crawlerResult != null)
+					{
+						crawlerResult.tryToGetBetterImageAfterInterestExpression(imageClosure);
+					}
+				}
 			}
 		}
-		synchronized (candidateTextClippingsPool)
+		synchronized (candidateTextClippingElementsPool)
 		{
-//			ArrayList<GenericElement<TextClipping>> tlist = new ArrayList<GenericElement<TextClipping>>(candidateTextClippingsPool.size());
-//			for (GenericWeightSet<TextClipping> ws : (GenericWeightSet<TextClipping>[]) candidateTextClippingsPool.getWeightSets())
-//				for (GenericElement<TextClipping> i : ws)
-//					tlist.add(i);
-			for (GenericElement<TextClipping> i : candidateTextClippingsPool)
+			for (GenericElement<TextClipping> textClippingElement : candidateTextClippingElementsPool)
 			{
-				TextClipping textClipping	= i.getGeneric();
+				TextClipping textClipping	= textClippingElement.getGeneric();
 				Document sourceDocument		= textClipping.getSource();
-				if (sourceDocument != null)
-					sourceDocument.tryToGetBetterTextAfterInterestExpression(i);
+				if (sourceDocument != null && sourceDocument.isCompoundDocument())
+				{
+					CompoundDocumentParserImageTextCrawlerResult crawlerResult	= (CompoundDocumentParserImageTextCrawlerResult) sourceDocument.getParserResult();
+					if (crawlerResult != null)
+					{
+						crawlerResult.tryToGetBetterTextAfterInterestExpression(textClippingElement);
+					}
+				}
 			}
 		}
 	}
@@ -129,7 +136,7 @@ public class ImageTextCrawler extends Crawler
 	@Override
 	public void removeTextClippingFromPools(GenericElement<TextClipping> replaceMe)
 	{
-		candidateTextClippingsPool.remove(replaceMe);
+		candidateTextClippingElementsPool.remove(replaceMe);
 	}
 	/**
 	 * Remove from candidate Images pool.
@@ -161,7 +168,7 @@ public class ImageTextCrawler extends Crawler
 	@Override
 	public boolean candidateTextClippingsSetIsAlmostEmpty()
 	{
-		return candidateTextClippingsPool.size() <= ALMOST_EMPTY_CANDIDATES_SET_THRESHOLD;
+		return candidateTextClippingElementsPool.size() <= ALMOST_EMPTY_CANDIDATES_SET_THRESHOLD;
 	}
 
 	/**
@@ -220,7 +227,7 @@ public class ImageTextCrawler extends Crawler
 	 */
 	public float candidateTextClippingsMean()
 	{
-		return candidateTextClippingsPool.mean();
+		return candidateTextClippingElementsPool.mean();
 	}
 
 	public float candidateImagesMean()
@@ -240,7 +247,7 @@ public class ImageTextCrawler extends Crawler
 	public void update(Observable o, Object arg)
 	{
 		super.update(o, arg);
-		checkCandidatesForBetterImagesAndText();
+		checkCandidatesParserResultsForBetterImagesAndText();
 	}
 
 	/**
@@ -253,7 +260,7 @@ public class ImageTextCrawler extends Crawler
 	@Override
 	public void addTextClippingToPool(GenericElement<TextClipping> textClippingGE, int poolPriority)
 	{
-		candidateTextClippingsPool.insert(textClippingGE, poolPriority);
+		candidateTextClippingElementsPool.insert(textClippingGE, poolPriority);
 		
 		InteractiveSpace interactiveSpace	= semanticsSessionScope.getInteractiveSpace();
 		if (seeding.isPlayOnStart() && interactiveSpace != null)
@@ -291,7 +298,7 @@ public class ImageTextCrawler extends Crawler
 	public void clearCollections()
 	{
 		candidateImagesPool.clear();
-		candidateTextClippingsPool.clear();
+		candidateTextClippingElementsPool.clear();
 		super.clearCollections();
 	}
 
