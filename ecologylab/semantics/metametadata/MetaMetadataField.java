@@ -1258,6 +1258,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	
 	void setInheritedField(MetaMetadataField inheritedField)
 	{
+		debug("setting " + this + ".inheritedField to " + inheritedField);
 		this.inheritedField = inheritedField;
 	}
 	

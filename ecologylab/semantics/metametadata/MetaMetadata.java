@@ -523,9 +523,9 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 				this.metadataClassDescriptor = superCd;
 			}
 			
-			if (inlineMmds != null)
+			if (this.getInlineMmds() != null)
 			{
-				for (MetaMetadata inlineMmd : inlineMmds.values())
+				for (MetaMetadata inlineMmd : this.getInlineMmds().values())
 				{
 					inlineMmd.findOrGenerateMetadataClassDescriptor(tscope);
 				}

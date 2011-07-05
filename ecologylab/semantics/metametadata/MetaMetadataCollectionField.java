@@ -250,17 +250,21 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 		{
 		case FieldTypes.COLLECTION_ELEMENT:
 		{
+			// prepare childComposite: possibly new name, type, extends, tag and inheritedField
 			MetaMetadataCompositeField childComposite = this.getChildComposite();
-			// child_type may have a new value from inheritedField
 			if (childComposite.getName().equals(UNRESOLVED_NAME))
 				childComposite.setName(this.childType == null ? this.name : this.childType);
+			childComposite.type = this.childType; // here not using setter to reduce unnecessary re-assignment of this.childType
+			childComposite.extendsAttribute = this.childExtends;
+			childComposite.tag = this.childTag;
 			// set inheritedField for childComposite, if this has an inheritedField set
 			MetaMetadataCollectionField inheritedField = (MetaMetadataCollectionField) this.getInheritedField();
 			if (inheritedField != null)
 				childComposite.setInheritedField(inheritedField.getChildComposite());
-			// set inheritedMmd for this field, using childComposite
-			childComposite.inheritMetaMetadata();
+			
+			childComposite.inheritMetaMetadata(); // inheritedMmd might be inferred from type/extends
 			this.setInheritedMmd(childComposite.getInheritedMmd());
+			
 			break;
 		}
 		case FieldTypes.COLLECTION_SCALAR:

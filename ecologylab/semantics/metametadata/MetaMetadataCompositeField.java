@@ -241,19 +241,14 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 			inheritedMmd.setRepository(repository);
 			inheritedMmd.inheritMetaMetadata();
 			
-			// inherit inline mmds, which could be used by fields inside this
+			// inherit from inheritedMmd, for meta-metadata specific things
 			if (this instanceof MetaMetadata)
 			{
 				((MetaMetadata) this).inheritInlineMmds(inheritedMmd);
-			}
-
-			if (this instanceof MetaMetadata)
-			{
-				// inherit attributes if it is a MetaMetadata object
-				this.inheritAttributes(inheritedMmd);
-				// initialize declaringMmd to this
+				this.inheritAttributes(inheritedMmd); // don't do this for fields: fields should inherit attributes from inheritedField
 				for (MetaMetadataField field : this.getChildMetaMetadata())
 				{
+					// initialize declaringMmd to this (some may be changed later)
 					field.setDeclaringMmd((MetaMetadata) this);
 				}
 			}
@@ -276,6 +271,8 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 					fieldLocal.setInheritedField(field);
 					fieldLocal.setDeclaringMmd(field.getDeclaringMmd());
 					fieldLocal.inheritAttributes(field);
+					if (fieldLocal instanceof MetaMetadataNestedField && field instanceof MetaMetadataNestedField)
+						((MetaMetadataNestedField)fieldLocal).setInheritedMmd(((MetaMetadataNestedField)field).getInheritedMmd());
 				}
 			}
 			
@@ -290,15 +287,21 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 						// as inline mmd), but actually defines new fields 
 						throw new MetaMetadataException("to define new fields inline, you need to specify extends!");
 					}
-					
-					if (f instanceof MetaMetadataNestedField)
-					{
-						f.setRepository(repository);
-						((MetaMetadataNestedField) f).setPackageName(this.packageName());
-						((MetaMetadataNestedField) f).inheritMetaMetadata();
-					}
 					this.setGenerateClassDescriptor(true);
 				}
+				
+				// if it is a nested field, no matter if it is declared in this meta-metadata, we have to
+				// process its nested fields by calling inheritedMetaMetadata(). and we know that its
+				// attributes have been inherited correctly.
+				if (f instanceof MetaMetadataNestedField)
+				{
+					f.setRepository(repository);
+					((MetaMetadataNestedField) f).setPackageName(this.packageName());
+					((MetaMetadataNestedField) f).inheritMetaMetadata();
+				}
+				
+				f.inheritInProcess = false;
+				f.inheritFinished = true;
 			}
 			
 			// inherit other stuffs
@@ -368,8 +371,8 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 					throw new MetaMetadataException("meta-metadata not found: " + inheritedMmdName + " (if you want to define new types inline, you need to specify extends/child_extends)");
 				
 				// process normal mmd / field
+				debug("setting " + this + ".inheritedMmd to " + inheritedMmd);
 				this.setInheritedMmd(inheritedMmd);
-				debug("inheritedMmd for " + this + ": " + inheritedMmd);
 			}
 		}
 		return inheritedMmd;
@@ -411,11 +414,13 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 		generatedMmd.setExtendsAttribute(inheritedMmd.getName());
 		generatedMmd.setRepository(this.getRepository());
 		generatedMmd.inheritAttributes(this);
-		generatedMmd.setChildMetaMetadata(this.kids);
-		for (MetaMetadataField kid : this.kids)
+		for (String kidKey : this.kids.keySet())
 		{
+			MetaMetadataField kid = this.kids.get(kidKey);
+			generatedMmd.getChildMetaMetadata().put(kidKey, kid);
 			kid.setParent(generatedMmd);
 		}
+		this.kids.clear();
 		
 		// must set this before generatedMmd.inheritMetaMetadata() to meet inheritMetaMetadata() prerequisites
 		this.setInheritedMmd(generatedMmd);
