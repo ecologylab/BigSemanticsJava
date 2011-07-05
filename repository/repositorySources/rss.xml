@@ -9,7 +9,7 @@
 	</meta_metadata>
 	
 	<meta_metadata name="yahoo_media_rss" extends="dc" comment="News feeds." parser="direct">
-		<composite name="media_content" tag="media:content" hide="true"> <!-- should really make this a collection and seek the larger one -->
+		<composite name="media_content" extends="metadata" tag="media:content" hide="true"> <!-- should really make this a collection and seek the larger one -->
 			<scalar name="media_url" tag="url" scalar_type="ParsedURL" />
 			<scalar name="height" scalar_type="Int" />
 			<scalar name="width" scalar_type="Int" />

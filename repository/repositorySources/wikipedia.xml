@@ -19,19 +19,19 @@
   </meta_metadata>
 
   <meta_metadata name="wikipedia_page_type" extends="compound_document" comment="An article on wikipedia" package="ecologylab.semantics.generated.library">
-    <collection name="paragraphs" comment="Paragraphs in the article." child_type="paragraph">
+    <collection name="paragraphs" comment="Paragraphs in the article." child_type="paragraph" child_extends="metadata">
       <scalar name="paragraph_text" scalar_type="String" />
-      <collection name="anchors" comment="Anchors (links) in the paragraph, typically links to another Wikipedia article." child_type="anchor">
+      <collection name="anchors" comment="Anchors (links) in the paragraph, typically links to another Wikipedia article." child_type="anchor" child_extends="metadata">
         <scalar name="link" scalar_type="ParsedURL" />
         <scalar name="anchor_text" scalar_type="String" />
         <scalar name="target_title" scalar_type="String" />
       </collection>
     </collection>
-    <collection name="categories" comment="Wikipedia Categories" child_type="category">
+    <collection name="categories" comment="Wikipedia Categories" child_type="category" child_extends="metadata">
       <scalar name="name" scalar_type="String" navigates_to="cat_link" />
       <scalar name="cat_link" hide="true" scalar_type="ParsedURL" />
     </collection>
-    <collection name="thumbinners" hide="true" child_type="thumbinner">
+    <collection name="thumbinners" hide="true" child_type="thumbinner" child_extends="metadata">
       <scalar name="thumb_img_src" scalar_type="ParsedURL" />
       <scalar name="thumb_img_caption" scalar_type="String" />
     </collection>

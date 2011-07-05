@@ -50,7 +50,7 @@
 		
 		<scalar name="image_url" scalar_type="ParsedURL" xpath="//p[@id='mainImage']/img/@src" hide="true" />
 		
-		<composite name="temp_field_value_holder" xpath="//p[@class='caption'][1]" hide="true">
+		<composite name="temp_field_value_holder" extends="metadata" xpath="//p[@class='caption'][1]" hide="true">
 			<field_parser name="regex_find" regex="(\S.+?)\. " />
 <!-- 			<scalar name="temp_year" scalar_type="Int" field_parser_key="$0"> -->
 <!-- 				<filter regex="[().]*" replace="" /> -->

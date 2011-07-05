@@ -45,14 +45,14 @@
 		<scalar name="isbn" layer="8.1" hide="true" xpath="//table[@id='metadata_content_table']/tr[contains(., 'ISBN')]">
 			<filter regex="ISBN" replace="" />
 		</scalar>
-		<collection name="subjects" layer="9.2" xpath="//table[@id='metadata_content_table']/tr[contains(., 'Subjects')]/td[2]/a" child_type="subject" >
+		<collection name="subjects" layer="9.2" xpath="//table[@id='metadata_content_table']/tr[contains(., 'Subjects')]/td[2]/a">
 			<scalar name="subject" xpath="." />
 			<scalar name="location" xpath="./@href" />
 		</collection>
 		<scalar name="cover_image" xpath="//img[@title='Front Cover']/@src" />
 		
 		<scalar name="places_mentioned_kml" xpath="//h3[@class='about_title']/font/a[text()='KML']/@href" hide="true" scalar_type="ParsedURL" />
-		<collection name="selected_pages" xpath="//div[@class='selectedpagesthumbnail']" hide="true" child_type="page">
+		<collection name="selected_pages" xpath="//div[@class='selectedpagesthumbnail']" hide="true" child_type="page" child_extends="metadata">
 			<scalar name="location" xpath="./a/@href" scalar_type="ParsedURL" />
 			<scalar name="page_thumbnail" xpath="./a/image" scalar_type="ParsedURL" />
 			<scalar name="page_number" xpath="./a[2]" scalar_type="Int">

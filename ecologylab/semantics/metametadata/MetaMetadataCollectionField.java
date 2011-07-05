@@ -123,7 +123,9 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 		if (rst == null)
 		{
 			String typeName = getTypeName();
-			String className = "Metadata" + XMLTools.classNameFromElementName(typeName);
+			String className = XMLTools.classNameFromElementName(typeName);
+			if (this.getFieldType() == FieldTypes.COLLECTION_SCALAR)
+				className = "Metadata" + className;
 			rst = "ArrayList<" + className + ">";
 			typeNameInJava = rst;
 		}
@@ -257,6 +259,7 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 			childComposite.type = this.childType; // here not using setter to reduce unnecessary re-assignment of this.childType
 			childComposite.extendsAttribute = this.childExtends;
 			childComposite.tag = this.childTag;
+			childComposite.setRepository(this.getRepository());
 			// set inheritedField for childComposite, if this has an inheritedField set
 			MetaMetadataCollectionField inheritedField = (MetaMetadataCollectionField) this.getInheritedField();
 			if (inheritedField != null)

@@ -267,6 +267,10 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 				}
 				else
 				{
+					// TODO need to do more tests to make sure that user does not accidentally hide a field
+					if (field.getClass() != fieldLocal.getClass())
+						warning("local field " + fieldLocal + " hides field " + fieldLocal + " with the same name in super mmd type!");
+					
 					debug("inheriting field: " + fieldLocal);
 					fieldLocal.setInheritedField(field);
 					fieldLocal.setDeclaringMmd(field.getDeclaringMmd());
@@ -349,6 +353,7 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 				// put generatedMmd in to current scope
 				MetaMetadata scopeMmd = getScopeMmd();
 				scopeMmd.addInlineMmd(previousName, generatedMmd);
+				generatedMmd.addInlineMmd(previousName, generatedMmd);
 				
 				generatedMmd.inheritMetaMetadata(); // this will set generateClassDescriptor to true if necessary
 				
@@ -468,16 +473,31 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 		return this.extendsAttribute != null;
 	}
 	
+	/**
+	 * hook method for updating collection field's child_type when its childComposite changes type.
+	 * 
+	 * @param newType
+	 */
 	protected void typeChanged(String newType)
 	{
 		// hook method
 	}
 	
+	/**
+	 * hook method for updating collection field's child_extends when its childComposite changes extends.
+	 * 
+	 * @param newType
+	 */
 	protected void extendsChanged(String newExtends)
 	{
 		// hook method
 	}
 	
+	/**
+	 * hook method for updating collection field's child_tag when its childComposite changes tag.
+	 * 
+	 * @param newType
+	 */
 	protected void tagChanged(String newTag)
 	{
 		// hook method

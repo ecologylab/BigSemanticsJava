@@ -17,6 +17,7 @@ import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
 import ecologylab.semantics.metadata.Metadata.mm_dont_inherit;
+import ecologylab.semantics.metametadata.exceptions.MetaMetadataException;
 import ecologylab.semantics.tools.MetaMetadataCompiler;
 import ecologylab.semantics.tools.MetaMetadataCompilerUtils;
 import ecologylab.serialization.ClassDescriptor;
@@ -37,7 +38,7 @@ import ecologylab.textformat.NamedStyle;
  */
 @simpl_inherit
 @simpl_descriptor_classes({ MetaMetadataClassDescriptor.class, MetaMetadataFieldDescriptor.class })
-public abstract class MetaMetadataField extends ElementState implements Mappable<String>, Iterable<MetaMetadataField>
+public abstract class MetaMetadataField extends ElementState implements Mappable<String>, Iterable<MetaMetadataField>, MMDConstants
 {
 
 	static class LayerComparator implements Comparator<MetaMetadataField>
@@ -1112,8 +1113,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 				metadataClassDescriptor = this.metadataClassDescriptor;
 				if (metadataClassDescriptor == null)
 				{
-					metadataClassDescriptor = (MetadataClassDescriptor) ClassDescriptor
-							.getClassDescriptor(metadataClass);
+					metadataClassDescriptor = (MetadataClassDescriptor) ClassDescriptor.getClassDescriptor(metadataClass);
 					bindMetadataFieldDescriptors(metadataTScope, metadataClassDescriptor);
 					this.metadataClassDescriptor = metadataClassDescriptor;
 				}

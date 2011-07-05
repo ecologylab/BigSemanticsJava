@@ -147,6 +147,7 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 		}
 		return result;
 	}
+	
 	/**
 	 * @return the mmName
 	 */

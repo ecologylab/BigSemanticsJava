@@ -18,7 +18,7 @@
 				<filter regex="^by\s+" replace="" />
 			</scalar>
 		</collection>
-		<composite name="citation_info" xpath="//h1[@class='primaryheader']/a">
+		<composite name="citation_info" type="citation_info" xpath="//h1[@class='primaryheader']/a">
 			<field_parser name="regex_find" regex="(\d+) citations .* (\d+) self" />
 			<scalar name="total_citation" field_parser_key="$1" />
 			<scalar name="self_citation" field_parser_key="$2" />

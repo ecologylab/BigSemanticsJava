@@ -419,19 +419,19 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		this.metadataTScope = metadataTScope;
 		initializeDefaultUserAgent();
 
-		// findAndDeclareNestedMetaMetadata(metadataTScope);
+		// make another copy because we may add new meta-metadata (from inline definitions) to repositoryByTagName
+		ArrayList<MetaMetadata> mmds = new ArrayList<MetaMetadata>(repositoryByTagName.values());
 
-		for (MetaMetadata metaMetadata : repositoryByTagName)
+		for (MetaMetadata metaMetadata : mmds)
 		{
 			metaMetadata.setRepository(this);
-			metaMetadata.inheritMetaMetadata(this);
+			metaMetadata.inheritMetaMetadata();
 			metaMetadata.getClassAndBindDescriptors(metadataTScope);
-			MetadataClassDescriptor metadataClassDescriptor = metaMetadata.getMetadataClassDescriptor();
 			
+			MetadataClassDescriptor metadataClassDescriptor = metaMetadata.getMetadataClassDescriptor();
 			// don't put restatements of the same base type into *this* map
 			if (metaMetadata.getType() == null && metadataClassDescriptor != null)
-				repositoryByClassName.put(metadataClassDescriptor.getDescribedClass().getName(),
-						metaMetadata);
+				repositoryByClassName.put(metadataClassDescriptor.getDescribedClass().getName(), metaMetadata);
 
 			// set up <link_with>
 			metaMetadata.setUpLinkWith(this);

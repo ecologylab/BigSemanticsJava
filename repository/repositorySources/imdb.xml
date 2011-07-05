@@ -38,7 +38,7 @@
 			<filter regex="Release Date:" replace="" /> <!-- Start of string until colon, inclusive, must be removed -->
 		</scalar>
 		
-		<collection name="genres" xpath="//h4[contains(.,'Genres')]/..//a" child_type="genre">
+		<collection name="genres" xpath="//h4[contains(.,'Genres')]/..//a" child_type="genre" child_extends="metadata">
 			<scalar name="name" xpath="string(.)" navigates_to="genre_link" scalar_type="String">
 				<!--<filter regex="more" replace="" />-->
 			</scalar>
@@ -50,7 +50,7 @@
 		<scalar name="tagline" xpath="//h4[contains(.,'Tagline')]/.." scalar_type="String">
 			<filter regex="Taglines:|See more" replace="" />
 		</scalar>
-		<collection name="cast" layer="8.0" xpath="//table[@class='cast_list']//tr[@class='odd' or @class='even']" child_type="cast_member">
+		<collection name="cast" layer="8.0" xpath="//table[@class='cast_list']//tr[@class='odd' or @class='even']" child_type="cast_member" child_extends="metadata">
 			<composite name="actor" xpath="td[@class='name']" type="person_details">
 				<scalar name="gist" xpath="string(.)" label="name" />
 				<scalar name="location" xpath="./a/@href" />

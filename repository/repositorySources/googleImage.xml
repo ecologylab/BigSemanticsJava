@@ -19,7 +19,7 @@
 	</meta_metadata>
 	
 	<meta_metadata name="google_image_search_type" extends="compound_document" comment="Google image search type" package="ecologylab.semantics.generated.library" >
-		<collection name="image_results" child_type="image_result" no_wrap="true" comment="Collection of results for google image search">
+		<collection name="image_results" child_type="image_result" child_extends="metadata" no_wrap="true" comment="Collection of results for google image search">
 			<scalar name="img_title" scalar_type="String" comment="image title" />
 			<scalar name="summary" scalar_type="String" comment="image summary" />
 			<scalar name="img_url" scalar_type="ParsedURL" comment="raw parsed URL for extracting values 'url', 'referer_url'" />  <!-- type is 'String' and will be converted into ParsedURL in StringOperation -->

@@ -27,7 +27,7 @@ import ecologylab.serialization.types.element.Mappable;
  * @author damaraju
  * 
  */
-public class MetaMetadata extends MetaMetadataCompositeField implements Mappable<String>, MMDConstants
+public class MetaMetadata extends MetaMetadataCompositeField implements Mappable<String>
 {
 
 	@simpl_collection("selector")
@@ -80,7 +80,7 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 	private Map<MetaMetadataSelector, MetaMetadata>	reselectMap;
 
 	private Scope<MetaMetadata>											inlineMmds				= null;
-
+	
 	public MetaMetadata()
 	{
 		super();
