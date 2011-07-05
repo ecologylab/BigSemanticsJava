@@ -1223,36 +1223,6 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	 */
 	public MetaMetadataField getInheritedField()
 	{
-//		MetaMetadataField result = inheritedField;
-//		if (result == null)
-//		{
-//			MetaMetadataNestedField parent = (MetaMetadataNestedField) parent();
-//			if (parent == null)
-//				return null;
-//			MetaMetadataNestedField toSearch = null;
-//			if (parent instanceof MetaMetadata)
-//			{
-//				MetaMetadata parentMmd = (MetaMetadata) parent;
-//				String parentSuperMmdName = parentMmd.getSuperMmdTypeName();
-//				MetaMetadata parentSuperMmd = getRepository().getByTagName(parentSuperMmdName);
-//				if (parentSuperMmd != null)
-//					toSearch = parentSuperMmd;
-//			}
-//			else
-//			{
-//				MetaMetadataNestedField parentDef = parent.getTypeDefinition();
-//				// parentDef == null indicates that a new mmd type is defined inline
-//				if (parentDef == null)
-//					return null;
-//				toSearch = parentDef;
-//			}
-//			
-//			if (toSearch != null)
-//				result = toSearch.searchForChild(getName());
-//			
-//			if (result != this)
-//				inheritedField = result;
-//		}
 		return inheritedField;
 	}
 	
@@ -1302,9 +1272,6 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 		return dontSerialize;
 	}
 
-	/**
-	 * @return the schemaOrgItemprop
-	 */
 	public String getSchemaOrgItemprop()
 	{
 		return schemaOrgItemprop;

@@ -482,6 +482,7 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 			this.inlineMmds = new Scope<MetaMetadata>(other.getInlineMmds());
 	}
 
+	@Override
 	protected boolean isInlineDefinition()
 	{
 		return false;

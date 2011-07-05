@@ -314,6 +314,15 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 		}
 	}
 
+	/**
+	 * find inherited meta-metadata for this field/mmd. for fields, inheritedMmd is the mmd type it is
+	 * using for itself or its children. for mmd, inheritedMmd is the mmd it directly uses (through
+	 * type/extends). this method will use generatedMmd() to automatically generate a mmd definition
+	 * when needed.
+	 * 
+	 * @param repository
+	 * @return
+	 */
 	protected MetaMetadata findInheritedMetaMetadata(MetaMetadataRepository repository)
 	{
 		MetaMetadata inheritedMmd = this.getInheritedMmd();
@@ -336,10 +345,6 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 				// process inline mmds
 				String previousName = this.getTypeOrName();
 				MetaMetadata generatedMmd = this.generateMetaMetadata(previousName, inheritedMmd);
-				repository.addMetaMetadata(generatedMmd);
-				this.setType(generatedMmd.getName());
-				this.setExtendsAttribute(null);
-				this.setTag(previousName);
 				
 				// put generatedMmd in to current scope
 				MetaMetadata scopeMmd = getScopeMmd();
@@ -362,7 +367,7 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 					this.setGenerateClassDescriptor(true);
 				}
 				inheritedMmd = repository.getByTagName(inheritedMmdName);
-				if (inheritedMmd == null)
+				if (inheritedMmd == null && !(this instanceof MetaMetadata))
 				{
 					MetaMetadata scopeMmd = getScopeMmd();
 					inheritedMmd = scopeMmd == null ? null : scopeMmd.getInlineMmd(inheritedMmdName);
@@ -378,10 +383,22 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 		return inheritedMmd;
 	}
 
+	/**
+	 * get the mmd with a correct scope of inline mmd definitions. more specifically, if this is a
+	 * field inside a mmd, we look up that mmd for inline mmd definitions (that mmd should have
+	 * already inherited inline definitions from its ancestors); if this is a field inside another
+	 * nested field, we look up that nested field's declaringMmd (which should also have already
+	 * inherited inline definitions from its ancestors).
+	 * <p>
+	 * prerequisite: this is not a MetaMetadata
+	 * 
+	 * @return
+	 */
 	private MetaMetadata getScopeMmd()
 	{
 		if (scopeMmd == null)
 		{
+			assert !(this instanceof MetaMetadata): "should never call getScopeMmd on a MetaMetadata because MetaMetadata will never be inline!";
 			MetaMetadataNestedField parent = (MetaMetadataNestedField) this.parent();
 			if (parent instanceof MetaMetadata)
 				scopeMmd = (MetaMetadata) parent;
@@ -391,8 +408,17 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 		return scopeMmd;
 	}
 
+	/**
+	 * this method generates a new mmd from this field, and makes this field as if is using that mmd
+	 * as type.
+	 * 
+	 * @param previousName
+	 * @param inheritedMmd
+	 * @return
+	 */
 	protected MetaMetadata generateMetaMetadata(String previousName, MetaMetadata inheritedMmd)
 	{
+		// generate a globally unique name
 		StringBuilder sb = StringBuilderUtils.acquire();
 		sb.append(MMD_PREFIX_INLINE).append(previousName);
 		MetaMetadataNestedField f = (MetaMetadataNestedField) this.parent();
@@ -406,6 +432,7 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 		String generatedName = sb.toString();
 		StringBuilderUtils.release(sb);
 		
+		// generate the mmd and set attributes
 		MetaMetadata generatedMmd = new MetaMetadata();
 		generatedMmd.setName(generatedName);
 		generatedMmd.setPackageName(this.packageName());
@@ -414,6 +441,8 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 		generatedMmd.setExtendsAttribute(inheritedMmd.getName());
 		generatedMmd.setRepository(this.getRepository());
 		generatedMmd.inheritAttributes(this);
+		
+		// move nested fields
 		for (String kidKey : this.kids.keySet())
 		{
 			MetaMetadataField kid = this.kids.get(kidKey);
@@ -424,6 +453,13 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 		
 		// must set this before generatedMmd.inheritMetaMetadata() to meet inheritMetaMetadata() prerequisites
 		this.setInheritedMmd(generatedMmd);
+		
+		// make this field as if is using generatedMmd as type
+		this.setType(generatedMmd.getName());
+		this.setExtendsAttribute(null);
+		this.setTag(previousName); // but keep the tag name
+		
+		this.getRepository().addMetaMetadata(generatedMmd); // add to the repository
 		return generatedMmd;
 	}
 
@@ -434,17 +470,17 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 	
 	protected void typeChanged(String newType)
 	{
-		
+		// hook method
 	}
 	
 	protected void extendsChanged(String newExtends)
 	{
-		
+		// hook method
 	}
 	
 	protected void tagChanged(String newTag)
 	{
-		
+		// hook method
 	}
 
 	@Override
