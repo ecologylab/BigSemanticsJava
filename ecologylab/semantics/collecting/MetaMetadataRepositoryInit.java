@@ -14,10 +14,13 @@ import ecologylab.generic.Debug;
 import ecologylab.io.Assets;
 import ecologylab.io.AssetsRoot;
 import ecologylab.io.Files;
+import ecologylab.semantics.metadata.builtins.ClippableDocument;
+import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.namesandnums.DocumentParserTagNames;
 import ecologylab.semantics.namesandnums.SemanticsAssetVersions;
+import ecologylab.semantics.namesandnums.SemanticsNames;
 import ecologylab.serialization.TranslationScope;
 
 /**
@@ -27,7 +30,7 @@ import ecologylab.serialization.TranslationScope;
  * @author andruid
  */
 public class MetaMetadataRepositoryInit extends Scope<Object>
-implements DocumentParserTagNames, ApplicationProperties
+implements DocumentParserTagNames, ApplicationProperties, SemanticsNames
 {
 	static final String	META_METADATA_REPOSITORY_DIR		= "repository";
 	
@@ -74,9 +77,13 @@ implements DocumentParserTagNames, ApplicationProperties
 	}
 
 	
-	private MetaMetadataRepository															metaMetadataRepository;
+	private MetaMetadataRepository									metaMetadataRepository;
 	
-	private TranslationScope																		metadataTranslationScope;
+	private TranslationScope												metadataTranslationScope;
+	
+	private final TranslationScope									generatedDocumentTranslations;
+
+	private final TranslationScope									generatedMediaTranslations;
 	
 	/**
 	 * This constructor should only be called from SemanticsScope's constructor!
@@ -88,9 +95,12 @@ implements DocumentParserTagNames, ApplicationProperties
 		META_METADATA_REPOSITORY.bindMetadataClassDescriptorsToMetaMetadata(metadataTranslationScope);
 		this.metadataTranslationScope	= metadataTranslationScope;
 		this.metaMetadataRepository		= META_METADATA_REPOSITORY;
+		this.generatedDocumentTranslations	= 
+			metadataTranslationScope.getAssignableSubset(GENERATED_DOCUMENT_TRANSLATIONS, Document.class);
+		this.generatedMediaTranslations	=
+			metadataTranslationScope.getAssignableSubset(GENERATED_MEDIA_TRANSLATIONS, ClippableDocument.class);
 	}
 	
-  
 	public MetaMetadataRepository getMetaMetadataRepository()
 	{
 		return metaMetadataRepository;
@@ -99,5 +109,23 @@ implements DocumentParserTagNames, ApplicationProperties
 	public TranslationScope getMetadataTranslationScope()
 	{
 		return metadataTranslationScope;
+	}
+
+
+	/**
+	 * @return the generatedDocumentTranslations
+	 */
+	public TranslationScope getGeneratedDocumentTranslations()
+	{
+		return generatedDocumentTranslations;
+	}
+
+
+	/**
+	 * @return the generatedMediaTranslations
+	 */
+	public TranslationScope getGeneratedMediaTranslations()
+	{
+		return generatedMediaTranslations;
 	}
 }

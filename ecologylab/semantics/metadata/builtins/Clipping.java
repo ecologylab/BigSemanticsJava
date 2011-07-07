@@ -6,7 +6,7 @@ package ecologylab.semantics.metadata.builtins;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
-import ecologylab.semantics.tools.MetaMetadataCompilerUtils;
+import ecologylab.semantics.namesandnums.SemanticsNames;
 import ecologylab.serialization.Hint;
 import ecologylab.serialization.simpl_inherit;
 
@@ -42,7 +42,7 @@ public class Clipping extends Metadata
 	 * The source document.
 	 */
 	@simpl_composite
-	@simpl_scope(MetaMetadataCompilerUtils.GENERATED_METADATA_TRANSLATIONS)
+	@simpl_scope(SemanticsNames.GENERATED_DOCUMENT_TRANSLATIONS)
 	@mm_name("source") 
 	private Document				source;
 	
@@ -50,7 +50,7 @@ public class Clipping extends Metadata
 	 * A hyperlinked Document.
 	 */
 	@simpl_composite
-	@simpl_scope(MetaMetadataCompilerUtils.GENERATED_METADATA_TRANSLATIONS)
+	@simpl_scope(SemanticsNames.GENERATED_DOCUMENT_TRANSLATIONS)
 	@mm_name("outlink") 
 	private Document				outlink;
 	
