@@ -525,9 +525,9 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 	public boolean isDerivedFrom(MetaMetadata base)
 	{
 		MetaMetadata mmd = this;
-		while (mmd.getInheritedMmd() != null)
+		while (mmd != null)
 		{
-			if (mmd.getInheritedMmd() == base)
+			if (mmd == base)
 				return true;
 			mmd = mmd.getInheritedMmd();
 		}
