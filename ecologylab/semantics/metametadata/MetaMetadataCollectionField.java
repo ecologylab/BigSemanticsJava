@@ -1,7 +1,10 @@
 package ecologylab.semantics.metametadata;
 
+import java.util.ArrayList;
+
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
+import ecologylab.semantics.metadata.Metadata.mm_dont_inherit;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
 import ecologylab.serialization.ElementState.xml_tag;
@@ -27,6 +30,7 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 	@simpl_scalar
 	protected String						childType;
 
+	@mm_dont_inherit
 	@simpl_scalar
 	protected String						childExtends;
 
@@ -247,36 +251,48 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 	@Override
 	public void inheritMetaMetadata()
 	{
-		int typeCode = this.getFieldType();
-		switch (typeCode)
+		if (!inheritFinished && !inheritInProcess)
 		{
-		case FieldTypes.COLLECTION_ELEMENT:
-		{
-			// prepare childComposite: possibly new name, type, extends, tag and inheritedField
-			MetaMetadataCompositeField childComposite = this.getChildComposite();
-			if (childComposite.getName().equals(UNRESOLVED_NAME))
-				childComposite.setName(this.childType == null ? this.name : this.childType);
-			childComposite.type = this.childType; // here not using setter to reduce unnecessary re-assignment of this.childType
-			childComposite.extendsAttribute = this.childExtends;
-			childComposite.tag = this.childTag;
-			childComposite.setRepository(this.getRepository());
-			// set inheritedField for childComposite, if this has an inheritedField set
-			MetaMetadataCollectionField inheritedField = (MetaMetadataCollectionField) this.getInheritedField();
-			if (inheritedField != null)
-				childComposite.setInheritedField(inheritedField.getChildComposite());
+			this.inheritInProcess = true;
 			
-			childComposite.inheritMetaMetadata(); // inheritedMmd might be inferred from type/extends
-			this.setInheritedMmd(childComposite.getInheritedMmd());
+			int typeCode = this.getFieldType();
+			switch (typeCode)
+			{
+			case FieldTypes.COLLECTION_ELEMENT:
+			{
+				// prepare childComposite: possibly new name, type, extends, tag and inheritedField
+				MetaMetadataCompositeField childComposite = this.getChildComposite();
+				if (childComposite.getName().equals(UNRESOLVED_NAME))
+					childComposite.setName(this.childType == null ? this.name : this.childType);
+				childComposite.type = this.childType; // here not using setter to reduce unnecessary
+																							// re-assignment of this.childType
+				childComposite.extendsAttribute = this.childExtends;
+				childComposite.tag = this.childTag;
+				childComposite.setRepository(this.getRepository());
+				// set inheritedField for childComposite, if this has an inheritedField set
+				MetaMetadataCollectionField inheritedField = (MetaMetadataCollectionField) this
+						.getInheritedField();
+				if (inheritedField != null)
+					childComposite.setInheritedField(inheritedField.getChildComposite());
+				childComposite.setDeclaringMmd(this.getDeclaringMmd());
+				childComposite.setInlineMmds(this.getInlineMmds());
+
+				childComposite.inheritMetaMetadata(); // inheritedMmd might be inferred from type/extends
+				this.setInheritedMmd(childComposite.getInheritedMmd());
+
+				break;
+			}
+			case FieldTypes.COLLECTION_SCALAR:
+			{
+				MetaMetadataField inheritedField = this.getInheritedField();
+				if (inheritedField != null)
+					this.inheritAttributes(inheritedField);
+				break;
+			}
+			}
 			
-			break;
-		}
-		case FieldTypes.COLLECTION_SCALAR:
-		{
-			MetaMetadataField inheritedField = this.getInheritedField();
-			if (inheritedField != null)
-				this.inheritAttributes(inheritedField);
-			break;
-		}
+			inheritFinished = true;
+			inheritInProcess = false;
 		}
 	}
 
@@ -335,7 +351,15 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 			}
 			fd.setWrapped(wrapped);
 		}
+		this.metadataFieldDescriptor = fd;
 		return fd;
+	}
+	
+	boolean isTheChildComposite(MetaMetadataCompositeField composite)
+	{
+		if (kids != null && kids.size() > 0)
+			return kids.get(0) == composite;
+		return false;
 	}
 
 }

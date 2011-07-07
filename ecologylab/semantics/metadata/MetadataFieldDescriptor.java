@@ -6,15 +6,19 @@ package ecologylab.semantics.metadata;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import ecologylab.semantics.gui.EditValueEvent;
 import ecologylab.semantics.gui.EditValueListener;
 import ecologylab.semantics.gui.EditValueNotifier;
+import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataCollectionField;
 import ecologylab.semantics.metametadata.MetaMetadataField;
+import ecologylab.semantics.metametadata.MetaMetadataNestedField;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.FieldDescriptor;
+import ecologylab.serialization.FieldTypes;
 import ecologylab.serialization.Hint;
 import ecologylab.serialization.ScalarUnmarshallingContext;
 import ecologylab.serialization.XMLTools;
@@ -38,9 +42,11 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 	@simpl_scalar
 	private String												mmName;
 
-	private ArrayList<EditValueListener>	editValueListeners	= new ArrayList<EditValueListener>();
+	private ArrayList<EditValueListener>	editValueListeners							= new ArrayList<EditValueListener>();
 
 	private MetaMetadataField							definingMmdField;
+
+	private boolean												startedTraversalForPolymorphism	= false;
 
 	public MetadataFieldDescriptor(ClassDescriptor declaringClassDescriptor, Field field, int annotationType) // String nameSpacePrefix
 	{
@@ -177,6 +183,37 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 	public void setWrapped(boolean wrapped)
 	{
 		super.setWrapped(wrapped);
+	}
+	
+	public void traverseAndProcessPolymorphismForCompilation()
+	{
+		startedTraversalForPolymorphism = true;
+		if (this.definingMmdField instanceof MetaMetadataNestedField)
+		{
+			MetaMetadataNestedField nested = (MetaMetadataNestedField) this.definingMmdField;
+			if (nested.getFieldType() != FieldTypes.COLLECTION_SCALAR)
+			{
+				// resolve @simpl_classes if any
+				HashSet<MetaMetadata> polyMmds = nested.getPolymorphicMmds();
+				if (polyMmds != null && polyMmds.size() > 0)
+				{
+					for (MetaMetadata polyMmd : polyMmds)
+					{
+						MetadataClassDescriptor mcd = polyMmd.getMetadataClassDescriptor();
+						this.putTagClassDescriptor(mcd);
+					}
+				}
+
+				// recursion
+				for (MetaMetadataField kid : nested.getChildMetaMetadata())
+				{
+					System.out.println(kid);
+					MetadataFieldDescriptor kidMFD = kid.getMetadataFieldDescriptor();
+					if (kidMFD != null && !kidMFD.startedTraversalForPolymorphism)
+						kidMFD.traverseAndProcessPolymorphismForCompilation();
+				}
+			}
+		}
 	}
 
 }

@@ -211,7 +211,12 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	 */
 	private MetaMetadataField															inheritedField					= null;
 
+	/**
+	 * in which meta-metadata this field is declared.
+	 */
 	private MetaMetadata																	declaringMmd						= null;
+	
+	private ArrayList<String>															otherTags								= null;
 
 	public MetaMetadataField()
 	{
@@ -570,6 +575,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	 * 
 	 * @return true if nothing goes wrong; false if there is something wrong.
 	 */
+	@Deprecated
 	abstract protected boolean checkForErrors();
 
 	/**
@@ -577,6 +583,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	 * 
 	 * @return
 	 */
+	@Deprecated
 	abstract public boolean isNewClass();
 
 	/**
@@ -585,6 +592,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	 * 
 	 * @return
 	 */
+	@Deprecated
 	protected boolean isNewDeclaration()
 	{
 		return getInheritedField() == null;
@@ -1207,6 +1215,8 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	/**
 	 * get the type name of this field, in terms of meta-metadata.
 	 * 
+	 * TODO redefining this.
+	 * 
 	 * @return the type name.
 	 */
 	abstract protected String getTypeName();
@@ -1285,6 +1295,18 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	void setDeclaringMmd(MetaMetadata declaringMmd)
 	{
 		this.declaringMmd = declaringMmd;
+	}
+
+	public ArrayList<String> getOtherTags()
+	{
+		return otherTags;
+	}
+
+	public void addOtherTag(String otherTag)
+	{
+		if (this.otherTags == null)
+			this.otherTags = new ArrayList<String>();
+		this.otherTags.add(otherTag);
 	}
 
 	abstract public MetadataFieldDescriptor findOrGenerateMetadataFieldDescriptor(MetadataClassDescriptor contextCd);

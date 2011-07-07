@@ -488,6 +488,7 @@ public class MetaMetadataScalarField extends MetaMetadataField
 		appendable.append("\trebuildCompositeTermVector();\n}\n");
 	}
 
+	@Deprecated
 	@Override
 	public boolean checkForErrors()
 	{

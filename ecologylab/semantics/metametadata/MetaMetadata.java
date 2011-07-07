@@ -79,8 +79,6 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 
 	private Map<MetaMetadataSelector, MetaMetadata>	reselectMap;
 
-	private Scope<MetaMetadata>											inlineMmds				= null;
-	
 	public MetaMetadata()
 	{
 		super();
@@ -234,25 +232,6 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 		return builtIn;
 	}
 
-	public Scope<MetaMetadata> getInlineMmds()
-	{
-		return inlineMmds;
-	}
-	
-	public MetaMetadata getInlineMmd(String name)
-	{
-		if (inlineMmds != null)
-			return inlineMmds.get(name);
-		return null;
-	}
-
-	public void addInlineMmd(String name, MetaMetadata generatedMmd)
-	{
-		if (inlineMmds == null)
-			inlineMmds = new Scope<MetaMetadata>();
-		inlineMmds.put(name, generatedMmd);
-	}
-
 	public void setGenerateClass(boolean generateClass)
 	{
 		this.dontGenerateClass = !generateClass;
@@ -333,6 +312,7 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 		return null;
 	}
 
+	@Deprecated
 	@Override
 	protected boolean checkForErrors()
 	{
@@ -476,16 +456,18 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 		}
 	}
 
-	void inheritInlineMmds(MetaMetadata other)
-	{
-		if (other.getInlineMmds() != null)
-			this.inlineMmds = new Scope<MetaMetadata>(other.getInlineMmds());
-	}
-
 	@Override
 	protected boolean isInlineDefinition()
 	{
 		return false;
+	}
+
+	void inheritInlineMmds(MetaMetadata mmd)
+	{
+		if (this.getInlineMmds() == null)
+			this.setInlineMmds(new Scope<MetaMetadata>());
+		if (mmd.getInlineMmds() != null)
+			this.getInlineMmds().setParent(mmd.getInlineMmds());
 	}
 
 	void findOrGenerateMetadataClassDescriptor(TranslationScope tscope)
@@ -499,6 +481,7 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 			if (this.isGenerateClassDescriptor())
 			{
 				MetadataClassDescriptor cd = new MetadataClassDescriptor(
+						this,
 						this.getName(),
 						this.getComment(),
 						this.packageName(),
@@ -510,7 +493,7 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 
 				for (MetaMetadataField f : this.getChildMetaMetadata())
 				{
-					if (f.getDeclaringMmd() == this)
+					if (f.getDeclaringMmd() == this && f.getInheritedField() == null)
 					{
 						MetadataFieldDescriptor fd = f.findOrGenerateMetadataFieldDescriptor(cd);
 						cd.addMetadataFieldDescriptor(fd);
@@ -537,6 +520,18 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 	static boolean isRootMetaMetadata(MetaMetadata mmd)
 	{
 		return mmd.getName().equals(ROOT_MMD_NAME);
+	}
+
+	public boolean isDerivedFrom(MetaMetadata base)
+	{
+		MetaMetadata mmd = this;
+		while (mmd.getInheritedMmd() != null)
+		{
+			if (mmd.getInheritedMmd() == base)
+				return true;
+			mmd = mmd.getInheritedMmd();
+		}
+		return false;
 	}
 
 }

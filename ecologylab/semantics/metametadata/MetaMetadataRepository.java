@@ -33,6 +33,7 @@ import ecologylab.semantics.metadata.builtins.Image;
 import ecologylab.semantics.metadata.builtins.MetadataBuiltinsTranslationScope;
 import ecologylab.semantics.metadata.scalar.types.MetadataScalarScalarType;
 import ecologylab.semantics.namesandnums.DocumentParserTagNames;
+import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.TranslationScope;
@@ -405,6 +406,14 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 			metaMetadata.inheritMetaMetadata();
 			metaMetadata.findOrGenerateMetadataClassDescriptor(ts);
 		}
+		
+		// finish polymorphism work, e.g. @simpl_classes & @xml_other_tags
+		for (ClassDescriptor cd : ts.getClassDescriptors())
+		{
+			MetadataClassDescriptor mcd = (MetadataClassDescriptor) cd;
+			mcd.traverseAndProcessPolymorphismForCompilation();
+		}
+		
 		return ts;
 	}
 

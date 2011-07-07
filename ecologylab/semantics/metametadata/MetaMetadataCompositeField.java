@@ -2,10 +2,7 @@ package ecologylab.semantics.metametadata;
 
 import java.util.ArrayList;
 
-import ecologylab.collections.Scope;
 import ecologylab.generic.HashMapArrayList;
-import ecologylab.semantics.actions.SemanticAction;
-import ecologylab.semantics.actions.SemanticActionTranslationScope;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.Metadata.mm_dont_inherit;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
@@ -50,11 +47,6 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 	 * for caching getTypeNameInJava().
 	 */
 	private String										typeNameInJava	= null;
-	
-	/**
-	 * (cached scopeMmd).
-	 */
-	private MetaMetadata							scopeMmd = null;
 	
 	public MetaMetadataCompositeField()
 	{
@@ -223,6 +215,7 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 				MetaMetadata thisMmd = (MetaMetadata) this;
 				if (MetaMetadata.isRootMetaMetadata(thisMmd))
 				{
+					// init each field's declaringMmd to this (some of them may change during inheritance)
 					for (MetaMetadataField f : this.getChildMetaMetadata())
 					{
 						f.setDeclaringMmd(thisMmd);
@@ -241,15 +234,17 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 			inheritedMmd.setRepository(repository);
 			inheritedMmd.inheritMetaMetadata();
 			
-			// inherit from inheritedMmd, for meta-metadata specific things
+			// process meta-metadata specific things
 			if (this instanceof MetaMetadata)
 			{
-				((MetaMetadata) this).inheritInlineMmds(inheritedMmd);
 				this.inheritAttributes(inheritedMmd); // don't do this for fields: fields should inherit attributes from inheritedField
+				((MetaMetadata) this).inheritInlineMmds(inheritedMmd);
+				// init each field's declaringMmd to this (some of them may change during inheritance)
 				for (MetaMetadataField field : this.getChildMetaMetadata())
 				{
-					// initialize declaringMmd to this (some may be changed later)
 					field.setDeclaringMmd((MetaMetadata) this);
+					if (field instanceof MetaMetadataNestedField)
+						((MetaMetadataNestedField) field).setInlineMmds(this.getInlineMmds());
 				}
 			}
 			
@@ -257,8 +252,10 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 			for (MetaMetadataField field : inheritedMmd.getChildMetaMetadata())
 			{
 				if (field instanceof MetaMetadataNestedField)
-					((MetaMetadataNestedField) field).inheritMetaMetadata();
-
+				{
+					((MetaMetadataNestedField)field).inheritMetaMetadata();
+				}
+				
 				String fieldName = field.getName();
 				MetaMetadataField fieldLocal = this.getChildMetaMetadata().get(fieldName);
 				if (fieldLocal == null)
@@ -275,33 +272,57 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 					fieldLocal.setInheritedField(field);
 					fieldLocal.setDeclaringMmd(field.getDeclaringMmd());
 					fieldLocal.inheritAttributes(field);
-					if (fieldLocal instanceof MetaMetadataNestedField && field instanceof MetaMetadataNestedField)
-						((MetaMetadataNestedField)fieldLocal).setInheritedMmd(((MetaMetadataNestedField)field).getInheritedMmd());
 				}
 			}
 			
 			// recursively call this method on nested fields
 			for (MetaMetadataField f : this.getChildMetaMetadata())
 			{
-				if (f.getDeclaringMmd() == this)
-				{
-					if (!(this instanceof MetaMetadata))
-					{
-						// this must be a nested field w/o extends/child_extends (or we would have processed it
-						// as inline mmd), but actually defines new fields 
-						throw new MetaMetadataException("to define new fields inline, you need to specify extends!");
-					}
-					this.setGenerateClassDescriptor(true);
-				}
+				if (f.parent() != this)
+					continue; // don't need to process purely inherited fields
 				
-				// if it is a nested field, no matter if it is declared in this meta-metadata, we have to
-				// process its nested fields by calling inheritedMetaMetadata(). and we know that its
-				// attributes have been inherited correctly.
+				if (f.getDeclaringMmd() == this && f.getInheritedField() == null)
+					this.setGenerateClassDescriptor(true);
+				
+				// recursively call this method on nested fields
 				if (f instanceof MetaMetadataNestedField)
 				{
-					f.setRepository(repository);
-					((MetaMetadataNestedField) f).setPackageName(this.packageName());
-					((MetaMetadataNestedField) f).inheritMetaMetadata();
+					MetaMetadataNestedField f1 = (MetaMetadataNestedField) f;
+					f1.setRepository(repository);
+					f1.setPackageName(this.packageName());
+
+					MetaMetadataNestedField f0 = (MetaMetadataNestedField) f.getInheritedField();
+					if (f0 == null)
+					{
+						f1.inheritMetaMetadata(); // new field, may define inline mmd
+					}
+					else
+					{
+						if (f1.getTypeName().equals(f0.getTypeName()))
+						{
+							// inherited field w/o changing base type
+							f1.setInheritedMmd(f0.getInheritedMmd());
+							f1.inheritMetaMetadata();
+						}
+						else
+						{
+							// inherited field w changing base type
+							f1.inheritMetaMetadata();
+							MetaMetadata mmd0 = f0.getInheritedMmd();
+							MetaMetadata mmd1 = f1.getInheritedMmd();
+							if (mmd1.isDerivedFrom(mmd0))
+							{
+								f0.addPolymorphicMmd(mmd0); // the base type
+								f0.addPolymorphicMmd(mmd1);
+								if (f1.tag != null)
+									mmd1.addOtherTag(f1.tag);
+							}
+							else
+							{
+								throw new MetaMetadataException("incompatible types: " + f0 + " => " + f1);
+							}
+						}
+					}
 				}
 				
 				f.inheritInProcess = false;
@@ -340,8 +361,7 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 				{
 					// could be an inline mmd type
 					// this must not be meta-metadata; MetaMetadata.isInlineDefinition() returns false
-					MetaMetadata scopeMmd = getScopeMmd();
-					inheritedMmd = scopeMmd == null ? null : scopeMmd.getInlineMmd(inheritedMmdName);
+					inheritedMmd = this.getInlineMmd(inheritedMmdName);
 					if (inheritedMmd == null)
 						throw new MetaMetadataException("meta-metadata not found: " + inheritedMmdName);
 				}
@@ -351,9 +371,8 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 				MetaMetadata generatedMmd = this.generateMetaMetadata(previousName, inheritedMmd);
 				
 				// put generatedMmd in to current scope
-				MetaMetadata scopeMmd = getScopeMmd();
-				scopeMmd.addInlineMmd(previousName, generatedMmd);
-				generatedMmd.addInlineMmd(previousName, generatedMmd);
+				this.addInlineMmd(previousName, generatedMmd);
+				generatedMmd.addInlineMmd(previousName, generatedMmd); // so that fields inside a inline mmd can refer to that inline mmd itself
 				
 				generatedMmd.inheritMetaMetadata(); // this will set generateClassDescriptor to true if necessary
 				
@@ -374,8 +393,7 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 				inheritedMmd = repository.getByTagName(inheritedMmdName);
 				if (inheritedMmd == null && !(this instanceof MetaMetadata))
 				{
-					MetaMetadata scopeMmd = getScopeMmd();
-					inheritedMmd = scopeMmd == null ? null : scopeMmd.getInlineMmd(inheritedMmdName);
+					inheritedMmd = this.getInlineMmd(inheritedMmdName);
 				}
 				if (inheritedMmd == null)
 					throw new MetaMetadataException("meta-metadata not found: " + inheritedMmdName + " (if you want to define new types inline, you need to specify extends/child_extends)");
@@ -387,32 +405,7 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 		}
 		return inheritedMmd;
 	}
-
-	/**
-	 * get the mmd with a correct scope of inline mmd definitions. more specifically, if this is a
-	 * field inside a mmd, we look up that mmd for inline mmd definitions (that mmd should have
-	 * already inherited inline definitions from its ancestors); if this is a field inside another
-	 * nested field, we look up that nested field's declaringMmd (which should also have already
-	 * inherited inline definitions from its ancestors).
-	 * <p>
-	 * prerequisite: this is not a MetaMetadata
-	 * 
-	 * @return
-	 */
-	private MetaMetadata getScopeMmd()
-	{
-		if (scopeMmd == null)
-		{
-			assert !(this instanceof MetaMetadata): "should never call getScopeMmd on a MetaMetadata because MetaMetadata will never be inline!";
-			MetaMetadataNestedField parent = (MetaMetadataNestedField) this.parent();
-			if (parent instanceof MetaMetadata)
-				scopeMmd = (MetaMetadata) parent;
-			else
-				scopeMmd = parent.getDeclaringMmd();
-		}
-		return scopeMmd;
-	}
-
+	
 	/**
 	 * this method generates a new mmd from this field, and makes this field as if is using that mmd
 	 * as type.
@@ -528,6 +521,7 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 						null,
 						javaTypeName);
 		}
+		this.metadataFieldDescriptor = fd;
 		return fd;
 	}
 

@@ -1,5 +1,8 @@
 package ecologylab.semantics.metametadata;
 
+import java.util.HashSet;
+
+import ecologylab.collections.Scope;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.serialization.simpl_inherit;
 
@@ -9,27 +12,33 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	
 	@simpl_composite
 	@xml_tag("field_parser")
-	private FieldParserElement	fieldParserElement;
+	private FieldParserElement		fieldParserElement;
 
 	@simpl_scalar
-	private boolean							promoteChildren;									// if children should be
-																																// displayed at this level
+	private boolean								promoteChildren;									// if children should be
+																																	// displayed at this level
 
 	@simpl_scalar
-	private boolean							polymorphicGlobal;
+	private boolean								polymorphicGlobal;
 
 	@xml_tag("package")
 	@simpl_scalar
-	String											packageName;
+	String												packageName;
 
 	/**
 	 * the mmd used by this nested field. corresponding attributes: (child_)type/extends. could be a
 	 * generated one for inline definitions.
 	 */
-	private MetaMetadata				inheritedMmd;
+	private MetaMetadata					inheritedMmd;
 
-	private boolean							generateClassDescriptor	= false;
-	
+	private boolean								generateClassDescriptor	= false;
+
+	private Scope<MetaMetadata>		inlineMmds							= null;
+
+	// private boolean isPolymorphic = false;
+
+	private HashSet<MetaMetadata>	polymorphicMmds					= null;
+
 	public MetaMetadataNestedField()
 	{
 		// TODO Auto-generated constructor stub
@@ -175,6 +184,7 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	 */
 	public abstract MetaMetadataCompositeField metaMetadataCompositeField();
 
+	@Deprecated
 	@Override
 	protected boolean checkForErrors()
 	{
@@ -245,6 +255,7 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	 */
 	private MetaMetadataNestedField typeDefinition;
 	
+	@Deprecated
 	@Override
 	protected MetaMetadataNestedField getTypeDefinition()
 	{
@@ -361,6 +372,59 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	public void setGenerateClassDescriptor(boolean generateClassDescriptor)
 	{
 		this.generateClassDescriptor = generateClassDescriptor;
+	}
+	
+	public Scope<MetaMetadata> getInlineMmds()
+	{
+		return inlineMmds;
+	}
+	
+	void setInlineMmds(Scope<MetaMetadata> inlineMmds)
+	{
+		this.inlineMmds = inlineMmds;
+	}
+	
+	public MetaMetadata getInlineMmd(String name)
+	{
+		if (inlineMmds != null)
+			return inlineMmds.get(name);
+		return null;
+	}
+
+	void addInlineMmd(String name, MetaMetadata generatedMmd)
+	{
+		if (inlineMmds == null)
+			inlineMmds = new Scope<MetaMetadata>();
+		inlineMmds.put(name, generatedMmd);
+	}
+
+//	public boolean isPolymorphic()
+//	{
+//		return isPolymorphic;
+//	}
+
+//	void setPolymorphic(boolean isPolymorphic)
+//	{
+//		this.isPolymorphic = isPolymorphic;
+//	}
+
+	public HashSet<MetaMetadata> getPolymorphicMmds()
+	{
+		return polymorphicMmds;
+	}
+
+	void addPolymorphicMmd(MetaMetadata polyMmd)
+	{
+		if (this.getInheritedField() != null)
+		{
+			((MetaMetadataNestedField)this.getInheritedField()).addPolymorphicMmd(polyMmd);
+		}
+		else
+		{
+			if (polymorphicMmds == null)
+				polymorphicMmds = new HashSet<MetaMetadata>();
+			polymorphicMmds.add(polyMmd);
+		}
 	}
 	
 }

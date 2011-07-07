@@ -5,6 +5,7 @@ package ecologylab.semantics.metadata;
 
 import java.util.ArrayList;
 
+import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.simpl_inherit;
 
@@ -17,6 +18,8 @@ import ecologylab.serialization.simpl_inherit;
 @simpl_inherit
 public class MetadataClassDescriptor extends ClassDescriptor<Metadata, MetadataFieldDescriptor>
 {
+	
+	private MetaMetadata definingMmd;
 	
 	public MetadataClassDescriptor()
 	{
@@ -34,6 +37,7 @@ public class MetadataClassDescriptor extends ClassDescriptor<Metadata, MetadataF
 	}
 
 	public MetadataClassDescriptor(
+			MetaMetadata definingMmd,
 			String tagName,
 			String comment,
 			String describedClassPackageName,
@@ -42,12 +46,29 @@ public class MetadataClassDescriptor extends ClassDescriptor<Metadata, MetadataF
 			ArrayList<String> interfaces)
 	{
 		super(tagName, comment, describedClassPackageName, describedClassSimpleName, superClass, interfaces);
-		// TODO Auto-generated constructor stub
+		this.definingMmd = definingMmd;
 	}
 	
 	public void addMetadataFieldDescriptor(MetadataFieldDescriptor fd)
 	{
 		this.addFieldDescriptor(fd);
+	}
+	
+	public void traverseAndProcessPolymorphismForCompilation()
+	{
+		if (this.definingMmd == null) // this could be true for built-ins
+			return;
+		
+		// resolve @xml_other_tags
+		if (this.definingMmd.getOtherTags() != null)
+			for (String otherTag : this.definingMmd.getOtherTags())
+				super.addOtherTag(otherTag);
+		
+		// process on fields
+		for (MetadataFieldDescriptor mfd : this.getDeclaredFieldDescriptorsByFieldName())
+		{
+			mfd.traverseAndProcessPolymorphismForCompilation();
+		}
 	}
 	
 }
