@@ -254,6 +254,8 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 		//this.metadataFieldDescriptor = other.metadataFieldDescriptor;
 		this.displayedLabel = other.displayedLabel;
 		this.repository = other.repository;
+		this.inheritFinished = other.inheritFinished;
+		this.inheritInProcess = other.inheritInProcess;
 		//this.metadataClass = other.metadataClass;
 		//this.metadataClassDescriptor = other.metadataClassDescriptor;
 	}
@@ -656,6 +658,8 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	void inheritForField(MetaMetadataField fieldToInheritFrom)
 	{
 
+		fieldToInheritFrom.inheritInProcess = true;
+		
 		String fieldName = fieldToInheritFrom.getName();
 		// this is for the case when meta_metadata has no meta_metadata fields of its own. It just
 		// inherits from super class.

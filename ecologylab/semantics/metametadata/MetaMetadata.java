@@ -18,6 +18,7 @@ import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.Metadata.mm_dont_inherit;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
+import ecologylab.semantics.metametadata.exceptions.MetaMetadataException;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.TranslationScope;
 import ecologylab.serialization.XMLTools;
@@ -468,6 +469,128 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 			this.setInlineMmds(new Scope<MetaMetadata>());
 		if (mmd.getInlineMmds() != null)
 			this.getInlineMmds().setParent(mmd.getInlineMmds());
+	}
+	
+	@Override
+	public void inheritMetaMetadata()
+	{
+			// a terminating point of recursion: do not inherit for root mmd 
+				if (MetaMetadata.isRootMetaMetadata(this))
+				{
+					// init each field's declaringMmd to this (some of them may change during inheritance)
+					for (MetaMetadataField f : this.getChildMetaMetadata())
+					{
+						f.setDeclaringMmd(this);
+					}
+					inheritFinished = true;
+					return;
+				}
+				
+				MetaMetadataRepository repository = getRepository();
+				
+				// find and prepare inheritedMmd
+				MetaMetadata inheritedMmd = findInheritedMetaMetadata(repository); // TODO for meta-metadata, this should only check type/extends 
+				inheritedMmd.setRepository(repository);
+				inheritedMmd.inheritMetaMetadata();
+				
+					this.inheritAttributes(inheritedMmd);
+					this.inheritInlineMmds(inheritedMmd);
+					// init each field's declaringMmd to this (some of them may change during inheritance)
+					for (MetaMetadataField field : this.getChildMetaMetadata())
+					{
+						field.setDeclaringMmd(this);
+						if (field instanceof MetaMetadataNestedField)
+							((MetaMetadataNestedField) field).setInlineMmds(this.getInlineMmds());
+					}
+				
+				// inherit fields (with attributes) from inheritedMmd
+				for (MetaMetadataField field : inheritedMmd.getChildMetaMetadata())
+				{
+					if (field instanceof MetaMetadataNestedField)
+					{
+						((MetaMetadataNestedField)field).inheritMetaMetadata();
+					}
+					
+					String fieldName = field.getName();
+					MetaMetadataField fieldLocal = this.getChildMetaMetadata().get(fieldName);
+					if (fieldLocal == null)
+					{
+						this.getChildMetaMetadata().put(fieldName, field);
+					}
+					else
+					{
+						// TODO need to do more tests to make sure that user does not accidentally hide a field
+						if (field.getClass() != fieldLocal.getClass())
+							warning("local field " + fieldLocal + " hides field " + fieldLocal + " with the same name in super mmd type!");
+						
+						debug("inheriting field: " + fieldLocal);
+						fieldLocal.setInheritedField(field);
+						fieldLocal.setDeclaringMmd(field.getDeclaringMmd());
+						fieldLocal.inheritAttributes(field);
+						
+						String localTag = fieldLocal.getTagForTranslationScope();
+						if (!field.getTagForTranslationScope().equals(localTag))
+							field.addOtherTag(localTag);
+					}
+				}
+				
+				// recursively call this method on nested fields
+				for (MetaMetadataField f : this.getChildMetaMetadata())
+				{
+					if (f.parent() != this)
+						continue; // don't need to process purely inherited fields
+					
+					if (f.getDeclaringMmd() == this && f.getInheritedField() == null)
+						this.setGenerateClassDescriptor(true);
+					
+					// recursively call this method on nested fields
+					if (f instanceof MetaMetadataNestedField)
+					{
+						MetaMetadataNestedField f1 = (MetaMetadataNestedField) f;
+						f1.setRepository(repository);
+						f1.setPackageName(this.packageName());
+
+						MetaMetadataNestedField f0 = (MetaMetadataNestedField) f.getInheritedField();
+						if (f0 == null)
+						{
+							f1.inheritMetaMetadata(); // new field, may define inline mmd
+						}
+						else
+						{
+							if (f1.getTypeName().equals(f0.getTypeName()))
+							{
+								// inherited field w/o changing base type
+								f1.setInheritedMmd(f0.getInheritedMmd());
+								f1.inheritMetaMetadata();
+							}
+							else
+							{
+								// inherited field w changing base type
+								f1.inheritMetaMetadata();
+								MetaMetadata mmd0 = f0.getInheritedMmd();
+								MetaMetadata mmd1 = f1.getInheritedMmd();
+								if (mmd1.isDerivedFrom(mmd0))
+								{
+									f0.addPolymorphicMmd(mmd0); // the base type
+									f0.addPolymorphicMmd(mmd1);
+									if (f1.tag != null)
+										mmd1.addOtherTag(f1.tag);
+								}
+								else
+								{
+									throw new MetaMetadataException("incompatible types: " + f0 + " => " + f1);
+								}
+							}
+						}
+					}
+					
+					f.inheritInProcess = false;
+					f.inheritFinished = true;
+				}
+				
+				// inherit other stuffs
+				if (this instanceof MetaMetadata)
+					((MetaMetadata) this).inheritNonFieldComponents(inheritedMmd);
 	}
 
 	void findOrGenerateMetadataClassDescriptor(TranslationScope tscope)

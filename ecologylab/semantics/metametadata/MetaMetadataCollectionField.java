@@ -60,18 +60,18 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 		MetaMetadataCollectionField cloned = new MetaMetadataCollectionField();
 		cloned.inheritAttributes(this);
 		cloned.copyClonedFieldsFrom(this);
-//		HashMapArrayList<String, MetaMetadataField> newKids = new HashMapArrayList<String, MetaMetadataField>();
-//		HashMapArrayList<String, MetaMetadataField> childMetaMetadata = this.getChildMetaMetadata();
-//		if (childMetaMetadata != null)
-//		{
-//			for (String kidName : childMetaMetadata.keySet())
-//			{
-//				MetaMetadataField kid = childMetaMetadata.get(kidName);
-//				MetaMetadataField clonedKid = (MetaMetadataField) kid.clone();
-//				newKids.put(kidName, clonedKid);
-//			}
-//			cloned.setChildMetaMetadata(newKids);
-//		}
+		HashMapArrayList<String, MetaMetadataField> newKids = new HashMapArrayList<String, MetaMetadataField>();
+		HashMapArrayList<String, MetaMetadataField> childMetaMetadata = this.getChildMetaMetadata();
+		if (childMetaMetadata != null)
+		{
+			for (String kidName : childMetaMetadata.keySet())
+			{
+				MetaMetadataField kid = childMetaMetadata.get(kidName);
+				MetaMetadataField clonedKid = (MetaMetadataField) kid.clone();
+				newKids.put(kidName, clonedKid);
+			}
+			cloned.setChildMetaMetadata(newKids);
+		}
 		return cloned;
 	}
 

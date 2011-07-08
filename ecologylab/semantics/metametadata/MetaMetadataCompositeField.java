@@ -72,14 +72,14 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 		MetaMetadataCompositeField cloned = new MetaMetadataCompositeField();
 		cloned.inheritAttributes(this);
 		cloned.copyClonedFieldsFrom(this);
-//		HashMapArrayList<String, MetaMetadataField> newKids = new HashMapArrayList<String, MetaMetadataField>();
-//		for (String kidName : this.getChildMetaMetadata().keySet())
-//		{
-//			MetaMetadataField kid = this.getChildMetaMetadata().get(kidName);
-//			MetaMetadataField clonedKid = (MetaMetadataField) kid.clone();
-//			newKids.put(kidName, clonedKid);
-//		}
-//		cloned.setChildMetaMetadata(newKids);
+		HashMapArrayList<String, MetaMetadataField> newKids = new HashMapArrayList<String, MetaMetadataField>();
+		for (String kidName : this.getChildMetaMetadata().keySet())
+		{
+			MetaMetadataField kid = this.getChildMetaMetadata().get(kidName);
+			MetaMetadataField clonedKid = (MetaMetadataField) kid.clone();
+			newKids.put(kidName, clonedKid);
+		}
+		cloned.setChildMetaMetadata(newKids);
 		return cloned;
 	}
 	
