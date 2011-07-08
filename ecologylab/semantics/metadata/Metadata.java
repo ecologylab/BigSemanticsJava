@@ -48,6 +48,7 @@ import ecologylab.serialization.library.html.Span;
 import ecologylab.serialization.library.html.Table;
 import ecologylab.serialization.library.html.Td;
 import ecologylab.serialization.library.html.Tr;
+import ecologylab.serialization.types.scalar.ScalarType;
 
 /**
  * This is the new metadata class that is the base class for the meta-metadata system. It contains
@@ -763,17 +764,26 @@ abstract public class Metadata extends ElementState implements MetadataBase, Ter
 				if (!mmdField.isHide())
 				{
 					final int type = childFD.getType();
+					String textCssClass = mmdField.getStyle();
+					if ("default".equals(textCssClass))
+							textCssClass		= "metadata_text";
 					if (type == SCALAR)
 					{
 						if (!childFD.getScalarType().isDefaultValue(childFD.getField(), currentMetadata))
 						{
-
 							Tr scalarTr = new Tr();
 							
 							scalarTr.setId("mmd_" + childFD.getTagName());
-
-							childFD.appendHtmlValueAsAttribute(currentMetadata, serializationContext, mmdField.getStyle(),
-									navigatesFD, mmdField.getDisplayedLabel(), scalarTr);
+							
+							String tagName					= childFD.getTagName();
+							boolean hasNavigatesTo	= navigatesFD != null;
+							hasNavigatesTo 					= hasNavigatesTo && !navigatesFD.isDefaultValue(currentMetadata);
+							if (!hasNavigatesTo && (tagName.equals("location") || tagName.equals("link")))
+							{
+								navigatesFD						= childFD;
+							}
+							childFD.appendHtmlValueAsAttribute(currentMetadata, serializationContext, scalarTr,
+									mmdField.getDisplayedLabel(), "metadata_field_name", textCssClass, navigatesFD, mmdField.getSchemaOrgItemprop());
 
 							if (recursing)
 								compositeTable.rows.add(scalarTr);
@@ -824,7 +834,7 @@ abstract public class Metadata extends ElementState implements MetadataBase, Ter
 								FieldDescriptor compositeAsScalarFD = nestedES.classDescriptor().getScalarValueFieldDescripotor();
 								
 								if (isScalar)
-									childFD.appendHtmlValueAsAttribute(currentMetadata, serializationContext, mmdField.getStyle(), navigatesFD, null, nestedTr);
+									childFD.appendHtmlValueAsAttribute(currentMetadata, serializationContext, nestedTr, null, "metadata_field_name", textCssClass, navigatesFD, null);
 								else if (compositeAsScalarFD != null)
 								{
 									Span compositeAsScalarSpan = new Span();
