@@ -35,7 +35,7 @@
 		<scalar name="abstract_field" xpath="//div[@class='abstract']/text()[1]"/>
 		<composite name="source">
 			<scalar name="archive_name" xpath="//div[@id='breadcrumb']/a[2]/text()" />
-			<scalar name="archive"  xpath="//div[@id='breadcrumb']/a[2]/@href" />
+			<scalar name="location"  xpath="//div[@id='breadcrumb']/a[2]/@href" />
 		</composite>
 	</meta_metadata>
 </meta_metadata_repository>

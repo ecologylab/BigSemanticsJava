@@ -137,7 +137,7 @@
 		</semantic_actions>
 	</meta_metadata>
 
-	<meta_metadata name="yahoo_thumbnail" extends="metadata" dont_generate_class="true" >
+	<meta_metadata name="yahoo_thumbnail" extends="metadata">
 		<scalar name="thumb_url" tag="Url" scalar_type="ParsedURL" hint="XML_LEAF" />
 		<scalar name="width" tag="Width" scalar_type="Int" hint="XML_LEAF" />
 		<scalar name="height" tag="Height" scalar_type="Int" hint="XML_LEAF" />
