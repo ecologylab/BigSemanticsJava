@@ -1,5 +1,7 @@
 package ecologylab.semantics.metametadata.test;
 
+import org.w3c.tidy.Tidy;
+
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.generated.library.GeneratedMetadataTranslationScope;
@@ -20,7 +22,7 @@ public class TestReselect
 		ParsedURL url1 = ParsedURL.getAbsolute("http://www.amazon.com/gp/product/1118013689/"); // book
 		ParsedURL url2 = ParsedURL.getAbsolute("http://www.amazon.com/gp/product/B004Z6NWAU"); // electronic
 
-		SemanticsSessionScope infoCollector = new SemanticsSessionScope(GeneratedMetadataTranslationScope.get());
+		SemanticsSessionScope infoCollector = new SemanticsSessionScope(GeneratedMetadataTranslationScope.get(), Tidy.class);
 		download(url1, infoCollector);
 		download(url2, infoCollector);
 

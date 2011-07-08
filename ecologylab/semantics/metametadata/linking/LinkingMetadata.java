@@ -4,9 +4,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.w3c.tidy.Tidy;
 
 import ecologylab.generic.Continuation;
 import ecologylab.net.ParsedURL;
@@ -40,7 +41,7 @@ public class LinkingMetadata implements Continuation<DocumentClosure>
 			count = urls.size();
 	
 			// create the infoCollector
-			SemanticsSessionScope infoCollector = new SemanticsSessionScope(GeneratedMetadataTranslationScope.get());
+			SemanticsSessionScope infoCollector = new SemanticsSessionScope(GeneratedMetadataTranslationScope.get(), Tidy.class);
 	
 			// seed start urls
 			for (String url : urls)

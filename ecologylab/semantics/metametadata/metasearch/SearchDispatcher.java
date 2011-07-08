@@ -1,11 +1,12 @@
 package ecologylab.semantics.metametadata.metasearch;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import ecologylab.generic.Debug;
+import org.w3c.tidy.Tidy;
+
 import ecologylab.generic.Continuation;
+import ecologylab.generic.Debug;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.generated.library.GeneratedMetadataTranslationScope;
@@ -37,7 +38,7 @@ public class SearchDispatcher extends Debug implements Continuation<DocumentClos
 	public void search(String[] urls)
 	{
 		// create the infoCollector
-		SemanticsSessionScope infoCollector = new SemanticsSessionScope(GeneratedMetadataTranslationScope.get());
+		SemanticsSessionScope infoCollector = new SemanticsSessionScope(GeneratedMetadataTranslationScope.get(), Tidy.class);
 
 		// seed start urls
 		totalCount = urls.length;

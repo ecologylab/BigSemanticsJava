@@ -53,7 +53,7 @@ implements Continuation<DocumentClosure>
 		super(appName);
 		this.outputStream	= outputStream;
 		
-		infoCollector = new SemanticsSessionScope(GeneratedMetadataTranslationScope.get());
+		infoCollector = new SemanticsSessionScope(GeneratedMetadataTranslationScope.get(), Tidy.class);
 	}
 
 	public void collect(String[] urlStrings)
@@ -69,7 +69,6 @@ implements Continuation<DocumentClosure>
 			ParsedURL thatPurl	= ParsedURL.getAbsolute(urlStrings[i]);
 			Document document		= infoCollector.getOrConstructDocument(thatPurl);
 			DocumentClosure documentClosure = document.getOrConstructClosure();
-			documentClosure.setProvider(new Tidy());
 			if (documentClosure != null)	// super defensive -- make sure its not malformed or null or otherwise a mess
 				documentCollection.add(documentClosure);
 		}

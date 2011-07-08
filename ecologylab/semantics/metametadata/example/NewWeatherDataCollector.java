@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 
+import org.w3c.tidy.Tidy;
+
 import ecologylab.generic.Continuation;
 import ecologylab.io.DownloadProcessor;
 import ecologylab.net.ParsedURL;
@@ -31,7 +33,7 @@ public class NewWeatherDataCollector implements Continuation<DocumentClosure>
 		SemanticAction.register(SaveImageSemanticAction.class);
 
 		// create the infoCollector
-		SemanticsSessionScope infoCollector = new SemanticsSessionScope(GeneratedMetadataTranslationScope.get());
+		SemanticsSessionScope infoCollector = new SemanticsSessionScope(GeneratedMetadataTranslationScope.get(), Tidy.class);
 
 		// seeding start url
 		String seedUrlStr = "http://www.google.com/search?q=texas+site%3Awww.wunderground.com";
