@@ -67,6 +67,23 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 	}
 
 	@Override
+	protected Object clone() throws CloneNotSupportedException
+	{
+		MetaMetadataCompositeField cloned = new MetaMetadataCompositeField();
+		cloned.inheritAttributes(this);
+		cloned.copyClonedFieldsFrom(this);
+		HashMapArrayList<String, MetaMetadataField> newKids = new HashMapArrayList<String, MetaMetadataField>();
+		for (String kidName : this.getChildMetaMetadata().keySet())
+		{
+			MetaMetadataField kid = this.getChildMetaMetadata().get(kidName);
+			MetaMetadataField clonedKid = (MetaMetadataField) kid.clone();
+			newKids.put(kidName, clonedKid);
+		}
+		cloned.setChildMetaMetadata(newKids);
+		return cloned;
+	}
+
+	@Override
 	public String getType()
 	{
 		return type;
@@ -272,6 +289,10 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 					fieldLocal.setInheritedField(field);
 					fieldLocal.setDeclaringMmd(field.getDeclaringMmd());
 					fieldLocal.inheritAttributes(field);
+					
+					String localTag = fieldLocal.getTagForTranslationScope();
+					if (!field.getTagForTranslationScope().equals(localTag))
+						field.addOtherTag(localTag);
 				}
 			}
 			

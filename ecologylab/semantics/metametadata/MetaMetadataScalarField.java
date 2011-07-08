@@ -32,7 +32,7 @@ public class MetaMetadataScalarField extends MetaMetadataField
 
 	@simpl_composite
 	protected RegexFilter	filter;
-	
+
 	@simpl_scalar
 	@xml_tag("as_composite_scalar")
 	private boolean				compositeScalar;
@@ -45,16 +45,25 @@ public class MetaMetadataScalarField extends MetaMetadataField
 	/**
 	 * for caching getTypeNameInJava().
 	 */
-	private String typeNameInJava = null;
-	
+	private String				typeNameInJava		= null;
+
 	/**
 	 * for caching getScalarTypeInJava().
 	 */
-	private String scalarTypeInJava = null;
+	private String				scalarTypeInJava	= null;
 
 	public MetaMetadataScalarField()
 	{
 		
+	}
+
+	@Override
+	protected Object clone() throws CloneNotSupportedException
+	{
+		MetaMetadataScalarField cloned = new MetaMetadataScalarField();
+		cloned.inheritAttributes(this);
+		cloned.copyClonedFieldsFrom(this);
+		return cloned;
 	}
 
 	/**
@@ -115,18 +124,20 @@ public class MetaMetadataScalarField extends MetaMetadataField
 	/**
 	 * This method will always return false since scalar fields never generate classes.
 	 */
+	@Deprecated
 	@Override
 	public boolean isNewClass()
 	{
 		return false;
 	}
 
+	@Deprecated
 	@Override
 	protected boolean isNewDeclaration()
 	{
 		if (scalarType != null)
 			return true; // enable default overriding behavior
-		return super.isNewDeclaration();
+		return false;
 	}
 
 	/**

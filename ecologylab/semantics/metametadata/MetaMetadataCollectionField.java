@@ -54,6 +54,23 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 		
 	}
 
+	@Override
+	protected Object clone() throws CloneNotSupportedException
+	{
+		MetaMetadataCollectionField cloned = new MetaMetadataCollectionField();
+		cloned.inheritAttributes(this);
+		cloned.copyClonedFieldsFrom(this);
+		HashMapArrayList<String, MetaMetadataField> newKids = new HashMapArrayList<String, MetaMetadataField>();
+		for (String kidName : this.getChildMetaMetadata().keySet())
+		{
+			MetaMetadataField kid = this.getChildMetaMetadata().get(kidName);
+			MetaMetadataField clonedKid = (MetaMetadataField) kid.clone();
+			newKids.put(kidName, clonedKid);
+		}
+		cloned.setChildMetaMetadata(newKids);
+		return cloned;
+	}
+
 	public String getChildTag()
 	{
 		if (childTag != null)
@@ -251,6 +268,11 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 	@Override
 	public void inheritMetaMetadata()
 	{
+		/*
+		 * the childComposite should hide all complexity between collection fields and composite fields,
+		 * through hooks when necessary.
+		 */
+		
 		if (!inheritFinished && !inheritInProcess)
 		{
 			this.inheritInProcess = true;
@@ -264,8 +286,7 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 				MetaMetadataCompositeField childComposite = this.getChildComposite();
 				if (childComposite.getName().equals(UNRESOLVED_NAME))
 					childComposite.setName(this.childType == null ? this.name : this.childType);
-				childComposite.type = this.childType; // here not using setter to reduce unnecessary
-																							// re-assignment of this.childType
+				childComposite.type = this.childType; // here not using setter to reduce unnecessary re-assignment of this.childType
 				childComposite.extendsAttribute = this.childExtends;
 				childComposite.tag = this.childTag;
 				childComposite.setRepository(this.getRepository());

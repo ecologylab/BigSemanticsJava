@@ -37,7 +37,7 @@ import ecologylab.textformat.NamedStyle;
  */
 @simpl_inherit
 @simpl_descriptor_classes({ MetaMetadataClassDescriptor.class, MetaMetadataFieldDescriptor.class })
-public abstract class MetaMetadataField extends ElementState implements Mappable<String>, Iterable<MetaMetadataField>, MMDConstants
+public abstract class MetaMetadataField extends ElementState implements Mappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneable
 {
 
 	static class LayerComparator implements Comparator<MetaMetadataField>
@@ -241,7 +241,18 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 		// this.childTag = copy.childTag;
 		// this.noWrap = copy.noWrap;
 	}
-
+	
+	abstract protected Object clone() throws CloneNotSupportedException;
+	
+	protected void copyClonedFieldsFrom(MetaMetadataField other)
+	{
+		this.metadataFieldDescriptor = other.metadataFieldDescriptor;
+		this.displayedLabel = other.displayedLabel;
+		this.repository = other.repository;
+		this.metadataClass = other.metadataClass;
+		this.metadataClassDescriptor = other.metadataClassDescriptor;
+	}
+	
 	public HashMapArrayList<String, MetaMetadataField> getChildMetaMetadata()
 	{
 		return kids;
