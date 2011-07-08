@@ -111,7 +111,7 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	@Deprecated
 	public void inheritMetaMetadata(MetaMetadataRepository repository)
 	{
-		if (!inheritFinished && !inheritInProcess)
+		if (!visitedMetaMetadata.contains(this) && !inheritFinished && !inheritInProcess)
 		{
 			/**************************************************************************************
 			 * Inheritance works here in a top-down manner: first we know the type or extends of a
@@ -124,6 +124,7 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 			// when you initialize A.b you will have to initialize A.b.a and you will have to initialize
 			// A.b.a.b ...
 			inheritInProcess = true;
+			visitedMetaMetadata.add(this);
 		
 			/*
 			 * tagName will be type / extends attribute for <composite>, or child_type attribute for
@@ -140,7 +141,7 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 					inheritAttributes(inheritedMetaMetadata);
 				for (MetaMetadataField inheritedField : inheritedMetaMetadata.getChildMetaMetadata())
 				{
-					if (this != inheritedField && !inheritedField.inheritInProcess)
+					if (!visitedMetaMetadata.contains(inheritedField) && !inheritedField.inheritInProcess && !inheritedField.ignoreCompletely)
 						inheritForField(inheritedField);
 				}
 				if (this instanceof MetaMetadata)

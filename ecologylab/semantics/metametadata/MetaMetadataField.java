@@ -57,6 +57,8 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	static ArrayList<MetaMetadataField>										EMPTY_COLLECTION				= new ArrayList<MetaMetadataField>(0);
 
 	static Iterator<MetaMetadataField>										EMPTY_ITERATOR					= EMPTY_COLLECTION.iterator();
+	
+	protected static HashSet<MetaMetadataField>						visitedMetaMetadata;
 
 	MetadataFieldDescriptor																metadataFieldDescriptor;
 
@@ -163,6 +165,9 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	@simpl_scalar
 	protected boolean																			ignoreInTermVector;
 
+	@simpl_scalar
+	protected boolean																			ignoreCompletely;
+	
 	// ///////////////////////////////// members /////////////////////////////////
 
 	HashSet<String>																				nonDisplayedFieldNames;
@@ -246,11 +251,11 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	
 	protected void copyClonedFieldsFrom(MetaMetadataField other)
 	{
-		this.metadataFieldDescriptor = other.metadataFieldDescriptor;
+		//this.metadataFieldDescriptor = other.metadataFieldDescriptor;
 		this.displayedLabel = other.displayedLabel;
 		this.repository = other.repository;
-		this.metadataClass = other.metadataClass;
-		this.metadataClassDescriptor = other.metadataClassDescriptor;
+		//this.metadataClass = other.metadataClass;
+		//this.metadataClassDescriptor = other.metadataClassDescriptor;
 	}
 	
 	public HashMapArrayList<String, MetaMetadataField> getChildMetaMetadata()
@@ -471,12 +476,17 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 
 	public boolean isHide()
 	{
-		return hide;
+		return hide || isIgnoreCompletely();
 	}
 
 	public boolean isIgnoreInTermVector()
 	{
-		return ignoreInTermVector;
+		return ignoreInTermVector || isIgnoreCompletely();
+	}
+	
+	public boolean isIgnoreCompletely()
+	{
+		return ignoreCompletely;
 	}
 
 	public int numNonDisplayedFields()
@@ -556,7 +566,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	public Iterator<MetaMetadataField> iterator()
 	{
 		HashMapArrayList<String, MetaMetadataField> childMetaMetadata = getChildMetaMetadata();
-		return (childMetaMetadata != null) ? childMetaMetadata.iterator() : EMPTY_ITERATOR;
+		return (childMetaMetadata != null) ? new MetaMetadataFieldIterator() : EMPTY_ITERATOR;
 	}
 
 	public String key()
@@ -650,12 +660,13 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 		// this is for the case when meta_metadata has no meta_metadata fields of its own. It just
 		// inherits from super class.
 		HashMapArrayList<String, MetaMetadataField> childMetaMetadata = getChildMetaMetadata();
-//		if (childMetaMetadata == null)
-//		{
-//			childMetaMetadata = initializeChildMetaMetadata();
-//		}
+		if (childMetaMetadata == null)
+		{
+			childMetaMetadata = initializeChildMetaMetadata();
+		}
 
 		// *do not* override fields in here with fields from super classes.
+		
 		MetaMetadataField fieldToInheritTo = childMetaMetadata.get(fieldName);
 		
 		if (fieldToInheritTo instanceof MetaMetadataCollectionField)
@@ -677,8 +688,20 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 
 		if (fieldToInheritTo == null)
 		{
-			childMetaMetadata.put(fieldName, fieldToInheritFrom);
-			fieldToInheritTo = fieldToInheritFrom;
+			MetaMetadataField clone;
+			try
+			{
+				clone = (MetaMetadataField) fieldToInheritFrom.clone();
+				clone.setParent(this);
+				childMetaMetadata.put(fieldName, clone);
+				fieldToInheritTo = clone;
+			}
+			catch (CloneNotSupportedException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
 		}
 		else
 		{			
@@ -687,17 +710,22 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 
 		if (!fieldToInheritTo.fieldInherited)
 		{
-			HashMapArrayList<String, MetaMetadataField> inheritedChildMetaMetadata = fieldToInheritFrom.getChildMetaMetadata();
-			if (inheritedChildMetaMetadata != null)
-			{
-				for (MetaMetadataField grandChildMetaMetadataField : inheritedChildMetaMetadata)
-				{
-					fieldToInheritTo.inheritForField(grandChildMetaMetadataField);
-				}
-			}
+//			HashMapArrayList<String, MetaMetadataField> inheritedChildMetaMetadata = fieldToInheritFrom.getChildMetaMetadata();
+//			if (inheritedChildMetaMetadata != null)
+//			{
+//				for (MetaMetadataField grandChildMetaMetadataField : inheritedChildMetaMetadata)
+//				{
+//					fieldToInheritTo.inheritForField(grandChildMetaMetadataField);
+//				}
+//			}
 
 			fieldToInheritTo.fieldInherited = true;
 		}
+	}
+
+	protected HashMapArrayList<String, MetaMetadataField> initializeChildMetaMetadata()
+	{
+		return null;
 	}
 
 	HashSet<String> nonDisplayedFieldNames()
@@ -1296,6 +1324,51 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	public String getSchemaOrgItemprop()
 	{
 		return schemaOrgItemprop;
+	}
+	
+	class MetaMetadataFieldIterator implements Iterator<MetaMetadataField>
+	{
+		int currentIndex = 0;
+
+		@Override
+		public boolean hasNext()
+		{
+			int size 				= kids.size();
+			boolean result 	= currentIndex < size;
+			
+			if (result)
+			{
+				for(int i=currentIndex; i < size; i++)
+				{
+					MetaMetadataField nextField = kids.get(i);
+					if (nextField.isIgnoreCompletely())
+					{
+						currentIndex++;
+					}
+					else
+						break;
+				}
+				
+				if (currentIndex == size)
+					result = false;
+			}
+			
+			return result;
+		}
+
+		@Override
+		public MetaMetadataField next()
+		{
+			return kids.get(currentIndex++);
+		}
+
+		@Override
+		public void remove()
+		{
+			// TODO Auto-generated method stub
+			
+		}
+		
 	}
 
 	public MetaMetadata getDeclaringMmd()
