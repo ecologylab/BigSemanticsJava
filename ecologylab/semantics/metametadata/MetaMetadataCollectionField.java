@@ -60,14 +60,18 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 		MetaMetadataCollectionField cloned = new MetaMetadataCollectionField();
 		cloned.inheritAttributes(this);
 		cloned.copyClonedFieldsFrom(this);
-		HashMapArrayList<String, MetaMetadataField> newKids = new HashMapArrayList<String, MetaMetadataField>();
-		for (String kidName : this.getChildMetaMetadata().keySet())
-		{
-			MetaMetadataField kid = this.getChildMetaMetadata().get(kidName);
-			MetaMetadataField clonedKid = (MetaMetadataField) kid.clone();
-			newKids.put(kidName, clonedKid);
-		}
-		cloned.setChildMetaMetadata(newKids);
+//		HashMapArrayList<String, MetaMetadataField> newKids = new HashMapArrayList<String, MetaMetadataField>();
+//		HashMapArrayList<String, MetaMetadataField> childMetaMetadata = this.getChildMetaMetadata();
+//		if (childMetaMetadata != null)
+//		{
+//			for (String kidName : childMetaMetadata.keySet())
+//			{
+//				MetaMetadataField kid = childMetaMetadata.get(kidName);
+//				MetaMetadataField clonedKid = (MetaMetadataField) kid.clone();
+//				newKids.put(kidName, clonedKid);
+//			}
+//			cloned.setChildMetaMetadata(newKids);
+//		}
 		return cloned;
 	}
 
@@ -381,6 +385,16 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 		if (kids != null && kids.size() > 0)
 			return kids.get(0) == composite;
 		return false;
+	}
+	
+	@Override
+	protected HashMapArrayList<String, MetaMetadataField> initializeChildMetaMetadata()
+	{
+		kids = new HashMapArrayList<String, MetaMetadataField>();
+		MetaMetadataCompositeField composite = new MetaMetadataCompositeField(childType, null);
+		kids.put(composite.getName(), composite);
+		
+		return composite.getChildMetaMetadata();
 	}
 
 }
