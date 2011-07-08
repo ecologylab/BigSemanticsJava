@@ -17,7 +17,6 @@ import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
 import ecologylab.semantics.metadata.Metadata.mm_dont_inherit;
-import ecologylab.semantics.metametadata.exceptions.MetaMetadataException;
 import ecologylab.semantics.tools.MetaMetadataCompiler;
 import ecologylab.semantics.tools.MetaMetadataCompilerUtils;
 import ecologylab.serialization.ClassDescriptor;
@@ -322,7 +321,8 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 						{
 							// the type name doesn't work, but we can try super mmd class
 							MetaMetadata superMmd = getRepository().getByTagName(type);
-							result = superMmd.getMetadataClass(ts);
+							if (superMmd != null)
+								result = superMmd.getMetadataClass(ts);
 						}
 					}
 					
@@ -1302,8 +1302,14 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 		return otherTags;
 	}
 
-	public void addOtherTag(String otherTag)
+	void addOtherTag(String otherTag)
 	{
+		if (this.getInheritedField() != null)
+		{
+			this.getInheritedField().addOtherTag(otherTag);
+			return;
+		}
+		
 		if (this.otherTags == null)
 			this.otherTags = new ArrayList<String>();
 		this.otherTags.add(otherTag);
