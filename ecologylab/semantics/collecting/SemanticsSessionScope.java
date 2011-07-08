@@ -6,12 +6,13 @@ package ecologylab.semantics.collecting;
 import ecologylab.appframework.ApplicationProperties;
 import ecologylab.collections.ConcurrentHashSet;
 import ecologylab.generic.Debug;
+import ecologylab.generic.ReflectionTools;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.gui.InteractiveSpace;
 import ecologylab.semantics.gui.WindowSystemBridge;
+import ecologylab.semantics.html.dom.IDOMProvider;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.Image;
-import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.namesandnums.DocumentParserTagNames;
 import ecologylab.semantics.namesandnums.SemanticsSessionObjectNames;
 import ecologylab.semantics.seeding.SemanticsPrefs;
@@ -42,22 +43,25 @@ implements SemanticsPrefs, ApplicationProperties, DocumentParserTagNames
 	
 	private ConcurrentHashSet<ParsedURL> 				visitedLocations	= new ConcurrentHashSet<ParsedURL>(DocumentLocationMap.NUM_DOCUMENTS);
 
+	final private Class<? extends IDOMProvider> domProviderClass;
+	
 	/**
 	 * Construct with no Crawler, and empty Seeding.
 	 * 
 	 * @param metaMetadataTranslations	Generated MetadataTranslationScope.
 	 */
-	public SemanticsSessionScope(TranslationScope metaMetadataTranslations)
+	public SemanticsSessionScope(TranslationScope metaMetadataTranslations, Class<? extends IDOMProvider> domProviderClass)
 	{
-		this(metaMetadataTranslations, null);
+		this(metaMetadataTranslations, null, domProviderClass);
 	}
-	public SemanticsSessionScope(TranslationScope metadataTranslationScope, Crawler crawler)
+	public SemanticsSessionScope(TranslationScope metadataTranslationScope, Crawler crawler, Class<? extends IDOMProvider> domProviderClass)
 	{
-		this(metadataTranslationScope, new Seeding(), crawler);
+		this(metadataTranslationScope, new Seeding(), crawler, domProviderClass);
 	}
-	public SemanticsSessionScope(TranslationScope metadataTranslationScope, Seeding seeding, Crawler crawler)
+	public SemanticsSessionScope(TranslationScope metadataTranslationScope, Seeding seeding, Crawler crawler, Class<? extends IDOMProvider> domProviderClass)
 	{
 		super(metadataTranslationScope);
+		this.domProviderClass							= domProviderClass;
 		this.put(SemanticsSessionObjectNames.INFO_COLLECTOR, this);	//TODO make this unnecessary; its a band-aid on old code
 		this.crawler											= crawler;
 		this.seeding											= seeding;
@@ -198,5 +202,10 @@ implements SemanticsPrefs, ApplicationProperties, DocumentParserTagNames
 	public boolean isLocationNew(ParsedURL location)
 	{
 		return visitedLocations.add(location);
+	}
+	
+	public IDOMProvider constructDOMProvider()
+	{
+		return ReflectionTools.getInstance(domProviderClass);
 	}
 }

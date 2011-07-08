@@ -69,6 +69,10 @@ public abstract class HTMLDOMParser extends HTMLParserCommon implements DOMParse
 	 */
 	protected org.w3c.dom.Node createDom() throws IOException
 	{
+		provider									= infoCollector.constructDOMProvider();
+		provider.setQuiet(true);
+		provider.setShowWarnings(false);
+
     org.w3c.dom.Node document = provider.parse(inputStream(), null, null);
     return document;
 	}
@@ -257,13 +261,6 @@ public abstract class HTMLDOMParser extends HTMLParserCommon implements DOMParse
 	public boolean isContentPage ( )
 	{
 		return contentPage;
-	}
-
-	public void setProvider(IDOMProvider provider)
-	{
-		this.provider = provider;
-		provider.setQuiet(true);
-		provider.setShowWarnings(false);
 	}
 
 	@Override

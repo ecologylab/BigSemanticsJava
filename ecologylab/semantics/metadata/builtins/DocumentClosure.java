@@ -64,8 +64,6 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 	
 	DownloadStatus								downloadStatus	= DownloadStatus.UNPROCESSED;
 	
-	IDOMProvider 									provider;
-	
 	protected		SemanticsSessionScope	semanticsSessionScope;
 	
 	/**
@@ -391,10 +389,6 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 		if (documentParser != null)
 		{
 			documentParser.fillValues(purlConnection, this, semanticsSessionScope);
-			if (documentParser instanceof HTMLDOMParser)
-			{
-				((HTMLDOMParser) documentParser).setProvider(provider);
-			}
 		}
 		else
 			warning("No DocumentParser found");
@@ -747,11 +741,6 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 	public SemanticsSessionScope getSemanticsSessionScope()
 	{
 		return semanticsSessionScope;
-	}
-
-	public void setProvider(IDOMProvider provider)
-	{
-		this.provider = provider;
 	}
 
 	/**
