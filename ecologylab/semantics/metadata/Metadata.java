@@ -19,6 +19,7 @@ import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.collecting.LinkedMetadataMonitor;
 import ecologylab.semantics.metadata.builtins.DebugMetadata;
+import ecologylab.semantics.metadata.output.MetadataConstants;
 import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
 import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.semantics.metametadata.ClassAndCollectionIterator;
@@ -740,12 +741,12 @@ abstract public class Metadata extends ElementState implements MetadataBase, Ter
 				Div div = new Div();
 				Input button = new Input();
 				
-				div.setCssClass("metadata_text");
-				htmlTable.setCssClass("nested_table");
-				buttonTd.setCssClass("metadata_field_name");
-				button.setType("image");
-				button.setCssClass("composite");
-				button.setSrc("http://ecologylab.net/cf/compositionIncludes/button.jpg");
+				div.setCssClass(MetadataConstants.METADATA_TEXT);
+				htmlTable.setCssClass(MetadataConstants.NESTED_TABLE);
+				buttonTd.setCssClass(MetadataConstants.FIELD_NAME);
+				button.setType(MetadataConstants.IMAGE);
+				button.setCssClass(MetadataConstants.COMPOSITE);
+				button.setSrc(MetadataConstants.IMAGE_URL);
 				button.setValue("");
 
 				div.members.add(button);
@@ -765,8 +766,13 @@ abstract public class Metadata extends ElementState implements MetadataBase, Ter
 				{
 					final int type = childFD.getType();
 					String textCssClass = mmdField.getStyle();
-					if ("default".equals(textCssClass))
-							textCssClass		= "metadata_text";
+					if (MetadataConstants.DEFAULT.equals(textCssClass))
+							textCssClass		= MetadataConstants.METADATA_TEXT;
+					String schemaOrgItemType = null;
+					if (mmdField instanceof MetaMetadataCompositeField)
+						schemaOrgItemType = ((MetaMetadataCompositeField) mmdField).getSchemaOrgItemType();
+					if (schemaOrgItemType != null)
+						compositeTable.setSchemaOrgItemType(schemaOrgItemType);
 					if (type == SCALAR)
 					{
 						if (!childFD.getScalarType().isDefaultValue(childFD.getField(), currentMetadata))
@@ -778,12 +784,12 @@ abstract public class Metadata extends ElementState implements MetadataBase, Ter
 							String tagName					= childFD.getTagName();
 							boolean hasNavigatesTo	= navigatesFD != null;
 							hasNavigatesTo 					= hasNavigatesTo && !navigatesFD.isDefaultValue(currentMetadata);
-							if (!hasNavigatesTo && (tagName.equals("location") || tagName.equals("link")))
+							if (!hasNavigatesTo && (tagName.equals(MetadataConstants.LOCATION) || tagName.equals(MetadataConstants.LINK)))
 							{
 								navigatesFD						= childFD;
 							}
 							childFD.appendHtmlValueAsAttribute(currentMetadata, serializationContext, scalarTr,
-									mmdField.getDisplayedLabel(), "metadata_field_name", textCssClass, navigatesFD, mmdField.getSchemaOrgItemprop());
+									mmdField.getDisplayedLabel(), MetadataConstants.FIELD_NAME, textCssClass, navigatesFD, mmdField.getSchemaOrgItemprop());
 
 							if (recursing)
 								compositeTable.rows.add(scalarTr);
@@ -821,12 +827,12 @@ abstract public class Metadata extends ElementState implements MetadataBase, Ter
 							int i = 0;
 							Tr nestedTr = new Tr();
 							
-							nestedTr.setCssClass("nested");
+							nestedTr.setCssClass(MetadataConstants.NESTED);
 
 							if (childFD.isWrapped())
 								childFD.writeHtmlWrap(false, thatCollection.size(), mmdField.getDisplayedLabel(), nestedTr);
 							Td collectionTd = new Td();
-							collectionTd.setCssClass("nested_field_value");
+							collectionTd.setCssClass(MetadataConstants.NESTED_VALUE);
 							
 							for (Object next : thatCollection)
 							{
@@ -834,11 +840,11 @@ abstract public class Metadata extends ElementState implements MetadataBase, Ter
 								FieldDescriptor compositeAsScalarFD = nestedES.classDescriptor().getScalarValueFieldDescripotor();
 								
 								if (isScalar)
-									childFD.appendHtmlValueAsAttribute(currentMetadata, serializationContext, nestedTr, null, "metadata_field_name", textCssClass, navigatesFD, null);
+									childFD.appendHtmlValueAsAttribute(currentMetadata, serializationContext, nestedTr, null, MetadataConstants.FIELD_NAME, textCssClass, navigatesFD, mmdField.getSchemaOrgItemprop());
 								else if (compositeAsScalarFD != null)
 								{
 									Span compositeAsScalarSpan = new Span();
-									compositeAsScalarSpan.setCssClass("composite_as_scalar");
+									compositeAsScalarSpan.setCssClass(MetadataConstants.COMPOSITE_AS_SCALAR);
 									collectionTd.spans.add(compositeAsScalarFD.getHtmlCompositeCollectionValue(nestedES, i == 0));
 								}
 								i++;
@@ -866,7 +872,7 @@ abstract public class Metadata extends ElementState implements MetadataBase, Ter
 							Tr compositeTr = new Tr();
 							Td compositeTd = new Td();
 							
-							tr.setCssClass("nested");
+							tr.setCssClass(MetadataConstants.NESTED);
 							
 							Metadata nestedMD = (Metadata) thatReferenceObject;
 							ElementState nestedES = (ElementState) thatReferenceObject;
@@ -877,7 +883,7 @@ abstract public class Metadata extends ElementState implements MetadataBase, Ter
 								childFD.writeCompositeHtmlWrap(false, mmdField.getDisplayedLabel(), compositeTr);
 
 								Span compositeAsScalarSpan = new Span();
-								compositeAsScalarSpan.setCssClass("composite_as_scalar");
+								compositeAsScalarSpan.setCssClass(MetadataConstants.COMPOSITE_AS_SCALAR);
 								compositeTd.spans.add(compositeAsScalarFD.getHtmlCompositeCollectionValue(nestedES, true));
 							}
 							else
