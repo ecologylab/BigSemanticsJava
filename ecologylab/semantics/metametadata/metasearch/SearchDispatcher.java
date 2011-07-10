@@ -98,7 +98,7 @@ public class SearchDispatcher extends Debug implements Continuation<DocumentClos
 						if (i < numSearchResults)
 						{
 							SearchResult result = search.getSearchResults().get(i);
-							if (!result.isNullHeading())
+							if (result.getHeading() != null)
 							{
 								result.setEngine(search.getLocation().domain());
 								renderer.appendMetadata(result);
