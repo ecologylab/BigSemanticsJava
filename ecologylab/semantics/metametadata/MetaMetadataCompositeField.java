@@ -342,15 +342,29 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 		{
 			if (isInlineDefinition())
 			{
-				String inheritedMmdName = this.getExtendsAttribute();
-				inheritedMmd = repository.getByTagName(inheritedMmdName);
+				// try type first
+				String inheritedMmdName = this.getType();
+				if (inheritedMmdName != null)
+				{
+					inheritedMmd = repository.getByTagName(inheritedMmdName);
+					if (inheritedMmd != null)
+					{
+						warning("meta-metadata " + inheritedMmdName + " found, ignoring extends/child_extends.");
+					}
+				}
+				// try extends
 				if (inheritedMmd == null)
 				{
-					// could be an inline mmd type
-					inheritedMmd = this.getScopingMmd().getInlineMmd(inheritedMmdName);
-					if (inheritedMmd == null)
-						throw new MetaMetadataException("meta-metadata not found: " + inheritedMmdName);
+					inheritedMmdName = this.getExtendsAttribute();
+					inheritedMmd = repository.getByTagName(inheritedMmdName);
 				}
+				// could be an inline mmd
+				if (inheritedMmd == null)
+				{
+					inheritedMmd = this.getScopingMmd().getInlineMmd(inheritedMmdName);
+				}
+				if (inheritedMmd == null)
+					throw new MetaMetadataException("meta-metadata not found: " + inheritedMmdName);
 				
 				// process inline mmds
 				String previousName = this.getTypeOrName();
