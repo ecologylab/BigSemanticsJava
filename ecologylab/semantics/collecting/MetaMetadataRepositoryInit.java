@@ -32,26 +32,26 @@ import ecologylab.serialization.TranslationScope;
 public class MetaMetadataRepositoryInit extends Scope<Object>
 implements DocumentParserTagNames, ApplicationProperties, SemanticsNames
 {
-	static final String	META_METADATA_REPOSITORY_DIR		= "repository";
-	
-	protected static File												METAMETADATA_REPOSITORY_DIR_FILE;
-	protected static File												METAMETADATA_SITES_FILE;
+	public static final String										DEFAULT_REPOSITORY_LOCATION	= "../ecologylabSemantics/repository";
 
+	public static final String										SEMANTICS										= "semantics/";
 
-	public static final String 	SEMANTICS											= "semantics/";
-	
+	protected static File													METAMETADATA_REPOSITORY_DIR_FILE;
+
+	protected static File													METAMETADATA_SITES_FILE;
+
 	/**
 	 * 
 	 * The repository has the metaMetadatas of the document types. The repository is populated as the
 	 * documents are processed.
 	 */
-	protected static final MetaMetadataRepository		META_METADATA_REPOSITORY;
-	
-	public static final MetaMetadata								DOCUMENT_META_METADATA;
-	public static final MetaMetadata								PDF_META_METADATA;
-	public static final MetaMetadata								SEARCH_META_METADATA;
-	public static final MetaMetadata								IMAGE_META_METADATA;
-	public static final MetaMetadata								DEBUG_META_METADATA;
+	protected static final MetaMetadataRepository	META_METADATA_REPOSITORY;
+
+	public static final MetaMetadata							DOCUMENT_META_METADATA;
+	public static final MetaMetadata							PDF_META_METADATA;
+	public static final MetaMetadata							SEARCH_META_METADATA;
+	public static final MetaMetadata							IMAGE_META_METADATA;
+	public static final MetaMetadata							DEBUG_META_METADATA;
 
 	static
 	{
@@ -63,7 +63,10 @@ implements DocumentParserTagNames, ApplicationProperties, SemanticsNames
 			METAMETADATA_REPOSITORY_DIR_FILE 	= Assets.getAsset(mmAssetsRoot, null, "repository", null, !USE_ASSETS_CACHE, SemanticsAssetVersions.METAMETADATA_ASSET_VERSION);
 		}
 		else
-			METAMETADATA_REPOSITORY_DIR_FILE 	= new File("../ecologylabSemantics/repository");
+		{
+//			METAMETADATA_REPOSITORY_DIR_FILE 	= new File("../ecologylabSemantics/repository");
+			METAMETADATA_REPOSITORY_DIR_FILE 	= new File(DEFAULT_REPOSITORY_LOCATION);
+		}
 		
 		Debug.println("\t\t-- Reading meta_metadata from " + METAMETADATA_REPOSITORY_DIR_FILE);
 
@@ -75,7 +78,11 @@ implements DocumentParserTagNames, ApplicationProperties, SemanticsNames
 		IMAGE_META_METADATA								= META_METADATA_REPOSITORY.getByTagName(IMAGE_TAG);
 		DEBUG_META_METADATA								= META_METADATA_REPOSITORY.getByTagName(DEBUG_TAG);
 	}
-
+	
+	public static MetaMetadataRepository getRepository()
+	{
+		return META_METADATA_REPOSITORY;
+	}
 	
 	private MetaMetadataRepository									metaMetadataRepository;
 	

@@ -80,6 +80,8 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 
 	private Map<MetaMetadataSelector, MetaMetadata>	reselectMap;
 
+	private Scope<MetaMetadata>											inlineMmds				= null;
+
 	public MetaMetadata()
 	{
 		super();
@@ -463,6 +465,30 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 		return false;
 	}
 
+	public Scope<MetaMetadata> getInlineMmds()
+	{
+		return inlineMmds;
+	}
+	
+	void setInlineMmds(Scope<MetaMetadata> inlineMmds)
+	{
+		this.inlineMmds = inlineMmds;
+	}
+	
+	public MetaMetadata getInlineMmd(String name)
+	{
+		if (inlineMmds != null)
+			return inlineMmds.get(name);
+		return null;
+	}
+
+	void addInlineMmd(String name, MetaMetadata generatedMmd)
+	{
+		if (inlineMmds == null)
+			inlineMmds = new Scope<MetaMetadata>();
+		inlineMmds.put(name, generatedMmd);
+	}
+	
 	void inheritInlineMmds(MetaMetadata mmd)
 	{
 		if (this.getInlineMmds() == null)
@@ -472,127 +498,38 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 	}
 	
 	@Override
-	public void inheritMetaMetadata()
+	protected void inheritMetaMetadataHelper()
 	{
-			// a terminating point of recursion: do not inherit for root mmd 
-				if (MetaMetadata.isRootMetaMetadata(this))
-				{
-					// init each field's declaringMmd to this (some of them may change during inheritance)
-					for (MetaMetadataField f : this.getChildMetaMetadata())
-					{
-						f.setDeclaringMmd(this);
-					}
-					inheritFinished = true;
-					return;
-				}
-				
-				MetaMetadataRepository repository = getRepository();
-				
-				// find and prepare inheritedMmd
-				MetaMetadata inheritedMmd = findInheritedMetaMetadata(repository); // TODO for meta-metadata, this should only check type/extends 
-				inheritedMmd.setRepository(repository);
-				inheritedMmd.inheritMetaMetadata();
-				
-					this.inheritAttributes(inheritedMmd);
-					this.inheritInlineMmds(inheritedMmd);
-					// init each field's declaringMmd to this (some of them may change during inheritance)
-					for (MetaMetadataField field : this.getChildMetaMetadata())
-					{
-						field.setDeclaringMmd(this);
-						if (field instanceof MetaMetadataNestedField)
-							((MetaMetadataNestedField) field).setInlineMmds(this.getInlineMmds());
-					}
-				
-				// inherit fields (with attributes) from inheritedMmd
-				for (MetaMetadataField field : inheritedMmd.getChildMetaMetadata())
-				{
-					if (field instanceof MetaMetadataNestedField)
-					{
-						((MetaMetadataNestedField)field).inheritMetaMetadata();
-					}
-					
-					String fieldName = field.getName();
-					MetaMetadataField fieldLocal = this.getChildMetaMetadata().get(fieldName);
-					if (fieldLocal == null)
-					{
-						this.getChildMetaMetadata().put(fieldName, field);
-					}
-					else
-					{
-						// TODO need to do more tests to make sure that user does not accidentally hide a field
-						if (field.getClass() != fieldLocal.getClass())
-							warning("local field " + fieldLocal + " hides field " + fieldLocal + " with the same name in super mmd type!");
-						
-						debug("inheriting field: " + fieldLocal);
-						fieldLocal.setInheritedField(field);
-						fieldLocal.setDeclaringMmd(field.getDeclaringMmd());
-						fieldLocal.inheritAttributes(field);
-						
-						String localTag = fieldLocal.getTagForTranslationScope();
-						if (!field.getTagForTranslationScope().equals(localTag))
-							field.addOtherTag(localTag);
-					}
-				}
-				
-				// recursively call this method on nested fields
-				for (MetaMetadataField f : this.getChildMetaMetadata())
-				{
-					if (f.parent() != this)
-						continue; // don't need to process purely inherited fields
-					
-					if (f.getDeclaringMmd() == this && f.getInheritedField() == null)
-						this.setGenerateClassDescriptor(true);
-					
-					// recursively call this method on nested fields
-					if (f instanceof MetaMetadataNestedField)
-					{
-						MetaMetadataNestedField f1 = (MetaMetadataNestedField) f;
-						f1.setRepository(repository);
-						f1.setPackageName(this.packageName());
+		warning("processing mmd: " + this);
+		// init
+		for (MetaMetadataField field : this.getChildMetaMetadata())
+		{
+			// init each field's declaringMmd to this (some of them may change during inheritance)
+			field.setDeclaringMmd(this);
+			if (field instanceof MetaMetadataNestedField)
+				((MetaMetadataNestedField) field).setPackageName(this.packageName());
+		}
 
-						MetaMetadataNestedField f0 = (MetaMetadataNestedField) f.getInheritedField();
-						if (f0 == null)
-						{
-							f1.inheritMetaMetadata(); // new field, may define inline mmd
-						}
-						else
-						{
-							if (f1.getTypeName().equals(f0.getTypeName()))
-							{
-								// inherited field w/o changing base type
-								f1.setInheritedMmd(f0.getInheritedMmd());
-								f1.inheritMetaMetadata();
-							}
-							else
-							{
-								// inherited field w changing base type
-								f1.inheritMetaMetadata();
-								MetaMetadata mmd0 = f0.getInheritedMmd();
-								MetaMetadata mmd1 = f1.getInheritedMmd();
-								if (mmd1.isDerivedFrom(mmd0))
-								{
-									f0.addPolymorphicMmd(mmd0); // the base type
-									f0.addPolymorphicMmd(mmd1);
-									if (f1.tag != null)
-										mmd1.addOtherTag(f1.tag);
-								}
-								else
-								{
-									throw new MetaMetadataException("incompatible types: " + f0 + " => " + f1);
-								}
-							}
-						}
-					}
-					
-					f.inheritInProcess = false;
-					f.inheritFinished = true;
-				}
-				
-				// inherit other stuffs
-				if (this instanceof MetaMetadata)
-					((MetaMetadata) this).inheritNonFieldComponents(inheritedMmd);
+		// a terminating point of recursion: do not inherit for root mmd
+		if (MetaMetadata.isRootMetaMetadata(this))
+			return;
+
+		super.inheritMetaMetadataHelper();
+
+		// inherit other stuffs
+		this.inheritNonFieldComponents(this.getInheritedMmd());
 	}
-
+	
+	protected void inheritFromInheritedMmd(MetaMetadata inheritedMmd)
+	{
+		this.inheritInlineMmds(inheritedMmd);
+	}
+	
+	protected MetaMetadata getScopingMmd()
+	{
+		return this;
+	}
+	
 	void findOrGenerateMetadataClassDescriptor(TranslationScope tscope)
 	{
 		if (this.metadataClassDescriptor == null)

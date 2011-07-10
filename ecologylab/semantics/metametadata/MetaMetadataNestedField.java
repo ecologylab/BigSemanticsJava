@@ -2,14 +2,14 @@ package ecologylab.semantics.metametadata;
 
 import java.util.HashSet;
 
-import ecologylab.collections.Scope;
 import ecologylab.generic.HashMapArrayList;
+import ecologylab.serialization.ElementState;
 import ecologylab.serialization.simpl_inherit;
 
 @simpl_inherit
 public abstract class MetaMetadataNestedField extends MetaMetadataField implements PackageSpecifier
 {
-	
+
 	@simpl_composite
 	@xml_tag("field_parser")
 	private FieldParserElement		fieldParserElement;
@@ -32,8 +32,8 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	private MetaMetadata					inheritedMmd;
 
 	private boolean								generateClassDescriptor	= false;
-
-	private Scope<MetaMetadata>		inlineMmds							= null;
+	
+	protected MetaMetadata				scopingMmd;
 
 	// private boolean isPolymorphic = false;
 
@@ -86,12 +86,26 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 
 	abstract protected String getMetaMetadataTagToInheritFrom();
 	
+	public void inheritMetaMetadata()
+	{
+		if (!inheritFinished && !inheritInProcess)
+		{
+			debug("inheriting " + this.toString());
+			inheritInProcess = true;
+			this.inheritMetaMetadataHelper();
+			this.sortForDisplay();
+			inheritInProcess = false;
+			inheritFinished = true;
+		}
+	}
+	
 	/**
 	 * prerequisites:<br>
 	 * <ul>
 	 *   <li>for meta-metadata: name & type/extends set;</li>
 	 *   <li>for fields: attributes inherited & declaringMmd set;</li>
 	 *   <li>for both: parent element inheritedMmd set.</li>
+	 * </ul>
 	 * <p>
 	 * consequences:<br>
 	 * <ul>
@@ -102,7 +116,7 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	 *   <li>for all (first-level) fields, attributes inherited from their inheritedField. (enabling recursion)</li>
 	 * </ul>
 	 */
-	abstract public void inheritMetaMetadata();
+	abstract protected void inheritMetaMetadataHelper();
 
 	//FIXME -- make it work for type graphs!!!
 	/**
@@ -375,28 +389,22 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 		this.generateClassDescriptor = generateClassDescriptor;
 	}
 	
-	public Scope<MetaMetadata> getInlineMmds()
+	protected MetaMetadata getScopingMmd()
 	{
-		return inlineMmds;
+		if (scopingMmd == null)
+		{
+			MetaMetadataNestedField p = (MetaMetadataNestedField) this.parent();
+			if (p instanceof MetaMetadata)
+				scopingMmd =  (MetaMetadata) p;
+			else
+				scopingMmd = p.getDeclaringMmd();
+		}
+		return scopingMmd;
 	}
 	
-	void setInlineMmds(Scope<MetaMetadata> inlineMmds)
+	void setScopingMmd(MetaMetadata scopingMmd)
 	{
-		this.inlineMmds = inlineMmds;
-	}
-	
-	public MetaMetadata getInlineMmd(String name)
-	{
-		if (inlineMmds != null)
-			return inlineMmds.get(name);
-		return null;
-	}
-
-	void addInlineMmd(String name, MetaMetadata generatedMmd)
-	{
-		if (inlineMmds == null)
-			inlineMmds = new Scope<MetaMetadata>();
-		inlineMmds.put(name, generatedMmd);
+		this.scopingMmd = scopingMmd;
 	}
 
 //	public boolean isPolymorphic()
@@ -425,6 +433,22 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 			if (polymorphicMmds == null)
 				polymorphicMmds = new HashSet<MetaMetadata>();
 			polymorphicMmds.add(polyMmd);
+		}
+	}
+
+	protected void cloneKidsTo(MetaMetadataNestedField cloned)
+	{
+		HashMapArrayList<String, MetaMetadataField> childMetaMetadata = this.kids;
+		if (childMetaMetadata != null)
+		{
+			HashMapArrayList<String, MetaMetadataField> newKids = new HashMapArrayList<String, MetaMetadataField>();
+			for (String kidName : childMetaMetadata.keySet())
+			{
+				MetaMetadataField kid = childMetaMetadata.get(kidName);
+				MetaMetadataField clonedKid = (MetaMetadataField) kid.clone();
+				newKids.put(kidName, clonedKid);
+			}
+			cloned.setChildMetaMetadata(newKids);
 		}
 	}
 	

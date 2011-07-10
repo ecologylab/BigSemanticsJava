@@ -437,7 +437,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		{
 			metaMetadata.setRepository(this);
 		
-			metaMetadata.inheritMetaMetadata(this);
+			metaMetadata.inheritMetaMetadata();
 			metaMetadata.getClassAndBindDescriptors(metadataTScope);
 			
 			MetadataClassDescriptor metadataClassDescriptor = metaMetadata.getMetadataClassDescriptor();
@@ -498,13 +498,13 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		return (tag == null) ? null : repositoryByTagName.get(tag);
 	}
 
-	public MetaMetadataCompositeField getMM(Class<? extends Metadata> parentClass, String fieldName)
+	public MetaMetadataNestedField getMM(Class<? extends Metadata> parentClass, String fieldName)
 	{
-		MetaMetadataCompositeField result = null;
+		MetaMetadataNestedField result = null;
 		MetaMetadata parentMM = getMM(parentClass);
 
 		if (parentMM != null)
-			result = (MetaMetadataCompositeField) parentMM.lookupChild(fieldName);
+			result = (MetaMetadataNestedField) parentMM.lookupChild(fieldName);
 
 		return result;
 	}

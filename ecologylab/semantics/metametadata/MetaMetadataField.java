@@ -209,6 +209,8 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	protected MetadataClassDescriptor											metadataClassDescriptor;
 
 	String																								toString;
+	
+	private boolean																				cloned									= false;
 
 	/**
 	 * for caching getInheritedField().
@@ -247,17 +249,30 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 		// this.noWrap = copy.noWrap;
 	}
 	
-	abstract protected Object clone() throws CloneNotSupportedException;
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (obj instanceof MetaMetadataField)
+		{
+			MetaMetadataField f = (MetaMetadataField) obj;
+			if (f.getName().equals(this.getName()) && f.getDeclaringMmd() == this.getDeclaringMmd())
+				return true;
+		}
+		return false;
+	}
+
+	abstract protected Object clone();
 	
 	protected void copyClonedFieldsFrom(MetaMetadataField other)
 	{
-		//this.metadataFieldDescriptor = other.metadataFieldDescriptor;
 		this.displayedLabel = other.displayedLabel;
 		this.repository = other.repository;
 		this.inheritFinished = other.inheritFinished;
 		this.inheritInProcess = other.inheritInProcess;
+		//this.metadataFieldDescriptor = other.metadataFieldDescriptor;
 		//this.metadataClass = other.metadataClass;
 		//this.metadataClassDescriptor = other.metadataClassDescriptor;
+		this.declaringMmd = other.declaringMmd;
 	}
 	
 	public HashMapArrayList<String, MetaMetadataField> getChildMetaMetadata()
@@ -693,19 +708,10 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 		if (fieldToInheritTo == null)
 		{
 			MetaMetadataField clone;
-			try
-			{
-				clone = (MetaMetadataField) fieldToInheritFrom.clone();
-				clone.setParent(this);
-				childMetaMetadata.put(fieldName, clone);
-				fieldToInheritTo = clone;
-			}
-			catch (CloneNotSupportedException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		
+			clone = (MetaMetadataField) fieldToInheritFrom.clone();
+			clone.setParent(this);
+			childMetaMetadata.put(fieldName, clone);
+			fieldToInheritTo = clone;
 		}
 		else
 		{			
@@ -1373,6 +1379,16 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 			
 		}
 		
+	}
+	
+	public boolean isCloned()
+	{
+		return cloned;
+	}
+	
+	void setCloned(boolean cloned)
+	{
+		this.cloned = cloned;
 	}
 
 	public MetaMetadata getDeclaringMmd()
