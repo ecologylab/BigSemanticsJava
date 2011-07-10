@@ -1,9 +1,6 @@
 package ecologylab.semantics.metametadata;
 
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -11,14 +8,11 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.regex.Pattern;
 
-import ecologylab.appframework.PropertiesAndDirectories;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
 import ecologylab.semantics.metadata.Metadata.mm_dont_inherit;
-import ecologylab.semantics.tools.MetaMetadataCompiler;
-import ecologylab.semantics.tools.MetaMetadataCompilerUtils;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.FieldTypes;
@@ -608,34 +602,6 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 //		return this.kids;
 //	}
 
-	/**
-	 * check for errors.
-	 * 
-	 * @return true if nothing goes wrong; false if there is something wrong.
-	 */
-	@Deprecated
-	abstract protected boolean checkForErrors();
-
-	/**
-	 * do we need to generate a new class definition (e.g. java source file) for this field? 
-	 * 
-	 * @return
-	 */
-	@Deprecated
-	abstract public boolean isNewClass();
-
-	/**
-	 * is this a new declaration (instead of an inherited one), so that we should generate member
-	 * declaration & getter/setters for this field?
-	 * 
-	 * @return
-	 */
-	@Deprecated
-	protected boolean isNewDeclaration()
-	{
-		return getInheritedField() == null;
-	}
-
 	public MetaMetadataField lookupChild(MetadataFieldDescriptor metadataFieldDescriptor)
 	{
 		return lookupChild(XMLTools.getXmlTagName(metadataFieldDescriptor.getFieldName(), null));
@@ -661,76 +627,6 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 		return (tag != null) ? tag : name;
 		// return (isNoWrap()) ? ((childTag != null) ? childTag : childType) : (tag != null) ? tag :
 		// name;
-	}
-
-	/**
-	 * Add a child field from a super class into the representation for this. Unless it should be
-	 * shadowed, in which case ignore.
-	 * 
-	 * @param fieldToInheritFrom
-	 */
-	@Deprecated
-	void inheritForField(MetaMetadataField fieldToInheritFrom)
-	{
-
-		fieldToInheritFrom.inheritInProcess = true;
-		
-		String fieldName = fieldToInheritFrom.getName();
-		// this is for the case when meta_metadata has no meta_metadata fields of its own. It just
-		// inherits from super class.
-		HashMapArrayList<String, MetaMetadataField> childMetaMetadata = getChildMetaMetadata();
-		if (childMetaMetadata == null)
-		{
-			childMetaMetadata = initializeChildMetaMetadata();
-		}
-
-		// *do not* override fields in here with fields from super classes.
-		
-		MetaMetadataField fieldToInheritTo = childMetaMetadata.get(fieldName);
-		
-		if (fieldToInheritTo instanceof MetaMetadataCollectionField)
-		{
-			MetaMetadataCompositeField childComposite = ((MetaMetadataCollectionField) fieldToInheritTo).getChildComposite();
-			if (childComposite != null)
-			{
-				MetaMetadataCompositeField inheritedChildComposite = ((MetaMetadataCollectionField) fieldToInheritFrom).getChildComposite();
-				
-				if (MetaMetadataCollectionField.UNRESOLVED_NAME == childComposite.getName())
-				{
-					fieldToInheritTo.kids.remove(MetaMetadataCollectionField.UNRESOLVED_NAME);
-					childComposite.inheritAttributes(inheritedChildComposite);
-					childComposite.setName(inheritedChildComposite.getName());
-					fieldToInheritTo.kids.put(childComposite.getName(), childComposite);
-				}
-			}
-		}
-
-		if (fieldToInheritTo == null)
-		{
-			MetaMetadataField clone;
-			clone = (MetaMetadataField) fieldToInheritFrom.clone();
-			clone.setParent(this);
-			childMetaMetadata.put(fieldName, clone);
-			fieldToInheritTo = clone;
-		}
-		else
-		{			
-			fieldToInheritTo.inheritAttributes(fieldToInheritFrom);
-		}
-
-		if (!fieldToInheritTo.fieldInherited)
-		{
-//			HashMapArrayList<String, MetaMetadataField> inheritedChildMetaMetadata = fieldToInheritFrom.getChildMetaMetadata();
-//			if (inheritedChildMetaMetadata != null)
-//			{
-//				for (MetaMetadataField grandChildMetaMetadataField : inheritedChildMetaMetadata)
-//				{
-//					fieldToInheritTo.inheritForField(grandChildMetaMetadataField);
-//				}
-//			}
-
-			fieldToInheritTo.fieldInherited = true;
-		}
 	}
 
 	protected HashMapArrayList<String, MetaMetadataField> initializeChildMetaMetadata()
@@ -774,134 +670,6 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 		return javaClassName;
 	}
 	
-	/**
-	 * translate a meta_metadata meta-language description into a Java class, in the form of source
-	 * codes.
-	 * 
-	 * @param packageName
-	 * @throws IOException
-	 */
-	public void compileToMetadataClass(String packageName) throws IOException
-	{
-//		if (!checkForErrors())
-//			return;
-		
-		// create buffers
-		StringBuilder memberDefinitions = new StringBuilder();
-		StringBuilder methods = new StringBuilder();
-		
-		// loop to generate data member and method definitions
-		HashMapArrayList<String, MetaMetadataField> metaMetadataFieldList = getChildMetaMetadata();
-		if (metaMetadataFieldList != null)
-		{
-			for (MetaMetadataField metaMetadataField : metaMetadataFieldList)
-			{
-//				metaMetadataField.setExtendsField(extendsAttribute); // why?
-				
-				// set inherited properties
-				metaMetadataField.setRepository(getRepository());
-				
-				if (metaMetadataField.isNewClass())
-				{
-					metaMetadataField.compileToMetadataClass(packageName);
-					MetaMetadataCompilerUtils.importTargets.add(packageName + ".*");
-				}
-				
-				if (metaMetadataField.isNewDeclaration())
-				{
-					try
-					{
-						metaMetadataField.compileToMemberDefinitions(memberDefinitions);
-						metaMetadataField.compileToMethods(methods);
-					}
-					catch (IOException e)
-					{
-						warning("error in compiling " + this + ": " + e.getMessage());
-						e.printStackTrace();
-					}
-				}
-			}
-		}
-		
-		// determine class name
-		String className = XMLTools.classNameFromElementName(getTypeName());
-		
-		// open a file to write java source code
-		String generationPath = MetaMetadataCompilerUtils.getGenerationPath(packageName);
-		File directoryPath = PropertiesAndDirectories.createDirsAsNeeded(new File(generationPath));
-		File srcFile = new File(directoryPath, className + ".java");
-		System.out.println((this.file == null ? "" : this.file + "\n") + "\t\t -> " + srcFile + "\n");
-		PrintWriter p = new PrintWriter(new FileWriter(srcFile));
-
-		// update the translation class
-		MetaMetadataCompilerUtils.appendToTranslationScope(packageName + "." + className + ".class,\n");
-
-		// Write the package info
-		p.println(MetaMetadataCompilerUtils.PACKAGE + " " + packageName + ";\n");
-
-		// Write the import statements
-		MetaMetadataCompiler.printImports(p);
-		
-		// Write java-doc comments
-		String generalNotes = MetaMetadataCompilerUtils.COMMENT;
-		String comment = getComment();
-		if (comment == null)
-			comment = "";
-		MetaMetadataCompilerUtils.writeJavaDocComment(comment + generalNotes, p);
-
-		// write annotation(s)
-		p.println("@simpl_inherit");
-		String tagDecl = getTagDecl();
-		if (tagDecl != null && tagDecl.length() > 0)
-			p.println(tagDecl);
-
-		// Write class declaration
-//		String extendsAttribute = getExtendsAttribute();
-		String extendsAttribute = null;
-		String extendsName = extendsAttribute == null ? "Metadata" : XMLTools.classNameFromElementName(extendsAttribute);
-		p.println("public class " + className + "\nextends " + extendsName + "\n{\n");
-
-		// data members
-		p.println(memberDefinitions.toString());
-		
-		// write the constructors
-		MetaMetadataCompilerUtils.appendBlankConstructor(p, className);
-		MetaMetadataCompilerUtils.appendConstructor(p, className);
-		
-		// other methods
-		p.println(methods.toString());
-			
-		// end the class declaration
-		p.println("\n}\n");
-		p.flush();
-		p.close();
-	}
-
-	/**
-	 * compile this field into a member definition.
-	 * 
-	 * @param appendable
-	 * @param packageName
-	 * @throws IOException
-	 */
-	public void compileToMemberDefinitions(Appendable appendable) throws IOException
-	{
-		MetaMetadataCompilerUtils.writeJavaDocComment(comment, appendable);
-		if (!dontSerialize())
-		{
-			appendable.append(getAnnotationsInJava());
-			appendable.append("\n");
-		}
-		appendable.append("private ");
-		appendable.append(getTypeNameInJava());
-		appendable.append("\t");
-		appendable.append(getFieldNameInJava(false));
-		appendable.append(";\n\n");
-	}
-	
-	@Deprecated
-	abstract public String getAnnotationsInJava();
-	
 	abstract public String getAdditionalAnnotationsInJava();
 
 	private String fieldNameInJava = null;
@@ -942,101 +710,6 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	 */
 	abstract protected String getTypeNameInJava();
 	
-	/**
-	 * compile this field into methods. typical methods include lazy evaluation methid, getter and
-	 * setter. override to add more methods.
-	 * 
-	 * @param appendable
-	 * @param packageName
-	 * @throws IOException 
-	 */
-	public void compileToMethods(Appendable appendable) throws IOException
-	{
-		compileLazyEvaluationMethod(appendable);
-		compileGetter(appendable);
-		compileSetter(appendable);
-	}
-	
-	/**
-	 * generate a lazy evaluation method for this field.
-	 * 
-	 * @param appendable
-	 * @throws IOException
-	 */
-	protected void compileLazyEvaluationMethod(Appendable appendable) throws IOException
-	{
-		String fieldName = getFieldNameInJava(false);
-		String typeName = getTypeNameInJava();
-		
-		// write comment for this method
-		String comment = "Lazy evaluation for " + fieldName;
-		MetaMetadataCompilerUtils.writeJavaDocComment(comment, appendable);
-	
-		// first line. Start of method name
-		appendable.append("public ").append(typeName).append("\t").append(fieldName).append("()\n{\n");
-	
-		// second line. Declaration of result variable.
-		appendable.append("\t");
-		appendable.append(typeName).append("\t").append("result = this.").append(fieldName).append(";\n");
-	
-		// third line. Start of if statement
-		appendable.append("\t");
-		appendable.append("if (result == null)\n\t{\n");
-	
-		// fourth line. creation of new result object.
-		appendable.append("\t\t");
-		appendable.append("result = new ").append(typeName).append("();\n");
-	
-		// fifth line. end of if statement
-		appendable.append("\t\t");
-		appendable.append("this.").append(fieldName).append(" = result;\n\t}\n");
-	
-		// sixth line. return statement and end of method.
-		appendable.append("\t");
-		appendable.append("return result;\n}\n");
-	}
-
-	/**
-	 * generate a getter for this field.
-	 * 
-	 * @param appendable
-	 * @throws IOException
-	 */
-	protected void compileGetter(Appendable appendable) throws IOException
-	{
-		String fieldName = getFieldNameInJava(false);
-		String typeName = getTypeNameInJava();
-		
-		// write Java doc
-		String comment = "Get the value of field " + fieldName;
-		MetaMetadataCompilerUtils.writeJavaDocComment(comment, appendable);
-
-		appendable.append("public ").append(typeName).append(" get")
-							.append(getFieldNameInJava(true)).append("()\n{\n");
-		appendable.append("\treturn this.").append(fieldName).append(";\n}\n");
-	}
-
-	/**
-	 * generate a setter for this field.
-	 * 
-	 * @param appendable
-	 * @throws IOException
-	 */
-	protected void compileSetter(Appendable appendable) throws IOException
-	{
-		String fieldName = getFieldNameInJava(false);
-		String typeName = getTypeNameInJava();
-		
-		// write Java doc
-		String comment = "Set the value of field " + fieldName;
-		MetaMetadataCompilerUtils.writeJavaDocComment(comment, appendable);
-
-		// write first line
-		appendable.append("public void set").append(getFieldNameInJava(true))
-		          .append("(").append(typeName).append(" ").append(fieldName).append(")\n{\n");
-		appendable.append("\tthis.").append(fieldName).append(" = ").append(fieldName).append(";\n}\n");
-	}
-
 	public void inheritAttributes(MetaMetadataField inheritFrom)
 	{
 		MetaMetadataClassDescriptor classDescriptor = (MetaMetadataClassDescriptor) classDescriptor();
@@ -1207,61 +880,6 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	}
 	
 	/**
-	 * util function making sure that an object is null.
-	 * @param obj
-	 * @param errorMsgFmt
-	 * @param vars
-	 * @return true if obj is null, otherwise false.
-	 */
-	protected boolean assertNull(Object obj, String errorMsgFmt, Object... vars)
-	{
-		if (obj != null)
-		{
-			String err = String.format(errorMsgFmt, vars);
-			error(err);
-			return false;
-		}
-		return true;
-	}
-	
-	/**
-	 * util function making sure that an object is not null.
-	 * @param obj
-	 * @param errorMsgFmt
-	 * @param vars
-	 * @return true if obj is not null, otherwise false.
-	 */
-	protected boolean assertNotNull(Object obj, String errorMsgFmt, Object... vars)
-	{
-		if (obj == null)
-		{
-			String err = String.format(errorMsgFmt, vars);
-			error(err);
-			return false;
-		}
-		return true;
-	}
-	
-	/**
-	 * util function making sure that two objects are equal (by calling equals()).
-	 * @param obj1
-	 * @param obj2
-	 * @param errorMsgFmt
-	 * @param vars
-	 * @return true if they are equal, otherwise false.
-	 */
-	protected boolean assertEquals(Object obj1, Object obj2, String errorMsgFmt, Object... vars)
-	{
-		if (!obj1.equals(obj2))
-		{
-			String err = String.format(errorMsgFmt, vars);
-			error(err);
-			return false;
-		}
-		return true;
-	}
-	
-	/**
 	 * get the type name of this field, in terms of meta-metadata.
 	 * 
 	 * TODO redefining this.
@@ -1270,13 +888,6 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	 */
 	abstract protected String getTypeName();
 
-	/**
-	 * get the meta-metadata (or meta-metadata field) defining the type of this field.
-	 * 
-	 * @return as above explained.
-	 */
-	abstract protected MetaMetadataNestedField getTypeDefinition();
-	
 	/**
 	 * @return the meta-metadata field object from which this field inherits.
 	 */

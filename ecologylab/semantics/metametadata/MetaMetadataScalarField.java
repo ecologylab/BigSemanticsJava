@@ -1,13 +1,10 @@
 package ecologylab.semantics.metametadata;
 
-import java.io.IOException;
-
 import ecologylab.semantics.documentparsers.ParserBase;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
 import ecologylab.semantics.metametadata.exceptions.MetaMetadataException;
-import ecologylab.semantics.tools.MetaMetadataCompilerUtils;
 import ecologylab.serialization.ElementState.xml_tag;
 import ecologylab.serialization.FieldTypes;
 import ecologylab.serialization.Hint;
@@ -116,31 +113,6 @@ public class MetaMetadataScalarField extends MetaMetadataField
 		throw new RuntimeException("no mmd name for scalar fields!");
 	}
 
-	@Override
-	protected MetaMetadataNestedField getTypeDefinition()
-	{
-		throw new RuntimeException("can't get type definition on scalars!");
-	}
-
-	/**
-	 * This method will always return false since scalar fields never generate classes.
-	 */
-	@Deprecated
-	@Override
-	public boolean isNewClass()
-	{
-		return false;
-	}
-
-	@Deprecated
-	@Override
-	protected boolean isNewDeclaration()
-	{
-		if (scalarType != null)
-			return true; // enable default overriding behavior
-		return false;
-	}
-
 	/**
 	 * get the parser attribute of the meta_metadata this field resides in.
 	 * 
@@ -175,39 +147,6 @@ public class MetaMetadataScalarField extends MetaMetadataField
 		}
 	
 		return metaMetadataParser;
-	}
-
-	@Override
-	public String getAnnotationsInJava()
-	{
-		StringBuilder appendable = new StringBuilder("@simpl_scalar");
-		
-		// @simpl_composite_as_scalar
-		if (isCompositeScalar())
-		{
-			appendable.append(" @simpl_composite_as_scalar");
-		}
-		
-		// @xml_tag
-		String tagDecl = getTagDecl();
-		if (tagDecl != null && tagDecl.length() > 0)
-			appendable.append(" ").append(tagDecl);
-		
-		// @simpl_hint
-		if (getHint() != null)
-		{
-			appendable.append(String.format(" @simpl_hints(Hint.%s)", getHint()));
-		}
-	
-		// @filter
-		if (filter != null && getMetaMetadataParser().equals(ParserBase.DIRECT_BINDING_PARSER))
-		{
-			String regex = filter.getJavaRegex();
-			String replace = filter.getJavaReplace();
-			appendable.append(String.format(" @simpl_filter(regex=\"%s\", replace=\"%s\")", regex, replace));
-		}
-		
-		return appendable.toString();
 	}
 
 	@Override
@@ -266,246 +205,239 @@ public class MetaMetadataScalarField extends MetaMetadataField
 		return scalarTypeInJava;
 	}
 
-	@Override
-	public void compileToMethods(Appendable appendable) throws IOException
-	{
-		super.compileToMethods(appendable);
-		
-		compileIsNullMethod(appendable);
-		compileHWSetter(appendable);
-		compileDirectSetter(appendable);
-		compileDirectHWSetter(appendable);
-		if (getTypeNameInJava().equals("StringBuilder"))
-		{
-//			compileAppendMethod(appendable, "StringBuilder");
-			compileAppendMethod(appendable, "String");
-			compileHWAppendMethod(appendable, "StringBuilder");
-			compileHWAppendMethod(appendable, "String");
-		}
-	}
-
-	/**
-	 * generate a specialized getter for scalar field: e.g. public String getTitle()
-	 * { return title().getValue(); }
-	 */
-	@Override
-	protected void compileGetter(Appendable appendable) throws IOException
-	{
-		String fieldName = getFieldNameInJava(false);
-		String typeName = getScalarTypeInJava();
-		
-		// write java doc
-		String comment = "Gets the value of the field " + fieldName;
-		MetaMetadataCompilerUtils.writeJavaDocComment(comment, appendable);
-	
-		// first line
-		appendable.append("public ").append(typeName).append(" get")
-				.append(getFieldNameInJava(true)).append("()\n{\n");
-	
-		// second line
-		appendable.append("\treturn this.").append(fieldName).append("().getValue();\n}\n");
-	}
-
-	/**
-	 * generate a specialized setter for scalar field: e.g. public void setTitle(String title)
-	 * { this.title().setValue(title); }
-	 */
-	@Override
-	protected void compileSetter(Appendable appendable) throws IOException
-	{
-		String fieldName = getFieldNameInJava(false);
-		String typeName = getScalarTypeInJava();
-		
-		// write java doc
-		String comment = "Sets the value of the field " + fieldName;
-		MetaMetadataCompilerUtils.writeJavaDocComment(comment, appendable);
-	
-		// first line
-		appendable.append("public void set").append(getFieldNameInJava(true))
-				.append("(").append(typeName).append(" ").append(fieldName).append(")\n{\n");
-	
-		// second line
-		appendable.append("\tthis.").append(fieldName).append("().setValue(").append(fieldName).append(");\n}\n");
-	}
-
-	/**
-	 * <code>
-	 * public boolean isNullTitle() { return title == null || title.getValue() == null; }
-	 * </code>
-	 * 
-	 * @param appendable
-	 * @throws IOException
-	 */
-	private void compileIsNullMethod(Appendable appendable) throws IOException
-	{
-		String fieldName = getFieldNameInJava(false);
-		
-		// write java doc
-		String comment = "Test to see if the value of the field is null, or if the field itself is null: " + fieldName;
-		MetaMetadataCompilerUtils.writeJavaDocComment(comment, appendable);
-	
-		// first line
-		appendable.append("public boolean isNull").append(getFieldNameInJava(true)).append("()\n{\n");
-	
-		// second line
-		appendable.append("\treturn ").append(fieldName).append(" == null || ")
-				.append(fieldName).append(".getValue() == null;\n}\n");
-	}
-
-	/**
-	 * <code>
-	 * public void hwSetTitle(String title) { this.setTitle(title); rebuildCompositeTermVector(); }
-	 * </code>
-	 * 
-	 * @param appendable
-	 * @throws IOException
-	 */
-	private void compileHWSetter(Appendable appendable) throws IOException
-	{
-		String fieldName = getFieldNameInJava(false);
-		String typeName = getScalarTypeInJava();
-		
-		// write java doc
-		String comment = "The heavy weight setter method for field " + fieldName;
-		MetaMetadataCompilerUtils.writeJavaDocComment(comment, appendable);
-	
-		// first line
-		appendable.append("public void hwSet").append(getFieldNameInJava(true))
-				.append("(").append(typeName).append(" ").append(fieldName).append(")\n{\n");
-	
-		// second line
-		appendable.append("\tthis.").append(fieldName).append("().setValue(").append(fieldName).append(");\n");
-	
-		// third line
-		appendable.append("\trebuildCompositeTermVector();\n}\n");
-	}
-
-	/**
-	 * <code>
-	 * public void setQueryMetadata(MetadataString query) { this.query = query; }
-	 * </code>
-	 * 
-	 * @param appendable
-	 * @throws IOException
-	 */
-	private void compileDirectSetter(Appendable appendable) throws IOException
-	{
-		String fieldName = getFieldNameInJava(false);
-		String typeName = getTypeNameInJava();
-		
-		// write the java doc comment
-		String comment = " Sets the " + fieldName + " directly.";
-		MetaMetadataCompilerUtils.writeJavaDocComment(comment, appendable);
-	
-		// first line
-		appendable.append("public void set").append(getFieldNameInJava(true)).append("Metadata(")
-				.append(typeName).append(" ").append(fieldName).append(")\n{\n");
-	
-		// second line
-		appendable.append("\tthis.").append(fieldName).append(" = ").append(fieldName).append(";\n}\n");
-	}
-
-	/**
-	 * <code>
-	 * public void hwSetQueryMetadata(MetadataString query)
-	 * {
-	 * 	if (this.query != null && this.query.getValue() != null && hasTermVector())
-	 *  	termVector().remove(this.query.termVector());
-	 *  this.query = query;
-	 *  rebuildCompositeTermVector();
-	 * }
-	 * </code>
-	 * 
-	 * @param appendable
-	 * @throws IOException
-	 */
-	private void compileDirectHWSetter(Appendable appendable) throws IOException
-	{
-		String fieldName = getFieldNameInJava(false);
-		String typeName = getTypeNameInJava();
-	
-		// write Java doc
-		String comment = "Heavy Weight Direct setter method for " + fieldName;
-		MetaMetadataCompilerUtils.writeJavaDocComment(comment, appendable);
-	
-		// first line
-		appendable.append("public void hwSet").append(getFieldNameInJava(true)).append("Metadata(")
-				.append(typeName).append(" ").append(fieldName).append(")\n{\n");
-	
-		// second line
-		appendable.append("\tif (this.").append(fieldName).append(" != null && this.").append(fieldName)
-				.append(".getValue() != null && hasTermVector())\n");
-	
-		// third line
-		appendable.append("\t\ttermVector().remove(this.").append(fieldName).append(".termVector());\n");
-	
-		// fourth line
-		appendable.append("\tthis.").append(fieldName).append(" = ").append(fieldName).append(";\n");
-	
-		// last line
-		appendable.append("\trebuildCompositeTermVector();\n}\n");
-	}
-
-	/**
-	 * <code>
-	 * public void appendAnchorText(String anchorText) { this.anchorText().setValue(anchorText); }
-	 * </code>
-	 * 
-	 * @param appendable
-	 * @param typeName
-	 * @throws IOException
-	 */
-	private void compileAppendMethod(Appendable appendable, String typeName)
-			throws IOException
-	{
-		String fieldName = getFieldNameInJava(false);
-		
-		// write Java doc
-		String comment = "Appends the value to the field " + fieldName;
-		MetaMetadataCompilerUtils.writeJavaDocComment(comment, appendable);
-
-		// first line
-		appendable.append("public void append").append(getFieldNameInJava(true))
-				.append("(").append(typeName).append(" ").append(fieldName).append(")\n{\n");
-
-		// second line
-		appendable.append("\tthis.").append(fieldName).append("().setValue(").append(fieldName).append(");\n}\n");
-	}
-
-	/**
-	 * <code>
-	 * public void hwAppendAnchorText(String anchorText) { this.anchorText().setValue(anchorText); rebuildCompositeTermVector(); }
-	 * </code>
-	 * 
-	 * @param appendable
-	 * @param typeName
-	 * @throws IOException
-	 */
-	private void compileHWAppendMethod(Appendable appendable, String typeName) throws IOException
-	{
-		String fieldName = getFieldNameInJava(false);
-		
-		// write java doc
-		String comment = "The heavy weight Append method for field " + fieldName;
-		MetaMetadataCompilerUtils.writeJavaDocComment(comment, appendable);
-
-		// first line
-		appendable.append("public void hwAppend").append(getFieldNameInJava(true))
-				.append("(").append(typeName).append(" ").append(fieldName).append(")\n{\n");
-
-		// second line
-		appendable.append("\tthis.").append(fieldName).append("().setValue(").append(fieldName).append(");\n");
-
-		// third line
-		appendable.append("\trebuildCompositeTermVector();\n}\n");
-	}
-
-	@Deprecated
-	@Override
-	public boolean checkForErrors()
-	{
-		return name != null;
-	}
+//	@Override
+//	public void compileToMethods(Appendable appendable) throws IOException
+//	{
+//		super.compileToMethods(appendable);
+//		
+//		compileIsNullMethod(appendable);
+//		compileHWSetter(appendable);
+//		compileDirectSetter(appendable);
+//		compileDirectHWSetter(appendable);
+//		if (getTypeNameInJava().equals("StringBuilder"))
+//		{
+////			compileAppendMethod(appendable, "StringBuilder");
+//			compileAppendMethod(appendable, "String");
+//			compileHWAppendMethod(appendable, "StringBuilder");
+//			compileHWAppendMethod(appendable, "String");
+//		}
+//	}
+//
+//	/**
+//	 * generate a specialized getter for scalar field: e.g. public String getTitle()
+//	 * { return title().getValue(); }
+//	 */
+//	@Override
+//	protected void compileGetter(Appendable appendable) throws IOException
+//	{
+//		String fieldName = getFieldNameInJava(false);
+//		String typeName = getScalarTypeInJava();
+//		
+//		// write java doc
+//		String comment = "Gets the value of the field " + fieldName;
+//		MetaMetadataCompilerUtils.writeJavaDocComment(comment, appendable);
+//	
+//		// first line
+//		appendable.append("public ").append(typeName).append(" get")
+//				.append(getFieldNameInJava(true)).append("()\n{\n");
+//	
+//		// second line
+//		appendable.append("\treturn this.").append(fieldName).append("().getValue();\n}\n");
+//	}
+//
+//	/**
+//	 * generate a specialized setter for scalar field: e.g. public void setTitle(String title)
+//	 * { this.title().setValue(title); }
+//	 */
+//	@Override
+//	protected void compileSetter(Appendable appendable) throws IOException
+//	{
+//		String fieldName = getFieldNameInJava(false);
+//		String typeName = getScalarTypeInJava();
+//		
+//		// write java doc
+//		String comment = "Sets the value of the field " + fieldName;
+//		MetaMetadataCompilerUtils.writeJavaDocComment(comment, appendable);
+//	
+//		// first line
+//		appendable.append("public void set").append(getFieldNameInJava(true))
+//				.append("(").append(typeName).append(" ").append(fieldName).append(")\n{\n");
+//	
+//		// second line
+//		appendable.append("\tthis.").append(fieldName).append("().setValue(").append(fieldName).append(");\n}\n");
+//	}
+//
+//	/**
+//	 * <code>
+//	 * public boolean isNullTitle() { return title == null || title.getValue() == null; }
+//	 * </code>
+//	 * 
+//	 * @param appendable
+//	 * @throws IOException
+//	 */
+//	private void compileIsNullMethod(Appendable appendable) throws IOException
+//	{
+//		String fieldName = getFieldNameInJava(false);
+//		
+//		// write java doc
+//		String comment = "Test to see if the value of the field is null, or if the field itself is null: " + fieldName;
+//		MetaMetadataCompilerUtils.writeJavaDocComment(comment, appendable);
+//	
+//		// first line
+//		appendable.append("public boolean isNull").append(getFieldNameInJava(true)).append("()\n{\n");
+//	
+//		// second line
+//		appendable.append("\treturn ").append(fieldName).append(" == null || ")
+//				.append(fieldName).append(".getValue() == null;\n}\n");
+//	}
+//
+//	/**
+//	 * <code>
+//	 * public void hwSetTitle(String title) { this.setTitle(title); rebuildCompositeTermVector(); }
+//	 * </code>
+//	 * 
+//	 * @param appendable
+//	 * @throws IOException
+//	 */
+//	private void compileHWSetter(Appendable appendable) throws IOException
+//	{
+//		String fieldName = getFieldNameInJava(false);
+//		String typeName = getScalarTypeInJava();
+//		
+//		// write java doc
+//		String comment = "The heavy weight setter method for field " + fieldName;
+//		MetaMetadataCompilerUtils.writeJavaDocComment(comment, appendable);
+//	
+//		// first line
+//		appendable.append("public void hwSet").append(getFieldNameInJava(true))
+//				.append("(").append(typeName).append(" ").append(fieldName).append(")\n{\n");
+//	
+//		// second line
+//		appendable.append("\tthis.").append(fieldName).append("().setValue(").append(fieldName).append(");\n");
+//	
+//		// third line
+//		appendable.append("\trebuildCompositeTermVector();\n}\n");
+//	}
+//
+//	/**
+//	 * <code>
+//	 * public void setQueryMetadata(MetadataString query) { this.query = query; }
+//	 * </code>
+//	 * 
+//	 * @param appendable
+//	 * @throws IOException
+//	 */
+//	private void compileDirectSetter(Appendable appendable) throws IOException
+//	{
+//		String fieldName = getFieldNameInJava(false);
+//		String typeName = getTypeNameInJava();
+//		
+//		// write the java doc comment
+//		String comment = " Sets the " + fieldName + " directly.";
+//		MetaMetadataCompilerUtils.writeJavaDocComment(comment, appendable);
+//	
+//		// first line
+//		appendable.append("public void set").append(getFieldNameInJava(true)).append("Metadata(")
+//				.append(typeName).append(" ").append(fieldName).append(")\n{\n");
+//	
+//		// second line
+//		appendable.append("\tthis.").append(fieldName).append(" = ").append(fieldName).append(";\n}\n");
+//	}
+//
+//	/**
+//	 * <code>
+//	 * public void hwSetQueryMetadata(MetadataString query)
+//	 * {
+//	 * 	if (this.query != null && this.query.getValue() != null && hasTermVector())
+//	 *  	termVector().remove(this.query.termVector());
+//	 *  this.query = query;
+//	 *  rebuildCompositeTermVector();
+//	 * }
+//	 * </code>
+//	 * 
+//	 * @param appendable
+//	 * @throws IOException
+//	 */
+//	private void compileDirectHWSetter(Appendable appendable) throws IOException
+//	{
+//		String fieldName = getFieldNameInJava(false);
+//		String typeName = getTypeNameInJava();
+//	
+//		// write Java doc
+//		String comment = "Heavy Weight Direct setter method for " + fieldName;
+//		MetaMetadataCompilerUtils.writeJavaDocComment(comment, appendable);
+//	
+//		// first line
+//		appendable.append("public void hwSet").append(getFieldNameInJava(true)).append("Metadata(")
+//				.append(typeName).append(" ").append(fieldName).append(")\n{\n");
+//	
+//		// second line
+//		appendable.append("\tif (this.").append(fieldName).append(" != null && this.").append(fieldName)
+//				.append(".getValue() != null && hasTermVector())\n");
+//	
+//		// third line
+//		appendable.append("\t\ttermVector().remove(this.").append(fieldName).append(".termVector());\n");
+//	
+//		// fourth line
+//		appendable.append("\tthis.").append(fieldName).append(" = ").append(fieldName).append(";\n");
+//	
+//		// last line
+//		appendable.append("\trebuildCompositeTermVector();\n}\n");
+//	}
+//
+//	/**
+//	 * <code>
+//	 * public void appendAnchorText(String anchorText) { this.anchorText().setValue(anchorText); }
+//	 * </code>
+//	 * 
+//	 * @param appendable
+//	 * @param typeName
+//	 * @throws IOException
+//	 */
+//	private void compileAppendMethod(Appendable appendable, String typeName)
+//			throws IOException
+//	{
+//		String fieldName = getFieldNameInJava(false);
+//		
+//		// write Java doc
+//		String comment = "Appends the value to the field " + fieldName;
+//		MetaMetadataCompilerUtils.writeJavaDocComment(comment, appendable);
+//
+//		// first line
+//		appendable.append("public void append").append(getFieldNameInJava(true))
+//				.append("(").append(typeName).append(" ").append(fieldName).append(")\n{\n");
+//
+//		// second line
+//		appendable.append("\tthis.").append(fieldName).append("().setValue(").append(fieldName).append(");\n}\n");
+//	}
+//
+//	/**
+//	 * <code>
+//	 * public void hwAppendAnchorText(String anchorText) { this.anchorText().setValue(anchorText); rebuildCompositeTermVector(); }
+//	 * </code>
+//	 * 
+//	 * @param appendable
+//	 * @param typeName
+//	 * @throws IOException
+//	 */
+//	private void compileHWAppendMethod(Appendable appendable, String typeName) throws IOException
+//	{
+//		String fieldName = getFieldNameInJava(false);
+//		
+//		// write java doc
+//		String comment = "The heavy weight Append method for field " + fieldName;
+//		MetaMetadataCompilerUtils.writeJavaDocComment(comment, appendable);
+//
+//		// first line
+//		appendable.append("public void hwAppend").append(getFieldNameInJava(true))
+//				.append("(").append(typeName).append(" ").append(fieldName).append(")\n{\n");
+//
+//		// second line
+//		appendable.append("\tthis.").append(fieldName).append("().setValue(").append(fieldName).append(");\n");
+//
+//		// third line
+//		appendable.append("\trebuildCompositeTermVector();\n}\n");
+//	}
 
 	public static void main(String[] args) throws SIMPLTranslationException
 	{

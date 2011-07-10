@@ -1,7 +1,6 @@
 package ecologylab.semantics.metametadata;
 
 import ecologylab.generic.HashMapArrayList;
-import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.Metadata.mm_dont_inherit;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
@@ -92,37 +91,6 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 	public boolean isNoWrap()
 	{
 		return noWrap;
-	}
-
-	@Deprecated
-	@Override
-	public String getAnnotationsInJava()
-	{
-		StringBuilder annotations = StringBuilderUtils.acquire();
-		
-		// @simpl_collection
-		String childTag = getChildTag();
-		if (childTag == null)
-		{
-			// TODO check for inherited child_tag / child_type !!!
-			warning("neither child_tag nor child_type specified in meta_metadata for collection field " + this.name);
-		}
-		annotations.append("@simpl_collection(\"" + childTag + "\")");
-		
-		// @simpl_nowrap or @xml_tag
-		if (isNoWrap())
-		{
-			annotations.append(" @simpl_nowrap");
-		}
-		else
-		{
-			annotations.append(" @xml_tag(\"" + resolveTag() + "\")");
-		}
-	
-		// @mm_name
-		annotations.append(" @mm_name(\"" + getName() + "\")");
-		
-		return annotations.toString();
 	}
 
 	@Override

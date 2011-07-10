@@ -3,7 +3,6 @@
  */
 package ecologylab.semantics.metametadata;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 
 import ecologylab.generic.OneLevelNestingIterator;

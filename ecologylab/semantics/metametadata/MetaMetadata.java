@@ -3,7 +3,6 @@
  */
 package ecologylab.semantics.metametadata;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,7 +17,6 @@ import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.Metadata.mm_dont_inherit;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
-import ecologylab.semantics.metametadata.exceptions.MetaMetadataException;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.TranslationScope;
 import ecologylab.serialization.XMLTools;
@@ -207,19 +205,6 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 		return getName();
 	}
 
-	public boolean isGenerateClass()
-	{
-		// we r not using getType as by default getType will give meta-metadata name
-
-		boolean compositeMmdWithTypeDecl = isCompositeMmdWithTypeDecl();
-		boolean dontGenerateOrBuiltin = dontGenerateClass || builtIn;
-		boolean hasExtends	= extendsAttribute != null;
-		
-//		boolean result = compositeMmdWithTypeDecl && !dontGenerateOrBuiltin;
-		boolean result = hasExtends && !builtIn && !dontGenerateClass;
-		return result;
-	}
-
 	/**
 	 * @return
 	 */
@@ -313,31 +298,6 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 	public MetaMetadataField getInheritedField()
 	{
 		return null;
-	}
-
-	@Deprecated
-	@Override
-	protected boolean checkForErrors()
-	{
-		MetaMetadata superMmd = (MetaMetadata) getInheritedField();
-
-		return assertNotNull(getTypeName(), "meta-metadata type name must be specified.")
-				&& assertNotNull(getSuperMmdTypeName(), "can't resolve parent meta-metadata.")
-				&& assertNotNull(superMmd, "meta-metadata '%s' not found.", getSuperMmdTypeName());
-	}
-
-	/**
-	 * meta_metadata can define their own package attribute. otherwise is the same as meta-metadata
-	 * field.
-	 */
-	@Override
-	public void compileToMetadataClass(String packageName) throws IOException
-	{
-		String packageAttr = packageName();
-		if (packageAttr != null)
-			super.compileToMetadataClass(packageAttr);
-		else
-			super.compileToMetadataClass(packageName);
 	}
 
 	/**

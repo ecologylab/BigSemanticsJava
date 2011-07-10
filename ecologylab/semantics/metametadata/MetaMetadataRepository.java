@@ -382,6 +382,12 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		return true;
 	}
 	
+	/**
+	 * this method is used by the compiler to traverse the repository, resolve inheritance and
+	 * generate a translation scope for code generation.
+	 * 
+	 * @return the generated translation scope.
+	 */
 	public TranslationScope traverseAndGenerateTranslationScope()
 	{
 		return traverseAndGenerateTranslationScope(META_METADATA_COMPILER_TSCOPE);
@@ -462,21 +468,6 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 			defaultUserAgentName = userAgent.userAgentString();
 		else
 			defaultUserAgentName = FIREFOX_3_6_4_AGENT_STRING;
-	}
-
-	private void findAndDeclareNestedMetaMetadata(TranslationScope metadataTScope)
-	{
-		ArrayList<MetaMetadata> nestedDeclarations = new ArrayList<MetaMetadata>();
-		for (MetaMetadata metaMetadata : repositoryByTagName)
-		{
-			nestedDeclarations.addAll(generateNestedDeclarations(metaMetadata));
-		}
-
-		for (MetaMetadata metaMetadata : nestedDeclarations)
-		{
-			// if(!repositoryByTagName.containsKey(metaMetadata.getTag()))
-			repositoryByTagName.put(metaMetadata.resolveTag(), metaMetadata);
-		}
 	}
 
 	/**
@@ -849,36 +840,6 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 				}
 			}
 		}
-	}
-
-	/**
-	 * Recursively looks for nested declarations of meta-metadata by iterating over the fields of
-	 * existing meta-metadata objects. Defines new MetaMetadata objects and adds them to the
-	 * repository.
-	 * 
-	 * @param metaMetadata
-	 * @return a collection of new meta-metadata objects to add to repository
-	 */
-	private ArrayList<MetaMetadata> generateNestedDeclarations(MetaMetadata metaMetadata)
-	{
-		ArrayList<MetaMetadata> result = new ArrayList<MetaMetadata>();
-		for (MetaMetadataField metaMetadataField : metaMetadata)
-		{
-			if (metaMetadataField.isNewClass())
-			{
-				String mmName = metaMetadataField.getTagForTranslationScope();
-				MetaMetadata newMetaMetadata = new MetaMetadata(metaMetadataField, mmName);
-				// newMetaMetadata.setName(mmName);
-				// newMetaMetadata.setChildMetaMetadata(metaMetadataField.childMetaMetadata);
-				// repositoryByTagName.put(className, newMetaMetadata);
-				result.add(newMetaMetadata);
-
-				// recurse to find deeper nested declarations
-				result.addAll(generateNestedDeclarations(newMetaMetadata));
-			}
-		}
-
-		return result;
 	}
 
 	/**

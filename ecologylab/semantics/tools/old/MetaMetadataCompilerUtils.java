@@ -1,7 +1,7 @@
 /**
  * 
  */
-package ecologylab.semantics.tools;
+package ecologylab.semantics.tools.old;
 
 import java.io.File;
 import java.io.FileWriter;

@@ -159,15 +159,6 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 		return defVars;
 	}
 
-	@Deprecated
-	@Override
-	public String getAnnotationsInJava()
-	{
-		String tagDecl = getTagDecl();
-		return "@simpl_composite" + (tagDecl.length() > 0 ? (" " + tagDecl) : "")
-					 + " @mm_name(\"" + getName() + "\")";
-	}
-
 	@Override
 	public String getAdditionalAnnotationsInJava()
 	{
