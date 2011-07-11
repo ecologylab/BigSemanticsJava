@@ -10,7 +10,6 @@ import org.w3c.tidy.Tidy;
 
 import ecologylab.appframework.ApplicationEnvironment;
 import ecologylab.generic.Continuation;
-import ecologylab.io.DownloadProcessor;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.generated.library.GeneratedMetadataTranslationScope;
@@ -67,6 +66,9 @@ implements Continuation<DocumentClosure>
 				System.err.println("Terminate due to //");
 				break;
 			}
+			if (urlStrings[i].startsWith("//"))
+				continue; // commented out urls
+			
 			ParsedURL thatPurl	= ParsedURL.getAbsolute(urlStrings[i]);
 			Document document		= semanticsSessionScope.getOrConstructDocument(thatPurl);
 			DocumentClosure documentClosure = document.getOrConstructClosure();
