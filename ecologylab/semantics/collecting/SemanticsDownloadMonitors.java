@@ -77,10 +77,20 @@ public class SemanticsDownloadMonitors extends Debug
 		DOWNLOAD_MONITORS[REGULAR_DOCUMENT_DOWNLOAD_MONITOR].setHurry(true);
 	}
 	
+	/**
+	 * Pause the regular crawler Document DownloadMonitor.
+	 * @param pause
+	 */
 	public void pauseRegular(boolean pause)
 	{
 		pause(REGULAR_DOCUMENT_DOWNLOAD_MONITOR, pause);
 	}
+	/**
+	 * Pause a particular DownloadMonitor.
+	 * 
+	 * @param whichMonitor
+	 * @param pause
+	 */
 	void pause(int whichMonitor, boolean pause)
 	{
 		DownloadMonitor<DocumentClosure> downloadMonitor = DOWNLOAD_MONITORS[whichMonitor];
@@ -91,11 +101,25 @@ public class SemanticsDownloadMonitors extends Debug
 	}
 
 
+	/**
+	 * 
+	 * @return	true if there are there are Downloadables enqueued in the Seeding DownloadMonitor.
+	 */
 	public boolean seedsArePending()
 	{
 		return DOWNLOAD_MONITORS[SEEDING_DOCUMENT_DOWNLOAD_MONITOR].toDownloadSize() > 0;
 	}
 	
+	/**
+	 * Get the DownloadMonitor that is appropriate for the Document and context at hand.
+	 * 
+	 * @param isImage
+	 * @param isDnd
+	 * @param isSeed
+	 * @param isGui
+	 * 
+	 * @return	Appropriate DownloadMonitor, based on the input parameters.
+	 */
   public DownloadProcessor<DocumentClosure> downloadProcessor(boolean isImage, boolean isDnd, boolean isSeed, boolean isGui)
 	{
 		DownloadProcessor<DocumentClosure> result;
@@ -111,28 +135,47 @@ public class SemanticsDownloadMonitors extends Debug
 		return result;
 	}
 	
+  /**
+   * Stop all the DownloadMonitors.
+   * 
+   * @param kill
+   */
 	public void stop(boolean kill)
 	{
 		for (DownloadMonitor<DocumentClosure> downloadMonitor: DOWNLOAD_MONITORS)
 			downloadMonitor.stop(kill);
 	}
 	
-	public void requestStopDownloadMonitors()
+	/**
+	 * Ask all the DownloadMonitors to stop when they have exhausted their queues.
+	 * 
+	 */
+	public void requestStops()
 	{
 		for (DownloadMonitor<DocumentClosure> downloadMonitor: DOWNLOAD_MONITORS)
 			downloadMonitor.requestStop();
 	}
+	/**
+	 * Pause regular DownloadMonitors for documents and images.
+	 */
 	public void pauseRegularDownloadMonitors()
 	{
 		DOWNLOAD_MONITORS[REGULAR_DOCUMENT_DOWNLOAD_MONITOR].pause();
 		DOWNLOAD_MONITORS[REGULAR_IMAGE_DOWNLOAD_MONITOR].pause();
 	}
+	/**
+	 * Unpause regular DownloadMonitors for documents and images.
+	 */
 	public void unpauseRegularDownloadMonitors()
 	{
 		DOWNLOAD_MONITORS[REGULAR_DOCUMENT_DOWNLOAD_MONITOR].unpause();
 		DOWNLOAD_MONITORS[REGULAR_IMAGE_DOWNLOAD_MONITOR].unpause();
 	}
 	
+	/**
+	 * The regular DownloadMonitor for operating on Images.
+	 * @return
+	 */
 	public static DownloadMonitor<DocumentClosure> regularImageDownloadMonitor()
 	{
 		return DOWNLOAD_MONITORS[REGULAR_IMAGE_DOWNLOAD_MONITOR];
