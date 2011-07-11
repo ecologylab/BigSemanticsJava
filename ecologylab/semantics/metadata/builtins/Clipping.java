@@ -42,17 +42,15 @@ public class Clipping extends Metadata
 	 * The source document.
 	 */
 	@simpl_composite
-	@simpl_scope(SemanticsNames.GENERATED_DOCUMENT_TRANSLATIONS)
 	@mm_name("source") 
-	private Document				source;
+	private DocumentMetadataWrap				source;
 	
 	/**
 	 * A hyperlinked Document.
 	 */
 	@simpl_composite
-	@simpl_scope(SemanticsNames.GENERATED_DOCUMENT_TRANSLATIONS)
 	@mm_name("outlink") 
-	private Document				outlink;
+	private DocumentMetadataWrap				outlink;
 	
 	private DocumentClosure				outlinkClosure;
 
@@ -73,7 +71,7 @@ public class Clipping extends Metadata
 	public Clipping(Document source)
 	{
 		this();
-		this.source	= source;
+		this.source	= new DocumentMetadataWrap(source);
 	}
 	public Clipping(Document source, Document outlink, String context)
 	{
@@ -81,7 +79,9 @@ public class Clipping extends Metadata
 		if (outlink != null)
 		{
 			if (outlink.isDownloadDone())
-				this.outlink				= outlink;
+			{
+				this.outlink				= new DocumentMetadataWrap(outlink);
+			}
 			else
 				this.outlinkClosure	= outlink.getOrConstructClosure();
 		}
@@ -100,7 +100,7 @@ public class Clipping extends Metadata
 	protected void serializationPreHook()
 	{
 		if (outlinkClosure != null && !outlinkClosure.isRecycled())
-			outlink	= outlinkClosure.getDocument();
+			outlink	= new DocumentMetadataWrap(outlinkClosure.getDocument());
 	}
 	
 	public MetadataString context()
@@ -218,7 +218,7 @@ public class Clipping extends Metadata
 	 */
 	public Document getSource()
 	{
-		return source;
+		return source.getDocument();
 	}
 
 	/**
@@ -226,7 +226,7 @@ public class Clipping extends Metadata
 	 */
 	public Document getOutlink()
 	{
-		return outlink;
+		return outlink.getDocument();
 	}
 
 	/**
@@ -256,8 +256,16 @@ public class Clipping extends Metadata
 	 */
 	public final synchronized void recycle (boolean unconditional )
 	{
-		source	= null;
-		outlink	= null;
+		if (source != null)
+		{
+			source.recycle();
+			source	= null;
+		}
+		if (outlink != null)
+		{
+			outlink.recycle();
+			outlink	= null;
+		}
 		outlinkClosure	= null;
 		super.recycle();
 	}

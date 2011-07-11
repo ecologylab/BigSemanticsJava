@@ -11,12 +11,16 @@
 		<collection name="additional_locations" child_scalar_type="ParsedURL" child_tag="location"/>
 	</meta_metadata>
 	
+	<meta_metadata name="document_metadata_wrap" extends="metadata" comment="Used to disambiguated Document subclass composites." built_in="true">
+		<composite name="document" type="document" comment="polymorphic across documents"/>
+	</meta_metadata>
+	
 	<meta_metadata name="clipping" extends="metadata" built_in="true">
 		<scalar name="context" layer="10.0" scalar_type="String" />
 		<scalar name="context_html" scalar_type="String" />
 		<scalar name="xpath" scalar_type="String" hide="true"/>
-		<composite name="source" type="document"/>
-		<composite name="outlink" type="document"/>
+		<composite name="source" type="document_metadata_wrap"/>
+		<composite name="outlink" type="document_metadata_wrap"/>
 	</meta_metadata>
 
 	<meta_metadata name="media_clipping" extends="clipping" built_in="true">
