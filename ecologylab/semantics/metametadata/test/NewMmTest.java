@@ -21,23 +21,29 @@ import ecologylab.serialization.TranslationScope;
 import ecologylab.serialization.TranslationScope.GRAPH_SWITCH;
 
 /**
+ * Basic program for testing meta-metadata.
+ * Takes a set of locations as arguments as input.
+ * (Input parsing is terminated by a // comment symbol).
+ * 
+ * Uses semantics to download and parse each input.
+ * Sends output to the console as XML.
+ * 
  * @author andruid
- *
  */
 public class NewMmTest extends ApplicationEnvironment
 implements Continuation<DocumentClosure>
 {
-	ArrayList<DocumentClosure>	documentCollection	= new ArrayList<DocumentClosure>();
+	ArrayList<DocumentClosure>			documentCollection	= new ArrayList<DocumentClosure>();
 
-	int 					currentResult;
+	int 														currentResult;
 	
-	protected boolean				outputOneAtATime;
+	protected boolean								outputOneAtATime;
 	
-	OutputStream	outputStream;
+	OutputStream										outputStream;
 
-	DownloadProcessor downloadMonitor	= null;
+	DownloadProcessor 							downloadMonitor	= null;
 	
-	protected SemanticsSessionScope infoCollector;
+	protected SemanticsSessionScope	semanticsSessionScope;
 
 
 	public NewMmTest(OutputStream	outputStream) throws SIMPLTranslationException
@@ -53,7 +59,7 @@ implements Continuation<DocumentClosure>
 		super(appName);
 		this.outputStream	= outputStream;
 		
-		infoCollector = new SemanticsSessionScope(GeneratedMetadataTranslationScope.get(), Tidy.class);
+		semanticsSessionScope = new SemanticsSessionScope(GeneratedMetadataTranslationScope.get(), Tidy.class);
 	}
 
 	public void collect(String[] urlStrings)
@@ -67,7 +73,7 @@ implements Continuation<DocumentClosure>
 				break;
 			}
 			ParsedURL thatPurl	= ParsedURL.getAbsolute(urlStrings[i]);
-			Document document		= infoCollector.getOrConstructDocument(thatPurl);
+			Document document		= semanticsSessionScope.getOrConstructDocument(thatPurl);
 			DocumentClosure documentClosure = document.getOrConstructClosure();
 			if (documentClosure != null)	// super defensive -- make sure its not malformed or null or otherwise a mess
 				documentCollection.add(documentClosure);
@@ -82,6 +88,7 @@ implements Continuation<DocumentClosure>
 				downloadMonitor		= documentClosure.downloadMonitor();
 			documentClosure.queueDownload();
 		}
+		semanticsSessionScope.getDownloadMonitors().requestStopDownloadMonitors();
 	}
 	
 	protected void postParse(int size)
@@ -110,11 +117,14 @@ implements Continuation<DocumentClosure>
 	{
 		if (outputOneAtATime)
 			output(incomingClosure);
-		else if (++currentResult == documentCollection.size())
+		if (++currentResult == documentCollection.size())
 		{
-			System.out.println("\n\n");
-			for (DocumentClosure documentClosure : documentCollection)
-				output(documentClosure);
+			if (!outputOneAtATime)
+			{
+				System.out.println("\n\n");
+				for (DocumentClosure documentClosure : documentCollection)
+					output(documentClosure);
+			}
 			downloadMonitor.stop();
 		}
 	}
