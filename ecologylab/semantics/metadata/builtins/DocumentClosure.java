@@ -390,7 +390,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 		{
 			documentParser.fillValues(purlConnection, this, semanticsSessionScope);
 		}
-		else
+		else if (!DocumentParser.isRegisteredNoParser(purlConnection.getPurl()))
 			warning("No DocumentParser found");
 	}
 

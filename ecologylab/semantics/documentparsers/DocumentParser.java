@@ -5,9 +5,9 @@ package ecologylab.semantics.documentparsers;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashSet;
 
 import ecologylab.collections.Scope;
-import ecologylab.concurrent.DownloadMonitor;
 import ecologylab.generic.Debug;
 import ecologylab.generic.ReflectionTools;
 import ecologylab.net.PURLConnection;
@@ -21,10 +21,11 @@ import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.seeding.Seed;
 
 /**
- * Super class for all document types. This class obtains the connection to a document. A parse
+ * Super class for all document parser types. This class obtains the connection to a document. A parse
  * method may be present to process the document.
  * <p/>
- * Their role is to parse documents. They start with a PURL, which the static connect() method
+ * Their role is to translate a Document into some kind of metadata and semantic actions. 
+ * They start with a PURL, which the static connect() method
  * translates into an PURLConnection, and an appropriate instance of a subclass. The
  * {@link #parse() parse()} method is then called to translate the document into the semantic model,
  * using the PURLConnection.
@@ -76,8 +77,10 @@ abstract public class DocumentParser<D extends Document>
 		}
 	}
 
+	private static final HashSet<String>	NO_PARSER_SUFFIX_MAP	= new HashSet<String>();
+	
 	/**
-	 * Keys are DocumentType class names without package names, returned by Class.getSimpleName().
+	 * Keys are DocumentParser class names without package names, returned by Class.getSimpleName().
 	 */
 	protected static final Scope<Class<? extends DocumentParser>>	registryByClassName	= new Scope<Class<? extends DocumentParser>>();
 
@@ -473,4 +476,17 @@ abstract public class DocumentParser<D extends Document>
 		return null;
 	}
 
+	public static boolean isRegisteredNoParser(ParsedURL purl)
+	{
+		boolean result	= false;
+		String suffix		= purl.suffix();
+		if (suffix != null && suffix.length() > 0)
+		{
+			result				= NO_PARSER_SUFFIX_MAP.contains(suffix);
+			if (!result)
+				NO_PARSER_SUFFIX_MAP.add(suffix);
+		}
+		
+		return result;
+	}
 }
