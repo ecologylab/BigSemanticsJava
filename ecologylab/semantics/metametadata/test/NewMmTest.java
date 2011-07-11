@@ -41,19 +41,14 @@ implements Continuation<DocumentClosure>
 	
 	OutputStream										outputStream;
 
-	DownloadProcessor 							downloadMonitor	= null;
-	
 	protected SemanticsSessionScope	semanticsSessionScope;
 
 
-	public NewMmTest(OutputStream	outputStream) throws SIMPLTranslationException
-	{
-		this("NewMmTest", outputStream);
-	}
 	public NewMmTest(String appName) throws SIMPLTranslationException
 	{
 		this(appName, System.out);
 	}
+
 	public NewMmTest(String appName, OutputStream	outputStream) throws SIMPLTranslationException
 	{
 		super(appName);
@@ -84,11 +79,9 @@ implements Continuation<DocumentClosure>
 		for (DocumentClosure documentClosure: documentCollection)
 		{
 			documentClosure.addContinuation(this);
-			if (downloadMonitor == null)
-				downloadMonitor		= documentClosure.downloadMonitor();
 			documentClosure.queueDownload();
 		}
-		semanticsSessionScope.getDownloadMonitors().requestStopDownloadMonitors();
+		semanticsSessionScope.getDownloadMonitors().requestStops();
 	}
 	
 	protected void postParse(int size)
@@ -102,7 +95,7 @@ implements Continuation<DocumentClosure>
 		NewMmTest mmTest;
 		try
 		{
-			mmTest = new NewMmTest(System.out);
+			mmTest = new NewMmTest("NewMmTest");
 			mmTest.collect(args);
 		}
 		catch (SIMPLTranslationException e)
@@ -125,7 +118,7 @@ implements Continuation<DocumentClosure>
 				for (DocumentClosure documentClosure : documentCollection)
 					output(documentClosure);
 			}
-			downloadMonitor.stop();
+			semanticsSessionScope.getDownloadMonitors().stop(false);
 		}
 	}
 

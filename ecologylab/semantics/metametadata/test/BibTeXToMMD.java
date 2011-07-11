@@ -14,9 +14,9 @@ import ecologylab.serialization.TranslationScope.GRAPH_SWITCH;
 public class BibTeXToMMD extends NewMmTest
 {
 
-	public BibTeXToMMD(OutputStream outputStream) throws SIMPLTranslationException
+	public BibTeXToMMD() throws SIMPLTranslationException
 	{
-		super(outputStream);
+		super("BibTeXToMMD");
 	}
 	
 	public static void main(String[] args)
@@ -25,7 +25,7 @@ public class BibTeXToMMD extends NewMmTest
 		BibTeXToMMD mmTest;
 		try
 		{
-			mmTest = new BibTeXToMMD(System.out);
+			mmTest = new BibTeXToMMD();
 			mmTest.collect(args);
 		}
 		catch (SIMPLTranslationException e)
@@ -44,7 +44,7 @@ public class BibTeXToMMD extends NewMmTest
 			System.out.println("\n\n");
 			for (DocumentClosure documentClosure : documentCollection)
 				documentClosure.serialize(System.out, FORMAT.BIBTEX);
-			downloadMonitor.stop();
+			semanticsSessionScope.getDownloadMonitors().stop(false);
 		}
 	}
 }

@@ -4,7 +4,6 @@ import java.awt.Desktop;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.net.URI;
@@ -27,9 +26,9 @@ public class MmToHtmlTest extends NewMmTest
 {
 	PrintStream	print;
 
-	public MmToHtmlTest(OutputStream outputStream) throws SIMPLTranslationException
+	public MmToHtmlTest() throws SIMPLTranslationException
 	{
-		super(outputStream);
+		super("MmToHtmlTest");
 		outputOneAtATime = false;
 		try
 		{
@@ -50,7 +49,7 @@ public class MmToHtmlTest extends NewMmTest
 		MmToHtmlTest test;
 		try
 		{
-			test = new MmToHtmlTest(System.out);
+			test = new MmToHtmlTest();
 			test.collect(args);
 		}
 		catch (SIMPLTranslationException e)
@@ -140,7 +139,7 @@ public class MmToHtmlTest extends NewMmTest
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			downloadMonitor.stop();
+			semanticsSessionScope.getDownloadMonitors().stop(false);
 		}
 	}
 
