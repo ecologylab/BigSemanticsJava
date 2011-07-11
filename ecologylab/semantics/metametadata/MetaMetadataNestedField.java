@@ -31,10 +31,8 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	private MetaMetadata					inheritedMmd;
 
 	private boolean								generateClassDescriptor	= false;
-	
-	protected MetaMetadata				scopingMmd;
 
-	// private boolean isPolymorphic = false;
+	protected MetaMetadata				scopingMmd;
 
 	private HashSet<MetaMetadata>	polymorphicMmds					= null;
 
@@ -54,7 +52,7 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 		super(copy, name);
 		// TODO Auto-generated constructor stub
 	}
-	
+
 	/**
 	 * @return the packageAttribute
 	 */
@@ -72,19 +70,19 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	{
 		return inheritedMmd;
 	}
-	
+
 	protected void setInheritedMmd(MetaMetadata inheritedMmd)
 	{
 		this.inheritedMmd = inheritedMmd;
 	}
-	
+
 	public FieldParserElement getFieldParserElement()
 	{
 		return fieldParserElement;
 	}
 
 	abstract protected String getMetaMetadataTagToInheritFrom();
-	
+
 	public void inheritMetaMetadata()
 	{
 		if (!inheritFinished && !inheritInProcess)
@@ -97,22 +95,23 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 			inheritFinished = true;
 		}
 	}
-	
+
 	/**
 	 * prerequisites:<br>
 	 * <ul>
-	 *   <li>for meta-metadata: name & type/extends set;</li>
-	 *   <li>for fields: attributes inherited & declaringMmd set;</li>
-	 *   <li>for both: parent element inheritedMmd set.</li>
+	 * <li>for meta-metadata: name & type/extends set;</li>
+	 * <li>for fields: attributes inherited & declaringMmd set;</li>
+	 * <li>for both: parent element inheritedMmd set.</li>
 	 * </ul>
 	 * <p>
 	 * consequences:<br>
 	 * <ul>
-	 *   <li>if this is a MetaMetadata object, attributes inherited from inheritedMmd;</li>
-	 *   <li>inheritedMmd set;</li>
-	 *   <li>(first-level) fields inherited from inheritedMmd;</li>
-	 *   <li>inheritedField and declaringMmd set for all (first-level) fields;</li>
-	 *   <li>for all (first-level) fields, attributes inherited from their inheritedField. (enabling recursion)</li>
+	 * <li>if this is a MetaMetadata object, attributes inherited from inheritedMmd;</li>
+	 * <li>inheritedMmd set;</li>
+	 * <li>(first-level) fields inherited from inheritedMmd;</li>
+	 * <li>inheritedField and declaringMmd set for all (first-level) fields;</li>
+	 * <li>for all (first-level) fields, attributes inherited from their inheritedField. (enabling
+	 * recursion)</li>
 	 * </ul>
 	 */
 	abstract protected void inheritMetaMetadataHelper();
@@ -124,51 +123,42 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	 */
 	public abstract MetaMetadataCompositeField metaMetadataCompositeField();
 
-	/**
-	 * for caching getTypeName().
-	 */
-	private String typeName;
-	
 	@Override
 	public String getTypeName()
 	{
-		String result = typeName;
+		String result = null;
+		if (this instanceof MetaMetadataCompositeField)
+		{
+			MetaMetadataCompositeField mmcf = (MetaMetadataCompositeField) this;
+			if (mmcf.type != null)
+				result = mmcf.type;
+		}
+		else if (this instanceof MetaMetadataCollectionField)
+		{
+			MetaMetadataCollectionField mmcf = (MetaMetadataCollectionField) this;
+			if (mmcf.childType != null)
+				result = mmcf.childType;
+			else if (mmcf.childScalarType != null)
+				result = mmcf.childScalarType.getJavaType();
+		}
+
 		if (result == null)
 		{
-			if (this instanceof MetaMetadataCompositeField)
+			MetaMetadataField inherited = getInheritedField();
+			if (inherited != null)
 			{
-				MetaMetadataCompositeField mmcf = (MetaMetadataCompositeField) this;
-				if (mmcf.type != null)
-					result = mmcf.type;
+				// use inherited field's type
+				result = inherited.getTypeName();
 			}
-			else if (this instanceof MetaMetadataCollectionField)
-			{
-				MetaMetadataCollectionField mmcf = (MetaMetadataCollectionField) this;
-				if (mmcf.childType != null)
-					result = mmcf.childType;
-				else if (mmcf.childScalarType != null)
-					result = mmcf.childScalarType.getJavaType();
-			}
-			
-			if (result == null)
-			{
-				MetaMetadataField inherited = getInheritedField();
-				if (inherited != null)
-				{
-					// use inherited field's type
-					result = inherited.getTypeName();
-				}
-			}
-				
-			if (result == null)
-			{
-				// defining new type inline without using type= / child_type=
-				result = getName();
-			}
-			
-			typeName = result;
 		}
-		return typeName;
+
+		if (result == null)
+		{
+			// defining new type inline without using type= / child_type=
+			result = getName();
+		}
+
+		return result;
 	}
 
 	/**
@@ -187,13 +177,14 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 			{
 				if (this.getName().equals("metadata"))
 					return null;
-				
+
 				MetaMetadata mmd = (MetaMetadata) this;
 				String superMmdName = mmd.getSuperMmdTypeName();
 				MetaMetadata superMmd = getRepository().getByTagName(superMmdName);
 				if (superMmd == null)
 				{
-					error(mmd + " specifies " + superMmdName + " as parent, but no meta-metadata for this type has been declared.");
+					error(mmd + " specifies " + superMmdName
+							+ " as parent, but no meta-metadata for this type has been declared.");
 					return null;
 				}
 				return superMmd.searchForChild(name);
@@ -207,7 +198,7 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 		}
 		return child;
 	}
-	
+
 	public boolean shouldPromoteChildren()
 	{
 		return promoteChildren;
@@ -225,7 +216,7 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	{
 		return polymorphicGlobal;
 	}
-	
+
 	public boolean isGenerateClassDescriptor()
 	{
 		return generateClassDescriptor;
@@ -235,35 +226,44 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	{
 		this.generateClassDescriptor = generateClassDescriptor;
 	}
-	
+
 	protected MetaMetadata getScopingMmd()
 	{
 		if (scopingMmd == null)
 		{
 			MetaMetadataNestedField p = (MetaMetadataNestedField) this.parent();
 			if (p instanceof MetaMetadata)
-				scopingMmd =  (MetaMetadata) p;
+				scopingMmd = (MetaMetadata) p;
 			else
 				scopingMmd = p.getDeclaringMmd();
 		}
 		return scopingMmd;
 	}
-	
+
 	void setScopingMmd(MetaMetadata scopingMmd)
 	{
 		this.scopingMmd = scopingMmd;
 	}
 
-//	public boolean isPolymorphic()
-//	{
-//		return isPolymorphic;
-//	}
+	/**
+	 * return if this nested field is polymorphic, that is, for composites if the type of this field
+	 * varies in derived fields, for collections if the child type of this field varies in derived
+	 * fields.
+	 * 
+	 * @return
+	 */
+	public boolean isPolymorphic()
+	{
+		if (this.getInheritedField() != null)
+			return ((MetaMetadataNestedField) this.getInheritedField()).isPolymorphic();
+		return polymorphicMmds != null && polymorphicMmds.size() > 0;
+	}
 
-//	void setPolymorphic(boolean isPolymorphic)
-//	{
-//		this.isPolymorphic = isPolymorphic;
-//	}
-
+	/**
+	 * get polymorphic mmds for this field, used in @simpl_classes.
+	 * 
+	 * @return
+	 */
 	public HashSet<MetaMetadata> getPolymorphicMmds()
 	{
 		return polymorphicMmds;
@@ -273,7 +273,7 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	{
 		if (this.getInheritedField() != null)
 		{
-			((MetaMetadataNestedField)this.getInheritedField()).addPolymorphicMmd(polyMmd);
+			((MetaMetadataNestedField) this.getInheritedField()).addPolymorphicMmd(polyMmd);
 		}
 		else
 		{
@@ -298,5 +298,18 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 			cloned.setChildMetaMetadata(newKids);
 		}
 	}
-	
+
+	public void makePolymorphicMmdsUseClassLevelOtherTags()
+	{
+		if (this.getInheritedField() != null)
+		{
+			((MetaMetadataNestedField) this.getInheritedField()).makePolymorphicMmdsUseClassLevelOtherTags();
+			return;
+		}
+		for (MetaMetadata mmd : this.getPolymorphicMmds())
+		{
+			mmd.setUseClassLevelOtherTags(true);
+		}
+	}
+
 }

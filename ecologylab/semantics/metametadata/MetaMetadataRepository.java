@@ -418,7 +418,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		for (ClassDescriptor cd : ts.getClassDescriptors())
 		{
 			MetadataClassDescriptor mcd = (MetadataClassDescriptor) cd;
-			mcd.traverseAndProcessPolymorphismForCompilation();
+			mcd.traverseAndResolvePolymorphismAndOtherTagsForCompilation();
 		}
 		
 		return ts;

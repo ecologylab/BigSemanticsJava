@@ -15,6 +15,7 @@ import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataCollectionField;
 import ecologylab.semantics.metametadata.MetaMetadataField;
 import ecologylab.semantics.metametadata.MetaMetadataNestedField;
+import ecologylab.semantics.metametadata.MetaMetadataScalarField;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.FieldDescriptor;
@@ -185,12 +186,24 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 		super.setWrapped(wrapped);
 	}
 	
-	public void traverseAndProcessPolymorphismForCompilation()
+	public void traverseAndResolvePolymorphismAndOtherTagsForCompilation()
 	{
 		startedTraversalForPolymorphism = true;
-		if (this.definingMmdField instanceof MetaMetadataNestedField)
+		
+		// @xml_other_tags
+		if (this.definingMmdField instanceof MetaMetadataScalarField)
+		{
+			this.otherTags = this.definingMmdField.getOtherTags();
+		}
+		else if (this.definingMmdField instanceof MetaMetadataNestedField)
 		{
 			MetaMetadataNestedField nested = (MetaMetadataNestedField) this.definingMmdField;
+			
+			// @xml_other_tags: for collection fields always add, for composite fields only add for non-
+			// polymorphic ones
+			if (nested instanceof MetaMetadataCollectionField || !nested.isPolymorphic())
+				this.otherTags = this.definingMmdField.getOtherTags();
+			
 			if (nested.getFieldType() != FieldTypes.COLLECTION_SCALAR)
 			{
 				// resolve @simpl_classes if any
@@ -210,7 +223,7 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 					System.out.println(kid);
 					MetadataFieldDescriptor kidMFD = kid.getMetadataFieldDescriptor();
 					if (kidMFD != null && !kidMFD.startedTraversalForPolymorphism)
-						kidMFD.traverseAndProcessPolymorphismForCompilation();
+						kidMFD.traverseAndResolvePolymorphismAndOtherTagsForCompilation();
 				}
 			}
 		}

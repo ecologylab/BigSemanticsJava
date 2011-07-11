@@ -419,17 +419,13 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 		return repository;
 	}
 
-	/**
-	 * If a tag was declared, form an ecologylab.serialization @xml_tag declaration with it.
-	 * 
-	 * @return The @xml_tag declaration string, or the empty string.
-	 */
-	public String getTagDecl()
+	public String getTagOrName()
 	{
-		boolean hasTag = tag != null && tag.length() > 0;
-		return hasTag ? "@xml_tag(\"" + tag + "\")" : "";
+		// different from getTagForTranslationScope() that this method is not overridden in
+		// MetaMetadataCollectionField.
+		return tag != null ? tag : name;
 	}
-
+	
 	public String getTagForTranslationScope()
 	{
 		return tag != null ? tag : name;
@@ -1012,11 +1008,22 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 		this.declaringMmd = declaringMmd;
 	}
 
+	/**
+	 * get other tags (used for @xml_other_tags) defined on this field.
+	 * 
+	 * @return
+	 */
 	public ArrayList<String> getOtherTags()
 	{
 		return otherTags;
 	}
 
+	/**
+	 * add an other tag (an element for @xml_other_tags) for this field or its ancestor
+	 * (inheritedField) if any.
+	 * 
+	 * @param otherTag
+	 */
 	void addOtherTag(String otherTag)
 	{
 		if (this.getInheritedField() != null)
@@ -1027,7 +1034,8 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 		
 		if (this.otherTags == null)
 			this.otherTags = new ArrayList<String>();
-		this.otherTags.add(otherTag);
+		if (!this.otherTags.contains(otherTag) && !this.getTagOrName().equals(otherTag))
+			this.otherTags.add(otherTag);
 	}
 
 	abstract public MetadataFieldDescriptor findOrGenerateMetadataFieldDescriptor(MetadataClassDescriptor contextCd);

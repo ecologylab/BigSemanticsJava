@@ -213,6 +213,12 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 			{
 				thisField.childTag = newTag;
 			}
+			
+			@Override
+			public boolean isPolymorphic()
+			{
+				return thisField.isPolymorphic();
+			}
 		};
 		composite.setParent(this);
 		composite.setType(childType);

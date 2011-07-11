@@ -460,7 +460,7 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 	@Override
 	protected void inheritMetaMetadataHelper()
 	{
-		warning("processing mmd: " + this);
+		debug("processing mmd: " + this);
 		// init
 		for (MetaMetadataField field : this.getChildMetaMetadata())
 		{
@@ -553,5 +553,5 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 		}
 		return false;
 	}
-
+	
 }
