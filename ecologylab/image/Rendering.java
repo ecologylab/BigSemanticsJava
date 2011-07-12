@@ -19,8 +19,10 @@ import java.awt.image.WritableRaster;
 import java.lang.ref.WeakReference;
 
 import ecologylab.generic.Colors;
-import ecologylab.generic.Debug;
 import ecologylab.generic.ImageTools;
+import ecologylab.semantics.gui.SerializableGUI;
+import ecologylab.serialization.ElementState;
+import ecologylab.serialization.ElementState.simpl_scope;
 
 /**
  * The basic unit of an image processing rendering pipeline;
@@ -31,7 +33,7 @@ import ecologylab.generic.ImageTools;
  * chain of such states that builds a pipeline of image processing operations.
  */
 public class Rendering
-extends Debug
+extends ElementState
 implements Colors
 {
 	/**
@@ -45,6 +47,7 @@ implements Colors
 	 */
 	public static int flushCount;
 	
+	@simpl_scalar
 	protected boolean isActive;
 	/**
 	 * true if this <code>ImageState</code> needs to have its pixels recomputed.
@@ -55,20 +58,27 @@ implements Colors
 	 * has a non-empty compute op, that gets called periodically, rather
 	 * than just once for init.
 	 */
+	@simpl_scalar
 	boolean			isDynamic;
 	
 	/**
 	 * Previous state in the Rendering pipeline.
 	 */
+	@simpl_composite
 	Rendering		previousRendering;
 	/**
 	 * Next state in the Rendering pipeline.
 	 */
+	@simpl_composite
 	Rendering		nextRendering;
 	
+	@simpl_composite
 	PixelBased		pixelBased;
 	
+	@simpl_scalar
 	int				width;
+	
+	@simpl_scalar
 	int				height;
 	
 	/**
@@ -86,6 +96,11 @@ implements Colors
 	 */
 	BufferedImage	bufferedImage;
 
+	public Rendering()
+	{
+		
+	}
+	
 	Rendering(PixelBased pixelBased, BufferedImage bufferedImage, DataBufferInt dataBuffer, int[] pixels)
 	{
 		this.pixelBased		= pixelBased;
@@ -123,8 +138,8 @@ implements Colors
 	public Rendering(Rendering previousRendering, boolean active)
 	{
 		this.pixelBased	= previousRendering.pixelBased;
-		width						= pixelBased.dimension.width;
-		height					= pixelBased.dimension.height;
+		width						= pixelBased.width;
+		height					= pixelBased.height;
 		isActive				= active;
 		
 		previousRendering.nextRendering	= this;
@@ -598,7 +613,7 @@ implements Colors
 	 * Free resources associated with just this.
 	 * NB: *does not* cycle through the rendering pipeline.
 	 */
-	void recycle()
+	public void recycle()
 	{
 		clearPending();
 		

@@ -8,6 +8,7 @@ import java.awt.image.SampleModel;
 import java.awt.image.SinglePixelPackedSampleModel;
 
 import ecologylab.generic.ImageTools;
+import ecologylab.serialization.simpl_inherit;
 
 /**
  * @author andruid
@@ -17,11 +18,20 @@ import ecologylab.generic.ImageTools;
  * To enable and disable the creation of type comments go to
  * Window>Preferences>Java>Code Generation.
  */
+@simpl_inherit
 public class AlphaGradientRendering extends Rendering
 {
-   int radius;
-   int minAlpha;
+	@simpl_scalar
+  int radius;
+	
+	@simpl_scalar
+  int minAlpha;
    
+	public AlphaGradientRendering()
+	{
+		
+	}
+	
 /**
  * Constructor for AlphaGradientRendering.
  * @param previousRendering
@@ -89,8 +99,10 @@ public class AlphaGradientRendering extends Rendering
 
   			 if (gradientFactor < radius)
   			 {
+  				 float gradientChange = ((float) gradientFactor / radius) * gradientMagnitude ;
   				 int thisGradient = // shift to compensate for sign avoidance
-  					 (gradientFactor * gradientMagnitude / radius + minAlpha)<< 8;
+  					 ((int) gradientChange + minAlpha)<< 8;
+
   				 // !!! already blt-ed them all over
   				 //	       int thisPixel	= outPixels[pixelIndex];
   				 //int srcPixel		= inPixels[pixelIndex];

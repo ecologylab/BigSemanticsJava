@@ -4,7 +4,6 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.GraphicsConfiguration;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.geom.AffineTransform;
@@ -14,13 +13,15 @@ import java.awt.image.PackedColorModel;
 import java.io.IOException;
 import java.net.URL;
 
-import ecologylab.concurrent.DownloadMonitor;
+import ecologylab.generic.Colors;
 import ecologylab.generic.ConsoleUtils;
-import ecologylab.generic.Debug;
-import ecologylab.generic.Continuation;
+import ecologylab.generic.MathTools;
 import ecologylab.io.BasicSite;
 import ecologylab.io.Downloadable;
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.gui.SerializableGUI;
+import ecologylab.serialization.ElementState;
+import ecologylab.serialization.ElementState.simpl_scope;
 
 /**
  * Infrastructure to display, keep track of, and manipulate pixel based media.
@@ -29,8 +30,8 @@ import ecologylab.net.ParsedURL;
  * image processing transformations on the bits.
  */
 public class PixelBased
-extends Debug
-implements Downloadable
+extends ElementState
+implements Downloadable, Colors
 {
 	///////////////////////////// image transform state ////////////////////////
 	public static final int	NO_ALPHA_RADIUS		= -1;
@@ -54,40 +55,48 @@ implements Downloadable
 	 * Net location of the whatever might get downloaded.
 	 * Change from URL to ParsedURL.
 	 */
-	ParsedURL				purl;
+	ParsedURL								purl;
 
-	boolean					recycled;
+	boolean									recycled;
 
 	/**
 	 * Don't run grab() more than once.
 	 */
-	boolean					grabbed;
+	boolean									grabbed;
 
 	/**
 	 * like unprocessedRendering, but never part of a chain.
 	 * image buffer for the completely unaltered, the virgin.
 	 * Usually unscaled, but may be scaled down due to maxDimension,
 	 */
-	Rendering				basisRendering;
+	@simpl_composite
+	Rendering								basisRendering;
 	/**
 	 * No image processing on this rendering, but if there is scaling to do, this one is scaled.
 	 */
-	protected Rendering		unprocessedRendering;
+	protected Rendering			unprocessedRendering;
+	
+	@simpl_composite
 	AlphaGradientRendering	alphaGradientRendering;
-	BlurredRendering			blurredRendering;
+	
+	@simpl_composite
+	BlurredRendering				blurredRendering;
+	
+	@simpl_composite
 	DesaturatedRendering		desaturatedRendering;
 
 	/**
 	 * The current Rendering.
 	 */
-	Rendering				currentRendering;
+	@simpl_composite
+	Rendering								currentRendering;
 
 	public final Object		renderingsLock	= new Object();
 	/**
 	 * First Rendering in the  pipeline (chain) that is dynamic,
 	 * that is, that changes after 1st rendered.
 	 */
-	Rendering				firstDynamic;
+	Rendering								firstDynamic;
 
 	public Rendering getFirstDynamic()
 	{
@@ -96,18 +105,26 @@ implements Downloadable
 	/**
 	 * Size of the image, once we know it. Position, as well, if its on screen.
 	 */
-	protected Dimension		dimension 	= new Dimension();
-
-	protected Dimension		originalDimension;
+	//protected Dimension		dimension 	= new Dimension();
+	@simpl_scalar
+	protected int width;
+	
+	@simpl_scalar
+	protected int height;
 
 	//////////////////////// for debugging ////////////////////////////////
-
+	@simpl_scalar
 	boolean					scaled;
 
 	public static int		constructedCount, recycledCount;
 
 
 	/////////////////////// constructors //////////////////////////
+	public PixelBased()
+	{
+		
+	}
+	
 	public PixelBased(BufferedImage bufferedImage)
 	{
 		this(bufferedImage, new Dimension(bufferedImage.getWidth(), bufferedImage.getHeight()));
@@ -125,7 +142,8 @@ implements Downloadable
 	
 	protected void initializeRenderings(Rendering rendering)
 	{
-		dimension					= new Dimension(rendering.width, rendering.height);
+		width							= rendering.width;
+		height 						= rendering.height;
 		basisRendering		= rendering;
 		currentRendering	= rendering;
 	}
@@ -140,7 +158,6 @@ implements Downloadable
 			int maxHeight	= maxDimension.height;
 			if (width > maxWidth || height > maxHeight)
 			{
-				originalDimension	= new Dimension(width, height);
 				if (width / (float) height < maxWidth / (float) maxHeight) 
 				{
 					width 	= (width*maxHeight + height/2) / height;
@@ -202,14 +219,14 @@ implements Downloadable
 		if (recycled || (basisRendering == null))
 			return false;
 
-		if ((newWidth != dimension.width) || (newHeight != dimension.height))
+		if ((newWidth != width) || (newHeight != height))
 		{
 			if (unprocessedRendering == null)
 			{
 				synchronized (renderingsLock)
 				{
-					dimension.width				= newWidth;
-					dimension.height			= newHeight;
+					width									= newWidth;
+					height								= newHeight;
 					scaled								= true;
 					basisRendering				= basisRendering.getScaledRendering(newWidth, newHeight);
 					unprocessedRendering 	= new Rendering(basisRendering);
@@ -224,8 +241,8 @@ implements Downloadable
 					ConsoleUtils.obtrusiveConsoleOutput("GASP! alphaGradient is not in the pipeline chain!");
 				}
 				this.resize(newWidth, newHeight);
-				if ((this.alphaGradientRendering != null) && (alphaGradientRendering.width != dimension.width))
-					ConsoleUtils.obtrusiveConsoleOutput("EARLY CRAZY! this="+dimension.width+" alphaGrad="+this.alphaGradientRendering.width);
+				if ((this.alphaGradientRendering != null) && (alphaGradientRendering.width != width))
+					ConsoleUtils.obtrusiveConsoleOutput("EARLY CRAZY! this="+width+" alphaGrad="+this.alphaGradientRendering.width);
 
 			}
 		}
@@ -257,20 +274,37 @@ implements Downloadable
 	{
 		//       debug("scale() " + extent.width +","+ extent.height+" -> " +
 		//	     newWidth +","+ newHeight);
-		if (recycled || (unprocessedRendering == null))
+		if (recycled)
 			return false;
 
-		if ((newWidth != dimension.width) || (newHeight != dimension.height))
+		if ((newWidth != width) || (newHeight != height))
 		{
+			if (unprocessedRendering == null)
+			{
+				unprocessedRendering = new Rendering(basisRendering);
+				this.setCurrentRendering(unprocessedRendering);
+			}
+			
 			synchronized (renderingsLock)
 			{
-				dimension.width	= newWidth;
-				dimension.height= newHeight;
+				width				= newWidth;
+				height			= newHeight;
 				scaled			= true;
 				unprocessedRendering.resize(newWidth, newHeight, basisRendering);
 			}
 		}
 		return true;
+	}
+	
+	public void setupRandomAlphaGradient(float radiusFactor)
+	{
+		// now (after probability thresholding), push it up!
+		radiusFactor	= MathTools.bias(radiusFactor, .7f);
+		int shorter	= (width < height) ? width : height;
+		int alphaRadius	= (int) ((shorter / 2) * radiusFactor);
+		int alphaMinimum	= ((int) (MathTools.random(.4f) * (float) R)) & R;
+		
+		alphaGradient(alphaRadius, alphaMinimum);
 	}
 	/**
 	 * Builds an alpha gradient, or feathered mask.
@@ -284,8 +318,12 @@ implements Downloadable
 	 */
 	public boolean alphaGradient(int radius, int minAlpha)
 	{
-		if (recycled || (unprocessedRendering == null))
+		if (recycled)
 			return false;
+		
+		if (unprocessedRendering == null)
+			unprocessedRendering = new Rendering(basisRendering);
+		
 		boolean active	= (radius != NO_ALPHA_RADIUS);
 
 		if (alphaGradientRendering == null)
@@ -301,8 +339,8 @@ implements Downloadable
 				//	     last.compute();
 				alphaGradientRendering.computeNext();
 		}
-		if (alphaGradientRendering.width != dimension.width)
-			ConsoleUtils.obtrusiveConsoleOutput("CRAZY! this="+dimension.width+" alphaGrad="+this.alphaGradientRendering.width);
+		if (alphaGradientRendering.width != width)
+			ConsoleUtils.obtrusiveConsoleOutput("CRAZY! this="+width+" alphaGrad="+this.alphaGradientRendering.width);
 		return true;
 	}
 	/**
@@ -376,8 +414,8 @@ implements Downloadable
 	{
 		// for more perceptibly linear response, push degree toward 0
 		//      degree		= MoreMath.bias(degree, .4f); 
-		int blurWidth	= (int) ((float) dimension.width  * .25f * degree);
-		int blurHeight	= (int) ((float) dimension.height * .25f * degree);
+		int blurWidth	= (int) ((float) width  * .25f * degree);
+		int blurHeight	= (int) ((float) height * .25f * degree);
 		blur2D(blurWidth, blurHeight, immediate);
 	}
 	/**
@@ -496,7 +534,7 @@ implements Downloadable
 	public String toString()
 	{ 
 		String addr = "["+ ((purl==null) ? "no purl - " + this.getClassName() : purl.toString())+"]";
-		String dim  = (dimension == null) ? " " : ("[" + dimension.width+"x"+dimension.height + "] ");
+		String dim  = "[" + width+"x"+height + "] ";
 		return getClassName(this) +  addr + dim;
 	}
 	public String errorMessage()
@@ -525,8 +563,6 @@ implements Downloadable
 
 				purl				= null;
 
-				dimension		= null;
-				
 				if (unprocessedRendering != null)
 				{
 					unprocessedRendering.recycleRenderingChain(true);
@@ -623,31 +659,12 @@ implements Downloadable
 
 	public int getWidth()
 	{
-		return (dimension != null) ? dimension.width : 0;
+		return width;
 	}
 
 	public int getHeight()
 	{
-		return (dimension != null) ? dimension.height : 0;
-	}
-
-	public Dimension getDimension()
-	{
-		return dimension;
-	}
-
-	/**
-	 * If scaling was performed, the dimensions of the image associated with this *before hand*.
-	 * 
-	 * @return	The original dimensions of the image, before scaling, or null, if no scaling was performed.
-	 */
-	public Dimension getOriginalDimesion()
-	{
-		return originalDimension;
-	}
-	public void resetOriginalDimesion()
-	{
-		originalDimension = null;
+		return height;
 	}
 
 	public boolean timedOut()
@@ -659,8 +676,8 @@ implements Downloadable
 		 so if the user wants to make it bigger than the basisRendering, 
 		 we should re-download it and not scale it down */
 		return (/* originalDimension != null && */
-				dimension.width > basisRendering.width ||
-				dimension.height > basisRendering.height);
+				width > basisRendering.width ||
+				height > basisRendering.height);
 	}
 	
 	public BufferedImage bufferedImage()
@@ -708,4 +725,15 @@ implements Downloadable
   {
   	return "image " + purl;
   }
+
+	public void updateRenderings(BufferedImage bufferedImage)
+	{
+		if (basisRendering != null)
+		{
+			basisRendering.bufferedImage = bufferedImage;
+			acquirePixelsIfNecessary();
+			
+			scaleInitially(width, height);
+		}
+	}
 }
