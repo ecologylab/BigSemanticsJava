@@ -124,4 +124,14 @@
 		<scalar name="link" hide="true" scalar_type="ParsedURL" />
 	</meta_metadata>
 	
+	<meta_metadata name="information_composition" extends="document" built_in="true">
+		<collection name="clippings" child_type="clipping" polymorphic_global="true"/>
+		<collection name="annotations" child_type="annotation" />
+		<collection name="media" child_type="clippable_document" polymorphic_global="true"/>
+		
+		<scalar name="version" scalar_type="Float" />
+		<scalar name="metadata_version" scalar_type="Float" />
+		<scalar name="width" scalar_type="Integer" />
+	
+	</meta_metadata>
 </meta_metadata_repository>
