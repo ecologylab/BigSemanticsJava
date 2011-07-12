@@ -16,14 +16,12 @@ import ecologylab.semantics.metametadata.MetaMetadataCollectionField;
 import ecologylab.semantics.metametadata.MetaMetadataField;
 import ecologylab.semantics.metametadata.MetaMetadataNestedField;
 import ecologylab.semantics.metametadata.MetaMetadataScalarField;
-import ecologylab.semantics.namesandnums.SemanticsNames;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.FieldDescriptor;
 import ecologylab.serialization.FieldTypes;
 import ecologylab.serialization.Hint;
 import ecologylab.serialization.ScalarUnmarshallingContext;
-import ecologylab.serialization.TranslationScope;
 import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.types.scalar.ScalarType;
 
@@ -160,7 +158,7 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 		if (result == null)
 		{
 			result			= XMLTools.getXmlTagName(thatField.getName(), null);
-			if (!this.isScalar())
+			if (!this.isScalar() && !thatField.isAnnotationPresent(Metadata.mm_no.class))
 				error("Missing @mm_name annotation for " + thatField + "\tusing " + result);
 		}
 		return result;
