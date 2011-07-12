@@ -174,7 +174,7 @@ abstract public class DocumentParser<D extends Document>
 	}
 
 
-	public void handleIoError ( )
+	public void handleIoError (Throwable e )
 	{
 		recycle();
 	}

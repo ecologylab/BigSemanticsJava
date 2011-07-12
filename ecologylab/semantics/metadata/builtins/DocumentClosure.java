@@ -591,12 +591,12 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 	 * Called by DownloadMonitor in case a timeout happens.
 	 */
 	@Override
-	public void handleIoError()
+	public void handleIoError(Throwable e)
 	{
 		downloadStatus	= DownloadStatus.IOERROR;
 		document.setDownloadDone(true);
 		if (documentParser != null)
-			documentParser.handleIoError();
+			documentParser.handleIoError(e);
 
 		recycle();
 	}
