@@ -11,10 +11,12 @@ package ecologylab.semantics.namesandnums;
 public interface SemanticsNames
 {
 
-	public static final String	GENERATED_METADATA_TRANSLATIONS				= "generated_metadata_translations";
+	public static final String	GENERATED_METADATA_TRANSLATIONS				= "repository_metadata";
 
-	public static final String	GENERATED_DOCUMENT_TRANSLATIONS				= "generated_document_translations";
+	public static final String	REPOSITORY_DOCUMENT_TRANSLATIONS				= "repository_documents";
 
-	public static final String	GENERATED_MEDIA_TRANSLATIONS					= "generated_media_translations";
+	public static final String	REPOSITORY_MEDIA_TRANSLATIONS					= "repository_media";
+
+	public static final String	REPOSITORY_CLIPPING_TRANSLATIONS				= "repository_clippings";
 
 }
