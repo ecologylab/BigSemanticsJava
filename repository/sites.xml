@@ -6,5 +6,6 @@
     <site domain="acm.org" min_download_interval="20" />
     <site domain="bing.net" min_download_interval=".125" />
     <site domain="wikipedia.org" min_download_interval="5" ignore_semantic_boost="true" />
+    <site domain="moma.org" min_download_interval="1" />
   </sites>
 </meta_metadata_repository>

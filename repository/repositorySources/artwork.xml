@@ -26,7 +26,7 @@
 	
 	<meta_metadata name="moma_artwork" extends="artwork"  parser="xpath">
 		<selector url_regex="http://www.moma.org/collection/browse_results.php[\S]*template_id=1[\S]*" domain="moma.org"/>
-		<selector url_regex="http://www.moma.org/collection/browse_results.php?object_id=[\d]+" domain="moma.org" />
+		<selector url_regex="http://www.moma.org/collection/browse_results.php\?object_id=[\d]+" domain="moma.org" />
 		<scalar name="location" hide="true" />
 		<scalar name="title" xpath="//div[@id='omniture_caption']/h3/i" />
 		<collection name="artists" xpath="//h4[@class='artist']/a">
@@ -52,9 +52,9 @@
 		
 		<composite name="temp_field_value_holder" extends="metadata" xpath="//p[@class='caption'][1]" hide="true">
 			<field_parser name="regex_find" regex="(\S.+?)\. " />
-<!-- 			<scalar name="temp_year" scalar_type="Int" field_parser_key="$0"> -->
-<!-- 				<filter regex="[().]*" replace="" /> -->
-<!-- 			</scalar> -->
+			<scalar name="temp_year" scalar_type="String" field_parser_key="$0">
+				<filter regex="[().]*" replace="" />
+			</scalar>
 			<scalar name="temp_medium" scalar_type="String" field_parser_key="$1">
 				<filter regex=", \d.+" replace="" />
 			</scalar>
@@ -69,14 +69,24 @@
 		
 			<get_field name="temp_field_value_holder" />
 			<if>
-<!-- 				<not_null value="temp_field_value_holder" /> -->
+				<not_null value="temp_field_value_holder" />
 <!-- 				<get_field name="temp_year" object="temp_field_value_holder" /> -->
-				<set_field name="year" value="temp_year" />
+<!-- 				<set_field name="year" value="temp_year" /> -->
 				<get_field name="temp_medium" object="temp_field_value_holder" />
 				<set_field name="medium" value="temp_medium" />
 				<get_field name="temp_dimensions" object="temp_field_value_holder" />
 				<set_field name="dimensions" value="temp_dimensions" />
 			</if>
+			
+<!-- 			<get_field name="image_url"/> -->
+<!-- 			<create_and_visualize_img_surrogate> -->
+<!-- 				<arg name="image_purl" value="image_url" />			 -->
+<!-- 			</create_and_visualize_img_surrogate>  -->
+			
+			<get_field name="title"/>
+			<create_and_visualize_text_surrogate>
+				<arg name="text" value="title" />
+			</create_and_visualize_text_surrogate>
 			
 		</semantic_actions>
 	</meta_metadata>
@@ -88,7 +98,6 @@
 		</collection>
 		<scalar name="next_list" scalar_type="ParsedURL" xpath="//a[@class='slideNext']/@href" />
 		
-		
 <!-- 		<semantic_actions> -->
 <!-- 			<get_field name="artworks" /> -->
 <!-- 			<for_each collection="artworks" as="artwork"> -->
@@ -98,6 +107,10 @@
 <!-- 					<arg value="artwork" name="document" /> -->
 <!-- 				</parse_document> -->
 <!-- 			</for_each> -->
+			
+<!-- 			<parse_document> -->
+<!-- 				<arg value="next_list" name="container_link" /> -->
+<!-- 			</parse_document> -->
 			
 <!-- 		</semantic_actions> -->
 	</meta_metadata>
