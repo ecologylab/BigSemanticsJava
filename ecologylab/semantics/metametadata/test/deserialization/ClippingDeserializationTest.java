@@ -10,6 +10,8 @@ import org.w3c.tidy.Tidy;
 import ecologylab.generic.Debug;
 import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.generated.library.GeneratedMetadataTranslationScope;
+import ecologylab.semantics.metametadata.MetaMetadataRepository;
+import ecologylab.semantics.namesandnums.SemanticsNames;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.TranslationScope;
@@ -19,10 +21,16 @@ import ecologylab.serialization.TranslationScope;
  *
  */
 public class ClippingDeserializationTest extends Debug
+implements SemanticsNames
 {
-
+	static
+	{
+		MetaMetadataRepository.initializeTypes();
+	}
 	private static final TranslationScope	META_METADATA_TRANSLATIONS	= GeneratedMetadataTranslationScope.get();
 
+	private static final TranslationScope MY_TRANSLATIONS	= TranslationScope.get("mine",
+			META_METADATA_TRANSLATIONS, InformationCompositionTest.class);
 	/**
 	 * 
 	 */
@@ -33,15 +41,21 @@ public class ClippingDeserializationTest extends Debug
 	
 	public static void main(String[] s)
 	{
-		File file	= new File("S:/cFprofiling/deserializationTest/textClippingDeserializationTest.xml");
+		File file2	= new File("ecologylab/semantics/metametadata/test/deserialization/imageClipping.xml");
+
+		File file		= new File("ecologylab/semantics/metametadata/test/deserialization/textClipping.xml");
 		
 		SemanticsSessionScope sss	= new SemanticsSessionScope(META_METADATA_TRANSLATIONS, Tidy.class);
 		
 		try
 		{
-			ElementState es	= META_METADATA_TRANSLATIONS.deserialize(file);
+//			ElementState es	= MY_TRANSLATIONS.deserialize(file);
+//
+//			es.serialize(System.out);
+			
+			ElementState es2	= MY_TRANSLATIONS.deserialize(file2);
 
-			es.serialize(System.out);
+			es2.serialize(System.out);
 		}
 		catch (SIMPLTranslationException e)
 		{
