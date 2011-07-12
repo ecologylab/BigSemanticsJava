@@ -737,6 +737,13 @@ abstract public class Metadata extends ElementState implements MetadataBase, Ter
 	@Retention(RetentionPolicy.RUNTIME)
 	@Inherited
 	@Target(ElementType.FIELD)
+	public @interface mm_no
+	{
+	}
+	
+	@Retention(RetentionPolicy.RUNTIME)
+	@Inherited
+	@Target(ElementType.FIELD)
 	public @interface mm_dont_inherit
 	{
 	}
