@@ -269,7 +269,7 @@ abstract public class Metadata extends ElementState implements MetadataBase, Ter
 
 			if (metaMetadata.isChildFieldDisplayed(metaMetadataField.getName()))
 			{
-				if (mfd.isScalar())
+				if (mfd.isScalar() && !mfd.isCollection())
 					hasVisibleNonNullField = MetadataString.isNotNullAndEmptyValue(mfd
 							.getValueString(currentMetadata));
 				else if (mfd.isNested())
