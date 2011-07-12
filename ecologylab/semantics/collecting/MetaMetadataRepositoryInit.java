@@ -15,6 +15,7 @@ import ecologylab.io.Assets;
 import ecologylab.io.AssetsRoot;
 import ecologylab.io.Files;
 import ecologylab.semantics.metadata.builtins.ClippableDocument;
+import ecologylab.semantics.metadata.builtins.Clipping;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
@@ -95,6 +96,8 @@ implements DocumentParserTagNames, ApplicationProperties, SemanticsNames
 
 	private final TranslationScope									generatedMediaTranslations;
 	
+	private final TranslationScope									repositoryClippingTranslations;
+	
 	/**
 	 * This constructor should only be called from SemanticsScope's constructor!
 	 * 
@@ -106,9 +109,11 @@ implements DocumentParserTagNames, ApplicationProperties, SemanticsNames
 		this.metadataTranslationScope	= metadataTranslationScope;
 		this.metaMetadataRepository		= META_METADATA_REPOSITORY;
 		this.generatedDocumentTranslations	= 
-			metadataTranslationScope.getAssignableSubset(GENERATED_DOCUMENT_TRANSLATIONS, Document.class);
+			metadataTranslationScope.getAssignableSubset(REPOSITORY_DOCUMENT_TRANSLATIONS, Document.class);
 		this.generatedMediaTranslations	=
-			metadataTranslationScope.getAssignableSubset(GENERATED_MEDIA_TRANSLATIONS, ClippableDocument.class);
+			metadataTranslationScope.getAssignableSubset(REPOSITORY_MEDIA_TRANSLATIONS, ClippableDocument.class);
+		this.repositoryClippingTranslations =
+			metadataTranslationScope.getAssignableSubset(REPOSITORY_CLIPPING_TRANSLATIONS, Clipping.class);
 	}
 	
 	public MetaMetadataRepository getMetaMetadataRepository()
