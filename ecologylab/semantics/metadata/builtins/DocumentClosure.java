@@ -255,6 +255,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 
 					// we dont need the new container object that was passed in
 					// TODO recycle it!
+					return true;
 				}
 				else
 				// redirect to a new url
