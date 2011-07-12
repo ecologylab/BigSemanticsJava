@@ -20,8 +20,8 @@
 		<scalar name="context" layer="10.0" scalar_type="String" />
 		<scalar name="context_html" scalar_type="String" />
 		<scalar name="xpath" scalar_type="String" hide="true"/>
-		<composite name="source" tag="source_doc" type="document_metadata_wrap" />
-		<composite name="outlink" type="document_metadata_wrap" />
+		<composite name="source" type="document" />
+		<composite name="outlink" type="document" />
 	</meta_metadata>
 
 	<meta_metadata name="media_clipping" extends="clipping" built_in="true">

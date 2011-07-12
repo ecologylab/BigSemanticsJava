@@ -12,6 +12,7 @@ import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.namesandnums.SemanticsNames;
 import ecologylab.serialization.Hint;
 import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.ElementState.simpl_scope;
 
 /**
  * Mix-in for adding the context of a clipping to the description of a Document.
@@ -45,16 +46,19 @@ public class Clipping extends Metadata
 	 * The source document.
 	 */
 	@simpl_composite
+	@simpl_wrap
 	@mm_name("source")
-	@xml_tag("source_doc")
-	private DocumentMetadataWrap				source;
+	@simpl_scope(SemanticsNames.REPOSITORY_DOCUMENT_TRANSLATIONS)
+	private Document				source;
 	
 	/**
 	 * A hyperlinked Document.
 	 */
 	@simpl_composite
 	@mm_name("outlink") 
-	private DocumentMetadataWrap				outlink;
+	@simpl_wrap
+	@simpl_scope(SemanticsNames.REPOSITORY_DOCUMENT_TRANSLATIONS)
+	private Document				outlink;
 	
 	private DocumentClosure				outlinkClosure;
 
@@ -75,7 +79,7 @@ public class Clipping extends Metadata
 	public Clipping(MetaMetadataCompositeField metaMetadata, Document source)
 	{
 		this(metaMetadata);
-		this.source	= new DocumentMetadataWrap(source);
+		this.source	= source;;
 	}
 	public Clipping(MetaMetadataCompositeField metaMetadata, Document source, Document outlink, String context)
 	{
@@ -84,7 +88,7 @@ public class Clipping extends Metadata
 		{
 			if (outlink.isDownloadDone())
 			{
-				this.outlink				= new DocumentMetadataWrap(outlink);
+				this.outlink				= outlink;
 			}
 			else
 				this.outlinkClosure	= outlink.getOrConstructClosure();
@@ -104,7 +108,7 @@ public class Clipping extends Metadata
 	protected void serializationPreHook()
 	{
 		if (outlinkClosure != null && !outlinkClosure.isRecycled())
-			outlink	= new DocumentMetadataWrap(outlinkClosure.getDocument());
+			outlink	= outlinkClosure.getDocument();
 	}
 	
 	public MetadataString context()
@@ -222,7 +226,7 @@ public class Clipping extends Metadata
 	 */
 	public Document getSource()
 	{
-		return source==null ? null : source.getDocument();
+		return source;
 	}
 
 	/**
@@ -230,7 +234,7 @@ public class Clipping extends Metadata
 	 */
 	public Document getOutlink()
 	{
-		return outlink == null ? null : outlink.getDocument();
+		return outlink;
 	}
 
 	/**
@@ -276,17 +280,19 @@ public class Clipping extends Metadata
 	
 	public void setSource(Document source)
 	{
-		if (this.source == null)
-			this.source	= new DocumentMetadataWrap(source);
-		else
-			this.source.setDocument(source);
+		this.source	= source;
+//		if (this.source == null)
+//			this.source	= new DocumentMetadataWrap(source);
+//		else
+//			this.source.setDocument(source);
 	}
 	public void setOutlink(Document outlink)
 	{
-		if (this.outlink == null)
-			this.outlink	= new DocumentMetadataWrap(outlink);
-		else
-			this.outlink.setDocument(outlink);
+		this.outlink	= outlink;
+//		if (this.outlink == null)
+//			this.outlink	= new DocumentMetadataWrap(outlink);
+//		else
+//			this.outlink.setDocument(outlink);
 	}
 
 }
