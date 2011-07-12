@@ -688,7 +688,7 @@ implements Downloadable, Colors
 	/**
 	 * Do nothing, but implement Downloadable.
 	 */
-	public void handleIoError()
+	public void handleIoError(Throwable e)
 	{
 		// TODO Auto-generated method stub
 		
