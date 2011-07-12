@@ -215,9 +215,9 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 			}
 			
 			@Override
-			public boolean isPolymorphic()
+			public boolean isPolymorphicInDescendantFields()
 			{
-				return thisField.isPolymorphic();
+				return thisField.isPolymorphicInDescendantFields();
 			}
 		};
 		composite.setParent(this);

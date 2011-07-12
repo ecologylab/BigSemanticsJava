@@ -1,9 +1,9 @@
 <meta_metadata_repository name="information_composition" package="ecologylab.semantics.generated.library.infocomp" >
 
 	<meta_metadata name="information_composition_base" extends="document">
-		<collection name="clippings" child_type="clipping" polymorphic_global="true" />
-		<collection name="annotations" child_type="annotation" />
-		<collection name="media" child_type="clippable_document" polymorphic_global="true" />
+		<collection name="clippings" child_type="clipping" polymorphic_scope="repository_clippings" />
+		<collection name="annotations" child_type="annotation" polymorphic_classes="annotation" />
+		<collection name="media" child_type="clippable_document" polymorphic_scope="repository_media" />
 		<scalar name="version" scalar_type="Float"/>
 		<scalar name="metadata_version" scalar_type="Float" />
 		<scalar name="width" scalar_type="Int" />

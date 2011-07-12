@@ -8,17 +8,25 @@ import ecologylab.serialization.simpl_inherit;
 @simpl_inherit
 public abstract class MetaMetadataNestedField extends MetaMetadataField implements PackageSpecifier
 {
+	
+	public static final String		POLYMORPHIC_CLASSES_SEP	= ",";
 
 	@simpl_composite
 	@xml_tag("field_parser")
 	private FieldParserElement		fieldParserElement;
 
 	@simpl_scalar
-	private boolean								promoteChildren;									// if children should be
-																																	// displayed at this level
+	private boolean								promoteChildren;									// if children should be displayed
+																																	// at this level
 
 	@simpl_scalar
-	private boolean								polymorphicGlobal;
+	private String								polymorphicScope;
+
+	/**
+	 * tags for polymorphic classes.
+	 */
+	@simpl_scalar
+	private String								polymorphicClasses;
 
 	@xml_tag("package")
 	@simpl_scalar
@@ -83,20 +91,6 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 
 	abstract protected String getMetaMetadataTagToInheritFrom();
 
-	public void inheritMetaMetadata()
-	{
-		if (!inheritFinished && !inheritInProcess)
-		{
-			debug("inheriting " + this.toString());
-			inheritInProcess = true;
-			if (!ignoreCompletely)
-				this.inheritMetaMetadataHelper();
-			this.sortForDisplay();
-			inheritInProcess = false;
-			inheritFinished = true;
-		}
-	}
-
 	/**
 	 * prerequisites:<br>
 	 * <ul>
@@ -115,6 +109,19 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	 * recursion)</li>
 	 * </ul>
 	 */
+	public void inheritMetaMetadata()
+	{
+		if (!inheritFinished && !inheritInProcess)
+		{
+			debug("inheriting " + this.toString());
+			inheritInProcess = true;
+			this.inheritMetaMetadataHelper();
+			this.sortForDisplay();
+			inheritInProcess = false;
+			inheritFinished = true;
+		}
+	}
+
 	abstract protected void inheritMetaMetadataHelper();
 
 	/**
@@ -210,14 +217,32 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 		this.promoteChildren = promoteChildren;
 	}
 
-	/**
-	 * @return the polymorphicGlobal
-	 */
-	public boolean isPolymorphicGlobal()
+	public String getPolymorphicScope()
 	{
-		return polymorphicGlobal;
+		return this.polymorphicScope;
+	}
+	
+	public String getPolymorphicClasses()
+	{
+		return this.polymorphicClasses;
 	}
 
+	/**
+	 * to determine if this field is polymorphic inherently, that is, a field which we don't have
+	 * prior knowledge of its specific meta-metadata type when its encompassing meta-metadata is used.
+	 * <p />
+	 * NOTE THAT this is different from isPolymorphicInDescendantFields() which determines if this
+	 * field is used for extended types in descendant fields. in that case although the field is
+	 * polymorphic, too, but we can determine the specific meta-metadata type for this field if the
+	 * encompassing meta-metadata is used.
+	 * 
+	 * @return
+	 */
+	public boolean isPolymorphicInherently()
+	{
+		return (polymorphicScope != null && polymorphicScope.length() > 0) || (polymorphicClasses != null && polymorphicClasses.length() > 0);
+	}
+	
 	public boolean isGenerateClassDescriptor()
 	{
 		return generateClassDescriptor;
@@ -247,16 +272,19 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	}
 
 	/**
-	 * return if this nested field is polymorphic, that is, for composites if the type of this field
-	 * varies in derived fields, for collections if the child type of this field varies in derived
-	 * fields.
+	 * return if this nested field is polymorphic in descendant fields, that is, for composites if the
+	 * type of this field varies in derived fields, for collections if the child type of this field
+	 * varies in derived fields.
+	 * <p />
+	 * NOTE THAT it is very different from isPolymorphicInherently(), which means that the field is
+	 * polymorphic by its nature. see the javadoc of the other method for more details.
 	 * 
 	 * @return
 	 */
-	public boolean isPolymorphic()
+	public boolean isPolymorphicInDescendantFields()
 	{
 		if (this.getInheritedField() != null)
-			return ((MetaMetadataNestedField) this.getInheritedField()).isPolymorphic();
+			return ((MetaMetadataNestedField) this.getInheritedField()).isPolymorphicInDescendantFields();
 		return polymorphicMmds != null && polymorphicMmds.size() > 0;
 	}
 

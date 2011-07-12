@@ -16,12 +16,14 @@ import ecologylab.semantics.metametadata.MetaMetadataCollectionField;
 import ecologylab.semantics.metametadata.MetaMetadataField;
 import ecologylab.semantics.metametadata.MetaMetadataNestedField;
 import ecologylab.semantics.metametadata.MetaMetadataScalarField;
+import ecologylab.semantics.namesandnums.SemanticsNames;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.FieldDescriptor;
 import ecologylab.serialization.FieldTypes;
 import ecologylab.serialization.Hint;
 import ecologylab.serialization.ScalarUnmarshallingContext;
+import ecologylab.serialization.TranslationScope;
 import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.types.scalar.ScalarType;
 
@@ -48,7 +50,7 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 	private MetaMetadataField							definingMmdField;
 
 	private boolean												startedTraversalForPolymorphism	= false;
-
+	
 	public MetadataFieldDescriptor(ClassDescriptor declaringClassDescriptor, Field field, int annotationType) // String nameSpacePrefix
 	{
 		super(declaringClassDescriptor, field, annotationType);
@@ -76,13 +78,22 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 			Hint xmlHint, String fieldType)
 	{
 		super(tagName, comment, type, elementClassDescriptor, declaringClassDescriptor, fieldName, scalarType, xmlHint, fieldType);
-		this.definingMmdField = definingMmdField;
 		this.isMixin = false;
+		this.definingMmdField = definingMmdField;
 		
+		// child tag for collections
 		if (definingMmdField instanceof MetaMetadataCollectionField)
 		{
 			String childTag = ((MetaMetadataCollectionField) definingMmdField).getChildTag();
 			this.setCollectionOrMapTagName(childTag);
+		}
+		
+		// simpl_scope for inherently polymorphic fields
+		if (definingMmdField instanceof MetaMetadataNestedField)
+		{
+			MetaMetadataNestedField nested = (MetaMetadataNestedField) definingMmdField;
+			String scopeName = nested.getPolymorphicScope();
+			this.setUnresolvedScopeAnnotation(scopeName);
 		}
 	}
 
@@ -201,7 +212,7 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 			
 			// @xml_other_tags: for collection fields always add, for composite fields only add for non-
 			// polymorphic ones
-			if (nested instanceof MetaMetadataCollectionField || !nested.isPolymorphic())
+			if (nested instanceof MetaMetadataCollectionField || !nested.isPolymorphicInDescendantFields())
 				this.otherTags = this.definingMmdField.getOtherTags();
 			
 			if (nested.getFieldType() != FieldTypes.COLLECTION_SCALAR)
@@ -216,14 +227,44 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 						this.putTagClassDescriptor(mcd);
 					}
 				}
-
-				// recursion
-				for (MetaMetadataField kid : nested.getChildMetaMetadata())
+				// @simpl_classes for inherently polymorphic fields
+				String polyClassStr = nested.getPolymorphicClasses();
+				if (polyClassStr != null)
 				{
-					System.out.println(kid);
-					MetadataFieldDescriptor kidMFD = kid.getMetadataFieldDescriptor();
-					if (kidMFD != null && !kidMFD.startedTraversalForPolymorphism)
-						kidMFD.traverseAndResolvePolymorphismAndOtherTagsForCompilation();
+					String[] polyClassTags = polyClassStr.split(MetaMetadataNestedField.POLYMORPHIC_CLASSES_SEP);
+					if (polyClassTags != null)
+					{
+						for (String polyClassTag : polyClassTags)
+						{
+							String truePolyClassTag = polyClassTag.trim();
+							MetaMetadata thatMmd = this.definingMmdField.getRepository().getByTagName(truePolyClassTag);
+							if (thatMmd != null)
+							{
+								MetadataClassDescriptor thatCd = thatMmd.getMetadataClassDescriptor();
+								if (thatCd != null)
+								{
+									this.putTagClassDescriptor(thatCd);
+								}
+								else
+								{
+									warning("can't find metadata class descriptor for " + thatMmd + ": ignoring tag " + truePolyClassTag + " in polymorphic_classes.");
+								}
+							}
+							else
+							{
+								warning("can't find meta-metadata with tag " + truePolyClassTag + ": ignoring that tag in polymorphic_classes.");
+							}
+						}
+					}
+	
+					// recursion
+					for (MetaMetadataField kid : nested.getChildMetaMetadata())
+					{
+						System.out.println(kid);
+						MetadataFieldDescriptor kidMFD = kid.getMetadataFieldDescriptor();
+						if (kidMFD != null && !kidMFD.startedTraversalForPolymorphism)
+							kidMFD.traverseAndResolvePolymorphismAndOtherTagsForCompilation();
+					}
 				}
 			}
 		}

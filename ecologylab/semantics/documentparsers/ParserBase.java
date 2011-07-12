@@ -779,7 +779,7 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 						"\n\tThis probably means there is a conflict between the meta-metadata repository and the runtime."+
 						"\n\tProgrammer: Have you Changed the fields in built-in Metadata subclasses without updating primitives.xml???!");
 			MetaMetadataCompositeField childMMComposite = null;
-			if (childMMNested.isPolymorphicGlobal())
+			if (childMMNested.isPolymorphicInherently())
 			{
 				String tagName = deserializedMetadata.classDescriptor().getTagName();
 				childMMComposite	= infoCollector.getMetaMetadataRepository().getByTagName(tagName);
