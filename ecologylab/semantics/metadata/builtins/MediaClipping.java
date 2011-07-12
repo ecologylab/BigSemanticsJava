@@ -24,7 +24,7 @@ public class MediaClipping<ME extends ClippableDocument> extends Clipping
 	private MetadataString	caption;
 	
 	@simpl_composite
-	@simpl_scope(SemanticsNames.GENERATED_MEDIA_TRANSLATIONS)
+	@simpl_scope(SemanticsNames.REPOSITORY_MEDIA_TRANSLATIONS)
 	@mm_name("media")
 	private ME							media;
 	

@@ -5,21 +5,13 @@ package ecologylab.semantics.metadata.builtins;
 
 import java.util.ArrayList;
 
-import ecologylab.collections.GenericElement;
-import ecologylab.collections.GenericWeightSet;
-import ecologylab.collections.WeightSet;
-import ecologylab.generic.Continuation;
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.collecting.ContainerWeightingStrategy;
 import ecologylab.semantics.collecting.Crawler;
-import ecologylab.semantics.collecting.DownloadStatus;
-import ecologylab.semantics.collecting.MetadataElement;
 import ecologylab.semantics.documentparsers.CompoundDocumentParserCrawlerResult;
 import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
-import ecologylab.semantics.model.text.InterestModel;
-import ecologylab.semantics.model.text.TermVectorWeightStrategy;
+import ecologylab.semantics.namesandnums.SemanticsNames;
 import ecologylab.semantics.seeding.Seed;
 import ecologylab.serialization.Hint;
 import ecologylab.serialization.simpl_inherit;
@@ -74,6 +66,7 @@ public class CompoundDocument extends Document
 	@mm_name("clippings") 
 	@simpl_collection
 	@simpl_classes({ImageClipping.class, TextClipping.class})
+//	@simpl_scope(SemanticsNames.REPOSITORY_CLIPPING_TRANSLATIONS)
 	ArrayList<Clipping>								clippings;
 
 

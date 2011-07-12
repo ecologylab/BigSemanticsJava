@@ -12,7 +12,12 @@ import ecologylab.serialization.simpl_inherit;
 @simpl_inherit
 public class TextClipping extends Clipping
 {
+	@xml_tag("text2")
+	@simpl_scalar
+	private String	text2;
 
+
+	@xml_tag("text")
 	@simpl_scalar
 	private MetadataString	text;
 

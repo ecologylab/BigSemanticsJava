@@ -13,7 +13,7 @@ import ecologylab.serialization.ElementState.simpl_scope;
 
 /**
  * Workaround for the absence of wrapped composites.
- * Provides isolation to avoid ambiguous deserialization betwee source and outlink in Clipping.
+ * Provides isolation to avoid ambiguous deserialization between source and outlink in Clipping.
  * 
  * @author andruid
  */
@@ -24,7 +24,8 @@ public class DocumentMetadataWrap extends Metadata
 	 * The Document we are wrapping.
 	 */
 	@simpl_composite
-	@simpl_scope(SemanticsNames.GENERATED_DOCUMENT_TRANSLATIONS)
+	@simpl_scope(SemanticsNames.REPOSITORY_DOCUMENT_TRANSLATIONS)
+//	@simpl_classes(CompoundDocument.class)
 	@mm_name("document") 
 	private Document				document;
 
