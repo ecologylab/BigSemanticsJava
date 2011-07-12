@@ -3,7 +3,10 @@
  */
 package ecologylab.semantics.metadata.builtins;
 
+import java.util.HashSet;
+
 import ecologylab.semantics.metadata.Metadata;
+import ecologylab.semantics.metadata.MetadataBase;
 import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.namesandnums.SemanticsNames;
@@ -42,7 +45,8 @@ public class Clipping extends Metadata
 	 * The source document.
 	 */
 	@simpl_composite
-	@mm_name("source") 
+	@mm_name("source")
+	@xml_tag("source_doc")
 	private DocumentMetadataWrap				source;
 	
 	/**
@@ -68,14 +72,14 @@ public class Clipping extends Metadata
 	{
 		numConstructed++;
 	}
-	public Clipping(Document source)
+	public Clipping(MetaMetadataCompositeField metaMetadata, Document source)
 	{
-		this();
+		this(metaMetadata);
 		this.source	= new DocumentMetadataWrap(source);
 	}
-	public Clipping(Document source, Document outlink, String context)
+	public Clipping(MetaMetadataCompositeField metaMetadata, Document source, Document outlink, String context)
 	{
-		this(source);
+		this(metaMetadata, source);
 		if (outlink != null)
 		{
 			if (outlink.isDownloadDone())
@@ -218,7 +222,7 @@ public class Clipping extends Metadata
 	 */
 	public Document getSource()
 	{
-		return source.getDocument();
+		return source==null ? null : source.getDocument();
 	}
 
 	/**
@@ -226,7 +230,7 @@ public class Clipping extends Metadata
 	 */
 	public Document getOutlink()
 	{
-		return outlink.getDocument();
+		return outlink == null ? null : outlink.getDocument();
 	}
 
 	/**
@@ -254,7 +258,7 @@ public class Clipping extends Metadata
 	 * {@link #doRecycle() doRecycle()}. That is the method that really frees resources. It is the
 	 * one that derived classes need to override. This is why the routine is being declared final.
 	 */
-	public final synchronized void recycle (boolean unconditional )
+	public final synchronized void recycle (boolean unconditional, HashSet<Metadata> visitedMetadata)
 	{
 		if (source != null)
 		{
@@ -267,7 +271,22 @@ public class Clipping extends Metadata
 			outlink	= null;
 		}
 		outlinkClosure	= null;
-		super.recycle();
+		super.recycle(visitedMetadata);
+	}
+	
+	public void setSource(Document source)
+	{
+		if (this.source == null)
+			this.source	= new DocumentMetadataWrap(source);
+		else
+			this.source.setDocument(source);
+	}
+	public void setOutlink(Document outlink)
+	{
+		if (this.outlink == null)
+			this.outlink	= new DocumentMetadataWrap(outlink);
+		else
+			this.outlink.setDocument(outlink);
 	}
 
 }

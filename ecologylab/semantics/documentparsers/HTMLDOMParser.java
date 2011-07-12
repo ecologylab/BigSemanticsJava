@@ -84,7 +84,7 @@ public abstract class HTMLDOMParser extends HTMLParserCommon implements DOMParse
 	 */
 	public Node getRootNode() throws IOException
 	{
-		return ((org.w3c.dom.Document) getDom()).getDocumentElement();
+		return getDom();
 	}
 
 	/**

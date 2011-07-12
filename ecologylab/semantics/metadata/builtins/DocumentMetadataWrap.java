@@ -3,6 +3,7 @@
  */
 package ecologylab.semantics.metadata.builtins;
 
+import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.Metadata.mm_name;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
@@ -34,13 +35,15 @@ public class DocumentMetadataWrap extends Metadata
 	 */
 	public DocumentMetadataWrap()
 	{
+		setMetaMetadata(SemanticsSessionScope.getRepository().getByClass(this.getClass()));
 	}
 
 	public DocumentMetadataWrap(Document document)
 	{
+		this();
 		this.document		= document;
 	}
-
+	
 	/**
 	 * @return the document
 	 */
@@ -52,5 +55,10 @@ public class DocumentMetadataWrap extends Metadata
 	public void recycle()
 	{
 		document	= null;
+	}
+
+	public void setDocument(Document document)
+	{
+		this.document = document;
 	}
 }

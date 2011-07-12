@@ -1,8 +1,7 @@
 package ecologylab.semantics.model.text;
 
-import java.util.Observable;
-
 import ecologylab.generic.ScaledValueObserver;
+import ecologylab.serialization.ObservableElementState;
 
 public class InterestExpressibleTerm implements ScaledValueObserver
 {
@@ -23,7 +22,7 @@ public class InterestExpressibleTerm implements ScaledValueObserver
 		return InterestModel.getInterestExpressedInXTerm(term);
 	}
 
-	public void update(Observable o, Object arg)
+	public void update(ObservableElementState o, Object arg)
 	{
 		if (arg instanceof Short)
 		{

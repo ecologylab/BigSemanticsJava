@@ -54,6 +54,7 @@ implements DocumentParserTagNames, ApplicationProperties, SemanticsNames
 	public static final MetaMetadata							SEARCH_META_METADATA;
 	public static final MetaMetadata							IMAGE_META_METADATA;
 	public static final MetaMetadata							DEBUG_META_METADATA;
+	public static final MetaMetadata							IMAGE_CLIPPING_META_METADATA;
 
 	static
 	{
@@ -74,6 +75,7 @@ implements DocumentParserTagNames, ApplicationProperties, SemanticsNames
 		
 		Debug.println("\t\t-- Reading meta_metadata from " + METAMETADATA_REPOSITORY_DIR_FILE);
 
+		MetaMetadataRepository.initializeTypes();
 		META_METADATA_REPOSITORY 					= MetaMetadataRepository.load(METAMETADATA_REPOSITORY_DIR_FILE);
 		
 		DOCUMENT_META_METADATA						= META_METADATA_REPOSITORY.getByTagName(DOCUMENT_TAG);
@@ -81,6 +83,7 @@ implements DocumentParserTagNames, ApplicationProperties, SemanticsNames
 		SEARCH_META_METADATA							= META_METADATA_REPOSITORY.getByTagName(SEARCH_TAG);
 		IMAGE_META_METADATA								= META_METADATA_REPOSITORY.getByTagName(IMAGE_TAG);
 		DEBUG_META_METADATA								= META_METADATA_REPOSITORY.getByTagName(DEBUG_TAG);
+		IMAGE_CLIPPING_META_METADATA			= META_METADATA_REPOSITORY.getByTagName(IMAGE_CLIPPING_TAG);
 	}
 	
 	public static MetaMetadataRepository getRepository()

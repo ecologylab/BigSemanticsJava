@@ -1,10 +1,7 @@
 package ecologylab.semantics.html;
 
-import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
@@ -12,15 +9,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.TreeMap;
 
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import ecologylab.generic.Debug;
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.documentparsers.HTMLDOMParser;
 import ecologylab.semantics.html.documentstructure.ImageFeatures;
 import ecologylab.semantics.html.documentstructure.RecognizedDocumentStructure;
 import ecologylab.semantics.html.utils.HTMLAttributeNames;
@@ -143,6 +138,7 @@ public class DOMWalkInformationTagger implements HTMLAttributeNames
 		currentNode = node;
 		if (node == null)
 			return;
+		
 		if (node.getNodeType() == Node.TEXT_NODE)
 		{
 			if (node.getNodeValue() != null && node.getNodeValue().length() > 0)
@@ -571,7 +567,7 @@ public class DOMWalkInformationTagger implements HTMLAttributeNames
 	 * @param te
 	 * @return
 	 */
-	// FIXME -- why is text in anchor node not included?
+	// FIXME -- why is text` in anchor node not included?
 
 	public static StringBuilder getTextInSubTree(Node node, boolean recurse, StringBuilder result)
 	{
@@ -580,7 +576,7 @@ public class DOMWalkInformationTagger implements HTMLAttributeNames
 		for (int i = 0; i < children.getLength(); i++)
 		{
 			Node childNode = children.item(i);
-			if ((recurse && childNode.getNodeName() != null)
+			if ((recurse && childNode.hasChildNodes())
 					&& (!childNode.getNodeName().equals("script")))
 			{
 				result = getTextInSubTree(childNode, true, result);

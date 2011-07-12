@@ -3,6 +3,8 @@
  */
 package ecologylab.semantics.metadata;
 
+import java.util.HashSet;
+
 import ecologylab.semantics.model.text.ITermVector;
 
 /**
@@ -31,6 +33,7 @@ extends Iterable<MetadataFieldDescriptor>
 	 */
 	public ITermVector termVector();
 
+	public ITermVector termVector(HashSet<Metadata> visitedMetadata);
 
 	public void recycle();
 

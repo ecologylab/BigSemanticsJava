@@ -27,6 +27,7 @@ public class MetadataBuiltinsTranslationScope extends Debug
 		TextClipping.class,
 		DebugMetadata.class,
 		DocumentMetadataWrap.class,
+		Annotation.class,
 		
 	};
 

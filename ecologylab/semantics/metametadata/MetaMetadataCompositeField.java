@@ -7,10 +7,12 @@ import java.util.Set;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.Metadata.mm_dont_inherit;
+import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
 import ecologylab.semantics.metametadata.exceptions.MetaMetadataException;
 import ecologylab.serialization.ElementState.xml_tag;
+import ecologylab.serialization.TranslationScope;
 import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.simpl_inherit;
 
@@ -77,7 +79,7 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 		cloned.inheritAttributes(this);
 		cloned.copyClonedFieldsFrom(this);
 		
-//		this.cloneKidsTo(cloned);
+		this.cloneKidsTo(cloned);
 		
 		return cloned;
 	}
@@ -274,7 +276,7 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 				if (field.getClass() != fieldLocal.getClass())
 					warning("local field " + fieldLocal + " hides field " + fieldLocal + " with the same name in super mmd type!");
 
-				debug("inheriting field " + fieldLocal + " from " + field);
+				//debug("inheriting field " + fieldLocal + " from " + field);
 				fieldLocal.setInheritedField(field);
 				fieldLocal.setDeclaringMmd(field.getDeclaringMmd());
 				fieldLocal.inheritAttributes(field);
@@ -542,4 +544,42 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 		return fd;
 	}
 
+	@Override
+	public Class<? extends Metadata> getMetadataClass(TranslationScope ts)
+	{
+		Class<? extends Metadata> result = this.metadataClass;
+		
+		if (result == null)
+		{
+			// if type= defined, use it
+			String type = getType();
+			if (type != null)
+			{
+				result = (Class<? extends Metadata>) ts.getClassByTag(type);
+				if (result == null)
+				{
+					// the type name doesn't work, but we can try super mmd class
+					MetaMetadata superMmd = getRepository().getByTagName(type);
+					if (superMmd != null)
+						result = superMmd.getMetadataClass(ts);
+				}
+			}
+			
+			if (result == null)
+			{
+				// then try name
+				String name = getName();
+				result = (Class<? extends Metadata>) ts.getClassByTag(name);
+			}
+			
+			if (result == null)
+			{
+				// if type and name don't work, try extends=
+				// there is no class for this tag we can use class of meta-metadata it extends
+				result = (Class<? extends Metadata>) ts.getClassByTag(((MetaMetadataCompositeField)this).getExtendsAttribute());
+			}
+		}
+		
+		return result;
+	}
 }

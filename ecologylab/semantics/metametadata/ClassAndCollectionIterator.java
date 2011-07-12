@@ -1,6 +1,7 @@
 package ecologylab.semantics.metametadata;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 
 import ecologylab.semantics.metadata.Metadata;
@@ -32,17 +33,22 @@ public class ClassAndCollectionIterator implements Iterator<MetadataBase>
 	private MetaMetadataField						currentMMField;
 
 	private Metadata										metadata;
+	
+	private HashSet<Metadata>						visitedMetadata;
 
 	/**
 	 * 
 	 * @param firstObject
 	 *          - The object whose elements need to be iterated over.
+	 * @param visitedMetadata TODO
 	 */
-	public ClassAndCollectionIterator(MetaMetadataField firstObject, Metadata metadata)
+	public ClassAndCollectionIterator(MetaMetadataField firstObject, Metadata metadata, HashSet<Metadata> visitedMetadata)
 	{
 		root = firstObject;
 		this.iterator = firstObject.iterator();
 		this.metadata = metadata;
+		this.visitedMetadata = visitedMetadata;
+		visitedMetadata.add(metadata);
 	}
 
 	/**
@@ -60,11 +66,12 @@ public class ClassAndCollectionIterator implements Iterator<MetadataBase>
 			if (iterator.hasNext())
 			{
 				MetaMetadataField firstNext = iterator.next();
+				
 				currentMMField = firstNext;
 				if (firstNext instanceof MetaMetadataCollectionField)
 				{
 					MetadataFieldDescriptor mfd = firstNext.getMetadataFieldDescriptor();
-					Collection<MetadataBase> c = mfd.getCollection(metadata);
+					Collection c = mfd.getCollection(metadata);
 					if (c != null)
 					{
 						collectionIterator = c.iterator();
@@ -79,7 +86,16 @@ public class ClassAndCollectionIterator implements Iterator<MetadataBase>
 					return null;
 				}
 				MetadataBase md = (MetadataBase) mfd.getField().get((MetadataBase) metadata);
+				boolean isComposite = (md instanceof Metadata);
+				if (isComposite && visitedMetadata.contains(md))
+				{
+					return next();
+				}
+				
 				currentObject = md;
+				if (isComposite)
+					visitedMetadata.add((Metadata) md);
+				
 				return md;
 			}
 		}
@@ -103,7 +119,20 @@ public class ClassAndCollectionIterator implements Iterator<MetadataBase>
 			return next();
 		}
 		MetadataBase next = collectionIterator.next();
+		while (visitedMetadata.contains(next) && collectionIterator.hasNext())
+			next = collectionIterator.next();
+		
+		boolean isComposite = (next instanceof Metadata);
+		if (isComposite && visitedMetadata.contains(next))
+		{
+			collectionIterator = null;
+			return next();
+		}
+		
 		currentObject = next;
+		if (isComposite)
+			visitedMetadata.add((Metadata) next);
+		
 		return next;
 	}
 

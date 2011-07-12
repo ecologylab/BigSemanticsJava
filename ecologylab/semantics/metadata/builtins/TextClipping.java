@@ -10,14 +10,9 @@ import ecologylab.serialization.simpl_inherit;
  **/
 
 @simpl_inherit
-public class TextClipping extends Clipping
+public class TextClipping extends Clipping implements TextualMetadata
 {
-	@xml_tag("text2")
-	@simpl_scalar
-	private String	text2;
 
-
-	@xml_tag("text")
 	@simpl_scalar
 	private MetadataString	text;
 

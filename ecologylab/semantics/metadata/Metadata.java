@@ -10,6 +10,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -18,9 +19,7 @@ import ecologylab.generic.HashMapArrayList;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.collecting.LinkedMetadataMonitor;
-import ecologylab.semantics.metadata.builtins.DebugMetadata;
 import ecologylab.semantics.metadata.output.MetadataConstants;
-import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
 import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.semantics.metametadata.ClassAndCollectionIterator;
 import ecologylab.semantics.metametadata.LinkWith;
@@ -33,14 +32,11 @@ import ecologylab.semantics.model.text.CompositeTermVector;
 import ecologylab.semantics.model.text.ITermVector;
 import ecologylab.semantics.model.text.TermVectorFeature;
 import ecologylab.semantics.namesandnums.SemanticsNames;
-import ecologylab.semantics.seeding.SearchState;
-import ecologylab.semantics.seeding.Seed;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.FieldDescriptor;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.ScalarUnmarshallingContext;
 import ecologylab.serialization.TranslationContext;
-import ecologylab.serialization.TranslationScope;
 import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.simpl_descriptor_classes;
 import ecologylab.serialization.library.html.Div;
@@ -49,7 +45,6 @@ import ecologylab.serialization.library.html.Span;
 import ecologylab.serialization.library.html.Table;
 import ecologylab.serialization.library.html.Td;
 import ecologylab.serialization.library.html.Tr;
-import ecologylab.serialization.types.scalar.ScalarType;
 
 /**
  * This is the new metadata class that is the base class for the meta-metadata system. It contains
@@ -222,9 +217,11 @@ abstract public class Metadata extends ElementState implements MetadataBase, Ter
 			ArrayList<Metadata> mixins = mixins();
 			if (!mixins.contains(mixin))
 			{
+				HashSet<Metadata> visitedMetadata = new HashSet<Metadata>();
 				mixins.add(mixin);
-				if (mixin.termVector() != null)
-					termVector().add(mixin.termVector());
+				CompositeTermVector mixinTermVector = mixin.termVector(visitedMetadata);
+				if (mixinTermVector != null)
+					termVector().add(mixinTermVector);
 			}
 		}
 	}
@@ -315,17 +312,44 @@ abstract public class Metadata extends ElementState implements MetadataBase, Ter
 	@Override
 	public void rebuildCompositeTermVector()
 	{
+		HashSet<Metadata> visitedMetadata = new HashSet<Metadata>();
 		// if there are no metadatafields retain the composite termvector
 		// because it might have meaningful entries
 		if (termVector == null)
 		{
-			initializeMetadataCompTermVector();
+			initializeMetadataCompTermVector(visitedMetadata);
 			return;
 		}
 
 		Set<ITermVector> vectors = termVector.componentVectors();
 
-		ClassAndCollectionIterator i = metadataIterator();
+		ClassAndCollectionIterator i = metadataIterator(visitedMetadata);
+		while (i.hasNext())
+		{
+			MetadataBase mb = i.next();
+			if (mb != null)
+			{
+				// if mb is a Metadata object, this call may recursively initialize its CompositeTermVector
+				ITermVector mTermVector = mb.termVector(visitedMetadata);
+				if (mb != null && !vectors.contains(mTermVector))
+					termVector.add(mTermVector);
+			}
+		}
+	}
+	
+	public void rebuildCompositeTermVector(HashSet<Metadata> visitedMetadata)
+	{
+		// if there are no metadatafields retain the composite termvector
+		// because it might have meaningful entries
+		if (termVector == null)
+		{
+			initializeMetadataCompTermVector(visitedMetadata);
+			return;
+		}
+
+		Set<ITermVector> vectors = termVector.componentVectors();
+
+		ClassAndCollectionIterator i = metadataIterator(visitedMetadata);
 		while (i.hasNext())
 		{
 			MetadataBase mb = i.next();
@@ -384,18 +408,21 @@ abstract public class Metadata extends ElementState implements MetadataBase, Ter
 	@Override
 	public CompositeTermVector termVector()
 	{
+		return getOrCreateTermVector();
+	}
+	
+	public CompositeTermVector termVector(HashSet<Metadata> visitedMetadata)
+	{
 		if (termVector == null && metaMetadata != null)
-			return initializeMetadataCompTermVector();
+			return initializeMetadataCompTermVector(visitedMetadata);
 		return termVector;
 	}
 
 	// could get called twice if termVector() is called from different threads & termVector is null.
-	public synchronized CompositeTermVector initializeMetadataCompTermVector()
+	public synchronized CompositeTermVector initializeMetadataCompTermVector(HashSet<Metadata> visitedMetadata)
 	{
-		if (termVector != null)
-			return termVector;
-		CompositeTermVector tv = new CompositeTermVector();
-		ClassAndCollectionIterator i = metadataIterator();
+		CompositeTermVector tv = getOrCreateTermVector();
+		ClassAndCollectionIterator i = metadataIterator(visitedMetadata);
 		while (i.hasNext())
 		{
 			MetadataBase mb = i.next();
@@ -404,10 +431,18 @@ abstract public class Metadata extends ElementState implements MetadataBase, Ter
 			if (mb != null && !currentMMField.isIgnoreInTermVector()
 					&& !mb.ignoreInTermVector())
 			{
-				tv.add(mb.termVector());
+				tv.add(mb.termVector(visitedMetadata));
 			}
 		}
 		return (termVector = tv);
+	}
+
+	protected CompositeTermVector getOrCreateTermVector()
+	{
+		if (termVector != null)
+			return termVector;
+		CompositeTermVector tv = new CompositeTermVector();
+		return tv;
 	}
 	
 	/**
@@ -491,8 +526,7 @@ abstract public class Metadata extends ElementState implements MetadataBase, Ter
 		return null;
 	}
 
-	@Override
-	public void recycle()
+	public void recycle(HashSet<Metadata> visitedMetadata)
 	{
 		if (recycled)
 			return;
@@ -508,7 +542,7 @@ abstract public class Metadata extends ElementState implements MetadataBase, Ter
 			}
 		}
 
-		ClassAndCollectionIterator iterator = metadataIterator();
+		ClassAndCollectionIterator iterator = metadataIterator(visitedMetadata);
 
 		for (MetadataBase metadata = iterator.next(); iterator.hasNext(); metadata = iterator.next())
 		{
@@ -539,9 +573,9 @@ abstract public class Metadata extends ElementState implements MetadataBase, Ter
 		return new MetaMetadataOneLevelNestingIterator(firstMetaMetadataField, this);
 	}
 
-	public ClassAndCollectionIterator metadataIterator()
+	public ClassAndCollectionIterator metadataIterator(HashSet<Metadata> visitedMetadata)
 	{
-		return new ClassAndCollectionIterator(metaMetadata, this);
+		return new ClassAndCollectionIterator(metaMetadata, this, visitedMetadata);
 	}
 
 	public boolean hasObservers()
@@ -926,7 +960,7 @@ abstract public class Metadata extends ElementState implements MetadataBase, Ter
 	{
 		ArrayList<Metadata> result = new ArrayList<Metadata>();
 
-		ClassAndCollectionIterator iterator = this.metadataIterator();
+		ClassAndCollectionIterator iterator = this.metadataIterator(null);
 		while (iterator.hasNext())
 		{
 			MetadataBase fieldValue = iterator.next();

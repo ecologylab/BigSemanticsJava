@@ -5,6 +5,7 @@ package ecologylab.semantics.metadata.builtins;
 
 import ecologylab.semantics.html.documentstructure.ImageFeatures;
 import ecologylab.semantics.metadata.scalar.MetadataString;
+import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.namesandnums.SemanticsNames;
 import ecologylab.serialization.simpl_inherit;
 import ecologylab.serialization.ElementState.simpl_scope;
@@ -33,12 +34,12 @@ public class MediaClipping<ME extends ClippableDocument> extends Clipping
 	{
 		
 	}
-	public MediaClipping(ME clippedMedia, Document source, Document outlink, String caption, String context)
+	public MediaClipping(MetaMetadataCompositeField metaMetadata, ME clippedMedia, Document source, Document outlink, String caption, String context)
 	{
-		super(source, outlink, context);
+		super(metaMetadata, source, outlink, context);
 		if (caption != null)
 			setCaption(caption);
-//		this.media			= clippedMedia;
+		this.media			= clippedMedia;
 	}
 	
 	public MetadataString caption()

@@ -89,7 +89,8 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 		{
 			debug("inheriting " + this.toString());
 			inheritInProcess = true;
-			this.inheritMetaMetadataHelper();
+			if (!ignoreCompletely)
+				this.inheritMetaMetadataHelper();
 			this.sortForDisplay();
 			inheritInProcess = false;
 			inheritFinished = true;
@@ -293,6 +294,7 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 			{
 				MetaMetadataField kid = childMetaMetadata.get(kidName);
 				MetaMetadataField clonedKid = (MetaMetadataField) kid.clone();
+				clonedKid.setParent(cloned);
 				newKids.put(kidName, clonedKid);
 			}
 			cloned.setChildMetaMetadata(newKids);

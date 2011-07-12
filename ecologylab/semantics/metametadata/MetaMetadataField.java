@@ -194,7 +194,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	 * Class of the Metadata object that corresponds to this. Non-null for nested and collection
 	 * fields. Null for scalar fields.
 	 */
-	private Class<? extends Metadata>											metadataClass;
+	protected Class<? extends Metadata>										metadataClass;
 
 	/**
 	 * Class descriptor for the Metadata object that corresponds to this. Non-null for nested and
@@ -333,41 +333,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 		{
 			String tagForTranslationScope = getTagForTranslationScope();
 			result = (Class<? extends Metadata>) ts.getClassByTag(tagForTranslationScope);
-			if (result == null)
-			{
-				if (this instanceof MetaMetadataCompositeField)
-				{
-					MetaMetadataCompositeField mmcf = (MetaMetadataCompositeField) this;
-					
-					// if type= defined, use it
-					String type = mmcf.getType();
-					if (type != null)
-					{
-						result = (Class<? extends Metadata>) ts.getClassByTag(type);
-						if (result == null)
-						{
-							// the type name doesn't work, but we can try super mmd class
-							MetaMetadata superMmd = getRepository().getByTagName(type);
-							if (superMmd != null)
-								result = superMmd.getMetadataClass(ts);
-						}
-					}
-					
-					if (result == null)
-					{
-						// then try name
-						String name = mmcf.getName();
-						result = (Class<? extends Metadata>) ts.getClassByTag(name);
-					}
-					
-					if (result == null && this instanceof MetaMetadataCompositeField)
-					{
-						// if type and name don't work, try extends=
-						// there is no class for this tag we can use class of meta-metadata it extends
-						result = (Class<? extends Metadata>) ts.getClassByTag(((MetaMetadataCompositeField)this).getExtendsAttribute());
-					}
-				}
-			}
+
 			if (result != null)
 				this.metadataClass = result;
 			else
@@ -723,8 +689,8 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 					{
 						Object value = fieldDescriptor.getField().get(inheritFrom);
 						fieldDescriptor.setField(this, value);
-						debug("inherit\t" + this.getName() + "." + fieldDescriptor.getFieldName() + "\t= "
-								+ value);
+//						debug("inherit\t" + this.getName() + "." + fieldDescriptor.getFieldName() + "\t= "
+//								+ value);
 					}
 				}
 				catch (IllegalArgumentException e)
@@ -1038,6 +1004,39 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 			this.otherTags.add(otherTag);
 	}
 
+	/**
+	 * @param metadataFromDerialization
+	 */
+	public boolean bindMetaMetadataToMetadata(MetaMetadataField deserializationMM)
+	{
+		if (deserializationMM != null) // should be always
+		{
+			MetadataClassDescriptor originalClassDescriptor = this.getMetadataClassDescriptor();
+			MetadataClassDescriptor deserializationClassDescriptor = deserializationMM
+					.getMetadataClassDescriptor();
+
+			// quick fix for a NullPointerException for RSS. originalClassDescriptor can be null because
+			// it might be a meta-metadata that does not generate metadata class, e.g. xml
+			if (originalClassDescriptor == null)
+				return true; // use the one from deserialization
+
+			boolean sameMetadataSubclass = originalClassDescriptor.equals(deserializationClassDescriptor);
+			// if they have the same metadataClassDescriptor, they can be of the same type, or one
+			// of them is using "type=" attribute.
+			boolean useMmdFromDeserialization = sameMetadataSubclass
+					&& (deserializationMM.getType() != null);
+			if (!useMmdFromDeserialization && !sameMetadataSubclass)
+				// if they have different metadataClassDescriptor, need to choose the more specific one
+				useMmdFromDeserialization = originalClassDescriptor.getDescribedClass().isAssignableFrom(
+						deserializationClassDescriptor.getDescribedClass());
+			return useMmdFromDeserialization;
+		}
+		else
+		{
+			error("No meta-metadata in root after direct binding :-(");
+			return false;
+		}
+	}
 	abstract public MetadataFieldDescriptor findOrGenerateMetadataFieldDescriptor(MetadataClassDescriptor contextCd);
 	
 }

@@ -556,7 +556,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 	 * Indicate that this Container is being processed via DnD.
 	 *
 	 */
-	void setDnd()
+	public void setDnd()
 	{
 		isDnd			= true;
 	}

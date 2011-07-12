@@ -35,9 +35,9 @@ implements SemanticsPrefs, ApplicationProperties, DocumentParserTagNames
 {
 	private final Crawler												crawler;
 	
-	private  WindowSystemBridge									guiBridge;
+	protected  WindowSystemBridge								guiBridge;
 	
-	private InteractiveSpace										interactiveSpace;
+	protected InteractiveSpace									interactiveSpace;
 	
 	private final Seeding												seeding;
 	
@@ -114,11 +114,15 @@ implements SemanticsPrefs, ApplicationProperties, DocumentParserTagNames
 	{
 		return interactiveSpace;
 	}
+	
+  public void setInteractiveSpace(InteractiveSpace interactiveSpace)
+	{
+		this.interactiveSpace = interactiveSpace;
+	}
+  
 	///////////////////////////////////// end WindowSystem / Display Stuff ////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	
-
-  public  void warning(CharSequence message)
+	public  void warning(CharSequence message)
   {
   	Debug.warning(this, message);
   }
@@ -174,6 +178,11 @@ implements SemanticsPrefs, ApplicationProperties, DocumentParserTagNames
 	public boolean hasCrawler()
 	{
 		return crawler != null;
+	}
+	public void stopCrawler(boolean kill)
+	{
+		if (hasCrawler())
+			crawler.stop(kill);
 	}
 	/**
 	 * True if all links should be accepted, without checking their traversability.

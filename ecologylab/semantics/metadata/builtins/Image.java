@@ -6,6 +6,7 @@ import java.util.Date;
 import ecologylab.net.MimeType;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.collecting.DocumentLocationMap;
+import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.html.documentstructure.ImageConstants;
 import ecologylab.semantics.metadata.scalar.MetadataDate;
 import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
@@ -166,7 +167,7 @@ implements MimeType, ImageConstants
 	 */
 	public ImageClipping constructClipping(Document sourceDocument, Document outlink, String caption, String context)
 	{
-		ImageClipping result	= new ImageClipping(this, sourceDocument, outlink, caption, context);
+		ImageClipping result	= new ImageClipping(SemanticsSessionScope.IMAGE_CLIPPING_META_METADATA, this, sourceDocument, outlink, caption, context);
 		this.addClipping(result);
 		
 		return result;

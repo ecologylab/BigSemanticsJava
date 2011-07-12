@@ -9,10 +9,12 @@ public interface DocumentParserTagNames
 	public static final String	COMPOUND_DOCUMENT_TAG	= "compound_document";
 
 	public static final String	IMAGE_TAG							= "image";
+	
+	public static final String	IMAGE_CLIPPING_TAG		= "image_clipping";
 
 	public static final String	DEBUG_TAG							= "debug_metadata";
 
-	public static final String	TEXT_TAG							= "text";
+	public static final String	TEXT_TAG							= "text_clipping";
 
 	public static final String	FLICKR_TAG						= "flickr";
 

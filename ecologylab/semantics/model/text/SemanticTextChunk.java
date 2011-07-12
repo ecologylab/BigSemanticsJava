@@ -9,15 +9,16 @@ import java.util.Iterator;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.model.TextChunkBase;
 import ecologylab.semantics.model.TextToken;
+import ecologylab.serialization.simpl_inherit;
 import ecologylab.serialization.types.scalar.ScalarType;
 
 /**
  * @author andruid
  *
  */
+@simpl_inherit
 public class SemanticTextChunk extends TextChunkBase<SemanticTextToken>
 {
-
 	/**
 	 * @param doUnderline
 	 * @param commonHref

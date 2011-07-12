@@ -1,10 +1,13 @@
 package ecologylab.semantics.metadata.scalar;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 
+import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataBase;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
+import ecologylab.semantics.model.text.ITermVector;
 
 abstract
 public class MetadataScalarBase<T> implements MetadataBase
@@ -93,4 +96,10 @@ public class MetadataScalarBase<T> implements MetadataBase
  	{
  		
  	}
+ 	
+	@Override
+	public ITermVector termVector(HashSet<Metadata> visitedMetadata)
+	{
+		return termVector();
+	}
 }

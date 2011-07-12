@@ -4,11 +4,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
-import ecologylab.net.ParsedURL;
 import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.html.DOMFragmentInformationTagger;
-import ecologylab.semantics.html.ImgElement;
 import ecologylab.semantics.html.DOMParserInterface;
+import ecologylab.semantics.html.ImgElement;
 import ecologylab.semantics.metadata.builtins.AnonymousDocument;
 
 public class HTMLFragmentDOMParser

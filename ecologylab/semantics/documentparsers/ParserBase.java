@@ -745,41 +745,6 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 		return newDocument;
 	}
 
-	/**
-	 * @param metadataFromDerialization
-	 */
-	private boolean bindMetaMetadataToMetadata(MetaMetadataField deserializationMM,
-			MetaMetadataField originalMM)
-	{
-		if (deserializationMM != null) // should be always
-		{
-			MetadataClassDescriptor originalClassDescriptor = originalMM.getMetadataClassDescriptor();
-			MetadataClassDescriptor deserializationClassDescriptor = deserializationMM
-					.getMetadataClassDescriptor();
-
-			// quick fix for a NullPointerException for RSS. originalClassDescriptor can be null because
-			// it might be a meta-metadata that does not generate metadata class, e.g. xml
-			if (originalClassDescriptor == null)
-				return true; // use the one from deserialization
-
-			boolean sameMetadataSubclass = originalClassDescriptor.equals(deserializationClassDescriptor);
-			// if they have the same metadataClassDescriptor, they can be of the same type, or one
-			// of them is using "type=" attribute.
-			boolean useMmdFromDeserialization = sameMetadataSubclass
-					&& (deserializationMM.getType() != null);
-			if (!useMmdFromDeserialization && !sameMetadataSubclass)
-				// if they have different metadataClassDescriptor, need to choose the more specific one
-				useMmdFromDeserialization = originalClassDescriptor.getDescribedClass().isAssignableFrom(
-						deserializationClassDescriptor.getDescribedClass());
-			return useMmdFromDeserialization;
-		}
-		else
-		{
-			error("No meta-metadata in root after direct binding :-(");
-			return false;
-		}
-	}
-
 	Stack<MetaMetadataNestedField>	currentMMstack	= new Stack<MetaMetadataNestedField>();
 
 	/**
@@ -793,7 +758,7 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 		{
 			MetaMetadataCompositeField deserializationMM	= (MetaMetadata) deserializedMetadata.getMetaMetadata();
 			MetaMetadataCompositeField metaMetadata				= getMetaMetadata();
-			if (bindMetaMetadataToMetadata(deserializationMM, metaMetadata))
+			if (metaMetadata.bindMetaMetadataToMetadata(deserializationMM))
 			{
 				metaMetadata = (MetaMetadata) deserializationMM;
 			}
