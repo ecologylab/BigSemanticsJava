@@ -242,12 +242,18 @@ public class ImageParserAwt extends DocumentParser<Image>
 	
 	private void readMetadata() throws IOException
 	{
-		IIOMetadata metadata	= imageReader.getImageMetadata(0);
-
-		String name						= metadata.getNativeMetadataFormatName();
-		IIOMetadataNode node	=(IIOMetadataNode) metadata.getAsTree(name);
-//		printTree(node);
-		extractMetadataFeatures(node);
+		try
+		{
+			IIOMetadata metadata	= imageReader.getImageMetadata(0);
+	
+			String name						= metadata.getNativeMetadataFormatName();
+			IIOMetadataNode node	=(IIOMetadataNode) metadata.getAsTree(name);
+	//		printTree(node);
+			extractMetadataFeatures(node);
+		} catch (javax.imageio.IIOException e)
+		{
+			warning("Couldn't extract metadata from image: " + e);
+		}
 //		byte[] iptc						=(byte[]) iptcNode.getUserObject();
 	}
 	
@@ -438,13 +444,14 @@ public class ImageParserAwt extends DocumentParser<Image>
 	/**
 	 * @return false when the thing could not be stopped and a new thread started.
 	 */
-	public synchronized void handleIoError()
+	public synchronized void handleIoError(Throwable e)
 	{
 		if (imageReader != null)
 			imageReader.abort();
 
 		freeImageIOResources();
-		super.error("TIMEOUT while downloading image.");
+		super.error("Caught I/O Error while downloading image:");
+		e.printStackTrace();
 		recycle();
 	}
 }
