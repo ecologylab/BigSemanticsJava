@@ -22,6 +22,7 @@ import ecologylab.semantics.namesandnums.DocumentParserTagNames;
 import ecologylab.semantics.namesandnums.SemanticsAssetVersions;
 import ecologylab.semantics.namesandnums.SemanticsNames;
 import ecologylab.serialization.TranslationScope;
+import ecologylab.serialization.TranslationScope.GRAPH_SWITCH;
 
 /**
  * Initializes the MetaMetadataRepository, using its standard location in the /repository directory of the ecologylabSemantics project,
@@ -55,6 +56,8 @@ implements DocumentParserTagNames, ApplicationProperties, SemanticsNames
 
 	static
 	{
+		TranslationScope.graphSwitch	= GRAPH_SWITCH.ON;
+
 		if (ApplicationEnvironment.isInUse() && !ApplicationEnvironment.runningInEclipse())
 		{
 			AssetsRoot mmAssetsRoot = new AssetsRoot(EnvironmentGeneric.configDir().getRelative(SEMANTICS), 
