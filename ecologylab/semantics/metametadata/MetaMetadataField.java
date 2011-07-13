@@ -80,7 +80,13 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 
 	@simpl_scalar
 	protected String																			schemaOrgItemprop;
-
+	
+	@simpl_scalar
+	protected boolean																			ormLazy;
+	
+	@simpl_scalar
+	protected boolean																			indexed;
+	
 	// initializing kids here seems a waste of space, but I would argue for this because this field
 	// will get created during the inheritance process anyway. -- yin
 	@simpl_map

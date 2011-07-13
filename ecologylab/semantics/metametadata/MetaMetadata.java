@@ -29,6 +29,9 @@ import ecologylab.serialization.types.element.Mappable;
 public class MetaMetadata extends MetaMetadataCompositeField implements Mappable<String>
 {
 
+	@simpl_scalar
+	protected String																ormInheritanceStrategy;
+
 	@simpl_collection("selector")
 	@simpl_nowrap
 	ArrayList<MetaMetadataSelector>									selectors;
