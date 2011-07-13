@@ -4,6 +4,8 @@ import ecologylab.semantics.documentparsers.ParserBase;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
+import ecologylab.semantics.metadata.scalar.types.MetadataScalarType;
+import ecologylab.semantics.metadata.scalar.types.MetadataStringScalarType;
 import ecologylab.semantics.metametadata.exceptions.MetaMetadataException;
 import ecologylab.serialization.ElementState.xml_tag;
 import ecologylab.serialization.FieldTypes;
@@ -23,32 +25,32 @@ public class MetaMetadataScalarField extends MetaMetadataField
 	 * The type of the field -- only if it is a scalar.
 	 */
 	@simpl_scalar
-	protected ScalarType	scalarType;
+	protected MetadataScalarType	scalarType;
 
 	@simpl_scalar
-	protected Hint				hint;
+	protected Hint								hint;
 
 	@simpl_composite
-	protected RegexFilter	filter;
+	protected RegexFilter					filter;
 
 	@simpl_scalar
 	@xml_tag("as_composite_scalar")
-	private boolean				compositeScalar;
+	private boolean								compositeScalar;
 
 	/**
 	 * for caching getMetaMetadataParser().
 	 */
-	private String				metaMetadataParser;
+	private String								metaMetadataParser;
 
 	/**
 	 * for caching getTypeNameInJava().
 	 */
-	private String				typeNameInJava		= null;
+	private String								typeNameInJava		= null;
 
 	/**
 	 * for caching getScalarTypeInJava().
 	 */
-	private String				scalarTypeInJava	= null;
+	private String								scalarTypeInJava	= null;
 
 	public MetaMetadataScalarField()
 	{
@@ -453,7 +455,7 @@ public class MetaMetadataScalarField extends MetaMetadataField
 	public static void testSerialization() throws SIMPLTranslationException
 	{
 		MetaMetadataScalarField mmsf = new MetaMetadataScalarField();
-		mmsf.scalarType = new StringType();
+		mmsf.scalarType = new MetadataStringScalarType();
 		mmsf.hint = Hint.XML_LEAF;
 		mmsf.filter = new RegexFilter("regex", "replace");
 		System.out.println(mmsf.serialize());
