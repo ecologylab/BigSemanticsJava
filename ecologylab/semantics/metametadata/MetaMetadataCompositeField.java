@@ -516,7 +516,7 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 	}
 
 	@Override
-	public MetadataFieldDescriptor findOrGenerateMetadataFieldDescriptor(MetadataClassDescriptor contextCd)
+	public MetadataFieldDescriptor findOrGenerateMetadataFieldDescriptor(TranslationScope tscope, MetadataClassDescriptor contextCd)
 	{
 		MetadataFieldDescriptor fd = this.getMetadataFieldDescriptor();
 		if (fd == null)
@@ -527,8 +527,9 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 
 			MetaMetadata inheritedMmd = this.getInheritedMmd();
 			assert inheritedMmd != null : "IMPOSSIBLE: inheritedMmd == null: something wrong in the inheritance process!";
+			inheritedMmd.findOrGenerateMetadataClassDescriptor(tscope);
 			MetadataClassDescriptor fieldCd = inheritedMmd.getMetadataClassDescriptor();
-			assert fieldCd != null : "IMPOSSIBLE fieldCd == null: something wrong in the inheritance process!";
+			assert fieldCd != null : "IMPOSSIBLE: fieldCd == null: something wrong in the inheritance process!";
 			fd = new MetadataFieldDescriptor(
 						this,
 						tagName,

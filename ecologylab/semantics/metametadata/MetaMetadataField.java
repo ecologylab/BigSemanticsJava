@@ -1043,6 +1043,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 			return false;
 		}
 	}
-	abstract public MetadataFieldDescriptor findOrGenerateMetadataFieldDescriptor(MetadataClassDescriptor contextCd);
+	
+	abstract public MetadataFieldDescriptor findOrGenerateMetadataFieldDescriptor(TranslationScope tscope, MetadataClassDescriptor contextCd);
 	
 }

@@ -518,7 +518,7 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 				{
 					if (f.getDeclaringMmd() == this && f.getInheritedField() == null)
 					{
-						MetadataFieldDescriptor fd = f.findOrGenerateMetadataFieldDescriptor(cd);
+						MetadataFieldDescriptor fd = f.findOrGenerateMetadataFieldDescriptor(tscope, cd);
 						cd.addMetadataFieldDescriptor(fd);
 					}
 				}

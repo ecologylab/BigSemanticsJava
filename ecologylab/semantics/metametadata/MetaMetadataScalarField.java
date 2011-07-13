@@ -9,6 +9,7 @@ import ecologylab.serialization.ElementState.xml_tag;
 import ecologylab.serialization.FieldTypes;
 import ecologylab.serialization.Hint;
 import ecologylab.serialization.SIMPLTranslationException;
+import ecologylab.serialization.TranslationScope;
 import ecologylab.serialization.simpl_inherit;
 import ecologylab.serialization.types.scalar.ScalarType;
 import ecologylab.serialization.types.scalar.StringType;
@@ -176,7 +177,7 @@ public class MetaMetadataScalarField extends MetaMetadataField
 	}
 
 	@Override
-	protected String getTypeNameInJava()
+	public String getTypeNameInJava()
 	{
 		String rst = typeNameInJava;
 		if (rst == null)
@@ -199,6 +200,10 @@ public class MetaMetadataScalarField extends MetaMetadataField
 			{
 				// HACK FOR METADATAINTEGER
 				rst = "Integer";
+			}
+			if (rst.equals("float"))
+			{
+				rst = "Float";
 			}
 			scalarTypeInJava = rst;
 		}
@@ -463,7 +468,7 @@ public class MetaMetadataScalarField extends MetaMetadataField
 	}
 
 	@Override
-	public MetadataFieldDescriptor findOrGenerateMetadataFieldDescriptor(MetadataClassDescriptor contextCd)
+	public MetadataFieldDescriptor findOrGenerateMetadataFieldDescriptor(TranslationScope tscope, MetadataClassDescriptor contextCd)
 	{
 		MetadataFieldDescriptor fd = this.metadataFieldDescriptor;
 		if (fd == null)
