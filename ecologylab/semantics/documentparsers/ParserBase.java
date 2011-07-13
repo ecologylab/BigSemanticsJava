@@ -32,10 +32,9 @@ import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataBase;
-import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
 import ecologylab.semantics.metadata.builtins.Document;
-import ecologylab.semantics.metadata.scalar.types.MetadataScalarScalarType;
+import ecologylab.semantics.metadata.scalar.types.MetadataScalarType;
 import ecologylab.semantics.metametadata.DefVar;
 import ecologylab.semantics.metametadata.FieldParser;
 import ecologylab.semantics.metametadata.FieldParserElement;
@@ -52,7 +51,6 @@ import ecologylab.serialization.ScalarUnmarshallingContext;
 import ecologylab.serialization.TranslationScope;
 import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.types.scalar.ScalarType;
-import ecologylab.serialization.types.scalar.TypeRegistry;
 
 /**
  * This is the base class for the all the document type which we create using meta-metadata.
@@ -511,14 +509,14 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 		// get class of elements in the collection
 		TranslationScope tscope = infoCollector.getMetadataTranslationScope();
 		Class elementClass = null;
-		MetadataScalarScalarType scalarType = null;
+		MetadataScalarType scalarType = null;
 		if (mmdField.isCollectionOfScalars())
 		{
 			// registered at MetadataScalarScalarType.init()
 			ScalarType theScalarType = mmdField.getChildScalarType();
-			if (theScalarType != null && theScalarType instanceof MetadataScalarScalarType)
+			if (theScalarType != null && theScalarType instanceof MetadataScalarType)
 			{
-				scalarType = (MetadataScalarScalarType) theScalarType;
+				scalarType = (MetadataScalarType) theScalarType;
 				elementClass = scalarType.getTypeClass();
 			}
 			else

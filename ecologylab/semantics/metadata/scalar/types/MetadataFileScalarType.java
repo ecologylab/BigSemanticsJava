@@ -13,7 +13,7 @@ import ecologylab.serialization.TranslationContext;
  * @author andrew
  *
  */
-public class MetadataFileScalarType extends MetadataScalarScalarType<MetadataFile, File>
+public class MetadataFileScalarType extends MetadataScalarType<MetadataFile, File>
 {
 
 	public MetadataFileScalarType()

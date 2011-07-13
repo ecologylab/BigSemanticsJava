@@ -5,7 +5,7 @@ import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.ScalarUnmarshallingContext;
 
-public class MetadataStringScalarType extends MetadataScalarScalarType<MetadataString, String>
+public class MetadataStringScalarType extends MetadataScalarType<MetadataString, String>
 {
 
 	public MetadataStringScalarType()
@@ -25,7 +25,7 @@ public class MetadataStringScalarType extends MetadataScalarScalarType<MetadataS
 
 	public static void main(String[] args)
 	{
-		MetadataScalarScalarType.init();
+		MetadataScalarType.init();
 		
 		ImageClipping i	= new ImageClipping();
 		i.setCaption("a nice caption.");

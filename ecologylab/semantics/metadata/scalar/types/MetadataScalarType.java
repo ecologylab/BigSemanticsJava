@@ -21,7 +21,7 @@ import ecologylab.serialization.types.scalar.TypeRegistry;
  * 
  * @author andruid
  */
-public abstract class MetadataScalarScalarType<M, T> extends ReferenceType<M>
+public abstract class MetadataScalarType<M, T> extends ReferenceType<M>
 {
 	ScalarType<T>						valueScalarType;
 
@@ -32,7 +32,7 @@ public abstract class MetadataScalarScalarType<M, T> extends ReferenceType<M>
 	/**
 	 * @param thatClass
 	 */
-	public MetadataScalarScalarType(Class<M> metadataScalarTypeClass, Class valueClass)
+	public MetadataScalarType(Class<M> metadataScalarTypeClass, Class valueClass)
 	{
 		super(metadataScalarTypeClass);
 		this.valueScalarType = TypeRegistry.getType(valueClass);

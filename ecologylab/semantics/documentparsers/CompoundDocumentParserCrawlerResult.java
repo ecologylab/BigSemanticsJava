@@ -3,24 +3,17 @@
  */
 package ecologylab.semantics.documentparsers;
 
-import ecologylab.collections.GenericElement;
-import ecologylab.collections.GenericWeightSet;
 import ecologylab.collections.WeightSet;
 import ecologylab.generic.Debug;
-import ecologylab.generic.Continuation;
 import ecologylab.semantics.collecting.ContainerWeightingStrategy;
 import ecologylab.semantics.collecting.Crawler;
 import ecologylab.semantics.collecting.DownloadStatus;
-import ecologylab.semantics.collecting.MetadataElement;
 import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.metadata.builtins.Clipping;
 import ecologylab.semantics.metadata.builtins.CompoundDocument;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
-import ecologylab.semantics.metadata.builtins.ImageClipping;
-import ecologylab.semantics.metadata.builtins.TextClipping;
 import ecologylab.semantics.model.text.InterestModel;
-import ecologylab.semantics.model.text.TermVectorWeightStrategy;
 
 /**
  * The per CompoundDocument component of the basic Crawler, involving outlinks, but not ImageClippings or TextClippings.

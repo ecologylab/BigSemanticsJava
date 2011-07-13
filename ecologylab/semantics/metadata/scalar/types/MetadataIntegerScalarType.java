@@ -10,7 +10,7 @@ import ecologylab.serialization.ScalarUnmarshallingContext;
  * @author andruid
  *
  */
-public class MetadataIntegerScalarType extends MetadataScalarScalarType<MetadataInteger, Integer>
+public class MetadataIntegerScalarType extends MetadataScalarType<MetadataInteger, Integer>
 {
 
 	public MetadataIntegerScalarType()

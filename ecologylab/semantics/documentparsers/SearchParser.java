@@ -5,8 +5,6 @@ package ecologylab.semantics.documentparsers;
 
 import java.io.IOException;
 
-import org.w3c.dom.Node;
-
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.actions.SemanticActionsKeyWords;

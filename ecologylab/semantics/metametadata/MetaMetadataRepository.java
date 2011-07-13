@@ -32,7 +32,7 @@ import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.Image;
 import ecologylab.semantics.metadata.builtins.MetadataBuiltinsTranslationScope;
-import ecologylab.semantics.metadata.scalar.types.MetadataScalarScalarType;
+import ecologylab.semantics.metadata.scalar.types.MetadataScalarType;
 import ecologylab.semantics.namesandnums.DocumentParserTagNames;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.ElementState;
@@ -164,7 +164,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		if (!initializedTypes)
 		{
 			initializedTypes = true;
-			MetadataScalarScalarType.init(); // register metadata-specific scalar
+			MetadataScalarType.init(); // register metadata-specific scalar
 			// types
 			ecologylab.semantics.metadata.builtins.MetadataBuiltinsTranslationScope.get();
 		}

@@ -11,7 +11,7 @@ import ecologylab.serialization.ScalarUnmarshallingContext;
  *
  */
 public class MetadataStringBuilderScalarType extends
-		MetadataScalarScalarType<MetadataStringBuilder, StringBuilder>
+		MetadataScalarType<MetadataStringBuilder, StringBuilder>
 {
 
 	public MetadataStringBuilderScalarType()

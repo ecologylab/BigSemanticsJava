@@ -528,6 +528,7 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 			MetaMetadata inheritedMmd = this.getInheritedMmd();
 			assert inheritedMmd != null : "IMPOSSIBLE: inheritedMmd == null: something wrong in the inheritance process!";
 			MetadataClassDescriptor fieldCd = inheritedMmd.getMetadataClassDescriptor();
+			assert fieldCd != null : "IMPOSSIBLE fieldCd == null: something wrong in the inheritance process!";
 			fd = new MetadataFieldDescriptor(
 						this,
 						tagName,

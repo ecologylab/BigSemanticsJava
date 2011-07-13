@@ -3,7 +3,7 @@ package ecologylab.semantics.metadata.scalar.types;
 import ecologylab.semantics.metadata.scalar.MetadataFloat;
 import ecologylab.serialization.ScalarUnmarshallingContext;
 
-public class MetadataFloatScalarType extends MetadataScalarScalarType<MetadataFloat, Float>
+public class MetadataFloatScalarType extends MetadataScalarType<MetadataFloat, Float>
 {
 
 	public MetadataFloatScalarType()

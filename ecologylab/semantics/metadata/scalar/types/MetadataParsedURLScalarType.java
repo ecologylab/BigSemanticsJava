@@ -13,7 +13,7 @@ import ecologylab.serialization.TranslationContext;
  *
  */
 public class MetadataParsedURLScalarType extends
-		MetadataScalarScalarType<MetadataParsedURL, ParsedURL>
+		MetadataScalarType<MetadataParsedURL, ParsedURL>
 {
 
 	public MetadataParsedURLScalarType()

@@ -12,7 +12,7 @@ import ecologylab.serialization.ScalarUnmarshallingContext;
  * @author andruid
  *
  */
-public class MetadataDateScalarType extends MetadataScalarScalarType<MetadataDate, Date>
+public class MetadataDateScalarType extends MetadataScalarType<MetadataDate, Date>
 {
 	public MetadataDateScalarType()
 	{

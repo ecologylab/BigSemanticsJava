@@ -5,20 +5,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.TreeMap;
 
-import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
-
 
 import ecologylab.generic.StringTools;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.html.AElement;
+import ecologylab.semantics.html.DOMParserInterface;
 import ecologylab.semantics.html.DOMWalkInformationTagger;
 import ecologylab.semantics.html.ImgElement;
 import ecologylab.semantics.html.ParagraphText;
-import ecologylab.semantics.html.DOMParserInterface;
 import ecologylab.semantics.html.documentstructure.AnchorContext;
 import ecologylab.semantics.html.documentstructure.ContentPage;
 import ecologylab.semantics.html.documentstructure.ImageCollectionPage;
@@ -28,7 +25,6 @@ import ecologylab.semantics.html.documentstructure.RecognizedDocumentStructure;
 import ecologylab.semantics.html.documentstructure.TextOnlyPage;
 import ecologylab.semantics.html.utils.HTMLAttributeNames;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
-import ecologylab.semantics.metadata.builtins.Image;
 import ecologylab.serialization.XMLTools;
 
 
