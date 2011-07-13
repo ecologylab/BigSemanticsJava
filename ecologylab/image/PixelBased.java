@@ -63,13 +63,16 @@ implements Downloadable, Colors
 	 * Don't run grab() more than once.
 	 */
 	boolean									grabbed;
-
+	;
+	
 	/**
 	 * like unprocessedRendering, but never part of a chain.
 	 * image buffer for the completely unaltered, the virgin.
 	 * Usually unscaled, but may be scaled down due to maxDimension,
 	 */
 	@simpl_composite
+	@simpl_classes({AlphaGradientRendering.class, Rendering.class, DesaturatedRendering.class, BlurredRendering.class})
+	@simpl_wrap
 	Rendering								basisRendering;
 	/**
 	 * No image processing on this rendering, but if there is scaling to do, this one is scaled.
@@ -89,6 +92,8 @@ implements Downloadable, Colors
 	 * The current Rendering.
 	 */
 	@simpl_composite
+	@simpl_classes({AlphaGradientRendering.class, Rendering.class, DesaturatedRendering.class, BlurredRendering.class})
+	@simpl_wrap
 	Rendering								currentRendering;
 
 	public final Object		renderingsLock	= new Object();
