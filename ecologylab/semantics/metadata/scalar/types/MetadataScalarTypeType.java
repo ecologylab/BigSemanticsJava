@@ -30,6 +30,9 @@ public class MetadataScalarTypeType extends ReferenceType<MetadataScalarType>
 	public MetadataScalarType getInstance(String value, String[] formatStrings, ScalarUnmarshallingContext scalarUnmarshallingContext)
 	{
 		MetadataScalarType result	= null;
+		if ("int".equals(value))
+			value										= "Integer";	// be flexible about integer types
+		
 		int length			= value.length();
 		if ((value != null) && (length > 0))
 		{
