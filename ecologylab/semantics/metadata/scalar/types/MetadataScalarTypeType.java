@@ -33,7 +33,7 @@ public class MetadataScalarTypeType extends ReferenceType<MetadataScalarType>
 		int length			= value.length();
 		if ((value != null) && (length > 0))
 		{
-			StringBuilder buffy	= new StringBuilder(length + 12);	// includes room for "Metadata" & "Type"
+			StringBuilder buffy	= new StringBuilder(length + 18);	// includes room for "Metadata" & "Type"
 			buffy.append("Metadata");
 			char firstChar			= value.charAt(0);
 			if (Character.isLowerCase(firstChar))
@@ -44,7 +44,7 @@ public class MetadataScalarTypeType extends ReferenceType<MetadataScalarType>
 			}
 			else
 				buffy.append(value);
-			buffy.append("Type");
+			buffy.append("ScalarType");
 			
 			result	= (MetadataScalarType) TypeRegistry.getType(buffy.toString());
 		}
