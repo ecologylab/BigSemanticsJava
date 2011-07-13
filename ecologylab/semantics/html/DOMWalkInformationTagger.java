@@ -555,7 +555,7 @@ public class DOMWalkInformationTagger implements HTMLAttributeNames
 
 	public static StringBuilder getTextInSubTree(Node node, boolean recurse)
 	{
-		return getTextInSubTree(node, recurse, null);
+		return getTextInSubTree(node, recurse, null, false);
 	}
 
 	/**
@@ -564,12 +564,13 @@ public class DOMWalkInformationTagger implements HTMLAttributeNames
 	 * include the text from the anchor node.
 	 * 
 	 * @param node
+	 * @param appendNewline TODO
 	 * @param te
 	 * @return
 	 */
 	// FIXME -- why is text` in anchor node not included?
 
-	public static StringBuilder getTextInSubTree(Node node, boolean recurse, StringBuilder result)
+	public static StringBuilder getTextInSubTree(Node node, boolean recurse, StringBuilder result, boolean appendNewline)
 	{
 		NodeList children = node.getChildNodes();
 
@@ -579,7 +580,7 @@ public class DOMWalkInformationTagger implements HTMLAttributeNames
 			if ((recurse && childNode.hasChildNodes())
 					&& (!childNode.getNodeName().equals("script")))
 			{
-				result = getTextInSubTree(childNode, true, result);
+				result = getTextInSubTree(childNode, true, result, appendNewline);
 			}
 			else if (childNode.getNodeType() == Node.TEXT_NODE)
 			{
@@ -592,8 +593,13 @@ public class DOMWalkInformationTagger implements HTMLAttributeNames
 				}
 				result = StringBuilderUtils.trimAndDecodeUTF8(result, childNode, 0, true);
 
-				if (result != null && length == result.length())
-					result.setLength(length - 1);
+				if (result != null)
+				{
+					if (length == result.length())
+						result.setLength(length - 1);
+					else if (appendNewline)
+						result.append('\n');
+				}
 			}
 			else if (childNode.getNodeName().equals("img"))
 			{

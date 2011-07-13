@@ -287,14 +287,22 @@ class TextChunkBase<T extends TextToken> extends ElementState implements
 
 		String delimsBefore = "";
 		final boolean allowDelimitersInTokens = scalarType.allowDelimitersInTokens();
+		boolean first		= true;
+
 		while (matcher.find())
 		{
-			if (allowDelimitersInTokens)
-				delimsBefore = matcher.group(1);
+			String group1 	= matcher.group(1);
+			if (group1.contains("\n"))
+				group1				= "\n";
+			if (allowDelimitersInTokens && !first)
+			{
+				delimsBefore	= group1;
+			}
 			T textToken = newToken(matcher.group(2), delimsBefore, null);
 			addTextToken(textToken);
 			if (!allowDelimitersInTokens)
-				delimsBefore = scalarType.primaryDelimiter();
+				delimsBefore	= scalarType.primaryDelimiter();
+			first						= false;
 		}
 	}
 
