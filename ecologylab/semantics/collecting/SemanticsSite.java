@@ -4,14 +4,10 @@
 package ecologylab.semantics.collecting;
 
 import java.awt.Color;
-import java.util.Collection;
-import java.util.concurrent.ConcurrentHashMap;
 
 import ecologylab.generic.Colors;
 import ecologylab.generic.Palette;
 import ecologylab.io.BasicSite;
-import ecologylab.net.ParsedURL;
-import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.serialization.simpl_inherit;
 
 /**
@@ -188,6 +184,8 @@ implements Colors
 	static final float MIN_STROKE_SAT	= .35f;
 	static final float MAX_STROKE_SAT	= .7f;
 	static final float STEP_STROKE_SAT	= .05f;
+	
+	static final int DND_GENERATION	= 3;
 
 	private static float nextStrokeHue()
 	{
@@ -197,6 +195,10 @@ implements Colors
 		return result;
 	}
 
+	public Color getStrokeColor()
+	{
+		return getStrokeColor(DND_GENERATION);
+	}
 	public Color getStrokeColor(int generation)
 	{
 		Color result		= null;
