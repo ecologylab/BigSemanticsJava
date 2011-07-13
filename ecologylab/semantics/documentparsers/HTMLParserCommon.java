@@ -140,6 +140,8 @@ extends ContainerParser implements SemanticsPrefs
 					alt = alt.trim();
 				
 				Image image						= infoCollector.getOrConstructImage(srcPurl);
+				if (image == null)
+					return null;
 				image.setWidth(width);
 				image.setHeight(height);
 				
