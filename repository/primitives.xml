@@ -20,8 +20,8 @@
 		<scalar name="context" layer="10.0" scalar_type="String" />
 		<scalar name="context_html" scalar_type="String" />
 		<scalar name="xpath" scalar_type="String" hide="true"/>
-		<composite name="source" type="document" />
-		<composite name="outlink" type="document" />
+		<composite name="source_doc" label="source" type="document" polymorphic_scope="repository_documents" />
+		<composite name="outlink" type="document" polymorphic_scope="repository_documents" />
 	</meta_metadata>
 
 	<meta_metadata name="media_clipping" extends="clipping" built_in="true">
@@ -125,9 +125,9 @@
 	</meta_metadata>
 	
 	<meta_metadata name="information_composition" extends="document" built_in="true">
-		<collection name="clippings" child_type="clipping" polymorphic_global="true"/>
+		<collection name="clippings" child_type="clipping" polymorphic_scope="repository_clippings" />
 		<collection name="annotations" child_type="annotation" />
-		<collection name="media" child_type="clippable_document" polymorphic_global="true"/>
+		<collection name="media" child_type="clippable_document" polymorphic_scope="repository_media"/>
 		
 		<scalar name="version" scalar_type="Float" />
 		<scalar name="metadata_version" scalar_type="Float" />

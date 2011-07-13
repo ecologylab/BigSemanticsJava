@@ -47,9 +47,9 @@ public class Clipping extends Metadata
 	 */
 	@simpl_composite
 	@simpl_wrap
-	@mm_name("source")
+	@mm_name("source_doc")
 	@simpl_scope(SemanticsNames.REPOSITORY_DOCUMENT_TRANSLATIONS)
-	private Document				source;
+	private Document				sourceDoc;
 	
 	/**
 	 * A hyperlinked Document.
@@ -79,7 +79,7 @@ public class Clipping extends Metadata
 	public Clipping(MetaMetadataCompositeField metaMetadata, Document source)
 	{
 		this(metaMetadata);
-		this.source	= source;;
+		this.sourceDoc	= source;;
 	}
 	public Clipping(MetaMetadataCompositeField metaMetadata, Document source, Document outlink, String context)
 	{
@@ -226,7 +226,7 @@ public class Clipping extends Metadata
 	 */
 	public Document getSource()
 	{
-		return source;
+		return sourceDoc;
 	}
 
 	/**
@@ -264,10 +264,10 @@ public class Clipping extends Metadata
 	 */
 	public final synchronized void recycle (boolean unconditional, HashSet<Metadata> visitedMetadata)
 	{
-		if (source != null)
+		if (sourceDoc != null)
 		{
-			source.recycle();
-			source	= null;
+			sourceDoc.recycle();
+			sourceDoc	= null;
 		}
 		if (outlink != null)
 		{
@@ -280,7 +280,7 @@ public class Clipping extends Metadata
 	
 	public void setSource(Document source)
 	{
-		this.source	= source;
+		this.sourceDoc	= source;
 //		if (this.source == null)
 //			this.source	= new DocumentMetadataWrap(source);
 //		else
