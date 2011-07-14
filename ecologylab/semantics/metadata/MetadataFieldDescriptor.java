@@ -222,7 +222,7 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 					for (MetaMetadata polyMmd : polyMmds)
 					{
 						MetadataClassDescriptor mcd = polyMmd.getMetadataClassDescriptor();
-						this.putTagClassDescriptor(mcd);
+						this.registerPolymorphicDescriptor(mcd);
 					}
 				}
 				// @simpl_classes for inherently polymorphic fields
@@ -241,7 +241,7 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 								MetadataClassDescriptor thatCd = thatMmd.getMetadataClassDescriptor();
 								if (thatCd != null)
 								{
-									this.putTagClassDescriptor(thatCd);
+									this.registerPolymorphicDescriptor(thatCd);
 								}
 								else
 								{
