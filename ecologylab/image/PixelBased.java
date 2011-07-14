@@ -538,14 +538,14 @@ implements Downloadable, Colors
 ////////////////////////utilities ////////////////////////////////
 	public String toString()
 	{ 
-		String addr = "["+ ((purl==null) ? "no purl - " + this.getClassName() : purl.toString())+"]";
+		String addr = "["+ ((purl==null) ? "no purl - " + this.getClassSimpleName() : purl.toString())+"]";
 		String dim  = "[" + width+"x"+height + "] ";
 		return getClassName(this) +  addr + dim;
 	}
 	public String errorMessage()
 	{
 		String purlString = (purl == null) ? "null" : purl.toString();
-		return "** " + getClassName() + " can't access content: " + purlString;
+		return "** " + getClassSimpleName() + " can't access content: " + purlString;
 	}
 
 	public static String hex(int h)
