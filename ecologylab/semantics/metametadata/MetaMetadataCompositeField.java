@@ -1,8 +1,6 @@
 package ecologylab.semantics.metametadata;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
@@ -27,6 +25,9 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 	@simpl_scalar
 	protected String					type;
 
+	/**
+	 * the extends attribute of a composite field / meta-metadata.
+	 */
 	@xml_tag("extends")
 	@simpl_scalar
 	@mm_dont_inherit
@@ -38,10 +39,16 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 	@simpl_scalar
 	protected String					userAgentString;
 
+	/**
+	 * def_vars, used as variables during the extraction and semantic action processes.
+	 */
 	@simpl_collection("def_var")
 	@simpl_nowrap
 	private ArrayList<DefVar>	defVars;
 
+	/**
+	 * schema.org item_type name for this field.
+	 */
 	@simpl_scalar
 	protected String					schemaOrgItemType;
 

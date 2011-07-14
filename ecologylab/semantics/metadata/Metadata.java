@@ -50,18 +50,30 @@ import ecologylab.serialization.library.html.Tr;
  * This is the new metadata class that is the base class for the meta-metadata system. It contains
  * all the functionality of the previous Metadata, and MetadataField classes.
  * 
- * Classes will extend this base class to provide a nested metadata structure
+ * Classes will extend this base class to provide a nested metadata structure.
  * 
  * @author sashikanth
  * 
  */
-@simpl_descriptor_classes(
-{ MetadataClassDescriptor.class, MetadataFieldDescriptor.class })
-abstract public class Metadata extends ElementState implements MetadataBase, TermVectorFeature,
-		Iterable<MetadataFieldDescriptor>
+@simpl_descriptor_classes({ MetadataClassDescriptor.class, MetadataFieldDescriptor.class })
+abstract public class Metadata extends ElementState
+implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 {
+	
+	final static int											INITIAL_SIZE							= 5;
+
+	private static final String						MIXINS_FIELD_NAME					= "mixins";
+
+	/**
+	 * Hidden reference to the MetaMetadataRepository. DO NOT access this field directly. DO NOT
+	 * create a static public accessor. -- andruid 10/7/09.
+	 */
+	private static MetaMetadataRepository	repository;
+
+	/**
+	 * The meta-metadata name of this metadata.
+	 */
 	@simpl_scalar
-//	@xml_other_tags("meta_metadata_name")
 	@xml_tag("mm_name")
 	MetadataString												metaMetadataName;
 
@@ -83,29 +95,28 @@ abstract public class Metadata extends ElementState implements MetadataBase, Ter
 	 */
 	@semantics_mixin
 	@simpl_collection
-	@simpl_scope(SemanticsNames.GENERATED_METADATA_TRANSLATIONS)
+	@simpl_scope(SemanticsNames.REPOSITORY_METADATA_TRANSLATIONS)
 	@mm_name("mixins")
 	ArrayList<Metadata>										mixins;
 
 	/**
-	 * Hidden reference to the MetaMetadataRepository. DO NOT access this field directly. DO NOT
-	 * create a static public accessor. -- andruid 10/7/09.
+	 * the (composite) term vector for this field.
 	 */
-	private static MetaMetadataRepository	repository;
-
-	private static final String						MIXINS_FIELD_NAME					= "mixins";
-
 	protected CompositeTermVector					termVector								= null;
-
-	final static int											INITIAL_SIZE							= 5;
 
 	/**
 	 * Indicates whether or not metadata has changed since last displayed.
 	 */
 	private boolean												metadataChangedForDisplay;
 
+	/**
+	 * caching natural ID name-value pairs.
+	 */
 	private Map<String, String>						cachedNaturalIdValues;
 	
+	/**
+	 * if this has been recycled.
+	 */
 	private boolean												recycled;
 
 	/**
@@ -114,17 +125,21 @@ abstract public class Metadata extends ElementState implements MetadataBase, Ter
 	 */
 	private Map<String, Metadata>					linkedMetadata;
 
+	/**
+	 * used for synchronization.
+	 */
 	private Object												lockLinkedMetadata				= new Object();
 	
 	/**
 	 * a list of linked metadata, which is used for de/serialization. the map (linkedMetadata) is not
-	 * used for de/serialization because thek key really should not be meta-metadata type. instead,
+	 * used for de/serialization because the key really should not be meta-metadata type. instead,
 	 * this field serves as a surrogate for de/serialization. at runtime, whenever the map is updated
 	 * this field is updated accordingly. also, linkedMetadata will be initialized using this field
 	 * in lazy evaluation.
 	 */
 	@mm_name("linked_metadata_list")
 	@simpl_collection("linked_metadata")
+	@simpl_scope(SemanticsNames.REPOSITORY_METADATA_TRANSLATIONS)
 	private ArrayList<Metadata>						linkedMetadataList;
 
 	/**
@@ -146,6 +161,11 @@ abstract public class Metadata extends ElementState implements MetadataBase, Ter
 		setMetaMetadata(metaMetadata);
 	}
 
+	/**
+	 * get the ormId.
+	 * 
+	 * @return
+	 */
 	public long getOrmId()
 	{
 		return ormId;
@@ -163,7 +183,6 @@ abstract public class Metadata extends ElementState implements MetadataBase, Ter
 		return MIXINS_FIELD_NAME.equals(tagName);
 	}
 
-	//
 	public MetadataClassDescriptor getMetadataClassDescriptor()
 	{
 		return (MetadataClassDescriptor) classDescriptor();
@@ -204,13 +223,14 @@ abstract public class Metadata extends ElementState implements MetadataBase, Ter
 			}
 			if (mm != null)
 				setMetaMetadata(mm);
-			// metaMetadata = mm;
 		}
 		return mm;
 	}
 
 	/**
+	 * get mixins.
 	 * 
+	 * @return
 	 */
 	ArrayList<Metadata> mixins()
 	{

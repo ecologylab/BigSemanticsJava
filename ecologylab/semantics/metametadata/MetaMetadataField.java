@@ -25,15 +25,21 @@ import ecologylab.serialization.types.scalar.ScalarType;
 import ecologylab.textformat.NamedStyle;
 
 /**
+ * The basic meta-metadata field class. Encapsulate common attributes and methods for all types of
+ * meta-metadata fields.
  * 
  * @author damaraju
  * 
  */
 @simpl_inherit
 @simpl_descriptor_classes({ MetaMetadataClassDescriptor.class, MetaMetadataFieldDescriptor.class })
-public abstract class MetaMetadataField extends ElementState implements Mappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneable
+public abstract class MetaMetadataField extends ElementState
+implements Mappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneable
 {
 
+	/**
+	 * the Comparator for conveniently sort fields.
+	 */
 	static class LayerComparator implements Comparator<MetaMetadataField>
 	{
 
@@ -46,13 +52,60 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 
 	}
 
+	/**
+	 * the Iterator class of fields inside this one.
+	 */
+	// FIXME move this to NestedField.
+	class MetaMetadataFieldIterator implements Iterator<MetaMetadataField>
+	{
+		int currentIndex = 0;
+	
+		@Override
+		public boolean hasNext()
+		{
+			int size 				= kids.size();
+			boolean result 	= currentIndex < size;
+			
+			if (result)
+			{
+				for(int i=currentIndex; i < size; i++)
+				{
+					MetaMetadataField nextField = kids.get(i);
+					if (nextField.isIgnoreCompletely())
+					{
+						currentIndex++;
+					}
+					else
+						break;
+				}
+				
+				if (currentIndex == size)
+					result = false;
+			}
+			
+			return result;
+		}
+	
+		@Override
+		public MetaMetadataField next()
+		{
+			return kids.get(currentIndex++);
+		}
+	
+		@Override
+		public void remove()
+		{
+			// TODO Auto-generated method stub
+			
+		}
+		
+	}
+
 	static LayerComparator																LAYER_COMPARATOR				= new LayerComparator();
 
 	static ArrayList<MetaMetadataField>										EMPTY_COLLECTION				= new ArrayList<MetaMetadataField>(0);
 
 	static Iterator<MetaMetadataField>										EMPTY_ITERATOR					= EMPTY_COLLECTION.iterator();
-	
-	protected static HashSet<MetaMetadataField>						visitedMetaMetadata;
 
 	MetadataFieldDescriptor																metadataFieldDescriptor;
 
@@ -75,24 +128,45 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	@simpl_scalar
 	protected String																			contextNode;
 
+	/**
+	 * used in the field_parser mechanism, which takes a string as input and parse it into values
+	 * indexed by keys. this field indicates what key this field uses to decide the value for it
+	 * inside a field_parser.
+	 */
 	@simpl_scalar
 	protected String																			fieldParserKey;
 
+	/**
+	 * schema.org microdata item_prop name.
+	 */
 	@simpl_scalar
 	protected String																			schemaOrgItemprop;
-	
+
+	/**
+	 * if this field should be lazily evaluated in ORM component. note that nested fields are
+	 * automatically lazy.
+	 */
 	@simpl_scalar
 	protected boolean																			ormLazy;
-	
+
+	/**
+	 * if this field should be indexed in database representation, used by the ORM component.
+	 */
 	@simpl_scalar
 	protected boolean																			indexed;
-	
+
+	/**
+	 * the nested structure inside this field.
+	 */
 	// initializing kids here seems a waste of space, but I would argue for this because this field
 	// will get created during the inheritance process anyway. -- yin
+	// FIXME move this to NestedField.
 	@simpl_map
-	@simpl_classes({ MetaMetadataField.class, MetaMetadataScalarField.class, MetaMetadataCompositeField.class, MetaMetadataCollectionField.class, })
+	@simpl_classes(
+	{ MetaMetadataField.class, MetaMetadataScalarField.class, MetaMetadataCompositeField.class,
+			MetaMetadataCollectionField.class, })
 	@simpl_nowrap
-	protected HashMapArrayList<String, MetaMetadataField>	kids = new HashMapArrayList<String, MetaMetadataField>();
+	protected HashMapArrayList<String, MetaMetadataField>	kids										= new HashMapArrayList<String, MetaMetadataField>();
 
 	// ///////////////////////////////// visualization fields /////////////////////////////////
 
@@ -108,6 +182,9 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	@simpl_scalar
 	protected boolean																			alwaysShow;
 
+	/**
+	 * name of a style.
+	 */
 	@simpl_scalar
 	protected String																			style;
 
@@ -154,20 +231,33 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	@simpl_scalar
 	protected boolean																			required								= false;
 
+	/**
+	 * if this field should be serialized.
+	 */
 	@simpl_scalar
 	protected boolean																			dontSerialize						= false;
 
 	// ///////////////////////////////// switches /////////////////////////////////
 
+	/**
+	 * if this field is used as a facet.
+	 */
 	@simpl_scalar
 	protected boolean																			isFacet;
 
+	/**
+	 * if we should ignore this in the term vector.
+	 */
 	@simpl_scalar
 	protected boolean																			ignoreInTermVector;
 
+	/**
+	 * if we should ignore this field completely (which will cause ignoring of this field for both
+	 * display and term vector).
+	 */
 	@simpl_scalar
 	protected boolean																			ignoreCompletely;
-	
+
 	// ///////////////////////////////// members /////////////////////////////////
 
 	HashSet<String>																				nonDisplayedFieldNames;
@@ -208,12 +298,18 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	 */
 	protected MetadataClassDescriptor											metadataClassDescriptor;
 
+	/**
+	 * (for caching toString())
+	 */
 	String																								toString;
-	
+
+	/**
+	 * mark if this field is cloned. used in the inheritance process.
+	 */
 	private boolean																				cloned									= false;
 
 	/**
-	 * for caching getInheritedField().
+	 * from which field this one inherits. could be null if this field is declared for the first time.
 	 */
 	private MetaMetadataField															inheritedField					= null;
 
@@ -221,7 +317,10 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	 * in which meta-metadata this field is declared.
 	 */
 	private MetaMetadata																	declaringMmd						= null;
-	
+
+	/**
+	 * caching contents in @xml_other_tags. could be null.
+	 */
 	private ArrayList<String>															otherTags								= null;
 
 	public MetaMetadataField()
@@ -249,6 +348,10 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 		// this.noWrap = copy.noWrap;
 	}
 	
+	/**
+	 * test if two fields are equal. equal fields are either the same one or inherited from the same
+	 * origin.
+	 */
 	@Override
 	public boolean equals(Object obj)
 	{
@@ -261,8 +364,17 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 		return false;
 	}
 
+	/**
+	 * clone this field. each field will have a cloned copy when inherited. the kids may or may not
+	 * be cloned, depending on the type of the field.
+	 */
 	abstract protected Object clone();
 	
+	/**
+	 * copy additional fields during clone(), other than those processed by inheritAttributes().
+	 * 
+	 * @param other
+	 */
 	protected void copyClonedFieldsFrom(MetaMetadataField other)
 	{
 		this.displayedLabel = other.displayedLabel;
@@ -275,21 +387,41 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 		this.declaringMmd = other.declaringMmd;
 	}
 	
+	/**
+	 * get the nested fields inside of this one.
+	 * 
+	 * @return
+	 */
 	public HashMapArrayList<String, MetaMetadataField> getChildMetaMetadata()
 	{
 		return kids;
 	}
 
+	/**
+	 * comment of this field.
+	 * 
+	 * @return
+	 */
 	public String getComment()
 	{
 		return comment;
 	}
 
+	/**
+	 * context node xpath (used in extraction).
+	 * 
+	 * @return
+	 */
 	public final String getContextNode()
 	{
 		return contextNode;
 	}
 
+	/**
+	 * the label used to display this field in visualization.
+	 * 
+	 * @return
+	 */
 	public String getDisplayedLabel()
 	{
 		String result = displayedLabel;
@@ -305,11 +437,21 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 		return result;
 	}
 
+	/**
+	 * the key used by this field to index a value in the output of a field_parser.
+	 * 
+	 * @return
+	 */
 	public String getFieldParserKey()
 	{
 		return fieldParserKey;
 	}
 
+	/**
+	 * the file inwhich this field is declared.
+	 * 
+	 * @return
+	 */
 	public File getFile()
 	{
 		if (file != null)
@@ -318,6 +460,13 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 		return (parent != null) ? parent.getFile() : null;
 	}
 
+	/**
+	 * get the corresponding metadata class. should be called after compilation and repository
+	 * loading.
+	 * 
+	 * @return
+	 */
+	// FIXME move this to NestedField.
 	public Class<? extends Metadata> getMetadataClass()
 	{
 		return metadataClass;
@@ -331,6 +480,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	 * 
 	 * @return
 	 */
+	// FIXME move this to NestedField.
 	public Class<? extends Metadata> getMetadataClass(TranslationScope ts)
 	{
 		Class<? extends Metadata> result = this.metadataClass;
@@ -349,41 +499,65 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	}
 
 	/**
-	 * @return the metadataClassDescriptor
+	 * @return the corresponding metadataClassDescriptor. note that this class descriptor might be
+	 * incomplete during the compilation process, e.g. lacking the actual Class.
+	 * 
 	 */
+	// FIXME move this to NestedField.
 	public MetadataClassDescriptor getMetadataClassDescriptor()
 	{
 		return metadataClassDescriptor;
 	}
 	
-	protected void setMetadataClassDescriptor(MetadataClassDescriptor cd)
+	/**
+	 * set metadata class descriptor for this field.
+	 * @param cd
+	 */
+	// FIXME move this to NestedField.
+	void setMetadataClassDescriptor(MetadataClassDescriptor cd)
 	{
 		this.metadataClassDescriptor = cd;
 	}
 
 	/**
-	 * @return the metadataFieldDescriptor
+	 * @return the corresponding metadataFieldDescriptor.
 	 */
 	public MetadataFieldDescriptor getMetadataFieldDescriptor()
 	{
 		return metadataFieldDescriptor;
 	}
 	
+	/**
+	 * 
+	 * @return the style name.
+	 */
 	public String getStyle()
 	{
 		return style;
 	}
 
+	/**
+	 * 
+	 * @return name of this field.
+	 */
 	public String getName()
 	{
 		return name;
 	}
 
+	/**
+	 * 
+	 * @return the link target (should be another ParsedURL field) of this field.
+	 */
 	public String getNavigatesTo()
 	{
 		return navigatesTo;
 	}
 
+	/**
+	 * 
+	 * @return the meta-metadata repository in which this field is declared.
+	 */
 	public MetaMetadataRepository getRepository()
 	{
 		if (repository == null)
@@ -391,24 +565,37 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 		return repository;
 	}
 
+	/**
+	 * 
+	 * @return the tag if existed, or the name of this field. this method is different from
+	 * getTagForTranslationScope() which is overridden in MetaMetadataCollectionField. they have
+	 * different purposes.
+	 */
 	public String getTagOrName()
 	{
-		// different from getTagForTranslationScope() that this method is not overridden in
-		// MetaMetadataCollectionField.
 		return tag != null ? tag : name;
 	}
 	
+	/**
+	 * 
+	 * @return the tag used to look up metadata from MetadataTranslationScope.
+	 */
 	public String getTagForTranslationScope()
 	{
 		return tag != null ? tag : name;
 	}
 
+	// FIXME move this to NestedField or CompositeField.
 	@Deprecated
 	public String getType()
 	{
 		return null;
 	}
 
+	/**
+	 * the xpath of this field.
+	 * @return
+	 */
 	public String getXpath()
 	{
 		return xpath;
@@ -417,12 +604,12 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 	/**
 	 * Connect the appropriate MetadataClassDescriptor with this, and likewise, recursively perform
 	 * this binding operation for all the children of this.
-	 * 
-	 * This method will remove this metametadata field from it's parent when no appropriate metadata subclass 
-	 * was found. 
-	 * 
-	 * @param metadataTScope
-	 * @return
+	 * <p>
+	 * This method will remove this metametadata field from it's parent when no appropriate metadata
+	 * subclass was found.
+	 *
+	 * @param metadataTScope the metadata translation scope.
+	 * @return true if successful, otherwise false.
 	 */
 	boolean getClassAndBindDescriptors(TranslationScope metadataTScope)
 	{
@@ -443,6 +630,10 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 		return true;
 	}
 
+	/**
+	 * if this field should always be shown in visualization.
+	 * @return
+	 */
 	public boolean isAlwaysShow()
 	{
 		return alwaysShow;
@@ -706,7 +897,6 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 				}
 				catch (IllegalAccessException e)
 				{
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -915,51 +1105,6 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 		return schemaOrgItemprop;
 	}
 	
-	class MetaMetadataFieldIterator implements Iterator<MetaMetadataField>
-	{
-		int currentIndex = 0;
-
-		@Override
-		public boolean hasNext()
-		{
-			int size 				= kids.size();
-			boolean result 	= currentIndex < size;
-			
-			if (result)
-			{
-				for(int i=currentIndex; i < size; i++)
-				{
-					MetaMetadataField nextField = kids.get(i);
-					if (nextField.isIgnoreCompletely())
-					{
-						currentIndex++;
-					}
-					else
-						break;
-				}
-				
-				if (currentIndex == size)
-					result = false;
-			}
-			
-			return result;
-		}
-
-		@Override
-		public MetaMetadataField next()
-		{
-			return kids.get(currentIndex++);
-		}
-
-		@Override
-		public void remove()
-		{
-			// TODO Auto-generated method stub
-			
-		}
-		
-	}
-	
 	public boolean isCloned()
 	{
 		return cloned;
@@ -1029,8 +1174,7 @@ public abstract class MetaMetadataField extends ElementState implements Mappable
 			boolean sameMetadataSubclass = originalClassDescriptor.equals(deserializationClassDescriptor);
 			// if they have the same metadataClassDescriptor, they can be of the same type, or one
 			// of them is using "type=" attribute.
-			boolean useMmdFromDeserialization = sameMetadataSubclass
-					&& (deserializationMM.getType() != null);
+			boolean useMmdFromDeserialization = sameMetadataSubclass && (deserializationMM.getType() != null);
 			if (!useMmdFromDeserialization && !sameMetadataSubclass)
 				// if they have different metadataClassDescriptor, need to choose the more specific one
 				useMmdFromDeserialization = originalClassDescriptor.getDescribedClass().isAssignableFrom(

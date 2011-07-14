@@ -437,7 +437,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 
 		// make another copy because we may add new meta-metadata (from inline definitions) to repositoryByTagName
 		ArrayList<MetaMetadata> mmds = new ArrayList<MetaMetadata>(repositoryByTagName.values());
-		MetaMetadata.visitedMetaMetadata = new HashSet<MetaMetadataField>();
+//		MetaMetadata.visitedMetaMetadata = new HashSet<MetaMetadataField>();
 		
 		for (MetaMetadata metaMetadata : mmds)
 		{
