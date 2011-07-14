@@ -134,7 +134,7 @@ public class SemanticActionHandler
 		int state = getActionState(action, "state", SemanticAction.INIT);
 		if (state == SemanticAction.FIN || requestWaiting)
 			return;
-		debug("["+parser+"] semantic action: " + action.getActionName() + ", SA class: " + action.getClassName() + "\n");
+		debug("["+parser+"] semantic action: " + action.getActionName() + ", SA class: " + action.getClassSimpleName() + "\n");
 		
 		// here state must be INTER or INIT
 

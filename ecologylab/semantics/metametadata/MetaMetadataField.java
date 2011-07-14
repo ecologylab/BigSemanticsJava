@@ -747,7 +747,7 @@ implements Mappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneabl
 		String result = toString;
 		if (result == null)
 		{
-			result = getClassName() + parentString() + "<" + name + ">";
+			result = getClassSimpleName() + parentString() + "<" + name + ">";
 			toString = result;
 		}
 		return result;
