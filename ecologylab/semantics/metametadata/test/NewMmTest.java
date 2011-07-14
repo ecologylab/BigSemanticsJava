@@ -12,7 +12,7 @@ import ecologylab.appframework.ApplicationEnvironment;
 import ecologylab.generic.Continuation;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.collecting.SemanticsSessionScope;
-import ecologylab.semantics.generated.library.GeneratedMetadataTranslationScope;
+import ecologylab.semantics.generated.library.RepositoryMetadataTranslationScope;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
 import ecologylab.serialization.SIMPLTranslationException;
@@ -53,7 +53,7 @@ implements Continuation<DocumentClosure>
 		super(appName);
 		this.outputStream	= outputStream;
 		
-		semanticsSessionScope = new SemanticsSessionScope(GeneratedMetadataTranslationScope.get(), Tidy.class);
+		semanticsSessionScope = new SemanticsSessionScope(RepositoryMetadataTranslationScope.get(), Tidy.class);
 	}
 
 	public void collect(String[] urlStrings)

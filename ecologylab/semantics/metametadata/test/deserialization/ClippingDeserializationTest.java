@@ -9,7 +9,7 @@ import org.w3c.tidy.Tidy;
 
 import ecologylab.generic.Debug;
 import ecologylab.semantics.collecting.SemanticsSessionScope;
-import ecologylab.semantics.generated.library.GeneratedMetadataTranslationScope;
+import ecologylab.semantics.generated.library.RepositoryMetadataTranslationScope;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.namesandnums.SemanticsNames;
 import ecologylab.serialization.ElementState;
@@ -27,7 +27,7 @@ implements SemanticsNames
 	{
 		MetaMetadataRepository.initializeTypes();
 	}
-	private static final TranslationScope	META_METADATA_TRANSLATIONS	= GeneratedMetadataTranslationScope.get();
+	private static final TranslationScope	META_METADATA_TRANSLATIONS	= RepositoryMetadataTranslationScope.get();
 
 	private static final TranslationScope MY_TRANSLATIONS	= TranslationScope.get("mine",
 			META_METADATA_TRANSLATIONS, InformationCompositionTest.class);
