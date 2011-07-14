@@ -196,7 +196,7 @@ public class MetaMetadataScalarField extends MetaMetadataField
 		if (rst == null)
 		{
 			if (scalarType == null)
-				throw new MetaMetadataException("No scalar_type is defined " + this);
+				throw new MetaMetadataException("Scalar type not defined: " + this);
 			rst = scalarType.fieldTypeName();
 			if (rst.equals("int"))
 			{
@@ -477,7 +477,7 @@ public class MetaMetadataScalarField extends MetaMetadataField
 		{
 			String tagName = this.resolveTag();
 			String fieldName = this.getFieldNameInJava(false);
-			String javaTypeName = this.getTypeNameInJava();
+			String javaTypeName = this.getScalarType().getJavaType();
 			fd = new MetadataFieldDescriptor(
 					this,
 					tagName,

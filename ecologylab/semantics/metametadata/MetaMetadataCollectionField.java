@@ -4,6 +4,7 @@ import ecologylab.generic.HashMapArrayList;
 import ecologylab.semantics.metadata.Metadata.mm_dont_inherit;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
+import ecologylab.semantics.metadata.scalar.types.MetadataScalarType;
 import ecologylab.serialization.ElementState.xml_tag;
 import ecologylab.serialization.FieldTypes;
 import ecologylab.serialization.TranslationScope;
@@ -16,35 +17,35 @@ import ecologylab.serialization.types.scalar.ScalarType;
 public class MetaMetadataCollectionField extends MetaMetadataNestedField
 {
 
-	public static final String	UNRESOLVED_NAME	= "&UNRESOLVED_NAME";
+	public static final String		UNRESOLVED_NAME	= "&UNRESOLVED_NAME";
 
 	@simpl_scalar
-	protected String						childTag;
+	protected String							childTag;
 
 	/**
 	 * The type for collection children.
 	 */
 	@simpl_scalar
-	protected String						childType;
+	protected String							childType;
 
 	@mm_dont_inherit
 	@simpl_scalar
-	protected String						childExtends;
+	protected String							childExtends;
 
 	@simpl_scalar
-	protected ScalarType				childScalarType;
+	protected MetadataScalarType	childScalarType;
 
 	/**
 	 * Specifies adding @simpl_nowrap to the collection object in cases where items in the collection
 	 * are not wrapped inside a tag.
 	 */
 	@simpl_scalar
-	protected boolean						noWrap;
+	protected boolean							noWrap;
 
 	/**
 	 * for caching getTypeNameInJava().
 	 */
-	private String							typeNameInJava	= null;
+	private String								typeNameInJava	= null;
 
 	public MetaMetadataCollectionField()
 	{
@@ -105,10 +106,16 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 		String rst = typeNameInJava;
 		if (rst == null)
 		{
-			String typeName = getTypeName();
-			String className = XMLTools.classNameFromElementName(typeName);
+			String className = null;
 			if (this.getFieldType() == FieldTypes.COLLECTION_SCALAR)
-				className = "Metadata" + className;
+			{
+				className = this.getChildScalarType().getJavaType();
+			}
+			else
+			{
+				String typeName = getTypeName();
+				className = XMLTools.classNameFromElementName(typeName);
+			}
 			rst = "ArrayList<" + className + ">";
 			typeNameInJava = rst;
 		}
