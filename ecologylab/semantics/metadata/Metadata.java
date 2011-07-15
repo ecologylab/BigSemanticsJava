@@ -138,7 +138,7 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 	 * in lazy evaluation.
 	 */
 	@mm_name("linked_metadata_list")
-	@simpl_collection("linked_metadata")
+	@simpl_collection
 	@simpl_scope(SemanticsNames.REPOSITORY_METADATA_TRANSLATIONS)
 	private ArrayList<Metadata>						linkedMetadataList;
 

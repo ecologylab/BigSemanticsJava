@@ -589,6 +589,11 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 				// there is no class for this tag we can use class of meta-metadata it extends
 				result = (Class<? extends Metadata>) ts.getClassByTag(((MetaMetadataCompositeField)this).getExtendsAttribute());
 			}
+			
+			if (result != null)
+				this.metadataClass = result;
+			else
+				warning("Can't resolve metadata class for " + this);
 		}
 		
 		return result;

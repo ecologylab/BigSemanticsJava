@@ -8,7 +8,7 @@
 		<scalar name="year" scalar_type="Int" />
 		<collection name="subjects" child_type="subject" child_extends="metadata">
 			<scalar name="subject" as_composite_scalar="true" scalar_type="String" navigates_to="location" />
-<!--			<scalar name="location" scalar_type="ParsedURL" hide="true" />-->
+			<scalar name="location" scalar_type="ParsedURL" hide="true" />
 		</collection>
 		<scalar name="about_the_authors" scalar_type="String" />
 		<collection name="common_terms" child_type="term_type" child_extends="document">

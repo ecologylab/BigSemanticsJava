@@ -37,9 +37,9 @@
 	</meta_metadata>
 	
 	<meta_metadata name="annotation" extends="metadata" built_in="true">
-		<scalar name="text" value="String"/>
-		<scalar name="author" value="String"/>
-		<scalar name="creation_time" value="Date"/>
+		<scalar name="text" scalar_type="String"/>
+		<scalar name="author" scalar_type="String"/>
+		<scalar name="creation_time" scalar_type="Date"/>
 	</meta_metadata>
 	
 	<meta_metadata name="clippable_document"  extends="document" built_in="true">
@@ -74,7 +74,7 @@
 		<collection name="clippings" child_type="clipping" comment="Clippings that this document contains." hide="true"  polymorphic_scope="repository_clippings"/>
 	</meta_metadata>
 	
-	<meta_metadata name="html" type="compound_document" dont_generate_class="true" parser="html_dom_image_text" user_agent_name="firefox_3_6_8">
+	<meta_metadata name="html" type="compound_document" parser="html_dom_image_text" user_agent_name="firefox_3_6_8">
 		<selector>
 			<mime_type>text/html</mime_type>
 			<suffix>htm</suffix>
@@ -87,7 +87,7 @@
 		</selector>
 	</meta_metadata>
 	
-	<meta_metadata name="xml" type="document"  parser="direct" dont_generate_class="true" user_agent_name="firefox_3_6_8">
+	<meta_metadata name="xml" type="document"  parser="direct" user_agent_name="firefox_3_6_8">
 		<selector>
 			<mime_type>text/xml</mime_type>
 			<mime_type>application/xml</mime_type>
@@ -95,7 +95,7 @@
 		</selector>
 	</meta_metadata>
 	
-	<meta_metadata name="pdf" type="compound_document" dont_generate_class="true" comment="The PDF class." parser="pdf">
+	<meta_metadata name="pdf" type="compound_document" comment="The PDF class." parser="pdf">
 		<selector>
 			<mime_type>application/pdf</mime_type>
 			<mime_type>application/x-pdf</mime_type>

@@ -21,7 +21,7 @@
 		<collection name="search_results" child_type="search_result" no_wrap="true" />
 	</meta_metadata>
 
-	<meta_metadata name="google_search" type="search" comment="The google Search class" user_agent_name="opera_9" parser="xpath" dont_generate_class="true" >
+	<meta_metadata name="google_search" type="search" comment="The google Search class" user_agent_name="opera_9" parser="xpath"  >
 		<selector url_stripped="http://www.google.com/search" />
 		<collection name="search_results" xpath="//div[@id='res']//div//ol/li[@*]">
 			<scalar name="heading" xpath=".//h3/a" />
@@ -100,7 +100,7 @@
 		</semantic_actions>
 	</meta_metadata>
 
-	<meta_metadata name="my_google_search" type="search" comment="The my_google Search class" user_agent_name="opera_9" parser="xpath" dont_generate_class="true" >
+	<meta_metadata name="my_google_search" type="search" comment="The my_google Search class" user_agent_name="opera_9" parser="xpath"  >
 		<selector url_stripped="http://staging.cs.tamu.edu:8080/my_google/search" />
 		<collection name="search_results" xpath="//div[@class='result']">
 			<scalar name="heading" xpath="./a/@href" />
@@ -118,7 +118,7 @@
 		</semantic_actions>
 	</meta_metadata>
 
-	<meta_metadata name="my_google_ecology0_search" type="search" comment="The my_google_ecology0 Search class" parser="xpath" dont_generate_class="true" >
+	<meta_metadata name="my_google_ecology0_search" type="search" comment="The my_google_ecology0 Search class" parser="xpath"  >
 		<selector url_stripped="http://ecology0.csdl.tamu.edu/my_google/search" />
 		<collection name="search_results" xpath="//div[@class='result']">
 			<scalar name="heading" xpath="./a/@href" />
@@ -158,7 +158,7 @@
 		</collection>
 	</meta_metadata>
 
-	<meta_metadata name="yahoo_web_search" type="yahoo_result_set" dont_generate_class="true" >
+	<meta_metadata name="yahoo_web_search" type="yahoo_result_set"  >
 		<selector url_stripped="http://api.search.yahoo.com/WebSearchService/V1/webSearch" />
 		<semantic_actions>
 			<get_field name="results" />
@@ -173,7 +173,7 @@
 		</semantic_actions>
 	</meta_metadata>
 
-	<meta_metadata name="yahoo_image_search" type="yahoo_result_set" dont_generate_class="true" >
+	<meta_metadata name="yahoo_image_search" type="yahoo_result_set"  >
 		<selector url_stripped="http://api.search.yahoo.com/ImageSearchService/V1/imageSearch" />
 		<semantic_actions>
 			<get_field name="results" />
@@ -192,7 +192,7 @@
 		</semantic_actions>
 	</meta_metadata>
 
-	<meta_metadata name="yahoo_news_search" type="yahoo_result_set" dont_generate_class="true" >
+	<meta_metadata name="yahoo_news_search" type="yahoo_result_set"  >
 		<selector url_stripped="http://api.search.yahoo.com/NewsSearchService/V1/newsSearch" />
 		<semantic_actions>
 			<get_field name="results" />
@@ -300,7 +300,7 @@
 		</semantic_actions>
 	</meta_metadata>
 
-	<meta_metadata name="bing_search_xpath" type="search" comment="The bing Search class, using xpath parser." user_agent_name="opera_9" parser="xpath" dont_generate_class="true" >
+	<meta_metadata name="bing_search_xpath" type="search" comment="The bing Search class, using xpath parser." user_agent_name="opera_9" parser="xpath"  >
 		<selector url_stripped="http://www.bing.com/search" />
 		<collection name="search_results" xpath="//div[@id='results']/ul/li[*]">
 			<scalar name="heading" xpath=".//h3/a" />
@@ -322,7 +322,7 @@
 		</semantic_actions>
 	</meta_metadata>
 
-	<meta_metadata name="slashdot_search" type="search" comment="The slashdot search class" user_agent_name="opera_9" parser="xpath" dont_generate_class="true" >
+	<meta_metadata name="slashdot_search" type="search" comment="The slashdot search class" user_agent_name="opera_9" parser="xpath"  >
 		<selector url_stripped="http://slashdot.org/index2.pl" />
 		<collection name="search_results" xpath="//div[@id='firehoselist']//h2[@class='story']">
 			<scalar name="heading" xpath=".//a" />
@@ -336,7 +336,7 @@
 		</collection>
 	</meta_metadata>
 
-	<meta_metadata name="delicious_search" type="search" comment="The delicious search class" user_agent_name="opera_9" parser="xpath" dont_generate_class="true" >
+	<meta_metadata name="delicious_search" type="search" comment="The delicious search class" user_agent_name="opera_9" parser="xpath"  >
 		<selector url_stripped="http://www.delicious.com/search" />
 		<collection name="search_results" xpath="//div[@id='content']/ul/li">
 			<scalar name="heading" xpath=".//div/h4/a" />
@@ -349,7 +349,7 @@
 		</collection>
 	</meta_metadata>
 	
-	<meta_metadata name="tumblr_search" type="search" comment="The tumblr search class" user_agent_name="opera_9" parser="xpath" dont_generate_class="true" >
+	<meta_metadata name="tumblr_search" type="search" comment="The tumblr search class" user_agent_name="opera_9" parser="xpath"  >
 		<selector url_path_tree="http://www.tumblr.com/tagged/" />
 		<collection name="search_results" xpath="//div[@id='left_column']//li">
 			<scalar name="heading" xpath=".//div[@class='post_title']" />

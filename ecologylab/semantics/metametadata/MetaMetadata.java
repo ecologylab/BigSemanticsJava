@@ -45,10 +45,6 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 
 	@simpl_scalar
 	@mm_dont_inherit
-	protected boolean																dontGenerateClass	= false;
-
-	@simpl_scalar
-	@mm_dont_inherit
 	protected boolean																builtIn;
 
 	@simpl_scalar
@@ -226,11 +222,6 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 	public boolean isBuiltIn()
 	{
 		return builtIn;
-	}
-
-	public void setGenerateClass(boolean generateClass)
-	{
-		this.dontGenerateClass = !generateClass;
 	}
 
 	public MetadataFieldDescriptor getFieldDescriptorByTagName(String tagName)
