@@ -8,7 +8,7 @@ public class MetadataFloatScalarType extends MetadataScalarType<MetadataFloat, F
 
 	public MetadataFloatScalarType()
 	{
-		super(MetadataFloat.class, Float.class);
+		super(MetadataFloat.class, Float.class, null, null);
 	}
 
 	@Override
@@ -18,27 +18,4 @@ public class MetadataFloatScalarType extends MetadataScalarType<MetadataFloat, F
 		return new MetadataFloat(getValueInstance(value, formatStrings, scalarUnmarshallingContext));
 	}
 
-	@Override
-	public String getCSharptType() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getDbType() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getObjectiveCType() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	@Override
-	public String getJavaType()
-	{
-		return MetadataFloat.class.getSimpleName();
-	}
 }

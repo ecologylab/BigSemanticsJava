@@ -16,7 +16,7 @@ public class MetadataDateScalarType extends MetadataScalarType<MetadataDate, Dat
 {
 	public MetadataDateScalarType()
 	{
-		super(MetadataDate.class, Date.class);
+		super(MetadataDate.class, Date.class, null, null);
 	}
 
 
@@ -25,34 +25,6 @@ public class MetadataDateScalarType extends MetadataScalarType<MetadataDate, Dat
 			ScalarUnmarshallingContext scalarUnmarshallingContext)
 	{
 		return new MetadataDate(getValueInstance(value, formatStrings, scalarUnmarshallingContext));
-	}
-
-
-	@Override
-	public String getCSharptType()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getDbType()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getObjectiveCType()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getJavaType()
-	{
-		return MetadataDate.class.getSimpleName();
 	}
 
 }

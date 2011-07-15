@@ -18,7 +18,7 @@ public class MetadataParsedURLScalarType extends
 
 	public MetadataParsedURLScalarType()
 	{
-		super(MetadataParsedURL.class, ParsedURL.class);
+		super(MetadataParsedURL.class, ParsedURL.class, null, null);
 	}
 
 	@Override
@@ -26,29 +26,6 @@ public class MetadataParsedURLScalarType extends
 			ScalarUnmarshallingContext scalarUnmarshallingContext)
 	{
 		return new MetadataParsedURL(getValueInstance(value, formatStrings, scalarUnmarshallingContext));
-	}
-
-	@Override
-	public String getCSharptType() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	@Override
-	public String getJavaType() {
-		return MetadataParsedURL.class.getSimpleName();
-	}
-
-	@Override
-	public String getDbType() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getObjectiveCType() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 	
 	@Override

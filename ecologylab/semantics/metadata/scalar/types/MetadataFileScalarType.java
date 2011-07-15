@@ -18,7 +18,7 @@ public class MetadataFileScalarType extends MetadataScalarType<MetadataFile, Fil
 
 	public MetadataFileScalarType()
 	{
-		super(MetadataFile.class, File.class);
+		super(MetadataFile.class, File.class, null, null);
 	}
 
 	@Override
@@ -28,26 +28,6 @@ public class MetadataFileScalarType extends MetadataScalarType<MetadataFile, Fil
 		return new MetadataFile(getValueInstance(value, formatStrings, scalarUnmarshallingContext));
 	}
 
-	@Override
-	public String getObjectiveCType()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getCSharptType()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getDbType()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
 	
 	@Override
 	public String marshall(MetadataFile instance, TranslationContext serializationContext)
@@ -55,10 +35,4 @@ public class MetadataFileScalarType extends MetadataScalarType<MetadataFile, Fil
 		return operativeScalarType().marshall(instance.getValue(), serializationContext);
 	}
 	
-	@Override
-	public String getJavaType()
-	{
-		return MetadataFile.class.getSimpleName();
-	}
-
 }

@@ -10,7 +10,7 @@ public class MetadataStringScalarType extends MetadataScalarType<MetadataString,
 
 	public MetadataStringScalarType()
 	{
-		super(MetadataString.class, String.class);
+		super(MetadataString.class, String.class, null, null);
 	}
 
 	/**
@@ -40,28 +40,5 @@ public class MetadataStringScalarType extends MetadataScalarType<MetadataString,
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-
-	@Override
-	public String getCSharptType() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	@Override
-	public String getJavaType() {
-		return MetadataString.class.getSimpleName();
-	}
-
-	@Override
-	public String getDbType() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getObjectiveCType() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 }

@@ -16,7 +16,7 @@ public class MetadataStringBuilderScalarType extends
 
 	public MetadataStringBuilderScalarType()
 	{
-		super(MetadataStringBuilder.class, StringBuilder.class);
+		super(MetadataStringBuilder.class, StringBuilder.class, null, null);
 	}
 
 	@Override
@@ -24,29 +24,6 @@ public class MetadataStringBuilderScalarType extends
 			ScalarUnmarshallingContext scalarUnmarshallingContext)
 	{
 		return new MetadataStringBuilder(getValueInstance(value, formatStrings, scalarUnmarshallingContext));
-	}
-
-	@Override
-	public String getCSharptType() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	@Override
-	public String getJavaType() {
-		return MetadataStringBuilder.class.getSimpleName();
-	}
-
-	@Override
-	public String getDbType() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getObjectiveCType() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 }

@@ -18,7 +18,7 @@ public class MetadataScalarTypeType extends ReferenceType<MetadataScalarType>
 {
 	public MetadataScalarTypeType()
 	{
-		super(MetadataScalarType.class);
+		super(MetadataScalarType.class, null, null, null, null);
 	}
 
 	/**

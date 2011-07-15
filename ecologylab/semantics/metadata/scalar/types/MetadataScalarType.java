@@ -29,12 +29,27 @@ public abstract class MetadataScalarType<M, T> extends ReferenceType<M>
 
 	private static boolean	metadataScalarTypesRegistered	= false;
 
-	/**
-	 * @param thatClass
-	 */
-	public MetadataScalarType(Class<M> metadataScalarTypeClass, Class valueClass)
+/**
+ * Construct.
+ * Use the simple name of the metadataScalarTypeClass as the javaTypeName.
+ * Use the dbTypeName of the valueClass as the dbTypeName.
+ * 
+ * @param metadataScalarTypeClass
+ * @param valueClass
+ * @param cSharpTypeName
+ * @param objectiveCTypeName
+ */
+	public MetadataScalarType(Class<M> metadataScalarTypeClass, Class valueClass,
+														String cSharpTypeName, String objectiveCTypeName)
 	{
-		super(metadataScalarTypeClass);
+		this(metadataScalarTypeClass, valueClass, metadataScalarTypeClass.getSimpleName(), cSharpTypeName, objectiveCTypeName);
+	}
+	public MetadataScalarType(Class<M> metadataScalarTypeClass, Class valueClass,
+														String javaTypeName, String cSharpTypeName, String objectiveCTypeName)
+	{
+		super(metadataScalarTypeClass, javaTypeName, cSharpTypeName,  objectiveCTypeName, 
+					TypeRegistry.getScalarType(valueClass).getDbType());
+		
 		this.valueScalarType = TypeRegistry.getScalarType(valueClass);
 		valueField();
 	}

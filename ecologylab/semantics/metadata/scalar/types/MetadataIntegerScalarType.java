@@ -15,7 +15,7 @@ public class MetadataIntegerScalarType extends MetadataScalarType<MetadataIntege
 
 	public MetadataIntegerScalarType()
 	{
-		super(MetadataInteger.class, Integer.class);
+		super(MetadataInteger.class, Integer.class, null, null);
 	}
 
 	@Override
@@ -23,30 +23,6 @@ public class MetadataIntegerScalarType extends MetadataScalarType<MetadataIntege
 			ScalarUnmarshallingContext scalarUnmarshallingContext)
 	{
 		return new MetadataInteger(getValueInstance(value, formatStrings, scalarUnmarshallingContext));
-	}
-
-	@Override
-	public String getCSharptType() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getDbType() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getObjectiveCType() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	@Override
-	public String getJavaType()
-	{
-		return MetadataInteger.class.getSimpleName();
 	}
 
 }
