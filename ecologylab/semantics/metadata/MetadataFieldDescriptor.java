@@ -23,7 +23,7 @@ import ecologylab.serialization.FieldTypes;
 import ecologylab.serialization.Hint;
 import ecologylab.serialization.ScalarUnmarshallingContext;
 import ecologylab.serialization.XMLTools;
-import ecologylab.serialization.types.scalar.ScalarType;
+import ecologylab.serialization.types.ScalarType;
 
 /**
  * @author andruid

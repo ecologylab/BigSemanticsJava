@@ -20,8 +20,8 @@ import ecologylab.serialization.TranslationScope;
 import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.simpl_descriptor_classes;
 import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.types.ScalarType;
 import ecologylab.serialization.types.element.Mappable;
-import ecologylab.serialization.types.scalar.ScalarType;
 import ecologylab.textformat.NamedStyle;
 
 /**

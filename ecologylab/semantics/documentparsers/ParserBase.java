@@ -50,7 +50,7 @@ import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.ScalarUnmarshallingContext;
 import ecologylab.serialization.TranslationScope;
 import ecologylab.serialization.XMLTools;
-import ecologylab.serialization.types.scalar.ScalarType;
+import ecologylab.serialization.types.ScalarType;
 
 /**
  * This is the base class for the all the document type which we create using meta-metadata.

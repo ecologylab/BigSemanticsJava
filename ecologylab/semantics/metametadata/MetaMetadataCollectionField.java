@@ -10,7 +10,7 @@ import ecologylab.serialization.FieldTypes;
 import ecologylab.serialization.TranslationScope;
 import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.simpl_inherit;
-import ecologylab.serialization.types.scalar.ScalarType;
+import ecologylab.serialization.types.ScalarType;
 
 @simpl_inherit
 @xml_tag("collection")

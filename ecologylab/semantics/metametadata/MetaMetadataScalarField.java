@@ -13,7 +13,7 @@ import ecologylab.serialization.Hint;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.TranslationScope;
 import ecologylab.serialization.simpl_inherit;
-import ecologylab.serialization.types.scalar.ScalarType;
+import ecologylab.serialization.types.ScalarType;
 import ecologylab.serialization.types.scalar.StringType;
 
 @simpl_inherit

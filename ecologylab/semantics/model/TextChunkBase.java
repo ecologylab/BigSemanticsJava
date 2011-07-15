@@ -21,7 +21,7 @@ import ecologylab.semantics.model.text.Term;
 import ecologylab.semantics.model.text.TermDictionary;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.simpl_inherit;
-import ecologylab.serialization.types.scalar.ScalarType;
+import ecologylab.serialization.types.ScalarType;
 import ecologylab.serialization.types.scalar.ScalarTypeInstanceConstants;
 import ecologylab.textformat.NamedStyle;
 

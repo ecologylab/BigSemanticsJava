@@ -4,10 +4,10 @@
 package ecologylab.semantics.metadata.scalar.types;
 
 import ecologylab.serialization.ScalarUnmarshallingContext;
-import ecologylab.serialization.types.scalar.MappingConstants;
+import ecologylab.serialization.types.MappingConstants;
+import ecologylab.serialization.types.ScalarType;
+import ecologylab.serialization.types.TypeRegistry;
 import ecologylab.serialization.types.scalar.ReferenceType;
-import ecologylab.serialization.types.scalar.ScalarType;
-import ecologylab.serialization.types.scalar.TypeRegistry;
 
 /**
  * Cool class for de/serializing MetadataScalarTypes from simple strings, like Integer...
@@ -49,7 +49,7 @@ public class MetadataScalarTypeType extends ReferenceType<MetadataScalarType>
 				buffy.append(value);
 			buffy.append("ScalarType");
 			
-			result	= (MetadataScalarType) TypeRegistry.getType(buffy.toString());
+			result	= (MetadataScalarType) TypeRegistry.getScalarType(buffy.toString());
 		}
 		return result;			
 	}

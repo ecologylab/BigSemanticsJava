@@ -10,7 +10,7 @@ import ecologylab.net.ParsedURL;
 import ecologylab.semantics.model.TextChunkBase;
 import ecologylab.semantics.model.TextToken;
 import ecologylab.serialization.simpl_inherit;
-import ecologylab.serialization.types.scalar.ScalarType;
+import ecologylab.serialization.types.ScalarType;
 
 /**
  * @author andruid

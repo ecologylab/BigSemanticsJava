@@ -5,7 +5,7 @@ import javax.xml.xpath.XPathConstants;
 
 import ecologylab.semantics.actions.SemanticActionsKeyWords;
 import ecologylab.serialization.ElementState;
-import ecologylab.serialization.types.scalar.ScalarType;
+import ecologylab.serialization.types.ScalarType;
 
 public class DefVar  extends ElementState
 {

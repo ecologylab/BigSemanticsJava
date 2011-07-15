@@ -8,9 +8,9 @@ import java.lang.reflect.Field;
 import ecologylab.generic.ReflectionTools;
 import ecologylab.semantics.metadata.scalar.MetadataScalarBase;
 import ecologylab.serialization.ScalarUnmarshallingContext;
+import ecologylab.serialization.types.ScalarType;
+import ecologylab.serialization.types.TypeRegistry;
 import ecologylab.serialization.types.scalar.ReferenceType;
-import ecologylab.serialization.types.scalar.ScalarType;
-import ecologylab.serialization.types.scalar.TypeRegistry;
 
 /**
  * Basis for scalar types for classes that derive from MetadataScalarBase.
@@ -35,7 +35,7 @@ public abstract class MetadataScalarType<M, T> extends ReferenceType<M>
 	public MetadataScalarType(Class<M> metadataScalarTypeClass, Class valueClass)
 	{
 		super(metadataScalarTypeClass);
-		this.valueScalarType = TypeRegistry.getType(valueClass);
+		this.valueScalarType = TypeRegistry.getScalarType(valueClass);
 		valueField();
 	}
 
@@ -127,7 +127,7 @@ public abstract class MetadataScalarType<M, T> extends ReferenceType<M>
 	{
 		if (!metadataScalarTypesRegistered)
 		{
-			TypeRegistry.register(METADATA_SCALAR_TYPES);
+			TypeRegistry.registerScalarType(METADATA_SCALAR_TYPES);
 			metadataScalarTypesRegistered = true;
 		}
 	}
