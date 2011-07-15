@@ -95,6 +95,12 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	abstract protected String getMetaMetadataTagToInheritFrom();
 
 	/**
+	 * The main entrance to the inheritance process. Also ensures that the inheritance process will
+	 * not be carried out on the same field / meta-metadata twice.
+	 * <p>
+	 * Note that this inheritance process is used by both the compiler and the run-time repository
+	 * loading process, thus there should be nothing about generating Class/FieldDescriptors inside.
+	 * <p>
 	 * prerequisites:<br>
 	 * <ul>
 	 * <li>for meta-metadata: name & type/extends set;</li>
@@ -125,6 +131,10 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 		}
 	}
 
+	/**
+	 * Helper method that actually does the inheritance process. This should be overridden in
+	 * sub-classes to fine-control the inheritance process.
+	 */
 	abstract protected void inheritMetaMetadataHelper();
 
 	/**

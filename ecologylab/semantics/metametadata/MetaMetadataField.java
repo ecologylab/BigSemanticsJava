@@ -280,8 +280,6 @@ implements Mappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneabl
 	 */
 	protected boolean																			inheritInProcess				= false;
 
-	private boolean																				fieldInherited					= false;
-
 	private boolean																				bindDescriptorsFinished	= false;
 
 	/**
@@ -394,9 +392,7 @@ implements Mappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneabl
 		this.repository = other.repository;
 		this.inheritFinished = other.inheritFinished;
 		this.inheritInProcess = other.inheritInProcess;
-		//this.metadataFieldDescriptor = other.metadataFieldDescriptor;
-		//this.metadataClass = other.metadataClass;
-		//this.metadataClassDescriptor = other.metadataClassDescriptor;
+		this.inheritedField = other.inheritedField;
 		this.declaringMmd = other.declaringMmd;
 		if (this instanceof MetaMetadataNestedField)
 			((MetaMetadataNestedField) this).setInheritedMmd(((MetaMetadataNestedField) other).getInheritedMmd());

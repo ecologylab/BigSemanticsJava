@@ -247,6 +247,7 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 		// init
 		MetaMetadataRepository repository = getRepository();
 		
+		// determine the structure we should inherit from
 		MetaMetadata inheritedMmd = findOrGenerateInheritedMetaMetadata(repository);
 		inheritedMmd.setRepository(repository);
 		inheritedMmd.inheritMetaMetadata();
