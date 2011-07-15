@@ -774,7 +774,7 @@ implements Mappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneabl
 
 	public MetaMetadataField lookupChild(MetadataFieldDescriptor metadataFieldDescriptor)
 	{
-		return lookupChild(XMLTools.getXmlTagName(metadataFieldDescriptor.getFieldName(), null));
+		return lookupChild(XMLTools.getXmlTagName(metadataFieldDescriptor.getName(), null));
 	}
 
 	public MetaMetadataField lookupChild(String name)
@@ -913,7 +913,7 @@ implements Mappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneabl
 				}
 				catch (IllegalArgumentException e)
 				{
-					debug(inheritFrom.getName() + " doesn't have field " + fieldDescriptor.getFieldName() + ", ignore it.");
+					debug(inheritFrom.getName() + " doesn't have field " + fieldDescriptor.getName() + ", ignore it.");
 //					e.printStackTrace();
 				}
 				catch (IllegalAccessException e)

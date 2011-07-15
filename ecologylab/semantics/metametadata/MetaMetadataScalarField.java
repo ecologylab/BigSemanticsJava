@@ -478,7 +478,7 @@ public class MetaMetadataScalarField extends MetaMetadataField
 		{
 			String tagName = this.resolveTag();
 			String fieldName = this.getFieldNameInJava(false);
-			String javaTypeName = this.getScalarType().getJavaType();
+			String javaTypeName = this.getScalarType().getJavaTypeName();
 			fd = new MetadataFieldDescriptor(
 					this,
 					tagName,

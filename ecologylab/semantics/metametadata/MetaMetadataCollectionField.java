@@ -110,7 +110,7 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 			String className = null;
 			if (this.getFieldType() == FieldTypes.COLLECTION_SCALAR)
 			{
-				className = this.getChildScalarType().getJavaType();
+				className = this.getChildScalarType().getJavaTypeName();
 			}
 			else
 			{

@@ -184,7 +184,7 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 	
 	public String toString()
 	{
-		String name = getFieldName(); if (name == null) name = "NO_FIELD";
+		String name = getName(); if (name == null) name = "NO_FIELD";
 		return this.getClassSimpleName() + "[" + name + " < " + declaringClassDescriptor.getDescribedClass()
 				+ " type=0x" + Integer.toHexString(getType()) + "]";
 	}

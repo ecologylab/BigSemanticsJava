@@ -4,7 +4,7 @@
 package ecologylab.semantics.metadata.scalar.types;
 
 import ecologylab.serialization.ScalarUnmarshallingContext;
-import ecologylab.serialization.types.MappingConstants;
+import ecologylab.serialization.types.CrossLanguageTypeConstants;
 import ecologylab.serialization.types.ScalarType;
 import ecologylab.serialization.types.TypeRegistry;
 import ecologylab.serialization.types.scalar.ReferenceType;
@@ -55,28 +55,28 @@ public class MetadataScalarTypeType extends ReferenceType<MetadataScalarType>
 	}
 
 	@Override
-	public String getCSharptType()
+	public String getCSharpTypeName()
 	{
-		return MappingConstants.DOTNET_SCALAR_TYPE;
+		return CrossLanguageTypeConstants.DOTNET_SCALAR_TYPE;
 	}
 	
 	@Override
-	public String getJavaType()
+	public String getJavaTypeName()
 	{
-		return MappingConstants.JAVA_SCALAR_TYPE;
+		return CrossLanguageTypeConstants.JAVA_SCALAR_TYPE;
 	}
 
 	@Override
-	public String getDbType()
+	public String getDbTypeName()
 	{
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String getObjectiveCType()
+	public String getObjectiveCTypeName()
 	{
-		return MappingConstants.OBJC_SCALAR_TYPE;
+		return CrossLanguageTypeConstants.OBJC_SCALAR_TYPE;
 	}
 
 }

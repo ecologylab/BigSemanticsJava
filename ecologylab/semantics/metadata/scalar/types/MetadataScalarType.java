@@ -48,7 +48,7 @@ public abstract class MetadataScalarType<M, T> extends ReferenceType<M>
 														String javaTypeName, String cSharpTypeName, String objectiveCTypeName)
 	{
 		super(metadataScalarTypeClass, javaTypeName, cSharpTypeName,  objectiveCTypeName, 
-					TypeRegistry.getScalarType(valueClass).getDbType());
+					TypeRegistry.getScalarType(valueClass).getDbTypeName());
 		
 		this.valueScalarType = TypeRegistry.getScalarType(valueClass);
 		valueField();
