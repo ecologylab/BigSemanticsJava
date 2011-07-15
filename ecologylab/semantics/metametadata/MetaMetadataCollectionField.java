@@ -62,6 +62,7 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 		
 		this.cloneKidsTo(cloned);
 		
+		cloned.clonedFrom = this;
 		return cloned;
 	}
 

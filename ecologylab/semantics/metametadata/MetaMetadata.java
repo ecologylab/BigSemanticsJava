@@ -83,6 +83,11 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 
 	private Scope<MetaMetadata>											inlineMmds				= null;
 
+	/**
+	 * MMDs derived from this one.
+	 */
+	private ArrayList<MetaMetadata>									derivedMmds;
+
 	public MetaMetadata()
 	{
 		super();
@@ -452,6 +457,18 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 		inlineMmds.put(name, generatedMmd);
 	}
 	
+	public ArrayList<MetaMetadata> getDerivedMmds()
+	{
+		return derivedMmds;
+	}
+	
+	public void addDerivedMmd(MetaMetadata mmd)
+	{
+		if (derivedMmds == null)
+			derivedMmds = new ArrayList<MetaMetadata>();
+		derivedMmds.add(mmd);
+	}
+
 	void inheritInlineMmds(MetaMetadata mmd)
 	{
 		if (this.getInlineMmds() == null)
@@ -540,11 +557,6 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 		}
 	}
 	
-	static boolean isRootMetaMetadata(MetaMetadata mmd)
-	{
-		return mmd.getName().equals(ROOT_MMD_NAME);
-	}
-
 	public boolean isDerivedFrom(MetaMetadata base)
 	{
 		MetaMetadata mmd = this;
@@ -557,4 +569,9 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 		return false;
 	}
 	
+	public static boolean isRootMetaMetadata(MetaMetadata mmd)
+	{
+		return mmd.getName().equals(ROOT_MMD_NAME);
+	}
+
 }

@@ -305,6 +305,11 @@ implements Mappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneabl
 	 * mark if this field is cloned. used in the inheritance process.
 	 */
 	private boolean																				cloned									= false;
+	
+	/**
+	 * the field this one is cloned from, if this one is cloned.
+	 */
+	protected MetaMetadataField														clonedFrom;
 
 	/**
 	 * from which field this one inherits. could be null if this field is declared for the first time.
@@ -369,6 +374,16 @@ implements Mappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneabl
 	abstract protected Object clone();
 	
 	/**
+	 * get the field this one clones from (if this one is cloned).
+	 * 
+	 * @return
+	 */
+	public MetaMetadataField getClonedFrom()
+	{
+		return clonedFrom;
+	}
+	
+	/**
 	 * copy additional fields during clone(), other than those processed by inheritAttributes().
 	 * 
 	 * @param other
@@ -383,6 +398,8 @@ implements Mappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneabl
 		//this.metadataClass = other.metadataClass;
 		//this.metadataClassDescriptor = other.metadataClassDescriptor;
 		this.declaringMmd = other.declaringMmd;
+		if (this instanceof MetaMetadataNestedField)
+			((MetaMetadataNestedField) this).setInheritedMmd(((MetaMetadataNestedField) other).getInheritedMmd());
 	}
 	
 	/**
@@ -832,8 +849,13 @@ implements Mappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneabl
 	private String fieldNameInJava = null;
 	private String capFieldNameInJava = null;
 	
-	// TODO change getFieldName() to this one; add javadoc
-	protected String getFieldNameInJava(boolean capitalized)
+	/**
+	 * get the field name in java.
+	 * 
+	 * @param capitalized
+	 * @return
+	 */
+	public String getFieldNameInJava(boolean capitalized)
 	{
 		if (capitalized)
 			return getCapFieldNameInJava();
@@ -847,6 +869,11 @@ implements Mappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneabl
 		return fieldNameInJava;
 	}
 	
+	/**
+	 * get the capitalized field name in java (could be used in method names).
+	 * 
+	 * @return
+	 */
 	private String getCapFieldNameInJava()
 	{
 		String rst = capFieldNameInJava;

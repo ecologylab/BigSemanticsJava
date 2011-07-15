@@ -88,6 +88,7 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 		
 		this.cloneKidsTo(cloned);
 		
+		cloned.clonedFrom = this;
 		return cloned;
 	}
 

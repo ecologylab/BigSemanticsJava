@@ -1,5 +1,6 @@
 package ecologylab.semantics.metametadata;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 
 import ecologylab.generic.HashMapArrayList;
@@ -37,7 +38,7 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	 * generated one for inline definitions.
 	 */
 	private MetaMetadata					inheritedMmd;
-
+	
 	private boolean								generateClassDescriptor	= false;
 
 	protected MetaMetadata				scopingMmd;
@@ -82,6 +83,8 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	protected void setInheritedMmd(MetaMetadata inheritedMmd)
 	{
 		this.inheritedMmd = inheritedMmd;
+		if (this instanceof MetaMetadata)
+			inheritedMmd.addDerivedMmd((MetaMetadata) this);
 	}
 
 	public FieldParserElement getFieldParserElement()
