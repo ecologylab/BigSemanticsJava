@@ -462,7 +462,7 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 		generatedMmd.setInheritedMmd(inheritedMmd);
 		generatedMmd.setExtendsAttribute(inheritedMmd.getName());
 		generatedMmd.setRepository(this.getRepository());
-		generatedMmd.inheritAttributes(this);
+//		generatedMmd.inheritAttributes(this); // this is unnecessary here: we only have to set name/package/type/extends, which has been done in the above lines.
 		
 		// move nested fields (they will be cloned later)
 		for (String kidKey : this.kids.keySet())
