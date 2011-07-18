@@ -5,6 +5,7 @@ package ecologylab.semantics.metadata.builtins;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
@@ -757,5 +758,21 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 		{
 			continuation.callback(o);
 		}
+	}
+	
+	/**
+	 * Close the current connection.
+	 * Re-open a connection to the same location.
+	 * Use the same Document object; don't process re-directs, or anything like that.
+	 * Re-connect simply.
+	 * 
+	 * @return	PURLConnection for the new connection.
+	 */
+	public PURLConnection reConnect()
+	{
+		purlConnection.close();
+		purlConnection.recycle();
+		purlConnection	= document.getLocation().connect(document.getMetaMetadata().getUserAgentString());
+		return purlConnection;
 	}
 }

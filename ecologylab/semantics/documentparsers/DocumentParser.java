@@ -486,7 +486,22 @@ abstract public class DocumentParser<D extends Document>
 			if (!result)
 				NO_PARSER_SUFFIX_MAP.add(suffix);
 		}
-		
 		return result;
+	}
+	
+	/**
+	 * Use the DocumentClosure to close the current connection.
+	 * Re-open a connection to the same location.
+	 * Use the same Document object; don't process re-directs, or anything like that.
+	 * Re-connect simply.
+	 * Reset the purlConnection field of this to the new PURLConnection.
+	 * 
+	 * @return	InputStream for the new connection.
+	 */
+	public InputStream reConnect()
+	{
+		PURLConnection purlConnection = documentClosure.reConnect();
+		this.purlConnection	= purlConnection;
+		return purlConnection.inputStream();
 	}
 }
