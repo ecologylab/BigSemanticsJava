@@ -536,7 +536,7 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 	 */
 	public ArrayList<Metadata> getMixins()
 	{
-		return mixins == null ? null : mixins();
+		return mixins == null ? null : mixins;
 	}
 
 	/**
