@@ -132,10 +132,13 @@ implements Downloadable, Colors
 	
 	public PixelBased(BufferedImage bufferedImage)
 	{
-		this(bufferedImage, new Dimension(bufferedImage.getWidth(), bufferedImage.getHeight()));
+		this(bufferedImage, null);
 	}
 	public PixelBased(BufferedImage bufferedImage, Dimension maxDimension)
 	{
+		if (maxDimension == null)
+			maxDimension			= new Dimension(bufferedImage.getWidth(), bufferedImage.getHeight());
+		
 		Rendering rendering	= new Rendering(this, bufferedImage, null, null);
 
 		rendering = scaleRenderingUnderMaxDimension(rendering, rendering.width, rendering.height, maxDimension);
