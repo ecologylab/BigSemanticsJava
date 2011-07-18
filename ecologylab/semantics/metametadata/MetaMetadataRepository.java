@@ -732,8 +732,14 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 
 	public Document constructDocumentBySuffix(String suffix)
 	{
+		Metadata result = constructBySuffix(suffix);
+		return result instanceof Document ? (Document) result : null;
+	}
+
+	public Metadata constructBySuffix(String suffix)
+	{
 		MetaMetadata metaMetadata = this.getMMBySuffix(suffix);
-		return metaMetadata == null ? null : (Document) metaMetadata.constructMetadata(metadataTScope);
+		return metaMetadata == null ? null : metaMetadata.constructMetadata(metadataTScope);
 	}
 
 	public Document constructDocumentByMime(String mimeType)
@@ -891,7 +897,16 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 			return null;
 		return repositoryByTagName.get(tagName);
 	}
-
+	public Metadata constructByTagName(String tagName)
+	{
+		Metadata result						= null;
+		MetaMetadata metaMetadata	= getByTagName(tagName);
+		if (metaMetadata != null)
+		{
+			result									= metaMetadata.constructMetadata(metadataTScope);
+		}
+		return result;
+	}
 	public MetaMetadata getByClass(Class<? extends Metadata> metadataClass)
 	{
 		if (metadataClass == null)
