@@ -14,6 +14,8 @@ import java.awt.image.Raster;
 import java.awt.image.SampleModel;
 import java.awt.image.SinglePixelPackedSampleModel;
 import java.awt.image.WritableRaster;
+import java.io.BufferedInputStream;
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
@@ -34,13 +36,11 @@ import com.drew.metadata.exif.ExifDirectory;
 import com.drew.metadata.exif.ExifReader;
 import com.drew.metadata.exif.GpsDirectory;
 
-import ecologylab.concurrent.DownloadMonitor;
 import ecologylab.generic.ReflectionTools;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionsKeyWords;
 import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.metadata.Metadata;
-import ecologylab.semantics.metadata.builtins.DocumentClosure;
 import ecologylab.semantics.metadata.builtins.Image;
 
 /**
@@ -49,6 +49,8 @@ import ecologylab.semantics.metadata.builtins.Image;
  */
 public class ImageParserAwt extends DocumentParser<Image>
 {
+	private static final String	MM_TAG_GPS_LOCATION	= "gps_location";
+	private static final String	MM_TAG_CAMERA_SETTINGS	= "camera_settings";
 	private static final int	EXIF_TAG_ORIGINAL_DATE	= 0x9003;
 	ImageInputStream	imageInputStream;
 	ImageReader				imageReader;
@@ -89,8 +91,8 @@ public class ImageParserAwt extends DocumentParser<Image>
 	public ImageParserAwt(SemanticsSessionScope infoCollector)
 	{
 		super(infoCollector);
-		cameraClass	= infoCollector.getMetadataTranslationScope().getClassByTag("camera_settings");
-		gpsClass		= infoCollector.getMetadataTranslationScope().getClassByTag("gps_location");
+		cameraClass	= infoCollector.getMetadataTranslationScope().getClassByTag(MM_TAG_CAMERA_SETTINGS);
+		gpsClass		= infoCollector.getMetadataTranslationScope().getClassByTag(MM_TAG_GPS_LOCATION);
 	}
 
 /**
@@ -226,7 +228,7 @@ public class ImageParserAwt extends DocumentParser<Image>
 				}
 				String formatName			= imageReader.getFormatName();
 				if ("JPEG".equals(formatName))
-					readMetadata();
+					readMetadata(false);
 				// desparate attempts to reduce referentiality :-)
 				param.setDestination(null);
 				param.setSourceBands(null);
@@ -240,7 +242,7 @@ public class ImageParserAwt extends DocumentParser<Image>
 		return bufferedImage;
 	}
 	
-	private void readMetadata() throws IOException
+	private void readMetadata(boolean reread) throws IOException
 	{
 		try
 		{
@@ -250,13 +252,89 @@ public class ImageParserAwt extends DocumentParser<Image>
 			IIOMetadataNode node	=(IIOMetadataNode) metadata.getAsTree(name);
 	//		printTree(node);
 			extractMetadataFeatures(node);
-		} catch (javax.imageio.IIOException e)
+		} catch (javax.imageio.IIOException iioex)
 		{
-			warning("Couldn't extract metadata from image: " + e);
+			// Crazy good workaround for java.imageio bug, from http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4924909
+			if (!reread && iioex.getMessage() != null &&
+          iioex.getMessage().endsWith("without prior JFIF!"))
+			{
+				warning("Trying workaround for java bug");
+				closeImageInputStream();
+				InputStream newInputSteam	= reConnect();
+				imageInputStream = patch(newInputSteam);
+				imageReader.setInput(imageInputStream);
+				readMetadata(true);
+//				IIOImage newImage = imageReader.readAll(0, null);
+       }
+			else
+				warning("Couldn't extract metadata from image: " + iioex);
 		}
 //		byte[] iptc						=(byte[]) iptcNode.getUserObject();
 	}
 	
+	private static ImageInputStream patch(InputStream in) throws IOException
+	{
+		in = new BufferedInputStream(in);
+		in = new PatchInputStream(in);
+		return ImageIO.createImageInputStream(in);
+	}
+  /** Patches a JPEG file that is missing a JFIF marker **/
+	private static class PatchInputStream extends FilterInputStream
+	{
+		private static final int[]	JFIF			=
+																					{ 0xFF, 0xE0, 0x00, 0x10, 0x4A, 0x46, 0x49, 0x46, 0x00,
+																							0x01, 0x02, 0x00, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00 };
+		int													position	= 0;
+
+		public PatchInputStream(InputStream in)
+		{
+			super(in);
+		}
+
+		public int read() throws IOException
+		{
+			int result;
+			if (position < 2)
+			{
+				result = in.read();
+			}
+			else if (position < 2 + JFIF.length)
+			{
+				result = JFIF[position - 2];
+			}
+			else
+			{
+				result = in.read();
+			}
+			position++;
+			return result;
+		}
+
+		public int read(byte[] b, int off, int len) throws IOException
+		{
+			final int max = off + len;
+			int bytesread = 0;
+			for (int i = off; i < max; i++)
+			{
+				final int bi = read();
+				if (bi == -1)
+				{
+					if (bytesread == 0)
+					{
+						bytesread = -1;
+					}
+					break;
+				}
+				else
+				{
+					b[i] = (byte) bi;
+					bytesread++;
+				}
+			}
+			return bytesread;
+		}
+	}
+
 	public static String	EXIF_ELEMENT_TAG_NAME	= "unknown";
 	/**
 	 * @param node
@@ -282,18 +360,16 @@ public class ImageParserAwt extends DocumentParser<Image>
       		dated		= true;
       		DATE_FEATURE.extractDate(getDocument(), exifDir);
       	}
-      	if (!mixedIn && (cameraClass != null) && CAMERA_MODEL_FEATURE.getStringValue(exifDir) != null)
+      	if (!mixedIn && CAMERA_MODEL_FEATURE.getStringValue(exifDir) != null)
       	{
       		mixedIn	= true;
-//      		Metadata cameraMixin	= ReflectionTools.getInstance(cameraClass);
-//      		extractMetadata(exifDirectory, EXIF_METADATA_FEATURES, cameraMixin);
-      		extractMixin(exifDir, EXIF_METADATA_FEATURES, cameraClass);
+      		extractMixin(exifDir, EXIF_METADATA_FEATURES, MM_TAG_CAMERA_SETTINGS);
       	}
       	com.drew.metadata.Directory gpsDir = exifMetadata.getDirectory(GpsDirectory.class);
       	String gpsLatitudeString = GPS_LATITUDE_FEATURE.getStringValue(gpsDir);
-				if (gpsClass != null && gpsLatitudeString != null)
+				if (gpsLatitudeString != null)
       	{
-      		extractMixin(gpsDir, GPS_METADATA_FEATURES, gpsClass);
+      		extractMixin(gpsDir, GPS_METADATA_FEATURES, MM_TAG_GPS_LOCATION);
       	}
 //    	Iterator<com.drew.metadata.Tag> exifList = printDirectory(exifDirectory);
       	Iterator<com.drew.metadata.Tag> gpsList = printDirectory(gpsDir);
@@ -326,11 +402,14 @@ public class ImageParserAwt extends DocumentParser<Image>
 		new MetadataExifFeature("altitude", GpsDirectory.TAG_GPS_ALTITUDE),
 		new MetadataExifFeature("satellites", GpsDirectory.TAG_GPS_SATELLITES),
 	};
-	public void extractMixin(com.drew.metadata.Directory dir, MetadataExifFeature[] features, Class<Metadata> metadataClass)
+	public void extractMixin(com.drew.metadata.Directory dir, MetadataExifFeature[] features, String metaMetadataTag)
 	{
-		Metadata mixin	= ReflectionTools.getInstance(metadataClass);
-		extractMetadata(dir, features, mixin);
-		getDocument().addMixin(mixin);
+		Metadata mixin	= infoCollector.getMetaMetadataRepository().constructByTagName(metaMetadataTag);
+		if (mixin != null)
+		{
+			extractMetadata(dir, features, mixin);
+			getDocument().addMixin(mixin);
+		}
 	}
 	public void extractMetadata(com.drew.metadata.Directory dir, MetadataExifFeature[] features, ecologylab.semantics.metadata.Metadata metadata)
 	{
@@ -424,6 +503,12 @@ public class ImageParserAwt extends DocumentParser<Image>
 			imageReader			= null;
 			result				= true;
 		}
+		result = closeImageInputStream();
+		return result;
+	}
+	private boolean closeImageInputStream()
+	{
+		boolean result	= false;
 		if (imageInputStream != null)
 		{
 			try
