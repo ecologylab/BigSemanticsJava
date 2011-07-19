@@ -37,7 +37,7 @@ public abstract class HTMLDOMParser extends HTMLParserCommon implements DOMParse
 	/**
 	 * Root DOM of the current document
 	 */
-	private org.w3c.dom.Node	dom;
+	private org.w3c.dom.Document	dom;
 
 	protected IDOMProvider				provider;
 
@@ -51,9 +51,9 @@ public abstract class HTMLDOMParser extends HTMLParserCommon implements DOMParse
 	}
 
 
-	public org.w3c.dom.Node getDom() throws IOException
+	public org.w3c.dom.Document getDom() throws IOException
 	{
-		org.w3c.dom.Node result = this.dom;
+		org.w3c.dom.Document result = this.dom;
 		if (result == null)
 		{
 			result = createDom();
@@ -67,13 +67,13 @@ public abstract class HTMLDOMParser extends HTMLParserCommon implements DOMParse
 	 * @return A bogus dom with a root element called empty.
 	 * @throws IOException 
 	 */
-	protected org.w3c.dom.Node createDom() throws IOException
+	private org.w3c.dom.Document createDom() throws IOException
 	{
 		provider									= infoCollector.constructDOMProvider();
 		provider.setQuiet(true);
 		provider.setShowWarnings(false);
 
-    org.w3c.dom.Node document = provider.parse(inputStream(), null, null);
+    org.w3c.dom.Document document = provider.parseDOM(inputStream(), null);
     return document;
 	}
 
