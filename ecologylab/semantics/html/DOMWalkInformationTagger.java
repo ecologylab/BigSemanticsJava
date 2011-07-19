@@ -139,13 +139,14 @@ public class DOMWalkInformationTagger implements HTMLAttributeNames
 		if (node == null)
 			return;
 		
-		if (node.getNodeType() == Node.TEXT_NODE)
+		short nodeType = node.getNodeType();
+		switch (nodeType)
 		{
+		case Node.TEXT_NODE:
 			if (node.getNodeValue() != null && node.getNodeValue().length() > 0)
 				printText(node.getNodeValue().getBytes(), 0, node.getNodeValue().length(), node, writer);
-		}
-		else if (node.getNodeType() == Node.ELEMENT_NODE)
-		{
+			break;
+		case Node.ELEMENT_NODE:
 			if (!node.getNodeName().equals("script"))
 			{
 				printTag(node);
@@ -158,9 +159,8 @@ public class DOMWalkInformationTagger implements HTMLAttributeNames
 				}
 				printEndTag(node);
 			}
-		}
-		else if (node.getNodeType() == Node.COMMENT_NODE)
-		{
+			break;
+		case 	Node.COMMENT_NODE:
 			addC('<', linelen++);
 			addC('!', linelen++);
 			addC('-', linelen++);
@@ -171,39 +171,36 @@ public class DOMWalkInformationTagger implements HTMLAttributeNames
 			addC('-', linelen++);
 			addC('>', linelen++);
 			flushLine(writer);
-		}
-		else if (node.getNodeType() == Node.DOCUMENT_NODE)
-		{
+			break;
+		case Node.DOCUMENT_NODE:
 			NodeList children = node.getChildNodes();
 			for (int i=0; i<children.getLength(); i++)
 			{
 				content = children.item(i);
 				printTree(content, writer);
 			}
-		}
-		else if (node.getNodeType() == Node.DOCUMENT_TYPE_NODE)
-		{
-      addC('<', linelen++);
-      addC('!', linelen++);
-      addC('D', linelen++);
-      addC('O', linelen++);
-      addC('C', linelen++);
-      addC('T', linelen++);
-      addC('Y', linelen++);
-      addC('P', linelen++);
-      addC('E', linelen++);
-      addC(' ', linelen++);
-      
-      for (int i=0; i<node.getNodeValue().length(); i++)
-      {
-      	char c = node.getNodeValue().charAt(i);
-      	addC(c, linelen++);
-      }
-      
-      addC('>', linelen++);
-		}
-		else if (node.getNodeType() == Node.ATTRIBUTE_NODE)
-		{
+			break;
+		case  Node.DOCUMENT_TYPE_NODE:
+			addC('<', linelen++);
+			addC('!', linelen++);
+			addC('D', linelen++);
+			addC('O', linelen++);
+			addC('C', linelen++);
+			addC('T', linelen++);
+			addC('Y', linelen++);
+			addC('P', linelen++);
+			addC('E', linelen++);
+			addC(' ', linelen++);
+
+			for (int i=0; i<node.getNodeValue().length(); i++)
+			{
+				char c = node.getNodeValue().charAt(i);
+				addC(c, linelen++);
+			}
+
+			addC('>', linelen++);
+			break;
+		case Node.ATTRIBUTE_NODE:
 			for (int i=0; i<node.getNodeName().length(); i++)
 			{
 				char name = node.getNodeName().charAt(i);
@@ -217,9 +214,8 @@ public class DOMWalkInformationTagger implements HTMLAttributeNames
 				addC(value, linelen++);
 			}
 			addC('\"', linelen++);
-		}
-		else if (node.getNodeType() == Node.CDATA_SECTION_NODE)
-		{
+			break;
+		case Node.CDATA_SECTION_NODE:
       addC('<', linelen++);
       addC('!', linelen++);
       addC('[', linelen++);
@@ -236,19 +232,18 @@ public class DOMWalkInformationTagger implements HTMLAttributeNames
       addC(']', linelen++);
       addC('>', linelen++);
       flushLine(writer);
-		}
-		else
-		{
+      break;
+		default:
 			printTag(node);
-			NodeList children = node.getChildNodes();
-			for (int i=0; i<children.getLength(); i++)
+			NodeList children2 = node.getChildNodes();
+			for (int i=0; i<children2.getLength(); i++)
 			{
-				Node child = children.item(i);
+				Node child = children2.item(i);
 				printTree(child, writer);
 			}
 			printEndTag(node);
+      	
 		}
-		
 	}
 	
 	public void printTag(Node node)
