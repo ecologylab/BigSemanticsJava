@@ -1,10 +1,20 @@
 <meta_metadata_repository name="gps" package="ecologylab.semantics.generated.library.gps">
 
-	<meta_metadata name="gps_location" extends="metadata">
+	<meta_metadata name="old_gps_location" extends="metadata">
 	
 		<scalar name="latitude" scalar_type="String"/>
 		<scalar name="longitude" scalar_type="String"/>
 		<scalar name="altitude" scalar_type="String"/>
+		<scalar name="satellites" scalar_type="String"/>
+			
+	</meta_metadata>
+
+	<meta_metadata name="geo_location" extends="metadata">
+	
+		<scalar name="latitude" scalar_type="Double"/>
+		<scalar name="longitude" scalar_type="Double"/>
+		<scalar name="altitude" scalar_type="Double"/>
+		
 		<scalar name="satellites" scalar_type="String"/>
 			
 	</meta_metadata>
