@@ -478,19 +478,25 @@ public class MetaMetadataScalarField extends MetaMetadataField
 		{
 			String tagName = this.resolveTag();
 			String fieldName = this.getFieldNameInJava(false);
-			String javaTypeName = this.getScalarType().getJavaTypeName();
-			fd = new MetadataFieldDescriptor(
-					this,
-					tagName,
-					this.getComment(),
-					FieldTypes.SCALAR,
-					null,
-					contextCd,
-					fieldName,
-					this.getScalarType(),
-					this.getHint(),
-					javaTypeName);
-			this.metadataFieldDescriptor = fd;
+			ScalarType scalarType2 = this.getScalarType();
+			if (scalarType2 == null)
+				error("Can't find scalar type :-(");
+			else
+			{
+				String javaTypeName = scalarType2.getJavaTypeName();
+				fd = new MetadataFieldDescriptor(
+						this,
+						tagName,
+						this.getComment(),
+						FieldTypes.SCALAR,
+						null,
+						contextCd,
+						fieldName,
+						scalarType2,
+						this.getHint(),
+						javaTypeName);
+				this.metadataFieldDescriptor = fd;
+			}
 		}
 		return fd;
 	}
