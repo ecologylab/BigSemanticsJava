@@ -7,6 +7,7 @@ package ecologylab.semantics.metadata.builtins;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 import ecologylab.generic.Continuation;
 import ecologylab.net.ParsedURL;
@@ -35,55 +36,54 @@ import ecologylab.serialization.simpl_inherit;
 @simpl_inherit
 public class Document extends Metadata
 {
-	@mm_name("location") 
-	@simpl_scalar MetadataParsedURL	location;
-	
+	@mm_name("location")
+	@simpl_scalar
+	MetadataParsedURL								location;
+
 	@simpl_collection("location")
-	ArrayList<MetadataParsedURL> 						additionalLocations;
-	
+	List<MetadataParsedURL>					additionalLocations;
+
 	private DocumentClosure					documentClosure;
-	
+
 	SemanticInLinks									semanticInlinks;
-	
+
 	private boolean									downloadDone;
 
 	SemanticsSite										site;
-	
-	protected		SemanticsGlobalScope	semanticsScope;
-	
-	protected		SemanticsSessionScope		semanticsSessionScope;
+
+	protected SemanticsGlobalScope	semanticsScope;
+
+	protected SemanticsSessionScope	semanticsSessionScope;
 
 	/**
-	 * documentType object for each document type 
-	 * such as HTMLType, PDFType. 
+	 * documentType object for each document type such as HTMLType, PDFType.
 	 */
 	DocumentParser									documentParser;
 
 	ParserResult										parserResult;
-	
-	
+
 	/** State from retrieval & interaction */
 	protected int										badImages;
-	
-	boolean 												sameDomainAsPrevious;
-	
+
+	boolean													sameDomainAsPrevious;
+
 	private boolean									alwaysAcceptRedirect;
-	
+
 	/**
 	 * Seed object associated with this, if this is a seed.
 	 */
-	private Seed													seed;
+	private Seed										seed;
 
 	/**
 	 * Indicates that this Container is a truly a seed, not just one that is associated into a Seed's
 	 * inverted index.
 	 */
-	private boolean												isTrueSeed;
+	private boolean									isTrueSeed;
 
 	/**
 	 * Indicates that this Container is processed via drag and drop.
 	 */
-	private boolean												isDnd;
+	private boolean									isDnd;
 
 	static public final Document 	RECYCLED_DOCUMENT	= new Document(ParsedURL.getAbsolute("http://recycled.document"));
 	static public final Document 	UNDEFINED_DOCUMENT= new Document(ParsedURL.getAbsolute("http://undefined.document"));
@@ -148,11 +148,6 @@ public class Document extends Metadata
 		return location == null ? null : location.getValue();
 	}
 	
-	protected void setLocation(MetadataParsedURL location)
-	{
-		this.location = location;
-	}
-
 	/**
 	 * Sets the value of the field location
 	 **/
@@ -183,10 +178,11 @@ public class Document extends Metadata
 		setLocation(location);
 	}
 
-	/**
-	 * Sets the location directly
-	 **/
-
+	public MetadataParsedURL getLocationMetadata()
+	{
+		return this.location;
+	}
+	
 	public void setLocationMetadata(MetadataParsedURL location)
 	{
 		this.location = location;
@@ -364,12 +360,12 @@ public class Document extends Metadata
 		else if (oldInlinks != null)
 			semanticInlinks.merge(oldInlinks);
 		
-		ArrayList<Metadata> oldMixins = oldDocument.getMixins();
+		List<Metadata> oldMixins = oldDocument.getMixins();
 		if (oldMixins != null)
 			for (Metadata oldMixin : oldMixins)
 				addMixin(oldMixin);
 
-		ArrayList<MetadataParsedURL> oldAdditionalLocations = oldDocument.additionalLocations;
+		List<MetadataParsedURL> oldAdditionalLocations = oldDocument.additionalLocations;
 		if (oldAdditionalLocations != null)
 			for (MetadataParsedURL otherLocation : oldAdditionalLocations)
 				addAdditionalLocation(otherLocation);
@@ -620,12 +616,12 @@ public class Document extends Metadata
 		return isDnd;
 	}
 
-	protected ArrayList<MetadataParsedURL> getAdditionalLocations()
+	protected List<MetadataParsedURL> getAdditionalLocations()
 	{
 		return additionalLocations;
 	}
 
-	protected void setAdditionalLocations(ArrayList<MetadataParsedURL> additionalLocations)
+	protected void setAdditionalLocations(List<MetadataParsedURL> additionalLocations)
 	{
 		this.additionalLocations = additionalLocations;
 	}

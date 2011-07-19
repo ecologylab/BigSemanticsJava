@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -97,7 +98,7 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 	@simpl_collection
 	@simpl_scope(SemanticsNames.REPOSITORY_METADATA_TRANSLATIONS)
 	@mm_name("mixins")
-	ArrayList<Metadata>										mixins;
+	List<Metadata>												mixins;
 
 	/**
 	 * the (composite) term vector for this field.
@@ -243,9 +244,9 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 	 * 
 	 * @return
 	 */
-	ArrayList<Metadata> mixins()
+	List<Metadata> mixins()
 	{
-		ArrayList<Metadata> result = this.mixins;
+		List<Metadata> result = this.mixins;
 		if (result == null)
 		{
 			result = new ArrayList<Metadata>();
@@ -258,7 +259,7 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 	{
 		if (mixin != null)
 		{
-			ArrayList<Metadata> mixins = mixins();
+			List<Metadata> mixins = mixins();
 			if (!mixins.contains(mixin))
 			{
 				HashSet<Metadata> visitedMetadata = new HashSet<Metadata>();
@@ -545,7 +546,7 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 	/**
 	 * @return the mixins
 	 */
-	public ArrayList<Metadata> getMixins()
+	public List<Metadata> getMixins()
 	{
 		return mixins == null ? null : mixins;
 	}
@@ -554,7 +555,7 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 	 * @param mixins
 	 *          the mixins to set
 	 */
-	public void setMixins(ArrayList<Metadata> mixins)
+	public void setMixins(List<Metadata> mixins)
 	{
 		this.mixins = mixins;
 	}
@@ -1150,12 +1151,12 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 
 	public SemanticActionHandler	pendingSemanticActionHandler;
 
-	protected MetadataString getMetaMetadataName()
+	protected MetadataString getMetaMetadataNameMetadata()
 	{
 		return metaMetadataName;
 	}
 
-	protected void setMetaMetadataName(MetadataString metaMetadataName)
+	protected void setMetaMetadataNameMetadata(MetadataString metaMetadataName)
 	{
 		this.metaMetadataName = metaMetadataName;
 	}

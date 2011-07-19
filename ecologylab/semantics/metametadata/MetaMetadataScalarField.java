@@ -480,7 +480,7 @@ public class MetaMetadataScalarField extends MetaMetadataField
 			String fieldName = this.getFieldNameInJava(false);
 			ScalarType scalarType2 = this.getScalarType();
 			if (scalarType2 == null)
-				error("Can't find scalar type :-(");
+				error("scalar_type not specified or defined: " + this);
 			else
 			{
 				String javaTypeName = scalarType2.getJavaTypeName();
