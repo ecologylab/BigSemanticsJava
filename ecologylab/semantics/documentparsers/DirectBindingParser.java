@@ -37,7 +37,7 @@ public class DirectBindingParser extends ParserBase
 
 	// FIXME - i don't think this is ever called.
 	@Override
-	protected org.w3c.dom.Document createDom()
+	public org.w3c.dom.Document getDom()
 	{
 		return XMLTools.buildDOM(getTruePURL());
 	}
