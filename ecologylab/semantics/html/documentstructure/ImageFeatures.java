@@ -19,7 +19,7 @@ implements HTMLAttributeNames, ImageConstants
 	/**
 	 * Test to see if alt attribute from HTML is garbage.
 	 * 
-	 * @param alt
+	 * @param altitude
 	 * 
 	 * @return	true if its null, empty string, "null", or looks like a filename.
 	 */
