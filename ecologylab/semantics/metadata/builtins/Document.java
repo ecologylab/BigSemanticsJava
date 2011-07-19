@@ -147,6 +147,11 @@ public class Document extends Metadata
 	{
 		return location == null ? null : location.getValue();
 	}
+	
+	protected void setLocation(MetadataParsedURL location)
+	{
+		this.location = location;
+	}
 
 	/**
 	 * Sets the value of the field location
@@ -613,6 +618,16 @@ public class Document extends Metadata
 	public boolean isDnd()
 	{
 		return isDnd;
+	}
+
+	protected ArrayList<MetadataParsedURL> getAdditionalLocations()
+	{
+		return additionalLocations;
+	}
+
+	protected void setAdditionalLocations(ArrayList<MetadataParsedURL> additionalLocations)
+	{
+		this.additionalLocations = additionalLocations;
 	}
 
 

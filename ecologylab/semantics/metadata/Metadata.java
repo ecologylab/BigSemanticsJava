@@ -158,7 +158,8 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 	public Metadata(MetaMetadataCompositeField metaMetadata)
 	{
 		this();
-		setMetaMetadata(metaMetadata);
+		if (metaMetadata != null)
+			setMetaMetadata(metaMetadata);
 	}
 
 	/**
@@ -169,6 +170,16 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 	public long getOrmId()
 	{
 		return ormId;
+	}
+	
+	/**
+	 * set the ormId.
+	 * 
+	 * @param ormId
+	 */
+	public void setOrmId(long ormId)
+	{
+		this.ormId = ormId;
 	}
 
 	/**
@@ -1138,5 +1149,15 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 	}
 
 	public SemanticActionHandler	pendingSemanticActionHandler;
+
+	protected MetadataString getMetaMetadataName()
+	{
+		return metaMetadataName;
+	}
+
+	protected void setMetaMetadataName(MetadataString metaMetadataName)
+	{
+		this.metaMetadataName = metaMetadataName;
+	}
 
 }
