@@ -84,6 +84,20 @@ public class ParagraphText
 		}
 	}
 	
+	public void append(char[] bytes, int start, int end)
+	{
+		if (buffy == null)
+			//TODO -- should this be built larger? how many calls are made on average?
+			buffy			= StringBuilderUtils.acquire();
+		else
+			buffy.append(' ');
+		
+		while (start < end)
+		{
+			buffy.append((char) bytes[start++]);
+		}
+	}
+	
 	public void recycle()
 	{
 		if (buffy != null)
