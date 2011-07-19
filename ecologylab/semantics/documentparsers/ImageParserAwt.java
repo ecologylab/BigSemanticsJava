@@ -42,6 +42,8 @@ import ecologylab.semantics.actions.SemanticActionsKeyWords;
 import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.builtins.Image;
+import ecologylab.semantics.sensing.GpsFeatures;
+import ecologylab.semantics.sensing.MetadataExifFeature;
 
 /**
  * @author andruid
@@ -355,10 +357,10 @@ public class ImageParserAwt extends DocumentParser<Image>
       	new ExifReader(exifSegment).extract(exifMetadata);
       	com.drew.metadata.Directory exifDir = exifMetadata.getDirectory(ExifDirectory.class);
       	
-      	if (!dated && ORIG_DATE_FEATURE.extractDate(getDocument(), exifDir) == null)
+      	if (!dated && ORIG_DATE_FEATURE.extract(getDocument(), exifDir) == null)
       	{
       		dated		= true;
-      		DATE_FEATURE.extractDate(getDocument(), exifDir);
+      		DATE_FEATURE.extract(getDocument(), exifDir);
       	}
       	if (!mixedIn && CAMERA_MODEL_FEATURE.getStringValue(exifDir) != null)
       	{
@@ -366,10 +368,10 @@ public class ImageParserAwt extends DocumentParser<Image>
       		extractMixin(exifDir, EXIF_METADATA_FEATURES, MM_TAG_CAMERA_SETTINGS);
       	}
       	com.drew.metadata.Directory gpsDir = exifMetadata.getDirectory(GpsDirectory.class);
-      	String gpsLatitudeString = GPS_LATITUDE_FEATURE.getStringValue(gpsDir);
-				if (gpsLatitudeString != null)
+      	Metadata gpsMixin	= GpsFeatures.extractMixin(gpsDir, infoCollector);
+				if (gpsMixin != null)
       	{
-      		extractMixin(gpsDir, GPS_METADATA_FEATURES, MM_TAG_GPS_LOCATION);
+      		getDocument().addMixin(gpsMixin);
       	}
 //    	Iterator<com.drew.metadata.Tag> exifList = printDirectory(exifDirectory);
       	Iterator<com.drew.metadata.Tag> gpsList = printDirectory(gpsDir);
@@ -394,15 +396,17 @@ public class ImageParserAwt extends DocumentParser<Image>
 		new MetadataExifFeature("subject_distance", ExifDirectory.TAG_SUBJECT_DISTANCE),
 	};
 
-	public static final MetadataExifFeature GPS_LATITUDE_FEATURE		= new MetadataExifFeature("latitude", GpsDirectory.TAG_GPS_LATITUDE);
-	public static final MetadataExifFeature GPS_METADATA_FEATURES[]	=
-	{
-		GPS_LATITUDE_FEATURE,
-		new MetadataExifFeature("longitude", GpsDirectory.TAG_GPS_LONGITUDE),
-		new MetadataExifFeature("altitude", GpsDirectory.TAG_GPS_ALTITUDE),
-		new MetadataExifFeature("satellites", GpsDirectory.TAG_GPS_SATELLITES),
-	};
+
 	public void extractMixin(com.drew.metadata.Directory dir, MetadataExifFeature[] features, String metaMetadataTag)
+	{
+		Metadata mixin	= infoCollector.getMetaMetadataRepository().constructByTagName(metaMetadataTag);
+		if (mixin != null)
+		{
+			extractMetadata(dir, features, mixin);
+			getDocument().addMixin(mixin);
+		}
+	}
+	public void extractGPS(com.drew.metadata.Directory dir, MetadataExifFeature[] features, String metaMetadataTag)
 	{
 		Metadata mixin	= infoCollector.getMetaMetadataRepository().constructByTagName(metaMetadataTag);
 		if (mixin != null)
@@ -415,7 +419,7 @@ public class ImageParserAwt extends DocumentParser<Image>
 	{
 		for (MetadataExifFeature feature: features)
 		{
-			feature.extractString(metadata, dir);
+			feature.extract(metadata, dir);
 		}
 	}
 	public static String getString(com.drew.metadata.Directory dir, int tag)
