@@ -43,7 +43,7 @@ public class MetadataScalarTypeType extends ReferenceType<MetadataScalarType>
 			{
 				buffy.append(Character.toUpperCase(firstChar));
 				if (length > 1)
-					buffy.append(value, 1, length - 1);
+					buffy.append(value, 1, length);
 			}
 			else
 				buffy.append(value);
