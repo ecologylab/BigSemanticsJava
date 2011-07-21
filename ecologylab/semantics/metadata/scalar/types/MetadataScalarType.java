@@ -133,18 +133,12 @@ public abstract class MetadataScalarType<M, T> extends ReferenceType<M>
 		return valueScalarType.getInstance(value, formatStrings, scalarUnmarshallingContext);
 	}
 
-	public static final Class[]	METADATA_SCALAR_TYPES	=
-																										{ MetadataStringScalarType.class, MetadataScalarTypeType.class,
-			MetadataStringBuilderScalarType.class, MetadataIntegerScalarType.class, 
-			MetadataFloatScalarType.class, MetadataDoubleScalarType.class,
-			MetadataParsedURLScalarType.class, MetadataDateScalarType.class, MetadataFileScalarType.class };
-
 	public static synchronized void init()
 	{
 		if (!metadataScalarTypesRegistered)
 		{
-			TypeRegistry.registerScalarType(METADATA_SCALAR_TYPES);
 			metadataScalarTypesRegistered = true;
+			new SemanticsTypes();
 		}
 	}
 
