@@ -10,6 +10,7 @@ import java.util.HashMap;
 import ecologylab.collections.Scope;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.collecting.Seeding;
+import ecologylab.semantics.collecting.SemanticsGlobalScope;
 import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.collecting.SemanticsSite;
 import ecologylab.semantics.documentparsers.DocumentParser;
@@ -79,7 +80,7 @@ public abstract class SemanticAction extends ElementState implements SemanticAct
 	@simpl_scalar
 	private String										error;
 
-	protected SemanticsSessionScope				infoCollector;
+	protected SemanticsGlobalScope				sessionScope;
 
 	protected SemanticActionHandler		semanticActionHandler;
 
@@ -198,9 +199,9 @@ public abstract class SemanticAction extends ElementState implements SemanticAct
 		this.error = error;
 	}
 
-	public void setInfoCollector(SemanticsSessionScope infoCollector)
+	public void setSessionScope(SemanticsGlobalScope infoCollector)
 	{
-		this.infoCollector = infoCollector;
+		this.sessionScope = infoCollector;
 	}
 
 	public void setSemanticActionHandler(SemanticActionHandler handler)
@@ -296,7 +297,7 @@ public abstract class SemanticAction extends ElementState implements SemanticAct
 		{
 			ParsedURL outlinkPurl	= (ParsedURL) getArgumentObject(LOCATION);
 			if (outlinkPurl != null)
-				result							= infoCollector.getOrConstructDocument(outlinkPurl);
+				result							= sessionScope.getOrConstructDocument(outlinkPurl);
 		}
 	
 		if (result == null)
@@ -304,7 +305,7 @@ public abstract class SemanticAction extends ElementState implements SemanticAct
 		
 		if (result != null && !result.isRecycled())
 		{
-			result.setSemanticsSessionScope(infoCollector);
+			result.setSemanticsSessionScope(sessionScope);
 			
 			Metadata mixin				= (Metadata) getArgumentObject(MIXIN);
 			if (mixin != null)
@@ -332,7 +333,7 @@ public abstract class SemanticAction extends ElementState implements SemanticAct
 			
 			if (traversable)
 			{
-				Seeding seeding = infoCollector.getSeeding();
+				Seeding seeding = sessionScope.getSeeding();
 				if (seeding != null)
 					seeding.traversable(location);
 			}

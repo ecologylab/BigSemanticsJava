@@ -37,12 +37,6 @@ public class CompoundDocument extends Document
 	@simpl_scalar
 	private MetadataString	        pageStructure;
 	
-	@mm_name("title") 
-	@simpl_scalar MetadataString		title;
-	
-	@mm_name("description") 
-	@simpl_scalar MetadataString		description;
-
 	/**
 	 * The search query
 	 **/
@@ -178,135 +172,6 @@ public class CompoundDocument extends Document
 
 
 	/**
-	 * Lazy Evaluation for title
-	 **/
-
-	public MetadataString title()
-	{
-		MetadataString result = this.title;
-		if (result == null)
-		{
-			result = new MetadataString();
-			this.title = result;
-		}
-		return result;
-	}
-
-	/**
-	 * Gets the value of the field title
-	 **/
-	@Override
-	public String getTitle()
-	{
-		return title == null ? null : title().getValue();
-	}
-
-	/**
-	 * Sets the value of the field title
-	 **/
-
-	public void setTitle(String title)
-	{
-		this.title().setValue(title);
-	}
-
-	/**
-	 * The heavy weight setter method for field title
-	 **/
-
-	public void hwSetTitle(String title)
-	{
-		this.title().setValue(title);
-		rebuildCompositeTermVector();
-	}
-
-	/**
-	 * Sets the title directly
-	 **/
-
-	public void setTitleMetadata(MetadataString title)
-	{
-		this.title = title;
-	}
-
-	/**
-	 * Heavy Weight Direct setter method for title
-	 **/
-
-	public void hwSetTitleMetadata(MetadataString title)
-	{
-		if (this.title != null && this.title.getValue() != null && hasTermVector())
-			termVector().remove(this.title.termVector());
-		this.title = title;
-		rebuildCompositeTermVector();
-	}
-
-
-	/**
-	 * Lazy Evaluation for description
-	 **/
-
-	public MetadataString description()
-	{
-		MetadataString result = this.description;
-		if (result == null)
-		{
-			result = new MetadataString();
-			this.description = result;
-		}
-		return result;
-	}
-
-	/**
-	 * Gets the value of the field description
-	 **/
-
-	public String getDescription()
-	{
-		return description == null ? null : description().getValue();
-	}
-
-	/**
-	 * Sets the value of the field description
-	 **/
-
-	public void setDescription(String description)
-	{
-		this.description().setValue(description);
-	}
-
-	/**
-	 * The heavy weight setter method for field description
-	 **/
-
-	public void hwSetDescription(String description)
-	{
-		this.description().setValue(description);
-		rebuildCompositeTermVector();
-	}
-
-	/**
-	 * Sets the description directly
-	 **/
-
-	public void setDescriptionMetadata(MetadataString description)
-	{
-		this.description = description;
-	}
-
-	/**
-	 * Heavy Weight Direct setter method for description
-	 **/
-
-	public void hwSetDescriptionMetadata(MetadataString description)
-	{
-		if (this.description != null && this.description.getValue() != null && hasTermVector())
-			termVector().remove(this.description.termVector());
-		this.description = description;
-		rebuildCompositeTermVector();
-	}
-
-	/**
 	 * Lazy Evaluation for query
 	 **/
 
@@ -404,7 +269,7 @@ public class CompoundDocument extends Document
 			}
 
 			// When downloadDone, add best surrogate and best container to infoCollector
-			Crawler crawler	= semanticsSessionScope.getCrawler();
+			Crawler crawler	= semanticsScope.getCrawler();
 			if (documentParser != null && crawler != null)
 			{
 				CompoundDocumentParserCrawlerResult	crawlerResult	= crawler.constructCompoundDocumentParserResult(this, isJustCrawl());

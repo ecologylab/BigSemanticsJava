@@ -42,8 +42,6 @@ implements SemanticsPrefs, ApplicationProperties, DocumentParserTagNames
 	private final Seeding												seeding;
 	
 	private ConcurrentHashSet<ParsedURL> 				visitedLocations	= new ConcurrentHashSet<ParsedURL>(DocumentLocationMap.NUM_DOCUMENTS);
-
-	final private Class<? extends IDOMProvider> domProviderClass;
 	
 	/**
 	 * Construct with no Crawler, and empty Seeding.
@@ -60,8 +58,7 @@ implements SemanticsPrefs, ApplicationProperties, DocumentParserTagNames
 	}
 	public SemanticsSessionScope(TranslationScope metadataTranslationScope, Seeding seeding, Crawler crawler, Class<? extends IDOMProvider> domProviderClass)
 	{
-		super(metadataTranslationScope);
-		this.domProviderClass							= domProviderClass;
+		super(metadataTranslationScope, domProviderClass);
 		this.put(SemanticsSessionObjectNames.INFO_COLLECTOR, this);	//TODO make this unnecessary; its a band-aid on old code
 		this.crawler											= crawler;
 		this.seeding											= seeding;
@@ -75,6 +72,7 @@ implements SemanticsPrefs, ApplicationProperties, DocumentParserTagNames
 	}
 
 	///////////////////////////////////////// WindowSystem / Display Stuff ////////////////////////////////////////
+	@Override
 	public void displayStatus(String message)
 	{
 		if (guiBridge != null)
@@ -82,7 +80,7 @@ implements SemanticsPrefs, ApplicationProperties, DocumentParserTagNames
 		else
 			debug(message);
 	}
-
+	@Override
   public void displayStatus(String message, int ticks)
   {
 		if (guiBridge != null)
@@ -102,6 +100,7 @@ implements SemanticsPrefs, ApplicationProperties, DocumentParserTagNames
 		return result;
   }
   
+  @Override
   public int getAppropriateFontIndex()
   {
   	return (guiBridge != null) ? guiBridge.getAppropriateFontIndex() : -1;
@@ -122,42 +121,6 @@ implements SemanticsPrefs, ApplicationProperties, DocumentParserTagNames
   
 	///////////////////////////////////// end WindowSystem / Display Stuff ////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	public  void warning(CharSequence message)
-  {
-  	Debug.warning(this, message);
-  }
-  public  void debug(CharSequence message)
-  {
-  	Debug.println(this, message);
-  }
-  public  void debugT(CharSequence message)
-  {
-  	Debug.debugT(this, message);
-  }
-	
-	public Document getOrConstructDocument(ParsedURL location)
-	{
-		if (location == null)
-			return null;
-		Document result	= globalCollection.getOrConstruct(location);
-		result.setSemanticsSessionScope(this);
-		return result;
-	}
-	public Image getOrConstructImage(ParsedURL location)
-	{
-		if (location == null)
-			return null;
-		Document constructDocument = globalCollection.getOrConstruct(location);
-
-		Image result	= null;
-		if (constructDocument.isImage())
-		{
-			result	= (Image) constructDocument;
-			result.setSemanticsSessionScope(this);
-		}
-		return result;
-	}	
-
 	/**
 	 * Accept the purl if there is no crawler, or if the Seeding says to.
 	 * 
@@ -171,10 +134,12 @@ implements SemanticsPrefs, ApplicationProperties, DocumentParserTagNames
 	/**
 	 * @return the crawler
 	 */
+	@Override
 	public Crawler getCrawler()
 	{
 		return crawler;
 	}
+	@Override
 	public boolean hasCrawler()
 	{
 		return crawler != null;
@@ -211,10 +176,5 @@ implements SemanticsPrefs, ApplicationProperties, DocumentParserTagNames
 	public boolean isLocationNew(ParsedURL location)
 	{
 		return visitedLocations.add(location);
-	}
-	
-	public IDOMProvider constructDOMProvider()
-	{
-		return ReflectionTools.getInstance(domProviderClass);
 	}
 }

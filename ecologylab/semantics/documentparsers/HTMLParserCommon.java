@@ -1,7 +1,7 @@
 package ecologylab.semantics.documentparsers;
 
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.collecting.SemanticsSessionScope;
+import ecologylab.semantics.collecting.SemanticsGlobalScope;
 import ecologylab.semantics.html.ImgElement;
 import ecologylab.semantics.html.documentstructure.ImageFeatures;
 import ecologylab.semantics.metadata.builtins.CompoundDocument;
@@ -30,7 +30,7 @@ extends ContainerParser implements SemanticsPrefs
 	/** <code>Filter</code> that recognizes junk images from URL */
 	public static final Filter 		filter			= new Filter();	// url filtering
 
-	public HTMLParserCommon(SemanticsSessionScope infoCollector)
+	public HTMLParserCommon(SemanticsGlobalScope infoCollector)
 	{
 		super(infoCollector);
 	}
@@ -71,7 +71,7 @@ extends ContainerParser implements SemanticsPrefs
 		Document document	= getDocument();
 		//FIXME -- should we depend on Seeding here?? or do this in post-processing for CompoundDocumentParserCrawlerResult??
 		return (parsedURL != null && 
-				infoCollector.accept(parsedURL) && 
+				semanticsScope.accept(parsedURL) && 
 				(!parsedURL.getName().startsWith("File:") && 
 					parsedURL.crawlable() && !document.isJustCrawl() &&
 					(document == null || parsedURL.isImg() || 
@@ -93,7 +93,7 @@ extends ContainerParser implements SemanticsPrefs
 	 */
 	public ImageClipping constructAnchorImageClipping(ImgElement imgNode, ParsedURL anchorHref)
 	{
-		CompoundDocument outlink	= (CompoundDocument) infoCollector.getOrConstructDocument(anchorHref);
+		CompoundDocument outlink	= (CompoundDocument) semanticsScope.getOrConstructDocument(anchorHref);
 		
 		return constructImageClipping(getDocument(), outlink, null, imgNode);
 	}
@@ -103,7 +103,7 @@ extends ContainerParser implements SemanticsPrefs
 	 */
 	public ImageClipping constructImageClipping(ImgElement imgNode, ParsedURL anchorHref)
 	{
-		Document outlink				= infoCollector.getOrConstructDocument(anchorHref);
+		Document outlink				= semanticsScope.getOrConstructDocument(anchorHref);
 		Document sourceDocument = getDocument();
 		return constructImageClipping(sourceDocument, sourceDocument, outlink, imgNode);
 	}
@@ -139,7 +139,7 @@ extends ContainerParser implements SemanticsPrefs
 				if (alt != null)
 					alt = alt.trim();
 				
-				Image image						= infoCollector.getOrConstructImage(srcPurl);
+				Image image						= semanticsScope.getOrConstructImage(srcPurl);
 				if (image == null)
 					return null;
 				image.setWidth(width);
@@ -150,7 +150,7 @@ extends ContainerParser implements SemanticsPrefs
 				break;
 			case ImageFeatures.UN_INFORMATIVE:
 			default:
-				infoCollector.getGlobalCollection().registerUninformativeImage(srcPurl);
+				semanticsScope.getGlobalCollection().registerUninformativeImage(srcPurl);
 			}
 		}
 		return result;

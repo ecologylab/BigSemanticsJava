@@ -8,7 +8,6 @@ import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -24,7 +23,7 @@ import ecologylab.net.ParsedURL;
 import ecologylab.net.UserAgent;
 import ecologylab.semantics.collecting.CookieProcessing;
 import ecologylab.semantics.collecting.LinkedMetadataMonitor;
-import ecologylab.semantics.collecting.SemanticsSessionScope;
+import ecologylab.semantics.collecting.SemanticsGlobalScope;
 import ecologylab.semantics.collecting.SemanticsSite;
 import ecologylab.semantics.collecting.SemanticsSiteMap;
 import ecologylab.semantics.metadata.Metadata;
@@ -1019,7 +1018,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		this.name = name;
 	}
 
-	public SemanticsSite getSite(Document document, SemanticsSessionScope semanticsSessionScope)
+	public SemanticsSite getSite(Document document, SemanticsGlobalScope semanticsSessionScope)
 	{
 		return sites.getOrConstruct(document, semanticsSessionScope);
 	}

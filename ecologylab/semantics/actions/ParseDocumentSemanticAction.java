@@ -99,7 +99,7 @@ class ParseDocumentSemanticAction
 	public Object perform(Object obj)
 	{
 		//TODO -- add pref to choose performFull!
-		return infoCollector.hasCrawler() ? performBasic(obj) : null;
+		return sessionScope.hasCrawler() ? performBasic(obj) : null;
 	}
 
 	public Object performFull(Object obj)
@@ -184,7 +184,7 @@ class ParseDocumentSemanticAction
 			warning("Can't parse " + document.getLocation() + " because null container or already queued." );
 		else 
 		{
-			final Crawler crawler	= infoCollector.getCrawler();
+			final Crawler crawler	= sessionScope.getCrawler();
 			if (!distributeSeedingResults(this, documentParser, documentClosure,
 					new DistributorContinuation()
 					{
@@ -221,7 +221,7 @@ class ParseDocumentSemanticAction
 		if (searchSeed != null)
 		{
 			// its a search type
-			resultsDistributor = searchSeed.seedDistributer(infoCollector);
+			resultsDistributor = searchSeed.seedDistributer(sessionScope);
 			// will be non-null only for search result documents or feed item documents
 			if (resultsDistributor == null)
 				return false;
@@ -245,7 +245,7 @@ class ParseDocumentSemanticAction
 			final String msg = "Queueing " + engineString + "search result " + (resultNum) + ": "
 					+ resultPURL;
 			// System.out.println(msg);
-			infoCollector.displayStatus(msg);
+			sessionScope.displayStatus(msg);
 			resultContainer.setSearchResult(resultsDistributor, metaMetadataSearchParser.getResultSoFar());
 			resultsDistributor.queueResult(resultContainer, callback);
 			metaMetadataSearchParser.incrementResultSoFar();

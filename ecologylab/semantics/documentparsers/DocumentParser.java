@@ -13,6 +13,7 @@ import ecologylab.generic.ReflectionTools;
 import ecologylab.net.PURLConnection;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionsKeyWords;
+import ecologylab.semantics.collecting.SemanticsGlobalScope;
 import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
@@ -50,7 +51,7 @@ abstract public class DocumentParser<D extends Document>
 	
 	public boolean 					cacheHit = false;
 
-	protected SemanticsSessionScope					infoCollector;
+	protected SemanticsGlobalScope					semanticsScope;
 	
 	private static boolean			inited;
 
@@ -98,9 +99,9 @@ abstract public class DocumentParser<D extends Document>
 	 * 
 	 * @param infoCollector
 	 */
-	protected DocumentParser ( SemanticsSessionScope infoCollector )
+	protected DocumentParser ( SemanticsGlobalScope infoCollector )
 	{
-		this.infoCollector = infoCollector;
+		this.semanticsScope = infoCollector;
 	}
 	
 	public abstract void parse ( ) throws IOException;
@@ -112,11 +113,11 @@ abstract public class DocumentParser<D extends Document>
 	 * @param documentClosure TODO
 	 * @param infoCollector
 	 */
-	public void fillValues ( PURLConnection purlConnection, DocumentClosure documentClosure, SemanticsSessionScope infoCollector )
+	public void fillValues ( PURLConnection purlConnection, DocumentClosure documentClosure, SemanticsGlobalScope infoCollector )
 	{
 		this.purlConnection		= purlConnection;
 		this.documentClosure	= documentClosure;
-		this.infoCollector = infoCollector;
+		this.semanticsScope = infoCollector;
 	}
 
 	/**
@@ -141,7 +142,7 @@ abstract public class DocumentParser<D extends Document>
 			purlConnection.recycle();
 			purlConnection	= null;
 		}
-		infoCollector 		= null;
+		semanticsScope 		= null;
 		documentClosure		= null;
 	}
 
@@ -361,7 +362,7 @@ abstract public class DocumentParser<D extends Document>
 	}
 
 	public static DocumentParser getParserInstanceFromBindingMap(String binding,
-			SemanticsSessionScope infoCollector)
+			SemanticsGlobalScope infoCollector)
 	{
 		DocumentParser result = null;
 		Class<? extends DocumentParser> documentTypeClass = (Class<? extends DocumentParser>) bindingParserMap.get(binding);
@@ -422,9 +423,9 @@ abstract public class DocumentParser<D extends Document>
 	}
 
 
-	public SemanticsSessionScope getInfoCollector()
+	public SemanticsGlobalScope getInfoCollector()
 	{
-		return infoCollector;
+		return semanticsScope;
 	}
 
 	public MetaMetadataCompositeField getMetaMetadata()
@@ -466,7 +467,7 @@ abstract public class DocumentParser<D extends Document>
 		return (D) documentClosure.getDocument();
 	}
 	
-	public static DocumentParser get(MetaMetadata mmd, SemanticsSessionScope infoCollector)
+	public static DocumentParser get(MetaMetadata mmd, SemanticsGlobalScope infoCollector)
 	{
 		String parserName = mmd.getParser();
 		if (parserName != null)

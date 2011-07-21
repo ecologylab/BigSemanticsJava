@@ -3,7 +3,7 @@
  */
 package ecologylab.semantics.seeding;
 
-import ecologylab.semantics.collecting.SemanticsSessionScope;
+import ecologylab.semantics.collecting.SemanticsGlobalScope;
 import ecologylab.serialization.Hint;
 
 /**
@@ -52,7 +52,8 @@ public class InlineSeed extends Seed
 	/* (non-Javadoc)
 	 * @see cf.gui.dashboard.DashboardOperand#performInternalSeedingSteps(cf.model.InfoCollector)
 	 */
-	public void performInternalSeedingSteps(SemanticsSessionScope infoCollector)
+	@Override
+	public void performInternalSeedingSteps(SemanticsGlobalScope infoCollector)
 	{
 		if (content != null)
 		{

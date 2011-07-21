@@ -9,6 +9,8 @@ import java.util.Queue;
 
 import ecologylab.generic.Debug;
 import ecologylab.generic.Generic;
+import ecologylab.semantics.collecting.Seeding;
+import ecologylab.semantics.collecting.SemanticsGlobalScope;
 import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
@@ -73,7 +75,7 @@ public class SeedDistributor extends Debug implements Runnable
 	 */
 	private static final int																MAX_NUM_SEARCHES_PROCESSING				= 2;
 
-	private SemanticsSessionScope																infoCollector;
+	private SemanticsGlobalScope																infoCollector;
 
 	/**
 	 * number of searches that we have to queue and process in total
@@ -120,14 +122,14 @@ public class SeedDistributor extends Debug implements Runnable
 
 	private boolean																					stopFlag;
 
-	public SeedDistributor(SemanticsSessionScope infoCollector, Comparator<DocumentClosure> comparator)
+	public SeedDistributor(SemanticsGlobalScope infoCollector, Comparator<DocumentClosure> comparator)
 	{
 		this.infoCollector = infoCollector;
 		this.comparator = comparator;
 		this.queuedResults = new PriorityQueue<DocumentClosure>(INIT_CAPACITY, comparator);
 	}
 
-	public SeedDistributor(SemanticsSessionScope infoCollector)
+	public SeedDistributor(SemanticsGlobalScope infoCollector)
 	{
 		this(infoCollector, new Comparator<DocumentClosure>()
 		{
@@ -412,7 +414,9 @@ public class SeedDistributor extends Debug implements Runnable
 					.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 			System.out
 					.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-			infoCollector.getSeeding().endSeeding();
+			Seeding seeding = infoCollector.getSeeding();
+			if (seeding != null)
+				seeding.endSeeding();
 			stop();
 		}
 	}

@@ -65,7 +65,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 	
 	DownloadStatus								downloadStatus	= DownloadStatus.UNPROCESSED;
 	
-	protected		SemanticsSessionScope	semanticsSessionScope;
+	protected		SemanticsGlobalScope	semanticsScope;
 	
 	/**
 	 * Keeps state about the search process, if this is encapsulates a search result;
@@ -97,11 +97,11 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 	/**
 	 * 
 	 */
-	private DocumentClosure(Document document, SemanticsSessionScope semanticsSessionScope, SemanticInLinks semanticInlinks)
+	private DocumentClosure(Document document, SemanticsGlobalScope semanticsSessionScope, SemanticInLinks semanticInlinks)
 	{
 		super();
 		this.document							= document;
-		this.semanticsSessionScope= semanticsSessionScope;
+		this.semanticsScope= semanticsSessionScope;
 		this.semanticInlinks			= semanticInlinks;
 	}
 
@@ -113,7 +113,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 	 */
 	DocumentClosure(Document document, SemanticInLinks semanticInlinks)
 	{
-		this(document, document.getSemanticsSessionScope(), semanticInlinks);
+		this(document, document.getSemanticsScope(), semanticInlinks);
 	}
 
 	/////////////////////// methods for downloadable //////////////////////////
@@ -137,17 +137,17 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 				return;
 			downloadStatus	= DownloadStatus.CONNECTING;
 		}
-		if (semanticsSessionScope == null)	// this should NEVER happen!!!!!!!!!!!!!!!!!!!!
+		if (semanticsScope == null)	// this should NEVER happen!!!!!!!!!!!!!!!!!!!!
 		{
-			SemanticsSessionScope documentInfoCollector = document.getSemanticsSessionScope();
+			SemanticsGlobalScope documentInfoCollector = document.getSemanticsScope();
 			if (documentInfoCollector == null)
 			{
 				error("Cant downloadAndParse: InfoCollector= null.");
 				return;
 			}
-			semanticsSessionScope	= documentInfoCollector;
+			semanticsScope	= documentInfoCollector;
 		}
-		document.setSemanticsSessionScope(semanticsSessionScope);
+		document.setSemanticsSessionScope(semanticsScope);
 		
 		if (recycled() || document.isRecycled())
 		{
@@ -163,7 +163,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 			// container or not (it could turn out to be an image or some other mime type), parse the baby!
 			downloadStatus	= DownloadStatus.PARSING;
 			if (documentParser.downloadingMessageOnConnect())
-				semanticsSessionScope.displayStatus("Downloading " + location(), 2);
+				semanticsScope.displayStatus("Downloading " + location(), 2);
 
 			documentParser.parse();
 			
@@ -223,21 +223,21 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 			 */
 			public boolean parseFilesWithSuffix(String suffix)
 			{
-				Document result = semanticsSessionScope.getMetaMetadataRepository().constructDocumentBySuffix(suffix);
+				Document result = semanticsScope.getMetaMetadataRepository().constructDocumentBySuffix(suffix);
 				changeDocument(result);
 				return (result != null);
 			}
 
 			public void displayStatus(String message)
 			{
-				semanticsSessionScope.displayStatus(message);
+				semanticsScope.displayStatus(message);
 			}
 			
 			public boolean processRedirect(URL connectionURL) throws IOException
 			{
 				ParsedURL connectionPURL	= new ParsedURL(connectionURL);
 				displayStatus("try redirecting: " + originalPURL + " > " + connectionURL);
-				Document redirectedDocument	= semanticsSessionScope.getOrConstructDocument(connectionPURL); // documentLocationMap.getOrCreate(connectionPURL);
+				Document redirectedDocument	= semanticsScope.getOrConstructDocument(connectionPURL); // documentLocationMap.getOrCreate(connectionPURL);
 				//TODO -- what if redirectedDocument is already in the queue or being downloaded already?
 				if (redirectedDocument != null)	// existing document
 				{	// the redirected url has been visited already.
@@ -264,7 +264,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 					MetaMetadata originalMM						= (MetaMetadata) orignalDocument.getMetaMetadata();
 					RedirectHandling redirectHandling = originalMM.getRedirectHandling();
 
-					if (document.isAlwaysAcceptRedirect() || semanticsSessionScope.accept(connectionPURL))
+					if (document.isAlwaysAcceptRedirect() || semanticsScope.accept(connectionPURL))
 					{
 						println("\tredirect: " + originalPURL + " -> " + connectionPURL);
 						String domain 				= connectionPURL.domain();
@@ -290,7 +290,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 						if (/* !Pref.lookupBoolean(CFPrefNames.USING_PROXY) && */
 								"acm.org".equals(domain) && "pdf".equals(connPURLSuffix))
 						{
-							MetaMetadata pdfMetaMetadata = semanticsSessionScope.getMetaMetadataRepository().getMMBySuffix(connPURLSuffix);
+							MetaMetadata pdfMetaMetadata = semanticsScope.getMetaMetadataRepository().getMMBySuffix(connPURLSuffix);
 							newMetadata = (Document) pdfMetaMetadata.constructMetadata();
 							newMetadata.setLocation(connectionPURL);
 							return true;
@@ -298,7 +298,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 						else
 						{
 							// regular get new metadata
-							newMetadata	= semanticsSessionScope.getOrConstructDocument(connectionPURL);
+							newMetadata	= semanticsScope.getOrConstructDocument(connectionPURL);
 						}
 
 						if (redirectHandling == RedirectHandling.REDIRECT_FOLLOW_DONT_RESET_LOCATION)
@@ -332,7 +332,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 			if (file.isDirectory())
 			{
 				// FileDirectoryParser
-				documentParser	= DocumentParser.getParserInstanceFromBindingMap(FILE_DIRECTORY_PARSER, semanticsSessionScope);
+				documentParser	= DocumentParser.getParserInstanceFromBindingMap(FILE_DIRECTORY_PARSER, semanticsScope);
 			}
 			else
 			{
@@ -366,7 +366,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 		
 					if (metaMetadata.isGenericMetadata())
 					{ // see if we can find more specifc meta-metadata using mimeType
-						final MetaMetadataRepository repository = semanticsSessionScope.getMetaMetadataRepository();
+						final MetaMetadataRepository repository = semanticsScope.getMetaMetadataRepository();
 						String mimeType = purlConnection.mimeType();
 						MetaMetadataCompositeField mimeMmd	= repository.getMMByMime(mimeType);
 						if (mimeMmd != null && !mimeMmd.equals(metaMetadata))
@@ -387,10 +387,10 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 	//			parserName = SemanticActionsKeyWords.HTML_IMAGE_DOM_TEXT_PARSER;
 			
 		if (documentParser == null)
-			documentParser = DocumentParser.get((MetaMetadata) metaMetadata, semanticsSessionScope);
+			documentParser = DocumentParser.get((MetaMetadata) metaMetadata, semanticsScope);
 		if (documentParser != null)
 		{
-			documentParser.fillValues(purlConnection, this, semanticsSessionScope);
+			documentParser.fillValues(purlConnection, this, semanticsScope);
 		}
 		else if (!DocumentParser.isRegisteredNoParser(purlConnection.getPurl()))
 			warning("No DocumentParser found");
@@ -568,7 +568,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 	}
 	public DownloadProcessor<DocumentClosure> downloadMonitor()
 	{
-		return  semanticsSessionScope.getDownloadMonitors().downloadProcessor(document.isImage(), isDnd, isSeed(), document.isGui());
+		return  semanticsScope.getDownloadMonitors().downloadProcessor(document.isImage(), isDnd, isSeed(), document.isGui());
 	}
 
 	
@@ -740,9 +740,9 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 	/**
 	 * @return the infoCollector
 	 */
-	public SemanticsSessionScope getSemanticsSessionScope()
+	public SemanticsGlobalScope getSemanticsScope()
 	{
-		return semanticsSessionScope;
+		return semanticsScope;
 	}
 
 	/**

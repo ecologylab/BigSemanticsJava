@@ -3,6 +3,7 @@ package ecologylab.semantics.seeding;
 import java.io.File;
 
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.collecting.SemanticsGlobalScope;
 import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.documentparsers.SearchParser;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
@@ -158,7 +159,7 @@ implements SemanticsPrefs
     * @param infoCollector TODO
     */
    @Override
-   public void performInternalSeedingSteps(SemanticsSessionScope infoCollector)
+   public void performInternalSeedingSteps(SemanticsGlobalScope infoCollector)
    {
   	 //  	 InterestModel.expressInterest(query, interestLevel);
   	 //infoCollector.instantiateDocumentType(SEARCH_DOCUMENT_TYPE_REGISTRY, engine, this);		

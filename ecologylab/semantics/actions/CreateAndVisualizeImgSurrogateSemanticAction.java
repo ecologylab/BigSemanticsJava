@@ -50,7 +50,7 @@ class CreateAndVisualizeImgSurrogateSemanticAction
 			ParsedURL imagePURL 	= (ParsedURL) getArgumentObject(SemanticActionNamedArguments.IMAGE_PURL);
 			if (imagePURL != null)
 			{
-				image								= infoCollector.getOrConstructImage(imagePURL);
+				image								= sessionScope.getOrConstructImage(imagePURL);
 				
 				//TODO -- if it already exists: (1) do we need to download??
 				//															(2) should we merge metadata
@@ -62,7 +62,7 @@ class CreateAndVisualizeImgSurrogateSemanticAction
 		}
 		if (image != null)
 		{
-			image.setSemanticsSessionScope(infoCollector);
+			image.setSemanticsSessionScope(sessionScope);
 
 			Document mixin				= (Document) getArgumentObject(SemanticActionNamedArguments.MIXIN);
 			if (mixin != null)
@@ -75,7 +75,7 @@ class CreateAndVisualizeImgSurrogateSemanticAction
 			ParsedURL hrefPURL 		= (ParsedURL) getArgumentObject(SemanticActionNamedArguments.HREF);
 			Document outlink 			= (Document) getArgumentObject(SemanticActionNamedArguments.HREF_METADATA);
 			if (hrefPURL != null & outlink == null)
-				outlink				= infoCollector.getOrConstructDocument(hrefPURL);
+				outlink				= sessionScope.getOrConstructDocument(hrefPURL);
 			
 			ImageClipping imageClipping	= image.constructClipping(source, outlink, caption, null);
 			source.addClipping(imageClipping);
@@ -88,7 +88,7 @@ class CreateAndVisualizeImgSurrogateSemanticAction
 			if (mmSearchParser != null)
 			{
 				Seed seed = mmSearchParser.getSeed();
-				resultsDistributor = seed.seedDistributer(infoCollector);
+				resultsDistributor = seed.seedDistributer(sessionScope);
 				if (resultsDistributor != null) // Case 1 - Image Search
 				{
 					imageClosure.setSearchResult(resultsDistributor, ((SearchParser) documentParser).getResultSoFar());

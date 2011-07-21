@@ -1,7 +1,7 @@
 package ecologylab.semantics.documentparsers;
 
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.collecting.SemanticsSessionScope;
+import ecologylab.semantics.collecting.SemanticsGlobalScope;
 import ecologylab.semantics.metadata.builtins.CompoundDocument;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
 import ecologylab.semantics.seeding.SearchState;
@@ -29,7 +29,7 @@ extends DocumentParser<CompoundDocument>
 	 */
 	protected SearchState 				searchSeed;
 
-	public ContainerParser(SemanticsSessionScope infoCollector)
+	public ContainerParser(SemanticsGlobalScope infoCollector)
 	{
 		super(infoCollector);
 	}
@@ -39,7 +39,7 @@ extends DocumentParser<CompoundDocument>
 	 * @param searchSeed TODO
 	 * @param infoCollector
 	 */
-	public ContainerParser(SearchState searchSeed, SemanticsSessionScope infoCollector)
+	public ContainerParser(SearchState searchSeed, SemanticsGlobalScope infoCollector)
 	{   
 		  super(infoCollector);
 		  this.searchSeed			= searchSeed;
@@ -62,8 +62,8 @@ extends DocumentParser<CompoundDocument>
 				resultNum	 += searchSeed.currentFirstResultIndex();
 			
 			final String msg 				= "Queueing search result "+ resultNum + ": " + resultPURL;
-			infoCollector.displayStatus(msg);
-			SeedDistributor sra		= this.searchSeed.seedDistributer(infoCollector);
+			semanticsScope.displayStatus(msg);
+			SeedDistributor sra		= this.searchSeed.seedDistributer(semanticsScope);
 			if (sra != null)
 			{
 				resultContainer.setSearchResult(sra, resultsSoFar);
@@ -84,7 +84,7 @@ extends DocumentParser<CompoundDocument>
 	    if( this.searchSeed != null)
 		{
 			SeedDistributor resultDistributer	= 
-				this.searchSeed.seedDistributer(infoCollector);
+				this.searchSeed.seedDistributer(semanticsScope);
 			if (resultDistributer != null)
 			{
 				resultDistributer.queueSearchRequest(searchContainer);

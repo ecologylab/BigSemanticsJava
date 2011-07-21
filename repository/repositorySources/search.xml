@@ -17,7 +17,7 @@
     <collection name="tags" child_type="tag" comment="Associated tags from the search engine, if exist" />
 	</meta_metadata>
 
-	<meta_metadata name="search" extends="compound_document" comment="">
+	<meta_metadata name="search" extends="document" comment="">
 		<collection name="search_results" child_type="search_result" no_wrap="true" />
 	</meta_metadata>
 
@@ -51,7 +51,7 @@
 		<scalar name="versions_link" scalar_type="ParsedURL" hide="true" />
 	</meta_metadata>
 
-	<meta_metadata name="google_scholar_search" extends="compound_document" comment="The google Search class" user_agent_name="opera_9" parser="xpath">
+	<meta_metadata name="google_scholar_search" extends="document" comment="The google Search class" user_agent_name="opera_9" parser="xpath">
 		<selector url_stripped="http://scholar.google.com/scholar" />
 		<def_var name="links_row" xpath="//span[@class='gs_fl']" type="node" />
 		<def_var name="pub_row" xpath="//span[@class='gs_a']" type="node" />
@@ -143,7 +143,7 @@
 		<scalar name="height" tag="Height" scalar_type="Int" hint="XML_LEAF" />
 	</meta_metadata>
 
-	<meta_metadata name="yahoo_result" extends="compound_document">
+	<meta_metadata name="yahoo_result" extends="document">
 		<scalar name="title" scalar_type="String" tag="Title" hide="true" />
 		<scalar name="summary" scalar_type="String" tag="Summary" />
 		<scalar name="location" scalar_type="ParsedURL" tag="Url" hide="true" />
@@ -151,11 +151,20 @@
 		<scalar name="modification_date" scalar_type="String" tag="ModificationDate" />
 		<scalar name="mime_type" scalar_type="String" tag="MimeType" hide="true" />
 		<composite name="thumbnail" tag="Thumbnail" type="yahoo_thumbnail" hide="true" />
+
+		<scalar name="line1" scalar_type="string" label="address"/>
+		<scalar name="city" scalar_type="string"/>
+		<scalar name="uzip" scalar_type="string" label="zip code"/>
+		<scalar name="country" scalar_type="string"/>
 	</meta_metadata>
 
-	<meta_metadata name="yahoo_result_set" extends="compound_document" comment="Yahoo Web Search Service" tag="ResultSet" parser="direct">
+	<meta_metadata name="yahoo_result_set" extends="document" comment="Yahoo Web Search Service" tag="ResultSet" parser="direct">
 		<collection name="results" child_type="yahoo_result" no_wrap="true" comment="Collection of results for yahoo search" child_tag="Result">
 		</collection>
+	</meta_metadata>
+
+	<meta_metadata name="yahoo_geo_code" type="yahoo_result_set"  parser="direct">
+		<selector url_stripped="http://where.yahooapis.com/geocode" />
 	</meta_metadata>
 
 	<meta_metadata name="yahoo_web_search" type="yahoo_result_set"  >

@@ -2,6 +2,7 @@ package ecologylab.semantics.seeding;
 
 import ecologylab.collections.Scope;
 import ecologylab.generic.ReflectionTools;
+import ecologylab.semantics.collecting.SemanticsGlobalScope;
 import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
@@ -36,7 +37,7 @@ abstract public class Seed extends ElementState implements CFPrefNames
 
     protected SeedDistributor            	seedDistributer;
     
-    protected		SemanticsSessionScope					infoCollector;
+    protected		SemanticsGlobalScope					infoCollector;
     
     protected 	SeedPeer									seedPeer;
     
@@ -62,7 +63,7 @@ abstract public class Seed extends ElementState implements CFPrefNames
      * 
      * @param infoProcessor
      */
-    public void initialize(SemanticsSessionScope infoProcessor)
+    public void initialize(SemanticsGlobalScope infoProcessor)
     {
     		this.infoCollector	= infoProcessor;
     		
@@ -99,7 +100,7 @@ abstract public class Seed extends ElementState implements CFPrefNames
 //FIXME        this.parent = ancestor;
     }
 
-    abstract public void performInternalSeedingSteps(SemanticsSessionScope infoCollector);
+    abstract public void performInternalSeedingSteps(SemanticsGlobalScope infoCollector);
     
     /**
      * This sets the infoCollector for the seed, and then hands off the internal seeding processing to the
@@ -107,7 +108,7 @@ abstract public class Seed extends ElementState implements CFPrefNames
      * 
      * @param	infoCollector	Must be non-null!
      */
-    public final void performSeedingSteps(SemanticsSessionScope infoCollector)
+    public final void performSeedingSteps(SemanticsGlobalScope infoCollector)
     {
     	// desparately seeking non-null InfoCollector
     	if (infoCollector != null)
@@ -146,7 +147,7 @@ abstract public class Seed extends ElementState implements CFPrefNames
     
     abstract public boolean setValue(String value);
 
-    public void setInfoCollector(SemanticsSessionScope infoCollector)
+    public void setInfoCollector(SemanticsGlobalScope infoCollector)
     {
         this.infoCollector = infoCollector;
     }
@@ -199,7 +200,7 @@ abstract public class Seed extends ElementState implements CFPrefNames
     /**
      * @return Returns the ResultDistributer.
      */
-    public SeedDistributor seedDistributer(SemanticsSessionScope infoCollector)
+    public SeedDistributor seedDistributer(SemanticsGlobalScope infoCollector)
     {
     	if (seedDistributer != null)
     		return seedDistributer;

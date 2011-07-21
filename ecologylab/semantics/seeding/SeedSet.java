@@ -6,8 +6,9 @@ import java.util.Iterator;
 import javax.swing.JOptionPane;
 
 import ecologylab.collections.Scope;
-import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.collecting.Seeding;
+import ecologylab.semantics.collecting.SemanticsGlobalScope;
+import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.namesandnums.SemanticsSessionObjectNames;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.TranslationScope;
@@ -89,7 +90,7 @@ public class SeedSet<S extends Seed> extends ElementState
 	 */
 	SeedSet					parentSeedSet;
 
-	public SeedDistributor seedDistributer(SemanticsSessionScope infoCollector)
+	public SeedDistributor seedDistributer(SemanticsGlobalScope infoCollector)
 	{
 		SeedDistributor result = resultDistributer;
 
@@ -347,7 +348,7 @@ public class SeedSet<S extends Seed> extends ElementState
 		}
 	}
 
-	public void add(S seed, SemanticsSessionScope infoCollector)
+	public void add(S seed, SemanticsGlobalScope infoCollector)
 	{
 		if (seed != null)
 			if (seeds == null)

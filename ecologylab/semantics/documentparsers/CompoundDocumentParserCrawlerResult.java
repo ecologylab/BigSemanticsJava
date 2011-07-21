@@ -8,7 +8,7 @@ import ecologylab.generic.Debug;
 import ecologylab.semantics.collecting.ContainerWeightingStrategy;
 import ecologylab.semantics.collecting.Crawler;
 import ecologylab.semantics.collecting.DownloadStatus;
-import ecologylab.semantics.collecting.SemanticsSessionScope;
+import ecologylab.semantics.collecting.SemanticsGlobalScope;
 import ecologylab.semantics.metadata.builtins.Clipping;
 import ecologylab.semantics.metadata.builtins.CompoundDocument;
 import ecologylab.semantics.metadata.builtins.Document;
@@ -25,7 +25,7 @@ implements ParserResult
 {
 	protected CompoundDocument								compoundDocument;
 	
-	protected final SemanticsSessionScope			semanticsSessionScope;
+	protected final SemanticsGlobalScope			semanticsSessionScope;
 	
 	protected final CR												crawler;
 
@@ -46,7 +46,7 @@ implements ParserResult
 	public CompoundDocumentParserCrawlerResult(CompoundDocument	compoundDocument)
 	{
 		this.compoundDocument				= compoundDocument;
-		this.semanticsSessionScope	= compoundDocument.getSemanticsSessionScope();
+		this.semanticsSessionScope	= compoundDocument.getSemanticsScope();
 		this.crawler								= (CR) semanticsSessionScope.getCrawler();
 	}
 

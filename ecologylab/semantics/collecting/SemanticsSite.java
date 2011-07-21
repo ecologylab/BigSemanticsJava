@@ -62,7 +62,7 @@ implements Colors
 	 * @param domain
 	 * @param infoCollector TODO
 	 */
-	public SemanticsSite(String domain, SemanticsSessionScope infoCollector)
+	public SemanticsSite(String domain, SemanticsGlobalScope infoCollector)
 	{
 		this.domain = domain;
 		strokeHue		= nextStrokeHue();

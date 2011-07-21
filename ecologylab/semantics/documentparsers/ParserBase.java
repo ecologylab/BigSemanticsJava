@@ -28,7 +28,7 @@ import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.actions.SemanticActionsKeyWords;
 import ecologylab.semantics.collecting.LinkedMetadataMonitor;
-import ecologylab.semantics.collecting.SemanticsSessionScope;
+import ecologylab.semantics.collecting.SemanticsGlobalScope;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataBase;
@@ -67,7 +67,7 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 
 	protected ParsedURL	truePURL;
 
-	public ParserBase(SemanticsSessionScope infoCollector)
+	public ParserBase(SemanticsGlobalScope infoCollector)
 	{
 		super(infoCollector);
 		xpath = XPathFactory.newInstance().newXPath();
@@ -91,7 +91,7 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 	public final Document parse(Document document, MetaMetadataCompositeField metaMetadata, org.w3c.dom.Node DOM) throws IOException
 	{
 		// init
-		SemanticActionHandler handler = new SemanticActionHandler(infoCollector, this);
+		SemanticActionHandler handler = new SemanticActionHandler(semanticsScope, this);
 		handler.getSemanticActionVariableMap().put(
 				SemanticActionsKeyWords.PURLCONNECTION_MIME,
 				purlConnection.mimeType());
@@ -127,7 +127,7 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 			resultingMetadata.rebuildCompositeTermVector();
 
 			resultingMetadata.serializeOut("Before linked metadata");
-			MetaMetadataRepository metaMetaDataRepository = infoCollector.getMetaMetadataRepository();
+			MetaMetadataRepository metaMetaDataRepository = semanticsScope.getMetaMetadataRepository();
 			LinkedMetadataMonitor monitor = metaMetaDataRepository.getLinkedMetadataMonitor();
 			monitor.tryLink(metaMetaDataRepository, resultingMetadata);
 			monitor.addMonitors(resultingMetadata);
@@ -471,7 +471,7 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 			ReflectionTools.setFieldValue(metadata, javaField, thisMetadata);
 
 			// try to link result metadata
-			MetaMetadataRepository repository = infoCollector.getMetaMetadataRepository();
+			MetaMetadataRepository repository = semanticsScope.getMetaMetadataRepository();
 			LinkedMetadataMonitor monitor = repository.getLinkedMetadataMonitor();
 			monitor.tryLink(repository, thisMetadata);
 
@@ -507,7 +507,7 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 		int size = helper.getListSize();
 
 		// get class of elements in the collection
-		TranslationScope tscope = infoCollector.getMetadataTranslationScope();
+		TranslationScope tscope = semanticsScope.getMetadataTranslationScope();
 		Class elementClass = null;
 		MetadataScalarType scalarType = null;
 		if (mmdField.isCollectionOfScalars())
@@ -729,7 +729,7 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 		Document newDocument = null;
 		try
 		{
-			newDocument = (Document) infoCollector.getMetadataTranslationScope().deserialize(purlConnection, this);
+			newDocument = (Document) semanticsScope.getMetadataTranslationScope().deserialize(purlConnection, this);
 			newDocument.serialize(System.out);
 			System.out.println();
 			documentClosure.changeDocument(newDocument);
@@ -780,7 +780,7 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 			if (childMMNested.isPolymorphicInherently())
 			{
 				String tagName = deserializedMetadata.classDescriptor().getTagName();
-				childMMComposite	= infoCollector.getMetaMetadataRepository().getByTagName(tagName);
+				childMMComposite	= semanticsScope.getMetaMetadataRepository().getByTagName(tagName);
 			}
 			else
 			{

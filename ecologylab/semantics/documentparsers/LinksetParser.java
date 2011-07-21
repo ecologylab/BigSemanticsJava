@@ -5,7 +5,7 @@ package ecologylab.semantics.documentparsers;
 
 import ecologylab.generic.Continuation;
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.collecting.SemanticsSessionScope;
+import ecologylab.semantics.collecting.SemanticsGlobalScope;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
 import ecologylab.semantics.seeding.Seed;
@@ -22,7 +22,7 @@ public abstract class LinksetParser
 		extends ParserBase implements Continuation<DocumentClosure>
 {
 
-	public LinksetParser(SemanticsSessionScope infoCollector)
+	public LinksetParser(SemanticsGlobalScope infoCollector)
 	{
 		super(infoCollector);
 	}
@@ -32,7 +32,7 @@ public abstract class LinksetParser
 	 * @param seed
 	 * @param defaultTag TODO
 	 */
-	protected void getMetaMetadataAndContainerAndQueue(SemanticsSessionScope infoCollector, ParsedURL purl, Seed seed, String defaultTag)
+	protected void getMetaMetadataAndContainerAndQueue(SemanticsGlobalScope infoCollector, ParsedURL purl, Seed seed, String defaultTag)
 	{
 		Document document								= infoCollector.getOrConstructDocument(purl);
 		DocumentClosure documentClosure	= document.getOrConstructClosure();
@@ -56,7 +56,7 @@ public abstract class LinksetParser
 		Seed seed = sourceClosure.getSeed();
 		if (seed != null)
 		{
-			SeedDistributor aggregator = seed.seedDistributer(infoCollector);
+			SeedDistributor aggregator = seed.seedDistributer(semanticsScope);
 			if (aggregator != null)
 				aggregator.doneQueueing(sourceClosure.getDocument());
 		}

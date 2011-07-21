@@ -4,7 +4,7 @@ import java.awt.Point;
 import java.io.File;
 
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.collecting.SemanticsSessionScope;
+import ecologylab.semantics.collecting.SemanticsGlobalScope;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.model.text.InterestModel;
 import ecologylab.serialization.simpl_inherit;
@@ -69,7 +69,8 @@ public class DocumentState extends Seed
 	 * @param objectRegistry		Context passed between services calls.
 	 * @param infoCollector TODO
 	 */
-	public void performInternalSeedingSteps(SemanticsSessionScope infoCollector)
+	@Override
+	public void performInternalSeedingSteps(SemanticsGlobalScope infoCollector)
 	{
 		if (url != null)
 		{

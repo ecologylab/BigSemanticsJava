@@ -22,12 +22,15 @@ import ecologylab.semantics.html.documentstructure.SemanticAnchor;
 import ecologylab.semantics.html.documentstructure.SemanticInLinks;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataBase;
+import ecologylab.semantics.metadata.Metadata.mm_name;
 import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
+import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.seeding.SearchState;
 import ecologylab.semantics.seeding.Seed;
 import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.ElementState.simpl_scalar;
 
 /**
  * The Document Class
@@ -39,6 +42,12 @@ public class Document extends Metadata
 	@mm_name("location")
 	@simpl_scalar
 	MetadataParsedURL								location;
+
+	@mm_name("title") 
+	@simpl_scalar MetadataString		title;
+	
+	@mm_name("description") 
+	@simpl_scalar MetadataString		description;
 
 	@simpl_collection("location")
 	List<MetadataParsedURL>					additionalLocations;
@@ -52,8 +61,6 @@ public class Document extends Metadata
 	SemanticsSite										site;
 
 	protected SemanticsGlobalScope	semanticsScope;
-
-	protected SemanticsSessionScope	semanticsSessionScope;
 
 	/**
 	 * documentType object for each document type such as HTMLType, PDFType.
@@ -201,6 +208,135 @@ public class Document extends Metadata
 	}
 
 	/**
+	 * Lazy Evaluation for title
+	 **/
+
+	public MetadataString title()
+	{
+		MetadataString result = this.title;
+		if (result == null)
+		{
+			result = new MetadataString();
+			this.title = result;
+		}
+		return result;
+	}
+
+	/**
+	 * Gets the value of the field title
+	 **/
+	public String getTitle()
+	{
+		return title == null ? null : title().getValue();
+	}
+
+	/**
+	 * Sets the value of the field title
+	 **/
+
+	public void setTitle(String title)
+	{
+		this.title().setValue(title);
+	}
+
+	/**
+	 * The heavy weight setter method for field title
+	 **/
+
+	public void hwSetTitle(String title)
+	{
+		this.title().setValue(title);
+		rebuildCompositeTermVector();
+	}
+
+	/**
+	 * Sets the title directly
+	 **/
+
+	public void setTitleMetadata(MetadataString title)
+	{
+		this.title = title;
+	}
+
+	/**
+	 * Heavy Weight Direct setter method for title
+	 **/
+
+	public void hwSetTitleMetadata(MetadataString title)
+	{
+		if (this.title != null && this.title.getValue() != null && hasTermVector())
+			termVector().remove(this.title.termVector());
+		this.title = title;
+		rebuildCompositeTermVector();
+	}
+
+
+	/**
+	 * Lazy Evaluation for description
+	 **/
+
+	public MetadataString description()
+	{
+		MetadataString result = this.description;
+		if (result == null)
+		{
+			result = new MetadataString();
+			this.description = result;
+		}
+		return result;
+	}
+
+	/**
+	 * Gets the value of the field description
+	 **/
+
+	public String getDescription()
+	{
+		return description == null ? null : description().getValue();
+	}
+
+	/**
+	 * Sets the value of the field description
+	 **/
+
+	public void setDescription(String description)
+	{
+		this.description().setValue(description);
+	}
+
+	/**
+	 * The heavy weight setter method for field description
+	 **/
+
+	public void hwSetDescription(String description)
+	{
+		this.description().setValue(description);
+		rebuildCompositeTermVector();
+	}
+
+	/**
+	 * Sets the description directly
+	 **/
+
+	public void setDescriptionMetadata(MetadataString description)
+	{
+		this.description = description;
+	}
+
+	/**
+	 * Heavy Weight Direct setter method for description
+	 **/
+
+	public void hwSetDescriptionMetadata(MetadataString description)
+	{
+		if (this.description != null && this.description.getValue() != null && hasTermVector())
+			termVector().remove(this.description.termVector());
+		this.description = description;
+		rebuildCompositeTermVector();
+	}
+
+
+	/**
 	 * @return the alwaysAcceptRedirects
 	 */
 	public boolean isAlwaysAcceptRedirect()
@@ -305,7 +441,7 @@ public class Document extends Metadata
 		SemanticsSite result	= this.site;
 		if (result == null)
 		{
-			result		= semanticsSessionScope.getMetaMetadataRepository().getSite(this, semanticsSessionScope);
+			result		= semanticsScope.getMetaMetadataRepository().getSite(this, semanticsScope);
 			this.site	= result;
 		}
 		return result;
@@ -313,17 +449,17 @@ public class Document extends Metadata
 	/**
 	 * @return the infoCollector
 	 */
-	public SemanticsSessionScope getSemanticsSessionScope()
+	public SemanticsGlobalScope getSemanticsScope()
 	{
-		return semanticsSessionScope;
+		return semanticsScope;
 	}
 
 	/**
 	 * @param semanticsSessionScope the infoCollector to set
 	 */
-	public void setSemanticsSessionScope(SemanticsSessionScope semanticsSessionScope)
+	public void setSemanticsSessionScope(SemanticsGlobalScope semanticsSessionScope)
 	{
-		this.semanticsSessionScope = semanticsSessionScope;
+		this.semanticsScope = semanticsSessionScope;
 	}
 	
 	public void addAdditionalLocation(ParsedURL newPurl)
@@ -344,13 +480,13 @@ public class Document extends Metadata
 	 */
 	public void inheritValues(Document oldDocument)
 	{
-		oldDocument.getSemanticsSessionScope().getGlobalCollection().remap(oldDocument, this);
+		oldDocument.getSemanticsScope().getGlobalCollection().remap(oldDocument, this);
 		if (location == null)
 		{
 			location									= oldDocument.location;
 			oldDocument.location			= null;
 		}
-		this.semanticsSessionScope					= oldDocument.semanticsSessionScope;
+		this.semanticsScope					= oldDocument.semanticsScope;
 		SemanticInLinks oldInlinks	= oldDocument.semanticInlinks;
 		if (semanticInlinks == null || semanticInlinks.size() == 0)
 		{
@@ -442,7 +578,7 @@ public class Document extends Metadata
 	
 	void setRecycled()
 	{
-		TNGGlobalCollections globalCollection = semanticsSessionScope.getGlobalCollection();
+		TNGGlobalCollections globalCollection = semanticsScope.getGlobalCollection();
 		globalCollection.setRecycled(getLocation());
 		if (additionalLocations != null)
 		{
@@ -508,11 +644,6 @@ public class Document extends Metadata
 	}
 	public void perhapsAddDocumentClosureToPool ( )
 	{
-	}
-
-	public String getTitle()
-	{
-		return null;
 	}
 	
 	/**

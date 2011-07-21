@@ -4,8 +4,8 @@
 package ecologylab.semantics.seeding;
 
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.collecting.Seeding;
+import ecologylab.semantics.collecting.SemanticsGlobalScope;
 
 /**
  * Specification of a directive to the agent or otherwise to compositon space services.
@@ -74,7 +74,7 @@ public class Crawler extends Seed
 	 * 
 	 * @param infoCollector 
 	 */
-	public void performInternalSeedingSteps(SemanticsSessionScope infoCollector)
+	public void performInternalSeedingSteps(SemanticsGlobalScope infoCollector)
  	{
 		Seeding seeding	= infoCollector.getSeeding();
 

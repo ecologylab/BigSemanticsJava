@@ -90,7 +90,7 @@ public class ChooseSemanticAction
 			ArrayList<SemanticAction> nestedSemanticActions = aCase.getNestedSemanticActionList();
 			for (SemanticAction nestedSemanticAction : nestedSemanticActions)
 				semanticActionHandler.handleSemanticAction(nestedSemanticAction, documentParser,
-						infoCollector);
+						sessionScope);
 		}
 		else
 		{
@@ -99,7 +99,7 @@ public class ChooseSemanticAction
 				ArrayList<SemanticAction> otherwiseActions = otherwise.getNestedSemanticActionList();
 				for (SemanticAction action : otherwiseActions)
 				{
-					semanticActionHandler.handleSemanticAction(action, documentParser, infoCollector);
+					semanticActionHandler.handleSemanticAction(action, documentParser, sessionScope);
 				}
 			}
 		}
