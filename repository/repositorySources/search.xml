@@ -166,7 +166,7 @@
 		</collection>
 	</meta_metadata>
 
-	<meta_metadata name="yahoo_geo_code" type="yahoo_result_set"  parser="direct">
+	<meta_metadata name="yahoo_geo_code" type="yahoo_result_set" >
 		<selector url_stripped="http://where.yahooapis.com/geocode" />
 	</meta_metadata>
 
