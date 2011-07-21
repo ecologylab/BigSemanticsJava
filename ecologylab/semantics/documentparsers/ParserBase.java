@@ -28,6 +28,7 @@ import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.actions.SemanticActionsKeyWords;
 import ecologylab.semantics.collecting.LinkedMetadataMonitor;
+import ecologylab.semantics.collecting.MetaMetadataRepositoryInit;
 import ecologylab.semantics.collecting.SemanticsGlobalScope;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.Metadata;
@@ -732,6 +733,9 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 			newDocument = (Document) semanticsScope.getMetadataTranslationScope().deserialize(purlConnection, this);
 			newDocument.serialize(System.out);
 			System.out.println();
+			// the old document is basic, so give it basic meta-metadata (so recycle does not tank)
+			Document oldDocument	= documentClosure.getDocument();
+			oldDocument.setMetaMetadata(MetaMetadataRepositoryInit.DOCUMENT_META_METADATA);
 			documentClosure.changeDocument(newDocument);
 
 			System.out.println();

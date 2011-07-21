@@ -153,8 +153,11 @@
 		<composite name="thumbnail" tag="Thumbnail" type="yahoo_thumbnail" hide="true" />
 
 		<scalar name="line1" scalar_type="string" label="address"/>
+		<scalar name="line2" scalar_type="string" label="address"/>
 		<scalar name="city" scalar_type="string"/>
-		<scalar name="uzip" scalar_type="string" label="zip code"/>
+		<scalar name="county" scalar_type="string"/>
+		<scalar name="state" scalar_type="string"/>
+		<scalar name="postal" scalar_type="string" label="zip code"/>
 		<scalar name="country" scalar_type="string"/>
 	</meta_metadata>
 
