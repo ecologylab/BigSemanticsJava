@@ -13,12 +13,12 @@ import ecologylab.generic.Debug;
 import ecologylab.generic.IntSlot;
 import ecologylab.generic.StringTools;
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.documentparsers.HTMLParserCommon;
+import ecologylab.semantics.documentparsers.HTMLDOMParser;
+import ecologylab.semantics.html.DOMParserInterface;
 import ecologylab.semantics.html.DOMWalkInformationTagger;
 import ecologylab.semantics.html.HTMLElementDOM;
 import ecologylab.semantics.html.ImgElement;
 import ecologylab.semantics.html.ParagraphText;
-import ecologylab.semantics.html.DOMParserInterface;
 import ecologylab.semantics.html.utils.HTMLAttributeNames;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.model.text.TermVector;
@@ -296,7 +296,7 @@ implements HTMLAttributeNames
 	{    	
 		for (ImgElement imgElement : imgNodes)
 		{
-			if (HTMLParserCommon.isAd(imgElement.getSrc()))
+			if (HTMLDOMParser.isAd(imgElement.getSrc()))
 				continue;
 			
 			Node imgNodeNode							= imgElement.getNode();
