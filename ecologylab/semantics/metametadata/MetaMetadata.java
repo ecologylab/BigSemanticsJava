@@ -495,6 +495,7 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 	
 	protected void inheritFromInheritedMmd(MetaMetadata inheritedMmd)
 	{
+		this.inheritAttributes(inheritedMmd);
 		this.inheritInlineMmds(inheritedMmd);
 	}
 	
