@@ -69,5 +69,13 @@ public class MetadataClassDescriptor extends ClassDescriptor<Metadata, MetadataF
 			mfd.traverseAndResolvePolymorphismAndOtherTagsForCompilation();
 		}
 	}
+
+	/**
+	 * @return the definingMmd
+	 */
+	public MetaMetadata getDefiningMmd()
+	{
+		return definingMmd;
+	}
 	
 }
