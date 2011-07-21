@@ -25,8 +25,6 @@ public interface DOMParserInterface
 
 	public void generateCandidateContainersFromContexts(ArrayList<AnchorContext> anchorContexts, boolean fromContentBody);
 	
-	public void closeHref();
-	
 	/**
 	 * Construct a TextClipping, with text not associated with an ImageClipping.
 	 * Associate with this.
