@@ -1176,10 +1176,12 @@ implements Mappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneabl
 			this.otherTags.add(otherTag);
 	}
 
-	/**
-	 * @param metadataFromDerialization
-	 */
-	public boolean bindMetaMetadataToMetadata(MetaMetadataField deserializationMM)
+/**
+ * 
+ * @param deserializationMM
+ * @return	true if binding succeeds
+ */
+	public boolean validateMetaMetadataToMetadataBinding(MetaMetadataField deserializationMM)
 	{
 		if (deserializationMM != null) // should be always
 		{
