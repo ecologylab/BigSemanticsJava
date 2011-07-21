@@ -33,7 +33,9 @@ import ecologylab.semantics.collecting.SemanticsGlobalScope;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataBase;
+import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
+import ecologylab.semantics.metadata.builtins.CompoundDocument;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.scalar.types.MetadataScalarType;
 import ecologylab.semantics.metametadata.DefVar;
@@ -60,7 +62,7 @@ import ecologylab.serialization.types.ScalarType;
  * 
  */
 @SuppressWarnings("rawtypes")
-public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarshallingContext,
+public abstract class ParserBase extends HTMLDOMParser<Document> implements ScalarUnmarshallingContext,
 		SemanticActionsKeyWords, DeserializationHookStrategy<Metadata, MetadataFieldDescriptor>
 {
 
@@ -749,6 +751,7 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 
 	Stack<MetaMetadataNestedField>	currentMMstack	= new Stack<MetaMetadataNestedField>();
 
+	boolean deserializingRoot	= true;
 	/**
 	 * For the root, compare the meta-metadata from the binding with the one we started with. Down the
 	 * hierarchy, try to perform similar bindings.
@@ -756,19 +759,26 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 	@Override
 	public void deserializationPreHook(Metadata deserializedMetadata, MetadataFieldDescriptor mfd)
 	{
-		if (deserializedMetadata.parent() == null)
+		if (deserializingRoot)
 		{
-			deserializedMetadata.setLocation(this.purl());
-			MetaMetadataCompositeField deserializationMM	= (MetaMetadata) deserializedMetadata.getMetaMetadata();
-			MetaMetadataCompositeField metaMetadata				= getMetaMetadata();
-			if (metaMetadata.bindMetaMetadataToMetadata(deserializationMM))
+			deserializingRoot						= false;
+			
+			Document document 					= getDocument();
+			MetaMetadataCompositeField preMM					= document.getMetaMetadata();
+			MetadataClassDescriptor mcd								= (MetadataClassDescriptor) deserializedMetadata.classDescriptor();
+			MetaMetadataCompositeField metaMetadata;
+			String tagName 														= mcd.getTagName();
+			if (preMM.getTagForTranslationScope().equals(tagName))
 			{
-				metaMetadata = (MetaMetadata) deserializationMM;
+				metaMetadata														= preMM;
 			}
 			else
-			{
-				deserializedMetadata.setMetaMetadata(metaMetadata);
+			{	// just match in translation scope
+				//TODO use local TranslationScope if there is one
+				metaMetadata														= semanticsScope.getMetaMetadataRepository().getByTagName(tagName);
 			}
+			deserializedMetadata.setMetaMetadata(metaMetadata);
+
 			currentMMstack.push(metaMetadata);
 		}
 		else
