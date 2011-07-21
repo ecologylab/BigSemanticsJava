@@ -368,7 +368,7 @@ public class ImageParserAwt extends DocumentParser<Image>
       		extractMixin(exifDir, EXIF_METADATA_FEATURES, MM_TAG_CAMERA_SETTINGS);
       	}
       	com.drew.metadata.Directory gpsDir = exifMetadata.getDirectory(GpsDirectory.class);
-      	Metadata gpsMixin	= GpsFeatures.extractMixin(gpsDir, infoCollector);
+      	Metadata gpsMixin	= GpsFeatures.extractMixin(gpsDir, semanticsScope);
 				if (gpsMixin != null)
       	{
       		getDocument().addMixin(gpsMixin);
@@ -399,7 +399,7 @@ public class ImageParserAwt extends DocumentParser<Image>
 
 	public void extractMixin(com.drew.metadata.Directory dir, MetadataExifFeature[] features, String metaMetadataTag)
 	{
-		Metadata mixin	= infoCollector.getMetaMetadataRepository().constructByTagName(metaMetadataTag);
+		Metadata mixin	= semanticsScope.getMetaMetadataRepository().constructByTagName(metaMetadataTag);
 		if (mixin != null)
 		{
 			extractMetadata(dir, features, mixin);
@@ -408,7 +408,7 @@ public class ImageParserAwt extends DocumentParser<Image>
 	}
 	public void extractGPS(com.drew.metadata.Directory dir, MetadataExifFeature[] features, String metaMetadataTag)
 	{
-		Metadata mixin	= infoCollector.getMetaMetadataRepository().constructByTagName(metaMetadataTag);
+		Metadata mixin	= semanticsScope.getMetaMetadataRepository().constructByTagName(metaMetadataTag);
 		if (mixin != null)
 		{
 			extractMetadata(dir, features, mixin);
