@@ -758,6 +758,7 @@ public abstract class ParserBase extends HTMLDOMParser implements ScalarUnmarsha
 	{
 		if (deserializedMetadata.parent() == null)
 		{
+			deserializedMetadata.setLocation(this.purl());
 			MetaMetadataCompositeField deserializationMM	= (MetaMetadata) deserializedMetadata.getMetaMetadata();
 			MetaMetadataCompositeField metaMetadata				= getMetaMetadata();
 			if (metaMetadata.bindMetaMetadataToMetadata(deserializationMM))

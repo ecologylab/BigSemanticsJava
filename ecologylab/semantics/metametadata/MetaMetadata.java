@@ -83,6 +83,8 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 	 * MMDs derived from this one.
 	 */
 	private ArrayList<MetaMetadata>									derivedMmds;
+	
+	private TranslationScope												tScope;
 
 	public MetaMetadata()
 	{

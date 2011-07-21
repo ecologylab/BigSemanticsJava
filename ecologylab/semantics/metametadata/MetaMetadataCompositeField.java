@@ -601,8 +601,8 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 			if (result == null)
 			{
 				// then try name
-				String name = getName();
-				result = (Class<? extends Metadata>) ts.getClassByTag(name);
+				String tagOrName = getTagOrName();
+				result = (Class<? extends Metadata>) ts.getClassByTag(tagOrName);
 			}
 			
 			if (result == null)
