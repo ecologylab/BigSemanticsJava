@@ -348,9 +348,7 @@ public class DOMWalkInformationTagger implements HTMLAttributeNames
 
 		if (parserInterface != null)
 		{
-			if (tag.equals("a"))
-				parserInterface.closeHref();
-			else if (tag.equals("i"))
+			if (tag.equals("i"))
 				parserInterface.setItalic(false);
 			else if (tag.equals("b"))
 				parserInterface.setBold(false);
