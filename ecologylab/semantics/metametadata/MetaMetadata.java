@@ -513,7 +513,7 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 			{
 				MetadataClassDescriptor cd = new MetadataClassDescriptor(
 						this,
-						this.getName(),
+						this.getTagOrName(),
 						this.getComment(),
 						this.packageName(),
 						XMLTools.classNameFromElementName(this.getName()),

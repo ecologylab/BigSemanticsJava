@@ -91,7 +91,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	 */
 	@simpl_map("meta_metadata")
 	@simpl_nowrap
-	private HashMapArrayList<String, MetaMetadata>							repositoryByTagName;
+	private HashMapArrayList<String, MetaMetadata>							repositoryByTagName; // actually not tag names, but meta-metadata names!
 
 	@simpl_map("selector")
 	@simpl_nowrap

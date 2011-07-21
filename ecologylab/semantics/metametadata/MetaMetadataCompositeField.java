@@ -254,6 +254,8 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 		inheritFromInheritedMmd(inheritedMmd);
 		if (!(this instanceof MetaMetadata))
 		{
+			// potentially, use xml_tag of this field as an xml_other_tag in inheritedMmd.
+			// however, these other tags will be effective only when necessary (used in polymorphic fields)
 			inheritedMmd.addOtherTag(this.getTagOrName());
 		}
 		MetaMetadataCompositeField inheritedField = (MetaMetadataCompositeField) this.getInheritedField();
@@ -342,6 +344,12 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 		}
 	}
 
+	/**
+	 * inherit stuffs from inheritedMmd of this composite field. currently nothing to inherit.
+	 * <p>
+	 * in MetaMetadata, this method is overridden to inherit inline meta-metadata definitions.
+	 * @param inheritedMmd
+	 */
 	protected void inheritFromInheritedMmd(MetaMetadata inheritedMmd)
 	{
 		// TODO Auto-generated method stub
@@ -479,6 +487,15 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 		return generatedMmd;
 	}
 
+	/**
+	 * set attributes and other members of this field, so that it is equivalent to define this field
+	 * using a generated (inline) meta-metadata.
+	 * 
+	 * @param previousName
+	 *          the previous name of this field (in contrast to generated names for inline
+	 *          meta-metadatas).
+	 * @param generatedMmd
+	 */
 	protected void makeThisFieldUseGeneratedMmd(String previousName, MetaMetadata generatedMmd)
 	{
 		// must set this before generatedMmd.inheritMetaMetadata() to meet inheritMetaMetadata() prerequisites
@@ -489,6 +506,11 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 		this.setTag(previousName); // but keep the tag name
 	}
 
+	/**
+	 * determine if there is an inline meta-metadata defined by this field.
+	 * 
+	 * @return
+	 */
 	protected boolean isInlineDefinition()
 	{
 		return this.extendsAttribute != null;

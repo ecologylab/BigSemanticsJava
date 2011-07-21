@@ -320,7 +320,7 @@ implements Mappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneabl
 	private MetaMetadata																	declaringMmd						= null;
 
 	/**
-	 * caching contents in @xml_other_tags. could be null.
+	 * class tags used for in @xml_other_tags. used only by fields with other tags.
 	 */
 	private ArrayList<String>															otherTags								= null;
 

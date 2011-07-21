@@ -1,6 +1,5 @@
 package ecologylab.semantics.metametadata;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 
 import ecologylab.generic.HashMapArrayList;
@@ -24,7 +23,7 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	private String								polymorphicScope;
 
 	/**
-	 * tags for polymorphic classes.
+	 * used to specify comma-separated class tags for polymorphic classes (@simpl_classes) in meta-metadata.
 	 */
 	@simpl_scalar
 	private String								polymorphicClasses;
@@ -39,10 +38,19 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	 */
 	private MetaMetadata					inheritedMmd;
 	
+	/**
+	 * should we generate a metadata class descriptor for this field. used by the compiler.
+	 */
 	private boolean								generateClassDescriptor	= false;
 
+	/**
+	 * the meta-metadata holding the inline meta-metadata scope for this field. 
+	 */
 	protected MetaMetadata				scopingMmd;
 
+	/**
+	 * the set of possible meta-metadata types for this field (used only for polymorphic fields).
+	 */
 	private HashSet<MetaMetadata>	polymorphicMmds					= null;
 
 	public MetaMetadataNestedField()
@@ -75,11 +83,21 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 		this.packageName = packageName;
 	}
 
+	/**
+	 * get the inherited meta-metadata type of this field.
+	 * 
+	 * @return
+	 */
 	public MetaMetadata getInheritedMmd()
 	{
 		return inheritedMmd;
 	}
 
+	/**
+	 * set the inherited meta-metadata type of this field.
+	 * 
+	 * @param inheritedMmd
+	 */
 	protected void setInheritedMmd(MetaMetadata inheritedMmd)
 	{
 		this.inheritedMmd = inheritedMmd;
@@ -244,28 +262,44 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	 * to determine if this field is polymorphic inherently, that is, a field which we don't have
 	 * prior knowledge of its specific meta-metadata type when its encompassing meta-metadata is used.
 	 * <p />
-	 * NOTE THAT this is different from isPolymorphicInDescendantFields() which determines if this
-	 * field is used for extended types in descendant fields. in that case although the field is
+	 * NOTE THAT this is different from {@code isPolymorphicInDescendantFields()} which determines if
+	 * this field is used for extended types in descendant fields. in that case although the field is
 	 * polymorphic, too, but we can determine the specific meta-metadata type for this field if the
 	 * encompassing meta-metadata is used.
 	 * 
 	 * @return
+	 * @see isPolymorphicInDescendantFields
 	 */
 	public boolean isPolymorphicInherently()
 	{
 		return (polymorphicScope != null && polymorphicScope.length() > 0) || (polymorphicClasses != null && polymorphicClasses.length() > 0);
 	}
 	
+	/**
+	 * should we generate a metadata class descriptor for this field. used by the compiler.
+	 * 
+	 * @return
+	 */
 	public boolean isGenerateClassDescriptor()
 	{
 		return generateClassDescriptor;
 	}
 
-	public void setGenerateClassDescriptor(boolean generateClassDescriptor)
+	/**
+	 * set the flag of generating (or not) metadata class descriptoer.
+	 * 
+	 * @param generateClassDescriptor
+	 * @see isGenerateClassDescriptor
+	 */
+	void setGenerateClassDescriptor(boolean generateClassDescriptor)
 	{
 		this.generateClassDescriptor = generateClassDescriptor;
 	}
 
+	/**
+	 * get the meta-metadata holding the inline meta-metadata scope for this field.
+	 * 
+	 */
 	protected MetaMetadata getScopingMmd()
 	{
 		if (scopingMmd == null)
@@ -279,6 +313,11 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 		return scopingMmd;
 	}
 
+	/**
+	 * set the meta-metadata holding the inline meta-metadata scope for this field.
+	 * 
+	 * @param scopingMmd
+	 */
 	void setScopingMmd(MetaMetadata scopingMmd)
 	{
 		this.scopingMmd = scopingMmd;
@@ -289,10 +328,11 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	 * type of this field varies in derived fields, for collections if the child type of this field
 	 * varies in derived fields.
 	 * <p />
-	 * NOTE THAT it is very different from isPolymorphicInherently(), which means that the field is
+	 * NOTE THAT it is very different from {@code isPolymorphicInherently()}, which means that the field is
 	 * polymorphic by its nature. see the javadoc of the other method for more details.
 	 * 
 	 * @return
+	 * @see isPolymorphicInherently
 	 */
 	public boolean isPolymorphicInDescendantFields()
 	{
@@ -302,7 +342,7 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	}
 
 	/**
-	 * get polymorphic mmds for this field, used in @simpl_classes.
+	 * get polymorphic meta-metadata types for this field. used to form @simpl_classes.
 	 * 
 	 * @return
 	 */
@@ -311,6 +351,11 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 		return polymorphicMmds;
 	}
 
+	/**
+	 * add a possible meta-metadata type for this field (and implicitly mark this field as polymorphic).
+	 * 
+	 * @param polyMmd
+	 */
 	void addPolymorphicMmd(MetaMetadata polyMmd)
 	{
 		if (this.getInheritedField() != null)
@@ -342,7 +387,15 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 		}
 	}
 
-	public void makePolymorphicMmdsUseClassLevelOtherTags()
+	/**
+	 * this method is used for a polymorphic nested field, to make polymorphic meta-metadata types it
+	 * uses to use class-level @xml_other_tags instead of field-level ones. this is needed because
+	 * when a nested field is polymorphic, SIMPL ignores the @xml_other_tags annotation. as a
+	 * workaround, we put those tags as @xml_other_tags on each specific type, so that SIMPL can use
+	 * this information. this will not cause "name polution" because this information is only used in
+	 * very specific and limited context.
+	 */
+	void makePolymorphicMmdsUseClassLevelOtherTags()
 	{
 		if (this.getInheritedField() != null)
 		{
