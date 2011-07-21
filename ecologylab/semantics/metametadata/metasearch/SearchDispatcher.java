@@ -71,7 +71,7 @@ public class SearchDispatcher extends Debug implements Continuation<DocumentClos
 			{
 				Search search = (Search) doc;
 
-				ArrayList<SearchResult> searchResults = search.getSearchResults();
+				List<SearchResult> searchResults = search.getSearchResults();
 				int numSearchResults = searchResults == null ? 0 : searchResults.size();
 
 				debug("\nSearch results[" + numSearchResults +"] from: " + search.getLocation() + "\n");
@@ -109,7 +109,7 @@ public class SearchDispatcher extends Debug implements Continuation<DocumentClos
 					i++;
 				}
 				renderer.close();
-				closure.getSemanticsSessionScope().getDownloadMonitors().stop(false);
+				closure.getSemanticsScope().getDownloadMonitors().stop(false);
 			}
 		}
 	}

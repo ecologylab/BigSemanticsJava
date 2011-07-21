@@ -70,7 +70,7 @@ public class LinkingMetadata implements Continuation<DocumentClosure>
 					renderer.appendMetadata(article);
 				
 				renderer.close();
-				closure.getSemanticsSessionScope().getDownloadMonitors().stop(false);
+				closure.getSemanticsScope().getDownloadMonitors().stop(false);
 			}
 		}
 	}
