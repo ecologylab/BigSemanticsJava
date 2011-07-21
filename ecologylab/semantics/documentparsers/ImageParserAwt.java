@@ -42,7 +42,7 @@ import ecologylab.semantics.actions.SemanticActionsKeyWords;
 import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.builtins.Image;
-import ecologylab.semantics.sensing.GpsFeatures;
+import ecologylab.semantics.sensing.GisFeatures;
 import ecologylab.semantics.sensing.MetadataExifFeature;
 
 /**
@@ -368,11 +368,8 @@ public class ImageParserAwt extends DocumentParser<Image>
       		extractMixin(exifDir, EXIF_METADATA_FEATURES, MM_TAG_CAMERA_SETTINGS);
       	}
       	com.drew.metadata.Directory gpsDir = exifMetadata.getDirectory(GpsDirectory.class);
-      	Metadata gpsMixin	= GpsFeatures.extractMixin(gpsDir, semanticsScope);
-				if (gpsMixin != null)
-      	{
-      		getDocument().addMixin(gpsMixin);
-      	}
+      	Metadata gpsMixin	= GisFeatures.extractMixin(gpsDir, semanticsScope, getDocument());
+      	
 //    	Iterator<com.drew.metadata.Tag> exifList = printDirectory(exifDirectory);
       	Iterator<com.drew.metadata.Tag> gpsList = printDirectory(gpsDir);
       	int qq = 33;
@@ -406,15 +403,7 @@ public class ImageParserAwt extends DocumentParser<Image>
 			getDocument().addMixin(mixin);
 		}
 	}
-	public void extractGPS(com.drew.metadata.Directory dir, MetadataExifFeature[] features, String metaMetadataTag)
-	{
-		Metadata mixin	= semanticsScope.getMetaMetadataRepository().constructByTagName(metaMetadataTag);
-		if (mixin != null)
-		{
-			extractMetadata(dir, features, mixin);
-			getDocument().addMixin(mixin);
-		}
-	}
+
 	public void extractMetadata(com.drew.metadata.Directory dir, MetadataExifFeature[] features, ecologylab.semantics.metadata.Metadata metadata)
 	{
 		for (MetadataExifFeature feature: features)
