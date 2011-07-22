@@ -22,8 +22,8 @@ import ecologylab.semantics.model.text.TermDictionary;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.simpl_inherit;
 import ecologylab.serialization.types.ScalarType;
-import ecologylab.serialization.types.scalar.ScalarTypeInstanceConstants;
 import ecologylab.textformat.NamedStyle;
+import ecologylab.serialization.types.FundamentalTypes;
 
 /**
  * A text chunk from an HTML page; delimited by markup, or a size threshold; composed of an ordered
@@ -31,7 +31,6 @@ import ecologylab.textformat.NamedStyle;
  */
 abstract public @simpl_inherit
 class TextChunkBase<T extends TextToken> extends ElementState implements
-		ScalarTypeInstanceConstants,
 		Iterable<T>
 {
 	
@@ -177,7 +176,7 @@ class TextChunkBase<T extends TextToken> extends ElementState implements
 	 */
 	protected TextChunkBase(boolean doUnderline)
 	{
-		this(doUnderline, STRING_SCALAR_TYPE);
+		this(doUnderline, FundamentalTypes.STRING_TYPE);
 	}
 
 	/**
