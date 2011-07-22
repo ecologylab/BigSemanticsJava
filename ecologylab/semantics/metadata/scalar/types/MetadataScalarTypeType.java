@@ -4,6 +4,7 @@
 package ecologylab.semantics.metadata.scalar.types;
 
 import ecologylab.serialization.ScalarUnmarshallingContext;
+import ecologylab.serialization.TranslationContext;
 import ecologylab.serialization.types.CrossLanguageTypeConstants;
 import ecologylab.serialization.types.ScalarType;
 import ecologylab.serialization.types.TypeRegistry;
@@ -61,4 +62,15 @@ public class MetadataScalarTypeType extends ReferenceType<MetadataScalarType>
 		}
 		return (MetadataScalarType) TypeRegistry.getScalarTypeBySimpleName(simpleName);			
 	}
+	
+	/**
+	 * As we write in the meta-metadata by hand, just save the name of the underlying type.
+	 * getInstance() will properly bind that to the correct MetadataScalarType subclass during deserialization.
+	 */
+	@Override
+	public String marshall(MetadataScalarType instance, TranslationContext serializationContext)
+	{
+		return instance.operativeScalarType().getJavaClass().getSimpleName();
+	}
+
 }
