@@ -543,7 +543,7 @@ implements Downloadable, Colors
 	{ 
 		String addr = "["+ ((purl==null) ? "no purl - " + this.getClassSimpleName() : purl.toString())+"]";
 		String dim  = "[" + width+"x"+height + "] ";
-		return getClassName(this) +  addr + dim;
+		return getClassSimpleName(this) +  addr + dim;
 	}
 	public String errorMessage()
 	{
