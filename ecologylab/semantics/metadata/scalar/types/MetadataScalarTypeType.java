@@ -47,36 +47,11 @@ public class MetadataScalarTypeType extends ReferenceType<MetadataScalarType>
 			}
 			else
 				buffy.append(value);
-			buffy.append("ScalarType");
+//			buffy.append("ScalarType");
 			
-			result	= (MetadataScalarType) TypeRegistry.getScalarType(buffy.toString());
+			String buffyString = buffy.toString();
+			result	= (MetadataScalarType) TypeRegistry.getScalarTypeBySimpleName(buffyString);
 		}
 		return result;			
 	}
-
-	@Override
-	public String getCSharpTypeName()
-	{
-		return CrossLanguageTypeConstants.DOTNET_SCALAR_TYPE;
-	}
-	
-	@Override
-	public String getJavaTypeName()
-	{
-		return CrossLanguageTypeConstants.JAVA_SCALAR_TYPE;
-	}
-
-	@Override
-	public String getDbTypeName()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getObjectiveCTypeName()
-	{
-		return CrossLanguageTypeConstants.OBJC_SCALAR_TYPE;
-	}
-
 }

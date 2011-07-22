@@ -158,7 +158,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	/**
 	 * 
 	 */
-	public static void initializeTypes()
+	public static synchronized void initializeTypes()
 	{
 		if (!initializedTypes)
 		{
