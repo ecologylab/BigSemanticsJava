@@ -29,13 +29,21 @@ public class MetadataScalarTypeType extends ReferenceType<MetadataScalarType>
 	@Override
 	public MetadataScalarType getInstance(String value, String[] formatStrings, ScalarUnmarshallingContext scalarUnmarshallingContext)
 	{
-		MetadataScalarType result	= null;
-		if ("int".equals(value) || "Int".equals(value))
-			value										= "Integer";	// be flexible about integer types
+		if ((value == null) || (value.length() == 0))
+			return null;
 		
-		int length			= value.length();
-		if ((value != null) && (length > 0))
+		MetadataScalarType result	= null;
+		String simpleName;
+		
+		if (value != null && value.startsWith("Metadata"))
+			simpleName							= value;
+		else
 		{
+			if ("int".equals(value) || "Int".equals(value))
+				value										= "Integer";	// be flexible about integer types
+			
+			int length			= value.length();
+	
 			StringBuilder buffy	= new StringBuilder(length + 18);	// includes room for "Metadata" & "Type"
 			buffy.append("Metadata");
 			char firstChar			= value.charAt(0);
@@ -46,12 +54,11 @@ public class MetadataScalarTypeType extends ReferenceType<MetadataScalarType>
 					buffy.append(value, 1, length);
 			}
 			else
+			{
 				buffy.append(value);
-//			buffy.append("ScalarType");
-			
-			String buffyString = buffy.toString();
-			result	= (MetadataScalarType) TypeRegistry.getScalarTypeBySimpleName(buffyString);
+			}
+			simpleName = buffy.toString();
 		}
-		return result;			
+		return (MetadataScalarType) TypeRegistry.getScalarTypeBySimpleName(simpleName);			
 	}
 }
