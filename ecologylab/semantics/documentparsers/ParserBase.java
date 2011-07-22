@@ -520,7 +520,7 @@ public abstract class ParserBase extends HTMLDOMParser<Document> implements Scal
 			if (theScalarType != null && theScalarType instanceof MetadataScalarType)
 			{
 				scalarType = (MetadataScalarType) theScalarType;
-				elementClass = scalarType.getTypeClass();
+				elementClass = scalarType.getJavaClass();
 			}
 			else
 			{
