@@ -108,6 +108,7 @@
 		<def_var name="bio_node" xpath="//td[@id='overview-top']/p" type="node" />
 <!--		<def_var name="trivia_node" xpath="//div[@class='info']/h5[starts-with(child::text(), 'Trivia:')]/.." type="node" />-->
 <!--		<def_var name="awards_node" xpath="//div[@class='info']/h5[starts-with(child::text(), 'Awards:')]/.." type="node" />-->
+		<scalar name="gist" scalar_type="string" />
 		<scalar name="title" xpath="//div[@id='main']//h1"/>
 		<scalar name="person_img" hide="true" xpath="//td[@id='img_primary']//img/@src" scalar_type="ParsedURL" />
 		<composite name="birth_detail" xpath="//td[@id='overview-top']" type="birth_detail">
