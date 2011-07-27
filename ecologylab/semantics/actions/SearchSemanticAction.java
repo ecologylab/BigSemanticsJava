@@ -1,5 +1,6 @@
 package ecologylab.semantics.actions;
 
+import ecologylab.generic.StringTools;
 import ecologylab.semantics.seeding.SearchState;
 import ecologylab.semantics.seeding.SeedSet;
 import ecologylab.serialization.simpl_inherit;
@@ -33,7 +34,7 @@ public class SearchSemanticAction
 	public Object perform(Object obj)
 	{
 		String query = (String) getArgumentObject(ARG_QUERY);
-		if (query == null || query.isEmpty())
+		if (StringTools.isNullOrEmpty(query))
 			return null;
 
 		SearchState search = new SearchState(query, engine);

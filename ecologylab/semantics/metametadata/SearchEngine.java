@@ -3,6 +3,7 @@
  */
 package ecologylab.semantics.metametadata;
 
+import ecologylab.generic.StringTools;
 import ecologylab.net.ParsedURL;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.types.element.Mappable;
@@ -140,11 +141,11 @@ public class SearchEngine extends ElementState implements Mappable<String>
 		
 		StringBuilder url = new StringBuilder(urlPrefix);
 		url.append(query);
-		if (numResultString != null && !numResultString.isEmpty() && numResults > 0)
+		if (!StringTools.isNullOrEmpty(numResultString) && numResults > 0)
 			url.append(numResultString).append(numResults);
-		if (startString != null && !startString.isEmpty() && currentFirstResultIndex > 0)
+		if (!StringTools.isNullOrEmpty(startString) && currentFirstResultIndex > 0)
 			url.append(startString).append(currentFirstResultIndex);
-		if (urlSuffix != null && !urlSuffix.isEmpty())
+		if (!StringTools.isNullOrEmpty(urlSuffix))
 			url.append(urlSuffix);
 		
 		return ParsedURL.getAbsolute(url.toString());

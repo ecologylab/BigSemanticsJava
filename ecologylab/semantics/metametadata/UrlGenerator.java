@@ -1,5 +1,6 @@
 package ecologylab.semantics.metametadata;
 
+import ecologylab.generic.StringTools;
 import ecologylab.net.ParsedURL;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.simpl_inherit;
@@ -55,7 +56,7 @@ public class UrlGenerator extends ElementState
 			if (begin >= 0 && end >= 0 && end > begin)
 			{
 				String id = pattern.substring(begin + 1, end);
-				if (id != null && !id.isEmpty())
+				if (!StringTools.isNullOrEmpty(id))
 				{
 					patternInvolvedId = id;
 				}

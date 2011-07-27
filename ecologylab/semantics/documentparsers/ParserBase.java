@@ -24,6 +24,7 @@ import com.sun.org.apache.xml.internal.dtm.ref.DTMNodeList;
 import ecologylab.collections.Scope;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.generic.ReflectionTools;
+import ecologylab.generic.StringTools;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.actions.SemanticActionsKeyWords;
@@ -347,7 +348,7 @@ public abstract class ParserBase extends HTMLDOMParser<Document> implements Scal
 	{
 		// get xpath, context node, field parser defintion & key: basic information for following
 		String xpathString = mmdField.getXpath();
-		if (xpathString != null && xpathString.isEmpty())
+		if (xpathString != null && xpathString.length() == 0)
 			xpathString = null;
 		String contextNodeName = mmdField.getContextNode();
 		if (contextNodeName != null)
@@ -388,19 +389,19 @@ public abstract class ParserBase extends HTMLDOMParser<Document> implements Scal
 				if (mmdField instanceof MetaMetadataCompositeField)
 				{
 					String valueString = xpath.evaluate(xpathString, contextNode);
-					if (valueString != null && !valueString.isEmpty())
+					if (!StringTools.isNullOrEmpty(valueString))
 						result.fieldParserContext = fieldParser.getKeyValuePairResult(fieldParserElement,
 								valueString);
 				}
 				else if (mmdField instanceof MetaMetadataCollectionField)
 				{
 					String valueString = xpath.evaluate(xpathString, contextNode);
-					if (valueString != null && !valueString.isEmpty())
+					if (!StringTools.isNullOrEmpty(valueString))
 						result.fieldParserContextList = fieldParser.getCollectionResult(fieldParserElement,
 								valueString);
 				}
 			}
-			else if (fieldParserElement != null && fieldParserKey != null && !fieldParserKey.isEmpty())
+			else if (fieldParserElement != null && !StringTools.isNullOrEmpty(fieldParserKey))
 			{
 				// use field parser key to look up the value string and use field parser for child fields
 
@@ -410,14 +411,14 @@ public abstract class ParserBase extends HTMLDOMParser<Document> implements Scal
 				if (mmdField instanceof MetaMetadataCompositeField)
 				{
 					String valueString = fieldParserContext.get(fieldParserKey);
-					if (valueString != null && !valueString.isEmpty())
+					if (!StringTools.isNullOrEmpty(valueString))
 						result.fieldParserContext = fieldParser.getKeyValuePairResult(fieldParserElement,
 								valueString);
 				}
 				else if (mmdField instanceof MetaMetadataCollectionField)
 				{
 					String valueString = fieldParserContext.get(fieldParserKey);
-					if (valueString != null && !valueString.isEmpty())
+					if (!StringTools.isNullOrEmpty(valueString))
 						result.fieldParserContextList = fieldParser.getCollectionResult(fieldParserElement,
 								valueString);
 				}
@@ -624,7 +625,7 @@ public abstract class ParserBase extends HTMLDOMParser<Document> implements Scal
 
 		// after we have evaluated the expression we might need to modify it.
 		evaluation = applyPrefixAndRegExOnEvaluation(evaluation, mmdField);
-		if (evaluation == null || evaluation.isEmpty())
+		if (StringTools.isNullOrEmpty(evaluation))
 			return false;
 
 		metadata.setByTagName(mmdField.getTagForTranslationScope(), evaluation, this);
