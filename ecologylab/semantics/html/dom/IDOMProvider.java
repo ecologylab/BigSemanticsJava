@@ -7,15 +7,32 @@ import java.io.OutputStream;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+/**
+ * Provides an interface for DOM providers that is used by DOM parsers
+ * @author agh8154
+ *
+ */
 public interface IDOMProvider
 {
 
-	void setQuiet(boolean b);
+	/**
+	 * If quiet is set to true, certain tags are not parsed
+	 * @param quiet
+	 */
+	void setQuiet(boolean quiet);
 
-	void setShowWarnings(boolean b);
+	/**
+	 * Enables showing warnings while parsing
+	 * @param showWarnings
+	 */
+	void setShowWarnings(boolean showWarnings);
 
-	Node parse(InputStream in, String file, OutputStream out) throws FileNotFoundException;
-
-	Document parseDOM(InputStream inputStream, OutputStream out);
+	/**
+	 * Creates an org.w3c.dom.Document containing the DOM
+	 * @param in
+	 * @param out
+	 * @return
+	 */
+	Document parseDOM(InputStream in, OutputStream out);
 
 }

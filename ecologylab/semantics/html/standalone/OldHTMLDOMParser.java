@@ -346,16 +346,10 @@ implements HTMLAttributeNames, IDOMProvider
 	}
 
 	@Override
-	public org.w3c.dom.Node parse(InputStream in, String file, OutputStream out)
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public Document parseDOM(InputStream inputStream, OutputStream out)
 	{
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 }
