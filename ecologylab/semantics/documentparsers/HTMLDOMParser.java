@@ -78,15 +78,12 @@ implements DOMParserInterface
 
 	/**
 	 * 
-	 * @return A bogus dom with a root element called empty.
+	 * @return The DOM provided by the input stream or a bogus DOM with a root node empty
 	 * @throws IOException 
 	 */
 	private org.w3c.dom.Document createDom() throws IOException
 	{
-		provider									= semanticsScope.constructDOMProvider();
-		provider.setQuiet(true);
-		provider.setShowWarnings(false);
-
+		provider											= semanticsScope.constructDOMProvider();
     org.w3c.dom.Document document = provider.parseDOM(inputStream(), null);
     return document;
 	}
