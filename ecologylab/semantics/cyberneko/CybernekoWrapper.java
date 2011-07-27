@@ -29,7 +29,7 @@ public class CybernekoWrapper implements IDOMProvider
 	}
 
 	@Override
-	public Document parseDOM(InputStream inputStream, OutputStream out)
+	public Document parseDOM(InputStream inputStream, OutputStream out) throws IOException
 	{
 		InputSource input = new InputSource(inputStream);
 		try
@@ -37,11 +37,6 @@ public class CybernekoWrapper implements IDOMProvider
 			parser.parse(input);
 		}
 		catch (SAXException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		catch (IOException e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
