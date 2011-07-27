@@ -733,7 +733,7 @@ public abstract class ParserBase extends HTMLDOMParser<Document> implements Scal
 		Document newDocument = null;
 		try
 		{
-			newDocument = (Document) semanticsScope.getMetadataTranslationScope().deserialize(purlConnection, this);
+			newDocument = (Document) semanticsScope.getGeneratedDocumentTranslations().deserialize(purlConnection, this);
 			newDocument.serialize(System.out);
 			System.out.println();
 			// the old document is basic, so give it basic meta-metadata (so recycle does not tank)
