@@ -28,15 +28,12 @@ import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.metadata.IIOMetadataNode;
 import javax.imageio.stream.ImageInputStream;
 
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.drew.metadata.exif.ExifDirectory;
 import com.drew.metadata.exif.ExifReader;
 import com.drew.metadata.exif.GpsDirectory;
 
-import ecologylab.generic.ReflectionTools;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionsKeyWords;
 import ecologylab.semantics.collecting.SemanticsSessionScope;
@@ -44,6 +41,7 @@ import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.builtins.Image;
 import ecologylab.semantics.sensing.GisFeatures;
 import ecologylab.semantics.sensing.MetadataExifFeature;
+import ecologylab.serialization.types.ImageAwtTypes;
 
 /**
  * @author andruid
@@ -75,6 +73,8 @@ public class ImageParserAwt extends DocumentParser<Image>
 		if (!inited)
 		{
 			inited		= true;
+			new ImageAwtTypes();
+			
 			DocumentParser.init();
 			bindingParserMap.put(SemanticActionsKeyWords.IMAGE_PARSER, ImageParserAwt.class);
 		}
