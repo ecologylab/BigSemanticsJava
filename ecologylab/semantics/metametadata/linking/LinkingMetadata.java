@@ -97,7 +97,7 @@ public class LinkingMetadata implements Continuation<DocumentClosure>
 				while ((line = br.readLine()) != null)
 				{
 					line = line.trim();
-					if (!line.isEmpty() && !line.startsWith("#"))
+					if (line.length() > 0 && !line.startsWith("#"))
 						urls.add(line.trim());
 				}
 				br.close();
