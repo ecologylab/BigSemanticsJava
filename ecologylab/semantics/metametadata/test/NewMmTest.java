@@ -6,12 +6,11 @@ package ecologylab.semantics.metametadata.test;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
-import org.w3c.tidy.Tidy;
-
 import ecologylab.appframework.ApplicationEnvironment;
 import ecologylab.generic.Continuation;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.collecting.SemanticsSessionScope;
+import ecologylab.semantics.cyberneko.CybernekoWrapper;
 import ecologylab.semantics.generated.library.RepositoryMetadataTranslationScope;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
@@ -53,7 +52,7 @@ implements Continuation<DocumentClosure>
 		super(appName);
 		this.outputStream	= outputStream;
 		
-		semanticsSessionScope = new SemanticsSessionScope(RepositoryMetadataTranslationScope.get(), Tidy.class);
+		semanticsSessionScope = new SemanticsSessionScope(RepositoryMetadataTranslationScope.get(), CybernekoWrapper.class);
 	}
 
 	public void collect(String[] urlStrings)
@@ -102,7 +101,6 @@ implements Continuation<DocumentClosure>
 		}
 		catch (SIMPLTranslationException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
