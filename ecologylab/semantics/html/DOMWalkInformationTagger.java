@@ -28,7 +28,6 @@ import ecologylab.serialization.XMLTools;
  * Extends Jtidy's PPrint object to keep state necessary for image+text surrogate extraction
  * 
  * @author eunyee
- * @author aaronherstein
  * 
  */
 public class DOMWalkInformationTagger implements HTMLAttributeNames
@@ -147,7 +146,7 @@ public class DOMWalkInformationTagger implements HTMLAttributeNames
 				printText(node.getNodeValue().getBytes(), 0, node.getNodeValue().length(), node, writer);
 			break;
 		case Node.ELEMENT_NODE:
-			if (!node.getNodeName().equals("script"))
+			if (!node.getNodeName().toLowerCase().equals("script") && (!node.getNodeName().toLowerCase().equals("style")))
 			{
 				printTag(node);
 				flushLine(writer);
@@ -161,16 +160,16 @@ public class DOMWalkInformationTagger implements HTMLAttributeNames
 			}
 			break;
 		case 	Node.COMMENT_NODE:
-			addC('<', linelen++);
-			addC('!', linelen++);
-			addC('-', linelen++);
-			addC('-', linelen++);
-			if (node.getNodeValue() != null && node.getNodeValue().length() > 0)
-				printText(node.getNodeValue().getBytes(), 0, node.getNodeValue().length(), node, writer);
-			addC('-', linelen++);
-			addC('-', linelen++);
-			addC('>', linelen++);
-			flushLine(writer);
+//			addC('<', linelen++);
+//			addC('!', linelen++);
+//			addC('-', linelen++);
+//			addC('-', linelen++);
+//			if (node.getNodeValue() != null && node.getNodeValue().length() > 0)
+//				printText(node.getNodeValue().getBytes(), 0, node.getNodeValue().length(), node, writer);
+//			addC('-', linelen++);
+//			addC('-', linelen++);
+//			addC('>', linelen++);
+//			flushLine(writer);
 			break;
 		case Node.DOCUMENT_NODE:
 			NodeList children = node.getChildNodes();
@@ -248,7 +247,7 @@ public class DOMWalkInformationTagger implements HTMLAttributeNames
 	
 	public void printTag(Node node)
 	{
-		String tagName = node.getNodeName();
+		String tagName = node.getNodeName().toLowerCase();
 
 		if (tagName.equals("img"))
 		{
@@ -344,7 +343,7 @@ public class DOMWalkInformationTagger implements HTMLAttributeNames
 
 	protected void printEndTag(Node node)
 	{
-		String tag = node.getNodeName();
+		String tag = node.getNodeName().toLowerCase();
 
 		if (parserInterface != null)
 		{
@@ -461,7 +460,7 @@ public class DOMWalkInformationTagger implements HTMLAttributeNames
 			
 			// We don't put the text into the paragraphTexts structure unless the text is over certain
 			// length and not surrounded by <a>
-			else if ((length > PARA_TEXT_LENGTH_LIMIT) && !underAHref(node) && node.getNodeType() != Node.COMMENT_NODE && (!node.getNodeName().equals("script")))
+			else if ((length > PARA_TEXT_LENGTH_LIMIT) && !underAHref(node) && node.getNodeType() != Node.COMMENT_NODE && (!(node.getNodeName().toLowerCase().equals("script")) || (node.getNodeName().toLowerCase().equals("style"))))
 			{
 				// FIXME -- look out for duplicates introduced by getLongestTxtinSubTree() above
 				paragraphTextsTMap.put(length, currentParagraphText);
@@ -571,7 +570,7 @@ public class DOMWalkInformationTagger implements HTMLAttributeNames
 		{
 			Node childNode = children.item(i);
 			if ((recurse && childNode.hasChildNodes())
-					&& (!childNode.getNodeName().equals("script")))
+					&& (!childNode.getNodeName().toLowerCase().equals("script")) && (!childNode.getNodeName().toLowerCase().equals("style")))
 			{
 				result = getTextInSubTree(childNode, true, result, appendNewline);
 			}
@@ -594,7 +593,7 @@ public class DOMWalkInformationTagger implements HTMLAttributeNames
 						result.append('\n');
 				}
 			}
-			else if (childNode.getNodeName().equals("img"))
+			else if (childNode.getNodeName().toLowerCase().equals("img"))
 			{
 				NamedNodeMap attributes = childNode.getAttributes();
 				Node altAtt = attributes.getNamedItem(ALT);
