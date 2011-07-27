@@ -1,5 +1,6 @@
 package ecologylab.semantics.html.standalone;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringWriter;
@@ -68,8 +69,9 @@ implements HTMLAttributeNames, IDOMProvider
 	 * @param purl TODO
 	 * @param out
 	 * @param tidyInterface
+	 * @throws IOException 
 	 */
-	public org.w3c.dom.Document parse(PURLConnection purlConnection)
+	public org.w3c.dom.Document parse(PURLConnection purlConnection) throws IOException
 	{
 		this.purlConnection		= purlConnection;
 		return provider.parseDOM(purlConnection.inputStream(), null);
@@ -80,8 +82,9 @@ implements HTMLAttributeNames, IDOMProvider
 	 * 
 	 * @param in
 	 * @param htmlType
+	 * @throws IOException 
 	 */
-	public void parse(PURLConnection purlConnection, DOMParserInterface htmlType)
+	public void parse(PURLConnection purlConnection, DOMParserInterface htmlType) throws IOException
 	{
 		Document parsedDoc = parse(purlConnection);
 

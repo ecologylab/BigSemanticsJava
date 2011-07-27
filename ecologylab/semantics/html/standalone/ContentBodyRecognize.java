@@ -26,7 +26,7 @@ public class ContentBodyRecognize extends OldHTMLDOMParser
 	RecognizedDocumentStructure recPageType;
 	
 	@Override
-	public org.w3c.dom.Document parse(PURLConnection purlConnection)
+	public org.w3c.dom.Document parse(PURLConnection purlConnection) throws IOException
 	{
 		recPageType	= new RecognizedDocumentStructure(purlConnection.getPurl());
 		return super.parse(purlConnection);
