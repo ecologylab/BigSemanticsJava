@@ -396,7 +396,7 @@ public class ImageParserAwt extends DocumentParser<Image>
 
 	public void extractMixin(com.drew.metadata.Directory dir, MetadataExifFeature[] features, String metaMetadataTag)
 	{
-		Metadata mixin	= semanticsScope.getMetaMetadataRepository().constructByTagName(metaMetadataTag);
+		Metadata mixin	= semanticsScope.getMetaMetadataRepository().constructByName(metaMetadataTag);
 		if (mixin != null)
 		{
 			extractMetadata(dir, features, mixin);
