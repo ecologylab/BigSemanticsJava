@@ -350,7 +350,7 @@ public abstract class ParserBase extends HTMLDOMParser<Document> implements Scal
 		String xpathString = mmdField.getXpath();
 		if (xpathString != null && xpathString.length() == 0)
 			xpathString = null;
-		if (xpathString != null && ReflectionTools.getClassSimpleName(this.provider).equals("CybernekoWrapper")) xpathString = parseXpathToLower(xpathString);
+		provider.xPathTagNamesToLower(xpathString);
 		String contextNodeName = mmdField.getContextNode();
 		if (contextNodeName != null)
 		{
@@ -601,8 +601,7 @@ public abstract class ParserBase extends HTMLDOMParser<Document> implements Scal
 			Node contextNode, Map<String, String> fieldParserContext, Scope<Object> params)
 	{
 		String xpathString = mmdField.getXpath();
-		if (xpathString != null && ReflectionTools.getClassSimpleName(this.provider).equals("CybernekoWrapper"))
-			xpathString = parseXpathToLower(xpathString);
+		this.provider.xPathTagNamesToLower(xpathString);
 		String fieldParserKey = mmdField.getFieldParserKey();
 
 		String evaluation = null;
@@ -633,56 +632,6 @@ public abstract class ParserBase extends HTMLDOMParser<Document> implements Scal
 
 		metadata.setByTagName(mmdField.getTagForTranslationScope(), evaluation, this);
 		return true;
-	}
-	
-	/**
-	 * Takes an xpath string and converts all of the element tag names (and only the element tag names) to upper case
-	 * @param xpath
-	 * @return String with uppercase tag names
-	 */
-	public String parseXpathToLower(String xpath)
-	{
-
-		StringBuilder newXpath = new StringBuilder();
-		boolean isTagName = true;
-		boolean isAxis = false;
-		for (int i=0; i<xpath.length(); i++)
-		{
-			char c = xpath.charAt(i);
-			char specialChar = '\0';
-			
-			if (!Character.isLetterOrDigit(c)) isTagName = false;
-			else if (i > 0 && xpath.charAt(i - 1) == '/' || xpath.charAt(i - 1) == ':')
-			{
-				int specialCharIndex = 0;
-				String restOfXpath = xpath.substring(i+1);
-				int slash = restOfXpath.indexOf('/');
-				int j = 0;
-
-				for (j = 0; j<restOfXpath.length(); j++)
-				{
-					if (!Character.isLetterOrDigit(restOfXpath.charAt(j)) && restOfXpath.charAt(j) != '/')
-					{
-						specialCharIndex = j;
-						break;
-					}
-				}
-				if (specialCharIndex != 0)
-				{
-					specialChar = restOfXpath.charAt(j);
-					if ((specialChar == ':' || specialChar =='(' || specialChar == '-') && (slash == -1 || slash > specialCharIndex))
-						isAxis = true;
-				}
-			}
-			if (c == ':' && specialChar != '(') isAxis = false;
-			if (i > 0 && (xpath.charAt(i - 1) == '/' || xpath.charAt(i - 1) == ':') && Character.isLetter(c) && !isAxis) isTagName = true;
-			
-			if (isTagName)
-				newXpath.append(Character.toUpperCase(c));
-			else
-				newXpath.append(c);
-		}
-		return newXpath.toString();
 	}
 
 	/**

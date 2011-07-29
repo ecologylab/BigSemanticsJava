@@ -355,4 +355,11 @@ implements HTMLAttributeNames, IDOMProvider
 		return null;
 	}
 
+	@Override
+	public String xPathTagNamesToLower(String xpath)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
