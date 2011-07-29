@@ -53,7 +53,6 @@ implements Continuation<DocumentClosure>
 		this.outputStream	= outputStream;
 		
 		semanticsSessionScope = new SemanticsSessionScope(RepositoryMetadataTranslationScope.get(), CybernekoWrapper.class);
-
 	}
 
 	public void collect(String[] urlStrings)
