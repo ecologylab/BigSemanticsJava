@@ -6,8 +6,6 @@ package ecologylab.semantics.metametadata.test;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
-import org.w3c.tidy.Tidy;
-
 import ecologylab.appframework.ApplicationEnvironment;
 import ecologylab.generic.Continuation;
 import ecologylab.net.ParsedURL;
@@ -54,8 +52,8 @@ implements Continuation<DocumentClosure>
 		super(appName);
 		this.outputStream	= outputStream;
 		
-//		semanticsSessionScope = new SemanticsSessionScope(RepositoryMetadataTranslationScope.get(), CybernekoWrapper.class);
-		semanticsSessionScope = new SemanticsSessionScope(RepositoryMetadataTranslationScope.get(), Tidy.class);
+		semanticsSessionScope = new SemanticsSessionScope(RepositoryMetadataTranslationScope.get(), CybernekoWrapper.class);
+
 	}
 
 	public void collect(String[] urlStrings)
