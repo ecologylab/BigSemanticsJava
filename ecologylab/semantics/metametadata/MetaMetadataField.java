@@ -6,14 +6,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.regex.Pattern;
 
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
 import ecologylab.semantics.metadata.Metadata.mm_dont_inherit;
-import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.FieldTypes;
 import ecologylab.serialization.TranslationScope;
@@ -280,7 +278,7 @@ implements Mappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneabl
 	 */
 	protected boolean																			inheritInProcess				= false;
 
-	private boolean																				bindDescriptorsFinished	= false;
+//	protected boolean																			bindDescriptorsFinished	= false;
 
 	/**
 	 * Class of the Metadata object that corresponds to this. Non-null for nested and collection
@@ -319,10 +317,10 @@ implements Mappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneabl
 	 */
 	private MetaMetadata																	declaringMmd						= null;
 
-	/**
-	 * class tags used for in @xml_other_tags. used only by fields with other tags.
-	 */
-	private ArrayList<String>															otherTags								= null;
+//	/**
+//	 * class tags used for in @xml_other_tags. used only by fields with other tags.
+//	 */
+//	private ArrayList<String>															otherTags								= null;
 
 	public MetaMetadataField()
 	{
@@ -472,64 +470,32 @@ implements Mappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneabl
 	}
 
 	/**
-	 * get the corresponding metadata class. should be called after compilation and repository
-	 * loading.
-	 * 
-	 * @return
+	 * @return the corresponding metadata class. should be used after inheritance and binding process.
+	 *         null for scalars.
 	 */
-	// FIXME move this to NestedField.
 	public Class<? extends Metadata> getMetadataClass()
 	{
+		Class<? extends Metadata> metadataClass = this.metadataClass;
+		if (metadataClass == null)
+		{
+			MetadataClassDescriptor metadataClassDescriptor = this.getMetadataClassDescriptor();
+			metadataClass = metadataClassDescriptor == null ? null : metadataClassDescriptor.getDescribedClass();
+			this.metadataClass = metadataClass;
+		}
 		return metadataClass;
 	}
 
 	/**
-	 * Lookup the Metadata class object that corresponds to tag_name, type, or extends attribute
-	 * depending on which exist.
-	 * <p>
-	 * This method will only be called on composite fields, not scalar fields.
-	 * 
-	 * @return
+	 * @return the corresponding metadataClassDescriptor. null for scalars.
+	 *         <p>
+	 *         note that this class descriptor might be incomplete during the compilation process,
+	 *         e.g. lacking the actual Class.
 	 */
-	// FIXME move this to NestedField.
-	public Class<? extends Metadata> getMetadataClass(TranslationScope ts)
-	{
-		Class<? extends Metadata> result = this.metadataClass;
-
-		if (result == null)
-		{
-			String tagForTranslationScope = getTagForTranslationScope();
-			result = (Class<? extends Metadata>) ts.getClassByTag(tagForTranslationScope);
-
-			if (result != null)
-				this.metadataClass = result;
-			else
-				ts.error("Can't resolve: " + this + " using " + tagForTranslationScope);
-		}
-		return result;
-	}
-
-	/**
-	 * @return the corresponding metadataClassDescriptor. note that this class descriptor might be
-	 * incomplete during the compilation process, e.g. lacking the actual Class.
-	 * 
-	 */
-	// FIXME move this to NestedField.
 	public MetadataClassDescriptor getMetadataClassDescriptor()
 	{
 		return metadataClassDescriptor;
 	}
 	
-	/**
-	 * set metadata class descriptor for this field.
-	 * @param cd
-	 */
-	// FIXME move this to NestedField.
-	void setMetadataClassDescriptor(MetadataClassDescriptor cd)
-	{
-		this.metadataClassDescriptor = cd;
-	}
-
 	/**
 	 * @return the corresponding metadataFieldDescriptor.
 	 */
@@ -610,35 +576,6 @@ implements Mappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneabl
 	public String getXpath()
 	{
 		return xpath;
-	}
-
-	/**
-	 * Connect the appropriate MetadataClassDescriptor with this, and likewise, recursively perform
-	 * this binding operation for all the children of this.
-	 * <p>
-	 * This method will remove this metametadata field from it's parent when no appropriate metadata
-	 * subclass was found.
-	 *
-	 * @param metadataTScope the metadata translation scope.
-	 * @return true if successful, otherwise false.
-	 */
-	boolean getClassAndBindDescriptors(TranslationScope metadataTScope)
-	{
-		Class<? extends Metadata> metadataClass = getMetadataClass(metadataTScope);
-		if (metadataClass == null)
-		{
-			ElementState parent = parent();
-			if (parent instanceof MetaMetadataField)
-				((MetaMetadataField) parent).kids.remove(this.getName()); 
-			else if (parent instanceof MetaMetadataRepository)
-			{
-				// TODO remove from the repository level
-			}
-			return false;
-		}
-		//
-		bindClassDescriptor(metadataClass, metadataTScope);
-		return true;
 	}
 
 	/**
@@ -804,7 +741,7 @@ implements Mappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneabl
 		return null;
 	}
 
-	HashSet<String> nonDisplayedFieldNames()
+	protected HashSet<String> nonDisplayedFieldNames()
 	{
 		HashSet<String> result = this.nonDisplayedFieldNames;
 		if (result == null)
@@ -938,126 +875,72 @@ implements Mappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneabl
 	}
 
 	/**
-	 * Compute the map of FieldDescriptors for this class, with the field names as key, but with the
-	 * mixins field removed.
+	 * bind the corresponding metadata field descriptor to this field, matched by field name.
+	 * customize the field descriptor when needed.
+	 * <p>
+	 * note that the customization assumes that the field descriptor is copied from super class to
+	 * this class. if this changes in the future, the customization process should do this copy. see
+	 * {@code customizeFieldDescriptor()}.
+	 * <p>
+	 * lazy evaluation. result cached.
 	 * 
 	 * @param metadataTScope
-	 *          TODO
+	 *          the translation scope of (generated) metadata classes.
 	 * @param metadataClassDescriptor
-	 *          TODO
+	 *          the current metadata class descriptor.
+	 * @return the bound metadata field descriptor if any.
 	 * 
-	 * @return A map of FieldDescriptors, with the field names as key, but with the mixins field
-	 *         removed.
+	 * @see {@code customizeFieldDescriptor()}
 	 */
-	protected final void bindMetadataFieldDescriptors(TranslationScope metadataTScope,
-			MetadataClassDescriptor metadataClassDescriptor)
+	protected MetadataFieldDescriptor bindMetadataFieldDescriptor(TranslationScope metadataTScope, MetadataClassDescriptor metadataClassDescriptor)
 	{
-		if (!bindDescriptorsFinished)
-		{
-			for (MetaMetadataField thatChild : kids)
-			{
-				thatChild.bindMetadataFieldDescriptor(metadataTScope, metadataClassDescriptor);
-	
-				if (thatChild instanceof MetaMetadataScalarField)
-				{
-					MetaMetadataScalarField scalar = (MetaMetadataScalarField) thatChild;
-					if (scalar.getRegexPattern() != null)
-					{
-						MetadataFieldDescriptor fd = scalar.getMetadataFieldDescriptor();
-						if(fd != null)
-							fd.setRegexFilter(Pattern.compile(scalar.getRegexPattern()), scalar.getRegexReplacement());
-						else
-							warning("Encountered null fd for scalar: " + scalar);
-					}
-				}
-	
-				HashSet<String> nonDisplayedFieldNames = nonDisplayedFieldNames();
-				if (thatChild.hide)
-					nonDisplayedFieldNames.add(thatChild.name);
-				if (thatChild.shadows != null)
-					nonDisplayedFieldNames.add(thatChild.shadows);
-	
-				// recursive descent
-				if (thatChild.hasChildren())
-					thatChild.getClassAndBindDescriptors(metadataTScope);
-				
-				bindDescriptorsFinished = true;
-				
-				if (this instanceof MetaMetadata)
-				{
-					MetaMetadata mmd = (MetaMetadata) this;
-					String naturalId = thatChild.getAsNaturalId();
-					if (naturalId != null)
-					{
-						mmd.addNaturalIdField(naturalId, thatChild);
-					}
-				}
-			}
-		}
-			// for (FieldDescriptor fieldDescriptor : allFieldDescriptorsByFieldName.values())
-			// {
-			// String tagName = fieldDescriptor.getTagName();
-			// result.put(tagName, (MetadataFieldDescriptor) fieldDescriptor);
-			// }
-	}
-
-	/**
-	 * Obtain a map of FieldDescriptors for this class, with the field names as key, but with the
-	 * mixins field removed. Use lazy evaluation, caching the result by class name.
-	 * 
-	 * @param metadataTScope
-	 *          TODO
-	 * 
-	 * @return A map of FieldDescriptors, with the field names as key, but with the mixins field
-	 *         removed.
-	 */
-	final void bindClassDescriptor(Class<? extends Metadata> metadataClass,
-			TranslationScope metadataTScope)
-	{
-		MetadataClassDescriptor metadataClassDescriptor = this.metadataClassDescriptor;
-		if (metadataClassDescriptor == null)
+		MetadataFieldDescriptor metadataFieldDescriptor = this.metadataFieldDescriptor;
+		if (metadataFieldDescriptor == null)
 		{
 			synchronized (this)
 			{
-				metadataClassDescriptor = this.metadataClassDescriptor;
-				if (metadataClassDescriptor == null)
+				metadataFieldDescriptor = this.metadataFieldDescriptor;
+				String fieldName = this.getFieldNameInJava(false);
+				if (metadataFieldDescriptor == null)
 				{
-					metadataClassDescriptor = (MetadataClassDescriptor) ClassDescriptor.getClassDescriptor(metadataClass);
-					bindMetadataFieldDescriptors(metadataTScope, metadataClassDescriptor);
-					this.metadataClassDescriptor = metadataClassDescriptor;
+					metadataFieldDescriptor = (MetadataFieldDescriptor) metadataClassDescriptor.getFieldDescriptorByFieldName(fieldName);
+					if (metadataFieldDescriptor != null)
+					{
+						// FIXME is the following "if" statement still useful? I never see the condition is
+						// true. can we remove it? -- yin 7/26/2011
+						// if we don't have a field, then this is a wrapped collection, so we need to get the
+						// wrapped field descriptor
+						if (metadataFieldDescriptor.getField() == null)
+							metadataFieldDescriptor = (MetadataFieldDescriptor) metadataFieldDescriptor.getWrappedFD();
+
+						// this method handles polymorphic type / changing tags
+						customizeFieldDescriptor(metadataTScope, metadataFieldDescriptor);
+
+						this.metadataFieldDescriptor = metadataFieldDescriptor;
+					}
+				}
+				else
+				{
+					warning("Ignoring <" + fieldName + "> because no corresponding MetadataFieldDescriptor can be found.");
 				}
 			}
 		}
+		return metadataFieldDescriptor;
 	}
 
-	void bindMetadataFieldDescriptor(TranslationScope metadataTScope,
-			MetadataClassDescriptor metadataClassDescriptor)
+	/**
+	 * this method customizes field descriptor for this field, e.g. specific type or tag.
+	 * 
+	 * @param metadataTScope
+	 *          the translation scope of (generated) metadata classes.
+	 * @param metadataFieldDescriptor
+	 *          the current metadata field descriptor.
+	 */
+	protected void customizeFieldDescriptor(TranslationScope metadataTScope, MetadataFieldDescriptor metadataFieldDescriptor)
 	{
-		String fieldName = this.getFieldNameInJava(false); // TODO -- is this the correct tag?
-		MetadataFieldDescriptor metadataFieldDescriptor = (MetadataFieldDescriptor) metadataClassDescriptor
-				.getFieldDescriptorByFieldName(fieldName);
-		if (metadataFieldDescriptor != null)
-		{
-			// if we don't have a field, then this is a wrapped collection, so we need to get the wrapped
-			// field descriptor
-			if (metadataFieldDescriptor.getField() == null)
-				metadataFieldDescriptor = (MetadataFieldDescriptor) metadataFieldDescriptor.getWrappedFD();
-
-			this.setMetadataFieldDescriptor(metadataFieldDescriptor);
-		}
-		else
-		{
-			warning("Ignoring <" + fieldName + "> because no corresponding MetadataFieldDescriptor can be found.");
-		}
-
+		metadataFieldDescriptor.setTagName(this.getTagOrName()); // use customized tag if applicable
 	}
 
-	@Override
-	protected void deserializationPostHook()
-	{
-	
-	}
-	
 	/**
 	 * get the type name of this field, in terms of meta-metadata.
 	 * 
@@ -1146,35 +1029,35 @@ implements Mappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneabl
 		this.declaringMmd = declaringMmd;
 	}
 
-	/**
-	 * get other tags (used for @xml_other_tags) defined on this field.
-	 * 
-	 * @return
-	 */
-	public ArrayList<String> getOtherTags()
-	{
-		return otherTags;
-	}
+//	/**
+//	 * get other tags (used for @xml_other_tags) defined on this field.
+//	 * 
+//	 * @return
+//	 */
+//	public ArrayList<String> getOtherTags()
+//	{
+//		return otherTags;
+//	}
 
-	/**
-	 * add an other tag (an element for @xml_other_tags) for this field or its ancestor
-	 * (inheritedField) if any.
-	 * 
-	 * @param otherTag
-	 */
-	void addOtherTag(String otherTag)
-	{
-		if (this.getInheritedField() != null)
-		{
-			this.getInheritedField().addOtherTag(otherTag);
-			return;
-		}
-		
-		if (this.otherTags == null)
-			this.otherTags = new ArrayList<String>();
-		if (!this.otherTags.contains(otherTag) && !this.getTagOrName().equals(otherTag))
-			this.otherTags.add(otherTag);
-	}
+//	/**
+//	 * add an other tag (an element for @xml_other_tags) for this field or its ancestor
+//	 * (inheritedField) if any.
+//	 * 
+//	 * @param otherTag
+//	 */
+//	void addOtherTag(String otherTag)
+//	{
+//		if (this.getInheritedField() != null)
+//		{
+//			this.getInheritedField().addOtherTag(otherTag);
+//			return;
+//		}
+//		
+//		if (this.otherTags == null)
+//			this.otherTags = new ArrayList<String>();
+//		if (!this.otherTags.contains(otherTag) && !this.getTagOrName().equals(otherTag))
+//			this.otherTags.add(otherTag);
+//	}
 
 /**
  * 

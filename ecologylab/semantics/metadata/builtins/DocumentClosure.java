@@ -368,7 +368,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 					{ // see if we can find more specifc meta-metadata using mimeType
 						final MetaMetadataRepository repository = semanticsScope.getMetaMetadataRepository();
 						String mimeType = purlConnection.mimeType();
-						MetaMetadataCompositeField mimeMmd	= repository.getMMByMime(mimeType);
+						MetaMetadata mimeMmd	= repository.getMMByMime(mimeType);
 						if (mimeMmd != null && !mimeMmd.equals(metaMetadata))
 						{	// new meta-metadata!
 							if (!mimeMmd.getMetadataClass().isAssignableFrom(document.getClass()))

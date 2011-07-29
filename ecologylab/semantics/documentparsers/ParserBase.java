@@ -735,7 +735,13 @@ public abstract class ParserBase extends HTMLDOMParser<Document> implements Scal
 		Document newDocument = null;
 		try
 		{
-			newDocument = (Document) semanticsScope.getGeneratedDocumentTranslations().deserialize(purlConnection, this);
+			// the currentCd and tscope is a workaround before we have local translation scopes;
+			// for cases where two meta-metadata have the same tag
+			MetadataClassDescriptor currentCd = this.getDocument().getMetadataClassDescriptor();
+			TranslationScope tscope = semanticsScope.getGeneratedDocumentTranslations(); // this could be a local translation scope
+			tscope.addTranslation(currentCd); // this makes sure that the currentCd will be prioritized
+			
+			newDocument = (Document) tscope.deserialize(purlConnection, this);
 			newDocument.serialize(System.out);
 			System.out.println();
 			// the old document is basic, so give it basic meta-metadata (so recycle does not tank)
@@ -778,7 +784,7 @@ public abstract class ParserBase extends HTMLDOMParser<Document> implements Scal
 			else
 			{	// just match in translation scope
 				//TODO use local TranslationScope if there is one
-				metaMetadata														= semanticsScope.getMetaMetadataRepository().getByTagName(tagName);
+				metaMetadata														= semanticsScope.getMetaMetadataRepository().getByName(tagName);
 			}
 			deserializedMetadata.setMetaMetadata(metaMetadata);
 
@@ -798,7 +804,7 @@ public abstract class ParserBase extends HTMLDOMParser<Document> implements Scal
 			if (childMMNested.isPolymorphicInherently())
 			{
 				String tagName = deserializedMetadata.classDescriptor().getTagName();
-				childMMComposite	= semanticsScope.getMetaMetadataRepository().getByTagName(tagName);
+				childMMComposite	= semanticsScope.getMetaMetadataRepository().getByName(tagName);
 			}
 			else
 			{

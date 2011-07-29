@@ -195,77 +195,89 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 		super.setWrapped(wrapped);
 	}
 	
-	public void traverseAndResolvePolymorphismAndOtherTagsForCompilation()
+	@Override
+	public void setTagName(String tagName)
 	{
-		startedTraversalForPolymorphism = true;
-		
-		// @xml_other_tags
-		if (this.definingMmdField instanceof MetaMetadataScalarField)
-		{
-			this.otherTags = this.definingMmdField.getOtherTags();
-		}
-		else if (this.definingMmdField instanceof MetaMetadataNestedField)
-		{
-			MetaMetadataNestedField nested = (MetaMetadataNestedField) this.definingMmdField;
-			
-			// @xml_other_tags: for collection fields always add, for composite fields only add for non-
-			// polymorphic ones
-			if (nested instanceof MetaMetadataCollectionField || !nested.isPolymorphicInDescendantFields())
-				this.otherTags = this.definingMmdField.getOtherTags();
-			
-			if (nested.getFieldType() != FieldTypes.COLLECTION_SCALAR)
-			{
-				// resolve @simpl_classes if any
-				HashSet<MetaMetadata> polyMmds = nested.getPolymorphicMmds();
-				if (polyMmds != null && polyMmds.size() > 0)
-				{
-					for (MetaMetadata polyMmd : polyMmds)
-					{
-						MetadataClassDescriptor mcd = polyMmd.getMetadataClassDescriptor();
-						this.registerPolymorphicDescriptor(mcd);
-					}
-				}
-				// @simpl_classes for inherently polymorphic fields
-				String polyClassStr = nested.getPolymorphicClasses();
-				if (polyClassStr != null)
-				{
-					String[] polyClassTags = polyClassStr.split(MetaMetadataNestedField.POLYMORPHIC_CLASSES_SEP);
-					if (polyClassTags != null)
-					{
-						for (String polyClassTag : polyClassTags)
-						{
-							String truePolyClassTag = polyClassTag.trim();
-							MetaMetadata thatMmd = this.definingMmdField.getRepository().getByTagName(truePolyClassTag);
-							if (thatMmd != null)
-							{
-								MetadataClassDescriptor thatCd = thatMmd.getMetadataClassDescriptor();
-								if (thatCd != null)
-								{
-									this.registerPolymorphicDescriptor(thatCd);
-								}
-								else
-								{
-									warning("can't find metadata class descriptor for " + thatMmd + ": ignoring tag " + truePolyClassTag + " in polymorphic_classes.");
-								}
-							}
-							else
-							{
-								warning("can't find meta-metadata with tag " + truePolyClassTag + ": ignoring that tag in polymorphic_classes.");
-							}
-						}
-					}
-	
-					// recursion
-					for (MetaMetadataField kid : nested.getChildMetaMetadata())
-					{
-						System.out.println(kid);
-						MetadataFieldDescriptor kidMFD = kid.getMetadataFieldDescriptor();
-						if (kidMFD != null && !kidMFD.startedTraversalForPolymorphism)
-							kidMFD.traverseAndResolvePolymorphismAndOtherTagsForCompilation();
-					}
-				}
-			}
-		}
+		super.setTagName(tagName);
 	}
+	
+	@Override
+	public void setCollectionOrMapTagName(String collectionOrMapTagName)
+	{
+		super.setCollectionOrMapTagName(collectionOrMapTagName);
+	}
+	
+//	public void traverseAndResolvePolymorphismAndOtherTagsForCompilation()
+//	{
+//		startedTraversalForPolymorphism = true;
+//		
+//		// @xml_other_tags
+//		if (this.definingMmdField instanceof MetaMetadataScalarField)
+//		{
+//			this.otherTags = this.definingMmdField.getOtherTags();
+//		}
+//		else if (this.definingMmdField instanceof MetaMetadataNestedField)
+//		{
+//			MetaMetadataNestedField nested = (MetaMetadataNestedField) this.definingMmdField;
+//			
+//			// @xml_other_tags: for collection fields always add, for composite fields only add for non-
+//			// polymorphic ones
+//			if (nested instanceof MetaMetadataCollectionField || !nested.isPolymorphicInDescendantFields())
+//				this.otherTags = this.definingMmdField.getOtherTags();
+//			
+//			if (nested.getFieldType() != FieldTypes.COLLECTION_SCALAR)
+//			{
+//				// resolve @simpl_classes if any
+//				HashSet<MetaMetadata> polyMmds = nested.getPolymorphicMmds();
+//				if (polyMmds != null && polyMmds.size() > 0)
+//				{
+//					for (MetaMetadata polyMmd : polyMmds)
+//					{
+//						MetadataClassDescriptor mcd = polyMmd.getMetadataClassDescriptor();
+//						this.registerPolymorphicDescriptor(mcd);
+//					}
+//				}
+//				// @simpl_classes for inherently polymorphic fields
+//				String polyClassStr = nested.getPolymorphicClasses();
+//				if (polyClassStr != null)
+//				{
+//					String[] polyClassTags = polyClassStr.split(MetaMetadataNestedField.POLYMORPHIC_CLASSES_SEP);
+//					if (polyClassTags != null)
+//					{
+//						for (String polyClassTag : polyClassTags)
+//						{
+//							String truePolyClassTag = polyClassTag.trim();
+//							MetaMetadata thatMmd = this.definingMmdField.getRepository().getByTagName(truePolyClassTag);
+//							if (thatMmd != null)
+//							{
+//								MetadataClassDescriptor thatCd = thatMmd.getMetadataClassDescriptor();
+//								if (thatCd != null)
+//								{
+//									this.registerPolymorphicDescriptor(thatCd);
+//								}
+//								else
+//								{
+//									warning("can't find metadata class descriptor for " + thatMmd + ": ignoring tag " + truePolyClassTag + " in polymorphic_classes.");
+//								}
+//							}
+//							else
+//							{
+//								warning("can't find meta-metadata with tag " + truePolyClassTag + ": ignoring that tag in polymorphic_classes.");
+//							}
+//						}
+//					}
+//	
+//					// recursion
+//					for (MetaMetadataField kid : nested.getChildMetaMetadata())
+//					{
+//						System.out.println(kid);
+//						MetadataFieldDescriptor kidMFD = kid.getMetadataFieldDescriptor();
+//						if (kidMFD != null && !kidMFD.startedTraversalForPolymorphism)
+//							kidMFD.traverseAndResolvePolymorphismAndOtherTagsForCompilation();
+//					}
+//				}
+//			}
+//		}
+//	}
 
 }

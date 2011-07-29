@@ -17,7 +17,6 @@ import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.Metadata.mm_dont_inherit;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
-import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.TranslationScope;
 import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.types.element.Mappable;
@@ -84,8 +83,6 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 	 */
 	private ArrayList<MetaMetadata>									derivedMmds;
 	
-	private TranslationScope												tScope;
-
 	public MetaMetadata()
 	{
 		super();
@@ -124,7 +121,8 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 	public Metadata constructMetadata(TranslationScope ts)
 	{
 		Metadata result = null;
-		Class<? extends Metadata> metadataClass = getMetadataClass(ts);
+//		Class<? extends Metadata> metadataClass = getMetadataClass(ts);
+		Class<? extends Metadata> metadataClass = this.getMetadataClassDescriptor().getDescribedClass();
 
 		if (metadataClass != null)
 		{
@@ -136,7 +134,7 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 			{
 				for (String mixinName : mixins)
 				{
-					MetaMetadata mixinMM = getRepository().getByTagName(mixinName);
+					MetaMetadata mixinMM = getRepository().getByName(mixinName);
 					if (mixinMM != null)
 					{
 						Metadata mixinMetadata = mixinMM.constructMetadata(ts);
@@ -230,25 +228,6 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 	{
 		return metadataClassDescriptor.getFieldDescriptorByTag(tagName, getRepository()
 				.metadataTranslationScope());
-	}
-
-	public static void main(String args[]) throws SIMPLTranslationException
-	{
-		final TranslationScope TS = MetaMetadataTranslationScope.get();
-		String patternXMLFilepath = "../cf/config/semantics/metametadata/metaMetadataRepository.xml";
-
-		// ElementState.setUseDOMForTranslateTo(true);
-		MetaMetadataRepository test = (MetaMetadataRepository) TS.deserialize(patternXMLFilepath);
-
-		test.serialize(System.out);
-
-		// File outputRoot = PropertiesAndDirectories.userDir();
-		//
-		// for (MetaMetadata metaMetadata : test.values())
-		// {
-		// // metaMetadata.translateToMetadataClass();
-		// System.out.println('\n');
-		// }
 	}
 
 	public ArrayList<MetaMetadataSelector> getSelectors()
@@ -356,7 +335,7 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 			for (String lwName : linkWiths.keySet())
 			{
 				LinkWith lw = linkWiths.get(lwName);
-				MetaMetadata targetMmd = this.getRepository().getByTagName(lw.getName());
+				MetaMetadata targetMmd = this.getRepository().getByName(lw.getName());
 				if (targetMmd != null)
 				{
 					monitor.registerName(lw.getName());
@@ -512,11 +491,12 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 			MetaMetadata inheritedMmd = this.getInheritedMmd();
 			inheritedMmd.findOrGenerateMetadataClassDescriptor(tscope);
 			MetadataClassDescriptor superCd = inheritedMmd.getMetadataClassDescriptor();
-			if (this.isGenerateClassDescriptor())
+			if (this.isNewMetadataClass())
 			{
+				String tagOrName = this.getTagOrName();
 				MetadataClassDescriptor cd = new MetadataClassDescriptor(
 						this,
-						this.getTagOrName(),
+						tagOrName,
 						this.getComment(),
 						this.packageName(),
 						XMLTools.classNameFromElementName(this.getName()),
@@ -534,6 +514,11 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 					}
 				}
 				
+				MetadataClassDescriptor existingCdWithThisTag = (MetadataClassDescriptor) tscope.getClassDescriptorByTag(tagOrName);
+				if (existingCdWithThisTag != null)
+				{
+					warning("Class descriptor exists for tag [" + tagOrName + "]: " + existingCdWithThisTag);
+				}
 				tscope.addTranslation(cd);
 			}
 			else
@@ -568,4 +553,34 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 		return mmd.getName().equals(ROOT_MMD_NAME);
 	}
 
+	/**
+	 * 
+	 * @return the corresponding Metadata class simple name.
+	 */
+	protected String getMetadataClassSimpleName()
+	{
+		if (this.isBuiltIn() || this.isNewMetadataClass())
+		{
+			// new definition
+			return XMLTools.classNameFromElementName(this.getName());
+		}
+		else
+		{
+			// re-using existing type
+			// do not use this.type directly because we don't know if that is a definition or just re-using exsiting type
+			MetaMetadata inheritedMmd = this.getInheritedMmd();
+			if (inheritedMmd == null)
+				this.inheritMetaMetadata(); // currently, this should never happend because we call this method after inheritance process.
+			return inheritedMmd == null ? null : inheritedMmd.getMetadataClassSimpleName();
+		}
+	}
+	
+	@Override
+	public boolean isNewMetadataClass()
+	{
+		// for meta-metadata, except for looking at its contents, we should also look at its built_in
+		// attribute to determine if it is a new type
+		return super.isNewMetadataClass() && !this.isBuiltIn();
+	}
+	
 }

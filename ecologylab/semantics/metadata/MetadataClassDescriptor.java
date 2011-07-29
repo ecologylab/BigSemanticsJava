@@ -54,21 +54,21 @@ public class MetadataClassDescriptor extends ClassDescriptor<Metadata, MetadataF
 		this.addFieldDescriptor(fd);
 	}
 	
-	public void traverseAndResolvePolymorphismAndOtherTagsForCompilation()
-	{
-		if (this.definingMmd == null) // this could be true for built-ins
-			return;
-		
-		// resolve @xml_other_tags
-		if (this.definingMmd.isUseClassLevelOtherTags())
-			this.otherTags = this.definingMmd.getOtherTags();
-		
-		// process on fields
-		for (MetadataFieldDescriptor mfd : this.getDeclaredFieldDescriptorsByFieldName())
-		{
-			mfd.traverseAndResolvePolymorphismAndOtherTagsForCompilation();
-		}
-	}
+//	public void traverseAndResolvePolymorphismAndOtherTagsForCompilation()
+//	{
+//		if (this.definingMmd == null) // this could be true for built-ins
+//			return;
+//		
+//		// resolve @xml_other_tags
+//		if (this.definingMmd.isUseClassLevelOtherTags())
+//			this.otherTags = this.definingMmd.getOtherTags();
+//		
+//		// process on fields
+//		for (MetadataFieldDescriptor mfd : this.getDeclaredFieldDescriptorsByFieldName())
+//		{
+//			mfd.traverseAndResolvePolymorphismAndOtherTagsForCompilation();
+//		}
+//	}
 
 	/**
 	 * @return the definingMmd

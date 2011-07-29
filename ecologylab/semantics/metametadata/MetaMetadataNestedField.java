@@ -1,57 +1,66 @@
 package ecologylab.semantics.metametadata;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
+import java.util.regex.Pattern;
 
 import ecologylab.generic.HashMapArrayList;
+import ecologylab.semantics.metadata.MetadataClassDescriptor;
+import ecologylab.semantics.metadata.MetadataFieldDescriptor;
+import ecologylab.semantics.metametadata.exceptions.MetaMetadataException;
+import ecologylab.serialization.ClassDescriptor;
+import ecologylab.serialization.TranslationScope;
 import ecologylab.serialization.simpl_inherit;
 
 @simpl_inherit
 public abstract class MetaMetadataNestedField extends MetaMetadataField implements PackageSpecifier
 {
 	
-	public static final String		POLYMORPHIC_CLASSES_SEP	= ",";
+	public static final String	POLYMORPHIC_CLASSES_SEP	= ",";
 
 	@simpl_composite
 	@xml_tag("field_parser")
-	private FieldParserElement		fieldParserElement;
+	private FieldParserElement	fieldParserElement;
 
 	@simpl_scalar
-	private boolean								promoteChildren;									// if children should be displayed
-																																	// at this level
+	private boolean							promoteChildren;									// if children should be displayed
+																																// at this level
 
 	@simpl_scalar
-	private String								polymorphicScope;
+	private String							polymorphicScope;
 
 	/**
-	 * used to specify comma-separated class tags for polymorphic classes (@simpl_classes) in meta-metadata.
+	 * used to specify comma-separated class tags for polymorphic classes (@simpl_classes) in
+	 * meta-metadata.
 	 */
 	@simpl_scalar
-	private String								polymorphicClasses;
+	private String							polymorphicClasses;
 
 	@xml_tag("package")
 	@simpl_scalar
-	String												packageName;
+	String											packageName;
 
 	/**
 	 * the mmd used by this nested field. corresponding attributes: (child_)type/extends. could be a
 	 * generated one for inline definitions.
 	 */
-	private MetaMetadata					inheritedMmd;
-	
+	private MetaMetadata				inheritedMmd;
+
+	/**
+	 * the meta-metadata holding the inline meta-metadata scope for this field.
+	 */
+	protected MetaMetadata			scopingMmd;
+
 	/**
 	 * should we generate a metadata class descriptor for this field. used by the compiler.
 	 */
-	private boolean								generateClassDescriptor	= false;
+	private boolean							newMetadataClass				= false;
 
-	/**
-	 * the meta-metadata holding the inline meta-metadata scope for this field. 
-	 */
-	protected MetaMetadata				scopingMmd;
-
-	/**
-	 * the set of possible meta-metadata types for this field (used only for polymorphic fields).
-	 */
-	private HashSet<MetaMetadata>	polymorphicMmds					= null;
+//	/**
+//	 * the set of possible meta-metadata types for this field (used only for polymorphic fields).
+//	 */
+//	private HashSet<MetaMetadata>	polymorphicMmds					= null;
 
 	public MetaMetadataNestedField()
 	{
@@ -219,7 +228,7 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 
 				MetaMetadata mmd = (MetaMetadata) this;
 				String superMmdName = mmd.getSuperMmdTypeName();
-				MetaMetadata superMmd = getRepository().getByTagName(superMmdName);
+				MetaMetadata superMmd = getRepository().getByName(superMmdName);
 				if (superMmd == null)
 				{
 					error(mmd + " specifies " + superMmdName
@@ -276,27 +285,6 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	}
 	
 	/**
-	 * should we generate a metadata class descriptor for this field. used by the compiler.
-	 * 
-	 * @return
-	 */
-	public boolean isGenerateClassDescriptor()
-	{
-		return generateClassDescriptor;
-	}
-
-	/**
-	 * set the flag of generating (or not) metadata class descriptoer.
-	 * 
-	 * @param generateClassDescriptor
-	 * @see isGenerateClassDescriptor
-	 */
-	void setGenerateClassDescriptor(boolean generateClassDescriptor)
-	{
-		this.generateClassDescriptor = generateClassDescriptor;
-	}
-
-	/**
 	 * get the meta-metadata holding the inline meta-metadata scope for this field.
 	 * 
 	 */
@@ -323,52 +311,52 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 		this.scopingMmd = scopingMmd;
 	}
 
-	/**
-	 * return if this nested field is polymorphic in descendant fields, that is, for composites if the
-	 * type of this field varies in derived fields, for collections if the child type of this field
-	 * varies in derived fields.
-	 * <p />
-	 * NOTE THAT it is very different from {@code isPolymorphicInherently()}, which means that the field is
-	 * polymorphic by its nature. see the javadoc of the other method for more details.
-	 * 
-	 * @return
-	 * @see isPolymorphicInherently
-	 */
-	public boolean isPolymorphicInDescendantFields()
-	{
-		if (this.getInheritedField() != null)
-			return ((MetaMetadataNestedField) this.getInheritedField()).isPolymorphicInDescendantFields();
-		return polymorphicMmds != null && polymorphicMmds.size() > 0;
-	}
+//	/**
+//	 * return if this nested field is polymorphic in descendant fields, that is, for composites if the
+//	 * type of this field varies in derived fields, for collections if the child type of this field
+//	 * varies in derived fields.
+//	 * <p />
+//	 * NOTE THAT it is very different from {@code isPolymorphicInherently()}, which means that the field is
+//	 * polymorphic by its nature. see the javadoc of the other method for more details.
+//	 * 
+//	 * @return
+//	 * @see isPolymorphicInherently
+//	 */
+//	public boolean isPolymorphicInDescendantFields()
+//	{
+//		if (this.getInheritedField() != null)
+//			return ((MetaMetadataNestedField) this.getInheritedField()).isPolymorphicInDescendantFields();
+//		return polymorphicMmds != null && polymorphicMmds.size() > 0;
+//	}
 
-	/**
-	 * get polymorphic meta-metadata types for this field. used to form @simpl_classes.
-	 * 
-	 * @return
-	 */
-	public HashSet<MetaMetadata> getPolymorphicMmds()
-	{
-		return polymorphicMmds;
-	}
+//	/**
+//	 * get polymorphic meta-metadata types for this field. used to form @simpl_classes.
+//	 * 
+//	 * @return
+//	 */
+//	public HashSet<MetaMetadata> getPolymorphicMmds()
+//	{
+//		return polymorphicMmds;
+//	}
 
-	/**
-	 * add a possible meta-metadata type for this field (and implicitly mark this field as polymorphic).
-	 * 
-	 * @param polyMmd
-	 */
-	void addPolymorphicMmd(MetaMetadata polyMmd)
-	{
-		if (this.getInheritedField() != null)
-		{
-			((MetaMetadataNestedField) this.getInheritedField()).addPolymorphicMmd(polyMmd);
-		}
-		else
-		{
-			if (polymorphicMmds == null)
-				polymorphicMmds = new HashSet<MetaMetadata>();
-			polymorphicMmds.add(polyMmd);
-		}
-	}
+//	/**
+//	 * add a possible meta-metadata type for this field (and implicitly mark this field as polymorphic).
+//	 * 
+//	 * @param polyMmd
+//	 */
+//	void addPolymorphicMmd(MetaMetadata polyMmd)
+//	{
+//		if (this.getInheritedField() != null)
+//		{
+//			((MetaMetadataNestedField) this.getInheritedField()).addPolymorphicMmd(polyMmd);
+//		}
+//		else
+//		{
+//			if (polymorphicMmds == null)
+//				polymorphicMmds = new HashSet<MetaMetadata>();
+//			polymorphicMmds.add(polyMmd);
+//		}
+//	}
 
 	protected void cloneKidsTo(MetaMetadataNestedField cloned)
 	{
@@ -379,6 +367,8 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 			for (String kidName : childMetaMetadata.keySet())
 			{
 				MetaMetadataField kid = childMetaMetadata.get(kidName);
+				if (kid instanceof MetaMetadataNestedField)
+					((MetaMetadataNestedField) kid).inheritMetaMetadata();
 				MetaMetadataField clonedKid = (MetaMetadataField) kid.clone();
 				clonedKid.setParent(cloned);
 				newKids.put(kidName, clonedKid);
@@ -387,25 +377,278 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 		}
 	}
 
+//	/**
+//	 * this method is used for a polymorphic nested field, to make polymorphic meta-metadata types it
+//	 * uses to use class-level @xml_other_tags instead of field-level ones. this is needed because
+//	 * when a nested field is polymorphic, SIMPL ignores the @xml_other_tags annotation. as a
+//	 * workaround, we put those tags as @xml_other_tags on each specific type, so that SIMPL can use
+//	 * this information. this will not cause "name polution" because this information is only used in
+//	 * very specific and limited context.
+//	 */
+//	void makePolymorphicMmdsUseClassLevelOtherTags()
+//	{
+//		if (this.getInheritedField() != null)
+//		{
+//			((MetaMetadataNestedField) this.getInheritedField()).makePolymorphicMmdsUseClassLevelOtherTags();
+//			return;
+//		}
+//		for (MetaMetadata mmd : this.getPolymorphicMmds())
+//		{
+//			mmd.setUseClassLevelOtherTags(true);
+//		}
+//	}
+
+//	/**
+//	 * Connect the appropriate MetadataClassDescriptor with this, and likewise, recursively perform
+//	 * this binding operation for all the children of this.
+//	 * <p>
+//	 * This method will remove this metametadata field from it's parent when no appropriate metadata
+//	 * subclass was found.
+//	 *
+//	 * @param metadataTScope the metadata translation scope.
+//	 * @return true if successful, otherwise false.
+//	 */
+//	@Deprecated
+//	boolean getClassAndBindDescriptors(TranslationScope metadataTScope)
+//	{
+//		Class<? extends Metadata> metadataClass = getMetadataClass(metadataTScope);
+//		if (metadataClass == null)
+//		{
+//			ElementState parent = parent();
+//			if (parent instanceof MetaMetadataField)
+//				((MetaMetadataField) parent).kids.remove(this.getName()); 
+//			else if (parent instanceof MetaMetadataRepository)
+//			{
+//				// TODO remove from the repository level
+//			}
+//			return false;
+//		}
+//		bindClassDescriptor(metadataClass, metadataTScope);
+//		return true;
+//	}
+
 	/**
-	 * this method is used for a polymorphic nested field, to make polymorphic meta-metadata types it
-	 * uses to use class-level @xml_other_tags instead of field-level ones. this is needed because
-	 * when a nested field is polymorphic, SIMPL ignores the @xml_other_tags annotation. as a
-	 * workaround, we put those tags as @xml_other_tags on each specific type, so that SIMPL can use
-	 * this information. this will not cause "name polution" because this information is only used in
-	 * very specific and limited context.
+	 * bind metadata field descriptors to sub-fields of this nested field, with field names as keys,
+	 * but without mixins field.
+	 * <p>
+	 * sub-fields that lack corresponding field descriptors will be removed from this nested field.
+	 * <p>
+	 * note that this field no longer uses a boolean flag to prevent multiple invocation. this should
+	 * have been done by the bindClassDescriptor() method.
+	 * 
+	 * @param metadataTScope
+	 *          the translation scope of (generated) metadata classes.
+	 * @param metadataClassDescriptor
+	 *          the metadata class descriptor where field descriptors can be found.
 	 */
-	void makePolymorphicMmdsUseClassLevelOtherTags()
+	protected void bindMetadataFieldDescriptors(TranslationScope metadataTScope, MetadataClassDescriptor metadataClassDescriptor)
 	{
-		if (this.getInheritedField() != null)
+		// copy the kids collection first to prevent modification to the collection during iteration (which may invalidate the iterator).
+		List<MetaMetadataField> fields = new ArrayList<MetaMetadataField>(this.kids.values());
+		for (MetaMetadataField thatChild : fields)
 		{
-			((MetaMetadataNestedField) this.getInheritedField()).makePolymorphicMmdsUseClassLevelOtherTags();
-			return;
-		}
-		for (MetaMetadata mmd : this.getPolymorphicMmds())
-		{
-			mmd.setUseClassLevelOtherTags(true);
+			// look up by field name and bind
+			MetadataFieldDescriptor metadataFieldDescriptor = thatChild.bindMetadataFieldDescriptor(metadataTScope, metadataClassDescriptor);
+			if (metadataFieldDescriptor == null)
+			{
+				warning("Cannot bind metadata field descriptor for " + thatChild);
+				this.kids.remove(thatChild.getName());
+				continue;
+			}
+
+			// process hide and shadows
+			HashSet<String> nonDisplayedFieldNames = nonDisplayedFieldNames();
+			if (thatChild.hide)
+				nonDisplayedFieldNames.add(thatChild.name);
+			if (thatChild.shadows != null)
+				nonDisplayedFieldNames.add(thatChild.shadows);
+
+			// recursively process sub-fields
+			if (thatChild instanceof MetaMetadataScalarField)
+			{
+				// process regex filter
+				MetaMetadataScalarField scalar = (MetaMetadataScalarField) thatChild;
+				if (scalar.getRegexPattern() != null)
+				{
+					MetadataFieldDescriptor fd = scalar.getMetadataFieldDescriptor();
+					if (fd != null)
+						fd.setRegexFilter(Pattern.compile(scalar.getRegexPattern()), scalar.getRegexReplacement());
+					else
+						warning("Encountered null fd for scalar: " + scalar);
+				}
+			}
+			else if (thatChild instanceof MetaMetadataNestedField && thatChild.hasChildren())
+			{
+				// bind class descriptor for nested sub-fields
+				MetadataClassDescriptor elementClassDescriptor = ((MetaMetadataNestedField) thatChild).bindMetadataClassDescriptor(metadataTScope);
+				if (elementClassDescriptor == null)
+				{
+					warning("Cannot determine elementClassDescriptor for " + thatChild);
+					this.kids.remove(thatChild.getName());
+					continue;
+				}
+			}
+
+			if (this instanceof MetaMetadata)
+			{
+				MetaMetadata mmd = (MetaMetadata) this;
+				String naturalId = thatChild.getAsNaturalId();
+				if (naturalId != null)
+				{
+					mmd.addNaturalIdField(naturalId, thatChild);
+				}
+			}
 		}
 	}
 
+//	/**
+//	 * Obtain a map of FieldDescriptors for this class, with the field names as key, but with the
+//	 * mixins field removed. Use lazy evaluation, caching the result by class name.
+//	 * 
+//	 * @param metadataTScope
+//	 *          TODO
+//	 * 
+//	 * @return A map of FieldDescriptors, with the field names as key, but with the mixins field
+//	 *         removed.
+//	 */
+//	@Deprecated
+//	final void bindClassDescriptor(Class<? extends Metadata> metadataClass, TranslationScope metadataTScope)
+//	{
+//		MetadataClassDescriptor metadataClassDescriptor = this.metadataClassDescriptor;
+//		if (metadataClassDescriptor == null)
+//		{
+//			synchronized (this)
+//			{
+//				metadataClassDescriptor = this.metadataClassDescriptor;
+//				if (metadataClassDescriptor == null)
+//				{
+//					metadataClassDescriptor = (MetadataClassDescriptor) ClassDescriptor.getClassDescriptor(metadataClass);
+//					bindMetadataFieldDescriptors(metadataTScope, metadataClassDescriptor);
+//					this.metadataClassDescriptor = metadataClassDescriptor;
+//				}
+//			}
+//		}
+//	}
+	
+	/**
+	 * bind metadata class descriptor to this nested field. bind field descriptors to nested sub-fields
+	 * inside this nested field, using the field names as key (but with mixins field removed).
+	 * <p>
+	 * lazy evaluated. result cached.
+	 * 
+	 * @param metadataTScope the translation scope for (generated) metadata classes.
+	 * @return the bound metadata class descriptor.
+	 */
+	protected MetadataClassDescriptor bindMetadataClassDescriptor(TranslationScope metadataTScope)
+	{
+		MetadataClassDescriptor metadataCd = this.metadataClassDescriptor;
+		if (metadataCd == null)
+		{
+			synchronized (this)
+			{
+				metadataCd = this.metadataClassDescriptor;
+				if (metadataCd == null)
+				{
+					// curerntly this should never happen because binding is after inheritance process
+					if (!this.inheritFinished)
+						this.inheritMetaMetadata();
+					
+					String metadataClassSimpleName = this.getMetadataClassSimpleName();
+					Class metadataClass = metadataTScope.getClassBySimpleName(metadataClassSimpleName);
+					if (metadataClass != null)
+					{
+						this.metadataClass = metadataClass;
+						metadataCd = (MetadataClassDescriptor) ClassDescriptor.getClassDescriptor(metadataClass);
+						this.metadataClassDescriptor = metadataCd; // early assignment to prevent infinite loop
+						this.bindMetadataFieldDescriptors(metadataTScope, metadataCd);
+					}
+				}
+			}
+		}
+		return metadataCd;
+	}
+	
+	/**
+	 * 
+	 * @return the corresponding Metadata class simple name.
+	 */
+	protected String getMetadataClassSimpleName()
+	{
+		return this.getInheritedMmd().getMetadataClassSimpleName();
+	}
+	
+	
+//	/**
+//	 * Lookup the Metadata class object that corresponds to tag_name, type, or extends attribute
+//	 * depending on which exist.
+//	 * <p>
+//	 * This method will only be called on composite fields, not scalar fields.
+//	 * 
+//	 * @return
+//	 */
+//	@Deprecated
+//	public Class<? extends Metadata> getMetadataClass(TranslationScope ts)
+//	{
+//		Class<? extends Metadata> result = this.metadataClass;
+//
+//		if (result == null)
+//		{
+//			String tagForTranslationScope = getTagForTranslationScope();
+//			result = (Class<? extends Metadata>) ts.getClassByTag(tagForTranslationScope);
+//
+//			if (result != null)
+//				this.metadataClass = result;
+//			else
+//				ts.error("Can't resolve: " + this + " using " + tagForTranslationScope);
+//		}
+//		return result;
+//	}
+
+	@Override
+	protected void customizeFieldDescriptor(TranslationScope metadataTScope, MetadataFieldDescriptor metadataFieldDescriptor)
+	{
+		super.customizeFieldDescriptor(metadataTScope, metadataFieldDescriptor);
+		
+		MetaMetadataNestedField inheritedField = (MetaMetadataNestedField) this.getInheritedField();
+		if (inheritedField != null)
+		{
+			MetaMetadata superMmd = inheritedField.getInheritedMmd();
+			MetaMetadata thisMmd = this.getInheritedMmd();
+			if (thisMmd == superMmd)
+				return;
+			if (thisMmd.isDerivedFrom(superMmd))
+			{
+				// extending type!
+				MetadataClassDescriptor metadataClassDescriptor = thisMmd.bindMetadataClassDescriptor(metadataTScope);
+				metadataFieldDescriptor.setElementClassDescriptor(metadataClassDescriptor);
+			}
+			else
+			{
+				throw new MetaMetadataException("incompatible types: " + inheritedField + " => " + this);
+			}
+		}
+	}
+
+	/**
+	 * should we generate a metadata class descriptor for this field. used by the compiler.
+	 * 
+	 * @return
+	 */
+	public boolean isNewMetadataClass()
+	{
+		return newMetadataClass;
+	}
+
+	/**
+	 * set the flag of generating (or not) metadata class descriptoer.
+	 * 
+	 * @param newMetadataClass
+	 * @see isGenerateClassDescriptor
+	 */
+	protected void setNewMetadataClass(boolean newMetadataClass)
+	{
+	//		debug("\n\nMarking generate class descriptor: " + this + " = " + generateClassDescriptor);
+			this.newMetadataClass = newMetadataClass;
+		}
+	
 }

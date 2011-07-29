@@ -12,6 +12,7 @@ import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.simpl_inherit;
 import ecologylab.serialization.types.ScalarType;
 
+@SuppressWarnings("rawtypes")
 @simpl_inherit
 @xml_tag("collection")
 public class MetaMetadataCollectionField extends MetaMetadataNestedField
@@ -155,18 +156,19 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 		return childType != null ? childType : null;
 	}
 	
-	/**
-	 * Collection fields with children need to bind a class descriptor to the composite
-	 * field created in postDeserializationHook(), and not itself.
-	 */
-	@Override
-	boolean getClassAndBindDescriptors(TranslationScope metadataTScope)
-	{
-		if (kids != null && kids.size() > 0)
-			return kids.get(0).getClassAndBindDescriptors(metadataTScope);
-		else
-			return false;
-	}
+//	/**
+//	 * Collection fields with children need to bind a class descriptor to the composite
+//	 * field created in postDeserializationHook(), and not itself.
+//	 */
+//	@Override
+//	boolean getClassAndBindDescriptors(TranslationScope metadataTScope)
+//	{
+//		MetaMetadataCompositeField childComposite = (MetaMetadataCompositeField) (kids.size() <= 0 ? null : kids.get(0));
+//		if (childComposite != null)
+//			return childComposite.getClassAndBindDescriptors(metadataTScope);
+//		else
+//			return false;
+//	}
 	
 	@Override
 	public HashMapArrayList<String, MetaMetadataField> getChildMetaMetadata()
@@ -220,14 +222,15 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 			@Override
 			protected void tagChanged(String newTag)
 			{
-				thisField.childTag = newTag;
+				if (thisField.childTag == null)
+					thisField.childTag = newTag;
 			}
 			
-			@Override
-			public boolean isPolymorphicInDescendantFields()
-			{
-				return thisField.isPolymorphicInDescendantFields();
-			}
+//			@Override
+//			public boolean isPolymorphicInDescendantFields()
+//			{
+//				return thisField.isPolymorphicInDescendantFields();
+//			}
 		};
 		composite.setParent(this);
 		composite.setType(childType);
@@ -345,14 +348,32 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 		return fd;
 	}
 	
+//	@Override
+//	protected HashMapArrayList<String, MetaMetadataField> initializeChildMetaMetadata()
+//	{
+//		kids = new HashMapArrayList<String, MetaMetadataField>();
+//		MetaMetadataCompositeField composite = new MetaMetadataCompositeField(childType, null);
+//		kids.put(composite.getName(), composite);
+//		
+//		return composite.getChildMetaMetadata();
+//	}
+	
 	@Override
-	protected HashMapArrayList<String, MetaMetadataField> initializeChildMetaMetadata()
+	protected MetadataClassDescriptor bindMetadataClassDescriptor(TranslationScope metadataTScope)
 	{
-		kids = new HashMapArrayList<String, MetaMetadataField>();
-		MetaMetadataCompositeField composite = new MetaMetadataCompositeField(childType, null);
-		kids.put(composite.getName(), composite);
-		
-		return composite.getChildMetaMetadata();
+		MetaMetadataCompositeField childComposite = getChildComposite();
+		if (childComposite != null)
+			return childComposite.bindMetadataClassDescriptor(metadataTScope);
+		return null;
+	}
+
+	@Override
+	protected void customizeFieldDescriptor(TranslationScope metadataTScope, MetadataFieldDescriptor metadataFieldDescriptor)
+	{
+		super.customizeFieldDescriptor(metadataTScope, metadataFieldDescriptor);
+		if (this.childTag != null)
+			metadataFieldDescriptor.setCollectionOrMapTagName(this.childTag);
+		metadataFieldDescriptor.setWrapped(!this.isNoWrap());
 	}
 
 }
