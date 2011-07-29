@@ -32,7 +32,6 @@ public interface IDOMProvider
 	 * @param out
 	 * @return
 	 */
-	Document parseDOM(InputStream in, OutputStream out)
-	throws IOException;
+	Document parseDOM(InputStream in, OutputStream out) throws IOException;
 
 }
