@@ -43,6 +43,61 @@ public class CybernekoWrapper implements IDOMProvider
 		}
 		return parser.getDocument();
 	}
+	
+	@Override
+	public String xPathTagNamesToLower(String xpath)
+	{
+
+		StringBuilder newXpath = new StringBuilder();
+		
+		boolean isTagName = true;
+		boolean isAxis 		= false;
+		
+		for (int i = 0; i < xpath.length(); i++)
+		{
+			char c 						= xpath.charAt(i);
+			char specialChar 	= '\0';
+
+			if (!Character.isLetterOrDigit(c))
+				isTagName = false;
+			else if (i > 0 && xpath.charAt(i - 1) == '/' || xpath.charAt(i - 1) == ':')
+			{
+				
+				String restOfXpath 		= xpath.substring(i + 1);
+				int specialCharIndex 	= 0;
+				int slash 						= restOfXpath.indexOf('/');
+				int j									= 0;
+
+				for (j = 0; j < restOfXpath.length(); j++)
+				{
+					if (!Character.isLetterOrDigit(restOfXpath.charAt(j)) && restOfXpath.charAt(j) != '/')
+					{
+						specialCharIndex = j;
+						break;
+					}
+				}
+				if (specialCharIndex != 0)
+				{
+					specialChar = restOfXpath.charAt(j);
+					if ((specialChar == ':' || specialChar == '(' || specialChar == '-')
+							&& (slash == -1 || slash > specialCharIndex))
+						isAxis = true;
+				}
+			}
+			if (c == ':' && specialChar != '(')
+				isAxis = false;
+			if (i > 0 && (xpath.charAt(i - 1) == '/' || xpath.charAt(i - 1) == ':')
+					&& Character.isLetter(c) && !isAxis)
+				isTagName = true;
+
+			if (isTagName)
+				newXpath.append(Character.toUpperCase(c));
+			else
+				newXpath.append(c);
+		}
+		
+		return newXpath.toString();
+	}
 
 	@Override
 	public void setQuiet(boolean b)
