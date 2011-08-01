@@ -121,9 +121,7 @@ implements HTMLAttributeNames, IDOMProvider
 		// walk through the HTML document object.
 		// gather all paragraphText and image objects in the data structure.
 		//FIXME -- get rid of this call and object!
-		domTagger.printTree(rootTdNode, writer);
-
-		domTagger.flushLine(writer);
+		domTagger.tagTree(rootTdNode);
 		return domTagger;
 	}
 
