@@ -51,9 +51,7 @@ public class ArticlePageRecognize extends OldHTMLDOMParser
 //        if (configuration.xmlTags)
 //            pprint.printXMLTree(o, (short)0, 0, null, document);
 //        else
-            pprint.printTree(document, o);
-
-        pprint.flushLine(o);
+            pprint.tagTree(document);
         
         Node articleMain = RecognizedDocumentStructure.recognizeContentBody(pprint);
 //System.out.println("ArticleMain: " + articleMain );

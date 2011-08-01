@@ -2,9 +2,7 @@ package ecologylab.semantics.html;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.TreeMap;
@@ -14,7 +12,6 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import ecologylab.generic.Debug;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.html.documentstructure.ImageFeatures;
 import ecologylab.semantics.html.documentstructure.RecognizedDocumentStructure;
@@ -108,30 +105,12 @@ public class DOMWalkInformationTagger implements HTMLAttributeNames
 		generateCollectionsFromRoot(root);
 	}
 
-	public void flushLine(Writer writer)
-	{	
-		try
-		{
-			for (int i=0; i<linelen; i++)
-			{
-				writer.append((char) linebuf[i]);
-			}
-			writer.append('\n');
-		}
-		catch (IOException e)
-		{
-				e.printStackTrace();
-		}
-		linelen=0;
-	}
 	public void generateCollectionsFromRoot(Node root)
 	{
-		StringWriter writer = new StringWriter();
-  	printTree(root, writer);
-		flushLine(writer);
+  	tagTree(root);
 	}
 
-	public void printTree(Node node, Writer writer)
+	public void tagTree(Node node)
 	{
 		Node content;
 		currentNode = node;
@@ -143,102 +122,36 @@ public class DOMWalkInformationTagger implements HTMLAttributeNames
 		{
 		case Node.TEXT_NODE:
 			if (node.getNodeValue() != null && node.getNodeValue().length() > 0)
-				printText(node.getNodeValue().getBytes(), 0, node.getNodeValue().length(), node, writer);
+				tagText(node.getNodeValue().getBytes(), 0, node.getNodeValue().length(), node);
 			break;
 		case Node.ELEMENT_NODE:
 			if (!node.getNodeName().toLowerCase().equals("script") && (!node.getNodeName().toLowerCase().equals("style")))
 			{
 				printTag(node);
-				flushLine(writer);
 				NodeList children = node.getChildNodes();
 				for (int i=0; i<children.getLength(); i++)
 				{
 					Node child = children.item(i);
-					printTree(child, writer);
+					tagTree(child);
 				}
 				printEndTag(node);
 			}
-			break;
-		case 	Node.COMMENT_NODE:
-//			addC('<', linelen++);
-//			addC('!', linelen++);
-//			addC('-', linelen++);
-//			addC('-', linelen++);
-//			if (node.getNodeValue() != null && node.getNodeValue().length() > 0)
-//				printText(node.getNodeValue().getBytes(), 0, node.getNodeValue().length(), node, writer);
-//			addC('-', linelen++);
-//			addC('-', linelen++);
-//			addC('>', linelen++);
-//			flushLine(writer);
 			break;
 		case Node.DOCUMENT_NODE:
 			NodeList children = node.getChildNodes();
 			for (int i=0; i<children.getLength(); i++)
 			{
 				content = children.item(i);
-				printTree(content, writer);
+				tagTree(content);
 			}
 			break;
-		case  Node.DOCUMENT_TYPE_NODE:
-			addC('<', linelen++);
-			addC('!', linelen++);
-			addC('D', linelen++);
-			addC('O', linelen++);
-			addC('C', linelen++);
-			addC('T', linelen++);
-			addC('Y', linelen++);
-			addC('P', linelen++);
-			addC('E', linelen++);
-			addC(' ', linelen++);
-
-			for (int i=0; i<node.getNodeValue().length(); i++)
-			{
-				char c = node.getNodeValue().charAt(i);
-				addC(c, linelen++);
-			}
-
-			addC('>', linelen++);
-			break;
-		case Node.ATTRIBUTE_NODE:
-			for (int i=0; i<node.getNodeName().length(); i++)
-			{
-				char name = node.getNodeName().charAt(i);
-				addC(name, linelen++);
-			}
-			addC('=',linelen++);
-			addC('\"', linelen++);
-			for (int j=0; j<node.getNodeValue().length(); j++)
-			{
-				char value = node.getNodeValue().charAt(j);
-				addC(value, linelen++);
-			}
-			addC('\"', linelen++);
-			break;
-		case Node.CDATA_SECTION_NODE:
-      addC('<', linelen++);
-      addC('!', linelen++);
-      addC('[', linelen++);
-      addC('C', linelen++);
-      addC('D', linelen++);
-      addC('A', linelen++);
-      addC('T', linelen++);
-      addC('A', linelen++);
-      addC('[', linelen++);
-      
-      printText(node.getNodeValue().getBytes(), 0, node.getNodeValue().length(), node, writer);
-      
-      addC(']', linelen++);
-      addC(']', linelen++);
-      addC('>', linelen++);
-      flushLine(writer);
-      break;
 		default:
 			printTag(node);
 			NodeList children2 = node.getChildNodes();
 			for (int i=0; i<children2.getLength(); i++)
 			{
 				Node child = children2.item(i);
-				printTree(child, writer);
+				tagTree(child);
 			}
 			printEndTag(node);
       	
@@ -290,55 +203,7 @@ public class DOMWalkInformationTagger implements HTMLAttributeNames
 		}
 		
 		//We need to delete a link to the file write part at the end -- EUNYEE
-		
-		addC('<', linelen++);
-		String element = node.getNodeName();
-		for (int i=0; i<element.length(); i++)
-		{
-			addC(element.charAt(i), linelen++);
-		}
-		
-		NamedNodeMap attributes = node.getAttributes();
-		for (int i=0; i<attributes.getLength(); i++)
-		{
-			Node attr = attributes.item(i);
-			addC(' ',linelen++);
-			for (int j=0; j<attr.getNodeName().length(); j++)
-				addC(attr.getNodeName().charAt(j), linelen++);
-			addC('=',linelen++);
-			addC('\"', linelen++);
-			for (int l=0; l<attr.getNodeValue().length(); l++)
-				addC(attr.getNodeValue().charAt(l), linelen++);
-			addC('\"', linelen++);
-		}
-		addC('>', linelen++);
-	}
 
-	private void addC(int c, int index)
-	{
-		if (index + 1 >= lbufsize)
-		{
-			while (index + 1 >= lbufsize)
-			{
-				if (lbufsize == 0)
-				{
-					lbufsize = 256;
-				}
-				else
-				{
-					lbufsize = lbufsize * 2;
-				}
-			}
-
-			int[] temp = new int[lbufsize];
-			if (linebuf != null)
-			{
-				System.arraycopy(linebuf, 0, temp, 0, index);
-			}
-			linebuf = temp;
-		}
-
-		linebuf[index] = c;
 	}
 
 	protected void printEndTag(Node node)
@@ -359,19 +224,7 @@ public class DOMWalkInformationTagger implements HTMLAttributeNames
 			{
 				closeBlock(node);
 			}
-		}
-		
-    addC('<', linelen++);
-    addC('/', linelen++);
-    String p = node.getNodeName();
-    
-    for (int i=0; i<p.length(); i++)
-    {
-    	addC(p.charAt(i), linelen++);
-    }
-    
-    addC('>', linelen++);
-		
+		}	
 	}
 
 	private void closeBlock(Node blockNode)
@@ -381,7 +234,7 @@ public class DOMWalkInformationTagger implements HTMLAttributeNames
 		totalTxtLength = 0;
 	}
 
-	protected void printText(byte[] textarray, int start, int end, Node node, Writer writer)
+	protected void tagText(byte[] textarray, int start, int end, Node node)
 	{
 		if (textarray != null && textarray.length > 0)
 		{
