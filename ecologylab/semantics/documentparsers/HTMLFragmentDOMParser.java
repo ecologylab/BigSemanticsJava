@@ -48,7 +48,8 @@ implements DOMParserInterface
 	{
 		org.w3c.dom.Document doc	= getDom();
 		DomTools.prettyPrint(doc);
-		NodeList bodyNodeList	= doc.getElementsByTagName("body");
+		int containerNodeIndex = 0;
+		NodeList bodyNodeList	= doc.getElementsByTagName("BODY");
 		if (bodyNodeList.getLength() > 0)
 		{
 			Node bodyNode				= bodyNodeList.item(0);
@@ -56,7 +57,15 @@ implements DOMParserInterface
 			NodeList children = bodyNode.getChildNodes();
 			if (children.getLength() > 0)
 			{
-				Node container 			= children.item(0).getAttributes().getNamedItem("container");
+				for (int i=0; i<children.getLength(); i++)
+				{
+					if (children.item(i).getNodeType() == Node.ELEMENT_NODE)
+					{
+						containerNodeIndex = i;
+						break;
+					}
+				}
+				Node container 			= children.item(containerNodeIndex).getAttributes().getNamedItem("CONTAINER");
 				if (container != null)
 				{
 					String containerValue = container.getNodeValue();
@@ -69,7 +78,7 @@ implements DOMParserInterface
 			}
 			DOMWalkInformationTagger.getTextInSubTree(bodyNode, true, bodyTextBuffy, true);
 		}
-		NodeList imgNodeList	= doc.getElementsByTagName("img");
+		NodeList imgNodeList	= doc.getElementsByTagName("IMG");
 		int numImages = imgNodeList.getLength();
 		if (numImages > 0)
 		{
