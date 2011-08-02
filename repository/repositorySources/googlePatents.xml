@@ -21,7 +21,7 @@
 		<selector url_path_tree="http://www.google.com/patents/about"/>
 		<scalar name="title" xpath="//div[@id='titlebar']/h1" />
 		<scalar name="inventor" xpath="//div[@id='titlebar']/span" scalar_type="String" />
-		<scalar name="abstract_field" xpath="//table[@id='summarytable']/tr/td/text()" scalar_type="String" />
+		<scalar name="abstract_field" xpath="//table[@id='summarytable']/tbody/tr/td/text()" scalar_type="String" />
 		<scalar name="claims" hide="true" xpath="//div[@id='patent_claims_v']" scalar_type="String" />
 		<scalar name="pic_link" xpath="//div[@id='selected_pages_v']/div[1]/a[1]/@href" scalar_type="ParsedURL" />
 		<collection name="referenced_bys" hide="true" xpath="//div[@id='patent_referenced_by_v']/table/tr[position()&gt;1]" child_type="search_result">
