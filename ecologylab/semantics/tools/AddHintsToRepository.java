@@ -17,7 +17,7 @@ import ecologylab.serialization.TranslationScope;
 public class AddHintsToRepository
 {
 
-	public AddHintsToRepository(File srcDir, File destDir)
+	public AddHintsToRepository(File srcDir, File destDir) throws SIMPLTranslationException
 	{
 		File srcPowerUserDir = new File(srcDir, "powerUser");
 		File srcRepositorySources = new File(srcDir, "repositorySources");
@@ -33,21 +33,21 @@ public class AddHintsToRepository
 		processDir(srcRepositorySources, destRepositorySources);
 	}
 
-	private void processDir(File srcDir, File destDir)
+	private void processDir(File srcDir, File destDir) throws SIMPLTranslationException
 	{
 		assert srcDir.exists() : "directory not exists: " + srcDir;
 
-		TranslationScope metaMetadataTScope = MetaMetadataTranslationScope.get();
-
-		for (File file : srcDir.listFiles(new FileFilter()
+		File[] files = srcDir.listFiles(new FileFilter()
 		{
 			public boolean accept(File dir)
 			{
 				return dir.getName().endsWith(".xml");
 			}
-		}))
+		});
+		TranslationScope mmdTScope = MetaMetadataTranslationScope.get();
+		for (File file : files)
 		{
-			MetaMetadataRepository repo = MetaMetadataRepository.readRepository(file, metaMetadataTScope);
+			MetaMetadataRepository repo = (MetaMetadataRepository) mmdTScope.deserialize(file); 
 			if (repo.values() != null)
 			{
 				for (MetaMetadata mmd : repo.values())
@@ -95,8 +95,9 @@ public class AddHintsToRepository
 
 	/**
 	 * @param args
+	 * @throws SIMPLTranslationException 
 	 */
-	public static void main(String[] args)
+	public static void main(String[] args) throws SIMPLTranslationException
 	{
 		File src = new File("../cf/config/semantics/metametadata");
 		File dest = new File("../cf/config/semantics/metametadata/hintsAdded");

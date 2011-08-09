@@ -243,9 +243,9 @@
 
 	<!-- definitions of Bing search results from different sources. -->
 	<meta_metadata name="bing_web_search_result" extends="search_result" comment="Bing web search result.">
-		<scalar name="heading" scalar_type="String" tag="web:Title" hide="true" />
-		<scalar name="snippet" scalar_type="String" tag="web:Description" />
-		<scalar name="link" scalar_type="ParsedURL" tag="web:Url" hide="true" />
+		<scalar name="heading" tag="web:Title" hide="true" />
+		<scalar name="snippet" tag="web:Description" />
+		<scalar name="link" tag="web:Url" hide="true" />
 	</meta_metadata>
 
 	<meta_metadata name="bing_image_search_result" extends="image_in_search_result" comment="Bing image search result.">

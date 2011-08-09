@@ -35,7 +35,7 @@ public class DocumentMetadataWrap extends Metadata
 	 */
 	public DocumentMetadataWrap()
 	{
-		setMetaMetadata(SemanticsSessionScope.getRepository().getByClass(this.getClass()));
+		setMetaMetadata(SemanticsSessionScope.getRepository().getMMByClass(this.getClass()));
 	}
 
 	public DocumentMetadataWrap(Document document)

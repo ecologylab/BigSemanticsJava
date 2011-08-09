@@ -18,13 +18,12 @@ import ecologylab.serialization.ElementState;
 public class CookieProcessing extends ElementState
 {
 	@simpl_scalar
-	String		domain;
-	
+	String													domain;
+
 	@simpl_scalar
-	boolean		ignoreAllCookies;
-	
-	static 
-	HashMap<String, Boolean>		globalCookieAcceptance	= new HashMap<String, Boolean>();
+	boolean													ignoreAllCookies;
+
+	static HashMap<String, Boolean>	globalCookieAcceptance	= new HashMap<String, Boolean>();
 	
 	/**
 	 * 
@@ -32,7 +31,6 @@ public class CookieProcessing extends ElementState
 	public CookieProcessing()
 	{
 	}
-
 	
 	@Override
 	public void deserializationPostHook()
@@ -42,7 +40,7 @@ public class CookieProcessing extends ElementState
 			globalCookieAcceptance.put(domain, ignoreAllCookies);
 	}
 	
-	public static CookiePolicy semanticsCookiePolicy	= new CookiePolicy()
+	public static CookiePolicy	semanticsCookiePolicy	= new CookiePolicy()
 	{
 
 		@Override

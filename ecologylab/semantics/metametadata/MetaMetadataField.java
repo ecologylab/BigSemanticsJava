@@ -29,6 +29,7 @@ import ecologylab.textformat.NamedStyle;
  * @author damaraju
  * 
  */
+@SuppressWarnings("rawtypes")
 @simpl_inherit
 @simpl_descriptor_classes({ MetaMetadataClassDescriptor.class, MetaMetadataFieldDescriptor.class })
 public abstract class MetaMetadataField extends ElementState
@@ -258,17 +259,15 @@ implements Mappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneabl
 
 	HashSet<String>																				nonDisplayedFieldNames;
 
-	File																									file;
-
 	private boolean																				fieldsSortedForDisplay	= false;
 
 	private String																				displayedLabel					= null;
 
 	/**
-	 * The Meta-Metadata repository object.
+	 * The (global) Meta-Metadata repository.
 	 */
 	private MetaMetadataRepository												repository;
-
+	
 	protected boolean																			inheritFinished					= false;
 
 	/**
@@ -393,7 +392,10 @@ implements Mappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneabl
 		this.inheritedField = other.inheritedField;
 		this.declaringMmd = other.declaringMmd;
 		if (this instanceof MetaMetadataNestedField)
+		{
 			((MetaMetadataNestedField) this).setInheritedMmd(((MetaMetadataNestedField) other).getInheritedMmd());
+			((MetaMetadataNestedField) this).setMmdScope(((MetaMetadataNestedField) other).getMmdScope());
+		}
 	}
 	
 	/**
@@ -457,16 +459,18 @@ implements Mappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneabl
 	}
 
 	/**
-	 * the file inwhich this field is declared.
+	 * the file in which this field is declared.
 	 * 
 	 * @return
 	 */
 	public File getFile()
 	{
-		if (file != null)
-			return file;
 		MetaMetadataField parent = (MetaMetadataField) parent();
-		return (parent != null) ? parent.getFile() : null;
+		if (parent == null)
+			return null;
+		if (parent instanceof MetaMetadata)
+			return ((MetaMetadata) parent).getFile();
+		return parent.getFile();
 	}
 
 	/**
@@ -1028,36 +1032,6 @@ implements Mappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneabl
 	{
 		this.declaringMmd = declaringMmd;
 	}
-
-//	/**
-//	 * get other tags (used for @xml_other_tags) defined on this field.
-//	 * 
-//	 * @return
-//	 */
-//	public ArrayList<String> getOtherTags()
-//	{
-//		return otherTags;
-//	}
-
-//	/**
-//	 * add an other tag (an element for @xml_other_tags) for this field or its ancestor
-//	 * (inheritedField) if any.
-//	 * 
-//	 * @param otherTag
-//	 */
-//	void addOtherTag(String otherTag)
-//	{
-//		if (this.getInheritedField() != null)
-//		{
-//			this.getInheritedField().addOtherTag(otherTag);
-//			return;
-//		}
-//		
-//		if (this.otherTags == null)
-//			this.otherTags = new ArrayList<String>();
-//		if (!this.otherTags.contains(otherTag) && !this.getTagOrName().equals(otherTag))
-//			this.otherTags.add(otherTag);
-//	}
 
 /**
  * 

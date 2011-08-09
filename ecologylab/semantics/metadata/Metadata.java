@@ -212,7 +212,7 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 		if (mm == null && repository != null)
 		{
 			if (metaMetadataName != null) // get from saved composition
-				mm = repository.getByName(metaMetadataName.getValue());
+				mm = repository.getMMByName(metaMetadataName.getValue());
 
 			if (mm == null)
 			{
@@ -227,10 +227,10 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 					// TODO -- also try to resolve by mime type ???
 				}
 				if (mm == null)
-					mm = repository.getByClass(getClass());
+					mm = repository.getMMByClass(getClass());
 				if (mm == null && classDescriptor() != null)
 				{
-					mm = repository.getByName(classDescriptor().getTagName());
+					mm = repository.getMMByName(classDescriptor().getTagName());
 				}
 			}
 			if (mm != null)
@@ -1081,7 +1081,7 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 		else
 		{
 			String mmdName = mmcf.getTypeName();
-			mmd = repository.getByName(mmdName);
+			mmd = repository.getMMByName(mmdName);
 		}
 		MetaMetadataField field = mmd.getNaturalIdFields().get(naturalId);
 		MetadataFieldDescriptor fd = field.getMetadataFieldDescriptor();

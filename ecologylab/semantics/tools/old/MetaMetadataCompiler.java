@@ -66,7 +66,7 @@ public class MetaMetadataCompiler extends ApplicationEnvironment
 	
 	public void compile(String mmdRepositoryDir, String generatedSemanticsLocation)
 	{
-		MetaMetadataRepository metaMetadataRepository = MetaMetadataRepository.load(new File(mmdRepositoryDir));
+		MetaMetadataRepository metaMetadataRepository = MetaMetadataRepository.loadFromDir(new File(mmdRepositoryDir));
 		compile(metaMetadataRepository, generatedSemanticsLocation);
 	}
 

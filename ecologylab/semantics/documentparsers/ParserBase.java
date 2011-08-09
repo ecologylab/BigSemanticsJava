@@ -36,7 +36,6 @@ import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataBase;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
-import ecologylab.semantics.metadata.builtins.CompoundDocument;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.scalar.types.MetadataScalarType;
 import ecologylab.semantics.metametadata.DefVar;
@@ -735,12 +734,7 @@ public abstract class ParserBase extends HTMLDOMParser<Document> implements Scal
 		Document newDocument = null;
 		try
 		{
-			// the currentCd and tscope is a workaround before we have local translation scopes;
-			// for cases where two meta-metadata have the same tag
-			MetadataClassDescriptor currentCd = this.getDocument().getMetadataClassDescriptor();
-			TranslationScope tscope = semanticsScope.getGeneratedDocumentTranslations(); // this could be a local translation scope
-			tscope.addTranslation(currentCd); // this makes sure that the currentCd will be prioritized
-			
+			TranslationScope tscope = this.getMetaMetadata().getLocalTranslationScope();
 			newDocument = (Document) tscope.deserialize(purlConnection, this);
 			newDocument.serialize(System.out);
 			System.out.println();
@@ -771,7 +765,6 @@ public abstract class ParserBase extends HTMLDOMParser<Document> implements Scal
 		if (deserializingRoot)
 		{
 			deserializingRoot						= false;
-			
 			Document document 					= getDocument();
 			MetaMetadataCompositeField preMM					= document.getMetaMetadata();
 			MetadataClassDescriptor mcd								= (MetadataClassDescriptor) deserializedMetadata.classDescriptor();
@@ -784,7 +777,7 @@ public abstract class ParserBase extends HTMLDOMParser<Document> implements Scal
 			else
 			{	// just match in translation scope
 				//TODO use local TranslationScope if there is one
-				metaMetadata														= semanticsScope.getMetaMetadataRepository().getByName(tagName);
+				metaMetadata														= semanticsScope.getMetaMetadataRepository().getMMByName(tagName);
 			}
 			deserializedMetadata.setMetaMetadata(metaMetadata);
 
@@ -804,7 +797,7 @@ public abstract class ParserBase extends HTMLDOMParser<Document> implements Scal
 			if (childMMNested.isPolymorphicInherently())
 			{
 				String tagName = deserializedMetadata.classDescriptor().getTagName();
-				childMMComposite	= semanticsScope.getMetaMetadataRepository().getByName(tagName);
+				childMMComposite	= semanticsScope.getMetaMetadataRepository().getMMByName(tagName);
 			}
 			else
 			{

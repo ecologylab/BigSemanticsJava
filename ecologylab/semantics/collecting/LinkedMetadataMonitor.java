@@ -116,7 +116,7 @@ public class LinkedMetadataMonitor
 		else
 		{
 			mmdName = parsedMetadata.getMetaMetadata().getTypeName();
-			mmd = repository.getByName(mmdName);
+			mmd = repository.getMMByName(mmdName);
 		}
 
 		if (mmd == null)
@@ -131,7 +131,7 @@ public class LinkedMetadataMonitor
 			if (mmdName == null || "metadata".equals(mmdName))
 				return false;
 			mmdName = mmd.getSuperMmdTypeName();
-			mmd = repository.getByName(mmdName);
+			mmd = repository.getMMByName(mmdName);
 		}
 
 		Map<Metadata, LinkWith> records = monitorRecords.get(mmdName);

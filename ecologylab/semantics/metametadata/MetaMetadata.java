@@ -3,11 +3,11 @@
  */
 package ecologylab.semantics.metametadata;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import ecologylab.collections.Scope;
 import ecologylab.generic.ReflectionTools;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticAction;
@@ -17,16 +17,27 @@ import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.Metadata.mm_dont_inherit;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
+import ecologylab.semantics.metametadata.exceptions.MetaMetadataException;
 import ecologylab.serialization.TranslationScope;
 import ecologylab.serialization.XMLTools;
+import ecologylab.serialization.simpl_inherit;
 import ecologylab.serialization.types.element.Mappable;
 
 /**
  * @author damaraju
  * 
  */
-public class MetaMetadata extends MetaMetadataCompositeField implements Mappable<String>
+@SuppressWarnings({"rawtypes"})
+@simpl_inherit
+public class MetaMetadata extends MetaMetadataCompositeField
+implements Mappable<String>//, HasLocalTranslationScope
 {
+	
+	public enum Visibility
+	{
+		GLOBAL,
+		PACKAGE,
+	}
 
 	@simpl_scalar
 	protected String																ormInheritanceStrategy;
@@ -36,7 +47,7 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 	ArrayList<MetaMetadataSelector>									selectors;
 
 	@simpl_scalar
-	private String																	parser						= null;
+	private String																	parser												= null;
 
 	@simpl_collection
 	@simpl_scope(SemanticActionTranslationScope.SEMANTIC_ACTION_TRANSLATION_SCOPE)
@@ -44,10 +55,10 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 
 	@simpl_scalar
 	@mm_dont_inherit
-	protected boolean																builtIn;
+	private boolean																	builtIn;
 
 	@simpl_scalar
-	protected RedirectHandling											redirectHandling;
+	private RedirectHandling												redirectHandling;
 
 	/**
 	 * Mixins are needed so that we can have objects of multiple metadata classes in side a single
@@ -65,7 +76,7 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 	@simpl_nowrap
 	private ArrayList<UrlGenerator>									urlGenerators;
 
-	private Map<String, MetaMetadataField>					naturalIds				= new HashMap<String, MetaMetadataField>();
+	private Map<String, MetaMetadataField>					naturalIds										= new HashMap<String, MetaMetadataField>();
 
 	@simpl_map("link_with")
 	@simpl_nowrap
@@ -74,15 +85,13 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 	@simpl_scalar
 	protected String																schemaOrgItemtype;
 
+	@simpl_scalar
+	protected Visibility														visibility										= Visibility.GLOBAL;
+
 	private Map<MetaMetadataSelector, MetaMetadata>	reselectMap;
 
-	private Scope<MetaMetadata>											inlineMmds				= null;
+	private File																		file;
 
-	/**
-	 * MMDs derived from this one.
-	 */
-	private ArrayList<MetaMetadata>									derivedMmds;
-	
 	public MetaMetadata()
 	{
 		super();
@@ -134,7 +143,7 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 			{
 				for (String mixinName : mixins)
 				{
-					MetaMetadata mixinMM = getRepository().getByName(mixinName);
+					MetaMetadata mixinMM = getRepository().getMMByName(mixinName);
 					if (mixinMM != null)
 					{
 						Metadata mixinMetadata = mixinMM.constructMetadata(ts);
@@ -222,12 +231,6 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 	public boolean isBuiltIn()
 	{
 		return builtIn;
-	}
-
-	public MetadataFieldDescriptor getFieldDescriptorByTagName(String tagName)
-	{
-		return metadataClassDescriptor.getFieldDescriptorByTag(tagName, getRepository()
-				.metadataTranslationScope());
 	}
 
 	public ArrayList<MetaMetadataSelector> getSelectors()
@@ -335,7 +338,7 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 			for (String lwName : linkWiths.keySet())
 			{
 				LinkWith lw = linkWiths.get(lwName);
-				MetaMetadata targetMmd = this.getRepository().getByName(lw.getName());
+				MetaMetadata targetMmd = this.getRepository().getMMByName(lw.getName());
 				if (targetMmd != null)
 				{
 					monitor.registerName(lw.getName());
@@ -381,16 +384,6 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 		reselectMap.put(selector, mmd);
 	}
 	
-	/**
-	 * Hook overrided by MetaMetadata class
-	 * 
-	 * @param inheritedMmd
-	 */
-	protected void inheritNonFieldComponents(MetaMetadata inheritedMmd)
-	{
-		inheritSemanticActions(inheritedMmd);
-	}
-	
 	protected void inheritSemanticActions(MetaMetadata inheritedMmd)
 	{
 		if (semanticActions == null)
@@ -399,88 +392,57 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 		}
 	}
 
-	@Override
-	protected boolean isInlineDefinition()
+	public void setFile(File file)
 	{
-		return false;
+		this.file = file;
 	}
 
-	public Scope<MetaMetadata> getInlineMmds()
+	public File getFile()
 	{
-		return inlineMmds;
-	}
-	
-	void setInlineMmds(Scope<MetaMetadata> inlineMmds)
-	{
-		this.inlineMmds = inlineMmds;
-	}
-	
-	public MetaMetadata getInlineMmd(String name)
-	{
-		if (inlineMmds != null)
-			return inlineMmds.get(name);
-		return null;
+		return file;
 	}
 
-	void addInlineMmd(String name, MetaMetadata generatedMmd)
-	{
-		if (inlineMmds == null)
-			inlineMmds = new Scope<MetaMetadata>();
-		inlineMmds.put(name, generatedMmd);
-	}
-	
-	public ArrayList<MetaMetadata> getDerivedMmds()
-	{
-		return derivedMmds;
-	}
-	
-	public void addDerivedMmd(MetaMetadata mmd)
-	{
-		if (derivedMmds == null)
-			derivedMmds = new ArrayList<MetaMetadata>();
-		derivedMmds.add(mmd);
-	}
-
-	void inheritInlineMmds(MetaMetadata mmd)
-	{
-		if (this.getInlineMmds() == null)
-			this.setInlineMmds(new Scope<MetaMetadata>());
-		if (mmd.getInlineMmds() != null)
-			this.getInlineMmds().setParent(mmd.getInlineMmds());
-	}
-	
 	@Override
 	protected void inheritMetaMetadataHelper()
 	{
 		debug("processing mmd: " + this);
-		// init
+		
+		// init each field's declaringMmd to this (some of them may change during inheritance)
 		for (MetaMetadataField field : this.getChildMetaMetadata())
-		{
-			// init each field's declaringMmd to this (some of them may change during inheritance)
 			field.setDeclaringMmd(this);
-			if (field instanceof MetaMetadataNestedField)
-				((MetaMetadataNestedField) field).setPackageName(this.packageName());
-		}
-
-		// a terminating point of recursion: do not inherit for root mmd
-		if (MetaMetadata.isRootMetaMetadata(this))
-			return;
 
 		super.inheritMetaMetadataHelper();
-
-		// inherit other stuffs
-		this.inheritNonFieldComponents(this.getInheritedMmd());
 	}
 	
 	protected void inheritFromInheritedMmd(MetaMetadata inheritedMmd)
 	{
+		super.inheritFromInheritedMmd(inheritedMmd);
 		this.inheritAttributes(inheritedMmd);
-		this.inheritInlineMmds(inheritedMmd);
+		inheritSemanticActions(inheritedMmd);
 	}
 	
-	protected MetaMetadata getScopingMmd()
+	protected MetaMetadata findOrGenerateInheritedMetaMetadata(MetaMetadataRepository repository)
 	{
-		return this;
+		if (MetaMetadata.isRootMetaMetadata(this))
+			return null;
+		
+		MetaMetadata inheritedMmd = this.getInheritedMmd();
+		if (inheritedMmd == null)
+		{
+			String inheritedMmdName = this.getType();
+			if (inheritedMmdName == null)
+			{
+				inheritedMmdName = this.getExtendsAttribute();
+				this.setNewMetadataClass(true);
+			}
+			if (inheritedMmdName == null)
+				throw new MetaMetadataException("no type/extends specified: " + this);
+			inheritedMmd = this.getMmdScope().get(inheritedMmdName);
+			if (inheritedMmd == null)
+				throw new MetaMetadataException("meta-metadata '" + inheritedMmdName + "' not found.");
+			this.setInheritedMmd(inheritedMmd);
+		}
+		return inheritedMmd;
 	}
 	
 	void findOrGenerateMetadataClassDescriptor(TranslationScope tscope)
@@ -526,9 +488,9 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 				this.metadataClassDescriptor = superCd;
 			}
 			
-			if (this.getInlineMmds() != null)
+			if (this.getMmdScope() != null)
 			{
-				for (MetaMetadata inlineMmd : this.getInlineMmds().values())
+				for (MetaMetadata inlineMmd : this.getMmdScope().values())
 				{
 					inlineMmd.findOrGenerateMetadataClassDescriptor(tscope);
 				}
@@ -582,5 +544,5 @@ public class MetaMetadata extends MetaMetadataCompositeField implements Mappable
 		// attribute to determine if it is a new type
 		return super.isNewMetadataClass() && !this.isBuiltIn();
 	}
-	
+
 }

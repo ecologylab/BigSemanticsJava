@@ -1,5 +1,7 @@
 package ecologylab.semantics.metametadata;
 
+import java.util.Map;
+
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.semantics.metadata.Metadata.mm_dont_inherit;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
@@ -156,20 +158,6 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 		return childType != null ? childType : null;
 	}
 	
-//	/**
-//	 * Collection fields with children need to bind a class descriptor to the composite
-//	 * field created in postDeserializationHook(), and not itself.
-//	 */
-//	@Override
-//	boolean getClassAndBindDescriptors(TranslationScope metadataTScope)
-//	{
-//		MetaMetadataCompositeField childComposite = (MetaMetadataCompositeField) (kids.size() <= 0 ? null : kids.get(0));
-//		if (childComposite != null)
-//			return childComposite.getClassAndBindDescriptors(metadataTScope);
-//		else
-//			return false;
-//	}
-	
 	@Override
 	public HashMapArrayList<String, MetaMetadataField> getChildMetaMetadata()
 	{
@@ -225,12 +213,6 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 				if (thisField.childTag == null)
 					thisField.childTag = newTag;
 			}
-			
-//			@Override
-//			public boolean isPolymorphicInDescendantFields()
-//			{
-//				return thisField.isPolymorphicInDescendantFields();
-//			}
 		};
 		composite.setParent(this);
 		composite.setType(childType);
@@ -271,10 +253,12 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 			if (inheritedField != null)
 				childComposite.setInheritedField(inheritedField.getChildComposite());
 			childComposite.setDeclaringMmd(this.getDeclaringMmd());
-			childComposite.setScopingMmd(this.getScopingMmd());
+			childComposite.setMmdScope(this.getMmdScope());
 
 			childComposite.inheritMetaMetadata(); // inheritedMmd might be inferred from type/extends
+			
 			this.setInheritedMmd(childComposite.getInheritedMmd());
+			this.setMmdScope(childComposite.getMmdScope());
 			break;
 		}
 		case FieldTypes.COLLECTION_SCALAR:
@@ -347,16 +331,6 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 		this.metadataFieldDescriptor = fd;
 		return fd;
 	}
-	
-//	@Override
-//	protected HashMapArrayList<String, MetaMetadataField> initializeChildMetaMetadata()
-//	{
-//		kids = new HashMapArrayList<String, MetaMetadataField>();
-//		MetaMetadataCompositeField composite = new MetaMetadataCompositeField(childType, null);
-//		kids.put(composite.getName(), composite);
-//		
-//		return composite.getChildMetaMetadata();
-//	}
 	
 	@Override
 	protected MetadataClassDescriptor bindMetadataClassDescriptor(TranslationScope metadataTScope)

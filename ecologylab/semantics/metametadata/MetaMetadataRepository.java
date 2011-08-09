@@ -6,17 +6,19 @@ package ecologylab.semantics.metametadata;
 import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import ecologylab.appframework.types.prefs.Pref;
+import ecologylab.collections.MultiAncestorScope;
 import ecologylab.collections.PrefixCollection;
 import ecologylab.collections.PrefixPhrase;
-import ecologylab.concurrent.DownloadMonitor;
 import ecologylab.generic.Debug;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.net.ParsedURL;
@@ -32,26 +34,36 @@ import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.Image;
 import ecologylab.semantics.metadata.builtins.MetadataBuiltinsTranslationScope;
 import ecologylab.semantics.metadata.scalar.types.MetadataScalarType;
+import ecologylab.semantics.metametadata.exceptions.MetaMetadataException;
 import ecologylab.semantics.namesandnums.DocumentParserTagNames;
-import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.TranslationScope;
+import ecologylab.serialization.simpl_inherit;
 import ecologylab.textformat.NamedStyle;
 
 /**
+ * The repository of meta-metadata wrappers.
+ * 
+ * Wrapper definitions can scatter over multiple files, while loadFromXXX() methods will collect
+ * information and assemble a unified representation.
+ * 
  * @author damaraju
  * 
  */
-
-public class MetaMetadataRepository extends ElementState implements PackageSpecifier,
-		DocumentParserTagNames
+@SuppressWarnings({"rawtypes", "unchecked"})
+@simpl_inherit
+public class MetaMetadataRepository extends ElementState
+implements PackageSpecifier, DocumentParserTagNames
 {
-	private static final String	META_METADATA_COMPILER_TSCOPE	= "meta-metadata-compiler-tscope";
-
-	private static final String																	FIREFOX_3_6_4_AGENT_STRING			= "Mozilla/5.0 (Windows; U; Windows NT 6.1; ru; rv:1.9.2.4) Gecko/20100513 Firefox/3.6.4";
-
+	
 	private static final String																	DEFAULT_STYLE_NAME							= "default";
+
+	private static MetaMetadata																	baseDocumentMM;
+
+	private static MetaMetadata																	baseImageMM;
+
+	// [region] de/serializable data fields.
 
 	/**
 	 * The name of the repository.
@@ -66,23 +78,50 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	@simpl_scalar
 	private String																							packageAttribute;
 
+	/**
+	 * user agent strings.
+	 */
 	@simpl_map("user_agent")
-	private HashMap<String, UserAgent>													userAgents;
+	private Map<String, UserAgent>															userAgents;
 
-	@simpl_composite
-	private SearchEngines																				searchEngines;
-
-	@simpl_map("named_style")
-	private HashMap<String, NamedStyle>													namedStyles;
-
+	/**
+	 * default user agent string name.
+	 */
 	@simpl_scalar
 	private String																							defaultUserAgentName;
 
-	private String																							defaultUserAgentString					= null;
+	/**
+	 * definition of search engines.
+	 */
+	@simpl_composite
+	private SearchEngines																				searchEngines;
 
+	/**
+	 * definition of sites.
+	 */
+	@simpl_map("site")
+	private SemanticsSiteMap																		sites;
+
+	/**
+	 * definition of name styles.
+	 */
+	@simpl_map("named_style")
+	private Map<String, NamedStyle>															namedStyles;
+
+	/**
+	 * definition of cookie processors.
+	 */
 	@simpl_nowrap
 	@simpl_collection("cookie_processing")
-	ArrayList<CookieProcessing>																	cookieProcessors;
+	private ArrayList<CookieProcessing>													cookieProcessors;
+
+	/**
+	 * definition of selectors. selectors are used to select a meta-metadata based on URL pattern or
+	 * MIME type / suffix.
+	 */
+	@simpl_map("selector")
+	@simpl_nowrap
+	private HashMapArrayList<String, MetaMetadataSelector>			selectorsByName;
 
 	/**
 	 * The map from meta-metadata name (currently simple name, but might be extended to fully
@@ -95,121 +134,325 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	@simpl_nowrap
 	private HashMapArrayList<String, MetaMetadata>							repositoryByName;
 
-	@simpl_map("selector")
-	@simpl_nowrap
-	private HashMapArrayList<String, MetaMetadataSelector>			selectorsByName;
+	// [endregion]
 
+	/**
+	 * package mmd scopes.
+	 */
+	private Map<String, MultiAncestorScope<MetaMetadata>>				packageMmdScopes;
+
+	// [region] repository maps generated from repositoryByName. used for look-up.
+
+	/**
+	 * meta-metadata sorted by metadata class name.
+	 */
 	private HashMap<String, MetaMetadata>												repositoryByClassName						= new HashMap<String, MetaMetadata>();
 
 	/**
-	 * Repository with noAnchorNoQuery URL string as key.
+	 * Repository by MIME type.
 	 */
-	private HashMap<String, MetaMetadata>												documentRepositoryByUrlStripped	= new HashMap<String, MetaMetadata>();
+	private HashMap<String, MetaMetadata>												repositoryByMime								= new HashMap<String, MetaMetadata>();
 
 	/**
-	 * Repository with domain as key.
+	 * Repository by suffix.
+	 */
+	private HashMap<String, MetaMetadata>												repositoryBySuffix							= new HashMap<String, MetaMetadata>();
+
+	/**
+	 * Collection of URL prefixes.
+	 */
+	private PrefixCollection																		urlPrefixCollection							= new PrefixCollection('/');
+
+	/**
+	 * Repository of documents with domain as key.
 	 */
 	private HashMap<String, MetaMetadata>												documentRepositoryByDomain			= new HashMap<String, MetaMetadata>();
 
 	/**
-	 * Repository for ClippableDocument and its subclasses.
+	 * Repository of documents with noAnchorNoQuery URL string as key.
+	 */
+	private HashMap<String, MetaMetadata>												documentRepositoryByUrlStripped	= new HashMap<String, MetaMetadata>();
+
+	/**
+	 * Repository of documents with URL pattern as key.
+	 */
+	private HashMap<String, ArrayList<RepositoryPatternEntry>>	documentRepositoryByPattern			= new HashMap<String, ArrayList<RepositoryPatternEntry>>();
+
+	/**
+	 * Repository of images with noAnchroNoQuery URL string as key.
 	 */
 	private HashMap<String, MetaMetadata>												imageRepositoryByUrlStripped		= new HashMap<String, MetaMetadata>();
 
-	private HashMap<String, ArrayList<RepositoryPatternEntry>>	documentRepositoryByPattern			= new HashMap<String, ArrayList<RepositoryPatternEntry>>();
-
+	/**
+	 * Repository of images with URL pattern as key.
+	 */
 	private HashMap<String, ArrayList<RepositoryPatternEntry>>	imageRepositoryByPattern				= new HashMap<String, ArrayList<RepositoryPatternEntry>>();
 
+	// [endregion]
+
 	/**
-	 * We have only documents as direct binding will be used only in case of feeds and XML
+	 * The metadata translation scope used by this repository.
 	 */
-	private HashMap<String, MetaMetadata>												repositoryByMime								= new HashMap<String, MetaMetadata>();
-
-	private HashMap<String, MetaMetadata>												repositoryBySuffix							= new HashMap<String, MetaMetadata>();
-
-	private PrefixCollection																		urlPrefixCollection							= new PrefixCollection('/');
-
-	// /////////rm s00n private HashMap<String, MetaMetadataSelector> selectorsByName = new
-	// HashMap<String, MetaMetadataSelector>();
-
-	// public static final TranslationScope META_METADATA_TSCOPE =
-	// MetaMetadataTranslationScope.get();
-
 	private TranslationScope																		metadataTScope;
 
-	// for debugging
-	protected static File																				REPOSITORY_FILE;
+	private LinkedMetadataMonitor																linkedMetadataMonitor						= new LinkedMetadataMonitor();
 
-	File																												file;
+	/**
+	 * for debug.
+	 */
+	private File																								file;
 
-	@simpl_map("site")
-	private SemanticsSiteMap																		sites;
-
-	public DownloadMonitor																			downloadMonitor;
-	
-	static MetaMetadata																					baseDocumentMM;
-
-	static MetaMetadata																					baseImageMM;
+	private static boolean																			initializedTypes;
 
 	static
 	{
 		initializeTypes();
 	}
 
-	private static boolean																			initializedTypes;
-
-	/**
-	 * 
-	 */
 	public static synchronized void initializeTypes()
 	{
 		if (!initializedTypes)
 		{
 			initializedTypes = true;
-			MetadataScalarType.init(); // register metadata-specific scalar
-			// types
+			MetadataScalarType.init(); // register metadata-specific scalar types
 			ecologylab.semantics.metadata.builtins.MetadataBuiltinsTranslationScope.get();
 		}
 	}
 
-	public static void main(String args[])
+	// [region] basic methods (getter/setters, etc.).
+	
+	public String getName()
 	{
-		REPOSITORY_FILE = new File(
-				/* PropertiesAndDirectories.thisApplicationDir(), */"C:\\abhinavThesisCode\\cf\\config\\semantics\\metametadata\\metaMetadataRepository.xml");
-		MetaMetadataRepository metaMetaDataRepository = load(REPOSITORY_FILE);
-		try
+		return name;
+	}
+
+	public void setName(String name)
+	{
+		this.name = name;
+	}
+
+	public String packageName()
+	{
+		return packageAttribute;
+	}
+
+	public NamedStyle getDefaultStyle()
+	{
+		return lookupStyle(DEFAULT_STYLE_NAME);
+	}
+
+	public NamedStyle lookupStyle(String styleName)
+	{
+		return namedStyles == null ? null : namedStyles.get(styleName);
+	}
+	
+	public String getDefaultUserAgentString()
+	{
+		if (defaultUserAgentName == null)
 		{
-			metaMetaDataRepository.serialize(System.out);
+			for (UserAgent userAgent : getUserAgents().values())
+			{
+				if (userAgent.isDefaultAgent())
+				{
+					defaultUserAgentName = userAgent.name();
+					break;
+				}
+			}
 		}
-		catch (SIMPLTranslationException e)
+		return getUserAgentString(defaultUserAgentName);
+	}
+
+	public String getUserAgentString(String name)
+	{
+		return getUserAgents().get(name).userAgentString();
+	}
+
+	private Map<String, UserAgent> getUserAgents()
+	{
+		if (userAgents == null)
+			userAgents = new HashMap<String, UserAgent>();
+		return userAgents;
+	}
+
+	public String getDefaultSearchEngine()
+	{
+		return searchEngines != null ? searchEngines.getDefaultEngine() : "bing";
+	}
+
+	public SearchEngine getSearchEngine(String engineName)
+	{
+		if (searchEngines != null)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			return searchEngines.getEngine(engineName);
 		}
+		return null;
+	}
+
+	public SemanticsSiteMap getSites()
+	{
+		return sites;
+	}
+
+	public SemanticsSite getSite(Document document, SemanticsGlobalScope semanticsSessionScope)
+	{
+		return sites.getOrConstruct(document, semanticsSessionScope);
+	}
+
+	public TranslationScope metadataTranslationScope()
+	{
+		return metadataTScope;
+	}
+
+	public Set<String> keySet()
+	{
+		return (repositoryByName == null) ? null : repositoryByName.keySet();
+	}
+
+	public Collection<MetaMetadata> values()
+	{
+		return (repositoryByName == null) ? null : repositoryByName.values();
+	}
+	
+	public Map<String, MultiAncestorScope<MetaMetadata>> getPackageMmdScopes()
+	{
+		return this.packageMmdScopes;
+	}
+	
+	/**
+	 * 
+	 * @return the monitor used for linking metadata.
+	 */
+	public LinkedMetadataMonitor getLinkedMetadataMonitor()
+	{
+		return linkedMetadataMonitor;
+	}
+	
+	// [endregion]
+	
+	protected static MetaMetadataRepository loadFromFiles(List<File> files)
+	{
+		TranslationScope metaMetadataTScope = MetaMetadataTranslationScope.get();
+		MetaMetadataRepository result = new MetaMetadataRepository();
+		result.repositoryByName = new HashMapArrayList<String, MetaMetadata>();
+		result.packageMmdScopes = new HashMap<String, MultiAncestorScope<MetaMetadata>>();
+		
+		for (File file : files)
+		{
+			if (file == null || !file.exists())
+			{
+				result.warning("ignoring " + file);
+				continue;
+			}
+			
+			println("MetaMetadataRepository read:\t" + file.getPath());
+			
+			try
+			{
+				MetaMetadataRepository repoData = (MetaMetadataRepository) metaMetadataTScope.deserialize(file);
+				if (repoData != null)
+				{
+					repoData.file = file;
+					
+					// sort meta-metadata into result.repositoryByName and mmd scope for that package.
+					if (repoData.repositoryByName != null)
+					{
+						String packageName = repoData.packageName();
+						MultiAncestorScope<MetaMetadata> packageMmdScope = result.packageMmdScopes.get(packageName);
+						if (packageMmdScope == null)
+						{
+							packageMmdScope = new MultiAncestorScope<MetaMetadata>(result.repositoryByName);
+							result.packageMmdScopes.put(packageName, packageMmdScope);
+						}
+						
+						for (String mmdName : repoData.repositoryByName.keySet())
+						{
+							MetaMetadata mmd = repoData.repositoryByName.get(mmdName);
+							mmd.setFile(file);
+							mmd.setParent(result);
+							mmd.setPackageName(repoData.packageName());
+							mmd.setRepository(result);
+
+							switch (mmd.visibility)
+							{
+							case GLOBAL:
+								if (result.repositoryByName.containsKey(mmdName) && result.repositoryByName.get(mmdName) != mmd)
+									throw new MetaMetadataException("meta-metadata already exists: " + mmdName + " in " + file);
+								result.repositoryByName.put(mmdName, mmd);
+								break;
+							case PACKAGE:
+								MetaMetadata existingMmd = packageMmdScope.get(mmdName);
+								if (existingMmd != null && existingMmd != mmd)
+									throw new MetaMetadataException("meta-metadata already exists: " + mmdName + " in " + file);
+								packageMmdScope.put(mmdName, mmd);
+								break;
+							}
+						}
+						
+						for (MetaMetadata mmd : repoData.repositoryByName.values())
+						{
+							mmd.setMmdScope(packageMmdScope);
+						}
+					}
+					
+					// combine other parts
+					result.integrateRepositoryWithThis(repoData);
+				}
+			}
+			catch (SIMPLTranslationException e)
+			{
+				Debug.error("MetaMetadataRepository", "translating repository source file " + file.getAbsolutePath());
+				e.printStackTrace();
+			}
+		}
+		
+		// initialize meta-metadata look-up maps
+//		result.initializeLocationBasedMaps(); // cannot do this since it needs the metadata TScope.
+		result.initializeSuffixAndMimeBasedMaps();
+		
+		// We might want to do this only if we have some policies worth enforcing.
+		ParsedURL.cookieManager.setCookiePolicy(CookieProcessing.semanticsCookiePolicy);
+	
+		// FIXME -- get rid of this?!
+		Metadata.setRepository(result);
+		
+		baseDocumentMM	= result.getMMByName(DOCUMENT_TAG);
+		baseImageMM			= result.getMMByName(IMAGE_TAG);
+		
+		return result;
 	}
 
 	/**
-	 * Load MetaMetadata from repository files from the file directory. Loads the base level xml files
-	 * first, then the xml files in the repositorySources folder and lastly the files in the powerUser
+	 * Load meta-metadata from repository files from a set of files. Does not build location-based
+	 * repository maps, because this requires a Metadata TranslationScope, which comes from
+	 * ecologylabGeneratedSemantics.
+	 * 
+	 * @param files
+	 * @return
+	 */
+	public static MetaMetadataRepository loadFromFiles(File... files)
+	{
+		return loadFromFiles(Arrays.asList(files));
+	}
+
+	/**
+	 * Load meta-metadata from repository files from a directly. Loads the base level xml files first,
+	 * then the xml files in the repositorySources folder and lastly the files in the powerUser
 	 * folder. Does not build repository maps, because this requires a Metadata TranslationScope,
 	 * which comes from ecologylabGeneratedSemantics.
 	 * 
-	 * @param file
-	 *          directory
-	 * @param metadataTScope
+	 * @param dir
+	 *          the repository directory.
 	 * @return
 	 */
-	public static MetaMetadataRepository load(File dir)
+	public static MetaMetadataRepository loadFromDir(File dir)
 	{
 		if (!dir.exists())
 		{
-			throw new RuntimeException("MetaMetadataRepository directory does not exist : " + dir.getAbsolutePath());
+			throw new MetaMetadataException("MetaMetadataRepository directory does not exist : " + dir.getAbsolutePath());
 		}
-		else
-			println("MetaMetadataRepository directory : " + dir + "\n");
-
-		MetaMetadataRepository result = null;
-
+		
+		println("MetaMetadataRepository directory : " + dir + "\n");
+	
 		FileFilter xmlFilter = new FileFilter()
 		{
 			public boolean accept(File dir)
@@ -217,186 +460,99 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 				return dir.getName().endsWith(".xml");
 			}
 		};
-
-		File powerUserDir = new File(dir, "powerUser");
+		
 		File repositorySources = new File(dir, "repositorySources");
-
-		TranslationScope metaMetadataTScope = MetaMetadataTranslationScope.get();
-
-		for (File file : dir.listFiles(xmlFilter))
-		{
-			MetaMetadataRepository repos = readRepository(file, metaMetadataTScope);
-			SearchEngines thoseEngines	= repos.searchEngines;
-			if (result == null)
-				result = repos;
-			else if (thoseEngines != null)
-			{
-				result.searchEngines	= thoseEngines;
-			}
-			else
-				result.integrateRepositoryWithThis(repos);
-			// result.populateURLBaseMap();
-			// // necessary to get, for example, fields for document into pdf...
-			// result.populateInheritedValues();
-			//
-			// result.populateMimeMap();
-			// For debug
-			// this.metaMetaDataRepository.translateToXML(System.out);
-		}
-
-		if (repositorySources.exists())
-		{
-			for (File file : repositorySources.listFiles(xmlFilter))
-				result.integrateRepositoryWithThis(file, metaMetadataTScope);
-		}
-
-		if (powerUserDir.exists())
-		{
-			for (File file : powerUserDir.listFiles(xmlFilter))
-				result.integrateRepositoryWithThis(file, metaMetadataTScope);
-		}
-
-		// We might want to do this only if we have some policies worth enforcing.
-		ParsedURL.cookieManager.setCookiePolicy(CookieProcessing.semanticsCookiePolicy);
-
-		// FIXME -- get rid of this?!
-		Metadata.setRepository(result);
+		File powerUserDir = new File(dir, "powerUser");
 		
-		baseDocumentMM	= result.getByName(DOCUMENT_TAG);
-		baseImageMM			= result.getByName(IMAGE_TAG);
+		List<File> allFiles = new ArrayList<File>();
+		addFilesInDirToList(dir, xmlFilter, allFiles);
+		addFilesInDirToList(repositorySources, xmlFilter, allFiles);
+		addFilesInDirToList(powerUserDir, xmlFilter, allFiles);
 		
-		return result;
+		return loadFromFiles(allFiles);
 	}
 	
-	public static MetaMetadataRepository readRepository(File file)
+	private static void addFilesInDirToList(File dir, FileFilter filter, List<File> buf)
 	{
-		return readRepository(file, MetaMetadataTranslationScope.get());
+		if (dir == null || !dir.exists())
+			return;
+		for (File f : dir.listFiles(filter))
+			buf.add(f);
 	}
 
 	/**
-	 * Load MetaMetadataRepository from one file.
+	 * Combines the data stored in the parameter repository into this repository, except for
+	 * repositoryByName.
 	 * 
-	 * @param file
-	 * @param metadataTScope
-	 * @return repository
-	 */
-	public static MetaMetadataRepository readRepository(File file, TranslationScope metaMetadataTScope)
-	{
-		MetaMetadataRepository repos = null;
-		println("MetaMetadataRepository read:\t" + new File(file.getParent()).getName() + "/" + file.getName());
-
-		try
-		{
-			repos = (MetaMetadataRepository) metaMetadataTScope.deserialize(file);
-			repos.file = file;
-			HashMapArrayList<String, MetaMetadata> mmdTagMap = repos.repositoryByName;
-			if (mmdTagMap != null)
-				for (MetaMetadata mmd : mmdTagMap.values())
-					mmd.setPackageName(repos.packageName());
-			repos.initializeSuffixAndMimeBasedMaps();
-		}
-		catch (SIMPLTranslationException e)
-		{
-			Debug.error("MetaMetadataRepository", "translating repository source file " + file.getAbsolutePath());
-			e.printStackTrace();
-		}
-
-		return repos;
-	}
-
-	public void integrateRepositoryWithThis(File repositoryFile, TranslationScope metaMetadataTScope)
-	{
-		MetaMetadataRepository thatRepo = readRepository(repositoryFile, metaMetadataTScope);
-		if (thatRepo == null)
-			error("Could not integrate repository file:\t" + repositoryFile);
-		else
-			integrateRepositoryWithThis(thatRepo);
-	}
-
-	/**
-	 * Combines the data stored in the parameter repository into this repository.
-	 * 
-	 * @param repository
+	 * @param theOtherRepository
 	 * @return
 	 */
-	public void integrateRepositoryWithThis(MetaMetadataRepository repository)
+	private void integrateRepositoryWithThis(MetaMetadataRepository theOtherRepository)
 	{
-		// combine userAgents
-		if (!combineMaps(repository.userAgents, this.userAgents))
-			this.userAgents = repository.userAgents;
+		this.userAgents = combineMap(this.userAgents, theOtherRepository.userAgents);
 
-		// combine searchEngines
-//		if (!combineMaps(repository.searchEngines, this.searchEngines))
-//			this.searchEngines = repository.searchEngines;
-
-		// combine namedStyles
-		if (!combineMaps(repository.namedStyles, this.namedStyles))
-			this.namedStyles = repository.namedStyles;
-
-		// combine sites
-		if (!combineMaps(repository.sites, this.sites))
-			this.sites = repository.sites;
-
-		if (!combineMaps(repository.repositoryByMime, this.repositoryByMime))
-			this.repositoryByMime = repository.repositoryByMime;
-
-		if (!combineMaps(repository.repositoryBySuffix, this.repositoryBySuffix))
-			this.repositoryBySuffix = repository.repositoryBySuffix;
-
-		combineMaps(repository.documentRepositoryByDomain, this.documentRepositoryByDomain);
-
-		// set metaMetadata to have the correct parent repository
-		HashMapArrayList<String, MetaMetadata> repositoryByTagName = repository.repositoryByName;
-		if (repositoryByTagName != null)
+		if (this.searchEngines != null && theOtherRepository.searchEngines != null)
 		{
-			for (MetaMetadata metaMetadata : repositoryByTagName)
+			String theOtherDefaultEngine = theOtherRepository.searchEngines.getDefaultEngine();
+			if (theOtherDefaultEngine != null)
 			{
-				metaMetadata.setParent(this);
-				metaMetadata.file = repository.file;
-				if (metaMetadata.packageName() == null)
-					metaMetadata.setPackageName(repository.packageAttribute);
+				if (this.searchEngines.getDefaultEngine() == null)
+					this.searchEngines.setDefaultEngine(theOtherDefaultEngine);
+				else
+					warning("default engine already defined, ignoring the one defined in " + theOtherRepository);
 			}
+			this.searchEngines.setSearchEngines(combineMap(this.searchEngines.getSearchEngines(), theOtherRepository.searchEngines.getSearchEngines()));
 		}
 
-		// combine metaMetadata
-		if (!combineMaps(repositoryByTagName, this.repositoryByName))
-			this.repositoryByName = repositoryByTagName;
-	}
+		this.namedStyles = combineMap(this.namedStyles, theOtherRepository.namedStyles);
 
-	private boolean combineMaps(Map srcMap, Map destMap)
+		this.sites = combineMap(this.sites, theOtherRepository.sites);
+	}
+	
+	/**
+	 * copy all items in srcMap to destMap, and report duplicate elements.
+	 * 
+	 * @param destMap
+	 * @param srcMap
+	 * @param controller
+	 *          the filter used to tune the combining process.
+	 * @return the combined map. if destMap != null, this is destMap; or this is srcMap.
+	 */
+	private <KT, VT, MT extends Map<KT, VT>> MT combineMap(MT destMap, MT srcMap)
 	{
 		if (destMap == null)
-			return false;
+			return srcMap;
+		
 		if (srcMap != null)
 		{
-			for (Object sourceMmdName : srcMap.keySet())
+			for (KT key : srcMap.keySet())
 			{
-				if (destMap.containsKey(sourceMmdName))
+				VT value = srcMap.get(key);
+				if (destMap.containsKey(key))
 				{
-					error("META-METADATA DEFINED TWICE: " + sourceMmdName);
+					error(value.getClass().getSimpleName() + " DEFINED TWICE: " + key);
 				}
 				else
 				{
-					destMap.put(sourceMmdName, srcMap.get(sourceMmdName));
+					destMap.put(key, value);
 				}
 			}
 		}
-		return true;
+		return destMap;
 	}
 	
 	/**
-	 * this method is used by the compiler to traverse the repository, resolve inheritance and
-	 * generate a translation scope for code generation.
+	 * traverse the repository and generate a translation scope from it. note that the graph switch
+	 * should be turned on because there probably will be type graphs in the meta-metadata type
+	 * system.
 	 * 
-	 * @return the generated translation scope.
+	 * @param TSName
+	 *          the name of the resulted translation scope.
+	 * @return
 	 */
-	public TranslationScope traverseAndGenerateTranslationScope()
-	{
-		return traverseAndGenerateTranslationScope(META_METADATA_COMPILER_TSCOPE);
-	}
-
 	public TranslationScope traverseAndGenerateTranslationScope(String TSName)
 	{
+		// init the TScope with built-ins, and bind descriptors for built-ins.
 		TranslationScope metadataBuiltInTScope = MetadataBuiltinsTranslationScope.get();
 		TranslationScope ts = TranslationScope.get(TSName, new TranslationScope[] {metadataBuiltInTScope});
 		for (MetaMetadata metaMetadata : repositoryByName)
@@ -405,146 +561,115 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 				metaMetadata.bindMetadataClassDescriptor(ts);
 		}
 		
-		// make another copy because we may add new meta-metadata (from inline definitions) to repositoryByTagName
-		ArrayList<MetaMetadata> mmds = new ArrayList<MetaMetadata>(repositoryByName.values());
+		// inheritance.
+		traverseAndInheritMetaMetadata();
 		
-		// class descriptors could be more than meta-metadatas! need another way to collect these.
-		for (MetaMetadata metaMetadata : mmds)
-		{
-			metaMetadata.setRepository(this);
-			metaMetadata.inheritMetaMetadata();
+		// generate translation scopes.
+		for (MetaMetadata metaMetadata : new ArrayList<MetaMetadata>(repositoryByName.values()))
 			metaMetadata.findOrGenerateMetadataClassDescriptor(ts);
-		}
-		
-//		// finish polymorphism work, e.g. @simpl_classes & @xml_other_tags
-//		for (ClassDescriptor cd : ts.entriesByClassName().values())
-//		{
-//			MetadataClassDescriptor mcd = (MetadataClassDescriptor) cd;
-//			mcd.traverseAndResolvePolymorphismAndOtherTagsForCompilation();
-//		}
 		
 		return ts;
 	}
 
 	/**
-	 * Recursively bind MetadataFieldDescriptors to all MetaMetadataFields. Perform other
-	 * initialization.
+	 * Recursively bind MetadataClassDescriptors to all MetaMetadata. Perform other initialization.
 	 * 
 	 * @param metadataTScope
+	 *          the (global) metadata translation scope used for binding.
 	 */
 	public void bindMetadataClassDescriptorsToMetaMetadata(TranslationScope metadataTScope)
 	{
 		this.metadataTScope = metadataTScope;
-		initializeDefaultUserAgent();
 
-		// make another copy because we may add new meta-metadata (from inline definitions) to repositoryByTagName
-		ArrayList<MetaMetadata> mmds = new ArrayList<MetaMetadata>(repositoryByName.values());
-		// inheritance process first, in which this.repositoryByName could be modified
-		for (MetaMetadata metaMetadata : mmds)
+		traverseAndInheritMetaMetadata();
+		
+		// bind global meta-metadata first
+		bindMetadataClassDescriptorsForScope(this.repositoryByName, metadataTScope);
+		
+		// then bind package-wide visible meta-metadata
+		for (String packageName : this.packageMmdScopes.keySet())
 		{
-			metaMetadata.setRepository(this);
-			metaMetadata.inheritMetaMetadata();
+			MultiAncestorScope<MetaMetadata> packageMmdScope = this.packageMmdScopes.get(packageName);
+			if (packageMmdScope != null && packageMmdScope.size() > 0)
+			{
+				TranslationScope packageMetadataTScope = TranslationScope.get(metadataTScope.getName()
+						+ "__" + packageName, new TranslationScope[] { metadataTScope });
+				for (MetaMetadata mmd : packageMmdScope.values())
+				{
+					if (mmd.isNewMetadataClass())
+					{
+						try
+						{
+							Class mmdClass = Class.forName(mmd.packageName() + "." + mmd.getMetadataClassSimpleName());
+							packageMetadataTScope.addTranslation(mmdClass);
+						}
+						catch (ClassNotFoundException e)
+						{
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				}
+				bindMetadataClassDescriptorsForScope(packageMmdScope, packageMetadataTScope);
+			}
 		}
 		
-		// then binding process
-		mmds = new ArrayList<MetaMetadata>(repositoryByName.values());
-		for (MetaMetadata metaMetadata : mmds)
+		for (MetaMetadata mmd : repositoryByName.values())
 		{
-//			metaMetadata.getClassAndBindDescriptors(metadataTScope);
-			MetadataClassDescriptor metadataClassDescriptor = metaMetadata.bindMetadataClassDescriptor(metadataTScope);
-			if (metadataClassDescriptor == null)
-			{
-				warning("Cannot bind metadata class descriptor for " + metaMetadata);
-				repositoryByName.remove(metaMetadata.getName());
-				continue;
-			}
+			MetadataClassDescriptor mcd = mmd.getMetadataClassDescriptor();
+			if (mmd.isNewMetadataClass() && mcd != null)
+				repositoryByClassName.put(mcd.getDescribedClass().getName(), mmd);
 			
-			// don't put restatements of the same base type into *this* map
-			if (metaMetadata.getType() == null && metadataClassDescriptor != null)
-				repositoryByClassName.put(metadataClassDescriptor.getDescribedClass().getName(), metaMetadata);
-
-			// set up <link_with>
-			metaMetadata.setUpLinkWith(this);
+			mmd.setUpLinkWith(this);
 		}
 
 		initializeLocationBasedMaps();
 	}
-
-	/**
-	 * 
-	 */
-	private void initializeDefaultUserAgent()
+	
+	private void bindMetadataClassDescriptorsForScope(Map<String, MetaMetadata> scope, TranslationScope metadataTScope)
 	{
-		UserAgent userAgent = userAgents == null ? null : userAgents.get(defaultUserAgentName);
-		if (userAgent != null)
-			defaultUserAgentName = userAgent.userAgentString();
-		else
-			defaultUserAgentName = FIREFOX_3_6_4_AGENT_STRING;
-	}
-
-	/**
-	 * Recursively Copying MetadataFields from srcMetaMetadata to destMetaMetadata.
-	 * 
-	 * @param destMetaMetadata
-	 * @param srcMetaMetadata
-	 */
-	protected void recursivePopulate(MetaMetadata destMetaMetadata)
-	{
-		// recursivePopulate(destMetaMetadata,
-		// destMetaMetadata.getExtendsClass());
-	}
-
-	public MetaMetadata getMM(Class<? extends Metadata> thatClass)
-	{
-		String tag = metadataTScope.getTag(thatClass);
-
-		return (tag == null) ? null : repositoryByName.get(tag);
-	}
-
-	public MetaMetadataNestedField getMM(Class<? extends Metadata> parentClass, String fieldName)
-	{
-		MetaMetadataNestedField result = null;
-		MetaMetadata parentMM = getMM(parentClass);
-
-		if (parentMM != null)
-			result = (MetaMetadataNestedField) parentMM.lookupChild(fieldName);
-
-		return result;
-	}
-
-	private MetaMetadata domainAndPatternForMetadata(String domain, Pattern pattern)
-	{
-		MetaMetadata result = null;
-		ArrayList<RepositoryPatternEntry> entries = documentRepositoryByPattern.get(domain);
-		if (entries != null)
+		// use another copy because we may modify scope during the process
+		ArrayList<MetaMetadata> mmds = new ArrayList<MetaMetadata>(scope.values());
+		for (MetaMetadata mmd : mmds)
 		{
-			for (RepositoryPatternEntry entry : entries)
+			MetadataClassDescriptor mcd = mmd.bindMetadataClassDescriptor(metadataTScope);
+			if (mcd == null)
 			{
-				if (entry.getPattern().pattern().equals(pattern.pattern()))
-				{
-					result = entry.getMetaMetadata();
-				}
+				warning("Cannot bind metadata class descriptor for " + mmd);
+				scope.remove(mmd.getName());
 			}
 		}
-		return result;
 	}
 
-	private void removeDomainAndPatternForMetadata(String domain, Pattern pattern)
+	/**
+	 * traverse the repository and do inheritance on each meta-metadata.
+	 */
+	public void traverseAndInheritMetaMetadata()
 	{
-		MetaMetadata result = null;
-		ArrayList<RepositoryPatternEntry> entries = documentRepositoryByPattern.get(domain);
-		if (entries != null)
+		if (this.repositoryByName != null && this.repositoryByName.size() > 0)
 		{
-			for (RepositoryPatternEntry entry : entries)
+			// make another copy because we may modify the collection (e.g. for adding inline definitions)
+			ArrayList<MetaMetadata> mmds = new ArrayList<MetaMetadata>(repositoryByName.values());
+			for (MetaMetadata metaMetadata : mmds)
 			{
-				if (entry.getPattern().pattern().equals(pattern.pattern()))
-				{
-					// result = entry.getMetaMetadata();
-					entries.remove(entry);
-					return;
-				}
+				metaMetadata.setRepository(this);
+				metaMetadata.inheritMetaMetadata();
 			}
 		}
+	}
+
+	public MetaMetadata getMMByName(String name)
+	{
+		if (name == null)
+			return null;
+		return repositoryByName.get(name);
+	}
+
+	public MetaMetadata getMMByClass(Class<? extends Metadata> metadataClass)
+	{
+		if (metadataClass == null)
+			return null;
+		return repositoryByClassName.get(metadataClass.getName());
 	}
 
 	/**
@@ -613,7 +738,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 			}
 		}
 		if (result == null)
-			result = getByName(tagName);
+			result = getMMByName(tagName);
 
 		return result;
 	}
@@ -631,29 +756,14 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		return getDocumentMM(purl, DOCUMENT_TAG);
 	}
 
-	public MetaMetadata getCompoundDocumentMM(ParsedURL purl)
-	{
-		return getDocumentMM(purl, COMPOUND_DOCUMENT_TAG);
-	}
-
-	public MetaMetadata getMMBySuffix(String suffix)
-	{
-		return repositoryBySuffix.get(suffix);
-	}
-
-	public MetaMetadata getMMByMime(String mimeType)
-	{
-		return repositoryByMime.get(mimeType);
-	}
-
 	public MetaMetadata getDocumentMM(Document metadata)
 	{
 		return getDocumentMM(metadata.getLocation(), metadataTScope.getTag(metadata.getClass()));
 	}
 
-	public MetaMetadata getImageMM(ParsedURL purl)
+	public MetaMetadata getCompoundDocumentMM(ParsedURL purl)
 	{
-		return getClippableDocumentMM(purl, IMAGE_TAG);
+		return getDocumentMM(purl, COMPOUND_DOCUMENT_TAG);
 	}
 
 	public MetaMetadata getClippableDocumentMM(ParsedURL purl, String tagName)
@@ -662,16 +772,16 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		if (purl != null && !purl.isFile())
 		{
 			result = imageRepositoryByUrlStripped.get(purl.noAnchorNoQueryPageString());
-
+	
 			if (result == null)
 			{
 				String protocolStrippedURL = purl.toString().split("://")[1];
-
+	
 				String key = purl.url().getProtocol() + "://"
 						+ urlPrefixCollection.getMatchingPhrase(protocolStrippedURL, '/');
-
+	
 				result = imageRepositoryByUrlStripped.get(key);
-
+	
 				if (result == null)
 				{
 					String domain = purl.domain();
@@ -693,7 +803,78 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 				}
 			}
 		}
-		return (result != null) ? result : getByName(tagName);
+		return (result != null) ? result : getMMByName(tagName);
+	}
+
+	public MetaMetadata getImageMM(ParsedURL purl)
+	{
+		return getClippableDocumentMM(purl, IMAGE_TAG);
+	}
+
+	public MetaMetadata getMMBySuffix(String suffix)
+	{
+		return repositoryBySuffix.get(suffix);
+	}
+
+	public MetaMetadata getMMByMime(String mimeType)
+	{
+		return repositoryByMime.get(mimeType);
+	}
+
+	public Metadata constructByName(String name)
+	{
+		Metadata result						= null;
+		MetaMetadata metaMetadata	= getMMByName(name);
+		if (metaMetadata != null)
+		{
+			result									= metaMetadata.constructMetadata(metadataTScope);
+		}
+		return result;
+	}
+
+	public Metadata constructBySuffix(String suffix)
+	{
+		MetaMetadata metaMetadata = this.getMMBySuffix(suffix);
+		return metaMetadata == null ? null : metaMetadata.constructMetadata(metadataTScope);
+	}
+
+	/**
+	 * Look-up MetaMetadata for this purl. If there is no special MetaMetadata, use Document.
+	 * Construct Metadata of the correct subtype, base on the MetaMetadata. Set its location field to
+	 * purl.
+	 * 
+	 * @param purl
+	 * @return
+	 */
+	public Document constructDocument(ParsedURL purl)
+	{
+		MetaMetadata metaMetadata = getDocumentMM(purl);
+		Document result = (Document) metaMetadata.constructMetadata(metadataTScope);
+		result.setLocation(purl);
+		return result;
+	}
+
+	public Document constructDocumentBySuffix(String suffix)
+	{
+		Metadata result = constructBySuffix(suffix);
+		return result instanceof Document ? (Document) result : null;
+	}
+
+	public Document constructDocumentByMime(String mimeType)
+	{
+		MetaMetadata metaMetadata = this.getMMByMime(mimeType);
+		return metaMetadata == null ? null : (Document) metaMetadata.constructMetadata(metadataTScope);
+	}
+
+	public Document constructCompoundDocument(ParsedURL purl)
+	{
+		if (purl.isImg())
+			return constructImage(purl);
+		
+		MetaMetadata metaMetadata = getCompoundDocumentMM(purl);
+		Document result = (Document) metaMetadata.constructMetadata(metadataTScope);
+		result.setLocation(purl);
+		return result;
 	}
 
 	/**
@@ -716,51 +897,6 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	}
 
 	/**
-	 * Look-up MetaMetadata for this purl. If there is no special MetaMetadata, use Document.
-	 * Construct Metadata of the correct subtype, base on the MetaMetadata. Set its location field to
-	 * purl.
-	 * 
-	 * @param purl
-	 * @return
-	 */
-	public Document constructDocument(ParsedURL purl)
-	{
-		MetaMetadata metaMetadata = getDocumentMM(purl);
-		Document result = (Document) metaMetadata.constructMetadata(metadataTScope);
-		result.setLocation(purl);
-		return result;
-	}
-
-	public Document constructCompoundDocument(ParsedURL purl)
-	{
-		if (purl.isImg())
-			return constructImage(purl);
-		
-		MetaMetadata metaMetadata = getCompoundDocumentMM(purl);
-		Document result = (Document) metaMetadata.constructMetadata(metadataTScope);
-		result.setLocation(purl);
-		return result;
-	}
-
-	public Document constructDocumentBySuffix(String suffix)
-	{
-		Metadata result = constructBySuffix(suffix);
-		return result instanceof Document ? (Document) result : null;
-	}
-
-	public Metadata constructBySuffix(String suffix)
-	{
-		MetaMetadata metaMetadata = this.getMMBySuffix(suffix);
-		return metaMetadata == null ? null : metaMetadata.constructMetadata(metadataTScope);
-	}
-
-	public Document constructDocumentByMime(String mimeType)
-	{
-		MetaMetadata metaMetadata = this.getMMByMime(mimeType);
-		return metaMetadata == null ? null : (Document) metaMetadata.constructMetadata(metadataTScope);
-	}
-
-	/**
 	 * Initializes HashMaps for MetaMetadata selectors by URL or pattern. Uses the ClippableDocument
 	 * and Document base classes to ensure that maps are only filled with appropriate matching
 	 * MetaMetadata.
@@ -771,7 +907,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 		{
 			// metaMetadata.inheritMetaMetadata(this);
 
-//			Class<? extends Metadata> metadataClass = metaMetadata.getMetadataClass(metadataTScope);
+			// Class<? extends Metadata> metadataClass = metaMetadata.getMetadataClass(metadataTScope);
 			Class<? extends Metadata> metadataClass = metaMetadata.getMetadataClassDescriptor().getDescribedClass();
 			if (metadataClass == null)
 			{
@@ -811,7 +947,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 					}
 					continue;
 				}
-				
+
 				ParsedURL strippedPurl = selector.getUrlStripped();
 				if (strippedPurl != null)
 				{
@@ -825,7 +961,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 					{
 						PrefixPhrase pp = urlPrefixCollection.add(urlPathTree);
 						pp.setMappedObject(metaMetadata);
-	
+
 						// TODO is this next line correct??? it looks wrong!
 						repositoryByUrlStripped.put(urlPathTree.toString(), metaMetadata);
 						metaMetadata.setMmSelectorType(MMSelectorType.LOCATION);
@@ -876,8 +1012,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 			{
 				for (String suffix : suffixes)
 				{
-					// FIXME-- Ask whether the suffix and mime should be
-					// inherited or not
+					// FIXME-- Ask whether the suffix and mime should be inherited or not
 					if (!repositoryBySuffix.containsKey(suffix))
 					{
 						repositoryBySuffix.put(suffix, metaMetadata);
@@ -891,8 +1026,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 			{
 				for (String mimeType : mimeTypes)
 				{
-					// FIXME -- Ask whether the suffix and mime should be
-					// inherited or not
+					// FIXME -- Ask whether the suffix and mime should be inherited or not
 					if (!repositoryByMime.containsKey(mimeType))
 					{
 						repositoryByMime.put(mimeType, metaMetadata);
@@ -900,157 +1034,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 					}
 				}
 			}
-
 		}
-	}
-
-	public MetaMetadata getByName(String name)
-	{
-		if (name == null)
-			return null;
-		return repositoryByName.get(name);
-	}
-	
-	public Metadata constructByName(String name)
-	{
-		Metadata result						= null;
-		MetaMetadata metaMetadata	= getByName(name);
-		if (metaMetadata != null)
-		{
-			result									= metaMetadata.constructMetadata(metadataTScope);
-		}
-		return result;
-	}
-	
-	public MetaMetadata getByClass(Class<? extends Metadata> metadataClass)
-	{
-		if (metadataClass == null)
-			return null;
-		// String tag = metadataTScope.getTag(metadataClass);
-		return repositoryByClassName.get(metadataClass.getName());
-	}
-
-	public Set<String> keySet()
-	{
-		return (repositoryByName == null) ? null : repositoryByName.keySet();
-	}
-
-	public Collection<MetaMetadata> values()
-	{
-		return (repositoryByName == null) ? null : repositoryByName.values();
-	}
-
-	public String packageName()
-	{
-		return packageAttribute;
-	}
-
-	public static String documentTag()
-	{
-		return DOCUMENT_TAG;
-	}
-
-	public MetaMetadata lookupByMime(String mimeType)
-	{
-		return null;
-	}
-
-	public MetaMetadata lookupBySuffix(String suffix)
-	{
-		return null;
-	}
-
-	public TranslationScope metadataTranslationScope()
-	{
-		return metadataTScope;
-	}
-
-	/**
-	 * @param packageName
-	 *          the packageName to set
-	 */
-	public void setPackageName(String packageName)
-	{
-		this.packageAttribute = packageName;
-	}
-
-	public NamedStyle lookupStyle(String styleName)
-	{
-		return namedStyles.get(styleName);
-	}
-
-	public NamedStyle getDefaultStyle()
-	{
-		return namedStyles.get(DEFAULT_STYLE_NAME);
-	}
-
-	public HashMap<String, UserAgent> userAgents()
-	{
-		if (userAgents == null)
-			userAgents = new HashMap<String, UserAgent>();
-
-		return userAgents;
-
-	}
-
-	public String getUserAgentString(String name)
-	{
-		return userAgents().get(name).userAgentString();
-	}
-
-	public String getDefaultUserAgentString()
-	{
-		if (defaultUserAgentString == null)
-		{
-			for (UserAgent userAgent : userAgents().values())
-			{
-				if (userAgent.isDefaultAgent())
-				{
-					defaultUserAgentString = userAgent.userAgentString();
-					break;
-				}
-			}
-		}
-
-		return defaultUserAgentString;
-	}
-
-	public SearchEngine getSearchEngine(String engineName)
-	{
-		if (searchEngines != null)
-		{
-			return searchEngines.get(engineName);
-		}
-		return null;
-	}
-
-	public String getName()
-	{
-		return name;
-	}
-
-	public void setName(String name)
-	{
-		this.name = name;
-	}
-
-	public SemanticsSite getSite(Document document, SemanticsGlobalScope semanticsSessionScope)
-	{
-		return sites.getOrConstruct(document, semanticsSessionScope);
-	}
-
-	public SemanticsSiteMap getSites()
-	{
-		return sites;
-	}
-
-	@Override
-	public String toString()
-	{
-		String result = "MetaMetadataRepository";
-		if (file != null)
-			result += "[" + file + "]";
-		return result;
 	}
 
 	/**
@@ -1072,7 +1056,6 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 				int numberOfMetametaData = 0;
 				if (repositoryByName != null)
 				{
-					ArrayList<MetaMetadataSelector> candidates = new ArrayList<MetaMetadataSelector>();
 					MetaMetadata onlyCandidate = null;
 					boolean prefNameMetaMetadataFound = false;
 					for (MetaMetadata metaMetadata : repositoryByName)
@@ -1107,8 +1090,7 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 					{
 						if (numberOfMetametaData == 0)
 						{
-							Debug.warning(this, "Selector " + selector.getName()
-									+ " does not appear to be used in any MetaMetadata.");
+							Debug.warning(this, "Selector " + selector.getName() + " does not appear to be used in any MetaMetadata.");
 						}
 						else if (numberOfMetametaData == 1)
 						{
@@ -1116,30 +1098,8 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 						}
 						else if (numberOfMetametaData > 1)
 						{
-							Debug.error(this, "Selector " + selector.getName()
-									+ " is ambiguous.  Set the pref_name or use a default_pref.");
+							Debug.error(this, "Selector " + selector.getName() + " is ambiguous.  Set the pref_name or use a default_pref.");
 						}
-					}
-				}
-			}
-		}
-	}
-
-	/**
-	 * This method makes MetaMetadata objects with no user agent inherit from the repository they are inside of.
-	 */
-	private void initializeAgents()
-	{
-		if (repositoryByName != null)
-		{
-			for (MetaMetadata m : repositoryByName)
-			{
-				if (m != null)
-				{
-					if (m.getUserAgentName() == null)
-					{
-						m.userAgentName = this.defaultUserAgentName;
-						m.userAgentString = this.defaultUserAgentString;
 					}
 				}
 			}
@@ -1149,14 +1109,15 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	protected void deserializationPostHook()
 	{
 		initializeSelectors();
-		initializeAgents();
 	}
 
-	LinkedMetadataMonitor	linkedMetadataMonitor	= new LinkedMetadataMonitor();
-
-	public LinkedMetadataMonitor getLinkedMetadataMonitor()
+	@Override
+	public String toString()
 	{
-		return linkedMetadataMonitor;
+		String result = "MetaMetadataRepository";
+		if (file != null)
+			result += "[" + file + "]";
+		return result;
 	}
 
 	/**
@@ -1173,16 +1134,6 @@ public class MetaMetadataRepository extends ElementState implements PackageSpeci
 	public static MetaMetadata getBaseImageMM()
 	{
 		return baseImageMM;
-	}
-
-	public String getDefaultSearchEngine()
-	{
-		return searchEngines != null ? searchEngines.getDefaultEngine() : "bing";
-	}
-
-	public void addMetaMetadata(MetaMetadata generatedMmd)
-	{
-		repositoryByName.put(generatedMmd.getName(), generatedMmd);
 	}
 	
 }

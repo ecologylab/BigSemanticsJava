@@ -40,7 +40,7 @@ public class GetLinkedMetadataSemanticAction extends SemanticAction
 				{
 					MetaMetadata thisMmd = (MetaMetadata) metadata.getMetaMetadata();
 					LinkWith linkWith = thisMmd.getLinkWiths().get(name);
-					MetaMetadata linkedMmd = sessionScope.getMetaMetadataRepository().getByName(name);
+					MetaMetadata linkedMmd = sessionScope.getMetaMetadataRepository().getMMByName(name);
 					if (linkedMmd != null)
 					{
 						String id = linkWith.getById();
