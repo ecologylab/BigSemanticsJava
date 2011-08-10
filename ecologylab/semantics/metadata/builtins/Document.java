@@ -49,6 +49,7 @@ public class Document extends Metadata
 	@mm_name("description") 
 	@simpl_scalar MetadataString		description;
 
+	@mm_name("additional_locations")
 	@simpl_collection("location")
 	List<MetadataParsedURL>					additionalLocations;
 

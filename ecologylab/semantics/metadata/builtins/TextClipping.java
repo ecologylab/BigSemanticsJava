@@ -14,6 +14,7 @@ public class TextClipping extends Clipping implements TextualMetadata
 {
 
 	@simpl_scalar
+	@mm_name("text")
 	private MetadataString	text;
 
 	/**

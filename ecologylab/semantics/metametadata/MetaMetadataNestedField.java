@@ -368,7 +368,7 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 			
 			String metadataClassSimpleName = this.getMetadataClassSimpleName();
 			// first look up by simple name, since package names for some built-ins are wrong
-			metadataCd = (MetadataClassDescriptor) metadataTScope.getClassDescriptorBySimpleName(metadataClassSimpleName);
+			metadataCd = (MetadataClassDescriptor) metadataTScope.getClassDescriptorByClassName(metadataClassSimpleName);
 			if (metadataCd == null)
 			{
 				String metadataClassName = this.getMetadataClassName();

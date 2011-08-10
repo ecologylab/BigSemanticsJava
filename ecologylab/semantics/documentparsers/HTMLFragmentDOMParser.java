@@ -65,7 +65,15 @@ implements DOMParserInterface
 						break;
 					}
 				}
-				Node container 			= children.item(containerNodeIndex).getAttributes().getNamedItem("CONTAINER");
+				Node container;
+				if (containerNodeIndex == 0)
+				{
+					container = bodyNode.getAttributes().getNamedItem("container");
+				}
+				else
+				{
+					container 			= children.item(containerNodeIndex).getAttributes().getNamedItem("container");
+				}
 				if (container != null)
 				{
 					String containerValue = container.getNodeValue();

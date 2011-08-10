@@ -48,7 +48,7 @@ public class Clipping extends Metadata
 	@simpl_composite
 	@simpl_wrap
 	@mm_name("source_doc")
-	@simpl_scope(SemanticsNames.REPOSITORY_DOCUMENT_TRANSLATIONS)
+//	@simpl_scope(SemanticsNames.REPOSITORY_DOCUMENT_TRANSLATIONS)
 	private Document				sourceDoc;
 	
 	/**

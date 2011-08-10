@@ -20,7 +20,7 @@ public class ImageClipping extends MediaClipping<Image>
 	{
 		
 	}
-	ImageClipping(MetaMetadataCompositeField metaMetadata, Image clippedMedia, Document source, Document outlink, String caption, String context)
+	public ImageClipping(MetaMetadataCompositeField metaMetadata, Image clippedMedia, Document source, Document outlink, String caption, String context)
 	{
 		super(metaMetadata, clippedMedia, source, outlink, caption, context);
 	}

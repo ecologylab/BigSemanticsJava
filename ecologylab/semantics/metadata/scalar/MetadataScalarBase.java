@@ -8,9 +8,10 @@ import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataBase;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
 import ecologylab.semantics.model.text.ITermVector;
+import ecologylab.serialization.ElementState;
 
 abstract
-public class MetadataScalarBase<T> implements MetadataBase
+public class MetadataScalarBase<T> extends ElementState implements MetadataBase
 {
 	protected T		value;
 	
