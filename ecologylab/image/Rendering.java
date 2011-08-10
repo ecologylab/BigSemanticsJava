@@ -678,4 +678,29 @@ implements Colors
 			}
 		}
 	}
+
+	public void setActive(boolean isActive)
+	{
+		this.isActive = isActive;
+	}
+
+	public void setWidth(int width)
+	{
+		this.width = width;
+	}
+
+	public void setHeight(int height)
+	{
+		this.height = height;
+	}
+
+	public PixelBased getPixelBased()
+	{
+		return pixelBased;
+	}
+
+	public void setPixelBased(PixelBased pixelBased)
+	{
+		this.pixelBased = pixelBased;
+	}
 }

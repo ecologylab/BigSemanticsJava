@@ -148,7 +148,7 @@ implements Downloadable, Colors
 		constructedCount++;
 	}
 	
-	protected void initializeRenderings(Rendering rendering)
+	public void initializeRenderings(Rendering rendering)
 	{
 		width							= rendering.width;
 		height 						= rendering.height;
@@ -743,5 +743,15 @@ implements Downloadable, Colors
 			
 			scaleInitially(width, height);
 		}
+	}
+
+	public void setWidth(int width)
+	{
+		this.width = width;
+	}
+
+	public void setHeight(int height)
+	{
+		this.height = height;
 	}
 }
