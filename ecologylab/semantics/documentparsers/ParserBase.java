@@ -734,7 +734,12 @@ public abstract class ParserBase extends HTMLDOMParser<Document> implements Scal
 		Document newDocument = null;
 		try
 		{
-			TranslationScope tscope = this.getMetaMetadata().getLocalTranslationScope();
+			// this must be a top-level metadata object (i.e. not a field)
+			// thus it must have a MetaMetadata attached (i.e. not a MetaMetadataCompositeField)
+			// thus this conversion is safe
+			MetaMetadata metaMetadata = (MetaMetadata) this.getMetaMetadata();
+			
+			TranslationScope tscope = metaMetadata.getLocalMetadataTranslationScope();
 			newDocument = (Document) tscope.deserialize(purlConnection, this);
 			newDocument.serialize(System.out);
 			System.out.println();
@@ -764,8 +769,8 @@ public abstract class ParserBase extends HTMLDOMParser<Document> implements Scal
 	{
 		if (deserializingRoot)
 		{
-			deserializingRoot						= false;
-			Document document 					= getDocument();
+			deserializingRoot													= false;
+			Document document													= getDocument();
 			MetaMetadataCompositeField preMM					= document.getMetaMetadata();
 			MetadataClassDescriptor mcd								= (MetadataClassDescriptor) deserializedMetadata.classDescriptor();
 			MetaMetadataCompositeField metaMetadata;

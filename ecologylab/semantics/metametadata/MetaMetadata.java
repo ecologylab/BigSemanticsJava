@@ -91,6 +91,8 @@ implements Mappable<String>//, HasLocalTranslationScope
 	private Map<MetaMetadataSelector, MetaMetadata>	reselectMap;
 
 	private File																		file;
+	
+	TranslationScope																localMetadataTranslationScope;
 
 	public MetaMetadata()
 	{
@@ -515,6 +517,11 @@ implements Mappable<String>//, HasLocalTranslationScope
 		return mmd.getName().equals(ROOT_MMD_NAME);
 	}
 
+	protected String getMetadataClassName()
+	{
+		return this.packageName() + "." + this.getMetadataClassSimpleName();
+	}
+	
 	/**
 	 * 
 	 * @return the corresponding Metadata class simple name.
@@ -543,6 +550,45 @@ implements Mappable<String>//, HasLocalTranslationScope
 		// for meta-metadata, except for looking at its contents, we should also look at its built_in
 		// attribute to determine if it is a new type
 		return super.isNewMetadataClass() && !this.isBuiltIn();
+	}
+	
+	protected MetadataClassDescriptor bindMetadataClassDescriptor(TranslationScope metadataTScope)
+	{
+		if (this.metadataClassDescriptor != null)
+			return this.metadataClassDescriptor;
+		
+		// create a temporary local metadata translation scope
+		TranslationScope localMetadataTScope = TranslationScope.get("mmd_local_tscope:" + this.getName(), new TranslationScope[] { metadataTScope });
+		
+		// record the initial number of classes in the local translation scope
+		int initialLocalTScopeSize = localMetadataTScope.entriesByClassName().size();
+		
+		// do actual stuff ...
+		super.bindMetadataClassDescriptor(localMetadataTScope);
+		
+		// if tag overlaps, or there are fields using classes not in metadataTScope, use localTScope
+		MetadataClassDescriptor thisCd = this.getMetadataClassDescriptor();
+		if (thisCd != null)
+		{
+			MetadataClassDescriptor thatCd = (MetadataClassDescriptor) metadataTScope.getClassDescriptorByTag(thisCd.getTagName());
+			if (thisCd != thatCd)
+			{
+				localMetadataTScope.addTranslation(thisCd);
+				this.localMetadataTranslationScope = localMetadataTScope;
+			}
+			else if (localMetadataTScope.entriesByClassName().size() > initialLocalTScopeSize)
+				this.localMetadataTranslationScope = localMetadataTScope;
+			else
+				this.localMetadataTranslationScope = metadataTScope;
+		}
+		
+		// return the bound metadata class descriptor
+		return thisCd;
+	}
+	
+	public TranslationScope getLocalMetadataTranslationScope()
+	{
+		return this.localMetadataTranslationScope;
 	}
 
 }

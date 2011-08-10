@@ -3,7 +3,6 @@ package ecologylab.semantics.metametadata;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 import ecologylab.collections.MultiAncestorScope;
@@ -61,8 +60,6 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	 * should we generate a metadata class descriptor for this field. used by the compiler.
 	 */
 	private boolean														newMetadataClass							= false;
-
-	TranslationScope													localTranslationScope;
 
 	public MetaMetadataNestedField()
 	{
@@ -367,74 +364,47 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 		MetadataClassDescriptor metadataCd = this.metadataClassDescriptor;
 		if (metadataCd == null)
 		{
-			synchronized (this)
+			this.inheritMetaMetadata();
+			
+			String metadataClassSimpleName = this.getMetadataClassSimpleName();
+			// first look up by simple name, since package names for some built-ins are wrong
+			metadataCd = (MetadataClassDescriptor) metadataTScope.getClassDescriptorBySimpleName(metadataClassSimpleName);
+			if (metadataCd == null)
 			{
-				metadataCd = this.metadataClassDescriptor;
+				String metadataClassName = this.getMetadataClassName();
+				metadataCd = (MetadataClassDescriptor) metadataTScope.getClassDescriptorByClassName(metadataClassName);
 				if (metadataCd == null)
 				{
-					this.inheritMetaMetadata();
-					
-					String metadataClassSimpleName = this.getMetadataClassSimpleName();
-					Class metadataClass = metadataTScope.getClassBySimpleName(metadataClassSimpleName);
-					if (metadataClass != null)
+					try
 					{
+						Class metadataClass = Class.forName(metadataClassName);
 						this.metadataClass = metadataClass;
 						metadataCd = (MetadataClassDescriptor) ClassDescriptor.getClassDescriptor(metadataClass);
-						this.metadataClassDescriptor = metadataCd; // early assignment to prevent infinite loop
-						
-						boolean tagOverlap = false;
-						String tag = this.getTagOrName();
-						if (metadataTScope.getClassDescriptorByTag(tag) != metadataCd)
-							tagOverlap = true;
-						
-						// generate local translation scope
-						TranslationScope localTScope = TranslationScope.get(metadataTScope.getName() + ":" + this.toString(), new TranslationScope[] {metadataTScope});
-						boolean localTScopeGenerated = this.generateLocalTranslationScope(localTScope);
-						if (tagOverlap)
-							localTScope.addTranslation(metadataCd);
-						else if (!localTScopeGenerated)
-							localTScope = metadataTScope;
-						this.localTranslationScope = localTScope;
-						this.bindMetadataFieldDescriptors(localTScope, metadataCd);
+						metadataTScope.addTranslation(metadataClass);
+					}
+					catch (ClassNotFoundException e)
+					{
+						e.printStackTrace();
+//						throw new MetaMetadataException("Cannot find metadata class: " + metadataClassName);
+						error("Cannot find metadata class: " + metadataClassName);
 					}
 				}
+			}
+			
+			if (metadataCd != null)
+			{
+				this.metadataClassDescriptor = metadataCd; // early assignment to prevent infinite loop
+				this.bindMetadataFieldDescriptors(metadataTScope, metadataCd);
 			}
 		}
 		return metadataCd;
 	}
 	
-	/**
-	 * 
-	 * @param localTScope the output buffer.
-	 * @return true if a local translation scope is generated, or false.
-	 */
-	private boolean generateLocalTranslationScope(TranslationScope localTScope)
+	protected String getMetadataClassName()
 	{
-		boolean result = false;
-		for (MetaMetadata mmd : this.getMmdScope().values())
-			if (mmd.isNewMetadataClass())
-			{
-				try
-				{
-					Class mmdClass = Class.forName(mmd.packageName() + "." + mmd.getMetadataClassSimpleName());
-					localTScope.addTranslation(mmdClass);
-					result = true;
-				}
-				catch (ClassNotFoundException e)
-				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		
-		if (this.getChildMetaMetadata() != null)
-			for (MetaMetadataField field : this.getChildMetaMetadata())
-				if (field instanceof MetaMetadataNestedField)
-					result |= ((MetaMetadataNestedField) field).generateLocalTranslationScope(localTScope);
-		
-		return result;
+		return this.getInheritedMmd().getMetadataClassName();
 	}
-
+	
 	/**
 	 * 
 	 * @return the corresponding Metadata class simple name.
@@ -491,9 +461,4 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 			this.newMetadataClass = newMetadataClass;
 		}
 
-	public TranslationScope getLocalTranslationScope()
-	{
-		return localTranslationScope;
-	}
-	
 }

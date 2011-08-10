@@ -11,7 +11,6 @@ import ecologylab.semantics.metadata.MetadataFieldDescriptor;
 import ecologylab.semantics.metametadata.MetaMetadata.Visibility;
 import ecologylab.semantics.metametadata.exceptions.MetaMetadataException;
 import ecologylab.serialization.ElementState.xml_tag;
-import ecologylab.serialization.FieldTypes;
 import ecologylab.serialization.TranslationScope;
 import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.simpl_inherit;
@@ -271,8 +270,10 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 			if (f instanceof MetaMetadataNestedField)
 			{
 				f.setRepository(repository);
-				((MetaMetadataNestedField) f).setPackageName(this.packageName());
-				((MetaMetadataNestedField) f).setMmdScope(this.getMmdScope());
+				MetaMetadataNestedField nested = (MetaMetadataNestedField) f;
+				if (nested.packageName() == null)
+					nested.setPackageName(this.packageName());
+				nested.setMmdScope(this.getMmdScope());
 			}
 		
 		// inherit fields with attributes from inheritedStructure
@@ -295,6 +296,8 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 					fieldLocal.setInheritedField(field);
 					fieldLocal.setDeclaringMmd(field.getDeclaringMmd());
 					fieldLocal.inheritAttributes(field);
+					if (fieldLocal instanceof MetaMetadataNestedField)
+						((MetaMetadataNestedField) fieldLocal).setPackageName(((MetaMetadataNestedField) field).packageName());
 				}
 			}
 		}

@@ -356,44 +356,60 @@ implements PackageSpecifier, DocumentParserTagNames
 					// sort meta-metadata into result.repositoryByName and mmd scope for that package.
 					if (repoData.repositoryByName != null)
 					{
-						String packageName = repoData.packageName();
-						MultiAncestorScope<MetaMetadata> packageMmdScope = result.packageMmdScopes.get(packageName);
-						if (packageMmdScope == null)
-						{
-							packageMmdScope = new MultiAncestorScope<MetaMetadata>(result.repositoryByName);
-							result.packageMmdScopes.put(packageName, packageMmdScope);
-						}
-						
 						for (String mmdName : repoData.repositoryByName.keySet())
 						{
 							MetaMetadata mmd = repoData.repositoryByName.get(mmdName);
 							mmd.setFile(file);
 							mmd.setParent(result);
-							mmd.setPackageName(repoData.packageName());
 							mmd.setRepository(result);
+
+							String packageName = mmd.packageName();
+							if (packageName == null)
+							{
+								packageName = repoData.packageName();
+								if (packageName == null)
+									throw new MetaMetadataException("no package name specified for " + mmd);
+								mmd.setPackageName(packageName);
+							}
+							MultiAncestorScope<MetaMetadata> packageMmdScope = result.packageMmdScopes
+									.get(packageName);
+							if (packageMmdScope == null)
+							{
+								packageMmdScope = new MultiAncestorScope<MetaMetadata>(result.repositoryByName);
+								result.packageMmdScopes.put(packageName, packageMmdScope);
+							}
 
 							switch (mmd.visibility)
 							{
 							case GLOBAL:
-								if (result.repositoryByName.containsKey(mmdName) && result.repositoryByName.get(mmdName) != mmd)
-									throw new MetaMetadataException("meta-metadata already exists: " + mmdName + " in " + file);
+							{
+								MetaMetadata existingMmd = result.repositoryByName.get(mmdName);
+								if (existingMmd != null && existingMmd != mmd)
+									throw new MetaMetadataException("meta-metadata already exists: " + mmdName
+											+ " in " + file);
 								result.repositoryByName.put(mmdName, mmd);
 								break;
+							}
 							case PACKAGE:
+							{
 								MetaMetadata existingMmd = packageMmdScope.get(mmdName);
 								if (existingMmd != null && existingMmd != mmd)
-									throw new MetaMetadataException("meta-metadata already exists: " + mmdName + " in " + file);
+									throw new MetaMetadataException("meta-metadata already exists: " + mmdName
+											+ " in " + file);
 								packageMmdScope.put(mmdName, mmd);
 								break;
 							}
+							}
 						}
-						
+
 						for (MetaMetadata mmd : repoData.repositoryByName.values())
 						{
+							MultiAncestorScope<MetaMetadata> packageMmdScope = result.packageMmdScopes.get(mmd
+									.packageName());
 							mmd.setMmdScope(packageMmdScope);
 						}
 					}
-					
+
 					// combine other parts
 					result.integrateRepositoryWithThis(repoData);
 				}
@@ -580,40 +596,22 @@ implements PackageSpecifier, DocumentParserTagNames
 	public void bindMetadataClassDescriptorsToMetaMetadata(TranslationScope metadataTScope)
 	{
 		this.metadataTScope = metadataTScope;
-
+		
 		traverseAndInheritMetaMetadata();
 		
-		// bind global meta-metadata first
-		bindMetadataClassDescriptorsForScope(this.repositoryByName, metadataTScope);
-		
-		// then bind package-wide visible meta-metadata
-		for (String packageName : this.packageMmdScopes.keySet())
+		// use another copy because we may modify the scope during the process
+		ArrayList<MetaMetadata> mmds = new ArrayList<MetaMetadata>(this.repositoryByName.values());
+		for (MetaMetadata mmd : mmds)
 		{
-			MultiAncestorScope<MetaMetadata> packageMmdScope = this.packageMmdScopes.get(packageName);
-			if (packageMmdScope != null && packageMmdScope.size() > 0)
+			MetadataClassDescriptor mcd = mmd.bindMetadataClassDescriptor(metadataTScope);
+			if (mcd == null)
 			{
-				TranslationScope packageMetadataTScope = TranslationScope.get(metadataTScope.getName()
-						+ "__" + packageName, new TranslationScope[] { metadataTScope });
-				for (MetaMetadata mmd : packageMmdScope.values())
-				{
-					if (mmd.isNewMetadataClass())
-					{
-						try
-						{
-							Class mmdClass = Class.forName(mmd.packageName() + "." + mmd.getMetadataClassSimpleName());
-							packageMetadataTScope.addTranslation(mmdClass);
-						}
-						catch (ClassNotFoundException e)
-						{
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}
-				}
-				bindMetadataClassDescriptorsForScope(packageMmdScope, packageMetadataTScope);
+				warning("Cannot bind metadata class descriptor for " + mmd);
+				this.repositoryByName.remove(mmd.getName());
 			}
 		}
 		
+		// other initialization stuffs
 		for (MetaMetadata mmd : repositoryByName.values())
 		{
 			MetadataClassDescriptor mcd = mmd.getMetadataClassDescriptor();
@@ -626,21 +624,6 @@ implements PackageSpecifier, DocumentParserTagNames
 		initializeLocationBasedMaps();
 	}
 	
-	private void bindMetadataClassDescriptorsForScope(Map<String, MetaMetadata> scope, TranslationScope metadataTScope)
-	{
-		// use another copy because we may modify scope during the process
-		ArrayList<MetaMetadata> mmds = new ArrayList<MetaMetadata>(scope.values());
-		for (MetaMetadata mmd : mmds)
-		{
-			MetadataClassDescriptor mcd = mmd.bindMetadataClassDescriptor(metadataTScope);
-			if (mcd == null)
-			{
-				warning("Cannot bind metadata class descriptor for " + mmd);
-				scope.remove(mmd.getName());
-			}
-		}
-	}
-
 	/**
 	 * traverse the repository and do inheritance on each meta-metadata.
 	 */

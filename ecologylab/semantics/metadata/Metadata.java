@@ -78,7 +78,10 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 	@xml_tag("mm_name")
 	MetadataString												metaMetadataName;
 
-	// FIXME with the new inheritance and inline MMD processing, this will always be a MetaMetadata!
+	/**
+	 * this must be a composite field. this is not the meta-metadata representing type, but the
+	 * "local" composite field object that may carry extraction / presentation rules.
+	 */
 	private MetaMetadataCompositeField		metaMetadata;
 	
 	/**

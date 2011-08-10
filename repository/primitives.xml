@@ -132,6 +132,6 @@
 		<scalar name="version" scalar_type="Float" />
 		<scalar name="metadata_version" scalar_type="Float" />
 		<scalar name="width" scalar_type="Integer" />
-	
 	</meta_metadata>
+	
 </meta_metadata_repository>
