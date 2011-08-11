@@ -79,6 +79,13 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 		this.isMixin = false;
 		this.definingMmdField = definingMmdField;
 		
+		if (definingMmdField.getOtherTags() != null)
+		{
+			String[] otherTags = definingMmdField.getOtherTags().split(",");
+			for (String otherTag : otherTags)
+				this.addOtherTag(otherTag);
+		}
+		
 		// child tag for collections
 		if (definingMmdField instanceof MetaMetadataCollectionField)
 		{
@@ -93,6 +100,7 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 			String scopeName = nested.getPolymorphicScope();
 			this.setUnresolvedScopeAnnotation(scopeName);
 		}
+		
 	}
 
 	public boolean isMixin() 

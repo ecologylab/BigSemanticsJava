@@ -119,6 +119,9 @@ implements Mappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneabl
 	protected String																			tag;
 
 	@simpl_scalar
+	private String																				otherTags;
+
+	@simpl_scalar
 	protected String																			xpath;
 
 	/**
@@ -315,12 +318,7 @@ implements Mappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneabl
 	 * in which meta-metadata this field is declared.
 	 */
 	private MetaMetadata																	declaringMmd						= null;
-
-//	/**
-//	 * class tags used for in @xml_other_tags. used only by fields with other tags.
-//	 */
-//	private ArrayList<String>															otherTags								= null;
-
+	
 	public MetaMetadataField()
 	{
 
@@ -621,10 +619,11 @@ implements Mappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneabl
 		String result = "";
 	
 		ElementState parent = parent();
-		if (parent instanceof MetaMetadataField)
+		while (parent instanceof MetaMetadataField)
 		{
 			MetaMetadataField pf = (MetaMetadataField) parent;
 			result = "<" + pf.name + ">";
+			parent = parent.parent();
 		}
 		return result;
 	}
@@ -1069,5 +1068,10 @@ implements Mappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneabl
 	}
 	
 	abstract public MetadataFieldDescriptor findOrGenerateMetadataFieldDescriptor(TranslationScope tscope, MetadataClassDescriptor contextCd);
+
+	public String getOtherTags()
+	{
+		return otherTags;
+	}
 	
 }

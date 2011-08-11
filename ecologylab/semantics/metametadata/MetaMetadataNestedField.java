@@ -60,6 +60,8 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	 * should we generate a metadata class descriptor for this field. used by the compiler.
 	 */
 	private boolean														newMetadataClass							= false;
+	
+	private boolean														mmdScopeTraversed							= false;
 
 	public MetaMetadataNestedField()
 	{
@@ -110,6 +112,9 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	 */
 	public MetaMetadata getInheritedMmd()
 	{
+		if (inheritedMmd == null)
+			if (this.clonedFrom != null)
+				inheritedMmd = ((MetaMetadataNestedField) this.clonedFrom).getInheritedMmd();
 		return inheritedMmd;
 	}
 
@@ -368,7 +373,7 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 			
 			String metadataClassSimpleName = this.getMetadataClassSimpleName();
 			// first look up by simple name, since package names for some built-ins are wrong
-			metadataCd = (MetadataClassDescriptor) metadataTScope.getClassDescriptorByClassName(metadataClassSimpleName);
+			metadataCd = (MetadataClassDescriptor) metadataTScope.getClassDescriptorBySimpleName(metadataClassSimpleName);
 			if (metadataCd == null)
 			{
 				String metadataClassName = this.getMetadataClassName();
@@ -384,7 +389,7 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 					}
 					catch (ClassNotFoundException e)
 					{
-						e.printStackTrace();
+//						e.printStackTrace();
 //						throw new MetaMetadataException("Cannot find metadata class: " + metadataClassName);
 						error("Cannot find metadata class: " + metadataClassName);
 					}
@@ -459,6 +464,32 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	{
 	//		debug("\n\nMarking generate class descriptor: " + this + " = " + generateClassDescriptor);
 			this.newMetadataClass = newMetadataClass;
+	}
+	
+	void findOrGenerateMetadataClassDescriptor(TranslationScope tscope)
+	{
+		if (mmdScopeTraversed)
+			return;
+		
+		mmdScopeTraversed = true;
+		
+		if (this.getMmdScope() != null)
+		{
+			for (MetaMetadata inlineMmd : this.getMmdScope().values())
+			{
+				inlineMmd.findOrGenerateMetadataClassDescriptor(tscope);
+			}
 		}
+		
+		if (this.getChildMetaMetadata() != null)
+			for (MetaMetadataField f : this.getChildMetaMetadata())
+			{
+				if (f instanceof MetaMetadataNestedField)
+				{
+					MetaMetadataNestedField nested = (MetaMetadataNestedField) f;
+					nested.findOrGenerateMetadataClassDescriptor(tscope);
+				}
+			}
+	}
 
 }

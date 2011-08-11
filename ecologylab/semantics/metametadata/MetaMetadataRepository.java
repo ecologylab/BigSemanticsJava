@@ -36,6 +36,7 @@ import ecologylab.semantics.metadata.builtins.MetadataBuiltinsTranslationScope;
 import ecologylab.semantics.metadata.scalar.types.MetadataScalarType;
 import ecologylab.semantics.metametadata.exceptions.MetaMetadataException;
 import ecologylab.semantics.namesandnums.DocumentParserTagNames;
+import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.TranslationScope;

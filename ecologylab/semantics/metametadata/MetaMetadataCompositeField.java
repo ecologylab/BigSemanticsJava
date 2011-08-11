@@ -256,15 +256,24 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 		{
 			inheritedMmd.inheritMetaMetadata();
 			inheritFromInheritedMmd(inheritedMmd);
+			inheritMetaMetadataFrom(repository, inheritedMmd);
 		}
 		MetaMetadataCompositeField inheritedField = (MetaMetadataCompositeField) this.getInheritedField();
 		if (inheritedField != null)
 		{
 			inheritedField.setRepository(repository);
 			inheritedField.inheritMetaMetadata();
+			inheritMetaMetadataFrom(repository, inheritedField);
 		}
-		MetaMetadataCompositeField inheritedStructure = inheritedField != null ? inheritedField : inheritedMmd;
 		
+		// for the root meta-metadata, this may happend
+		if (inheritedMmd == null && inheritedField == null)
+			inheritMetaMetadataFrom(repository, null);
+	}
+
+	protected void inheritMetaMetadataFrom(MetaMetadataRepository repository,
+			MetaMetadataCompositeField inheritedStructure)
+	{
 		// init nested fields inside this
 		for (MetaMetadataField f : this.getChildMetaMetadata())
 			if (f instanceof MetaMetadataNestedField)
@@ -290,6 +299,7 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 				MetaMetadataField fieldLocal = this.getChildMetaMetadata().get(fieldName);
 				if (fieldLocal != null)
 				{
+					debug("inheriting field: " + fieldLocal + " <= " + field);
 					if (field.getClass() != fieldLocal.getClass())
 						warning("local field " + fieldLocal + " hides field " + fieldLocal + " with the same name in super mmd type!");
 					// debug("inheriting field " + fieldLocal + " from " + field);
@@ -315,6 +325,8 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 			{
 				MetaMetadataNestedField f1 = (MetaMetadataNestedField) f;
 				f1.inheritMetaMetadata();
+				if (f1.isNewMetadataClass())
+					this.setNewMetadataClass(true);
 				
 				MetaMetadataNestedField f0 = (MetaMetadataNestedField) f.getInheritedField();
 				if (f0 != null && !f0.getTypeName().equals(f1.getTypeName()))
@@ -397,6 +409,7 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 				// generate inline mmds and put it into current scope
 				MetaMetadata generatedMmd = this.generateMetaMetadata(newTypeName, inheritedMmd);
 				mmdScope.put(newTypeName, generatedMmd);
+				mmdScope.put(generatedMmd.getName(), generatedMmd);
 				
 				// recursively do inheritance on generated mmd
 				generatedMmd.inheritMetaMetadata(); // this will set generateClassDescriptor to true if necessary
@@ -455,6 +468,7 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 		generatedMmd.setRepository(this.getRepository());
 		generatedMmd.visibility = Visibility.PACKAGE;
 		generatedMmd.setMmdScope(new MultiAncestorScope<MetaMetadata>(this.getMmdScope(), inheritedMmd.getMmdScope()));
+		generatedMmd.setNewMetadataClass(true);
 		
 		// move nested fields (they will be cloned later)
 		for (String kidKey : this.kids.keySet())
@@ -466,7 +480,6 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 		this.kids.clear();
 		
 		makeThisFieldUseMmd(previousName, generatedMmd);
-//		this.getRepository().addGeneratedMetaMetadata(generatedMmd); // add to the repository
 		return generatedMmd;
 	}
 
@@ -508,7 +521,8 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 		// make this field as if is using generatedMmd as type
 		this.setType(mmd.getName());
 		this.setExtendsAttribute(null);
-		this.setTag(previousName); // but keep the tag name
+		if (this.tag == null)
+			this.setTag(previousName); // but keep the tag name
 	}
 
 	/**

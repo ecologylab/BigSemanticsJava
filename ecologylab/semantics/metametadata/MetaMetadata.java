@@ -476,6 +476,8 @@ implements Mappable<String>//, HasLocalTranslationScope
 						MetadataFieldDescriptor fd = f.findOrGenerateMetadataFieldDescriptor(tscope, cd);
 						cd.addMetadataFieldDescriptor(fd);
 					}
+					if (!f.isCloned() && f instanceof MetaMetadataNestedField)
+						((MetaMetadataNestedField) f).findOrGenerateMetadataClassDescriptor(tscope);
 				}
 				
 				MetadataClassDescriptor existingCdWithThisTag = (MetadataClassDescriptor) tscope.getClassDescriptorByTag(tagOrName);

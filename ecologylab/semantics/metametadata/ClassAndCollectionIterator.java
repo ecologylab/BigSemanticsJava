@@ -1,5 +1,6 @@
 package ecologylab.semantics.metametadata;
 
+import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -85,7 +86,16 @@ public class ClassAndCollectionIterator implements Iterator<MetadataBase>
 							.error("Can't find MetadataFieldDescriptor. This probably means that the MetaMetadata compiler was not run or encountered errors!");
 					return null;
 				}
-				MetadataBase md = (MetadataBase) mfd.getField().get((MetadataBase) metadata);
+				Field field = mfd.getField();
+				MetadataBase md = null;
+				try
+				{
+					md = (MetadataBase) field.get((MetadataBase) metadata);
+				}
+				catch(IllegalArgumentException e)
+				{
+					e.printStackTrace();
+				}
 				boolean isComposite = (md instanceof Metadata);
 				if (isComposite && visitedMetadata.contains(md))
 				{
