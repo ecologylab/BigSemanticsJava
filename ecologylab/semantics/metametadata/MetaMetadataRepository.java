@@ -5,6 +5,8 @@ package ecologylab.semantics.metametadata;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -36,7 +38,6 @@ import ecologylab.semantics.metadata.builtins.MetadataBuiltinsTranslationScope;
 import ecologylab.semantics.metadata.scalar.types.MetadataScalarType;
 import ecologylab.semantics.metametadata.exceptions.MetaMetadataException;
 import ecologylab.semantics.namesandnums.DocumentParserTagNames;
-import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.TranslationScope;
@@ -57,8 +58,10 @@ import ecologylab.textformat.NamedStyle;
 public class MetaMetadataRepository extends ElementState
 implements PackageSpecifier, DocumentParserTagNames
 {
-	
+
 	private static final String																	DEFAULT_STYLE_NAME							= "default";
+
+	protected static final int																	BUFFER_SIZE											= 4096;
 
 	private static MetaMetadata																	baseDocumentMM;
 
@@ -330,9 +333,40 @@ implements PackageSpecifier, DocumentParserTagNames
 	
 	// [endregion]
 	
-	protected static MetaMetadataRepository loadFromFiles(List<File> files)
+	public static interface RepositoryFileLoader
 	{
-		TranslationScope metaMetadataTScope = MetaMetadataTranslationScope.get();
+		MetaMetadataRepository loadRepositoryFile(File file) throws SIMPLTranslationException, IOException;
+	}
+	
+	public static RepositoryFileLoader	XML_FILE_LOADER	= new RepositoryFileLoader() {
+		@Override
+		public MetaMetadataRepository loadRepositoryFile( File file) throws SIMPLTranslationException
+		{
+			return (MetaMetadataRepository) MetaMetadataTranslationScope .get().deserialize(file);
+		}
+	};
+	
+	public static RepositoryFileLoader JSON_FILE_LOADER = new RepositoryFileLoader() {
+		@Override
+		public MetaMetadataRepository loadRepositoryFile(File file) throws SIMPLTranslationException, IOException
+		{
+			StringBuilder json = new StringBuilder();
+			char[] buffer = new char[BUFFER_SIZE];
+			FileReader reader = new FileReader(file);
+			while (true)
+			{
+				int n = reader.read(buffer, 0, BUFFER_SIZE);
+				if (n < 0)
+					break;
+				json.append(buffer, 0, n);
+			}
+			reader.close();
+			return (MetaMetadataRepository) MetaMetadataTranslationScope.get().deserializeCharSequence(json, FORMAT.JSON);
+		}
+	};
+	
+	protected static MetaMetadataRepository loadFromFiles(List<File> files, RepositoryFileLoader fileLoader)
+	{
 		MetaMetadataRepository result = new MetaMetadataRepository();
 		result.repositoryByName = new HashMapArrayList<String, MetaMetadata>();
 		result.packageMmdScopes = new HashMap<String, MultiAncestorScope<MetaMetadata>>();
@@ -349,7 +383,7 @@ implements PackageSpecifier, DocumentParserTagNames
 			
 			try
 			{
-				MetaMetadataRepository repoData = (MetaMetadataRepository) metaMetadataTScope.deserialize(file);
+				MetaMetadataRepository repoData = fileLoader.loadRepositoryFile(file);
 				if (repoData != null)
 				{
 					repoData.file = file;
@@ -420,6 +454,11 @@ implements PackageSpecifier, DocumentParserTagNames
 				Debug.error("MetaMetadataRepository", "translating repository source file " + file.getAbsolutePath());
 				e.printStackTrace();
 			}
+			catch (IOException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		
 		// initialize meta-metadata look-up maps
@@ -439,19 +478,6 @@ implements PackageSpecifier, DocumentParserTagNames
 	}
 
 	/**
-	 * Load meta-metadata from repository files from a set of files. Does not build location-based
-	 * repository maps, because this requires a Metadata TranslationScope, which comes from
-	 * ecologylabGeneratedSemantics.
-	 * 
-	 * @param files
-	 * @return
-	 */
-	public static MetaMetadataRepository loadFromFiles(File... files)
-	{
-		return loadFromFiles(Arrays.asList(files));
-	}
-
-	/**
 	 * Load meta-metadata from repository files from a directly. Loads the base level xml files first,
 	 * then the xml files in the repositorySources folder and lastly the files in the powerUser
 	 * folder. Does not build repository maps, because this requires a Metadata TranslationScope,
@@ -459,9 +485,11 @@ implements PackageSpecifier, DocumentParserTagNames
 	 * 
 	 * @param dir
 	 *          the repository directory.
+	 * @param fileNameSuffix
+	 * @param fileLoader
 	 * @return
 	 */
-	public static MetaMetadataRepository loadFromDir(File dir)
+	public static MetaMetadataRepository loadFromDir(File dir, final String fileNameSuffix, RepositoryFileLoader fileLoader)
 	{
 		if (!dir.exists())
 		{
@@ -474,7 +502,7 @@ implements PackageSpecifier, DocumentParserTagNames
 		{
 			public boolean accept(File dir)
 			{
-				return dir.getName().endsWith(".xml");
+				return dir.getName().endsWith(fileNameSuffix);
 			}
 		};
 		
@@ -486,7 +514,35 @@ implements PackageSpecifier, DocumentParserTagNames
 		addFilesInDirToList(repositorySources, xmlFilter, allFiles);
 		addFilesInDirToList(powerUserDir, xmlFilter, allFiles);
 		
-		return loadFromFiles(allFiles);
+		return loadFromFiles(allFiles, fileLoader);
+	}
+
+	/**
+	 * Load meta-metadata from repository files from a set of files. Does not build location-based
+	 * repository maps, because this requires a Metadata TranslationScope, which comes from
+	 * ecologylabGeneratedSemantics.
+	 * 
+	 * @param files
+	 * @return
+	 */
+	public static MetaMetadataRepository loadXmlFromFiles(File... files)
+	{
+		return loadFromFiles(Arrays.asList(files), XML_FILE_LOADER);
+	}
+
+	public static MetaMetadataRepository loadXmlFromDir(File dir)
+	{
+		return loadFromDir(dir, ".xml", XML_FILE_LOADER);
+	}
+	
+	public static MetaMetadataRepository loadJsonFromFiles(File... files)
+	{
+		return loadFromFiles(Arrays.asList(files), JSON_FILE_LOADER);
+	}
+
+	public static MetaMetadataRepository loadJsonFromDir(File dir)
+	{
+		return loadFromDir(dir, ".json", JSON_FILE_LOADER);
 	}
 	
 	private static void addFilesInDirToList(File dir, FileFilter filter, List<File> buf)

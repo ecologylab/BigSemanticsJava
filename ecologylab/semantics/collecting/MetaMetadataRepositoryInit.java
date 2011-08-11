@@ -34,32 +34,62 @@ import ecologylab.serialization.TranslationScope.GRAPH_SWITCH;
 public class MetaMetadataRepositoryInit extends Scope<Object>
 implements DocumentParserTagNames, ApplicationProperties, SemanticsNames
 {
-	public static final String										DEFAULT_REPOSITORY_LOCATION	= "../ecologylabSemantics/repository";
+	public static String																			DEFAULT_REPOSITORY_LOCATION			= "../ecologylabSemantics/repository";
 
-	public static final String										SEMANTICS										= "semantics/";
+	public static String																			DEFAULT_REPOSITORY_FILE_SUFFIX	= ".xml";
 
-	protected static File													METAMETADATA_REPOSITORY_DIR_FILE;
+	public static MetaMetadataRepository.RepositoryFileLoader	DEFAULT_REPOSITORY_FILE_LOADER	= MetaMetadataRepository.XML_FILE_LOADER;
 
-	protected static File													METAMETADATA_SITES_FILE;
+	public static final String																SEMANTICS												= "semantics/";
+
+	protected static File																			METAMETADATA_REPOSITORY_DIR_FILE;
+
+	protected static File																			METAMETADATA_SITES_FILE;
 
 	/**
 	 * 
 	 * The repository has the metaMetadatas of the document types. The repository is populated as the
 	 * documents are processed.
 	 */
-	protected static final MetaMetadataRepository	META_METADATA_REPOSITORY;
+	protected static MetaMetadataRepository										META_METADATA_REPOSITORY;
 
-	public static final MetaMetadata							DOCUMENT_META_METADATA;
-	public static final MetaMetadata							PDF_META_METADATA;
-	public static final MetaMetadata							SEARCH_META_METADATA;
-	public static final MetaMetadata							IMAGE_META_METADATA;
-	public static final MetaMetadata							DEBUG_META_METADATA;
-	public static final MetaMetadata							IMAGE_CLIPPING_META_METADATA;
+	public static MetaMetadata																DOCUMENT_META_METADATA;
+	public static MetaMetadata																PDF_META_METADATA;
+	public static MetaMetadata																SEARCH_META_METADATA;
+	public static MetaMetadata																IMAGE_META_METADATA;
+	public static MetaMetadata																DEBUG_META_METADATA;
+	public static MetaMetadata																IMAGE_CLIPPING_META_METADATA;
 
 	static
 	{
 		TranslationScope.graphSwitch	= GRAPH_SWITCH.ON;
+		
+		MetaMetadataRepository.initializeTypes();
 
+	}
+	
+	public static MetaMetadataRepository getRepository()
+	{
+		return META_METADATA_REPOSITORY;
+	}
+	
+	private MetaMetadataRepository	metaMetadataRepository;
+
+	private TranslationScope				metadataTranslationScope;
+
+	private final TranslationScope	generatedDocumentTranslations;
+
+	private final TranslationScope	generatedMediaTranslations;
+
+	private final TranslationScope	repositoryClippingTranslations;
+	
+	/**
+	 * This constructor should only be called from SemanticsScope's constructor!
+	 * 
+	 * @param metadataTranslationScope
+	 */
+	protected MetaMetadataRepositoryInit(TranslationScope metadataTranslationScope)
+	{
 		if (ApplicationEnvironment.isInUse() && !ApplicationEnvironment.runningInEclipse())
 		{
 			AssetsRoot mmAssetsRoot = new AssetsRoot(EnvironmentGeneric.configDir().getRelative(SEMANTICS), 
@@ -75,8 +105,8 @@ implements DocumentParserTagNames, ApplicationProperties, SemanticsNames
 		
 		Debug.println("\t\t-- Reading meta_metadata from " + METAMETADATA_REPOSITORY_DIR_FILE);
 
-		MetaMetadataRepository.initializeTypes();
-		META_METADATA_REPOSITORY 					= MetaMetadataRepository.loadFromDir(METAMETADATA_REPOSITORY_DIR_FILE);
+		
+		META_METADATA_REPOSITORY 					= MetaMetadataRepository.loadFromDir(METAMETADATA_REPOSITORY_DIR_FILE, DEFAULT_REPOSITORY_FILE_SUFFIX, DEFAULT_REPOSITORY_FILE_LOADER);
 		
 		DOCUMENT_META_METADATA						= META_METADATA_REPOSITORY.getMMByName(DOCUMENT_TAG);
 		PDF_META_METADATA									= META_METADATA_REPOSITORY.getMMByName(PDF_TAG);
@@ -84,30 +114,7 @@ implements DocumentParserTagNames, ApplicationProperties, SemanticsNames
 		IMAGE_META_METADATA								= META_METADATA_REPOSITORY.getMMByName(IMAGE_TAG);
 		DEBUG_META_METADATA								= META_METADATA_REPOSITORY.getMMByName(DEBUG_TAG);
 		IMAGE_CLIPPING_META_METADATA			= META_METADATA_REPOSITORY.getMMByName(IMAGE_CLIPPING_TAG);
-	}
-	
-	public static MetaMetadataRepository getRepository()
-	{
-		return META_METADATA_REPOSITORY;
-	}
-	
-	private MetaMetadataRepository									metaMetadataRepository;
-	
-	private TranslationScope												metadataTranslationScope;
-	
-	private final TranslationScope									generatedDocumentTranslations;
-
-	private final TranslationScope									generatedMediaTranslations;
-	
-	private final TranslationScope									repositoryClippingTranslations;
-	
-	/**
-	 * This constructor should only be called from SemanticsScope's constructor!
-	 * 
-	 * @param metadataTranslationScope
-	 */
-	protected MetaMetadataRepositoryInit(TranslationScope metadataTranslationScope)
-	{
+		
 		META_METADATA_REPOSITORY.bindMetadataClassDescriptorsToMetaMetadata(metadataTranslationScope);
 		this.metadataTranslationScope	= metadataTranslationScope;
 		this.metaMetadataRepository		= META_METADATA_REPOSITORY;
