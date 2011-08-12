@@ -164,7 +164,7 @@ implements Mappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneabl
 	// will get created during the inheritance process anyway. -- yin
 	// FIXME move this to NestedField.
 	@simpl_map
-	@simpl_classes( { MetaMetadataField.class, MetaMetadataScalarField.class, MetaMetadataCompositeField.class, MetaMetadataCollectionField.class, })
+	@simpl_scope(NestedMetaMetadataFieldTranslationScope.NAME)
 	@simpl_nowrap
 	protected HashMapArrayList<String, MetaMetadataField>	kids										= new HashMapArrayList<String, MetaMetadataField>();
 

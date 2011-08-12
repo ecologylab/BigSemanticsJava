@@ -83,7 +83,7 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 		{
 			String[] otherTags = definingMmdField.getOtherTags().split(",");
 			for (String otherTag : otherTags)
-				this.addOtherTag(otherTag);
+				this.addOtherTag(otherTag.trim());
 		}
 		
 		// child tag for collections

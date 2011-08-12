@@ -90,7 +90,6 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 	 * surrogate ID prevents potential conflicts problems, when used with strict relational database
 	 * systems.
 	 */
-	@mm_orm_pkey
 	private long													ormId;
 
 	/**
@@ -797,13 +796,6 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 	{
 	}
 	
-	@Retention(RetentionPolicy.RUNTIME)
-	@Inherited
-	@Target(ElementType.FIELD)
-	public @interface mm_orm_pkey
-	{
-	}
-
 	public void serializeToHtml(Appendable a, TranslationContext serializationContext)
 			throws IllegalArgumentException, IllegalAccessException, IOException, SIMPLTranslationException
 	{

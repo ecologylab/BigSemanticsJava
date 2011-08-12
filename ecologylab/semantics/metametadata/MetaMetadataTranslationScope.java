@@ -27,11 +27,7 @@ public class MetaMetadataTranslationScope extends Debug
 	{
 		MetadataClassDescriptor.class,
 		MetadataFieldDescriptor.class,
-		MetaMetadataField.class,
-		MetaMetadataScalarField.class,
-		MetaMetadataCompositeField.class,
 		MetaMetadataNestedField.class,
-		MetaMetadataCollectionField.class,
 		MetaMetadata.class,
 		SearchEngines.class,
 		SearchEngine.class,
@@ -65,6 +61,7 @@ public class MetaMetadataTranslationScope extends Debug
 	public static final TranslationScope[]	SCOPE_SET	= 
 	{
 		BASE_TRANSLATIONS, 
+		NestedMetaMetadataFieldTranslationScope.get(),
 		SemanticActionTranslationScope.get(),
 		ConditionTranslationScope.get(),
 	};
