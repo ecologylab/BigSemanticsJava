@@ -90,6 +90,7 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 	 * surrogate ID prevents potential conflicts problems, when used with strict relational database
 	 * systems.
 	 */
+	@mm_orm_pkey
 	private long													ormId;
 
 	/**
@@ -793,6 +794,13 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 	@Inherited
 	@Target(ElementType.FIELD)
 	public @interface mm_dont_inherit
+	{
+	}
+	
+	@Retention(RetentionPolicy.RUNTIME)
+	@Inherited
+	@Target(ElementType.FIELD)
+	public @interface mm_orm_pkey
 	{
 	}
 
