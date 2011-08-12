@@ -10,11 +10,11 @@ import ecologylab.serialization.TranslationScope;
 public class TestTranslationScopeDeSerialization extends TestTranslationScope
 {
 
-	static DeserializationHookStrategy	emptyStrategy;
+	static DeserializationHookStrategy<ElementState, FieldDescriptor>	emptyStrategy;
 
 	static
 	{
-		emptyStrategy = new DeserializationHookStrategy()
+		emptyStrategy = new DeserializationHookStrategy<ElementState, FieldDescriptor>()
 		{
 			@Override
 			public void deserializationPreHook(
