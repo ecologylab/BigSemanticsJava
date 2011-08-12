@@ -7,8 +7,12 @@ import java.io.IOException;
 
 import ecologylab.semantics.collecting.MetaMetadataRepositoryInit;
 import ecologylab.semantics.metadata.scalar.types.SemanticsTypes;
+import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
+import ecologylab.semantics.metametadata.MetaMetadataField;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
+import ecologylab.semantics.metametadata.MetaMetadataScalarField;
 import ecologylab.semantics.metametadata.MetaMetadataTranslationScope;
+import ecologylab.semantics.metametadata.NestedMetaMetadataFieldTranslationScope;
 import ecologylab.serialization.ElementState.FORMAT;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.TranslationScope;
@@ -16,6 +20,20 @@ import ecologylab.serialization.TranslationScope.GRAPH_SWITCH;
 
 public class TestRepositoryInJSON
 {
+	
+	private static TranslationScope mmdTScope;
+	
+	static
+	{
+		// replace MetaMetadataCollectionField with MetaMetadataCollectionFieldChildComposite
+		TranslationScope.get(NestedMetaMetadataFieldTranslationScope.NAME, new Class[] {
+				MetaMetadataField.class,
+				MetaMetadataScalarField.class,
+				MetaMetadataCompositeField.class,
+				MetaMetadataCollectionFieldWithoutChildComposite.class,
+		});
+		mmdTScope = MetaMetadataTranslationScope.get();
+	}
 	
 	private void translateRepositoryIntoJSON(File srcDir, File destDir)
 	{
@@ -35,7 +53,6 @@ public class TestRepositoryInJSON
 				return pathname.getName().endsWith("xml");
 			}
 		};
-		TranslationScope mmdTScope = MetaMetadataTranslationScope.get();
 		for (File f : srcDir.listFiles(filter))
 		{
 			try
@@ -72,6 +89,21 @@ public class TestRepositoryInJSON
 		MetaMetadataRepository.initializeTypes();
 		new SemanticsTypes();
 		
+		FileFilter filter = new FileFilter() {
+			@Override
+			public boolean accept(File pathname)
+			{
+				return pathname.getName().endsWith(".xml");
+			}
+		};
+		for (File xmlFile : (new File("../ecologylabSemantics/repository/repositorySources/")).listFiles(filter))
+		{
+			testLoadingAndSavingXML(
+					xmlFile,
+					new File("/tmp/" + xmlFile.getName())
+					);
+		}
+		
 		// convert repository to json
 		TestRepositoryInJSON trij = new TestRepositoryInJSON();
 		trij.translateRepositoryIntoJSON(new File("../ecologylabSemantics/repository"), new File("../ecologylabSemantics/repositoryInJSON"));
@@ -102,6 +134,25 @@ public class TestRepositoryInJSON
 		}
 		catch (SIMPLTranslationException e)
 		{
+			e.printStackTrace();
+		}
+	}
+
+	private static void testLoadingAndSavingXML(File srcXmlFile, File destXmlFile)
+	{
+		try
+		{
+			MetaMetadataRepository repo = (MetaMetadataRepository) mmdTScope.deserialize(srcXmlFile);
+			repo.serialize(destXmlFile);
+		}
+		catch (SIMPLTranslationException e1)
+		{
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		catch (IOException e)
+		{
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
