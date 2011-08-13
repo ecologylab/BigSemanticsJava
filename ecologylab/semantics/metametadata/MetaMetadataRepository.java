@@ -906,9 +906,17 @@ implements PackageSpecifier, DocumentParserTagNames
 		return metaMetadata == null ? null : (Document) metaMetadata.constructMetadata(metadataTScope);
 	}
 
-	public Document constructCompoundDocument(ParsedURL purl)
+	/**
+	 * Construct a document by location.
+	 * If nothing particular turns up, make it either a CompoundDocument, or, if isImage, an Image.
+	 * 
+	 * @param purl
+	 * @param isImage
+	 * @return
+	 */
+	public Document constructDocument(ParsedURL purl, boolean isImage)
 	{
-		if (purl.isImg())
+		if (purl.isImg() || isImage)
 			return constructImage(purl);
 		
 		MetaMetadata metaMetadata = getCompoundDocumentMM(purl);

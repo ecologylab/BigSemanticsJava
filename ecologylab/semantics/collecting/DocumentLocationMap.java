@@ -35,15 +35,16 @@ public class DocumentLocationMap<D extends Document> extends ConcurrentHashMap<P
 	 * Add it to the map and return.
 	 * 
 	 * @param location
+	 * @param isImage TODO
 	 * @return
 	 */
-	public D getOrConstruct(ParsedURL location)
+	public D getOrConstruct(ParsedURL location, boolean isImage)
 	{
     D result = this.get(location);
     if (result == null) 
     {
     	// record does not yet exist
-    	D newValue = mapHelper.constructValue(location);
+    	D newValue = mapHelper.constructValue(location, isImage);
     	result = this.putIfAbsent(location, newValue);
     	if (result == null) 
     	{

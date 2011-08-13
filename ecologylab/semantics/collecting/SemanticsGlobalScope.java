@@ -91,7 +91,7 @@ public class SemanticsGlobalScope extends MetaMetadataRepositoryInit
 	{
 		if (location == null)
 			return null;
-		Document result	= globalCollection.getOrConstruct(location);
+		Document result	= globalCollection.getOrConstruct(location, false);
 		result.setSemanticsSessionScope(this);
 		return result;
 	}
@@ -99,7 +99,7 @@ public class SemanticsGlobalScope extends MetaMetadataRepositoryInit
 	{
 		if (location == null)
 			return null;
-		Document constructDocument = globalCollection.getOrConstruct(location);
+		Document constructDocument = globalCollection.getOrConstruct(location, true);
 
 		Image result	= null;
 		if (constructDocument.isImage())

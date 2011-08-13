@@ -62,9 +62,9 @@ public class TNGGlobalCollections extends Debug
 					 * @return					Newly constructed Document (subclass), based on the location.
 					 */
 					@Override
-					public Document constructValue(ParsedURL location)
+					public Document constructValue(ParsedURL location, boolean isImage)
 					{
-						return repository.constructCompoundDocument(location);
+						return repository.constructDocument(location, isImage);
 					}
 					/**
 					 * Construct a new Document, using the supplied MetaMetadata.
@@ -97,12 +97,13 @@ public class TNGGlobalCollections extends Debug
 	 * Get from Map if possible. If necessary, construct anew and add to map before returning.
 	 * 
 	 * @param location	Location to get Document Metadata (subclass) for.
+	 * @param isImage TODO
 	 * 
 	 * @return					Associated Document Metadata (subclass).
 	 */
-	public Document getOrConstruct(ParsedURL location)
+	public Document getOrConstruct(ParsedURL location, boolean isImage)
 	{
-		return allDocuments.getOrConstruct(location);
+		return allDocuments.getOrConstruct(location, isImage);
 	}
 
 	/**

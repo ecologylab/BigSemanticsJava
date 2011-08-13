@@ -3,7 +3,6 @@
  */
 package ecologylab.semantics.collecting;
 
-import ecologylab.generic.ValueFactory;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.MetaMetadata;
@@ -12,7 +11,7 @@ import ecologylab.semantics.metametadata.MetaMetadata;
  * @author andruid
  *
  */
-public interface DocumentMapHelper<D extends Document> extends ValueFactory<ParsedURL, D>
+public interface DocumentMapHelper<D extends Document> extends ConditionalValueFactory<ParsedURL, D>
 {
 	D recycledValue();
 	
