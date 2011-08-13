@@ -23,8 +23,8 @@
 		<scalar name="cover_image" scalar_type="ParsedURL" hide="true" />
 	</meta_metadata>
 	
-	<meta_metadata name="publisher" extends="metadata" comment="A publishing company.">
-		<scalar name="name" as_composite_scalar="true" navigates_to="location" is_facet="true" scalar_type="String" />
+	<meta_metadata name="publisher" extends="document" comment="A publishing company.">
+		<scalar name="title" label="name" as_composite_scalar="true" navigates_to="location" is_facet="true" scalar_type="String" />
 		<scalar name="city" scalar_type="String" />
 	</meta_metadata>
 	
@@ -34,7 +34,7 @@
 		</selector>
 		
 		<collection name="authors" xpath="//span[@class='contributorNameTrigger']">
-			<scalar name="name" xpath=".//a[1]" />
+			<scalar name="title" xpath=".//a[1]" />
 			<scalar name="location" xpath=".//a[1]/@href" />
 		</collection>
 		<scalar name="cover_image" xpath="//td[@id='prodImageCell']//img/@src" />

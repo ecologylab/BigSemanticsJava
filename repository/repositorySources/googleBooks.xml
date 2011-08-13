@@ -6,11 +6,11 @@
 			<filter regex="\(Google eBook\)" replace="" />
 		</scalar>
 		<collection name="authors" layer="9.5" xpath="//table[@id='metadata_content_table']/tr[contains(., 'Author')]/td[2]/a" >
-			<scalar name="name" xpath="." />
+			<scalar name="title" xpath="." />
 			<scalar name="location" xpath="./@href" />
 		</collection>
 		<collection name="editors" xpath="//table[@id='metadata_content_table']/tr[contains(., 'Editor')]/td[2]/a" >
-			<scalar name="name" navigates_to="location" xpath="." />
+			<scalar name="title" navigates_to="location" xpath="." />
 			<scalar name="location" xpath="./@href" />
 		</collection>
 		
@@ -19,7 +19,7 @@
 			<filter regex="[a-zA-Z, /-]*" replace="" />
 		</scalar>
 		<composite name="publisher" layer="9.15" context_node="publisher_year" xpath="." >
-			<scalar name="name" xpath=".">
+			<scalar name="title" xpath=".">
 				<filter regex=", [0-9]+" replace="" />
 			</scalar>
 		</composite>
@@ -71,7 +71,7 @@
 				<filter regex="\&amp;printsec=[a-z]+" replace="" />
 			</scalar>
 			<collection name="authors" xpath="./table/tr/td[2]/div/font/span/span[1]/a">
-				<scalar name="name" xpath="." />
+				<scalar name="title" xpath="." />
 				<scalar name="location" xpath="./@href" />	
 			</collection>
 		</collection>

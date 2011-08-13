@@ -39,7 +39,7 @@
 		</scalar>
 		
 		<collection name="genres" xpath="//h4[contains(.,'Genres')]/..//a" child_type="genre" child_extends="metadata">
-			<scalar name="name" xpath="string(.)" navigates_to="genre_link" scalar_type="String">
+			<scalar name="title" xpath="string(.)" navigates_to="genre_link" scalar_type="String">
 				<!--<filter regex="more" replace="" />-->
 			</scalar>
 			<scalar name="genre_link" hide="true" xpath="./@href" scalar_type="ParsedURL" />

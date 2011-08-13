@@ -14,7 +14,7 @@
 		</scalar>
 		<collection name="authors" xpath="//div[@id='introduction']/div[contains(@class, 'char_mediumvalue')]">
 			<field_parser name="regex_split" regex="\s*,\s*" />
-			<scalar name="name" field_parser_key="$0">
+			<scalar name="title" field_parser_key="$0">
 				<filter regex="^by\s+" replace="" />
 			</scalar>
 		</collection>

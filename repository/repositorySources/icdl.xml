@@ -49,13 +49,13 @@
 
 		<composite name="author" type="author"
 			xpath="//td/span[@class='textsize4']/../a[1]">
-			<scalar name="name" xpath="./span" />
+			<scalar name="title" xpath="./span" />
 			<scalar name="location" xpath="./@href" />
 		</composite>
 		
 		<composite name="illustrator" type="author"
 			xpath="//td/span[@class='textsize4']/../a[2]">
-			<scalar name="name" xpath="./span" />
+			<scalar name="title" xpath="./span" />
 			<scalar name="location" xpath="./@href" />
 		</composite>
 		

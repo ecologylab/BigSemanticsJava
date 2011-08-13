@@ -4,7 +4,7 @@
 		<scalar name="title" xpath="//div[@class='articleTitle']"/>
 		<collection name="authors"  xpath="//div[@id='articleContent']/p" comment="All authors">
 			<field_parser name="regex_split" regex=",|and" />
-			<scalar name="name" field_parser_key="$0" required="true">
+			<scalar name="title" field_parser_key="$0" required="true">
 				<filter regex="(a|b|c)\s*$" replace="" />
 			</scalar>	
 		</collection>		
