@@ -30,7 +30,7 @@
 		<scalar name="location" hide="true" />
 		<scalar name="title" xpath="//div[@id='omniture_caption']/h3/i" />
 		<collection name="artists" xpath="//h4[@class='artist']/a">
-			<scalar name=  xpath="." />
+<!--			<scalar name=  xpath="." />-->
 			<scalar name="location" xpath="./@href" hide="true" />
 		</collection>
 		<scalar name="status" scalar_type="String" xpath="//div[@class='status']/strong" />
