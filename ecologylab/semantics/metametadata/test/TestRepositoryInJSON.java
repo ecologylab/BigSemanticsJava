@@ -23,9 +23,9 @@ import ecologylab.serialization.TranslationScope.GRAPH_SWITCH;
 public class TestRepositoryInJSON
 {
 	
-	private static final int	BUFFER_SIZE	= 4096;
+	private static final int				BUFFER_SIZE	= 4096;
 
-	private static TranslationScope mmdTScope = null;
+	private static TranslationScope	mmdTScope		= null;
 	
 	private void translateRepositoryIntoJSON(File srcDir, File destDir)
 	{
@@ -86,9 +86,9 @@ public class TestRepositoryInJSON
 //		testLoadingAndSavingXmlRepository();
 //		testSavedAgainXmlRepository();
 //		testConvertingRepositoryFromXmlToJson();
-//		testJsonRepository(destJsonRepoDir);
+		testJsonRepository(destJsonRepoDir);
 		
-		testLoadAndSaveJsonRepository(destJsonRepoDir, dest2JsonRepoDir);
+//		testLoadAndSaveJsonRepository(destJsonRepoDir, dest2JsonRepoDir);
 //		testJsonRepository(dest2JsonRepoDir);
 	}
 	
