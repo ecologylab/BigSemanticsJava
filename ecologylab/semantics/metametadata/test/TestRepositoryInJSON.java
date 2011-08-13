@@ -2,6 +2,8 @@ package ecologylab.semantics.metametadata.test;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
@@ -21,6 +23,8 @@ import ecologylab.serialization.TranslationScope.GRAPH_SWITCH;
 public class TestRepositoryInJSON
 {
 	
+	private static final int	BUFFER_SIZE	= 4096;
+
 	private static TranslationScope mmdTScope = null;
 	
 	private void translateRepositoryIntoJSON(File srcDir, File destDir)
@@ -77,19 +81,24 @@ public class TestRepositoryInJSON
 		MetaMetadataRepository.initializeTypes();
 		new SemanticsTypes();
 		
-		// ********* each time, run one of the following 4 methods: *********
+		// ********* each time, run one of the following methods: *********
 		
 //		testLoadingAndSavingXmlRepository();
 //		testSavedAgainXmlRepository();
 //		testConvertingRepositoryFromXmlToJson();
-		testJsonRepository();
+//		testJsonRepository(destJsonRepoDir);
+		
+		testLoadAndSaveJsonRepository(destJsonRepoDir, dest2JsonRepoDir);
+//		testJsonRepository(dest2JsonRepoDir);
 	}
 	
-	private static File	srcXmlRepoDir		= new File("../ecologylabSemantics/repository/");
+	private static File	srcXmlRepoDir			= new File("../ecologylabSemantics/repository/");
 
-	private static File	destXmlRepoDir	= new File("/tmp/repository/");
+	private static File	destXmlRepoDir		= new File("/tmp/repository/");
 
-	private static File	destJsonRepoDir	= new File("../ecologylabSemantics/repositoryInJSON");
+	private static File	destJsonRepoDir		= new File("../ecologylabSemantics/repositoryInJSON");
+
+	private static File	dest2JsonRepoDir	= new File("/tmp/jsonAgain");
 
 	private static void testLoadingAndSavingXmlRepository()
 	{
@@ -136,7 +145,70 @@ public class TestRepositoryInJSON
 			}
 		}
 	}
+	
+	private static void testLoadAndSaveJsonRepository(File srcDir, File destDir)
+	{
+		// replace MetaMetadataCollectionField with MetaMetadataCollectionFieldChildComposite
+		TranslationScope.get(NestedMetaMetadataFieldTranslationScope.NAME, new Class[] {
+				MetaMetadataField.class,
+				MetaMetadataScalarField.class,
+				MetaMetadataCompositeField.class,
+				MetaMetadataCollectionFieldWithoutChildComposite.class,
+		});
+		mmdTScope = MetaMetadataTranslationScope.get();
+		
+		// load and save the repository again
+		testLoadAndSaveJsonRepositoryDir(destJsonRepoDir, dest2JsonRepoDir);
+		testLoadAndSaveJsonRepositoryDir(new File(destJsonRepoDir, "repositorySources"), new File(dest2JsonRepoDir, "repositorySources"));
+		testLoadAndSaveJsonRepositoryDir(new File(destJsonRepoDir, "powerUser"), new File(dest2JsonRepoDir, "powerUser"));
+	}
 
+	private static void testLoadAndSaveJsonRepositoryDir(File srcDir, File destDir)
+	{
+		FileFilter filter = new FileFilter() {
+			@Override
+			public boolean accept(File pathname)
+			{
+				return pathname.getName().endsWith(".json");
+			}
+		};
+		for (File jsonFile : srcDir.listFiles(filter))
+		{
+			try
+			{
+				StringBuilder json = new StringBuilder();
+				char[] buffer = new char[BUFFER_SIZE];
+				FileReader reader = new FileReader(jsonFile);
+				while (true)
+				{
+					int n = reader.read(buffer, 0, BUFFER_SIZE);
+					if (n < 0)
+						break;
+					json.append(buffer, 0, n);
+				}
+				reader.close();
+				MetaMetadataRepository repo = (MetaMetadataRepository) mmdTScope.deserializeCharSequence(json, FORMAT.JSON);
+				File newJsonFile = new File(destDir, jsonFile.getName());
+				if (!newJsonFile.exists())
+				{
+					newJsonFile.getParentFile().mkdirs();
+					newJsonFile.createNewFile();
+				}
+				repo.serialize(new FileOutputStream(newJsonFile), FORMAT.JSON);
+			}
+			catch (SIMPLTranslationException e1)
+			{
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			catch (IOException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
 	private static void testSavedAgainXmlRepository()
 	{
 		// use json repository for NewMmTest
@@ -163,12 +235,12 @@ public class TestRepositoryInJSON
 		trij.translateRepositoryIntoJSON(srcXmlRepoDir, destJsonRepoDir);
 	}
 	
-	private static void testJsonRepository()
+	private static void testJsonRepository(File jsonRepoDir)
 	{
 		mmdTScope = MetaMetadataTranslationScope.get();
 		
 		// use json repository for NewMmTest
-		MetaMetadataRepositoryInit.DEFAULT_REPOSITORY_LOCATION = "../ecologylabSemantics/repositoryInJSON";
+		MetaMetadataRepositoryInit.DEFAULT_REPOSITORY_LOCATION = jsonRepoDir.getAbsolutePath();
 		MetaMetadataRepositoryInit.DEFAULT_REPOSITORY_FILE_SUFFIX = ".json";
 		MetaMetadataRepositoryInit.DEFAULT_REPOSITORY_FILE_LOADER = MetaMetadataRepository.JSON_FILE_LOADER;
 		
