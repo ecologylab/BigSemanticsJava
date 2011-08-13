@@ -137,6 +137,8 @@ public class SemanticActionHandler
 			return;
 		debug("["+parser+"] semantic action: " + action.getActionName() + ", SA class: " + action.getClassSimpleName() + "\n");
 		
+		action.setSemanticActionHandler(this);
+		
 		// here state must be INTER or INIT
 
 		// if state == INIT, we check pre-conditions

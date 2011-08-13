@@ -126,6 +126,8 @@ public class ChooseSemanticAction
 		{
 			for (IfSemanticAction aCase : cases)
 			{
+				SemanticActionHandler handler = getSemanticActionHandler();
+				aCase.setSemanticActionHandler(handler);
 				semanticActionHandler.setActionState(aCase, name, value);
 				aCase.setNestedActionState(name, value);
 			}

@@ -58,7 +58,9 @@ public abstract class NestedSemanticAction
 	{
 		for (SemanticAction action : nestedSemanticActionList)
 		{
-			getSemanticActionHandler().setActionState(action, name, value);
+			SemanticActionHandler handler = getSemanticActionHandler();
+			action.setSemanticActionHandler(handler);
+			handler.setActionState(action, name, value);
 			action.setNestedActionState(name, value);
 		}
 	}
