@@ -9,6 +9,7 @@ import ecologylab.semantics.collecting.MetaMetadataRepositoryInit;
 import ecologylab.semantics.metadata.scalar.types.SemanticsTypes;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.metametadata.MetaMetadataField;
+import ecologylab.semantics.metametadata.MetaMetadataNestedField;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.metametadata.MetaMetadataScalarField;
 import ecologylab.semantics.metametadata.MetaMetadataTranslationScope;
@@ -21,19 +22,7 @@ import ecologylab.serialization.TranslationScope.GRAPH_SWITCH;
 public class TestRepositoryInJSON
 {
 	
-	private static TranslationScope mmdTScope;
-	
-	static
-	{
-		// replace MetaMetadataCollectionField with MetaMetadataCollectionFieldChildComposite
-		TranslationScope.get(NestedMetaMetadataFieldTranslationScope.NAME, new Class[] {
-				MetaMetadataField.class,
-				MetaMetadataScalarField.class,
-				MetaMetadataCompositeField.class,
-				MetaMetadataCollectionFieldWithoutChildComposite.class,
-		});
-		mmdTScope = MetaMetadataTranslationScope.get();
-	}
+	private static TranslationScope mmdTScope = null;
 	
 	private void translateRepositoryIntoJSON(File srcDir, File destDir)
 	{
@@ -89,6 +78,43 @@ public class TestRepositoryInJSON
 		MetaMetadataRepository.initializeTypes();
 		new SemanticsTypes();
 		
+		// ********* each time, run one of the following 3 methods: *********
+		
+//		testLoadingAndSavingXmlRepository();
+		testSavedAgainXmlRepository();
+//		testConvertingRepositoryFromXmlToJson();
+	}
+	
+	private static File destRepoDir = new File("/tmp/repository/");
+	
+	private static void testLoadingAndSavingXmlRepository()
+	{
+		// *********************************************************************************************
+		// * this method uses a different translation scope
+		// * (MetaMetadataCollectionFieldWithoutChildComposite instead of MetaMetadataCollectionField),
+		// * but the other two methods (testSavedAgainXmlRepository() and
+		// * testConvertingRepositoryFromXmlToJson()) need the original translation scope to work
+		// * properly.
+		// *********************************************************************************************
+		
+		// replace MetaMetadataCollectionField with MetaMetadataCollectionFieldChildComposite
+		TranslationScope.get(NestedMetaMetadataFieldTranslationScope.NAME, new Class[] {
+				MetaMetadataField.class,
+				MetaMetadataScalarField.class,
+				MetaMetadataCompositeField.class,
+				MetaMetadataCollectionFieldWithoutChildComposite.class,
+		});
+		mmdTScope = MetaMetadataTranslationScope.get();
+		File srcRepoDir = new File("../ecologylabSemantics/repository/");
+		
+		// load and save the repository again
+		testLoadAndSaveXmlRepositoryDir(srcRepoDir, destRepoDir);
+		testLoadAndSaveXmlRepositoryDir(new File(srcRepoDir, "repositorySources"), new File(destRepoDir, "repositorySources"));
+		testLoadAndSaveXmlRepositoryDir(new File(srcRepoDir, "powerUser"), new File(destRepoDir, "powerUser"));
+	}
+
+	private static void testLoadAndSaveXmlRepositoryDir(File srcDir, File destDir)
+	{
 		FileFilter filter = new FileFilter() {
 			@Override
 			public boolean accept(File pathname)
@@ -96,13 +122,40 @@ public class TestRepositoryInJSON
 				return pathname.getName().endsWith(".xml");
 			}
 		};
-		for (File xmlFile : (new File("../ecologylabSemantics/repository/repositorySources/")).listFiles(filter))
+		for (File xmlFile : srcDir.listFiles(filter))
 		{
-			testLoadingAndSavingXML(
-					xmlFile,
-					new File("/tmp/" + xmlFile.getName())
-					);
+			try
+			{
+				MetaMetadataRepository repo = (MetaMetadataRepository) mmdTScope.deserialize(xmlFile);
+				repo.serialize(new File(destDir, xmlFile.getName()));
+			}
+			catch (SIMPLTranslationException e1)
+			{
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			catch (IOException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
+	}
+
+	private static void testSavedAgainXmlRepository()
+	{
+		// use json repository for NewMmTest
+		MetaMetadataRepositoryInit.DEFAULT_REPOSITORY_LOCATION = destRepoDir.getAbsolutePath();
+		MetaMetadataRepositoryInit.DEFAULT_REPOSITORY_FILE_SUFFIX = ".xml";
+		MetaMetadataRepositoryInit.DEFAULT_REPOSITORY_FILE_LOADER = MetaMetadataRepository.XML_FILE_LOADER;
+		
+		tryNewMmTest();
+	}
+
+	private static void testConvertingRepositoryFromXmlToJson()
+	{
+		// init
+		mmdTScope = MetaMetadataTranslationScope.get();
 		
 		// convert repository to json
 		TestRepositoryInJSON trij = new TestRepositoryInJSON();
@@ -113,6 +166,11 @@ public class TestRepositoryInJSON
 		MetaMetadataRepositoryInit.DEFAULT_REPOSITORY_FILE_SUFFIX = ".json";
 		MetaMetadataRepositoryInit.DEFAULT_REPOSITORY_FILE_LOADER = MetaMetadataRepository.JSON_FILE_LOADER;
 		
+		tryNewMmTest();
+	}
+
+	private static void tryNewMmTest()
+	{
 		// use a set of URLs to test extraction
 		String[] testUrls = new String[] {
 			"http://www.dlese.org/dds/services/ddsws1-1?verb=UserSearch&q=water+on+mars&s=0&n=10&client=ddsws10examples",
@@ -134,25 +192,6 @@ public class TestRepositoryInJSON
 		}
 		catch (SIMPLTranslationException e)
 		{
-			e.printStackTrace();
-		}
-	}
-
-	private static void testLoadingAndSavingXML(File srcXmlFile, File destXmlFile)
-	{
-		try
-		{
-			MetaMetadataRepository repo = (MetaMetadataRepository) mmdTScope.deserialize(srcXmlFile);
-			repo.serialize(destXmlFile);
-		}
-		catch (SIMPLTranslationException e1)
-		{
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		catch (IOException e)
-		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
