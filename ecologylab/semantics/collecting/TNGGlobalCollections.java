@@ -139,5 +139,14 @@ public class TNGGlobalCollections extends Debug
 	{
 		allDocuments.remap(oldDocument, newDocument);
 	}
-	
+	/**
+	 * Add a new mapping, down the line, for an already mapped document, in the global map.
+	 * 
+	 * @param location
+	 * @param document
+	 */
+	public void addMapping(ParsedURL location, Document document)
+	{
+		allDocuments.addMapping(location, document);
+	}
 }

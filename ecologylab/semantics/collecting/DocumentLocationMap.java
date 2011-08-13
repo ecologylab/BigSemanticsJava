@@ -119,6 +119,16 @@ public class DocumentLocationMap<D extends Document> extends ConcurrentHashMap<P
 		if (newDocumentLocation != null && !location.equals(newDocumentLocation))
 			put(newDocumentLocation, (D) newDocument);	// just to make sure
 	}
+	/**
+	 * Add a new mapping, down the line, for an already mapped document, in the global map.
+	 * 
+	 * @param location
+	 * @param document
+	 */
+	public void addMapping(ParsedURL location, Document document)
+	{
+		put(location, (D) document);
+	}
 /**
  * Change the mapped Document of reference for location to document.
  * 
