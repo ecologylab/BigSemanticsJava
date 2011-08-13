@@ -8,12 +8,12 @@
 
 		<scalar name="location" xpath="//div[@id='divmain']//a[@name='FullTextPdf' or @name='FullTextPDF']/@href" />
 
-		<scalar name="title" xpath="//div[@class='large-text']" navigates_to="metadata_page" as_natural_id="title" format="text" />
+<!-- 		<scalar name="title" xpath="//div[@class='large-text']" navigates_to="metadata_page" as_natural_id="title" format="text" /> -->
 
-		<collection name="authors" xpath="//div[@id='divmain']/table[1]/tr/td[1]/table[2]/tr">
-			<scalar name="location" xpath="./td/a/@href" />
-			<scalar name="name" xpath="./td/a" />
-			<scalar name="affiliation" xpath="./td[3]" />
+		<collection name="authors" xpath="//div[@id='divmain']//a[@title='Author Profile Page']">
+			<scalar name="location" xpath="./@href" />
+			<scalar name="title" xpath="./text()" />
+			<scalar name="affiliation" xpath="../..//a[@title='Institutional Profile Page']/text()" />
 		</collection>
 
 		<composite name="source" navigates_to="location" xpath="//h1/a/span[contains(text(), 'PUBLICATION')]/ancestor::h1/following-sibling::div[@class='flatbody'][1]">
