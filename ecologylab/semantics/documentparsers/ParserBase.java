@@ -347,7 +347,7 @@ public abstract class ParserBase extends HTMLDOMParser<Document> implements Scal
 	{
 		// get xpath, context node, field parser defintion & key: basic information for following
 		String xpathString = mmdField.getXpath();
-		if (xpathString != null && xpathString.length() == 0)		
+		if (xpathString != null && xpathString.length() > 0)		
 			xpathString = provider.xPathTagNamesToLower(xpathString);
 		String contextNodeName = mmdField.getContextNode();
 		if (contextNodeName != null)
