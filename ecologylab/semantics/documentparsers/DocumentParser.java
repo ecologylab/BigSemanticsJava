@@ -423,7 +423,7 @@ abstract public class DocumentParser<D extends Document>
 	}
 
 
-	public SemanticsGlobalScope getInfoCollector()
+	public SemanticsGlobalScope getSemanticsScope()
 	{
 		return semanticsScope;
 	}
