@@ -9,7 +9,6 @@ import ecologylab.semantics.collecting.MetaMetadataRepositoryInit;
 import ecologylab.semantics.metadata.scalar.types.SemanticsTypes;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.metametadata.MetaMetadataField;
-import ecologylab.semantics.metametadata.MetaMetadataNestedField;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.metametadata.MetaMetadataScalarField;
 import ecologylab.semantics.metametadata.MetaMetadataTranslationScope;
@@ -78,25 +77,22 @@ public class TestRepositoryInJSON
 		MetaMetadataRepository.initializeTypes();
 		new SemanticsTypes();
 		
-		// ********* each time, run one of the following 3 methods: *********
+		// ********* each time, run one of the following 4 methods: *********
 		
 //		testLoadingAndSavingXmlRepository();
-		testSavedAgainXmlRepository();
+//		testSavedAgainXmlRepository();
 //		testConvertingRepositoryFromXmlToJson();
+		testJsonRepository();
 	}
 	
-	private static File destRepoDir = new File("/tmp/repository/");
-	
+	private static File	srcXmlRepoDir		= new File("../ecologylabSemantics/repository/");
+
+	private static File	destXmlRepoDir	= new File("/tmp/repository/");
+
+	private static File	destJsonRepoDir	= new File("../ecologylabSemantics/repositoryInJSON");
+
 	private static void testLoadingAndSavingXmlRepository()
 	{
-		// *********************************************************************************************
-		// * this method uses a different translation scope
-		// * (MetaMetadataCollectionFieldWithoutChildComposite instead of MetaMetadataCollectionField),
-		// * but the other two methods (testSavedAgainXmlRepository() and
-		// * testConvertingRepositoryFromXmlToJson()) need the original translation scope to work
-		// * properly.
-		// *********************************************************************************************
-		
 		// replace MetaMetadataCollectionField with MetaMetadataCollectionFieldChildComposite
 		TranslationScope.get(NestedMetaMetadataFieldTranslationScope.NAME, new Class[] {
 				MetaMetadataField.class,
@@ -105,12 +101,11 @@ public class TestRepositoryInJSON
 				MetaMetadataCollectionFieldWithoutChildComposite.class,
 		});
 		mmdTScope = MetaMetadataTranslationScope.get();
-		File srcRepoDir = new File("../ecologylabSemantics/repository/");
 		
 		// load and save the repository again
-		testLoadAndSaveXmlRepositoryDir(srcRepoDir, destRepoDir);
-		testLoadAndSaveXmlRepositoryDir(new File(srcRepoDir, "repositorySources"), new File(destRepoDir, "repositorySources"));
-		testLoadAndSaveXmlRepositoryDir(new File(srcRepoDir, "powerUser"), new File(destRepoDir, "powerUser"));
+		testLoadAndSaveXmlRepositoryDir(srcXmlRepoDir, destXmlRepoDir);
+		testLoadAndSaveXmlRepositoryDir(new File(srcXmlRepoDir, "repositorySources"), new File(destXmlRepoDir, "repositorySources"));
+		testLoadAndSaveXmlRepositoryDir(new File(srcXmlRepoDir, "powerUser"), new File(destXmlRepoDir, "powerUser"));
 	}
 
 	private static void testLoadAndSaveXmlRepositoryDir(File srcDir, File destDir)
@@ -145,7 +140,7 @@ public class TestRepositoryInJSON
 	private static void testSavedAgainXmlRepository()
 	{
 		// use json repository for NewMmTest
-		MetaMetadataRepositoryInit.DEFAULT_REPOSITORY_LOCATION = destRepoDir.getAbsolutePath();
+		MetaMetadataRepositoryInit.DEFAULT_REPOSITORY_LOCATION = destXmlRepoDir.getAbsolutePath();
 		MetaMetadataRepositoryInit.DEFAULT_REPOSITORY_FILE_SUFFIX = ".xml";
 		MetaMetadataRepositoryInit.DEFAULT_REPOSITORY_FILE_LOADER = MetaMetadataRepository.XML_FILE_LOADER;
 		
@@ -154,12 +149,23 @@ public class TestRepositoryInJSON
 
 	private static void testConvertingRepositoryFromXmlToJson()
 	{
-		// init
+		// replace MetaMetadataCollectionField with MetaMetadataCollectionFieldChildComposite
+		TranslationScope.get(NestedMetaMetadataFieldTranslationScope.NAME, new Class[] {
+				MetaMetadataField.class,
+				MetaMetadataScalarField.class,
+				MetaMetadataCompositeField.class,
+				MetaMetadataCollectionFieldWithoutChildComposite.class,
+		});
 		mmdTScope = MetaMetadataTranslationScope.get();
 		
 		// convert repository to json
 		TestRepositoryInJSON trij = new TestRepositoryInJSON();
-		trij.translateRepositoryIntoJSON(new File("../ecologylabSemantics/repository"), new File("../ecologylabSemantics/repositoryInJSON"));
+		trij.translateRepositoryIntoJSON(srcXmlRepoDir, destJsonRepoDir);
+	}
+	
+	private static void testJsonRepository()
+	{
+		mmdTScope = MetaMetadataTranslationScope.get();
 		
 		// use json repository for NewMmTest
 		MetaMetadataRepositoryInit.DEFAULT_REPOSITORY_LOCATION = "../ecologylabSemantics/repositoryInJSON";
