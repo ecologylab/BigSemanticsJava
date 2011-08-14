@@ -65,7 +65,7 @@ public interface SemanticActionStandardMethods
 	 */
 	public static String	CREATE_AND_VISUALIZE_TEXT_SURROGATE	= "create_and_visualize_text_surrogate";
 	
-	public static String	TRANSFORM_LOCATION									= "transform_location";
+	public static String	FILTER_LOCATION											= "filter_location";
 
 	/**
 	 * start a new search.

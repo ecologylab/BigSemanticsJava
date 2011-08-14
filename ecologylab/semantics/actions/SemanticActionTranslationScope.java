@@ -23,7 +23,7 @@ public class SemanticActionTranslationScope
 		GetLinkedMetadataSemanticAction.class,
 		ReselectAndExtractMetadataSemanticAction.class,
 		AddMixinSemanticAction.class,
-		TransformLocation.class,
+		FilterLocation.class,
 	};
 	
 	public static final TranslationScope get()

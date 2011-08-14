@@ -21,17 +21,17 @@ import ecologylab.serialization.simpl_inherit;
  *
  */
 @simpl_inherit
-@xml_tag(SemanticActionStandardMethods.TRANSFORM_LOCATION)
-public class TransformLocation extends SemanticAction
+@xml_tag(SemanticActionStandardMethods.FILTER_LOCATION)
+public class FilterLocation extends SemanticAction
 {
-	@simpl_classes({SetParam.class})
+	@simpl_classes({SetParam.class, StripParam.class})
 	@simpl_nowrap
 	ArrayList<ParamOp>	paramOps;
 
 	/**
 	 * 
 	 */
-	public TransformLocation()
+	public FilterLocation()
 	{
 		// TODO Auto-generated constructor stub
 	}
@@ -39,7 +39,7 @@ public class TransformLocation extends SemanticAction
 	@Override
 	public String getActionName()
 	{
-		return SemanticActionStandardMethods.TRANSFORM_LOCATION;
+		return SemanticActionStandardMethods.FILTER_LOCATION;
 	}
 
 	@Override
