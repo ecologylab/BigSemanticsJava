@@ -26,6 +26,7 @@ public class FilterLocation extends SemanticAction
 {
 	@simpl_classes({SetParam.class, StripParam.class})
 	@simpl_nowrap
+	@simpl_collection
 	ArrayList<ParamOp>	paramOps;
 
 	/**
@@ -75,6 +76,8 @@ public class FilterLocation extends SemanticAction
 				document.addAdditionalLocation(origLocation);
 				document.setLocation(transformedLocation);
 				documentParser.getSemanticsScope().getGlobalCollection().addMapping(transformedLocation, document);
+				
+				documentParser.reConnect();		// changed the location, so we better connect again!
 			}
 		}
 		return null;
