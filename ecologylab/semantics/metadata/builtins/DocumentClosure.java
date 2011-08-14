@@ -5,7 +5,6 @@ package ecologylab.semantics.metadata.builtins;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
@@ -17,15 +16,14 @@ import ecologylab.io.Downloadable;
 import ecologylab.net.ConnectionHelperJustRemote;
 import ecologylab.net.PURLConnection;
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.actions.SemanticAction;
+import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.actions.SemanticActionsKeyWords;
 import ecologylab.semantics.collecting.DownloadStatus;
 import ecologylab.semantics.collecting.SemanticsGlobalScope;
-import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.collecting.SemanticsSite;
 import ecologylab.semantics.documentparsers.DocumentParser;
-import ecologylab.semantics.documentparsers.HTMLDOMParser;
 import ecologylab.semantics.html.documentstructure.SemanticInLinks;
-import ecologylab.semantics.html.dom.IDOMProvider;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
@@ -35,8 +33,8 @@ import ecologylab.semantics.model.text.TermVectorFeature;
 import ecologylab.semantics.seeding.SearchResult;
 import ecologylab.semantics.seeding.Seed;
 import ecologylab.semantics.seeding.SeedDistributor;
-import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.ElementState.FORMAT;
+import ecologylab.serialization.SIMPLTranslationException;
 
 /**
  * New Container object. Mostly just a closure around Document.
@@ -164,8 +162,22 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 			downloadStatus	= DownloadStatus.PARSING;
 			if (documentParser.downloadingMessageOnConnect())
 				semanticsScope.displayStatus("Downloading " + location(), 2);
-
+			
+			MetaMetadata metaMetadata	= (MetaMetadata) document.getMetaMetadata();
+			ArrayList<SemanticAction> beforeSemanticActions	= metaMetadata.getBeforeSemanticActions();
+			if (beforeSemanticActions != null)
+			{
+				SemanticActionHandler handler	= new SemanticActionHandler(semanticsScope, documentParser);
+				handler.takeSemanticActions(metaMetadata, document, beforeSemanticActions);
+			}
 			documentParser.parse();
+			
+			ArrayList<SemanticAction> afterSemanticActions	= metaMetadata.getBeforeSemanticActions();
+			if (afterSemanticActions != null)
+			{
+				SemanticActionHandler handler	= new SemanticActionHandler(semanticsScope, documentParser);
+				handler.takeSemanticActions(metaMetadata, document, afterSemanticActions);
+			}
 			
 			downloadStatus	= DownloadStatus.DOWNLOAD_DONE;
 									
@@ -393,7 +405,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 			documentParser.fillValues(purlConnection, this, semanticsScope);
 		}
 		else if (!DocumentParser.isRegisteredNoParser(purlConnection.getPurl()))
-			warning("No DocumentParser found");
+			warning("No DocumentParser found: " + metaMetadata);
 	}
 
 	/**

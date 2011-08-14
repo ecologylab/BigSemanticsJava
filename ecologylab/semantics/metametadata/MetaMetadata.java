@@ -51,7 +51,15 @@ implements Mappable<String>//, HasLocalTranslationScope
 
 	@simpl_collection
 	@simpl_scope(SemanticActionTranslationScope.SEMANTIC_ACTION_TRANSLATION_SCOPE)
+	private ArrayList<SemanticAction>								beforeSemanticActions;
+
+	@simpl_collection
+	@simpl_scope(SemanticActionTranslationScope.SEMANTIC_ACTION_TRANSLATION_SCOPE)
 	private ArrayList<SemanticAction>								semanticActions;
+
+	@simpl_collection
+	@simpl_scope(SemanticActionTranslationScope.SEMANTIC_ACTION_TRANSLATION_SCOPE)
+	private ArrayList<SemanticAction>								afterSemanticActions;
 
 	@simpl_scalar
 	@mm_dont_inherit
@@ -591,6 +599,16 @@ implements Mappable<String>//, HasLocalTranslationScope
 	public TranslationScope getLocalMetadataTranslationScope()
 	{
 		return this.localMetadataTranslationScope;
+	}
+
+	public ArrayList<SemanticAction> getBeforeSemanticActions()
+	{
+		return beforeSemanticActions;
+	}
+
+	public ArrayList<SemanticAction> getAfterSemanticActions()
+	{
+		return afterSemanticActions;
 	}
 
 }

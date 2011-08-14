@@ -39,7 +39,7 @@ public class SemanticActionHandler
 		BUILT_IN_SCOPE.put(NULL, null);
 	}
 
-	private SemanticsGlobalScope											infoCollector;
+	private SemanticsGlobalScope											semanticsScope;
 
 	private DocumentParser														documentParser;
 
@@ -62,11 +62,14 @@ public class SemanticActionHandler
 
 	Metadata																					metadata;
 
-	public SemanticActionHandler(SemanticsGlobalScope infoCollector, DocumentParser documentParser)
+	public SemanticActionHandler(SemanticsGlobalScope semanticsScope, DocumentParser documentParser)
 	{
-		this.infoCollector = infoCollector;
-		this.documentParser = documentParser;
+		this.semanticsScope 			= semanticsScope;
+		this.documentParser 			= documentParser;
 		semanticActionVariableMap = new Scope<Object>(BUILT_IN_SCOPE);
+		semanticActionVariableMap.put(
+				SemanticActionsKeyWords.PURLCONNECTION_MIME,
+				documentParser.purlConnection().mimeType());
 	}
 
 	public Scope<Object> getSemanticActionVariableMap()
@@ -86,7 +89,10 @@ public class SemanticActionHandler
 	}
 	public void takeSemanticActions(MetaMetadata metaMetadata, Metadata metadata)
 	{
-		ArrayList<? extends SemanticAction> semanticActions = metaMetadata.getSemanticActions();
+		takeSemanticActions(metaMetadata, metadata, metaMetadata.getSemanticActions());
+	}
+	public void takeSemanticActions(MetaMetadata metaMetadata, Metadata metadata, ArrayList<? extends SemanticAction> semanticActions)
+	{
 		if (semanticActions == null)
 		{
 			System.out.println("[ParserBase] warning: no semantic actions exist");
@@ -112,7 +118,7 @@ public class SemanticActionHandler
 		for (int i = 0; i < semanticActions.size(); i++)
 		{
 			SemanticAction action = semanticActions.get(i);
-			handleSemanticAction(action, documentParser, infoCollector);
+			handleSemanticAction(action, documentParser, semanticsScope);
 			if (requestWaiting)
 				return;
 		}
