@@ -65,24 +65,16 @@ implements DOMParserInterface
 						break;
 					}
 				}
-				Node container;
+				Node containerNode;
 				if (containerNodeIndex == 0)
 				{
-					container = bodyNode.getAttributes().getNamedItem("container");
+					containerNode = getContainerAttrNode(bodyNode);
 				}
 				else
 				{
-					container 			= children.item(containerNodeIndex).getAttributes().getNamedItem("container");
+					containerNode 			= getContainerAttrNode(children.item(containerNodeIndex));
 				}
-				if (container != null)
-				{
-					String containerValue = container.getNodeValue();
-					if (containerValue != null && containerValue.length() > 0)
-					{
-						containerValue= XMLTools.unescapeXML(containerValue);
-						containerPurl = ParsedURL.getAbsolute(containerValue);
-					}
-				}
+				setContainerPurl(containerNode);
 			}
 			DOMWalkInformationTagger.getTextInSubTree(bodyNode, true, bodyTextBuffy, true);
 		}
@@ -93,10 +85,32 @@ implements DOMParserInterface
 			for (int i=0; i < numImages; i++)
 			{
 				Node imgNode = imgNodeList.item(i);
+				if (containerPurl == null)
+				{
+					setContainerPurl(getContainerAttrNode(imgNode));
+				}
 				imageElements.add(new ImgElement(imgNode, containerPurl));
 			}
 		}
 //		taggedDoc.generateCollectionsFromRoot(rootNode);
+	}
+	
+	private Node getContainerAttrNode(Node elementNode)
+	{
+		return elementNode.getAttributes().getNamedItem("container");
+	}
+
+	private void setContainerPurl(Node containerNode)
+	{
+		if (containerNode != null)
+		{
+			String containerValue = containerNode.getNodeValue();
+			if (containerValue != null && containerValue.length() > 0)
+			{
+				containerValue= XMLTools.unescapeXML(containerValue);
+				containerPurl = ParsedURL.getAbsolute(containerValue);
+			}
+		}
 	}
 	
 	public InputStream inputStream()
