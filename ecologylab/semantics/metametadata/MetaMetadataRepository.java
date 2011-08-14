@@ -185,12 +185,12 @@ implements PackageSpecifier, DocumentParserTagNames
 	/**
 	 * Repository of images with noAnchroNoQuery URL string as key.
 	 */
-	private HashMap<String, MetaMetadata>												imageRepositoryByUrlStripped		= new HashMap<String, MetaMetadata>();
+//	private HashMap<String, MetaMetadata>												imageRepositoryByUrlStripped		= new HashMap<String, MetaMetadata>();
 
 	/**
 	 * Repository of images with URL pattern as key.
 	 */
-	private HashMap<String, ArrayList<RepositoryPatternEntry>>	imageRepositoryByPattern				= new HashMap<String, ArrayList<RepositoryPatternEntry>>();
+//	private HashMap<String, ArrayList<RepositoryPatternEntry>>	imageRepositoryByPattern				= new HashMap<String, ArrayList<RepositoryPatternEntry>>();
 
 	// [endregion]
 
@@ -808,6 +808,11 @@ implements PackageSpecifier, DocumentParserTagNames
 
 	public MetaMetadata getClippableDocumentMM(ParsedURL purl, String tagName)
 	{
+		return getDocumentMM(purl, tagName);
+	}
+	/*
+	public MetaMetadata getOldClippableDocumentMM(ParsedURL purl, String tagName)
+	{
 		MetaMetadata result = null;
 		if (purl != null && !purl.isFile())
 		{
@@ -845,7 +850,7 @@ implements PackageSpecifier, DocumentParserTagNames
 		}
 		return (result != null) ? result : getMMByName(tagName);
 	}
-
+*/
 	public MetaMetadata getImageMM(ParsedURL purl)
 	{
 		return getClippableDocumentMM(purl, IMAGE_TAG);
@@ -965,18 +970,21 @@ implements PackageSpecifier, DocumentParserTagNames
 			HashMap<String, MetaMetadata> repositoryByUrlStripped;
 			HashMap<String, ArrayList<RepositoryPatternEntry>> repositoryByPattern;
 
-			if (Image.class.isAssignableFrom(metadataClass))
-			{
-				repositoryByUrlStripped = imageRepositoryByUrlStripped;
-				repositoryByPattern = imageRepositoryByPattern;
-			}
-			else if (Document.class.isAssignableFrom(metadataClass))
-			{
-				repositoryByUrlStripped = documentRepositoryByUrlStripped;
-				repositoryByPattern = documentRepositoryByPattern;
-			}
-			else
-				continue;
+//			if (Image.class.isAssignableFrom(metadataClass))
+//			{
+//				repositoryByUrlStripped = imageRepositoryByUrlStripped;
+//				repositoryByPattern = imageRepositoryByPattern;
+//			}
+//			else if (Document.class.isAssignableFrom(metadataClass))
+//			{
+//				repositoryByUrlStripped = documentRepositoryByUrlStripped;
+//				repositoryByPattern = documentRepositoryByPattern;
+//			}
+//			else
+//				continue;
+
+			repositoryByUrlStripped = documentRepositoryByUrlStripped;
+			repositoryByPattern = documentRepositoryByPattern;
 
 			// We need to check if something is there already
 			// if something is there, then we need to check to see if it has its cf pref set
@@ -999,7 +1007,8 @@ implements PackageSpecifier, DocumentParserTagNames
 				ParsedURL strippedPurl = selector.getUrlStripped();
 				if (strippedPurl != null)
 				{
-					repositoryByUrlStripped.put(strippedPurl.noAnchorNoQueryPageString(), metaMetadata);
+					String noAnchorNoQueryPageString = strippedPurl.noAnchorNoQueryPageString();
+					repositoryByUrlStripped.put(noAnchorNoQueryPageString, metaMetadata);
 					metaMetadata.setMmSelectorType(MMSelectorType.LOCATION);
 				}
 				else
@@ -1011,7 +1020,7 @@ implements PackageSpecifier, DocumentParserTagNames
 						pp.setMappedObject(metaMetadata);
 
 						// TODO is this next line correct??? it looks wrong!
-						repositoryByUrlStripped.put(urlPathTree.toString(), metaMetadata);
+//						repositoryByUrlStripped.put(urlPathTree.toString(), metaMetadata);
 						metaMetadata.setMmSelectorType(MMSelectorType.LOCATION);
 					}
 					else
