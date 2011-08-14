@@ -95,10 +95,7 @@ public abstract class ParserBase extends HTMLDOMParser<Document> implements Scal
 	{
 		// init
 		SemanticActionHandler handler = new SemanticActionHandler(semanticsScope, this);
-		handler.getSemanticActionVariableMap().put(
-				SemanticActionsKeyWords.PURLCONNECTION_MIME,
-				purlConnection.mimeType());
-		instantiateMetaMetadataVariables(handler);
+		instantiateSemanticActionXPathVars(handler);
 		truePURL = document.getLocation();
 
 		// build the metadata object
@@ -157,7 +154,7 @@ public abstract class ParserBase extends HTMLDOMParser<Document> implements Scal
 	 * @param document
 	 *          The root of the document
 	 */
-	private void instantiateMetaMetadataVariables(SemanticActionHandler handler)
+	private void instantiateSemanticActionXPathVars(SemanticActionHandler handler)
 	{
 		// get the list of all variable defintions
 		ArrayList<DefVar> defVars = getMetaMetadata().getDefVars();
@@ -172,13 +169,13 @@ public abstract class ParserBase extends HTMLDOMParser<Document> implements Scal
 			for (DefVar defVar : defVars)
 			{
 				String xpathExpression = defVar.getXpath();
-				String node = defVar.getNode();
-				String name = defVar.getName();
-				QName type = defVar.getType();
-				Node contextNode = null;
+				String nodeName 	= defVar.getNode();
+				String varName 		= defVar.getName();
+				QName varType 		= defVar.getType();
+				Node contextNode	= null;
 				try
 				{
-					if (node == null)
+					if (nodeName == null)
 					{
 						// apply the XPath on the document root.
 						contextNode = getDom();
@@ -186,25 +183,25 @@ public abstract class ParserBase extends HTMLDOMParser<Document> implements Scal
 					else
 					{
 						// get the context node from parameters
-						contextNode = (Node) parameters.get(node);
+						contextNode = (Node) parameters.get(nodeName);
 					}
 
-					if (type != null)
+					if (varType != null)
 					{
 						// apply xpath and get the node list
-						if (type == XPathConstants.NODESET)
+						if (varType == XPathConstants.NODESET)
 						{
-							NodeList nList = (NodeList) xpath.evaluate(xpathExpression, contextNode, type);
+							NodeList nList = (NodeList) xpath.evaluate(xpathExpression, contextNode, varType);
 
 							// put the value in the parametrers
-							parameters.put(name, nList);
+							parameters.put(varName, nList);
 						}
-						else if (type == XPathConstants.NODE)
+						else if (varType == XPathConstants.NODE)
 						{
-							Node n = (Node) xpath.evaluate(xpathExpression, contextNode, type);
+							Node n = (Node) xpath.evaluate(xpathExpression, contextNode, varType);
 
 							// put the value in the parametrers
-							parameters.put(name, n);
+							parameters.put(varName, n);
 						}
 					}
 					else
@@ -213,7 +210,7 @@ public abstract class ParserBase extends HTMLDOMParser<Document> implements Scal
 						String evaluation = xpath.evaluate(xpathExpression, contextNode);
 
 						// put it into returnValueMap
-						parameters.put(name, evaluation);
+						parameters.put(varName, evaluation);
 					}
 				}
 				catch (Exception e)
@@ -221,13 +218,13 @@ public abstract class ParserBase extends HTMLDOMParser<Document> implements Scal
 					StringBuilder buffy = StringBuilderUtils.acquire();
 					buffy
 							.append("################### ERROR IN VARIABLE DEFINTION ##############################\n");
-					buffy.append("Variable Name::\t").append(name).append("\n");
+					buffy.append("Variable Name::\t").append(varName).append("\n");
 					buffy.append("Check if the context node is not null::\t").append(contextNode)
 							.append("\n");
 					buffy.append("Check if the XPath Expression is valid::\t").append(xpathExpression)
 							.append("\n");
 					buffy.append("Check if the return object type of Xpath evaluation is corect::\t").append(
-							type).append("\n");
+							varType).append("\n");
 					debug(buffy);
 					StringBuilderUtils.release(buffy);
 				}
