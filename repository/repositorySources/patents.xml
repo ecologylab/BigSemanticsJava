@@ -26,8 +26,17 @@
 		<collection name="classifications" child_type="document"/>
 	</meta_metadata>
 	
+	<meta_metadata name="google_patent_image" type="image" parser="image">
+		<selector url_stripped="http://bks1.books.google.com/patents" />
+		<before_semantic_actions>
+			<filter_location>
+				<set_param name="zoom" value="3"/>
+			</filter_location>
+		</before_semantic_actions>
+	</meta_metadata>
+	
 	<meta_metadata name="google_patent" extends="patent" comment="Google Patents Class" user_agent_name="firefox_2" parser="xpath">
-		<selector url_path_tree="http://www.google.com/patents/about"/>
+		<selector url_stripped="http://www.google.com/patents/about"/>
 		
 		<collection name="authors" xpath="//div[@class='patent_bibdata']/a">
 			<scalar name="location" xpath="./@href" />
@@ -111,7 +120,7 @@
 			</if>
 		</semantic_actions>
 	</meta_metadata>
-	<meta_metadata name="google_patent_image" extends="compound_document" comment="Google Patents Image Class" user_agent_name="firefox_2" parser="xpath">
+<!-- 	<meta_metadata name="google_patent_image" extends="compound_document" comment="Google Patents Image Class" user_agent_name="firefox_2" parser="xpath">
 		<selector url_regex="(?=http://www.google.com/patents\?id=)^((?!img).)*$" domain="google.com"/>
 		<scalar name="title" xpath="//div[@id='titlebar']/h1" />
 		<scalar name="inventor" xpath="//div[@id='titlebar']/span" scalar_type="String" />
@@ -128,7 +137,7 @@
 			</for_each>
 		</semantic_actions>
 	</meta_metadata>
-	<meta_metadata name="google_sorry" extends="compound_document" parser="xpath">
+ -->	<meta_metadata name="google_sorry" extends="compound_document" parser="xpath">
 		<selector url_regex="http://sorry.google.com" domain="google.com"/>
 		<semantic_actions>
 			<back_off_from_site domain="google.com" />
