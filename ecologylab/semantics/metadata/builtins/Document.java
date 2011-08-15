@@ -230,6 +230,16 @@ public class Document extends Metadata
 	{
 		return title == null ? null : title().getValue();
 	}
+	
+	/**
+	 * (used by the ORM layer.)
+	 * 
+	 * @return
+	 */
+	public MetadataString getTitleMetadata()
+	{
+		return title;
+	}
 
 	/**
 	 * Sets the value of the field title
@@ -251,9 +261,8 @@ public class Document extends Metadata
 	}
 
 	/**
-	 * Sets the title directly
+	 * (used by the ORM layer.)
 	 **/
-
 	public void setTitleMetadata(MetadataString title)
 	{
 		this.title = title;
@@ -294,6 +303,16 @@ public class Document extends Metadata
 	public String getDescription()
 	{
 		return description == null ? null : description().getValue();
+	}
+	
+	/**
+	 * (used by the ORM layer.)
+	 * 
+	 * @return
+	 */
+	public MetadataString getDescriptionMetadata()
+	{
+		return description;
 	}
 
 	/**
