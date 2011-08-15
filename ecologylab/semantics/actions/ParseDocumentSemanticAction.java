@@ -28,7 +28,7 @@ import ecologylab.serialization.simpl_inherit;
 @simpl_inherit
 public @xml_tag(SemanticActionStandardMethods.PARSE_DOCUMENT)
 class ParseDocumentSemanticAction
-		extends SemanticAction
+		extends ContinuableSemanticAction
 {
 
 	@simpl_scalar
@@ -169,6 +169,10 @@ class ParseDocumentSemanticAction
 		if (document != null)
 		{
 			DocumentClosure documentClosure	= document.getOrConstructClosure();
+			if (continuation != null)
+			{
+				documentClosure.addContinuation(this);	// for continuation semantic actions :-)!
+			}
 			if (documentClosure == null)
 				warning("Can't parse " + document.getLocation() + " because null container." );
 			else if (!distributeSeedingResults(this, documentParser, documentClosure, null))
@@ -197,7 +201,13 @@ class ParseDocumentSemanticAction
 					}))
 			{
 				if (crawler != null)
+				{
+					if (continuation != null)
+					{
+						documentClosure.addContinuation(this);	// for continuation semantic actions :-)!
+					}
 					crawler.addClosureToPool(documentClosure);
+				}
 			}
 		}
 	}
@@ -212,7 +222,7 @@ class ParseDocumentSemanticAction
 	 * @return true if a seeding result is distributed; false if not applicable (e.g. a normal page).
 	 */
 	protected boolean distributeSeedingResults(SemanticAction action, DocumentParser documentParser, 
-			DocumentClosure resultContainer, DistributorContinuation callback)
+			DocumentClosure resultContainer, DistributorContinuation distributorContinuation)
 	{
 		SeedDistributor resultsDistributor = null;
 		Seed searchSeed = documentParser.getSeed();
@@ -247,7 +257,8 @@ class ParseDocumentSemanticAction
 			// System.out.println(msg);
 			sessionScope.displayStatus(msg);
 			resultContainer.setSearchResult(resultsDistributor, metaMetadataSearchParser.getResultSoFar());
-			resultsDistributor.queueResult(resultContainer, callback);
+			//TODO -- add continuation semantic actions!!!
+			resultsDistributor.queueResult(resultContainer, distributorContinuation);
 			metaMetadataSearchParser.incrementResultSoFar();
 
 			return true;
@@ -257,7 +268,8 @@ class ParseDocumentSemanticAction
 			int rank = action.getArgumentInteger(SemanticActionNamedArguments.RANK, 0);
 			resultContainer.setSearchResult(resultsDistributor, rank);
 			// resultContainer.setQuery(searchSeed.getQuery());
-			resultsDistributor.queueResult(resultContainer, callback);
+			//TODO -- add continuation semantic actions!!!
+			resultsDistributor.queueResult(resultContainer, distributorContinuation);
 
 			return true;
 		}

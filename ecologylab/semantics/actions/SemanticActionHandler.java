@@ -64,12 +64,18 @@ public class SemanticActionHandler
 
 	public SemanticActionHandler(SemanticsGlobalScope semanticsScope, DocumentParser documentParser)
 	{
+		this(semanticsScope, documentParser, new Scope<Object>(BUILT_IN_SCOPE));
+	}
+
+	public SemanticActionHandler(SemanticsGlobalScope semanticsScope, DocumentParser documentParser, 
+			Scope<Object> semanticActionVariableMap)
+	{
 		this.semanticsScope 			= semanticsScope;
 		this.documentParser 			= documentParser;
-		semanticActionVariableMap = new Scope<Object>(BUILT_IN_SCOPE);
 		semanticActionVariableMap.put(
 				SemanticActionsKeyWords.PURLCONNECTION_MIME,
 				documentParser.purlConnection().mimeType());
+		this.semanticActionVariableMap	= semanticActionVariableMap;
 	}
 
 	public Scope<Object> getSemanticActionVariableMap()

@@ -73,4 +73,6 @@ public interface SemanticActionsKeyWords
 	public static String	IMAGE_PARSER							= "image";
 	
 	public static String PURLCONNECTION_MIME				= "purl_connect_mime";
+	
+	public static String DOCUMENT_CALLER						= "document_caller";
 }
