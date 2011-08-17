@@ -6,7 +6,7 @@ package ecologylab.semantics.metametadata.test;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
-import ecologylab.appframework.ApplicationEnvironment;
+import ecologylab.appframework.SingletonApplicationEnvironment;
 import ecologylab.generic.Continuation;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.collecting.SemanticsSessionScope;
@@ -28,7 +28,7 @@ import ecologylab.serialization.TranslationScope.GRAPH_SWITCH;
  * 
  * @author andruid
  */
-public class NewMmTest extends ApplicationEnvironment
+public class NewMmTest extends SingletonApplicationEnvironment
 implements Continuation<DocumentClosure>
 {
 	ArrayList<DocumentClosure>			documentCollection	= new ArrayList<DocumentClosure>();
