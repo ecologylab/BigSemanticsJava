@@ -76,6 +76,11 @@ implements MimeType, ImageConstants
 		return (localLocation != null) ? localLocation.getValue() : null;
 	}
 	
+	public MetadataParsedURL getLocalLocationMetadata()
+	{
+		return localLocation;
+	}
+	
 	public File getLocalLocationAsFile()
 	{
 		ParsedURL localLocationPurl = getLocalLocationPurl();
@@ -94,6 +99,10 @@ implements MimeType, ImageConstants
 			this.localLocation.setValue(localLocationFile);
 	}
 	
+	public void setLocalLocationMetadata(MetadataParsedURL localLocation)
+	{
+		this.localLocation = localLocation;
+	}
 
 	/**
 	 * Lazy Evaluation for creationDate
@@ -113,6 +122,16 @@ implements MimeType, ImageConstants
 	public Date getCreationDate()
 	{
 		return creationDate == null ? null : creationDate.getValue();
+	}
+
+	public MetadataDate getCreationDateMetadata()
+	{
+		return creationDate;
+	}
+	
+	public void setCreationDateMetadata(MetadataDate creationDate)
+	{
+		this.creationDate = creationDate;
 	}
 
 	/**

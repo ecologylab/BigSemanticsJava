@@ -672,7 +672,7 @@ implements PackageSpecifier, DocumentParserTagNames
 		for (MetaMetadata mmd : repositoryByName.values())
 		{
 			MetadataClassDescriptor mcd = mmd.getMetadataClassDescriptor();
-			if (mmd.isNewMetadataClass() && mcd != null)
+			if (mcd != null)
 				repositoryByClassName.put(mcd.getDescribedClass().getName(), mmd);
 			
 			mmd.setUpLinkWith(this);

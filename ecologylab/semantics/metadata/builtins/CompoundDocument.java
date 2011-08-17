@@ -129,6 +129,11 @@ public class CompoundDocument extends Document
 	{
 		return pageStructure == null ? null : pageStructure().getValue();
 	}
+	
+	public MetadataString getPageStructureMetadata()
+	{
+		return pageStructure;
+	}
 
 	/**
 	 * Sets the value of the field pageStructure
@@ -193,6 +198,11 @@ public class CompoundDocument extends Document
 	public String getQuery()
 	{
 		return query == null ? null : query().getValue();
+	}
+	
+	public MetadataString getQueryMetadata()
+	{
+		return query;
 	}
 
 	/**

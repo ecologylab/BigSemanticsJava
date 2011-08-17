@@ -322,7 +322,7 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 							.getValueString(currentMetadata));
 				else if (mfd.isNested())
 				{
-					Metadata nestedMetadata = (Metadata) mfd.getNested((ElementState) currentMetadata);
+					Metadata nestedMetadata = (Metadata) mfd.getNestedMetadata(currentMetadata);
 					hasVisibleNonNullField = (nestedMetadata != null) ? (nestedMetadata
 							.numberOfVisibleFields() > 0) : false;
 				}

@@ -34,4 +34,14 @@ public class DebugMetadata extends Metadata
 		super(MetaMetadataRepositoryInit.DEBUG_META_METADATA);
 		this.newTermVector = newTermVector;
 	}
+
+	public MetadataStringBuilder getNewTermVectorMetadata()
+	{
+		return newTermVector;
+	}
+
+	public void setNewTermVectorMetadata(MetadataStringBuilder newTermVector)
+	{
+		this.newTermVector = newTermVector;
+	}
 }

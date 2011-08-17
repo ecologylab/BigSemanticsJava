@@ -980,11 +980,8 @@ implements Mappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneabl
 				MetaMetadataCollectionField coll = (MetaMetadataCollectionField) this;
 				if (coll.getChildScalarType() != null)
 					return FieldTypes.COLLECTION_SCALAR;
-				else if (coll.getChildType() != null)
-					return FieldTypes.COLLECTION_ELEMENT;
 				else
-					warning("both child_type and child_scalar_type are null!! treat it as a COLLECTION_ELEMENT by default.");
-				return FieldTypes.COLLECTION_ELEMENT;
+					return FieldTypes.COLLECTION_ELEMENT;
 			}
 			else
 				return FieldTypes.SCALAR;

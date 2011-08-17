@@ -103,6 +103,11 @@ public class TextClipping extends Clipping implements TextualMetadata
 	{
 		return text == null || text.getValue() == null;
 	}
+	
+	public MetadataString getTextMetadata()
+	{
+		return this.text;
+	}
 
 	/**
 	 * Sets the text directly

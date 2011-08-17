@@ -21,7 +21,7 @@
   <meta_metadata name="wikipedia_page_type" extends="compound_document" comment="An article on wikipedia">
     <collection name="paragraphs" comment="Paragraphs in the article." child_type="paragraph" child_extends="metadata">
       <scalar name="paragraph_text" scalar_type="String" />
-      <collection name="anchors" comment="Anchors (links) in the paragraph, typically links to another Wikipedia article." child_type="anchor" child_extends="metadata">
+      <collection name="anchors" comment="Anchors (links) in the paragraph, typically links to another Wikipedia article." child_type="wiki_anchor" child_extends="metadata">
         <scalar name="link" scalar_type="ParsedURL" />
         <scalar name="anchor_text" scalar_type="String" />
         <scalar name="target_title" scalar_type="String" />
@@ -45,7 +45,7 @@
     <scalar name="main_image_src" hide="true" xpath="./@src" context_node="main_image" scalar_type="ParsedURL" />
     <collection name="paragraphs" hide="true" xpath="//div[@id='bodyContent']/p/a[starts-with(@href,'/wiki/')]/.." child_type="paragraph">
       <scalar name="paragraph_text" xpath="string(.)" />
-      <collection name="anchors" xpath="./a[starts-with(@href,'/wiki/')]" child_type="anchor">
+      <collection name="anchors" xpath="./a[starts-with(@href,'/wiki/')]">
         <scalar name="link" xpath="./@href" />
         <scalar name="anchor_text" xpath="string(.)" />
         <scalar name="target_title" xpath="./@title" />

@@ -1,7 +1,7 @@
 <meta_metadata_repository name="dlese" package="ecologylab.semantics.generated.library.dlese" default_user_agent_name="firefox_3_6_8">
 
 	<meta_metadata name="dlese_record" extends="document" visibility="PACKAGE" parser="direct" tag="record">
-		<composite name="head" extends="metadata">
+		<composite name="dlese_record_head" extends="metadata" tag="head">
 			<scalar name="id" scalar_type="String" />
 			<composite name="collection" extends="metadata">
 				<scalar name="id" scalar_type="String" tag="recordId" />
@@ -61,7 +61,7 @@
 				<scalar name="offset" scalar_type="Int" />
 			</composite>
 			<collection name="search_results" tag="results" child_tag="record" child_type="dlese_record1" child_extends="dlese_record">
-				<composite name="head" type="head1" extends="head" tag="head">
+				<composite name="dlese_record_head" type="head1" extends="dlese_record_head" tag="head">
 					<composite name="additional_metadata" type="user_search_additional_metadata" extends="additional_metadata">
 						<composite name="search_additional_metadata_adn" extends="metadata" tag="adn">
 							<scalar name="accession_status" scalar_type="String" tag="accessionStatus" />
@@ -79,7 +79,7 @@
 		<selector url_regex="http://www.dlese.org/dds/services/ddsws1-0\?verb=GetRecord.*" domain="dlese.org" />
 
 		<collection name="records" tag="GetRecord" child_tag="record" child_type="dlese_record2" child_extends="dlese_record">
-			<composite name="head" type="head2" extends="head" tag="head">
+			<composite name="dlese_record_head" type="head2" extends="dlese_record_head" tag="head">
 				<composite name="additional_metadata" type="get_record_additional_metadata" extends="additional_metadata">
 					<scalar name="realm" scalar_type="String" />
 					<scalar name="accession_status" scalar_type="String" tag="accessionStatus" />

@@ -140,9 +140,9 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 		editValueListeners.remove(listener);
 	}
 	
-	public ElementState getNested(MetadataBase context)
+	public MetadataBase getNestedMetadata(MetadataBase context)
 	{
-		return isScalar() ? null : getNested((ElementState) context);
+		return isScalar() ? null : (MetadataBase) getNested((ElementState) context);
 	}
 	
 	@Override

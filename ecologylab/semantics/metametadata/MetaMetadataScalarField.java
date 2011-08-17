@@ -161,7 +161,7 @@ public class MetaMetadataScalarField extends MetaMetadataField
 		// @simpl_composite_as_scalar
 		if (isCompositeScalar())
 		{
-			appendable.append(" @").append(simpl_composite_as_scalar.class.getSimpleName());
+			appendable.append("@").append(simpl_composite_as_scalar.class.getSimpleName());
 		}
 		
 		// @filter
@@ -170,7 +170,7 @@ public class MetaMetadataScalarField extends MetaMetadataField
 			String regex = filter.getJavaRegex();
 			String replace = filter.getJavaReplace();
 			appendable.append(String.format(" @simpl_filter(regex=\"%s\", replace=\"%s\")", regex, replace));
-			appendable.append(" @").append(simpl_filter.class.getSimpleName()).append("(regex=\"");
+			appendable.append("@").append(simpl_filter.class.getSimpleName()).append("(regex=\"");
 			appendable.append(regex).append(", replace=\"").append(replace).append("\")");
 		}
 		

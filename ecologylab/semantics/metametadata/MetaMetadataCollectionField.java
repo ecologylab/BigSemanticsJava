@@ -4,6 +4,7 @@ import java.util.Map;
 
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.semantics.metadata.Metadata.mm_dont_inherit;
+import ecologylab.semantics.metadata.Metadata.mm_name;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
 import ecologylab.semantics.metadata.scalar.types.MetadataScalarType;
@@ -101,7 +102,7 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 	@Override
 	public String getAdditionalAnnotationsInJava()
 	{
-		return " @mm_name(\"" + getName() + "\")";
+		return "@" + mm_name.class.getSimpleName() + "(\"" + getName() + "\")";
 	}
 
 	@Override

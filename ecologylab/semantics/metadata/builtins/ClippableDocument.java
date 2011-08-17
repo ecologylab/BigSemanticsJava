@@ -115,6 +115,11 @@ public class ClippableDocument<ME extends ClippableDocument> extends Document
 		return width == null ? 0 : this.width().getValue();
 	}
 
+	public MetadataInteger getWidthMetadata()
+	{
+		return width;
+	}
+
 	/**
 	 * Sets the value of the field width
 	 */
@@ -179,6 +184,11 @@ public class ClippableDocument<ME extends ClippableDocument> extends Document
 	public Integer getHeight()
 	{
 		return height == null ? 0 : this.height().getValue();
+	}
+
+	public MetadataInteger getHeightMetadata()
+	{
+		return height;
 	}
 
 	/**

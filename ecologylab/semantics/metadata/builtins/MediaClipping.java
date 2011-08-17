@@ -58,10 +58,20 @@ public class MediaClipping<ME extends ClippableDocument> extends Clipping
 		return caption == null ? null : caption.getValue();
 	}
 
+	public MetadataString getCaptionMetadata()
+	{
+		return caption;
+	}
+
 	public void setCaption(String captionString)
 	{
 		MetadataString caption = this.caption();
 		caption.setValue(captionString);
+	}
+
+	public void setCaptionMetadata(MetadataString caption)
+	{
+		this.caption = caption;
 	}
 
 	public void hwSetCaption(String caption)

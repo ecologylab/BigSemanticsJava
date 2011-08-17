@@ -46,6 +46,36 @@ public class Annotation extends Metadata implements TextualMetadata
 		super(metaMetadata);
 	}
 
+	public MetadataString getAuthorMetadata()
+	{
+		return author;
+	}
+
+	public void setAuthorMetadata(MetadataString author)
+	{
+		this.author = author;
+	}
+
+	public MetadataDate getCreationTimeMetadata()
+	{
+		return creationTime;
+	}
+
+	public void setCreationTimeMetadata(MetadataDate creationTime)
+	{
+		this.creationTime = creationTime;
+	}
+
+	public MetadataString getTextMetadata()
+	{
+		return text;
+	}
+	
+	public void setTextMetadata(MetadataString text)
+	{
+		this.text = text;
+	}
+
 	@Override
 	public void setText(String newText)
 	{

@@ -130,7 +130,17 @@ public class Clipping extends Metadata
 	{
 		return context == null ? null : context.getValue();
 	}
+	
+	public MetadataString getContextMetadata()
+	{
+		return context;
+	}
 
+	public void setContextMetadata(MetadataString context)
+	{
+		this.context = context;
+	}
+	
 	/**
 	 * Sets the value of the field context
 	 **/
@@ -196,6 +206,11 @@ public class Clipping extends Metadata
 		return xpath == null ? null : xpath().getValue();
 	}
 
+	public MetadataString getXpathMetadata()
+	{
+		return xpath;
+	}
+
 	/**
 	 * Sets the value of the field context
 	 **/
@@ -205,6 +220,11 @@ public class Clipping extends Metadata
 		this.xpath().setValue(context);
 	}
 
+	public void setXpathMetadata(MetadataString xpath)
+	{
+		this.xpath = xpath;
+	}
+	
 	/**
 	 * @return the outlinkContainer
 	 */
@@ -221,6 +241,16 @@ public class Clipping extends Metadata
 		return contextHtml;
 	}
 
+	public MetadataString getContextHtmlMetadata()
+	{
+		return contextHtml;
+	}
+
+	public void setContextHtmlMetadata(MetadataString contextHtml)
+	{
+		this.contextHtml = contextHtml;
+	}
+	
 	/**
 	 * @return the source
 	 */
