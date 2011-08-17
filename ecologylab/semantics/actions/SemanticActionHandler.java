@@ -11,7 +11,6 @@ import ecologylab.semantics.actions.exceptions.ForLoopException;
 import ecologylab.semantics.actions.exceptions.IfActionException;
 import ecologylab.semantics.actions.exceptions.SemanticActionExecutionException;
 import ecologylab.semantics.collecting.SemanticsGlobalScope;
-import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metametadata.MetaMetadata;

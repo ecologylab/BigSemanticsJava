@@ -3,7 +3,7 @@ package ecologylab.semantics.seeding;
 import java.io.File;
 import java.util.ArrayList;
 
-import ecologylab.appframework.ApplicationEnvironment;
+import ecologylab.appframework.SingletonApplicationEnvironment;
 import ecologylab.io.Assets;
 import ecologylab.semantics.namesandnums.CFPrefNames;
 import ecologylab.semantics.namesandnums.SemanticsAssetVersions;
@@ -44,7 +44,7 @@ implements CFPrefNames
 	private static void init()
 	{
 		File seedingsFile	= Assets.getAsset(SemanticsAssetVersions.SEMANTICS_ASSETS_ROOT, CFPrefNames.CURATED + "/curated_seed_sets.xml");
-		if (!ApplicationEnvironment.runningInEclipse())
+		if (!SingletonApplicationEnvironment.runningInEclipse())
 			Assets.updateAssetsXml("CuratedSeedSets.init()");
 		try
 		{

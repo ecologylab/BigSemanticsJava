@@ -5,10 +5,10 @@ package ecologylab.semantics.collecting;
 
 import java.io.File;
 
-import ecologylab.appframework.ApplicationEnvironment;
 import ecologylab.appframework.ApplicationProperties;
 import ecologylab.appframework.EnvironmentGeneric;
 import ecologylab.appframework.PropertiesAndDirectories;
+import ecologylab.appframework.SingletonApplicationEnvironment;
 import ecologylab.collections.Scope;
 import ecologylab.generic.Debug;
 import ecologylab.io.Assets;
@@ -90,7 +90,7 @@ implements DocumentParserTagNames, ApplicationProperties, SemanticsNames
 	 */
 	protected MetaMetadataRepositoryInit(TranslationScope metadataTranslationScope)
 	{
-		if (ApplicationEnvironment.isInUse() && !ApplicationEnvironment.runningInEclipse())
+		if (SingletonApplicationEnvironment.isInUse() && !SingletonApplicationEnvironment.runningInEclipse())
 		{
 			AssetsRoot mmAssetsRoot = new AssetsRoot(EnvironmentGeneric.configDir().getRelative(SEMANTICS), 
 					 Files.newFile(PropertiesAndDirectories.thisApplicationDir(), SEMANTICS + "/repository"));

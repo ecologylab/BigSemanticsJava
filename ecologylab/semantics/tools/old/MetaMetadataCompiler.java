@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.List;
 
 import ecologylab.appframework.ApplicationEnvironment;
+import ecologylab.appframework.SingletonApplicationEnvironment;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.metametadata.MetaMetadataTranslationScope;
@@ -19,7 +20,7 @@ import ecologylab.serialization.SIMPLTranslationException;
  * @author andruid
  * 
  */
-public class MetaMetadataCompiler extends ApplicationEnvironment
+public class MetaMetadataCompiler extends SingletonApplicationEnvironment
 {
 	{
 		MetaMetadataRepository.initializeTypes();
