@@ -704,6 +704,18 @@ implements PackageSpecifier, DocumentParserTagNames
 			return null;
 		return repositoryByName.get(name);
 	}
+	
+	/**
+	 * 
+	 * @return A <b>new</b> ArrayList containing the names of the MMDs in the repo map.
+	 */
+	public ArrayList<String> getMMNameList()
+	{
+		if(repositoryByName == null || repositoryByName.isEmpty())
+			return null;
+		
+		return new ArrayList<String>(repositoryByName.keySet());
+	}
 
 	public MetaMetadata getMMByClass(Class<? extends Metadata> metadataClass)
 	{
