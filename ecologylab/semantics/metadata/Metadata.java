@@ -144,7 +144,7 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 	@mm_name("linked_metadata_list")
 	@simpl_collection
 	@simpl_scope(SemanticsNames.REPOSITORY_METADATA_TRANSLATIONS)
-	private ArrayList<Metadata>						linkedMetadataList;
+	private List<Metadata>								linkedMetadataList;
 	
 	/**
 	 * This constructor should *only* be used when marshalled Metadata is read.
@@ -1128,6 +1128,11 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 	public List<Metadata> getLinkedMetadataList()
 	{
 		return this.linkedMetadataList;
+	}
+
+	public void setLinkedMetadataList(List<Metadata> linkedMetadataList)
+	{
+		this.linkedMetadataList = linkedMetadataList;
 	}
 
 	public Set<String> getLinkedMetadataKeys()

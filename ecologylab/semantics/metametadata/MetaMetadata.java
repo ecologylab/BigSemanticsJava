@@ -562,7 +562,7 @@ implements Mappable<String>//, HasLocalTranslationScope
 		return super.isNewMetadataClass() && !this.isBuiltIn();
 	}
 	
-	protected MetadataClassDescriptor bindMetadataClassDescriptor(TranslationScope metadataTScope)
+	public MetadataClassDescriptor bindMetadataClassDescriptor(TranslationScope metadataTScope)
 	{
 		if (this.metadataClassDescriptor != null)
 			return this.metadataClassDescriptor;

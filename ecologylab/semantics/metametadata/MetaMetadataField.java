@@ -498,6 +498,15 @@ implements Mappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneabl
 		return metadataClassDescriptor;
 	}
 	
+	public void setMetadataClassDescriptor(MetadataClassDescriptor metadataClassDescriptor)
+	{
+		if (metadataClassDescriptor != null)
+		{
+			this.metadataClassDescriptor = metadataClassDescriptor;
+			this.metadataClass = metadataClassDescriptor.getDescribedClass();
+		}
+	}
+	
 	/**
 	 * @return the corresponding metadataFieldDescriptor.
 	 */

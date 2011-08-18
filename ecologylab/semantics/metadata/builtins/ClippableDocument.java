@@ -1,9 +1,9 @@
 package ecologylab.semantics.metadata.builtins;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.metadata.Metadata.mm_name;
 import ecologylab.semantics.metadata.scalar.MetadataInteger;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.serialization.simpl_inherit;
@@ -28,7 +28,7 @@ public class ClippableDocument<ME extends ClippableDocument> extends Document
 	@mm_name("clippings") 
 	@simpl_collection
 	@simpl_classes(ImageClipping.class)
-	protected ArrayList<MediaClipping<ME>>	clippings;
+	protected List<MediaClipping<ME>>	clippings;
 
 	@mm_name("width") 
 	@simpl_scalar
@@ -60,9 +60,9 @@ public class ClippableDocument<ME extends ClippableDocument> extends Document
 		super(location);
 	}
 
-	private ArrayList<MediaClipping<ME>> clippings()
+	private List<MediaClipping<ME>> clippings()
 	{
-		ArrayList<MediaClipping<ME>> result = this.clippings;
+		List<MediaClipping<ME>> result = this.clippings;
 		if (result == null)
 		{
 			result = new ArrayList<MediaClipping<ME>>(INITIAL_CAPACITY);
@@ -71,9 +71,19 @@ public class ClippableDocument<ME extends ClippableDocument> extends Document
 		return result;
 	}
 
+	public List<MediaClipping<ME>> getClippings()
+	{
+		return clippings;
+	}
+
+	public void setClippings(List<MediaClipping<ME>> clippings)
+	{
+		this.clippings = clippings;
+	}
+
 	protected boolean addClipping(MediaClipping<ME> clipping)
 	{
-		ArrayList<MediaClipping<ME>> clippings = clippings();
+		List<MediaClipping<ME>> clippings = clippings();
 		clipping.setParent(this);
 		return (clippings.add(clipping));
 	}
@@ -85,7 +95,7 @@ public class ClippableDocument<ME extends ClippableDocument> extends Document
 		{
 			for (MediaClipping<ME> clipping : clippings)
 			{
-				result = clipping.getSource();
+				result = clipping.getSourceDoc();
 				if (result != null)
 					break;
 			}

@@ -4,6 +4,7 @@
 package ecologylab.semantics.metadata.builtins;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.collecting.Crawler;
@@ -11,7 +12,6 @@ import ecologylab.semantics.documentparsers.CompoundDocumentParserCrawlerResult;
 import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
-import ecologylab.semantics.namesandnums.SemanticsNames;
 import ecologylab.semantics.seeding.Seed;
 import ecologylab.serialization.Hint;
 import ecologylab.serialization.simpl_inherit;
@@ -61,7 +61,7 @@ public class CompoundDocument extends Document
 	@simpl_collection
 	@simpl_classes({ImageClipping.class, TextClipping.class})
 //	@simpl_scope(SemanticsNames.REPOSITORY_CLIPPING_TRANSLATIONS)
-	ArrayList<Clipping>								clippings;
+	List<Clipping>									clippings;
 
 
 	
@@ -362,9 +362,9 @@ public class CompoundDocument extends Document
 		return seed;
 	}
 	
-	ArrayList<Clipping> clippings()
+	List<Clipping> clippings()
 	{
-		ArrayList<Clipping> result	= this.clippings;
+		List<Clipping> result	= this.clippings;
 		if (result == null)
 		{
 			result										= new ArrayList<Clipping>();
@@ -406,9 +406,14 @@ public class CompoundDocument extends Document
 	/**
 	 * @return the clippings
 	 */
-	public ArrayList<Clipping> getClippings()
+	public List<Clipping> getClippings()
 	{
 		return clippings;
+	}
+	
+	public void setClippings(List<Clipping> clippings)
+	{
+		this.clippings = clippings;
 	}
 	
 	/**

@@ -656,6 +656,7 @@ implements PackageSpecifier, DocumentParserTagNames
 		
 		traverseAndInheritMetaMetadata();
 		
+		// global metadata classes
 		// use another copy because we may modify the scope during the process
 		ArrayList<MetaMetadata> mmds = new ArrayList<MetaMetadata>(this.repositoryByName.values());
 		for (MetaMetadata mmd : mmds)

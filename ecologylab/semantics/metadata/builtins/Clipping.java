@@ -6,13 +6,11 @@ package ecologylab.semantics.metadata.builtins;
 import java.util.HashSet;
 
 import ecologylab.semantics.metadata.Metadata;
-import ecologylab.semantics.metadata.MetadataBase;
 import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.namesandnums.SemanticsNames;
 import ecologylab.serialization.Hint;
 import ecologylab.serialization.simpl_inherit;
-import ecologylab.serialization.ElementState.simpl_scope;
 
 /**
  * Mix-in for adding the context of a clipping to the description of a Document.
@@ -23,6 +21,7 @@ import ecologylab.serialization.ElementState.simpl_scope;
 @simpl_inherit
 public class Clipping extends Metadata
 {
+	
 	/**
 	 * Text connected to the clipping in the source document.
 	 */
@@ -32,8 +31,9 @@ public class Clipping extends Metadata
 	/**
 	 * Text connected to the clipping in the source document.
 	 */
-	//TODO use html context -- need methods to strip tags to set regular context from it.
-	@simpl_scalar @simpl_hints(Hint.XML_LEAF_CDATA)
+	// TODO use html context -- need methods to strip tags to set regular context from it.
+	@simpl_scalar
+	@simpl_hints(Hint.XML_LEAF_CDATA)
 	private MetadataString	contextHtml;
 
 	/**
@@ -50,19 +50,20 @@ public class Clipping extends Metadata
 	@mm_name("source_doc")
 	@simpl_scope(SemanticsNames.REPOSITORY_DOCUMENT_TRANSLATIONS)
 	private Document				sourceDoc;
-	
+
 	/**
 	 * A hyperlinked Document.
 	 */
 	@simpl_composite
-	@mm_name("outlink") 
+	@mm_name("outlink")
 	@simpl_wrap
 	@simpl_scope(SemanticsNames.REPOSITORY_DOCUMENT_TRANSLATIONS)
 	private Document				outlink;
-	
-	private DocumentClosure				outlinkClosure;
 
-	protected static int							numWithCaption;
+	private DocumentClosure	outlinkClosure;
+
+	protected static int		numWithCaption;
+
 	/**
 	 * Total number of images we have created within this session
 	 */
@@ -254,7 +255,7 @@ public class Clipping extends Metadata
 	/**
 	 * @return the source
 	 */
-	public Document getSource()
+	public Document getSourceDoc()
 	{
 		return sourceDoc;
 	}
@@ -308,7 +309,7 @@ public class Clipping extends Metadata
 		super.recycle(visitedMetadata);
 	}
 	
-	public void setSource(Document source)
+	public void setSourceDoc(Document source)
 	{
 		this.sourceDoc	= source;
 //		if (this.source == null)

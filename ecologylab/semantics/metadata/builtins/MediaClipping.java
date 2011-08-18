@@ -8,7 +8,6 @@ import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.namesandnums.SemanticsNames;
 import ecologylab.serialization.simpl_inherit;
-import ecologylab.serialization.ElementState.simpl_scope;
 
 /**
  * @author andruid
@@ -117,4 +116,10 @@ public class MediaClipping<ME extends ClippableDocument> extends Clipping
 	{
 		return media;
 	}
+	
+	public void setMedia(ME media)
+	{
+		this.media = media;
+	}
+	
 }
