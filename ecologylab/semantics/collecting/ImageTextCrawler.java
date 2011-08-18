@@ -115,7 +115,7 @@ public class ImageTextCrawler extends Crawler
 			for (GenericElement<TextClipping> textClippingElement : candidateTextClippingElementsPool)
 			{
 				TextClipping textClipping	= textClippingElement.getGeneric();
-				Document sourceDocument		= textClipping.getSource();
+				Document sourceDocument		= textClipping.getSourceDoc();
 				if (sourceDocument != null && sourceDocument.isCompoundDocument())
 				{
 					CompoundDocumentParserImageTextCrawlerResult crawlerResult	= (CompoundDocumentParserImageTextCrawlerResult) sourceDocument.getParserResult();
