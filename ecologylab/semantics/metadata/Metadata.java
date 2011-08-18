@@ -70,7 +70,7 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 	 * create a static public accessor. -- andruid 10/7/09.
 	 */
 	private static MetaMetadataRepository	repository;
-
+	
 	/**
 	 * The meta-metadata name of this metadata.
 	 */
@@ -145,7 +145,7 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 	@simpl_collection
 	@simpl_scope(SemanticsNames.REPOSITORY_METADATA_TRANSLATIONS)
 	private ArrayList<Metadata>						linkedMetadataList;
-
+	
 	/**
 	 * This constructor should *only* be used when marshalled Metadata is read.
 	 */
@@ -1124,6 +1124,11 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 		}
 		return linkedMetadata;
 	}
+	
+	public List<Metadata> getLinkedMetadataList()
+	{
+		return this.linkedMetadataList;
+	}
 
 	public Set<String> getLinkedMetadataKeys()
 	{
@@ -1154,12 +1159,12 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 
 	public SemanticActionHandler	pendingSemanticActionHandler;
 
-	protected MetadataString getMetaMetadataNameMetadata()
+	public MetadataString getMetaMetadataNameMetadata()
 	{
 		return metaMetadataName;
 	}
 
-	protected void setMetaMetadataNameMetadata(MetadataString metaMetadataName)
+	public void setMetaMetadataNameMetadata(MetadataString metaMetadataName)
 	{
 		this.metaMetadataName = metaMetadataName;
 	}

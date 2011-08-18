@@ -4,18 +4,16 @@
 package ecologylab.semantics.metadata;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.HashSet;
 
 import ecologylab.semantics.gui.EditValueEvent;
 import ecologylab.semantics.gui.EditValueListener;
 import ecologylab.semantics.gui.EditValueNotifier;
-import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataCollectionField;
 import ecologylab.semantics.metametadata.MetaMetadataField;
 import ecologylab.semantics.metametadata.MetaMetadataNestedField;
-import ecologylab.semantics.metametadata.MetaMetadataScalarField;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.FieldDescriptor;
@@ -32,10 +30,48 @@ import ecologylab.serialization.types.ScalarType;
 public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor implements EditValueNotifier
 {
 	
+	private static Class<?>								PROXY_CLASS																	= null;
+
+	private static Method									PROXY_METHOD_HANDLER_GETTER									= null;
+
+	/**
+	 * the class that connects MethodHandler and LazyInitializer.
+	 */
+	private static Class<?>								HIBERNATE_JAVASSIST_LAZY_INITIALIZER_CLASS	= null;
+
+	private static Method									PERSIST_OBJECT_GETTER												= null;
+	
+	static
+	{
+		try
+		{
+			PROXY_CLASS = Class.forName("javassist.util.proxy.ProxyObject");
+			PROXY_METHOD_HANDLER_GETTER = PROXY_CLASS.getMethod("getHandler");
+			HIBERNATE_JAVASSIST_LAZY_INITIALIZER_CLASS = Class.forName("org.hibernate.proxy.pojo.javassist.JavassistLazyInitializer");
+			PERSIST_OBJECT_GETTER = HIBERNATE_JAVASSIST_LAZY_INITIALIZER_CLASS.getMethod("getImplementation");
+		}
+		catch (ClassNotFoundException e)
+		{
+			// nothing
+		}
+		catch (SecurityException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (NoSuchMethodException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	final private boolean									isMixin;
 
 	Method																hwSetMethod;
 
+	Method																getter;
+	
 	/**
 	 * The name in the MetaMetadataComposite field whose declaration resulted in the generation of
 	 * this.
@@ -288,4 +324,78 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 //		}
 //	}
 
+	public Object getValue(Object context)
+	{
+		Object value = null;
+		try
+		{
+			if (context != null)
+			{
+				if (PROXY_CLASS == null || !PROXY_CLASS.isAssignableFrom(context.getClass()))
+				{
+					return super.getValue(context);
+				}
+				else
+				{
+					Object handler = PROXY_METHOD_HANDLER_GETTER.invoke(context);
+					Object target = PERSIST_OBJECT_GETTER.invoke(handler);
+					// use getter to take advantage of AOP by javassist
+					Method getter = this.getGetter();
+					if (getter != null)
+						value = getter.invoke(target);
+				}
+			}
+		}
+		catch (IllegalArgumentException e)
+		{
+			// TODO Auto-generated catch bloc
+			e.printStackTrace();
+		}
+		catch (IllegalAccessException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (InvocationTargetException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return value;
+	}
+	
+	public boolean isDefaultValue(Object value)
+	{
+		if (this.getType() == FieldTypes.SCALAR)
+			return value == null || this.getScalarType().isDefaultValue(value.toString());
+		else
+			return value == null;
+	}
+	
+	private synchronized Method getGetter()
+	{
+		if (getter != null)
+			return getter;
+		
+		String fieldName = this.getName();
+		String getterName = "get" + Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1);
+		if (this.getType() == FieldTypes.SCALAR)
+			getterName += "Metadata";
+		try
+		{
+			getter = this.field.getDeclaringClass().getMethod(getterName);
+		}
+		catch (SecurityException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (NoSuchMethodException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return getter;
+	}
+	
 }

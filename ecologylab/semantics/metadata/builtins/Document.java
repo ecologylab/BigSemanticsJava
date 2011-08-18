@@ -767,12 +767,12 @@ public class Document extends Metadata
 		return isDnd;
 	}
 
-	protected List<MetadataParsedURL> getAdditionalLocations()
+	public List<MetadataParsedURL> getAdditionalLocations()
 	{
 		return additionalLocations;
 	}
 
-	protected void setAdditionalLocations(List<MetadataParsedURL> additionalLocations)
+	public void setAdditionalLocations(List<MetadataParsedURL> additionalLocations)
 	{
 		this.additionalLocations = additionalLocations;
 	}
