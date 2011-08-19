@@ -3,9 +3,10 @@
 	<meta_metadata name="acm_portal" type="scholarly_article" parser="xpath" user_agent_name="google_bot_2">
 
 		<selector url_stripped="http://portal.acm.org/citation.cfm" />
+		<selector url_stripped="http://dl.acm.org/citation.cfm" />
 
 		<url_generator type="search" engine="acm_portal" use_id="title" />
-
+	
 		<scalar name="location" xpath="//div[@id='divmain']//a[@name='FullTextPdf' or @name='FullTextPDF']/@href" />
 
 <!-- 		<scalar name="title" xpath="//div[@class='large-text']" navigates_to="metadata_page" as_natural_id="title" format="text" /> -->
@@ -51,6 +52,11 @@
 		<!-- <link_with name="google_scholar_search_result" by_id="title" /> -->
 
 		<semantic_actions>
+		<filter_location>
+			<alternative_host>portal.acm.org</alternative_host>
+			<alternative_host>dl.acm.org</alternative_host>
+		</filter_location>
+
 			<get_field name="location" />
 			<set_field name="metadata_page" value="location" />
 			<if>
