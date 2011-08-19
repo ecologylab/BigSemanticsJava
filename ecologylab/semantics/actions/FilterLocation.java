@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.collecting.TNGGlobalCollections;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.serialization.ElementState.xml_tag;
 import ecologylab.serialization.simpl_inherit;
@@ -29,6 +30,11 @@ public class FilterLocation extends SemanticAction
 	@simpl_collection
 	ArrayList<ParamOp>	paramOps;
 
+	@simpl_nowrap
+	@simpl_collection("alternative_host")
+	ArrayList<String>	alternativeHosts;
+
+	
 	/**
 	 * 
 	 */
@@ -60,9 +66,10 @@ public class FilterLocation extends SemanticAction
 	public Object perform(Object obj) throws IOException
 	{
 		Document document								= documentParser.getDocument();
+		final ParsedURL origLocation 		= document.getLocation();
+		final TNGGlobalCollections globalCollection = documentParser.getSemanticsScope().getGlobalCollection();
 		if (paramOps != null && paramOps.size() > 0)
 		{
-			final ParsedURL origLocation 					= document.getLocation();
 			HashMap<String, String>	parametersMap	= origLocation.extractParams();
 			if (parametersMap == null)
 				parametersMap												= new HashMap<String, String>(paramOps.size());
@@ -75,9 +82,22 @@ public class FilterLocation extends SemanticAction
 			{
 				document.addAdditionalLocation(origLocation);
 				document.setLocation(transformedLocation);
-				documentParser.getSemanticsScope().getGlobalCollection().addMapping(transformedLocation, document);
+				globalCollection.addMapping(transformedLocation, document);
 				
 				documentParser.reConnect();		// changed the location, so we better connect again!
+			}
+		}
+		if (alternativeHosts != null)
+		{
+			final String origHost	= origLocation.host();
+			for (String alternativeHost: alternativeHosts)
+			{
+				if (!origHost.equals(alternativeHost))
+				{
+					ParsedURL newLocation	= origLocation.changeHost(alternativeHost);
+					document.addAdditionalLocation(newLocation);
+					globalCollection.addMapping(newLocation, document);
+				}
 			}
 		}
 		return null;
