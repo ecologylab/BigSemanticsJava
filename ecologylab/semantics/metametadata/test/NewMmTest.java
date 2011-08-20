@@ -49,10 +49,14 @@ implements Continuation<DocumentClosure>
 
 	public NewMmTest(String appName, OutputStream	outputStream) throws SIMPLTranslationException
 	{
+		this(appName, outputStream, RepositoryMetadataTranslationScope.get());
+	}
+	
+	public NewMmTest(String appName, OutputStream outputStream, TranslationScope metadataTranslationScope) throws SIMPLTranslationException
+	{
 		super(appName);
-		this.outputStream	= outputStream;
-		
-		semanticsSessionScope = new SemanticsSessionScope(RepositoryMetadataTranslationScope.get(), CybernekoWrapper.class);
+		this.outputStream = outputStream;
+		semanticsSessionScope = new SemanticsSessionScope(metadataTranslationScope, CybernekoWrapper.class);
 	}
 
 	public void collect(String[] urlStrings)
