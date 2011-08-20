@@ -18,7 +18,7 @@ import ecologylab.serialization.XMLTools;
  * @author amathur
  * 
  */
-public class DirectBindingParser extends ParserBase
+public class DirectBindingParser extends ParserBase<Document>
 {
 
 	public DirectBindingParser(SemanticsSessionScope infoCollector)

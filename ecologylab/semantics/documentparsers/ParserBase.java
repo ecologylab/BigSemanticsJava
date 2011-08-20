@@ -62,7 +62,7 @@ import ecologylab.serialization.types.ScalarType;
  * 
  */
 @SuppressWarnings("rawtypes")
-public abstract class ParserBase extends HTMLDOMParser<Document> implements ScalarUnmarshallingContext,
+public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> implements ScalarUnmarshallingContext,
 		SemanticActionsKeyWords, DeserializationHookStrategy<Metadata, MetadataFieldDescriptor>
 {
 

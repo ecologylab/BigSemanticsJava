@@ -19,7 +19,7 @@ import ecologylab.semantics.seeding.SeedDistributor;
  * 
  */
 public abstract class LinksetParser
-		extends ParserBase implements Continuation<DocumentClosure>
+		extends ParserBase<Document> implements Continuation<DocumentClosure>
 {
 
 	public LinksetParser(SemanticsGlobalScope infoCollector)

@@ -10,6 +10,7 @@ import org.w3c.dom.NodeList;
 
 import ecologylab.generic.StringTools;
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.html.AElement;
 import ecologylab.semantics.html.DOMParserInterface;
@@ -26,6 +27,9 @@ import ecologylab.semantics.html.documentstructure.TextOnlyPage;
 import ecologylab.semantics.html.utils.HTMLAttributeNames;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.builtins.CompoundDocument;
+import ecologylab.semantics.metadata.builtins.Document;
+import ecologylab.semantics.metametadata.MetaMetadata;
+import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.serialization.XMLTools;
 
 
@@ -36,7 +40,7 @@ import ecologylab.serialization.XMLTools;
  *
  */
 public class HTMLDOMImageTextParser
-extends HTMLDOMParser<CompoundDocument>
+extends ParserBase<CompoundDocument>
 implements DOMParserInterface, HTMLAttributeNames
 {
 	public HTMLDOMImageTextParser(SemanticsSessionScope infoCollector)	// this is of type In
@@ -46,6 +50,14 @@ implements DOMParserInterface, HTMLAttributeNames
 	HashMap<Node, String> tdNodeAnchorContextStringCache;
 	
 	DOMWalkInformationTagger taggedDoc;
+	
+	@Override
+	public Document populateMetadata(Document document, MetaMetadataCompositeField metaMetadata,
+			org.w3c.dom.Node DOM, SemanticActionHandler handler)
+	{
+		recursiveExtraction(metaMetadata, document, DOM, null, handler.getSemanticActionVariableMap());
+		return document;
+	}
 	
 	@Override
 	public void parse() throws IOException
@@ -78,6 +90,10 @@ implements DOMParserInterface, HTMLAttributeNames
 		
 		if (fromContentBody)
 			taggedContentNode.recycle();
+		
+		MetaMetadata metaMetadata	= (MetaMetadata) getMetaMetadata();
+		if (metaMetadata.getSemanticActions() != null)
+			super.parse();
 	}
 
 	

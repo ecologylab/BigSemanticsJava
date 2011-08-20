@@ -13,7 +13,7 @@ import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
  * @author amathur
  * 
  */
-public class XPathParser extends ParserBase implements
+public class XPathParser extends ParserBase<Document> implements
 		SemanticActionsKeyWords
 {
 
