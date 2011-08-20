@@ -134,4 +134,26 @@ public class AlphaGradientRendering extends Rendering
 	{
 		super.paint(g, x, y);
 	}
+
+	// for ORM layer:
+	
+	public int getRadius()
+	{
+		return radius;
+	}
+
+	public void setRadius(int radius)
+	{
+		this.radius = radius;
+	}
+
+	public int getMinAlpha()
+	{
+		return minAlpha;
+	}
+
+	public void setMinAlpha(int minAlpha)
+	{
+		this.minAlpha = minAlpha;
+	}
 }

@@ -22,6 +22,7 @@ import ecologylab.generic.Colors;
 import ecologylab.generic.ImageTools;
 import ecologylab.semantics.gui.SerializableGUI;
 import ecologylab.serialization.ElementState;
+import ecologylab.serialization.simpl_inherit;
 import ecologylab.serialization.ElementState.simpl_scope;
 
 /**
@@ -32,69 +33,72 @@ import ecologylab.serialization.ElementState.simpl_scope;
  * Thus, these objects form a
  * chain of such states that builds a pipeline of image processing operations.
  */
+@simpl_inherit
 public class Rendering
 extends ElementState
 implements Colors
 {
 	/**
-	 * Global count of all pending <code>ImageState</code>s that need to
-	 * have their pixels recomputed.
+	 * Global count of all pending <code>ImageState</code>s that need to have their pixels recomputed.
 	 */
-	static int		renderingToDo;
-	
+	static int				renderingToDo;
+
 	/**
 	 * Global statistic for debugging memory leaks.
 	 */
-	public static int flushCount;
-	
+	public static int	flushCount;
+
 	@simpl_scalar
-	protected boolean isActive;
+	protected boolean	isActive;
+
 	/**
 	 * true if this <code>ImageState</code> needs to have its pixels recomputed.
 	 */
-	private boolean	isPending;
-	
+	private boolean		isPending;
+
 	/**
-	 * has a non-empty compute op, that gets called periodically, rather
-	 * than just once for init.
+	 * has a non-empty compute op, that gets called periodically, rather than just once for init.
 	 */
 	@simpl_scalar
-	boolean			isDynamic;
-	
+	boolean						isDynamic;
+
 	/**
 	 * Previous state in the Rendering pipeline.
 	 */
 	@simpl_composite
-	Rendering		previousRendering;
+	Rendering					previousRendering;
+
 	/**
 	 * Next state in the Rendering pipeline.
 	 */
 	@simpl_composite
-	Rendering		nextRendering;
-	
+	Rendering					nextRendering;
+
 	@simpl_composite
-	PixelBased		pixelBased;
-	
+	PixelBased				pixelBased;
+
 	@simpl_scalar
-	int				width;
-	
+	int								width;
+
 	@simpl_scalar
-	int				height;
-	
+	int								height;
+
 	/**
 	 * where pixels resulting from this operation live
 	 */
-	int[]			pixels;
+	int[]							pixels;
 
 	/**
 	 * DataBuffer that refers to the pixels.
 	 */
-	DataBufferInt	dataBuffer;
-	
+	DataBufferInt			dataBuffer;
+
 	/**
 	 * BufferedImage that refers to the DataBuffer.
 	 */
-	BufferedImage	bufferedImage;
+	BufferedImage			bufferedImage;
+
+	private long			ormId;
 
 	public Rendering()
 	{
@@ -679,7 +683,7 @@ implements Colors
 		}
 	}
 
-	public void setActive(boolean isActive)
+	public void setIsActive(boolean isActive)
 	{
 		this.isActive = isActive;
 	}
@@ -702,5 +706,60 @@ implements Colors
 	public void setPixelBased(PixelBased pixelBased)
 	{
 		this.pixelBased = pixelBased;
+	}
+
+	public long getOrmId()
+	{
+		return ormId;
+	}
+
+	public void setOrmId(long ormId)
+	{
+		this.ormId = ormId;
+	}
+
+	public boolean getIsDynamic()
+	{
+		return isDynamic;
+	}
+
+	public void setIsDynamic(boolean isDynamic)
+	{
+		this.isDynamic = isDynamic;
+	}
+
+	public Rendering getPreviousRendering()
+	{
+		return previousRendering;
+	}
+
+	public void setPreviousRendering(Rendering previousRendering)
+	{
+		this.previousRendering = previousRendering;
+	}
+
+	public Rendering getNextRendering()
+	{
+		return nextRendering;
+	}
+
+	public void setNextRendering(Rendering nextRendering)
+	{
+		this.nextRendering = nextRendering;
+	}
+
+	public boolean getIsActive()
+	{
+		return isActive;
+	}
+
+	public int getWidth()
+	{
+		return width;
+	}
+
+	public int getHeight()
+	{
+		return height;
 	}
 }

@@ -19,9 +19,8 @@ import ecologylab.generic.MathTools;
 import ecologylab.io.BasicSite;
 import ecologylab.io.Downloadable;
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.gui.SerializableGUI;
 import ecologylab.serialization.ElementState;
-import ecologylab.serialization.ElementState.simpl_scope;
+import ecologylab.serialization.simpl_inherit;
 
 /**
  * Infrastructure to display, keep track of, and manipulate pixel based media.
@@ -29,100 +28,98 @@ import ecologylab.serialization.ElementState.simpl_scope;
  * Works with {@link Rendering Rendering} to implement pipelined
  * image processing transformations on the bits.
  */
+@simpl_inherit
 public class PixelBased
 extends ElementState
 implements Downloadable, Colors
 {
-	///////////////////////////// image transform state ////////////////////////
-	public static final int	NO_ALPHA_RADIUS		= -1;
+	
+	// /////////////////////////// image transform state ////////////////////////
+	public static final int									NO_ALPHA_RADIUS	= -1;
 
+	protected static final DirectColorModel	ARGB_MODEL			= new DirectColorModel(32, 0x00ff0000, 0x0000ff00, 0xff, 0xff000000);
 
-	protected static final DirectColorModel	ARGB_MODEL	= new DirectColorModel(32, 0x00ff0000, 0x0000ff00, 0xff, 0xff000000);
+	protected static final PackedColorModel	RGB_MODEL				= new DirectColorModel(24, 0xff0000, 0xff00, 0xff, 0);
 
+	protected static final int[]						ARGB_MASKS			= { 0xff0000, 0xff00, 0xff, 0xff000000, };
 
-	protected static final PackedColorModel	RGB_MODEL	= new DirectColorModel(24, 0xff0000, 0xff00, 0xff, 0);
+	protected static final int[]						RGB_MASKS				= { 0xff0000, 0xff00, 0xff, };
 
-
-	protected static final int[]	ARGB_MASKS	= { 0xff0000, 0xff00, 0xff, 0xff000000, };
-
-
-	protected static final int[]	RGB_MASKS	= { 0xff0000, 0xff00, 0xff,  };
-
-
-	static final int[]	RGB_BANDS	= { 0, 1, 2  };
+	static final int[]											RGB_BANDS				= { 0, 1, 2 };
 
 	/**
-	 * Net location of the whatever might get downloaded.
-	 * Change from URL to ParsedURL.
+	 * Net location of the whatever might get downloaded. Change from URL to ParsedURL.
 	 */
-	ParsedURL								purl;
+	ParsedURL																purl;
 
-	boolean									recycled;
+	boolean																	recycled;
 
 	/**
 	 * Don't run grab() more than once.
 	 */
-	boolean									grabbed;
-	;
-	
+	boolean																	grabbed;																										;
+
 	/**
-	 * like unprocessedRendering, but never part of a chain.
-	 * image buffer for the completely unaltered, the virgin.
-	 * Usually unscaled, but may be scaled down due to maxDimension,
+	 * like unprocessedRendering, but never part of a chain. image buffer for the completely
+	 * unaltered, the virgin. Usually unscaled, but may be scaled down due to maxDimension,
 	 */
 	@simpl_composite
-	@simpl_classes({AlphaGradientRendering.class, Rendering.class, DesaturatedRendering.class, BlurredRendering.class})
+	@simpl_classes({ AlphaGradientRendering.class, Rendering.class, DesaturatedRendering.class, BlurredRendering.class })
 	@simpl_wrap
-	Rendering								basisRendering;
+	Rendering																basisRendering;
+
 	/**
 	 * No image processing on this rendering, but if there is scaling to do, this one is scaled.
 	 */
-	protected Rendering			unprocessedRendering;
-	
+	protected Rendering											unprocessedRendering;
+
 	@simpl_composite
-	AlphaGradientRendering	alphaGradientRendering;
-	
+	AlphaGradientRendering									alphaGradientRendering;
+
 	@simpl_composite
-	BlurredRendering				blurredRendering;
-	
+	BlurredRendering												blurredRendering;
+
 	@simpl_composite
-	DesaturatedRendering		desaturatedRendering;
+	DesaturatedRendering										desaturatedRendering;
 
 	/**
 	 * The current Rendering.
 	 */
 	@simpl_composite
-	@simpl_classes({AlphaGradientRendering.class, Rendering.class, DesaturatedRendering.class, BlurredRendering.class})
+	@simpl_classes({ AlphaGradientRendering.class, Rendering.class, DesaturatedRendering.class, BlurredRendering.class })
 	@simpl_wrap
-	Rendering								currentRendering;
+	Rendering																currentRendering;
 
-	public final Object		renderingsLock	= new Object();
+	public final Object											renderingsLock	= new Object();
+
 	/**
-	 * First Rendering in the  pipeline (chain) that is dynamic,
-	 * that is, that changes after 1st rendered.
+	 * First Rendering in the pipeline (chain) that is dynamic, that is, that changes after 1st
+	 * rendered.
 	 */
-	Rendering								firstDynamic;
+	Rendering																firstDynamic;
+
+	private long														ormId;
+
+	/**
+	 * Size of the image, once we know it. Position, as well, if its on screen.
+	 */
+	// protected Dimension dimension = new Dimension();
+	@simpl_scalar
+	protected int														width;
+
+	@simpl_scalar
+	protected int														height;
+
+	// ////////////////////// for debugging ////////////////////////////////
+	@simpl_scalar
+	boolean																	scaled;
+
+	public static int												constructedCount, recycledCount;
 
 	public Rendering getFirstDynamic()
 	{
 		return firstDynamic;
 	}
-	/**
-	 * Size of the image, once we know it. Position, as well, if its on screen.
-	 */
-	//protected Dimension		dimension 	= new Dimension();
-	@simpl_scalar
-	protected int width;
-	
-	@simpl_scalar
-	protected int height;
-
-	//////////////////////// for debugging ////////////////////////////////
-	@simpl_scalar
-	boolean					scaled;
-
-	public static int		constructedCount, recycledCount;
-
 
 	/////////////////////// constructors //////////////////////////
 	public PixelBased()
@@ -753,5 +750,80 @@ implements Downloadable, Colors
 	public void setHeight(int height)
 	{
 		this.height = height;
+	}
+
+	public long getOrmId()
+	{
+		return ormId;
+	}
+
+	public void setOrmId(long ormId)
+	{
+		this.ormId = ormId;
+	}
+
+	public Rendering getBasisRendering()
+	{
+		return basisRendering;
+	}
+
+	public void setBasisRendering(Rendering basisRendering)
+	{
+		this.basisRendering = basisRendering;
+	}
+
+	public Rendering getUnprocessedRendering()
+	{
+		return unprocessedRendering;
+	}
+
+	public void setUnprocessedRendering(Rendering unprocessedRendering)
+	{
+		this.unprocessedRendering = unprocessedRendering;
+	}
+
+	public AlphaGradientRendering getAlphaGradientRendering()
+	{
+		return alphaGradientRendering;
+	}
+
+	public void setAlphaGradientRendering(AlphaGradientRendering alphaGradientRendering)
+	{
+		this.alphaGradientRendering = alphaGradientRendering;
+	}
+
+	public BlurredRendering getBlurredRendering()
+	{
+		return blurredRendering;
+	}
+
+	public void setBlurredRendering(BlurredRendering blurredRendering)
+	{
+		this.blurredRendering = blurredRendering;
+	}
+
+	public DesaturatedRendering getDesaturatedRendering()
+	{
+		return desaturatedRendering;
+	}
+
+	public void setDesaturatedRendering(DesaturatedRendering desaturatedRendering)
+	{
+		this.desaturatedRendering = desaturatedRendering;
+	}
+
+	public boolean isScaled()
+	{
+		return scaled;
+	}
+
+	public void setScaled(boolean scaled)
+	{
+		this.scaled = scaled;
+	}
+
+	public Rendering getCurrentRendering()
+	{
+		return currentRendering;
 	}
 }
