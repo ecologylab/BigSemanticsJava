@@ -37,7 +37,7 @@ class TextChunkBase<T extends TextToken> extends ElementState implements
 	@simpl_collection
 	@simpl_scope(TextTokenTranslations.TEXT_TOKEN_SCOPE_NAME)
 	@simpl_nowrap
-	protected ArrayList<T>						tokens;
+	protected List<T>						tokens;
 	/**
 	 * Named Style for this text chunk. Default is to an anonymous style.
 	 */
@@ -60,6 +60,11 @@ class TextChunkBase<T extends TextToken> extends ElementState implements
 	private boolean										recycled;
 
 	private ScalarType								scalarType								= null;
+	
+	/**
+	 * used by the ORM layer as the database generated surrogate id.
+	 */
+	private long											ormId;
 
 	
 	public static final int						DEFAULT_POINT_SIZE				= 21;
@@ -164,10 +169,10 @@ class TextChunkBase<T extends TextToken> extends ElementState implements
 	{
 		this(doUnderline);
 		this.commonHref = commonHref;
-		namedStyle().setFontSize(size);
-		namedStyle().setFaceIndex(faceIndex);
-		namedStyle().setFontStyle(fontStyle);
-		namedStyle().setAlignment(alignment);
+		getNamedStyle().setFontSize(size);
+		getNamedStyle().setFaceIndex(faceIndex);
+		getNamedStyle().setFontStyle(fontStyle);
+		getNamedStyle().setAlignment(alignment);
 	}
 
 	/**
@@ -185,7 +190,7 @@ class TextChunkBase<T extends TextToken> extends ElementState implements
 	 */
 	protected TextChunkBase(boolean doUnderline, ScalarType scalarType)
 	{
-		namedStyle().setUnderline(doUnderline);
+		getNamedStyle().setUnderline(doUnderline);
 		this.scalarType = scalarType;
 		this.tokens = new ArrayList<T>();
 	}
@@ -219,7 +224,7 @@ class TextChunkBase<T extends TextToken> extends ElementState implements
 	 */
 	protected TextChunkBase(TextChunkBase<T> copyChunk)
 	{
-		this(copyChunk.namedStyle.underline());
+		this(copyChunk.namedStyle.getUnderline());
 		int size = copyChunk.size();
 		for (int i = 0; i < size; i++)
 		{
@@ -280,6 +285,9 @@ class TextChunkBase<T extends TextToken> extends ElementState implements
 	{
 		if (scalarType == null)
 			error("tokenize() scalarType==null; untokenized = " + untokenized);
+		
+		if (untokenized == null)
+			return;
 
 		Pattern pattern = scalarType.delimitersTokenizer();
 		Matcher matcher = pattern.matcher(untokenized);
@@ -311,7 +319,7 @@ class TextChunkBase<T extends TextToken> extends ElementState implements
 		for (int i = 0; i < this.size(); i++)
 		{
 			T token = this.get(i);
-			if (token.href() != null)
+			if (token.getHref() != null)
 			{
 				if (hrefInRow == 0)
 				{
@@ -452,8 +460,8 @@ class TextChunkBase<T extends TextToken> extends ElementState implements
 		for (int i = 0; i != size(); i++)
 		{
 			TextToken t = token(i);
-			sb.append(t.delimsBefore());
-			sb.append(t.string());
+			sb.append(t.getDelimsBefore());
+			sb.append(t.getString());
 		}
 		return sb;
 	}
@@ -505,7 +513,7 @@ class TextChunkBase<T extends TextToken> extends ElementState implements
 		for (int i = 0; i != size(); i++)
 		{
 			TextToken thatToken = token(i);
-			ParsedURL href = thatToken.href();
+			ParsedURL href = thatToken.getHref();
 
 			if (!inHref && (href != null))
 			{
@@ -513,7 +521,7 @@ class TextChunkBase<T extends TextToken> extends ElementState implements
 				inHref = true;
 			}
 
-			result += thatToken.delimsBefore() + thatToken.string() + " ";
+			result += thatToken.getDelimsBefore() + thatToken.getString() + " ";
 
 			if (inHref && (href == null))
 			{
@@ -610,9 +618,14 @@ class TextChunkBase<T extends TextToken> extends ElementState implements
 		return result;
 	}	
 
-	public ParsedURL commonHref()
+	public ParsedURL getCommonHref()
 	{
 		return commonHref;
+	}
+	
+	public void setCommonHref(ParsedURL commonHref)
+	{
+		this.commonHref = commonHref;
 	}
 
 	/**
@@ -628,7 +641,7 @@ class TextChunkBase<T extends TextToken> extends ElementState implements
 		for (int i = 0; i < size; i++)
 		{
 			TextToken token = token(i);
-			ParsedURL tokenPURL = token.href();
+			ParsedURL tokenPURL = token.getHref();
 			if (currentPURL != tokenPURL)
 			{
 				// changes in hyperlink
@@ -683,7 +696,7 @@ class TextChunkBase<T extends TextToken> extends ElementState implements
 		}
 	}
 
-	public NamedStyle namedStyle()
+	public NamedStyle getNamedStyle()
 	{
 		return namedStyle;
 	}
@@ -693,7 +706,7 @@ class TextChunkBase<T extends TextToken> extends ElementState implements
 		this.namedStyle = style;
 	}
 
-	public String styleName()
+	public String getStyleName()
 	{
 		return styleName;
 	}
@@ -758,7 +771,7 @@ class TextChunkBase<T extends TextToken> extends ElementState implements
 		for (int i = 0; i < this.size(); i++)
 		{
 			T cfTextToken = this.get(i);
-			String tokenString = cfTextToken.string();
+			String tokenString = cfTextToken.getString();
 			if (tokenString.length() > 1)		//  ignore 1 character strings. they are not valuable.
 			{
 				Term xterm = cfTextToken.xterm();
@@ -796,7 +809,7 @@ class TextChunkBase<T extends TextToken> extends ElementState implements
 		TextChunkBase<T> subchunk = this.newTextChunk();
 		for (int i = begin; i <= end; i++)
 		{
-			if (!TermDictionary.mostObviousStopWordTerms.containsKey(removeNonAlpha(get(i).string()))
+			if (!TermDictionary.mostObviousStopWordTerms.containsKey(removeNonAlpha(get(i).getString()))
 					|| !subchunk.isEmpty())
 			{
 				subchunk.add(get(i));
@@ -804,7 +817,7 @@ class TextChunkBase<T extends TextToken> extends ElementState implements
 		}
 		int lastI = subchunk.size() - 1;
 		while (lastI >= 0
-				&& TermDictionary.mostObviousStopWordTerms.containsKey(removeNonAlpha(subchunk.get(lastI).string())))
+				&& TermDictionary.mostObviousStopWordTerms.containsKey(removeNonAlpha(subchunk.get(lastI).getString())))
 		{
 			subchunk.remove(lastI);
 			lastI--;
@@ -934,6 +947,36 @@ class TextChunkBase<T extends TextToken> extends ElementState implements
 			sentence.get(0).setDelimsBefore("");
 		}
 		return sentence;
+	}
+
+	public long getOrmId()
+	{
+		return ormId;
+	}
+
+	public void setOrmId(long ormId)
+	{
+		this.ormId = ormId;
+	}
+
+	public List<T> getTokens()
+	{
+		return tokens;
+	}
+
+	public void setTokens(List<T> tokens)
+	{
+		this.tokens = tokens;
+	}
+
+	public float getNonStopIndex()
+	{
+		return nonStopIndex;
+	}
+
+	public void setNonStopIndex(float nonStopIndex)
+	{
+		this.nonStopIndex = nonStopIndex;
 	}
 
 

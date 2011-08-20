@@ -27,16 +27,17 @@ public @simpl_inherit
 class TextToken extends ElementState
 {
 
-	@simpl_scalar @simpl_hints(Hint.XML_LEAF)
-	protected String		string = "";
+	@simpl_scalar
+	@simpl_hints(Hint.XML_LEAF)
+	protected String											string												= "";
 
 	/** Link for the TextToken, if one exists */
 	@simpl_scalar
-	protected ParsedURL		href;
+	protected ParsedURL										href;
 
 	/** Delimiters that come before the string found in WordForms */
 	@simpl_scalar
-	protected String		delimsBefore					= " ";
+	protected String											delimsBefore									= " ";
 
 	/**
 	 * Style of the token, plus one. Style are found in Font. 0 is the same as the ChunkStyle, 1 is
@@ -44,25 +45,26 @@ class TextToken extends ElementState
 	 * that if the token is the same as the chunk, the value is not stored in the xml.
 	 */
 	@simpl_scalar
-	protected int			stylePlusOne					= 0;
+	protected int													stylePlusOne									= 0;
 
 	/**
 	 * Face index (font) for the token. Done in same manner as StylePlusOne. Uses same index as
-	 * fontIndex just plus one so that 0 can be the same as the chunk, rather than -1. Although in
-	 * the methods it is coded as -1.
+	 * fontIndex just plus one so that 0 can be the same as the chunk, rather than -1. Although in the
+	 * methods it is coded as -1.
 	 */
 	@simpl_scalar
-	protected int			facePlusOne						= 0;
+	protected int													facePlusOne										= 0;
 
 	/**
 	 * Font size of the token. 0 means that it is the same as the Chunk.
 	 */
 	@simpl_scalar
-	protected int			fontSize						= 0;
+	protected int													fontSize											= 0;
 
 	// TODO Boolean
 	@simpl_scalar
-	protected int			eol								= 0;
+	@xml_other_tags({"eol"})
+	protected int													endOfLine											= 0;
 
 	/**
 	 * Underline is an integer that has constants that mean different things. 0-Same as Chunk
@@ -70,14 +72,16 @@ class TextToken extends ElementState
 	 * Entire Token 4-Do Double Underline String but not Delims 5-Do Double Underline Entire Token
 	 */
 	@simpl_scalar
-	protected int			underline						= 0;
+	protected int													underline											= 0;
 
 	/** Variable used to denote the end of a link */
-	public boolean			endOfLink;
+	public boolean												endOfLink;
 
-	private boolean			fullStringIsOld					= true;
+	private boolean												fullStringIsOld								= true;
 
-	private String	fullString;
+	private String												fullString;
+
+	private long													ormId;
 
 	public static final int	NOT_END_OF_LINE					= 0;
 
@@ -158,8 +162,8 @@ class TextToken extends ElementState
 	public TextToken ( TextToken previousToken )
 	{
 		this(previousToken.string, previousToken.href, previousToken.fontStyle(), previousToken
-				.fontSize(), previousToken.delimsBefore, previousToken.faceIndex(), previousToken
-				.underline());
+				.getFontSize(), previousToken.delimsBefore, previousToken.faceIndex(), previousToken
+				.getUnderline());
 	}
 
 	/**
@@ -197,19 +201,19 @@ class TextToken extends ElementState
 	
 	public String lc()
 	{
-		return string().toLowerCase();
+		return getString().toLowerCase();
 	}
 
 	public String toString ( )
 	{
 		StringBuilder sb = stringBufPool.acquire();
-		sb.append(string());
+		sb.append(getString());
 		sb.append("->");
 		sb.append(href);
 		return stringBufPool.releaseAndGetString(sb);
 	}
 
-	public String string ( )
+	public String getString ( )
 	{
 		return string;
 	}
@@ -231,7 +235,7 @@ class TextToken extends ElementState
 		facePlusOne = faceIndex + 1;
 	}
 
-	public int underline ( )
+	public int getUnderline ( )
 	{
 		return underline;
 	}
@@ -246,7 +250,7 @@ class TextToken extends ElementState
 		return string.equals("");
 	}
 
-	public ParsedURL href ( )
+	public ParsedURL getHref ( )
 	{
 		return href;
 	}
@@ -256,12 +260,17 @@ class TextToken extends ElementState
 		return stylePlusOne - 1;
 	}
 
-	public int fontSize ( )
+	public int getStylePlusOne ( )
+	{
+		return stylePlusOne;
+	}
+
+	public int getFontSize ( )
 	{
 		return fontSize;
 	}
 
-	public String delimsBefore ( )
+	public String getDelimsBefore ( )
 	{
 		return delimsBefore;
 	}
@@ -292,6 +301,11 @@ class TextToken extends ElementState
 	public void setFontStyle ( int style )
 	{
 		stylePlusOne = style + 1;
+	}
+
+	public void setStylePlusOne( int stylePlusOne )
+	{
+		this.stylePlusOne = stylePlusOne;
 	}
 
 	public void setFontSize ( int tokenSize )
@@ -353,14 +367,14 @@ class TextToken extends ElementState
 		super.recycle();
 	}
 
-	public int endOfLine ( )
+	public int getEndOfLine ( )
 	{
-		return eol;
+		return endOfLine;
 	}
 
 	public void setEndOfLine ( int endOfLine )
 	{
-		this.eol = endOfLine;
+		this.endOfLine = endOfLine;
 	}
 	
 	private void resetFullString()
@@ -372,7 +386,7 @@ class TextToken extends ElementState
 	{
 		StringBuilder sb = stringBufPool.acquire();
 		sb.append(delimsBefore);
-		sb.append(string());
+		sb.append(getString());
 		fullString = stringBufPool.releaseAndGetString(sb);
 		fullStringIsOld = false;
 	}
@@ -435,7 +449,7 @@ class TextToken extends ElementState
 
 	public boolean endsWithTerminal()
 	{
-		String string = this.string();
+		String string = this.getString();
 		if (!TERMINAL_EXCEPTIONS.contains(string.toLowerCase())
 				&& !HONORIFIC_MATCHER.matcher(string).matches())
 		{
@@ -446,7 +460,7 @@ class TextToken extends ElementState
 
 	private boolean endsWith(java.util.Collection<String> endings)
 	{
-		String string = this.string();
+		String string = this.getString();
 		for (String ending : endings)
 		{
 			if (string.endsWith(ending))
@@ -455,6 +469,26 @@ class TextToken extends ElementState
 			}
 		}
 		return false;
+	}
+
+	public long getOrmId()
+	{
+		return ormId;
+	}
+
+	public void setOrmId(long ormId)
+	{
+		this.ormId = ormId;
+	}
+
+	public int getFacePlusOne()
+	{
+		return facePlusOne;
+	}
+
+	public void setFacePlusOne(int facePlusOne)
+	{
+		this.facePlusOne = facePlusOne;
 	}
 
 }

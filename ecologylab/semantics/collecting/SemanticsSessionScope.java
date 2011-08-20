@@ -46,11 +46,11 @@ implements SemanticsPrefs, ApplicationProperties, DocumentParserTagNames
 	/**
 	 * Construct with no Crawler, and empty Seeding.
 	 * 
-	 * @param metaMetadataTranslations	Generated MetadataTranslationScope.
+	 * @param metadataTranslationScope	Generated MetadataTranslationScope.
 	 */
-	public SemanticsSessionScope(TranslationScope metaMetadataTranslations, Class<? extends IDOMProvider> domProviderClass)
+	public SemanticsSessionScope(TranslationScope metadataTranslationScope, Class<? extends IDOMProvider> domProviderClass)
 	{
-		this(metaMetadataTranslations, null, domProviderClass);
+		this(metadataTranslationScope, null, domProviderClass);
 	}
 	public SemanticsSessionScope(TranslationScope metadataTranslationScope, Crawler crawler, Class<? extends IDOMProvider> domProviderClass)
 	{

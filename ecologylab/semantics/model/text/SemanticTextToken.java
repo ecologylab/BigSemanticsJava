@@ -75,7 +75,7 @@ public class SemanticTextToken extends TextToken
 	public Term xterm()
 	{
 	   if (term == null)
-		   term = TermDictionary.getTermForUnsafeWord(this.string());
+		   term = TermDictionary.getTermForUnsafeWord(this.getString());
 	   return term;
 	 }
 	
