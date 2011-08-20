@@ -92,7 +92,7 @@ implements DOMParserInterface, HTMLAttributeNames
 			taggedContentNode.recycle();
 		
 		MetaMetadata metaMetadata	= (MetaMetadata) getMetaMetadata();
-		if (metaMetadata.getSemanticActions() != null)
+		if (metaMetadata.getSemanticActions() != null || metaMetadata.hasChildren())
 			super.parse();
 	}
 
