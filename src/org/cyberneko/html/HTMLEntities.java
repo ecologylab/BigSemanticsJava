@@ -89,12 +89,12 @@ public class HTMLEntities {
 
     /** Loads the entity values in the specified resource. */
     private static void load0(String filename) {
-//        try {
-//            ENTITIES.load(HTMLEntities.class.getResourceAsStream(filename));
-//        }
-//        catch (IOException e) {
-//            System.err.println("error: unable to load resource \""+filename+"\"");
-//        }
+        try {
+            ENTITIES.load(HTMLEntities.class.getResourceAsStream(filename));
+        }
+        catch (IOException e) {
+            System.err.println("error: unable to load resource \""+filename+"\"");
+        }
     } // load0(String)
 
     //
