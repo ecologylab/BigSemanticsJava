@@ -350,5 +350,31 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 			metadataFieldDescriptor.setCollectionOrMapTagName(this.childTag);
 		metadataFieldDescriptor.setWrapped(!this.isNoWrap());
 	}
+	
+	public void recursivelyRestoreChildComposite()
+	{
+		int typeCode = this.getFieldType();
+		if (typeCode == FieldTypes.COLLECTION_SCALAR)
+			return;
+		
+		if (kids != null && kids.size() == 1)
+		{
+			MetaMetadataCompositeField childComposite = getChildComposite();
+			if (childComposite != null)
+			{
+				HashMapArrayList<String, MetaMetadataField> childsKids = childComposite.getChildMetaMetadata();
+				this.setChildMetaMetadata(childsKids);
+				if (childsKids != null)
+					for (MetaMetadataField field : childsKids)
+					{
+						field.setParent(this);
+						if (field instanceof MetaMetadataNestedField)
+							((MetaMetadataNestedField) field).recursivelyRestoreChildComposite();
+					}
+			}
+			return;
+		}
+		warning("collection field without a (correct) child composite: " + this);
+	}
 
 }

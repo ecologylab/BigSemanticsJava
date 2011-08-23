@@ -506,4 +506,13 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 			}
 	}
 
+	public void recursivelyRestoreChildComposite()
+	{
+		for (MetaMetadataField field : this.getChildMetaMetadata())
+		{
+			if (field instanceof MetaMetadataNestedField)
+				((MetaMetadataNestedField) field).recursivelyRestoreChildComposite();
+		}
+	}
+
 }
