@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import ecologylab.semantics.gui.EditValueEvent;
 import ecologylab.semantics.gui.EditValueListener;
 import ecologylab.semantics.gui.EditValueNotifier;
+import ecologylab.semantics.metadata.scalar.MetadataScalarBase;
 import ecologylab.semantics.metametadata.MetaMetadataCollectionField;
 import ecologylab.semantics.metametadata.MetaMetadataField;
 import ecologylab.semantics.metametadata.MetaMetadataNestedField;
@@ -22,6 +23,7 @@ import ecologylab.serialization.Hint;
 import ecologylab.serialization.ScalarUnmarshallingContext;
 import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.types.ScalarType;
+import ecologylab.serialization.types.scalar.CompositeAsScalarType;
 
 /**
  * @author andruid
@@ -99,12 +101,14 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 			isMixin							= false;
 		}
 		this.mmName						= deriveMmName();
+		checkScalarType();
 	}
 	
 	public MetadataFieldDescriptor(ClassDescriptor baseClassDescriptor, FieldDescriptor wrappedFD, String wrapperTag)
 	{
 		super(baseClassDescriptor, wrappedFD, wrapperTag);
 		isMixin				= false;
+		checkScalarType();
 	}
 	
 	public MetadataFieldDescriptor(MetaMetadataField definingMmdField, String tagName, String comment, int type, ClassDescriptor elementClassDescriptor,
@@ -137,6 +141,19 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 			this.setUnresolvedScopeAnnotation(scopeName);
 		}
 		
+		checkScalarType();
+	}
+	
+	private void checkScalarType()
+	{
+		if (this.field != null
+				&& MetadataScalarBase.class.isAssignableFrom(this.field.getType())
+				&& this.getScalarType() != null
+				&& this.getScalarType() instanceof CompositeAsScalarType)
+		{
+			warning("A CompositeAsScalarType Field!");
+			warning("Please check if metadata scalar types registered before MetadataFieldDescriptors formed!");
+		}
 	}
 
 	public boolean isMixin() 

@@ -5,7 +5,7 @@ package ecologylab.semantics.metadata.builtins;
 
 import ecologylab.generic.Debug;
 import ecologylab.semantics.metadata.Metadata;
-import ecologylab.semantics.metametadata.MetaMetadataRepository;
+import ecologylab.semantics.metadata.scalar.types.MetadataScalarType;
 import ecologylab.serialization.TranslationScope;
 
 /**
@@ -29,12 +29,11 @@ public class MetadataBuiltinsTranslationScope extends Debug
 		DebugMetadata.class,
 		DocumentMetadataWrap.class,
 		Annotation.class,
-		
 	};
 	
 	static
 	{
-		MetaMetadataRepository.initializeTypes();
+		MetadataScalarType.init();
 	}
 
 	public static TranslationScope get()
