@@ -13,11 +13,11 @@ import java.awt.image.PackedColorModel;
 import java.io.IOException;
 import java.net.URL;
 
+import ecologylab.concurrent.BasicSite;
+import ecologylab.concurrent.Downloadable;
 import ecologylab.generic.Colors;
 import ecologylab.generic.ConsoleUtils;
 import ecologylab.generic.MathTools;
-import ecologylab.io.BasicSite;
-import ecologylab.io.Downloadable;
 import ecologylab.net.ParsedURL;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.simpl_inherit;
