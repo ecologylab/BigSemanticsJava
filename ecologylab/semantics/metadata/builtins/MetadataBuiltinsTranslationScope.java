@@ -5,6 +5,7 @@ package ecologylab.semantics.metadata.builtins;
 
 import ecologylab.generic.Debug;
 import ecologylab.semantics.metadata.Metadata;
+import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.serialization.TranslationScope;
 
 /**
@@ -30,6 +31,11 @@ public class MetadataBuiltinsTranslationScope extends Debug
 		Annotation.class,
 		
 	};
+	
+	static
+	{
+		MetaMetadataRepository.initializeTypes();
+	}
 
 	public static TranslationScope get()
 	{
