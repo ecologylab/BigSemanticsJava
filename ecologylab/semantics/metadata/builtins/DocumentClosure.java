@@ -10,9 +10,9 @@ import java.net.URL;
 import java.util.ArrayList;
 
 import ecologylab.collections.SetElement;
+import ecologylab.concurrent.Downloadable;
 import ecologylab.generic.Continuation;
 import ecologylab.io.DownloadProcessor;
-import ecologylab.io.Downloadable;
 import ecologylab.net.ConnectionHelperJustRemote;
 import ecologylab.net.PURLConnection;
 import ecologylab.net.ParsedURL;

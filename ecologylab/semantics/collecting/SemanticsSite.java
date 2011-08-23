@@ -5,9 +5,9 @@ package ecologylab.semantics.collecting;
 
 import java.awt.Color;
 
+import ecologylab.concurrent.BasicSite;
 import ecologylab.generic.Colors;
 import ecologylab.generic.Palette;
-import ecologylab.io.BasicSite;
 import ecologylab.serialization.simpl_inherit;
 
 /**

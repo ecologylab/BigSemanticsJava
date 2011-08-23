@@ -1,7 +1,7 @@
 package ecologylab.semantics.metametadata;
 
+import ecologylab.concurrent.BasicSite;
 import ecologylab.generic.Debug;
-import ecologylab.io.BasicSite;
 import ecologylab.net.UserAgent;
 import ecologylab.semantics.actions.AddMixinSemanticAction;
 import ecologylab.semantics.actions.ConditionTranslationScope;
