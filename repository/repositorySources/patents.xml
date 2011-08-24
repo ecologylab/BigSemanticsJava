@@ -27,14 +27,11 @@
 	</meta_metadata>
 	
 	<meta_metadata name="google_patent_image" type="image" parser="image">
-		<selector url_stripped="http://bks1.books.google.com/patents" />
-		<selector url_stripped="http://bks2.books.google.com/patents" />
-		<selector url_stripped="http://bks3.books.google.com/patents" />
-		<selector url_stripped="http://bks4.books.google.com/patents" />
-		<selector url_stripped="http://bks5.books.google.com/patents" />
+		<selector url_regex="http://bks[0-9].books.google.com/patents" domain="google.com"/>
+
 		<before_semantic_actions>
 			<filter_location>
-				<set_param name="zoom" value="3"/>
+				<set_param name="zoom" value="2"/>
 			</filter_location>
 		</before_semantic_actions>
 	</meta_metadata>
@@ -83,6 +80,7 @@
 				<strip_param name="v" />
 				<strip_param name="q" />
 				<strip_param name="f" />
+				<strip_param name="pg" />
 				<regex match="/patents" replace="/patents/about"/>
 			</filter_location>
 		</before_semantic_actions>
@@ -154,7 +152,8 @@
 			</for_each>
 		</semantic_actions>
 	</meta_metadata>
- -->	<meta_metadata name="google_sorry" extends="compound_document" parser="xpath">
+ -->	
+ 	<meta_metadata name="google_sorry" extends="document" parser="xpath">
 		<selector url_regex="http://sorry.google.com" domain="google.com"/>
 		<semantic_actions>
 			<back_off_from_site domain="google.com" />
