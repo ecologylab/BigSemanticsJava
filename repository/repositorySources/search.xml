@@ -22,6 +22,7 @@
 
 	<meta_metadata name="google_search" type="search" comment="The google Search class" user_agent_name="opera_9" parser="xpath">
 		<selector url_stripped="http://www.google.com/search" />
+
 		<collection name="search_results" xpath="//div[@id='res']//div//ol/li[@*]">
 			<scalar name="heading" xpath=".//h3/a" />
 			<scalar name="snippet" xpath=".//div[@class='s']" />
