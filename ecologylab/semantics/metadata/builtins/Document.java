@@ -495,6 +495,28 @@ public class Document extends Metadata
 	}
 	
 	/**
+	 * Get the old location from this.
+	 * Set the location of this to the newLocation.
+	 * Add a mapping in the GlobalCollection from newLocation to this.
+	 * Add the old location for this as an additionalLocation for this.
+	 * 
+	 * @param newLocation
+	 */
+	public void changeLocation(final ParsedURL newLocation)
+	{
+		if (newLocation != null)
+		{
+			ParsedURL origLocation	= getLocation();
+			if (!origLocation.equals(newLocation));
+			{
+				setLocation(newLocation);
+				getSemanticsScope().getGlobalCollection().addMapping(newLocation, this);
+				addAdditionalLocation(origLocation);
+			}
+		}
+	}
+
+	/**
 	 * Used when oldDocument turns out to be re-directed from this.
 	 * @param oldDocument
 	 */
