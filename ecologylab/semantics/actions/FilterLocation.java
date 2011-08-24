@@ -34,6 +34,8 @@ public class FilterLocation extends SemanticAction
 	@simpl_collection("alternative_host")
 	ArrayList<String>	alternativeHosts;
 
+	@simpl_composite
+	Regex								regex;
 	
 	/**
 	 * 
@@ -61,6 +63,8 @@ public class FilterLocation extends SemanticAction
  * Derive a new ParsedURL using the base of the original location's ParsedURL and the transformed parameter map.
  * If the new ParsedURL is different than the old one, make the old one an additional location for this,
  * and add the transformed ParsedURL to the DocumentLocationMap.
+ * <p/>
+ * If the location changes, then reconnect to the new one.
  */
 	@Override
 	public Object perform(Object obj) throws IOException
@@ -68,6 +72,7 @@ public class FilterLocation extends SemanticAction
 		Document document								= documentParser.getDocument();
 		final ParsedURL origLocation 		= document.getLocation();
 		final TNGGlobalCollections globalCollection = documentParser.getSemanticsScope().getGlobalCollection();
+		boolean locationChanged					= false;
 		if (paramOps != null && paramOps.size() > 0)
 		{
 			HashMap<String, String>	parametersMap	= origLocation.extractParams();
@@ -80,11 +85,10 @@ public class FilterLocation extends SemanticAction
 			ParsedURL transformedLocation		= origLocation.updateParams(parametersMap);
 			if (origLocation != transformedLocation)
 			{
-				document.addAdditionalLocation(origLocation);
-				document.setLocation(transformedLocation);
-				globalCollection.addMapping(transformedLocation, document);
+				document.changeLocation(transformedLocation);
+//				changeLocation(globalCollection, document, origLocation, transformedLocation);
 				
-				documentParser.reConnect();		// changed the location, so we better connect again!
+				locationChanged			= true;
 			}
 		}
 		if (alternativeHosts != null)
@@ -100,7 +104,24 @@ public class FilterLocation extends SemanticAction
 				}
 			}
 		}
+		if (regex != null)
+		{
+			ParsedURL location	= document.getLocation();
+			ParsedURL regexURL	= regex.perform(location);
+			document.changeLocation(regexURL);
+			locationChanged			= true;
+		}
+		if (locationChanged)
+			documentParser.reConnect();		// changed the location, so we better connect again!
 		return null;
+	}
+
+	static void changeLocation(final TNGGlobalCollections globalCollection, Document document,
+			final ParsedURL origLocation, ParsedURL transformedLocation)
+	{
+		document.addAdditionalLocation(origLocation);
+		document.setLocation(transformedLocation);
+		globalCollection.addMapping(transformedLocation, document);
 	}
 
 }
