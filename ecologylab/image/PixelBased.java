@@ -826,4 +826,12 @@ implements Downloadable, Colors
 	{
 		return currentRendering;
 	}
+	
+
+	@Override
+	public boolean isImage()
+	{
+		return true;
+	}
+
 }
