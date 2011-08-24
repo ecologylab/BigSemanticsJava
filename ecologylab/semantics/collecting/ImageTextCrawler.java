@@ -3,6 +3,7 @@
  */
 package ecologylab.semantics.collecting;
 
+import java.util.ArrayList;
 import java.util.Observable;
 
 import ecologylab.collections.GenericElement;
@@ -316,6 +317,51 @@ public class ImageTextCrawler extends Crawler
 	{
 		return justCrawl ? new CompoundDocumentParserImageTextCrawlerResult(compoundDocument) 
 			: super.constructCompoundDocumentParserResult(compoundDocument, justCrawl);
+	}
+
+	public void killSite(final SemanticsSite site)
+	{
+		super.killSite(site);
+		
+		ArrayList<DocumentClosure> removalSet = new ArrayList<DocumentClosure>();
+		int poolNum = 0;
+		for(WeightSet<DocumentClosure> set : candidateImagesPool.getWeightSets())
+		{
+			removalSet.clear();
+			for(DocumentClosure documentClosure : set)
+				if(documentClosure.isFromSite(site))
+					removalSet.add(documentClosure);
+			if(removalSet.size() > 0)
+			{
+				debug("Removing " + removalSet.size() + " candidate images from " + set);
+				for(DocumentClosure toRemove : removalSet)
+					set.remove(toRemove);
+			}
+			else
+				debug("No Images to remove from poolNum: " + poolNum++ + " :" + set);
+		}
+		
+		ArrayList<GenericElement<TextClipping>> textRemovalSet = new ArrayList<GenericElement<TextClipping>>();
+		// remove relevant text
+		for(WeightSet<GenericElement<TextClipping>> set : candidateTextClippingElementsPool.getWeightSets())
+		{
+			textRemovalSet.clear();
+			for (GenericElement<TextClipping> genericElement : set)
+			{
+				TextClipping textClipping	= genericElement.getGeneric();
+				Document sourceDocument	= textClipping.getSourceDoc();
+				if (sourceDocument.getSite() == site)
+					textRemovalSet.add(genericElement);
+				if(textRemovalSet.size() > 0)
+				{
+					debug("Removing " + removalSet.size() + " candidate text clippings from " + set);
+					for(GenericElement<TextClipping> toRemove : textRemovalSet)
+						set.remove(toRemove);
+				}
+				else
+					debug("No TextClippings to remove from poolNum: " + poolNum++ + " :" + set);
+			}
+		}
 	}
 
 }
