@@ -39,7 +39,7 @@
 		</before_semantic_actions>
 	</meta_metadata>
 	
-	<meta_metadata name="google_patent" extends="patent" comment="Google Patents Class" user_agent_name="firefox_2" parser="xpath">
+	<meta_metadata name="google_patent" extends="patent" comment="Google Patents Class" user_agent_name="firefox_5" parser="xpath">
 		<selector url_stripped="http://www.google.com/patents/about"/>
 		<selector url_stripped="http://www.google.com/patents"/>
 		
@@ -78,6 +78,11 @@
 
 		<before_semantic_actions>
 			<filter_location>
+				<strip_param name="printsec" />
+				<strip_param name="zoom" />
+				<strip_param name="v" />
+				<strip_param name="q" />
+				<strip_param name="f" />
 				<regex match="/patents" replace="/patents/about"/>
 			</filter_location>
 		</before_semantic_actions>
