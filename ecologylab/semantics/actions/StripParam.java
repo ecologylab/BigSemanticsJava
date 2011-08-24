@@ -5,11 +5,14 @@ package ecologylab.semantics.actions;
 
 import java.util.HashMap;
 
+import ecologylab.serialization.simpl_inherit;
+
 /**
  * Operation specifies removing the param with this name from the location ParsedURL.
  * 
  * @author andruid
  */
+@simpl_inherit
 public class StripParam extends ParamOp
 {
 
