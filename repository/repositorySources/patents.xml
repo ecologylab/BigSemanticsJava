@@ -28,6 +28,10 @@
 	
 	<meta_metadata name="google_patent_image" type="image" parser="image">
 		<selector url_stripped="http://bks1.books.google.com/patents" />
+		<selector url_stripped="http://bks2.books.google.com/patents" />
+		<selector url_stripped="http://bks3.books.google.com/patents" />
+		<selector url_stripped="http://bks4.books.google.com/patents" />
+		<selector url_stripped="http://bks5.books.google.com/patents" />
 		<before_semantic_actions>
 			<filter_location>
 				<set_param name="zoom" value="3"/>
@@ -37,6 +41,7 @@
 	
 	<meta_metadata name="google_patent" extends="patent" comment="Google Patents Class" user_agent_name="firefox_2" parser="xpath">
 		<selector url_stripped="http://www.google.com/patents/about"/>
+		<selector url_stripped="http://www.google.com/patents"/>
 		
 		<collection name="authors" xpath="//div[@class='patent_bibdata']/a">
 			<scalar name="location" xpath="./@href" />
@@ -70,6 +75,13 @@
 		<collection name="pic_links" hide="true" xpath="//div[@id='selected_pages_v']/div/a[1]" child_type="search_result">
 			<scalar name="link" xpath="./@href" />
 		</collection>
+
+		<before_semantic_actions>
+			<filter_location>
+				<regex match="/patents" replace="/patents/about"/>
+			</filter_location>
+		</before_semantic_actions>
+
 		<semantic_actions>
 <!-- 			<get_field name="patent_name" /> -->
 <!-- 			<get_field name="inventor" /> -->
