@@ -438,6 +438,11 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 		return (document == null) ? null : document.getSite();
 	}
 	
+	public boolean isFromSite(SemanticsSite site)
+	{
+		return site != null && site == getSite();
+	}
+	
 	@Override
 	public void recycle()
 	{
@@ -786,5 +791,11 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 		purlConnection.recycle();
 		purlConnection	= document.getLocation().connect(document.getMetaMetadata().getUserAgentString());
 		return purlConnection;
+	}
+
+	@Override
+	public boolean isImage()
+	{
+		return document.isImage();
 	}
 }
