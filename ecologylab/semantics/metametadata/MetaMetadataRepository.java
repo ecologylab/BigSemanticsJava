@@ -292,9 +292,9 @@ implements PackageSpecifier, DocumentParserTagNames
 		return null;
 	}
 
-	public SemanticsSiteMap getSites()
+	public SemanticsSite getSite(String domain)
 	{
-		return sites;
+		return sites.get(domain);
 	}
 
 	public SemanticsSite getSite(Document document, SemanticsGlobalScope semanticsSessionScope)
