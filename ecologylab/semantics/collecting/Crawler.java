@@ -140,12 +140,12 @@ implements Observer, ThreadMaster, Runnable, SemanticsPrefs
 		TermVector piv 										= InterestModel.getPIV(); 
 		piv.addObserver(this);
 		
-		WeightSet<DocumentClosure>[] containerWeightSets = new WeightSet[NUM_GENERATIONS_IN_CONTAINER_POOL];
+		WeightSet<DocumentClosure>[] documentClosureWeightSets = new WeightSet[NUM_GENERATIONS_IN_CONTAINER_POOL];
 		
 		for(int i = 0; i < NUM_GENERATIONS_IN_CONTAINER_POOL; i++)
-				containerWeightSets[i] = new WeightSet<DocumentClosure>(MAX_PAGES_PER_GENERATION, this, 
+				documentClosureWeightSets[i] = new WeightSet<DocumentClosure>(MAX_PAGES_PER_GENERATION, this, 
 					(TermVectorWeightStrategy) new DownloadContainerWeightingStrategy(piv));
-		candidateDocumentClosuresPool 	= new PrioritizedPool<DocumentClosure>(containerWeightSets);
+		candidateDocumentClosuresPool 	= new PrioritizedPool<DocumentClosure>(documentClosureWeightSets);
 		
 		
 		finished		= false;
@@ -649,5 +649,26 @@ implements Observer, ThreadMaster, Runnable, SemanticsPrefs
 	constructCompoundDocumentParserResult(CompoundDocument compoundDocument, boolean justCrawl)
 	{
 		return new CompoundDocumentParserCrawlerResult(compoundDocument);
+	}
+	
+	public void killSite(final SemanticsSite site)
+	{
+		ArrayList<DocumentClosure> removalSet = new ArrayList<DocumentClosure>();
+		int poolNum = 0;
+		for(WeightSet<DocumentClosure> set : candidateDocumentClosuresPool.getWeightSets())
+		{
+			removalSet.clear();
+			for(DocumentClosure documentClosure : set)
+				if(documentClosure.isFromSite(site))
+					removalSet.add(documentClosure);
+			if(removalSet.size() > 0)
+			{
+				debug("Removing " + removalSet.size() + " candidate documentClosures from " + set);
+				for(DocumentClosure toRemove : removalSet)
+					set.remove(toRemove);
+			}
+			else
+				debug("No DocumentClosures to remove from poolNum: " + poolNum++ + " :" + set);
+		}
 	}
 }

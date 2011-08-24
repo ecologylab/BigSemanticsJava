@@ -4,9 +4,9 @@
 package ecologylab.semantics.collecting;
 
 import java.util.ArrayList;
-import java.util.Observer;
 
 import ecologylab.appframework.SimpleDownloadProcessor;
+import ecologylab.concurrent.BasicSite;
 import ecologylab.concurrent.DownloadMonitor;
 import ecologylab.generic.Debug;
 import ecologylab.io.DownloadProcessor;
@@ -181,4 +181,9 @@ public class SemanticsDownloadMonitors extends Debug
 		return DOWNLOAD_MONITORS[REGULAR_IMAGE_DOWNLOAD_MONITOR];
 	}
 
+	public void killSite(BasicSite site)
+	{
+		for (DownloadMonitor<DocumentClosure> downloadMonitor: DOWNLOAD_MONITORS)
+			downloadMonitor.removeAllDownloadClosuresFromSite(site);
+	}
 }
