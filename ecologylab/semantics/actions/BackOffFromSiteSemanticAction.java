@@ -1,7 +1,9 @@
 package ecologylab.semantics.actions;
 
-import ecologylab.serialization.simpl_inherit;
+import ecologylab.semantics.collecting.Crawler;
+import ecologylab.semantics.collecting.SemanticsSite;
 import ecologylab.serialization.ElementState.xml_tag;
+import ecologylab.serialization.simpl_inherit;
 
 /**
  * By default, this method prevent the InfoCollector from collecting information from the specified
@@ -32,7 +34,22 @@ class BackOffFromSiteSemanticAction
 	@Override
 	public Object perform(Object obj)
 	{
-		sessionScope.getSeeding().reject(domain);
+		if (domain != null)
+		{
+			SemanticsSite site	= sessionScope.getMetaMetadataRepository().getSite(domain);
+			site.setAbnormallyLongNextAvailableTime();
+			
+//			debug("\t\t\tStep 2: Adding site to rejects");
+//			infoCollector.reject(domain);
+	
+			debug("\t\t\tStep 2: Removing from current download Queues");
+			sessionScope.getDownloadMonitors().killSite(site);
+	
+			debug("\t\t\tStep 3: Removing from candidate pools");
+			Crawler crawler	= sessionScope.getCrawler();
+			if (crawler != null)
+				crawler.killSite(site);
+		}
 		return null;
 	}
 
