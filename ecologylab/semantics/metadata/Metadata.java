@@ -1191,6 +1191,17 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 		}
 		return false;
 	}
+	public boolean containsMixin(String mixinTag)
+	{
+		if (mixins == null || mixinTag == null)
+			return false;
+		for (Metadata mixin: mixins)
+		{
+			if (mixinTag.equals(mixin.getMetaMetadata().getName()))
+				return true;
+		}
+		return false;
+	}
 	public<MI extends Metadata> MI getMixin(Class<MI> mixinClass)
 	{
 		if (mixins == null || mixinClass == null)
