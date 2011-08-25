@@ -353,7 +353,7 @@ public class ImageParserAwt extends DocumentParser<Image>
 			IIOMetadataNode foundUnknownNode			= (IIOMetadataNode) unknownElements.item(i);
 			if ("225".equals(foundUnknownNode.getAttribute("MarkerTag")))
 			{
-	      boolean mixedIn			= false, dated = false;
+	      boolean dated 			= false;
 				byte[] 	exifSegment	= (byte[]) foundUnknownNode.getUserObject();
 				
         final com.drew.metadata.Metadata exifMetadata = new com.drew.metadata.Metadata();
@@ -361,7 +361,8 @@ public class ImageParserAwt extends DocumentParser<Image>
       	com.drew.metadata.Directory exifDir = exifMetadata.getDirectory(ExifDirectory.class);
       	
       	Image image = getDocument();
-      	if (!GisFeatures.containsGisMixin(image))
+	      boolean mixedIn			= image.containsMixin(MM_TAG_CAMERA_SETTINGS);
+      	if (!mixedIn && !GisFeatures.containsGisMixin(image))
       	{
 					if (!dated && ORIG_DATE_FEATURE.extract(image, exifDir) == null)
 	      	{
