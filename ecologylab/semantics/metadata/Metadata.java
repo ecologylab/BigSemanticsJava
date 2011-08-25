@@ -1191,13 +1191,20 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 		}
 		return false;
 	}
-	public boolean containsMixin(String mixinTag)
+	/**
+	 * Determine if this already has a mixin assignable from the class passed in.
+	 * 
+	 * @param mixinName	The name of the meta-metadata for the mixin you seek to match.
+	 * 
+	 * @return
+	 */
+	public boolean containsMixin(String mixinName)
 	{
-		if (mixins == null || mixinTag == null)
+		if (mixins == null || mixinName == null)
 			return false;
 		for (Metadata mixin: mixins)
 		{
-			if (mixinTag.equals(mixin.getMetaMetadata().getName()))
+			if (mixinName.equals(mixin.getMetaMetadata().getName()))
 				return true;
 		}
 		return false;
