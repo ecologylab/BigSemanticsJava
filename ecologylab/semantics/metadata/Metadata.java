@@ -1174,4 +1174,32 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 		this.metaMetadataName = metaMetadataName;
 	}
 
+	/**
+	 * Determine if this already has a mixin assignable from the class passed in.
+	 * 
+	 * @param mixinClass
+	 * @return
+	 */
+	public boolean containsMixin(Class<? extends Metadata> mixinClass)
+	{
+		if (mixins == null || mixinClass == null)
+			return false;
+		for (Metadata mixin: mixins)
+		{
+			if (mixinClass.isAssignableFrom(mixin.getClass()))
+				return true;
+		}
+		return false;
+	}
+	public<MI extends Metadata> MI getMixin(Class<MI> mixinClass)
+	{
+		if (mixins == null || mixinClass == null)
+			return null;
+		for (Metadata mixin: mixins)
+		{
+			if (mixinClass.isAssignableFrom(mixin.getClass()))
+				return (MI) mixin;
+		}
+		return null;
+	}
 }
