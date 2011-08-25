@@ -928,9 +928,9 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 								ElementState nestedES = (ElementState) next;
 								FieldDescriptor compositeAsScalarFD = nestedES.classDescriptor().getScalarValueFieldDescripotor();
 								
-								if (isScalar)
-									childFD.appendHtmlValueAsAttribute(currentMetadata, serializationContext, nestedTr, null, MetadataConstants.FIELD_NAME, textCssClass, navigatesFD, mmdField.getSchemaOrgItemprop());
-								else if (compositeAsScalarFD != null)
+//								if (isScalar)
+//									childFD.appendHtmlValueAsAttribute(currentMetadata, serializationContext, nestedTr, null, MetadataConstants.FIELD_NAME, textCssClass, navigatesFD, mmdField.getSchemaOrgItemprop());
+								if (compositeAsScalarFD != null)
 								{
 									Span compositeAsScalarSpan = new Span();
 									compositeAsScalarSpan.setCssClass(MetadataConstants.COMPOSITE_AS_SCALAR);
