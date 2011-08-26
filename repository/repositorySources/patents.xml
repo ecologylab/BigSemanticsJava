@@ -1,6 +1,9 @@
 <meta_metadata_repository name="patents" package="ecologylab.semantics.generated.library.patents" default_user_agent_name="chrome_2">
-	<meta_metadata name="google_patent_search" comment="Google Patents Search Class" type="search" user_agent_name="firefox_2" parser="xpath">
-	<selector url_regex="(?=http://www.google.com/patents)^((?!id=).)*$" domain="google.com"/>
+
+	<meta_metadata name="google_patent_search" comment="Google Patents Search Class" type="search" user_agent_name="firefox_5" parser="xpath">
+		<selector url_regex="(?=http://www.google.com/patents)^((?!id=).)*$" domain="google.com"/>
+		<selector url_regex="http://www.google.com/search\?.*tbm=pts" domain="google.com"/>
+
 		<collection name="search_results" xpath="//div[@class='scontentarea']//p[last()&gt;position()]">
 			<scalar name="heading" xpath="./a" />
 			<scalar name="link" xpath="./a/@href" />
@@ -154,7 +157,7 @@
 	</meta_metadata>
  -->	
  	<meta_metadata name="google_sorry" extends="document" parser="xpath">
-		<selector url_regex="http://sorry.google.com" domain="google.com"/>
+		<selector url_path_tree="http://sorry.google.com"/>
 		<semantic_actions>
 			<back_off_from_site domain="google.com" />
 		</semantic_actions>

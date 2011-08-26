@@ -20,8 +20,8 @@
 		<collection name="search_results" child_type="search_result" no_wrap="true" />
 	</meta_metadata>
 
-	<meta_metadata name="google_search" type="search" comment="The google Search class" user_agent_name="opera_9" parser="xpath">
-		<selector url_stripped="http://www.google.com/search" />
+	<meta_metadata name="google_search" type="search" comment="The google Search class" user_agent_name="firefox_5" parser="xpath">
+		<selector url_regex="http://www.google.com/search\?(?:(?!tbm=pts).)*" domain="google.com"/>
 
 		<collection name="search_results" xpath="//div[@id='res']//div//ol/li[@*]">
 			<scalar name="heading" xpath=".//h3/a" />
