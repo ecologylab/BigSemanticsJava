@@ -736,7 +736,7 @@ implements PackageSpecifier, DocumentParserTagNames
 	 * @param tagName
 	 * @return
 	 */
-	public MetaMetadata getDocumentMM(ParsedURL purl, String tagName)
+	public MetaMetadata getDocumentMM(final ParsedURL purl, final String tagName)
 	{
 		MetaMetadata result = null;
 		if (purl != null)
@@ -763,9 +763,10 @@ implements PackageSpecifier, DocumentParserTagNames
 						ArrayList<RepositoryPatternEntry> entries = documentRepositoryByPattern.get(domain);
 						if (entries != null)
 						{
+							final String purlString = purl.toString();
 							for (RepositoryPatternEntry entry : entries)
 							{
-								Matcher matcher = entry.getPattern().matcher(purl.toString());
+								Matcher matcher = entry.getPattern().matcher(purlString);
 								if (matcher.find())
 								{
 									result = entry.getMetaMetadata();
@@ -1040,9 +1041,9 @@ implements PackageSpecifier, DocumentParserTagNames
 					{
 						// use .pattern() for comparison
 						String domain = selector.getDomain();
+						Pattern urlPattern = selector.getUrlRegex();
 						if (domain != null)
 						{
-							Pattern urlPattern = selector.getUrlRegex();
 							if (urlPattern != null)
 							{
 								ArrayList<RepositoryPatternEntry> bucket = repositoryByPattern.get(domain);
@@ -1060,6 +1061,10 @@ implements PackageSpecifier, DocumentParserTagNames
 								documentRepositoryByDomain.put(domain, metaMetadata);
 								metaMetadata.setMmSelectorType(MMSelectorType.DOMAIN);
 							}
+						}
+						else if (urlPattern != null)
+						{
+							metaMetadata.error("<selector with url_regex=\"" + urlPattern + "\" but domain is not specified :(");
 						}
 					}
 				}
