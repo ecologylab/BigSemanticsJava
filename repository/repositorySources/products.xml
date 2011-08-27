@@ -6,6 +6,7 @@
 		<scalar name="price" scalar_type="String" />
 		<scalar name="model" scalar_type="String" />
 		<scalar name="image_url" scalar_type="ParsedURL" hide="true" />
+		<scalar name="reviews_location" scalar_type="ParsedURL"  />
 		<scalar name="overall_rating" scalar_type="String" />
 
 		<collection name="reviews" child_type="product_review" child_extends="metadata">
@@ -18,17 +19,29 @@
 		<selector url_regex="http://www.amazon.com/[^/]*/dp/[^/]*" domain="amazon.com" />
 		<selector url_regex="http://www.amazon.com/gp/product/[^/]*" domain="amazon.com" />
 
-		<scalar name="department" scalar_type="String" xpath="//div[@id='navbar']//table[@id='navCatSubnav']//a[@class='navCatA']" />
+		<composite name="department" type="document" xpath="//div[@id='navbar']//table[@id='navCatSubnav']//a[@class='navCatA']" >
+			<scalar name="title" xpath="."/>
+			<scalar name="location" hide="true" xpath="./@href" />
+		</composite>
 		<scalar name="price" xpath="//b[@class='priceLarge']" />
 		<scalar name="title" xpath="//span[@id='btAsinTitle']" />
+		<scalar name="description" xpath="//div[@id='technicalProductFeatures']/../ul"/>
 		<scalar name="image_url" xpath="//td[@id='prodImageCell']//img/@src" />
-		<scalar name="overall_rating" xpath="//span[@class='asinReviewsSummary']//span[1]/@title" />
+		
+		<def_var name="reviews_span" xpath="//span[@ref='dp_top_cm_cr_acr_pop_']" type="node" />
+		<scalar name="reviews_location" context_node="reviews_span" xpath="./a/@href" /> <!-- does not work :-( -->
+		<scalar name="overall_rating"   context_node="reviews_span" xpath=".//span[1]/@title"/>
 
 		<collection name="reviews" xpath="//div[@class='content']/table/tr[2]/td[1]/div[position() &lt; last()-1]">
 			<scalar name="rating" xpath="./div[2]/span/span[1]/@title" />
 			<scalar name="content" xpath="." /> <!-- not concise! -->
 		</collection>
 		
+		<composite name="bestseller_list" extends="document" xpath="//li[@class='zg_hrsr_item']">
+			<scalar name="title" xpath="./span[@class='zg_hrsr_ladder']/b/a/text()" />
+			<scalar name="location" hide="true" xpath="./span[@class='zg_hrsr_ladder']/b/a/@href" />
+			<scalar name="rank" scalar_type="string" xpath="./span[@class='zg_hrsr_rank']/text()" />
+		</composite>
 		<semantic_actions>
 			<reselect_meta_metadata_and_extract name="amazon_item" />
 			<if>
