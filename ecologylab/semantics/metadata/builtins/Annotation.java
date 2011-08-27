@@ -7,6 +7,7 @@ import java.util.Date;
 
 import ecologylab.appframework.PropertiesAndDirectories;
 import ecologylab.semantics.metadata.Metadata;
+import ecologylab.semantics.metadata.Metadata.mm_name;
 import ecologylab.semantics.metadata.scalar.MetadataDate;
 import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
@@ -19,12 +20,15 @@ import ecologylab.serialization.simpl_inherit;
 @simpl_inherit
 public class Annotation extends Metadata implements TextualMetadata
 {
+	@mm_name("text")
 	@simpl_scalar
 	MetadataString text;
 	
+	@mm_name("author")
 	@simpl_scalar
 	MetadataString author;
 	
+	@mm_name("creation_time")
 	@simpl_scalar
 	MetadataDate creationTime;
 	
