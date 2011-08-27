@@ -18,8 +18,10 @@
 		<composite name="publisher" type="publisher" schema_org_itemprop="publisher"/>
 	</meta_metadata>
 	
-	<meta_metadata name="periodical" extends="basic_publication" comment="Metadata related to where an article is published.">
-		<scalar name="archive_name" scalar_type="String" as_composite_scalar="true" comment="Same as title, but used for composite scalar" />
+	<meta_metadata name="periodical" extends="basic_publication" comment="An issue of a periodical.">
+		<composite name="archive" type="document" comment="All the issues of a periodical." >
+			<scalar name="location" hide="true" />
+		</composite>
 		<scalar name="location" hide="true" />
 	</meta_metadata>
 	

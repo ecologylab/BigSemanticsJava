@@ -24,7 +24,9 @@
 		<scalar name="title" xpath="//div[@id='breadcrumb']/text()[5]" />
 		<scalar name="abstract_field" xpath="//div[@class='abstract']/text()[1]"/>
 		<composite name="source">
-			<scalar name="archive_name" xpath="//div[@id='breadcrumb']/a[2]/text()" />
+			<composite name="archive" >
+				<scalar name="title" xpath="//div[@id='breadcrumb']/a[2]/text()" />
+			</composite>
 			<scalar name="location"  xpath="//div[@id='breadcrumb']/a[2]/@href" />
 		</composite>
 	</meta_metadata>
