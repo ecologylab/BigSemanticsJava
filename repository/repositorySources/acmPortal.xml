@@ -19,14 +19,19 @@
 
 		<composite name="source" navigates_to="location" xpath="//h1/a/span[contains(text(), 'PUBLICATION')]/ancestor::h1/following-sibling::div[@class='flatbody'][1]">
 			<scalar name="location" xpath=".//td[text()='Title']/following-sibling::td/a[1]" />
-			<composite name="archive" >
-				<scalar name="title" xpath=".//td[text()='Title']/following-sibling::td/a[1]" />
-				<scalar name="location" xpath=".//td[text()='Title']/following-sibling::td/a[2]/@href" />
-			</composite>
-			<scalar name="year_of_publication" xpath=".//td[text()='Publisher']/following-sibling::td" label="year published">
+			<scalar name="title" xpath=".//td[text()='Title']/following-sibling::td[1]" />
+			<collection name="authors" label="chairs" comment="Publication general/program chairs." xpath=".//td[contains(text(), 'Chairs')]/following-sibling::td/a">
+				<scalar name="location" xpath="./@href" />
+				<scalar name="title" xpath="." />
+<!-- 				<scalar name="affiliation" /> -->
+<!-- 				<scalar name="city" /> -->
+			</collection>
+			<scalar name="year" xpath=".//td[text()='Publisher']/following-sibling::td" label="year published" is_facet="true">
 				<filter regex="[\D]" replace="" />
 			</scalar>
-			<scalar name="pages" xpath=".//td[text()='Pages']/following-sibling::td" />
+			<scalar name="isbn" xpath=".//td[text()='Publisher']/parent::*/following-sibling::tr/td[2]">
+				<filter regex="\d\d\d-\d-\d\d\d\d\d-\d\d\d-\d" />
+			</scalar>
 		</composite>
 
 		<scalar name="abstract_field" label="abstract" xpath="//h1/a[contains(text(), 'ABSTRACT')]/ancestor::h1/following-sibling::div[@class='flatbody'][1]" />
@@ -51,6 +56,8 @@
 			<scalar name="tag_name" xpath="./span/child::text()" />
 		</collection>
 
+		<scalar name="pages" xpath="//h1/a/span[contains(text(), 'PUBLICATION')]/ancestor::h1/following-sibling::div[@class='flatbody'][1]//td[text()='Pages']/following-sibling::td" />
+			
 		<link_with name="citeseerx_summary" by_id="title" />
 		<!-- <link_with name="google_scholar_search_result" by_id="title" /> -->
 		

@@ -21,7 +21,7 @@
 	<scalar name="title" xpath="//p[@class='product-name']/text()"/>
 	<scalar name="description" xpath="//div[@id='tab-features']/p[1]/text()"/>
 	<scalar name="price" xpath="//p[@class='pip-price']/text()" >
-		<filter regex="/[a-z|A-Z|-]*"/>
+		<filter regex="/[a-z|A-Z|-]*" replace="" />
 	</scalar>
 	<scalar name="model" xpath="//input[@name='modelNumber']/@value"/>
 	
@@ -44,7 +44,7 @@
 	
 	
 	<scalar name="price" xpath="//span[@class='cinza bigfont']/text()" >
-		<filter regex="Price: "/>
+		<filter regex="Price: " replace="" />
 	</scalar>
 	<scalar name="description" xpath="//span[@class='mce-content']/p[2]/font/text()" />
 	

@@ -168,10 +168,13 @@ public class MetaMetadataScalarField extends MetaMetadataField
 		if (filter != null && getMetaMetadataParser().equals(ParserBase.DIRECT_BINDING_PARSER))
 		{
 			String regex = filter.getJavaRegex();
+			appendable.append("@").append(simpl_filter.class.getSimpleName()).append("(regex=\"").append(regex).append("\"");
 			String replace = filter.getJavaReplace();
-			appendable.append(String.format(" @simpl_filter(regex=\"%s\", replace=\"%s\")", regex, replace));
-			appendable.append("@").append(simpl_filter.class.getSimpleName()).append("(regex=\"");
-			appendable.append(regex).append(", replace=\"").append(replace).append("\")");
+			if (replace != null)
+			{
+				appendable.append(", replace=\"").append(replace).append("\"");
+			}
+			appendable.append(")");
 		}
 		
 		String annotations = appendable.toString();

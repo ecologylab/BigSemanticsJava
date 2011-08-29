@@ -683,22 +683,28 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 
 		if (regularExpression != null)
 		{
-			// create a pattern based on regular expression
-			Pattern pattern = Pattern.compile(regularExpression);
-			// create a matcher based on input string
-			Matcher matcher = pattern.matcher(evaluation);
-
-			// TODO right now we r using regular expressions just to replace the
-			// matching string we might use them for more better uses.
-			// get the replacement thing.
+			Matcher matcher = Pattern.compile(regularExpression).matcher(evaluation);
 			String replacementString = field.getRegexReplacement();
 			if (replacementString == null)
-				replacementString = "";
-			debug(String.format("regex replacement: regex=%s, replace=%s", regularExpression,
-					replacementString));
-
-			// Consecutively check for further matches. Replacing all with the replacementString
-			evaluation = matcher.replaceAll(replacementString);
+			{
+				// without replacementString, we search for the input pattern as the evaluation result
+				if (matcher.find())
+				{
+					evaluation = matcher.group();
+//					debug(String.format("regex pattern hit: regex=%s", regularExpression));
+				}
+				else
+				{
+					evaluation = ""; // because nothing matched, we return an empty string
+//					debug(String.format("regex pattern not hit: regex=%s", regularExpression));
+				}
+			}
+			else
+			{
+				// with replacementString, we replace occurrences of input pattern with the replacementString
+				evaluation = matcher.replaceAll(replacementString);
+//				debug(String.format("regex replacement: regex=%s, replace=%s", regularExpression, replacementString));
+			}
 		}
 
 		// remove white spaces if any
