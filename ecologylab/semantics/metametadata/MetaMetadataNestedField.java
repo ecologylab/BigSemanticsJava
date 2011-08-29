@@ -347,7 +347,8 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 					{
 						MetaMetadata mmdForThatChild = nested.getInheritedMmd();
 						if (mmdForThatChild != null && mmdForThatChild.getMetadataClassDescriptor() == null)
-							mmdForThatChild.setMetadataClassDescriptor(elementClassDescriptor);
+//							mmdForThatChild.setMetadataClassDescriptor(elementClassDescriptor);
+							mmdForThatChild.bindMetadataClassDescriptor(metadataTScope);
 					}
 					else
 					{
