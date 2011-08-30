@@ -106,6 +106,7 @@
 			</for_each>
 		</semantic_actions>
 	</meta_metadata>
+  
 	<meta_metadata name="flickr_tags_interesting" extends="search" comment="Used for flickr search results" parser="xpath">
 		<selector url_regex="http://www.flickr.com/photos/tags/[a-z0-9]+/interesting/*$" domain="flickr.com" />
 		<collection name="flickr_link_set" xpath="//span[@class='photo_container pc_t']" comment="Collection of all images of a user" child_type="flickr_link">
@@ -252,25 +253,25 @@
 		</semantic_actions>
 	</meta_metadata>
 
-	<meta_metadata name="flickr_nearby" type="search" comment="Searching from a photo for nearby photos" parser="xpath">
+	<meta_metadata name="flickr_nearby" extends="search" comment="Searching from a photo for nearby photos" parser="xpath">
 		<selector name="flickr_nearby_selector" />
-		<collection name="search_results" xpath="//span[@class='photo_container pc_m']">
-			<scalar name="link" xpath="./a/@href">
+		<collection name="search_results" child_type="flickr_nearby_search_result" child_extends="search_result" xpath="//span[@class='photo_container pc_m']">
+			<scalar name="location" xpath="./a/@href">
 				<filter regex="nearby.+detail$"	replace="nearby?show=thumb&amp;fromfilter=1&amp;by=everyone&amp;taken=alltime&amp;sort=distance&amp;show=detail" />
 			</scalar>
-			<scalar name="link_other" xpath="./a/@href">
+			<scalar name="title" xpath="./a" />
+			<scalar name="description" xpath="./a/@title" />
+			<scalar name="link_other" scalar_type="ParsedURL" xpath="./a/@href">
 				<filter regex="nearby.+detail$" replace="" />
 			</scalar>
-			<scalar name="heading" xpath="./a" />
-			<scalar name="snippet" xpath="./a/@title" />
 		</collection>
 
 		<semantic_actions>
 			<get_field name="search_results" />
 			<for_each collection="search_results" as="res">
-				<get_field object="res" name="link" />
+				<get_field object="res" name="location" />
 				<parse_document now="true">
-					<arg value="link" name="location" />
+					<arg value="location" name="location" />
 				</parse_document>
 				<get_field object="res" name="link_other" />
 				<parse_document now="true">
@@ -289,19 +290,19 @@
 		</collection>
 		
 		<collection name="search_results" xpath="//p[@class='PoolList']">
-			<scalar name="link" xpath="./span/a/@href">
+			<scalar name="location" xpath="./span/a/@href">
 				<filter regex="/in/.*$" replace="/" />
 			</scalar>
-			<scalar name="heading" xpath="./span/a" />
-			<scalar name="snippet" xpath="./span/a/@title" />
+			<scalar name="title" xpath="./span/a" />
+			<scalar name="description" xpath="./span/a/@title" />
 		</collection>
 
 		<semantic_actions>
 			<get_field name="search_results" />
 			<for_each collection="search_results" as="res">
-				<get_field object="res" name="link" />
+				<get_field object="res" name="location" />
 				<parse_document now="true">
-					<arg value="link" name="location" />
+					<arg value="location" name="location" />
 				</parse_document>
 			</for_each>
 

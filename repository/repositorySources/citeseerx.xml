@@ -157,9 +157,9 @@
 		<selector url_stripped="http://citeseerx.ist.psu.edu/search" />
 
 		<collection name="search_results" child_type="citeseerx_search_result" xpath="//div[@class='searchresult'][1]/div">
-			<scalar name="heading" xpath=".//a[contains(@class, 'doc_details')]" />
-			<scalar name="snippet" xpath=".//li[2]" />
-			<scalar name="link" xpath=".//a[contains(@class, 'doc_details')]/@href">
+			<scalar name="title" xpath=".//a[contains(@class, 'doc_details')]" />
+			<scalar name="description" xpath=".//li[2]" />
+			<scalar name="location" xpath=".//a[contains(@class, 'doc_details')]/@href">
 				<filter regex=";jsessionid=[A-Za-z0-9]*" replace="" />
 			</scalar>
 			<scalar name="citation_info" xpath=".//a[contains(@class, 'citation')]" />
@@ -168,9 +168,9 @@
 		<semantic_actions>
 			<get_field name="search_results" />
 			<for_each collection="search_results" as="res">
-				<get_field name="link" object="res" />
+				<get_field name="location" object="res" />
 				<parse_document now="true">
-					<arg name="location" value="link" />
+					<arg name="location" value="location" />
 				</parse_document>
 			</for_each>
 		</semantic_actions>
@@ -184,9 +184,9 @@
 		<semantic_actions>
 			<get_field name="search_results" />
 			<for_each collection="search_results" as="res">
-				<get_field name="link" object="res" />
+				<get_field name="location" object="res" />
 				<parse_document>
-					<arg name="location" value="link" />
+					<arg name="location" value="location" />
 				</parse_document>
 			</for_each>
 		</semantic_actions>

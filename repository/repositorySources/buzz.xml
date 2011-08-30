@@ -26,17 +26,17 @@
 	<meta_metadata name="yahoo_buzz_search" comment="Yahoo buzz search" type="search" parser="xpath">
 		<selector url_path_tree="http://buzz.yahoo.com/search"/>
 		<collection name="search_results" xpath="//div[contains(@class, 'searchListContainer')]//div[contains(@class, 'searchArticleItem')]/dl">
-			<scalar name="heading" xpath="./dt/a" />
-			<scalar name="snippet" xpath="./dd[contains(@class, 'articleSummaryContainer')]/a" />
-			<scalar name="link" xpath="./dt/a/@href" />
+			<scalar name="title" xpath="./dt/a" />
+			<scalar name="description" xpath="./dd[contains(@class, 'articleSummaryContainer')]/a" />
+			<scalar name="location" xpath="./dt/a/@href" />
 		</collection>
 		<semantic_actions>
 			<get_field name="search_results" />
 			<for_each collection="search_results" as="res">
-				<get_field object="res" name="link" />
+				<get_field object="res" name="location" />
 				<!-- is a ResultDistributor created for each of these???? -->
 				<parse_document now="true">
-					<arg value="link" name="location" />
+					<arg value="location" name="location" />
 				</parse_document>
 			</for_each>
 		</semantic_actions>

@@ -170,9 +170,9 @@
 		<selector url_stripped="http://portal.acm.org/results.cfm" />
 
 		<collection name="search_results" child_type="acm_portal_search_result" xpath="//a[starts-with(@href, 'citation.cfm')]/../../..">
-			<scalar name="heading" xpath="./tr[1]/td/a" />
-			<scalar name="snippet" xpath="./tr[5]" />
-			<scalar name="link" xpath="./tr[1]/td/a/@href" />
+			<scalar name="title" xpath="./tr[1]/td/a" />
+			<scalar name="description" xpath="./tr[5]" />
+			<scalar name="location" xpath="./tr[1]/td/a/@href" />
 			<scalar name="author_list" xpath="./tr[1]/td/div" />
 		</collection>
 
@@ -181,11 +181,11 @@
 			<if>
 				<not_null value="search_results" />
 				<for_each collection="search_results" as="result">
-					<get_field object="result" name="heading" />
-					<get_field object="result" name="link" />
+					<get_field object="result" name="title" />
+					<get_field object="result" name="location" />
 					<parse_document link_type="TRUSTED_SEMANTICS">
-						<arg name="anchor_text" value="heading" />
-						<arg name="location" value="link" />
+						<arg name="anchor_text" value="title" />
+						<arg name="location" value="location" />
 					</parse_document>
 				</for_each>
 			</if>
