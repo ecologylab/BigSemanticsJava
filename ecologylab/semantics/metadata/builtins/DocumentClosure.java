@@ -221,7 +221,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 	{
 		assert(document != null);
 		final Document 	orignalDocument	= document;
-		final ParsedURL originalPURL		= document.getLocation();
+		final ParsedURL originalPURL		= document.getDownloadLocation();
 		
 		ConnectionHelperJustRemote documentParserConnectHelper = new ConnectionHelperJustRemote()
 		{
@@ -349,7 +349,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 			else
 			{
 				purlConnection.fileConnect();
-				// we already have the correct meta-metadata, having used suffix to construct.
+				// we already have the correct meta-metadata, having used suffix to construct, or having gotten it from a restore.
 			}
 		}
 		else

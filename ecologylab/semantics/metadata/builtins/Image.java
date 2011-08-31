@@ -5,12 +5,12 @@ import java.util.Date;
 
 import ecologylab.net.MimeType;
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.collecting.DocumentLocationMap;
 import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.html.documentstructure.ImageConstants;
 import ecologylab.semantics.metadata.scalar.MetadataDate;
 import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
+import ecologylab.serialization.TranslationContext;
 import ecologylab.serialization.simpl_inherit;
 
 /**
@@ -165,6 +165,25 @@ implements MimeType, ImageConstants
 		return true;
 	}
 	
+	/**
+	 * Use the local location if there is one; otherwise, just use the regular location.
+	 * 
+	 * @return
+	 */
+	@Override
+	public ParsedURL getDownloadLocation()
+	{
+		ParsedURL result	= getLocation();
+		if (localLocation != null)
+		{
+			ParsedURL locationLocationPurl	= getLocalLocationPurl();
+			File localFile	= locationLocationPurl.file();
+			if (localFile.exists())
+				result	= locationLocationPurl;
+		}
+		return result;
+	}
+
 //	/**
 //	 * @return
 //	 */
@@ -210,4 +229,5 @@ implements MimeType, ImageConstants
 		basisDocument.addClipping(result);
 		return result;
 	}
+	
 }

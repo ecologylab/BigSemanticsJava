@@ -157,6 +157,15 @@ public class Document extends Metadata
 	}
 	
 	/**
+	 * Just use the regular location.
+	 * 
+	 * @return
+	 */
+	public ParsedURL getDownloadLocation()
+	{
+		return getLocation();
+	}
+	/**
 	 * Sets the value of the field location
 	 **/
 
@@ -441,7 +450,7 @@ public class Document extends Metadata
 	/**
 	 * @return
 	 */
-	protected DocumentClosure constructClosure()
+	public DocumentClosure constructClosure()
 	{
 		return new DocumentClosure(this, semanticInlinks);
 	}
