@@ -71,6 +71,8 @@ implements Downloadable, Colors
 	/**
 	 * No image processing on this rendering, but if there is scaling to do, this one is scaled.
 	 */
+//	@simpl_classes({ AlphaGradientRendering.class, Rendering.class, DesaturatedRendering.class, BlurredRendering.class })
+//	@simpl_wrap
 	protected Rendering											unprocessedRendering;
 
 	@simpl_composite
@@ -213,18 +215,18 @@ implements Downloadable, Colors
 	 *
 	 * @param newWidth	new width for the image.
 	 * @param newHeight	new height for the image.
-	 * 
+	 * @param bufferedImage TODO
 	 * @return	true if the operation succeeds (even if no new dimensions).
 	 * @return	false if the image is timeBased, or bad.
 	 */
-	public boolean scaleInitially(int newWidth, int newHeight)
+	public boolean scaleInitially(int newWidth, int newHeight, BufferedImage bufferedImage)
 	{
 //		debug("scale() " + dimension.width +","+ dimension.height+" -> " +
 //		newWidth +","+ newHeight);
 		if (recycled || (basisRendering == null))
 			return false;
 
-		if ((newWidth != width) || (newHeight != height))
+		if ((bufferedImage.getWidth() != newWidth) || (newHeight != bufferedImage.getHeight()))
 		{
 			if (unprocessedRendering == null)
 			{
@@ -736,9 +738,11 @@ implements Downloadable, Colors
 		if (basisRendering != null)
 		{
 			basisRendering.bufferedImage = bufferedImage;
-			acquirePixelsIfNecessary();
-			
-			scaleInitially(width, height);
+			acquirePixelsIfNecessary();	// may have side effects on the bufferedImage we use
+			bufferedImage	= basisRendering.bufferedImage;
+//			if (unprocessedRendering != null)
+//				unprocessedRendering.
+			scaleInitially(width, height, bufferedImage);
 		}
 	}
 
