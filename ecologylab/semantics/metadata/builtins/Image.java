@@ -1,8 +1,11 @@
 package ecologylab.semantics.metadata.builtins;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Date;
 
+import ecologylab.generic.ImageTools;
 import ecologylab.net.MimeType;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.collecting.SemanticsSessionScope;
@@ -10,7 +13,9 @@ import ecologylab.semantics.html.documentstructure.ImageConstants;
 import ecologylab.semantics.metadata.scalar.MetadataDate;
 import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
+import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.TranslationContext;
+import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.simpl_inherit;
 
 /**
@@ -228,6 +233,34 @@ implements MimeType, ImageConstants
 		ImageClipping result	= constructClipping(sourceDocument, outlink, caption, context);
 		basisDocument.addClipping(result);
 		return result;
+	}
+	
+	@Override
+	protected void serializationPreHook(TranslationContext translationContext)
+	{
+//		CompositionContext compositionContext = (CompositionContext) translationContext;
+//		ParsedURL imageLocation = this.getLocation();
+//		
+//		if (imageLocation == null)
+//			imageLocation = new ParsedURL(new File("pasted-" + this.getHeight() + ".png"));
+//
+//		File fileContext = new File(translationContext.fileContext().getAbsolutePath() + '/'
+//				+ compositionContext.getCompositionDir().getName());
+//		File outputFile = new File(fileContext, imageLocation.getName());
+//		try
+//		{
+//			XMLTools.createParentDirs(outputFile);
+//		}
+//		catch (SIMPLTranslationException e)
+//		{
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+////		ImageTools.writePngFile(this.getPixelBased().bufferedImage(), outputFile);
+//
+//		ParsedURL localLocationFile = new ParsedURL(outputFile);
+//		this.setLocalLocation(localLocationFile);
+//		this.setLocation(localLocationFile);
 	}
 	
 }
