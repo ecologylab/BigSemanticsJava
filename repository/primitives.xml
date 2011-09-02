@@ -70,7 +70,7 @@
 	
 	<meta_metadata name="compound_document"  extends="document" built_in="true" schema_org_itemtype="http://schema.org/Thing">
 		<scalar name="query" layer="5.0" comment="The search query" scalar_type="String" />
-		<scalar name="page_structure" layer="6.0" comment="For debugging. Type of the structure recognized by information extraction." scalar_type="String" />
+		<scalar name="page_structure" layer="6.0" hide="true" comment="For debugging. Type of the structure recognized by information extraction." scalar_type="String" />
 		<collection name="clippings" child_type="clipping" comment="Clippings that this document contains." hide="true"  polymorphic_scope="repository_clippings"/>
 	</meta_metadata>
 	
