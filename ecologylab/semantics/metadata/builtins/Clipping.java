@@ -5,6 +5,7 @@ package ecologylab.semantics.metadata.builtins;
 
 import java.util.HashSet;
 
+import ecologylab.net.ParsedURL;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
@@ -324,6 +325,17 @@ public class Clipping extends Metadata
 //			this.outlink	= new DocumentMetadataWrap(outlink);
 //		else
 //			this.outlink.setDocument(outlink);
+	}
+
+	@Override
+	public boolean hasLocation()
+	{
+		return sourceDoc != null && sourceDoc.hasLocation();
+	}
+	@Override
+	public ParsedURL getLocation()
+	{
+		return sourceDoc != null ? sourceDoc.getLocation() : null;
 	}
 
 }
