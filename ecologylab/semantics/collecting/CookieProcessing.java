@@ -10,6 +10,7 @@ import java.util.HashMap;
 
 import ecologylab.net.ParsedURL;
 import ecologylab.serialization.ElementState;
+import ecologylab.serialization.TranslationContext;
 
 /**
  * @author andruid
@@ -33,7 +34,7 @@ public class CookieProcessing extends ElementState
 	}
 	
 	@Override
-	public void deserializationPostHook()
+	public void deserializationPostHook(TranslationContext translationContext)
 	{
 		System.out.println("Setting cookie policy for domain : " + domain + " [IgnoreAllCookies: " + ignoreAllCookies + "]");
 		if (domain != null)
