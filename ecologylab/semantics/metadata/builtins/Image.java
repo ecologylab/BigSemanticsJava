@@ -235,32 +235,5 @@ implements MimeType, ImageConstants
 		return result;
 	}
 	
-	@Override
-	protected void serializationPreHook(TranslationContext translationContext)
-	{
-//		CompositionContext compositionContext = (CompositionContext) translationContext;
-//		ParsedURL imageLocation = this.getLocation();
-//		
-//		if (imageLocation == null)
-//			imageLocation = new ParsedURL(new File("pasted-" + this.getHeight() + ".png"));
-//
-//		File fileContext = new File(translationContext.fileContext().getAbsolutePath() + '/'
-//				+ compositionContext.getCompositionDir().getName());
-//		File outputFile = new File(fileContext, imageLocation.getName());
-//		try
-//		{
-//			XMLTools.createParentDirs(outputFile);
-//		}
-//		catch (SIMPLTranslationException e)
-//		{
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-////		ImageTools.writePngFile(this.getPixelBased().bufferedImage(), outputFile);
-//
-//		ParsedURL localLocationFile = new ParsedURL(outputFile);
-//		this.setLocalLocation(localLocationFile);
-//		this.setLocation(localLocationFile);
-	}
 	
 }
