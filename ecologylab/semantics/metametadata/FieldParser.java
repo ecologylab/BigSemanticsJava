@@ -1,6 +1,5 @@
 package ecologylab.semantics.metametadata;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,23 +15,6 @@ import java.util.Map;
  */
 public abstract class FieldParser
 {
-
-	static Map<String, FieldParser>	preDefinedFieldParsers	= new HashMap<String, FieldParser>();
-
-	static
-	{
-		preDefinedFieldParsers.put("bibtex", new FieldParserForBibTeX());
-		preDefinedFieldParsers.put("regex_find", new FieldParserForRegexFind());
-		preDefinedFieldParsers.put("regex_split", new FieldParserForRegexSplit());
-	}
-	
-	public static FieldParser get(String name)
-	{
-		if (preDefinedFieldParsers.containsKey(name))
-			return preDefinedFieldParsers.get(name);
-		else
-			return null;
-	}
 
 	public Map<String, String> getKeyValuePairResult(FieldParserElement parserElement, String input)
 	{

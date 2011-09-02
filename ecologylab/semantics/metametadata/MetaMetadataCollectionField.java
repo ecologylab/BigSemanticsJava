@@ -1,7 +1,5 @@
 package ecologylab.semantics.metametadata;
 
-import java.util.Map;
-
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.semantics.metadata.Metadata.mm_dont_inherit;
 import ecologylab.semantics.metadata.Metadata.mm_name;
@@ -114,7 +112,7 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 			String className = null;
 			if (this.getFieldType() == FieldTypes.COLLECTION_SCALAR)
 			{
-				className = this.getChildScalarType().getJavaTypeName();
+				className = this.getChildScalarType().getJavaClass().getSimpleName();
 			}
 			else
 			{
@@ -225,7 +223,7 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 
 	public boolean isCollectionOfScalars()
 	{
-		return childScalarType != null;
+		return childScalarType != null || (this.getInheritedField() == null ? false : ((MetaMetadataCollectionField) this.getInheritedField()).isCollectionOfScalars());
 	}
 
 	@Override

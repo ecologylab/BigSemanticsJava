@@ -19,6 +19,7 @@ import ecologylab.semantics.html.documentstructure.SemanticAnchor;
 import ecologylab.semantics.html.documentstructure.SemanticInLinks;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.builtins.Document;
+import ecologylab.semantics.metadata.scalar.MetadataScalarBase;
 import ecologylab.semantics.metametadata.Argument;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.seeding.Seed;
@@ -166,6 +167,8 @@ public abstract class SemanticAction extends ElementState implements SemanticAct
 						}					
 					}
 				}
+				if (result != null && result instanceof MetadataScalarBase)
+					result = ((MetadataScalarBase) result).getValue();
 			}
 		}
 		return result;

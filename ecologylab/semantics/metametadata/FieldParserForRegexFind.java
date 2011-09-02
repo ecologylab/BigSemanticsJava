@@ -21,7 +21,7 @@ public class FieldParserForRegexFind extends FieldParser
 		int j=0;
 		while (m.find())
 		{
-			for (int i=0; i < m.groupCount(); i++)
+			for (int i=0; i <= m.groupCount(); i++)
 			{
 				String value = m.group(i);
 				rst.put(groupPrefix + j++, value);

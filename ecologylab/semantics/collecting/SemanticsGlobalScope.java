@@ -3,14 +3,13 @@
  */
 package ecologylab.semantics.collecting;
 
-import ecologylab.collections.Scope;
 import ecologylab.generic.Debug;
 import ecologylab.generic.ReflectionTools;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.html.dom.IDOMProvider;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.Image;
-import ecologylab.semantics.metametadata.MetaMetadataRepository;
+import ecologylab.semantics.metametadata.FieldParserFactory;
 import ecologylab.serialization.TranslationScope;
 
 /**
@@ -28,27 +27,29 @@ import ecologylab.serialization.TranslationScope;
  */
 public class SemanticsGlobalScope extends MetaMetadataRepositoryInit
 {
+	
 	/**
-	 * Maps locations to Document Metadata subclasses. 
-	 * Constructs these Document instances as needed using the MetaMetadataRepository.
+	 * Maps locations to Document Metadata subclasses. Constructs these Document instances as needed
+	 * using the MetaMetadataRepository.
 	 */
 	final protected TNGGlobalCollections				globalCollection;
-	
+
 	/**
 	 * Pool of DownloadMonitors used for parsing Documents of various types.
 	 */
-	final private		SemanticsDownloadMonitors		downloadMonitors;
+	final private SemanticsDownloadMonitors			downloadMonitors;
 
-	final private Class<? extends IDOMProvider> domProviderClass;
+	final private Class<? extends IDOMProvider>	domProviderClass;
+
+	final private FieldParserFactory						fieldParserFactory;
 	
 	public SemanticsGlobalScope(TranslationScope metadataTScope, Class<? extends IDOMProvider> domProviderClass)
 	{
 		super(metadataTScope);
-		this.domProviderClass	= domProviderClass;
-		
-		globalCollection			= TNGGlobalCollections.getSingleton(getMetaMetadataRepository());
-		
-		downloadMonitors			= new SemanticsDownloadMonitors();
+		this.domProviderClass = domProviderClass;
+		globalCollection = TNGGlobalCollections.getSingleton(getMetaMetadataRepository());
+		downloadMonitors = new SemanticsDownloadMonitors();
+		fieldParserFactory = new FieldParserFactory();
 	}
 
 	/**
@@ -175,4 +176,14 @@ public class SemanticsGlobalScope extends MetaMetadataRepositoryInit
 	{
 		return true;
 	}
+
+	/**
+	 * 
+	 * @return the field parser factory for this session.
+	 */
+	public FieldParserFactory getFieldParserFactory()
+	{
+		return fieldParserFactory;
+	}
+	
 }

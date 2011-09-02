@@ -20,11 +20,29 @@ public class FieldParserForRegexSplit extends FieldParser
 		if (input != null)
 		{
 			String[] parts = parserElement.getRegex().split(input);
+			int a = parserElement.getBeginIndex();
+			if (a == FieldParserElement.BAD_VALUE)
+				a = 0;
+			int b = parserElement.getEndIndex();
+			if (b == FieldParserElement.BAD_VALUE)
+				b = parts.length;
+			if (a < 0)
+				a += parts.length;
+			if (b < 0)
+				b += parts.length;
 			for (int i = 0; i < parts.length; ++i)
 			{
-				Map<String, String> item = new HashMap<String, String>();
-				item.put(DEFAULT_KEY, parts[i]);
-				rst.add(item);
+				if (a <= i && i < b)
+				{
+					Map<String, String> item = new HashMap<String, String>();
+					String value = parts[i];
+					if (value != null && parserElement.isTrim())
+						value = value.trim();
+					item.put(DEFAULT_KEY, parts[i]);
+					rst.add(item);
+				}
+				else
+					rst.add(null);
 			}
 		}
 

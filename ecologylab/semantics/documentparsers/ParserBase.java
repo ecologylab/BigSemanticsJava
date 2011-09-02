@@ -41,6 +41,7 @@ import ecologylab.semantics.metadata.scalar.types.MetadataScalarType;
 import ecologylab.semantics.metametadata.DefVar;
 import ecologylab.semantics.metametadata.FieldParser;
 import ecologylab.semantics.metametadata.FieldParserElement;
+import ecologylab.semantics.metametadata.FieldParserForRegexSplit;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataCollectionField;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
@@ -255,10 +256,10 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 		{
 			if (listSize < 0)
 			{
-				if (nodeList != null)
-					listSize = nodeList.getLength();
-				else if (fieldParserContextList != null)
+				if (fieldParserContextList != null)
 					listSize = fieldParserContextList.size();
+				else if (nodeList != null)
+					listSize = nodeList.getLength();
 				else
 					listSize = 0;
 			}
@@ -365,62 +366,58 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 
 		try
 		{
-			// extract information to prepare for recursive descent
-			if (xpathString != null && contextNode != null && fieldParserElement == null)
+			if (xpathString != null && contextNode != null)
 			{
-				// use xpath for child fields
 				if (mmdField instanceof MetaMetadataCompositeField)
 					result.node = (Node) xpath.evaluate(xpathString, contextNode, XPathConstants.NODE);
 				else if (mmdField instanceof MetaMetadataCollectionField)
-					result.nodeList = (DTMNodeList) xpath.evaluate(xpathString, contextNode,
-							XPathConstants.NODESET);
+					result.nodeList = (DTMNodeList) xpath.evaluate(xpathString, contextNode, XPathConstants.NODESET);
 			}
-			else if (xpathString != null && contextNode != null && fieldParserElement != null)
+			
+			if (fieldParserElement != null)
 			{
-				// use xpath to get the string to feed field parser, and use field parser for child fields
-
-				// retrieve pre-defined parsers
-				FieldParser fieldParser = FieldParser.get(fieldParserElement.getName());
+				FieldParser fieldParser = this.getSemanticsScope().getFieldParserFactory().get(fieldParserElement.getName());
 
 				if (mmdField instanceof MetaMetadataCompositeField)
 				{
-					String valueString = xpath.evaluate(xpathString, contextNode);
-					if (!StringTools.isNullOrEmpty(valueString))
-						result.fieldParserContext = fieldParser.getKeyValuePairResult(fieldParserElement,
-								valueString);
+					String valueString = null;
+					if (fieldParserKey != null && fieldParserKey.length() > 0)
+						valueString = fieldParserContext.get(fieldParserKey);
+					else if (result.node != null)
+						valueString = result.node.getTextContent();
+						
+					if (valueString != null && valueString.length() > 0)
+						result.fieldParserContext = fieldParser.getKeyValuePairResult(fieldParserElement, valueString.trim());
 				}
 				else if (mmdField instanceof MetaMetadataCollectionField)
 				{
-					String valueString = xpath.evaluate(xpathString, contextNode);
-					if (!StringTools.isNullOrEmpty(valueString))
-						result.fieldParserContextList = fieldParser.getCollectionResult(fieldParserElement,
-								valueString);
+					if (!((MetaMetadataCollectionField) mmdField).isCollectionOfScalars() && fieldParserElement.isForEachElement())
+					{
+						result.fieldParserContextList = new ArrayList<Map<String,String>>();
+						for (int i = 0; i < result.nodeList.getLength(); ++i)
+						{
+							Node node = result.nodeList.item(i);
+							String valueString = node.getTextContent();
+							if (valueString != null && valueString.length() > 0)
+							{
+								Map<String, String> aContext = fieldParser.getKeyValuePairResult(fieldParserElement, valueString.trim());
+								result.fieldParserContextList.add(aContext);
+							}
+						}
+					}
+					else
+					{
+						String valueString = null;
+						if (fieldParserKey != null && fieldParserKey.length() > 0)
+							valueString = fieldParserContext.get(fieldParserKey);
+						else if (result.nodeList != null && result.nodeList.getLength() >= 1)
+							valueString = result.nodeList.item(0).getTextContent();
+						
+						if (valueString != null && valueString.length() > 0)
+							result.fieldParserContextList = fieldParser.getCollectionResult(fieldParserElement, valueString.trim());
+					}
 				}
 			}
-			else if (fieldParserElement != null && !StringTools.isNullOrEmpty(fieldParserKey))
-			{
-				// use field parser key to look up the value string and use field parser for child fields
-
-				// retrieve pre-defined parsers
-				FieldParser fieldParser = FieldParser.get(fieldParserElement.getName());
-
-				if (mmdField instanceof MetaMetadataCompositeField)
-				{
-					String valueString = fieldParserContext.get(fieldParserKey);
-					if (!StringTools.isNullOrEmpty(valueString))
-						result.fieldParserContext = fieldParser.getKeyValuePairResult(fieldParserElement,
-								valueString);
-				}
-				else if (mmdField instanceof MetaMetadataCollectionField)
-				{
-					String valueString = fieldParserContext.get(fieldParserKey);
-					if (!StringTools.isNullOrEmpty(valueString))
-						result.fieldParserContextList = fieldParser.getCollectionResult(fieldParserElement,
-								valueString);
-				}
-			}
-			else
-				return null;
 		}
 		catch (Exception e)
 		{
@@ -429,8 +426,7 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 			e.printStackTrace();
 		}
 
-		if (result.node == null && result.nodeList == null && result.fieldParserContext == null
-				&& result.fieldParserContextList == null)
+		if (result.node == null && result.nodeList == null && result.fieldParserContext == null && result.fieldParserContextList == null)
 			return null;
 
 		return result;
@@ -527,7 +523,8 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 		}
 		else
 		{
-			elementClass = tscope.getClassByTag(mmdField.getChildType());
+//			elementClass = tscope.getClassByTag(mmdField.getChildType());
+			elementClass = mmdField.getMetadataFieldDescriptor().getElementClassDescriptor().getDescribedClass();
 		}
 
 		// build the result list and populate
@@ -551,15 +548,11 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 			else
 			{
 				String value = null;
-				if (thisNode != null)
-					value = thisNode.getNodeValue();
-				if (thisFieldParserContext != null)
-				{
-					assert thisFieldParserContext.size() == 1;
-					Iterator<String> iter = thisFieldParserContext.values().iterator();
-					if (iter.hasNext())
-						value = iter.next();
-				}
+				if (fieldParserContextList != null)
+					value = thisFieldParserContext == null ? null : thisFieldParserContext.get(FieldParserForRegexSplit.DEFAULT_KEY);
+				else if (thisNode != null)
+					value = thisNode.getTextContent();
+				
 				if (value != null)
 				{
 					MetadataBase element;
@@ -645,7 +638,7 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 		StringBuilder buffy = StringBuilderUtils.acquire();
 		buffy.append("################# ERROR IN EVALUATION OF A FIELD########################\n");
 		buffy.append("Field Name::\t").append(mmdField.getName()).append("\n");
-		buffy.append("ContextNode::\t").append(contextNode.getNodeValue()).append("\n");
+		buffy.append("ContextNode::\t").append(contextNode.getTextContent()).append("\n");
 		buffy.append("XPath Expression::\t").append(xpathString).append("\n");
 		buffy.append("Exception Message::\t").append(e.getMessage()).append("\n");
 		String msg = buffy.toString();

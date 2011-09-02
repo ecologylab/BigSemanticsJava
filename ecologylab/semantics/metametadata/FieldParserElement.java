@@ -11,13 +11,33 @@ import ecologylab.serialization.simpl_inherit;
 public class FieldParserElement extends ElementState
 {
 
+	static int			BAD_VALUE					= Integer.MIN_VALUE;
+
 	@simpl_scalar
 	private String	name;
 
 	@simpl_scalar
+	@xml_other_tags("regex_split")
 	private String	regex;
 
-	private Pattern	compiledRegex	= null;
+	@simpl_scalar
+	private String	regexFind;
+
+	@simpl_scalar
+	private boolean	forEachElement		= false;
+
+	@simpl_scalar
+	private int			beginIndex				= BAD_VALUE;
+
+	@simpl_scalar
+	private int			endIndex					= BAD_VALUE;
+
+	@simpl_scalar
+	private boolean	trim							= true;
+
+	private Pattern	compiledRegex			= null;
+
+	private Pattern	compiledRegexFind	= null;
 
 	public FieldParserElement()
 	{
@@ -38,10 +58,35 @@ public class FieldParserElement extends ElementState
 	public Pattern getRegex()
 	{
 		if (compiledRegex == null && regex != null)
-		{
 			compiledRegex = Pattern.compile(regex);
-		}
 		return compiledRegex;
+	}
+
+	public Pattern getRegexFind()
+	{
+		if (compiledRegexFind == null && regexFind != null)
+			compiledRegexFind = Pattern.compile(regexFind);
+		return compiledRegexFind;
+	}
+
+	public boolean isForEachElement()
+	{
+		return forEachElement;
+	}
+
+	public int getBeginIndex()
+	{
+		return beginIndex;
+	}
+
+	public int getEndIndex()
+	{
+		return endIndex;
+	}
+
+	public boolean isTrim()
+	{
+		return trim;
 	}
 
 }

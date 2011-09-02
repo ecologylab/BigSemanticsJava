@@ -23,7 +23,8 @@
 	</meta_metadata>
 
 	<meta_metadata name="patent" extends="creative_work" comment="Patents Class" parser="xpath">
-		<scalar name="claims" scalar_type="String" hint="XML_LEAF" />
+<!-- 		<scalar name="claims" scalar_type="String" hint="XML_LEAF" /> -->
+    <collection name="claims" child_scalar_type="String" child_tag="claim" />
 		<scalar name="inventor" scalar_type="String" />
 		<scalar name="filing_date" scalar_type="Date" />
 		
@@ -58,7 +59,11 @@
 		<scalar name="title" xpath="//div[@id='titlebar']/h1" />
 <!-- 		<scalar name="inventor" xpath="//div[@id='titlebar']/span" /> -->
 		<scalar name="abstract_field" xpath="//table[@id='summarytable']/tbody/tr/td/text()"/>
-		<scalar name="claims" xpath="//div[@id='patent_claims_v']" />
+<!-- 		<scalar name="claims" xpath="//div[@id='patent_claims_v']" /> -->
+<!-- 		<collection name="claims" xpath="//div[@id='patent_claims_v']"> --><!-- not specifying child_scalar_type causes null pointer! this needs to be fixed. -->
+		<collection name="claims" child_scalar_type="String" xpath="//div[@id='patent_claims_v']">
+      <field_parser name="regex_split" regex="\d+\.\s+" begin_index="1" />
+    </collection>
 
 		<scalar name="filing_date" xpath="//div[@class='patent_bibdata']/p/text()[(following::b)][3]">
 			<filter regex=": " replace="" />
@@ -109,9 +114,11 @@
 			<get_field name="claims" />
 			<if>
 				<not_null value="claims" />
-				<create_and_visualize_text_surrogate>
-					<arg value="claims" name="text" />
-				</create_and_visualize_text_surrogate>
+        <for_each collection="claims" as="claim">
+  				<create_and_visualize_text_surrogate>
+  					<arg value="claim" name="text" />
+  				</create_and_visualize_text_surrogate>
+        </for_each>
 			</if>
 			<if>
 				<not_null value="citations" />
