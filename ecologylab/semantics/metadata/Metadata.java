@@ -418,7 +418,7 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 	}
 
 	@Override
-	protected void deserializationPostHook()
+	protected void deserializationPostHook(TranslationContext translationContext)
 	{
 		// if (metaMetadata != null)
 		// initializeMetadataCompTermVector();
@@ -1219,5 +1219,10 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 				return (MI) mixin;
 		}
 		return null;
+	}
+	
+	public boolean hasLocation()
+	{
+		return false;
 	}
 }

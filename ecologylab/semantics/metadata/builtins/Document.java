@@ -808,5 +808,9 @@ public class Document extends Metadata
 		this.additionalLocations = additionalLocations;
 	}
 
-
+	@Override
+	public boolean hasLocation()
+	{
+		return location != null;
+	}
 }
