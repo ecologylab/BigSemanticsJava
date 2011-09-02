@@ -11,7 +11,7 @@
 		<scalar name="title" style="metadata_h1" layer="10.0" navigates_to="location" schema_org_itemprop="name" comment="The Title of the Document" scalar_type="String"  hint="XML_LEAF"/>
 		<scalar name="description" layer="9.0" scalar_type="String" schema_org_itemprop="description"/>
 		
-		<collection name="additional_locations" child_scalar_type="ParsedURL" child_tag="location"/>
+		<collection name="additional_locations" child_scalar_type="ParsedURL" hide="true" child_tag="location"/>
 	</meta_metadata>
 	
 	<meta_metadata name="document_metadata_wrap" extends="metadata" comment="Used to disambiguated Document subclass composites." built_in="true">
