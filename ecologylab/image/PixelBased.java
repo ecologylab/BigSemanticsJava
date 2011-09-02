@@ -692,6 +692,11 @@ implements Downloadable, Colors
 		return (currentRendering != null) ? currentRendering.bufferedImage : null;
 	}
 
+	public BufferedImage basisBufferedImage()
+	{
+		return basisRendering.bufferedImage;
+	}
+
 	/**
 	 * Do nothing, but implement Downloadable.
 	 */
