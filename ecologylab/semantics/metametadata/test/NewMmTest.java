@@ -55,6 +55,7 @@ implements Continuation<DocumentClosure>
 	public NewMmTest(String appName, OutputStream outputStream, TranslationScope metadataTranslationScope) throws SIMPLTranslationException
 	{
 		super(appName);
+		TranslationScope.graphSwitch	= GRAPH_SWITCH.ON;
 		this.outputStream = outputStream;
 		semanticsSessionScope = new SemanticsSessionScope(metadataTranslationScope, CybernekoWrapper.class);
 	}
@@ -96,7 +97,6 @@ implements Continuation<DocumentClosure>
 
 	public static void main(String[] args)
 	{
-		TranslationScope.graphSwitch	= GRAPH_SWITCH.ON;
 		NewMmTest mmTest;
 		try
 		{
