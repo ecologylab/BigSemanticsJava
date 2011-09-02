@@ -40,6 +40,7 @@ import ecologylab.semantics.metametadata.exceptions.MetaMetadataException;
 import ecologylab.semantics.namesandnums.DocumentParserTagNames;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.SIMPLTranslationException;
+import ecologylab.serialization.TranslationContext;
 import ecologylab.serialization.TranslationScope;
 import ecologylab.serialization.simpl_inherit;
 import ecologylab.textformat.NamedStyle;
@@ -1181,7 +1182,7 @@ implements PackageSpecifier, DocumentParserTagNames
 		}
 	}
 
-	protected void deserializationPostHook()
+	protected void deserializationPostHook(TranslationContext translationContext)
 	{
 		initializeSelectors();
 	}
