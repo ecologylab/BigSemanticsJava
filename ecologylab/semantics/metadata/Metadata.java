@@ -1225,4 +1225,9 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 	{
 		return false;
 	}
+	
+	public boolean isClipping()
+	{
+		return false;
+	}
 }

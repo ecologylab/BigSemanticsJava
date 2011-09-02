@@ -338,4 +338,10 @@ public class Clipping extends Metadata
 		return sourceDoc != null ? sourceDoc.getLocation() : null;
 	}
 
+	@Override
+	public boolean isClipping()
+	{
+		return true;
+	}
+
 }

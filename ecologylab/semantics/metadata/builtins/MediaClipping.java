@@ -8,6 +8,7 @@ import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.namesandnums.SemanticsNames;
 import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.ElementState.simpl_wrap;
 
 /**
  * @author andruid
@@ -26,6 +27,7 @@ public class MediaClipping<ME extends ClippableDocument> extends Clipping
 	@simpl_composite
 	@simpl_scope(SemanticsNames.REPOSITORY_MEDIA_TRANSLATIONS)
 	@mm_name("media")
+	@simpl_wrap
 	private ME							media;
 	
 
