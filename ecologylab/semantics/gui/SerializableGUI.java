@@ -46,6 +46,9 @@ public class SerializableGUI extends ObservableElementState
 
 	@simpl_scalar
 	protected boolean						isInteractive													= true;
+	
+	@simpl_scalar
+	protected boolean						centered															= false;
 
 	public SerializableGUI()
 	{
@@ -123,6 +126,16 @@ public class SerializableGUI extends ObservableElementState
 	public void setId(String id)
 	{
 		this.id = id;
+	}
+
+	public boolean isCentered()
+	{
+		return centered;
+	}
+
+	public void setCentered(boolean centered)
+	{
+		this.centered = centered;
 	}
 
 }
