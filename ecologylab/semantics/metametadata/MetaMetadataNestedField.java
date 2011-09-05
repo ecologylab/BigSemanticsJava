@@ -173,6 +173,12 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 			inheritFinished = true;
 		}
 	}
+	
+	protected void clearInheritFinishedOrInProgressFlag()
+	{
+		this.inheritFinished = false;
+		this.inheritInProcess = false;
+	}
 
 	/**
 	 * Helper method that actually does the inheritance process. This should be overridden in

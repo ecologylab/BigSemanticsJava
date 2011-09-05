@@ -226,6 +226,13 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 		return childScalarType != null || (this.getInheritedField() == null ? false : ((MetaMetadataCollectionField) this.getInheritedField()).isCollectionOfScalars());
 	}
 
+	protected void clearInheritFinishedOrInProgressFlag()
+	{
+		super.clearInheritFinishedOrInProgressFlag();
+		if (this.getChildComposite() != null)
+			this.getChildComposite().clearInheritFinishedOrInProgressFlag();
+	}
+	
 	@Override
 	protected void inheritMetaMetadataHelper()
 	{

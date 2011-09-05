@@ -1,6 +1,7 @@
 package ecologylab.semantics.metametadata;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import ecologylab.collections.MultiAncestorScope;
 import ecologylab.generic.HashMapArrayList;
@@ -272,8 +273,7 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 			inheritMetaMetadataFrom(repository, null);
 	}
 
-	protected void inheritMetaMetadataFrom(MetaMetadataRepository repository,
-			MetaMetadataCompositeField inheritedStructure)
+	protected void inheritMetaMetadataFrom(MetaMetadataRepository repository, MetaMetadataCompositeField inheritedStructure)
 	{
 		// init nested fields inside this
 		for (MetaMetadataField f : this.getChildMetaMetadata())

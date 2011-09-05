@@ -455,6 +455,26 @@ implements Mappable<String>//, HasLocalTranslationScope
 		return inheritedMmd;
 	}
 	
+	protected void inheritMetaMetadataFrom(MetaMetadataRepository repository, MetaMetadataCompositeField inheritedStructure)
+	{
+		super.inheritMetaMetadataFrom(repository, inheritedStructure);
+		
+		// for fields referring to this meta-metadata type
+		// need to do inheritMetaMetadata() again after copying fields from this.getInheritedMmd()
+		for (MetaMetadataField f : this.getChildMetaMetadata())
+		{
+			if (f instanceof MetaMetadataNestedField)
+			{
+				MetaMetadataNestedField nested = (MetaMetadataNestedField) f;
+				if (nested.getInheritedMmd() == this)
+				{
+					nested.clearInheritFinishedOrInProgressFlag();
+					nested.inheritMetaMetadata();
+				}
+			}
+		}
+	}
+	
 	void findOrGenerateMetadataClassDescriptor(TranslationScope tscope)
 	{
 		if (this.metadataClassDescriptor == null)
