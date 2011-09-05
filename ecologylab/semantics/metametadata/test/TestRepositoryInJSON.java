@@ -9,6 +9,7 @@ import java.io.IOException;
 
 import ecologylab.semantics.collecting.MetaMetadataRepositoryInit;
 import ecologylab.semantics.metadata.scalar.types.SemanticsTypes;
+import ecologylab.semantics.metametadata.MetaMetadataCollectionFieldWithoutChildComposite;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.metametadata.MetaMetadataField;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
@@ -20,6 +21,12 @@ import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.TranslationScope;
 import ecologylab.serialization.TranslationScope.GRAPH_SWITCH;
 
+/**
+ * test repository in JSON format with NewMmTest-like tasks.
+ * 
+ * @author quyin
+ *
+ */
 public class TestRepositoryInJSON
 {
 	
