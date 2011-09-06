@@ -293,10 +293,10 @@
 		</semantic_actions>
 	</meta_metadata>
 
-	<meta_metadata name="bing_search_xpath" type="search" comment="The bing Search class, using xpath parser." user_agent_name="opera_9" parser="xpath">
+	<meta_metadata name="bing_search_xpath" type="search" parser="xpath" user_agent_name="firefox_5" comment="The bing Search class, using xpath parser.">
 		<selector url_stripped="http://www.bing.com/search" />
     
-		<collection name="search_results" xpath="//div[@id='results']/ul/li[*]">
+		<collection name="search_results" xpath="//div[@id='results']/ul/li">
 			<scalar name="title" xpath=".//h3/a" />
 			<scalar name="description" xpath=".//div[@class='sa_cc']/p" />
 			<scalar name="location" xpath=".//h3/a/@href" />
@@ -310,12 +310,14 @@
 
 	<meta_metadata name="slashdot_search" extends="search" comment="The slashdot search class" user_agent_name="opera_9" parser="xpath">
 		<selector url_stripped="http://slashdot.org/index2.pl" />
-		<collection name="search_results" xpath="//div[@id='firehoselist']//h2[@class='story']" child_type="social_media_search_result">
-			<scalar name="heading" xpath=".//a" />
-			<scalar name="link" xpath=".//a/@href" />
-			<scalar name="snippet" xpath="./following-sibling::div[@class='hide'][1]//i" />
-			<scalar name="author" xpath="./following-sibling::div[@class='hide'][1]//a[@rel='nofollow']" />
-			<collection name="tags" xpath="./following-sibling::div[@class='grid_14'][1]//a[@class='popular tag']">
+		<selector url_stripped="http://slashdot.com/index2.pl" />
+    
+		<collection name="search_results" xpath="//div[@id='firehoselist']//article" child_type="social_media_search_result">
+			<scalar name="title" xpath=".//h2" />
+			<scalar name="location" xpath=".//h2//a[1]/@href" />
+			<scalar name="description" xpath="./div[@class='hide']/div/i" />
+			<scalar name="author" xpath="./header/div[@class='details']/a" />
+			<collection name="tags" xpath="./footer//div[@class='grid_14']//a[@class='popular tag']">
 				<scalar name="tag_name" xpath="." />
 				<scalar name="link" xpath="./@href" />
 			</collection>
@@ -325,8 +327,8 @@
 	<meta_metadata name="delicious_search" extends="search" comment="The delicious search class" user_agent_name="opera_9" parser="xpath">
 		<selector url_stripped="http://www.delicious.com/search" />
 		<collection name="search_results" xpath="//div[@id='content']/ul/li" child_type="social_media_search_result">
-			<scalar name="heading" xpath=".//div/h4/a" />
-			<scalar name="link" xpath=".//div/h4/a/@href" />
+			<scalar name="title" xpath=".//div/h4/a" />
+			<scalar name="location" xpath=".//div/h4/a/@href" />
 			<scalar name="author" xpath="./div/div[@class='meta']//span[1]" />
 			<collection name="tags" xpath="./div/div[@class='tagdisplay']//a">
 				<scalar name="tag_name" xpath="." />
@@ -338,10 +340,10 @@
 	<meta_metadata name="tumblr_search" extends="search" comment="The tumblr search class" user_agent_name="opera_9" parser="xpath">
 		<selector url_path_tree="http://www.tumblr.com/tagged/" />
 		<collection name="search_results" xpath="//div[@id='left_column']//li" child_type="social_media_search_result">
-			<scalar name="heading" xpath=".//div[@class='post_title']" />
-			<scalar name="snippet" xpath=".//div[@class='post_content']" />
+			<scalar name="title" xpath=".//div[@class='post_title']" />
+			<scalar name="description" xpath=".//div[@class='post_content']" />
 			<scalar name="author" xpath="./div[@class='post_info']" />
-			<collection name="tags" xpath="./div[@class='footer_links with_tags ']//a">
+			<collection name="tags" xpath="./div[@class='footer_links with_tags']//a">
 				<scalar name="tag_name" xpath="." />
 				<scalar name="link" xpath="./@href" />
 			</collection>

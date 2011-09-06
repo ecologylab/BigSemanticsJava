@@ -20,20 +20,21 @@ public class HtmlRenderer extends Debug
 	private String	jQuery	= "<script language=\"JavaScript\" src=\"https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js\"></script>";
 
 	private String	javascript;
-	
+
 	private boolean	bad;
-	
-	File file;
-	
-	PrintWriter fileWriter;
+
+	File						file;
+
+	PrintWriter			fileWriter;
 
 	public HtmlRenderer(File file, String title, String header)
 	{
 		this(file, title, header, "mixed_search.css", "linking_metadata.js");
 	}
+
 	public HtmlRenderer(File file, String title, String header, String styleSheet, String javascript)
 	{
-		this.file		= file;
+		this.file = file;
 		debug("Opening " + file.getAbsolutePath());
 		try
 		{
@@ -41,17 +42,19 @@ public class HtmlRenderer extends Debug
 			setup(title, header, styleSheet, javascript);
 			appendHeader(fileWriter);
 		}
-		
+
 		catch (Exception e)
 		{
 			e.printStackTrace();
-			bad				 = true;
+			bad = true;
 		}
 	}
+
 	public HtmlRenderer(String title, String header, String styleSheet, String javascript)
 	{
 		setup(title, header, styleSheet, javascript);
 	}
+
 	/**
 	 * @param title
 	 * @param header
@@ -71,11 +74,9 @@ public class HtmlRenderer extends Debug
 		appendable.append("<html>\n");
 		appendable.append("  <head>\n");
 		appendable.append("    <title>").append(title).append("</title>\n");
-		appendable.append("    <link href=\"").append(styleSheet)
-				.append("\" rel=\"stylesheet\" type=\"text/css\" />\n");
+		appendable.append("    <link href=\"").append(styleSheet) .append("\" rel=\"stylesheet\" type=\"text/css\" />\n");
 		appendable.append("		").append(jQuery).append('\n');
-		appendable.append("    <script language=\"JavaScript\" src=\"").append(javascript)
-				.append("\"> </script>");
+		appendable.append("    <script language=\"JavaScript\" src=\"").append(javascript) .append("\"> </script>");
 		appendable.append("  </head>\n");
 		appendable.append("  <body>\n");
 		appendable.append("    <h1 class=\"header\">").append(header).append("</h1>\n");
@@ -91,11 +92,13 @@ public class HtmlRenderer extends Debug
 		catch (Exception e)
 		{
 			e.printStackTrace();
-			bad		= true;
+			bad = true;
 		}
 		return bad;
 	}
-	public void appendMetadata(Metadata metadata, Appendable a) throws IOException, IllegalArgumentException, IllegalAccessException, SIMPLTranslationException
+
+	public void appendMetadata(Metadata metadata, Appendable a) throws IOException,
+			IllegalArgumentException, IllegalAccessException, SIMPLTranslationException
 	{
 		a.append("      ");
 		metadata.serializeToHtml(a, metadata.getMetaMetadata().createGraphContext());
@@ -131,11 +134,12 @@ public class HtmlRenderer extends Debug
 		catch (IOException e)
 		{
 			e.printStackTrace();
-			bad		= true;
+			bad = true;
 		}
 		debug("Closed " + file.getAbsolutePath());
 		return bad;
 	}
+
 	/**
 	 * @return the bad
 	 */
