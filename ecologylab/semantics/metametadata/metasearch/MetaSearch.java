@@ -8,7 +8,7 @@ public class MetaSearch
 {
 
 	public static String[]	engines	= {
-																	"http://www.bing.com/search?q=",
+//																	"http://www.bing.com/search?q=", // temporarily commented out.
 																	"http://www.tumblr.com/tagged/",
 																	"http://www.google.com/search?hl=en&q=",
 																	"http://slashdot.com/index2.pl?fhfilter=",
