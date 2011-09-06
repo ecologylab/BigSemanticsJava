@@ -1,8 +1,6 @@
 package ecologylab.semantics.metametadata.metasearch;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
 import ecologylab.semantics.metadata.output.HtmlRenderer;
 
@@ -11,11 +9,11 @@ public class MetaSearch
 
 	public static String[]	engines	= {
 																	"http://www.bing.com/search?q=",
+																	"http://www.tumblr.com/tagged/",
 																	"http://www.google.com/search?hl=en&q=",
 																	"http://slashdot.com/index2.pl?fhfilter=",
-																	"http://www.tumblr.com/tagged/",
-																	"http://buzz.yahoo.com/search?p=",
-																	"http://delicious.com/search?p=",
+																	"http://www.delicious.com/search?p=",
+//																	"http://buzz.yahoo.com/search?p=", // yahoo buzz shut down
 																	};
 
 	public static void main(String[] args)
