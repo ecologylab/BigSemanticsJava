@@ -332,6 +332,24 @@ implements PackageSpecifier, DocumentParserTagNames
 		return linkedMetadataMonitor;
 	}
 	
+	/**
+	 * Convenience method for allowing a repository to be used as a wrapper, for deserialization of MMD into the repository directory.
+	 * @param additionalMMD
+	 */
+	public void addMetaMetadata(MetaMetadata additionalMMD)
+	{
+		if(additionalMMD == null || additionalMMD.name == null || additionalMMD.name.length() == 0)
+		{
+			System.err.println("Invalid mmd, not adding to the repository!");
+			return;
+		}
+		if(repositoryByName == null) //initialize only if we need to.
+			repositoryByName = new HashMapArrayList<String, MetaMetadata>();
+		
+		repositoryByName.put(additionalMMD.name, additionalMMD);
+		
+	}
+	
 	// [endregion]
 	
 	public static interface RepositoryFileLoader
