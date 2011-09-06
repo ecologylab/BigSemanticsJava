@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 
 import ecologylab.semantics.generated.library.RepositoryMetadataTranslationScope;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
+import ecologylab.semantics.metametadata.MetaMetadataTranslationScope;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.ElementState.FORMAT;
 import ecologylab.serialization.SIMPLTranslationException;
@@ -18,8 +19,7 @@ public class MMDTester
 		MetaMetadataRepository.initializeTypes();
 	}
 
-	private static final TranslationScope	META_METADATA_TRANSLATIONS	= RepositoryMetadataTranslationScope
-																																				.get();
+	private static final TranslationScope	META_METADATA_TRANSLATIONS	= MetaMetadataTranslationScope.get();
 
 	public static void main(String[] args) throws IOException
 	{
