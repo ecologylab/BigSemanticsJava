@@ -631,4 +631,15 @@ implements Mappable<String>//, HasLocalTranslationScope
 		return afterSemanticActions;
 	}
 
+	@Override
+	public String getSchemaOrgItemtype()
+	{
+		return schemaOrgItemtype;
+	}
+
+	public void setSchemaOrgItemtype(String schemaOrgItemtype)
+	{
+		this.schemaOrgItemtype = schemaOrgItemtype;
+	}
+
 }

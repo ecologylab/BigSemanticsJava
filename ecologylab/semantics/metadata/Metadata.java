@@ -956,7 +956,7 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 								nestedTr.cells.add(collectionTd);
 							htmlTable.rows.add(nestedTr);
 						}
-						else if (thatReferenceObject instanceof Metadata)
+						else if (thatReferenceObject instanceof Metadata)	// type is COMPOSITE_ELEMENT
 						{
 							Tr compositeTr = new Tr();
 							Td compositeTd = new Td();
@@ -969,7 +969,7 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 
 							if (compositeAsScalarFD != null)
 							{
-								childFD.writeCompositeHtmlWrap(false, mmdField.getDisplayedLabel(), compositeTr);
+								childFD.writeCompositeHtmlWrap(false, mmdField.getDisplayedLabel(), mmdField.getSchemaOrgItemtype(), compositeTr);
 
 								Span compositeAsScalarSpan = new Span();
 								compositeAsScalarSpan.setCssClass(MetadataConstants.COMPOSITE_AS_SCALAR);

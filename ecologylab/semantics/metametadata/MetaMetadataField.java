@@ -1074,5 +1074,9 @@ implements Mappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneabl
 	{
 		return otherTags;
 	}
+	public String getSchemaOrgItemtype()
+	{
+		return null;
+	}
 	
 }
