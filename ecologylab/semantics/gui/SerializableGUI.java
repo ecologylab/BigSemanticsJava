@@ -6,6 +6,7 @@ package ecologylab.semantics.gui;
 import java.awt.Color;
 import java.awt.Rectangle;
 
+import ecologylab.serialization.ElementState;
 import ecologylab.serialization.ObservableElementState;
 import ecologylab.serialization.simpl_inherit;
 
@@ -14,7 +15,7 @@ import ecologylab.serialization.simpl_inherit;
  * 
  */
 @simpl_inherit
-public class SerializableGUI extends ObservableElementState
+public class SerializableGUI<P extends ElementState> extends ObservableElementState<P>
 {
 	public static final String	SERIALIZABLE_GUI_TRANSLATIONS_NAME	= "serializable_gui_translations";
 
