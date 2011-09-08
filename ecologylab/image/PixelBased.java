@@ -235,8 +235,9 @@ implements Downloadable, Colors
 					width									= newWidth;
 					height								= newHeight;
 					scaled								= true;
-					basisRendering				= basisRendering.getScaledRendering(newWidth, newHeight);
-					unprocessedRendering 	= new Rendering(basisRendering);
+					unprocessedRendering	= basisRendering.getScaledRendering(newWidth, newHeight);
+//					basisRendering				= basisRendering.getScaledRendering(newWidth, newHeight);
+//					unprocessedRendering 	= new Rendering(basisRendering);
 				}
 			}
 			else

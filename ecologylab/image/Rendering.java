@@ -35,7 +35,7 @@ import ecologylab.serialization.ElementState.simpl_scope;
  */
 @simpl_inherit
 public class Rendering
-extends ElementState
+extends ElementState<PixelBased>
 implements Colors
 {
 	/**
@@ -178,7 +178,7 @@ implements Colors
 			BufferedImage newImage	= createNewBufferedImage(dataBuffer);			
 			this.bufferedImage		= newImage;
 			
-			debug("fixPixels() copying!! " + pixelBased.location());
+			debug("fixPixels() copying!! " + pixelBased().location());
 			ImageTools.copyImage(oldImage, newImage);
 			
 			// now that the copy is done, we can do the flush()!
@@ -246,7 +246,7 @@ implements Colors
 			
 			Rendering scaledState			= new Rendering(pixelBased, scaledBImage, scaledDataBuffer, scaledPixels);
 			
-			recycle();
+//			recycle();
 
 			return scaledState;
 		}
@@ -761,5 +761,15 @@ implements Colors
 	public int getHeight()
 	{
 		return height;
+	}
+	public PixelBased pixelBased()
+	{
+		PixelBased result	= pixelBased;
+		if (result == null)
+		{
+			result					= parent();
+			this.pixelBased	= result;
+		}
+		return result;
 	}
 }
