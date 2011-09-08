@@ -46,7 +46,7 @@ public class DOMFragmentInformationTagger extends DOMWalkInformationTagger
 		}
 		else if ("body".equals(tagName))
 		{
-			getTextInSubTree(node, true, dndText, true);
+			getTextInSubTree(node, true, dndText, true, true);
 		}
 		
 		// We need to delete a link to the file write part at the end -- EUNYEE

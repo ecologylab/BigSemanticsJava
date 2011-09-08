@@ -400,7 +400,7 @@ public class DOMWalkInformationTagger implements HTMLAttributeNames
 
 	public static StringBuilder getTextInSubTree(Node node, boolean recurse)
 	{
-		return getTextInSubTree(node, recurse, null, false);
+		return getTextInSubTree(node, recurse, null, false, false);
 	}
 
 	/**
@@ -415,7 +415,7 @@ public class DOMWalkInformationTagger implements HTMLAttributeNames
 	 */
 	// FIXME -- why is text` in anchor node not included?
 
-	public static StringBuilder getTextInSubTree(Node node, boolean recurse, StringBuilder result, boolean appendNewline)
+	public static StringBuilder getTextInSubTree(Node node, boolean recurse, StringBuilder result, boolean appendNewline, boolean ignoreAltText)
 	{
 		NodeList children = node.getChildNodes();
 
@@ -425,7 +425,7 @@ public class DOMWalkInformationTagger implements HTMLAttributeNames
 			if ((recurse && childNode.hasChildNodes())
 					&& (!childNode.getNodeName().toLowerCase().equals("script")) && (!childNode.getNodeName().toLowerCase().equals("style")))
 			{
-				result = getTextInSubTree(childNode, true, result, appendNewline);
+				result = getTextInSubTree(childNode, true, result, appendNewline, ignoreAltText);
 			}
 			else if (childNode.getNodeType() == Node.TEXT_NODE)
 			{
@@ -446,7 +446,8 @@ public class DOMWalkInformationTagger implements HTMLAttributeNames
 						result.append('\n');
 				}
 			}
-			else if (childNode.getNodeName().toLowerCase().equals("img"))
+		  //images now alt text to the caption of the image
+			else if (!ignoreAltText && childNode.getNodeName().toLowerCase().equals("img"))
 			{
 				NamedNodeMap attributes = childNode.getAttributes();
 				Node altAtt = attributes.getNamedItem(ALT);
