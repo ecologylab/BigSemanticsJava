@@ -58,9 +58,9 @@ public class CybernekoXpathTest
 		try
 		{
 			InputStream inStream = PURL.connect().inputStream();
-			Document contextNode = cyberneko.parseDOM(inStream, null);
-			String parentXPathString = cyberneko.xPathTagNamesToLower(XPATH);
+			Document contextNode = cyberneko.parseDOM(inStream, System.out);
 			
+			String parentXPathString = cyberneko.xPathTagNamesToLower(XPATH);
 
 
 			NodeList parentNodeList = (NodeList) xpath.evaluate(parentXPathString, contextNode, XPathConstants.NODESET);
