@@ -4,10 +4,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.apache.xerces.xni.parser.XMLDocumentFilter;
+import org.apache.xerces.xni.parser.XMLDocumentSource;
+import org.apache.xerces.xni.parser.XMLParserConfiguration;
+import org.cyberneko.html.HTMLConfiguration;
+import org.cyberneko.html.filters.Writer;
 import org.cyberneko.html.parsers.DOMParser;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXNotRecognizedException;
+import org.xml.sax.SAXNotSupportedException;
 
 
 import ecologylab.semantics.html.dom.IDOMProvider;
@@ -23,15 +30,41 @@ public class CybernekoWrapper implements IDOMProvider
 	
 	DOMParser parser;
 	
+	
 	public CybernekoWrapper()
 	{
+
+		//XMLParserConfiguration parser = new HTMLConfiguration();
 		parser = new DOMParser();
+		
+		
+		
 	}
 
 	@Override
 	public Document parseDOM(InputStream inputStream, OutputStream out) throws IOException
 	{
 		InputSource input = new InputSource(inputStream);
+		if(out != null)
+		{
+			XMLDocumentFilter writer = new Writer();
+			XMLDocumentFilter[] filters = { writer };
+			try
+			{
+				parser.setProperty("http://cyberneko.org/html/properties/filters", filters);
+			}
+			catch (SAXNotRecognizedException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			catch (SAXNotSupportedException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
 		try
 		{
 			parser.parse(input);
@@ -41,6 +74,10 @@ public class CybernekoWrapper implements IDOMProvider
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		
+		
+
 		return parser.getDocument();
 	}
 	
