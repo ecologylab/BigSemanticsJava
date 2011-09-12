@@ -599,6 +599,7 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 			try
 			{
 				evaluation = xpath.evaluate(xpathString, contextNode);
+				debug("Evaluated : " + xpathString + " to :" + evaluation);
 			}
 			catch (Exception e)
 			{
