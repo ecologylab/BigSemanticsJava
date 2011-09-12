@@ -32,11 +32,21 @@ public class CybernekoXpathTest
 
 	private static final String			FLICKR_CHILD_XPATH		= ".";
 
-	private static final String			LOCATION							= FLICKR;
+	private static final String			CARTOONS_AC_UK				= "http://www.cartoons.ac.uk/record/28011";
 
-	private static final String			XPATH									= FLICKR_XPATH;
+	private static final String			CARTOONS_AC_UK_XPATH	= "//*[@id='detailPublish']"; 
+//	private static final String			CARTOONS_AC_UK_XPATH	= "//div[@id='detailPublish']"; //Should be same as above
+//	private static final String			CARTOONS_AC_UK_XPATH	= "//*[@id='detailPublish']/h4/a[1]";	//Should pick the first link
+//	private static final String			CARTOONS_AC_UK_XPATH	= "//*[@id='detailPublish']//a[1]"; //Should pick the first link
+	
+	private static final String			CARTOONS_AC_UK_CHILD_XPATH		= ".";
 
-	private static final String			CHILD_XPATH						= FLICKR_CHILD_XPATH;
+	
+	private static final String			LOCATION							= CARTOONS_AC_UK;
+
+	private static final String			XPATH									= CARTOONS_AC_UK_XPATH;
+
+	private static final String			CHILD_XPATH						= CARTOONS_AC_UK_CHILD_XPATH;
 
 	private static final ParsedURL	PURL									= ParsedURL.getAbsolute(LOCATION);
 
