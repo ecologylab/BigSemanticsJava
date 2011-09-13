@@ -382,7 +382,7 @@ public class CompoundDocument extends Document
 	{
 		super.inheritValues(oldDocument);
 		
-		if (oldDocument instanceof Document)
+		if (oldDocument instanceof CompoundDocument)
 		{
 			CompoundDocument oldCompound= (CompoundDocument) oldDocument;
 			

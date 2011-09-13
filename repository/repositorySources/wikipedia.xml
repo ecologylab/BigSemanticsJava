@@ -46,24 +46,24 @@
     <def_var name="main_image" xpath="//*[starts-with(@class,'infobox')]//img[1]" type="node" />
     <selector url_regex="http://en.wikipedia.org/wiki/[^/:]*" domain="wikipedia.org" />
 
-    <scalar name="title" xpath="//h1[@id='firstHeading']" />
-    <scalar name="description" xpath="//div[@class='bodycontent']/p[1]" />
+    <scalar name="title" xpath="//*[@id='firstHeading']" />
+    <scalar name="description" xpath="//*[@id='bodyContent']/p[1]" />
     <scalar name="main_image_src" hide="true" xpath="./@src" context_node="main_image" scalar_type="ParsedURL" />
-    <collection name="paragraphs" hide="true" xpath="//div[@id='bodyContent']/p/a[starts-with(@href,'/wiki/')]/.." child_type="paragraph">
-      <scalar name="paragraph_text" xpath="string(.)" />
+    <collection name="paragraphs" hide="true" xpath="//*[@id='bodyContent']/p[string-length(text()) > 0]" child_type="paragraph">
+      <scalar name="paragraph_text" xpath="." />
       <collection name="anchors" xpath="./a[starts-with(@href,'/wiki/')]">
         <scalar name="link" xpath="./@href" />
-        <scalar name="anchor_text" xpath="string(.)" />
+        <scalar name="anchor_text" xpath="." />
         <scalar name="target_title" xpath="./@title" />
       </collection>
     </collection>
-    <collection name="categories" xpath="//div[@id='mw-normal-catlinks']//a[starts-with(@href,'/wiki/Category:')]" child_type="category" promote_children="true">
-      <scalar name="name" xpath="string(.)" />
+    <collection name="categories" xpath="//*[@id='mw-normal-catlinks']//a[starts-with(@href,'/wiki/Category:')]" child_type="category" promote_children="true">
+      <scalar name="name" xpath="." />
       <scalar name="cat_link" xpath="./@href" />
     </collection>
-    <collection name="thumbinners" xpath="//div[@class='thumbinner']" child_type="thumbinner">
+    <collection name="thumbinners" xpath="//*[@class='thumbinner']" child_type="thumbinner">
       <scalar name="thumb_img_src" xpath="./a/img/@src" />
-      <scalar name="thumb_img_caption" xpath="string(.)" />
+      <scalar name="thumb_img_caption" xpath="." />
     </collection>
 
     <semantic_actions>

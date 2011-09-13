@@ -1,4 +1,5 @@
 <meta_metadata_repository name="google_books" package="ecologylab.semantics.generated.library.googleBooks" >
+
 	<meta_metadata name="google_book" extends="book" parser="xpath" user_agent_name="firefox_3_6_8">
 		<selector url_stripped="http://books.google.com/books" />
 		
@@ -102,4 +103,5 @@
 		</semantic_actions>
 		
 	</meta_metadata>
+  
 </meta_metadata_repository>	
