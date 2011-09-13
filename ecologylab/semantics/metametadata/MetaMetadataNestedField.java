@@ -45,6 +45,9 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	@simpl_scalar
 	private String														polymorphicClasses;
 
+	@simpl_scalar
+	private String														schemaOrgItemtype;
+
 	/**
 	 * the mmd used by this nested field. corresponding attributes: (child_)type/extends. could be a
 	 * generated one for inline definitions.
@@ -520,6 +523,19 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 			if (field instanceof MetaMetadataNestedField)
 				((MetaMetadataNestedField) field).recursivelyRestoreChildComposite();
 		}
+	}
+
+	/**
+	 * @return the schemaOrgItemType
+	 */
+	public String getSchemaOrgItemtype()
+	{
+		return schemaOrgItemtype;
+	}
+
+	public void setSchemaOrgItemtype(String schemaOrgItemtype)
+	{
+		this.schemaOrgItemtype = schemaOrgItemtype;
 	}
 
 }

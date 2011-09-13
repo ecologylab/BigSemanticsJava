@@ -142,7 +142,7 @@ implements Mappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneabl
 	 * schema.org microdata item_prop name.
 	 */
 	@simpl_scalar
-	protected String																			schemaOrgItemprop;
+	private String																				schemaOrgItemprop;
 
 	/**
 	 * if this field should be lazily evaluated in ORM component. note that nested fields are

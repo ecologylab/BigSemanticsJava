@@ -91,9 +91,6 @@ implements Mappable<String>//, HasLocalTranslationScope
 	private HashMap<String, LinkWith>								linkWiths;
 
 	@simpl_scalar
-	protected String																schemaOrgItemtype;
-
-	@simpl_scalar
 	protected Visibility														visibility										= Visibility.GLOBAL;
 
 	private Map<MetaMetadataSelector, MetaMetadata>	reselectMap;
@@ -629,17 +626,6 @@ implements Mappable<String>//, HasLocalTranslationScope
 	public ArrayList<SemanticAction> getAfterSemanticActions()
 	{
 		return afterSemanticActions;
-	}
-
-	@Override
-	public String getSchemaOrgItemtype()
-	{
-		return schemaOrgItemtype;
-	}
-
-	public void setSchemaOrgItemtype(String schemaOrgItemtype)
-	{
-		this.schemaOrgItemtype = schemaOrgItemtype;
 	}
 
 }

@@ -818,14 +818,20 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 		if (numElements > 0 || hasXmlText)
 		{
 			Tr tr = new Tr();
-
 			Table compositeTable	= new Table();
 			Td nestedTd 					= new Td();
+			
+			String schemaOrgItemtype = null;
+			MetaMetadataCompositeField compositeMmd = this.getMetaMetadata();
+			if (compositeMmd instanceof MetaMetadata)
+				schemaOrgItemtype = compositeMmd.getSchemaOrgItemtype();
+			else
+				schemaOrgItemtype = compositeMmd.getInheritedMmd().getSchemaOrgItemtype();
+			if (schemaOrgItemtype != null)
+				htmlTable.setSchemaOrgItemType(schemaOrgItemtype);
 
 			if (recursing && numElements > 1)
 			{
-				
-
 				Td buttonTd = new Td();
 				Div div = new Div();
 				Input button = new Input();
@@ -844,6 +850,7 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 				tr.cells.add(buttonTd);
 				htmlTable.rows.add(tr);
 			}
+			
 			while (fullIterator.hasNext())
 			{
 				MetaMetadataField mmdField = fullIterator.next();
@@ -857,11 +864,6 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 					String textCssClass = mmdField.getStyle();
 					if (MetadataConstants.DEFAULT.equals(textCssClass))
 							textCssClass		= MetadataConstants.METADATA_TEXT;
-					String schemaOrgItemType = null;
-					if (mmdField instanceof MetaMetadataCompositeField)
-						schemaOrgItemType = ((MetaMetadataCompositeField) mmdField).getSchemaOrgItemType();
-					if (schemaOrgItemType != null)
-						compositeTable.setSchemaOrgItemType(schemaOrgItemType);
 					if (type == SCALAR)
 					{
 						if (!childFD.getScalarType().isDefaultValue(childFD.getField(), currentMetadata))

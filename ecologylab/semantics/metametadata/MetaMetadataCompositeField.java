@@ -52,12 +52,6 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 	@simpl_nowrap
 	private ArrayList<DefVar>	defVars;
 
-	/**
-	 * schema.org item_type name for this field.
-	 */
-	@simpl_scalar
-	protected String					schemaOrgItemType;
-
 	private MMSelectorType		mmSelectorType					= MMSelectorType.DEFAULT;
 
 	/**
@@ -221,14 +215,6 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 	public boolean isBuiltIn()
 	{
 		return false;
-	}
-
-	/**
-	 * @return the schemaOrgItemType
-	 */
-	public String getSchemaOrgItemType()
-	{
-		return schemaOrgItemType;
 	}
 
 	/**
