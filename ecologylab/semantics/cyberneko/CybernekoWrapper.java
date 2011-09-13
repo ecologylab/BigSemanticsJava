@@ -5,9 +5,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.apache.xerces.xni.parser.XMLDocumentFilter;
-import org.apache.xerces.xni.parser.XMLDocumentSource;
-import org.apache.xerces.xni.parser.XMLParserConfiguration;
-import org.cyberneko.html.HTMLConfiguration;
 import org.cyberneko.html.filters.Writer;
 import org.cyberneko.html.parsers.DOMParser;
 import org.w3c.dom.Document;
@@ -15,7 +12,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
-
 
 import ecologylab.semantics.html.dom.IDOMProvider;
 
@@ -33,12 +29,22 @@ public class CybernekoWrapper implements IDOMProvider
 	
 	public CybernekoWrapper()
 	{
-
 		//XMLParserConfiguration parser = new HTMLConfiguration();
 		parser = new DOMParser();
-		
-		
-		
+		try
+		{
+			parser.setFeature("http://xml.org/sax/features/namespaces", false);
+		}
+		catch (SAXNotRecognizedException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (SAXNotSupportedException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -97,7 +103,7 @@ public class CybernekoWrapper implements IDOMProvider
 
 			if (!Character.isLetterOrDigit(c))
 				isTagName = false;
-			else if (i > 0 && xpath.charAt(i - 1) == '/' || xpath.charAt(i - 1) == ':')
+			else if (i > 0 && (xpath.charAt(i - 1) == '/' || xpath.charAt(i - 1) == ':'))
 			{
 				
 				String restOfXpath 		= xpath.substring(i + 1);
