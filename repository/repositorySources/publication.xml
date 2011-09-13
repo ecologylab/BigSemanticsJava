@@ -15,17 +15,17 @@
 	</meta_metadata>
 
 	<meta_metadata name="book" extends="publication">
-		<collection name="editors" child_type="author" />
-		<scalar name="edition" scalar_type="String" />
+		<collection name="editors" child_type="author" schema_org_itemprop="editor" />
+		<scalar name="edition" scalar_type="String" schema_org_itemprop="bookEdition" />
 		<collection name="table_of_contents" child_type="publication">
 			<scalar name="title"  label="chapter title" />
 		</collection>
 		<scalar name="cover_image" scalar_type="ParsedURL" hide="true" />
 	</meta_metadata>
 	
-	<meta_metadata name="publisher" extends="document" comment="A publishing company.">
+	<meta_metadata name="publisher" extends="document" comment="A publishing company." schema_org_itemtype="http://schema.org/Organization">
 		<scalar name="title" label="name" as_composite_scalar="true" navigates_to="location" is_facet="true" scalar_type="String" />
-		<scalar name="city" scalar_type="String" />
+		<scalar name="city" scalar_type="String" schema_org_itemtype="location" />
 	</meta_metadata>
 	
 	<meta_metadata name="amazon_book" extends="book" parser="xpath">

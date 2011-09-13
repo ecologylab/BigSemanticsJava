@@ -25,7 +25,7 @@
 		</composite>
 		
 		<scalar name="category" layer="9.3" xpath="//div[@class='bookinfo_sectionwrap']//div[3]/a" scalar_type="String" />
-		<scalar name="pages" layer="9.05" hide="true" xpath="//table[@id='metadata_content_table']/tr[contains(., 'Length')]/td[2]">
+		<scalar name="pages" layer="9.05" hide="true" xpath="//table[@id='metadata_content_table']/tr[contains(., 'Length')]/td[2]" schema_org_itemprop="numberOfPages">
 			<filter regex="[pages]*" replace="" />
 		</scalar>
 		<scalar name="description" layer="9.4" xpath="//div[@id='synopsistext']" scalar_type="String" />
@@ -42,7 +42,7 @@
 			</scalar>
 		</collection>	
 		<scalar name="about_the_authors" layer="7.0" xpath="//div[@class='textmodulecontent']" />
-		<scalar name="isbn" layer="8.1" hide="true" xpath="//table[@id='metadata_content_table']/tr[contains(., 'ISBN')]">
+		<scalar name="isbn" layer="8.1" hide="true" xpath="//table[@id='metadata_content_table']/tr[contains(., 'ISBN')]" schema_org_itemprop="isbn">
 			<filter regex="ISBN" replace="" />
 		</scalar>
 		<collection name="subjects" layer="9.2" xpath="//table[@id='metadata_content_table']/tr[contains(., 'Subjects')]/td[2]/a">

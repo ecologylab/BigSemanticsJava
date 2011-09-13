@@ -455,6 +455,8 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 		generatedMmd.setRepository(this.getRepository());
 		generatedMmd.visibility = Visibility.PACKAGE;
 		generatedMmd.setMmdScope(new MultiAncestorScope<MetaMetadata>(this.getMmdScope(), inheritedMmd.getMmdScope()));
+		if (this.getSchemaOrgItemtype() != null)
+			generatedMmd.setSchemaOrgItemtype(this.getSchemaOrgItemtype());
 		generatedMmd.setNewMetadataClass(true);
 		
 		// move nested fields (they will be cloned later)
