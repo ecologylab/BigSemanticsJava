@@ -6,7 +6,7 @@
     <scalar name="title" label="heading" layer="10.0" navigates_to="location" comment="The heading of the search result." />
 		<scalar name="description" label="snippet" comment="The snippet of the search result." />
 		<scalar name="location" label="link" hide="true" comment="The link of the search result." /><!-- we may want to show location in some cases -->
-		<scalar name="engine" scalar_type="String" comment="The search engine used for this result." />
+		<scalar name="engine" scalar_type="String" layer="-20.0" comment="The search engine used for this result." />
 	</meta_metadata>
 
 	<meta_metadata name="search" extends="document" comment="">

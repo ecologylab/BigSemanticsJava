@@ -1,27 +1,5 @@
 <meta_metadata_repository name="patents" package="ecologylab.semantics.generated.library.patents" default_user_agent_name="chrome_2">
 
-	<meta_metadata name="google_patent_search" comment="Google Patents Search Class" type="search" user_agent_name="firefox_5" parser="xpath">
-		<selector url_regex="(?=http://www.google.com/patents)^((?!id=).)*$" domain="google.com"/>
-		<selector url_regex="http://www.google.com/search\?.*tbm=pts.*" domain="google.com"/>
-
-		<collection name="search_results" xpath="//div[@class='scontentarea']//p[last()&gt;position()]">
-			<scalar name="title" xpath="./a" />
-			<scalar name="location" xpath="./a/@href" />
-		</collection>
-    
-		<semantic_actions>
-			<get_field name="search_results" />
-			<for_each collection="search_results" as="result">
-				<get_field object="result" name="title" />
-				<get_field object="result" name="location" />
-				<parse_document now="true">
-					<arg value="title" name="anchor_text" />
-					<arg value="location" name="location" />
-				</parse_document>
-			</for_each>
-		</semantic_actions>
-	</meta_metadata>
-
 	<meta_metadata name="patent" extends="creative_work" comment="Patents Class" parser="xpath">
 <!-- 		<scalar name="claims" scalar_type="String" hint="XML_LEAF" /> -->
     <collection name="claims" child_scalar_type="String" child_tag="claim" />

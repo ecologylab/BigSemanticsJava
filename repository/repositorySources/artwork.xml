@@ -25,8 +25,9 @@
 	</meta_metadata>
 	
 	<meta_metadata name="moma_artwork" extends="artwork"  parser="xpath">
-		<selector url_regex="http://www.moma.org/collection/browse_results.php[\S]*template_id=1[\S]*" domain="moma.org"/>
-		<selector url_regex="http://www.moma.org/collection/browse_results.php\?object_id=[\d]+" domain="moma.org" />
+		<selector url_regex="http://(www\.)?moma.org/collection/browse_results.php[\S]*template_id=1[\S]*" domain="moma.org"/>
+		<selector url_regex="http://(www\.)?moma.org/collection/browse_results.php\?object_id=[\d]+" domain="moma.org" />
+    
 		<scalar name="location" hide="true" />
 		<scalar name="title" xpath="//div[@id='omniture_caption']/h3/i" />
 		<collection name="artists" xpath="//h4[@class='artist']/a">
@@ -91,12 +92,13 @@
 		</semantic_actions>
 	</meta_metadata>
 	
-	<meta_metadata name="moma_list" extends="compound_document" parser="xpath">
-		<selector url_regex="http://www.moma.org/collection/browse_results.php[\S]*template_id=6[\S]*" domain="moma.org" />
-		<collection name="artworks" child_type="moma_artwork" child_tag="moma_artwork" xpath="//ul[@id='thumbnail-view-items']/li/a" no_wrap="true">
-			<scalar name="location" xpath="./@href" />
-		</collection>
-		<scalar name="next_list" scalar_type="ParsedURL" xpath="//a[@class='slideNext']/@href" />
+<!-- 	<meta_metadata name="moma_list" extends="compound_document" parser="xpath"> -->
+<!-- 		<selector url_regex="http://www.moma.org/collection/browse_results.php[\S]*template_id=6[\S]*" domain="moma.org" /> -->
+    
+<!-- 		<collection name="artworks" child_type="moma_artwork" child_tag="moma_artwork" xpath="//ul[@id='thumbnail-view-items']/li/a" no_wrap="true"> -->
+<!-- 			<scalar name="location" xpath="./@href" /> -->
+<!-- 		</collection> -->
+<!-- 		<scalar name="next_list" scalar_type="ParsedURL" xpath="//a[@class='slideNext']/@href" /> -->
 		
 <!-- 		<semantic_actions> -->
 <!-- 			<get_field name="artworks" /> -->
@@ -113,6 +115,15 @@
 <!-- 			</parse_document> -->
 			
 <!-- 		</semantic_actions> -->
-	</meta_metadata>
+<!-- 	</meta_metadata> -->
 	
+	<meta_metadata name="moma_list" type="search" parser="xpath">
+		<selector url_regex="http://(www\.)?moma.org/collection/browse_results.php[\S]*template_id=6[\S]*" domain="moma.org" />
+    
+		<collection name="search_results" xpath="//ul[@id='thumbnail-view-items']/li">
+      <scalar name="title" xpath=".//div[@class='description']/div" />
+			<scalar name="location" xpath="./a/@href" />
+		</collection>
+  </meta_metadata>
+		
 </meta_metadata_repository>

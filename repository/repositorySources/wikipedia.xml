@@ -5,20 +5,10 @@
     <selector url_stripped="http://en.wikipedia.org/w/index.php?title=Special%3ASearch" />
 
     <collection name="search_results" xpath="//div[@id='bodyContent']/div[@class='searchresults']/ul[@class='mw-search-results']/li">
-      <scalar name="title" xpath="./a" />
-      <scalar name="location" xpath="./a/@href" />
+      <scalar name="title" xpath="./div[@class='mw-search-result-heading']/a" />
+      <scalar name="location" xpath="./div[@class='mw-search-result-heading']/a/@href" />
       <scalar name="description" xpath="./div[@class='searchresult']" />
     </collection>
-
-    <semantic_actions>
-      <get_field name="search_results" />
-      <for_each collection="search_results" as="res">
-        <get_field object="res" name="location" />
-        <parse_document now="true">
-          <arg value="location" name="location" />
-        </parse_document>
-      </for_each>
-    </semantic_actions>
   </meta_metadata>
 
   <meta_metadata name="wikipedia_page_type" extends="compound_document" comment="An article on wikipedia">
@@ -51,13 +41,13 @@
     <scalar name="main_image_src" hide="true" xpath="./@src" context_node="main_image" scalar_type="ParsedURL" />
     <collection name="paragraphs" hide="true" xpath="//*[@id='bodyContent']/p[string-length(text()) > 0]" child_type="paragraph">
       <scalar name="paragraph_text" xpath="." />
-      <collection name="anchors" xpath="./a[starts-with(@href,'/wiki/')]">
+      <collection name="anchors" xpath="./a[@title]">
         <scalar name="link" xpath="./@href" />
         <scalar name="anchor_text" xpath="." />
         <scalar name="target_title" xpath="./@title" />
       </collection>
     </collection>
-    <collection name="categories" xpath="//*[@id='mw-normal-catlinks']//a[starts-with(@href,'/wiki/Category:')]" child_type="category" promote_children="true">
+    <collection name="categories" xpath="//*[@id='mw-normal-catlinks']//a[starts-with(@title,'Category:')]" child_type="category" promote_children="true">
       <scalar name="name" xpath="." />
       <scalar name="cat_link" xpath="./@href" />
     </collection>

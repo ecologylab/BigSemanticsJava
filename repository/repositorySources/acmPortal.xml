@@ -190,6 +190,7 @@
 	<meta_metadata name="acm_portal_search" extends="search" parser="xpath" user_agent_name="firefox_3_6_8">
 
 		<selector url_stripped="http://portal.acm.org/results.cfm" />
+		<selector url_stripped="http://dl.acm.org/results.cfm" />
 
 		<collection name="search_results" child_type="acm_portal_search_result" xpath="//a[starts-with(@href, 'citation.cfm')]/../../..">
 			<scalar name="title" xpath="./tr[1]/td/a" />
