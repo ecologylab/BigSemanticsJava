@@ -299,6 +299,10 @@ implements Downloadable, Colors
 				height			= newHeight;
 				scaled			= true;
 				unprocessedRendering.resize(newWidth, newHeight, basisRendering);
+//				if (alphaGradientRendering != null)
+//				{
+//					unprocessedRendering.computeNext();
+//				}
 			}
 		}
 		return true;
@@ -355,7 +359,7 @@ implements Downloadable, Colors
 	 * @return In alpha gradient blending, the distance from the perimeter,
 	 * inside which opacity is complete.
 	 */
-	public int alphaRadius()
+	public double alphaRadius()
 	{
 		return (alphaGradientRendering != null) ? alphaGradientRendering.radius : 0;
 	}
@@ -411,6 +415,8 @@ implements Downloadable, Colors
 		if (alphaGradientRendering == null)
 			return false;
 
+		if (alphaGradientRendering.fixPreviousRendering(unprocessedRendering))	// kludge pipeline if necessary
+			unprocessedRendering.setNextRendering(alphaGradientRendering);			// ditto
 		goActive(alphaGradientRendering, true);
 		return true;
 	}
@@ -749,6 +755,7 @@ implements Downloadable, Colors
 //			if (unprocessedRendering != null)
 //				unprocessedRendering.
 			scaleInitially(width, height, bufferedImage);
+			restoreAlphaGradient();
 		}
 	}
 

@@ -22,7 +22,7 @@ import ecologylab.serialization.simpl_inherit;
 public class AlphaGradientRendering extends Rendering
 {
 	@simpl_scalar
-  int radius;
+  double radius;
 	
 	@simpl_scalar
   int minAlpha;
@@ -71,8 +71,8 @@ public class AlphaGradientRendering extends Rendering
   	 // gradient area. 
   	 int gradientMagnitude	= R - minAlpha;
   	 int pixelIndex		= 0;
-  	 int beyondRight	= width - radius; // x >= places in gradient
-  	 int beyondBottom	= height - radius;// y >= places in gradient
+  	 int beyondRight	= (int)(width - radius); // x >= places in gradient
+  	 int beyondBottom	= (int)(height - radius);// y >= places in gradient
   	 //	 debug("radius="+radius+ ", minAlpha="+Integer.toHexString(minAlpha) +
   	 //	       ", gradientMagnitude="+hex(gradientMagnitude) +
   	 //	       "\t"+width+"x"+height+"\n");
@@ -99,7 +99,7 @@ public class AlphaGradientRendering extends Rendering
 
   			 if (gradientFactor < radius)
   			 {
-  				 float gradientChange = ((float) gradientFactor / radius) * gradientMagnitude ;
+  				 double gradientChange = ((float) gradientFactor / radius) * gradientMagnitude ;
   				 int thisGradient = // shift to compensate for sign avoidance
   					 ((int) gradientChange + minAlpha)<< 8;
 
@@ -137,12 +137,12 @@ public class AlphaGradientRendering extends Rendering
 
 	// for ORM layer:
 	
-	public int getRadius()
+	public double getRadius()
 	{
 		return radius;
 	}
 
-	public void setRadius(int radius)
+	public void setRadius(double radius)
 	{
 		this.radius = radius;
 	}
@@ -155,5 +155,15 @@ public class AlphaGradientRendering extends Rendering
 	public void setMinAlpha(int minAlpha)
 	{
 		this.minAlpha = minAlpha;
+	}
+	@Override
+	protected void resizeImageComponents(int width, int height, boolean createBufferedImage)
+	{
+		double oldRadius	= radius;
+		double ratio	= Math.sqrt((double) (width * height) / (double) (this.width * this.height));
+		debug("resize ratio: " + oldRadius +"\t-> " + radius);
+//		double ratio	=  (width * height) / (this.width * this.height);
+		radius	*= ratio;
+		super.resizeImageComponents(width, height, createBufferedImage);
 	}
 }

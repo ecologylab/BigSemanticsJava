@@ -20,10 +20,8 @@ import java.lang.ref.WeakReference;
 
 import ecologylab.generic.Colors;
 import ecologylab.generic.ImageTools;
-import ecologylab.semantics.gui.SerializableGUI;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.simpl_inherit;
-import ecologylab.serialization.ElementState.simpl_scope;
 
 /**
  * The basic unit of an image processing rendering pipeline;
@@ -213,7 +211,7 @@ implements Colors
 		{
 			// assumption -- !((newWidth == width) && (newHeight == height))
 			
-			this.setupPipelineImageComponents(newWidth, newHeight);
+			this.resizePipelineImageComponents(newWidth, newHeight);
 			
 			ImageTools.scaleAndCopyImage(newWidth, newHeight, 
 										 unscaledRendering.bufferedImage, bufferedImage);
@@ -235,20 +233,20 @@ implements Colors
 	{
 		synchronized (pixelBased.renderingsLock)
 		{
-			int[] scaledPixels				= new int[newWidth * newHeight];
+			int[] scaledPixels	= new int[newWidth * newHeight];
 			int size						= newWidth * newHeight;
 			DataBufferInt scaledDataBuffer	= new DataBufferInt(scaledPixels, size);
-			BufferedImage scaledBImage		= createNewBufferedImage(scaledDataBuffer, newWidth, newHeight);
+			BufferedImage scaledBImage			= createNewBufferedImage(scaledDataBuffer, newWidth, newHeight);
 		
 			// if you want to clone everything, this is reasonably fast
 			// even if there's no scaling
 			ImageTools.scaleAndCopyImage(newWidth, newHeight, bufferedImage, scaledBImage);
 			
-			Rendering scaledState			= new Rendering(pixelBased, scaledBImage, scaledDataBuffer, scaledPixels);
-			
+			Rendering result		= new Rendering(pixelBased, scaledBImage, scaledDataBuffer, scaledPixels);
+			result.setPreviousRendering(this);
 //			recycle();
 
-			return scaledState;
+			return result;
 		}
 	}
 	protected BufferedImage createNewBufferedImage(DataBufferInt scaledDataBuffer, int width, int height)
@@ -327,6 +325,13 @@ implements Colors
 		AffineTransformOp scaleOp		= new AffineTransformOp(scaleTransform, AffineTransformOp.TYPE_BILINEAR);
 		return scaleOp;
 	}
+	protected void resizePipelineImageComponents(int width, int height)
+	{
+		resizeImageComponents(width, height, true);
+		Rendering next		= nextRendering;
+		if (next != null)
+			next.resizePipelineImageComponents(width, height);
+	}
 	protected void setupPipelineImageComponents(int width, int height)
 	{
 		setupImageComponents(width, height, true);
@@ -337,6 +342,10 @@ implements Colors
 	protected void setupImageComponents(int width, int height)
 	{
 		setupImageComponents(width, height, true);
+	}
+	protected void resizeImageComponents(int width, int height, boolean createBufferedImage)
+	{
+		setupImageComponents(width, height, createBufferedImage);
 	}
 	/**
 	 * Create an array of pixels, a DataBufferInt, and a BufferedImage at this size.
@@ -485,7 +494,7 @@ implements Colors
 	{
 		boolean wasActive		= isActive;
 		isActive			= true;
-		if (!wasActive)
+		if (!wasActive || immediate)
 		{
 			setPending();
 			if (immediate)
@@ -738,6 +747,14 @@ implements Colors
 		this.previousRendering = previousRendering;
 	}
 
+	public boolean fixPreviousRendering(Rendering previousRendering)
+	{
+		boolean result = !this.previousRendering.hasPixels();
+		if (result)
+			this.previousRendering = previousRendering;
+		return result;
+	}
+
 	public Rendering getNextRendering()
 	{
 		return nextRendering;
@@ -771,5 +788,10 @@ implements Colors
 			this.pixelBased	= result;
 		}
 		return result;
+	}
+	
+	boolean hasPixels()
+	{
+		return pixels != null;
 	}
 }
