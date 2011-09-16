@@ -416,13 +416,13 @@ implements Downloadable, Colors
 	}
 	public boolean restoreAlphaGradient()
 	{
-		if (alphaGradientRendering == null)
-			return false;
-
-		if (alphaGradientRendering.fixPreviousRendering(unprocessedRendering))	// kludge pipeline if necessary
-			unprocessedRendering.setNextRendering(alphaGradientRendering);			// ditto
-		goActive(alphaGradientRendering, true);
-		return true;
+		boolean result = alphaGradientRendering != null;
+		if (result)
+		{
+			alphaGradientRendering.fixPreviousRendering(unprocessedRendering);	// kludge pipeline if necessary
+			goActive(alphaGradientRendering, true);
+		}
+		return result;
 	}
 	public void noBlur2D()
 	{

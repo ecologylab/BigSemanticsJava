@@ -749,11 +749,14 @@ implements Colors
 		this.previousRendering = previousRendering;
 	}
 
-	public boolean fixPreviousRendering(Rendering previousRendering)
+	public boolean fixPreviousRendering(Rendering newPreviousRendering)
 	{
 		boolean result = !this.previousRendering.hasPixels();
 		if (result)
-			this.previousRendering = previousRendering;
+		{
+			this.previousRendering = newPreviousRendering;
+			newPreviousRendering.nextRendering	= this;
+		}
 		return result;
 	}
 
