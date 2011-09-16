@@ -23,7 +23,7 @@ import ecologylab.serialization.annotations.simpl_scalar;
 public class AlphaGradientRendering extends Rendering
 {
 	@simpl_scalar
-  double radius;
+  float radius;
 	
 	@simpl_scalar
   int minAlpha;
@@ -138,12 +138,12 @@ public class AlphaGradientRendering extends Rendering
 
 	// for ORM layer:
 	
-	public double getRadius()
+	public float getRadius()
 	{
 		return radius;
 	}
 
-	public void setRadius(double radius)
+	public void setRadius(float radius)
 	{
 		this.radius = radius;
 	}
@@ -162,8 +162,7 @@ public class AlphaGradientRendering extends Rendering
 	{
 		double oldRadius	= radius;
 		double ratio	= Math.sqrt((double) (width * height) / (double) (this.width * this.height));
-		debug("resize ratio: " + oldRadius +"\t-> " + radius);
-//		double ratio	=  (width * height) / (this.width * this.height);
+//		debug("resize ratio: " + oldRadius +"\t-> " + radius);
 		radius	*= ratio;
 		super.resizeImageComponents(width, height, createBufferedImage);
 	}
