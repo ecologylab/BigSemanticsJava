@@ -1,21 +1,12 @@
 package ecologylab.semantics.metametadata.test;
 
 import java.awt.Desktop;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 
-import ecologylab.concurrent.DownloadMonitor;
-import ecologylab.generic.Debug;
-import ecologylab.generic.Continuation;
-import ecologylab.net.ParsedURL;
-import ecologylab.semantics.collecting.SemanticsSessionScope;
-import ecologylab.semantics.generated.library.RepositoryMetadataTranslationScope;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
 import ecologylab.serialization.SIMPLTranslationException;

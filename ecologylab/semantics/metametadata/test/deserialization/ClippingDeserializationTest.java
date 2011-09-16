@@ -12,8 +12,11 @@ import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.generated.library.RepositoryMetadataTranslationScope;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.namesandnums.SemanticsNames;
+import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.ElementState;
+import ecologylab.serialization.Format;
 import ecologylab.serialization.SIMPLTranslationException;
+import ecologylab.serialization.StringFormat;
 import ecologylab.serialization.TranslationScope;
 
 /**
@@ -53,9 +56,10 @@ implements SemanticsNames
 //
 //			es.serialize(System.out);
 			
-			ElementState es2	= MY_TRANSLATIONS.deserialize(file2);
+			ElementState es2	= (ElementState) MY_TRANSLATIONS.deserialize(file2, Format.XML);
 
-			es2.serialize(System.out);
+			ClassDescriptor.serialize(es2, System.out, StringFormat.XML);
+
 		}
 		catch (SIMPLTranslationException e)
 		{

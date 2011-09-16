@@ -4,12 +4,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import ecologylab.semantics.generated.library.RepositoryMetadataTranslationScope;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.metametadata.MetaMetadataTranslationScope;
 import ecologylab.serialization.ElementState;
-import ecologylab.serialization.ElementState.FORMAT;
 import ecologylab.serialization.SIMPLTranslationException;
+import ecologylab.serialization.StringFormat;
 import ecologylab.serialization.TranslationScope;
 
 public class MMDTester
@@ -30,7 +29,7 @@ public class MMDTester
 		
 		try
 		{
-			ElementState deserializeCharSequence = META_METADATA_TRANSLATIONS.deserializeCharSequence(s, FORMAT.JSON);
+			ElementState deserializeCharSequence = (ElementState) META_METADATA_TRANSLATIONS.deserialize(s, StringFormat.JSON);
 			System.out.println("Deserialized");
 		}
 		catch (SIMPLTranslationException e)

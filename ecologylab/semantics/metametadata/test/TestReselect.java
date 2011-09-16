@@ -6,7 +6,9 @@ import ecologylab.net.ParsedURL;
 import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.generated.library.RepositoryMetadataTranslationScope;
 import ecologylab.semantics.metadata.builtins.Document;
+import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.SIMPLTranslationException;
+import ecologylab.serialization.StringFormat;
 
 public class TestReselect
 {
@@ -40,9 +42,11 @@ public class TestReselect
 
 		try
 		{
-			infoCollector.getOrConstructDocument(url1).serialize(System.out);
+			ClassDescriptor.serialize(infoCollector.getOrConstructDocument(url1), System.out, StringFormat.XML);
+			
 			System.out.println();
-			infoCollector.getOrConstructDocument(url2).serialize(System.out);
+			ClassDescriptor.serialize(infoCollector.getOrConstructDocument(url2), System.out, StringFormat.XML);
+			
 			System.out.println();
 		}
 		catch (SIMPLTranslationException e)

@@ -7,12 +7,12 @@ import java.net.MalformedURLException;
 
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticAction;
-import ecologylab.serialization.ElementState.xml_tag;
-import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_tag;
 
 /**
  * This semantic action is used to save weather images to local drive, as an example of reusing
- * existing semantic actions. Note that by using @xml_tag with the same name, we can override
+ * existing semantic actions. Note that by using @simpl_tag with the same name, we can override
  * default implementation of this semantic action (need to use SemanticAction.register() to register
  * it).
  * 
@@ -20,7 +20,7 @@ import ecologylab.serialization.simpl_inherit;
  *
  */
 @simpl_inherit
-@xml_tag("create_and_visualize_img_surrogate")
+@simpl_tag("create_and_visualize_img_surrogate")
 public class SaveImageSemanticAction extends SemanticAction
 {
 

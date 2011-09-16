@@ -16,8 +16,10 @@ import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.metametadata.MetaMetadataScalarField;
 import ecologylab.semantics.metametadata.MetaMetadataTranslationScope;
 import ecologylab.semantics.metametadata.NestedMetaMetadataFieldTranslationScope;
-import ecologylab.serialization.ElementState.FORMAT;
+import ecologylab.serialization.ClassDescriptor;
+import ecologylab.serialization.Format;
 import ecologylab.serialization.SIMPLTranslationException;
+import ecologylab.serialization.StringFormat;
 import ecologylab.serialization.TranslationScope;
 import ecologylab.serialization.TranslationScope.GRAPH_SWITCH;
 
@@ -25,27 +27,29 @@ import ecologylab.serialization.TranslationScope.GRAPH_SWITCH;
  * test repository in JSON format with NewMmTest-like tasks.
  * 
  * @author quyin
- *
+ * 
  */
 public class TestRepositoryInJSON
 {
-	
+
 	private static final int				BUFFER_SIZE	= 4096;
 
 	private static TranslationScope	mmdTScope		= null;
-	
+
 	private void translateRepositoryIntoJSON(File srcDir, File destDir)
 	{
 		translateRepositoryDirIntoJSON(srcDir, destDir);
-		translateRepositoryDirIntoJSON(new File(srcDir, "repositorySources"), new File(destDir, "repositorySources"));
+		translateRepositoryDirIntoJSON(new File(srcDir, "repositorySources"), new File(destDir,
+				"repositorySources"));
 		translateRepositoryDirIntoJSON(new File(srcDir, "powerUser"), new File(destDir, "powerUser"));
 	}
-	
+
 	private void translateRepositoryDirIntoJSON(File srcDir, File destDir)
 	{
 		if (!destDir.exists())
 			destDir.mkdir();
-		FileFilter filter = new FileFilter() {
+		FileFilter filter = new FileFilter()
+		{
 			@Override
 			public boolean accept(File pathname)
 			{
@@ -56,11 +60,12 @@ public class TestRepositoryInJSON
 		{
 			try
 			{
-				MetaMetadataRepository repo = (MetaMetadataRepository) mmdTScope.deserialize(f);
-				String json = repo.serialize(FORMAT.JSON).toString();
+				MetaMetadataRepository repo = (MetaMetadataRepository) mmdTScope.deserialize(f, Format.XML);
+				String json = ClassDescriptor.serialize(repo, StringFormat.JSON).toString();
 				if (json != null && json.length() > 0)
 				{
-					File jsonRepoFile = new File(destDir, f.getName().replace((CharSequence) ".xml", (CharSequence) ".json"));
+					File jsonRepoFile = new File(destDir, f.getName().replace((CharSequence) ".xml",
+							(CharSequence) ".json"));
 					FileWriter writer = new FileWriter(jsonRepoFile);
 					writer.write(json);
 					writer.close();
@@ -84,21 +89,21 @@ public class TestRepositoryInJSON
 	 */
 	public static void main(String[] args)
 	{
-		TranslationScope.graphSwitch	= GRAPH_SWITCH.ON;
+		TranslationScope.graphSwitch = GRAPH_SWITCH.ON;
 		MetaMetadataRepository.initializeTypes();
 		new SemanticsTypes();
-		
+
 		// ********* each time, run one of the following methods: *********
-		
-//		testLoadingAndSavingXmlRepository();
-//		testSavedAgainXmlRepository();
-//		testConvertingRepositoryFromXmlToJson();
+
+		// testLoadingAndSavingXmlRepository();
+		// testSavedAgainXmlRepository();
+		// testConvertingRepositoryFromXmlToJson();
 		testJsonRepository(destJsonRepoDir);
-		
-//		testLoadAndSaveJsonRepository(destJsonRepoDir, dest2JsonRepoDir);
-//		testJsonRepository(dest2JsonRepoDir);
+
+		// testLoadAndSaveJsonRepository(destJsonRepoDir, dest2JsonRepoDir);
+		// testJsonRepository(dest2JsonRepoDir);
 	}
-	
+
 	private static File	srcXmlRepoDir			= new File("../ecologylabSemantics/repository/");
 
 	private static File	destXmlRepoDir		= new File("/tmp/repository/");
@@ -110,23 +115,23 @@ public class TestRepositoryInJSON
 	private static void testLoadingAndSavingXmlRepository()
 	{
 		// replace MetaMetadataCollectionField with MetaMetadataCollectionFieldChildComposite
-		TranslationScope.get(NestedMetaMetadataFieldTranslationScope.NAME, new Class[] {
-				MetaMetadataField.class,
-				MetaMetadataScalarField.class,
-				MetaMetadataCompositeField.class,
-				MetaMetadataCollectionFieldWithoutChildComposite.class,
-		});
+		TranslationScope.get(NestedMetaMetadataFieldTranslationScope.NAME, new Class[]
+		{ MetaMetadataField.class, MetaMetadataScalarField.class, MetaMetadataCompositeField.class,
+				MetaMetadataCollectionFieldWithoutChildComposite.class, });
 		mmdTScope = MetaMetadataTranslationScope.get();
-		
+
 		// load and save the repository again
 		testLoadAndSaveXmlRepositoryDir(srcXmlRepoDir, destXmlRepoDir);
-		testLoadAndSaveXmlRepositoryDir(new File(srcXmlRepoDir, "repositorySources"), new File(destXmlRepoDir, "repositorySources"));
-		testLoadAndSaveXmlRepositoryDir(new File(srcXmlRepoDir, "powerUser"), new File(destXmlRepoDir, "powerUser"));
+		testLoadAndSaveXmlRepositoryDir(new File(srcXmlRepoDir, "repositorySources"), new File(
+				destXmlRepoDir, "repositorySources"));
+		testLoadAndSaveXmlRepositoryDir(new File(srcXmlRepoDir, "powerUser"), new File(destXmlRepoDir,
+				"powerUser"));
 	}
 
 	private static void testLoadAndSaveXmlRepositoryDir(File srcDir, File destDir)
 	{
-		FileFilter filter = new FileFilter() {
+		FileFilter filter = new FileFilter()
+		{
 			@Override
 			public boolean accept(File pathname)
 			{
@@ -137,42 +142,39 @@ public class TestRepositoryInJSON
 		{
 			try
 			{
-				MetaMetadataRepository repo = (MetaMetadataRepository) mmdTScope.deserialize(xmlFile);
-				repo.serialize(new File(destDir, xmlFile.getName()));
+				MetaMetadataRepository repo = (MetaMetadataRepository) mmdTScope.deserialize(xmlFile,
+						Format.XML);
+				ClassDescriptor.serialize(repo, new File(destDir, xmlFile.getName()), Format.XML);
+
 			}
 			catch (SIMPLTranslationException e1)
 			{
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			catch (IOException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 		}
 	}
-	
+
 	private static void testLoadAndSaveJsonRepository(File srcDir, File destDir)
 	{
 		// replace MetaMetadataCollectionField with MetaMetadataCollectionFieldChildComposite
-		TranslationScope.get(NestedMetaMetadataFieldTranslationScope.NAME, new Class[] {
-				MetaMetadataField.class,
-				MetaMetadataScalarField.class,
-				MetaMetadataCompositeField.class,
-				MetaMetadataCollectionFieldWithoutChildComposite.class,
-		});
+		TranslationScope.get(NestedMetaMetadataFieldTranslationScope.NAME, new Class[]
+		{ MetaMetadataField.class, MetaMetadataScalarField.class, MetaMetadataCompositeField.class,
+				MetaMetadataCollectionFieldWithoutChildComposite.class, });
 		mmdTScope = MetaMetadataTranslationScope.get();
-		
+
 		// load and save the repository again
 		testLoadAndSaveJsonRepositoryDir(destJsonRepoDir, dest2JsonRepoDir);
-		testLoadAndSaveJsonRepositoryDir(new File(destJsonRepoDir, "repositorySources"), new File(dest2JsonRepoDir, "repositorySources"));
-		testLoadAndSaveJsonRepositoryDir(new File(destJsonRepoDir, "powerUser"), new File(dest2JsonRepoDir, "powerUser"));
+		testLoadAndSaveJsonRepositoryDir(new File(destJsonRepoDir, "repositorySources"), new File(
+				dest2JsonRepoDir, "repositorySources"));
+		testLoadAndSaveJsonRepositoryDir(new File(destJsonRepoDir, "powerUser"), new File(
+				dest2JsonRepoDir, "powerUser"));
 	}
 
 	private static void testLoadAndSaveJsonRepositoryDir(File srcDir, File destDir)
 	{
-		FileFilter filter = new FileFilter() {
+		FileFilter filter = new FileFilter()
+		{
 			@Override
 			public boolean accept(File pathname)
 			{
@@ -194,14 +196,17 @@ public class TestRepositoryInJSON
 					json.append(buffer, 0, n);
 				}
 				reader.close();
-				MetaMetadataRepository repo = (MetaMetadataRepository) mmdTScope.deserializeCharSequence(json, FORMAT.JSON);
+				MetaMetadataRepository repo = (MetaMetadataRepository) mmdTScope.deserialize(json,
+						StringFormat.JSON);
 				File newJsonFile = new File(destDir, jsonFile.getName());
 				if (!newJsonFile.exists())
 				{
 					newJsonFile.getParentFile().mkdirs();
 					newJsonFile.createNewFile();
 				}
-				repo.serialize(new FileOutputStream(newJsonFile), FORMAT.JSON);
+
+				ClassDescriptor.serialize(repo, newJsonFile, Format.JSON);
+
 			}
 			catch (SIMPLTranslationException e1)
 			{
@@ -215,60 +220,56 @@ public class TestRepositoryInJSON
 			}
 		}
 	}
-	
+
 	private static void testSavedAgainXmlRepository()
 	{
 		// use json repository for NewMmTest
 		MetaMetadataRepositoryInit.DEFAULT_REPOSITORY_LOCATION = destXmlRepoDir.getAbsolutePath();
 		MetaMetadataRepositoryInit.DEFAULT_REPOSITORY_FILE_SUFFIX = ".xml";
 		MetaMetadataRepositoryInit.DEFAULT_REPOSITORY_FILE_LOADER = MetaMetadataRepository.XML_FILE_LOADER;
-		
+
 		tryNewMmTest();
 	}
 
 	private static void testConvertingRepositoryFromXmlToJson()
 	{
 		// replace MetaMetadataCollectionField with MetaMetadataCollectionFieldChildComposite
-		TranslationScope.get(NestedMetaMetadataFieldTranslationScope.NAME, new Class[] {
-				MetaMetadataField.class,
-				MetaMetadataScalarField.class,
-				MetaMetadataCompositeField.class,
-				MetaMetadataCollectionFieldWithoutChildComposite.class,
-		});
+		TranslationScope.get(NestedMetaMetadataFieldTranslationScope.NAME, new Class[]
+		{ MetaMetadataField.class, MetaMetadataScalarField.class, MetaMetadataCompositeField.class,
+				MetaMetadataCollectionFieldWithoutChildComposite.class, });
 		mmdTScope = MetaMetadataTranslationScope.get();
-		
+
 		// convert repository to json
 		TestRepositoryInJSON trij = new TestRepositoryInJSON();
 		trij.translateRepositoryIntoJSON(srcXmlRepoDir, destJsonRepoDir);
 	}
-	
+
 	private static void testJsonRepository(File jsonRepoDir)
 	{
 		mmdTScope = MetaMetadataTranslationScope.get();
-		
+
 		// use json repository for NewMmTest
 		MetaMetadataRepositoryInit.DEFAULT_REPOSITORY_LOCATION = jsonRepoDir.getAbsolutePath();
 		MetaMetadataRepositoryInit.DEFAULT_REPOSITORY_FILE_SUFFIX = ".json";
 		MetaMetadataRepositoryInit.DEFAULT_REPOSITORY_FILE_LOADER = MetaMetadataRepository.JSON_FILE_LOADER;
-		
+
 		tryNewMmTest();
 	}
 
 	private static void tryNewMmTest()
 	{
 		// use a set of URLs to test extraction
-		String[] testUrls = new String[] {
-			"http://www.dlese.org/dds/services/ddsws1-1?verb=UserSearch&q=water+on+mars&s=0&n=10&client=ddsws10examples",
-			"http://www.dlese.org/dds/services/ddsws1-0?verb=GetRecord&id=DLESE-000-000-000-001",
-			"http://where.yahooapis.com/geocode?gflags=R&q=-96.28616666666667,30.604833333333332",
-			"http://news.blogs.cnn.com/2011/04/14/predator-dinosaurs-may-have-been-night-hunters/?hpt=C2",
-			"http://remodelista.com/products/victoria-and-albert-wessex-bath",
-			"http://portal.acm.org/citation.cfm?id=1416955",
-			"http://buzzlog.yahoo.com/feeds/buzzsportm.xml",
-			"http://www.informaworld.com/smpp/content~db=all?content=10.1080/10447310802142243",
-			"http://rss.cnn.com/rss/cnn_topstories.rss",
-			"//",
-		};
+		String[] testUrls = new String[]
+		{
+				"http://www.dlese.org/dds/services/ddsws1-1?verb=UserSearch&q=water+on+mars&s=0&n=10&client=ddsws10examples",
+				"http://www.dlese.org/dds/services/ddsws1-0?verb=GetRecord&id=DLESE-000-000-000-001",
+				"http://where.yahooapis.com/geocode?gflags=R&q=-96.28616666666667,30.604833333333332",
+				"http://news.blogs.cnn.com/2011/04/14/predator-dinosaurs-may-have-been-night-hunters/?hpt=C2",
+				"http://remodelista.com/products/victoria-and-albert-wessex-bath",
+				"http://portal.acm.org/citation.cfm?id=1416955",
+				"http://buzzlog.yahoo.com/feeds/buzzsportm.xml",
+				"http://www.informaworld.com/smpp/content~db=all?content=10.1080/10447310802142243",
+				"http://rss.cnn.com/rss/cnn_topstories.rss", "//", };
 		NewMmTest mmTest;
 		try
 		{

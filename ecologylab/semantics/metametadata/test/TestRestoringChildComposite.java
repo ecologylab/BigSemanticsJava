@@ -11,6 +11,8 @@ import ecologylab.semantics.cyberneko.CybernekoWrapper;
 import ecologylab.semantics.generated.library.RepositoryMetadataTranslationScope;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
+import ecologylab.serialization.ClassDescriptor;
+import ecologylab.serialization.Format;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.TranslationScope;
 
@@ -33,7 +35,7 @@ public class TestRestoringChildComposite
 				packageMmd.recursivelyRestoreChildComposite();
 		}
 		
-		repository.serialize(new File("data/test-restore-child-composite.xml"));
+		ClassDescriptor.serialize(repository, new File("data/test-restore-child-composite.xml"), Format.XML);
 	}
 	
 }

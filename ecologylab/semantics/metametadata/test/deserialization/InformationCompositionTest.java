@@ -10,13 +10,16 @@ import ecologylab.semantics.metadata.builtins.ImageClipping;
 import ecologylab.semantics.metadata.builtins.TextClipping;
 import ecologylab.semantics.namesandnums.SemanticsNames;
 import ecologylab.serialization.ElementState;
-import ecologylab.serialization.ElementState.xml_tag;
+import ecologylab.serialization.annotations.simpl_classes;
+import ecologylab.serialization.annotations.simpl_collection;
+import ecologylab.serialization.annotations.simpl_scalar;
+import ecologylab.serialization.annotations.simpl_tag;
 
 /**
  * @author andruid
  *
  */
-@xml_tag("information_composition")
+@simpl_tag("information_composition")
 public class InformationCompositionTest extends ElementState
 implements SemanticsNames
 {

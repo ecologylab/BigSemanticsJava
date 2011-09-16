@@ -6,8 +6,11 @@ package ecologylab.semantics.metametadata.test;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.generated.library.rss.Channel;
 import ecologylab.semantics.generated.library.rss.Item;
+import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.ElementState;
+import ecologylab.serialization.Format;
 import ecologylab.serialization.SIMPLTranslationException;
+import ecologylab.serialization.StringFormat;
 import ecologylab.serialization.TranslationScope;
 import ecologylab.serialization.library.rss.RssState;
 import ecologylab.serialization.library.rss.RssTranslations;
@@ -37,10 +40,10 @@ public class RssTest
 		{
 //		rss = translateFromXMLCharSequence(FLICKR_EXAMPLE, RssTranslations.get());
 //			rss = translateFromXMLCharSequence(NABEEL_TEST, RssTranslations.get());
-			rss = RssTranslations.get().deserialize(CNN_TOP_FEED);
+			rss = (ElementState) RssTranslations.get().deserialize(CNN_TOP_FEED, Format.XML);
 			
-			System.out.println("");
-			rss.serialize(System.out);
+			System.out.println("");			
+			ClassDescriptor.serialize(rss, System.out, StringFormat.XML);
 			System.out.println("");
 			
 			// RssTranslations.get().translateToXML(System.out);
