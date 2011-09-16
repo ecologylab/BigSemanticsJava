@@ -100,7 +100,7 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 	}
 
 	@Override
-	public String getAdditionalAnnotationsInJava()
+	public String getAdditionalAnnotationsInJava(MmdCompilerService compiler)
 	{
 		return "@" + mm_name.class.getSimpleName() + "(\"" + getName() + "\")";
 	}

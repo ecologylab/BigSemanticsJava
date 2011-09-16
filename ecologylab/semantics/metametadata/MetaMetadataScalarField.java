@@ -1,5 +1,7 @@
 package ecologylab.semantics.metametadata;
 
+import java.io.IOException;
+
 import ecologylab.semantics.documentparsers.ParserBase;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
@@ -159,21 +161,19 @@ public class MetaMetadataScalarField extends MetaMetadataField
 	}
 
 	@Override
-	public String getAdditionalAnnotationsInJava()
+	public String getAdditionalAnnotationsInJava(MmdCompilerService compiler) throws IOException
 	{
 		StringBuilder appendable = StringBuilderUtils.acquire();
 		
 		// @simpl_composite_as_scalar
-		if (isCompositeScalar())
-		{
-			appendable.append("@").append(simpl_composite_as_scalar.class.getSimpleName());
-		}
+		compiler.appendAnnotation(appendable, " ", simpl_composite_as_scalar.class);
 		
 		// @filter
 		if (filter != null && getMetaMetadataParser().equals(ParserBase.DIRECT_BINDING_PARSER))
 		{
 			String regex = filter.getJavaRegex();
-			appendable.append("@").append(simpl_filter.class.getSimpleName()).append("(regex=\"").append(regex).append("\"");
+			compiler.appendAnnotation(appendable, " ", simpl_filter.class);
+			appendable.append("(regex=\"").append(regex).append("\"");
 			String replace = filter.getJavaReplace();
 			if (replace != null)
 			{

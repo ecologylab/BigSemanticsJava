@@ -1,6 +1,7 @@
 package ecologylab.semantics.metametadata;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -785,7 +786,7 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
 		return javaClassName;
 	}
 	
-	abstract public String getAdditionalAnnotationsInJava();
+	abstract public String getAdditionalAnnotationsInJava(MmdCompilerService compiler) throws IOException;
 
 	private String fieldNameInJava = null;
 	private String capFieldNameInJava = null;
