@@ -21,7 +21,9 @@ import java.lang.ref.WeakReference;
 import ecologylab.generic.Colors;
 import ecologylab.generic.ImageTools;
 import ecologylab.serialization.ElementState;
-import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_composite;
+import ecologylab.serialization.annotations.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_scalar;
 
 /**
  * The basic unit of an image processing rendering pipeline;

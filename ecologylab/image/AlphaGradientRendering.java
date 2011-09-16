@@ -8,7 +8,8 @@ import java.awt.image.SampleModel;
 import java.awt.image.SinglePixelPackedSampleModel;
 
 import ecologylab.generic.ImageTools;
-import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_scalar;
 
 /**
  * @author andruid
