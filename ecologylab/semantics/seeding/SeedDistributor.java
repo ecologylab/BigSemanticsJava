@@ -11,7 +11,6 @@ import ecologylab.generic.Debug;
 import ecologylab.generic.Generic;
 import ecologylab.semantics.collecting.Seeding;
 import ecologylab.semantics.collecting.SemanticsGlobalScope;
-import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
 

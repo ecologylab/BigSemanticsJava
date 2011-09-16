@@ -11,7 +11,6 @@ import ecologylab.collections.Scope;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.collecting.Seeding;
 import ecologylab.semantics.collecting.SemanticsGlobalScope;
-import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.collecting.SemanticsSite;
 import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.html.documentstructure.LinkType;
@@ -24,7 +23,13 @@ import ecologylab.semantics.metametadata.Argument;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.seeding.Seed;
 import ecologylab.serialization.ElementState;
-import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_collection;
+import ecologylab.serialization.annotations.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_map;
+import ecologylab.serialization.annotations.simpl_nowrap;
+import ecologylab.serialization.annotations.simpl_scalar;
+import ecologylab.serialization.annotations.simpl_scope;
+import ecologylab.serialization.annotations.simpl_tag;
 
 /**
  * This is the abstract class which defines the semantic action. All the semantic actions must
@@ -66,7 +71,7 @@ public abstract class SemanticAction extends ElementState implements SemanticAct
 	 * Object on which the Action is to be taken
 	 */
 	@simpl_scalar
-	@xml_tag("object")
+	@simpl_tag("object")
 	private String										objectStr;
 
 	/**
@@ -244,7 +249,7 @@ public abstract class SemanticAction extends ElementState implements SemanticAct
 	 * compiling or using the MetaMetadata repository.
 	 * <p />
 	 * To override an existing semantic action, subclass your own semantic action class, use the same
-	 * tag (indicated in @xml_tag), and override perform().
+	 * tag (indicated in @simpl_tag), and override perform().
 	 * 
 	 * @param semanticActionClass
 	 * @param canBeNested

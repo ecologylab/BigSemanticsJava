@@ -3,11 +3,13 @@ package ecologylab.semantics.metametadata;
 import java.util.regex.Pattern;
 
 import ecologylab.serialization.ElementState;
-import ecologylab.serialization.ElementState.xml_tag;
-import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_other_tags;
+import ecologylab.serialization.annotations.simpl_scalar;
+import ecologylab.serialization.annotations.simpl_tag;
 
 @simpl_inherit
-@xml_tag("field_parser")
+@simpl_tag("field_parser")
 public class FieldParserElement extends ElementState
 {
 
@@ -17,7 +19,7 @@ public class FieldParserElement extends ElementState
 	private String	name;
 
 	@simpl_scalar
-	@xml_other_tags("regex_split")
+	@simpl_other_tags("regex_split")
 	private String	regex;
 
 	@simpl_scalar

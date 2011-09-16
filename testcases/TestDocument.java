@@ -2,7 +2,10 @@ package testcases;
 
 import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.serialization.ElementState;
-import ecologylab.serialization.Hint;
+import ecologylab.serialization.annotations.Hint;
+import ecologylab.serialization.annotations.simpl_composite;
+import ecologylab.serialization.annotations.simpl_hints;
+import ecologylab.serialization.annotations.simpl_scalar;
 
 public class TestDocument extends ElementState
 {

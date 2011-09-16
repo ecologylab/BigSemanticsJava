@@ -7,7 +7,6 @@ import java.util.ArrayList;
 
 import ecologylab.collections.Scope;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
-import ecologylab.semantics.metadata.builtins.Image;
 import ecologylab.semantics.metadata.builtins.TextClipping;
 
 /**

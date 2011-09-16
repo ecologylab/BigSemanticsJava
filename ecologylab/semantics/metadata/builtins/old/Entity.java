@@ -9,9 +9,11 @@ import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
 import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
-import ecologylab.serialization.Hint;
-import ecologylab.serialization.simpl_inherit;
-import ecologylab.serialization.types.element.Mappable;
+import ecologylab.serialization.annotations.Hint;
+import ecologylab.serialization.annotations.simpl_hints;
+import ecologylab.serialization.annotations.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_scalar;
+import ecologylab.serialization.types.element.IMappable;
 
 /**
  * This class represents a linked nested object in a metadata reference graph.
@@ -22,7 +24,7 @@ import ecologylab.serialization.types.element.Mappable;
  */
 @simpl_inherit
 public class Entity<D extends Document> extends Metadata
-implements Mappable<ParsedURL>
+implements IMappable<ParsedURL>
 {
 	@simpl_scalar @simpl_hints(Hint.XML_LEAF) MetadataString		gist;
 	@simpl_scalar @simpl_hints(Hint.XML_LEAF) MetadataParsedURL	location;

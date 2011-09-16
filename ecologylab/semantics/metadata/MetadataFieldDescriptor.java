@@ -19,9 +19,10 @@ import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.FieldDescriptor;
 import ecologylab.serialization.FieldTypes;
-import ecologylab.serialization.Hint;
 import ecologylab.serialization.ScalarUnmarshallingContext;
 import ecologylab.serialization.XMLTools;
+import ecologylab.serialization.annotations.Hint;
+import ecologylab.serialization.annotations.simpl_scalar;
 import ecologylab.serialization.types.ScalarType;
 import ecologylab.serialization.types.scalar.CompositeAsScalarType;
 
@@ -199,9 +200,8 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 	}
 	
 	@Override
-	protected void setFieldToScalar(Object context, String value, ScalarUnmarshallingContext scalarUnmarshallingContext)
-	{
-		
+	public void setFieldToScalar(Object context, String value, ScalarUnmarshallingContext scalarUnmarshallingContext)
+	{		
 		super.setFieldToScalar(context, value, scalarUnmarshallingContext);
 	}
 	
@@ -272,7 +272,7 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 //	{
 //		startedTraversalForPolymorphism = true;
 //		
-//		// @xml_other_tags
+//		// @simpl_other_tags
 //		if (this.definingMmdField instanceof MetaMetadataScalarField)
 //		{
 //			this.otherTags = this.definingMmdField.getOtherTags();
@@ -281,7 +281,7 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 //		{
 //			MetaMetadataNestedField nested = (MetaMetadataNestedField) this.definingMmdField;
 //			
-//			// @xml_other_tags: for collection fields always add, for composite fields only add for non-
+//			// @simpl_other_tags: for collection fields always add, for composite fields only add for non-
 //			// polymorphic ones
 //			if (nested instanceof MetaMetadataCollectionField || !nested.isPolymorphicInDescendantFields())
 //				this.otherTags = this.definingMmdField.getOtherTags();
@@ -381,13 +381,7 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 		return value;
 	}
 	
-	public boolean isDefaultValue(Object value)
-	{
-		if (this.getType() == FieldTypes.SCALAR)
-			return value == null || this.getScalarType().isDefaultValue(value.toString());
-		else
-			return value == null;
-	}
+	
 	
 	private synchronized Method getGetter()
 	{

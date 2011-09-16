@@ -4,16 +4,17 @@
 package ecologylab.semantics.metametadata;
 
 import ecologylab.serialization.ElementState;
-import ecologylab.serialization.ElementState.xml_tag;
-import ecologylab.serialization.types.element.Mappable;
+import ecologylab.serialization.annotations.simpl_scalar;
+import ecologylab.serialization.annotations.simpl_tag;
+import ecologylab.serialization.types.element.IMappable;
 
 /**
  * @author amathur
  * 
  */
 
-public @xml_tag("arg") class Argument extends ElementState 
-implements Mappable
+public @simpl_tag("arg") class Argument extends ElementState 
+implements IMappable
 {
 
 	public Argument()

@@ -6,13 +6,14 @@ package ecologylab.semantics.metametadata;
 import ecologylab.generic.StringTools;
 import ecologylab.net.ParsedURL;
 import ecologylab.serialization.ElementState;
-import ecologylab.serialization.types.element.Mappable;
+import ecologylab.serialization.annotations.simpl_scalar;
+import ecologylab.serialization.types.element.IMappable;
 
 /**
  * @author amathur
  *
  */
-public class SearchEngine extends ElementState implements Mappable<String>
+public class SearchEngine extends ElementState implements IMappable<String>
 {
 
 	@simpl_scalar private String name;

@@ -33,8 +33,9 @@ import ecologylab.semantics.model.text.TermVectorFeature;
 import ecologylab.semantics.seeding.SearchResult;
 import ecologylab.semantics.seeding.Seed;
 import ecologylab.semantics.seeding.SeedDistributor;
-import ecologylab.serialization.ElementState.FORMAT;
+import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.SIMPLTranslationException;
+import ecologylab.serialization.StringFormat;
 
 /**
  * New Container object. Mostly just a closure around Document.
@@ -420,7 +421,9 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 			this.document					= newDocument;
 			
 			newDocument.inheritValues(oldDocument);	
-			newDocument.serializeOut("After changeDocument()");
+			
+			ClassDescriptor.serializeOut(newDocument, "After changeDocument()", StringFormat.XML);
+			
 			semanticInlinks				= newDocument.semanticInlinks; // probably not needed, but just in case.
 			oldDocument.recycle();
 		}
@@ -723,14 +726,15 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 	}
 	public void serialize(OutputStream stream)
 	{
-		serialize(stream, FORMAT.XML);
+		serialize(stream, StringFormat.XML);
 	}
-	public void serialize(OutputStream stream, FORMAT format)
+	public void serialize(OutputStream stream, StringFormat format)
 	{
 		Document document	= getDocument();
 		try
 		{
-			document.serialize(stream, format);
+			ClassDescriptor.serialize(document, System.out, format);
+			
 			System.out.println("\n");
 		}
 		catch (SIMPLTranslationException e)
@@ -743,8 +747,8 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 	{
 		Document document	= getDocument();
 		try
-		{
-			document.serialize(buffy);
+		{			
+			ClassDescriptor.serialize(document, buffy, StringFormat.XML);
 			System.out.println("\n");
 		}
 		catch (SIMPLTranslationException e)

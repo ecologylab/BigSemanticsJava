@@ -3,6 +3,10 @@ package ecologylab.semantics.seeding;
 import java.util.ArrayList;
 
 import ecologylab.serialization.ElementState;
+import ecologylab.serialization.annotations.simpl_collection;
+import ecologylab.serialization.annotations.simpl_nowrap;
+import ecologylab.serialization.annotations.simpl_scalar;
+import ecologylab.serialization.annotations.simpl_scope;
 
 public class CuratedCollection extends ElementState
 {

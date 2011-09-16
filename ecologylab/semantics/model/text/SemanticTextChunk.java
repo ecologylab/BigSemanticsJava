@@ -9,7 +9,7 @@ import java.util.Iterator;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.model.TextChunkBase;
 import ecologylab.semantics.model.TextToken;
-import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_inherit;
 import ecologylab.serialization.types.ScalarType;
 
 /**

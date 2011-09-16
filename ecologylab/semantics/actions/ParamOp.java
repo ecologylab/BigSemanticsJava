@@ -6,6 +6,7 @@ package ecologylab.semantics.actions;
 import java.util.HashMap;
 
 import ecologylab.serialization.ElementState;
+import ecologylab.serialization.annotations.simpl_scalar;
 
 /**
  * @author andruid

@@ -15,7 +15,6 @@ import ecologylab.concurrent.Monitor;
 import ecologylab.generic.ConsoleUtils;
 import ecologylab.generic.Generic;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
-import ecologylab.semantics.metadata.builtins.Image;
 import ecologylab.semantics.model.text.TermVector;
 import ecologylab.semantics.model.text.TermVectorWeightStrategy;
 

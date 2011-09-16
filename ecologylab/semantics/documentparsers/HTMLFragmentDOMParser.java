@@ -2,16 +2,13 @@ package ecologylab.semantics.documentparsers;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import ecologylab.generic.DomTools;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.collecting.SemanticsSessionScope;
-import ecologylab.semantics.html.DOMFragmentInformationTagger;
 import ecologylab.semantics.html.DOMParserInterface;
 import ecologylab.semantics.html.DOMWalkInformationTagger;
 import ecologylab.semantics.html.ImgElement;

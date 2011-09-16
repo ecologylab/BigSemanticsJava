@@ -3,11 +3,12 @@ package ecologylab.semantics.actions;
 import ecologylab.generic.StringTools;
 import ecologylab.semantics.seeding.SearchState;
 import ecologylab.semantics.seeding.SeedSet;
-import ecologylab.serialization.simpl_inherit;
-import ecologylab.serialization.ElementState.xml_tag;
+import ecologylab.serialization.annotations.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_scalar;
+import ecologylab.serialization.annotations.simpl_tag;
 
 @simpl_inherit
-@xml_tag(SemanticActionStandardMethods.SEARCH)
+@simpl_tag(SemanticActionStandardMethods.SEARCH)
 public class SearchSemanticAction
 		extends SemanticAction
 {

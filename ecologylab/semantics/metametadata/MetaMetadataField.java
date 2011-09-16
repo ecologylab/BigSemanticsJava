@@ -12,14 +12,19 @@ import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
 import ecologylab.semantics.metadata.Metadata.mm_dont_inherit;
+import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.FieldTypes;
 import ecologylab.serialization.TranslationScope;
 import ecologylab.serialization.XMLTools;
-import ecologylab.serialization.simpl_descriptor_classes;
-import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_descriptor_classes;
+import ecologylab.serialization.annotations.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_map;
+import ecologylab.serialization.annotations.simpl_nowrap;
+import ecologylab.serialization.annotations.simpl_scalar;
+import ecologylab.serialization.annotations.simpl_scope;
 import ecologylab.serialization.types.ScalarType;
-import ecologylab.serialization.types.element.Mappable;
+import ecologylab.serialization.types.element.IMappable;
 import ecologylab.textformat.NamedStyle;
 
 /**
@@ -33,7 +38,7 @@ import ecologylab.textformat.NamedStyle;
 @simpl_inherit
 @simpl_descriptor_classes({ MetaMetadataClassDescriptor.class, MetaMetadataFieldDescriptor.class })
 public abstract class MetaMetadataField extends ElementState
-implements Mappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneable
+implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneable
 {
 
 	/**
@@ -481,7 +486,7 @@ implements Mappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneabl
 		if (metadataClass == null)
 		{
 			MetadataClassDescriptor metadataClassDescriptor = this.getMetadataClassDescriptor();
-			metadataClass = metadataClassDescriptor == null ? null : metadataClassDescriptor.getDescribedClass();
+			metadataClass = (Class<? extends Metadata>) (metadataClassDescriptor == null ? null : metadataClassDescriptor.getDescribedClass());
 			this.metadataClass = metadataClass;
 		}
 		return metadataClass;
@@ -832,7 +837,7 @@ implements Mappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneabl
 	
 	public void inheritAttributes(MetaMetadataField inheritFrom)
 	{
-		MetaMetadataClassDescriptor classDescriptor = (MetaMetadataClassDescriptor) classDescriptor();
+		MetaMetadataClassDescriptor classDescriptor = (MetaMetadataClassDescriptor)  ClassDescriptor.getClassDescriptor(this);;
 	
 		for (MetaMetadataFieldDescriptor fieldDescriptor : classDescriptor)
 		{

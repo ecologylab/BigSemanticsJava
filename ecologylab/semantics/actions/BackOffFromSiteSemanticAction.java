@@ -2,8 +2,9 @@ package ecologylab.semantics.actions;
 
 import ecologylab.semantics.collecting.Crawler;
 import ecologylab.semantics.collecting.SemanticsSite;
-import ecologylab.serialization.ElementState.xml_tag;
-import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_scalar;
+import ecologylab.serialization.annotations.simpl_tag;
 
 /**
  * By default, this method prevent the InfoCollector from collecting information from the specified
@@ -11,7 +12,7 @@ import ecologylab.serialization.simpl_inherit;
  * providing the "domain" semantic argument in the meta-metadata xml codes.
  */
 @simpl_inherit
-public @xml_tag(SemanticActionStandardMethods.BACK_OFF_FROM_SITE)
+public @simpl_tag(SemanticActionStandardMethods.BACK_OFF_FROM_SITE)
 class BackOffFromSiteSemanticAction
 		extends SemanticAction implements SemanticActionStandardMethods
 {

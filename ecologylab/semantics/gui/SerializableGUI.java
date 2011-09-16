@@ -8,7 +8,8 @@ import java.awt.Rectangle;
 
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.ObservableElementState;
-import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_scalar;
 
 /**
  * @author andrew

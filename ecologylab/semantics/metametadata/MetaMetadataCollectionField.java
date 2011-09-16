@@ -1,21 +1,23 @@
 package ecologylab.semantics.metametadata;
 
 import ecologylab.generic.HashMapArrayList;
-import ecologylab.semantics.metadata.Metadata.mm_dont_inherit;
-import ecologylab.semantics.metadata.Metadata.mm_name;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
+import ecologylab.semantics.metadata.Metadata.mm_dont_inherit;
+import ecologylab.semantics.metadata.Metadata.mm_name;
 import ecologylab.semantics.metadata.scalar.types.MetadataScalarType;
-import ecologylab.serialization.ElementState.xml_tag;
 import ecologylab.serialization.FieldTypes;
+import ecologylab.serialization.TranslationContext;
 import ecologylab.serialization.TranslationScope;
 import ecologylab.serialization.XMLTools;
-import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_scalar;
+import ecologylab.serialization.annotations.simpl_tag;
 import ecologylab.serialization.types.ScalarType;
 
 @SuppressWarnings("rawtypes")
 @simpl_inherit
-@xml_tag("collection")
+@simpl_tag("collection")
 public class MetaMetadataCollectionField extends MetaMetadataNestedField
 {
 
@@ -183,7 +185,7 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 	 * Each object in a collection of metadata require a specific MMdata composite object to be associated with them.
 	 * This is unavailable in the MMD XML, and must be generated when the XML is read in.
 	 */
-	public void deserializationPostHook()
+	public void deserializationPostHook(TranslationContext translationContext, Object object)
 	{
 		int typeCode = this.getFieldType();
 		if (typeCode == FieldTypes.COLLECTION_SCALAR)

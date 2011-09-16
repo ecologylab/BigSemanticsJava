@@ -1,10 +1,9 @@
 package ecologylab.semantics.metadata.builtins;
 
 import ecologylab.semantics.metadata.Metadata;
-import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.sensor.location.EarthData;
-import ecologylab.serialization.ElementState.simpl_scalar;
-import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_scalar;
 
 /**
  * An object for representing a set of 3d coordinates on the earth's surface: latitude, longitude,

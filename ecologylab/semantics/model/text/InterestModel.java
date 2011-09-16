@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 import ecologylab.generic.IFeatureVector;
 import ecologylab.semantics.seeding.SemanticsPrefs;
 import ecologylab.serialization.ElementState;
+import ecologylab.serialization.annotations.simpl_map;
 
 public class InterestModel implements SemanticsPrefs
 {

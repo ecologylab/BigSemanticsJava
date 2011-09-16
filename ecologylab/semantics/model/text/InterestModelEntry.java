@@ -3,10 +3,11 @@ package ecologylab.semantics.model.text;
 import java.util.Map.Entry;
 
 import ecologylab.serialization.ElementState;
-import ecologylab.serialization.types.element.Mappable;
+import ecologylab.serialization.annotations.simpl_scalar;
+import ecologylab.serialization.types.element.IMappable;
 
 public class InterestModelEntry extends ElementState
-implements Mappable<String>
+implements IMappable<String>
 {
 	@simpl_scalar	protected String	string;
 	@simpl_scalar	protected double 	value;

@@ -4,7 +4,9 @@
 package ecologylab.semantics.seeding;
 
 import ecologylab.semantics.collecting.SemanticsGlobalScope;
-import ecologylab.serialization.Hint;
+import ecologylab.serialization.annotations.Hint;
+import ecologylab.serialization.annotations.simpl_hints;
+import ecologylab.serialization.annotations.simpl_scalar;
 
 /**
  * 

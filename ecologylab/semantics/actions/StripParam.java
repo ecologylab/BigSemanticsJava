@@ -5,7 +5,7 @@ package ecologylab.semantics.actions;
 
 import java.util.HashMap;
 
-import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_inherit;
 
 /**
  * Operation specifies removing the param with this name from the location ParsedURL.

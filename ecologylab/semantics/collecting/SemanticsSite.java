@@ -8,7 +8,7 @@ import java.awt.Color;
 import ecologylab.concurrent.BasicSite;
 import ecologylab.generic.Colors;
 import ecologylab.generic.Palette;
-import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_inherit;
 
 /**
  * BasicSite extended to maintain semantics 

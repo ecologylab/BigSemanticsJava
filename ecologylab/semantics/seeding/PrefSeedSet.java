@@ -4,19 +4,21 @@
 package ecologylab.semantics.seeding;
 
 import ecologylab.appframework.types.prefs.PrefElementState;
-import ecologylab.serialization.ElementState.xml_other_tags;
-import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_composite;
+import ecologylab.serialization.annotations.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_other_tags;
+import ecologylab.serialization.annotations.simpl_tag;
 
 /**
  * @author andruid
  *
  */
 @simpl_inherit
-@xml_other_tags({"pref_element"})
+@simpl_other_tags({"pref_element"})
 public class PrefSeedSet extends PrefElementState<SeedSet>
 {
 	@simpl_composite
-	@xml_tag("seed_set")
+	@simpl_tag("seed_set")
 	SeedSet				value;
 	/**
 	 * 

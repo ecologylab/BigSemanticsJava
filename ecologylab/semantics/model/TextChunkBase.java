@@ -20,10 +20,16 @@ import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.model.text.Term;
 import ecologylab.semantics.model.text.TermDictionary;
 import ecologylab.serialization.ElementState;
-import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_collection;
+import ecologylab.serialization.annotations.simpl_composite;
+import ecologylab.serialization.annotations.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_nowrap;
+import ecologylab.serialization.annotations.simpl_other_tags;
+import ecologylab.serialization.annotations.simpl_scalar;
+import ecologylab.serialization.annotations.simpl_scope;
+import ecologylab.serialization.types.FundamentalTypes;
 import ecologylab.serialization.types.ScalarType;
 import ecologylab.textformat.NamedStyle;
-import ecologylab.serialization.types.FundamentalTypes;
 
 /**
  * A text chunk from an HTML page; delimited by markup, or a size threshold; composed of an ordered
@@ -41,7 +47,7 @@ class TextChunkBase<T extends TextToken> extends ElementState implements
 	/**
 	 * Named Style for this text chunk. Default is to an anonymous style.
 	 */
-	@simpl_composite @xml_other_tags({"anon_style"})
+	@simpl_composite @simpl_other_tags({"anon_style"})
 	protected NamedStyle							namedStyle									= new NamedStyle(DEFAULT_POINT_SIZE);
 
 	/**

@@ -2,8 +2,10 @@ package ecologylab.semantics.metadata.scalar.types;
 
 import ecologylab.semantics.metadata.builtins.ImageClipping;
 import ecologylab.semantics.metadata.scalar.MetadataString;
+import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.ScalarUnmarshallingContext;
+import ecologylab.serialization.StringFormat;
 
 public class MetadataStringScalarType extends MetadataScalarType<MetadataString, String>
 {
@@ -33,7 +35,7 @@ public class MetadataStringScalarType extends MetadataScalarType<MetadataString,
 		
 		try
 		{
-			i.serialize(System.out);
+			ClassDescriptor.serialize(i, System.out, StringFormat.XML);
 		}
 		catch (SIMPLTranslationException e)
 		{

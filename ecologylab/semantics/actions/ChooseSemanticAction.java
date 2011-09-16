@@ -5,12 +5,17 @@ import java.util.ArrayList;
 import org.junit.Test;
 
 import ecologylab.semantics.metametadata.MetaMetadataTranslationScope;
+import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.SIMPLTranslationException;
-import ecologylab.serialization.simpl_inherit;
-import ecologylab.serialization.ElementState.xml_tag;
+import ecologylab.serialization.StringFormat;
+import ecologylab.serialization.annotations.simpl_collection;
+import ecologylab.serialization.annotations.simpl_composite;
+import ecologylab.serialization.annotations.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_nowrap;
+import ecologylab.serialization.annotations.simpl_tag;
 
 @simpl_inherit
-@xml_tag(SemanticActionStandardMethods.CHOOSE)
+@simpl_tag(SemanticActionStandardMethods.CHOOSE)
 public class ChooseSemanticAction
 		extends SemanticAction
 {
@@ -112,11 +117,11 @@ public class ChooseSemanticAction
 	{
 		String xml = "<choose><case><not_null /><get_field /><for_each /></case><case><not_null /><set_metadata /></case><otherwise><get_field /></otherwise></choose>";
 		ChooseSemanticAction choose = (ChooseSemanticAction) MetaMetadataTranslationScope.get()
-				.deserializeCharSequence(xml);
+				.deserialize(xml, StringFormat.XML);
 		System.out.println(choose);
 		System.out.println(choose.cases);
 		System.out.println(choose.otherwise);
-		System.out.println(choose.serialize());
+		System.out.println(ClassDescriptor.serialize(choose, StringFormat.XML));
 	}
 
 	@Override

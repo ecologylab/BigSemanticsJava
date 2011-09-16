@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.serialization.ClassDescriptor;
-import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_inherit;
 
 /**
  * Special class descriptor for Metadata subclasses.
@@ -16,7 +16,7 @@ import ecologylab.serialization.simpl_inherit;
  * 
  */
 @simpl_inherit
-public class MetadataClassDescriptor extends ClassDescriptor<Metadata, MetadataFieldDescriptor>
+public class MetadataClassDescriptor extends ClassDescriptor<MetadataFieldDescriptor>
 {
 	
 	private MetaMetadata definingMmd;
@@ -59,7 +59,7 @@ public class MetadataClassDescriptor extends ClassDescriptor<Metadata, MetadataF
 //		if (this.definingMmd == null) // this could be true for built-ins
 //			return;
 //		
-//		// resolve @xml_other_tags
+//		// resolve @simpl_other_tags
 //		if (this.definingMmd.isUseClassLevelOtherTags())
 //			this.otherTags = this.definingMmd.getOtherTags();
 //		

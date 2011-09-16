@@ -5,12 +5,17 @@ import java.util.ArrayList;
 import org.junit.Test;
 
 import ecologylab.semantics.metametadata.MetaMetadataTranslationScope;
+import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.SIMPLTranslationException;
-import ecologylab.serialization.simpl_inherit;
-import ecologylab.serialization.ElementState.xml_tag;
+import ecologylab.serialization.StringFormat;
+import ecologylab.serialization.annotations.simpl_collection;
+import ecologylab.serialization.annotations.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_nowrap;
+import ecologylab.serialization.annotations.simpl_scope;
+import ecologylab.serialization.annotations.simpl_tag;
 
 @simpl_inherit
-@xml_tag("and")
+@simpl_tag("and")
 public class AndCondition extends Condition
 {
 
@@ -39,11 +44,11 @@ public class AndCondition extends Condition
 	public void test() throws SIMPLTranslationException
 	{
 		String xml = "<and><or><and /><or /></or><not_null /></and>";
-		AndCondition and = (AndCondition) MetaMetadataTranslationScope.get().deserializeCharSequence(
-				xml);
+		AndCondition and = (AndCondition) MetaMetadataTranslationScope.get().deserialize(
+				xml, StringFormat.XML);
 		System.out.println(and);
 		System.out.println(and.checks);
-		System.out.println(and.serialize());
+		System.out.println(ClassDescriptor.serialize(and, StringFormat.XML));
 	}
 
 }

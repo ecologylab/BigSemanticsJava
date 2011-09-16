@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 
 import ecologylab.net.ParsedURL;
 import ecologylab.serialization.ElementState;
+import ecologylab.serialization.annotations.simpl_scalar;
 
 /**
  * @author andruid

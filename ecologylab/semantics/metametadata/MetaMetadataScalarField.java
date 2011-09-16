@@ -7,17 +7,22 @@ import ecologylab.semantics.metadata.MetadataFieldDescriptor;
 import ecologylab.semantics.metadata.scalar.types.MetadataScalarType;
 import ecologylab.semantics.metadata.scalar.types.MetadataStringScalarType;
 import ecologylab.semantics.metametadata.exceptions.MetaMetadataException;
-import ecologylab.serialization.ElementState.xml_tag;
+import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.FieldTypes;
-import ecologylab.serialization.Hint;
 import ecologylab.serialization.SIMPLTranslationException;
+import ecologylab.serialization.StringFormat;
 import ecologylab.serialization.TranslationScope;
-import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.annotations.Hint;
+import ecologylab.serialization.annotations.simpl_composite;
+import ecologylab.serialization.annotations.simpl_composite_as_scalar;
+import ecologylab.serialization.annotations.simpl_filter;
+import ecologylab.serialization.annotations.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_scalar;
+import ecologylab.serialization.annotations.simpl_tag;
 import ecologylab.serialization.types.ScalarType;
-import ecologylab.serialization.types.scalar.StringType;
 
 @simpl_inherit
-@xml_tag("scalar")
+@simpl_tag("scalar")
 public class MetaMetadataScalarField extends MetaMetadataField
 {
 
@@ -34,7 +39,7 @@ public class MetaMetadataScalarField extends MetaMetadataField
 	protected RegexFilter					filter;
 
 	@simpl_scalar
-	@xml_tag("as_composite_scalar")
+	@simpl_tag("as_composite_scalar")
 	private boolean								compositeScalar;
 
 	/**
@@ -462,14 +467,14 @@ public class MetaMetadataScalarField extends MetaMetadataField
 		mmsf.scalarType = new MetadataStringScalarType();
 		mmsf.hint = Hint.XML_LEAF;
 		mmsf.filter = new RegexFilter("regex", "replace");
-		System.out.println(mmsf.serialize());
+		System.out.println(ClassDescriptor.serialize(mmsf, StringFormat.XML));
 	}
 
 	public static void testDeserialization() throws SIMPLTranslationException
 	{
 		String xml = "<scalar name=\"example\" scalar_type=\"String\" hint=\"XML_ATTRIBUTE\"><filter regex=\".\" replace=\".\" /></scalar>";
 		MetaMetadataScalarField m = (MetaMetadataScalarField) MetaMetadataTranslationScope.get()
-				.deserializeCharSequence(xml);
+				.deserialize(xml, StringFormat.XML);
 		System.out.println(m);
 	}
 

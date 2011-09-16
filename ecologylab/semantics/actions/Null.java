@@ -4,6 +4,7 @@
 package ecologylab.semantics.actions;
 
 import ecologylab.collections.Scope;
+import ecologylab.serialization.annotations.simpl_scalar;
 
 /**
  * @author andruid

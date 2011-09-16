@@ -3,16 +3,15 @@
  */
 package ecologylab.semantics.actions;
 
-import ecologylab.semantics.metadata.Metadata;
-import ecologylab.serialization.ElementState.xml_tag;
-import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_tag;
 
 /**
  * @author amathur
  * 
  */
 @simpl_inherit
-public @xml_tag(SemanticActionStandardMethods.SET_METADATA)
+public @simpl_tag(SemanticActionStandardMethods.SET_METADATA)
 class SetMetadataSemanticAction
 		extends SemanticAction
 {

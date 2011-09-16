@@ -5,6 +5,7 @@ import ecologylab.serialization.DeserializationHookStrategy;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.FieldDescriptor;
 import ecologylab.serialization.SIMPLTranslationException;
+import ecologylab.serialization.StringFormat;
 import ecologylab.serialization.TranslationScope;
 
 public class TestTranslationScopeDeSerialization extends TestTranslationScope
@@ -43,7 +44,8 @@ public class TestTranslationScopeDeSerialization extends TestTranslationScope
 		TranslationScope ts = get();
 
 		StringBuilder sb = new StringBuilder();
-		ts.serialize(sb);
+		ClassDescriptor.serialize(ts, sb, StringFormat.XML);
+
 		String xml = sb.toString();
 		System.out.println();
 		System.out.println(xml);
@@ -56,7 +58,7 @@ public class TestTranslationScopeDeSerialization extends TestTranslationScope
 				TranslationScope.class,
 				ClassDescriptor.class,
 				FieldDescriptor.class);
-		TranslationScope newTs = (TranslationScope) tsts.deserialize(xml, emptyStrategy);
+		TranslationScope newTs = (TranslationScope) tsts.deserialize(xml, emptyStrategy, StringFormat.XML);
 		for (Class clazz : newTs.getAllClasses())
 		{
 			System.out.println(clazz);

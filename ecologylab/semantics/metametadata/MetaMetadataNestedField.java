@@ -12,7 +12,10 @@ import ecologylab.semantics.metadata.MetadataFieldDescriptor;
 import ecologylab.semantics.metametadata.exceptions.MetaMetadataException;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.TranslationScope;
-import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_composite;
+import ecologylab.serialization.annotations.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_scalar;
+import ecologylab.serialization.annotations.simpl_tag;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 @simpl_inherit
@@ -22,11 +25,11 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	public static final String								POLYMORPHIC_CLASSES_SEP	= ",";
 
 	@simpl_scalar
-	@xml_tag("package")
+	@simpl_tag("package")
 	private String														packageName;
 
 	@simpl_composite
-	@xml_tag("field_parser")
+	@simpl_tag("field_parser")
 	private FieldParserElement								fieldParserElement;
 
 	/**

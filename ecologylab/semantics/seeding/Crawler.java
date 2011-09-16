@@ -6,6 +6,7 @@ package ecologylab.semantics.seeding;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.collecting.Seeding;
 import ecologylab.semantics.collecting.SemanticsGlobalScope;
+import ecologylab.serialization.annotations.simpl_scalar;
 
 /**
  * Specification of a directive to the agent or otherwise to compositon space services.

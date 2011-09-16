@@ -2,11 +2,12 @@ package ecologylab.semantics.metametadata;
 
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.serialization.ElementState;
-import ecologylab.serialization.simpl_inherit;
-import ecologylab.serialization.types.element.Mappable;
+import ecologylab.serialization.annotations.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_scalar;
+import ecologylab.serialization.types.element.IMappable;
 
 @simpl_inherit
-public class LinkWith extends ElementState implements Mappable<String>
+public class LinkWith extends ElementState implements IMappable<String>
 {
 
 	@simpl_scalar

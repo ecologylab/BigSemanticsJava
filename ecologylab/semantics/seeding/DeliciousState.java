@@ -3,6 +3,8 @@
  */
 package ecologylab.semantics.seeding;
 
+import ecologylab.serialization.annotations.simpl_scalar;
+
 
 /**
  * 

@@ -3,12 +3,16 @@ package ecologylab.semantics.actions;
 import org.junit.Test;
 
 import ecologylab.semantics.metametadata.MetaMetadataTranslationScope;
-import ecologylab.serialization.ElementState.xml_tag;
+import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.SIMPLTranslationException;
-import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.StringFormat;
+import ecologylab.serialization.annotations.simpl_composite;
+import ecologylab.serialization.annotations.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_scope;
+import ecologylab.serialization.annotations.simpl_tag;
 
 @simpl_inherit
-@xml_tag("not")
+@simpl_tag("not")
 public class NotCondition extends Condition
 {
 
@@ -26,11 +30,11 @@ public class NotCondition extends Condition
 	public void test() throws SIMPLTranslationException
 	{
 		String xml = "<not><and><or><and /><or /></or><not_null /></and></not>";
-		NotCondition not = (NotCondition) MetaMetadataTranslationScope.get().deserializeCharSequence(
-				xml);
+		NotCondition not = (NotCondition) MetaMetadataTranslationScope.get().deserialize(xml,
+				StringFormat.XML);
 		System.out.println(not);
 		System.out.println(not.check);
-		System.out.println(not.serialize());
+		System.out.println(ClassDescriptor.serialize(not, StringFormat.XML));
 	}
 
 }

@@ -8,15 +8,14 @@ import org.w3c.dom.Node;
 import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.documentparsers.ParserBase;
 import ecologylab.semantics.metadata.builtins.CompoundDocument;
-import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataSelector;
-import ecologylab.serialization.simpl_inherit;
-import ecologylab.serialization.ElementState.xml_tag;
+import ecologylab.serialization.annotations.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_tag;
 
 @simpl_inherit
-@xml_tag(SemanticActionStandardMethods.RESELECT_METAMETADATA_AND_EXTRACT)
+@simpl_tag(SemanticActionStandardMethods.RESELECT_METAMETADATA_AND_EXTRACT)
 public class ReselectAndExtractMetadataSemanticAction extends SemanticAction
 {
 

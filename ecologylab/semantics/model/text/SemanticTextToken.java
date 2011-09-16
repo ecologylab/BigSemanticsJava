@@ -6,7 +6,7 @@ import ecologylab.generic.StringTools;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.model.TextToken;
-import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_inherit;
 
 @simpl_inherit
 public class SemanticTextToken extends TextToken

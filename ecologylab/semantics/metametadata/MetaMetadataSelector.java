@@ -1,19 +1,20 @@
 package ecologylab.semantics.metametadata;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 import ecologylab.generic.HashMapArrayList;
-import ecologylab.generic.ReflectionTools;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.metadata.Metadata;
-import ecologylab.semantics.metadata.MetadataFieldDescriptor;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.FieldDescriptor;
-import ecologylab.serialization.simpl_inherit;
-import ecologylab.serialization.types.element.Mappable;
+import ecologylab.serialization.annotations.simpl_collection;
+import ecologylab.serialization.annotations.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_map;
+import ecologylab.serialization.annotations.simpl_nowrap;
+import ecologylab.serialization.annotations.simpl_scalar;
+import ecologylab.serialization.annotations.simpl_tag;
+import ecologylab.serialization.types.element.IMappable;
 
 /**
  * 
@@ -23,7 +24,7 @@ import ecologylab.serialization.types.element.Mappable;
  */
 
 public @simpl_inherit
-class MetaMetadataSelector extends ElementState implements Mappable<String>
+class MetaMetadataSelector extends ElementState implements IMappable<String>
 {
 	public static final ArrayList<MetaMetadataSelector> NULL_SELECTOR = new ArrayList<MetaMetadataSelector>();
 	
@@ -66,7 +67,7 @@ class MetaMetadataSelector extends ElementState implements Mappable<String>
 	/* followings are used for selecting another meta-metadata according to a particular field */
 	
 	@simpl_scalar
-	@xml_tag("meta_metadata_name")
+	@simpl_tag("meta_metadata_name")
 	private String 											reselectMetaMetadataName;
 	
 	@simpl_nowrap

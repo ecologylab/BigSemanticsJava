@@ -39,10 +39,18 @@ import ecologylab.semantics.metadata.scalar.types.MetadataScalarType;
 import ecologylab.semantics.metametadata.exceptions.MetaMetadataException;
 import ecologylab.semantics.namesandnums.DocumentParserTagNames;
 import ecologylab.serialization.ElementState;
+import ecologylab.serialization.Format;
 import ecologylab.serialization.SIMPLTranslationException;
+import ecologylab.serialization.StringFormat;
 import ecologylab.serialization.TranslationContext;
 import ecologylab.serialization.TranslationScope;
-import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_collection;
+import ecologylab.serialization.annotations.simpl_composite;
+import ecologylab.serialization.annotations.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_map;
+import ecologylab.serialization.annotations.simpl_nowrap;
+import ecologylab.serialization.annotations.simpl_scalar;
+import ecologylab.serialization.annotations.simpl_tag;
 import ecologylab.textformat.NamedStyle;
 
 /**
@@ -79,7 +87,7 @@ implements PackageSpecifier, DocumentParserTagNames
 	/**
 	 * The package in which the class files have to be generated.
 	 */
-	@xml_tag("package")
+	@simpl_tag("package")
 	@simpl_scalar
 	private String																							packageAttribute;
 
@@ -361,7 +369,7 @@ implements PackageSpecifier, DocumentParserTagNames
 		@Override
 		public MetaMetadataRepository loadRepositoryFile( File file) throws SIMPLTranslationException
 		{
-			return (MetaMetadataRepository) MetaMetadataTranslationScope .get().deserialize(file);
+			return (MetaMetadataRepository) MetaMetadataTranslationScope .get().deserialize(file, Format.XML);
 		}
 	};
 	
@@ -380,7 +388,7 @@ implements PackageSpecifier, DocumentParserTagNames
 				json.append(buffer, 0, n);
 			}
 			reader.close();
-			return (MetaMetadataRepository) MetaMetadataTranslationScope.get().deserializeCharSequence(json, FORMAT.JSON);
+			return (MetaMetadataRepository) MetaMetadataTranslationScope.get().deserialize(json, StringFormat.JSON);
 		}
 	};
 	
@@ -994,7 +1002,7 @@ implements PackageSpecifier, DocumentParserTagNames
 			// metaMetadata.inheritMetaMetadata(this);
 
 			// Class<? extends Metadata> metadataClass = metaMetadata.getMetadataClass(metadataTScope);
-			Class<? extends Metadata> metadataClass = metaMetadata.getMetadataClassDescriptor().getDescribedClass();
+			Class<? extends Metadata> metadataClass = (Class<? extends Metadata>) metaMetadata.getMetadataClassDescriptor().getDescribedClass();
 			if (metadataClass == null)
 			{
 				continue;
@@ -1200,7 +1208,7 @@ implements PackageSpecifier, DocumentParserTagNames
 		}
 	}
 
-	protected void deserializationPostHook(TranslationContext translationContext)
+	public void deserializationPostHook(TranslationContext translationContext, Object object, Object parent)
 	{
 		initializeSelectors();
 	}

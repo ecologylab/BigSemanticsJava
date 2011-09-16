@@ -14,14 +14,19 @@ import ecologylab.semantics.actions.SemanticAction;
 import ecologylab.semantics.actions.SemanticActionTranslationScope;
 import ecologylab.semantics.collecting.LinkedMetadataMonitor;
 import ecologylab.semantics.metadata.Metadata;
-import ecologylab.semantics.metadata.Metadata.mm_dont_inherit;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
+import ecologylab.semantics.metadata.Metadata.mm_dont_inherit;
 import ecologylab.semantics.metametadata.exceptions.MetaMetadataException;
 import ecologylab.serialization.TranslationScope;
 import ecologylab.serialization.XMLTools;
-import ecologylab.serialization.simpl_inherit;
-import ecologylab.serialization.types.element.Mappable;
+import ecologylab.serialization.annotations.simpl_collection;
+import ecologylab.serialization.annotations.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_map;
+import ecologylab.serialization.annotations.simpl_nowrap;
+import ecologylab.serialization.annotations.simpl_scalar;
+import ecologylab.serialization.annotations.simpl_scope;
+import ecologylab.serialization.types.element.IMappable;
 
 /**
  * @author damaraju
@@ -30,7 +35,7 @@ import ecologylab.serialization.types.element.Mappable;
 @SuppressWarnings({"rawtypes"})
 @simpl_inherit
 public class MetaMetadata extends MetaMetadataCompositeField
-implements Mappable<String>//, HasLocalTranslationScope
+implements IMappable<String>//, HasLocalTranslationScope
 {
 	
 	public enum Visibility
@@ -138,7 +143,7 @@ implements Mappable<String>//, HasLocalTranslationScope
 	{
 		Metadata result = null;
 //		Class<? extends Metadata> metadataClass = getMetadataClass(ts);
-		Class<? extends Metadata> metadataClass = this.getMetadataClassDescriptor().getDescribedClass();
+		Class<? extends Metadata> metadataClass = (Class<? extends Metadata>) this.getMetadataClassDescriptor().getDescribedClass();
 
 		if (metadataClass != null)
 		{

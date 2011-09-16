@@ -4,7 +4,6 @@
 package ecologylab.semantics.metadata.scalar.types;
 
 import ecologylab.semantics.metadata.scalar.MetadataDouble;
-import ecologylab.semantics.metadata.scalar.MetadataFloat;
 import ecologylab.serialization.ScalarUnmarshallingContext;
 
 /**

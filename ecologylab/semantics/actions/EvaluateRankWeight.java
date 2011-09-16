@@ -3,8 +3,8 @@
  */
 package ecologylab.semantics.actions;
 
-import ecologylab.serialization.simpl_inherit;
-import ecologylab.serialization.ElementState.xml_tag;
+import ecologylab.serialization.annotations.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_tag;
 
 /**
  * Semantic action to evualte weight basesd on rank.
@@ -12,7 +12,7 @@ import ecologylab.serialization.ElementState.xml_tag;
  * @author amathur
  */
 @simpl_inherit
-public @xml_tag(SemanticActionStandardMethods.EVALUATE_RANK_WEIGHT)
+public @simpl_tag(SemanticActionStandardMethods.EVALUATE_RANK_WEIGHT)
 class EvaluateRankWeight
 extends SemanticAction
 {

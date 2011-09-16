@@ -8,7 +8,9 @@ import java.util.ArrayList;
 import ecologylab.collections.Scope;
 import ecologylab.generic.Continuation;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
-import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_collection;
+import ecologylab.serialization.annotations.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_scope;
 
 /**
  * @author andruid

@@ -13,8 +13,13 @@ import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.seeding.Seed;
-import ecologylab.serialization.Hint;
-import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.TranslationContext;
+import ecologylab.serialization.annotations.Hint;
+import ecologylab.serialization.annotations.simpl_classes;
+import ecologylab.serialization.annotations.simpl_collection;
+import ecologylab.serialization.annotations.simpl_hints;
+import ecologylab.serialization.annotations.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_scalar;
 
 /**
  * A Document that can be broken down into clippings, including references to other documents.
@@ -304,7 +309,7 @@ public class CompoundDocument extends Document
 	}
 	
 	@Override
-	protected void serializationPreHook()
+	public void serializationPreHook(TranslationContext translationContext)
 	{
 //		if (clippings == null)
 //		{

@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -49,9 +48,12 @@ import ecologylab.semantics.metametadata.MetaMetadataField;
 import ecologylab.semantics.metametadata.MetaMetadataNestedField;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.metametadata.MetaMetadataScalarField;
+import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.DeserializationHookStrategy;
+import ecologylab.serialization.Format;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.ScalarUnmarshallingContext;
+import ecologylab.serialization.StringFormat;
 import ecologylab.serialization.TranslationScope;
 import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.types.ScalarType;
@@ -108,7 +110,7 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 			debug("Metadata parsed from: " + document.getLocation());
 			if (resultingMetadata != null)
 			{
-				debug(resultingMetadata.serialize());
+				debug(ClassDescriptor.serialize(resultingMetadata, StringFormat.XML));
 			}
 		}
 		catch (Exception e)
@@ -121,18 +123,23 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 		{
 			// make sure termVector is built here
 			resultingMetadata.rebuildCompositeTermVector();
-			resultingMetadata.serializeOut("Before semantic actions");
+			ClassDescriptor.serializeOut(resultingMetadata, "Before semantic actions", StringFormat.XML);
+
 			handler.takeSemanticActions(resultingMetadata);
 
 			// make sure termVector is built here
 			resultingMetadata.rebuildCompositeTermVector();
 
-			resultingMetadata.serializeOut("Before linked metadata");
+			
+			ClassDescriptor.serializeOut(resultingMetadata, "Before linked metadata", StringFormat.XML);
+			
 			MetaMetadataRepository metaMetaDataRepository = semanticsScope.getMetaMetadataRepository();
 			LinkedMetadataMonitor monitor = metaMetaDataRepository.getLinkedMetadataMonitor();
 			monitor.tryLink(metaMetaDataRepository, resultingMetadata);
 			monitor.addMonitors(resultingMetadata);
-			resultingMetadata.serializeOut("After linked metadata");
+			
+			ClassDescriptor.serializeOut(resultingMetadata, "After linked metadata", StringFormat.XML);
+			
 		}
 
 		return  resultingMetadata;
@@ -737,8 +744,10 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 			MetaMetadata metaMetadata = (MetaMetadata) this.getMetaMetadata();
 			
 			TranslationScope tscope = metaMetadata.getLocalMetadataTranslationScope();
-			newDocument = (Document) tscope.deserialize(purlConnection, this);
-			newDocument.serialize(System.out);
+			newDocument = (Document) tscope.deserialize(purlConnection.getPurl(), this, Format.XML);
+			
+			ClassDescriptor.serialize(newDocument, System.out,  StringFormat.XML);
+			
 			System.out.println();
 			// the old document is basic, so give it basic meta-metadata (so recycle does not tank)
 			Document oldDocument	= documentClosure.getDocument();
@@ -769,7 +778,7 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 			deserializingRoot													= false;
 			Document document													= getDocument();
 			MetaMetadataCompositeField preMM					= document.getMetaMetadata();
-			MetadataClassDescriptor mcd								= (MetadataClassDescriptor) deserializedMetadata.classDescriptor();
+			MetadataClassDescriptor mcd								= (MetadataClassDescriptor) ClassDescriptor.getClassDescriptor(deserializedMetadata);;
 			MetaMetadataCompositeField metaMetadata;
 			String tagName 														= mcd.getTagName();
 			if (preMM.getTagForTranslationScope().equals(tagName))
@@ -798,7 +807,7 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 			MetaMetadataCompositeField childMMComposite = null;
 			if (childMMNested.isPolymorphicInherently())
 			{
-				String tagName = deserializedMetadata.classDescriptor().getTagName();
+				String tagName = ClassDescriptor.getClassDescriptor(deserializedMetadata).getTagName();
 				childMMComposite	= semanticsScope.getMetaMetadataRepository().getMMByName(tagName);
 			}
 			else

@@ -2,11 +2,12 @@ package ecologylab.semantics.actions;
 
 import ecologylab.collections.Scope;
 import ecologylab.semantics.metadata.Metadata;
-import ecologylab.serialization.simpl_inherit;
-import ecologylab.serialization.ElementState.xml_tag;
+import ecologylab.serialization.annotations.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_scalar;
+import ecologylab.serialization.annotations.simpl_tag;
 
 @simpl_inherit
-@xml_tag(SemanticActionStandardMethods.ADD_MIXIN)
+@simpl_tag(SemanticActionStandardMethods.ADD_MIXIN)
 public class AddMixinSemanticAction extends SemanticAction
 {
 

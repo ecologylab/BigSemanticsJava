@@ -5,7 +5,7 @@ package ecologylab.semantics.metadata.builtins;
 
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
-import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_inherit;
 
 /**
  * Class for use during Drag and Drop, when we do not have a real Document because we don't know the source location.

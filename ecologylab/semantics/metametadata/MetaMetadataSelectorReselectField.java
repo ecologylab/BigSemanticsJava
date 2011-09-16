@@ -1,11 +1,12 @@
 package ecologylab.semantics.metametadata;
 
 import ecologylab.serialization.ElementState;
-import ecologylab.serialization.simpl_inherit;
-import ecologylab.serialization.types.element.Mappable;
+import ecologylab.serialization.annotations.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_scalar;
+import ecologylab.serialization.types.element.IMappable;
 
 @simpl_inherit
-public class MetaMetadataSelectorReselectField extends ElementState implements Mappable<String>
+public class MetaMetadataSelectorReselectField extends ElementState implements IMappable<String>
 {
 
 	@simpl_scalar

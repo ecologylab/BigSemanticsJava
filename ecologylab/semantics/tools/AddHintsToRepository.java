@@ -10,9 +10,11 @@ import ecologylab.semantics.metametadata.MetaMetadataField;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.metametadata.MetaMetadataScalarField;
 import ecologylab.semantics.metametadata.MetaMetadataTranslationScope;
-import ecologylab.serialization.Hint;
+import ecologylab.serialization.ClassDescriptor;
+import ecologylab.serialization.Format;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.TranslationScope;
+import ecologylab.serialization.annotations.Hint;
 
 public class AddHintsToRepository
 {
@@ -47,7 +49,7 @@ public class AddHintsToRepository
 		TranslationScope mmdTScope = MetaMetadataTranslationScope.get();
 		for (File file : files)
 		{
-			MetaMetadataRepository repo = (MetaMetadataRepository) mmdTScope.deserialize(file); 
+			MetaMetadataRepository repo = (MetaMetadataRepository) mmdTScope.deserialize(file, Format.XML); 
 			if (repo.values() != null)
 			{
 				for (MetaMetadata mmd : repo.values())
@@ -58,14 +60,10 @@ public class AddHintsToRepository
 			File out = new File(destDir, file.getName());
 			try
 			{
-				repo.serialize(out);
+				
+				ClassDescriptor.serialize(repo, out, Format.XML);
 			}
 			catch (SIMPLTranslationException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			catch (IOException e)
 			{
 				// TODO Auto-generated catch block
 				e.printStackTrace();

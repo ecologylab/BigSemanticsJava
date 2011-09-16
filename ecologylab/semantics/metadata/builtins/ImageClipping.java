@@ -3,10 +3,8 @@
  */
 package ecologylab.semantics.metadata.builtins;
 
-import java.awt.image.BufferedImage;
-
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
-import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_inherit;
 
 
 /**

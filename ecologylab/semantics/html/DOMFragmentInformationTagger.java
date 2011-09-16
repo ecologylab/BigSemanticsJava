@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import org.w3c.dom.Node;
 
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.metadata.builtins.Image;
-import ecologylab.semantics.metadata.builtins.ImageClipping;
 import ecologylab.serialization.XMLTools;
 
 public class DOMFragmentInformationTagger extends DOMWalkInformationTagger

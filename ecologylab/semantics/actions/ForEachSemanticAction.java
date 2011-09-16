@@ -3,15 +3,16 @@
  */
 package ecologylab.semantics.actions;
 
-import ecologylab.serialization.simpl_inherit;
-import ecologylab.serialization.ElementState.xml_tag;
+import ecologylab.serialization.annotations.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_scalar;
+import ecologylab.serialization.annotations.simpl_tag;
 
 /**
  * @author amathur
  * 
  */
 @simpl_inherit
-public @xml_tag(SemanticActionStandardMethods.FOR_EACH)
+public @simpl_tag(SemanticActionStandardMethods.FOR_EACH)
 class ForEachSemanticAction
 extends NestedSemanticAction
 {
@@ -26,7 +27,7 @@ extends NestedSemanticAction
 	 * Name of the iterator [iterator variable]
 	 */
 	@simpl_scalar
-	@xml_tag("as")
+	@simpl_tag("as")
 	private String	asStr;
 
 	/**

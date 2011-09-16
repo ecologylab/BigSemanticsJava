@@ -10,8 +10,12 @@ import java.util.HashMap;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.collecting.TNGGlobalCollections;
 import ecologylab.semantics.metadata.builtins.Document;
-import ecologylab.serialization.ElementState.xml_tag;
-import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_classes;
+import ecologylab.serialization.annotations.simpl_collection;
+import ecologylab.serialization.annotations.simpl_composite;
+import ecologylab.serialization.annotations.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_nowrap;
+import ecologylab.serialization.annotations.simpl_tag;
 
 /**
  * transform_location semantic action, with set_param, strip_param semantic actions inside it, 
@@ -22,7 +26,7 @@ import ecologylab.serialization.simpl_inherit;
  *
  */
 @simpl_inherit
-@xml_tag(SemanticActionStandardMethods.FILTER_LOCATION)
+@simpl_tag(SemanticActionStandardMethods.FILTER_LOCATION)
 public class FilterLocation extends SemanticAction
 {
 	@simpl_classes({SetParam.class, StripParam.class})

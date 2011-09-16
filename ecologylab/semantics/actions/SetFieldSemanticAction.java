@@ -7,16 +7,18 @@ import java.lang.reflect.Method;
 
 import ecologylab.generic.ReflectionTools;
 import ecologylab.semantics.actions.exceptions.SemanticActionExecutionException;
-import ecologylab.serialization.ElementState.xml_tag;
-import ecologylab.serialization.Hint;
 import ecologylab.serialization.XMLTools;
-import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.annotations.Hint;
+import ecologylab.serialization.annotations.simpl_hints;
+import ecologylab.serialization.annotations.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_scalar;
+import ecologylab.serialization.annotations.simpl_tag;
 
 /**
  * @author amathur
  */
 @simpl_inherit
-@xml_tag(SemanticActionStandardMethods.SET_FIELD_ACTION)
+@simpl_tag(SemanticActionStandardMethods.SET_FIELD_ACTION)
 public class SetFieldSemanticAction
 		extends SemanticAction implements SemanticActionStandardMethods
 {
@@ -24,7 +26,7 @@ public class SetFieldSemanticAction
 	public static final String	VALUE	= "value";
 	
 	@simpl_scalar
-	@xml_tag(VALUE)
+	@simpl_tag(VALUE)
 	@simpl_hints(Hint.XML_ATTRIBUTE)
 	private String valueName;
 

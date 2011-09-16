@@ -2,9 +2,8 @@ package ecologylab.semantics.actions;
 
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.TextClipping;
-import ecologylab.semantics.model.text.SemanticTextChunk;
-import ecologylab.serialization.ElementState.xml_tag;
-import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_tag;
 
 /**
  * This action needs to be implemented by the client.
@@ -12,7 +11,7 @@ import ecologylab.serialization.simpl_inherit;
  * @author quyin
  */
 @simpl_inherit
-public @xml_tag(SemanticActionStandardMethods.CREATE_AND_VISUALIZE_TEXT_SURROGATE)
+public @simpl_tag(SemanticActionStandardMethods.CREATE_AND_VISUALIZE_TEXT_SURROGATE)
 class CreateAndVisualizeTextSurrogateSemanticAction
 		extends SemanticAction implements SemanticActionStandardMethods
 {

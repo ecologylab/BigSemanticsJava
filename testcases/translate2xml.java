@@ -3,7 +3,10 @@ package testcases;
 import java.io.File;
 
 import ecologylab.semantics.metadata.builtins.Image;
+import ecologylab.serialization.ClassDescriptor;
+import ecologylab.serialization.Format;
 import ecologylab.serialization.SIMPLTranslationException;
+import ecologylab.serialization.StringFormat;
 import ecologylab.serialization.TranslationScope;
 
 public class translate2xml
@@ -23,8 +26,8 @@ public class translate2xml
 		File file = new File("./testcases/file3.xml");
 		try
 		{
-			Image image = (Image) TS.deserialize(file);
-			image.serialize(System.out);
+			Image image = (Image) TS.deserialize(file, Format.XML);
+			ClassDescriptor.serialize(image, System.out, StringFormat.XML);
 //			TestDocument testDocumentfromXML = (TestDocument) TestDocument.translateFromXMLSAX(file, TS);
 //			testDocumentfromXML.translateToXML(System.out);
 		} catch (SIMPLTranslationException e)

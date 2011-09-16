@@ -5,7 +5,8 @@ package ecologylab.semantics.actions;
 
 import java.util.HashMap;
 
-import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_scalar;
 
 /**
  * Operation specifies adding param with this name and value to the query string for the location ParsedURL.

@@ -13,8 +13,11 @@ import ecologylab.generic.StringBuilderPool;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.model.text.Term;
 import ecologylab.serialization.ElementState;
-import ecologylab.serialization.Hint;
-import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.annotations.Hint;
+import ecologylab.serialization.annotations.simpl_hints;
+import ecologylab.serialization.annotations.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_other_tags;
+import ecologylab.serialization.annotations.simpl_scalar;
 
 /**
  * Smallest unit of top-level text in an HTML page; that is, a token of text that lives outside of
@@ -63,7 +66,7 @@ class TextToken extends ElementState
 
 	// TODO Boolean
 	@simpl_scalar
-	@xml_other_tags({"eol"})
+	@simpl_other_tags({"eol"})
 	protected int													endOfLine											= 0;
 
 	/**

@@ -4,6 +4,7 @@ import java.text.DecimalFormat;
 import java.util.Hashtable;
 
 import ecologylab.serialization.ElementState;
+import ecologylab.serialization.annotations.simpl_scalar;
 
 
 public class Term extends ElementState implements Comparable<Term>

@@ -8,9 +8,13 @@ import ecologylab.io.Assets;
 import ecologylab.semantics.namesandnums.CFPrefNames;
 import ecologylab.semantics.namesandnums.SemanticsAssetVersions;
 import ecologylab.serialization.ElementState;
+import ecologylab.serialization.Format;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.TranslationScope;
-import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_collection;
+import ecologylab.serialization.annotations.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_nowrap;
+import ecologylab.serialization.annotations.simpl_scope;
 
 /**
  * A collection + registry of SeedSets.
@@ -48,7 +52,7 @@ implements CFPrefNames
 			Assets.updateAssetsXml("CuratedSeedSets.init()");
 		try
 		{
-			CuratedSeedSets cs		= (CuratedSeedSets) TSCOPE.deserialize(seedingsFile);
+			CuratedSeedSets cs		= (CuratedSeedSets) TSCOPE.deserialize(seedingsFile, Format.XML);
 			singleton				= cs;
 		} catch (SIMPLTranslationException e)
 		{

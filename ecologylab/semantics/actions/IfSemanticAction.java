@@ -3,8 +3,8 @@
  */
 package ecologylab.semantics.actions;
 
-import ecologylab.serialization.simpl_inherit;
-import ecologylab.serialization.ElementState.xml_tag;
+import ecologylab.serialization.annotations.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_tag;
 
 /**
  * THE IF statement
@@ -13,7 +13,7 @@ import ecologylab.serialization.ElementState.xml_tag;
  * 
  */
 @simpl_inherit
-public @xml_tag(SemanticActionStandardMethods.IF)
+public @simpl_tag(SemanticActionStandardMethods.IF)
 class IfSemanticAction 
 extends	NestedSemanticAction
 {

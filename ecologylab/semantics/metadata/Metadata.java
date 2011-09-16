@@ -33,13 +33,19 @@ import ecologylab.semantics.model.text.CompositeTermVector;
 import ecologylab.semantics.model.text.ITermVector;
 import ecologylab.semantics.model.text.TermVectorFeature;
 import ecologylab.semantics.namesandnums.SemanticsNames;
+import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.FieldDescriptor;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.ScalarUnmarshallingContext;
+import ecologylab.serialization.StringFormat;
 import ecologylab.serialization.TranslationContext;
 import ecologylab.serialization.XMLTools;
-import ecologylab.serialization.simpl_descriptor_classes;
+import ecologylab.serialization.annotations.simpl_collection;
+import ecologylab.serialization.annotations.simpl_descriptor_classes;
+import ecologylab.serialization.annotations.simpl_scalar;
+import ecologylab.serialization.annotations.simpl_scope;
+import ecologylab.serialization.annotations.simpl_tag;
 import ecologylab.serialization.library.html.Div;
 import ecologylab.serialization.library.html.Input;
 import ecologylab.serialization.library.html.Span;
@@ -75,7 +81,7 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 	 * The meta-metadata name of this metadata.
 	 */
 	@simpl_scalar
-	@xml_tag("mm_name")
+	@simpl_tag("mm_name")
 	MetadataString												metaMetadataName;
 
 	/**
@@ -412,13 +418,13 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 	}
 
 	@Override
-	protected void serializationPreHook()
+	public void serializationPreHook(TranslationContext translationContext)
 	{
 		getMetaMetadata();
 	}
 
 	@Override
-	protected void deserializationPostHook(TranslationContext translationContext)
+	public void deserializationPostHook(TranslationContext translationContext, Object object)
 	{
 		// if (metaMetadata != null)
 		// initializeMetadataCompTermVector();
@@ -801,12 +807,14 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 	{
 		Table htmlTable = new Table();
 		renderHtml(htmlTable, serializationContext, false, true);
-		htmlTable.serialize(a);
+		
+		ClassDescriptor.serialize(htmlTable, a, StringFormat.XML);
+		
 	}
 
 	public void renderHtml(Table htmlTable, TranslationContext serializationContext, boolean recursing,
 			boolean encapsulateInTable) throws IllegalArgumentException,
-			IllegalAccessException, IOException
+			IllegalAccessException, IOException, SIMPLTranslationException
 	{
 
 		MetadataClassDescriptor classDescriptor = this.getMetadataClassDescriptor();

@@ -6,7 +6,7 @@ package ecologylab.semantics.metadata.scalar;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.metadata.semantics_pseudo_scalar;
 import ecologylab.semantics.model.text.NullTermVector;
-import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_inherit;
 
 /**
  * @author bharat

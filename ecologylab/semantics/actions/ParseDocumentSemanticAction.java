@@ -18,15 +18,17 @@ import ecologylab.semantics.seeding.SearchState;
 import ecologylab.semantics.seeding.Seed;
 import ecologylab.semantics.seeding.SeedDistributor;
 import ecologylab.semantics.seeding.SeedDistributor.DistributorContinuation;
-import ecologylab.serialization.ElementState.xml_tag;
-import ecologylab.serialization.Hint;
-import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.annotations.Hint;
+import ecologylab.serialization.annotations.simpl_hints;
+import ecologylab.serialization.annotations.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_scalar;
+import ecologylab.serialization.annotations.simpl_tag;
 
 /**
  * 
  */
 @simpl_inherit
-public @xml_tag(SemanticActionStandardMethods.PARSE_DOCUMENT)
+public @simpl_tag(SemanticActionStandardMethods.PARSE_DOCUMENT)
 class ParseDocumentSemanticAction
 		extends ContinuableSemanticAction
 {

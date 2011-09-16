@@ -4,10 +4,10 @@
 package ecologylab.semantics.metadata.builtins;
 
 import ecologylab.semantics.collecting.MetaMetadataRepositoryInit;
-import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.scalar.MetadataStringBuilder;
-import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_scalar;
 
 /**
  * Dynamically generated fields, only for debugging purposes by developers.

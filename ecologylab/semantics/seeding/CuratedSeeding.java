@@ -4,7 +4,8 @@ import java.io.File;
 
 import ecologylab.semantics.collecting.SemanticsGlobalScope;
 import ecologylab.semantics.namesandnums.SemanticsSessionObjectNames;
-import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_scalar;
 
 /**
  * Specifies a named collection of seeds.

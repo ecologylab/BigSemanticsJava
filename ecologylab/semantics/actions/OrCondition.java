@@ -5,12 +5,17 @@ import java.util.ArrayList;
 import org.junit.Test;
 
 import ecologylab.semantics.metametadata.MetaMetadataTranslationScope;
-import ecologylab.serialization.ElementState.xml_tag;
+import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.SIMPLTranslationException;
-import ecologylab.serialization.simpl_inherit;
+import ecologylab.serialization.StringFormat;
+import ecologylab.serialization.annotations.simpl_collection;
+import ecologylab.serialization.annotations.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_nowrap;
+import ecologylab.serialization.annotations.simpl_scope;
+import ecologylab.serialization.annotations.simpl_tag;
 
 @simpl_inherit
-@xml_tag("or")
+@simpl_tag("or")
 public class OrCondition extends Condition
 {
 
@@ -39,10 +44,10 @@ public class OrCondition extends Condition
 	public void test() throws SIMPLTranslationException
 	{
 		String xml = "<or><or /><not_null /></or>";
-		OrCondition or = (OrCondition) MetaMetadataTranslationScope.get().deserializeCharSequence(xml);
+		OrCondition or = (OrCondition) MetaMetadataTranslationScope.get().deserialize(xml, StringFormat.XML);
 		System.out.println(or);
 		System.out.println(or.checks);
-		System.out.println(or.serialize());
+		System.out.println(ClassDescriptor.serialize(or, StringFormat.XML));
 	}
 
 }
