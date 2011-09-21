@@ -1,8 +1,9 @@
 <meta_metadata_repository name="flickr" package="ecologylab.semantics.generated.library.flickr">
-	<selector name="flickr_search_selector" default_pref="flickr_search_two" pref_name="flickr_search_type" url_stripped="http://www.flickr.com/search/" />
-	<selector name="flickr_image_detail_selector" pref_name="flickr_detail_type" default_pref="flickr_image_detail"	url_regex="http://www.flickr.com/photos/(?!tags)[A-z0-9_@-]+/[0-9]+/$" domain="flickr.com" />
+<!-- 	<selector name="flickr_search_selector" default_pref="flickr_search_two" pref_name="flickr_search_type" url_stripped="http://www.flickr.com/search/" />
 	<selector name="flickr_nearby_selector" pref_name="flickr_nearby_type" default_pref="flickr_nearby" url_regex="^http://www.flickr.com/photos/[A-z0-9_@-]+/[0-9]+/nearby" domain="flickr.com" />
+ 	<selector name="flickr_image_detail_selector" pref_name="flickr_detail_type" default_pref="flickr_image_detail_two"	url_regex="http://www.flickr.com/photos/(?!tags)[A-z0-9_@-]+/[0-9]+/$" domain="flickr.com" />
 
+-->
 	<meta_metadata name="flickr_tag" extends="metadata">
 		<scalar name="tag_name" as_composite_scalar="true" navigates_to="tag_link" scalar_type="String" />
 		<scalar name="tag_link" hide="true" scalar_type="ParsedURL" />
@@ -63,6 +64,7 @@
 			</scalar>
 		</collection>
 		<semantic_actions>
+		<!-- 
 			<get_field name="title" />
 			<get_field name="image_kludge" />
 			<create_and_visualize_img_surrogate name="imgSurrogate">
@@ -78,6 +80,7 @@
 					<arg value="tag_link" name="location" />
 				</parse_document>
 			</for_each>
+			 -->
 		</semantic_actions>
 	</meta_metadata>
 
@@ -141,6 +144,7 @@
 
 	<meta_metadata name="flickr_search_two" extends="compound_document" comment="The flickr search class" parser="xpath">
 		<selector name="flickr_search_selector" />
+		
 		<collection name="flickr_results" xpath="//div[@class='DetailResults']//div[@class='box']" child_type="flickr_image_detail">
 			<scalar name="title" xpath=".//h3[@class='PicTitle']" />
 			<scalar name="thumbnail_kludge" xpath=".//span//img/@src"/>
@@ -196,7 +200,10 @@
 
 
 	<meta_metadata name="flickr_image_detail_two" extends="compound_document" parser="xpath" comment="A Flickr Image result page">
-		<selector name="flickr_image_detail_selector" />
+		<!--   <selector name="flickr_image_detail_selector" />
+		-->
+				<selector name="flickr_image_detail_selector" url_regex="http://www.flickr.com/photos/(?!tags)[A-z0-9_@-]+/[0-9]+/$" domain="flickr.com" />
+		
 		<def_var name="photoTD" xpath="//div[@id='meta']" type="node" />
 
 		<scalar name="title" xpath="./h1" context_node="photoTD" />
