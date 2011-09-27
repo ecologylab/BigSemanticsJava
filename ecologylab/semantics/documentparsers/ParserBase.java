@@ -352,8 +352,8 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 	{
 		// get xpath, context node, field parser defintion & key: basic information for following
 		String xpathString = mmdField.getXpath();
-		if (xpathString != null && xpathString.length() > 0)		
-			xpathString = provider.xPathTagNamesToLower(xpathString);
+//		if (xpathString != null && xpathString.length() > 0)		
+//			xpathString = provider.xPathTagNamesToLower(xpathString);
 		String contextNodeName = mmdField.getContextNode();
 		if (contextNodeName != null)
 		{
@@ -596,8 +596,8 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 			Node contextNode, Map<String, String> fieldParserContext, Scope<Object> params)
 	{
 		String xpathString = mmdField.getXpath();
-		if (xpathString != null)
-			xpathString = this.provider.xPathTagNamesToLower(xpathString);
+//		if (xpathString != null)
+//			xpathString = this.provider.xPathTagNamesToLower(xpathString);
 		String fieldParserKey = mmdField.getFieldParserKey();
 
 		String evaluation = null;
@@ -606,7 +606,7 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 			try
 			{
 				evaluation = xpath.evaluate(xpathString, contextNode);
-				debug("Evaluated : " + xpathString + " to :" + evaluation);
+//				debug("Evaluated : " + xpathString + " to :" + evaluation);
 			}
 			catch (Exception e)
 			{
