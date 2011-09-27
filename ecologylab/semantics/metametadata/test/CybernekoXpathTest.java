@@ -17,31 +17,32 @@ import ecologylab.semantics.html.utils.StringBuilderUtils;
 public class CybernekoXpathTest
 {
 
-	private static final String			SLASHDOT							= "http://slashdot.org/index2.pl?fhfilter=japan+earthquake";
-	private static final String			SLASHDOT_XPATH				= "//div[@id='firehoselist']";
-	private static final String			SLASHDOT_CHILD_XPATH	= ".";
+	private static final String			SLASHDOT										= "http://slashdot.org/index2.pl?fhfilter=japan+earthquake";
+	private static final String			SLASHDOT_XPATH							= "//div[@id='firehoselist']";
+	private static final String			SLASHDOT_CHILD_XPATH				= ".";
 
+	private static final String			FLICKR											= "http://www.flickr.com/photos/81124164@N00/4085549266/";
+	private static final String			FLICKR_XPATH								= "//html/head/link[2]/@href";
+	private static final String			FLICKR_CHILD_XPATH					= ".";
 
-	private static final String			FLICKR								= "http://www.flickr.com/photos/81124164@N00/4085549266/";
-	private static final String			FLICKR_XPATH					= "//html/head/link[2]/@href";
-	private static final String			FLICKR_CHILD_XPATH		= ".";
-
-	private static final String			CARTOONS_AC_UK				= "http://www.cartoons.ac.uk/record/28011";
-	private static final String			CARTOONS_AC_UK_XPATH	= "//*[@id='detailPublish']"; 
-//	private static final String			CARTOONS_AC_UK_XPATH	= "//div[@id='detailPublish']"; //Should be same as above
-//	private static final String			CARTOONS_AC_UK_XPATH	= "//*[@id='detailPublish']/h4/a[1]";	//Should pick the first link
-//	private static final String			CARTOONS_AC_UK_XPATH	= "//*[@id='detailPublish']//a[1]"; //Should pick the first link
-	private static final String			CARTOONS_AC_UK_CHILD_XPATH		= ".";
+	private static final String			CARTOONS_AC_UK							= "http://www.cartoons.ac.uk/record/28011";
+	private static final String			CARTOONS_AC_UK_XPATH				= "//*[@id='detailPublish']";
+	// private static final String CARTOONS_AC_UK_XPATH = "//div[@id='detailPublish']"; //Should be same as above
+	// private static final String CARTOONS_AC_UK_XPATH = "//*[@id='detailPublish']/h4/a[1]"; //Should pick the first link
+	// private static final String CARTOONS_AC_UK_XPATH = "//*[@id='detailPublish']//a[1]"; //Should pick the first link
+	private static final String			CARTOONS_AC_UK_CHILD_XPATH	= ".";
 
 	private static final String			WIKIPEDIA										= "http://en.wikipedia.org/wiki/Modern_art";
-	private static final String			WIKIPEDIA_XPATH							= "//*[@id='bodyContent']/p[1]";
+	private static final String			WIKIPEDIA_XPATH							= "//div[@id='bodyContent']/p[1]";
 	private static final String			WIKIPEDIA_CHILD_XPATH				= ".";
-	
-	private static final String			LOCATION										= WIKIPEDIA;
-	private static final String			XPATH												= WIKIPEDIA_XPATH;
-	private static final String			CHILD_XPATH									= WIKIPEDIA_CHILD_XPATH;
 
-	private static final ParsedURL	PURL									= ParsedURL.getAbsolute(LOCATION);
+	private static final String			LOCATION										= SLASHDOT;
+	private static final String			XPATH												= SLASHDOT_XPATH;
+	private static final String			CHILD_XPATH									= SLASHDOT_CHILD_XPATH;
+
+	private static final ParsedURL	PURL												= ParsedURL.getAbsolute(LOCATION);
+
+	private static boolean					useUpper										= false;
 
 	public static void main(String[] args)
 	{
@@ -53,18 +54,25 @@ public class CybernekoXpathTest
 			InputStream inStream = PURL.connect().inputStream();
 			Document contextNode = cyberneko.parseDOM(inStream, System.out);
 			
-			String parentXPathString = cyberneko.xPathTagNamesToLower(XPATH);
-
+			String parentXPathString;
+			if (useUpper)
+				parentXPathString = cyberneko.xPathTagNamesToLower(XPATH);
+			else
+				parentXPathString = XPATH;
 
 			NodeList parentNodeList = (NodeList) xpath.evaluate(parentXPathString, contextNode, XPathConstants.NODESET);
-			String childXPath = cyberneko.xPathTagNamesToLower(CHILD_XPATH);
-			System.out.println("List Size: " + parentNodeList.getLength());
+			String childXPath;
+			if (useUpper)
+				childXPath = cyberneko.xPathTagNamesToLower(CHILD_XPATH);
+			else
+				childXPath = CHILD_XPATH;
+			System.out.println("\n\nList Size: " + parentNodeList.getLength());
 			for (int i = 0; i < parentNodeList.getLength(); i++)
 			{
 				Node node = parentNodeList.item(i);
 				System.out.println(node);
 				String pNode = xpath.evaluate(childXPath, node);
-				System.out.println("Result " + i + " =\t" + pNode);
+				System.out.println("Result " + i + " =\t" + pNode.replaceAll("\\s+", " "));
 			}
 		}
 		catch (Exception e)
