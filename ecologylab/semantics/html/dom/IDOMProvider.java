@@ -46,6 +46,6 @@ public interface IDOMProvider
 	 * @return String with uppercase tag names
 	 */
 
-	public String xPathTagNamesToLower(String xpath);
-
+	String xPathTagNamesToLower(String xpath);
+	
 }

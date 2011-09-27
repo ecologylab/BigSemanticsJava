@@ -18,6 +18,10 @@ import ecologylab.serialization.XMLTools;
 public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInterface
 {
 
+	public static final String	HTML_TAG_BODY	= "body";
+
+	public static final String	HTML_TAG_IMG	= "img";
+
 	InputStream						fragmentStream;
 
 	ArrayList<ImgElement>	imageElements	= new ArrayList<ImgElement>();
@@ -45,7 +49,7 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 		org.w3c.dom.Document doc = getDom();
 
 		int containerNodeIndex = 0;
-		NodeList bodyNodeList = doc.getElementsByTagName("BODY");
+		NodeList bodyNodeList = doc.getElementsByTagName(HTML_TAG_BODY);
 		if (bodyNodeList.getLength() > 0)
 		{
 			Node bodyNode = bodyNodeList.item(0);
@@ -74,7 +78,7 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 			}
 			DOMWalkInformationTagger.getTextInSubTree(bodyNode, true, bodyTextBuffy, true, true);
 		}
-		NodeList imgNodeList = doc.getElementsByTagName("IMG");
+		NodeList imgNodeList = doc.getElementsByTagName(HTML_TAG_IMG);
 		int numImages = imgNodeList.getLength();
 		if (numImages > 0)
 		{
