@@ -1,9 +1,16 @@
-### Eclipse Workspace Patch 1.0
-#P xercesImpl-2.9.1
 Index: src/org/apache/html/dom/HTMLDocumentImpl.java
 ===================================================================
 --- src/org/apache/html/dom/HTMLDocumentImpl.java	(revision 1176003)
 +++ src/org/apache/html/dom/HTMLDocumentImpl.java	(working copy)
+@@ -415,7 +415,7 @@
+ 
+     public final NodeList getElementsByTagName( String tagName )
+     {
+-        return super.getElementsByTagName( tagName.toUpperCase(Locale.ENGLISH) );
++        return super.getElementsByTagName( tagName );
+     }
+ 
+ 
 @@ -467,7 +467,7 @@
          // First, make sure tag name is all upper case, next get the associated
          // element class. If no class is found, generate a generic HTML element.
