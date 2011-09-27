@@ -1,0 +1,162 @@
+### Eclipse Workspace Patch 1.0
+#P xercesImpl-2.9.1
+Index: src/org/apache/html/dom/HTMLDocumentImpl.java
+===================================================================
+--- src/org/apache/html/dom/HTMLDocumentImpl.java	(revision 1176003)
++++ src/org/apache/html/dom/HTMLDocumentImpl.java	(working copy)
+@@ -467,7 +467,7 @@
+         // First, make sure tag name is all upper case, next get the associated
+         // element class. If no class is found, generate a generic HTML element.
+         // Do so also if an unexpected exception occurs.
+-        tagName = tagName.toUpperCase(Locale.ENGLISH);
++//        tagName = tagName.toUpperCase(Locale.ENGLISH);
+         elemClass = (Class) _elementTypesHTML.get( tagName );
+         if ( elemClass != null )
+         {
+@@ -687,69 +687,69 @@
+         if ( _elementTypesHTML != null )
+             return;
+         _elementTypesHTML = new Hashtable( 63 );
+-        populateElementType( "A", "HTMLAnchorElementImpl" );
+-        populateElementType( "APPLET", "HTMLAppletElementImpl" );
+-        populateElementType( "AREA", "HTMLAreaElementImpl" );
+-        populateElementType( "BASE",  "HTMLBaseElementImpl" );
+-        populateElementType( "BASEFONT", "HTMLBaseFontElementImpl" );
+-        populateElementType( "BLOCKQUOTE", "HTMLQuoteElementImpl" );
+-        populateElementType( "BODY", "HTMLBodyElementImpl" );
+-        populateElementType( "BR", "HTMLBRElementImpl" );
+-        populateElementType( "BUTTON", "HTMLButtonElementImpl" );
+-        populateElementType( "DEL", "HTMLModElementImpl" );
+-        populateElementType( "DIR", "HTMLDirectoryElementImpl" );
+-        populateElementType( "DIV",  "HTMLDivElementImpl" );
+-        populateElementType( "DL", "HTMLDListElementImpl" );
+-        populateElementType( "FIELDSET", "HTMLFieldSetElementImpl" );
+-        populateElementType( "FONT", "HTMLFontElementImpl" );
+-        populateElementType( "FORM", "HTMLFormElementImpl" );
+-        populateElementType( "FRAME","HTMLFrameElementImpl" );
+-        populateElementType( "FRAMESET", "HTMLFrameSetElementImpl" );
+-        populateElementType( "HEAD", "HTMLHeadElementImpl" );
+-        populateElementType( "H1", "HTMLHeadingElementImpl" );
+-        populateElementType( "H2", "HTMLHeadingElementImpl" );
+-        populateElementType( "H3", "HTMLHeadingElementImpl" );
+-        populateElementType( "H4", "HTMLHeadingElementImpl" );
+-        populateElementType( "H5", "HTMLHeadingElementImpl" );
+-        populateElementType( "H6", "HTMLHeadingElementImpl" );
+-        populateElementType( "HR", "HTMLHRElementImpl" );
+-        populateElementType( "HTML", "HTMLHtmlElementImpl" );
+-        populateElementType( "IFRAME", "HTMLIFrameElementImpl" );
+-        populateElementType( "IMG", "HTMLImageElementImpl" );
+-        populateElementType( "INPUT", "HTMLInputElementImpl" );
+-        populateElementType( "INS", "HTMLModElementImpl" );
+-        populateElementType( "ISINDEX", "HTMLIsIndexElementImpl" );
+-        populateElementType( "LABEL", "HTMLLabelElementImpl" );
+-        populateElementType( "LEGEND", "HTMLLegendElementImpl" );
+-        populateElementType( "LI", "HTMLLIElementImpl" );
+-        populateElementType( "LINK", "HTMLLinkElementImpl" );
+-        populateElementType( "MAP", "HTMLMapElementImpl" );
+-        populateElementType( "MENU", "HTMLMenuElementImpl" );
+-        populateElementType( "META", "HTMLMetaElementImpl" );
+-        populateElementType( "OBJECT", "HTMLObjectElementImpl" );
+-        populateElementType( "OL", "HTMLOListElementImpl" );
+-        populateElementType( "OPTGROUP", "HTMLOptGroupElementImpl" );
+-        populateElementType( "OPTION", "HTMLOptionElementImpl" );
+-        populateElementType( "P", "HTMLParagraphElementImpl" );
+-        populateElementType( "PARAM", "HTMLParamElementImpl" );
+-        populateElementType( "PRE", "HTMLPreElementImpl" );
+-        populateElementType( "Q", "HTMLQuoteElementImpl" );
+-        populateElementType( "SCRIPT", "HTMLScriptElementImpl" );
+-        populateElementType( "SELECT", "HTMLSelectElementImpl" );
+-        populateElementType( "STYLE", "HTMLStyleElementImpl" );
+-        populateElementType( "TABLE", "HTMLTableElementImpl" );
+-        populateElementType( "CAPTION", "HTMLTableCaptionElementImpl" );
+-        populateElementType( "TD", "HTMLTableCellElementImpl" );
+-        populateElementType( "TH", "HTMLTableCellElementImpl" );
+-        populateElementType( "COL", "HTMLTableColElementImpl" );
+-        populateElementType( "COLGROUP", "HTMLTableColElementImpl" );
+-        populateElementType( "TR", "HTMLTableRowElementImpl" );
+-        populateElementType( "TBODY", "HTMLTableSectionElementImpl" );
+-        populateElementType( "THEAD", "HTMLTableSectionElementImpl" );
+-        populateElementType( "TFOOT", "HTMLTableSectionElementImpl" );
+-        populateElementType( "TEXTAREA", "HTMLTextAreaElementImpl" );
+-        populateElementType( "TITLE", "HTMLTitleElementImpl" );
+-        populateElementType( "UL", "HTMLUListElementImpl" );
++        populateElementType( "a", "HTMLAnchorElementImpl" );
++        populateElementType( "applet", "HTMLAppletElementImpl" );
++        populateElementType( "area", "HTMLAreaElementImpl" );
++        populateElementType( "base",  "HTMLBaseElementImpl" );
++        populateElementType( "basefont", "HTMLBaseFontElementImpl" );
++        populateElementType( "blockquote", "HTMLQuoteElementImpl" );
++        populateElementType( "body", "HTMLBodyElementImpl" );
++        populateElementType( "br", "HTMLBRElementImpl" );
++        populateElementType( "button", "HTMLButtonElementImpl" );
++        populateElementType( "del", "HTMLModElementImpl" );
++        populateElementType( "dir", "HTMLDirectoryElementImpl" );
++        populateElementType( "div",  "HTMLDivElementImpl" );
++        populateElementType( "dl", "HTMLDListElementImpl" );
++        populateElementType( "fieldset", "HTMLFieldSetElementImpl" );
++        populateElementType( "font", "HTMLFontElementImpl" );
++        populateElementType( "form", "HTMLFormElementImpl" );
++        populateElementType( "frame","HTMLFrameElementImpl" );
++        populateElementType( "frameset", "HTMLFrameSetElementImpl" );
++        populateElementType( "head", "HTMLHeadElementImpl" );
++        populateElementType( "h1", "HTMLHeadingElementImpl" );
++        populateElementType( "h2", "HTMLHeadingElementImpl" );
++        populateElementType( "h3", "HTMLHeadingElementImpl" );
++        populateElementType( "h4", "HTMLHeadingElementImpl" );
++        populateElementType( "h5", "HTMLHeadingElementImpl" );
++        populateElementType( "h6", "HTMLHeadingElementImpl" );
++        populateElementType( "hr", "HTMLHRElementImpl" );
++        populateElementType( "html", "HTMLHtmlElementImpl" );
++        populateElementType( "iframe", "HTMLIFrameElementImpl" );
++        populateElementType( "img", "HTMLImageElementImpl" );
++        populateElementType( "input", "HTMLInputElementImpl" );
++        populateElementType( "ins", "HTMLModElementImpl" );
++        populateElementType( "isindex", "HTMLIsIndexElementImpl" );
++        populateElementType( "label", "HTMLLabelElementImpl" );
++        populateElementType( "legend", "HTMLLegendElementImpl" );
++        populateElementType( "li", "HTMLLIElementImpl" );
++        populateElementType( "link", "HTMLLinkElementImpl" );
++        populateElementType( "map", "HTMLMapElementImpl" );
++        populateElementType( "menu", "HTMLMenuElementImpl" );
++        populateElementType( "meta", "HTMLMetaElementImpl" );
++        populateElementType( "object", "HTMLObjectElementImpl" );
++        populateElementType( "ol", "HTMLOListElementImpl" );
++        populateElementType( "optgroup", "HTMLOptGroupElementImpl" );
++        populateElementType( "option", "HTMLOptionElementImpl" );
++        populateElementType( "p", "HTMLParagraphElementImpl" );
++        populateElementType( "param", "HTMLParamElementImpl" );
++        populateElementType( "pre", "HTMLPreElementImpl" );
++        populateElementType( "q", "HTMLQuoteElementImpl" );
++        populateElementType( "script", "HTMLScriptElementImpl" );
++        populateElementType( "select", "HTMLSelectElementImpl" );
++        populateElementType( "style", "HTMLStyleElementImpl" );
++        populateElementType( "table", "HTMLTableElementImpl" );
++        populateElementType( "caption", "HTMLTableCaptionElementImpl" );
++        populateElementType( "td", "HTMLTableCellElementImpl" );
++        populateElementType( "th", "HTMLTableCellElementImpl" );
++        populateElementType( "col", "HTMLTableColElementImpl" );
++        populateElementType( "colgroup", "HTMLTableColElementImpl" );
++        populateElementType( "tr", "HTMLTableRowElementImpl" );
++        populateElementType( "tbody", "HTMLTableSectionElementImpl" );
++        populateElementType( "thead", "HTMLTableSectionElementImpl" );
++        populateElementType( "tfoot", "HTMLTableSectionElementImpl" );
++        populateElementType( "textarea", "HTMLTextAreaElementImpl" );
++        populateElementType( "title", "HTMLTitleElementImpl" );
++        populateElementType( "ul", "HTMLUListElementImpl" );
+     }
+ 
+ 
+Index: src/org/apache/html/dom/HTMLElementImpl.java
+===================================================================
+--- src/org/apache/html/dom/HTMLElementImpl.java	(revision 1176003)
++++ src/org/apache/html/dom/HTMLElementImpl.java	(working copy)
+@@ -56,7 +56,8 @@
+      * @param tagName The element's tag name
+      */
+     public HTMLElementImpl( HTMLDocumentImpl owner, String tagName ) {
+-        super( owner, tagName.toUpperCase(Locale.ENGLISH) );
++//        super( owner, tagName.toUpperCase(Locale.ENGLISH) );
++        super( owner, tagName );
+     }
+     
+     public String getId() {
