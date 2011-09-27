@@ -33,7 +33,7 @@ public class CybernekoWrapper implements IDOMProvider
 		parser = new DOMParser();
 		try
 		{
-			parser.setFeature("http://xml.org/sax/features/namespaces", false);
+			parser.setFeature("http://xml.org/sax/features/namespaces", false);			parser.setProperty("http://cyberneko.org/html/properties/names/elems", "lower");
 		}
 		catch (SAXNotRecognizedException e)
 		{
