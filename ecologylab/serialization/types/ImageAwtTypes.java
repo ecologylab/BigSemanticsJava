@@ -5,6 +5,7 @@ package ecologylab.serialization.types;
 
 import ecologylab.generic.Debug;
 import ecologylab.serialization.types.scalar.ColorType;
+import ecologylab.serialization.types.scalar.ImageType;
 import ecologylab.serialization.types.scalar.RectangleType;
 
 /**
@@ -17,6 +18,8 @@ public class ImageAwtTypes extends Debug
 	public static final ScalarType COLOR_TYPE 					= new ColorType();
 	
 	public static final ScalarType RECTANGLE_TYPE 			= new RectangleType();
+	
+	public static final ScalarType IMAGE_TYPE 					= new ImageType();
 
 
 }
