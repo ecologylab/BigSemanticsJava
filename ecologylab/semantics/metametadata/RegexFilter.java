@@ -1,10 +1,14 @@
 package ecologylab.semantics.metametadata;
 
+import java.util.regex.Pattern;
+
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.annotations.Hint;
 import ecologylab.serialization.annotations.simpl_hints;
+import ecologylab.serialization.annotations.simpl_inherit;
 import ecologylab.serialization.annotations.simpl_scalar;
 
+@simpl_inherit
 public class RegexFilter extends ElementState
 {
 
@@ -19,6 +23,11 @@ public class RegexFilter extends ElementState
 	private String	javaRegex;
 
 	private String	javaReplace;
+	
+	/**
+	 * Lazily evaluated Pattern object compiled from regex.
+	 */
+	private Pattern regexPattern;
 
 	public RegexFilter()
 	{
@@ -31,9 +40,12 @@ public class RegexFilter extends ElementState
 		this.replace = replace;
 	}
 
-	public String getRegex()
+	public Pattern getRegex()
 	{
-		return regex;
+		if (regexPattern == null)
+			if (regex != null)
+				regexPattern = Pattern.compile(regex);
+		return regexPattern;
 	}
 
 	public String getJavaRegex()

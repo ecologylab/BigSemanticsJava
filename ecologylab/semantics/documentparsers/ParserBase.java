@@ -680,11 +680,11 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 		evaluation = XMLTools.unescapeXML(evaluation);
 
 		// get the regular expression
-		String regularExpression = field.getRegexPattern();
+		Pattern regularExpression = field.getRegexPattern();
 
 		if (regularExpression != null)
 		{
-			Matcher matcher = Pattern.compile(regularExpression).matcher(evaluation);
+			Matcher matcher = regularExpression.matcher(evaluation);
 			String replacementString = field.getRegexReplacement();
 			if (replacementString == null)
 			{

@@ -338,7 +338,7 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 				{
 					MetadataFieldDescriptor fd = scalar.getMetadataFieldDescriptor();
 					if (fd != null)
-						fd.setRegexFilter(Pattern.compile(scalar.getRegexPattern()), scalar.getRegexReplacement());
+						fd.setRegexFilter(scalar.getRegexPattern(), scalar.getRegexReplacement());
 					else
 						warning("Encountered null fd for scalar: " + scalar);
 				}

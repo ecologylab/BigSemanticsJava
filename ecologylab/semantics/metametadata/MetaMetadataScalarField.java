@@ -1,6 +1,7 @@
 package ecologylab.semantics.metametadata;
 
 import java.io.IOException;
+import java.util.regex.Pattern;
 
 import ecologylab.semantics.documentparsers.ParserBase;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
@@ -96,7 +97,7 @@ public class MetaMetadataScalarField extends MetaMetadataField
 	/**
 	 * @return the regex pattern
 	 */
-	public String getRegexPattern()
+	public Pattern getRegexPattern()
 	{
 		if (filter != null)
 			return filter.getRegex();
