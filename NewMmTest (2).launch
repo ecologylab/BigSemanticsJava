@@ -7,7 +7,7 @@
 <listEntry value="1"/>
 </listAttribute>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="ecologylab.semantics.metametadata.test.NewMmTest"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="http://www.airbnb.com/rooms/36769&#13;&#10;http://dl.acm.org/citation.cfm?id=1871437.1871580"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="http://where.yahooapis.com/geocode?gflags=R&amp;q=-96.28616666666667,30.604833333333332&#13;&#10;http://www.airbnb.com/rooms/36769&#13;&#10;http://dl.acm.org/citation.cfm?id=1871437.1871580"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="ecologylabSemanticsExample"/>
 <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Xms320m -Xmx320m"/>
 </launchConfiguration>
