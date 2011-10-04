@@ -292,7 +292,8 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 					if (field.getClass() != fieldLocal.getClass())
 						warning("local field " + fieldLocal + " hides field " + fieldLocal + " with the same name in super mmd type!");
 					// debug("inheriting field " + fieldLocal + " from " + field);
-					fieldLocal.setInheritedField(field);
+					if (field != fieldLocal)
+						fieldLocal.setInheritedField(field);
 					fieldLocal.setDeclaringMmd(field.getDeclaringMmd());
 					fieldLocal.inheritAttributes(field);
 					if (fieldLocal instanceof MetaMetadataNestedField)
@@ -343,9 +344,10 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 				MetaMetadataField fieldLocal = this.getChildMetaMetadata().get(fieldName);
 				if (fieldLocal == null)
 				{
-					MetaMetadataField clonedField = (MetaMetadataField) field.clone();
-					clonedField.setParent(this);
-					this.getChildMetaMetadata().put(fieldName, clonedField);
+//					MetaMetadataField clonedField = (MetaMetadataField) field.clone();
+//					clonedField.setParent(this);
+//					this.getChildMetaMetadata().put(fieldName, clonedField);
+					this.getChildMetaMetadata().put(fieldName, field);
 				}
 			}
 		}

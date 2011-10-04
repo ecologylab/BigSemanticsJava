@@ -9,6 +9,7 @@ import ecologylab.collections.MultiAncestorScope;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
+import ecologylab.semantics.metametadata.MetaMetadataField.MetadataFieldDescriptorProxy;
 import ecologylab.semantics.metametadata.exceptions.MetaMetadataException;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.TranslationScope;
@@ -447,9 +448,9 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	}
 	
 	@Override
-	protected void customizeFieldDescriptor(TranslationScope metadataTScope, MetadataFieldDescriptor metadataFieldDescriptor)
+	protected void customizeFieldDescriptor(TranslationScope metadataTScope, MetadataFieldDescriptorProxy fdProxy)
 	{
-		super.customizeFieldDescriptor(metadataTScope, metadataFieldDescriptor);
+		super.customizeFieldDescriptor(metadataTScope, fdProxy);
 		
 		MetaMetadataNestedField inheritedField = (MetaMetadataNestedField) this.getInheritedField();
 		if (inheritedField != null)
@@ -462,7 +463,7 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 			{
 				// extending type!
 				MetadataClassDescriptor metadataClassDescriptor = thisMmd.bindMetadataClassDescriptor(metadataTScope);
-				metadataFieldDescriptor.setElementClassDescriptor(metadataClassDescriptor);
+				fdProxy.setElementClassDescriptor(metadataClassDescriptor);
 			}
 			else
 			{

@@ -13,6 +13,7 @@ import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
 import ecologylab.semantics.metadata.Metadata.mm_dont_inherit;
+import ecologylab.semantics.metametadata.MetaMetadataField.MetadataFieldDescriptorProxy;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.FieldTypes;
@@ -922,10 +923,19 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
 						if (metadataFieldDescriptor.getField() == null)
 							metadataFieldDescriptor = (MetadataFieldDescriptor) metadataFieldDescriptor.getWrappedFD();
 
-						// this method handles polymorphic type / changing tags
-						customizeFieldDescriptor(metadataTScope, metadataFieldDescriptor);
-
 						this.metadataFieldDescriptor = metadataFieldDescriptor;
+						
+						// this method handles polymorphic type / changing tags
+						if (this.metadataFieldDescriptor != null)
+							customizeFieldDescriptor(metadataTScope, fieldDescriptorProxy);
+						if (this.metadataFieldDescriptor != metadataFieldDescriptor)
+						{
+							String tagName = this.metadataFieldDescriptor.getTagName();
+							int fieldType = this.metadataFieldDescriptor.getType();
+							if (fieldType == FieldTypes.COLLECTION_ELEMENT || fieldType == FieldTypes.MAP_ELEMENT)
+								tagName = this.metadataFieldDescriptor.getCollectionOrMapTagName();
+							metadataClassDescriptor.getAllFieldDescriptorsByTagNames().put(tagName, this.metadataFieldDescriptor);
+						}
 					}
 				}
 				else
@@ -938,16 +948,72 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
 	}
 
 	/**
+	 * this class encapsulate the clone-on-write behavior of metadata field descriptor associated
+	 * with this field.
+	 * 
+	 * @author quyin
+	 *
+	 */
+	protected class MetadataFieldDescriptorProxy
+	{
+
+		private void cloneFieldDescriptorOnWrite()
+		{
+			if (MetaMetadataField.this.metadataFieldDescriptor.getDescriptorClonedFrom() == null)
+				MetaMetadataField.this.metadataFieldDescriptor = MetaMetadataField.this.metadataFieldDescriptor.clone();
+		}
+
+		public void setTagName(String newTagName)
+		{
+			if (newTagName != null && !newTagName.equals(MetaMetadataField.this.metadataFieldDescriptor.getTagName()))
+			{
+				cloneFieldDescriptorOnWrite();
+				MetaMetadataField.this.metadataFieldDescriptor.setTagName(newTagName);
+			}
+		}
+
+		public void setElementClassDescriptor(MetadataClassDescriptor metadataClassDescriptor)
+		{
+			if (metadataClassDescriptor != MetaMetadataField.this.metadataFieldDescriptor.getElementClassDescriptor())
+			{
+				cloneFieldDescriptorOnWrite();
+				MetaMetadataField.this.metadataFieldDescriptor.setElementClassDescriptor(metadataClassDescriptor);
+			}
+		}
+
+		public void setCollectionOrMapTagName(String childTag)
+		{
+			if (childTag != null && !childTag.equals(MetaMetadataField.this.metadataFieldDescriptor.getCollectionOrMapTagName()))
+			{
+				cloneFieldDescriptorOnWrite();
+				MetaMetadataField.this.metadataFieldDescriptor.setCollectionOrMapTagName(childTag);
+			}
+		}
+
+		public void setWrapped(boolean wrapped)
+		{
+			if (wrapped != MetaMetadataField.this.metadataFieldDescriptor.isWrapped())
+			{
+				cloneFieldDescriptorOnWrite();
+				MetaMetadataField.this.metadataFieldDescriptor.setWrapped(wrapped);
+			}
+		}
+		
+	}
+	
+	private MetadataFieldDescriptorProxy fieldDescriptorProxy = new MetadataFieldDescriptorProxy();
+
+	/**
 	 * this method customizes field descriptor for this field, e.g. specific type or tag.
 	 * 
 	 * @param metadataTScope
 	 *          the translation scope of (generated) metadata classes.
-	 * @param metadataFieldDescriptor
+	 * @param fdProxy
 	 *          the current metadata field descriptor.
 	 */
-	protected void customizeFieldDescriptor(TranslationScope metadataTScope, MetadataFieldDescriptor metadataFieldDescriptor)
+	protected void customizeFieldDescriptor(TranslationScope metadataTScope, MetadataFieldDescriptorProxy fdProxy)
 	{
-		metadataFieldDescriptor.setTagName(this.getTagOrName()); // use customized tag if applicable
+		fdProxy.setTagName(this.getTagOrName());
 	}
 
 	/**

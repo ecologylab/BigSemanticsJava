@@ -140,7 +140,7 @@
 		</collection>
 	</meta_metadata>
 
-	<meta_metadata name="yahoo_geo_code" type="yahoo_result_set">
+	<meta_metadata name="yahoo_geo_code" extends="yahoo_result_set">
 		<selector url_stripped="http://where.yahooapis.com/geocode" />
 		<collection name="results" child_type="yahoo_geo_code_result" child_extends="yahoo_result">
 			<scalar name="line1" scalar_type="string" label="address" />
@@ -217,12 +217,12 @@
 
 	<!-- this definition of image might apply to many other XML-based search results. -->
 	<meta_metadata name="image_in_search_result" extends="image" comment="Def of an image in a Bing image search result.">
-		<scalar name="caption" scalar_type="String" tag="mms:Title" /> <!-- shadows image.caption? -->
-		<scalar name="location" scalar_type="ParsedURL" tag="mms:Url" /> <!-- shadows image.location? -->
+		<scalar name="title" tag="mms:Title" /> <!-- shadows image.caption? -->
+		<scalar name="location" tag="mms:Url" /> <!-- shadows image.location? -->
+		<scalar name="width" tag="mms:Width" />
+		<scalar name="height" tag="mms:Height" />
 		<scalar name="content_type" scalar_type="String" tag="mms:ContentType" />
 		<scalar name="referrer_url" scalar_type="ParsedURL" />
-		<scalar name="width" scalar_type="Int" tag="mms:Width" />
-		<scalar name="height" scalar_type="Int" tag="mms:Height" />
 		<scalar name="file_size" scalar_type="Int" tag="mms:FileSize" />
 	</meta_metadata>
 

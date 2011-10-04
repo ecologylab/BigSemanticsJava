@@ -381,8 +381,6 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 		return value;
 	}
 	
-	
-	
 	private synchronized Method getGetter()
 	{
 		if (getter != null)
@@ -407,6 +405,13 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 			e.printStackTrace();
 		}
 		return getter;
+	}
+	
+	public MetadataFieldDescriptor clone()
+	{
+		MetadataFieldDescriptor cloned = null;
+		cloned = (MetadataFieldDescriptor) super.clone();
+		return cloned;
 	}
 	
 }

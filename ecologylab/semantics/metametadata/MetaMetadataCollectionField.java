@@ -6,6 +6,7 @@ import ecologylab.semantics.metadata.MetadataFieldDescriptor;
 import ecologylab.semantics.metadata.Metadata.mm_dont_inherit;
 import ecologylab.semantics.metadata.Metadata.mm_name;
 import ecologylab.semantics.metadata.scalar.types.MetadataScalarType;
+import ecologylab.semantics.metametadata.MetaMetadataField.MetadataFieldDescriptorProxy;
 import ecologylab.serialization.FieldTypes;
 import ecologylab.serialization.TranslationContext;
 import ecologylab.serialization.TranslationScope;
@@ -350,12 +351,12 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 	}
 
 	@Override
-	protected void customizeFieldDescriptor(TranslationScope metadataTScope, MetadataFieldDescriptor metadataFieldDescriptor)
+	protected void customizeFieldDescriptor(TranslationScope metadataTScope, MetadataFieldDescriptorProxy fdProxy)
 	{
-		super.customizeFieldDescriptor(metadataTScope, metadataFieldDescriptor);
-		if (this.childTag != null)
-			metadataFieldDescriptor.setCollectionOrMapTagName(this.childTag);
-		metadataFieldDescriptor.setWrapped(!this.isNoWrap());
+		super.customizeFieldDescriptor(metadataTScope, fdProxy);
+		
+		fdProxy.setCollectionOrMapTagName(this.childTag);
+		fdProxy.setWrapped(!this.isNoWrap());
 	}
 	
 	public void recursivelyRestoreChildComposite()
