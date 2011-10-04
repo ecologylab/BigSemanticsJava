@@ -467,7 +467,7 @@ public class MetaMetadataScalarField extends MetaMetadataField
 		MetaMetadataScalarField mmsf = new MetaMetadataScalarField();
 		mmsf.scalarType = new MetadataStringScalarType();
 		mmsf.hint = Hint.XML_LEAF;
-		mmsf.filter = new RegexFilter("regex", "replace");
+		mmsf.filter = new RegexFilter(Pattern.compile("regex"), "replace");
 		System.out.println(ClassDescriptor.serialize(mmsf, StringFormat.XML));
 	}
 

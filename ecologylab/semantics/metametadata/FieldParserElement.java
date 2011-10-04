@@ -20,10 +20,10 @@ public class FieldParserElement extends ElementState
 
 	@simpl_scalar
 	@simpl_other_tags("regex_split")
-	private String	regex;
+	private Pattern	regex;
 
 	@simpl_scalar
-	private String	regexFind;
+	private Pattern	regexFind;
 
 	@simpl_scalar
 	private boolean	forEachElement		= false;
@@ -37,16 +37,12 @@ public class FieldParserElement extends ElementState
 	@simpl_scalar
 	private boolean	trim							= true;
 
-	private Pattern	compiledRegex			= null;
-
-	private Pattern	compiledRegexFind	= null;
-
 	public FieldParserElement()
 	{
 
 	}
 
-	FieldParserElement(String name, String regex)
+	FieldParserElement(String name, Pattern regex)
 	{
 		this.name = name;
 		this.regex = regex;
@@ -59,16 +55,12 @@ public class FieldParserElement extends ElementState
 
 	public Pattern getRegex()
 	{
-		if (compiledRegex == null && regex != null)
-			compiledRegex = Pattern.compile(regex);
-		return compiledRegex;
+		return regex;
 	}
 
 	public Pattern getRegexFind()
 	{
-		if (compiledRegexFind == null && regexFind != null)
-			compiledRegexFind = Pattern.compile(regexFind);
-		return compiledRegexFind;
+		return regexFind;
 	}
 
 	public boolean isForEachElement()

@@ -2,7 +2,9 @@ package ecologylab.semantics.metametadata;
 
 import java.util.regex.Pattern;
 
+import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.ElementState;
+import ecologylab.serialization.StringFormat;
 import ecologylab.serialization.annotations.Hint;
 import ecologylab.serialization.annotations.simpl_hints;
 import ecologylab.serialization.annotations.simpl_inherit;
@@ -14,7 +16,7 @@ public class RegexFilter extends ElementState
 
 	@simpl_scalar
 	@simpl_hints(Hint.XML_ATTRIBUTE)
-	private String	regex;
+	private Pattern	regex;
 
 	@simpl_scalar
 	@simpl_hints(Hint.XML_ATTRIBUTE)
@@ -24,17 +26,12 @@ public class RegexFilter extends ElementState
 
 	private String	javaReplace;
 	
-	/**
-	 * Lazily evaluated Pattern object compiled from regex.
-	 */
-	private Pattern regexPattern;
-
 	public RegexFilter()
 	{
 		
 	}
 	
-	public RegexFilter(String regex, String replace)
+	public RegexFilter(Pattern regex, String replace)
 	{
 		this.regex = regex;
 		this.replace = replace;
@@ -42,16 +39,13 @@ public class RegexFilter extends ElementState
 
 	public Pattern getRegex()
 	{
-		if (regexPattern == null)
-			if (regex != null)
-				regexPattern = Pattern.compile(regex);
-		return regexPattern;
+		return regex;
 	}
 
 	public String getJavaRegex()
 	{
 		if (javaRegex == null && regex != null)
-			javaRegex = regex.replaceAll("\\\\", "\\\\\\\\");
+			javaRegex = regex.pattern().replaceAll("\\\\", "\\\\\\\\");
 		return javaRegex;
 	}
 
@@ -65,6 +59,24 @@ public class RegexFilter extends ElementState
 		if (javaReplace == null && replace != null)
 			javaReplace = replace.replaceAll("\\\\", "\\\\\\\\");
 		return javaReplace;
+	}
+	
+	public static void main(String[] args)
+	{
+		String[] testPatterns = {
+			"\\s+",
+			"\\\\\\\\ 4 back slashes",
+		};
+		String testReplace = "";
+		for (String p : testPatterns)
+		{
+			RegexFilter rf = new RegexFilter(Pattern.compile(p), testReplace);
+			System.out.println();
+			ClassDescriptor.serializeOut(rf, "some message", StringFormat.XML);
+			System.out.println();
+			System.out.println("In java annotation: " + rf.getJavaRegex());
+			System.out.println();
+		}
 	}
 	
 }
