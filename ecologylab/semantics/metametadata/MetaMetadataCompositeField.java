@@ -85,20 +85,6 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 	}
 
 	@Override
-	protected Object clone()
-	{
-		MetaMetadataCompositeField cloned = new MetaMetadataCompositeField();
-		cloned.setCloned(true);
-		cloned.inheritAttributes(this);
-		cloned.copyClonedFieldsFrom(this);
-		
-		this.cloneKidsTo(cloned);
-		
-		cloned.clonedFrom = this;
-		return cloned;
-	}
-
-	@Override
 	protected HashMapArrayList<String, MetaMetadataField> initializeChildMetaMetadata()
 	{
 		if (kids == null)

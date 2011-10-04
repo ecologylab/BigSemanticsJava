@@ -57,20 +57,6 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 		
 	}
 
-	@Override
-	protected Object clone()
-	{
-		MetaMetadataCollectionField cloned = new MetaMetadataCollectionField();
-		cloned.setCloned(true);
-		cloned.inheritAttributes(this);
-		cloned.copyClonedFieldsFrom(this);
-		
-		this.cloneKidsTo(cloned);
-		
-		cloned.clonedFrom = this;
-		return cloned;
-	}
-
 	public String getChildTag()
 	{
 		if (childTag != null)

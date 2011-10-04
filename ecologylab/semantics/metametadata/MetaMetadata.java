@@ -506,7 +506,8 @@ implements IMappable<String>//, HasLocalTranslationScope
 						MetadataFieldDescriptor fd = f.findOrGenerateMetadataFieldDescriptor(tscope, cd);
 						cd.addMetadataFieldDescriptor(fd);
 					}
-					if (!f.isCloned() && f instanceof MetaMetadataNestedField)
+//					if (!f.isCloned() && f instanceof MetaMetadataNestedField)
+					if (f.parent() == this && f instanceof MetaMetadataNestedField)
 						((MetaMetadataNestedField) f).findOrGenerateMetadataClassDescriptor(tscope);
 				}
 				

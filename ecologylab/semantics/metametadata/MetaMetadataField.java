@@ -287,8 +287,6 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
 	 */
 	protected boolean																			inheritInProcess				= false;
 
-//	protected boolean																			bindDescriptorsFinished	= false;
-
 	/**
 	 * Class of the Metadata object that corresponds to this. Non-null for nested and collection
 	 * fields. Null for scalar fields.
@@ -305,16 +303,6 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
 	 * (for caching toString())
 	 */
 	String																								toString;
-
-	/**
-	 * mark if this field is cloned. used in the inheritance process.
-	 */
-	private boolean																				cloned									= false;
-	
-	/**
-	 * the field this one is cloned from, if this one is cloned.
-	 */
-	protected MetaMetadataField														clonedFrom;
 
 	/**
 	 * from which field this one inherits. could be null if this field is declared for the first time.
@@ -367,42 +355,6 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
 		return false;
 	}
 
-	/**
-	 * clone this field. each field will have a cloned copy when inherited. the kids may or may not
-	 * be cloned, depending on the type of the field.
-	 */
-	abstract protected Object clone();
-	
-	/**
-	 * get the field this one clones from (if this one is cloned).
-	 * 
-	 * @return
-	 */
-	public MetaMetadataField getClonedFrom()
-	{
-		return clonedFrom;
-	}
-	
-	/**
-	 * copy additional fields during clone(), other than those processed by inheritAttributes().
-	 * 
-	 * @param other
-	 */
-	protected void copyClonedFieldsFrom(MetaMetadataField other)
-	{
-		this.displayedLabel = other.displayedLabel;
-		this.repository = other.repository;
-		this.inheritFinished = other.inheritFinished;
-		this.inheritInProcess = other.inheritInProcess;
-		this.inheritedField = other.inheritedField;
-		this.declaringMmd = other.declaringMmd;
-		if (this instanceof MetaMetadataNestedField)
-		{
-			((MetaMetadataNestedField) this).setInheritedMmd(((MetaMetadataNestedField) other).getInheritedMmd());
-			((MetaMetadataNestedField) this).setMmdScope(((MetaMetadataNestedField) other).getMmdScope());
-		}
-	}
-	
 	/**
 	 * get the nested fields inside of this one.
 	 * 
@@ -1085,16 +1037,6 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
 		return schemaOrgItemprop;
 	}
 	
-	public boolean isCloned()
-	{
-		return cloned;
-	}
-	
-	void setCloned(boolean cloned)
-	{
-		this.cloned = cloned;
-	}
-
 	public MetaMetadata getDeclaringMmd()
 	{
 		return declaringMmd;

@@ -65,17 +65,6 @@ public class MetaMetadataScalarField extends MetaMetadataField
 		
 	}
 
-	@Override
-	protected Object clone()
-	{
-		MetaMetadataScalarField cloned = new MetaMetadataScalarField();
-		cloned.setCloned(true);
-		cloned.inheritAttributes(this);
-		cloned.copyClonedFieldsFrom(this);
-		cloned.clonedFrom = this;
-		return cloned;
-	}
-
 	/**
 	 * @return the scalarType
 	 */

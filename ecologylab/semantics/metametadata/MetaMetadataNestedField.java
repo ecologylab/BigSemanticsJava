@@ -3,13 +3,11 @@ package ecologylab.semantics.metametadata;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import ecologylab.collections.MultiAncestorScope;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
-import ecologylab.semantics.metametadata.MetaMetadataField.MetadataFieldDescriptorProxy;
 import ecologylab.semantics.metametadata.exceptions.MetaMetadataException;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.TranslationScope;
@@ -119,9 +117,6 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	 */
 	public MetaMetadata getInheritedMmd()
 	{
-		if (inheritedMmd == null)
-			if (this.clonedFrom != null)
-				inheritedMmd = ((MetaMetadataNestedField) this.clonedFrom).getInheritedMmd();
 		return inheritedMmd;
 	}
 
@@ -275,23 +270,6 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	public boolean isPolymorphicInherently()
 	{
 		return (polymorphicScope != null && polymorphicScope.length() > 0) || (polymorphicClasses != null && polymorphicClasses.length() > 0);
-	}
-
-	protected void cloneKidsTo(MetaMetadataNestedField cloned)
-	{
-		HashMapArrayList<String, MetaMetadataField> childMetaMetadata = this.kids;
-		if (childMetaMetadata != null)
-		{
-			HashMapArrayList<String, MetaMetadataField> newKids = new HashMapArrayList<String, MetaMetadataField>();
-			for (String kidName : childMetaMetadata.keySet())
-			{
-				MetaMetadataField kid = childMetaMetadata.get(kidName);
-				MetaMetadataField clonedKid = (MetaMetadataField) kid.clone();
-				clonedKid.setParent(cloned);
-				newKids.put(kidName, clonedKid);
-			}
-			cloned.setChildMetaMetadata(newKids);
-		}
 	}
 
 	/**
