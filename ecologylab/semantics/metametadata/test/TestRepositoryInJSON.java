@@ -2,7 +2,6 @@ package ecologylab.semantics.metametadata.test;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -225,8 +224,7 @@ public class TestRepositoryInJSON
 	{
 		// use json repository for NewMmTest
 		MetaMetadataRepositoryInit.DEFAULT_REPOSITORY_LOCATION = destXmlRepoDir.getAbsolutePath();
-		MetaMetadataRepositoryInit.DEFAULT_REPOSITORY_FILE_SUFFIX = ".xml";
-		MetaMetadataRepositoryInit.DEFAULT_REPOSITORY_FILE_LOADER = MetaMetadataRepository.XML_FILE_LOADER;
+		MetaMetadataRepositoryInit.DEFAULT_REPOSITORY_FORMAT = Format.XML;
 
 		tryNewMmTest();
 	}
@@ -250,8 +248,7 @@ public class TestRepositoryInJSON
 
 		// use json repository for NewMmTest
 		MetaMetadataRepositoryInit.DEFAULT_REPOSITORY_LOCATION = jsonRepoDir.getAbsolutePath();
-		MetaMetadataRepositoryInit.DEFAULT_REPOSITORY_FILE_SUFFIX = ".json";
-		MetaMetadataRepositoryInit.DEFAULT_REPOSITORY_FILE_LOADER = MetaMetadataRepository.JSON_FILE_LOADER;
+		MetaMetadataRepositoryInit.DEFAULT_REPOSITORY_FORMAT = Format.JSON;
 
 		tryNewMmTest();
 	}
