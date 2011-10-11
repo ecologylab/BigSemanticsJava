@@ -35,8 +35,15 @@ public class BibTeXToMMD extends NewMmTest
 	public void callback(DocumentClosure incomingClosure)
 	{
 		if (outputOneAtATime)
-			ClassDescriptor.serialize(incomingClosure, outputStream, Format.BIBTEX);
-			
+			try
+			{
+				ClassDescriptor.serialize(incomingClosure, outputStream, Format.BIBTEX);
+			}
+			catch (SIMPLTranslationException e1)
+			{
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		else if (++currentResult == documentCollection.size())
 		{
 			System.out.println("\n\n");
