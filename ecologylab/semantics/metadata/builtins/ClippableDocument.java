@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.metadata.mm_name;
 import ecologylab.semantics.metadata.scalar.MetadataInteger;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.serialization.annotations.simpl_classes;

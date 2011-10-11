@@ -5,7 +5,7 @@ package ecologylab.semantics.metametadata;
 
 import java.lang.reflect.Field;
 
-import ecologylab.semantics.metadata.Metadata;
+import ecologylab.semantics.metadata.mm_dont_inherit;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.FieldDescriptor;
 
@@ -26,7 +26,7 @@ public class MetaMetadataFieldDescriptor extends FieldDescriptor
 		super(declaringClassDescriptor, field, annotationType);
 		if (field != null)
 		{
-			isInheritable				= !field.isAnnotationPresent(Metadata.mm_dont_inherit.class);
+			isInheritable				= !field.isAnnotationPresent(mm_dont_inherit.class);
 		}
 		else
 		{

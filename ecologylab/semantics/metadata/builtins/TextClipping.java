@@ -1,5 +1,6 @@
 package ecologylab.semantics.metadata.builtins;
 
+import ecologylab.semantics.metadata.mm_name;
 import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.model.text.SemanticTextChunk;

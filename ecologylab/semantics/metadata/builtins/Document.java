@@ -20,6 +20,7 @@ import ecologylab.semantics.documentparsers.ParserResult;
 import ecologylab.semantics.html.documentstructure.SemanticAnchor;
 import ecologylab.semantics.html.documentstructure.SemanticInLinks;
 import ecologylab.semantics.metadata.Metadata;
+import ecologylab.semantics.metadata.mm_name;
 import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
 import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;

@@ -7,6 +7,7 @@ import ecologylab.net.MimeType;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.html.documentstructure.ImageConstants;
+import ecologylab.semantics.metadata.mm_name;
 import ecologylab.semantics.metadata.scalar.MetadataDate;
 import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;

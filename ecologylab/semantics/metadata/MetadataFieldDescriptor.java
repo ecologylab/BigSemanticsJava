@@ -93,7 +93,7 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 		super(declaringClassDescriptor, field, annotationType);
 		if (field != null)
 		{
-			isMixin							= field.isAnnotationPresent(Metadata.semantics_mixin.class);
+			isMixin							= field.isAnnotationPresent(semantics_mixin.class);
 			//TODO -- for future expansion??? andruid 4/14/09
 //			hwSetMethod					= ReflectionTools.getMethod(thatClass, "hwSet", SET_METHOD_ARG);
 		}
@@ -210,7 +210,7 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 		String result	= null;
 		
 		Field thatField = this.field;
-		final Metadata.mm_name mmNameAnnotation 	= thatField.getAnnotation(Metadata.mm_name.class);
+		final mm_name mmNameAnnotation 	= thatField.getAnnotation(mm_name.class);
 	
 		if (mmNameAnnotation != null)
 		{
@@ -219,7 +219,7 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 		if (result == null)
 		{
 			result			= XMLTools.getXmlTagName(thatField.getName(), null);
-			if (!this.isScalar() && !thatField.isAnnotationPresent(Metadata.mm_no.class))
+			if (!this.isScalar() && !thatField.isAnnotationPresent(mm_no.class))
 				error("Missing @mm_name annotation for " + thatField + "\tusing " + result);
 		}
 		return result;
@@ -412,6 +412,12 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 		MetadataFieldDescriptor cloned = null;
 		cloned = (MetadataFieldDescriptor) super.clone();
 		return cloned;
+	}
+	
+	public void setGeneric(String genericParametersString)
+	{
+		this.isGeneric = true;
+		this.genericParametersString = genericParametersString;
 	}
 	
 }

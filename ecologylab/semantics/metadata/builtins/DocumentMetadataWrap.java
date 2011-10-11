@@ -5,6 +5,7 @@ package ecologylab.semantics.metadata.builtins;
 
 import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.metadata.Metadata;
+import ecologylab.semantics.metadata.mm_name;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.namesandnums.SemanticsNames;

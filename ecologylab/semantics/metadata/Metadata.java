@@ -1,11 +1,6 @@
 package ecologylab.semantics.metadata;
 
 import java.io.IOException;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -726,14 +721,6 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 		return false;
 	}
 
-	@Retention(RetentionPolicy.RUNTIME)
-	@Target(ElementType.FIELD)
-	@Inherited
-	public @interface semantics_mixin
-	{
-
-	}
-
 	@Override
 	public boolean hasCompositeTermVector()
 	{
@@ -780,28 +767,6 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 		return false;
 	}
 
-	@Retention(RetentionPolicy.RUNTIME)
-	@Inherited
-	@Target(ElementType.FIELD)
-	public @interface mm_name
-	{
-		String value();
-	}
-	
-	@Retention(RetentionPolicy.RUNTIME)
-	@Inherited
-	@Target(ElementType.FIELD)
-	public @interface mm_no
-	{
-	}
-	
-	@Retention(RetentionPolicy.RUNTIME)
-	@Inherited
-	@Target(ElementType.FIELD)
-	public @interface mm_dont_inherit
-	{
-	}
-	
 	public void serializeToHtml(Appendable a, TranslationContext serializationContext)
 			throws IllegalArgumentException, IllegalAccessException, IOException, SIMPLTranslationException
 	{

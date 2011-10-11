@@ -5,6 +5,7 @@ package ecologylab.semantics.metadata.builtins;
 
 import ecologylab.semantics.collecting.MetaMetadataRepositoryInit;
 import ecologylab.semantics.metadata.Metadata;
+import ecologylab.semantics.metadata.mm_name;
 import ecologylab.semantics.metadata.scalar.MetadataStringBuilder;
 import ecologylab.serialization.annotations.simpl_inherit;
 import ecologylab.serialization.annotations.simpl_scalar;

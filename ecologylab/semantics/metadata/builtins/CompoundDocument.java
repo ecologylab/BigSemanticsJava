@@ -10,6 +10,7 @@ import ecologylab.net.ParsedURL;
 import ecologylab.semantics.collecting.Crawler;
 import ecologylab.semantics.documentparsers.CompoundDocumentParserCrawlerResult;
 import ecologylab.semantics.documentparsers.DocumentParser;
+import ecologylab.semantics.metadata.mm_name;
 import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.seeding.Seed;

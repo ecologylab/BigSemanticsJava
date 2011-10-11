@@ -5,8 +5,7 @@ import java.util.List;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
-import ecologylab.semantics.metadata.Metadata.mm_dont_inherit;
-import ecologylab.semantics.metadata.Metadata.mm_name;
+import ecologylab.semantics.metadata.mm_dont_inherit;
 import ecologylab.semantics.metadata.scalar.types.MetadataScalarType;
 import ecologylab.semantics.metametadata.MetaMetadataField.MetadataFieldDescriptorProxy;
 import ecologylab.serialization.FieldTypes;
@@ -276,6 +275,7 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 			if (!wrapped)
 				tagName = null;
 			
+			String genericTypeName = null;
 			int typeCode = this.getFieldType();
 			switch (typeCode)
 			{
@@ -297,6 +297,7 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 						null,
 						null,
 						javaTypeName);
+				genericTypeName = fieldCd.getDescribedClassSimpleName();
 				break;
 			}
 			case FieldTypes.COLLECTION_SCALAR:
@@ -316,9 +317,12 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 						scalarType,
 						null,
 						javaTypeName);
+				genericTypeName = scalarType.getCSharpTypeName();
+				break;
 			}
 			}
 			fd.setWrapped(wrapped);
+			fd.setGeneric("<" + genericTypeName + ">");
 		}
 		this.metadataFieldDescriptor = fd;
 		return fd;

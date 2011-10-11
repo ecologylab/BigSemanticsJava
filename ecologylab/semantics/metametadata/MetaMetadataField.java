@@ -10,9 +10,9 @@ import java.util.List;
 
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.semantics.metadata.Metadata;
-import ecologylab.semantics.metadata.Metadata.mm_dont_inherit;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
+import ecologylab.semantics.metadata.mm_dont_inherit;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.FieldTypes;
@@ -739,7 +739,17 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
 		return javaClassName;
 	}
 	
-	abstract public void addAdditionalMetaInformation(List<MetaInformation> metaInfo, MmdCompilerService compiler);
+	/**
+	 * Add additional meta information about the field to an existing meta information list.
+	 * 
+	 * @param metaInfoBuf
+	 *          The existing meta information list. Additional meta information will be added to this
+	 *          list. Cannot be null.
+	 * @param compiler
+	 *          Providing compiler services such as dependency handling, in case needed in this
+	 *          method. This is not used right now; just for extensibility.
+	 */
+	abstract public void addAdditionalMetaInformation(List<MetaInformation> metaInfoBuf, MmdCompilerService compiler);
 
 	private String fieldNameInJava = null;
 	private String capFieldNameInJava = null;

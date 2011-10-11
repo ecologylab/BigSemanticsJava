@@ -10,6 +10,6 @@ package ecologylab.semantics.metametadata;
 public interface MmdCompilerService
 {
 
-	// TODO expose addDependency()
+	// currently not used, but can be extended to expose compiler functionalities to MetaMetadataField.
 	
 }

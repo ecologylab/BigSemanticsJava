@@ -153,11 +153,11 @@ public class MetaMetadataScalarField extends MetaMetadataField
 	}
 	
 	@Override
-	public void addAdditionalMetaInformation(List<MetaInformation> metaInfo, MmdCompilerService compiler)
+	public void addAdditionalMetaInformation(List<MetaInformation> metaInfoBuf, MmdCompilerService compiler)
 	{
 		// @simpl_composite_as_scalar
 		if (this.compositeScalar)
-			metaInfo.add(new MetaInformation(simpl_composite_as_scalar.class));
+			metaInfoBuf.add(new MetaInformation(simpl_composite_as_scalar.class));
 
 		// @filter
 		if (filter != null && getMetaMetadataParser().equals(ParserBase.DIRECT_BINDING_PARSER))
@@ -181,7 +181,7 @@ public class MetaMetadataScalarField extends MetaMetadataField
 						new Object[] { regex, replace }
 						);
 			}
-			metaInfo.add(simplFilter);
+			metaInfoBuf.add(simplFilter);
 		}
 	}
 
