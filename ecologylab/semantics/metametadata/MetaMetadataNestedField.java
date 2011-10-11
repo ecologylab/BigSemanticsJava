@@ -6,10 +6,12 @@ import java.util.List;
 
 import ecologylab.collections.MultiAncestorScope;
 import ecologylab.generic.HashMapArrayList;
+import ecologylab.semantics.metadata.Metadata.mm_name;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
 import ecologylab.semantics.metametadata.exceptions.MetaMetadataException;
 import ecologylab.serialization.ClassDescriptor;
+import ecologylab.serialization.MetaInformation;
 import ecologylab.serialization.TranslationScope;
 import ecologylab.serialization.annotations.simpl_composite;
 import ecologylab.serialization.annotations.simpl_inherit;
@@ -518,6 +520,12 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	public void setSchemaOrgItemtype(String schemaOrgItemtype)
 	{
 		this.schemaOrgItemtype = schemaOrgItemtype;
+	}
+
+	@Override
+	public void addAdditionalMetaInformation(List<MetaInformation> metaInfo, MmdCompilerService compiler)
+	{
+		metaInfo.add(new MetaInformation(mm_name.class, false, getName()));
 	}
 
 }

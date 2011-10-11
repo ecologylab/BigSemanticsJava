@@ -1,6 +1,7 @@
 package ecologylab.semantics.metametadata;
 
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import ecologylab.semantics.documentparsers.ParserBase;
@@ -12,6 +13,7 @@ import ecologylab.semantics.metadata.scalar.types.MetadataStringScalarType;
 import ecologylab.semantics.metametadata.exceptions.MetaMetadataException;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.FieldTypes;
+import ecologylab.serialization.MetaInformation;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.StringFormat;
 import ecologylab.serialization.TranslationScope;
@@ -149,32 +151,38 @@ public class MetaMetadataScalarField extends MetaMetadataField
 	
 		return metaMetadataParser;
 	}
-
+	
 	@Override
-	public String getAdditionalAnnotationsInJava(MmdCompilerService compiler) throws IOException
+	public void addAdditionalMetaInformation(List<MetaInformation> metaInfo, MmdCompilerService compiler)
 	{
-		StringBuilder appendable = StringBuilderUtils.acquire();
-		
 		// @simpl_composite_as_scalar
-		compiler.appendAnnotation(appendable, " ", simpl_composite_as_scalar.class);
-		
+		if (this.compositeScalar)
+			metaInfo.add(new MetaInformation(simpl_composite_as_scalar.class));
+
 		// @filter
 		if (filter != null && getMetaMetadataParser().equals(ParserBase.DIRECT_BINDING_PARSER))
 		{
 			String regex = filter.getJavaRegex();
-			compiler.appendAnnotation(appendable, " ", simpl_filter.class);
-			appendable.append("(regex=\"").append(regex).append("\"");
 			String replace = filter.getJavaReplace();
-			if (replace != null)
+			MetaInformation simplFilter;
+			if (replace == null)
 			{
-				appendable.append(", replace=\"").append(replace).append("\"");
+				simplFilter = new MetaInformation(
+						simpl_filter.class,
+						new String[] { "regex" },
+						new Object[] { regex }
+						);
 			}
-			appendable.append(")");
+			else
+			{
+				simplFilter = new MetaInformation(
+						simpl_filter.class,
+						new String[] { "regex", "replace" },
+						new Object[] { regex, replace }
+						);
+			}
+			metaInfo.add(simplFilter);
 		}
-		
-		String annotations = appendable.toString();
-		StringBuilderUtils.release(appendable);
-		return annotations;
 	}
 
 	@Override

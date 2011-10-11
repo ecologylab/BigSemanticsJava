@@ -13,7 +13,9 @@ import ecologylab.appframework.ApplicationEnvironment;
 import ecologylab.appframework.SingletonApplicationEnvironment;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
+import ecologylab.semantics.metametadata.MetaMetadataRepositoryLoader;
 import ecologylab.semantics.metametadata.MetaMetadataTranslationScope;
+import ecologylab.serialization.Format;
 import ecologylab.serialization.SIMPLTranslationException;
 
 /**
@@ -67,7 +69,8 @@ public class MetaMetadataCompiler extends SingletonApplicationEnvironment
 	
 	public void compile(String mmdRepositoryDir, String generatedSemanticsLocation)
 	{
-		MetaMetadataRepository metaMetadataRepository = MetaMetadataRepository.loadXmlFromDir(new File(mmdRepositoryDir));
+		MetaMetadataRepositoryLoader loader = new MetaMetadataRepositoryLoader();
+		MetaMetadataRepository metaMetadataRepository = loader.loadFromDir(new File(mmdRepositoryDir), Format.XML);
 		compile(metaMetadataRepository, generatedSemanticsLocation);
 	}
 

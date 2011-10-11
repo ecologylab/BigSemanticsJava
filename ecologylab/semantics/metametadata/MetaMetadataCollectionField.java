@@ -1,5 +1,7 @@
 package ecologylab.semantics.metametadata;
 
+import java.util.List;
+
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
@@ -8,6 +10,7 @@ import ecologylab.semantics.metadata.Metadata.mm_name;
 import ecologylab.semantics.metadata.scalar.types.MetadataScalarType;
 import ecologylab.semantics.metametadata.MetaMetadataField.MetadataFieldDescriptorProxy;
 import ecologylab.serialization.FieldTypes;
+import ecologylab.serialization.MetaInformation;
 import ecologylab.serialization.TranslationContext;
 import ecologylab.serialization.TranslationScope;
 import ecologylab.serialization.XMLTools;
@@ -84,12 +87,6 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 	public boolean isNoWrap()
 	{
 		return noWrap;
-	}
-
-	@Override
-	public String getAdditionalAnnotationsInJava(MmdCompilerService compiler)
-	{
-		return "@" + mm_name.class.getSimpleName() + "(\"" + getName() + "\")";
 	}
 
 	@Override

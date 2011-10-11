@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.serialization.ClassDescriptor;
+import ecologylab.serialization.MetaInformation;
 import ecologylab.serialization.annotations.simpl_inherit;
 
 /**
@@ -54,22 +55,6 @@ public class MetadataClassDescriptor extends ClassDescriptor<MetadataFieldDescri
 		this.addFieldDescriptor(fd);
 	}
 	
-//	public void traverseAndResolvePolymorphismAndOtherTagsForCompilation()
-//	{
-//		if (this.definingMmd == null) // this could be true for built-ins
-//			return;
-//		
-//		// resolve @simpl_other_tags
-//		if (this.definingMmd.isUseClassLevelOtherTags())
-//			this.otherTags = this.definingMmd.getOtherTags();
-//		
-//		// process on fields
-//		for (MetadataFieldDescriptor mfd : this.getDeclaredFieldDescriptorsByFieldName())
-//		{
-//			mfd.traverseAndResolvePolymorphismAndOtherTagsForCompilation();
-//		}
-//	}
-
 	/**
 	 * @return the definingMmd
 	 */
@@ -77,5 +62,5 @@ public class MetadataClassDescriptor extends ClassDescriptor<MetadataFieldDescri
 	{
 		return definingMmd;
 	}
-	
+
 }

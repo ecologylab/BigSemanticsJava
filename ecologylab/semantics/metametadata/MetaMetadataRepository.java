@@ -4,14 +4,9 @@
 package ecologylab.semantics.metametadata;
 
 import java.io.File;
-import java.io.FileFilter;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -36,12 +31,8 @@ import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.Image;
 import ecologylab.semantics.metadata.builtins.MetadataBuiltinsTranslationScope;
 import ecologylab.semantics.metadata.scalar.types.MetadataScalarType;
-import ecologylab.semantics.metametadata.exceptions.MetaMetadataException;
 import ecologylab.semantics.namesandnums.DocumentParserTagNames;
 import ecologylab.serialization.ElementState;
-import ecologylab.serialization.Format;
-import ecologylab.serialization.SIMPLTranslationException;
-import ecologylab.serialization.StringFormat;
 import ecologylab.serialization.TranslationContext;
 import ecologylab.serialization.TranslationScope;
 import ecologylab.serialization.annotations.simpl_collection;
@@ -70,11 +61,9 @@ implements PackageSpecifier, DocumentParserTagNames
 
 	private static final String																	DEFAULT_STYLE_NAME							= "default";
 
-	protected static final int																	BUFFER_SIZE											= 4096;
+	static MetaMetadata																					baseDocumentMM;
 
-	private static MetaMetadata																	baseDocumentMM;
-
-	private static MetaMetadata																	baseImageMM;
+	static MetaMetadata																					baseImageMM;
 
 	// [region] de/serializable data fields.
 
@@ -145,14 +134,14 @@ implements PackageSpecifier, DocumentParserTagNames
 	 */
 	@simpl_map("meta_metadata")
 	@simpl_nowrap
-	private HashMapArrayList<String, MetaMetadata>							repositoryByName;
+	HashMapArrayList<String, MetaMetadata>											repositoryByName;
 
 	// [endregion]
 
 	/**
 	 * package mmd scopes.
 	 */
-	private Map<String, MultiAncestorScope<MetaMetadata>>				packageMmdScopes;
+	Map<String, MultiAncestorScope<MetaMetadata>>								packageMmdScopes;
 
 	// [region] repository maps generated from repositoryByName. used for look-up.
 
@@ -194,12 +183,14 @@ implements PackageSpecifier, DocumentParserTagNames
 	/**
 	 * Repository of images with noAnchroNoQuery URL string as key.
 	 */
-//	private HashMap<String, MetaMetadata>												imageRepositoryByUrlStripped		= new HashMap<String, MetaMetadata>();
+	// private HashMap<String, MetaMetadata> imageRepositoryByUrlStripped = new HashMap<String,
+	// MetaMetadata>();
 
 	/**
 	 * Repository of images with URL pattern as key.
 	 */
-//	private HashMap<String, ArrayList<RepositoryPatternEntry>>	imageRepositoryByPattern				= new HashMap<String, ArrayList<RepositoryPatternEntry>>();
+	// private HashMap<String, ArrayList<RepositoryPatternEntry>> imageRepositoryByPattern = new
+	// HashMap<String, ArrayList<RepositoryPatternEntry>>();
 
 	// [endregion]
 
@@ -213,7 +204,7 @@ implements PackageSpecifier, DocumentParserTagNames
 	/**
 	 * for debug.
 	 */
-	private File																								file;
+	File																												file;
 
 	private static boolean																			initializedTypes;
 
@@ -360,226 +351,6 @@ implements PackageSpecifier, DocumentParserTagNames
 	
 	// [endregion]
 	
-	public static interface RepositoryFileLoader
-	{
-		MetaMetadataRepository loadRepositoryFile(File file) throws SIMPLTranslationException, IOException;
-	}
-	
-	public static RepositoryFileLoader	XML_FILE_LOADER	= new RepositoryFileLoader() {
-		@Override
-		public MetaMetadataRepository loadRepositoryFile( File file) throws SIMPLTranslationException
-		{
-			return (MetaMetadataRepository) MetaMetadataTranslationScope .get().deserialize(file, Format.XML);
-		}
-	};
-	
-	public static RepositoryFileLoader JSON_FILE_LOADER = new RepositoryFileLoader() {
-		@Override
-		public MetaMetadataRepository loadRepositoryFile(File file) throws SIMPLTranslationException, IOException
-		{
-			StringBuilder json = new StringBuilder();
-			char[] buffer = new char[BUFFER_SIZE];
-			FileReader reader = new FileReader(file);
-			while (true)
-			{
-				int n = reader.read(buffer, 0, BUFFER_SIZE);
-				if (n < 0)
-					break;
-				json.append(buffer, 0, n);
-			}
-			reader.close();
-			return (MetaMetadataRepository) MetaMetadataTranslationScope.get().deserialize(json, StringFormat.JSON);
-		}
-	};
-	
-	protected static MetaMetadataRepository loadFromFiles(List<File> files, RepositoryFileLoader fileLoader)
-	{
-		MetaMetadataRepository result = new MetaMetadataRepository();
-		result.repositoryByName = new HashMapArrayList<String, MetaMetadata>();
-		result.packageMmdScopes = new HashMap<String, MultiAncestorScope<MetaMetadata>>();
-		
-		for (File file : files)
-		{
-			if (file == null || !file.exists())
-			{
-				result.warning("ignoring " + file);
-				continue;
-			}
-			
-			println("MetaMetadataRepository read:\t" + file.getPath());
-			
-			try
-			{
-				MetaMetadataRepository repoData = fileLoader.loadRepositoryFile(file);
-				if (repoData != null)
-				{
-					repoData.file = file;
-					
-					// sort meta-metadata into result.repositoryByName and mmd scope for that package.
-					if (repoData.repositoryByName != null)
-					{
-						for (String mmdName : repoData.repositoryByName.keySet())
-						{
-							MetaMetadata mmd = repoData.repositoryByName.get(mmdName);
-							mmd.setFile(file);
-							mmd.setParent(result);
-							mmd.setRepository(result);
-
-							String packageName = mmd.packageName();
-							if (packageName == null)
-							{
-								packageName = repoData.packageName();
-								if (packageName == null)
-									throw new MetaMetadataException("no package name specified for " + mmd);
-								mmd.setPackageName(packageName);
-							}
-							MultiAncestorScope<MetaMetadata> packageMmdScope = result.packageMmdScopes
-									.get(packageName);
-							if (packageMmdScope == null)
-							{
-								packageMmdScope = new MultiAncestorScope<MetaMetadata>(result.repositoryByName);
-								result.packageMmdScopes.put(packageName, packageMmdScope);
-							}
-
-							switch (mmd.visibility)
-							{
-							case GLOBAL:
-							{
-								MetaMetadata existingMmd = result.repositoryByName.get(mmdName);
-								if (existingMmd != null && existingMmd != mmd)
-									throw new MetaMetadataException("meta-metadata already exists: " + mmdName
-											+ " in " + file);
-								result.repositoryByName.put(mmdName, mmd);
-								break;
-							}
-							case PACKAGE:
-							{
-								MetaMetadata existingMmd = packageMmdScope.get(mmdName);
-								if (existingMmd != null && existingMmd != mmd)
-									throw new MetaMetadataException("meta-metadata already exists: " + mmdName
-											+ " in " + file);
-								packageMmdScope.put(mmdName, mmd);
-								break;
-							}
-							}
-						}
-
-						for (MetaMetadata mmd : repoData.repositoryByName.values())
-						{
-							MultiAncestorScope<MetaMetadata> packageMmdScope = result.packageMmdScopes.get(mmd
-									.packageName());
-							mmd.setMmdScope(packageMmdScope);
-						}
-					}
-
-					// combine other parts
-					result.integrateRepositoryWithThis(repoData);
-				}
-			}
-			catch (SIMPLTranslationException e)
-			{
-				Debug.error("MetaMetadataRepository", "translating repository source file " + file.getAbsolutePath());
-				e.printStackTrace();
-			}
-			catch (IOException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		
-		// initialize meta-metadata look-up maps
-//		result.initializeLocationBasedMaps(); // cannot do this since it needs the metadata TScope.
-		result.initializeSuffixAndMimeBasedMaps();
-		
-		// We might want to do this only if we have some policies worth enforcing.
-		ParsedURL.cookieManager.setCookiePolicy(CookieProcessing.semanticsCookiePolicy);
-	
-		// FIXME -- get rid of this?!
-		Metadata.setRepository(result);
-		
-		baseDocumentMM	= result.getMMByName(DOCUMENT_TAG);
-		baseImageMM			= result.getMMByName(IMAGE_TAG);
-		
-		return result;
-	}
-
-	/**
-	 * Load meta-metadata from repository files from a directly. Loads the base level xml files first,
-	 * then the xml files in the repositorySources folder and lastly the files in the powerUser
-	 * folder. Does not build repository maps, because this requires a Metadata TranslationScope,
-	 * which comes from ecologylabGeneratedSemantics.
-	 * 
-	 * @param dir
-	 *          the repository directory.
-	 * @param fileNameSuffix
-	 * @param fileLoader
-	 * @return
-	 */
-	public static MetaMetadataRepository loadFromDir(File dir, final String fileNameSuffix, RepositoryFileLoader fileLoader)
-	{
-		if (!dir.exists())
-		{
-			throw new MetaMetadataException("MetaMetadataRepository directory does not exist : " + dir.getAbsolutePath());
-		}
-		
-		println("MetaMetadataRepository directory : " + dir + "\n");
-	
-		FileFilter xmlFilter = new FileFilter()
-		{
-			public boolean accept(File dir)
-			{
-				return dir.getName().endsWith(fileNameSuffix);
-			}
-		};
-		
-		File repositorySources = new File(dir, "repositorySources");
-		File powerUserDir = new File(dir, "powerUser");
-		
-		List<File> allFiles = new ArrayList<File>();
-		addFilesInDirToList(dir, xmlFilter, allFiles);
-		addFilesInDirToList(repositorySources, xmlFilter, allFiles);
-		addFilesInDirToList(powerUserDir, xmlFilter, allFiles);
-		
-		return loadFromFiles(allFiles, fileLoader);
-	}
-
-	/**
-	 * Load meta-metadata from repository files from a set of files. Does not build location-based
-	 * repository maps, because this requires a Metadata TranslationScope, which comes from
-	 * ecologylabGeneratedSemantics.
-	 * 
-	 * @param files
-	 * @return
-	 */
-	public static MetaMetadataRepository loadXmlFromFiles(File... files)
-	{
-		return loadFromFiles(Arrays.asList(files), XML_FILE_LOADER);
-	}
-
-	public static MetaMetadataRepository loadXmlFromDir(File dir)
-	{
-		return loadFromDir(dir, ".xml", XML_FILE_LOADER);
-	}
-	
-	public static MetaMetadataRepository loadJsonFromFiles(File... files)
-	{
-		return loadFromFiles(Arrays.asList(files), JSON_FILE_LOADER);
-	}
-
-	public static MetaMetadataRepository loadJsonFromDir(File dir)
-	{
-		return loadFromDir(dir, ".json", JSON_FILE_LOADER);
-	}
-	
-	private static void addFilesInDirToList(File dir, FileFilter filter, List<File> buf)
-	{
-		if (dir == null || !dir.exists())
-			return;
-		for (File f : dir.listFiles(filter))
-			buf.add(f);
-	}
-
 	/**
 	 * Combines the data stored in the parameter repository into this repository, except for
 	 * repositoryByName.
@@ -587,7 +358,7 @@ implements PackageSpecifier, DocumentParserTagNames
 	 * @param theOtherRepository
 	 * @return
 	 */
-	private void integrateRepositoryWithThis(MetaMetadataRepository theOtherRepository)
+	void integrateRepositoryWithThis(MetaMetadataRepository theOtherRepository)
 	{
 		this.userAgents = combineMap(this.userAgents, theOtherRepository.userAgents);
 
@@ -1102,7 +873,7 @@ implements PackageSpecifier, DocumentParserTagNames
 	/**
 	 * This initalizes the map based on mime type and suffix.
 	 */
-	private void initializeSuffixAndMimeBasedMaps()
+	void initializeSuffixAndMimeBasedMaps()
 	{
 		if (repositoryByName == null)
 			return;

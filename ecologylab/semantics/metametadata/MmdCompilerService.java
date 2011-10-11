@@ -1,15 +1,15 @@
 package ecologylab.semantics.metametadata;
 
-import java.io.IOException;
-import java.util.List;
 
+/**
+ * Make it possible for MetaMetadataField objects to use compiler services.
+ * 
+ * @author quyin
+ *
+ */
 public interface MmdCompilerService
 {
 
-	void appendAnnotation(Appendable appendable, String indent, Class annotationClass, boolean quoted, String params) throws IOException;
-	
-	void appendAnnotation(Appendable appendable, String indent, Class annotationClass) throws IOException;
-	
-	void appendAnnotation(Appendable appendable, String indent, Class annotationClass, boolean quoted, List<String> params) throws IOException;
+	// TODO expose addDependency()
 	
 }

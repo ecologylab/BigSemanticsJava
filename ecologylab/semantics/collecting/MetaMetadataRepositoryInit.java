@@ -19,9 +19,11 @@ import ecologylab.semantics.metadata.builtins.Clipping;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
+import ecologylab.semantics.metametadata.MetaMetadataRepositoryLoader;
 import ecologylab.semantics.namesandnums.DocumentParserTagNames;
 import ecologylab.semantics.namesandnums.SemanticsAssetVersions;
 import ecologylab.semantics.namesandnums.SemanticsNames;
+import ecologylab.serialization.Format;
 import ecologylab.serialization.TranslationScope;
 import ecologylab.serialization.TranslationScope.GRAPH_SWITCH;
 
@@ -34,31 +36,32 @@ import ecologylab.serialization.TranslationScope.GRAPH_SWITCH;
 public class MetaMetadataRepositoryInit extends Scope<Object>
 implements DocumentParserTagNames, ApplicationProperties, SemanticsNames
 {
-	public static String																			DEFAULT_REPOSITORY_LOCATION			= "../ecologylabSemantics/repository";
+	
+	public static String												DEFAULT_REPOSITORY_LOCATION	= "../ecologylabSemantics/repository";
 
-	public static String																			DEFAULT_REPOSITORY_FILE_SUFFIX	= ".xml";
+	public static Format												DEFAULT_REPOSITORY_FORMAT		= Format.XML;
 
-	public static MetaMetadataRepository.RepositoryFileLoader	DEFAULT_REPOSITORY_FILE_LOADER	= MetaMetadataRepository.XML_FILE_LOADER;
+	public static MetaMetadataRepositoryLoader	DEFAULT_REPOSITORY_LOADER		= new MetaMetadataRepositoryLoader();
 
-	public static final String																SEMANTICS												= "semantics/";
+	public static final String									SEMANTICS										= "semantics/";
 
-	protected static File																			METAMETADATA_REPOSITORY_DIR_FILE;
+	protected static File												METAMETADATA_REPOSITORY_DIR_FILE;
 
-	protected static File																			METAMETADATA_SITES_FILE;
+	protected static File												METAMETADATA_SITES_FILE;
 
 	/**
 	 * 
 	 * The repository has the metaMetadatas of the document types. The repository is populated as the
 	 * documents are processed.
 	 */
-	protected static MetaMetadataRepository										META_METADATA_REPOSITORY;
+	protected static MetaMetadataRepository			META_METADATA_REPOSITORY;
 
-	public static MetaMetadata																DOCUMENT_META_METADATA;
-	public static MetaMetadata																PDF_META_METADATA;
-	public static MetaMetadata																SEARCH_META_METADATA;
-	public static MetaMetadata																IMAGE_META_METADATA;
-	public static MetaMetadata																DEBUG_META_METADATA;
-	public static MetaMetadata																IMAGE_CLIPPING_META_METADATA;
+	public static MetaMetadata									DOCUMENT_META_METADATA;
+	public static MetaMetadata									PDF_META_METADATA;
+	public static MetaMetadata									SEARCH_META_METADATA;
+	public static MetaMetadata									IMAGE_META_METADATA;
+	public static MetaMetadata									DEBUG_META_METADATA;
+	public static MetaMetadata									IMAGE_CLIPPING_META_METADATA;
 
 	static
 	{
@@ -92,21 +95,21 @@ implements DocumentParserTagNames, ApplicationProperties, SemanticsNames
 	{
 		if (SingletonApplicationEnvironment.isInUse() && !SingletonApplicationEnvironment.runningInEclipse())
 		{
-			AssetsRoot mmAssetsRoot = new AssetsRoot(EnvironmentGeneric.configDir().getRelative(SEMANTICS), 
-					 Files.newFile(PropertiesAndDirectories.thisApplicationDir(), SEMANTICS + "/repository"));
+			AssetsRoot mmAssetsRoot = new AssetsRoot(
+					EnvironmentGeneric.configDir().getRelative(SEMANTICS), 
+					Files.newFile(PropertiesAndDirectories.thisApplicationDir(), SEMANTICS + "/repository")
+					);
 	
 			METAMETADATA_REPOSITORY_DIR_FILE 	= Assets.getAsset(mmAssetsRoot, null, "repository", null, !USE_ASSETS_CACHE, SemanticsAssetVersions.METAMETADATA_ASSET_VERSION);
 		}
 		else
 		{
-//			METAMETADATA_REPOSITORY_DIR_FILE 	= new File("../ecologylabSemantics/repository");
 			METAMETADATA_REPOSITORY_DIR_FILE 	= new File(DEFAULT_REPOSITORY_LOCATION);
 		}
 		
 		Debug.println("\t\t-- Reading meta_metadata from " + METAMETADATA_REPOSITORY_DIR_FILE);
-
 		
-		META_METADATA_REPOSITORY 					= MetaMetadataRepository.loadFromDir(METAMETADATA_REPOSITORY_DIR_FILE, DEFAULT_REPOSITORY_FILE_SUFFIX, DEFAULT_REPOSITORY_FILE_LOADER);
+		META_METADATA_REPOSITORY 					= DEFAULT_REPOSITORY_LOADER.loadFromDir(METAMETADATA_REPOSITORY_DIR_FILE, DEFAULT_REPOSITORY_FORMAT);
 		
 		DOCUMENT_META_METADATA						= META_METADATA_REPOSITORY.getMMByName(DOCUMENT_TAG);
 		PDF_META_METADATA									= META_METADATA_REPOSITORY.getMMByName(PDF_TAG);
@@ -136,7 +139,6 @@ implements DocumentParserTagNames, ApplicationProperties, SemanticsNames
 		return metadataTranslationScope;
 	}
 
-
 	/**
 	 * @return the generatedDocumentTranslations
 	 */
@@ -153,4 +155,13 @@ implements DocumentParserTagNames, ApplicationProperties, SemanticsNames
 	{
 		return generatedMediaTranslations;
 	}
+	
+	/**
+	 * @return the repositoryClippingTranslations
+	 */
+	public TranslationScope getRepositoryClippingTranslations()
+	{
+		return repositoryClippingTranslations;
+	}
+	
 }

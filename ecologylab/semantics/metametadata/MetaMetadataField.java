@@ -1,22 +1,22 @@
 package ecologylab.semantics.metametadata;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.semantics.metadata.Metadata;
+import ecologylab.semantics.metadata.Metadata.mm_dont_inherit;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
-import ecologylab.semantics.metadata.Metadata.mm_dont_inherit;
-import ecologylab.semantics.metametadata.MetaMetadataField.MetadataFieldDescriptorProxy;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.FieldTypes;
+import ecologylab.serialization.MetaInformation;
 import ecologylab.serialization.TranslationScope;
 import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.annotations.simpl_descriptor_classes;
@@ -739,7 +739,7 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
 		return javaClassName;
 	}
 	
-	abstract public String getAdditionalAnnotationsInJava(MmdCompilerService compiler) throws IOException;
+	abstract public void addAdditionalMetaInformation(List<MetaInformation> metaInfo, MmdCompilerService compiler);
 
 	private String fieldNameInJava = null;
 	private String capFieldNameInJava = null;

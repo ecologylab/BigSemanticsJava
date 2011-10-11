@@ -1,6 +1,7 @@
 package ecologylab.semantics.metametadata;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import ecologylab.collections.MultiAncestorScope;
 import ecologylab.generic.HashMapArrayList;
@@ -11,6 +12,7 @@ import ecologylab.semantics.metadata.Metadata.mm_dont_inherit;
 import ecologylab.semantics.metadata.Metadata.mm_name;
 import ecologylab.semantics.metametadata.MetaMetadata.Visibility;
 import ecologylab.semantics.metametadata.exceptions.MetaMetadataException;
+import ecologylab.serialization.MetaInformation;
 import ecologylab.serialization.TranslationScope;
 import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.annotations.simpl_collection;
@@ -153,12 +155,6 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 	public final ArrayList<DefVar> getDefVars()
 	{
 		return defVars;
-	}
-
-	@Override
-	public String getAdditionalAnnotationsInJava(MmdCompilerService compiler)
-	{
-		return "@" + mm_name.class.getSimpleName() + "(\"" + getName() + "\")";
 	}
 
 	@Override
