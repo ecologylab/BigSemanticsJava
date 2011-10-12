@@ -1,12 +1,11 @@
 package ecologylab.semantics.metametadata.test;
 
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
-import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.Format;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.StringFormat;
-import ecologylab.serialization.TranslationScope;
-import ecologylab.serialization.TranslationScope.GRAPH_SWITCH;
+import ecologylab.serialization.SimplTypesScope;
+import ecologylab.serialization.SimplTypesScope.GRAPH_SWITCH;
 
 public class BibTeXToMMD extends NewMmTest
 {
@@ -18,7 +17,7 @@ public class BibTeXToMMD extends NewMmTest
 	
 	public static void main(String[] args)
 	{
-		TranslationScope.graphSwitch	= GRAPH_SWITCH.ON;
+		SimplTypesScope.graphSwitch	= GRAPH_SWITCH.ON;
 		BibTeXToMMD mmTest;
 		try
 		{
@@ -37,7 +36,7 @@ public class BibTeXToMMD extends NewMmTest
 		if (outputOneAtATime)
 			try
 			{
-				ClassDescriptor.serialize(incomingClosure, outputStream, Format.BIBTEX);
+				SimplTypesScope.serialize(incomingClosure, outputStream, Format.BIBTEX);
 			}
 			catch (SIMPLTranslationException e1)
 			{
@@ -50,7 +49,7 @@ public class BibTeXToMMD extends NewMmTest
 			for (DocumentClosure documentClosure : documentCollection)
 				try
 				{
-					ClassDescriptor.serialize(incomingClosure, System.out, StringFormat.BIBTEX);
+					SimplTypesScope.serialize(incomingClosure, System.out, StringFormat.BIBTEX);
 				}
 				catch (SIMPLTranslationException e)
 				{

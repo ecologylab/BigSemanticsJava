@@ -15,12 +15,11 @@ import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.metametadata.MetaMetadataScalarField;
 import ecologylab.semantics.metametadata.MetaMetadataTranslationScope;
 import ecologylab.semantics.metametadata.NestedMetaMetadataFieldTranslationScope;
-import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.Format;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.StringFormat;
-import ecologylab.serialization.TranslationScope;
-import ecologylab.serialization.TranslationScope.GRAPH_SWITCH;
+import ecologylab.serialization.SimplTypesScope;
+import ecologylab.serialization.SimplTypesScope.GRAPH_SWITCH;
 
 /**
  * test repository in JSON format with NewMmTest-like tasks.
@@ -33,7 +32,7 @@ public class TestRepositoryInJSON
 
 	private static final int				BUFFER_SIZE	= 4096;
 
-	private static TranslationScope	mmdTScope		= null;
+	private static SimplTypesScope	mmdTScope		= null;
 
 	private void translateRepositoryIntoJSON(File srcDir, File destDir)
 	{
@@ -60,7 +59,7 @@ public class TestRepositoryInJSON
 			try
 			{
 				MetaMetadataRepository repo = (MetaMetadataRepository) mmdTScope.deserialize(f, Format.XML);
-				String json = ClassDescriptor.serialize(repo, StringFormat.JSON).toString();
+				String json = SimplTypesScope.serialize(repo, StringFormat.JSON).toString();
 				if (json != null && json.length() > 0)
 				{
 					File jsonRepoFile = new File(destDir, f.getName().replace((CharSequence) ".xml",
@@ -88,7 +87,7 @@ public class TestRepositoryInJSON
 	 */
 	public static void main(String[] args)
 	{
-		TranslationScope.graphSwitch = GRAPH_SWITCH.ON;
+		SimplTypesScope.graphSwitch = GRAPH_SWITCH.ON;
 		MetaMetadataRepository.initializeTypes();
 		new SemanticsTypes();
 
@@ -114,7 +113,7 @@ public class TestRepositoryInJSON
 	private static void testLoadingAndSavingXmlRepository()
 	{
 		// replace MetaMetadataCollectionField with MetaMetadataCollectionFieldChildComposite
-		TranslationScope.get(NestedMetaMetadataFieldTranslationScope.NAME, new Class[]
+		SimplTypesScope.get(NestedMetaMetadataFieldTranslationScope.NAME, new Class[]
 		{ MetaMetadataField.class, MetaMetadataScalarField.class, MetaMetadataCompositeField.class,
 				MetaMetadataCollectionFieldWithoutChildComposite.class, });
 		mmdTScope = MetaMetadataTranslationScope.get();
@@ -143,7 +142,7 @@ public class TestRepositoryInJSON
 			{
 				MetaMetadataRepository repo = (MetaMetadataRepository) mmdTScope.deserialize(xmlFile,
 						Format.XML);
-				ClassDescriptor.serialize(repo, new File(destDir, xmlFile.getName()), Format.XML);
+				SimplTypesScope.serialize(repo, new File(destDir, xmlFile.getName()), Format.XML);
 
 			}
 			catch (SIMPLTranslationException e1)
@@ -157,7 +156,7 @@ public class TestRepositoryInJSON
 	private static void testLoadAndSaveJsonRepository(File srcDir, File destDir)
 	{
 		// replace MetaMetadataCollectionField with MetaMetadataCollectionFieldChildComposite
-		TranslationScope.get(NestedMetaMetadataFieldTranslationScope.NAME, new Class[]
+		SimplTypesScope.get(NestedMetaMetadataFieldTranslationScope.NAME, new Class[]
 		{ MetaMetadataField.class, MetaMetadataScalarField.class, MetaMetadataCompositeField.class,
 				MetaMetadataCollectionFieldWithoutChildComposite.class, });
 		mmdTScope = MetaMetadataTranslationScope.get();
@@ -204,7 +203,7 @@ public class TestRepositoryInJSON
 					newJsonFile.createNewFile();
 				}
 
-				ClassDescriptor.serialize(repo, newJsonFile, Format.JSON);
+				SimplTypesScope.serialize(repo, newJsonFile, Format.JSON);
 
 			}
 			catch (SIMPLTranslationException e1)
@@ -232,7 +231,7 @@ public class TestRepositoryInJSON
 	private static void testConvertingRepositoryFromXmlToJson()
 	{
 		// replace MetaMetadataCollectionField with MetaMetadataCollectionFieldChildComposite
-		TranslationScope.get(NestedMetaMetadataFieldTranslationScope.NAME, new Class[]
+		SimplTypesScope.get(NestedMetaMetadataFieldTranslationScope.NAME, new Class[]
 		{ MetaMetadataField.class, MetaMetadataScalarField.class, MetaMetadataCompositeField.class,
 				MetaMetadataCollectionFieldWithoutChildComposite.class, });
 		mmdTScope = MetaMetadataTranslationScope.get();

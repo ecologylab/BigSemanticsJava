@@ -12,12 +12,11 @@ import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.generated.library.RepositoryMetadataTranslationScope;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.namesandnums.SemanticsNames;
-import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.Format;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.StringFormat;
-import ecologylab.serialization.TranslationScope;
+import ecologylab.serialization.SimplTypesScope;
 
 /**
  * @author andruid
@@ -30,9 +29,9 @@ implements SemanticsNames
 	{
 		MetaMetadataRepository.initializeTypes();
 	}
-	private static final TranslationScope	META_METADATA_TRANSLATIONS	= RepositoryMetadataTranslationScope.get();
+	private static final SimplTypesScope	META_METADATA_TRANSLATIONS	= RepositoryMetadataTranslationScope.get();
 
-	private static final TranslationScope MY_TRANSLATIONS	= TranslationScope.get("mine",
+	private static final SimplTypesScope MY_TRANSLATIONS	= SimplTypesScope.get("mine",
 			META_METADATA_TRANSLATIONS, InformationCompositionTest.class);
 	/**
 	 * 
@@ -58,7 +57,7 @@ implements SemanticsNames
 			
 			ElementState es2	= (ElementState) MY_TRANSLATIONS.deserialize(file2, Format.XML);
 
-			ClassDescriptor.serialize(es2, System.out, StringFormat.XML);
+			SimplTypesScope.serialize(es2, System.out, StringFormat.XML);
 
 		}
 		catch (SIMPLTranslationException e)

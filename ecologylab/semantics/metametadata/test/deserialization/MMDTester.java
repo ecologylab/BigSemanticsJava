@@ -9,7 +9,7 @@ import ecologylab.semantics.metametadata.MetaMetadataTranslationScope;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.StringFormat;
-import ecologylab.serialization.TranslationScope;
+import ecologylab.serialization.SimplTypesScope;
 
 public class MMDTester
 {
@@ -18,7 +18,7 @@ public class MMDTester
 		MetaMetadataRepository.initializeTypes();
 	}
 
-	private static final TranslationScope	META_METADATA_TRANSLATIONS	= MetaMetadataTranslationScope.get();
+	private static final SimplTypesScope	META_METADATA_TRANSLATIONS	= MetaMetadataTranslationScope.get();
 
 	public static void main(String[] args) throws IOException
 	{

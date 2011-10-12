@@ -6,12 +6,11 @@ package ecologylab.semantics.metametadata.test;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.generated.library.rss.Channel;
 import ecologylab.semantics.generated.library.rss.Item;
-import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.Format;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.StringFormat;
-import ecologylab.serialization.TranslationScope;
+import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.library.rss.RssState;
 import ecologylab.serialization.library.rss.RssTranslations;
 
@@ -24,9 +23,9 @@ public class RssTest
 	public static final ParsedURL CNN_TOP_FEED	= ParsedURL.getAbsolute("http://rss.cnn.com/rss/cnn_topstories.rss");
   private static final String TRANSLATION_SPACE_NAME	= "rss_test";
   
-  public static TranslationScope get()
+  public static SimplTypesScope get()
   {
-	   return TranslationScope.get(TRANSLATION_SPACE_NAME, RssState.class, Channel.class, Item.class);
+	   return SimplTypesScope.get(TRANSLATION_SPACE_NAME, RssState.class, Channel.class, Item.class);
   }
 
 
@@ -43,7 +42,7 @@ public class RssTest
 			rss = (ElementState) RssTranslations.get().deserialize(CNN_TOP_FEED, Format.XML);
 			
 			System.out.println("");			
-			ClassDescriptor.serialize(rss, System.out, StringFormat.XML);
+			SimplTypesScope.serialize(rss, System.out, StringFormat.XML);
 			System.out.println("");
 			
 			// RssTranslations.get().translateToXML(System.out);

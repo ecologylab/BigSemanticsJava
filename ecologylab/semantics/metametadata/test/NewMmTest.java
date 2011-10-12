@@ -15,8 +15,8 @@ import ecologylab.semantics.generated.library.RepositoryMetadataTranslationScope
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
 import ecologylab.serialization.SIMPLTranslationException;
-import ecologylab.serialization.TranslationScope;
-import ecologylab.serialization.TranslationScope.GRAPH_SWITCH;
+import ecologylab.serialization.SimplTypesScope;
+import ecologylab.serialization.SimplTypesScope.GRAPH_SWITCH;
 
 /**
  * Basic program for testing meta-metadata.
@@ -52,10 +52,10 @@ implements Continuation<DocumentClosure>
 		this(appName, outputStream, RepositoryMetadataTranslationScope.get());
 	}
 	
-	public NewMmTest(String appName, OutputStream outputStream, TranslationScope metadataTranslationScope) throws SIMPLTranslationException
+	public NewMmTest(String appName, OutputStream outputStream, SimplTypesScope metadataTranslationScope) throws SIMPLTranslationException
 	{
 		super(appName);
-		TranslationScope.graphSwitch	= GRAPH_SWITCH.ON;
+		SimplTypesScope.graphSwitch	= GRAPH_SWITCH.ON;
 		this.outputStream = outputStream;
 		semanticsSessionScope = new SemanticsSessionScope(metadataTranslationScope, CybernekoWrapper.class);
 	}

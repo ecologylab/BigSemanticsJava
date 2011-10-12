@@ -11,10 +11,9 @@ import ecologylab.semantics.cyberneko.CybernekoWrapper;
 import ecologylab.semantics.generated.library.RepositoryMetadataTranslationScope;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
-import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.Format;
 import ecologylab.serialization.SIMPLTranslationException;
-import ecologylab.serialization.TranslationScope;
+import ecologylab.serialization.SimplTypesScope;
 
 public class TestRestoringChildComposite
 {
@@ -24,7 +23,7 @@ public class TestRestoringChildComposite
 	@Test
 	public void testRestoringChildComposite() throws SIMPLTranslationException, IOException
 	{
-		TranslationScope metadataTranslationScope = RepositoryMetadataTranslationScope.get();
+		SimplTypesScope metadataTranslationScope = RepositoryMetadataTranslationScope.get();
 		semanticsSessionScope = new SemanticsSessionScope(metadataTranslationScope, CybernekoWrapper.class);
 		MetaMetadataRepository repository = semanticsSessionScope.getRepository(); // after inheritance and binding
 		for (MetaMetadata globalMmd : repository.values())
@@ -35,7 +34,7 @@ public class TestRestoringChildComposite
 				packageMmd.recursivelyRestoreChildComposite();
 		}
 		
-		ClassDescriptor.serialize(repository, new File("data/test-restore-child-composite.xml"), Format.XML);
+		SimplTypesScope.serialize(repository, new File("data/test-restore-child-composite.xml"), Format.XML);
 	}
 	
 }

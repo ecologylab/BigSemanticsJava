@@ -10,8 +10,8 @@ import java.net.URISyntaxException;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
 import ecologylab.serialization.SIMPLTranslationException;
-import ecologylab.serialization.TranslationScope;
-import ecologylab.serialization.TranslationScope.GRAPH_SWITCH;
+import ecologylab.serialization.SimplTypesScope;
+import ecologylab.serialization.SimplTypesScope.GRAPH_SWITCH;
 
 public class MmToHtmlTest extends NewMmTest
 {
@@ -36,7 +36,7 @@ public class MmToHtmlTest extends NewMmTest
 
 	public static void main(String[] args)
 	{
-		TranslationScope.graphSwitch = GRAPH_SWITCH.ON;
+		SimplTypesScope.graphSwitch = GRAPH_SWITCH.ON;
 		MmToHtmlTest test;
 		try
 		{
