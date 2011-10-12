@@ -10,10 +10,9 @@ import ecologylab.semantics.metametadata.MetaMetadataField;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.metametadata.MetaMetadataScalarField;
 import ecologylab.semantics.metametadata.MetaMetadataTranslationScope;
-import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.Format;
 import ecologylab.serialization.SIMPLTranslationException;
-import ecologylab.serialization.TranslationScope;
+import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.annotations.Hint;
 
 public class AddHintsToRepository
@@ -46,7 +45,7 @@ public class AddHintsToRepository
 				return dir.getName().endsWith(".xml");
 			}
 		});
-		TranslationScope mmdTScope = MetaMetadataTranslationScope.get();
+		SimplTypesScope mmdTScope = MetaMetadataTranslationScope.get();
 		for (File file : files)
 		{
 			MetaMetadataRepository repo = (MetaMetadataRepository) mmdTScope.deserialize(file, Format.XML); 
@@ -61,7 +60,7 @@ public class AddHintsToRepository
 			try
 			{
 				
-				ClassDescriptor.serialize(repo, out, Format.XML);
+				SimplTypesScope.serialize(repo, out, Format.XML);
 			}
 			catch (SIMPLTranslationException e)
 			{

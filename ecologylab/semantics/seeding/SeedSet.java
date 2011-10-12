@@ -11,7 +11,7 @@ import ecologylab.semantics.collecting.SemanticsGlobalScope;
 import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.namesandnums.SemanticsSessionObjectNames;
 import ecologylab.serialization.ElementState;
-import ecologylab.serialization.TranslationScope;
+import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.annotations.simpl_collection;
 import ecologylab.serialization.annotations.simpl_inherit;
 import ecologylab.serialization.annotations.simpl_nowrap;
@@ -28,7 +28,7 @@ import ecologylab.serialization.annotations.simpl_scope;
 public class SeedSet<S extends Seed> extends ElementState
 		implements SemanticsSessionObjectNames, Iterable<S>
 {
-	static TranslationScope	ts								= BaseSeedTranslations.get();
+	static SimplTypesScope	ts								= BaseSeedTranslations.get();
 
 	@simpl_scalar
 	protected boolean				dontPlayOnStart;

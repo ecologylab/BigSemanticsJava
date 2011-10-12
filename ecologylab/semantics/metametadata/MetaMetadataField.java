@@ -17,7 +17,7 @@ import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.FieldTypes;
 import ecologylab.serialization.MetaInformation;
-import ecologylab.serialization.TranslationScope;
+import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.annotations.simpl_descriptor_classes;
 import ecologylab.serialization.annotations.simpl_inherit;
@@ -864,7 +864,7 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
 	 * 
 	 * @see {@code customizeFieldDescriptor()}
 	 */
-	protected MetadataFieldDescriptor bindMetadataFieldDescriptor(TranslationScope metadataTScope, MetadataClassDescriptor metadataClassDescriptor)
+	protected MetadataFieldDescriptor bindMetadataFieldDescriptor(SimplTypesScope metadataTScope, MetadataClassDescriptor metadataClassDescriptor)
 	{
 		MetadataFieldDescriptor metadataFieldDescriptor = this.metadataFieldDescriptor;
 		if (metadataFieldDescriptor == null)
@@ -973,7 +973,7 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
 	 * @param fdProxy
 	 *          the current metadata field descriptor.
 	 */
-	protected void customizeFieldDescriptor(TranslationScope metadataTScope, MetadataFieldDescriptorProxy fdProxy)
+	protected void customizeFieldDescriptor(SimplTypesScope metadataTScope, MetadataFieldDescriptorProxy fdProxy)
 	{
 		fdProxy.setTagName(this.getTagOrName());
 	}
@@ -1092,7 +1092,7 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
 		}
 	}
 	
-	abstract public MetadataFieldDescriptor findOrGenerateMetadataFieldDescriptor(TranslationScope tscope, MetadataClassDescriptor contextCd);
+	abstract public MetadataFieldDescriptor findOrGenerateMetadataFieldDescriptor(SimplTypesScope tscope, MetadataClassDescriptor contextCd);
 
 	public String getOtherTags()
 	{

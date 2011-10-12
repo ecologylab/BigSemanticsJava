@@ -2,7 +2,7 @@ package ecologylab.semantics.model;
 
 import ecologylab.generic.Debug;
 import ecologylab.semantics.model.text.SemanticTextToken;
-import ecologylab.serialization.TranslationScope;
+import ecologylab.serialization.SimplTypesScope;
 
 public class TextTokenTranslations extends Debug
 {
@@ -21,8 +21,8 @@ public class TextTokenTranslations extends Debug
 		super();
 	}
 
-	public static TranslationScope get()
+	public static SimplTypesScope get()
 	{
-		return TranslationScope.get(TEXT_TOKEN_SCOPE_NAME, TRANSLATIONS);
+		return SimplTypesScope.get(TEXT_TOKEN_SCOPE_NAME, TRANSLATIONS);
 	}
 }

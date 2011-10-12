@@ -6,7 +6,7 @@ package ecologylab.semantics.metadata.builtins;
 import ecologylab.generic.Debug;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.scalar.types.MetadataScalarType;
-import ecologylab.serialization.TranslationScope;
+import ecologylab.serialization.SimplTypesScope;
 
 /**
  * Encapsulates ClassDescriptors for Metadata and its subclasses that are coded by hand.
@@ -36,8 +36,8 @@ public class MetadataBuiltinsTranslationScope extends Debug
 		MetadataScalarType.init();
 	}
 
-	public static TranslationScope get()
+	public static SimplTypesScope get()
 	{
-		return TranslationScope.get(NAME, CLASSES);
+		return SimplTypesScope.get(NAME, CLASSES);
 	}	
 }

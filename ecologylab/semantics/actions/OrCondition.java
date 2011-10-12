@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import org.junit.Test;
 
 import ecologylab.semantics.metametadata.MetaMetadataTranslationScope;
-import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.SIMPLTranslationException;
+import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.StringFormat;
 import ecologylab.serialization.annotations.simpl_collection;
 import ecologylab.serialization.annotations.simpl_inherit;
@@ -47,7 +47,7 @@ public class OrCondition extends Condition
 		OrCondition or = (OrCondition) MetaMetadataTranslationScope.get().deserialize(xml, StringFormat.XML);
 		System.out.println(or);
 		System.out.println(or.checks);
-		System.out.println(ClassDescriptor.serialize(or, StringFormat.XML));
+		System.out.println(SimplTypesScope.serialize(or, StringFormat.XML));
 	}
 
 }

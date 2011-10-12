@@ -17,7 +17,7 @@ import ecologylab.semantics.metametadata.exceptions.MetaMetadataException;
 import ecologylab.semantics.namesandnums.DocumentParserTagNames;
 import ecologylab.serialization.Format;
 import ecologylab.serialization.SIMPLTranslationException;
-import ecologylab.serialization.TranslationScope;
+import ecologylab.serialization.SimplTypesScope;
 
 /**
  * Take charge in loading the repository.
@@ -61,7 +61,7 @@ public class MetaMetadataRepositoryLoader extends Debug implements DocumentParse
 		result.repositoryByName = new HashMapArrayList<String, MetaMetadata>();
 		result.packageMmdScopes = new HashMap<String, MultiAncestorScope<MetaMetadata>>();
 
-		TranslationScope mmdTScope = MetaMetadataTranslationScope.get();
+		SimplTypesScope mmdTScope = MetaMetadataTranslationScope.get();
 
 		for (File file : files)
 		{

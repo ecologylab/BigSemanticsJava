@@ -9,8 +9,8 @@ import ecologylab.semantics.documentparsers.SearchParser;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.metametadata.SearchEngine;
 import ecologylab.semantics.model.text.InterestModel;
-import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.SIMPLTranslationException;
+import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.StringFormat;
 import ecologylab.serialization.annotations.simpl_inherit;
 import ecologylab.serialization.annotations.simpl_scalar;
@@ -137,7 +137,7 @@ implements SemanticsPrefs
 	   {
 		   try
 		   {
-			   error("Can't process search seed with null query: " + ClassDescriptor.serialize(this, StringFormat.XML));
+			   error("Can't process search seed with null query: " + SimplTypesScope.serialize(this, StringFormat.XML));
 		   } catch (SIMPLTranslationException e)
 		   {
 			   e.printStackTrace();

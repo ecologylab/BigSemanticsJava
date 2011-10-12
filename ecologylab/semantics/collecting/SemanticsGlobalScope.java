@@ -10,7 +10,7 @@ import ecologylab.semantics.html.dom.IDOMProvider;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.Image;
 import ecologylab.semantics.metametadata.FieldParserFactory;
-import ecologylab.serialization.TranslationScope;
+import ecologylab.serialization.SimplTypesScope;
 
 /**
  * 
@@ -43,7 +43,7 @@ public class SemanticsGlobalScope extends MetaMetadataRepositoryInit
 
 	final private FieldParserFactory						fieldParserFactory;
 	
-	public SemanticsGlobalScope(TranslationScope metadataTScope, Class<? extends IDOMProvider> domProviderClass)
+	public SemanticsGlobalScope(SimplTypesScope metadataTScope, Class<? extends IDOMProvider> domProviderClass)
 	{
 		super(metadataTScope);
 		this.domProviderClass = domProviderClass;

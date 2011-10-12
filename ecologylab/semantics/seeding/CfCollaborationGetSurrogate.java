@@ -6,10 +6,9 @@ import ecologylab.generic.Debug;
 import ecologylab.oodss.messages.OkResponse;
 import ecologylab.oodss.messages.RequestMessage;
 import ecologylab.oodss.messages.ResponseMessage;
-import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.StringFormat;
-import ecologylab.serialization.TranslationScope;
+import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.annotations.Hint;
 import ecologylab.serialization.annotations.simpl_hints;
 import ecologylab.serialization.annotations.simpl_inherit;
@@ -20,7 +19,7 @@ public class CfCollaborationGetSurrogate extends RequestMessage {
 
 	@simpl_scalar @simpl_hints(Hint.XML_LEAF) protected String surrogateSetString;
 	
-	static TranslationScope translationScope;
+	static SimplTypesScope translationScope;
 	
 	public CfCollaborationGetSurrogate()
 	{
@@ -45,7 +44,7 @@ public class CfCollaborationGetSurrogate extends RequestMessage {
 		return OkResponse.get();
 	}
 	
-	public CfCollaborationGetSurrogate (String surrogateSetString, TranslationScope translationScope) 
+	public CfCollaborationGetSurrogate (String surrogateSetString, SimplTypesScope translationScope) 
 	throws SIMPLTranslationException
 	{
 		this(surrogateSetString);
@@ -68,7 +67,7 @@ public class CfCollaborationGetSurrogate extends RequestMessage {
 		{
 			CfCollaborationGetSurrogate cfCollabGet = new CfCollaborationGetSurrogate (test, translationScope);
 			System.out.println("cfCollabGet.get: " + cfCollabGet.getSurrogateSetString());
-			System.out.println("cfCollabGet: " + ClassDescriptor.serialize(cfCollabGet, StringFormat.XML));
+			System.out.println("cfCollabGet: " + SimplTypesScope.serialize(cfCollabGet, StringFormat.XML));
 			
 		} catch (SIMPLTranslationException e) {
 			// TODO Auto-generated catch block

@@ -34,7 +34,7 @@ import ecologylab.semantics.metadata.scalar.types.MetadataScalarType;
 import ecologylab.semantics.namesandnums.DocumentParserTagNames;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.TranslationContext;
-import ecologylab.serialization.TranslationScope;
+import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.annotations.simpl_collection;
 import ecologylab.serialization.annotations.simpl_composite;
 import ecologylab.serialization.annotations.simpl_inherit;
@@ -197,7 +197,7 @@ implements PackageSpecifier, DocumentParserTagNames
 	/**
 	 * The metadata translation scope used by this repository.
 	 */
-	private TranslationScope																		metadataTScope;
+	private SimplTypesScope																		metadataTScope;
 
 	private LinkedMetadataMonitor																linkedMetadataMonitor						= new LinkedMetadataMonitor();
 
@@ -302,7 +302,7 @@ implements PackageSpecifier, DocumentParserTagNames
 		return sites.getOrConstruct(document, semanticsSessionScope);
 	}
 
-	public TranslationScope metadataTranslationScope()
+	public SimplTypesScope metadataTranslationScope()
 	{
 		return metadataTScope;
 	}
@@ -421,11 +421,11 @@ implements PackageSpecifier, DocumentParserTagNames
 	 *          the name of the resulted translation scope.
 	 * @return
 	 */
-	public TranslationScope traverseAndGenerateTranslationScope(String TSName)
+	public SimplTypesScope traverseAndGenerateTranslationScope(String TSName)
 	{
 		// init the TScope with built-ins, and bind descriptors for built-ins.
-		TranslationScope metadataBuiltInTScope = MetadataBuiltinsTranslationScope.get();
-		TranslationScope ts = TranslationScope.get(TSName, new TranslationScope[] {metadataBuiltInTScope});
+		SimplTypesScope metadataBuiltInTScope = MetadataBuiltinsTranslationScope.get();
+		SimplTypesScope ts = SimplTypesScope.get(TSName, new SimplTypesScope[] {metadataBuiltInTScope});
 		for (MetaMetadata metaMetadata : repositoryByName)
 		{
 			if (metaMetadata.isBuiltIn())
@@ -448,7 +448,7 @@ implements PackageSpecifier, DocumentParserTagNames
 	 * @param metadataTScope
 	 *          the (global) metadata translation scope used for binding.
 	 */
-	public void bindMetadataClassDescriptorsToMetaMetadata(TranslationScope metadataTScope)
+	public void bindMetadataClassDescriptorsToMetaMetadata(SimplTypesScope metadataTScope)
 	{
 		this.metadataTScope = metadataTScope;
 		

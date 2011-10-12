@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import org.junit.Test;
 
 import ecologylab.semantics.metametadata.MetaMetadataTranslationScope;
-import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.SIMPLTranslationException;
+import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.StringFormat;
 import ecologylab.serialization.annotations.simpl_collection;
 import ecologylab.serialization.annotations.simpl_composite;
@@ -121,7 +121,7 @@ public class ChooseSemanticAction
 		System.out.println(choose);
 		System.out.println(choose.cases);
 		System.out.println(choose.otherwise);
-		System.out.println(ClassDescriptor.serialize(choose, StringFormat.XML));
+		System.out.println(SimplTypesScope.serialize(choose, StringFormat.XML));
 	}
 
 	@Override

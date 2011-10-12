@@ -24,8 +24,8 @@ import ecologylab.semantics.namesandnums.DocumentParserTagNames;
 import ecologylab.semantics.namesandnums.SemanticsAssetVersions;
 import ecologylab.semantics.namesandnums.SemanticsNames;
 import ecologylab.serialization.Format;
-import ecologylab.serialization.TranslationScope;
-import ecologylab.serialization.TranslationScope.GRAPH_SWITCH;
+import ecologylab.serialization.SimplTypesScope;
+import ecologylab.serialization.SimplTypesScope.GRAPH_SWITCH;
 
 /**
  * Initializes the MetaMetadataRepository, using its standard location in the /repository directory of the ecologylabSemantics project,
@@ -65,7 +65,7 @@ implements DocumentParserTagNames, ApplicationProperties, SemanticsNames
 
 	static
 	{
-		TranslationScope.graphSwitch	= GRAPH_SWITCH.ON;
+		SimplTypesScope.graphSwitch	= GRAPH_SWITCH.ON;
 		
 		MetaMetadataRepository.initializeTypes();
 
@@ -78,20 +78,20 @@ implements DocumentParserTagNames, ApplicationProperties, SemanticsNames
 	
 	private MetaMetadataRepository	metaMetadataRepository;
 
-	private TranslationScope				metadataTranslationScope;
+	private SimplTypesScope				metadataTranslationScope;
 
-	private final TranslationScope	generatedDocumentTranslations;
+	private final SimplTypesScope	generatedDocumentTranslations;
 
-	private final TranslationScope	generatedMediaTranslations;
+	private final SimplTypesScope	generatedMediaTranslations;
 
-	private final TranslationScope	repositoryClippingTranslations;
+	private final SimplTypesScope	repositoryClippingTranslations;
 	
 	/**
 	 * This constructor should only be called from SemanticsScope's constructor!
 	 * 
 	 * @param metadataTranslationScope
 	 */
-	protected MetaMetadataRepositoryInit(TranslationScope metadataTranslationScope)
+	protected MetaMetadataRepositoryInit(SimplTypesScope metadataTranslationScope)
 	{
 		if (SingletonApplicationEnvironment.isInUse() && !SingletonApplicationEnvironment.runningInEclipse())
 		{
@@ -134,7 +134,7 @@ implements DocumentParserTagNames, ApplicationProperties, SemanticsNames
 		return metaMetadataRepository;
 	}
 
-	public TranslationScope getMetadataTranslationScope()
+	public SimplTypesScope getMetadataTranslationScope()
 	{
 		return metadataTranslationScope;
 	}
@@ -142,7 +142,7 @@ implements DocumentParserTagNames, ApplicationProperties, SemanticsNames
 	/**
 	 * @return the generatedDocumentTranslations
 	 */
-	public TranslationScope getGeneratedDocumentTranslations()
+	public SimplTypesScope getGeneratedDocumentTranslations()
 	{
 		return generatedDocumentTranslations;
 	}
@@ -151,7 +151,7 @@ implements DocumentParserTagNames, ApplicationProperties, SemanticsNames
 	/**
 	 * @return the generatedMediaTranslations
 	 */
-	public TranslationScope getGeneratedMediaTranslations()
+	public SimplTypesScope getGeneratedMediaTranslations()
 	{
 		return generatedMediaTranslations;
 	}
@@ -159,7 +159,7 @@ implements DocumentParserTagNames, ApplicationProperties, SemanticsNames
 	/**
 	 * @return the repositoryClippingTranslations
 	 */
-	public TranslationScope getRepositoryClippingTranslations()
+	public SimplTypesScope getRepositoryClippingTranslations()
 	{
 		return repositoryClippingTranslations;
 	}

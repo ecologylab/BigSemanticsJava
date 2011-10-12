@@ -4,7 +4,7 @@ package testcases;
 import ecologylab.generic.Debug;
 import ecologylab.semantics.metadata.builtins.Image;
 import ecologylab.semantics.metadata.scalar.MetadataString;
-import ecologylab.serialization.TranslationScope;
+import ecologylab.serialization.SimplTypesScope;
 
 public class TestTranslationScope extends Debug
 {
@@ -18,8 +18,8 @@ public class TestTranslationScope extends Debug
 		Image.class
 	};
 		
-	public static TranslationScope get()
+	public static SimplTypesScope get()
 	{
-		return TranslationScope.get(PACKAGE_NAME, TRANSLATIONS);
+		return SimplTypesScope.get(PACKAGE_NAME, TRANSLATIONS);
 	}
 }

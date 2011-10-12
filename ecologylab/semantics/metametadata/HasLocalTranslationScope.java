@@ -1,6 +1,6 @@
 package ecologylab.semantics.metametadata;
 
-import ecologylab.serialization.TranslationScope;
+import ecologylab.serialization.SimplTypesScope;
 
 /**
  * This interface marks classes that can hold a local translation scope, e.g. a meta-metadata
@@ -16,6 +16,6 @@ public interface HasLocalTranslationScope
 	 * 
 	 * @return The local translation scope.
 	 */
-	TranslationScope getLocalTranslationScope();
+	SimplTypesScope getLocalTranslationScope();
 	
 }

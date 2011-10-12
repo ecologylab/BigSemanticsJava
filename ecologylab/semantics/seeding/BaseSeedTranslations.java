@@ -5,7 +5,7 @@ package ecologylab.semantics.seeding;
 
 import ecologylab.generic.Debug;
 import ecologylab.oodss.messages.DefaultServicesTranslations;
-import ecologylab.serialization.TranslationScope;
+import ecologylab.serialization.SimplTypesScope;
 
 /**
  * TranslationSpace for client-side CFServices.
@@ -46,8 +46,8 @@ public class BaseSeedTranslations extends Debug
 	 * This accessor will work from anywhere, in any order, and stay efficient.
 	 * @return	TranslationSpace for cF services.
 	 */
-	public static TranslationScope get()
+	public static SimplTypesScope get()
 	{
-		return TranslationScope.get(TSCOPE_NAME, DefaultServicesTranslations.get(), TRANSLATIONS);
+		return SimplTypesScope.get(TSCOPE_NAME, DefaultServicesTranslations.get(), TRANSLATIONS);
 	}
 }

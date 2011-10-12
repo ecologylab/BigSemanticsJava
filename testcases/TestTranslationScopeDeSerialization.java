@@ -6,7 +6,7 @@ import ecologylab.serialization.ElementState;
 import ecologylab.serialization.FieldDescriptor;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.StringFormat;
-import ecologylab.serialization.TranslationScope;
+import ecologylab.serialization.SimplTypesScope;
 
 public class TestTranslationScopeDeSerialization extends TestTranslationScope
 {
@@ -41,10 +41,10 @@ public class TestTranslationScopeDeSerialization extends TestTranslationScope
 	 */
 	public static void main(String[] args) throws SIMPLTranslationException
 	{
-		TranslationScope ts = get();
+		SimplTypesScope ts = get();
 
 		StringBuilder sb = new StringBuilder();
-		ClassDescriptor.serialize(ts, sb, StringFormat.XML);
+		SimplTypesScope.serialize(ts, sb, StringFormat.XML);
 
 		String xml = sb.toString();
 		System.out.println();
@@ -53,12 +53,12 @@ public class TestTranslationScopeDeSerialization extends TestTranslationScope
 		
 		xml = xml.replaceAll("TestDocument", "NewTestDocument");
 
-		TranslationScope tsts = TranslationScope.get(
+		SimplTypesScope tsts = SimplTypesScope.get(
 				"tscope_bootstrap",
-				TranslationScope.class,
+				SimplTypesScope.class,
 				ClassDescriptor.class,
 				FieldDescriptor.class);
-		TranslationScope newTs = (TranslationScope) tsts.deserialize(xml, emptyStrategy, StringFormat.XML);
+		SimplTypesScope newTs = (SimplTypesScope) tsts.deserialize(xml, emptyStrategy, StringFormat.XML);
 		for (Class clazz : newTs.getAllClasses())
 		{
 			System.out.println(clazz);

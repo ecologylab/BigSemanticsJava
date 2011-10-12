@@ -13,7 +13,7 @@ import ecologylab.semantics.html.dom.IDOMProvider;
 import ecologylab.semantics.namesandnums.DocumentParserTagNames;
 import ecologylab.semantics.namesandnums.SemanticsSessionObjectNames;
 import ecologylab.semantics.seeding.SemanticsPrefs;
-import ecologylab.serialization.TranslationScope;
+import ecologylab.serialization.SimplTypesScope;
 
 /**
  * The fundamental Crossroads of the S.IM.PL Semantics session. 
@@ -45,15 +45,15 @@ implements SemanticsPrefs, ApplicationProperties, DocumentParserTagNames
 	 * 
 	 * @param metadataTranslationScope	Generated MetadataTranslationScope.
 	 */
-	public SemanticsSessionScope(TranslationScope metadataTranslationScope, Class<? extends IDOMProvider> domProviderClass)
+	public SemanticsSessionScope(SimplTypesScope metadataTranslationScope, Class<? extends IDOMProvider> domProviderClass)
 	{
 		this(metadataTranslationScope, null, domProviderClass);
 	}
-	public SemanticsSessionScope(TranslationScope metadataTranslationScope, Crawler crawler, Class<? extends IDOMProvider> domProviderClass)
+	public SemanticsSessionScope(SimplTypesScope metadataTranslationScope, Crawler crawler, Class<? extends IDOMProvider> domProviderClass)
 	{
 		this(metadataTranslationScope, new Seeding(), crawler, domProviderClass);
 	}
-	public SemanticsSessionScope(TranslationScope metadataTranslationScope, Seeding seeding, Crawler crawler, Class<? extends IDOMProvider> domProviderClass)
+	public SemanticsSessionScope(SimplTypesScope metadataTranslationScope, Seeding seeding, Crawler crawler, Class<? extends IDOMProvider> domProviderClass)
 	{
 		super(metadataTranslationScope, domProviderClass);
 		this.put(SemanticsSessionObjectNames.INFO_COLLECTOR, this);	//TODO make this unnecessary; its a band-aid on old code

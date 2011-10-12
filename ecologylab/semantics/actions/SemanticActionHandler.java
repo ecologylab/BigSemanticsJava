@@ -15,7 +15,7 @@ import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.tools.GenericIterable;
-import ecologylab.serialization.ClassDescriptor;
+import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.StringFormat;
 
 /**
@@ -256,7 +256,7 @@ public class SemanticActionHandler
 
 				if (collectionObject == null)
 				{
-					error("Can't execute loop because collection is null: " + ClassDescriptor.serialize(action, StringFormat.XML));
+					error("Can't execute loop because collection is null: " + SimplTypesScope.serialize(action, StringFormat.XML));
 					return;
 				}
 

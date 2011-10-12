@@ -18,7 +18,7 @@ import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
 import ecologylab.semantics.metadata.mm_dont_inherit;
 import ecologylab.semantics.metametadata.exceptions.MetaMetadataException;
-import ecologylab.serialization.TranslationScope;
+import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.annotations.simpl_collection;
 import ecologylab.serialization.annotations.simpl_inherit;
@@ -102,7 +102,7 @@ implements IMappable<String>//, HasLocalTranslationScope
 
 	private File																		file;
 	
-	TranslationScope																localMetadataTranslationScope;
+	SimplTypesScope																localMetadataTranslationScope;
 
 	public MetaMetadata()
 	{
@@ -139,7 +139,7 @@ implements IMappable<String>//, HasLocalTranslationScope
 	 * @return An instance of the Metadata subclass that corresponds to this, or null, if there is
 	 *         none.
 	 */
-	public Metadata constructMetadata(TranslationScope ts)
+	public Metadata constructMetadata(SimplTypesScope ts)
 	{
 		Metadata result = null;
 //		Class<? extends Metadata> metadataClass = getMetadataClass(ts);
@@ -477,7 +477,7 @@ implements IMappable<String>//, HasLocalTranslationScope
 		}
 	}
 	
-	void findOrGenerateMetadataClassDescriptor(TranslationScope tscope)
+	void findOrGenerateMetadataClassDescriptor(SimplTypesScope tscope)
 	{
 		if (this.metadataClassDescriptor == null)
 		{
@@ -585,13 +585,13 @@ implements IMappable<String>//, HasLocalTranslationScope
 		return super.isNewMetadataClass() && !this.isBuiltIn();
 	}
 	
-	public MetadataClassDescriptor bindMetadataClassDescriptor(TranslationScope metadataTScope)
+	public MetadataClassDescriptor bindMetadataClassDescriptor(SimplTypesScope metadataTScope)
 	{
 		if (this.metadataClassDescriptor != null)
 			return this.metadataClassDescriptor;
 		
 		// create a temporary local metadata translation scope
-		TranslationScope localMetadataTScope = TranslationScope.get("mmd_local_tscope:" + this.getName(), new TranslationScope[] { metadataTScope });
+		SimplTypesScope localMetadataTScope = SimplTypesScope.get("mmd_local_tscope:" + this.getName(), new SimplTypesScope[] { metadataTScope });
 		
 		// record the initial number of classes in the local translation scope
 		int initialLocalTScopeSize = localMetadataTScope.entriesByClassName().size();
@@ -619,7 +619,7 @@ implements IMappable<String>//, HasLocalTranslationScope
 		return thisCd;
 	}
 	
-	public TranslationScope getLocalMetadataTranslationScope()
+	public SimplTypesScope getLocalMetadataTranslationScope()
 	{
 		return this.localMetadataTranslationScope;
 	}

@@ -1,6 +1,6 @@
 package ecologylab.semantics.actions;
 
-import ecologylab.serialization.TranslationScope;
+import ecologylab.serialization.SimplTypesScope;
 
 public class ConditionTranslationScope
 {
@@ -17,8 +17,8 @@ public class ConditionTranslationScope
 		
 	};
 
-	public static final TranslationScope get()
+	public static final SimplTypesScope get()
 	{
-		return TranslationScope.get(CONDITION_SCOPE, CLASSES);
+		return SimplTypesScope.get(CONDITION_SCOPE, CLASSES);
 	}
 }

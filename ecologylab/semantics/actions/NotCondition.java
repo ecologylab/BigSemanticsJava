@@ -3,8 +3,8 @@ package ecologylab.semantics.actions;
 import org.junit.Test;
 
 import ecologylab.semantics.metametadata.MetaMetadataTranslationScope;
-import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.SIMPLTranslationException;
+import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.StringFormat;
 import ecologylab.serialization.annotations.simpl_composite;
 import ecologylab.serialization.annotations.simpl_inherit;
@@ -34,7 +34,7 @@ public class NotCondition extends Condition
 				StringFormat.XML);
 		System.out.println(not);
 		System.out.println(not.check);
-		System.out.println(ClassDescriptor.serialize(not, StringFormat.XML));
+		System.out.println(SimplTypesScope.serialize(not, StringFormat.XML));
 	}
 
 }

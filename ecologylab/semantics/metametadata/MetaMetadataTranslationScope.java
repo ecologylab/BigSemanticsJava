@@ -11,7 +11,7 @@ import ecologylab.semantics.collecting.CookieProcessing;
 import ecologylab.semantics.collecting.SemanticsSite;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
-import ecologylab.serialization.TranslationScope;
+import ecologylab.serialization.SimplTypesScope;
 import ecologylab.textformat.NamedStyle;
 
 public class MetaMetadataTranslationScope extends Debug
@@ -54,9 +54,9 @@ public class MetaMetadataTranslationScope extends Debug
 		LinkWith.class,
 	};
 
-	public static final TranslationScope BASE_TRANSLATIONS	= TranslationScope.get(BASE_NAME, BASE_CLASSES);
+	public static final SimplTypesScope BASE_TRANSLATIONS	= SimplTypesScope.get(BASE_NAME, BASE_CLASSES);
 
-	public static final TranslationScope[]	SCOPE_SET	= 
+	public static final SimplTypesScope[]	SCOPE_SET	= 
 	{
 		BASE_TRANSLATIONS, 
 		NestedMetaMetadataFieldTranslationScope.get(),
@@ -64,8 +64,8 @@ public class MetaMetadataTranslationScope extends Debug
 		ConditionTranslationScope.get(),
 	};
 
-	public static TranslationScope get()
+	public static SimplTypesScope get()
 	{
-		return TranslationScope.get(NAME, SCOPE_SET);
+		return SimplTypesScope.get(NAME, SCOPE_SET);
 	}
 }

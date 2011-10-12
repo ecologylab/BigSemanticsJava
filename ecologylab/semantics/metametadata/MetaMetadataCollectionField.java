@@ -11,7 +11,7 @@ import ecologylab.semantics.metametadata.MetaMetadataField.MetadataFieldDescript
 import ecologylab.serialization.FieldTypes;
 import ecologylab.serialization.MetaInformation;
 import ecologylab.serialization.TranslationContext;
-import ecologylab.serialization.TranslationScope;
+import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.annotations.simpl_inherit;
 import ecologylab.serialization.annotations.simpl_scalar;
@@ -263,7 +263,7 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 	}
 
 	@Override
-	public MetadataFieldDescriptor findOrGenerateMetadataFieldDescriptor(TranslationScope tscope, MetadataClassDescriptor contextCd)
+	public MetadataFieldDescriptor findOrGenerateMetadataFieldDescriptor(SimplTypesScope tscope, MetadataClassDescriptor contextCd)
 	{
 		MetadataFieldDescriptor fd = this.getMetadataFieldDescriptor();
 		if (fd == null)
@@ -329,7 +329,7 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 	}
 	
 	@Override
-	protected MetadataClassDescriptor bindMetadataClassDescriptor(TranslationScope metadataTScope)
+	protected MetadataClassDescriptor bindMetadataClassDescriptor(SimplTypesScope metadataTScope)
 	{
 		MetaMetadataCompositeField childComposite = getChildComposite();
 		if (childComposite != null)
@@ -338,7 +338,7 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 	}
 
 	@Override
-	protected void customizeFieldDescriptor(TranslationScope metadataTScope, MetadataFieldDescriptorProxy fdProxy)
+	protected void customizeFieldDescriptor(SimplTypesScope metadataTScope, MetadataFieldDescriptorProxy fdProxy)
 	{
 		super.customizeFieldDescriptor(metadataTScope, fdProxy);
 		

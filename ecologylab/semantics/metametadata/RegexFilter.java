@@ -2,8 +2,8 @@ package ecologylab.semantics.metametadata;
 
 import java.util.regex.Pattern;
 
-import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.ElementState;
+import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.StringFormat;
 import ecologylab.serialization.annotations.Hint;
 import ecologylab.serialization.annotations.simpl_hints;
@@ -72,7 +72,7 @@ public class RegexFilter extends ElementState
 		{
 			RegexFilter rf = new RegexFilter(Pattern.compile(p), testReplace);
 			System.out.println();
-			ClassDescriptor.serializeOut(rf, "some message", StringFormat.XML);
+			SimplTypesScope.serializeOut(rf, "some message", StringFormat.XML);
 			System.out.println();
 			System.out.println("In java annotation: " + rf.getJavaRegex());
 			System.out.println();

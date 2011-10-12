@@ -10,7 +10,7 @@ import ecologylab.semantics.namesandnums.SemanticsAssetVersions;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.Format;
 import ecologylab.serialization.SIMPLTranslationException;
-import ecologylab.serialization.TranslationScope;
+import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.annotations.simpl_collection;
 import ecologylab.serialization.annotations.simpl_inherit;
 import ecologylab.serialization.annotations.simpl_nowrap;
@@ -31,7 +31,7 @@ implements CFPrefNames
 	
 	static CuratedSeedSets	singleton;
 	
-	static TranslationScope TSCOPE	= TranslationScope.get("curated_seed_sets", BaseSeedTranslations.get(), CuratedSeedSets.class);
+	static SimplTypesScope TSCOPE	= SimplTypesScope.get("curated_seed_sets", BaseSeedTranslations.get(), CuratedSeedSets.class);
 	public CuratedSeedSets()
 	{
 		super();

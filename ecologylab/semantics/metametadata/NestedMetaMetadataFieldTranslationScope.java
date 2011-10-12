@@ -1,7 +1,7 @@
 package ecologylab.semantics.metametadata;
 
 import ecologylab.generic.Debug;
-import ecologylab.serialization.TranslationScope;
+import ecologylab.serialization.SimplTypesScope;
 
 public class NestedMetaMetadataFieldTranslationScope extends Debug
 {
@@ -16,9 +16,9 @@ public class NestedMetaMetadataFieldTranslationScope extends Debug
 		MetaMetadataCollectionField.class,
 	};
 
-	public static TranslationScope get()
+	public static SimplTypesScope get()
 	{
-		return TranslationScope.get(NAME, TRANSLATIONS);
+		return SimplTypesScope.get(NAME, TRANSLATIONS);
 	}
 	
 }

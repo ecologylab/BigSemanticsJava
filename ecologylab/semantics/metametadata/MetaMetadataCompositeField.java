@@ -12,7 +12,7 @@ import ecologylab.semantics.metadata.mm_dont_inherit;
 import ecologylab.semantics.metametadata.MetaMetadata.Visibility;
 import ecologylab.semantics.metametadata.exceptions.MetaMetadataException;
 import ecologylab.serialization.MetaInformation;
-import ecologylab.serialization.TranslationScope;
+import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.annotations.simpl_collection;
 import ecologylab.serialization.annotations.simpl_inherit;
@@ -540,7 +540,7 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 	}
 
 	@Override
-	public MetadataFieldDescriptor findOrGenerateMetadataFieldDescriptor(TranslationScope tscope, MetadataClassDescriptor contextCd)
+	public MetadataFieldDescriptor findOrGenerateMetadataFieldDescriptor(SimplTypesScope tscope, MetadataClassDescriptor contextCd)
 	{
 		MetadataFieldDescriptor fd = this.getMetadataFieldDescriptor();
 		if (fd == null)

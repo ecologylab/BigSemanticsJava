@@ -28,11 +28,11 @@ import ecologylab.semantics.model.text.CompositeTermVector;
 import ecologylab.semantics.model.text.ITermVector;
 import ecologylab.semantics.model.text.TermVectorFeature;
 import ecologylab.semantics.namesandnums.SemanticsNames;
-import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.FieldDescriptor;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.ScalarUnmarshallingContext;
+import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.StringFormat;
 import ecologylab.serialization.TranslationContext;
 import ecologylab.serialization.XMLTools;
@@ -773,7 +773,7 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 		Table htmlTable = new Table();
 		renderHtml(htmlTable, serializationContext, false, true);
 		
-		ClassDescriptor.serialize(htmlTable, a, StringFormat.XML);
+		SimplTypesScope.serialize(htmlTable, a, StringFormat.XML);
 		
 	}
 

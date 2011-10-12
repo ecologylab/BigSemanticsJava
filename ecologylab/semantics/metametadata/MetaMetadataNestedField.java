@@ -12,7 +12,7 @@ import ecologylab.semantics.metadata.mm_name;
 import ecologylab.semantics.metametadata.exceptions.MetaMetadataException;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.MetaInformation;
-import ecologylab.serialization.TranslationScope;
+import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.annotations.simpl_composite;
 import ecologylab.serialization.annotations.simpl_inherit;
 import ecologylab.serialization.annotations.simpl_scalar;
@@ -288,7 +288,7 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	 * @param metadataClassDescriptor
 	 *          the metadata class descriptor where field descriptors can be found.
 	 */
-	protected void bindMetadataFieldDescriptors(TranslationScope metadataTScope, MetadataClassDescriptor metadataClassDescriptor)
+	protected void bindMetadataFieldDescriptors(SimplTypesScope metadataTScope, MetadataClassDescriptor metadataClassDescriptor)
 	{
 		// copy the kids collection first to prevent modification to the collection during iteration (which may invalidate the iterator).
 		List<MetaMetadataField> fields = new ArrayList<MetaMetadataField>(this.kids.values());
@@ -372,7 +372,7 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	 * @param metadataTScope the translation scope for (generated) metadata classes.
 	 * @return the bound metadata class descriptor.
 	 */
-	protected MetadataClassDescriptor bindMetadataClassDescriptor(TranslationScope metadataTScope)
+	protected MetadataClassDescriptor bindMetadataClassDescriptor(SimplTypesScope metadataTScope)
 	{
 		MetadataClassDescriptor metadataCd = this.metadataClassDescriptor;
 		if (metadataCd == null)
@@ -428,7 +428,7 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	}
 	
 	@Override
-	protected void customizeFieldDescriptor(TranslationScope metadataTScope, MetadataFieldDescriptorProxy fdProxy)
+	protected void customizeFieldDescriptor(SimplTypesScope metadataTScope, MetadataFieldDescriptorProxy fdProxy)
 	{
 		super.customizeFieldDescriptor(metadataTScope, fdProxy);
 		
@@ -474,7 +474,7 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 			this.newMetadataClass = newMetadataClass;
 	}
 	
-	void findOrGenerateMetadataClassDescriptor(TranslationScope tscope)
+	void findOrGenerateMetadataClassDescriptor(SimplTypesScope tscope)
 	{
 		if (mmdScopeTraversed)
 			return;

@@ -1,6 +1,6 @@
 package ecologylab.semantics.actions;
 
-import ecologylab.serialization.TranslationScope;
+import ecologylab.serialization.SimplTypesScope;
 
 public class SemanticActionTranslationScope
 {
@@ -26,8 +26,8 @@ public class SemanticActionTranslationScope
 		FilterLocation.class,
 	};
 	
-	public static final TranslationScope get()
+	public static final SimplTypesScope get()
 	{
-		return TranslationScope.get(SEMANTIC_ACTION_TRANSLATION_SCOPE, CLASSES);
+		return SimplTypesScope.get(SEMANTIC_ACTION_TRANSLATION_SCOPE, CLASSES);
 	}
 }

@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import org.junit.Test;
 
 import ecologylab.semantics.metametadata.MetaMetadataTranslationScope;
-import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.SIMPLTranslationException;
+import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.StringFormat;
 import ecologylab.serialization.annotations.simpl_collection;
 import ecologylab.serialization.annotations.simpl_inherit;
@@ -48,7 +48,7 @@ public class AndCondition extends Condition
 				xml, StringFormat.XML);
 		System.out.println(and);
 		System.out.println(and.checks);
-		System.out.println(ClassDescriptor.serialize(and, StringFormat.XML));
+		System.out.println(SimplTypesScope.serialize(and, StringFormat.XML));
 	}
 
 }

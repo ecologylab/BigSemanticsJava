@@ -11,12 +11,11 @@ import ecologylab.semantics.metadata.MetadataFieldDescriptor;
 import ecologylab.semantics.metadata.scalar.types.MetadataScalarType;
 import ecologylab.semantics.metadata.scalar.types.MetadataStringScalarType;
 import ecologylab.semantics.metametadata.exceptions.MetaMetadataException;
-import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.FieldTypes;
 import ecologylab.serialization.MetaInformation;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.StringFormat;
-import ecologylab.serialization.TranslationScope;
+import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.annotations.Hint;
 import ecologylab.serialization.annotations.simpl_composite;
 import ecologylab.serialization.annotations.simpl_composite_as_scalar;
@@ -465,7 +464,7 @@ public class MetaMetadataScalarField extends MetaMetadataField
 		mmsf.scalarType = new MetadataStringScalarType();
 		mmsf.hint = Hint.XML_LEAF;
 		mmsf.filter = new RegexFilter(Pattern.compile("regex"), "replace");
-		System.out.println(ClassDescriptor.serialize(mmsf, StringFormat.XML));
+		System.out.println(SimplTypesScope.serialize(mmsf, StringFormat.XML));
 	}
 
 	public static void testDeserialization() throws SIMPLTranslationException
@@ -477,7 +476,7 @@ public class MetaMetadataScalarField extends MetaMetadataField
 	}
 
 	@Override
-	public MetadataFieldDescriptor findOrGenerateMetadataFieldDescriptor(TranslationScope tscope, MetadataClassDescriptor contextCd)
+	public MetadataFieldDescriptor findOrGenerateMetadataFieldDescriptor(SimplTypesScope tscope, MetadataClassDescriptor contextCd)
 	{
 		MetadataFieldDescriptor fd = this.metadataFieldDescriptor;
 		if (fd == null)

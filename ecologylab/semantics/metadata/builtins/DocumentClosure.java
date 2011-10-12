@@ -33,8 +33,8 @@ import ecologylab.semantics.model.text.TermVectorFeature;
 import ecologylab.semantics.seeding.SearchResult;
 import ecologylab.semantics.seeding.Seed;
 import ecologylab.semantics.seeding.SeedDistributor;
-import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.SIMPLTranslationException;
+import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.StringFormat;
 
 /**
@@ -422,7 +422,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 			
 			newDocument.inheritValues(oldDocument);	
 			
-			ClassDescriptor.serializeOut(newDocument, "After changeDocument()", StringFormat.XML);
+			SimplTypesScope.serializeOut(newDocument, "After changeDocument()", StringFormat.XML);
 			
 			semanticInlinks				= newDocument.semanticInlinks; // probably not needed, but just in case.
 			oldDocument.recycle();
@@ -733,7 +733,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 		Document document	= getDocument();
 		try
 		{
-			ClassDescriptor.serialize(document, System.out, format);
+			SimplTypesScope.serialize(document, System.out, format);
 			
 			System.out.println("\n");
 		}
@@ -748,7 +748,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 		Document document	= getDocument();
 		try
 		{			
-			ClassDescriptor.serialize(document, buffy, StringFormat.XML);
+			SimplTypesScope.serialize(document, buffy, StringFormat.XML);
 			System.out.println("\n");
 		}
 		catch (SIMPLTranslationException e)

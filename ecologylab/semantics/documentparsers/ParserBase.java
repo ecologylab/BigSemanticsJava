@@ -54,7 +54,7 @@ import ecologylab.serialization.Format;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.ScalarUnmarshallingContext;
 import ecologylab.serialization.StringFormat;
-import ecologylab.serialization.TranslationScope;
+import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.types.ScalarType;
 
@@ -110,7 +110,7 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 			debug("Metadata parsed from: " + document.getLocation());
 			if (resultingMetadata != null)
 			{
-				debug(ClassDescriptor.serialize(resultingMetadata, StringFormat.XML));
+				debug(SimplTypesScope.serialize(resultingMetadata, StringFormat.XML));
 			}
 		}
 		catch (Exception e)
@@ -123,7 +123,7 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 		{
 			// make sure termVector is built here
 			resultingMetadata.rebuildCompositeTermVector();
-			ClassDescriptor.serializeOut(resultingMetadata, "Before semantic actions", StringFormat.XML);
+			SimplTypesScope.serializeOut(resultingMetadata, "Before semantic actions", StringFormat.XML);
 
 			handler.takeSemanticActions(resultingMetadata);
 
@@ -131,14 +131,14 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 			resultingMetadata.rebuildCompositeTermVector();
 
 			
-			ClassDescriptor.serializeOut(resultingMetadata, "Before linked metadata", StringFormat.XML);
+			SimplTypesScope.serializeOut(resultingMetadata, "Before linked metadata", StringFormat.XML);
 			
 			MetaMetadataRepository metaMetaDataRepository = semanticsScope.getMetaMetadataRepository();
 			LinkedMetadataMonitor monitor = metaMetaDataRepository.getLinkedMetadataMonitor();
 			monitor.tryLink(metaMetaDataRepository, resultingMetadata);
 			monitor.addMonitors(resultingMetadata);
 			
-			ClassDescriptor.serializeOut(resultingMetadata, "After linked metadata", StringFormat.XML);
+			SimplTypesScope.serializeOut(resultingMetadata, "After linked metadata", StringFormat.XML);
 			
 		}
 
@@ -510,7 +510,7 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 		int size = helper.getListSize();
 
 		// get class of elements in the collection
-		TranslationScope tscope = semanticsScope.getMetadataTranslationScope();
+		SimplTypesScope tscope = semanticsScope.getMetadataTranslationScope();
 		Class elementClass = null;
 		MetadataScalarType scalarType = null;
 		if (mmdField.isCollectionOfScalars())
@@ -743,10 +743,10 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 			// thus this conversion is safe
 			MetaMetadata metaMetadata = (MetaMetadata) this.getMetaMetadata();
 			
-			TranslationScope tscope = metaMetadata.getLocalMetadataTranslationScope();
+			SimplTypesScope tscope = metaMetadata.getLocalMetadataTranslationScope();
 			newDocument = (Document) tscope.deserialize(purlConnection.getPurl(), this, Format.XML);
 			
-			ClassDescriptor.serialize(newDocument, System.out,  StringFormat.XML);
+			SimplTypesScope.serialize(newDocument, System.out,  StringFormat.XML);
 			
 			System.out.println();
 			// the old document is basic, so give it basic meta-metadata (so recycle does not tank)
