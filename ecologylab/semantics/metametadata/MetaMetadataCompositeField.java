@@ -269,10 +269,8 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 				MetaMetadataField fieldLocal = this.getChildMetaMetadata().get(fieldName);
 				if (fieldLocal != null)
 				{
-					debug("inheriting field: " + fieldLocal + " <= " + field);
 					if (field.getClass() != fieldLocal.getClass())
 						warning("local field " + fieldLocal + " hides field " + fieldLocal + " with the same name in super mmd type!");
-					// debug("inheriting field " + fieldLocal + " from " + field);
 					if (field != fieldLocal)
 						fieldLocal.setInheritedField(field);
 					fieldLocal.setDeclaringMmd(field.getDeclaringMmd());
@@ -411,7 +409,7 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 					throw new MetaMetadataException("meta-metadata not found: " + inheritedMmdName + " (if you want to define new types inline, you need to specify extends/child_extends)");
 				
 				// process normal mmd / field
-				debug("setting " + this + ".inheritedMmd to " + inheritedMmd);
+//				debug("setting " + this + ".inheritedMmd to " + inheritedMmd);
 				this.setInheritedMmd(inheritedMmd);
 			}
 		}

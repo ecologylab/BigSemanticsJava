@@ -144,7 +144,7 @@ public class MetaMetadataRepositoryLoader extends Debug implements DocumentParse
 			}
 			catch (SIMPLTranslationException e)
 			{
-				Debug.error("MetaMetadataRepository",
+				Debug.error(this.getClassSimpleName(),
 						"translating repository source file " + file.getAbsolutePath());
 				e.printStackTrace();
 			}

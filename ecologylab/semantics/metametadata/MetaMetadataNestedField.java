@@ -169,7 +169,7 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	{
 		if (!inheritFinished && !inheritInProcess)
 		{
-			debug("inheriting " + this.toString());
+//			debug("inheriting " + this.toString());
 			inheritInProcess = true;
 			this.inheritMetaMetadataHelper();
 			this.sortForDisplay();
@@ -331,7 +331,8 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 				MetadataFieldDescriptor fd = nested.getMetadataFieldDescriptor();
 				if (fd.isPolymorphic())
 				{
-					debug("Polymorphic field: " + nested + ", not binding an element class descriptor.");
+					// do not bind descriptor for truely polymorphic fields
+//					debug("Polymorphic field: " + nested + ", not binding an element class descriptor.");
 				}
 				else
 				{

@@ -121,25 +121,16 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 		}
 		if (resultingMetadata != null)
 		{
-			// make sure termVector is built here
-			resultingMetadata.rebuildCompositeTermVector();
-			SimplTypesScope.serializeOut(resultingMetadata, "Before semantic actions", StringFormat.XML);
-
 			handler.takeSemanticActions(resultingMetadata);
 
 			// make sure termVector is built here
 			resultingMetadata.rebuildCompositeTermVector();
-
 			
-			SimplTypesScope.serializeOut(resultingMetadata, "Before linked metadata", StringFormat.XML);
-			
+			// linking
 			MetaMetadataRepository metaMetaDataRepository = semanticsScope.getMetaMetadataRepository();
 			LinkedMetadataMonitor monitor = metaMetaDataRepository.getLinkedMetadataMonitor();
 			monitor.tryLink(metaMetaDataRepository, resultingMetadata);
 			monitor.addMonitors(resultingMetadata);
-			
-			SimplTypesScope.serializeOut(resultingMetadata, "After linked metadata", StringFormat.XML);
-			
 		}
 
 		return  resultingMetadata;

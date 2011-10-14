@@ -417,7 +417,7 @@ implements IMappable<String>//, HasLocalTranslationScope
 	@Override
 	protected void inheritMetaMetadataHelper()
 	{
-		debug("processing mmd: " + this);
+//		debug("processing mmd: " + this);
 		
 		// init each field's declaringMmd to this (some of them may change during inheritance)
 		for (MetaMetadataField field : this.getChildMetaMetadata())
