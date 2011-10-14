@@ -129,7 +129,7 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 	
 	/**
 	 * @author rhema
-	 *  returns true when a breakline would make sense based on the node name
+	 *  returns true when a breakline would make sense based on the node name.
 	 * 
 	 * @param nodeName such as p, div, br
 	 * @return
