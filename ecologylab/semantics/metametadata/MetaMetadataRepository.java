@@ -59,11 +59,11 @@ public class MetaMetadataRepository extends ElementState
 implements PackageSpecifier, DocumentParserTagNames
 {
 
-	private static final String																	DEFAULT_STYLE_NAME							= "default";
+	private static final String	DEFAULT_STYLE_NAME = "default";
 
-	static MetaMetadata																					baseDocumentMM;
+	static MetaMetadata			baseDocumentMM;
 
-	static MetaMetadata																					baseImageMM;
+	static MetaMetadata			baseImageMM;
 
 	// [region] de/serializable data fields.
 
@@ -71,51 +71,51 @@ implements PackageSpecifier, DocumentParserTagNames
 	 * The name of the repository.
 	 */
 	@simpl_scalar
-	private String																							name;
+	private String				name;
 
 	/**
 	 * The package in which the class files have to be generated.
 	 */
 	@simpl_tag("package")
 	@simpl_scalar
-	private String																							packageAttribute;
+	private String				packageAttribute;
 
 	/**
 	 * user agent strings.
 	 */
 	@simpl_map("user_agent")
-	private Map<String, UserAgent>															userAgents;
+	private Map<String, UserAgent> userAgents;
 
 	/**
 	 * default user agent string name.
 	 */
 	@simpl_scalar
-	private String																							defaultUserAgentName;
+	private String 				defaultUserAgentName;
 
 	/**
 	 * definition of search engines.
 	 */
 	@simpl_composite
-	private SearchEngines																				searchEngines;
+	private SearchEngines 		searchEngines;
 
 	/**
 	 * definition of sites.
 	 */
 	@simpl_map("site")
-	private SemanticsSiteMap																		sites;
+	private SemanticsSiteMap 	sites;
 
 	/**
 	 * definition of name styles.
 	 */
 	@simpl_map("named_style")
-	private Map<String, NamedStyle>															namedStyles;
+	private Map<String, NamedStyle> namedStyles;
 
 	/**
 	 * definition of cookie processors.
 	 */
 	@simpl_nowrap
 	@simpl_collection("cookie_processing")
-	private ArrayList<CookieProcessing>													cookieProcessors;
+	private ArrayList<CookieProcessing> cookieProcessors;
 
 	/**
 	 * definition of selectors. selectors are used to select a meta-metadata based on URL pattern or
@@ -123,7 +123,7 @@ implements PackageSpecifier, DocumentParserTagNames
 	 */
 	@simpl_map("selector")
 	@simpl_nowrap
-	private HashMapArrayList<String, MetaMetadataSelector>			selectorsByName;
+	private HashMapArrayList<String, MetaMetadataSelector> selectorsByName;
 
 	/**
 	 * The map from meta-metadata name (currently simple name, but might be extended to fully
@@ -134,51 +134,51 @@ implements PackageSpecifier, DocumentParserTagNames
 	 */
 	@simpl_map("meta_metadata")
 	@simpl_nowrap
-	HashMapArrayList<String, MetaMetadata>											repositoryByName;
+	HashMapArrayList<String, MetaMetadata>	repositoryByName;
 
 	// [endregion]
 
 	/**
 	 * package mmd scopes.
 	 */
-	Map<String, MultiAncestorScope<MetaMetadata>>								packageMmdScopes;
+	Map<String, MultiAncestorScope<MetaMetadata>>	packageMmdScopes;
 
 	// [region] repository maps generated from repositoryByName. used for look-up.
 
 	/**
 	 * meta-metadata sorted by metadata class name.
 	 */
-	private HashMap<String, MetaMetadata>												repositoryByClassName						= new HashMap<String, MetaMetadata>();
+	private HashMap<String, MetaMetadata> repositoryByClassName		= new HashMap<String, MetaMetadata>();
 
 	/**
 	 * Repository by MIME type.
 	 */
-	private HashMap<String, MetaMetadata>												repositoryByMime								= new HashMap<String, MetaMetadata>();
+	private HashMap<String, MetaMetadata> repositoryByMime			= new HashMap<String, MetaMetadata>();
 
 	/**
 	 * Repository by suffix.
 	 */
-	private HashMap<String, MetaMetadata>												repositoryBySuffix							= new HashMap<String, MetaMetadata>();
+	private HashMap<String, MetaMetadata> repositoryBySuffix		= new HashMap<String, MetaMetadata>();
 
 	/**
 	 * Collection of URL prefixes.
 	 */
-	private PrefixCollection																		urlPrefixCollection							= new PrefixCollection('/');
+	private PrefixCollection urlPrefixCollection					= new PrefixCollection('/');
 
 	/**
 	 * Repository of documents with domain as key.
 	 */
-	private HashMap<String, MetaMetadata>												documentRepositoryByDomain			= new HashMap<String, MetaMetadata>();
+	private HashMap<String, MetaMetadata> documentRepositoryByDomain= new HashMap<String, MetaMetadata>();
 
 	/**
 	 * Repository of documents with noAnchorNoQuery URL string as key.
 	 */
-	private HashMap<String, MetaMetadata>												documentRepositoryByUrlStripped	= new HashMap<String, MetaMetadata>();
+	private HashMap<String, MetaMetadata> documentRepositoryByUrlStripped	= new HashMap<String, MetaMetadata>();
 
 	/**
 	 * Repository of documents with URL pattern as key.
 	 */
-	private HashMap<String, ArrayList<RepositoryPatternEntry>>	documentRepositoryByPattern			= new HashMap<String, ArrayList<RepositoryPatternEntry>>();
+	private HashMap<String, ArrayList<RepositoryPatternEntry>> documentRepositoryByPattern = new HashMap<String, ArrayList<RepositoryPatternEntry>>();
 
 	/**
 	 * Repository of images with noAnchroNoQuery URL string as key.
@@ -197,16 +197,16 @@ implements PackageSpecifier, DocumentParserTagNames
 	/**
 	 * The metadata translation scope used by this repository.
 	 */
-	private SimplTypesScope																		metadataTScope;
+	private SimplTypesScope metadataTScope;
 
-	private LinkedMetadataMonitor																linkedMetadataMonitor						= new LinkedMetadataMonitor();
+	private LinkedMetadataMonitor linkedMetadataMonitor = new LinkedMetadataMonitor();
 
 	/**
 	 * for debug.
 	 */
-	File																												file;
+	File file;
 
-	private static boolean																			initializedTypes;
+	private static boolean initializedTypes;
 
 	static
 	{
