@@ -3,6 +3,8 @@ package ecologylab.semantics.documentparsers;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -43,13 +45,20 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 		this.documentClosure = anonymousDocument.getOrConstructClosure();
 	}
 
+	
+	
+	/*
+	This is the old parse method as of oct 13, 2011.
+	This will be removed as soon as I am happy tweaking the old one.
+	-Rhema
+	
 	@Override
 	public void parse() throws IOException
 	{
 		org.w3c.dom.Document doc = getDom();
-
 		int containerNodeIndex = 0;
 		NodeList bodyNodeList = doc.getElementsByTagName(HTML_TAG_BODY);
+		//types not passed well... check here
 		if (bodyNodeList.getLength() > 0)
 		{
 			Node bodyNode = bodyNodeList.item(0);
@@ -76,7 +85,7 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 				}
 				setContainerPurl(containerNode);
 			}
-			DOMWalkInformationTagger.getTextInSubTree(bodyNode, true, bodyTextBuffy, true, true);
+			DOMWalkInformationTagger.getTextInSubTree2(bodyNode, true, bodyTextBuffy, false, true);
 		}
 		NodeList imgNodeList = doc.getElementsByTagName(HTML_TAG_IMG);
 		int numImages = imgNodeList.getLength();
@@ -110,6 +119,151 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 
 		}
 		// taggedDoc.generateCollectionsFromRoot(rootNode);
+	} 
+
+*
+*
+*/
+	
+	private static HashMap<String, Integer> namesOfBreaklineNodeNames = null;
+	
+	/**
+	 * @author rhema
+	 *  returns true when a breakline would make sense based on the node name
+	 * 
+	 * @param nodeName such as p, div, br
+	 * @return
+	 */
+	private boolean shouldBreakLineWithNodeName(String nodeName)
+	{
+		String name = nodeName.toLowerCase();
+		if(namesOfBreaklineNodeNames == null)
+		{
+			namesOfBreaklineNodeNames = new HashMap<String,Integer>();
+			namesOfBreaklineNodeNames.put("p",1);
+			namesOfBreaklineNodeNames.put("h1",1);
+			namesOfBreaklineNodeNames.put("h2",1);
+			namesOfBreaklineNodeNames.put("h3",1);
+			namesOfBreaklineNodeNames.put("h4",1);
+			namesOfBreaklineNodeNames.put("h5",1);
+			namesOfBreaklineNodeNames.put("h6",1);
+			namesOfBreaklineNodeNames.put("br",1);
+		}
+		return namesOfBreaklineNodeNames.containsKey(name);
+	}
+	
+	public String walkDomAddingTextAndAddNewlines(Node bodyNode)
+	{
+	  String s ="";
+		NodeList children = bodyNode.getChildNodes();
+		boolean addLine = false; //this is outside of the loop below to make it work correctly
+	  for (int i = 0; i < children.getLength(); i++)
+	  {	
+	  	Node kid = children.item(i);
+		//debug("Looooopy loop lop lop..."+kid.getNodeName());
+		if(addLine == false)
+		    addLine = shouldBreakLineWithNodeName(kid.getNodeName());
+		if(kid.getNodeValue() != null)
+		{
+			String v = kid.getNodeValue();
+			s = addWithOneSpaceBetween(s, v,false);
+			if(addLine)
+			{
+				s+= "\n";
+				addLine = false;
+			}
+		}
+		  s = addWithOneSpaceBetween(s,walkDomAddingTextAndAddNewlines(kid),true);
+	  }
+	 
+	  return s;
+	}
+
+
+
+	private String addWithOneSpaceBetween(String s, String v, boolean newlineOK)
+	{
+		if(!newlineOK)
+		   v = v.replaceAll("\\n","");
+		v = v.replaceAll("^[\\s]+", "");
+		if(v.length()>0)
+		{
+			if(s.length()>0)
+				if(s.charAt(s.length() -1) != ' ')
+				{
+					s+= " ";
+				}
+		   s+=v;
+		}
+		return s;
+	}
+	
+	void checkForContainerAndSetPURL(Node bodyNode)
+	{
+		debug("looking at"+bodyNode.getNodeName());
+		bodyNode.getAttributes();
+	  if(bodyNode.getAttributes() != null)// bodyNode. .getNamedItem("container") != null)
+	  {
+	  	if(bodyNode.getAttributes().getNamedItem("container") != null)
+	  	{
+			  String containerValue = bodyNode.getAttributes().getNamedItem("container").getTextContent();
+	     if (containerValue != null && containerValue.length() > 0)
+			  {
+				  containerValue = XMLTools.unescapeXML(containerValue);
+				  containerPurl = ParsedURL.getAbsolute(containerValue);
+				//  debug("FOUND THER PURLLLL!!!"+containerValue);
+			    return;
+			  }
+	  	}
+	  }
+		NodeList children = bodyNode.getChildNodes();
+	  for (int i = 0; i < children.getLength(); i++)
+		{	
+		  checkForContainerAndSetPURL(children.item(i));
+		}
+	}
+	
+	@Override
+	public void parse() throws IOException
+	{
+		org.w3c.dom.Document doc = getDom();
+		int containerNodeIndex = 0;
+		NodeList bodyNodeList = doc.getElementsByTagName(HTML_TAG_BODY);
+		if (bodyNodeList.getLength() > 0)
+		{
+			Node bodyNode = bodyNodeList.item(0);
+			bodyTextBuffy.append( walkDomAddingTextAndAddNewlines(bodyNode));
+			checkForContainerAndSetPURL(bodyNode);
+		}
+		
+		NodeList imgNodeList = doc.getElementsByTagName(HTML_TAG_IMG);
+		int numImages = imgNodeList.getLength();
+		if (numImages > 0)
+		{
+			for (int i = 0; i < numImages; i++)
+			{
+				Node imgNode = imgNodeList.item(i);
+				
+				if (containerPurl == null)
+				{
+					setContainerPurl(getContainerAttrNode(imgNode));
+				}
+				// Add other information if available
+				String altText = null;
+				for (int k = 0; k < imgNode.getAttributes().getLength(); k++)
+				{
+					Node att = imgNode.getAttributes().item(k);
+					// debug(att.getNodeName());
+					if (att.getNodeName().toLowerCase().equals("alt"))
+					{
+						altText = att.getNodeValue();
+					}
+				}
+				ImgElement im = new ImgElement(imgNode, containerPurl);
+				im.setAlt(altText);
+				imageElements.add(im);
+			}
+		}
 	}
 
 	private Node getContainerAttrNode(Node elementNode)
