@@ -200,7 +200,14 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 		{
 			for (int i = 0; i < numImages; i++)
 			{
+				
 				Node imgNode = imgNodeList.item(i);
+			  //make sure src is set...
+				if(imgNode.getAttributes().getNamedItem("src") == null)
+				{
+					System.out.println("Skipping img with no image source");
+					continue;
+				}
 
 				if (containerPurl == null)
 				{
