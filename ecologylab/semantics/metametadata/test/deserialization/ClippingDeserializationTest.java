@@ -13,10 +13,10 @@ import ecologylab.semantics.generated.library.RepositoryMetadataTranslationScope
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.namesandnums.SemanticsNames;
 import ecologylab.serialization.ElementState;
-import ecologylab.serialization.Format;
 import ecologylab.serialization.SIMPLTranslationException;
-import ecologylab.serialization.StringFormat;
 import ecologylab.serialization.SimplTypesScope;
+import ecologylab.serialization.formatenums.Format;
+import ecologylab.serialization.formatenums.StringFormat;
 
 /**
  * @author andruid

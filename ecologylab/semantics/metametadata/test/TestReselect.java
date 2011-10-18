@@ -8,7 +8,7 @@ import ecologylab.semantics.generated.library.RepositoryMetadataTranslationScope
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.SimplTypesScope;
-import ecologylab.serialization.StringFormat;
+import ecologylab.serialization.formatenums.StringFormat;
 
 public class TestReselect
 {

@@ -8,8 +8,8 @@ import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.metametadata.MetaMetadataTranslationScope;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.SIMPLTranslationException;
-import ecologylab.serialization.StringFormat;
 import ecologylab.serialization.SimplTypesScope;
+import ecologylab.serialization.formatenums.StringFormat;
 
 public class MMDTester
 {

@@ -11,9 +11,9 @@ import ecologylab.semantics.cyberneko.CybernekoWrapper;
 import ecologylab.semantics.generated.library.RepositoryMetadataTranslationScope;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
-import ecologylab.serialization.Format;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.SimplTypesScope;
+import ecologylab.serialization.formatenums.Format;
 
 public class TestRestoringChildComposite
 {

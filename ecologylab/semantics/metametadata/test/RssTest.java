@@ -7,10 +7,10 @@ import ecologylab.net.ParsedURL;
 import ecologylab.semantics.generated.library.rss.Channel;
 import ecologylab.semantics.generated.library.rss.Item;
 import ecologylab.serialization.ElementState;
-import ecologylab.serialization.Format;
 import ecologylab.serialization.SIMPLTranslationException;
-import ecologylab.serialization.StringFormat;
 import ecologylab.serialization.SimplTypesScope;
+import ecologylab.serialization.formatenums.Format;
+import ecologylab.serialization.formatenums.StringFormat;
 import ecologylab.serialization.library.rss.RssState;
 import ecologylab.serialization.library.rss.RssTranslations;
 

@@ -1,11 +1,11 @@
 package ecologylab.semantics.metametadata.test;
 
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
-import ecologylab.serialization.Format;
 import ecologylab.serialization.SIMPLTranslationException;
-import ecologylab.serialization.StringFormat;
 import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.SimplTypesScope.GRAPH_SWITCH;
+import ecologylab.serialization.formatenums.Format;
+import ecologylab.serialization.formatenums.StringFormat;
 
 public class BibTeXToMMD extends NewMmTest
 {
