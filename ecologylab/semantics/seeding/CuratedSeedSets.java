@@ -8,13 +8,13 @@ import ecologylab.io.Assets;
 import ecologylab.semantics.namesandnums.CFPrefNames;
 import ecologylab.semantics.namesandnums.SemanticsAssetVersions;
 import ecologylab.serialization.ElementState;
-import ecologylab.serialization.Format;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.annotations.simpl_collection;
 import ecologylab.serialization.annotations.simpl_inherit;
 import ecologylab.serialization.annotations.simpl_nowrap;
 import ecologylab.serialization.annotations.simpl_scope;
+import ecologylab.serialization.formatenums.Format;
 
 /**
  * A collection + registry of SeedSets.

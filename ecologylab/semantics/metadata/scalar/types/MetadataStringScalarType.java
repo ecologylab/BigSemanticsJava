@@ -5,7 +5,7 @@ import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.ScalarUnmarshallingContext;
 import ecologylab.serialization.SimplTypesScope;
-import ecologylab.serialization.StringFormat;
+import ecologylab.serialization.formatenums.StringFormat;
 
 public class MetadataStringScalarType extends MetadataScalarType<MetadataString, String>
 {

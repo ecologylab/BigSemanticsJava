@@ -3,10 +3,10 @@ package testcases;
 import java.io.File;
 
 import ecologylab.semantics.metadata.builtins.Image;
-import ecologylab.serialization.Format;
 import ecologylab.serialization.SIMPLTranslationException;
-import ecologylab.serialization.StringFormat;
 import ecologylab.serialization.SimplTypesScope;
+import ecologylab.serialization.formatenums.Format;
+import ecologylab.serialization.formatenums.StringFormat;
 
 public class translate2xml
 {

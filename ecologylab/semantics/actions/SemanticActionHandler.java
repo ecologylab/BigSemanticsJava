@@ -16,7 +16,7 @@ import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.tools.GenericIterable;
 import ecologylab.serialization.SimplTypesScope;
-import ecologylab.serialization.StringFormat;
+import ecologylab.serialization.formatenums.StringFormat;
 
 /**
  * This is the handler for semantic actions. * It has a <code>handleSemanticAction</code> method

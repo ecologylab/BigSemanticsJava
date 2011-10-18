@@ -14,7 +14,6 @@ import ecologylab.semantics.metametadata.exceptions.MetaMetadataException;
 import ecologylab.serialization.FieldTypes;
 import ecologylab.serialization.MetaInformation;
 import ecologylab.serialization.SIMPLTranslationException;
-import ecologylab.serialization.StringFormat;
 import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.annotations.Hint;
 import ecologylab.serialization.annotations.simpl_composite;
@@ -23,6 +22,7 @@ import ecologylab.serialization.annotations.simpl_filter;
 import ecologylab.serialization.annotations.simpl_inherit;
 import ecologylab.serialization.annotations.simpl_scalar;
 import ecologylab.serialization.annotations.simpl_tag;
+import ecologylab.serialization.formatenums.StringFormat;
 import ecologylab.serialization.types.ScalarType;
 
 @simpl_inherit

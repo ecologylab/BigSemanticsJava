@@ -23,9 +23,9 @@ import ecologylab.semantics.metametadata.MetaMetadataRepositoryLoader;
 import ecologylab.semantics.namesandnums.DocumentParserTagNames;
 import ecologylab.semantics.namesandnums.SemanticsAssetVersions;
 import ecologylab.semantics.namesandnums.SemanticsNames;
-import ecologylab.serialization.Format;
 import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.SimplTypesScope.GRAPH_SWITCH;
+import ecologylab.serialization.formatenums.Format;
 
 /**
  * Initializes the MetaMetadataRepository, using its standard location in the /repository directory of the ecologylabSemantics project,

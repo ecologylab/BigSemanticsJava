@@ -15,9 +15,9 @@ import ecologylab.semantics.collecting.CookieProcessing;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metametadata.exceptions.MetaMetadataException;
 import ecologylab.semantics.namesandnums.DocumentParserTagNames;
-import ecologylab.serialization.Format;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.SimplTypesScope;
+import ecologylab.serialization.formatenums.Format;
 
 /**
  * Take charge in loading the repository.

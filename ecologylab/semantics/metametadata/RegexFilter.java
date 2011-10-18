@@ -4,11 +4,11 @@ import java.util.regex.Pattern;
 
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.SimplTypesScope;
-import ecologylab.serialization.StringFormat;
 import ecologylab.serialization.annotations.Hint;
 import ecologylab.serialization.annotations.simpl_hints;
 import ecologylab.serialization.annotations.simpl_inherit;
 import ecologylab.serialization.annotations.simpl_scalar;
+import ecologylab.serialization.formatenums.StringFormat;
 
 @simpl_inherit
 public class RegexFilter extends ElementState

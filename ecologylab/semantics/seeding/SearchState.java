@@ -11,9 +11,9 @@ import ecologylab.semantics.metametadata.SearchEngine;
 import ecologylab.semantics.model.text.InterestModel;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.SimplTypesScope;
-import ecologylab.serialization.StringFormat;
 import ecologylab.serialization.annotations.simpl_inherit;
 import ecologylab.serialization.annotations.simpl_scalar;
+import ecologylab.serialization.formatenums.StringFormat;
 
 /**
  * {@link Seed Seed} element that directs combinFormation to perform a search.
