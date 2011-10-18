@@ -344,6 +344,7 @@ implements Downloadable, Colors
 
 		if (alphaGradientRendering == null)
 			alphaGradientRendering = new AlphaGradientRendering(unprocessedRendering, active);
+		
 		if (active)
 		{
 			alphaGradientRendering.compute(radius, minAlpha);
@@ -359,6 +360,13 @@ implements Downloadable, Colors
 			ConsoleUtils.obtrusiveConsoleOutput("CRAZY! this="+width+" alphaGrad="+this.alphaGradientRendering.width);
 		return true;
 	}
+	
+	public boolean alphaGradient(int radius, int minAlpha, int minAlphaInt)
+	{
+		alphaGradientRendering.setMinAlphaInt(minAlphaInt);
+		return alphaGradient(radius, minAlpha);
+	}
+	
 	/**
 	 * @return In alpha gradient blending, the distance from the perimeter,
 	 * inside which opacity is complete.
@@ -804,7 +812,10 @@ implements Downloadable, Colors
 	}
 
 	public AlphaGradientRendering getAlphaGradientRendering()
-	{
+	{		
+		if (alphaGradientRendering == null)
+			alphaGradientRendering = new AlphaGradientRendering(unprocessedRendering, true);
+		
 		return alphaGradientRendering;
 	}
 

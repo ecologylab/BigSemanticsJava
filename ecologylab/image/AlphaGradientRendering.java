@@ -7,6 +7,7 @@ import java.awt.image.DataBuffer;
 import java.awt.image.SampleModel;
 import java.awt.image.SinglePixelPackedSampleModel;
 
+import ecologylab.generic.Colors;
 import ecologylab.generic.ImageTools;
 import ecologylab.serialization.annotations.simpl_inherit;
 import ecologylab.serialization.annotations.simpl_scalar;
@@ -27,6 +28,8 @@ public class AlphaGradientRendering extends Rendering
 	
 	@simpl_scalar
   int minAlpha;
+	
+	int minAlphaInt;
    
 	public AlphaGradientRendering()
 	{
@@ -41,6 +44,9 @@ public class AlphaGradientRendering extends Rendering
    public AlphaGradientRendering(Rendering previousRendering, boolean active)
    {
 	   super(previousRendering, active);
+	   radius = 0.0f;
+	   minAlpha = ((int) (((float)0 / 255.0f) * (float) Colors.R)) & Colors.R;
+	   minAlphaInt = 0;
    }
 
    public void compute(int radius, int minAlpha)
@@ -165,5 +171,13 @@ public class AlphaGradientRendering extends Rendering
 //		debug("resize ratio: " + oldRadius +"\t-> " + radius);
 		radius	*= ratio;
 		super.resizeImageComponents(width, height, createBufferedImage);
+	}
+	
+	public int getMinAlphaInt() {
+		return minAlphaInt;
+	}
+
+	public void setMinAlphaInt(int minAlphaInt) {
+		this.minAlphaInt = minAlphaInt;
 	}
 }
