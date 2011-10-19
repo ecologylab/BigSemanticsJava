@@ -3,8 +3,6 @@ package ecologylab.semantics.metametadata.metasearch;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.w3c.tidy.Tidy;
-
 import ecologylab.generic.Continuation;
 import ecologylab.generic.Debug;
 import ecologylab.net.ParsedURL;

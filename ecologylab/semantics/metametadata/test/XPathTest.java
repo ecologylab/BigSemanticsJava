@@ -9,10 +9,10 @@ import javax.xml.xpath.XPathFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.w3c.tidy.DOMNodeListImpl;
-import org.w3c.tidy.Tidy;
+//import org.w3c.tidy.Tidy;
 
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.cyberneko.CybernekoWrapper;
 import ecologylab.semantics.html.dom.IDOMProvider;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 
@@ -63,18 +63,19 @@ public class XPathTest
 	 */
 	public static void main(String[] args)
 	{
-		Tidy tidy = new Tidy();
-		tidy.setQuiet(true);
-		tidy.setShowWarnings(false);
+//		IDOMProvider domProvider = new Tidy(); // we used to use JTidy as the DOM provider.
+		IDOMProvider domProvider = new CybernekoWrapper();
+		domProvider.setQuiet(true);
+		domProvider.setShowWarnings(false);
 		XPath xpath = XPathFactory.newInstance().newXPath();
 		try
 		{
 //		InputStream inStream = new FileInputStream(new File("C:\\abhinavCode\\ecologylabSemantics\\testcases\\file2.xml"));
 			InputStream inStream = PURL.connect().inputStream();
-			Document contextNode = tidy.parseDOM(inStream, null);
+			Document contextNode = domProvider.parseDOM(inStream, null);
 			String parentXPathString=XPATH;
 			
-				DOMNodeListImpl parentNodeList = (DOMNodeListImpl) xpath.evaluate(parentXPathString, contextNode, XPathConstants.NODESET);
+			NodeList parentNodeList = (NodeList) xpath.evaluate(parentXPathString, contextNode, XPathConstants.NODESET);
 				String childXPath = CHILD_XPATH;
 				System.out.println("List Size: " + parentNodeList.getLength());
 				for(int i=0;i<parentNodeList.getLength();i++)

@@ -5,10 +5,9 @@ package ecologylab.semantics.metametadata.test.deserialization;
 
 import java.io.File;
 
-import org.w3c.tidy.Tidy;
-
 import ecologylab.generic.Debug;
 import ecologylab.semantics.collecting.SemanticsSessionScope;
+import ecologylab.semantics.cyberneko.CybernekoWrapper;
 import ecologylab.semantics.generated.library.RepositoryMetadataTranslationScope;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.namesandnums.SemanticsNames;
@@ -47,7 +46,7 @@ implements SemanticsNames
 
 		File file		= new File("ecologylab/semantics/metametadata/test/deserialization/textClipping.xml");
 		
-		SemanticsSessionScope sss	= new SemanticsSessionScope(META_METADATA_TRANSLATIONS, Tidy.class);
+		SemanticsSessionScope sss	= new SemanticsSessionScope(META_METADATA_TRANSLATIONS, CybernekoWrapper.class);
 		
 		try
 		{

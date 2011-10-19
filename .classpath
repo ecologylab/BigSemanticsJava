@@ -6,7 +6,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/ecologylabFundamental"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/ecologylabGeneratedSemantics"/>
 	<classpathentry kind="src" path="/ecologylabSemanticsCyberneko"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/jtidy"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/cyberneko"/>
 	<classpathentry kind="lib" path="/cyberneko/lib/xercesMinimal.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
