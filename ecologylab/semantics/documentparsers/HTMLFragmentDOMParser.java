@@ -163,6 +163,18 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 		if (bodyNode.getAttributes() != null)// bodyNode. .getNamedItem("container") != null)
 		{
 			//We are moving to use the simpl attribute instead of container.  
+			if (bodyNode.getAttributes().getNamedItem("simpl:source_location") != null)
+			{
+				String containerValue = bodyNode.getAttributes().getNamedItem("simpl:source_location").getTextContent();
+				if (containerValue != null && containerValue.length() > 0)
+				{
+					containerValue = XMLTools.unescapeXML(containerValue);
+					containerPurl = ParsedURL.getAbsolute(containerValue);
+					// debug("FOUND THER PURLLLL!!!"+containerValue);
+					return;
+				}
+			}
+			
 			if (bodyNode.getAttributes().getNamedItem("simpl") != null)
 			{
 				String containerValue = bodyNode.getAttributes().getNamedItem("simpl").getTextContent();
