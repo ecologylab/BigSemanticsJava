@@ -100,8 +100,9 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 	{
 		super();
 		this.document							= document;
-		this.semanticsScope= semanticsSessionScope;
+		this.semanticsScope				= semanticsSessionScope;
 		this.semanticInlinks			= semanticInlinks;
+		this.continuations 				= new ArrayList<Continuation<DocumentClosure>>();
 	}
 
 	/**
@@ -654,13 +655,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 
 	private ArrayList<Continuation<DocumentClosure>> continuations()
 	{
-		ArrayList<Continuation<DocumentClosure>> result	= continuations;
-		if (result == null)
-		{
-			result							= new ArrayList<Continuation<DocumentClosure>>(2);
-			this.continuations	= result;
-		}
-		return result;
+		return continuations;
 	}
 	
 	public void addContinuation(Continuation<DocumentClosure> continuation)
