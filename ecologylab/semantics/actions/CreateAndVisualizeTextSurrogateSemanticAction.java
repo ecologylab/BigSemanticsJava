@@ -12,8 +12,8 @@ import ecologylab.serialization.annotations.simpl_tag;
  */
 @simpl_inherit
 public @simpl_tag(SemanticActionStandardMethods.CREATE_AND_VISUALIZE_TEXT_SURROGATE)
-class CreateAndVisualizeTextSurrogateSemanticAction
-		extends SemanticAction implements SemanticActionStandardMethods
+class CreateAndVisualizeTextSurrogateSemanticAction extends SemanticAction implements
+		SemanticActionStandardMethods
 {
 
 	@Override
@@ -32,22 +32,18 @@ class CreateAndVisualizeTextSurrogateSemanticAction
 	@Override
 	public Object perform(Object obj)
 	{
-		boolean isSemanticText	= getArgumentBoolean(SemanticActionNamedArguments.SEMANTIC_TEXT, false);
-		String context 					= (String) getArgumentObject(SemanticActionNamedArguments.TEXT);
-//		String conText	= (String) getArgumentObject(SemanticActionNamedArguments.CONTEXT);
-		//TODO use html context -- need methods to strip tags to set regular context from it.
-		String htmlContext			= (String) getArgumentObject(SemanticActionNamedArguments.HTML_CONTEXT);
-
+		boolean isSemanticText = getArgumentBoolean(SemanticActionNamedArguments.SEMANTIC_TEXT, false);
+		String context = (String) getArgumentObject(SemanticActionNamedArguments.TEXT);
+		// TODO use html context -- need methods to strip tags to set regular context from it.
+		String htmlContext = (String) getArgumentObject(SemanticActionNamedArguments.HTML_CONTEXT);
 		if (context != null)
 		{
-			TextClipping textClipping	= new TextClipping(context, isSemanticText);
-			
-			Document sourceDocument		= resolveSourceDocument();
+			Document sourceDocument = resolveSourceDocument();
+			TextClipping textClipping = new TextClipping(sessionScope.getMetaMetadataRepository().getMMByName(sessionScope.TEXT_TAG));
+			textClipping.setText(context);
+			textClipping.setSourceDoc(sourceDocument);
 			sourceDocument.addClipping(textClipping);
 		}
-		
 		return null;
 	}
-
-
 }
