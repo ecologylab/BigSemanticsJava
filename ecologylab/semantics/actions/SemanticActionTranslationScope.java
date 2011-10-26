@@ -24,6 +24,7 @@ public class SemanticActionTranslationScope
 		ReselectAndExtractMetadataSemanticAction.class,
 		AddMixinSemanticAction.class,
 		FilterLocation.class,
+		VisualizeClippings.class,
 	};
 	
 	public static final SimplTypesScope get()

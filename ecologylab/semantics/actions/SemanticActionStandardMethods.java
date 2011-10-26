@@ -65,6 +65,11 @@ public interface SemanticActionStandardMethods
 	 */
 	public static String	CREATE_AND_VISUALIZE_TEXT_SURROGATE	= "create_and_visualize_text_surrogate";
 	
+	/**
+	 * text handling action.
+	 */
+	public static String	VISUALIZE_CLIPPINGS									= "visualize_clippings";
+	
 	public static String	FILTER_LOCATION											= "filter_location";
 
 	/**

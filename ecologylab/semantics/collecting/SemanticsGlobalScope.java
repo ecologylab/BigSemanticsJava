@@ -6,6 +6,7 @@ package ecologylab.semantics.collecting;
 import ecologylab.generic.Debug;
 import ecologylab.generic.ReflectionTools;
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.gui.InteractiveSpace;
 import ecologylab.semantics.html.dom.IDOMProvider;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.Image;
@@ -186,4 +187,9 @@ public class SemanticsGlobalScope extends MetaMetadataRepositoryInit
 		return fieldParserFactory;
 	}
 	
+	public InteractiveSpace getInteractiveSpace()
+	{
+		return null;
+	}
+
 }

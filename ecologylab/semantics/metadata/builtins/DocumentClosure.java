@@ -36,6 +36,7 @@ import ecologylab.semantics.seeding.SeedDistributor;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.formatenums.StringFormat;
+import ecologylab.serialization.library.geom.PointInt;
 
 /**
  * New Container object. Mostly just a closure around Document.
@@ -64,6 +65,8 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 	
 	DownloadStatus								downloadStatus	= DownloadStatus.UNPROCESSED;
 	
+	PointInt											dndPoint;
+
 	protected		SemanticsGlobalScope	semanticsScope;
 	
 	/**
@@ -82,11 +85,6 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 	 * web crawler, providing that they are traversable() and of the right mime types.
 	 */
 	boolean							crawlLinks		= true;
-
-	/**
-	 * Indicates that this Container is processed via drag and drop.
-	 */
-	private boolean			isDnd;
 	
 	private boolean 		cacheHit = false;
 
@@ -575,21 +573,9 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 		}
 	}
 
-	/**
-	 * Indicate that this Container is being processed via DnD.
-	 *
-	 */
-	public void setDnd()
-	{
-		isDnd			= true;
-	}
-	public boolean isDnd()
-	{
-		return isDnd;
-	}
 	public DownloadProcessor<DocumentClosure> downloadMonitor()
 	{
-		return  semanticsScope.getDownloadMonitors().downloadProcessor(document.isImage(), isDnd, isSeed(), document.isGui());
+		return  semanticsScope.getDownloadMonitors().downloadProcessor(document.isImage(), isDnd(), isSeed(), document.isGui());
 	}
 
 	
@@ -797,4 +783,19 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 	{
 		return document.isImage();
 	}
-}
+	
+	public PointInt getDndPoint()
+	{
+		return dndPoint;
+	}
+
+	public void setDndPoint(PointInt dndPoint)
+	{
+		this.dndPoint = dndPoint;
+	}
+	
+	public boolean isDnd()
+	{
+		return dndPoint != null;
+	}
+	}

@@ -3,6 +3,9 @@
  */
 package ecologylab.semantics.gui;
 
+import ecologylab.semantics.metadata.builtins.ImageClipping;
+import ecologylab.semantics.metadata.builtins.TextClipping;
+
 /**
  * Wraps something like a CompositionSpace.
  * 
@@ -24,4 +27,8 @@ public interface InteractiveSpace
   
   public void pressPlayWhenFirstMediaArrives();
 	
+	public void createAndAddClipping(ImageClipping imageClipping, int x, int y);
+
+	public void createAndAddClipping(TextClipping textClipping, int x, int y);
+
 }
