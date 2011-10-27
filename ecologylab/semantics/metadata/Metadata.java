@@ -702,7 +702,7 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 		// FIXME -- why is this necessary???????????????????????
 		if (marshalledValue != null && marshalledValue.length() != 0)
 		{
-			tagName = tagName.toLowerCase(); // FIXME -- get rid of this!
+//			tagName = tagName.toLowerCase(); // FIXME -- get rid of this!
 			MetadataFieldDescriptor fieldDescriptor = getFieldDescriptorByTagName(tagName);
 			if (fieldDescriptor != null /* && value != null && value.length()!=0 */) // allow set to
 																																								// nothing --
@@ -716,6 +716,25 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 			else
 			{
 				debug("Not Able to set the field: " + tagName);
+			}
+		}
+		return false;
+	}
+	
+	public boolean setByFieldName(String fieldName, String marshalledValue)
+	{
+		return setByFieldName(fieldName, marshalledValue, null);
+	}
+	
+	public boolean setByFieldName(String fieldName, String marshalledValue, ScalarUnmarshallingContext scalarUnmarshallingContext)
+	{
+		if (marshalledValue != null && marshalledValue.length() != 0)
+		{
+			MetadataFieldDescriptor fieldDescriptor = getFieldDescriptorsByFieldName().get(fieldName);
+			if (fieldDescriptor != null)
+			{
+				fieldDescriptor.set(this, marshalledValue, scalarUnmarshallingContext);
+				return true;
 			}
 		}
 		return false;

@@ -618,7 +618,8 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 		if (StringTools.isNullOrEmpty(evaluation))
 			return false;
 
-		metadata.setByTagName(mmdField.getTagForTranslationScope(), evaluation, this);
+//		metadata.setByTagName(mmdField.getTagForTranslationScope(), evaluation, this);
+		metadata.setByFieldName(mmdField.getName(), evaluation, this);
 		return true;
 	}
 
