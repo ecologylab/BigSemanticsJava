@@ -48,7 +48,7 @@ abstract public class DocumentParser<D extends Document>
 	protected PURLConnection		purlConnection;
 
 	protected DocumentClosure		documentClosure;
-	
+
 	public boolean 					cacheHit = false;
 
 	protected SemanticsGlobalScope					semanticsScope;
@@ -457,6 +457,11 @@ abstract public class DocumentParser<D extends Document>
 	public boolean doesDirectBinding()
 	{
 		return false;
+	}
+	
+	public DocumentClosure getDocumentClosure()
+	{
+		return documentClosure;
 	}
 
 	/**
