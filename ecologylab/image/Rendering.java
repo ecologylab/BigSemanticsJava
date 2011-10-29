@@ -117,7 +117,7 @@ implements Colors
 				DataBuffer db	= raster.getDataBuffer();
 				if (db instanceof DataBufferInt)
 				{
-					debug("EUREKA: Derived dataBuffer and pixels from BufferedImage!");
+//					debug("EUREKA: Derived dataBuffer and pixels from BufferedImage!");
 					dataBuffer	= (DataBufferInt) db;
 					pixels		= dataBuffer.getData();
 				}
