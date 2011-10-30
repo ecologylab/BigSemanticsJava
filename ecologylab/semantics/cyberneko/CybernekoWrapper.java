@@ -3,6 +3,7 @@ package ecologylab.semantics.cyberneko;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Reader;
 
 import org.apache.xerces.xni.parser.XMLDocumentFilter;
 import org.cyberneko.html.filters.Writer;
@@ -51,6 +52,18 @@ public class CybernekoWrapper implements IDOMProvider
 	public Document parseDOM(InputStream inputStream, OutputStream out) throws IOException
 	{
 		InputSource input = new InputSource(inputStream);
+		return parseDOM(input, out);
+	}
+
+	@Override
+	public Document parseDOM(Reader reader, OutputStream out) throws IOException
+	{
+		InputSource input = new InputSource(reader);
+		return parseDOM(input, out);
+	}
+
+	private Document parseDOM(InputSource input, OutputStream out) throws IOException
+	{
 		if(out != null)
 		{
 			XMLDocumentFilter writer = new Writer();
@@ -80,10 +93,6 @@ public class CybernekoWrapper implements IDOMProvider
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
-		
-
 		return parser.getDocument();
 	}
 	
