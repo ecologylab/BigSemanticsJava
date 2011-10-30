@@ -1,6 +1,8 @@
 package ecologylab.semantics.documentparsers;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
 import java.util.ArrayList;
 
 import org.w3c.dom.Node;
@@ -84,7 +86,9 @@ implements DOMParserInterface
 	private org.w3c.dom.Document createDom() throws IOException
 	{
 		provider											= semanticsScope.constructDOMProvider();
-    org.w3c.dom.Document document = provider.parseDOM(inputStream(), null);
+    InputStream inputStream = inputStream();
+    Reader reader						= reader();
+		org.w3c.dom.Document document = reader != null ? provider.parseDOM(reader, null) : provider.parseDOM(inputStream, null);
     return document;
 	}
 

@@ -2,9 +2,9 @@ package ecologylab.semantics.documentparsers;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -12,7 +12,6 @@ import org.w3c.dom.NodeList;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.html.DOMParserInterface;
-import ecologylab.semantics.html.DOMWalkInformationTagger;
 import ecologylab.semantics.html.ImgElement;
 import ecologylab.semantics.metadata.builtins.AnonymousDocument;
 import ecologylab.serialization.XMLTools;
@@ -25,6 +24,8 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 	public static final String	HTML_TAG_IMG	= "img";
 
 	InputStream									fragmentStream;
+	
+	Reader											reader;
 
 	ArrayList<ImgElement>				imageElements	= new ArrayList<ImgElement>();
 
@@ -37,10 +38,11 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 
 	StringBuilder	bodyTextBuffy	= new StringBuilder();
 
-	public HTMLFragmentDOMParser(SemanticsSessionScope infoCollector, InputStream inputStream)
+	public HTMLFragmentDOMParser(SemanticsSessionScope infoCollector, Reader reader, InputStream inputStream)
 	{
 		super(infoCollector);
-		fragmentStream = inputStream;
+		fragmentStream 	= inputStream;
+		this.reader			= reader;
 		AnonymousDocument anonymousDocument = new AnonymousDocument();
 		this.documentClosure = anonymousDocument.getOrConstructClosure();
 	}
@@ -274,11 +276,17 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 		}
 	}
 
+	@Override
 	public InputStream inputStream()
 	{
 		return fragmentStream;
 	}
 
+	@Override
+	public Reader reader()
+	{
+		return reader;
+	}
 	public String getDNDText()
 	{
 		return bodyTextBuffy.toString();

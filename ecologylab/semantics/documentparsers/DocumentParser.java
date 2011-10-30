@@ -5,6 +5,7 @@ package ecologylab.semantics.documentparsers;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Reader;
 import java.util.HashSet;
 
 import ecologylab.collections.Scope;
@@ -172,6 +173,11 @@ abstract public class DocumentParser<D extends Document>
 	protected InputStream inputStream ( )
 	{
 		return (purlConnection == null) ? null : purlConnection.inputStream();
+	}
+	
+	protected Reader reader()
+	{
+		return null;
 	}
 
 

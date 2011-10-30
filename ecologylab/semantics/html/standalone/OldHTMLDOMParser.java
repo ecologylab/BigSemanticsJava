@@ -3,6 +3,7 @@ package ecologylab.semantics.html.standalone;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.TreeMap;
@@ -355,6 +356,13 @@ implements HTMLAttributeNames, IDOMProvider
 
 	@Override
 	public String xPathTagNamesToLower(String xpath)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Document parseDOM(Reader reader, OutputStream out) throws IOException
 	{
 		// TODO Auto-generated method stub
 		return null;

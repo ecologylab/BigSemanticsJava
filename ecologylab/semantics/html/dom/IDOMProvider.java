@@ -3,6 +3,7 @@ package ecologylab.semantics.html.dom;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Reader;
 
 import org.w3c.dom.Document;
 
@@ -37,6 +38,15 @@ public interface IDOMProvider
 	 * @return
 	 */
 	Document parseDOM(InputStream in, OutputStream out) throws IOException;
+
+	/**
+	 * Creates an org.w3c.dom.Document containing the DOM
+	 * 
+	 * @param in
+	 * @param out
+	 * @return
+	 */
+	Document parseDOM(Reader reader, OutputStream out) throws IOException;
 
 	/**
 	 * Takes an xpath string and converts all of the element tag names (and only the element tag
