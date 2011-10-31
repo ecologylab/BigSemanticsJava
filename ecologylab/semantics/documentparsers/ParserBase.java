@@ -619,7 +619,7 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 			return false;
 
 //		metadata.setByTagName(mmdField.getTagForTranslationScope(), evaluation, this);
-		metadata.setByFieldName(mmdField.getName(), evaluation, this);
+		metadata.setByFieldName(mmdField.getFieldNameInJava(false), evaluation, this);
 		return true;
 	}
 

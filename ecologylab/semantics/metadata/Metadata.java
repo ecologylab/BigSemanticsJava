@@ -736,6 +736,10 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 				fieldDescriptor.set(this, marshalledValue, scalarUnmarshallingContext);
 				return true;
 			}
+			else
+			{
+				warning("Cannot find field [" + fieldName + "] on " + this);
+			}
 		}
 		return false;
 	}
