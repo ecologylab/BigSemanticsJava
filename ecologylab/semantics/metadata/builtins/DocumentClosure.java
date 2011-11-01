@@ -172,7 +172,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 			}
 			documentParser.parse();
 			
-			ArrayList<SemanticAction> afterSemanticActions	= metaMetadata.getBeforeSemanticActions();
+			ArrayList<SemanticAction> afterSemanticActions	= metaMetadata.getAfterSemanticActions();
 			if (afterSemanticActions != null)
 			{
 				SemanticActionHandler handler	= new SemanticActionHandler(semanticsScope, documentParser);
@@ -245,11 +245,11 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 				semanticsScope.displayStatus(message);
 			}
 			
-			public boolean processRedirect(URL connectionURL) throws IOException
+			public boolean processRedirect(URL redirectedURL) throws IOException
 			{
-				ParsedURL connectionPURL	= new ParsedURL(connectionURL);
-				displayStatus("try redirecting: " + originalPURL + " > " + connectionURL);
-				Document redirectedDocument	= semanticsScope.getOrConstructDocument(connectionPURL); // documentLocationMap.getOrCreate(connectionPURL);
+				ParsedURL redirectedPURL	= new ParsedURL(redirectedURL);
+				displayStatus("try redirecting: " + originalPURL + " > " + redirectedURL);
+				Document redirectedDocument	= semanticsScope.getOrConstructDocument(redirectedPURL); // documentLocationMap.getOrCreate(connectionPURL);
 				//TODO -- what if redirectedDocument is already in the queue or being downloaded already?
 				if (redirectedDocument != null)	// existing document
 				{	// the redirected url has been visited already.
@@ -259,7 +259,8 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 //					if (container != null)
 //						container.redirectInlinksTo(redirectedAbstractContainer);
 
-					redirectedDocument.addAdditionalLocation(connectionPURL);
+					if (!originalPURL.equals(redirectedPURL))
+						redirectedDocument.addAdditionalLocation(redirectedPURL);
 					//TODO -- copy metadata from originalDocument?!!
 					changeDocument(redirectedDocument);
 					//TODO -- reconnect
@@ -271,16 +272,17 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 					return true;
 				}
 				else
+				// FIXME this will never happen now! since getOrConstructDocument() never returns null.
 				// redirect to a new url
 				{
 					MetaMetadata originalMM						= (MetaMetadata) orignalDocument.getMetaMetadata();
 					RedirectHandling redirectHandling = originalMM.getRedirectHandling();
 
-					if (document.isAlwaysAcceptRedirect() || semanticsScope.accept(connectionPURL))
+					if (document.isAlwaysAcceptRedirect() || semanticsScope.accept(redirectedPURL))
 					{
-						println("\tredirect: " + originalPURL + " -> " + connectionPURL);
-						String domain 				= connectionPURL.domain();
-						String connPURLSuffix = connectionPURL.suffix();
+						println("\tredirect: " + originalPURL + " -> " + redirectedPURL);
+						String domain 				= redirectedPURL.domain();
+						String connPURLSuffix = redirectedPURL.suffix();
 						// add entry to GlobalCollections containersHash
 
 						// FIXME:hack for acmPortal pdf containers.
@@ -304,19 +306,19 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 						{
 							MetaMetadata pdfMetaMetadata = semanticsScope.getMetaMetadataRepository().getMMBySuffix(connPURLSuffix);
 							newMetadata = (Document) pdfMetaMetadata.constructMetadata();
-							newMetadata.setLocation(connectionPURL);
+							newMetadata.setLocation(redirectedPURL);
 							return true;
 						}
 						else
 						{
 							// regular get new metadata
-							newMetadata	= semanticsScope.getOrConstructDocument(connectionPURL);
+							newMetadata	= semanticsScope.getOrConstructDocument(redirectedPURL);
 						}
 
 						if (redirectHandling == RedirectHandling.REDIRECT_FOLLOW_DONT_RESET_LOCATION)
 						{
 							newMetadata.setLocation(originalPURL);
-							newMetadata.addAdditionalLocation(connectionPURL);
+							newMetadata.addAdditionalLocation(redirectedPURL);
 						}
 						else
 							newMetadata.addAdditionalLocation(originalPURL);
@@ -326,7 +328,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 						return true;
 					}
 					else
-						println("rejecting redirect: " + originalPURL + " -> " + connectionPURL);
+						println("rejecting redirect: " + originalPURL + " -> " + redirectedPURL);
 				}
 				return false;
 			}
