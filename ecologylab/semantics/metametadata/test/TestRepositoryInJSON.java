@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import ecologylab.semantics.collecting.MetaMetadataRepositoryInit;
+import ecologylab.semantics.generated.library.RepositoryMetadataTranslationScope;
 import ecologylab.semantics.metadata.scalar.types.SemanticsTypes;
 import ecologylab.semantics.metametadata.MetaMetadataCollectionFieldWithoutChildComposite;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
@@ -222,10 +223,8 @@ public class TestRepositoryInJSON
 	private static void testSavedAgainXmlRepository()
 	{
 		// use json repository for NewMmTest
-		MetaMetadataRepositoryInit.DEFAULT_REPOSITORY_LOCATION = destXmlRepoDir.getAbsolutePath();
-		MetaMetadataRepositoryInit.DEFAULT_REPOSITORY_FORMAT = Format.XML;
-
-		tryNewMmTest();
+		MetaMetadataRepositoryInit.DEFAULT_REPOSITORY_FORMAT = Format.XML; 
+		tryNewMmTest(destXmlRepoDir);
 	}
 
 	private static void testConvertingRepositoryFromXmlToJson()
@@ -246,13 +245,11 @@ public class TestRepositoryInJSON
 		mmdTScope = MetaMetadataTranslationScope.get();
 
 		// use json repository for NewMmTest
-		MetaMetadataRepositoryInit.DEFAULT_REPOSITORY_LOCATION = jsonRepoDir.getAbsolutePath();
 		MetaMetadataRepositoryInit.DEFAULT_REPOSITORY_FORMAT = Format.JSON;
-
-		tryNewMmTest();
+		tryNewMmTest(jsonRepoDir);
 	}
 
-	private static void tryNewMmTest()
+	private static void tryNewMmTest(File repositoryLocation)
 	{
 		// use a set of URLs to test extraction
 		String[] testUrls = new String[]
@@ -269,7 +266,7 @@ public class TestRepositoryInJSON
 		NewMmTest mmTest;
 		try
 		{
-			mmTest = new NewMmTest("NewMmTest");
+			mmTest = new NewMmTest(repositoryLocation, "NewMmTest", System.out, RepositoryMetadataTranslationScope.get());
 			mmTest.collect(testUrls);
 		}
 		catch (SIMPLTranslationException e)

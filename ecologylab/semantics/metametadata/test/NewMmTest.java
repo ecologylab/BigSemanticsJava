@@ -3,6 +3,7 @@
  */
 package ecologylab.semantics.metametadata.test;
 
+import java.io.File;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
@@ -49,15 +50,15 @@ implements Continuation<DocumentClosure>
 
 	public NewMmTest(String appName, OutputStream	outputStream) throws SIMPLTranslationException
 	{
-		this(appName, outputStream, RepositoryMetadataTranslationScope.get());
+		this(null, appName, outputStream, RepositoryMetadataTranslationScope.get());
 	}
 	
-	public NewMmTest(String appName, OutputStream outputStream, SimplTypesScope metadataTranslationScope) throws SIMPLTranslationException
+	public NewMmTest(File repositoryLocation, String appName, OutputStream outputStream, SimplTypesScope metadataTranslationScope) throws SIMPLTranslationException
 	{
 		super(appName);
 		SimplTypesScope.graphSwitch	= GRAPH_SWITCH.ON;
 		this.outputStream = outputStream;
-		semanticsSessionScope = new SemanticsSessionScope(metadataTranslationScope, CybernekoWrapper.class);
+		semanticsSessionScope = new SemanticsSessionScope(repositoryLocation, metadataTranslationScope, CybernekoWrapper.class);
 	}
 
 	public void collect(String[] urlStrings)

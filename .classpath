@@ -9,5 +9,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/cyberneko"/>
 	<classpathentry kind="lib" path="/cyberneko/lib/xercesMinimal.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/MetaMetadataRepository"/>
 	<classpathentry kind="output" path=""/>
 </classpath>

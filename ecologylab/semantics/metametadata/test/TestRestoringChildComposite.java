@@ -25,7 +25,7 @@ public class TestRestoringChildComposite
 	{
 		SimplTypesScope metadataTranslationScope = RepositoryMetadataTranslationScope.get();
 		semanticsSessionScope = new SemanticsSessionScope(metadataTranslationScope, CybernekoWrapper.class);
-		MetaMetadataRepository repository = semanticsSessionScope.getRepository(); // after inheritance and binding
+		MetaMetadataRepository repository = semanticsSessionScope.getMetaMetadataRepository(); // after inheritance and binding
 		for (MetaMetadata globalMmd : repository.values())
 			globalMmd.recursivelyRestoreChildComposite();
 		for (Map<String, MetaMetadata> packageMmdScope : repository.getPackageMmdScopes().values())
