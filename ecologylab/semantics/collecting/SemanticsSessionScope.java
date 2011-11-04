@@ -3,6 +3,8 @@
  */
 package ecologylab.semantics.collecting;
 
+import java.io.File;
+
 import ecologylab.appframework.ApplicationProperties;
 import ecologylab.collections.ConcurrentHashSet;
 import ecologylab.generic.Debug;
@@ -30,6 +32,16 @@ import ecologylab.serialization.SimplTypesScope;
 public class SemanticsSessionScope extends SemanticsGlobalScope
 implements SemanticsPrefs, ApplicationProperties, DocumentParserTagNames
 {
+	
+	private static SemanticsSessionScope	globalSemanticsScope;
+
+	public static SemanticsSessionScope get()
+	{
+		return globalSemanticsScope;
+	}
+	
+	////////////////////////////////////////////////////////////////////////
+	
 	private final Crawler												crawler;
 	
 	protected  WindowSystemBridge								guiBridge;
@@ -49,13 +61,25 @@ implements SemanticsPrefs, ApplicationProperties, DocumentParserTagNames
 	{
 		this(metadataTranslationScope, null, domProviderClass);
 	}
+	
+	public SemanticsSessionScope(File repositoryLocation, SimplTypesScope metadataTranslationScope, Class<? extends IDOMProvider> domProviderClass)
+	{
+		this(repositoryLocation, metadataTranslationScope, null, domProviderClass);
+	}
+	
 	public SemanticsSessionScope(SimplTypesScope metadataTranslationScope, Crawler crawler, Class<? extends IDOMProvider> domProviderClass)
 	{
-		this(metadataTranslationScope, new Seeding(), crawler, domProviderClass);
+		this(null, metadataTranslationScope, new Seeding(), crawler, domProviderClass);
 	}
-	public SemanticsSessionScope(SimplTypesScope metadataTranslationScope, Seeding seeding, Crawler crawler, Class<? extends IDOMProvider> domProviderClass)
+	
+	public SemanticsSessionScope(File repositoryLocation, SimplTypesScope metadataTranslationScope, Crawler crawler, Class<? extends IDOMProvider> domProviderClass)
 	{
-		super(metadataTranslationScope, domProviderClass);
+		this(repositoryLocation, metadataTranslationScope, new Seeding(), crawler, domProviderClass);
+	}
+	
+	public SemanticsSessionScope(File repositoryLocation, SimplTypesScope metadataTranslationScope, Seeding seeding, Crawler crawler, Class<? extends IDOMProvider> domProviderClass)
+	{
+		super(repositoryLocation, metadataTranslationScope, domProviderClass);
 		this.put(SemanticsSessionObjectNames.INFO_COLLECTOR, this);	//TODO make this unnecessary; its a band-aid on old code
 		this.crawler											= crawler;
 		this.seeding											= seeding;
@@ -66,9 +90,11 @@ implements SemanticsPrefs, ApplicationProperties, DocumentParserTagNames
 			crawler.setSeeding(seeding);
 		}
 		Debug.println("");
+		globalSemanticsScope = this;
 	}
 
 	///////////////////////////////////////// WindowSystem / Display Stuff ////////////////////////////////////////
+	
 	@Override
 	public void displayStatus(String message)
 	{
@@ -77,6 +103,7 @@ implements SemanticsPrefs, ApplicationProperties, DocumentParserTagNames
 		else
 			debug(message);
 	}
+	
 	@Override
   public void displayStatus(String message, int ticks)
   {
@@ -118,6 +145,7 @@ implements SemanticsPrefs, ApplicationProperties, DocumentParserTagNames
   
 	///////////////////////////////////// end WindowSystem / Display Stuff ////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  
 	/**
 	 * Accept the purl if there is no crawler, or if the Seeding says to.
 	 * 
@@ -128,6 +156,7 @@ implements SemanticsPrefs, ApplicationProperties, DocumentParserTagNames
 	{
 		return isAcceptAll() || seeding.accept(purl);
 	}
+	
 	/**
 	 * @return the crawler
 	 */
@@ -136,16 +165,19 @@ implements SemanticsPrefs, ApplicationProperties, DocumentParserTagNames
 	{
 		return crawler;
 	}
+	
 	@Override
 	public boolean hasCrawler()
 	{
 		return crawler != null;
 	}
+	
 	public void stopCrawler(boolean kill)
 	{
 		if (hasCrawler())
 			crawler.stop(kill);
 	}
+	
 	/**
 	 * True if all links should be accepted, without checking their traversability.
 	 * This is true if there is no Crawler, or no Seeding, 
@@ -155,6 +187,7 @@ implements SemanticsPrefs, ApplicationProperties, DocumentParserTagNames
 	{
 		return crawler == null || seeding == null;
 	}
+	
 	/**
 	 * @return the seeding
 	 */
@@ -174,4 +207,5 @@ implements SemanticsPrefs, ApplicationProperties, DocumentParserTagNames
 	{
 		return visitedLocations.add(location);
 	}
+	
 }

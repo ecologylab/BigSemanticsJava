@@ -206,7 +206,7 @@ implements MimeType, ImageConstants
 	 */
 	public ImageClipping constructClipping(Document sourceDocument, Document outlink, String caption, String context)
 	{
-		ImageClipping result	= new ImageClipping(SemanticsSessionScope.IMAGE_CLIPPING_META_METADATA, this, sourceDocument, outlink, caption, context);
+		ImageClipping result	= new ImageClipping(SemanticsSessionScope.get().IMAGE_CLIPPING_META_METADATA, this, sourceDocument, outlink, caption, context);
 		this.addClipping(result);
 		
 		return result;

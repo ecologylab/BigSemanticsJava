@@ -743,7 +743,7 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 			System.out.println();
 			// the old document is basic, so give it basic meta-metadata (so recycle does not tank)
 			Document oldDocument	= documentClosure.getDocument();
-			oldDocument.setMetaMetadata(MetaMetadataRepositoryInit.DOCUMENT_META_METADATA);
+			oldDocument.setMetaMetadata(semanticsScope.DOCUMENT_META_METADATA);
 			documentClosure.changeDocument(newDocument);
 
 			System.out.println();

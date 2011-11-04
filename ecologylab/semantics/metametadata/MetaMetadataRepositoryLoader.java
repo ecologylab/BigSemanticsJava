@@ -2,6 +2,10 @@ package ecologylab.semantics.metametadata;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +16,7 @@ import ecologylab.generic.Debug;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.collecting.CookieProcessing;
+import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metametadata.exceptions.MetaMetadataException;
 import ecologylab.semantics.namesandnums.DocumentParserTagNames;
@@ -32,11 +37,63 @@ public class MetaMetadataRepositoryLoader extends Debug implements DocumentParse
 	 * registry of formats to file name extensions.
 	 */
 	private static final Map<Format, String>	fileNameExts	= new HashMap<Format, String>();
+	
+	private static final int BUF_SIZE = 4096;
 
 	static
 	{
 		fileNameExts.put(Format.XML, ".xml");
 		fileNameExts.put(Format.JSON, ".json");
+	}
+	
+	public MetaMetadataRepository loadAsResources(String rootRepositoryResourceName)
+	{
+		try {
+			processResourceDir(rootRepositoryResourceName);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	private char[] buf;
+	
+	public void processResourceDir(String resourceDirName) throws IOException
+	{
+		if (buf == null)
+			buf = new char[BUF_SIZE];
+		
+		URL url = getClass().getResource(resourceDirName);
+		InputStream in = url.openStream(); InputStreamReader reader = new InputStreamReader(in);
+		StringBuilder sb = StringBuilderUtils.acquire();
+		int n = 0;
+		while (true)
+		{
+			n = reader.read(buf);
+			if (n < 0)
+				break;
+			sb.append(buf, 0, n);
+		}
+		reader.close(); in.close();
+		String list = sb.toString();
+		String[] rootDirReses = list.split("\n");
+		for (String rootDirRes : rootDirReses)
+		{
+			String kidResName = resourceDirName + "/" + rootDirRes;
+			if (rootDirRes.endsWith(".xml"))
+			{
+				URL kidResUrl = getClass().getResource(kidResName);
+				if (kidResUrl != null)
+					System.out.println("resource found: " + kidResName);
+				else
+					System.out.println("!!! resource not found: " + kidResName);
+			}
+			else if (!rootDirRes.contains("."))
+			{
+				processResourceDir(kidResName);
+			}
+		}
 	}
 
 	/**

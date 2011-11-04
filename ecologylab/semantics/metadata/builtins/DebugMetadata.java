@@ -3,10 +3,10 @@
  */
 package ecologylab.semantics.metadata.builtins;
 
-import ecologylab.semantics.collecting.MetaMetadataRepositoryInit;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.mm_name;
 import ecologylab.semantics.metadata.scalar.MetadataStringBuilder;
+import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.serialization.annotations.simpl_inherit;
 import ecologylab.serialization.annotations.simpl_scalar;
 
@@ -30,9 +30,9 @@ public class DebugMetadata extends Metadata
 	{
 	}
 	
-	public DebugMetadata(MetadataStringBuilder newTermVector)
+	public DebugMetadata(MetaMetadata debugMetaMetadata, MetadataStringBuilder newTermVector)
 	{
-		super(MetaMetadataRepositoryInit.DEBUG_META_METADATA);
+		super(debugMetaMetadata);
 		this.newTermVector = newTermVector;
 	}
 

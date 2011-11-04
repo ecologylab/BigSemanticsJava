@@ -3,6 +3,8 @@
  */
 package ecologylab.semantics.collecting;
 
+import java.io.File;
+
 import ecologylab.generic.Debug;
 import ecologylab.generic.ReflectionTools;
 import ecologylab.net.ParsedURL;
@@ -46,7 +48,12 @@ public class SemanticsGlobalScope extends MetaMetadataRepositoryInit
 	
 	public SemanticsGlobalScope(SimplTypesScope metadataTScope, Class<? extends IDOMProvider> domProviderClass)
 	{
-		super(metadataTScope);
+		this(null, metadataTScope, domProviderClass);
+	}
+	
+	public SemanticsGlobalScope(File repositoryLocation, SimplTypesScope metadataTScope, Class<? extends IDOMProvider> domProviderClass)
+	{
+		super(repositoryLocation, metadataTScope);
 		this.domProviderClass = domProviderClass;
 		globalCollection = TNGGlobalCollections.getSingleton(getMetaMetadataRepository());
 		downloadMonitors = new SemanticsDownloadMonitors();
