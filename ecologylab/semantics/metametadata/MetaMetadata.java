@@ -126,7 +126,7 @@ implements IMappable<String>//, HasLocalTranslationScope
 	{
 		return semanticActions;
 	}
-
+	
 	public Metadata constructMetadata()
 	{
 		return constructMetadata(this.getRepository().metadataTranslationScope());
@@ -401,6 +401,14 @@ implements IMappable<String>//, HasLocalTranslationScope
 		if (semanticActions == null)
 		{
 			semanticActions = inheritedMmd.getSemanticActions();
+		}
+		if(afterSemanticActions == null)
+		{
+			afterSemanticActions = inheritedMmd.getAfterSemanticActions();
+			//if(afterSemanticActions != null)
+			//  debug("HEY, JUST GOT SOME AFTERSEMANTIC ACTIONs FROM MY PARENT!!!");
+			//else
+			//	debug("HEY, JUST GOT SOME REALLY REALLY EMPTY AFTERSEMANTIC ACTIONs FROM MY PARENT!!!");
 		}
 	}
 
