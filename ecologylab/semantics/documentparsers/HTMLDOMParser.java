@@ -149,9 +149,10 @@ implements DOMParserInterface
 		{
 			StringBuilder buffy	= paraText.getBuffy();
 			if (buffy.indexOf("@") == -1 )	 // filter out paragraphs with email addresses
-			{
-				TextClipping textClipping	= new TextClipping(StringTools.toString(buffy), false);
-				
+			{				
+				TextClipping textClipping = new TextClipping(semanticsScope.getMetaMetadataRepository().getMMByName(semanticsScope.TEXT_TAG));
+				textClipping.setText(StringTools.toString(buffy));
+				textClipping.setSourceDoc(getDocument());
 				getDocument().addClipping(textClipping);
 			}
 		}
