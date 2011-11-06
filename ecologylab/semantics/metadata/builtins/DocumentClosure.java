@@ -800,4 +800,11 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 	{
 		return dndPoint != null;
 	}
+	
+	public DocumentParser getParser()
+	{
+		return documentParser;
+	}
+	
+	
 	}
