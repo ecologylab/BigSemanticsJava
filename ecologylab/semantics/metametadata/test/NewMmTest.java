@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import ecologylab.appframework.SingletonApplicationEnvironment;
 import ecologylab.generic.Continuation;
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.collecting.MetaMetadataRepositoryInit;
 import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.cyberneko.CybernekoWrapper;
 import ecologylab.semantics.generated.library.RepositoryMetadataTranslationScope;
@@ -18,6 +19,7 @@ import ecologylab.semantics.metadata.builtins.DocumentClosure;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.SimplTypesScope.GRAPH_SWITCH;
+import ecologylab.serialization.formatenums.Format;
 
 /**
  * Basic program for testing meta-metadata.
@@ -50,15 +52,30 @@ implements Continuation<DocumentClosure>
 
 	public NewMmTest(String appName, OutputStream	outputStream) throws SIMPLTranslationException
 	{
-		this(null, appName, outputStream, RepositoryMetadataTranslationScope.get());
+		this(appName, outputStream, RepositoryMetadataTranslationScope.get());
 	}
 	
-	public NewMmTest(File repositoryLocation, String appName, OutputStream outputStream, SimplTypesScope metadataTranslationScope) throws SIMPLTranslationException
+	public NewMmTest(String appName, OutputStream outputStream, SimplTypesScope metadataTranslationScope) throws SIMPLTranslationException
+	{
+		this(appName, outputStream, metadataTranslationScope, null, MetaMetadataRepositoryInit.DEFAULT_REPOSITORY_FORMAT);
+	}
+	
+	public NewMmTest(String appName, File repositoryLocation, Format repositoryFormat) throws SIMPLTranslationException
+	{
+		this(appName, System.out, repositoryLocation, repositoryFormat);
+	}
+
+	public NewMmTest(String appName, OutputStream outputStream, File repositoryLocation, Format repositoryFormat) throws SIMPLTranslationException
+	{
+		this(appName, outputStream, RepositoryMetadataTranslationScope.get(), repositoryLocation, repositoryFormat);
+	}
+	
+	public NewMmTest(String appName, OutputStream outputStream, SimplTypesScope metadataTranslationScope, File repositoryLocation, Format repositoryFormat) throws SIMPLTranslationException
 	{
 		super(appName);
 		SimplTypesScope.graphSwitch	= GRAPH_SWITCH.ON;
 		this.outputStream = outputStream;
-		semanticsSessionScope = new SemanticsSessionScope(repositoryLocation, metadataTranslationScope, CybernekoWrapper.class);
+		semanticsSessionScope = new SemanticsSessionScope(repositoryLocation, repositoryFormat, metadataTranslationScope, CybernekoWrapper.class);
 	}
 
 	public void collect(String[] urlStrings)

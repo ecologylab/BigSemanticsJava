@@ -266,7 +266,7 @@ public class TestRepositoryInJSON
 		NewMmTest mmTest;
 		try
 		{
-			mmTest = new NewMmTest(repositoryLocation, "NewMmTest", System.out, RepositoryMetadataTranslationScope.get());
+			mmTest = new NewMmTest("NewMmTest", System.out, RepositoryMetadataTranslationScope.get(), repositoryLocation, MetaMetadataRepositoryInit.DEFAULT_REPOSITORY_FORMAT);
 			mmTest.collect(testUrls);
 		}
 		catch (SIMPLTranslationException e)
