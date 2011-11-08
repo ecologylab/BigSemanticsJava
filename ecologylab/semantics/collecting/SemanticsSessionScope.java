@@ -16,6 +16,7 @@ import ecologylab.semantics.namesandnums.DocumentParserTagNames;
 import ecologylab.semantics.namesandnums.SemanticsSessionObjectNames;
 import ecologylab.semantics.seeding.SemanticsPrefs;
 import ecologylab.serialization.SimplTypesScope;
+import ecologylab.serialization.formatenums.Format;
 
 /**
  * The fundamental Crossroads of the S.IM.PL Semantics session. 
@@ -67,19 +68,34 @@ implements SemanticsPrefs, ApplicationProperties, DocumentParserTagNames
 		this(repositoryLocation, metadataTranslationScope, null, domProviderClass);
 	}
 	
+	public SemanticsSessionScope(File repositoryLocation, Format repositoryFormat, SimplTypesScope metadataTranslationScope, Class<? extends IDOMProvider> domProviderClass)
+	{
+		this(repositoryLocation, repositoryFormat, metadataTranslationScope, null, domProviderClass);
+	}
+	
 	public SemanticsSessionScope(SimplTypesScope metadataTranslationScope, Crawler crawler, Class<? extends IDOMProvider> domProviderClass)
 	{
-		this(null, metadataTranslationScope, new Seeding(), crawler, domProviderClass);
+		this(null, MetaMetadataRepositoryInit.DEFAULT_REPOSITORY_FORMAT, metadataTranslationScope, new Seeding(), crawler, domProviderClass);
 	}
 	
 	public SemanticsSessionScope(File repositoryLocation, SimplTypesScope metadataTranslationScope, Crawler crawler, Class<? extends IDOMProvider> domProviderClass)
 	{
-		this(repositoryLocation, metadataTranslationScope, new Seeding(), crawler, domProviderClass);
+		this(repositoryLocation, MetaMetadataRepositoryInit.DEFAULT_REPOSITORY_FORMAT, metadataTranslationScope, new Seeding(), crawler, domProviderClass);
 	}
 	
-	public SemanticsSessionScope(File repositoryLocation, SimplTypesScope metadataTranslationScope, Seeding seeding, Crawler crawler, Class<? extends IDOMProvider> domProviderClass)
+	public SemanticsSessionScope(Format repositoryFormat, SimplTypesScope metadataTranslationScope, Crawler crawler, Class<? extends IDOMProvider> domProviderClass)
 	{
-		super(repositoryLocation, metadataTranslationScope, domProviderClass);
+		this(null, repositoryFormat, metadataTranslationScope, new Seeding(), crawler, domProviderClass);
+	}
+	
+	public SemanticsSessionScope(File repositoryLocation, Format repositoryFormat, SimplTypesScope metadataTranslationScope, Crawler crawler, Class<? extends IDOMProvider> domProviderClass)
+	{
+		this(repositoryLocation, repositoryFormat, metadataTranslationScope, new Seeding(), crawler, domProviderClass);
+	}
+	
+	public SemanticsSessionScope(File repositoryLocation, Format repositoryFormat, SimplTypesScope metadataTranslationScope, Seeding seeding, Crawler crawler, Class<? extends IDOMProvider> domProviderClass)
+	{
+		super(repositoryLocation, repositoryFormat, metadataTranslationScope, domProviderClass);
 		this.put(SemanticsSessionObjectNames.INFO_COLLECTOR, this);	//TODO make this unnecessary; its a band-aid on old code
 		this.crawler											= crawler;
 		this.seeding											= seeding;

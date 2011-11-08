@@ -77,12 +77,17 @@ implements DocumentParserTagNames, ApplicationProperties, SemanticsNames
 		this(null, metadataTranslationScope);
 	}
 	
+	protected MetaMetadataRepositoryInit(File repositoryLocation, SimplTypesScope metadataTranslationScope)
+	{
+		this(repositoryLocation, DEFAULT_REPOSITORY_FORMAT, metadataTranslationScope);
+	}
+	
 	/**
 	 * This constructor should only be called from SemanticsScope's constructor!
 	 * 
 	 * @param metadataTranslationScope
 	 */
-	protected MetaMetadataRepositoryInit(File repositoryLocation, SimplTypesScope metadataTranslationScope)
+	protected MetaMetadataRepositoryInit(File repositoryLocation, Format repositoryFormat, SimplTypesScope metadataTranslationScope)
 	{
 		if (SingletonApplicationEnvironment.isInUse() && !SingletonApplicationEnvironment.runningInEclipse())
 		{
@@ -100,7 +105,7 @@ implements DocumentParserTagNames, ApplicationProperties, SemanticsNames
 		this.repositoryLocation = repositoryLocation;
 		
 		Debug.println("\t\t-- Reading meta_metadata from " + repositoryLocation);
-		metaMetadataRepository 					= DEFAULT_REPOSITORY_LOADER.loadFromDir(repositoryLocation, DEFAULT_REPOSITORY_FORMAT);
+		metaMetadataRepository 					= DEFAULT_REPOSITORY_LOADER.loadFromDir(repositoryLocation, repositoryFormat);
 		if (metaMetadataRepository != null)
 		{
 			DOCUMENT_META_METADATA						= metaMetadataRepository.getMMByName(DOCUMENT_TAG);

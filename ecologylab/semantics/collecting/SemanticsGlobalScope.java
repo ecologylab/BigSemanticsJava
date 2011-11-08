@@ -14,6 +14,7 @@ import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.Image;
 import ecologylab.semantics.metametadata.FieldParserFactory;
 import ecologylab.serialization.SimplTypesScope;
+import ecologylab.serialization.formatenums.Format;
 
 /**
  * 
@@ -53,7 +54,12 @@ public class SemanticsGlobalScope extends MetaMetadataRepositoryInit
 	
 	public SemanticsGlobalScope(File repositoryLocation, SimplTypesScope metadataTScope, Class<? extends IDOMProvider> domProviderClass)
 	{
-		super(repositoryLocation, metadataTScope);
+		this(repositoryLocation, MetaMetadataRepositoryInit.DEFAULT_REPOSITORY_FORMAT, metadataTScope, domProviderClass);
+	}
+	
+	public SemanticsGlobalScope(File repositoryLocation, Format repositoryFormat, SimplTypesScope metadataTScope, Class<? extends IDOMProvider> domProviderClass)
+	{
+		super(repositoryLocation, repositoryFormat, metadataTScope);
 		this.domProviderClass = domProviderClass;
 		globalCollection = TNGGlobalCollections.getSingleton(getMetaMetadataRepository());
 		downloadMonitors = new SemanticsDownloadMonitors();
