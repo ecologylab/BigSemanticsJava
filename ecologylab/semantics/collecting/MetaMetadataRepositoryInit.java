@@ -45,7 +45,7 @@ implements DocumentParserTagNames, ApplicationProperties, SemanticsNames
 
 	private static final String									SEMANTICS										= "semantics/";
 	
-	private static final String									DEFAULT_REPOSITORY_LOCATION	= "../../MetaMetadataRepository/MmdRepository/mmdrepository";
+	public static final String									DEFAULT_REPOSITORY_LOCATION	= "../../MetaMetadataRepository/MmdRepository/mmdrepository";
 
 	static
 	{
