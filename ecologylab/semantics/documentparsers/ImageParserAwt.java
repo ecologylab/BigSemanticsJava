@@ -353,33 +353,33 @@ public class ImageParserAwt extends DocumentParser<Image>
 			IIOMetadataNode foundUnknownNode			= (IIOMetadataNode) unknownElements.item(i);
 			if ("225".equals(foundUnknownNode.getAttribute("MarkerTag")))
 			{
-	      boolean dated 			= false;
+				boolean dated 			= false;
 				byte[] 	exifSegment	= (byte[]) foundUnknownNode.getUserObject();
-				
-        final com.drew.metadata.Metadata exifMetadata = new com.drew.metadata.Metadata();
-      	new ExifReader(exifSegment).extract(exifMetadata);
-      	com.drew.metadata.Directory exifDir = exifMetadata.getDirectory(ExifDirectory.class);
-      	
-      	Image image = getDocument();
-	      boolean mixedIn			= image.containsMixin(MM_TAG_CAMERA_SETTINGS);
-      	if (!mixedIn && !GisFeatures.containsGisMixin(image))
-      	{
+
+				final com.drew.metadata.Metadata exifMetadata = new com.drew.metadata.Metadata();
+				new ExifReader(exifSegment).extract(exifMetadata);
+				com.drew.metadata.Directory exifDir = exifMetadata.getDirectory(ExifDirectory.class);
+
+				Image image = getDocument();
+				boolean mixedIn			= image.containsMixin(MM_TAG_CAMERA_SETTINGS);
+				if (!mixedIn && !GisFeatures.containsGisMixin(image))
+				{
 					if (!dated && ORIG_DATE_FEATURE.extract(image, exifDir) == null)
-	      	{
-	      		dated		= true;
-	      		DATE_FEATURE.extract(image, exifDir);
-	      	}
-	      	if (!mixedIn && CAMERA_MODEL_FEATURE.getStringValue(exifDir) != null)
-	      	{
-	      		mixedIn	= true;
-	      		extractMixin(exifDir, EXIF_METADATA_FEATURES, MM_TAG_CAMERA_SETTINGS);
-	      	}
-	      	com.drew.metadata.Directory gpsDir = exifMetadata.getDirectory(GpsDirectory.class);
-	      	Metadata gpsMixin	= GisFeatures.extractMixin(gpsDir, semanticsScope, image);
-	      	Iterator<com.drew.metadata.Tag> gpsList = printDirectory(gpsDir);
-	      	int qq = 33;
-      	}
-      }
+					{
+						dated		= true;
+						DATE_FEATURE.extract(image, exifDir);
+					}
+					if (!mixedIn && CAMERA_MODEL_FEATURE.getStringValue(exifDir) != null)
+					{
+						mixedIn	= true;
+						extractMixin(exifDir, EXIF_METADATA_FEATURES, MM_TAG_CAMERA_SETTINGS);
+					}
+					com.drew.metadata.Directory gpsDir = exifMetadata.getDirectory(GpsDirectory.class);
+					Metadata gpsMixin	= GisFeatures.extractMixin(gpsDir, semanticsScope, image);
+					Iterator<com.drew.metadata.Tag> gpsList = printDirectory(gpsDir);
+					int qq = 33;
+				}
+			}
 		}
 	}
 	static final MetadataExifFeature	DATE_FEATURE	= new MetadataExifFeature("creation_date", ExifDirectory.TAG_DATETIME);
