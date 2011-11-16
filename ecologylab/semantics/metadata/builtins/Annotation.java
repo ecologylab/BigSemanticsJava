@@ -44,6 +44,7 @@ public class Annotation extends Metadata implements TextualMetadata
 		this.setText(text);
 		this.setAuthor(PropertiesAndDirectories.userName());
 		this.creationTime = new MetadataDate(new Date());
+		this.rebuildCompositeTermVector();
 	}
 	
 	public Annotation(MetaMetadataCompositeField metaMetadata)
@@ -79,12 +80,14 @@ public class Annotation extends Metadata implements TextualMetadata
 	public void setTextMetadata(MetadataString text)
 	{
 		this.text = text;
+		this.rebuildCompositeTermVector();
 	}
 
 	@Override
 	public void setText(String newText)
 	{
 		this.text().setValue(newText);
+		this.rebuildCompositeTermVector();
 	}
 
 	@Override
