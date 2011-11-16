@@ -755,6 +755,9 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 	@Override
 	public void callback(DocumentClosure o)
 	{
+		// FIXME callback() could be called from different DownloadMonitor threads! and this is causing
+		// concurrent modification problems for this.continuations collection in some cases.
+		// we may need a synchronization mechanism here, but should look out for performance.
 		if (continuations == null)
 			return;
 		

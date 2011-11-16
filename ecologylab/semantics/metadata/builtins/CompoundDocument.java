@@ -273,6 +273,7 @@ public class CompoundDocument extends Document
 	{
 		if (clippings != null && clippings.size() > 0)
 		{	
+			getSite(); // initialize this.site if haven't
 			if (documentParser.isIndexPage())
 			{
 				site.newIndexPage();
