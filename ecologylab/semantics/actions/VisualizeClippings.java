@@ -28,13 +28,9 @@ import ecologylab.semantics.metadata.builtins.TextClipping;
 //
 
 public class VisualizeClippings extends SemanticAction
-implements SemanticActionStandardMethods, Continuation<DocumentClosure>
+implements SemanticActionStandardMethods
 {
-	
 
-	/**
-	 * 
-	 */
 	public VisualizeClippings()
 	{
 		
@@ -62,8 +58,7 @@ implements SemanticActionStandardMethods, Continuation<DocumentClosure>
 	// number of clippings added default 1...  for searches mainly.
 	// max_extent:
 	//method for display. Currently using FIFO.  Also add filters: like text only
-	TextClipping bestTextClipping = null;
-	ImageClipping bestImageClipping = null;
+
 	
 	@Override
 	public Object perform(Object obj) throws IOException
@@ -81,6 +76,9 @@ implements SemanticActionStandardMethods, Continuation<DocumentClosure>
 			{
 				compoundSource = (CompoundDocument) sourceDocument;
 			}
+			
+			TextClipping bestTextClipping = null;
+			ImageClipping bestImageClipping = null;
 
 			List<Clipping> clippings = compoundSource.getClippings();
 			if(clippings != null)
@@ -116,7 +114,7 @@ implements SemanticActionStandardMethods, Continuation<DocumentClosure>
 
 					//try to download or make closure et cetera...
 					sessionScope.getOrConstructImage(bestImageClipping.getMedia().getLocation());
-					bestImageClipping.getMedia().getOrConstructClosure().addContinuation(this);
+					bestImageClipping.getMedia().getOrConstructClosure().addContinuation(new DropImageContinuation(bestImageClipping));
 					bestImageClipping.getMedia().getOrConstructClosure().setDndPoint(closure.getDndPoint());
 					bestImageClipping.getMedia().getOrConstructClosure().queueDownload();
 
@@ -130,6 +128,7 @@ implements SemanticActionStandardMethods, Continuation<DocumentClosure>
 				}
 				if(bestTextClipping != null)
 				{
+					//preprocess at this point to make smaller...
 					interactiveSpace.createAndAddClipping((TextClipping)bestTextClipping, closure.getDndPoint().getX(), closure.getDndPoint().getY());
 					return null;
 				}
@@ -147,14 +146,36 @@ implements SemanticActionStandardMethods, Continuation<DocumentClosure>
 		return null;
 	}
 
-	@Override
-	public void callback(DocumentClosure o)
-	{
-		//TODO we may want to download all of the images first before picking one.
-		//for now, we assume that we just display anything that uses this as its continuation.
-		InteractiveSpace interactiveSpace = sessionScope.getInteractiveSpace();
-		interactiveSpace.createAndAddClipping((ImageClipping)bestImageClipping, o.getDndPoint().getX(), o.getDndPoint().getY());
-		debug("Dropped image");
-	}
 
+	class DropImageContinuation implements Continuation<DocumentClosure>
+	{
+		ImageClipping bestImageClipping;
+		public DropImageContinuation()
+		{
+			super();
+		}
+		public DropImageContinuation(ImageClipping imageClipping)
+		{
+			super();
+			bestImageClipping = imageClipping;
+		}
+		
+		@Override
+		public void callback(DocumentClosure o)
+		{
+			//debug("Here is the url for the document that should be showing up as the source:"+bestImageClipping.getSourceDoc().getLocation());
+     // debug(""+bestImageClipping.getSourceDoc().setTitle(title));
+      
+			//TODO we may want to download all of the images first before picking one.
+			//for now, we assume that we just display anything that uses this as its continuation.
+			//bestImageClipping.getSourceDoc().setTitle("SWIINGERS ARE FUNNY!!!");
+			//bestImageClipping.setSourceDoc(sessionScope.getOrConstructDocument((bestImageClipping.getSourceDoc().getDownloadLocation())));
+
+			if(bestImageClipping.getSourceDoc() == null)
+				debug("There is no source document for this image");
+			InteractiveSpace interactiveSpace = sessionScope.getInteractiveSpace();
+			interactiveSpace.createAndAddClipping((ImageClipping)bestImageClipping, o.getDndPoint().getX(), o.getDndPoint().getY());
+			debug("Dropped image");
+		}
+	}
 }
