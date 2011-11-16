@@ -45,6 +45,7 @@ public class MediaClipping<ME extends ClippableDocument> extends Clipping
 		if (caption != null)
 			setCaption(caption);
 		this.media			= clippedMedia;
+		this.setSourceDoc(source);
 	}
 	
 	public MetadataString caption()
