@@ -26,6 +26,7 @@ import ecologylab.semantics.metametadata.MetaMetadataOneLevelNestingIterator;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.model.text.CompositeTermVector;
 import ecologylab.semantics.model.text.ITermVector;
+import ecologylab.semantics.model.text.OrderedNormalizedTermVectorCache;
 import ecologylab.semantics.model.text.TermVectorFeature;
 import ecologylab.semantics.namesandnums.SemanticsNames;
 import ecologylab.serialization.ElementState;
@@ -109,6 +110,12 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 	 */
 	protected CompositeTermVector					termVector								= null;
 
+	public static String USE_SEMANTIC_SEARCH_PREF = "use_situated_search";
+	/**
+	 * the cache for ordered normalized term vectors
+	 */
+	protected OrderedNormalizedTermVectorCache orderedCompositeTermVectorCache = null;
+	
 	/**
 	 * Indicates whether or not metadata has changed since last displayed.
 	 */
@@ -484,6 +491,22 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 			}
 		}
 		return (termVector = tv);
+	}
+	
+	public OrderedNormalizedTermVectorCache getOrCreateOrderedNormalizedTermVectorCache()
+	{
+		if(orderedCompositeTermVectorCache == null)
+		{
+			try
+			{
+			   orderedCompositeTermVectorCache = new OrderedNormalizedTermVectorCache(termVector().simplex());
+			}
+			catch(Throwable t)
+			{
+				return new OrderedNormalizedTermVectorCache();
+			}
+		}
+		return orderedCompositeTermVectorCache;
 	}
 
 	protected CompositeTermVector getOrCreateTermVector()
