@@ -295,9 +295,12 @@ public class TermVector extends FeatureVector<Term> implements ITermVector
 	public TermVector simplex ( )
 	{
 		TermVector v = new TermVector(this);
-		for (Term t : v.values.keySet())
+		if(v.size() > 0)
 		{
-			v.values.put(t, 1.0);
+			for (Term t : v.values.keySet())
+			{
+				v.values.put(t, 1.0);
+			}
 		}
 		return v;
 	}
@@ -375,6 +378,27 @@ public class TermVector extends FeatureVector<Term> implements ITermVector
 			for (Double tfIdf : tfIdfMap.keySet())
 			{
 				if (tfIdf < threshold)
+					break;
+				Term term	= tfIdfMap.get(tfIdf);
+				if(ignoreTV.map().get(term) == null) //This term is not in the ignoreTV
+					result.add(term);
+			}
+			return result;
+		}
+	}
+	
+	
+	public ArrayList<Term> tfIdfTrimByCount(int maxCount, TermVector ignoreTV)
+	{
+		synchronized (values)
+		{			
+			TreeMap<Double, Term> tfIdfMap = buildTfIdfMap();
+			ArrayList<Term> result	= new ArrayList<Term>();
+			int count = 0;
+			for (Double tfIdf : tfIdfMap.keySet())
+			{
+				count += 1;
+				if (count >= maxCount)
 					break;
 				Term term	= tfIdfMap.get(tfIdf);
 				if(ignoreTV.map().get(term) == null) //This term is not in the ignoreTV
