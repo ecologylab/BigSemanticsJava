@@ -340,12 +340,16 @@ implements DOMParserInterface
 	 * add an image+text surrogate for this that was extracted from a different document. FIXME this
 	 * currently does the same thing as a surrogate extracted from this, but we might want to make a
 	 * special collection for these "anchor surrogates".
+	 * 
+	 * Really, this should be setting the outlink somehow...
 	 */
 	public ImageClipping constructAnchorImageClipping(ImgElement imgNode, ParsedURL anchorHref)
 	{
+		CompoundDocument source	= (CompoundDocument)documentClosure.getDocument();
+		ImageClipping clipping = constructImageClipping(getDocument(), source, null, imgNode);
 		CompoundDocument outlink	= (CompoundDocument) semanticsScope.getOrConstructDocument(anchorHref);
-		
-		return constructImageClipping(getDocument(), outlink, null, imgNode);
+		clipping.setOutlink(outlink);
+		return clipping;
 	}
 	/**
 	 * create image and text surrogates for this HTML document, and add these surrogates into the
@@ -353,6 +357,9 @@ implements DOMParserInterface
 	 */
 	public ImageClipping constructImageClipping(ImgElement imgNode, ParsedURL anchorHref)
 	{
+		if(documentClosure.location().equals(anchorHref))
+			debug("This should be something else here!!");
+		debug("PART 1  "+anchorHref);
 		Document outlink				= semanticsScope.getOrConstructDocument(anchorHref);
 		Document sourceDocument = getDocument();
 		return constructImageClipping(sourceDocument, sourceDocument, outlink, imgNode);
