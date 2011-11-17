@@ -54,6 +54,23 @@ public class MetadataScalarBase<T> extends ElementState implements MetadataBase
 //		return (parent == null) ? null : parent.getMetaMetadata();
 //	}
 
+	/**
+	 * compare two MetadataScalarBase objects according to their enclosed value. use that value's
+	 * equal() method for actual comparison. note that we treat null == null as true.
+	 */
+	public boolean equals(Object other)
+	{
+		if (other == null || !(other instanceof MetadataScalarBase))
+			return false;
+		if (this.value == null)
+		{
+			return ((MetadataScalarBase)other).value == null;
+		}
+		else
+		{
+			return this.value.equals(((MetadataScalarBase)other).value);
+		}
+	}
 	
 	@Override
 	public void rebuildCompositeTermVector()
