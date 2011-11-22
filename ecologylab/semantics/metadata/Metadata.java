@@ -222,28 +222,36 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 		MetaMetadataCompositeField mm = metaMetadata;
 		if (mm == null && repository != null)
 		{
-			if (metaMetadataName != null) // get from saved composition
-				mm = repository.getMMByName(metaMetadataName.getValue());
-
-			if (mm == null)
+			MetaMetadataCompositeField bySavedName = metaMetadataName == null ? null : repository.getMMByName(metaMetadataName.getValue());
+			if (bySavedName != null)
+				mm = bySavedName;
+			else
 			{
 				ParsedURL location = getLocation();
-				if (location != null)
+				MetaMetadataCompositeField byLocation = location == null ? null : isImage() ? repository.getImageMM(location) : repository.getDocumentMM(location);
+				
+				// TODO by MIME type
+				
+				MetaMetadataCompositeField byClass = repository.getMMByClass(getClass());
+				
+				// I believe that in all the cases, we should use the class instead of the tag name, since
+				// the same tag name can be used for different classes! -- yin qu
+//				ClassDescriptor cd = classDescriptor();
+//				MetaMetadataCompositeField byTagName = cd == null ? null : repository.getMMByName(cd.getTagName());
+				
+				// in most cases, we might use the one by location / mime type;
+				// but if the one by class / tag name is more specific, we might want that one (?)
+				if (byLocation != null)
 				{
-					if (isImage())
-						mm = repository.getImageMM(location);
+					if (byClass != null && byLocation.getMetadataClass().isAssignableFrom(byClass.getMetadataClass()))
+						mm = byClass;
+//					else if (byTagName != null && byLocation.getMetadataClass().isAssignableFrom(byTagName.getMetadataClass()))
+//						mm = byTagName;
 					else
-						mm = repository.getDocumentMM(location);
-
-					// TODO -- also try to resolve by mime type ???
-				}
-				if (mm == null)
-					mm = repository.getMMByClass(getClass());
-				if (mm == null && classDescriptor() != null)
-				{
-					mm = repository.getMMByName(classDescriptor().getTagName());
+						mm = byLocation;
 				}
 			}
+			
 			if (mm != null)
 				setMetaMetadata(mm);
 		}
@@ -467,6 +475,7 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 		return getOrCreateTermVector();
 	}
 	
+	@Override
 	public CompositeTermVector termVector(HashSet<Metadata> visitedMetadata)
 	{
 		if (termVector == null && metaMetadata != null)
@@ -773,6 +782,7 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 		return termVector != null;
 	}
 
+	@Override
 	public Iterator<MetadataFieldDescriptor> iterator()
 	{
 		return classDescriptor().iterator();
@@ -1093,7 +1103,7 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 
 	private String getNaturalIdValueHelper(String naturalId)
 	{
-		MetaMetadataCompositeField mmcf = (MetaMetadataCompositeField) getMetaMetadata();
+		MetaMetadataCompositeField mmcf = getMetaMetadata();
 		if (mmcf == null)
 			return null;
 

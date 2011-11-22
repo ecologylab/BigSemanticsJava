@@ -4,7 +4,6 @@
 package ecologylab.semantics.metadata;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
@@ -18,7 +17,6 @@ import ecologylab.semantics.metametadata.MetaMetadataNestedField;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.FieldDescriptor;
-import ecologylab.serialization.FieldTypes;
 import ecologylab.serialization.ScalarUnmarshallingContext;
 import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.annotations.Hint;
@@ -32,42 +30,6 @@ import ecologylab.serialization.types.scalar.CompositeAsScalarType;
  */
 public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor implements EditValueNotifier
 {
-	
-	private static Class<?>								PROXY_CLASS																	= null;
-
-	private static Method									PROXY_METHOD_HANDLER_GETTER									= null;
-
-	/**
-	 * the class that connects MethodHandler and LazyInitializer.
-	 */
-	private static Class<?>								HIBERNATE_JAVASSIST_LAZY_INITIALIZER_CLASS	= null;
-
-	private static Method									PERSIST_OBJECT_GETTER												= null;
-	
-	static
-	{
-		try
-		{
-			PROXY_CLASS = Class.forName("javassist.util.proxy.ProxyObject");
-			PROXY_METHOD_HANDLER_GETTER = PROXY_CLASS.getMethod("getHandler");
-			HIBERNATE_JAVASSIST_LAZY_INITIALIZER_CLASS = Class.forName("org.hibernate.proxy.pojo.javassist.JavassistLazyInitializer");
-			PERSIST_OBJECT_GETTER = HIBERNATE_JAVASSIST_LAZY_INITIALIZER_CLASS.getMethod("getImplementation");
-		}
-		catch (ClassNotFoundException e)
-		{
-			// nothing
-		}
-		catch (SecurityException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		catch (NoSuchMethodException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 	
 	final private boolean									isMixin;
 
@@ -157,11 +119,13 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 		}
 	}
 
+	@Override
 	public boolean isMixin() 
 	{
 		return isMixin;
 	}
 
+	@Override
 	public void addEditValueListener(EditValueListener listener)
 	{
 		editValueListeners.add(listener);
@@ -170,6 +134,7 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 /**
  * Edit the value of a scalar.
  */
+	@Override
 	public void fireEditValue(Metadata metadata, String fieldValueString)
 	{
 		if (isScalar())
@@ -189,6 +154,7 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 		}
 	}
 	
+	@Override
 	public void removeEditValueListener(EditValueListener listener)
 	{
 		editValueListeners.remove(listener);
@@ -243,6 +209,7 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 		return definingMmdField;
 	}
 	
+	@Override
 	public String toString()
 	{
 		String name = getName(); if (name == null) name = "NO_FIELD";
@@ -268,145 +235,7 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 		super.setCollectionOrMapTagName(collectionOrMapTagName);
 	}
 	
-//	public void traverseAndResolvePolymorphismAndOtherTagsForCompilation()
-//	{
-//		startedTraversalForPolymorphism = true;
-//		
-//		// @simpl_other_tags
-//		if (this.definingMmdField instanceof MetaMetadataScalarField)
-//		{
-//			this.otherTags = this.definingMmdField.getOtherTags();
-//		}
-//		else if (this.definingMmdField instanceof MetaMetadataNestedField)
-//		{
-//			MetaMetadataNestedField nested = (MetaMetadataNestedField) this.definingMmdField;
-//			
-//			// @simpl_other_tags: for collection fields always add, for composite fields only add for non-
-//			// polymorphic ones
-//			if (nested instanceof MetaMetadataCollectionField || !nested.isPolymorphicInDescendantFields())
-//				this.otherTags = this.definingMmdField.getOtherTags();
-//			
-//			if (nested.getFieldType() != FieldTypes.COLLECTION_SCALAR)
-//			{
-//				// resolve @simpl_classes if any
-//				HashSet<MetaMetadata> polyMmds = nested.getPolymorphicMmds();
-//				if (polyMmds != null && polyMmds.size() > 0)
-//				{
-//					for (MetaMetadata polyMmd : polyMmds)
-//					{
-//						MetadataClassDescriptor mcd = polyMmd.getMetadataClassDescriptor();
-//						this.registerPolymorphicDescriptor(mcd);
-//					}
-//				}
-//				// @simpl_classes for inherently polymorphic fields
-//				String polyClassStr = nested.getPolymorphicClasses();
-//				if (polyClassStr != null)
-//				{
-//					String[] polyClassTags = polyClassStr.split(MetaMetadataNestedField.POLYMORPHIC_CLASSES_SEP);
-//					if (polyClassTags != null)
-//					{
-//						for (String polyClassTag : polyClassTags)
-//						{
-//							String truePolyClassTag = polyClassTag.trim();
-//							MetaMetadata thatMmd = this.definingMmdField.getRepository().getByTagName(truePolyClassTag);
-//							if (thatMmd != null)
-//							{
-//								MetadataClassDescriptor thatCd = thatMmd.getMetadataClassDescriptor();
-//								if (thatCd != null)
-//								{
-//									this.registerPolymorphicDescriptor(thatCd);
-//								}
-//								else
-//								{
-//									warning("can't find metadata class descriptor for " + thatMmd + ": ignoring tag " + truePolyClassTag + " in polymorphic_classes.");
-//								}
-//							}
-//							else
-//							{
-//								warning("can't find meta-metadata with tag " + truePolyClassTag + ": ignoring that tag in polymorphic_classes.");
-//							}
-//						}
-//					}
-//	
-//					// recursion
-//					for (MetaMetadataField kid : nested.getChildMetaMetadata())
-//					{
-//						System.out.println(kid);
-//						MetadataFieldDescriptor kidMFD = kid.getMetadataFieldDescriptor();
-//						if (kidMFD != null && !kidMFD.startedTraversalForPolymorphism)
-//							kidMFD.traverseAndResolvePolymorphismAndOtherTagsForCompilation();
-//					}
-//				}
-//			}
-//		}
-//	}
-
-	public Object getValue(Object context)
-	{
-		Object value = null;
-		try
-		{
-			if (context != null)
-			{
-				if (PROXY_CLASS == null || !PROXY_CLASS.isAssignableFrom(context.getClass()))
-				{
-					return super.getValue(context);
-				}
-				else
-				{
-					Object handler = PROXY_METHOD_HANDLER_GETTER.invoke(context);
-					Object target = PERSIST_OBJECT_GETTER.invoke(handler);
-					// use getter to take advantage of AOP by javassist
-					Method getter = this.getGetter();
-					if (getter != null)
-						value = getter.invoke(target);
-				}
-			}
-		}
-		catch (IllegalArgumentException e)
-		{
-			// TODO Auto-generated catch bloc
-			e.printStackTrace();
-		}
-		catch (IllegalAccessException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		catch (InvocationTargetException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return value;
-	}
-	
-	private synchronized Method getGetter()
-	{
-		if (getter != null)
-			return getter;
-		
-		String fieldName = this.getName();
-		String getterName = "get" + Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1);
-		if (this.getType() == FieldTypes.SCALAR)
-			getterName += "Metadata";
-		try
-		{
-			getter = this.field.getDeclaringClass().getMethod(getterName);
-		}
-		catch (SecurityException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		catch (NoSuchMethodException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return getter;
-	}
-	
+	@Override
 	public MetadataFieldDescriptor clone()
 	{
 		MetadataFieldDescriptor cloned = null;
