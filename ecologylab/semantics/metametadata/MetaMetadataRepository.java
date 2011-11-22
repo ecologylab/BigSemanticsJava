@@ -33,8 +33,8 @@ import ecologylab.semantics.metadata.builtins.MetadataBuiltinsTranslationScope;
 import ecologylab.semantics.metadata.scalar.types.MetadataScalarType;
 import ecologylab.semantics.namesandnums.DocumentParserTagNames;
 import ecologylab.serialization.ElementState;
-import ecologylab.serialization.TranslationContext;
 import ecologylab.serialization.SimplTypesScope;
+import ecologylab.serialization.TranslationContext;
 import ecologylab.serialization.annotations.simpl_collection;
 import ecologylab.serialization.annotations.simpl_composite;
 import ecologylab.serialization.annotations.simpl_inherit;
@@ -235,6 +235,7 @@ implements PackageSpecifier, DocumentParserTagNames
 		this.name = name;
 	}
 
+	@Override
 	public String packageName()
 	{
 		return packageAttribute;
@@ -470,14 +471,34 @@ implements PackageSpecifier, DocumentParserTagNames
 		// other initialization stuffs
 		for (MetaMetadata mmd : repositoryByName.values())
 		{
+			addToRepositoryByClassName(mmd);
+			mmd.setUpLinkWith(this);
+		}
+		for (MultiAncestorScope<MetaMetadata> scope : packageMmdScopes.values())
+		{
+			for (MetaMetadata mmd : scope.values())
+			{
+				addToRepositoryByClassName(mmd);
+				mmd.setUpLinkWith(this);
+			}
+		}
+
+		initializeLocationBasedMaps();
+	}
+	
+	private void addToRepositoryByClassName(MetaMetadata mmd)
+	{
+		if (mmd.getExtendsAttribute() != null)
+		{
 			MetadataClassDescriptor mcd = mmd.getMetadataClassDescriptor();
 			if (mcd != null)
 				repositoryByClassName.put(mcd.getDescribedClass().getName(), mmd);
 			
-			mmd.setUpLinkWith(this);
+			for (MetaMetadata localMmd : mmd.getMmdScope().values())
+			{
+				addToRepositoryByClassName(localMmd);
+			}
 		}
-
-		initializeLocationBasedMaps();
 	}
 	
 	/**

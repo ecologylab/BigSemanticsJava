@@ -245,6 +245,8 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 				{
 					if (byClass != null && byLocation.getMetadataClass().isAssignableFrom(byClass.getMetadataClass()))
 						mm = byClass;
+					else if (byClass != null && byLocation.isGenericMetadata() && !byClass.isGenericMetadata())
+						mm = byClass;
 //					else if (byTagName != null && byLocation.getMetadataClass().isAssignableFrom(byTagName.getMetadataClass()))
 //						mm = byTagName;
 					else
