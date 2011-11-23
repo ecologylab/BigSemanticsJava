@@ -252,6 +252,8 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 					else
 						mm = byLocation;
 				}
+				else
+					mm = byClass;
 			}
 			
 			if (mm != null)
@@ -658,7 +660,7 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 
 	public ClassAndCollectionIterator metadataIterator(HashSet<Metadata> visitedMetadata)
 	{
-		return new ClassAndCollectionIterator(metaMetadata, this, visitedMetadata);
+		return new ClassAndCollectionIterator(getMetaMetadata(), this, visitedMetadata);
 	}
 
 	public boolean hasObservers()

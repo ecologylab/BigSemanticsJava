@@ -5,15 +5,19 @@ import java.util.Map.Entry;
 
 import ecologylab.generic.IFeatureVector;
 import ecologylab.semantics.seeding.SemanticsPrefs;
-import ecologylab.serialization.ElementState;
+import ecologylab.serialization.ElementStateOrmBase;
+import ecologylab.serialization.annotations.simpl_inherit;
 import ecologylab.serialization.annotations.simpl_map;
 
+@simpl_inherit
 public class InterestModel implements SemanticsPrefs
 {
 	
-	public static class InterestModelState extends ElementState 
+	@simpl_inherit
+	public static class InterestModelState extends ElementStateOrmBase
 	{
-		protected @simpl_map("interest_model_entry") HashMap<String, InterestModelEntry>	values = new HashMap<String, InterestModelEntry>();
+		@simpl_map("interest_model_entry")
+		protected HashMap<String, InterestModelEntry>	values = new HashMap<String, InterestModelEntry>();
 		
 		public InterestModelState()
 		{
@@ -25,6 +29,7 @@ public class InterestModel implements SemanticsPrefs
 			result.enterValues();
 			return result;
 		}
+		
 		private void enterValues()
 		{
 			synchronized(participantInterest)
@@ -65,7 +70,7 @@ public class InterestModel implements SemanticsPrefs
 	{
 		timeScaleInterest();
 		double max			= interestingTermVector.max();
-		double factor		= max * magnitude < magnitude ? (double) magnitude : ((double) magnitude) / max;
+		double factor		= max * magnitude < magnitude ? (double) magnitude : magnitude / max;
 		participantInterest.add(factor, interestingTermVector);
 		unitize();
 	}

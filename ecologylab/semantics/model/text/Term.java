@@ -3,11 +3,12 @@ package ecologylab.semantics.model.text;
 import java.text.DecimalFormat;
 import java.util.Hashtable;
 
-import ecologylab.serialization.ElementState;
+import ecologylab.serialization.ElementStateOrmBase;
+import ecologylab.serialization.annotations.simpl_inherit;
 import ecologylab.serialization.annotations.simpl_scalar;
 
-
-public class Term extends ElementState implements Comparable<Term>
+@simpl_inherit
+public class Term extends ElementStateOrmBase implements Comparable<Term>
 {
 
 	private static final Hashtable<String, String> uniqueStemObjectMap = new Hashtable<String, String>();
@@ -31,6 +32,7 @@ public class Term extends ElementState implements Comparable<Term>
 		this.idf = idf;
 	}
 	
+	@Override
 	public String toString()
 	{
 		return stem;
@@ -64,6 +66,7 @@ public class Term extends ElementState implements Comparable<Term>
 		return false;
 	}
 
+	@Override
 	public int compareTo(Term o) 
 	{
 		double difference = this.idf() - o.idf();

@@ -6,14 +6,16 @@ package ecologylab.semantics.model.text;
 import java.util.ArrayList;
 import java.util.Map;
 
-import ecologylab.serialization.ElementState;
+import ecologylab.serialization.ElementStateOrmBase;
 import ecologylab.serialization.annotations.simpl_collection;
+import ecologylab.serialization.annotations.simpl_inherit;
 
 /**
  * @author andrew
  *
  */
-public class TermVectorState extends ElementState
+@simpl_inherit
+public class TermVectorState extends ElementStateOrmBase
 {
 	@simpl_collection("term_vector_entry") ArrayList<TermVectorEntry> terms = new ArrayList<TermVectorEntry>();
 	

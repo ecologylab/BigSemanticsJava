@@ -1,4 +1,7 @@
 package ecologylab.semantics.model.text;
+
+import ecologylab.serialization.annotations.simpl_inherit;
+
 /***
  * 
  * @author rhema
@@ -6,7 +9,7 @@ package ecologylab.semantics.model.text;
  *  and change it's score arbitrarily.  This is useful
  *  in the context of normalizing terms.
  */
-
+@simpl_inherit
 public class TermWithScore extends Term
 {
 	private double score;
@@ -32,6 +35,7 @@ public class TermWithScore extends Term
 		this.score = score;
 	}
 	
+	@Override
 	public String toString()
 	{
 		return this.getWord() + ":" + score;

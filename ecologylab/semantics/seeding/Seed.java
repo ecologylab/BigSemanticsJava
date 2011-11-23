@@ -7,7 +7,8 @@ import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
 import ecologylab.semantics.namesandnums.CFPrefNames;
-import ecologylab.serialization.ElementState;
+import ecologylab.serialization.ElementStateOrmBase;
+import ecologylab.serialization.annotations.simpl_inherit;
 import ecologylab.serialization.annotations.simpl_scalar;
 
 /**
@@ -15,7 +16,8 @@ import ecologylab.serialization.annotations.simpl_scalar;
  * 
  * @author andruid, robinson
  */
-abstract public class Seed extends ElementState implements CFPrefNames
+@simpl_inherit
+abstract public class Seed extends ElementStateOrmBase implements CFPrefNames
 {
     public static final String          TRAVERSABLE                  = "traversable";
     public static final String          UNTRAVERSABLE                = "untraversable";

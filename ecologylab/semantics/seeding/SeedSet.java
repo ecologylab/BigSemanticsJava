@@ -10,7 +10,7 @@ import ecologylab.semantics.collecting.Seeding;
 import ecologylab.semantics.collecting.SemanticsGlobalScope;
 import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.namesandnums.SemanticsSessionObjectNames;
-import ecologylab.serialization.ElementState;
+import ecologylab.serialization.ElementStateOrmBase;
 import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.annotations.simpl_collection;
 import ecologylab.serialization.annotations.simpl_inherit;
@@ -25,7 +25,7 @@ import ecologylab.serialization.annotations.simpl_scope;
  * @author andruid
  */
 @simpl_inherit
-public class SeedSet<S extends Seed> extends ElementState
+public class SeedSet<S extends Seed> extends ElementStateOrmBase
 		implements SemanticsSessionObjectNames, Iterable<S>
 {
 	static SimplTypesScope	ts								= BaseSeedTranslations.get();
@@ -410,6 +410,7 @@ public class SeedSet<S extends Seed> extends ElementState
 		return (seeds != null) ? seeds.size() : 0;
 	}
 
+	@Override
 	public Iterator<S> iterator()
 	{
 		return seeds.iterator();
