@@ -1,18 +1,22 @@
 package ecologylab.semantics.actions;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 
 
+import ecologylab.appframework.types.prefs.Pref;
 import ecologylab.generic.Continuation;
 import ecologylab.semantics.actions.SemanticAction;
 import ecologylab.semantics.actions.SemanticActionStandardMethods;
 import ecologylab.semantics.gui.InteractiveSpace;
+import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.builtins.Clipping;
 import ecologylab.semantics.metadata.builtins.CompoundDocument;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
 import ecologylab.semantics.metadata.builtins.ImageClipping;
 import ecologylab.semantics.metadata.builtins.TextClipping;
+import ecologylab.semantics.model.text.TermWithScore;
 
 /**
  * 
@@ -40,6 +44,82 @@ implements SemanticActionStandardMethods
 	public String getActionName()
 	{
 		return VISUALIZE_CLIPPINGS;
+	}
+	
+	//need a score function for text that I can also use for clippings...
+	
+	public double scoreTextAtPoint(String text, int x, int y)
+	{
+		if(!Pref.lookupBoolean(Metadata.USE_SEMANTIC_SEARCH_PREF))
+		    return 0;
+		//just idf
+		//TermDictionary.getTermForUnsafeWord("sanity")
+		//getTermsFromInteractiveSpace
+		//with 
+		
+		InteractiveSpace interactiveSpace = sessionScope.getInteractiveSpace();
+		TermWithScore[] terms = interactiveSpace.getTermScoresAtPoint(x, y);
+		//should add somet sort of stemming here or something... :(
+		HashMap<String, TermWithScore> termHash = new HashMap<String, TermWithScore>();
+		for(TermWithScore term: terms)
+		{
+//			debug(term.getWord());
+			termHash.put(term.getWord(), term);
+		}
+		
+		String[] words = text.split(" ");
+		double score = 0;
+		for(String word : words)
+		{
+			word = word.replaceAll("[^A-Za-z]", "");
+			word = word.toLowerCase();
+//			debug("Does the hash contain:"+word+"?");
+			if(termHash.containsKey(word))
+			{
+				score += termHash.get(word).getScore();
+//				debug("yes");
+			}
+			else
+			{
+//				debug("no");
+			}
+		}
+		return score;
+	}
+	
+	public String gistForTextAndPosition(int x, int y, int numWords, String text)
+	{
+		debug("make gist at "+x+","+y+" with "+numWords+" and the text "+text);
+		String[] words = text.split(" ");
+		double bestScore = -1;
+		String bestGist = "";
+		for(int wordOffset=0; wordOffset<Math.min(words.length, numWords+words.length); wordOffset++)
+		{
+			String wholeGist = "";
+			int wordCount = 0;
+			//this should be repeated with different indexes
+			//calkins1942@gmail.com
+			for(int i=wordOffset; i<words.length; i++)
+			{
+				String word = words[i];
+				if(wordCount > 0)
+				wholeGist += " ";
+				wholeGist += word;
+				wordCount++;
+				if(wordCount >= numWords)
+					break;
+			}
+			///add up total score here...
+			
+			double gScore = scoreTextAtPoint(wholeGist, x, y);
+			debug("check dist:"+wholeGist +" gets the score:"+gScore);
+			if(gScore > bestScore)
+			{
+				bestScore = gScore;
+				bestGist = wholeGist;
+			}
+		}
+		return bestGist;
 	}
 
 	@Override
@@ -79,6 +159,7 @@ implements SemanticActionStandardMethods
 			
 			TextClipping bestTextClipping = null;
 			ImageClipping bestImageClipping = null;
+			double bestTextClippingScore = -1;
 
 			List<Clipping> clippings = compoundSource.getClippings();
 			if(clippings != null)
@@ -87,6 +168,7 @@ implements SemanticActionStandardMethods
 				{
 					if (clipping instanceof TextClipping)
 					{
+						/*
 						//debug("Found text clipping");
 						if(selectionMethod == SelectionMethod.FIFO)
 						{
@@ -94,6 +176,13 @@ implements SemanticActionStandardMethods
 							{
 								bestTextClipping = (TextClipping)clipping;
 							}
+						}
+						*/
+						double textClippingScore = scoreTextAtPoint(((TextClipping)clipping).getText(), closure.getDndPoint().getX(), closure.getDndPoint().getY());
+						if(textClippingScore > bestTextClippingScore)//tbd, normalize on lenght
+						{
+							 bestTextClippingScore = textClippingScore;
+							 bestTextClipping = (TextClipping) clipping;
 						}
 					}
 					else if(clipping instanceof ImageClipping)
@@ -129,7 +218,9 @@ implements SemanticActionStandardMethods
 				if(bestTextClipping != null)
 				{
 					//preprocess at this point to make smaller...
-					interactiveSpace.createAndAddClipping((TextClipping)bestTextClipping, closure.getDndPoint().getX(), closure.getDndPoint().getY());
+					TextClipping gistWithContext = (TextClipping)bestTextClipping;
+					gistWithContext.setText(gistForTextAndPosition(closure.getDndPoint().getX(),closure.getDndPoint().getY(),10,gistWithContext.getText()));
+					interactiveSpace.createAndAddClipping(gistWithContext, closure.getDndPoint().getX(), closure.getDndPoint().getY());
 					return null;
 				}
 			}
