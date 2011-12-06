@@ -60,7 +60,8 @@ class CreateAndVisualizeTextSurrogateSemanticAction extends SemanticAction imple
 			Document sourceDocument = resolveSourceDocument();
 			//We will do something smarter here later when we have interest vectors.
 			TextClipping textClipping = new TextClipping(sessionScope.getMetaMetadataRepository().getMMByName(sessionScope.TEXT_TAG));
-			textClipping.setText(createGist(context));
+		  ///textClipping.setText(createGist(context));
+			textClipping.setText(context);
 			textClipping.setContext(context);
 
 			textClipping.setSourceDoc(sourceDocument);
