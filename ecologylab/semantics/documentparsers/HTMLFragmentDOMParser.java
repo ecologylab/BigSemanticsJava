@@ -102,7 +102,7 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 			namesOfBreaklineNodeNames.put("h5", 1);
 			namesOfBreaklineNodeNames.put("h6", 1);
 			namesOfBreaklineNodeNames.put("br", 1);
-			namesOfBreaklineNodeNames.put("span", 1);
+			namesOfBreaklineNodeNames.put("div", 1);
 		}
 		return namesOfBreaklineNodeNames.containsKey(name);
 	}
