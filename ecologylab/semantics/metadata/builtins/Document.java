@@ -21,6 +21,7 @@ import ecologylab.semantics.html.documentstructure.SemanticAnchor;
 import ecologylab.semantics.html.documentstructure.SemanticInLinks;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.mm_name;
+import ecologylab.semantics.metadata.mm_no;
 import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
 import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
@@ -94,6 +95,13 @@ public class Document extends Metadata
 
 	static public final Document 	RECYCLED_DOCUMENT	= new Document(ParsedURL.getAbsolute("http://recycled.document"));
 	static public final Document 	UNDEFINED_DOCUMENT= new Document(ParsedURL.getAbsolute("http://undefined.document"));
+	
+	/**
+	 * used in the database.
+	 */
+	@simpl_scalar
+	@mm_no
+	private int											downloadStatus;
 
 	/**
 	 * Occasionally, we want to navigate to somewhere other than the regular purl,
@@ -150,6 +158,7 @@ public class Document extends Metadata
 	 * Gets the value of the field location
 	 **/
 
+	@Override
 	public ParsedURL getLocation()
 	{
 		return location == null ? null : location.getValue();
@@ -168,6 +177,7 @@ public class Document extends Metadata
 	 * Sets the value of the field location
 	 **/
 
+	@Override
 	public void setLocation(ParsedURL location)
 	{
 		if (location != null)
@@ -189,6 +199,7 @@ public class Document extends Metadata
 	 * The heavy weight setter method for field location
 	 **/
 
+	@Override
 	public void hwSetLocation(ParsedURL location)
 	{
 		setLocation(location);
@@ -637,6 +648,7 @@ public class Document extends Metadata
 		}
 	}
 	
+	@Override
 	public void recycle()
 	{
 		recycle(new HashSet<Metadata>());
@@ -811,5 +823,15 @@ public class Document extends Metadata
 	public boolean hasLocation()
 	{
 		return location != null;
+	}
+
+	public int getDownloadStatus()
+	{
+		return downloadStatus;
+	}
+
+	public void setDownloadStatus(int downloadStatus)
+	{
+		this.downloadStatus = downloadStatus;
 	}
 }
