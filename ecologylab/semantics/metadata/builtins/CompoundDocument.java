@@ -18,6 +18,7 @@ import ecologylab.serialization.TranslationContext;
 import ecologylab.serialization.annotations.Hint;
 import ecologylab.serialization.annotations.simpl_classes;
 import ecologylab.serialization.annotations.simpl_collection;
+import ecologylab.serialization.annotations.simpl_composite;
 import ecologylab.serialization.annotations.simpl_hints;
 import ecologylab.serialization.annotations.simpl_inherit;
 import ecologylab.serialization.annotations.simpl_scalar;
@@ -33,7 +34,7 @@ public class CompoundDocument extends Document
 {
 	private static final String	CONTENT_PAGE	= "content_page";
 
-	private static final String	INDEX_PAGE	= "index_page";
+	private static final String	INDEX_PAGE		= "index_page";
 
 	/**
 	 * For debugging. Type of the structure recognized by information extraction.
@@ -41,24 +42,44 @@ public class CompoundDocument extends Document
 
 	@mm_name("page_structure") 
 	@simpl_scalar
-	private MetadataString	        pageStructure;
+	private MetadataString	        		pageStructure;
 	
 	/**
 	 * The search query
 	 **/
 	@simpl_scalar @simpl_hints(Hint.XML_LEAF)
-	private MetadataString					query;
+	private MetadataString							query;
 	
+	/**
+	 * The rootDocument is filled in to create an alternative, connected CompoundDocument instance that is used to 
+	 * store the List<Clipping> clippings object associated with this. 
+	 * It can be used to merge the clippings collection for two or more related documents, such as a metadata page, and an associated PDF.
+	 */
+	@simpl_composite
+	private CompoundDocument						rootDocument;
+	
+	/**
+	 * The rootDocument is filled in to create an alternative, connected CompoundDocument instance that is used to 
+	 * store the List<Clipping> clippings object associated with this. 
+	 * It can be used to merge the clippings collection for two or more related documents, such as a metadata page, and an associated PDF.
+	 * 
+	 * @param rootDocument
+	 */
+	public void setRootDocument(CompoundDocument rootDocument)
+	{
+		this.rootDocument = rootDocument;
+	}
+
 	/**
 	 * Seed object associated with this, if this is a seed.
 	 */
-	private Seed										seed;
+	private Seed												seed;
 	
 	/**
 	 * Indicates that this Document is a truly a seed, not just one
 	 * that is associated into a Seed's inverted index.
 	 */
-	private boolean									isTrueSeed;
+	private boolean											isTrueSeed;
 
 	/**
 	 * Clippings that this document contains.
@@ -67,7 +88,7 @@ public class CompoundDocument extends Document
 	@simpl_collection
 	@simpl_classes({ImageClipping.class, TextClipping.class})
 //	@simpl_scope(SemanticsNames.REPOSITORY_CLIPPING_TRANSLATIONS)
-	List<Clipping>									clippings;
+	List<Clipping>											clippings;
 
 
 	
@@ -369,7 +390,17 @@ public class CompoundDocument extends Document
 		return seed;
 	}
 	
+	/**
+	 * Lazy evaluation of clippings field.
+	 * If rootDocument non-null, get and construct in that, as necessary; else get and construct in this, as necessary.
+	 * @return
+	 */
 	List<Clipping> clippings()
+	{
+		return rootDocument != null ? rootDocument.selfClippings() : selfClippings();
+	}
+
+	private List<Clipping> selfClippings() 
 	{
 		List<Clipping> result	= this.clippings;
 		if (result == null)
@@ -380,6 +411,58 @@ public class CompoundDocument extends Document
 		return result;
 	}
 	
+	/**
+	 * @return the clippings
+	 */
+	public List<Clipping> getClippings()
+	{
+		return rootDocument != null ? rootDocument.clippings : clippings;
+	}
+	
+	/**
+	 * @return the clippings
+	 */
+	public List<Clipping> getSelfClippings()
+	{
+		return clippings;
+	}
+	
+	public void setClippings(List<Clipping> clippings)
+	{
+		this.clippings = clippings;
+	}
+	
+	/**
+	 * Add to collection of clippings, representing our compound documentness.
+	 */
+	@Override
+	public void addClipping(Clipping clipping)
+	{
+		clippings().add(clipping);
+	}
+
+	/**
+	 * 
+	 * @return	The number of Clippings that have been collected, if any.
+	 */
+	public int numClippings()
+	{
+		return clippings == null ? 0 : clippings.size();
+	}
+
+	/**
+	 * 
+	 * @return 	The rootDocument is filled in to create an alternative, connected CompoundDocument instance that is used to 
+	 * store the List<Clipping> clippings object associated with this. 
+	 * It can be used to merge the clippings collection for two or more related documents, such as a metadata page, and an associated PDF.
+
+	 */
+	public CompoundDocument getRootDocument()
+	{
+		return rootDocument;
+	}
+
+
 	/**
 	 * Used when oldDocument turns out to be re-directed from this.
 	 * @param oldDocument
@@ -397,39 +480,13 @@ public class CompoundDocument extends Document
 			if (queryString == null || queryString.length() == 0)
 				this.query									= oldCompound.query;
 			oldCompound.query						= null;
+			
+			List<Clipping> oldClippings	= oldCompound.clippings;
+			
+			if (this.clippings == null && oldClippings != null)
+				this.clippings						= oldClippings;
 		}
 		
 	}
 	
-	/**
-	 * Add to collection of clippings, representing our compound documentness.
-	 */
-	@Override
-	public void addClipping(Clipping clipping)
-	{
-		clippings().add(clipping);
-	}
-
-	/**
-	 * @return the clippings
-	 */
-	public List<Clipping> getClippings()
-	{
-		return clippings;
-	}
-	
-	public void setClippings(List<Clipping> clippings)
-	{
-		this.clippings = clippings;
-	}
-	
-	/**
-	 * 
-	 * @return	The number of Clippings that have been collected, if any.
-	 */
-	public int numClippings()
-	{
-		return clippings == null ? 0 : clippings.size();
-	}
-
 }
