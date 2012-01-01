@@ -592,7 +592,7 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 		String fieldParserKey = mmdField.getFieldParserKey();
 
 		String evaluation = null;
-		if (xpathString != null && contextNode != null && fieldParserKey == null)
+		if (xpathString != null && xpathString.length() > 0 && contextNode != null && fieldParserKey == null)
 		{
 			try
 			{
