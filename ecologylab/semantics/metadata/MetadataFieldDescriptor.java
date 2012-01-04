@@ -15,7 +15,6 @@ import ecologylab.semantics.metametadata.MetaMetadataCollectionField;
 import ecologylab.semantics.metametadata.MetaMetadataField;
 import ecologylab.semantics.metametadata.MetaMetadataNestedField;
 import ecologylab.serialization.ClassDescriptor;
-import ecologylab.serialization.ElementState;
 import ecologylab.serialization.FieldDescriptor;
 import ecologylab.serialization.ScalarUnmarshallingContext;
 import ecologylab.serialization.XMLTools;
@@ -162,7 +161,7 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 	
 	public MetadataBase getNestedMetadata(MetadataBase context)
 	{
-		return isScalar() ? null : (MetadataBase) getNested((ElementState) context);
+		return isScalar() ? null : (MetadataBase) getNested(context);
 	}
 	
 	@Override

@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import ecologylab.generic.Debug;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionHandler;
@@ -29,8 +30,10 @@ import ecologylab.semantics.model.text.ITermVector;
 import ecologylab.semantics.model.text.OrderedNormalizedTermVectorCache;
 import ecologylab.semantics.model.text.TermVectorFeature;
 import ecologylab.semantics.namesandnums.SemanticsNames;
+import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.FieldDescriptor;
+import ecologylab.serialization.FieldTypes;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.ScalarUnmarshallingContext;
 import ecologylab.serialization.SimplTypesScope;
@@ -41,6 +44,7 @@ import ecologylab.serialization.annotations.simpl_descriptor_classes;
 import ecologylab.serialization.annotations.simpl_scalar;
 import ecologylab.serialization.annotations.simpl_scope;
 import ecologylab.serialization.annotations.simpl_tag;
+import ecologylab.serialization.deserializers.ISimplDeserializationPost;
 import ecologylab.serialization.formatenums.StringFormat;
 import ecologylab.serialization.library.html.Div;
 import ecologylab.serialization.library.html.Input;
@@ -48,6 +52,7 @@ import ecologylab.serialization.library.html.Span;
 import ecologylab.serialization.library.html.Table;
 import ecologylab.serialization.library.html.Td;
 import ecologylab.serialization.library.html.Tr;
+import ecologylab.serialization.serializers.ISimplSerializationPre;
 
 /**
  * This is the new metadata class that is the base class for the meta-metadata system. It contains
@@ -59,8 +64,9 @@ import ecologylab.serialization.library.html.Tr;
  * 
  */
 @simpl_descriptor_classes({ MetadataClassDescriptor.class, MetadataFieldDescriptor.class })
-abstract public class Metadata extends ElementState
-implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
+abstract public class Metadata
+implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>, FieldTypes,
+ISimplSerializationPre, ISimplDeserializationPost
 {
 	
 	final static int											INITIAL_SIZE							= 5;
@@ -154,6 +160,8 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 	@simpl_scope(SemanticsNames.REPOSITORY_METADATA_TRANSLATIONS)
 	private List<Metadata>								linkedMetadataList;
 	
+	private MetadataClassDescriptor				classDescriptor;
+	
 	/**
 	 * This constructor should *only* be used when marshalled Metadata is read.
 	 */
@@ -208,7 +216,13 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 
 	public MetadataClassDescriptor getMetadataClassDescriptor()
 	{
-		return (MetadataClassDescriptor) classDescriptor();
+		MetadataClassDescriptor result = this.classDescriptor;
+		if (result == null)
+		{
+			result = (MetadataClassDescriptor) ClassDescriptor.getClassDescriptor(this);
+			this.classDescriptor = result;
+		}
+		return result;
 	}
 
 	/**
@@ -468,7 +482,7 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 
 		this.metaMetadata = metaMetadata;
 		String metaMetadataName = metaMetadata.getName();
-		if (!classDescriptor().getTagName().equals(metaMetadataName)) // avoid writing these when you
+		if (!getMetadataClassDescriptor().getTagName().equals(metaMetadataName)) // avoid writing these when you
 																																	// don't need them
 			this.metaMetadataName = new MetadataString(metaMetadataName);
 	}
@@ -610,6 +624,13 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 	{
 		return null;
 	}
+	
+	@Override
+	public void recycle()
+	{
+		// TODO recycling
+		this.recycled = true;
+	}
 
 	public void recycle(HashSet<Metadata> visitedMetadata)
 	{
@@ -635,7 +656,8 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 				metadata.recycle();
 		}
 
-		super.recycle();
+		this.recycle();
+		
 		if (termVector != null)
 		{
 			// termVector can be null for those metadata created on the fly, e.g. ImageElement created
@@ -751,7 +773,7 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 			}
 			else
 			{
-				debug("Not Able to set the field: " + tagName);
+				Debug.debugT(this, "Not Able to set the field: " + tagName);
 			}
 		}
 		return false;
@@ -774,7 +796,7 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 			}
 			else
 			{
-				warning("Cannot find field [" + fieldName + "] on " + this);
+				Debug.warning(this, "Cannot find field [" + fieldName + "] on " + this);
 			}
 		}
 		return false;
@@ -789,7 +811,7 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 	@Override
 	public Iterator<MetadataFieldDescriptor> iterator()
 	{
-		return classDescriptor().iterator();
+		return getMetadataClassDescriptor().iterator();
 	}
 
 	/**
@@ -797,7 +819,7 @@ implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>
 	 */
 	public HashMapArrayList<String, MetadataFieldDescriptor> getFieldDescriptorsByFieldName()
 	{
-		return classDescriptor().getFieldDescriptorsByFieldName();
+		return getMetadataClassDescriptor().getFieldDescriptorsByFieldName();
 	}
 
 	/**
