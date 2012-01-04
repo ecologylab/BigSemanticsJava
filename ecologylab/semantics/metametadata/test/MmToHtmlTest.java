@@ -12,6 +12,8 @@ import ecologylab.semantics.metadata.builtins.DocumentClosure;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.SimplTypesScope.GRAPH_SWITCH;
+import ecologylab.serialization.TranslationContext;
+import ecologylab.serialization.TranslationContextPool;
 
 public class MmToHtmlTest extends NewMmTest
 {
@@ -59,7 +61,9 @@ public class MmToHtmlTest extends NewMmTest
 		{
 			Document document = documentClosure.getDocument();
 
-			document.serializeToHtml(print, document.createGraphContext());
+			TranslationContext translationContext = TranslationContextPool.get().acquire();
+			document.serializeToHtml(print, translationContext);
+			TranslationContextPool.get().release(translationContext);
 		}
 		appendFooter(print);
 		print.close();
