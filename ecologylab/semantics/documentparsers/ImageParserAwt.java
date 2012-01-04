@@ -34,6 +34,7 @@ import com.drew.metadata.exif.ExifDirectory;
 import com.drew.metadata.exif.ExifReader;
 import com.drew.metadata.exif.GpsDirectory;
 
+import ecologylab.generic.Debug;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionsKeyWords;
 import ecologylab.semantics.collecting.SemanticsSessionScope;
@@ -113,7 +114,7 @@ public class ImageParserAwt extends DocumentParser<Image>
 			image.setHeight(bufferedImage.getHeight());
 		}
 		else
-			image.error("ImageParserAwt failed for " + image.getLocation());
+			Debug.error(image, "ImageParserAwt failed for " + image.getLocation());
 	}
 
 	public static final int MIN_DIM	= 10;
@@ -133,7 +134,7 @@ public class ImageParserAwt extends DocumentParser<Image>
 				error("Cant get reader for " + location);
 			else
 			{
-				imageReader	= (ImageReader) imageReadersIterator.next();
+				imageReader	= imageReadersIterator.next();
 				imageReader.setInput(imageInputStream, true, true);
 				
 				ImageReadParam param	= imageReader.getDefaultReadParam();
@@ -225,7 +226,7 @@ public class ImageParserAwt extends DocumentParser<Image>
 					}
 					while (imageReadersIterator.hasNext())
 					{
-						ImageReader nextReader	= (ImageReader) imageReadersIterator.next();
+						ImageReader nextReader	= imageReadersIterator.next();
 						debug("COOL: Freeing resources on additional readers! " + nextReader);
 						nextReader.reset();
 						nextReader.dispose();
@@ -296,6 +297,7 @@ public class ImageParserAwt extends DocumentParser<Image>
 			super(in);
 		}
 
+		@Override
 		public int read() throws IOException
 		{
 			int result;
@@ -315,6 +317,7 @@ public class ImageParserAwt extends DocumentParser<Image>
 			return result;
 		}
 
+		@Override
 		public int read(byte[] b, int off, int len) throws IOException
 		{
 			final int max = off + len;
@@ -484,6 +487,7 @@ public class ImageParserAwt extends DocumentParser<Image>
 	/**
 	 * @return false when the thing could not be stopped and a new thread started.
 	 */
+	@Override
 	public synchronized void handleIoError(Throwable e)
 	{
 		if (imageReader != null)
