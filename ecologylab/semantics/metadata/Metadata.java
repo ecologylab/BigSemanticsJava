@@ -31,7 +31,6 @@ import ecologylab.semantics.model.text.OrderedNormalizedTermVectorCache;
 import ecologylab.semantics.model.text.TermVectorFeature;
 import ecologylab.semantics.namesandnums.SemanticsNames;
 import ecologylab.serialization.ClassDescriptor;
-import ecologylab.serialization.ElementState;
 import ecologylab.serialization.FieldDescriptor;
 import ecologylab.serialization.FieldTypes;
 import ecologylab.serialization.SIMPLTranslationException;
@@ -982,8 +981,7 @@ ISimplSerializationPre, ISimplDeserializationPost
 							
 							for (Object next : thatCollection)
 							{
-								ElementState nestedES = (ElementState) next;
-								FieldDescriptor compositeAsScalarFD = nestedES.classDescriptor().getScalarValueFieldDescripotor();
+								FieldDescriptor compositeAsScalarFD = ClassDescriptor.getClassDescriptor(next).getScalarValueFieldDescripotor();
 								
 //								if (isScalar)
 //									childFD.appendHtmlValueAsAttribute(currentMetadata, serializationContext, nestedTr, null, MetadataConstants.FIELD_NAME, textCssClass, navigatesFD, mmdField.getSchemaOrgItemprop());
@@ -991,7 +989,7 @@ ISimplSerializationPre, ISimplDeserializationPost
 								{
 									Span compositeAsScalarSpan = new Span();
 									compositeAsScalarSpan.setCssClass(MetadataConstants.COMPOSITE_AS_SCALAR);
-									collectionTd.spans.add(compositeAsScalarFD.getHtmlCompositeCollectionValue(nestedES, i == 0));
+									collectionTd.spans.add(compositeAsScalarFD.getHtmlCompositeCollectionValue(next, i == 0));
 								}
 								i++;
 							}
@@ -1021,8 +1019,7 @@ ISimplSerializationPre, ISimplDeserializationPost
 							tr.setCssClass(MetadataConstants.NESTED);
 							
 							Metadata nestedMD = (Metadata) thatReferenceObject;
-							ElementState nestedES = (ElementState) thatReferenceObject;
-							FieldDescriptor compositeAsScalarFD = nestedES.classDescriptor().getScalarValueFieldDescripotor();
+							FieldDescriptor compositeAsScalarFD = ClassDescriptor.getClassDescriptor(thatReferenceObject).getScalarValueFieldDescripotor();
 
 							if (compositeAsScalarFD != null)
 							{
@@ -1030,7 +1027,7 @@ ISimplSerializationPre, ISimplDeserializationPost
 
 								Span compositeAsScalarSpan = new Span();
 								compositeAsScalarSpan.setCssClass(MetadataConstants.COMPOSITE_AS_SCALAR);
-								compositeTd.spans.add(compositeAsScalarFD.getHtmlCompositeCollectionValue(nestedES, true));
+								compositeTd.spans.add(compositeAsScalarFD.getHtmlCompositeCollectionValue(thatReferenceObject, true));
 							}
 							else
 							{
