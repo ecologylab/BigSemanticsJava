@@ -1,7 +1,6 @@
 package ecologylab.semantics.metametadata;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import ecologylab.collections.MultiAncestorScope;
 import ecologylab.generic.HashMapArrayList;
@@ -11,7 +10,6 @@ import ecologylab.semantics.metadata.MetadataFieldDescriptor;
 import ecologylab.semantics.metadata.mm_dont_inherit;
 import ecologylab.semantics.metametadata.MetaMetadata.Visibility;
 import ecologylab.semantics.metametadata.exceptions.MetaMetadataException;
-import ecologylab.serialization.MetaInformation;
 import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.annotations.simpl_collection;
@@ -118,12 +116,14 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 		extendsChanged(extendsAttribute);
 	}
 	
+	@Override
 	public void setTag(String tag)
 	{
 		super.setTag(tag);
 		tagChanged(tag);
 	}
 
+	@Override
 	protected String getMetaMetadataTagToInheritFrom()
 	{
 		return type != null ? type : null;
@@ -134,6 +134,7 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 	 * 
 	 * @return this, because it is a composite itself.
 	 */
+	@Override
 	public MetaMetadataCompositeField metaMetadataCompositeField()
 	{
 		return this;
@@ -216,6 +217,7 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 		this.useClassLevelOtherTags = useClassLevelOtherTags;
 	}
 
+	@Override
 	protected void inheritMetaMetadataHelper()
 	{
 		// init
