@@ -1,17 +1,14 @@
 package ecologylab.semantics.metametadata;
 
-import java.util.List;
-
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
 import ecologylab.semantics.metadata.mm_dont_inherit;
 import ecologylab.semantics.metadata.scalar.types.MetadataScalarType;
-import ecologylab.semantics.metametadata.MetaMetadataField.MetadataFieldDescriptorProxy;
+import ecologylab.semantics.metametadata.MetaMetadataCompositeField.AttributeChangeListener;
 import ecologylab.serialization.FieldTypes;
-import ecologylab.serialization.MetaInformation;
-import ecologylab.serialization.TranslationContext;
 import ecologylab.serialization.SimplTypesScope;
+import ecologylab.serialization.TranslationContext;
 import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.annotations.simpl_inherit;
 import ecologylab.serialization.annotations.simpl_scalar;
@@ -114,6 +111,7 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 	/**
 	 * @return the tag
 	 */
+	@Override
 	public String resolveTag()
 	{
 		if (isNoWrap())
@@ -130,6 +128,7 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 		// return (isNoWrap()) ? ((childTag != null) ? childTag : childType) : (tag != null) ? tag : name;
 	}
 	
+	@Override
 	public String getTagForTranslationScope()
 	{
 		// FIXME: seems broken when rewriting collection xpath without re-indicating child_type
@@ -158,6 +157,7 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 	 * 
 	 * @return	this, because it is a composite itself.
 	 */
+	@Override
 	public MetaMetadataCompositeField metaMetadataCompositeField()
 	{
 		return getChildComposite();
@@ -177,27 +177,28 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 		String childType = getChildType();
 		String childCompositeName = childType != null ? childType : UNRESOLVED_NAME;
 		final MetaMetadataCollectionField thisField = this;
-		MetaMetadataCompositeField composite = new MetaMetadataCompositeField(childCompositeName, kids)
+		MetaMetadataCompositeField composite = new MetaMetadataCompositeField(childCompositeName, kids);
+		composite.setAttributeChangeListener(new AttributeChangeListener()
 		{
 			@Override
-			protected void typeChanged(String newType)
+			public void typeChanged(String newType)
 			{
 				thisField.childType = newType;
 			}
 
 			@Override
-			protected void extendsChanged(String newExtends)
+			public void extendsChanged(String newExtends)
 			{
 				thisField.childExtends = newExtends;
 			}
 			
 			@Override
-			protected void tagChanged(String newTag)
+			public void tagChanged(String newTag)
 			{
 				if (thisField.childTag == null)
 					thisField.childTag = newTag;
 			}
-		};
+		});
 		composite.setParent(this);
 		composite.setType(childType);
 		composite.setExtendsAttribute(this.childExtends);
@@ -211,6 +212,7 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 		return childScalarType != null || (this.getInheritedField() == null ? false : ((MetaMetadataCollectionField) this.getInheritedField()).isCollectionOfScalars());
 	}
 
+	@Override
 	protected void clearInheritFinishedOrInProgressFlag()
 	{
 		super.clearInheritFinishedOrInProgressFlag();
@@ -346,6 +348,7 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 		fdProxy.setWrapped(!this.isNoWrap());
 	}
 	
+	@Override
 	public void recursivelyRestoreChildComposite()
 	{
 		int typeCode = this.getFieldType();

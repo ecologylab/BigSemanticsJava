@@ -23,6 +23,13 @@ import ecologylab.serialization.annotations.simpl_tag;
 @simpl_tag("composite")
 public class MetaMetadataCompositeField extends MetaMetadataNestedField implements MMDConstants
 {
+	
+	static interface AttributeChangeListener
+	{
+			void typeChanged(String newType);
+			void extendsChanged(String newExtends);
+			void tagChanged(String newTag);
+	}
 
 	/**
 	 * The type/class of metadata object.
@@ -61,6 +68,8 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 	private String						typeNameInJava					= null;
 
 	private boolean						useClassLevelOtherTags	= false;
+	
+	private AttributeChangeListener	attributeChangeListener = null;
 
 	public MetaMetadataCompositeField()
 	{
@@ -113,14 +122,16 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 	public void setExtendsAttribute(String extendsAttribute)
 	{
 		this.extendsAttribute = extendsAttribute;
-		extendsChanged(extendsAttribute);
+		if (attributeChangeListener != null)
+			attributeChangeListener.extendsChanged(extendsAttribute);
 	}
 	
 	@Override
 	public void setTag(String tag)
 	{
 		super.setTag(tag);
-		tagChanged(tag);
+		if (attributeChangeListener != null)
+			attributeChangeListener.tagChanged(tag);
 	}
 
 	@Override
@@ -193,7 +204,8 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 	public void setType(String type)
 	{
 		this.type = type;
-		typeChanged(type);
+		if (attributeChangeListener != null)
+			attributeChangeListener.typeChanged(type);
 	}
 	
 	public boolean isBuiltIn()
@@ -509,34 +521,9 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 		return this.extendsAttribute != null;
 	}
 	
-	/**
-	 * hook method for updating collection field's child_type when its childComposite changes type.
-	 * 
-	 * @param newType
-	 */
-	protected void typeChanged(String newType)
+	public void setAttributeChangeListener(AttributeChangeListener attributeChangeListener)
 	{
-		// hook method
-	}
-	
-	/**
-	 * hook method for updating collection field's child_extends when its childComposite changes extends.
-	 * 
-	 * @param newType
-	 */
-	protected void extendsChanged(String newExtends)
-	{
-		// hook method
-	}
-	
-	/**
-	 * hook method for updating collection field's child_tag when its childComposite changes tag.
-	 * 
-	 * @param newType
-	 */
-	protected void tagChanged(String newTag)
-	{
-		// hook method
+		this.attributeChangeListener = attributeChangeListener;
 	}
 
 	@Override
