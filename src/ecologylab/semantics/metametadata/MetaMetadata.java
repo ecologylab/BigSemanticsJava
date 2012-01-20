@@ -50,6 +50,9 @@ implements IMappable<String>//, HasLocalTranslationScope
 	@simpl_collection("selector")
 	@simpl_nowrap
 	ArrayList<MetaMetadataSelector>									selectors;
+	
+	@simpl_collection("example_url")
+	ArrayList<ExampleUrl>														exampleUrls;
 
 	@simpl_scalar
 	private String																	parser												= null;
@@ -417,6 +420,7 @@ implements IMappable<String>//, HasLocalTranslationScope
 		this.file = file;
 	}
 
+	@Override
 	public File getFile()
 	{
 		return file;
@@ -434,6 +438,7 @@ implements IMappable<String>//, HasLocalTranslationScope
 		super.inheritMetaMetadataHelper();
 	}
 	
+	@Override
 	protected void inheritFromInheritedMmd(MetaMetadata inheritedMmd)
 	{
 		super.inheritFromInheritedMmd(inheritedMmd);
@@ -441,6 +446,7 @@ implements IMappable<String>//, HasLocalTranslationScope
 		inheritSemanticActions(inheritedMmd);
 	}
 	
+	@Override
 	protected MetaMetadata findOrGenerateInheritedMetaMetadata(MetaMetadataRepository repository)
 	{
 		if (MetaMetadata.isRootMetaMetadata(this))
@@ -465,6 +471,7 @@ implements IMappable<String>//, HasLocalTranslationScope
 		return inheritedMmd;
 	}
 	
+	@Override
 	protected void inheritMetaMetadataFrom(MetaMetadataRepository repository, MetaMetadataCompositeField inheritedStructure)
 	{
 		super.inheritMetaMetadataFrom(repository, inheritedStructure);
@@ -485,6 +492,7 @@ implements IMappable<String>//, HasLocalTranslationScope
 		}
 	}
 	
+	@Override
 	void findOrGenerateMetadataClassDescriptor(SimplTypesScope tscope)
 	{
 		if (this.metadataClassDescriptor == null)
@@ -558,6 +566,7 @@ implements IMappable<String>//, HasLocalTranslationScope
 		return mmd.getName().equals(ROOT_MMD_NAME);
 	}
 
+	@Override
 	protected String getMetadataClassName()
 	{
 		return this.packageName() + "." + this.getMetadataClassSimpleName();
@@ -567,6 +576,7 @@ implements IMappable<String>//, HasLocalTranslationScope
 	 * 
 	 * @return the corresponding Metadata class simple name.
 	 */
+	@Override
 	protected String getMetadataClassSimpleName()
 	{
 		if (this.isBuiltIn() || this.isNewMetadataClass())
@@ -593,6 +603,7 @@ implements IMappable<String>//, HasLocalTranslationScope
 		return super.isNewMetadataClass() && !this.isBuiltIn();
 	}
 	
+	@Override
 	public MetadataClassDescriptor bindMetadataClassDescriptor(SimplTypesScope metadataTScope)
 	{
 		if (this.metadataClassDescriptor != null)
