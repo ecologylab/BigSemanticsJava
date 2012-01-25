@@ -9,12 +9,15 @@ import ecologylab.generic.HashMapArrayList;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
 import ecologylab.semantics.metadata.mm_name;
+import ecologylab.semantics.metadata.semantics_mixin;
 import ecologylab.semantics.metametadata.exceptions.MetaMetadataException;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.MetaInformation;
 import ecologylab.serialization.SimplTypesScope;
+import ecologylab.serialization.annotations.simpl_collection;
 import ecologylab.serialization.annotations.simpl_composite;
 import ecologylab.serialization.annotations.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_nowrap;
 import ecologylab.serialization.annotations.simpl_scalar;
 import ecologylab.serialization.annotations.simpl_tag;
 
@@ -51,6 +54,10 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 
 	@simpl_scalar
 	private String														schemaOrgItemtype;
+	
+	@simpl_collection("generic_type_var")
+	@simpl_nowrap
+	private List<MetaMetadataGenericTypeVar>	genericTypeVars;
 
 	/**
 	 * the mmd used by this nested field. corresponding attributes: (child_)type/extends. could be a
@@ -87,6 +94,7 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	/**
 	 * the package name.
 	 */
+	@Override
 	public final String packageName()
 	{
 		return this.packageName;
@@ -302,6 +310,8 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 				this.kids.remove(thatChild.getName());
 				continue;
 			}
+			
+			metadataFieldDescriptor.setDefiningMmdField(thatChild);
 
 			// process hide and shadows
 			HashSet<String> nonDisplayedFieldNames = nonDisplayedFieldNames();
@@ -513,6 +523,7 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	/**
 	 * @return the schemaOrgItemType
 	 */
+	@Override
 	public String getSchemaOrgItemtype()
 	{
 		return schemaOrgItemtype;
@@ -527,6 +538,18 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	public void addAdditionalMetaInformation(List<MetaInformation> metaInfoBuf, MmdCompilerService compiler)
 	{
 		metaInfoBuf.add(new MetaInformation(mm_name.class, false, getName()));
+		if (this.name.equals("mixins") && this.getDeclaringMmd().name.equals("metadata"))
+			metaInfoBuf.add(new MetaInformation(semantics_mixin.class));
+	}
+
+	public List<MetaMetadataGenericTypeVar> getMetaMetadataGenericTypeVars()
+	{
+		return genericTypeVars;
+	}
+
+	public void setMetaMetadataGenericTypeVars(List<MetaMetadataGenericTypeVar> genericTypeVars)
+	{
+		this.genericTypeVars = genericTypeVars;
 	}
 
 }

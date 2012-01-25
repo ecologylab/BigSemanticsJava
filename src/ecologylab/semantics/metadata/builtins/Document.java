@@ -20,38 +20,37 @@ import ecologylab.semantics.documentparsers.ParserResult;
 import ecologylab.semantics.html.documentstructure.SemanticAnchor;
 import ecologylab.semantics.html.documentstructure.SemanticInLinks;
 import ecologylab.semantics.metadata.Metadata;
-import ecologylab.semantics.metadata.mm_name;
 import ecologylab.semantics.metadata.mm_no;
+import ecologylab.semantics.metadata.builtins.declarations.DocumentDeclaration;
 import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
 import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.seeding.SearchState;
 import ecologylab.semantics.seeding.Seed;
-import ecologylab.serialization.annotations.simpl_collection;
 import ecologylab.serialization.annotations.simpl_inherit;
 import ecologylab.serialization.annotations.simpl_scalar;
 
 /**
  * The Document Class
  **/
-
 @simpl_inherit
-public class Document extends Metadata
+public class Document extends DocumentDeclaration
 {
-	@mm_name("location")
-	@simpl_scalar
-	MetadataParsedURL								location;
-
-	@mm_name("title") 
-	@simpl_scalar MetadataString		title;
 	
-	@mm_name("description") 
-	@simpl_scalar MetadataString		description;
-
-	@mm_name("additional_locations")
-	@simpl_collection("location")
-	List<MetadataParsedURL>					additionalLocations;
+//	@mm_name("location")
+//	@simpl_scalar
+//	MetadataParsedURL								location;
+//
+//	@mm_name("title") 
+//	@simpl_scalar MetadataString		title;
+//	
+//	@mm_name("description") 
+//	@simpl_scalar MetadataString		description;
+//
+//	@mm_name("additional_locations")
+//	@simpl_collection("location")
+//	List<MetadataParsedURL>					additionalLocations;
 
 	private DocumentClosure					documentClosure;
 
@@ -135,35 +134,21 @@ public class Document extends Metadata
 	protected Document(ParsedURL location)
 	{
 		super(MetaMetadataRepository.getBaseDocumentMM());
-		setLocation(location);
-	}
-
-
-	/**
-	 * Lazy Evaluation for location
-	 **/
-
-	public MetadataParsedURL location()
-	{
-		MetadataParsedURL result = this.location;
-		if (result == null)
-		{
-			result = new MetadataParsedURL();
-			this.location = result;
-		}
-		return result;
-	}
-
-	/**
-	 * Gets the value of the field location
-	 **/
-
-	@Override
-	public ParsedURL getLocation()
-	{
-		return location == null ? null : location.getValue();
+		initDocument(this, location);
 	}
 	
+	/**
+	 * with the new *Declaration classes, constructor inheritance might be limited. thus, the
+	 * initialization process can be abstracted out for subclasses to use.
+	 * 
+	 * @param document
+	 * @param location
+	 */
+	protected static void initDocument(Document document, ParsedURL location)
+	{
+		document.setLocation(location);
+	}
+
 	/**
 	 * Just use the regular location.
 	 * 
@@ -173,10 +158,10 @@ public class Document extends Metadata
 	{
 		return getLocation();
 	}
+	
 	/**
 	 * Sets the value of the field location
 	 **/
-
 	@Override
 	public void setLocation(ParsedURL location)
 	{
@@ -198,81 +183,31 @@ public class Document extends Metadata
 	/**
 	 * The heavy weight setter method for field location
 	 **/
-
 	@Override
 	public void hwSetLocation(ParsedURL location)
 	{
 		setLocation(location);
 	}
 
-	public MetadataParsedURL getLocationMetadata()
-	{
-		return this.location;
-	}
-	
-	public void setLocationMetadata(MetadataParsedURL location)
-	{
-		this.location = location;
-	}
-
 	/**
 	 * Heavy Weight Direct setter method for location
 	 **/
-
 	public void hwSetLocationMetadata(MetadataParsedURL location)
 	{
-		if (this.location != null && this.location.getValue() != null && hasTermVector())
-			termVector().remove(this.location.termVector());
-		this.location = location;
+		if (!isLocationNull() && hasTermVector())
+			termVector().remove(this.getLocationMetadata().termVector());
+		this.setLocationMetadata(location);
 		rebuildCompositeTermVector();
 	}
-
-	/**
-	 * Lazy Evaluation for title
-	 **/
-
-	public MetadataString title()
-	{
-		MetadataString result = this.title;
-		if (result == null)
-		{
-			result = new MetadataString();
-			this.title = result;
-		}
-		return result;
-	}
-
-	/**
-	 * Gets the value of the field title
-	 **/
-	public String getTitle()
-	{
-		return title == null ? null : title().getValue();
-	}
 	
-	/**
-	 * (used by the ORM layer.)
-	 * 
-	 * @return
-	 */
-	public MetadataString getTitleMetadata()
+	public boolean isLocationNull()
 	{
-		return title;
-	}
-
-	/**
-	 * Sets the value of the field title
-	 **/
-
-	public void setTitle(String title)
-	{
-		this.title().setValue(title);
+		return this.getLocationMetadata() == null || this.getLocationMetadata().getValue() == null;
 	}
 
 	/**
 	 * The heavy weight setter method for field title
 	 **/
-
 	public void hwSetTitle(String title)
 	{
 		this.title().setValue(title);
@@ -280,73 +215,24 @@ public class Document extends Metadata
 	}
 
 	/**
-	 * (used by the ORM layer.)
-	 **/
-	public void setTitleMetadata(MetadataString title)
-	{
-		this.title = title;
-	}
-
-	/**
 	 * Heavy Weight Direct setter method for title
 	 **/
-
 	public void hwSetTitleMetadata(MetadataString title)
 	{
-		if (this.title != null && this.title.getValue() != null && hasTermVector())
-			termVector().remove(this.title.termVector());
-		this.title = title;
+		if (!isTitleNull() && hasTermVector())
+			termVector().remove(this.getTitleMetadata().termVector());
+		this.setTitleMetadata(title);
 		rebuildCompositeTermVector();
 	}
 
-
-	/**
-	 * Lazy Evaluation for description
-	 **/
-
-	public MetadataString description()
+	public boolean isTitleNull()
 	{
-		MetadataString result = this.description;
-		if (result == null)
-		{
-			result = new MetadataString();
-			this.description = result;
-		}
-		return result;
-	}
-
-	/**
-	 * Gets the value of the field description
-	 **/
-
-	public String getDescription()
-	{
-		return description == null ? null : description().getValue();
-	}
-	
-	/**
-	 * (used by the ORM layer.)
-	 * 
-	 * @return
-	 */
-	public MetadataString getDescriptionMetadata()
-	{
-		return description;
-	}
-
-	/**
-	 * Sets the value of the field description
-	 **/
-
-	public void setDescription(String description)
-	{
-		this.description().setValue(description);
+		return this.getTitleMetadata() == null || this.getTitleMetadata().getValue() == null;
 	}
 
 	/**
 	 * The heavy weight setter method for field description
 	 **/
-
 	public void hwSetDescription(String description)
 	{
 		this.description().setValue(description);
@@ -354,26 +240,20 @@ public class Document extends Metadata
 	}
 
 	/**
-	 * Sets the description directly
-	 **/
-
-	public void setDescriptionMetadata(MetadataString description)
-	{
-		this.description = description;
-	}
-
-	/**
 	 * Heavy Weight Direct setter method for description
 	 **/
-
 	public void hwSetDescriptionMetadata(MetadataString description)
 	{
-		if (this.description != null && this.description.getValue() != null && hasTermVector())
-			termVector().remove(this.description.termVector());
-		this.description = description;
+		if (!isDescriptionNull() && hasTermVector())
+			termVector().remove(this.getDescriptionMetadata().termVector());
+		this.setDescriptionMetadata(description);
 		rebuildCompositeTermVector();
 	}
 
+	public boolean isDescriptionNull()
+	{
+		return this.getDescriptionMetadata() == null || this.getDescriptionMetadata().getValue() == null;
+	}
 
 	/**
 	 * @return the alwaysAcceptRedirects
@@ -398,8 +278,6 @@ public class Document extends Metadata
 	{
 		return documentParser;
 	}
-	
-
 	
 	public Document getAncestor()
 	{
@@ -427,7 +305,7 @@ public class Document extends Metadata
 	@Override
 	public int hashCode()
 	{
-		return (location == null) ? -1 : location.hashCode();
+		return (getLocationMetadata() == null) ? -1 : getLocationMetadata().hashCode();
 	}
 	
 	final Object CREATE_CLOSURE_LOCK	= new Object();
@@ -473,8 +351,6 @@ public class Document extends Metadata
 //		this.downloadClosure = downloadClosure;
 //	}
 	
-	
-	
 	public SemanticsSite getSite()
 	{
 		SemanticsSite result	= this.site;
@@ -485,6 +361,7 @@ public class Document extends Metadata
 		}
 		return result;
 	}
+	
 	/**
 	 * @return the infoCollector
 	 */
@@ -508,9 +385,9 @@ public class Document extends Metadata
 	
 	public void addAdditionalLocation(MetadataParsedURL newMPurl)
 	{
-		if (additionalLocations == null)
-			additionalLocations	= new ArrayList<MetadataParsedURL>(3);
-		additionalLocations.add(newMPurl);
+		if (getAdditionalLocations() == null)
+			setAdditionalLocations(new ArrayList<MetadataParsedURL>(3));
+		getAdditionalLocations().add(newMPurl);
 	}
 	
 	/**
@@ -542,10 +419,10 @@ public class Document extends Metadata
 	public void inheritValues(Document oldDocument)
 	{
 		oldDocument.getSemanticsScope().getGlobalCollection().remap(oldDocument, this);
-		if (location == null)
+		if (getLocationMetadata() == null)
 		{
-			location									= oldDocument.location;
-			oldDocument.location			= null;
+			setLocationMetadata(oldDocument.getLocationMetadata());
+			oldDocument.setLocationMetadata(null);
 		}
 		this.semanticsScope					= oldDocument.semanticsScope;
 		SemanticInLinks oldInlinks	= oldDocument.semanticInlinks;
@@ -562,7 +439,7 @@ public class Document extends Metadata
 			for (Metadata oldMixin : oldMixins)
 				addMixin(oldMixin);
 
-		List<MetadataParsedURL> oldAdditionalLocations = oldDocument.additionalLocations;
+		List<MetadataParsedURL> oldAdditionalLocations = oldDocument.getAdditionalLocations();
 		if (oldAdditionalLocations != null)
 			for (MetadataParsedURL otherLocation : oldAdditionalLocations)
 				addAdditionalLocation(otherLocation);
@@ -605,6 +482,7 @@ public class Document extends Metadata
 	{
 		return queueDownload(null);
 	}
+	
 //	@Override
 //	public void recycle()
 //	{
@@ -641,9 +519,9 @@ public class Document extends Metadata
 	{
 		TNGGlobalCollections globalCollection = semanticsScope.getGlobalCollection();
 		globalCollection.setRecycled(getLocation());
-		if (additionalLocations != null)
+		if (getAdditionalLocations() != null)
 		{
-			for (MetadataParsedURL additionalMPurl: additionalLocations)
+			for (MetadataParsedURL additionalMPurl: getAdditionalLocations())
 				globalCollection.setRecycled(additionalMPurl.getValue());
 		}
 	}
@@ -692,6 +570,7 @@ public class Document extends Metadata
 	{
 		return false;
 	}
+	
 	public String getQuery()
 	{
 		return null;
@@ -701,9 +580,11 @@ public class Document extends Metadata
 	{
 		
 	}
+	
 	public void addCandidateOutlink (Document newOutlink )
 	{
 	}
+	
 	public void perhapsAddDocumentClosureToPool ( )
 	{
 	}
@@ -719,12 +600,12 @@ public class Document extends Metadata
 	public String getLocationsString()
 	{
 		String result;
-		if (additionalLocations == null || additionalLocations.size() == 0)
-			result	= location.toString();
+		if (getAdditionalLocations() == null || getAdditionalLocations().size() == 0)
+			result	= getLocationMetadata().toString();
 		else
 		{
-			StringBuilder buffy	= new StringBuilder(location.toString()).append(',');
-			for (MetadataParsedURL otherLocation : additionalLocations)
+			StringBuilder buffy	= new StringBuilder(getLocationMetadata().toString()).append(',');
+			for (MetadataParsedURL otherLocation : getAdditionalLocations())
 				buffy.append(otherLocation.toString());
 			result	= buffy.toString();
 		}
@@ -809,20 +690,10 @@ public class Document extends Metadata
 		return isDnd;
 	}
 
-	public List<MetadataParsedURL> getAdditionalLocations()
-	{
-		return additionalLocations;
-	}
-
-	public void setAdditionalLocations(List<MetadataParsedURL> additionalLocations)
-	{
-		this.additionalLocations = additionalLocations;
-	}
-
 	@Override
 	public boolean hasLocation()
 	{
-		return location != null;
+		return getLocationMetadata() != null;
 	}
 
 	public int getDownloadStatus()

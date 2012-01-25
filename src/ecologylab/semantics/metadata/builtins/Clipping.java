@@ -7,18 +7,10 @@ import java.util.HashSet;
 
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.metadata.Metadata;
-import ecologylab.semantics.metadata.mm_name;
-import ecologylab.semantics.metadata.scalar.MetadataString;
+import ecologylab.semantics.metadata.builtins.declarations.ClippingDeclaration;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
-import ecologylab.semantics.namesandnums.SemanticsNames;
 import ecologylab.serialization.TranslationContext;
-import ecologylab.serialization.annotations.Hint;
-import ecologylab.serialization.annotations.simpl_composite;
-import ecologylab.serialization.annotations.simpl_hints;
 import ecologylab.serialization.annotations.simpl_inherit;
-import ecologylab.serialization.annotations.simpl_scalar;
-import ecologylab.serialization.annotations.simpl_scope;
-import ecologylab.serialization.annotations.simpl_wrap;
 
 /**
  * Mix-in for adding the context of a clipping to the description of a Document.
@@ -27,46 +19,46 @@ import ecologylab.serialization.annotations.simpl_wrap;
  * @author andruid
  */
 @simpl_inherit
-public class Clipping extends Metadata
+public class Clipping extends ClippingDeclaration
 {
 	
-	/**
-	 * Text connected to the clipping in the source document.
-	 */
-	@simpl_scalar
-	private MetadataString	context;
-
-	/**
-	 * Text connected to the clipping in the source document.
-	 */
-	// TODO use html context -- need methods to strip tags to set regular context from it.
-	@simpl_scalar
-	@simpl_hints(Hint.XML_LEAF_CDATA)
-	private MetadataString	contextHtml;
-
-	/**
-	 * Location of the clipping in the source document.
-	 */
-	@simpl_scalar
-	private MetadataString	xpath;
-
-	/**
-	 * The source document.
-	 */
-	@simpl_composite
-	@simpl_wrap
-	@mm_name("source_doc")
-	@simpl_scope(SemanticsNames.REPOSITORY_DOCUMENT_TRANSLATIONS)
-	private Document				sourceDoc;
-
-	/**
-	 * A hyperlinked Document.
-	 */
-	@simpl_composite
-	@mm_name("outlink")
-	@simpl_wrap
-	@simpl_scope(SemanticsNames.REPOSITORY_DOCUMENT_TRANSLATIONS)
-	private Document				outlink;
+//	/**
+//	 * Text connected to the clipping in the source document.
+//	 */
+//	@simpl_scalar
+//	private MetadataString	context;
+//
+//	/**
+//	 * Text connected to the clipping in the source document.
+//	 */
+//	// TODO use html context -- need methods to strip tags to set regular context from it.
+//	@simpl_scalar
+//	@simpl_hints(Hint.XML_LEAF_CDATA)
+//	private MetadataString	contextHtml;
+//
+//	/**
+//	 * Location of the clipping in the source document.
+//	 */
+//	@simpl_scalar
+//	private MetadataString	xpath;
+//
+//	/**
+//	 * The source document.
+//	 */
+//	@simpl_composite
+//	@simpl_wrap
+//	@mm_name("source_doc")
+//	@simpl_scope(SemanticsNames.REPOSITORY_DOCUMENT_TRANSLATIONS)
+//	private Document				sourceDoc;
+//
+//	/**
+//	 * A hyperlinked Document.
+//	 */
+//	@simpl_composite
+//	@mm_name("outlink")
+//	@simpl_wrap
+//	@simpl_scope(SemanticsNames.REPOSITORY_DOCUMENT_TRANSLATIONS)
+//	private Document				outlink;
 
 	private DocumentClosure	outlinkClosure;
 
@@ -78,97 +70,60 @@ public class Clipping extends Metadata
 	static int							numConstructed;
 
 	
-	/**
-	 * 
-	 */
 	public Clipping()
 	{
 		numConstructed++;
 	}
+	
+	public Clipping(MetaMetadataCompositeField metaMetadata)
+	{
+		super(metaMetadata);
+		// NOTE is numConstructed++ missing? -- yin, 1/24/2012
+	}
+	
 	public Clipping(MetaMetadataCompositeField metaMetadata, Document source)
 	{
 		this(metaMetadata);
-		this.sourceDoc	= source;;
+		this.setSourceDoc(source);
 	}
+	
 	public Clipping(MetaMetadataCompositeField metaMetadata, Document source, Document outlink, String context)
 	{
 		this(metaMetadata, source);
+		initClipping(this, outlink, context);
+	}
+
+	public static void initClipping(Clipping clipping, Document outlink, String context)
+	{
 		if (outlink != null)
 		{
 			if (outlink.isDownloadDone())
 			{
-				this.outlink				= outlink;
+				clipping.setOutlink(outlink);
 			}
 			else
-				this.outlinkClosure	= outlink.getOrConstructClosure();
+				clipping.outlinkClosure	= outlink.getOrConstructClosure();
 		}
 		if (context != null)
-			setContext(context);
-	}
-	/**
-	 * @param metaMetadata
-	 */
-	public Clipping(MetaMetadataCompositeField metaMetadata)
-	{
-		super(metaMetadata);
+			clipping.setContext(context);
 	}
 	
 	@Override
 	public void serializationPreHook(TranslationContext translationContext)
 	{
 		if (outlinkClosure != null && !outlinkClosure.isRecycled())
-			outlink	= outlinkClosure.getDocument();
+			setOutlink(outlinkClosure.getDocument());
 	}
 	
-	public MetadataString context()
-	{
-		MetadataString result = this.context;
-		if (result == null)
-		{
-			result = new MetadataString();
-			this.context = result;
-		}
-		return result;
-	}
-
-	/**
-	 * Gets the value of the field context
-	 **/
-
-	public String getContext()
-	{
-		return context == null ? null : context.getValue();
-	}
-	
-	public MetadataString getContextMetadata()
-	{
-		return context;
-	}
-
-	public void setContextMetadata(MetadataString context)
-	{
-		this.context = context;
-	}
-	
-	/**
-	 * Sets the value of the field context
-	 **/
-
-	public void setContext(String context)
-	{
-		this.context().setValue(context);
-	}
-
 	/**
 	 * The heavy weight setter method for field context
 	 **/
-
+	@Override
 	public void hwSetContext(String context)
 	{
 		this.context().setValue(context);
 		rebuildCompositeTermVector();
 	}
-
 	
 	/**
 	 * used for deriving statistics that track how many images
@@ -177,61 +132,17 @@ public class Clipping extends Metadata
 	 */   
 	public static int hasCaptionPercent()
 	{
-		return (int) (100.0f * (float) numWithCaption / ((float) numConstructed));
-	}
-
-	public boolean isImage()
-	{
-		return false;
+		return (int) (100.0f * numWithCaption / numConstructed);
 	}
 
 	public boolean isNullContext()
 	{
-		return context == null || context.getValue() == null;
+		return getContextMetadata() == null || getContextMetadata().getValue() == null;
 	}
 	
 	public boolean isNullXpath()
 	{
-		return xpath == null || xpath.getValue() == null;
-	}
-	
-	public MetadataString xpath()
-	{
-		MetadataString result = this.xpath;
-		if (result == null)
-		{
-			result = new MetadataString();
-			this.xpath = result;
-		}
-		return result;
-	}
-
-	/**
-	 * Gets the value of the field context
-	 **/
-
-	public String getXpath()
-	{
-		return xpath == null ? null : xpath().getValue();
-	}
-
-	public MetadataString getXpathMetadata()
-	{
-		return xpath;
-	}
-
-	/**
-	 * Sets the value of the field context
-	 **/
-
-	public void setXpath(String context)
-	{
-		this.xpath().setValue(context);
-	}
-
-	public void setXpathMetadata(MetadataString xpath)
-	{
-		this.xpath = xpath;
+		return getXpathMetadata() == null || getXpathMetadata().getValue() == null;
 	}
 	
 	/**
@@ -240,40 +151,6 @@ public class Clipping extends Metadata
 	public DocumentClosure getOutlinkClosure()
 	{
 		return outlinkClosure;
-	}
-
-	/**
-	 * @return the contextHtml
-	 */
-	public MetadataString getContextHtml()
-	{
-		return contextHtml;
-	}
-
-	public MetadataString getContextHtmlMetadata()
-	{
-		return contextHtml;
-	}
-
-	public void setContextHtmlMetadata(MetadataString contextHtml)
-	{
-		this.contextHtml = contextHtml;
-	}
-	
-	/**
-	 * @return the source
-	 */
-	public Document getSourceDoc()
-	{
-		return sourceDoc;
-	}
-
-	/**
-	 * @return the outlink
-	 */
-	public Document getOutlink()
-	{
-		return outlink;
 	}
 
 	/**
@@ -301,48 +178,32 @@ public class Clipping extends Metadata
 	 * {@link #doRecycle() doRecycle()}. That is the method that really frees resources. It is the
 	 * one that derived classes need to override. This is why the routine is being declared final.
 	 */
-	public final synchronized void recycle (boolean unconditional, HashSet<Metadata> visitedMetadata)
+	public final synchronized void recycle(boolean unconditional, HashSet<Metadata> visitedMetadata)
 	{
-		if (sourceDoc != null)
+		if (getSourceDoc() != null)
 		{
-			sourceDoc.recycle();
-			sourceDoc	= null;
+			getSourceDoc().recycle();
+			setSourceDoc(null);
 		}
-		if (outlink != null)
+		if (getOutlink() != null)
 		{
-			outlink.recycle();
-			outlink	= null;
+			getOutlink().recycle();
+			setOutlink(null);
 		}
 		outlinkClosure	= null;
 		super.recycle(visitedMetadata);
 	}
 	
-	public void setSourceDoc(Document source)
-	{
-		this.sourceDoc	= source;
-//		if (this.source == null)
-//			this.source	= new DocumentMetadataWrap(source);
-//		else
-//			this.source.setDocument(source);
-	}
-	public void setOutlink(Document outlink)
-	{
-		this.outlink	= outlink;
-//		if (this.outlink == null)
-//			this.outlink	= new DocumentMetadataWrap(outlink);
-//		else
-//			this.outlink.setDocument(outlink);
-	}
-
 	@Override
 	public boolean hasLocation()
 	{
-		return sourceDoc != null && sourceDoc.hasLocation();
+		return getSourceDoc() != null && getSourceDoc().hasLocation();
 	}
+	
 	@Override
 	public ParsedURL getLocation()
 	{
-		return sourceDoc != null ? sourceDoc.getLocation() : null;
+		return getSourceDoc() != null ? getSourceDoc().getLocation() : null;
 	}
 
 	@Override

@@ -1,33 +1,33 @@
 package ecologylab.semantics.metadata.builtins;
 
-import ecologylab.semantics.metadata.mm_name;
+import ecologylab.semantics.metadata.builtins.declarations.TextClippingDeclaration;
 import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.model.text.SemanticTextChunk;
 import ecologylab.serialization.annotations.simpl_inherit;
-import ecologylab.serialization.annotations.simpl_scalar;
 
 /**
  * Text clippings from documents.
  **/
 
 @simpl_inherit
-public class TextClipping extends Clipping implements TextualMetadata
+public class TextClipping extends TextClippingDeclaration implements TextualMetadata
 {
 
-	@simpl_scalar
-	@mm_name("text")
-	private MetadataString	text;
-
-	/**
-	 * Constructor
-	 **/
+//	@simpl_scalar
+//	@mm_name("text")
+//	private MetadataString	text;
 
 	public TextClipping()
 	{
 		super();
 	}
 	
+	public TextClipping(MetaMetadataCompositeField metaMetadata)
+	{
+		super(metaMetadata);
+	}
+
 	public TextClipping(String context)
 	{
 		super();
@@ -46,48 +46,6 @@ public class TextClipping extends Clipping implements TextualMetadata
 	}
 
 	/**
-	 * Constructor
-	 **/
-
-	public TextClipping(MetaMetadataCompositeField metaMetadata)
-	{
-		super(metaMetadata);
-	}
-
-	/**
-	 * Lazy Evaluation for text
-	 **/
-
-	public MetadataString text()
-	{
-		MetadataString result = this.text;
-		if (result == null)
-		{
-			result = new MetadataString();
-			this.text = result;
-		}
-		return result;
-	}
-
-	/**
-	 * Gets the value of the field text
-	 **/
-
-	public String getText()
-	{
-		return text().getValue();
-	}
-
-	/**
-	 * Sets the value of the field text
-	 **/
-
-	public void setText(String text)
-	{
-		this.text().setValue(text);
-	}
-
-	/**
 	 * The heavy weight setter method for field text
 	 **/
 
@@ -97,42 +55,19 @@ public class TextClipping extends Clipping implements TextualMetadata
 		rebuildCompositeTermVector();
 	}
 
-	/**
-	 * Tests to see if the value of the field is null, or if the field itself is null: text
-	 **/
-
-	public boolean isNullText()
-	{
-		return text == null || text.getValue() == null;
-	}
-	
-	public MetadataString getTextMetadata()
-	{
-		return this.text;
-	}
-
-	/**
-	 * Sets the text directly
-	 **/
-
-	public void setTextMetadata(MetadataString text)
-	{
-		this.text = text;
-	}
-
 	public void setText(CharSequence textSequence)
 	{
-		this.text	= new MetadataString(textSequence.toString());
+		setTextMetadata(new MetadataString(textSequence.toString()));
 	}
+	
 	/**
 	 * Heavy Weight Direct setter method for text
 	 **/
-
 	public void hwSetTextMetadata(MetadataString text)
 	{
-		if (this.text != null && this.text.getValue() != null && hasTermVector())
-			termVector().remove(this.text.termVector());
-		this.text = text;
+		if (getText() != null && hasTermVector())
+			termVector().remove(this.getTextMetadata().termVector());
+		this.setTextMetadata(text);
 		rebuildCompositeTermVector();
 	}
 

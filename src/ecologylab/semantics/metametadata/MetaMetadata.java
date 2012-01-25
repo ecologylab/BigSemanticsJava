@@ -450,7 +450,10 @@ implements IMappable<String>//, HasLocalTranslationScope
 	protected MetaMetadata findOrGenerateInheritedMetaMetadata(MetaMetadataRepository repository)
 	{
 		if (MetaMetadata.isRootMetaMetadata(this))
+		{
+			this.setNewMetadataClass(true);
 			return null;
+		}
 		
 		MetaMetadata inheritedMmd = this.getInheritedMmd();
 		if (inheritedMmd == null)
@@ -499,8 +502,9 @@ implements IMappable<String>//, HasLocalTranslationScope
 		{
 			this.inheritMetaMetadata();
 			MetaMetadata inheritedMmd = this.getInheritedMmd();
-			inheritedMmd.findOrGenerateMetadataClassDescriptor(tscope);
-			MetadataClassDescriptor superCd = inheritedMmd.getMetadataClassDescriptor();
+			if (inheritedMmd != null)
+				inheritedMmd.findOrGenerateMetadataClassDescriptor(tscope);
+			MetadataClassDescriptor superCd = inheritedMmd == null ? null : inheritedMmd.getMetadataClassDescriptor();
 			if (this.isNewMetadataClass())
 			{
 				String tagOrName = this.getTagOrName();
@@ -514,7 +518,7 @@ implements IMappable<String>//, HasLocalTranslationScope
 						null);
 				// setting this early allows referring to the same class in fields
 				this.metadataClassDescriptor = cd;
-
+				
 				for (MetaMetadataField f : this.getChildMetaMetadata())
 				{
 					if (f.getDeclaringMmd() == this && f.getInheritedField() == null)
@@ -595,13 +599,13 @@ implements IMappable<String>//, HasLocalTranslationScope
 		}
 	}
 	
-	@Override
-	public boolean isNewMetadataClass()
-	{
-		// for meta-metadata, except for looking at its contents, we should also look at its built_in
-		// attribute to determine if it is a new type
-		return super.isNewMetadataClass() && !this.isBuiltIn();
-	}
+//	@Override
+//	public boolean isNewMetadataClass()
+//	{
+//		// for meta-metadata, except for looking at its contents, we should also look at its built_in
+//		// attribute to determine if it is a new type
+//		return super.isNewMetadataClass() && !this.isBuiltIn();
+//	}
 	
 	@Override
 	public MetadataClassDescriptor bindMetadataClassDescriptor(SimplTypesScope metadataTScope)
@@ -622,6 +626,8 @@ implements IMappable<String>//, HasLocalTranslationScope
 		MetadataClassDescriptor thisCd = this.getMetadataClassDescriptor();
 		if (thisCd != null)
 		{
+			thisCd.setDefiningMmd(this);
+			
 			MetadataClassDescriptor thatCd = (MetadataClassDescriptor) metadataTScope.getClassDescriptorByTag(thisCd.getTagName());
 			if (thisCd != thatCd)
 			{
@@ -651,6 +657,11 @@ implements IMappable<String>//, HasLocalTranslationScope
 	public ArrayList<SemanticAction> getAfterSemanticActions()
 	{
 		return afterSemanticActions;
+	}
+
+	public boolean isRootMetaMetadata()
+	{
+		return isRootMetaMetadata(this);
 	}
 
 }

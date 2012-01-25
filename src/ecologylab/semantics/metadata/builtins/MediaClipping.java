@@ -4,82 +4,58 @@
 package ecologylab.semantics.metadata.builtins;
 
 import ecologylab.semantics.html.documentstructure.ImageFeatures;
-import ecologylab.semantics.metadata.mm_name;
-import ecologylab.semantics.metadata.scalar.MetadataString;
+import ecologylab.semantics.metadata.builtins.declarations.MediaClippingDeclaration;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
-import ecologylab.semantics.namesandnums.SemanticsNames;
-import ecologylab.serialization.annotations.simpl_composite;
 import ecologylab.serialization.annotations.simpl_inherit;
-import ecologylab.serialization.annotations.simpl_scalar;
-import ecologylab.serialization.annotations.simpl_scope;
-import ecologylab.serialization.annotations.simpl_wrap;
 
 /**
  * @author andruid
  *
  */
 @simpl_inherit
-public class MediaClipping<ME extends ClippableDocument> extends Clipping
+public class MediaClipping<ME extends ClippableDocument> extends MediaClippingDeclaration<ME>
 {
-	/**
-	 * Explicit description of the clipped media in the source document.
-	 */
-	@mm_name("caption")
-	@simpl_scalar
-	private MetadataString	caption;
 	
-	@simpl_composite
-	@simpl_scope(SemanticsNames.REPOSITORY_MEDIA_TRANSLATIONS)
-	@mm_name("media")
-	@simpl_wrap
-	private ME							media;
-	
+//	/**
+//	 * Explicit description of the clipped media in the source document.
+//	 */
+//	@mm_name("caption")
+//	@simpl_scalar
+//	private MetadataString	caption;
+//	
+//	@simpl_composite
+//	@simpl_scope(SemanticsNames.REPOSITORY_MEDIA_TRANSLATIONS)
+//	@mm_name("media")
+//	@simpl_wrap
+//	private ME							media;
 
 	public MediaClipping()
 	{
-		
-	}
-	public MediaClipping(MetaMetadataCompositeField metaMetadata, ME clippedMedia, Document source, Document outlink, String caption, String context)
-	{
-		super(metaMetadata, source, outlink, context);
-		if (caption != null)
-			setCaption(caption);
-		this.media			= clippedMedia;
-		this.setSourceDoc(source);
+		super();
 	}
 	
-	public MetadataString caption()
+	public MediaClipping(MetaMetadataCompositeField mmd)
 	{
-		MetadataString result = this.caption;
-		if (result == null)
-		{
-			result = new MetadataString();
-			this.caption = result;
-		}
-		return result;
+		super(mmd);
+	}
+	
+	public MediaClipping(MetaMetadataCompositeField metaMetadata, ME clippedMedia, Document source, Document outlink, String caption, String context)
+	{
+		this(metaMetadata);
+		initMediaClipping(this, clippedMedia, source, outlink, caption, context);
 	}
 
-	public String getCaption()
+	public static <ME extends ClippableDocument> void initMediaClipping(
+			MediaClipping<ME> mediaClipping, ME clippedMedia, Document source, Document outlink,
+			String caption, String context)
 	{
-		return caption == null ? null : caption.getValue();
+		mediaClipping.setSourceDoc(source);
+		Clipping.initClipping(mediaClipping, outlink, context);
+		if (caption != null)
+			mediaClipping.setCaption(caption);
+		mediaClipping.setMedia(clippedMedia);
 	}
-
-	public MetadataString getCaptionMetadata()
-	{
-		return caption;
-	}
-
-	public void setCaption(String captionString)
-	{
-		MetadataString caption = this.caption();
-		caption.setValue(captionString);
-	}
-
-	public void setCaptionMetadata(MetadataString caption)
-	{
-		this.caption = caption;
-	}
-
+	
 	public void hwSetCaption(String caption)
 	{
 		if (caption != null)
@@ -116,17 +92,7 @@ public class MediaClipping<ME extends ClippableDocument> extends Clipping
 
 	public boolean isNullCaption()
 	{
-		return caption == null || caption.getValue() == null;
+		return getCaptionMetadata() == null || getCaptionMetadata().getValue() == null;
 	}
 
-	public ME getMedia()
-	{
-		return media;
-	}
-	
-	public void setMedia(ME media)
-	{
-		this.media = media;
-	}
-	
 }

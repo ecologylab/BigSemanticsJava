@@ -7,28 +7,27 @@ import ecologylab.net.MimeType;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.html.documentstructure.ImageConstants;
-import ecologylab.semantics.metadata.mm_name;
-import ecologylab.semantics.metadata.scalar.MetadataDate;
-import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
+import ecologylab.semantics.metadata.builtins.declarations.ImageDeclaration;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
+import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.serialization.annotations.simpl_inherit;
-import ecologylab.serialization.annotations.simpl_scalar;
 
 /**
  * This is not generated code, but a hand-authored base class in the 
  * Metadata hierarchy. It is hand-authored in order to provide specific functionalities
  **/
 @simpl_inherit
-public class Image extends ClippableDocument<Image>
+public class Image extends ImageDeclaration
 implements MimeType, ImageConstants
 {
-	@mm_name("local_location") 
-	@simpl_scalar
-	private MetadataParsedURL	localLocation;
 	
-	@mm_name("creation_date") 
-	@simpl_scalar
-	private MetadataDate	creationDate;
+//	@mm_name("local_location") 
+//	@simpl_scalar
+//	private MetadataParsedURL	localLocation;
+//	
+//	@mm_name("creation_date") 
+//	@simpl_scalar
+//	private MetadataDate	creationDate;
 	
 	/**
 	 * Number of images that we parsed with an alt-text.
@@ -37,7 +36,7 @@ implements MimeType, ImageConstants
 
 	public Image()
 	{
-
+		super();
 	}
 
 	public Image(MetaMetadataCompositeField metaMetadata)
@@ -52,7 +51,8 @@ implements MimeType, ImageConstants
 	 */
 	public Image(ParsedURL location)
 	{
-		super(location);
+		this(MetaMetadataRepository.getBaseDocumentMM());
+		setLocation(location);
 	}
 
 	@Override
@@ -62,87 +62,10 @@ implements MimeType, ImageConstants
 		rebuildCompositeTermVector();
 	}
 	
-
-	/**
-	 * Lazy Evaluation for localLocation
-	 **/
-
-	public MetadataParsedURL localLocation()
-	{
-		return this.localLocation;
-	}
-	
-	public ParsedURL getLocalLocationPurl()
-	{
-		return (localLocation != null) ? localLocation.getValue() : null;
-	}
-	
-	public MetadataParsedURL getLocalLocationMetadata()
-	{
-		return localLocation;
-	}
-	
 	public File getLocalLocationAsFile()
 	{
-		ParsedURL localLocationPurl = getLocalLocationPurl();
+		ParsedURL localLocationPurl = getLocalLocation();
 		return (localLocationPurl != null) ? localLocationPurl.file() : null;
-	}
-
-	/**
-	 * Sets the localLocation directly
-	 **/
-
-	public void setLocalLocation(ParsedURL localLocationFile)
-	{
-		if (this.localLocation == null)
-			this.localLocation = new MetadataParsedURL(localLocationFile);
-		else
-			this.localLocation.setValue(localLocationFile);
-	}
-	
-	public void setLocalLocationMetadata(MetadataParsedURL localLocation)
-	{
-		this.localLocation = localLocation;
-	}
-
-	/**
-	 * Lazy Evaluation for creationDate
-	 **/
-
-	public MetadataDate creationDate()
-	{
-		MetadataDate result = this.creationDate;
-		if (result == null)
-		{
-			result = new MetadataDate();
-			this.creationDate = result;
-		}
-		return result;
-	}
-
-	public Date getCreationDate()
-	{
-		return creationDate == null ? null : creationDate.getValue();
-	}
-
-	public MetadataDate getCreationDateMetadata()
-	{
-		return creationDate;
-	}
-	
-	public void setCreationDateMetadata(MetadataDate creationDate)
-	{
-		this.creationDate = creationDate;
-	}
-
-	/**
-	 * Sets the creationDate directly
-	 **/
-
-	public void setCreationDate(Date date)
-	{
-		if (date != null)
-			creationDate().setValue(date);
 	}
 	
 	/**
@@ -175,23 +98,15 @@ implements MimeType, ImageConstants
 	public ParsedURL getDownloadLocation()
 	{
 		ParsedURL result	= getLocation();
+		ParsedURL localLocation	= getLocalLocation();
 		if (localLocation != null)
 		{
-			ParsedURL locationLocationPurl	= getLocalLocationPurl();
-			File localFile	= locationLocationPurl.file();
+			File localFile	= localLocation.file();
 			if (localFile.exists())
-				result	= locationLocationPurl;
+				result	= localLocation;
 		}
 		return result;
 	}
-
-//	/**
-//	 * @return
-//	 */
-//	protected DocumentClosure constructClosure()
-//	{
-//		return new ImageClosure(this, semanticInlinks);
-//	}
 
 	/**
 	 * Construct an ImageClipping object.

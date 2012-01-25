@@ -16,6 +16,7 @@ import ecologylab.generic.HashMapArrayList;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.collecting.LinkedMetadataMonitor;
+import ecologylab.semantics.metadata.builtins.declarations.MetadataDeclaration;
 import ecologylab.semantics.metadata.output.MetadataConstants;
 import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.semantics.metametadata.ClassAndCollectionIterator;
@@ -29,7 +30,6 @@ import ecologylab.semantics.model.text.CompositeTermVector;
 import ecologylab.semantics.model.text.ITermVector;
 import ecologylab.semantics.model.text.OrderedNormalizedTermVectorCache;
 import ecologylab.semantics.model.text.TermVectorFeature;
-import ecologylab.semantics.namesandnums.SemanticsNames;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.FieldDescriptor;
 import ecologylab.serialization.FieldTypes;
@@ -38,11 +38,7 @@ import ecologylab.serialization.ScalarUnmarshallingContext;
 import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.TranslationContext;
 import ecologylab.serialization.XMLTools;
-import ecologylab.serialization.annotations.simpl_collection;
 import ecologylab.serialization.annotations.simpl_descriptor_classes;
-import ecologylab.serialization.annotations.simpl_scalar;
-import ecologylab.serialization.annotations.simpl_scope;
-import ecologylab.serialization.annotations.simpl_tag;
 import ecologylab.serialization.deserializers.ISimplDeserializationPost;
 import ecologylab.serialization.formatenums.StringFormat;
 import ecologylab.serialization.library.html.Div;
@@ -63,7 +59,7 @@ import ecologylab.serialization.serializers.ISimplSerializationPre;
  * 
  */
 @simpl_descriptor_classes({ MetadataClassDescriptor.class, MetadataFieldDescriptor.class })
-abstract public class Metadata
+public abstract class Metadata extends MetadataDeclaration
 implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>, FieldTypes,
 ISimplSerializationPre, ISimplDeserializationPost
 {
@@ -72,19 +68,42 @@ ISimplSerializationPre, ISimplDeserializationPost
 
 	private static final String						MIXINS_FIELD_NAME					= "mixins";
 
+//	/**
+//	 * The meta-metadata name of this metadata.
+//	 */
+//	@simpl_scalar
+//	@simpl_tag("mm_name")
+//	MetadataString												metaMetadataName;
+//
+//	/**
+//	 * Allows combining instantiated Metadata subclass declarations without hierarchy.
+//	 * 
+//	 * Could help, for example, to support user annotation.
+//	 */
+//	@semantics_mixin
+//	@simpl_collection
+//	@simpl_scope(SemanticsNames.REPOSITORY_METADATA_TRANSLATIONS)
+//	@mm_name("mixins")
+//	List<Metadata>												mixins;
+//
+//	/**
+//	 * a list of linked metadata, which is used for de/serialization. the map (linkedMetadata) is not
+//	 * used for de/serialization because the key really should not be meta-metadata type. instead,
+//	 * this field serves as a surrogate for de/serialization. at runtime, whenever the map is updated
+//	 * this field is updated accordingly. also, linkedMetadata will be initialized using this field
+//	 * in lazy evaluation.
+//	 */
+//	@mm_name("linked_metadata_list")
+//	@simpl_collection
+//	@simpl_scope(SemanticsNames.REPOSITORY_METADATA_TRANSLATIONS)
+//	private List<Metadata>								linkedMetadataList;
+	
 	/**
 	 * Hidden reference to the MetaMetadataRepository. DO NOT access this field directly. DO NOT
 	 * create a static public accessor. -- andruid 10/7/09.
 	 */
 	private static MetaMetadataRepository	repository;
 	
-	/**
-	 * The meta-metadata name of this metadata.
-	 */
-	@simpl_scalar
-	@simpl_tag("mm_name")
-	MetadataString												metaMetadataName;
-
 	/**
 	 * this must be a composite field. this is not the meta-metadata representing type, but the
 	 * "local" composite field object that may carry extraction / presentation rules.
@@ -98,17 +117,6 @@ ISimplSerializationPre, ISimplDeserializationPost
 	 * systems.
 	 */
 	private long													ormId;
-
-	/**
-	 * Allows combining instantiated Metadata subclass declarations without hierarchy.
-	 * 
-	 * Could help, for example, to support user annotation.
-	 */
-	@semantics_mixin
-	@simpl_collection
-	@simpl_scope(SemanticsNames.REPOSITORY_METADATA_TRANSLATIONS)
-	@mm_name("mixins")
-	List<Metadata>												mixins;
 
 	/**
 	 * the (composite) term vector for this field.
@@ -146,18 +154,6 @@ ISimplSerializationPre, ISimplDeserializationPost
 	 * used for synchronization.
 	 */
 	private Object												lockLinkedMetadata				= new Object();
-	
-	/**
-	 * a list of linked metadata, which is used for de/serialization. the map (linkedMetadata) is not
-	 * used for de/serialization because the key really should not be meta-metadata type. instead,
-	 * this field serves as a surrogate for de/serialization. at runtime, whenever the map is updated
-	 * this field is updated accordingly. also, linkedMetadata will be initialized using this field
-	 * in lazy evaluation.
-	 */
-	@mm_name("linked_metadata_list")
-	@simpl_collection
-	@simpl_scope(SemanticsNames.REPOSITORY_METADATA_TRANSLATIONS)
-	private List<Metadata>								linkedMetadataList;
 	
 	private MetadataClassDescriptor				classDescriptor;
 	
@@ -235,6 +231,7 @@ ISimplSerializationPre, ISimplDeserializationPost
 		MetaMetadataCompositeField mm = metaMetadata;
 		if (mm == null && repository != null)
 		{
+			MetadataString metaMetadataName = getMetaMetadataNameMetadata();
 			MetaMetadataCompositeField bySavedName = metaMetadataName == null ? null : repository.getMMByName(metaMetadataName.getValue());
 			if (bySavedName != null)
 				mm = bySavedName;
@@ -282,11 +279,11 @@ ISimplSerializationPre, ISimplDeserializationPost
 	 */
 	List<Metadata> mixins()
 	{
-		List<Metadata> result = this.mixins;
+		List<Metadata> result = this.getMixins();
 		if (result == null)
 		{
 			result = new ArrayList<Metadata>();
-			this.mixins = result;
+			this.setMixins(result);
 		}
 		return result;
 	}
@@ -483,7 +480,7 @@ ISimplSerializationPre, ISimplDeserializationPost
 		String metaMetadataName = metaMetadata.getName();
 		if (!getMetadataClassDescriptor().getTagName().equals(metaMetadataName)) // avoid writing these when you
 																																	// don't need them
-			this.metaMetadataName = new MetadataString(metaMetadataName);
+			this.setMetaMetadataNameMetadata(new MetadataString(metaMetadataName));
 	}
 
 	@Override
@@ -594,23 +591,6 @@ ISimplSerializationPre, ISimplDeserializationPost
 
 	public void hwSetNavLocation(ParsedURL navLocation)
 	{
-	}
-
-	/**
-	 * @return the mixins
-	 */
-	public List<Metadata> getMixins()
-	{
-		return mixins == null ? null : mixins;
-	}
-
-	/**
-	 * @param mixins
-	 *          the mixins to set
-	 */
-	public void setMixins(List<Metadata> mixins)
-	{
-		this.mixins = mixins;
 	}
 
 	// For adding mapped attributes
@@ -1165,9 +1145,9 @@ ISimplSerializationPre, ISimplDeserializationPost
 				if (linkedMetadata == null)
 				{
 					Map<String, Metadata> linkedMetadata = new HashMap<String, Metadata>();
-					if (linkedMetadataList != null)
+					if (getLinkedMetadataList() != null)
 					{
-						for (Metadata linkedMd : linkedMetadataList)
+						for (Metadata linkedMd : getLinkedMetadataList())
 						{
 							linkedMetadata.put(linkedMd.getMetaMetadata().getName(), linkedMd);
 						}
@@ -1179,16 +1159,6 @@ ISimplSerializationPre, ISimplDeserializationPost
 		return linkedMetadata;
 	}
 	
-	public List<Metadata> getLinkedMetadataList()
-	{
-		return this.linkedMetadataList;
-	}
-
-	public void setLinkedMetadataList(List<Metadata> linkedMetadataList)
-	{
-		this.linkedMetadataList = linkedMetadataList;
-	}
-
 	public Set<String> getLinkedMetadataKeys()
 	{
 		synchronized (lockLinkedMetadata)
@@ -1210,23 +1180,13 @@ ISimplSerializationPre, ISimplDeserializationPost
 		synchronized (lockLinkedMetadata)
 		{
 			getLinkedMetadata().put(lw.key(), metadata);
-			if (linkedMetadataList == null)
-				linkedMetadataList = new ArrayList<Metadata>();
-			linkedMetadataList.add(metadata);
+			if (getLinkedMetadataList() == null)
+				setLinkedMetadataList(new ArrayList<Metadata>());
+			getLinkedMetadataList().add(metadata);
 		}
 	}
 
 	public SemanticActionHandler	pendingSemanticActionHandler;
-
-	public MetadataString getMetaMetadataNameMetadata()
-	{
-		return metaMetadataName;
-	}
-
-	public void setMetaMetadataNameMetadata(MetadataString metaMetadataName)
-	{
-		this.metaMetadataName = metaMetadataName;
-	}
 
 	/**
 	 * Determine if this already has a mixin assignable from the class passed in.
@@ -1236,9 +1196,9 @@ ISimplSerializationPre, ISimplDeserializationPost
 	 */
 	public boolean containsMixin(Class<? extends Metadata> mixinClass)
 	{
-		if (mixins == null || mixinClass == null)
+		if (getMixins() == null || mixinClass == null)
 			return false;
-		for (Metadata mixin: mixins)
+		for (Metadata mixin: getMixins())
 		{
 			if (mixinClass.isAssignableFrom(mixin.getClass()))
 				return true;
@@ -1254,20 +1214,21 @@ ISimplSerializationPre, ISimplDeserializationPost
 	 */
 	public boolean containsMixin(String mixinName)
 	{
-		if (mixins == null || mixinName == null)
+		if (getMixins() == null || mixinName == null)
 			return false;
-		for (Metadata mixin: mixins)
+		for (Metadata mixin: getMixins())
 		{
 			if (mixinName.equals(mixin.getMetaMetadata().getName()))
 				return true;
 		}
 		return false;
 	}
+	
 	public<MI extends Metadata> MI getMixin(Class<MI> mixinClass)
 	{
-		if (mixins == null || mixinClass == null)
+		if (getMixins() == null || mixinClass == null)
 			return null;
-		for (Metadata mixin: mixins)
+		for (Metadata mixin: getMixins())
 		{
 			if (mixinClass.isAssignableFrom(mixin.getClass()))
 				return (MI) mixin;

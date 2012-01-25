@@ -5,6 +5,7 @@ package ecologylab.semantics.metadata.builtins;
 
 import ecologylab.generic.Debug;
 import ecologylab.semantics.metadata.Metadata;
+import ecologylab.semantics.metadata.builtins.declarations.MetadataBuiltinDeclarationsTranslationScope;
 import ecologylab.semantics.metadata.scalar.types.MetadataScalarType;
 import ecologylab.serialization.SimplTypesScope;
 
@@ -38,6 +39,6 @@ public class MetadataBuiltinsTranslationScope extends Debug
 
 	public static SimplTypesScope get()
 	{
-		return SimplTypesScope.get(NAME, CLASSES);
+		return SimplTypesScope.get(NAME, MetadataBuiltinDeclarationsTranslationScope.get(), CLASSES);
 	}	
 }

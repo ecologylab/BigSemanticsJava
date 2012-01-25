@@ -3,9 +3,11 @@
  */
 package ecologylab.semantics.metadata;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.List;
 
 import ecologylab.semantics.gui.EditValueEvent;
 import ecologylab.semantics.gui.EditValueListener;
@@ -13,6 +15,7 @@ import ecologylab.semantics.gui.EditValueNotifier;
 import ecologylab.semantics.metadata.scalar.MetadataScalarBase;
 import ecologylab.semantics.metametadata.MetaMetadataCollectionField;
 import ecologylab.semantics.metametadata.MetaMetadataField;
+import ecologylab.semantics.metametadata.MetaMetadataGenericTypeVar;
 import ecologylab.semantics.metametadata.MetaMetadataNestedField;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.FieldDescriptor;
@@ -20,6 +23,7 @@ import ecologylab.serialization.ScalarUnmarshallingContext;
 import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.annotations.Hint;
 import ecologylab.serialization.annotations.simpl_scalar;
+import ecologylab.serialization.types.CollectionType;
 import ecologylab.serialization.types.ScalarType;
 import ecologylab.serialization.types.scalar.CompositeAsScalarType;
 
@@ -208,6 +212,11 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 		return definingMmdField;
 	}
 	
+	public void setDefiningMmdField(MetaMetadataField mmdField)
+	{
+		this.definingMmdField = mmdField;
+	}
+	
 	@Override
 	public String toString()
 	{
@@ -246,6 +255,52 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 	{
 		this.isGeneric = true;
 		this.genericParametersString = genericParametersString;
+	}
+	
+	@Override
+	public String getJavaType()
+	{
+		CollectionType collectionType = this.getCollectionType();
+		String javaType = super.getJavaType();
+		if (collectionType != null && definingMmdField instanceof MetaMetadataNestedField)
+		{
+			MetaMetadataNestedField nested = (MetaMetadataNestedField) definingMmdField;
+			List<MetaMetadataGenericTypeVar> mmdGenericTypeVars = nested.getMetaMetadataGenericTypeVars();
+			if (mmdGenericTypeVars != null && mmdGenericTypeVars.size() > 0)
+			{
+				StringBuilder sb = new StringBuilder();
+				sb.append(javaType.substring(0, javaType.indexOf('<')));
+				sb.append("<");
+				sb.append(this.getElementClassDescriptor().getDescribedClassSimpleName());
+				try
+				{
+					MetaMetadataGenericTypeVar.appendGenericTypeVarParameterizations(sb, mmdGenericTypeVars, nested.getRepository(), null);
+				}
+				catch (IOException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				sb.append(">");
+				return sb.toString();
+			}
+		}
+		
+		if (getType() == COMPOSITE_ELEMENT)
+		{
+			MetaMetadataNestedField nested = (MetaMetadataNestedField) definingMmdField;
+			List<MetaMetadataGenericTypeVar> mmdGenericTypeVars = nested.getMetaMetadataGenericTypeVars();
+			if (mmdGenericTypeVars != null && mmdGenericTypeVars.size() > 0)
+			{
+				for (MetaMetadataGenericTypeVar mmdGenericTypeVar : mmdGenericTypeVars)
+				{
+					if (mmdGenericTypeVar.getGenericType() != null)
+						return mmdGenericTypeVar.getGenericType();
+				}
+			}
+		}
+		
+		return javaType;
 	}
 	
 }

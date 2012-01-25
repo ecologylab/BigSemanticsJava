@@ -4,11 +4,10 @@
 package ecologylab.semantics.metadata.builtins;
 
 import ecologylab.semantics.collecting.SemanticsSessionScope;
-import ecologylab.semantics.metadata.Metadata;
-import ecologylab.semantics.metadata.mm_name;
+import ecologylab.semantics.metadata.builtins.declarations.DebugMetadataDeclaration;
 import ecologylab.semantics.metadata.scalar.MetadataStringBuilder;
+import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.serialization.annotations.simpl_inherit;
-import ecologylab.serialization.annotations.simpl_scalar;
 
 /**
  * Dynamically generated fields, only for debugging purposes by developers.
@@ -17,32 +16,27 @@ import ecologylab.serialization.annotations.simpl_scalar;
  * @author andruid
  */
 @simpl_inherit
-public class DebugMetadata extends Metadata
+public class DebugMetadata extends DebugMetadataDeclaration
 {
-	@simpl_scalar 
-	@mm_name("new_term_vector")
-	MetadataStringBuilder newTermVector;
 	
-	/**
-	 * 
-	 */
+//	@simpl_scalar 
+//	@mm_name("new_term_vector")
+//	MetadataStringBuilder newTermVector;
+	
 	public DebugMetadata()
 	{
+		super();
+	}
+	
+	public DebugMetadata(MetaMetadataCompositeField mmd)
+	{
+		super(mmd);
 	}
 	
 	public DebugMetadata(MetadataStringBuilder newTermVector)
 	{
 		super(SemanticsSessionScope.get().DEBUG_META_METADATA);
-		this.newTermVector = newTermVector;
+		this.setNewTermVectorMetadata(newTermVector);
 	}
 
-	public MetadataStringBuilder getNewTermVectorMetadata()
-	{
-		return newTermVector;
-	}
-
-	public void setNewTermVectorMetadata(MetadataStringBuilder newTermVector)
-	{
-		this.newTermVector = newTermVector;
-	}
 }

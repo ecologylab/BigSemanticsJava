@@ -59,6 +59,12 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 	@simpl_collection("def_var")
 	@simpl_nowrap
 	private ArrayList<DefVar>	defVars;
+	
+	/**
+	 * if this composite should be wrapped.
+	 */
+	@simpl_scalar
+	private boolean						wrap;
 
 	private MMSelectorType		mmSelectorType					= MMSelectorType.DEFAULT;
 
@@ -285,7 +291,8 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 				{
 					if (field.getClass() != fieldLocal.getClass())
 						warning("local field " + fieldLocal + " hides field " + fieldLocal + " with the same name in super mmd type!");
-					if (field != fieldLocal)
+					
+					if (field != fieldLocal && field.getInheritedField() != fieldLocal)
 						fieldLocal.setInheritedField(field);
 					fieldLocal.setDeclaringMmd(field.getDeclaringMmd());
 					fieldLocal.inheritAttributes(field);
@@ -553,6 +560,7 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 						null,
 						javaTypeName);
 		}
+		fd.setWrapped(wrap);
 		this.metadataFieldDescriptor = fd;
 		return fd;
 	}

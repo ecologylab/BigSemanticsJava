@@ -7,7 +7,6 @@ import java.util.ArrayList;
 
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.serialization.ClassDescriptor;
-import ecologylab.serialization.MetaInformation;
 import ecologylab.serialization.annotations.simpl_inherit;
 
 /**
@@ -17,7 +16,7 @@ import ecologylab.serialization.annotations.simpl_inherit;
  * 
  */
 @simpl_inherit
-public class MetadataClassDescriptor extends ClassDescriptor<MetadataFieldDescriptor>
+public class MetadataClassDescriptor extends ClassDescriptor<MetadataFieldDescriptor> implements Cloneable
 {
 	
 	private MetaMetadata definingMmd;
@@ -61,6 +60,17 @@ public class MetadataClassDescriptor extends ClassDescriptor<MetadataFieldDescri
 	public MetaMetadata getDefiningMmd()
 	{
 		return definingMmd;
+	}
+	
+	public void setDefiningMmd(MetaMetadata mmd)
+	{
+		this.definingMmd = mmd;
+	}
+	
+	@Override
+	public Object clone()
+	{
+		return super.clone();
 	}
 
 }

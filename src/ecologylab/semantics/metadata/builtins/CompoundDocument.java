@@ -10,18 +10,13 @@ import ecologylab.net.ParsedURL;
 import ecologylab.semantics.collecting.Crawler;
 import ecologylab.semantics.documentparsers.CompoundDocumentParserCrawlerResult;
 import ecologylab.semantics.documentparsers.DocumentParser;
-import ecologylab.semantics.metadata.mm_name;
+import ecologylab.semantics.metadata.builtins.declarations.CompoundDocumentDeclaration;
 import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
+import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.seeding.Seed;
 import ecologylab.serialization.TranslationContext;
-import ecologylab.serialization.annotations.Hint;
-import ecologylab.serialization.annotations.simpl_classes;
-import ecologylab.serialization.annotations.simpl_collection;
-import ecologylab.serialization.annotations.simpl_composite;
-import ecologylab.serialization.annotations.simpl_hints;
 import ecologylab.serialization.annotations.simpl_inherit;
-import ecologylab.serialization.annotations.simpl_scalar;
 
 /**
  * A Document that can be broken down into clippings, including references to other documents.
@@ -30,46 +25,43 @@ import ecologylab.serialization.annotations.simpl_scalar;
  * @author andruid
  */
 @simpl_inherit
-public class CompoundDocument extends Document
+public class CompoundDocument extends CompoundDocumentDeclaration
 {
+	
 	private static final String	CONTENT_PAGE	= "content_page";
 
 	private static final String	INDEX_PAGE		= "index_page";
 
-	/**
-	 * For debugging. Type of the structure recognized by information extraction.
-	 **/
-
-	@mm_name("page_structure") 
-	@simpl_scalar
-	private MetadataString	        		pageStructure;
+//	/**
+//	 * For debugging. Type of the structure recognized by information extraction.
+//	 **/
+//	@mm_name("page_structure") 
+//	@simpl_scalar
+//	private MetadataString	        		pageStructure;
+//	
+//	/**
+//	 * The search query
+//	 **/
+//	@simpl_scalar @simpl_hints(Hint.XML_LEAF)
+//	private MetadataString							query;
+//	
+//	/**
+//	 * Clippings that this document contains.
+//	 */
+//	@mm_name("clippings") 
+//	@simpl_collection
+//	@simpl_classes({ImageClipping.class, TextClipping.class})
+////	@simpl_scope(SemanticsNames.REPOSITORY_CLIPPING_TRANSLATIONS)
+//	List<Clipping>											clippings;
+//
+//	/**
+//	 * The rootDocument is filled in to create an alternative, connected CompoundDocument instance that is used to 
+//	 * store the List<Clipping> clippings object associated with this. 
+//	 * It can be used to merge the clippings collection for two or more related documents, such as a metadata page, and an associated PDF.
+//	 */
+//	@simpl_composite
+//	private CompoundDocument						rootDocument;
 	
-	/**
-	 * The search query
-	 **/
-	@simpl_scalar @simpl_hints(Hint.XML_LEAF)
-	private MetadataString							query;
-	
-	/**
-	 * The rootDocument is filled in to create an alternative, connected CompoundDocument instance that is used to 
-	 * store the List<Clipping> clippings object associated with this. 
-	 * It can be used to merge the clippings collection for two or more related documents, such as a metadata page, and an associated PDF.
-	 */
-	@simpl_composite
-	private CompoundDocument						rootDocument;
-	
-	/**
-	 * The rootDocument is filled in to create an alternative, connected CompoundDocument instance that is used to 
-	 * store the List<Clipping> clippings object associated with this. 
-	 * It can be used to merge the clippings collection for two or more related documents, such as a metadata page, and an associated PDF.
-	 * 
-	 * @param rootDocument
-	 */
-	public void setRootDocument(CompoundDocument rootDocument)
-	{
-		this.rootDocument = rootDocument;
-	}
-
 	/**
 	 * Seed object associated with this, if this is a seed.
 	 */
@@ -80,15 +72,6 @@ public class CompoundDocument extends Document
 	 * that is associated into a Seed's inverted index.
 	 */
 	private boolean											isTrueSeed;
-
-	/**
-	 * Clippings that this document contains.
-	 */
-	@mm_name("clippings") 
-	@simpl_collection
-	@simpl_classes({ImageClipping.class, TextClipping.class})
-//	@simpl_scope(SemanticsNames.REPOSITORY_CLIPPING_TRANSLATIONS)
-	List<Clipping>											clippings;
 
 
 	
@@ -121,8 +104,8 @@ public class CompoundDocument extends Document
 	 */
 	public CompoundDocument(ParsedURL location)
 	{
-		super(location);
-		// TODO Auto-generated constructor stub
+		this(MetaMetadataRepository.getBaseDocumentMM());
+		Document.initDocument(this, location);
 	}
 
 	@Override
@@ -130,51 +113,10 @@ public class CompoundDocument extends Document
 	{
 		return true;
 	}
-
 	
-	
-	/**
-	 * Lazy Evaluation for pageStructure
-	 **/
-
-	public MetadataString pageStructure()
-	{
-		MetadataString result = this.pageStructure;
-		if (result == null)
-		{
-			result = new MetadataString();
-			this.pageStructure = result;
-		}
-		return result;
-	}
-
-	/**
-	 * Gets the value of the field pageStructure
-	 **/
-
-	public String getPageStructure()
-	{
-		return pageStructure == null ? null : pageStructure().getValue();
-	}
-	
-	public MetadataString getPageStructureMetadata()
-	{
-		return pageStructure;
-	}
-
-	/**
-	 * Sets the value of the field pageStructure
-	 **/
-
-	public void setPageStructure(String pageStructure)
-	{
-		this.pageStructure().setValue(pageStructure);
-	}
-
 	/**
 	 * The heavy weight setter method for field pageStructure
 	 **/
-
 	public void hwSetPageStructure(String pageStructure)
 	{
 		this.pageStructure().setValue(pageStructure);
@@ -182,69 +124,24 @@ public class CompoundDocument extends Document
 	}
 
 	/**
-	 * Sets the pageStructure directly
-	 **/
-
-	public void setPageStructureMetadata(MetadataString pageStructure)
-	{
-		this.pageStructure = pageStructure;
-	}
-
-	/**
 	 * Heavy Weight Direct setter method for pageStructure
 	 **/
-
 	public void hwSetPageStructureMetadata(MetadataString pageStructure)
 	{
-		if (this.pageStructure != null && this.pageStructure.getValue() != null && hasTermVector())
-			termVector().remove(this.pageStructure.termVector());
-		this.pageStructure = pageStructure;
+		if (!isPageStructureNull() && hasTermVector())
+			termVector().remove(this.getPageStructureMetadata().termVector());
+		this.setPageStructureMetadata(pageStructure);
 		rebuildCompositeTermVector();
 	}
-
-
-	/**
-	 * Lazy Evaluation for query
-	 **/
-
-	public MetadataString query()
-	{
-		MetadataString result = this.query;
-		if (result == null)
-		{
-			result = new MetadataString();
-			this.query = result;
-		}
-		return result;
-	}
-
-	/**
-	 * Gets the value of the field query
-	 **/
-	@Override
-	public String getQuery()
-	{
-		return query == null ? null : query().getValue();
-	}
 	
-	public MetadataString getQueryMetadata()
+	public boolean isPageStructureNull()
 	{
-		return query;
-	}
-
-	/**
-	 * Sets the value of the field query
-	 **/
-	@Override
-	public void setQuery(String query)
-	{
-		this.query().setValue(query);
+		return this.getPageStructureMetadata() == null || this.getPageStructureMetadata().getValue() == null;
 	}
 
 	/**
 	 * The heavy weight setter method for field query
 	 **/
-
 	public void hwSetQuery(String query)
 	{
 		this.query().setValue(query);
@@ -252,25 +149,21 @@ public class CompoundDocument extends Document
 	}
 
 	/**
-	 * Sets the query directly
-	 **/
-
-	public void setQueryMetadata(MetadataString query)
-	{
-		this.query = query;
-	}
-
-	/**
 	 * Heavy Weight Direct setter method for query
 	 **/
-
 	public void hwSetQueryMetadata(MetadataString query)
 	{
-		if (this.query != null && this.query.getValue() != null && hasTermVector())
-			termVector().remove(this.query.termVector());
-		this.query = query;
+		if (!isQueryNull() && hasTermVector())
+			termVector().remove(this.getQueryMetadata().termVector());
+		this.setQueryMetadata(query);
 		rebuildCompositeTermVector();
 	}
+	
+	public boolean isQueryNull()
+	{
+		return this.getQueryMetadata() == null || this.getQueryMetadata().getValue() == null;
+	}
+	
 	/**
 	 * Insert the queryMetadata into the composite term vector FOR THE FIRST TIME.
 	 * Use a coefficient to control its emphasis, in order to avoid overpowering
@@ -281,28 +174,28 @@ public class CompoundDocument extends Document
 	 */
 	public void hwInitializeQueryMetadata(MetadataString query, double weight)
 	{
-		this.query = query;
+		setQueryMetadata(query);
 		termVector().add(weight, query.termVector());
 	}
 
 	
-	
 	////////////////////////////////// Downloadable /////////////////////////////////////////////////////
 	
 	
+	@Override
 	public void downloadAndParseDone(DocumentParser documentParser)
 	{
-		if (clippings != null && clippings.size() > 0)
+		if (numClippings() > 0)
 		{	
 			getSite(); // initialize this.site if haven't
 			if (documentParser.isIndexPage())
 			{
-				site.newIndexPage();
+				getSite().newIndexPage();
 				setPageStructure(INDEX_PAGE);
 			}
 			else if (documentParser.isContentPage())
 			{
-				site.newContentPage();
+				getSite().newContentPage();
 				setPageStructure(CONTENT_PAGE);
 			}
 
@@ -360,6 +253,7 @@ public class CompoundDocument extends Document
 //		}
 	}
 	
+	@Override
 	public void setAsTrueSeed(Seed seed)
 	{
 		associateSeed(seed);
@@ -385,6 +279,7 @@ public class CompoundDocument extends Document
 	 * return the seed from where the container originated
 	 * @return
 	 */
+	@Override
 	public Seed getSeed()
 	{
 		return seed;
@@ -397,39 +292,26 @@ public class CompoundDocument extends Document
 	 */
 	List<Clipping> clippings()
 	{
-		return rootDocument != null ? rootDocument.selfClippings() : selfClippings();
+		return getRootDocument() != null ? getRootDocument().selfClippings() : selfClippings();
 	}
 
-	private List<Clipping> selfClippings() 
+	private List<Clipping> selfClippings()
 	{
-		List<Clipping> result	= this.clippings;
+		List<Clipping> result = this.getClippings();
 		if (result == null)
 		{
-			result										= new ArrayList<Clipping>();
-			this.clippings						= result;
+			result = new ArrayList<Clipping>();
+			this.setClippings(result);
 		}
 		return result;
 	}
-	
-	/**
-	 * @return the clippings
-	 */
-	public List<Clipping> getClippings()
-	{
-		return rootDocument != null ? rootDocument.clippings : clippings;
-	}
-	
+
 	/**
 	 * @return the clippings
 	 */
 	public List<Clipping> getSelfClippings()
 	{
-		return clippings;
-	}
-	
-	public void setClippings(List<Clipping> clippings)
-	{
-		this.clippings = clippings;
+		return getClippings();
 	}
 	
 	/**
@@ -447,21 +329,8 @@ public class CompoundDocument extends Document
 	 */
 	public int numClippings()
 	{
-		return clippings == null ? 0 : clippings.size();
+		return getClippings() == null ? 0 : getClippings().size();
 	}
-
-	/**
-	 * 
-	 * @return 	The rootDocument is filled in to create an alternative, connected CompoundDocument instance that is used to 
-	 * store the List<Clipping> clippings object associated with this. 
-	 * It can be used to merge the clippings collection for two or more related documents, such as a metadata page, and an associated PDF.
-
-	 */
-	public CompoundDocument getRootDocument()
-	{
-		return rootDocument;
-	}
-
 
 	/**
 	 * Used when oldDocument turns out to be re-directed from this.
@@ -478,15 +347,13 @@ public class CompoundDocument extends Document
 			
 			String queryString					= this.getQuery();
 			if (queryString == null || queryString.length() == 0)
-				this.query									= oldCompound.query;
-			oldCompound.query						= null;
+				this.setQueryMetadata(oldCompound.getQueryMetadata());
+			oldCompound.setQueryMetadata(null);
 			
-			List<Clipping> oldClippings	= oldCompound.clippings;
-			
-			if (this.clippings == null && oldClippings != null)
-				this.clippings						= oldClippings;
+			List<Clipping> oldClippings	= oldCompound.getClippings();
+			if (this.getClippings() == null && oldClippings != null)
+				this.setClippings(oldClippings);
 		}
-		
 	}
 	
 }

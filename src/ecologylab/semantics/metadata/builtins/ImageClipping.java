@@ -3,6 +3,7 @@
  */
 package ecologylab.semantics.metadata.builtins;
 
+import ecologylab.semantics.metadata.builtins.declarations.ImageClippingDeclaration;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.serialization.annotations.simpl_inherit;
 
@@ -12,15 +13,23 @@ import ecologylab.serialization.annotations.simpl_inherit;
  *
  */
 @simpl_inherit
-public class ImageClipping extends MediaClipping<Image>
+public class ImageClipping extends ImageClippingDeclaration
 {
+	
 	public ImageClipping()
 	{
-		
+		super();
 	}
+	
+	public ImageClipping(MetaMetadataCompositeField mmd)
+	{
+		super(mmd);
+	}
+
 	public ImageClipping(MetaMetadataCompositeField metaMetadata, Image clippedMedia, Document source, Document outlink, String caption, String context)
 	{
-		super(metaMetadata, clippedMedia, source, outlink, caption, context);
+		this(metaMetadata);
+		MediaClipping.initMediaClipping(this, clippedMedia, source, outlink, caption, context);
 	}
 	
 	@Override
@@ -28,4 +37,5 @@ public class ImageClipping extends MediaClipping<Image>
 	{
 		return true;
 	}
+	
 }

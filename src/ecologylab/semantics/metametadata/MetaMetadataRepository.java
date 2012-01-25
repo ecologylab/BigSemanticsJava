@@ -29,7 +29,6 @@ import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.Image;
-import ecologylab.semantics.metadata.builtins.MetadataBuiltinsTranslationScope;
 import ecologylab.semantics.metadata.scalar.types.MetadataScalarType;
 import ecologylab.semantics.namesandnums.DocumentParserTagNames;
 import ecologylab.serialization.ElementState;
@@ -425,13 +424,14 @@ implements PackageSpecifier, DocumentParserTagNames
 	public SimplTypesScope traverseAndGenerateTranslationScope(String TSName)
 	{
 		// init the TScope with built-ins, and bind descriptors for built-ins.
-		SimplTypesScope metadataBuiltInTScope = MetadataBuiltinsTranslationScope.get();
-		SimplTypesScope ts = SimplTypesScope.get(TSName, new SimplTypesScope[] {metadataBuiltInTScope});
-		for (MetaMetadata metaMetadata : repositoryByName)
-		{
-			if (metaMetadata.isBuiltIn())
-				metaMetadata.bindMetadataClassDescriptor(ts);
-		}
+//		SimplTypesScope metadataBuiltInTScope = MetadataBuiltinsTranslationScope.get();
+//		SimplTypesScope ts = SimplTypesScope.get(TSName, new SimplTypesScope[] {metadataBuiltInTScope});
+//		for (MetaMetadata metaMetadata : repositoryByName)
+//		{
+//			if (metaMetadata.isBuiltIn())
+//				metaMetadata.bindMetadataClassDescriptor(ts);
+//		}
+		SimplTypesScope ts = SimplTypesScope.get(TSName, new Class[] {});
 		
 		// inheritance.
 		traverseAndInheritMetaMetadata();
