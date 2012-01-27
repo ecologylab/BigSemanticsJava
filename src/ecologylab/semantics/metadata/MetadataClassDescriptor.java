@@ -67,10 +67,4 @@ public class MetadataClassDescriptor extends ClassDescriptor<MetadataFieldDescri
 		this.definingMmd = mmd;
 	}
 	
-	@Override
-	public Object clone()
-	{
-		return super.clone();
-	}
-
 }
