@@ -20,7 +20,7 @@ import ecologylab.serialization.annotations.simpl_inherit;
  *          The underling Media type
  */
 @simpl_inherit
-public class ClippableDocument<ME extends ClippableDocument> extends ClippableDocumentDeclaration<ME>
+public class ClippableDocument<ME extends ClippableDocument<ME>> extends ClippableDocumentDeclaration<ME>
 {
 //	/**
 //	 * Clippings based on this.

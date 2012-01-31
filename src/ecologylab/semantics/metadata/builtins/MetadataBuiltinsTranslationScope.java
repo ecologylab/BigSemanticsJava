@@ -19,17 +19,17 @@ public class MetadataBuiltinsTranslationScope extends Debug
 	protected static final Class CLASSES[] = 
 	{
 		Metadata.class, 
-		Document.class, 
-		CompoundDocument.class,
+		Annotation.class,
 		ClippableDocument.class,
 		Clipping.class,
-		Image.class, 
-		MediaClipping.class,
-		ImageClipping.class,
-		TextClipping.class,
+		CompoundDocument.class,
 		DebugMetadata.class,
+		Document.class, 
 		DocumentMetadataWrap.class,
-		Annotation.class,
+		Image.class, 
+		ImageClipping.class,
+		MediaClipping.class,
+		TextClipping.class,
 	};
 	
 	static

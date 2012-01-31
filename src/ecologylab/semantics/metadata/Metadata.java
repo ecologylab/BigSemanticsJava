@@ -38,7 +38,6 @@ import ecologylab.serialization.ScalarUnmarshallingContext;
 import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.TranslationContext;
 import ecologylab.serialization.XMLTools;
-import ecologylab.serialization.annotations.simpl_descriptor_classes;
 import ecologylab.serialization.deserializers.ISimplDeserializationPost;
 import ecologylab.serialization.formatenums.StringFormat;
 import ecologylab.serialization.library.html.Div;
@@ -58,7 +57,6 @@ import ecologylab.serialization.serializers.ISimplSerializationPre;
  * @author sashikanth
  * 
  */
-@simpl_descriptor_classes({ MetadataClassDescriptor.class, MetadataFieldDescriptor.class })
 public abstract class Metadata extends MetadataDeclaration
 implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>, FieldTypes,
 ISimplSerializationPre, ISimplDeserializationPost

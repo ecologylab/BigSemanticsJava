@@ -16,6 +16,7 @@ import ecologylab.io.Assets;
 import ecologylab.io.AssetsRoot;
 import ecologylab.io.Files;
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.metadata.builtins.Annotation;
 import ecologylab.semantics.metadata.builtins.ClippableDocument;
 import ecologylab.semantics.metadata.builtins.Clipping;
 import ecologylab.semantics.metadata.builtins.Document;
@@ -115,12 +116,15 @@ implements DocumentParserTagNames, ApplicationProperties, SemanticsNames
 			DEBUG_META_METADATA								= metaMetadataRepository.getMMByName(DEBUG_TAG);
 			IMAGE_CLIPPING_META_METADATA			= metaMetadataRepository.getMMByName(IMAGE_CLIPPING_TAG);
 			
-			metaMetadataRepository.bindMetadataClassDescriptorsToMetaMetadata(metadataTranslationScope);
-			
 			this.metadataTranslationScope	= metadataTranslationScope;
 			this.generatedDocumentTranslations	= metadataTranslationScope.getAssignableSubset(REPOSITORY_DOCUMENT_TRANSLATIONS, Document.class);
 			this.generatedMediaTranslations	= metadataTranslationScope.getAssignableSubset(REPOSITORY_MEDIA_TRANSLATIONS, ClippableDocument.class);
 			this.repositoryClippingTranslations = metadataTranslationScope.getAssignableSubset(REPOSITORY_CLIPPING_TRANSLATIONS, Clipping.class);
+			
+			this.generatedMediaTranslations.addTranslation(Clipping.class);
+			this.generatedMediaTranslations.addTranslation(Annotation.class);
+			
+			metaMetadataRepository.bindMetadataClassDescriptorsToMetaMetadata(metadataTranslationScope);
 		}
 		else
 		{

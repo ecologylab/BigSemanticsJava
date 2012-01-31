@@ -4,8 +4,10 @@
 package ecologylab.semantics.metadata;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import ecologylab.semantics.metametadata.MetaMetadata;
+import ecologylab.semantics.metametadata.MetaMetadataGenericTypeVar;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.annotations.simpl_inherit;
 
@@ -65,6 +67,25 @@ public class MetadataClassDescriptor extends ClassDescriptor<MetadataFieldDescri
 	public void setDefiningMmd(MetaMetadata mmd)
 	{
 		this.definingMmd = mmd;
+	}
+	
+	@Override
+	public boolean isGenericClass()
+	{
+		List<MetaMetadataGenericTypeVar> mmdGenericTypeVars = this.definingMmd.getMetaMetadataGenericTypeVars();
+		if (mmdGenericTypeVars != null && mmdGenericTypeVars.size() > 0)
+		{
+			for (MetaMetadataGenericTypeVar mmdGenericTypeVar : mmdGenericTypeVars)
+			{
+				// if name and bound specified, this should be a new definition of a generic type var.
+				// currently we require that a bound is needed, although in fact this can be omitted in some cases.
+				if (mmdGenericTypeVar.getName() != null && mmdGenericTypeVar.getBound() != null)
+				{
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 	
 }

@@ -13,7 +13,7 @@ import ecologylab.serialization.annotations.simpl_inherit;
  *
  */
 @simpl_inherit
-public class MediaClipping<ME extends ClippableDocument> extends MediaClippingDeclaration<ME>
+public class MediaClipping<ME extends ClippableDocument<ME>> extends MediaClippingDeclaration<ME>
 {
 	
 //	/**
@@ -45,7 +45,7 @@ public class MediaClipping<ME extends ClippableDocument> extends MediaClippingDe
 		initMediaClipping(this, clippedMedia, source, outlink, caption, context);
 	}
 
-	public static <ME extends ClippableDocument> void initMediaClipping(
+	public static <ME extends ClippableDocument<ME>> void initMediaClipping(
 			MediaClipping<ME> mediaClipping, ME clippedMedia, Document source, Document outlink,
 			String caption, String context)
 	{

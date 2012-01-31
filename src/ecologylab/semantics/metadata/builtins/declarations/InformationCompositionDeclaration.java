@@ -8,8 +8,8 @@ package ecologylab.semantics.metadata.builtins.declarations;
  * Copyright (2012) Interface Ecology Lab.
  */
 
+import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.builtins.Annotation;
-import ecologylab.semantics.metadata.builtins.ClippableDocument;
 import ecologylab.semantics.metadata.builtins.Clipping;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.MetadataBuiltinsTranslationScope;
@@ -41,7 +41,7 @@ public abstract class InformationCompositionDeclaration extends Document
 	@simpl_collection
 	@simpl_scope("repository_media")
 	@mm_name("media")
-	private List<ClippableDocument> media;
+	private List<Metadata> media;
 
 	@simpl_scalar
 	private MetadataFloat version;
@@ -77,12 +77,12 @@ public abstract class InformationCompositionDeclaration extends Document
 		this.annotations = annotations;
 	}
 
-	public List<ClippableDocument> getMedia()
+	public List<Metadata> getMedia()
 	{
 		return media;
 	}
 
-	public void setMedia(List<ClippableDocument> media)
+	public void setMedia(List<Metadata> media)
 	{
 		this.media = media;
 	}

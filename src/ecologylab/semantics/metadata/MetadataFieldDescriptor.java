@@ -17,6 +17,7 @@ import ecologylab.semantics.metametadata.MetaMetadataCollectionField;
 import ecologylab.semantics.metametadata.MetaMetadataField;
 import ecologylab.semantics.metametadata.MetaMetadataGenericTypeVar;
 import ecologylab.semantics.metametadata.MetaMetadataNestedField;
+import ecologylab.semantics.metametadata.MmdCompilerService;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.FieldDescriptor;
 import ecologylab.serialization.ScalarUnmarshallingContext;
@@ -257,12 +258,25 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 		this.genericParametersString = genericParametersString;
 	}
 	
+	private MmdCompilerService compilerService;
+	
+	public void setCompilerService(MmdCompilerService compilerService)
+	{
+		this.compilerService = compilerService;
+	}
+	
+	private String cachedJavaType;
+	
 	@Override
 	public String getJavaType()
 	{
+		if (cachedJavaType != null)
+			return cachedJavaType;
+		
 		CollectionType collectionType = this.getCollectionType();
 		String javaType = super.getJavaType();
-		if (collectionType != null && definingMmdField instanceof MetaMetadataNestedField)
+		
+		if (compilerService != null && collectionType != null && definingMmdField instanceof MetaMetadataNestedField)
 		{
 			MetaMetadataNestedField nested = (MetaMetadataNestedField) definingMmdField;
 			List<MetaMetadataGenericTypeVar> mmdGenericTypeVars = nested.getMetaMetadataGenericTypeVars();
@@ -274,7 +288,7 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 				sb.append(this.getElementClassDescriptor().getDescribedClassSimpleName());
 				try
 				{
-					MetaMetadataGenericTypeVar.appendGenericTypeVarParameterizations(sb, mmdGenericTypeVars, nested.getRepository(), null);
+					compilerService.appendGenericTypeVarParameterizations(sb, mmdGenericTypeVars, nested.getRepository());
 				}
 				catch (IOException e)
 				{
@@ -295,12 +309,72 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 				for (MetaMetadataGenericTypeVar mmdGenericTypeVar : mmdGenericTypeVars)
 				{
 					if (mmdGenericTypeVar.getGenericType() != null)
-						return mmdGenericTypeVar.getGenericType();
+					{
+						javaType = mmdGenericTypeVar.getGenericType();
+						break;
+					}
 				}
 			}
 		}
 		
+		cachedJavaType = javaType;
 		return javaType;
+	}
+	
+	private String cachedCSharpType;
+	
+	@Override
+	public String getCSharpType()
+	{
+		if (cachedCSharpType != null)
+			return cachedCSharpType;
+		
+		CollectionType collectionType = this.getCollectionType();
+		String csType = super.getCSharpType();
+		
+		if (compilerService != null && collectionType != null && definingMmdField instanceof MetaMetadataNestedField)
+		{
+			MetaMetadataNestedField nested = (MetaMetadataNestedField) definingMmdField;
+			List<MetaMetadataGenericTypeVar> mmdGenericTypeVars = nested.getMetaMetadataGenericTypeVars();
+			if (mmdGenericTypeVars != null && mmdGenericTypeVars.size() > 0)
+			{
+				StringBuilder sb = new StringBuilder();
+				sb.append(csType.substring(0, csType.indexOf('<')));
+				sb.append("<");
+				sb.append(this.getElementClassDescriptor().getDescribedClassSimpleName());
+				try
+				{
+					compilerService.appendGenericTypeVarParameterizations(sb, mmdGenericTypeVars, nested.getRepository());
+				}
+				catch (IOException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				sb.append(">");
+				return sb.toString();
+			}
+		}
+		
+		if (getType() == COMPOSITE_ELEMENT)
+		{
+			MetaMetadataNestedField nested = (MetaMetadataNestedField) definingMmdField;
+			List<MetaMetadataGenericTypeVar> mmdGenericTypeVars = nested.getMetaMetadataGenericTypeVars();
+			if (mmdGenericTypeVars != null && mmdGenericTypeVars.size() > 0)
+			{
+				for (MetaMetadataGenericTypeVar mmdGenericTypeVar : mmdGenericTypeVars)
+				{
+					if (mmdGenericTypeVar.getGenericType() != null)
+					{
+						csType = mmdGenericTypeVar.getGenericType();
+						break;
+					}
+				}
+			}
+		}
+		
+		cachedCSharpType = csType;
+		return csType;
 	}
 	
 }

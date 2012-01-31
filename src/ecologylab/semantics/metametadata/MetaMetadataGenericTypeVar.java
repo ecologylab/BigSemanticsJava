@@ -1,10 +1,7 @@
 package ecologylab.semantics.metametadata;
 
-import java.io.IOException;
 import java.util.List;
 
-import ecologylab.generic.Debug;
-import ecologylab.generic.StringTools;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.annotations.simpl_collection;
@@ -107,79 +104,6 @@ public class MetaMetadataGenericTypeVar extends ElementState
 		this.genericTypeVars = genericTypeVars;
 	}
 
-	public static void appendGenericTypeVarDefinitions(Appendable appendable,
-			List<MetaMetadataGenericTypeVar> mmdGenericTypeVars, MetaMetadataRepository repository,
-			MmdCompilerService compilerService) throws IOException
-	{
-		if (mmdGenericTypeVars != null && mmdGenericTypeVars.size() > 0)
-		{
-			boolean first = true;
-			for (MetaMetadataGenericTypeVar mmdGenericTypeVar : mmdGenericTypeVars)
-			{
-				String varName = mmdGenericTypeVar.getName();
-				String boundName = mmdGenericTypeVar.getBound();
-				String paramName = mmdGenericTypeVar.getParameter();
-				if (varName != null && boundName != null && paramName == null)
-				{
-					if (StringTools.isUpperCase(varName))
-					{
-						Debug.warning(MetaMetadataGenericTypeVar.class,
-								"We recommend capital letters for generic variable names!");
-					}
-					if (first)
-					{
-						appendable.append("<");
-						first = false;
-					}
-					else
-						appendable.append(", ");
-					appendable
-							.append(varName)
-							.append(" extends ")
-							.append(
-									MetaMetadataGenericTypeVar.getMdClassNameFromMmdOrNoChange(boundName, repository,
-											compilerService));
-					MetaMetadataGenericTypeVar.appendGenericTypeVarDefinitions(appendable,
-							mmdGenericTypeVar.getGenericTypeVars(), repository, compilerService);
-				}
-			}
-			if (!first)
-				appendable.append(">");
-		}
-	}
-
-	public static void appendGenericTypeVarParameterizations(Appendable appendable,
-			List<MetaMetadataGenericTypeVar> mmdGenericTypeVars, MetaMetadataRepository repository,
-			MmdCompilerService compilerService) throws IOException
-	{
-		if (mmdGenericTypeVars != null && mmdGenericTypeVars.size() > 0)
-		{
-			boolean first = true;
-			for (MetaMetadataGenericTypeVar mmdGenericTypeVar : mmdGenericTypeVars)
-			{
-				String varName = mmdGenericTypeVar.getName();
-				String boundName = mmdGenericTypeVar.getBound();
-				String paramName = mmdGenericTypeVar.getParameter();
-				if (paramName != null && varName == null && boundName == null)
-				{
-					if (first)
-					{
-						appendable.append("<");
-						first = false;
-					}
-					else
-						appendable.append(",");
-					appendable
-							.append(getMdClassNameFromMmdOrNoChange(paramName, repository, compilerService));
-					appendGenericTypeVarParameterizations(appendable, mmdGenericTypeVar.getGenericTypeVars(),
-							repository, compilerService);
-				}
-			}
-			if (!first)
-				appendable.append(">");
-		}
-	}
-
 	public static String getMdClassNameFromMmdOrNoChange(String mmdName,
 			MetaMetadataRepository repository, MmdCompilerService compilerService)
 	{
@@ -192,7 +116,7 @@ public class MetaMetadataGenericTypeVar extends ElementState
 		{
 			MetadataClassDescriptor metadataClassDescriptor = mmd.getMetadataClassDescriptor();
 			if (compilerService != null)
-				compilerService.addCurrentClassDependency(metadataClassDescriptor.getDescribedClassName());
+				compilerService.addCurrentClassDependency(metadataClassDescriptor);
 			return metadataClassDescriptor.getDescribedClassSimpleName();
 		}
 	}
