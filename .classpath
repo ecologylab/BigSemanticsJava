@@ -10,5 +10,6 @@
 	<classpathentry kind="lib" path="/cyberneko/lib/xercesMinimal.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/MetaMetadataRepository"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/ecologylabFundamentalSun"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
