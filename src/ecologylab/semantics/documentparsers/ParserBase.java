@@ -18,8 +18,6 @@ import javax.xml.xpath.XPathFactory;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.sun.org.apache.xml.internal.dtm.ref.DTMNodeList;
-
 import ecologylab.collections.Scope;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.generic.ReflectionTools;
@@ -28,7 +26,6 @@ import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.actions.SemanticActionsKeyWords;
 import ecologylab.semantics.collecting.LinkedMetadataMonitor;
-import ecologylab.semantics.collecting.MetaMetadataRepositoryInit;
 import ecologylab.semantics.collecting.SemanticsGlobalScope;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.Metadata;
@@ -244,7 +241,7 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 
 		public Map<String, String>				fieldParserContext;
 
-		public DTMNodeList								nodeList;
+		public NodeList										nodeList;
 
 		public List<Map<String, String>>	fieldParserContextList;
 
@@ -369,7 +366,7 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 				if (mmdField instanceof MetaMetadataCompositeField)
 					result.node = (Node) xpath.evaluate(xpathString, contextNode, XPathConstants.NODE);
 				else if (mmdField instanceof MetaMetadataCollectionField)
-					result.nodeList = (DTMNodeList) xpath.evaluate(xpathString, contextNode, XPathConstants.NODESET);
+					result.nodeList = (NodeList) xpath.evaluate(xpathString, contextNode, XPathConstants.NODESET);
 			}
 			
 			if (fieldParserElement != null)
@@ -380,7 +377,7 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 				{
 					String valueString = null;
 					if (fieldParserKey != null && fieldParserKey.length() > 0)
-						valueString = fieldParserContext.get(fieldParserKey);
+						valueString = getFieldParserValueByKey(fieldParserContext, fieldParserKey);
 					else if (result.node != null)
 						valueString = result.node.getTextContent();
 						
@@ -407,7 +404,7 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 					{
 						String valueString = null;
 						if (fieldParserKey != null && fieldParserKey.length() > 0)
-							valueString = fieldParserContext.get(fieldParserKey);
+							valueString = getFieldParserValueByKey(fieldParserContext, fieldParserKey);
 						else if (result.nodeList != null && result.nodeList.getLength() >= 1)
 							valueString = result.nodeList.item(0).getTextContent();
 						
@@ -428,6 +425,18 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 			return null;
 
 		return result;
+	}
+	
+	private String getFieldParserValueByKey(Map<String, String> fieldParserContext, String fieldParserKey)
+	{
+		int pos = fieldParserKey.indexOf('|');
+		if (pos < 0)
+			return fieldParserContext.get(fieldParserKey);
+		String[] keys = fieldParserKey.split("\\|");
+		for (String key : keys)
+			if (fieldParserContext.containsKey(key))
+				return fieldParserContext.get(key);
+		return null;
 	}
 
 	/**
@@ -705,11 +714,13 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 		return evaluation;
 	}
 
+	@Override
 	public ParsedURL purlContext()
 	{
 		return purl();
 	}
 
+	@Override
 	public File fileContext()
 	{
 		return null;
@@ -811,6 +822,7 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 		}
 	}
 
+	@Override
 	public void deserializationPostHook(Metadata deserializedMetadata, MetadataFieldDescriptor mfd)
 	{
 		currentMMstack.pop();
