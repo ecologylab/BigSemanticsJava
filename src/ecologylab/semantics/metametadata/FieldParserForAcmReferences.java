@@ -8,8 +8,9 @@ import java.util.regex.Pattern;
 public class FieldParserForAcmReferences extends FieldParser
 {
 
-	public static enum Flavors
+	public static enum Flavor
 	{
+		UNKNOWN,
 		ACM_STANDARD,
 		BRIEF,
 	}
@@ -31,15 +32,15 @@ public class FieldParserForAcmReferences extends FieldParser
 		if (input == null || input.length() == 0)
 			return result;
 
-		int flavor = 0;
+		Flavor flavor = Flavor.UNKNOWN;
 		if (input.contains(" , ") || input.contains("doi>") || !input.contains("."))
-			flavor = 1;
+			flavor = Flavor.ACM_STANDARD;
 		else if (input.matches("^[A-Z][a-z]+, [A-Z]\\..*"))
-			flavor = 2;
+			flavor = Flavor.BRIEF;
 
 		switch (flavor)
 		{
-		case 1:
+		case ACM_STANDARD:
 			String[] authorListAndOther = input.split("(?<=\\S),\\s", 2);
 			if (authorListAndOther.length == 2)
 			{
@@ -62,7 +63,7 @@ public class FieldParserForAcmReferences extends FieldParser
 				}
 			}
 			break;
-		case 2:
+		case BRIEF:
 			Matcher m = pAuthors.matcher(input);
 			int nextPos = 0;
 			StringBuilder authors = new StringBuilder();
@@ -119,10 +120,10 @@ public class FieldParserForAcmReferences extends FieldParser
 	public static void main(String[] args)
 	{
 		String[] tests = {
+				"George W. Furnas , Samuel J. Rauch, Considerations for information environments and the NaviQue workspace, Proceedings of the third ACM conference on Digital libraries, p.79-88, June 23-26, 1998, Pittsburgh, Pennsylvania, United States  [doi>10.1145/276675.276684]",
 				"Miller, G.A., The Magical number seven, plus or minus two: some limits on our capacity for processing information, Psychology Review, 63, 81--97, 1956. ",
 				"Hamming, R. The Art of Doing Science and Engineering: Learning to Learn. CRC Press, 1997, 35. {The original maxim is, of course, \"The purpose of computing is insight, not numbers.\"} ",
 				"Karlson, A., Piatko, C., and Gersh, J. Semantic navigation in complex graphs. Interactive poster and demonstration. Abstract published in IEEE Symposium on Information Visualization Poster Compendium (Seattle, WA), 2003, 84--85. ",
-				"George W. Furnas , Samuel J. Rauch, Considerations for information environments and the NaviQue workspace, Proceedings of the third ACM conference on Digital libraries, p.79-88, June 23-26, 1998, Pittsburgh, Pennsylvania, United States  [doi>10.1145/276675.276684]",
 				"Oxford English Dictionary on Compact Disk, 2nd Edition. Oxford: Oxford University Press, 1992.",
 				"Smith, S. M., Getting Into and Out of Mental Ruts: A theory of Fixation, Incubation, and Insight in Sternberg, R J. and Davidson, J., The Nature of Insight, Cambridge, MA, MIT Press, 1994, 121--149. ",
 				"Smith, S. M., Dodds, R. A., Incubation. in Runco, M.A., Pritzker, S. R., eds., Encyclopedia of Creativity, Volume 2. San Diego: Assoc Press, 1999, 39--44. ",
