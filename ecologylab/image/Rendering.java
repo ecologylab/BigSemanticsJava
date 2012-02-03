@@ -170,9 +170,9 @@ implements Colors
 	{
 		if ((dataBuffer == null) || (pixels == null))
 		{
-			BufferedImage oldImage	= this.bufferedImage;
+			BufferedImage oldImage	= this.bufferedImage;				
 			// create pixels and DataBufferInt, but not WritableRaster and BufferedImage
-			this.setupImageComponents(width, height, false);
+			this.setupImageComponents(oldImage.getWidth(), oldImage.getHeight(), false);
 			// create new WritableRaster and BufferedImage without flushing the old BufferedImage
 			// cause we need to copy from it
 			BufferedImage newImage	= createNewBufferedImage(dataBuffer);			
