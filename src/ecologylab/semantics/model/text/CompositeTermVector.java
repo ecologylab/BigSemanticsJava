@@ -89,11 +89,17 @@ public class CompositeTermVector extends Observable implements Observer, ITermVe
 			notifyObservers();
 		}
 	}
+	private boolean notifiedAlready;
 	public void update ( Observable o, Object arg )
 	{
+		notifiedAlready = false;
 		rebuildCompositeTermVector();
 		setChanged();
-		notifyObservers();
+		if(notifiedAlready == false)
+		{
+		   notifiedAlready = true;
+		   notifyObservers();
+		}
 	}
 
 	public synchronized void recycle ( )
