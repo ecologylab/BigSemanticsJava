@@ -43,10 +43,15 @@ public class AlphaGradientRendering extends Rendering
  */
    public AlphaGradientRendering(Rendering previousRendering, boolean active)
    {
-	   super(previousRendering, active);
-	   radius = 0.0f;
-	   minAlpha = ((int) (((float)0 / 255.0f) * (float) Colors.R)) & Colors.R;
-	   minAlphaInt = 0;
+	   this(previousRendering, active, 0, ((int) (((float)0 / 255.0f) * (float) Colors.R)) & Colors.R );
+   }
+   
+   public AlphaGradientRendering(Rendering previousRendering, boolean active, int radius, int minAlpha)
+   {
+  	 super(previousRendering, active);
+	   this.radius 		= radius;
+	   this.minAlpha 	= minAlpha;
+	   minAlphaInt 		= 0;
    }
 
    public void compute(int radius, int minAlpha)

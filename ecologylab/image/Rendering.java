@@ -21,9 +21,11 @@ import java.lang.ref.WeakReference;
 import ecologylab.generic.Colors;
 import ecologylab.generic.ImageTools;
 import ecologylab.serialization.ElementState;
+import ecologylab.serialization.annotations.simpl_classes;
 import ecologylab.serialization.annotations.simpl_composite;
 import ecologylab.serialization.annotations.simpl_inherit;
 import ecologylab.serialization.annotations.simpl_scalar;
+import ecologylab.serialization.annotations.simpl_wrap;
 
 /**
  * The basic unit of an image processing rendering pipeline;
@@ -66,12 +68,16 @@ implements Colors
 	 * Previous state in the Rendering pipeline.
 	 */
 	@simpl_composite
+	@simpl_classes({ AlphaGradientRendering.class, Rendering.class, DesaturatedRendering.class, BlurredRendering.class })
+	@simpl_wrap
 	Rendering					previousRendering;
 
 	/**
 	 * Next state in the Rendering pipeline.
 	 */
 	@simpl_composite
+	@simpl_classes({ AlphaGradientRendering.class, Rendering.class, DesaturatedRendering.class, BlurredRendering.class })
+	@simpl_wrap
 	Rendering					nextRendering;
 
 	@simpl_composite
@@ -129,7 +135,7 @@ implements Colors
 		this.height			= bufferedImage.getHeight();
 		this.isActive		= true;
 	}
-	Rendering(Rendering mommy)
+	public Rendering(Rendering mommy)
 	{
 		this.pixelBased		= mommy.pixelBased;
 		this.bufferedImage	= mommy.bufferedImage;

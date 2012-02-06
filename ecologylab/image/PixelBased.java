@@ -507,7 +507,7 @@ implements Downloadable, Colors
 
 	/////////////////////// Images and MemoryImageSource //////////////////////////
 
-	void setCurrentRendering(Rendering rendering)
+	public void setCurrentRendering(Rendering rendering)
 	{
 		if (!recycled)
 			this.currentRendering	= rendering;
