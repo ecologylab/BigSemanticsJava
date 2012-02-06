@@ -89,7 +89,7 @@ implements SemanticActionStandardMethods
 	
 	public String gistForTextAndPosition(int x, int y, int numWords, String text)
 	{
-		debug("make gist at "+x+","+y+" with "+numWords+" and the text "+text);
+		//debug("make gist at "+x+","+y+" with "+numWords+" and the text "+text);
 		String[] words = text.split(" ");
 		double bestScore = -1;
 		String bestGist = "";
@@ -112,7 +112,7 @@ implements SemanticActionStandardMethods
 			///add up total score here...
 			
 			double gScore = scoreTextAtPoint(wholeGist, x, y);
-			debug("check dist:"+wholeGist +" gets the score:"+gScore);
+			//debug("check dist:"+wholeGist +" gets the score:"+gScore);
 			if(gScore > bestScore)
 			{
 				bestScore = gScore;
