@@ -6,7 +6,7 @@ package ecologylab.semantics.tools;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import com.sun.org.apache.xml.internal.dtm.ref.DTMNodeList;
+import org.w3c.dom.NodeList;
 
 /**
  * @author amathur
@@ -24,13 +24,14 @@ public class GenericIterable implements Iterable
 
 
 
+	@Override
 	public Iterator iterator()
 	{
 		// if this is an instance of NodeList
-		if(collectionObject instanceof DTMNodeList )
+		if(collectionObject instanceof NodeList )
 		{
 			// need to do some thing
-			return  new DTMNodeListIterator((DTMNodeList)collectionObject);
+			return  new NodeListIterator((NodeList)collectionObject);
 		}
 		else
 		{
@@ -41,9 +42,9 @@ public class GenericIterable implements Iterable
 	
 	public int size()
 		{
-			if(collectionObject instanceof DTMNodeList)
+			if(collectionObject instanceof NodeList)
 			{
-				return ((DTMNodeList)collectionObject).getLength();
+				return ((NodeList)collectionObject).getLength();
 			}
 			else
 				return ((ArrayList)collectionObject).size();
@@ -51,9 +52,9 @@ public class GenericIterable implements Iterable
 			
 	 public Object get(int i)
 	 {
-		 if(collectionObject instanceof DTMNodeList)
+		 if(collectionObject instanceof NodeList)
 			{
-				return ((DTMNodeList)collectionObject).item(i);
+				return ((NodeList)collectionObject).item(i);
 			}
 			else
 				return ((ArrayList)collectionObject).get(i);

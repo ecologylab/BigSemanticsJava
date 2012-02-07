@@ -2,28 +2,30 @@ package ecologylab.semantics.tools;
 
 import java.util.Iterator;
 
-import com.sun.org.apache.xml.internal.dtm.ref.DTMNodeList;
+import org.w3c.dom.NodeList;
+
 /**
  * 
  * @author amathur
  *
  */
-public class DTMNodeListIterator implements Iterator
+public class NodeListIterator implements Iterator
 {
 	
-	private DTMNodeList nodeList;
+	private NodeList nodeList;
 	
 	// counter for the list
 	private int count;
 	
 
-	public DTMNodeListIterator(DTMNodeList collectionObject)
+	public NodeListIterator(NodeList collectionObject)
 	{
 		this.nodeList = collectionObject;
 		this.count=0;
 	}
 
 
+	@Override
 	public boolean hasNext()
 	{
 		if(nodeList.getLength()>0)
@@ -34,6 +36,7 @@ public class DTMNodeListIterator implements Iterator
 	}
 	
 
+	@Override
 	public Object next()
 	{
 		Object returnValue= nodeList.item(count);
@@ -42,6 +45,7 @@ public class DTMNodeListIterator implements Iterator
 	}
 
 
+	@Override
 	public void remove()
 	{
 	 // TODO implement me
