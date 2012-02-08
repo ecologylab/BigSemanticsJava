@@ -5,14 +5,18 @@ package ecologylab.semantics.metadata.builtins;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import ecologylab.collections.SetElement;
 import ecologylab.concurrent.Downloadable;
 import ecologylab.generic.Continuation;
 import ecologylab.io.DownloadProcessor;
+import ecologylab.io.Files;
 import ecologylab.net.ConnectionHelperJustRemote;
 import ecologylab.net.PURLConnection;
 import ecologylab.net.ParsedURL;
@@ -126,6 +130,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 	 */
 
 
+	@Override
 	public void performDownload()
 	throws IOException
 	{
@@ -240,11 +245,13 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 				return (result != null);
 			}
 
+			@Override
 			public void displayStatus(String message)
 			{
 				semanticsScope.displayStatus(message);
 			}
 			
+			@Override
 			public boolean processRedirect(URL redirectedURL) throws IOException
 			{
 				ParsedURL redirectedPURL	= new ParsedURL(redirectedURL);
@@ -341,9 +348,22 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 		purlConnection								= new PURLConnection(originalPURL);
 		if (originalPURL.isFile())
 		{
-			//TODO handle local files here!
 			File file	= originalPURL.file();
-			if (file.isDirectory())
+			if (!file.exists())
+			{
+				// this might be pointing to an entry in a ZIP file, e.g. the packed composition file.
+				File ancestor = Files.findFirstExistingAncestor(file);
+				if (ancestor != null && !ancestor.isDirectory() && Files.isZipFile(ancestor))
+				{
+					// read from a ZIP file, which should be the packed composition file
+					String entryName = ancestor.toURI().relativize(file.toURI()).toString();
+					ZipFile zipFile = new ZipFile(ancestor);
+					ZipEntry entry = zipFile.getEntry(entryName);
+					InputStream in = zipFile.getInputStream(entry);
+					purlConnection.streamConnect(in);
+				}
+			}
+			else if (file.isDirectory())
 			{
 				// FileDirectoryParser
 				documentParser	= DocumentParser.getParserInstanceFromBindingMap(FILE_DIRECTORY_PARSER, semanticsScope);
@@ -387,7 +407,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 						{	// new meta-metadata!
 							if (!mimeMmd.getMetadataClass().isAssignableFrom(document.getClass()))
 							{	// more specifc so we need new metadata!
-								document	= (Document) ((MetaMetadata) mimeMmd).constructMetadata(); // set temporary on stack
+								document	= (Document) mimeMmd.constructMetadata(); // set temporary on stack
 								changeDocument(document);
 							}
 							metaMetadata	= mimeMmd;
@@ -543,7 +563,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 				return false;	
 			delete();				// remove from candidate pools! (invokes deleteHook as well)  
 			
-			downloadMonitor().download((DocumentClosure) this, continuations == null ? null : this);
+			downloadMonitor().download(this, continuations == null ? null : this);
 		}
 		return result;
 	}
