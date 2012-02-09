@@ -42,7 +42,7 @@ import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.builtins.Image;
 import ecologylab.semantics.sensing.GisFeatures;
 import ecologylab.semantics.sensing.MetadataExifFeature;
-import ecologylab.serialization.types.ImageAwtTypes;
+import ecologylab.serialization.types.PlatformSpecificTypesSun;
 
 /**
  * @author andruid
@@ -74,7 +74,7 @@ public class ImageParserAwt extends DocumentParser<Image>
 		if (!inited)
 		{
 			inited		= true;
-			new ImageAwtTypes();
+			//new PlatformSpecificTypesSun();
 			
 			DocumentParser.init();
 			bindingParserMap.put(SemanticActionsKeyWords.IMAGE_PARSER, ImageParserAwt.class);
