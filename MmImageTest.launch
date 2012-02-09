@@ -7,7 +7,7 @@
 <listEntry value="1"/>
 </listAttribute>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="ecologylab.image.test.MmImageTest"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="file:///Users/andruid/web/workspaces/ecologylabWebWorkspace/ecologylabWeb/images/combinFormationIcon06.png&#10;http://graphics8.nytimes.com/images/blogs_v3/opinionator/pogs/thestone75.gif&#10;file:///Users/andruid/web/workspaces/ecologylabWebWorkspace/ecologylabWeb/images/interfaceEcologyLabLogos200.png"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="file:///Users/andruid/web/workspaces/ecologylabWebWorkspace/ecologylabWeb/images/combinFormationIcon06.png&#13;&#10;http://graphics8.nytimes.com/images/blogs_v3/opinionator/pogs/thestone75.gif&#13;&#10;file:///Users/andruid/web/workspaces/ecologylabWebWorkspace/ecologylabWeb/images/interfaceEcologyLabLogos200.png"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="ecologylabImageAwtTest"/>
 <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Xms320m -Xmx320m"/>
 </launchConfiguration>
