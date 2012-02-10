@@ -24,8 +24,10 @@ import ecologylab.serialization.annotations.simpl_collection;
 import ecologylab.serialization.annotations.simpl_inherit;
 import ecologylab.serialization.annotations.simpl_map;
 import ecologylab.serialization.annotations.simpl_nowrap;
+import ecologylab.serialization.annotations.simpl_other_tags;
 import ecologylab.serialization.annotations.simpl_scalar;
 import ecologylab.serialization.annotations.simpl_scope;
+import ecologylab.serialization.annotations.simpl_tag;
 import ecologylab.serialization.types.element.IMappable;
 
 /**
@@ -62,6 +64,8 @@ implements IMappable<String>//, HasLocalTranslationScope
 	private ArrayList<SemanticAction>								beforeSemanticActions;
 
 	@simpl_collection
+	@simpl_tag("operations")
+	@simpl_other_tags({"semantic_actions"})
 	@simpl_scope(SemanticActionTranslationScope.SEMANTIC_ACTION_TRANSLATION_SCOPE)
 	private ArrayList<SemanticAction>								semanticActions;
 
