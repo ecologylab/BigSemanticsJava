@@ -311,7 +311,7 @@ public abstract class SemanticAction extends ElementState implements SemanticAct
 		if (result == null)
 			result	= sourceDocument;	//direct binding?!
 		
-		if (result != null && !result.isRecycled())
+		if (result != null && !result.isRecycled() && (result.getLocation() != null))
 		{
 			result.setSemanticsSessionScope(sessionScope);
 			
