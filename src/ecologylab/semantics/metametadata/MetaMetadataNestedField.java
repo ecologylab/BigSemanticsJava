@@ -3,6 +3,7 @@ package ecologylab.semantics.metametadata;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Stack;
 
 import ecologylab.collections.MultiAncestorScope;
 import ecologylab.generic.HashMapArrayList;
@@ -25,6 +26,16 @@ import ecologylab.serialization.annotations.simpl_tag;
 @simpl_inherit
 public abstract class MetaMetadataNestedField extends MetaMetadataField implements PackageSpecifier//, HasLocalMetaMetadataScope
 {
+	
+	public static interface InheritFinishEventListener
+	{
+		void inheritFinish(Object... eventArgs);
+	}
+	
+	protected static interface InheritCommand
+	{
+		void doInherit(Object... eventArgs);
+	}
 
 	public static final String								POLYMORPHIC_CLASSES_SEP	= ",";
 
@@ -76,6 +87,38 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	private boolean														newMetadataClass							= false;
 	
 	private boolean														mmdScopeTraversed							= false;
+	
+	private List<InheritFinishEventListener>	inheritFinishEventListeners		= new ArrayList<InheritFinishEventListener>();
+	
+	/**
+	 * this lock is currently useless, because all inheritance stuff happens in one thread.
+	 * it is here just for possible future extensions.
+	 */
+	protected Object													lockInheritCommands						= new Object();
+	
+	/*
+	 * how we handle cross-references in inheritance:
+	 * 
+	 * - each nested field has two possible sources to inherit from: the meta-metadata defining its
+	 * type, and the inherited field that it is overriding. for some cases, e.g. fields defining
+	 * inline meta-metadata, both sources are used.
+	 * 
+	 * - it is possible that when we are inheriting for a nested field, one or more than one of its
+	 * inheriting sources is not ready (inheritInProgress == true). when this is the case, two things
+	 * will be done: 1) a event listener will be added to the source structure; 2) a command will be
+	 * added to this.waitForFinish.
+	 * 
+	 * - when a source structure finishes inheriting, it calls the event listener, which pops one
+	 * command from waitForFinish and pushes it to waitForExecute. if waitForFinish is empty, it pops
+	 * commands in waitForExecute one by one and execute them (do inheritance). in this way, we ensure
+	 * that: 1) inheritance is done in the same order as they are supposed to be in the code; 2) it
+	 * doesn't matter which structure is done first, or if it is done before the following ones are
+	 * pushed into the stack, etc.
+	 */
+	
+	protected Stack<InheritCommand>						waitForFinish;
+	
+	protected Stack<InheritCommand>						waitForExecute;
 
 	public MetaMetadataNestedField()
 	{
@@ -183,9 +226,31 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 			this.sortForDisplay();
 			inheritInProcess = false;
 			inheritFinished = true;
+			handleInheritFinishEventListeners();
 		}
 	}
 	
+	private void handleInheritFinishEventListeners()
+	{
+		if (inheritFinishEventListeners != null)
+		{
+			synchronized (inheritFinishEventListeners)
+			{
+				for (InheritFinishEventListener listener : inheritFinishEventListeners)
+					listener.inheritFinish();
+				inheritFinishEventListeners.clear();
+			}
+		}
+	}
+	
+	public void addInheritFinishEventListener(InheritFinishEventListener listener)
+	{
+		synchronized (inheritFinishEventListeners)
+		{
+			inheritFinishEventListeners.add(listener);
+		}
+	}
+
 	protected void clearInheritFinishedOrInProgressFlag()
 	{
 		this.inheritFinished = false;

@@ -1,6 +1,7 @@
 package ecologylab.semantics.metametadata;
 
 import java.util.ArrayList;
+import java.util.Stack;
 
 import ecologylab.collections.MultiAncestorScope;
 import ecologylab.generic.HashMapArrayList;
@@ -239,27 +240,108 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 	protected void inheritMetaMetadataHelper()
 	{
 		// init
-		MetaMetadataRepository repository = this.getRepository();
+		final MetaMetadataRepository repository = this.getRepository();
 		
 		// determine the structure we should inherit from
-		MetaMetadata inheritedMmd = findOrGenerateInheritedMetaMetadata(repository);
+		final MetaMetadata inheritedMmd = findOrGenerateInheritedMetaMetadata(repository);
 		if (inheritedMmd != null)
 		{
-			inheritedMmd.inheritMetaMetadata();
-			inheritFromInheritedMmd(inheritedMmd);
-			inheritMetaMetadataFrom(repository, inheritedMmd);
+			if (inheritedMmd.inheritInProcess)
+			{
+				synchronized (lockInheritCommands)
+				{
+					if (waitForFinish == null)
+						waitForFinish = new Stack<InheritCommand>();
+					waitForFinish.push(new InheritCommand()
+					{
+						@Override
+						public void doInherit(Object... eventArgs)
+						{
+							debug("now inherit from " + inheritedMmd);
+							inheritFromInheritedMmd(inheritedMmd);
+							inheritMetaMetadataFrom(repository, inheritedMmd);
+						}
+					});
+				
+					inheritedMmd.addInheritFinishEventListener(new InheritFinishEventListener()
+					{
+						@Override
+						public void inheritFinish(Object... eventArgs)
+						{
+							processWaitingInheritanceCommands();
+						}
+					});
+					
+					debug("delaying inheriting from " + inheritedMmd);
+				}
+			}
+			else
+			{
+				inheritedMmd.inheritMetaMetadata();
+				inheritFromInheritedMmd(inheritedMmd);
+				inheritMetaMetadataFrom(repository, inheritedMmd);
+			}
 		}
-		MetaMetadataCompositeField inheritedField = (MetaMetadataCompositeField) this.getInheritedField();
+		
+		final MetaMetadataCompositeField inheritedField = (MetaMetadataCompositeField) this.getInheritedField();
 		if (inheritedField != null)
 		{
-			inheritedField.setRepository(repository);
-			inheritedField.inheritMetaMetadata();
-			inheritMetaMetadataFrom(repository, inheritedField);
+			if (inheritedField.inheritInProcess)
+			{
+				synchronized (lockInheritCommands)
+				{
+					if (waitForFinish == null)
+						waitForFinish = new Stack<InheritCommand>();
+					waitForFinish.push(new InheritCommand()
+					{
+						@Override
+						public void doInherit(Object... eventArgs)
+						{
+							debug("now inherit from " + inheritedField);
+							inheritMetaMetadataFrom(repository, inheritedField);
+						}
+					});
+				
+					inheritedMmd.addInheritFinishEventListener(new InheritFinishEventListener()
+					{
+						@Override
+						public void inheritFinish(Object... eventArgs)
+						{
+							processWaitingInheritanceCommands();
+						}
+					});
+					
+					debug("delaying inheriting from " + inheritedField);
+				}
+			}
+			else
+			{
+				inheritedField.setRepository(repository);
+				inheritedField.inheritMetaMetadata();
+				inheritMetaMetadataFrom(repository, inheritedField);
+			}
 		}
 		
 		// for the root meta-metadata, this may happend
 		if (inheritedMmd == null && inheritedField == null)
 			inheritMetaMetadataFrom(repository, null);
+	}
+	
+	private void processWaitingInheritanceCommands()
+	{
+		synchronized (lockInheritCommands)
+		{
+			InheritCommand aCommand = waitForFinish.pop();
+			if (waitForExecute == null)
+				waitForExecute = new Stack<InheritCommand>();
+			waitForExecute.push(aCommand);
+			
+			if (waitForFinish.isEmpty())
+			{
+				while (!waitForExecute.isEmpty())
+					waitForExecute.pop().doInherit();
+			}
+		}
 	}
 
 	protected void inheritMetaMetadataFrom(MetaMetadataRepository repository, MetaMetadataCompositeField inheritedStructure)
