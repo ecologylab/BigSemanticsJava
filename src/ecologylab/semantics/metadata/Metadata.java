@@ -830,16 +830,44 @@ ISimplSerializationPre, ISimplDeserializationPost
 			throws IllegalArgumentException, IllegalAccessException, IOException, SIMPLTranslationException
 	{
 		Table htmlTable = new Table();
-		renderHtml(htmlTable, serializationContext, false, true);
-		
+		renderHtml(htmlTable, serializationContext, false, true, false);
 		SimplTypesScope.serialize(htmlTable, a, StringFormat.XML);
 		
 	}
+	
+	
+	public Table addLabelAndReturnTable(Tr outputRow, int numElements, Metadata metadata)
+	{
+		//Tr tr = new Tr();
+		Td labelTd = new Td();
+		Div div = new Div();
+		Input button = new Input(); //expanding button
+		
+		div.setCssClass(MetadataConstants.METADATA_TEXT);//css for all
+		div.setText(metadata.getMetaMetadata().getDisplayedLabel());//label for all
+		if (numElements > 1)//add button
+		{
+			labelTd.setCssClass(MetadataConstants.FIELD_NAME);
+			button.setType(MetadataConstants.IMAGE);
+			button.setCssClass(MetadataConstants.COMPOSITE);
+			button.setSrc(MetadataConstants.IMAGE_URL);
+			button.setValue("");
+			
+			div.members.add(button);
+		}
+		labelTd.items.add(div);
+		outputRow.cells.add(labelTd);
+		Table placeHolderTable = new Table();
+		return placeHolderTable;
+	}
+	
 
 	public void renderHtml(Table htmlTable, TranslationContext serializationContext, boolean recursing,
-			boolean encapsulateInTable) throws IllegalArgumentException,
+			boolean encapsulateInTable, boolean hideNextCompositLabel) throws IllegalArgumentException,
 			IllegalAccessException, IOException, SIMPLTranslationException
 	{
+		
+		//System.out.println("   debug report 1: metadata name form top is "+this.getMetaMetadataName());
 
 		MetadataClassDescriptor classDescriptor = this.getMetadataClassDescriptor();
 		MetaMetadataOneLevelNestingIterator fullIterator = fullNonRecursiveMetaMetadataIterator(null);
@@ -861,27 +889,6 @@ ISimplSerializationPre, ISimplDeserializationPost
 				schemaOrgItemtype = compositeMmd.getInheritedMmd().getSchemaOrgItemtype();
 			if (schemaOrgItemtype != null)
 				htmlTable.setSchemaOrgItemType(schemaOrgItemtype);
-
-			if (recursing && numElements > 1)
-			{
-				Td buttonTd = new Td();
-				Div div = new Div();
-				Input button = new Input();
-				
-				div.setCssClass(MetadataConstants.METADATA_TEXT);
-				htmlTable.setCssClass(MetadataConstants.NESTED_TABLE);
-				buttonTd.setCssClass(MetadataConstants.FIELD_NAME);
-				button.setType(MetadataConstants.IMAGE);
-				button.setCssClass(MetadataConstants.COMPOSITE);
-				button.setSrc(MetadataConstants.IMAGE_URL);
-				button.setValue("");
-
-				div.members.add(button);
-				div.setText(metaMetadata.getDisplayedLabel());
-				buttonTd.items.add(div);
-				tr.cells.add(buttonTd);
-				htmlTable.rows.add(tr);
-			}
 			
 			while (fullIterator.hasNext())
 			{
@@ -889,7 +896,6 @@ ISimplSerializationPre, ISimplDeserializationPost
 				final Metadata currentMetadata = fullIterator.currentMetadata();
 				MetadataFieldDescriptor childFD = mmdField.getMetadataFieldDescriptor();
 				FieldDescriptor navigatesFD = this.getFieldDescriptorByTagName(mmdField.getNavigatesTo());
-				
 				if (!mmdField.isHide())
 				{
 					final int type = childFD.getType();
@@ -929,7 +935,7 @@ ISimplSerializationPre, ISimplDeserializationPost
 						if (thatReferenceObject == null)
 							continue;
 
-						final boolean isScalar = (type == COLLECTION_SCALAR || type == MAP_SCALAR);
+					//	final boolean isScalar = (type == COLLECTION_SCALAR || type == MAP_SCALAR);
 						Collection thatCollection;
 						
 						switch (type)
@@ -956,34 +962,28 @@ ISimplSerializationPre, ISimplDeserializationPost
 								childFD.writeHtmlWrap(false, thatCollection.size(), mmdField.getDisplayedLabel(), nestedTr);
 							Td collectionTd = new Td();
 							collectionTd.setCssClass(MetadataConstants.NESTED_VALUE);
-							
-							for (Object next : thatCollection)
-							{
-								FieldDescriptor compositeAsScalarFD = ClassDescriptor.getClassDescriptor(next).getScalarValueFieldDescripotor();
-								
-//								if (isScalar)
-//									childFD.appendHtmlValueAsAttribute(currentMetadata, serializationContext, nestedTr, null, MetadataConstants.FIELD_NAME, textCssClass, navigatesFD, mmdField.getSchemaOrgItemprop());
-								if (compositeAsScalarFD != null)
-								{
-									Span compositeAsScalarSpan = new Span();
-									compositeAsScalarSpan.setCssClass(MetadataConstants.COMPOSITE_AS_SCALAR);
-									collectionTd.spans.add(compositeAsScalarFD.getHtmlCompositeCollectionValue(next, i == 0));
-								}
-								i++;
-							}
-							
+														
 							nestedTr.cells.add(collectionTd);
 							
 							for (Object next : thatCollection)
 							{
 								if (next instanceof Metadata)
 								{
+									//System.out.println("   debug report 4: within itterator 1 "+((Metadata)next).getMetaMetadataName());
+
+									
 									Table nestedTable = new Table();
 									Metadata collectionSubElementState = (Metadata) next;
-									collectionSubElementState.renderHtml(nestedTable, serializationContext, true, true);
+																	
+									collectionSubElementState.renderHtml(nestedTable, serializationContext, true, true, false); // This collection may add a composite element....
+									
+									//remove last row of this table because it is empty
+									if(nestedTable.rows.size() > 1)
+									{
+										nestedTable.rows.remove(nestedTable.rows.size() - 1);
+									}
 									collectionTd.items.add(nestedTable);
 								}
-
 							}
 							if (childFD.isWrapped())
 								nestedTr.cells.add(collectionTd);
@@ -1002,17 +1002,23 @@ ISimplSerializationPre, ISimplDeserializationPost
 							if (compositeAsScalarFD != null)
 							{
 								childFD.writeCompositeHtmlWrap(false, mmdField.getDisplayedLabel(), mmdField.getSchemaOrgItemtype(), compositeTr);
-
-								Span compositeAsScalarSpan = new Span();
-								compositeAsScalarSpan.setCssClass(MetadataConstants.COMPOSITE_AS_SCALAR);
-								compositeTd.spans.add(compositeAsScalarFD.getHtmlCompositeCollectionValue(thatReferenceObject, true));
 							}
 							else
 							{
-								Table nestedTable = new Table();
-								nestedMD.renderHtml(nestedTable, serializationContext, true, false);
-								compositeTd.items.add(nestedTable);
+								Table nestedTable = addLabelAndReturnTable(compositeTr, ((Metadata)thatReferenceObject).numberOfVisibleFields(false), (Metadata)thatReferenceObject);
+								nestedMD.renderHtml(nestedTable, serializationContext, true, false, true);  //also called with a scholarly article...
+								compositeTd.items.add(nestedTable);								
+							}							
+							
+							if(compositeTd.items.size() > 0 && compositeTd.items.get(0) instanceof Table)
+							{
+								Table innerTable = (Table) compositeTd.items.get(0);
+								//remove last row from this table because it is empty
+								if(innerTable.rows.size() > 1)
+									innerTable.rows.remove(innerTable.rows.size()-1);
 							}
+							
+							compositeTr.cells.add(compositeTd);
 							htmlTable.rows.add(compositeTr);
 						}
 					}
