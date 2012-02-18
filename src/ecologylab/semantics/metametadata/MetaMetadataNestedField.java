@@ -66,6 +66,9 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	@simpl_scalar
 	private String														schemaOrgItemtype;
 	
+	@simpl_scalar
+	private boolean														showExpandedInitially;
+	
 	@simpl_collection("generic_type_var")
 	@simpl_nowrap
 	private List<MetaMetadataGenericTypeVar>	genericTypeVars;
@@ -615,6 +618,11 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	public void setMetaMetadataGenericTypeVars(List<MetaMetadataGenericTypeVar> genericTypeVars)
 	{
 		this.genericTypeVars = genericTypeVars;
+	}
+
+	public boolean isShowExpandedInitially()
+	{
+		return showExpandedInitially;
 	}
 
 }
