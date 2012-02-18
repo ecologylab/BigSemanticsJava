@@ -383,7 +383,7 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 
 			// process hide and shadows
 			HashSet<String> nonDisplayedFieldNames = nonDisplayedFieldNames();
-			if (thatChild.hide)
+			if (thatChild.hide && !thatChild.alwaysShow)
 				nonDisplayedFieldNames.add(thatChild.name);
 			if (thatChild.shadows != null)
 				nonDisplayedFieldNames.add(thatChild.shadows);
