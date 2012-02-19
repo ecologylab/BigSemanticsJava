@@ -54,6 +54,7 @@ implements IMappable<String>//, HasLocalTranslationScope
 	ArrayList<MetaMetadataSelector>									selectors;
 	
 	@simpl_collection("example_url")
+	@simpl_nowrap
 	ArrayList<ExampleUrl>														exampleUrls;
 
 	@simpl_scalar
