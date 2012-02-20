@@ -53,16 +53,21 @@ extends SemanticAction
 		String returnObjectName = getReturnObjectName();
 		String getterName = "get" + XMLTools.javaNameFromElementName(returnObjectName, true);
 		Method method = getGetterMethod(obj.getClass(), getterName);
-		try
+		if (method == null)
 		{
-			return method.invoke(obj, null);
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
 			error(String.format("get_field failed: object=%s, getter=%s()", obj, getterName));
-			return null;
 		}
+		else
+			try
+			{
+				return method.invoke(obj, null);
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+				error(String.format("get_field failed: object=%s, getter=%s()", obj, getterName));
+			}
+		return null;
 	}
 
 }
