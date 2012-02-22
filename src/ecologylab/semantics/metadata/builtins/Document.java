@@ -373,6 +373,7 @@ public class Document extends DocumentDeclaration
 	/**
 	 * @param semanticsSessionScope the infoCollector to set
 	 */
+	@Override
 	public void setSemanticsSessionScope(SemanticsGlobalScope semanticsSessionScope)
 	{
 		this.semanticsScope = semanticsSessionScope;

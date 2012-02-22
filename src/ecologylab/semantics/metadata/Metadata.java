@@ -16,6 +16,7 @@ import ecologylab.generic.HashMapArrayList;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.collecting.LinkedMetadataMonitor;
+import ecologylab.semantics.collecting.SemanticsGlobalScope;
 import ecologylab.semantics.metadata.builtins.declarations.MetadataDeclaration;
 import ecologylab.semantics.metadata.output.MetadataConstants;
 import ecologylab.semantics.metadata.scalar.MetadataString;
@@ -1248,5 +1249,12 @@ ISimplSerializationPre, ISimplDeserializationPost
 	public boolean isClipping()
 	{
 		return false;
+	}
+	/**
+	 * Base class method for overriding. Does nothing.
+	 * @param semanticsSessionScope
+	 */
+	public void setSemanticsSessionScope(SemanticsGlobalScope semanticsSessionScope)
+	{
 	}
 }

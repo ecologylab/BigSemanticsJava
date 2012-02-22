@@ -507,7 +507,8 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 		Class[] argClasses = new Class[] { MetaMetadataCompositeField.class };
 		Object[] argObjects = new Object[] { mmdField };
 		Metadata thisMetadata = ReflectionTools.getInstance(metadataClass, argClasses, argObjects);
-
+		thisMetadata.setSemanticsSessionScope(semanticsScope);
+		
 		if (recursiveExtraction(mmdField, thisMetadata, thisNode, thisFieldParserContext, params))
 		{
 			// here everything seems ok. assign result composite back to input metadata object
@@ -588,8 +589,9 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 			
 			if (!mmdField.isCollectionOfScalars())
 			{
-				Metadata element;
-				element = (Metadata) ReflectionTools.getInstance(elementClass, argClasses, argObjects);
+				Metadata element = (Metadata) ReflectionTools.getInstance(elementClass, argClasses, argObjects);
+				element.setSemanticsSessionScope(semanticsScope);
+				
 				if (recursiveExtraction(mmdField.getChildComposite(), element, thisNode, thisFieldParserContext, params))
 					elements.add(element);
 			}
