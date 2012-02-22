@@ -157,6 +157,18 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 
 		// get the parameters
 		Scope<Object> parameters = handler.getSemanticActionVariableMap();
+		
+		try
+		{
+			Node documentRoot = getDom();
+			parameters.put(DOCUMENT_ROOT_NODE, documentRoot);
+		}
+		catch (IOException e1)
+		{
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
 		if (defVars != null)
 		{
 			// only if some variables are there we create a DOM[for diect binidng types for others DOM is
@@ -286,11 +298,24 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 		HashMapArrayList<String, MetaMetadataField> fieldSet = mmdField.getChildMetaMetadata();
 		if (fieldSet == null || fieldSet.isEmpty())
 			return false;
+		
+		params.put(SURROUNDING_META_METADATA_FIELD, mmdField);
 
 		synchronized (fieldSet)
 		{
 			for (MetaMetadataField field : fieldSet)
 			{
+				if (field.parent() != mmdField)
+				{
+					// if 'field' is purely inherited, we ignore it to prevent infinite loops.
+					// infinite loops can happen when 'field' uses the same mmd type as where it is defined,
+					// e.g. google_patent.references are google_patent too.
+					// this behavior is not necessarily required to prevent infinite loops, but it works
+					// for our use cases now.
+					// -- yin qu, 2/21/2012
+					continue;
+				}
+				
 				try
 				{
 					boolean suc = false;
@@ -339,14 +364,22 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 			Map<String, String> fieldParserContext, Scope<Object> params)
 	{
 		// get xpath, context node, field parser defintion & key: basic information for following
+		
 		String xpathString = mmdField.getXpath();
+		
 //		if (xpathString != null && xpathString.length() > 0)		
 //			xpathString = provider.xPathTagNamesToLower(xpathString);
+		
 		String contextNodeName = mmdField.getContextNode();
 		if (contextNodeName != null)
 		{
 			contextNode = (Node) params.get(contextNodeName);
 		}
+		if (contextNode == null)
+		{
+			contextNode = (Node) params.get(DOCUMENT_ROOT_NODE);
+		}
+		
 		FieldParserElement fieldParserElement = mmdField.getFieldParserElement();
 		String fieldParserKey = mmdField.getFieldParserKey();
 
@@ -361,8 +394,16 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 
 		try
 		{
-			if (xpathString != null && contextNode != null)
+			if (contextNode != null)
 			{
+				if ((xpathString == null || xpathString.length() == 0)
+						&& mmdField.parent() == params.get(SURROUNDING_META_METADATA_FIELD))
+				{
+					// the condition above after && holds when this field is actually authored there, but not
+					// purely inherited.
+					xpathString = ".";
+				}
+				
 				if (mmdField instanceof MetaMetadataCompositeField)
 					result.node = (Node) xpath.evaluate(xpathString, contextNode, XPathConstants.NODE);
 				else if (mmdField instanceof MetaMetadataCollectionField)
@@ -549,7 +590,7 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 			{
 				Metadata element;
 				element = (Metadata) ReflectionTools.getInstance(elementClass, argClasses, argObjects);
-				if (recursiveExtraction(mmdField, element, thisNode, thisFieldParserContext, params))
+				if (recursiveExtraction(mmdField.getChildComposite(), element, thisNode, thisFieldParserContext, params))
 					elements.add(element);
 			}
 			else

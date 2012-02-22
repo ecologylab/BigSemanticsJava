@@ -61,6 +61,19 @@ public class MetadataClassDescriptor extends ClassDescriptor<MetadataFieldDescri
 	 */
 	public MetaMetadata getDefiningMmd()
 	{
+//		if (definingMmd == null)
+//		{
+//			SemanticsSessionScope globalSemanticsSessionScope = SemanticsSessionScope.get();
+//			if (globalSemanticsSessionScope != null)
+//			{
+//				MetaMetadataRepository repository = globalSemanticsSessionScope.getMetaMetadataRepository();
+//				if (repository != null)
+//				{
+//					if (this.getDescribedClass() != null)
+//					definingMmd = repository.getMMByClass((Class<? extends Metadata>) this.getDescribedClass());
+//				}
+//			}
+//		}
 		return definingMmd;
 	}
 	

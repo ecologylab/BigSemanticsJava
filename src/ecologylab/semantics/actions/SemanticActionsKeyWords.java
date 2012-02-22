@@ -46,7 +46,7 @@ public interface SemanticActionsKeyWords
 	/**
 	 * Root Node of the document
 	 */
-	public static String	DOCUMENT_ROOT_NODE				= "DocumentRootNode";
+	public static String	DOCUMENT_ROOT_NODE				= "__DocumentRootNode__";
 
 	public static String	NODE											= "node";
 
@@ -75,4 +75,6 @@ public interface SemanticActionsKeyWords
 	public static String PURLCONNECTION_MIME				= "purl_connect_mime";
 	
 	public static String DOCUMENT_CALLER						= "document_caller";
+	
+	public static String SURROUNDING_META_METADATA_FIELD = "__SurroundingMetaMetadataField__";
 }
