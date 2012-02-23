@@ -273,6 +273,16 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 			return listSize;
 		}
 	}
+	
+	private boolean isAuthoredChildOf(MetaMetadataField parentField, MetaMetadataField childField)
+	{
+		if (parentField instanceof MetaMetadataCompositeField && childField.parent() == parentField)
+			return true;
+		if (parentField instanceof MetaMetadataCollectionField
+				&& childField.parent() == ((MetaMetadataCollectionField) parentField).getChildComposite())
+			return true;
+		return false;
+	}
 
 	/**
 	 * Recursively extract information from the sub DOM tree rooted at current context node to a given
@@ -305,7 +315,7 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 		{
 			for (MetaMetadataField field : fieldSet)
 			{
-				if (field.parent() != mmdField)
+				if (!isAuthoredChildOf(mmdField, field))
 				{
 					// if 'field' is purely inherited, we ignore it to prevent infinite loops.
 					// infinite loops can happen when 'field' uses the same mmd type as where it is defined,
@@ -399,15 +409,25 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 				if ((xpathString == null || xpathString.length() == 0)
 						&& mmdField.parent() == params.get(SURROUNDING_META_METADATA_FIELD))
 				{
-					// the condition above after && holds when this field is actually authored there, but not
-					// purely inherited.
+					// the condition above after '&&' holds when this field is actually authored there,
+					// but not purely inherited.
 					xpathString = ".";
 				}
 				
-				if (mmdField instanceof MetaMetadataCompositeField)
-					result.node = (Node) xpath.evaluate(xpathString, contextNode, XPathConstants.NODE);
-				else if (mmdField instanceof MetaMetadataCollectionField)
-					result.nodeList = (NodeList) xpath.evaluate(xpathString, contextNode, XPathConstants.NODESET);
+				if (xpathString != null)
+				{
+					// if at this point of time xpathString is null, this field must be purely inherited,
+					// thus we may want to ignore it.
+					// this behavior, as documented in recursiveExtraction(), is not necessarily required.
+					// it basically prevents xpaths to be inherited by a subtype meta-metadata.
+					// further extension may allow this inheritance, e.g. by explicitly saying 'I want to
+					// inherit xpaths from the super wrapper', using some attribute on <meta-metadata>.
+					// -- yin qu, 2/23/2012
+					if (mmdField instanceof MetaMetadataCompositeField)
+						result.node = (Node) xpath.evaluate(xpathString, contextNode, XPathConstants.NODE);
+					else if (mmdField instanceof MetaMetadataCollectionField)
+						result.nodeList = (NodeList) xpath.evaluate(xpathString, contextNode, XPathConstants.NODESET);
+				}
 			}
 			
 			if (fieldParserElement != null)
@@ -592,7 +612,8 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 				Metadata element = (Metadata) ReflectionTools.getInstance(elementClass, argClasses, argObjects);
 				element.setSemanticsSessionScope(semanticsScope);
 				
-				if (recursiveExtraction(mmdField.getChildComposite(), element, thisNode, thisFieldParserContext, params))
+//				if (recursiveExtraction(mmdField.getChildComposite(), element, thisNode, thisFieldParserContext, params))
+				if (recursiveExtraction(mmdField, element, thisNode, thisFieldParserContext, params))
 					elements.add(element);
 			}
 			else
