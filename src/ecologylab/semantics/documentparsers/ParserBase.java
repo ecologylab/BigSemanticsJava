@@ -2,15 +2,23 @@ package ecologylab.semantics.documentparsers;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.xml.namespace.QName;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
@@ -396,7 +404,7 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 		// init result
 		NestedFieldHelper result = new NestedFieldHelper();
 
-		if (mmdField instanceof MetaMetadata)
+		if (mmdField instanceof MetaMetadata) // this should not happen, currently
 		{
 			result.node = contextNode;
 			return result;
@@ -440,7 +448,12 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 					if (fieldParserKey != null && fieldParserKey.length() > 0)
 						valueString = getFieldParserValueByKey(fieldParserContext, fieldParserKey);
 					else if (result.node != null)
-						valueString = result.node.getTextContent();
+					{
+						if (mmdField.isExtractAsHtml())
+							valueString = getInnerHtml(result.node);
+						else
+							valueString = result.node.getTextContent();
+					}
 						
 					if (valueString != null && valueString.length() > 0)
 						result.fieldParserContext = fieldParser.getKeyValuePairResult(fieldParserElement, valueString.trim());
@@ -453,7 +466,15 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 						for (int i = 0; i < result.nodeList.getLength(); ++i)
 						{
 							Node node = result.nodeList.item(i);
-							String valueString = node.getTextContent();
+							String valueString = null;
+							if (mmdField.isExtractAsHtml())
+							{
+								valueString = getInnerHtml(node);
+							}
+							else
+							{
+								valueString = node.getTextContent();
+							}
 							if (valueString != null && valueString.length() > 0)
 							{
 								Map<String, String> aContext = fieldParser.getKeyValuePairResult(fieldParserElement, valueString.trim());
@@ -467,7 +488,12 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 						if (fieldParserKey != null && fieldParserKey.length() > 0)
 							valueString = getFieldParserValueByKey(fieldParserContext, fieldParserKey);
 						else if (result.nodeList != null && result.nodeList.getLength() >= 1)
-							valueString = result.nodeList.item(0).getTextContent();
+						{
+							if (mmdField.isExtractAsHtml())
+								valueString = getInnerHtml(result.nodeList.item(0));
+							else
+								valueString = result.nodeList.item(0).getTextContent();
+						}
 						
 						if (valueString != null && valueString.length() > 0)
 							result.fieldParserContextList = fieldParser.getCollectionResult(fieldParserElement, valueString.trim());
@@ -622,7 +648,16 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 				if (fieldParserContextList != null)
 					value = thisFieldParserContext == null ? null : thisFieldParserContext.get(FieldParserForRegexSplit.DEFAULT_KEY);
 				else if (thisNode != null)
-					value = thisNode.getTextContent();
+				{
+					if (mmdField.isExtractAsHtml())
+					{
+						value = getInnerHtml(thisNode);
+					}
+					else
+					{
+						value = thisNode.getTextContent();
+					}
+				}
 				
 				if (value != null)
 				{
@@ -643,6 +678,43 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 		}
 
 		return false;
+	}
+	
+	private static Properties	innerHtmlProps	= new Properties();
+	static
+	{
+		innerHtmlProps.put(OutputKeys.METHOD, "html");
+		innerHtmlProps.put(OutputKeys.INDENT, "yes");
+	}
+	
+	/**
+	 * using javax.xml.transform.Transformer to get the inner HTML of a node.
+	 * 
+	 * @param node
+	 * @return
+	 */
+	private String getInnerHtml(Node node)
+	{
+		node.normalize();
+		StringWriter w = new StringWriter();
+		try
+		{
+			Transformer t = XmlTransformerPool.get().acquire();
+			t.setOutputProperties(innerHtmlProps);
+			t.transform(new DOMSource(node), new StreamResult(w));
+			XmlTransformerPool.get().release(t);
+		}
+		catch (TransformerConfigurationException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (TransformerException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return w.toString();
 	}
 
 	/**
@@ -669,7 +741,16 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 		{
 			try
 			{
-				evaluation = xpath.evaluate(xpathString, contextNode);
+				if (mmdField.isExtractAsHtml())
+				{
+					Node targetNode = (Node) xpath.evaluate(xpathString, contextNode, XPathConstants.NODE);
+					if (targetNode != null)
+						evaluation = getInnerHtml(targetNode);
+				}
+				else
+				{
+					evaluation = xpath.evaluate(xpathString, contextNode);
+				}
 //				debug("Evaluated : " + xpathString + " to :" + evaluation);
 			}
 			catch (Exception e)

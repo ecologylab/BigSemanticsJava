@@ -130,6 +130,9 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
 
 	@simpl_scalar
 	protected String																			xpath;
+	
+	@simpl_scalar
+	private boolean																				extractAsHtml						=	false;
 
 	/**
 	 * Context node for xpath based extarction rules for this field. Default value is document root.
@@ -1104,6 +1107,16 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
 	public String getSchemaOrgItemtype()
 	{
 		return null;
+	}
+
+	public boolean isExtractAsHtml()
+	{
+		return extractAsHtml;
+	}
+
+	public void setExtractAsHtml(boolean extractAsHtml)
+	{
+		this.extractAsHtml = extractAsHtml;
 	}
 	
 }
