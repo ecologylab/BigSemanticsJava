@@ -837,7 +837,7 @@ ISimplSerializationPre, ISimplDeserializationPost
 	}
 	
 	
-	public Table addLabelAndReturnTable(Tr outputRow, int numElements, Metadata metadata)
+	public Table addLabelAndReturnTable(Tr outputRow, int numElements, Metadata metadata, MetaMetadataCompositeField mmCompositeField)
 	{
 		//Tr tr = new Tr();
 		Td labelTd = new Td();
@@ -845,7 +845,10 @@ ISimplSerializationPre, ISimplDeserializationPost
 		Input button = new Input(); //expanding button
 		
 		div.setCssClass(MetadataConstants.METADATA_TEXT);//css for all
-		div.setText(metadata.getMetaMetadata().getDisplayedLabel());//label for all
+		
+		///div.setText(metadata.getMetaMetadata().getDisplayedLabel());//label for all
+		div.setText(mmCompositeField.getDisplayedLabel());
+		
 		if (numElements > 1)//add button
 		{
 			labelTd.setCssClass(MetadataConstants.FIELD_NAME);
@@ -1006,7 +1009,7 @@ ISimplSerializationPre, ISimplDeserializationPost
 							}
 							else
 							{
-								Table nestedTable = addLabelAndReturnTable(compositeTr, ((Metadata)thatReferenceObject).numberOfVisibleFields(false), (Metadata)thatReferenceObject);
+								Table nestedTable = addLabelAndReturnTable(compositeTr, ((Metadata)thatReferenceObject).numberOfVisibleFields(false), (Metadata)thatReferenceObject, (MetaMetadataCompositeField) mmdField);
 								nestedMD.renderHtml(nestedTable, serializationContext, true, false, true);  //also called with a scholarly article...
 								compositeTd.items.add(nestedTable);								
 							}							
