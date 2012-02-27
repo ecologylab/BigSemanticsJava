@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -781,7 +782,8 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 		if (continuations == null)
 			return;
 		
-		for (Continuation<DocumentClosure> continuation: continuations)
+		List<Continuation<DocumentClosure>> currentContinuations = new ArrayList<Continuation<DocumentClosure>>(continuations);
+		for (Continuation<DocumentClosure> continuation: currentContinuations)
 		{
 			continuation.callback(o);
 		}
