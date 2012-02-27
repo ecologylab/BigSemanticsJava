@@ -40,6 +40,7 @@ import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataBase;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
+import ecologylab.semantics.metadata.builtins.CompoundDocument;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.scalar.types.MetadataScalarType;
 import ecologylab.semantics.metametadata.DefVar;
@@ -53,6 +54,7 @@ import ecologylab.semantics.metametadata.MetaMetadataField;
 import ecologylab.semantics.metametadata.MetaMetadataNestedField;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.metametadata.MetaMetadataScalarField;
+import ecologylab.semantics.namesandnums.DocumentParserTagNames;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.DeserializationHookStrategy;
 import ecologylab.serialization.SIMPLTranslationException;
@@ -557,6 +559,11 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 		
 		if (recursiveExtraction(mmdField, thisMetadata, thisNode, thisFieldParserContext, params))
 		{
+			lookupTrueMetaMetadata(mmdField.getRepository(), thisMetadata);
+			
+			// TODO check for polymorphism. if this is an inherent polymorphic fields, we may need to
+			// replace thisMetadata completely if its type changes.
+			
 			// here everything seems ok. assign result composite back to input metadata object
 			Field javaField = mmdField.getMetadataFieldDescriptor().getField();
 			ReflectionTools.setFieldValue(metadata, javaField, thisMetadata);
@@ -570,6 +577,28 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 		}
 
 		return false;
+	}
+
+	protected void lookupTrueMetaMetadata(MetaMetadataRepository repository, Metadata thisMetadata)
+	{
+		// if we got a compound document, we may want to look up its true meta-metadata type
+		// by location.
+		// before doing connect(), what we can do to find out the true meta-metadata type is quite
+		// limited (location, suffix, tag name). here we do location & suffix. tag name is mainly
+		// used by direct binding cases.
+		if (thisMetadata instanceof CompoundDocument)
+		{
+			ParsedURL thisMetadataLocation = thisMetadata.getLocation();
+			if (thisMetadataLocation != null)
+			{
+				MetaMetadata locMmd = repository.getCompoundDocumentMM(thisMetadataLocation);
+				if (locMmd != null && !locMmd.getName().equals(DocumentParserTagNames.COMPOUND_DOCUMENT_TAG))
+				{
+					debug("changing meta-metadata for extract value " + thisMetadata + " to " + locMmd);
+					thisMetadata.setMetaMetadata(locMmd);
+				}
+			}
+		}
 	}
 
 	/**
@@ -640,7 +669,14 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 				
 //				if (recursiveExtraction(mmdField.getChildComposite(), element, thisNode, thisFieldParserContext, params))
 				if (recursiveExtraction(mmdField, element, thisNode, thisFieldParserContext, params))
+				{
+					lookupTrueMetaMetadata(mmdField.getRepository(), element);
+					
+				// TODO check for polymorphism. if this is an inherent polymorphic fields, we may need to
+				// replace element completely if its type changes.
+			
 					elements.add(element);
+				}
 			}
 			else
 			{
