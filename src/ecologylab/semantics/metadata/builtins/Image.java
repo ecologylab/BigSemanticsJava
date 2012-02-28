@@ -146,5 +146,22 @@ implements MimeType, ImageConstants
 		return result;
 	}
 	
+	public ParsedURL getInternetLocation()
+	{
+		return super.getLocation();
+	}
+	
+	@Override
+	public ParsedURL getLocation()
+	{
+		if (getLocalLocation() != null)
+			return getLocalLocation();
+		else if (super.getLocation() != null)
+			return super.getLocation();
+		else if (getAdditionalLocations() != null && getAdditionalLocations().size() > 0)
+			return getAdditionalLocations().get(0).getValue();
+		return null;
+	}
+
 	
 }
