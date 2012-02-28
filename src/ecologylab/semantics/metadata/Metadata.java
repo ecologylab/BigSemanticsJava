@@ -25,6 +25,7 @@ import ecologylab.semantics.metametadata.LinkWith;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.metametadata.MetaMetadataField;
+import ecologylab.semantics.metametadata.MetaMetadataNestedField;
 import ecologylab.semantics.metametadata.MetaMetadataOneLevelNestingIterator;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.model.text.CompositeTermVector;
@@ -469,7 +470,7 @@ ISimplSerializationPre, ISimplDeserializationPost
 		return null;
 	}
 
-	public void setMetaMetadata(MetaMetadataCompositeField metaMetadata)
+	public void setMetaMetadata(MetaMetadataNestedField metaMetadata)
 	{
 		// FIXME -- get rid of all call sites for this method -- andruid 6/1/10
 		// see MetaMetadataSearchParser for a call site. can we avoid this call?

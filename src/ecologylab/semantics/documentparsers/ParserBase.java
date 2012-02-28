@@ -559,6 +559,7 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 		
 		if (recursiveExtraction(mmdField, thisMetadata, thisNode, thisFieldParserContext, params))
 		{
+			thisMetadata.setMetaMetadata(mmdField);
 			lookupTrueMetaMetadata(mmdField.getRepository(), thisMetadata);
 			
 			// TODO check for polymorphism. if this is an inherent polymorphic fields, we may need to
@@ -670,6 +671,7 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 //				if (recursiveExtraction(mmdField.getChildComposite(), element, thisNode, thisFieldParserContext, params))
 				if (recursiveExtraction(mmdField, element, thisNode, thisFieldParserContext, params))
 				{
+					element.setMetaMetadata(mmdField);
 					lookupTrueMetaMetadata(mmdField.getRepository(), element);
 					
 				// TODO check for polymorphism. if this is an inherent polymorphic fields, we may need to
