@@ -33,6 +33,7 @@ import ecologylab.generic.StringTools;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.actions.SemanticActionsKeyWords;
+import ecologylab.semantics.collecting.DownloadStatus;
 import ecologylab.semantics.collecting.LinkedMetadataMonitor;
 import ecologylab.semantics.collecting.SemanticsGlobalScope;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
@@ -559,9 +560,14 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 		
 		if (recursiveExtraction(mmdField, thisMetadata, thisNode, thisFieldParserContext, params))
 		{
+			Document downloadedMetadata = lookupDownloadedDocument(thisMetadata);
+			if (downloadedMetadata != null)
+			{
+				thisMetadata = downloadedMetadata;
+			}
+			
 			thisMetadata.setMetaMetadata(mmdField);
 			lookupTrueMetaMetadata(mmdField.getRepository(), thisMetadata);
-			
 			// TODO check for polymorphism. if this is an inherent polymorphic fields, we may need to
 			// replace thisMetadata completely if its type changes.
 			
@@ -579,14 +585,43 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 
 		return false;
 	}
+	
+	/**
+	 * looking at the global document collection, and reuse exising document object if it is already
+	 * downloaded.
+	 * 
+	 * @param metadata
+	 * @return
+	 */
+	protected Document lookupDownloadedDocument(Metadata metadata)
+	{
+		if (metadata instanceof Document)
+		{
+			Document doc = (Document) metadata;
+			ParsedURL location = doc.getLocationOrFirstAdditionLocation();
+			if (location != null)
+			{
+				Document existingDoc = semanticsScope.lookupDocument(location);
+				if (existingDoc != null && existingDoc.getDownloadStatus() == DownloadStatus.DOWNLOAD_DONE)
+				{
+					return existingDoc;
+				}
+			}
+		}
+		return null;
+	}
 
+	/**
+	 * if we got a compound document, we may want to look up its true meta-metadata type by location.
+	 * before doing connect(), what we can do to find out the true meta-metadata type is quite limited
+	 * (location, suffix, tag name). here we do location & suffix. tag name is mainly used by direct
+	 * binding cases.
+	 * 
+	 * @param repository
+	 * @param thisMetadata
+	 */
 	protected void lookupTrueMetaMetadata(MetaMetadataRepository repository, Metadata thisMetadata)
 	{
-		// if we got a compound document, we may want to look up its true meta-metadata type
-		// by location.
-		// before doing connect(), what we can do to find out the true meta-metadata type is quite
-		// limited (location, suffix, tag name). here we do location & suffix. tag name is mainly
-		// used by direct binding cases.
 		if (thisMetadata instanceof CompoundDocument)
 		{
 			ParsedURL thisMetadataLocation = thisMetadata.getLocation();
@@ -671,12 +706,17 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 //				if (recursiveExtraction(mmdField.getChildComposite(), element, thisNode, thisFieldParserContext, params))
 				if (recursiveExtraction(mmdField, element, thisNode, thisFieldParserContext, params))
 				{
+					Document downloadedDocument = lookupDownloadedDocument(element);
+					if (downloadedDocument != null)
+					{
+						element = downloadedDocument;
+					}
+					
 					element.setMetaMetadata(mmdField);
 					lookupTrueMetaMetadata(mmdField.getRepository(), element);
+					// TODO check for polymorphism. if this is an inherent polymorphic fields, we may need to
+					// replace element completely if its type changes.
 					
-				// TODO check for polymorphism. if this is an inherent polymorphic fields, we may need to
-				// replace element completely if its type changes.
-			
 					elements.add(element);
 				}
 			}

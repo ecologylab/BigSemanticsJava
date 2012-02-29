@@ -1,6 +1,7 @@
 package ecologylab.semantics.model.text;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
@@ -33,6 +34,7 @@ public class CompositeTermVector extends Observable implements Observer, ITermVe
 	 * @param multiplier
 	 *            The scalar multiple.
 	 */
+	@Override
 	public void add ( double multiplier, ITermVector tv )
 	{
 		HashMap<ITermVector, Double> v;
@@ -57,6 +59,7 @@ public class CompositeTermVector extends Observable implements Observer, ITermVe
 	 * @param tv
 	 *            The term vector you wish to add.
 	 */
+	@Override
 	public void add ( ITermVector tv )
 	{
 		if (tv != null)
@@ -89,19 +92,33 @@ public class CompositeTermVector extends Observable implements Observer, ITermVe
 			notifyObservers();
 		}
 	}
+	
 	private boolean notifiedAlready;
+	@Override
 	public void update ( Observable o, Object arg )
 	{
+		Set set = (Set) arg;
+		if (set.contains(this))
+			return;
+		set.add(this);
+		
 		notifiedAlready = false;
 		rebuildCompositeTermVector();
 		setChanged();
 		if(notifiedAlready == false)
 		{
 		   notifiedAlready = true;
-		   notifyObservers();
+		   notifyObservers(set);
 		}
 	}
+	
+	@Override
+	public void notifyObservers()
+	{
+		notifyObservers(new HashSet());
+	}
 
+	@Override
 	public synchronized void recycle ( )
 	{
 		if (!hasObservers())
@@ -125,6 +142,7 @@ public class CompositeTermVector extends Observable implements Observer, ITermVe
 		}
 	}
 	
+	@Override
 	public boolean isRecycled()
 	{
 		return compositeTermVector == null;
@@ -147,26 +165,31 @@ public class CompositeTermVector extends Observable implements Observer, ITermVe
 		termVectors			= new HashMap<ITermVector, Double>();
 	}
 
+	@Override
 	public double dot ( IFeatureVector<Term> v )
 	{
 		return compositeTermVector.dot(v);
 	}
 
+	@Override
 	public Set<Term> elements ( )
 	{
 		return compositeTermVector.elements();
 	}
 
+	@Override
 	public double get ( Term term )
 	{
 		return compositeTermVector.get(term);
 	}
 
+	@Override
 	public Map<Term, Double> map ( )
 	{
 		return compositeTermVector != null ? compositeTermVector.map() : null;
 	}
 
+	@Override
 	public Set<Double> values ( )
 	{
 		return compositeTermVector.values();
@@ -177,6 +200,7 @@ public class CompositeTermVector extends Observable implements Observer, ITermVe
 		return termVectors.keySet();
 	}
 
+	@Override
 	public String toString ( )
 	{
 		if (termVectors == null)
@@ -195,41 +219,49 @@ public class CompositeTermVector extends Observable implements Observer, ITermVe
 		return s.toString();
 	}
 
+	@Override
 	public double norm ( )
 	{
 		return compositeTermVector.norm();
 	}
 
+	@Override
 	public double max ( )
 	{
 		return compositeTermVector.max();
 	}
 
+	@Override
 	public double idfDot ( IFeatureVector<Term> v )
 	{
 		return (compositeTermVector != null) ? compositeTermVector.idfDot(v) : Double.MIN_VALUE;
 	}
 
+	@Override
 	public TermVector unit ( )
 	{
 		return compositeTermVector.unit();
 	}
 
+	@Override
 	public int commonDimensions ( IFeatureVector<Term> v )
 	{
 		return compositeTermVector.commonDimensions(v);
 	}
 
+	@Override
 	public double dotSimplex ( IFeatureVector<Term> v )
 	{
 		return compositeTermVector.dotSimplex(v);
 	}
 
+	@Override
 	public TermVector simplex ( )
 	{
 		return compositeTermVector.simplex();
 	}
 
+	@Override
 	public double idfDotSimplex ( IFeatureVector<Term> v )
 	{
 		return compositeTermVector.idfDotSimplex(v);
@@ -240,6 +272,7 @@ public class CompositeTermVector extends Observable implements Observer, ITermVe
 		return compositeTermVector.size();
 	}
 
+	@Override
 	public boolean hasObservers()
 	{
 		return countObservers() > 0;

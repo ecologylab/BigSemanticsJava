@@ -2,12 +2,14 @@ package ecologylab.semantics.metadata.builtins;
 
 import java.io.File;
 import java.util.Date;
+import java.util.List;
 
 import ecologylab.net.MimeType;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.html.documentstructure.ImageConstants;
 import ecologylab.semantics.metadata.builtins.declarations.ImageDeclaration;
+import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.serialization.annotations.simpl_inherit;
@@ -154,14 +156,22 @@ implements MimeType, ImageConstants
 	@Override
 	public ParsedURL getLocation()
 	{
-		if (getLocalLocation() != null)
-			return getLocalLocation();
-		else if (super.getLocation() != null)
-			return super.getLocation();
-		else if (getAdditionalLocations() != null && getAdditionalLocations().size() > 0)
-			return getAdditionalLocations().get(0).getValue();
+		ParsedURL localLocation = getLocalLocation();
+		if (localLocation != null)
+			return localLocation;
+		else
+		{
+			ParsedURL location = super.getLocation();
+			if (location != null)
+				return location;
+			else
+			{
+				List<MetadataParsedURL> additionalLocations = getAdditionalLocations();
+				if (additionalLocations != null && additionalLocations.size() > 0)
+					return additionalLocations.get(0).getValue();
+			}
+		}
 		return null;
 	}
-
 	
 }

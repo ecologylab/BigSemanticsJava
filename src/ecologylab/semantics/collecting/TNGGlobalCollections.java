@@ -91,6 +91,12 @@ public class TNGGlobalCollections extends Debug
 					}
 				});
 	}
+	
+	public Document lookupDocument(ParsedURL location)
+	{
+		return allDocuments.get(location);
+	}
+	
 	/**
 	 * Basic operation on the DocumentLocationMap.
 	 * Get from Map if possible. If necessary, construct anew and add to map before returning.
@@ -138,6 +144,7 @@ public class TNGGlobalCollections extends Debug
 	{
 		allDocuments.remap(oldDocument, newDocument);
 	}
+	
 	/**
 	 * Add a new mapping, down the line, for an already mapped document, in the global map.
 	 * 
@@ -148,4 +155,5 @@ public class TNGGlobalCollections extends Debug
 	{
 		allDocuments.addMapping(location, document);
 	}
+	
 }

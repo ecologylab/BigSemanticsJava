@@ -101,6 +101,11 @@ public class SemanticsGlobalScope extends MetaMetadataRepositoryInit
 	{
 		return ReflectionTools.getInstance(domProviderClass);
 	}
+	
+	public Document lookupDocument(ParsedURL location)
+	{
+		return location == null ? null : globalCollection.lookupDocument(location);
+	}
 
 	public Document getOrConstructDocument(ParsedURL location)
 	{
@@ -110,6 +115,7 @@ public class SemanticsGlobalScope extends MetaMetadataRepositoryInit
 		result.setSemanticsSessionScope(this);
 		return result;
 	}
+	
 	public Image getOrConstructImage(ParsedURL location)
 	{
 		if (location == null)

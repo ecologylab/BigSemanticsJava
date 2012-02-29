@@ -100,7 +100,7 @@ public class Document extends DocumentDeclaration
 	 */
 	@simpl_scalar
 	@mm_no
-	private int											downloadStatus;
+	private DownloadStatus					downloadStatus = DownloadStatus.UNPROCESSED;
 
 	/**
 	 * Occasionally, we want to navigate to somewhere other than the regular purl,
@@ -697,13 +697,23 @@ public class Document extends DocumentDeclaration
 		return getLocationMetadata() != null;
 	}
 
-	public int getDownloadStatus()
+	public DownloadStatus getDownloadStatus()
 	{
 		return downloadStatus;
 	}
 
-	public void setDownloadStatus(int downloadStatus)
+	public void setDownloadStatus(DownloadStatus downloadStatus)
 	{
 		this.downloadStatus = downloadStatus;
 	}
+	
+	public ParsedURL getLocationOrFirstAdditionLocation()
+	{
+		if (getLocation() != null)
+			return getLocation();
+		if (getAdditionalLocations() != null && getAdditionalLocations().size() > 0)
+			return getAdditionalLocations().get(0).getValue();
+		return null;
+	}
+	
 }

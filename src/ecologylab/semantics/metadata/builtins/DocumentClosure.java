@@ -139,7 +139,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 		{
 			if (!(downloadStatus == DownloadStatus.QUEUED || downloadStatus == DownloadStatus.UNPROCESSED))
 				return;
-			downloadStatus	= DownloadStatus.CONNECTING;
+			setDownloadStatusInternal(DownloadStatus.CONNECTING);
 		}
 		if (semanticsScope == null)	// this should NEVER happen!!!!!!!!!!!!!!!!!!!!
 		{
@@ -165,7 +165,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 		if (purlConnection.isGood() && documentParser != null)
 		{
 			// container or not (it could turn out to be an image or some other mime type), parse the baby!
-			downloadStatus	= DownloadStatus.PARSING;
+			setDownloadStatusInternal(DownloadStatus.PARSING);
 			if (documentParser.downloadingMessageOnConnect())
 				semanticsScope.displayStatus("Downloading " + location(), 2);
 			
@@ -185,7 +185,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 				handler.takeSemanticActions(metaMetadata, document, afterSemanticActions);
 			}
 			
-			downloadStatus	= DownloadStatus.DOWNLOAD_DONE;
+			setDownloadStatusInternal(DownloadStatus.DOWNLOAD_DONE);
 									
 //		 	if(Pref.lookupBoolean(CFPrefNames.CRAWL_CAREFULLY) && !documentParser.cacheHit) //infoCollector.getCrawlingSlow() && 
 //		 	{		 		
@@ -480,7 +480,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 		{
 			if (downloadStatus == DownloadStatus.RECYCLED)
 				return;
-			downloadStatus	= DownloadStatus.RECYCLED;
+			setDownloadStatusInternal(DownloadStatus.RECYCLED);
 		}
 		
 		if (documentParser != null)
@@ -579,7 +579,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 		{
 			if (downloadStatus != DownloadStatus.UNPROCESSED)
 				return false;
-			downloadStatus					= DownloadStatus.QUEUED;
+			setDownloadStatusInternal(DownloadStatus.QUEUED);
 			return true;
 		}
 	}
@@ -625,7 +625,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 	@Override
 	public void handleIoError(Throwable e)
 	{
-		downloadStatus	= DownloadStatus.IOERROR;
+		setDownloadStatusInternal(DownloadStatus.IOERROR);
 		document.setDownloadDone(true);
 		if (documentParser != null)
 			documentParser.handleIoError(e);
@@ -710,6 +710,18 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 		}
 	}
 	
+	/**
+	 * (this method does not lock DOWNLOAD_STATUS_LOCK!)
+	 * 
+	 * @param newStatus
+	 */
+	private void setDownloadStatusInternal(DownloadStatus newStatus)
+	{
+		this.downloadStatus = newStatus;
+		if (this.document != null)
+			document.setDownloadStatus(newStatus);
+	}
+
 	public boolean isUnprocessed()
 	{
 		return getDownloadStatus() == DownloadStatus.UNPROCESSED;
