@@ -684,7 +684,16 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 		else
 		{
 //			elementClass = tscope.getClassByTag(mmdField.getChildType());
-			elementClass = mmdField.getMetadataFieldDescriptor().getElementClassDescriptor().getDescribedClass();
+			ClassDescriptor elementClassDescriptor = mmdField.getMetadataFieldDescriptor().getElementClassDescriptor();
+			if (elementClassDescriptor != null)
+				elementClass = elementClassDescriptor.getDescribedClass();
+		}
+		
+		if (elementClass == null)
+		{
+			// we cannot determine the class of this collection. this may be due to lack of type
+			// specification there, but it may also be correct, e.g. for polymorphic fields
+			return false;
 		}
 
 		// build the result list and populate
