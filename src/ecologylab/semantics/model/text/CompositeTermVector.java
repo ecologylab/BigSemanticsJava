@@ -98,9 +98,7 @@ public class CompositeTermVector extends Observable implements Observer, ITermVe
 	public void update ( Observable o, Object arg )
 	{
 		Set set = (Set) arg;
-		if(set == null)
-			return;
-		if (set.contains(this))
+		if (set == null || set.contains(this))
 			return;
 		set.add(this);
 		
