@@ -14,5 +14,5 @@ public interface EditValueNotifier
 {
 	public void addEditValueListener(EditValueListener listener);
 	public void removeEditValueListener(EditValueListener listener);
-	public void fireEditValue(Metadata metadata, String fieldValueString);
+	public boolean fireEditValue(Metadata metadata, String fieldValueString);
 }

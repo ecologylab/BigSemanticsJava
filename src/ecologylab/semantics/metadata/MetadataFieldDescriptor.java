@@ -137,13 +137,17 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 
 /**
  * Edit the value of a scalar.
+ * 
+ * @return True if the value of the field is set; otherwise, false.
  */
 	@Override
-	public void fireEditValue(Metadata metadata, String fieldValueString)
+	public boolean fireEditValue(Metadata metadata, String fieldValueString)
 	{
+		boolean result = false;
 		if (isScalar())
 		{
-			if(this.set(metadata, fieldValueString))	// uses reflection to call a set method or access the field directly if there is not one.
+			result = this.set(metadata, fieldValueString);
+			if(result)	// uses reflection to call a set method or access the field directly if there is not one.
 			{
 				metadata.rebuildCompositeTermVector();	// makes this as if an hwSet().
 				
@@ -156,6 +160,8 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 				}
 			}
 		}
+		
+		return result;
 	}
 	
 	@Override
