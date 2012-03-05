@@ -49,7 +49,7 @@ public class TermDictionary implements ApplicationProperties
 																			{ // more aggressive
 																				// i.r.
 			// stop words
-			"about", "above", "across", "after", "again", "against", "all", "almost", "alone",
+			"about", "img", "above", "across", "after", "again", "against", "all", "almost", "alone",
 			"along", "already", "also", "although", "always", "am", "a.m", "among", "another",
 			"any", "anybody", "anyone", "anything", "anywhere", "are", "area", "areas", "around",
 			"as", "ask", "asked", "asking", "asks", "at", "away", "b", "back", "backed", "backing",
@@ -127,6 +127,7 @@ public class TermDictionary implements ApplicationProperties
 			"fields",
 			"thumbnail",
 			"thumbnails",
+			"doi","proceedings",//acm portal...
 
 			// agressive
 			"past", "headline", "headlines", "announcements", "help", "info", "leading", "company",

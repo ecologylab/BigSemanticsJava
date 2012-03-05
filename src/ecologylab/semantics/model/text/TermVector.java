@@ -378,7 +378,7 @@ public class TermVector extends FeatureVector<Term> implements ITermVector
 			for (Double tfIdf : tfIdfMap.keySet())
 			{
 				if (tfIdf < threshold)
-					break;
+					continue;
 				Term term	= tfIdfMap.get(tfIdf);
 				if(ignoreTV.map().get(term) == null) //This term is not in the ignoreTV
 					result.add(term);

@@ -525,7 +525,7 @@ ISimplSerializationPre, ISimplDeserializationPost
 		{
 			try
 			{
-			   orderedCompositeTermVectorCache = new OrderedNormalizedTermVectorCache(termVector().simplex());
+			   orderedCompositeTermVectorCache = new OrderedNormalizedTermVectorCache(termVector());
 			}
 			catch(Throwable t)
 			{

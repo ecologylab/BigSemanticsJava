@@ -1,7 +1,7 @@
 package ecologylab.semantics.model.text;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 
 import ecologylab.generic.Debug;
@@ -24,17 +24,17 @@ public class OrderedNormalizedTermVectorCache extends Debug
 		cachedNormalizedVectors = new HashMap<Integer, Vector<TermWithScore>>();
 	}
 	
-	public OrderedNormalizedTermVectorCache(TermVector termVector)
+	public OrderedNormalizedTermVectorCache(CompositeTermVector compositeTermVector)
 	{
 		this();
 		//debug("A metadata has been created!");
-		ArrayList<Term> blah = termVector.tfIdfTrim(.00001, new TermVector());
-		for(Term t: blah)
+		Map<Term, Double> blah = compositeTermVector.map();//.tfIdfTrim(.00001, new TermVector());
+		for(Term t: blah.keySet())
 		{
 			if(t != null)
 			{
 			   //debug(t.getWord() + "  "+termVector.tfIdf(t));
-			   orderedTerms.add(new TermWithScore(t, termVector.tfIdf(t)));
+			   orderedTerms.add(new TermWithScore(t, blah.get(t)));//compositeTermVector.tfIdf(t)));
 			}
 			else
 			{
