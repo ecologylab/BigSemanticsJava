@@ -391,15 +391,7 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 //		if (xpathString != null && xpathString.length() > 0)		
 //			xpathString = provider.xPathTagNamesToLower(xpathString);
 		
-		String contextNodeName = mmdField.getContextNode();
-		if (contextNodeName != null)
-		{
-			contextNode = (Node) params.get(contextNodeName);
-		}
-		if (contextNode == null)
-		{
-			contextNode = (Node) params.get(DOCUMENT_ROOT_NODE);
-		}
+		contextNode = findContextNodeIfNecessary(mmdField, contextNode, params);
 		
 		FieldParserElement fieldParserElement = mmdField.getFieldParserElement();
 		String fieldParserKey = mmdField.getFieldParserKey();
@@ -515,6 +507,21 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 			return null;
 
 		return result;
+	}
+
+	private Node findContextNodeIfNecessary(MetaMetadataField mmdField, Node currentContextNode,
+			Scope<Object> params)
+	{
+		String contextNodeName = mmdField.getContextNode();
+		if (contextNodeName != null)
+		{
+			currentContextNode = (Node) params.get(contextNodeName);
+		}
+		if (currentContextNode == null)
+		{
+			currentContextNode = (Node) params.get(DOCUMENT_ROOT_NODE);
+		}
+		return currentContextNode;
 	}
 	
 	private String getFieldParserValueByKey(Map<String, String> fieldParserContext, String fieldParserKey)
@@ -822,6 +829,8 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 //		if (xpathString != null)
 //			xpathString = this.provider.xPathTagNamesToLower(xpathString);
 		String fieldParserKey = mmdField.getFieldParserKey();
+		
+		contextNode = findContextNodeIfNecessary(mmdField, contextNode, params);
 
 		String evaluation = null;
 		if (xpathString != null && xpathString.length() > 0 && contextNode != null && fieldParserKey == null)

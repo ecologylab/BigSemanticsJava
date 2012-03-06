@@ -28,6 +28,8 @@ import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.seeding.SearchState;
 import ecologylab.semantics.seeding.Seed;
+import ecologylab.serialization.annotations.FieldUsage;
+import ecologylab.serialization.annotations.simpl_exclude_usage;
 import ecologylab.serialization.annotations.simpl_inherit;
 import ecologylab.serialization.annotations.simpl_scalar;
 
@@ -98,6 +100,7 @@ public class Document extends DocumentDeclaration
 	/**
 	 * used in the database.
 	 */
+	@simpl_exclude_usage(FieldUsage.SERIALIZATION_IN_STREAM)
 	@simpl_scalar
 	@mm_no
 	private DownloadStatus					downloadStatus = DownloadStatus.UNPROCESSED;
