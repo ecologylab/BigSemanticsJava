@@ -128,6 +128,7 @@ public class TermDictionary implements ApplicationProperties
 			"thumbnail",
 			"thumbnails",
 			"doi","proceedings",//acm portal...
+			"video","encylopedia", "html",//common search spamesque
 
 			// agressive
 			"past", "headline", "headlines", "announcements", "help", "info", "leading", "company",
