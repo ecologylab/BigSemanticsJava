@@ -1068,5 +1068,12 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 	{
 		currentMMstack.pop();
 	}
+	
+	@Override
+	public Metadata changeObjectIfNecessary(Metadata deserializedMetadata, MetadataFieldDescriptor mdf)
+	{
+		Document downloadedDoc = lookupDownloadedDocument(deserializedMetadata);
+		return downloadedDoc == null ? deserializedMetadata : downloadedDoc;
+	}
 
 }

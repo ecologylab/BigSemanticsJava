@@ -32,6 +32,12 @@ public class TestTranslationScopeDeSerialization extends TestTranslationScope
 				// TODO Auto-generated method stub
 
 			}
+
+			@Override
+			public ElementState changeObjectIfNecessary(ElementState o, FieldDescriptor fd)
+			{
+				return o;
+			}
 		};
 	}
 
