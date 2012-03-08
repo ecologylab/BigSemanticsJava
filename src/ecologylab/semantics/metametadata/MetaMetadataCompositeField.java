@@ -30,6 +30,7 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 			void typeChanged(String newType);
 			void extendsChanged(String newExtends);
 			void tagChanged(String newTag);
+			void usedForInlineMmdDefChanged(boolean usedForInlineMmdDef);
 	}
 
 	/**
@@ -77,7 +78,7 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 	private boolean						useClassLevelOtherTags	= false;
 	
 	private AttributeChangeListener	attributeChangeListener = null;
-
+	
 	public MetaMetadataCompositeField()
 	{
 		
@@ -550,12 +551,12 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 		{
 			MetaMetadataField kid = this.kids.get(kidKey);
 			generatedMmd.getChildMetaMetadata().put(kidKey, kid);
-			
 			kid.setParent(generatedMmd);
 		}
 		this.kids.clear();
 		
 		makeThisFieldUseMmd(previousName, generatedMmd);
+		this.setUsedForInlineMmdDef(true);
 		return generatedMmd;
 	}
 
@@ -648,4 +649,12 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 		return fd;
 	}
 
+	@Override
+	public void setUsedForInlineMmdDef(boolean usedForInlineMmdDef)
+	{
+		super.setUsedForInlineMmdDef(usedForInlineMmdDef);
+		if (this.attributeChangeListener != null)
+			attributeChangeListener.usedForInlineMmdDefChanged(usedForInlineMmdDef);
+	}
+	
 }

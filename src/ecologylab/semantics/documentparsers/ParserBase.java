@@ -303,7 +303,7 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 	 * @return true if some information is extracted, and every required field has value. false if
 	 *         nothing is extracted or a required field doesn't have value.
 	 */
-	protected boolean recursiveExtraction(MetaMetadataField mmdField, Metadata metadata,
+	protected boolean recursiveExtraction(MetaMetadataNestedField mmdField, Metadata metadata,
 			Node contextNode, Map<String, String> fieldParserContext, Scope<Object> params)
 	{
 		HashMapArrayList<String, MetaMetadataField> fieldSet = mmdField.getChildMetaMetadata();
@@ -312,11 +312,13 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 		
 		params.put(SURROUNDING_META_METADATA_FIELD, mmdField);
 
+		MetaMetadataNestedField targetParent = mmdField.isUsedForInlineMmdDef() ? mmdField.getInheritedMmd() : mmdField;
+		
 		synchronized (fieldSet)
 		{
 			for (MetaMetadataField field : fieldSet)
 			{
-				if (!field.isAuthoredChildOf(mmdField))
+				if (!field.isAuthoredChildOf(targetParent))
 				{
 					// if 'field' is purely inherited, we ignore it to prevent infinite loops.
 					// infinite loops can happen when 'field' uses the same mmd type as where it is defined,

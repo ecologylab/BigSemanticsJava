@@ -198,6 +198,12 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 				if (thisField.childTag == null)
 					thisField.childTag = newTag;
 			}
+
+			@Override
+			public void usedForInlineMmdDefChanged(boolean usedForInlineMmdDef)
+			{
+				thisField.setUsedForInlineMmdDef(usedForInlineMmdDef);
+			}
 		});
 		composite.setParent(this);
 		composite.setType(childType);
