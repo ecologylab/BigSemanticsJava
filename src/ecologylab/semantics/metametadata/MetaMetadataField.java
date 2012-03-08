@@ -317,6 +317,9 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
 	 */
 	private MetaMetadata																	declaringMmd						= null;
 	
+	@simpl_scalar
+	private boolean																				forceInherit						= false;
+	
 	public MetaMetadataField()
 	{
 
@@ -1118,5 +1121,25 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
 	{
 		this.extractAsHtml = extractAsHtml;
 	}
+
+	public boolean isForceInherit()
+	{
+		return forceInherit;
+	}
+
+	public void setForceInherit(boolean forceInherit)
+	{
+		this.forceInherit = forceInherit;
+	}
 	
+	public boolean isAuthoredChildOf(MetaMetadataField parentField)
+	{
+		if (parentField instanceof MetaMetadataCompositeField && this.parent() == parentField)
+			return true;
+		if (parentField instanceof MetaMetadataCollectionField
+				&& this.parent() == ((MetaMetadataCollectionField) parentField).getChildComposite())
+			return true;
+		return false;
+	}
+
 }

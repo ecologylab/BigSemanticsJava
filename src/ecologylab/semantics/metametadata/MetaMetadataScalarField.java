@@ -93,6 +93,13 @@ public class MetaMetadataScalarField extends MetaMetadataField
 			return filter.getRegex();
 		return null;
 	}
+	
+	public int getRegexGroup()
+	{
+		if (filter != null)
+			return filter.getGroup();
+		return 0;
+	}
 
 	/**
 	 * @return the replacement string

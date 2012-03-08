@@ -550,6 +550,7 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 		{
 			MetaMetadataField kid = this.kids.get(kidKey);
 			generatedMmd.getChildMetaMetadata().put(kidKey, kid);
+			
 			kid.setParent(generatedMmd);
 		}
 		this.kids.clear();

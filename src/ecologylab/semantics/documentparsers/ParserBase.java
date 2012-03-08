@@ -285,16 +285,6 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 		}
 	}
 	
-	private boolean isAuthoredChildOf(MetaMetadataField parentField, MetaMetadataField childField)
-	{
-		if (parentField instanceof MetaMetadataCompositeField && childField.parent() == parentField)
-			return true;
-		if (parentField instanceof MetaMetadataCollectionField
-				&& childField.parent() == ((MetaMetadataCollectionField) parentField).getChildComposite())
-			return true;
-		return false;
-	}
-
 	/**
 	 * Recursively extract information from the sub DOM tree rooted at current context node to a given
 	 * field on the given metadata, using given meta-metadata field information.
@@ -326,7 +316,7 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 		{
 			for (MetaMetadataField field : fieldSet)
 			{
-				if (!isAuthoredChildOf(mmdField, field))
+				if (!field.isAuthoredChildOf(mmdField))
 				{
 					// if 'field' is purely inherited, we ignore it to prevent infinite loops.
 					// infinite loops can happen when 'field' uses the same mmd type as where it is defined,
@@ -940,7 +930,7 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 				// without replacementString, we search for the input pattern as the evaluation result
 				if (matcher.find())
 				{
-					evaluation = matcher.group();
+					evaluation = matcher.group(field.getRegexGroup());
 //					debug(String.format("regex pattern hit: regex=%s", regularExpression));
 				}
 				else

@@ -17,6 +17,10 @@ public class RegexFilter extends ElementState
 	@simpl_scalar
 	@simpl_hints(Hint.XML_ATTRIBUTE)
 	private Pattern	regex;
+	
+	@simpl_scalar
+	@simpl_hints(Hint.XML_ATTRIBUTE)
+	private int			group;
 
 	@simpl_scalar
 	@simpl_hints(Hint.XML_ATTRIBUTE)
@@ -61,6 +65,16 @@ public class RegexFilter extends ElementState
 		return javaReplace;
 	}
 	
+	public int getGroup()
+	{
+		return group;
+	}
+
+	public void setGroup(int group)
+	{
+		this.group = group;
+	}
+
 	public static void main(String[] args)
 	{
 		String[] testPatterns = {
