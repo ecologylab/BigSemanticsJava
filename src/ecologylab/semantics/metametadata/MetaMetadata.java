@@ -643,6 +643,11 @@ implements IMappable<String>//, HasLocalTranslationScope
 				this.localMetadataTranslationScope = localMetadataTScope;
 			else
 				this.localMetadataTranslationScope = metadataTScope;
+			
+			// we should have stuffs in the scope already
+			thisCd.resolvePolymorphicAnnotations();
+			thisCd.resolveUnresolvedClassesAnnotationFDs();
+			thisCd.resolveUnresolvedScopeAnnotationFDs();
 		}
 		
 		// return the bound metadata class descriptor

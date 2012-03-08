@@ -673,6 +673,7 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 		SimplTypesScope tscope = semanticsScope.getMetadataTranslationScope();
 		Class elementClass = null;
 		MetadataScalarType scalarType = null;
+		MetadataFieldDescriptor metadataFieldDescriptor = mmdField.getMetadataFieldDescriptor();
 		if (mmdField.isCollectionOfScalars())
 		{
 			// registered at MetadataScalarScalarType.init()
@@ -691,7 +692,13 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 		else
 		{
 //			elementClass = tscope.getClassByTag(mmdField.getChildType());
-			ClassDescriptor elementClassDescriptor = mmdField.getMetadataFieldDescriptor().getElementClassDescriptor();
+			ClassDescriptor elementClassDescriptor = metadataFieldDescriptor.getElementClassDescriptor();
+			if (metadataFieldDescriptor.isPolymorphic())
+			{
+				String polymorphTagName = mmdField.getChildComposite().getInheritedMmd().getTagForTranslationScope();
+				if (polymorphTagName != null)
+					elementClassDescriptor = metadataFieldDescriptor.elementClassDescriptor(polymorphTagName);
+			}
 			if (elementClassDescriptor != null)
 				elementClass = elementClassDescriptor.getDescribedClass();
 		}
@@ -766,7 +773,7 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 		// if more than 0 elements are extracted, assign the collection back
 		if (elements.size() > 0)
 		{
-			Field javaField = mmdField.getMetadataFieldDescriptor().getField();
+			Field javaField = metadataFieldDescriptor.getField();
 			ReflectionTools.setFieldValue(metadata, javaField, elements);
 			return true;
 		}
