@@ -874,6 +874,20 @@ ISimplSerializationPre, ISimplDeserializationPost
 			boolean encapsulateInTable, boolean hideNextCompositLabel) throws IllegalArgumentException,
 			IllegalAccessException, IOException, SIMPLTranslationException
 	{
+		renderHtml(htmlTable, serializationContext, recursing, encapsulateInTable,
+				hideNextCompositLabel, new HashSet());
+	}
+
+	public void renderHtml(Table htmlTable, TranslationContext serializationContext, boolean recursing,
+			boolean encapsulateInTable, boolean hideNextCompositLabel, Set bookKeeper) throws IllegalArgumentException,
+			IllegalAccessException, IOException, SIMPLTranslationException
+	{
+		// TODO currently, when there is a back reference, we render nothing to the HTML
+		// but what we actually need is to render a title or part of the metadata with a hyperlink to
+		// the real data.
+		if (bookKeeper.contains(this))
+			return;
+		bookKeeper.add(this);
 		
 		//System.out.println("   debug report 1: metadata name form top is "+this.getMetaMetadataName());
 
@@ -983,7 +997,7 @@ ISimplSerializationPre, ISimplDeserializationPost
 									Table nestedTable = new Table();
 									Metadata collectionSubElementState = (Metadata) next;
 																	
-									collectionSubElementState.renderHtml(nestedTable, serializationContext, true, true, false); // This collection may add a composite element....
+									collectionSubElementState.renderHtml(nestedTable, serializationContext, true, true, false, bookKeeper); // This collection may add a composite element....
 									
 									//remove last row of this table because it is empty
 									if(nestedTable.rows.size() > 1)
@@ -1014,7 +1028,7 @@ ISimplSerializationPre, ISimplDeserializationPost
 							else
 							{
 								Table nestedTable = addLabelAndReturnTable(compositeTr, ((Metadata)thatReferenceObject).numberOfVisibleFields(false), (Metadata)thatReferenceObject, (MetaMetadataCompositeField) mmdField);
-								nestedMD.renderHtml(nestedTable, serializationContext, true, false, true);  //also called with a scholarly article...
+								nestedMD.renderHtml(nestedTable, serializationContext, true, false, true, bookKeeper);  //also called with a scholarly article...
 								compositeTd.items.add(nestedTable);								
 							}							
 							
