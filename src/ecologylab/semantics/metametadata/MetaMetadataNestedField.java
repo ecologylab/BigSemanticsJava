@@ -391,16 +391,17 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 			// recursively process sub-fields
 			if (thatChild instanceof MetaMetadataScalarField)
 			{
-				// process regex filter
-				MetaMetadataScalarField scalar = (MetaMetadataScalarField) thatChild;
-				if (scalar.getRegexPattern() != null)
-				{
-					MetadataFieldDescriptor fd = scalar.getMetadataFieldDescriptor();
-					if (fd != null)
-						fd.setRegexFilter(scalar.getRegexPattern(), scalar.getRegexReplacement());
-					else
-						warning("Encountered null fd for scalar: " + scalar);
-				}
+				// no! we can't add regex filters to field descriptors, because field descriptors
+				// are shared between fields and inherited fields.
+//				MetaMetadataScalarField scalar = (MetaMetadataScalarField) thatChild;
+//				if (scalar.getRegexPattern() != null)
+//				{
+//					MetadataFieldDescriptor fd = scalar.getMetadataFieldDescriptor();
+//					if (fd != null)
+//						fd.setRegexFilter(scalar.getRegexPattern(), scalar.getRegexReplacement());
+//					else
+//						warning("Encountered null fd for scalar: " + scalar);
+//				}
 			}
 			else if (thatChild instanceof MetaMetadataNestedField && thatChild.hasChildren())
 			{

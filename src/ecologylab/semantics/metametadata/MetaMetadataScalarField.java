@@ -165,29 +165,26 @@ public class MetaMetadataScalarField extends MetaMetadataField
 		if (this.compositeScalar)
 			metaInfoBuf.add(new MetaInformation(simpl_composite_as_scalar.class));
 
-		// @filter
-		if (filter != null && getMetaMetadataParser().equals(ParserBase.DIRECT_BINDING_PARSER))
+		// @simpl_filter
+		if (filter != null && filter.getRegex() != null && filter.getRegex().pattern().length() > 0
+				&& getMetaMetadataParser().equals(ParserBase.DIRECT_BINDING_PARSER))
 		{
-			String regex = filter.getJavaRegex();
-			String replace = filter.getJavaReplace();
-			MetaInformation simplFilter;
-			if (replace == null)
+			List<String> argNames = new ArrayList<String>();
+			List<Object> argValues = new ArrayList<Object>();
+			argNames.add("regex");
+			argValues.add(filter.getJavaRegex());
+			if (filter.getGroup() > 0)
 			{
-				simplFilter = new MetaInformation(
-						simpl_filter.class,
-						new String[] { "regex" },
-						new Object[] { regex }
-						);
+				argNames.add("group");
+				argValues.add(filter.getGroup());
 			}
-			else
+			if (filter.getReplace() != null)
 			{
-				simplFilter = new MetaInformation(
-						simpl_filter.class,
-						new String[] { "regex", "replace" },
-						new Object[] { regex, replace }
-						);
+				argNames.add("replace");
+				argValues.add(filter.getReplace());
 			}
-			metaInfoBuf.add(simplFilter);
+			metaInfoBuf.add(new MetaInformation(simpl_filter.class, argNames.toArray(new String[] {}),
+					argValues.toArray()));
 		}
 	}
 
@@ -507,6 +504,8 @@ public class MetaMetadataScalarField extends MetaMetadataField
 						scalarType2,
 						this.getHint(),
 						javaTypeName);
+//				if (filter != null && filter.getRegex() != null && filter.getRegex().pattern().length() > 0)
+//					fd.setRegexFilter(filter.getRegex(), filter.getGroup(), filter.getReplace());
 				this.metadataFieldDescriptor = fd;
 			}
 		}
