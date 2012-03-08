@@ -149,11 +149,11 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 		v = v.replaceAll("^[\\s]+", "");
 		if (v.length() > 0)
 		{
-			if (s.length() > 0)
-				if (s.charAt(s.length() - 1) != ' ')
-				{
-					s += " ";
-				}
+//			if (s.length() > 0)
+//				if (s.charAt(s.length() - 1) != ' ')
+//				{
+//					s += " ";
+//				}
 			s += v;
 		}
 		return s;
