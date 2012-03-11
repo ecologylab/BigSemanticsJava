@@ -608,9 +608,12 @@ public class Document extends DocumentDeclaration
 			result	= getLocationMetadata().toString();
 		else
 		{
-			StringBuilder buffy	= new StringBuilder(getLocationMetadata().toString()).append(',');
+			StringBuilder buffy	= new StringBuilder(getLocationMetadata().toString());
 			for (MetadataParsedURL otherLocation : getAdditionalLocations())
+			{
+				buffy.append(',');
 				buffy.append(otherLocation.toString());
+			}
 			result	= buffy.toString();
 		}
 		return result;
