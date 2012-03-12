@@ -925,6 +925,7 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 
 		if (regularExpression != null)
 		{
+			int group = field.getRegexGroup();
 			Matcher matcher = regularExpression.matcher(evaluation);
 			String replacementString = field.getRegexReplacement();
 			if (replacementString == null)
@@ -932,8 +933,14 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 				// without replacementString, we search for the input pattern as the evaluation result
 				if (matcher.find())
 				{
-					evaluation = matcher.group(field.getRegexGroup());
+					if (group <= matcher.groupCount())
+						evaluation = matcher.group(field.getRegexGroup());
 //					debug(String.format("regex pattern hit: regex=%s", regularExpression));
+					else
+					{
+						warning("RegEx capturing group not found: regex=" + regularExpression + ", content=" + evaluation);
+						evaluation = "";
+					}
 				}
 				else
 				{
