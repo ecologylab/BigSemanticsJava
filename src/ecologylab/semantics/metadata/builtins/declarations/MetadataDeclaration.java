@@ -11,6 +11,7 @@ package ecologylab.semantics.metadata.builtins.declarations;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
+import ecologylab.semantics.metadata.builtins.Annotation;
 import ecologylab.semantics.metadata.builtins.MetadataBuiltinsTranslationScope;
 import ecologylab.semantics.metadata.mm_name;
 import ecologylab.semantics.metadata.scalar.MetadataString;
@@ -52,6 +53,13 @@ public abstract class MetadataDeclaration
 	@simpl_scope("repository_metadata")
 	@mm_name("linked_metadata_list")
 	private List<Metadata> linkedMetadataList;
+
+	/** 
+	 *User annotations.
+	 */ 
+	@simpl_collection("annotation")
+	@mm_name("annotations")
+	private List<Annotation> annotations;
 
 	public MetadataDeclaration()
 	{ super(); }
@@ -106,5 +114,15 @@ public abstract class MetadataDeclaration
 	public void setLinkedMetadataList(List<Metadata> linkedMetadataList)
 	{
 		this.linkedMetadataList = linkedMetadataList;
+	}
+
+	public List<Annotation> getAnnotations()
+	{
+		return annotations;
+	}
+
+	public void setAnnotations(List<Annotation> annotations)
+	{
+		this.annotations = annotations;
 	}
 }
