@@ -55,6 +55,7 @@ import ecologylab.semantics.metametadata.MetaMetadataField;
 import ecologylab.semantics.metametadata.MetaMetadataNestedField;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.metametadata.MetaMetadataScalarField;
+import ecologylab.semantics.metametadata.MetaMetadataValueField;
 import ecologylab.semantics.namesandnums.DocumentParserTagNames;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.DeserializationHookStrategy;
@@ -191,45 +192,56 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 				String nodeName 	= defVar.getNode();
 				String varName 		= defVar.getName();
 				QName varType 		= defVar.getType();
+				String varValue		= defVar.getValue();
 				Node contextNode	= null;
+				
 				try
 				{
-					if (nodeName == null)
+					// Does the var have a constant value?
+					if(varValue == null)
 					{
-						// apply the XPath on the document root.
-						contextNode = getDom();
-					}
-					else
-					{
-						// get the context node from parameters
-						contextNode = (Node) parameters.get(nodeName);
-					}
-
-					if (varType != null)
-					{
-						// apply xpath and get the node list
-						if (varType == XPathConstants.NODESET)
+						// No. Evaluate the Xpath to obtain the value. 
+						if (nodeName == null)
 						{
-							NodeList nList = (NodeList) xpath.evaluate(xpathExpression, contextNode, varType);
-
-							// put the value in the parametrers
-							parameters.put(varName, nList);
+							// apply the XPath on the document root.
+							contextNode = getDom();
 						}
-						else if (varType == XPathConstants.NODE)
+						else
 						{
-							Node n = (Node) xpath.evaluate(xpathExpression, contextNode, varType);
-
-							// put the value in the parametrers
-							parameters.put(varName, n);
+							// get the context node from parameters
+							contextNode = (Node) parameters.get(nodeName);
 						}
-					}
-					else
+	
+						if (varType != null)
+						{
+							// apply xpath and get the node list
+							if (varType == XPathConstants.NODESET)
+							{
+								NodeList nList = (NodeList) xpath.evaluate(xpathExpression, contextNode, varType);
+	
+								// put the value in the parametrers
+								parameters.put(varName, nList);
+							}
+							else if (varType == XPathConstants.NODE)
+							{
+								Node n = (Node) xpath.evaluate(xpathExpression, contextNode, varType);
+	
+								// put the value in the parametrers
+								parameters.put(varName, n);
+							}
+						}
+						else
+						{
+							// its gonna be a simple string evaluation
+							String evaluation = xpath.evaluate(xpathExpression, contextNode);
+	
+							// put it into returnValueMap
+							parameters.put(varName, evaluation);
+						}
+					}else
 					{
-						// its gonna be a simple string evaluation
-						String evaluation = xpath.evaluate(xpathExpression, contextNode);
-
-						// put it into returnValueMap
-						parameters.put(varName, evaluation);
+						// If we have a variable value, we'll just use it! 
+						parameters.put(varName, varValue);
 					}
 				}
 				catch (Exception e)
@@ -825,8 +837,7 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 			Node contextNode, Map<String, String> fieldParserContext, Scope<Object> params)
 	{
 		String xpathString = mmdField.getXpath();
-//		if (xpathString != null)
-//			xpathString = this.provider.xPathTagNamesToLower(xpathString);
+
 		String fieldParserKey = mmdField.getFieldParserKey();
 		
 		contextNode = findContextNodeIfNecessary(mmdField, contextNode, params);
@@ -846,7 +857,6 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 				{
 					evaluation = xpath.evaluate(xpathString, contextNode);
 				}
-//				debug("Evaluated : " + xpathString + " to :" + evaluation);
 			}
 			catch (Exception e)
 			{
@@ -859,8 +869,16 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 		{
 			evaluation = fieldParserContext.get(fieldParserKey);
 		}
-		else
-			return false;
+		else if (!mmdField.hasConcatenateValues())			
+			return false; // This is the final catch all. 
+		
+		if(evaluation == null)
+		{
+			evaluation = ""; // Set an empty string to concatenate to.
+		}
+		
+		evaluation = concatenateValues(evaluation, mmdField, metadata, params);
+				
 
 		// after we have evaluated the expression we might need to modify it.
 		evaluation = applyPrefixAndRegExOnEvaluation(evaluation, mmdField);
@@ -870,6 +888,48 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 //		metadata.setByTagName(mmdField.getTagForTranslationScope(), evaluation, this);
 		metadata.setByFieldName(mmdField.getFieldNameInJava(false), evaluation, this);
 		return true;
+	}
+
+
+
+	/**
+	 * Handles concatenation semantics for a field value. 
+	 * @param evaluation String originally in the scalar value (will be appended at the beginning of the string
+	 * @param mmdField The scalar field with values to concatenate
+	 * @param metadata Metadata object that contains the field
+	 * @param params Scope of parsing with variables / etc
+	 * @return String value concatenated to pass onto other tasks (like regexing)
+	 */
+	private String concatenateValues(String evaluation, MetaMetadataScalarField mmdField, 
+			Metadata metadata, Scope<Object> params) 
+	{
+		if(mmdField.hasConcatenateValues())
+		{
+			List<MetaMetadataValueField> fields = mmdField.getConcatenateValues();
+			
+			StringBuffer buffy = new StringBuffer();
+			
+			buffy.append(evaluation); //If we have a value already for the mmd field, append it at the beginning
+			
+			for(MetaMetadataValueField v : fields)
+			{
+				String varValue = v.getReferencedValue(mmdField, metadata, params);			
+
+				if(varValue == null)
+				{
+					varValue = "";
+					warning("Attempted to concatenate null value from value referenced as: " +v.getReferenceName());
+				}
+				
+				buffy.append(varValue);
+			}
+
+			return buffy.toString();
+		}
+		else
+		{
+			return evaluation;
+		}
 	}
 
 	/**
