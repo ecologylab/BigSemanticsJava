@@ -26,6 +26,13 @@ public class TestTranslationScopeDeSerialization extends TestTranslationScope
 			}
 
 			@Override
+			public void deserializationInHook(ElementState o, FieldDescriptor fd)
+			{
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
 			public void deserializationPostHook(
 					ElementState e, FieldDescriptor fd)
 			{

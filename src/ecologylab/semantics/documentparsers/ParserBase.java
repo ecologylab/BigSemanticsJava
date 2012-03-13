@@ -1015,7 +1015,10 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 
 	Stack<MetaMetadataNestedField>	currentMMstack	= new Stack<MetaMetadataNestedField>();
 
-	boolean deserializingRoot	= true;
+	boolean													deserializingRoot	= true;
+
+	boolean													polymorphMmd			= false;
+	
 	/**
 	 * For the root, compare the meta-metadata from the binding with the one we started with. Down the
 	 * hierarchy, try to perform similar bindings.
@@ -1041,6 +1044,8 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 				metaMetadata														= semanticsScope.getMetaMetadataRepository().getMMByName(tagName);
 			}
 			deserializedMetadata.setMetaMetadata(metaMetadata);
+			
+			polymorphMmd = true;
 
 			currentMMstack.push(metaMetadata);
 		}
@@ -1059,6 +1064,7 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 			{
 				String tagName = ClassDescriptor.getClassDescriptor(deserializedMetadata).getTagName();
 				childMMComposite	= semanticsScope.getMetaMetadataRepository().getMMByName(tagName);
+				polymorphMmd = true;
 			}
 			else
 			{
@@ -1069,6 +1075,29 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 		}
 	}
 
+	@Override
+	public void deserializationInHook(Metadata deserializedMetadata, MetadataFieldDescriptor mfd)
+	{
+		if (polymorphMmd) // for efficiency; if it is not polymorphic case we don't have to look up mmd at this point of time
+		{
+			String mmName = deserializedMetadata.getMetaMetadataName();
+			if (mmName != null && mmName.length() > 0)
+			{
+				MetaMetadata trueMm = semanticsScope.getMetaMetadataRepository().getMMByName(mmName);
+				if (trueMm != null)
+				{
+					debug(String.format("setting [%s].metaMetadata to %s (mm_name=%s)...", deserializedMetadata, trueMm, mmName)); 
+					deserializedMetadata.setMetaMetadata(trueMm);
+				}
+				else
+				{
+					warning("polymorphicly looking up meta-metadata failed: cannot find mmd named as " + mmName);
+				}
+			}
+			polymorphMmd = true;
+		}
+	}
+	
 	@Override
 	public void deserializationPostHook(Metadata deserializedMetadata, MetadataFieldDescriptor mfd)
 	{
