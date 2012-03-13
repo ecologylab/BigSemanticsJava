@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -40,6 +41,7 @@ import ecologylab.semantics.seeding.Seed;
 import ecologylab.semantics.seeding.SeedDistributor;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.SimplTypesScope;
+import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.formatenums.StringFormat;
 import ecologylab.serialization.library.geom.PointInt;
 
@@ -358,10 +360,18 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 				{
 					// read from a ZIP file, which should be the packed composition file
 					String entryName = ancestor.toURI().relativize(file.toURI()).toString();
+					entryName = URLDecoder.decode(entryName, "utf-8");
 					ZipFile zipFile = new ZipFile(ancestor);
 					ZipEntry entry = zipFile.getEntry(entryName);
-					InputStream in = zipFile.getInputStream(entry);
-					purlConnection.streamConnect(in);
+					if (entry == null)
+					{
+						warning("No zip entry found: " + entryName);
+					}
+					else
+					{
+						InputStream in = zipFile.getInputStream(entry);
+						purlConnection.streamConnect(in);
+					}
 				}
 			}
 			else if (file.isDirectory())
