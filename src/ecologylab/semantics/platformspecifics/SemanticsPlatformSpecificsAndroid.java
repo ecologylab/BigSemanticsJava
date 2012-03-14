@@ -1,6 +1,6 @@
 package ecologylab.semantics.platformspecifics;
 
-public class SemanticsPlatformSpecificsSun implements ISemanticsPlatformSpecifics
+public class SemanticsPlatformSpecificsAndroid implements ISemanticsPlatformSpecifics
 {
 	static final float	MIN_STROKE_VALUE	= .8f;
 
