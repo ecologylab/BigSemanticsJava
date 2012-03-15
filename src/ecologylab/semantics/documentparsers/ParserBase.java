@@ -26,6 +26,7 @@ import javax.xml.xpath.XPathFactory;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import ecologylab.appframework.types.prefs.Pref;
 import ecologylab.collections.Scope;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.generic.ReflectionTools;
@@ -78,6 +79,8 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 		SemanticActionsKeyWords, DeserializationHookStrategy<Metadata, MetadataFieldDescriptor>
 {
 
+	public static final boolean	DONOT_LOOKUP_DOWNLOADED_DOCUMENT	= Pref.lookupBoolean("donot_lookup_downloaded_documents", false);
+	
 	protected XPath			xpath;
 
 	protected ParsedURL	truePURL;
@@ -571,10 +574,13 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 		
 		if (recursiveExtraction(mmdField, thisMetadata, thisNode, thisFieldParserContext, params))
 		{
-			Document downloadedMetadata = lookupDownloadedDocument(thisMetadata);
-			if (downloadedMetadata != null)
+			if (!DONOT_LOOKUP_DOWNLOADED_DOCUMENT)
 			{
-				thisMetadata = downloadedMetadata;
+				Document downloadedMetadata = lookupDownloadedDocument(thisMetadata);
+				if (downloadedMetadata != null)
+				{
+					thisMetadata = downloadedMetadata;
+				}
 			}
 			
 			thisMetadata.setMetaMetadata(mmdField);
@@ -733,10 +739,13 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 //				if (recursiveExtraction(mmdField.getChildComposite(), element, thisNode, thisFieldParserContext, params))
 				if (recursiveExtraction(mmdField, element, thisNode, thisFieldParserContext, params))
 				{
-					Document downloadedDocument = lookupDownloadedDocument(element);
-					if (downloadedDocument != null)
+					if (!DONOT_LOOKUP_DOWNLOADED_DOCUMENT)
 					{
-						element = downloadedDocument;
+						Document downloadedDocument = lookupDownloadedDocument(element);
+						if (downloadedDocument != null)
+						{
+							element = downloadedDocument;
+						}
 					}
 					
 					element.setMetaMetadata(mmdField);
@@ -1167,8 +1176,12 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 	@Override
 	public Metadata changeObjectIfNecessary(Metadata deserializedMetadata, MetadataFieldDescriptor mdf)
 	{
-		Document downloadedDoc = lookupDownloadedDocument(deserializedMetadata);
-		return downloadedDoc == null ? deserializedMetadata : downloadedDoc;
+		if (!DONOT_LOOKUP_DOWNLOADED_DOCUMENT)
+		{
+			Document downloadedDoc = lookupDownloadedDocument(deserializedMetadata);
+			return downloadedDoc == null ? deserializedMetadata : downloadedDoc;
+		}
+		return deserializedMetadata;
 	}
 
 }
