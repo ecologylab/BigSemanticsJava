@@ -9,6 +9,7 @@ package ecologylab.semantics.metadata.builtins.declarations;
  */
 
 import ecologylab.semantics.metadata.Metadata;
+import ecologylab.semantics.metadata.builtins.Annotation;
 import ecologylab.semantics.metadata.builtins.Clipping;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.MetadataBuiltinsTranslationScope;
@@ -37,6 +38,13 @@ public abstract class InformationCompositionDeclaration extends Document
 	@simpl_scope("repository_media")
 	@mm_name("media")
 	private List<Metadata> media;
+
+	/** 
+	 *User annotations.
+	 */ 
+	@simpl_collection("annotation")
+	@mm_name("annotations")
+	private List<Annotation> annotations;
 
 	@simpl_scalar
 	private MetadataFloat version;
@@ -70,6 +78,16 @@ public abstract class InformationCompositionDeclaration extends Document
 	public void setMedia(List<Metadata> media)
 	{
 		this.media = media;
+	}
+
+	public List<Annotation> getAnnotations()
+	{
+		return annotations;
+	}
+
+	public void setAnnotations(List<Annotation> annotations)
+	{
+		this.annotations = annotations;
 	}
 
 	public MetadataFloat	version()
