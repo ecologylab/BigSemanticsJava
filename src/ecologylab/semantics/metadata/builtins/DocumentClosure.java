@@ -679,19 +679,27 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 	
 	public void addContinuation(Continuation<DocumentClosure> continuation)
 	{
-		continuations().add(continuation);
+		synchronized (continuations)
+		{
+			continuations().add(continuation);
+		}
 	}
 	public void addContinuationBefore(Continuation<DocumentClosure> continuation)
 	{
-		continuations().add(0, continuation);
+		synchronized (continuations)
+		{
+			continuations().add(0, continuation);
+		}
 	}	
 
 	public void addContinuations(ArrayList<Continuation<DocumentClosure>> incomingContinuations)
 	{
-		ArrayList<Continuation<DocumentClosure>> continuations = continuations();
-		
-		for (Continuation<DocumentClosure> continuation: incomingContinuations)
-			continuations.add(continuation);
+		synchronized (continuations)
+		{
+			ArrayList<Continuation<DocumentClosure>> continuations = continuations();
+			for (Continuation<DocumentClosure> continuation: incomingContinuations)
+				continuations.add(continuation);
+		}
 	}
 
 	public ArrayList<Continuation<DocumentClosure>> getContinuations()
@@ -804,10 +812,24 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 		if (continuations == null)
 			return;
 		
-		List<Continuation<DocumentClosure>> currentContinuations = new ArrayList<Continuation<DocumentClosure>>(continuations);
-		for (Continuation<DocumentClosure> continuation: currentContinuations)
+		List<Continuation<DocumentClosure>> currentContinuations;
+		synchronized (continuations)
 		{
-			continuation.callback(o);
+			currentContinuations = new ArrayList<Continuation<DocumentClosure>>(continuations);
+		}
+		if (currentContinuations != null)
+		{
+			for (Continuation<DocumentClosure> continuation: currentContinuations)
+			{
+				try
+				{
+				continuation.callback(o);
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+				}
+			}
 		}
 		
 		// wait to recycle continuations until after they have been called.
