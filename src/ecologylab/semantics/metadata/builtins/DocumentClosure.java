@@ -503,9 +503,9 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 
 		initialPURL			= null;
 
-		if (continuations != null)
-			continuations.clear();	
-		continuations		= null;
+//		if (continuations != null)
+//			continuations.clear();	
+//		continuations		= null;
 			
 		//??? should we recycle Document here -- under what circumstances???
 		if (recycleDocument)
@@ -808,6 +808,13 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 		for (Continuation<DocumentClosure> continuation: currentContinuations)
 		{
 			continuation.callback(o);
+		}
+		
+		// wait to recycle continuations until after they have been called.
+		if (isRecycled())
+		{
+			continuations.clear();	
+			continuations		= null;
 		}
 	}
 	
