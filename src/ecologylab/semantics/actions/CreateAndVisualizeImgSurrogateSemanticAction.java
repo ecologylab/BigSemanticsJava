@@ -60,7 +60,7 @@ class CreateAndVisualizeImgSurrogateSemanticAction
 		{
 			//TODO add to global collections?! if already there merge!
 		}
-		if (image != null)
+		if (image != null && image.getLocation() != null)
 		{
 			image.setSemanticsSessionScope(sessionScope);
 
