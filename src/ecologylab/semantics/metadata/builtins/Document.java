@@ -722,4 +722,13 @@ public class Document extends DocumentDeclaration
 		return null;
 	}
 	
+	/**
+	 * Get a collection of clippings, if we have one.
+	 * 
+	 * @return always null in the base class
+	 */
+	public List<Clipping> getClippings()
+	{
+		return null;
+	}
 }
