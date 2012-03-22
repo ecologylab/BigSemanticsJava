@@ -18,6 +18,7 @@ import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.namesandnums.SemanticsNames;
 import ecologylab.serialization.annotations.simpl_collection;
 import ecologylab.serialization.annotations.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_other_tags;
 import ecologylab.serialization.annotations.simpl_scalar;
 import ecologylab.serialization.annotations.simpl_scope;
 import java.lang.Integer;
@@ -32,9 +33,10 @@ public abstract class ClippableDocumentDeclaration<ME extends ClippableDocument<
 	 *Clippings based on this.
 	 */ 
 	@simpl_collection
+	@simpl_other_tags({"clippings"})
 	@simpl_scope("repository_clippings")
-	@mm_name("clippings")
-	private List<MediaClipping<ME>> clippings;
+	@mm_name("clippings_this_is_in")
+	private List<MediaClipping<ME>> clippingsThisIsIn;
 
 	@simpl_scalar
 	private MetadataInteger width;
@@ -50,14 +52,14 @@ public abstract class ClippableDocumentDeclaration<ME extends ClippableDocument<
 	}
 
 
-	public List<MediaClipping<ME>> getClippings()
+	public List<MediaClipping<ME>> getClippingsThisIsIn()
 	{
-		return clippings;
+		return clippingsThisIsIn;
 	}
 
-	public void setClippings(List<MediaClipping<ME>> clippings)
+	public void setClippingsThisIsIn(List<MediaClipping<ME>> clippingsThisIsIn)
 	{
-		this.clippings = clippings;
+		this.clippingsThisIsIn = clippingsThisIsIn;
 	}
 
 	public MetadataInteger	width()
