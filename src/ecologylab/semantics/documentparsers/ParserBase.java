@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -34,6 +35,8 @@ import ecologylab.generic.StringTools;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.actions.SemanticActionsKeyWords;
+import ecologylab.semantics.collecting.DocumentDownloadingMonitor;
+import ecologylab.semantics.collecting.DocumentDownloadedEventHandler;
 import ecologylab.semantics.collecting.DownloadStatus;
 import ecologylab.semantics.collecting.LinkedMetadataMonitor;
 import ecologylab.semantics.collecting.SemanticsGlobalScope;
@@ -79,7 +82,9 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 		SemanticActionsKeyWords, DeserializationHookStrategy<Metadata, MetadataFieldDescriptor>
 {
 
-	public static final boolean	DONOT_LOOKUP_DOWNLOADED_DOCUMENT	= Pref.lookupBoolean("donot_lookup_downloaded_documents", false);
+	public static final boolean	DONOT_LOOKUP_DOWNLOADED_DOCUMENT			= Pref.lookupBoolean("donot_lookup_downloaded_documents", false);
+
+	public static final boolean	DONOT_SETUP_DOCUMENT_GRAPH_CALLBACKS	= Pref.lookupBoolean("donot_setup_document_graph_callbacks", false);
 	
 	protected XPath			xpath;
 
@@ -583,6 +588,11 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 				}
 			}
 			
+			if (!DONOT_SETUP_DOCUMENT_GRAPH_CALLBACKS)
+			{
+				setupDocumentChangedEventListener(mmdField, metadata, thisMetadata);
+			}
+			
 			thisMetadata.setMetaMetadata(mmdField);
 			lookupTrueMetaMetadata(mmdField.getRepository(), thisMetadata);
 			// TODO check for polymorphism. if this is an inherent polymorphic fields, we may need to
@@ -602,7 +612,31 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 
 		return false;
 	}
-	
+
+	/**
+	 * 
+	 * @param mmdField
+	 * @param hostMetadata
+	 * @param docToDownload
+	 * @param isCollection
+	 */
+	private void setupDocumentChangedEventListener(MetaMetadataNestedField mmdField,
+			Metadata hostMetadata, Metadata docToDownload)
+	{
+		if (docToDownload instanceof Document)
+		{
+			Document doc = (Document) docToDownload;
+			if (doc.getDownloadStatus() != DownloadStatus.DOWNLOAD_DONE)
+			{
+				ParsedURL listeningLoc = doc.getLocation();
+				DocumentDownloadingMonitor monitor = semanticsScope.getDocumentDownloadingMonitor();
+				DocumentDownloadedEventHandler downloadedEventListener = new DocumentDownloadedEventHandler();
+				monitor.listenForDocumentDownloading(hostMetadata, listeningLoc, mmdField
+						.getMetadataFieldDescriptor().getField(), downloadedEventListener);
+			}
+		}
+	}
+
 	/**
 	 * looking at the global document collection, and reuse exising document object if it is already
 	 * downloaded.
@@ -748,6 +782,11 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 						}
 					}
 					
+					if (!DONOT_SETUP_DOCUMENT_GRAPH_CALLBACKS)
+					{
+						setupDocumentChangedEventListener(mmdField, metadata, element);
+					}
+			
 					element.setMetaMetadata(mmdField);
 					lookupTrueMetaMetadata(mmdField.getRepository(), element);
 					// TODO check for polymorphism. if this is an inherent polymorphic fields, we may need to

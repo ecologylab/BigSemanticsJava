@@ -10,7 +10,9 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -25,6 +27,7 @@ import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticAction;
 import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.actions.SemanticActionsKeyWords;
+import ecologylab.semantics.collecting.DocumentDownloadedEventHandler;
 import ecologylab.semantics.collecting.DownloadStatus;
 import ecologylab.semantics.collecting.SemanticsGlobalScope;
 import ecologylab.semantics.collecting.SemanticsSite;
@@ -41,7 +44,6 @@ import ecologylab.semantics.seeding.Seed;
 import ecologylab.semantics.seeding.SeedDistributor;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.SimplTypesScope;
-import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.formatenums.StringFormat;
 import ecologylab.serialization.library.geom.PointInt;
 
@@ -188,6 +190,9 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 			}
 			
 			setDownloadStatusInternal(DownloadStatus.DOWNLOAD_DONE);
+			Set<DocumentDownloadedEventHandler> listeners = semanticsScope.getDocumentDownloadingMonitor().getListenersForDocument(document);
+			if (listeners != null && listeners.size() > 0)
+				addContinuations(listeners);
 									
 //		 	if(Pref.lookupBoolean(CFPrefNames.CRAWL_CAREFULLY) && !documentParser.cacheHit) //infoCollector.getCrawlingSlow() && 
 //		 	{		 		
@@ -692,7 +697,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 		}
 	}	
 
-	public void addContinuations(ArrayList<Continuation<DocumentClosure>> incomingContinuations)
+	public void addContinuations(Collection<? extends Continuation<DocumentClosure>> incomingContinuations)
 	{
 		synchronized (continuations)
 		{
@@ -823,10 +828,11 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 			{
 				try
 				{
-				continuation.callback(o);
+				  continuation.callback(o);
 				}
 				catch (Exception e)
 				{
+					error("EXCEPTION INVOKING CALLBACK ON " + o + ": " + continuation);
 					e.printStackTrace();
 				}
 			}

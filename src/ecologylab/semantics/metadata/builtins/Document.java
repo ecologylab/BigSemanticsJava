@@ -702,6 +702,22 @@ public class Document extends DocumentDeclaration
 	{
 		return getLocationMetadata() != null;
 	}
+	
+	public boolean hasLocation(ParsedURL location)
+	{
+		if (location.equals(getLocation()))
+			return true;
+		List<MetadataParsedURL> additionalLocations = getAdditionalLocations();
+		if (additionalLocations != null && additionalLocations.size() > 0)
+		{
+			for (MetadataParsedURL mpurl : additionalLocations)
+			{
+				if (mpurl != null && location.equals(mpurl.getValue()))
+					return true;
+			}
+		}
+		return false;
+	}
 
 	public DownloadStatus getDownloadStatus()
 	{

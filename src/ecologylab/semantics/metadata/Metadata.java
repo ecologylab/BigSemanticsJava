@@ -1063,6 +1063,7 @@ ISimplSerializationPre, ISimplDeserializationPost
 
 	public void setMetadataChanged(boolean value)
 	{
+		Debug.println(this, "setMetadataChanged()");
 		this.metadataChangedForDisplay = value;
 	}
 

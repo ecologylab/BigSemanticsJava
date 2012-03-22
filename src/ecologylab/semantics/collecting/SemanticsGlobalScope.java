@@ -47,6 +47,8 @@ public class SemanticsGlobalScope extends MetaMetadataRepositoryInit
 
 	final private FieldParserFactory						fieldParserFactory;
 	
+	private DocumentDownloadingMonitor					documentDownloadingMonitor = new DocumentDownloadingMonitor(this);
+	
 	public SemanticsGlobalScope(SimplTypesScope metadataTScope, Class<? extends IDOMProvider> domProviderClass)
 	{
 		this(null, metadataTScope, domProviderClass);
@@ -209,6 +211,11 @@ public class SemanticsGlobalScope extends MetaMetadataRepositoryInit
 	public InteractiveSpace getInteractiveSpace()
 	{
 		return null;
+	}
+
+	public DocumentDownloadingMonitor getDocumentDownloadingMonitor()
+	{
+		return documentDownloadingMonitor;
 	}
 
 }
