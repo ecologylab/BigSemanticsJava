@@ -32,6 +32,7 @@ import ecologylab.semantics.collecting.DownloadStatus;
 import ecologylab.semantics.collecting.SemanticsGlobalScope;
 import ecologylab.semantics.collecting.SemanticsSite;
 import ecologylab.semantics.documentparsers.DocumentParser;
+import ecologylab.semantics.documentparsers.ParserBase;
 import ecologylab.semantics.html.documentstructure.SemanticInLinks;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
@@ -190,9 +191,12 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 			}
 			
 			setDownloadStatusInternal(DownloadStatus.DOWNLOAD_DONE);
-			Set<DocumentDownloadedEventHandler> listeners = semanticsScope.getDocumentDownloadingMonitor().getListenersForDocument(document);
-			if (listeners != null && listeners.size() > 0)
-				addContinuations(listeners);
+			if (!ParserBase.DONOT_SETUP_DOCUMENT_GRAPH_CALLBACKS)
+			{
+				Set<DocumentDownloadedEventHandler> listeners = semanticsScope.getDocumentDownloadingMonitor().getListenersForDocument(document);
+				if (listeners != null && listeners.size() > 0)
+					addContinuations(listeners);
+			}
 									
 //		 	if(Pref.lookupBoolean(CFPrefNames.CRAWL_CAREFULLY) && !documentParser.cacheHit) //infoCollector.getCrawlingSlow() && 
 //		 	{		 		
