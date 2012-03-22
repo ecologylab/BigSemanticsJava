@@ -75,6 +75,12 @@ public class FilterLocation extends SemanticAction
 	{
 		Document document								= documentParser.getDocument();
 		final ParsedURL origLocation 		= document.getLocation();
+		if (origLocation.isFile())
+		{
+			warning("Not doing <filter_location> because this is a file: " + origLocation);
+			return null;
+		}
+		
 		final TNGGlobalCollections globalCollection = documentParser.getSemanticsScope().getGlobalCollection();
 		boolean locationChanged					= false;
 		if (paramOps != null && paramOps.size() > 0)
