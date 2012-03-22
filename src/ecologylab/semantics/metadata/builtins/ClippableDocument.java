@@ -50,20 +50,20 @@ public class ClippableDocument<ME extends ClippableDocument<ME>> extends Clippab
 		super(metaMetadata);
 	}
 
-	private List<MediaClipping<ME>> clippings()
+	private List<MediaClipping<ME>> clippingsThisIsIn()
 	{
-		List<MediaClipping<ME>> result = this.getClippings();
+		List<MediaClipping<ME>> result = this.getClippingsThisIsIn();
 		if (result == null)
 		{
 			result = new ArrayList<MediaClipping<ME>>(INITIAL_CAPACITY);
-			this.setClippings(result);
+			this.setClippingsThisIsIn(result);
 		}
 		return result;
 	}
 
 	protected boolean addClipping(MediaClipping<ME> clipping)
 	{
-		List<MediaClipping<ME>> clippings = clippings();
+		List<MediaClipping<ME>> clippings = clippingsThisIsIn();
 //		clipping.setParent(this);
 		return (clippings.add(clipping));
 	}
@@ -71,9 +71,9 @@ public class ClippableDocument<ME extends ClippableDocument<ME>> extends Clippab
 	public Document getClippingSource()
 	{
 		Document result = null;
-		if (getClippings() != null)
+		if (getClippingsThisIsIn() != null)
 		{
-			for (MediaClipping<ME> clipping : getClippings())
+			for (MediaClipping<ME> clipping : getClippingsThisIsIn())
 			{
 				result = clipping.getSourceDoc();
 				if (result != null)
