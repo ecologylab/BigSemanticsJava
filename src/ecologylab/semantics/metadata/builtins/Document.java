@@ -320,7 +320,7 @@ public class Document extends DocumentDeclaration
 	public DocumentClosure getOrConstructClosure()
 	{
 		DocumentClosure result	= this.documentClosure;
-		if (result == null && !isRecycled())
+		if (result == null && !isRecycled() && getLocation() != null)
 		{
 			synchronized (CREATE_CLOSURE_LOCK)
 			{
