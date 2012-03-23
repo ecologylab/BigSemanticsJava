@@ -18,7 +18,7 @@ public class SemanticsSiteMap extends ConcurrentHashMap<String, SemanticsSite>
 	public SemanticsSite getOrConstruct(Document document, SemanticsGlobalScope infoCollector) 
 	{
 		ParsedURL parsedURL	= document.getLocation();
-		String domain				= parsedURL.domain();
+		String domain				= parsedURL == null ? null : parsedURL.domain();
 		SemanticsSite result	= null;
 		if (domain != null)
 		{
