@@ -104,8 +104,42 @@ public class MetaMetadataScalarField extends MetaMetadataField
 	{
 		return (this.concatenateValues != null  && this.concatenateValues.size() > 0);
 	}
-		
-
+	
+	public Boolean hasValueDependencies()
+	{
+		Boolean hasDependencies = (this.getValueDependencies().size() > 0);
+		return hasDependencies;
+	}
+	
+	private List<MetaMetadataValueField> cachedValueDependencies = null;
+	
+	public List<MetaMetadataValueField> getValueDependencies()
+	{
+		if(cachedValueDependencies == null)
+		{
+			List<MetaMetadataValueField> ourDependencies = new ArrayList<MetaMetadataValueField>();
+			
+			//Todo: refactor to Google Guava predicates
+			if(hasConcatenateValues())
+			{
+				for(MetaMetadataValueField field : getConcatenateValues())
+				{
+					if(field.fromScalar != null)
+					{
+						ourDependencies.add(field);
+					}
+				}
+			}
+			
+			// More semantics that generate dep's should be filtered here... 
+			
+			this.cachedValueDependencies =ourDependencies;
+			return ourDependencies;
+		}else{
+			return cachedValueDependencies;
+		}
+	}
+			
 	/**
 	 * @return the regex pattern
 	 */

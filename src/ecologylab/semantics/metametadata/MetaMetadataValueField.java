@@ -94,6 +94,40 @@ public class MetaMetadataValueField
 		}
 	}
 	
+	public MetadataFieldDescriptor<Metadata> getScalarFieldDescriptor(Metadata metadata)
+	{
+		if(this.fromScalar != null)
+		{
+			return metadata.getFieldDescriptorByTagName(this.fromScalar);
+		}else{
+			return null;
+		}
+	}
+	
+	public MetaMetadataScalarField getScalarField(Metadata metadata)
+	{
+		if(this.fromScalar != null)
+		{
+			MetadataFieldDescriptor<Metadata> mfd = getScalarFieldDescriptor(metadata);
+			if(mfd != null)
+			{
+				return (MetaMetadataScalarField)mfd.getDefiningMmdField(); 
+			}
+			return null;
+		}
+		return null;
+	}
+	
+	public Boolean hasValueDependencies(Metadata metadata)
+	{
+		if(this.fromScalar != null)
+		{
+			return getScalarField(metadata).hasValueDependencies();
+		}else{
+			return false;
+		}
+	}
+	
 	/**
 	 * Obtains the string value referenced by this MetaMetadataValue in a given scope for a given metadata object
 	 * @param mmdField
@@ -106,7 +140,7 @@ public class MetaMetadataValueField
 		String value = null;
 		if(this.fromScalar != null)
 		{
-			MetadataFieldDescriptor<Metadata> mhd = metadata.getFieldDescriptorByTagName(this.fromScalar);
+			MetadataFieldDescriptor<Metadata> mhd = getScalarFieldDescriptor(metadata);
 			if(mhd != null)
 			{
 				value = mhd.getValueString(metadata);

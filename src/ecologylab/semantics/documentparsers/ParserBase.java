@@ -60,6 +60,8 @@ import ecologylab.semantics.metametadata.MetaMetadataNestedField;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.metametadata.MetaMetadataScalarField;
 import ecologylab.semantics.metametadata.MetaMetadataValueField;
+import ecologylab.semantics.metametadata.ScalarDependencyException;
+import ecologylab.semantics.metametadata.ScalarDependencyManager;
 import ecologylab.semantics.namesandnums.DocumentParserTagNames;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.DeserializationHookStrategy;
@@ -336,6 +338,19 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 		
 		synchronized (fieldSet)
 		{
+			if(fieldsetContainsFieldsWithDependencies(fieldSet))
+			{
+				try{
+					ScalarDependencyManager d = new ScalarDependencyManager(fieldSet);
+					fieldSet = d.sortFieldSetByDependencies(metadata);
+				}
+				catch(ScalarDependencyException e)
+				{
+					error(e.getMessage() + " \n Proceeding with extraction anyways; will result in null values.");
+					e.printStackTrace();
+				}
+			}
+			
 			for (MetaMetadataField field : fieldSet)
 			{
 				if (!field.isAuthoredChildOf(targetParent))
@@ -347,8 +362,8 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 					// for our use cases now.
 					// -- yin qu, 2/21/2012
 					continue;
-				}
-				
+				}			
+			
 				try
 				{
 					boolean suc = false;
@@ -382,7 +397,29 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 
 		return true;
 	}
-
+	
+	/**
+	 * Determines if a given collection of metametadata fields contain dependencies (for concatenation or other value semantics)
+	 * on other mmd fields.
+	 * @param fieldSet The set of metametadata fields to check.
+	 * @return True if there are dependencies that need to be handled correctly
+	 */
+	private Boolean fieldsetContainsFieldsWithDependencies(HashMapArrayList<String, MetaMetadataField> fieldSet)
+	{
+		// TODO: refactor to predicate w/ Google Guava
+		Boolean hasDependency = false;
+		for (MetaMetadataField field : fieldSet)
+		{
+			if(field instanceof MetaMetadataScalarField)
+			{
+				MetaMetadataScalarField m = (MetaMetadataScalarField)field;
+				if(m.hasValueDependencies())
+					return true;
+			}
+		}
+		return false;
+	}
+	
 	/**
 	 * This helper method builds the context for extracting a nested field, e.g. context node and
 	 * field parser context.
