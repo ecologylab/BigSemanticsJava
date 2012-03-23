@@ -365,10 +365,10 @@ ISimplSerializationPre, ISimplDeserializationPost
 			// "null" happens with mixins fieldAccessor b'coz getValueString() returns "null".
 
 			// TODO use MetaMetadataField.numNonDisplayedFields()
-			boolean isVisibleField = !metaMetadataField.isHide()
-					&& ((considerAlwaysShow && metaMetadataField.isAlwaysShow()) || hasVisibleNonNullField);
+//			boolean isVisibleField = !metaMetadataField.isHide()
+//					&& ((considerAlwaysShow && metaMetadataField.isAlwaysShow()) || hasVisibleNonNullField);
 
-			if (isVisibleField)
+			if (hasVisibleNonNullField)
 				size++;
 		}
 
