@@ -6,6 +6,7 @@ package ecologylab.semantics.metametadata.test;
 import java.io.File;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.List;
 
 import ecologylab.appframework.SingletonApplicationEnvironment;
 import ecologylab.generic.Continuation;
@@ -14,8 +15,10 @@ import ecologylab.semantics.collecting.MetaMetadataRepositoryInit;
 import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.cyberneko.CybernekoWrapper;
 import ecologylab.semantics.generated.library.RepositoryMetadataTranslationScope;
+import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
+import ecologylab.semantics.metadata.builtins.declarations.InformationCompositionDeclaration;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.SimplTypesScope.GRAPH_SWITCH;
@@ -26,6 +29,10 @@ import ecologylab.serialization.formatenums.Format;
  * parsing is terminated by a // comment symbol).
  * 
  * Uses semantics to download and parse each input. Sends output to the console as XML.
+ * 
+ * Also construct an information_composition_declaration object. Add each metadata that gets constructed / extracted into it.
+ * Write this file to the temp directory (Java's idea of where you can write).
+ * Report this file's path on the console, so you can paste into Chrome and browse it.
  * 
  * @author andruid
  */
@@ -41,6 +48,8 @@ public class NewMmTest extends SingletonApplicationEnvironment implements
 	OutputStream										outputStream;
 
 	protected SemanticsSessionScope	semanticsSessionScope;
+	
+	protected InformationCompositionDeclaration informationComposition = new InformationCompositionDeclaration();
 
 	public NewMmTest(String appName) throws SIMPLTranslationException
 	{
@@ -145,13 +154,50 @@ public class NewMmTest extends SingletonApplicationEnvironment implements
 				System.out.println("\n\n");
 				for (DocumentClosure documentClosure : documentCollection)
 					output(documentClosure);
+				writeCompositionFile();
 			}
 			semanticsSessionScope.getDownloadMonitors().stop(false);
 		}
 	}
 
+	private static final String OUT_PREFIX		= "mmTest";
+	private static final String OUT_SUFFIX		= ".xml";
+	private static final String OUT_NAME			= OUT_PREFIX + OUT_SUFFIX;
+	
+	private void writeCompositionFile()
+	{
+		try
+		{
+			File tempFile	= File.createTempFile(OUT_PREFIX, OUT_SUFFIX);
+			String dirName= tempFile.getParent();
+			File outFile	= new File(dirName, OUT_NAME);
+			tempFile.renameTo(outFile);
+			
+			SimplTypesScope.serialize(informationComposition, outFile, Format.XML);
+			System.out.println("Wrote to: " + outFile.getAbsolutePath());
+		}
+		catch (Exception e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+	}
+
 	protected void output(DocumentClosure incomingClosure)
 	{
 		incomingClosure.serialize(outputStream);
+		Document document	= incomingClosure.getDocument();
+		if (document != null)
+		{
+			List<Metadata>	allMetadata	= informationComposition.getMetadata();
+			if (allMetadata == null)
+			{
+				allMetadata	= new ArrayList<Metadata>();
+				informationComposition.setMetadata(allMetadata);
+			}
+			allMetadata.add(document);
+		}
 	}
 }
