@@ -94,8 +94,8 @@ public class ImageParserAwt extends DocumentParser<Image>
 	public ImageParserAwt(SemanticsSessionScope infoCollector)
 	{
 		super(infoCollector);
-		cameraClass	= infoCollector.getMetadataTranslationScope().getClassByTag(MM_TAG_CAMERA_SETTINGS);
-		gpsClass		= infoCollector.getMetadataTranslationScope().getClassByTag(MM_TAG_GPS_LOCATION);
+		cameraClass	= infoCollector.getMetadataTypesScope().getClassByTag(MM_TAG_CAMERA_SETTINGS);
+		gpsClass		= infoCollector.getMetadataTypesScope().getClassByTag(MM_TAG_GPS_LOCATION);
 	}
 
 /**
