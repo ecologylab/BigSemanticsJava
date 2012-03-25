@@ -15,7 +15,7 @@ import ecologylab.semantics.metametadata.MetaMetadataField;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.metametadata.MetaMetadataScalarField;
 import ecologylab.semantics.metametadata.MetaMetadataTranslationScope;
-import ecologylab.semantics.metametadata.NestedMetaMetadataFieldTranslationScope;
+import ecologylab.semantics.metametadata.NestedMetaMetadataFieldTypesScope;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.SimplTypesScope.GRAPH_SWITCH;
@@ -114,7 +114,7 @@ public class TestRepositoryInJSON
 	private static void testLoadingAndSavingXmlRepository()
 	{
 		// replace MetaMetadataCollectionField with MetaMetadataCollectionFieldChildComposite
-		SimplTypesScope.get(NestedMetaMetadataFieldTranslationScope.NAME, new Class[]
+		SimplTypesScope.get(NestedMetaMetadataFieldTypesScope.NAME, new Class[]
 		{ MetaMetadataField.class, MetaMetadataScalarField.class, MetaMetadataCompositeField.class,
 				MetaMetadataCollectionFieldWithoutChildComposite.class, });
 		mmdTScope = MetaMetadataTranslationScope.get();
@@ -157,7 +157,7 @@ public class TestRepositoryInJSON
 	private static void testLoadAndSaveJsonRepository(File srcDir, File destDir)
 	{
 		// replace MetaMetadataCollectionField with MetaMetadataCollectionFieldChildComposite
-		SimplTypesScope.get(NestedMetaMetadataFieldTranslationScope.NAME, new Class[]
+		SimplTypesScope.get(NestedMetaMetadataFieldTypesScope.NAME, new Class[]
 		{ MetaMetadataField.class, MetaMetadataScalarField.class, MetaMetadataCompositeField.class,
 				MetaMetadataCollectionFieldWithoutChildComposite.class, });
 		mmdTScope = MetaMetadataTranslationScope.get();
@@ -230,7 +230,7 @@ public class TestRepositoryInJSON
 	private static void testConvertingRepositoryFromXmlToJson()
 	{
 		// replace MetaMetadataCollectionField with MetaMetadataCollectionFieldChildComposite
-		SimplTypesScope.get(NestedMetaMetadataFieldTranslationScope.NAME, new Class[]
+		SimplTypesScope.get(NestedMetaMetadataFieldTypesScope.NAME, new Class[]
 		{ MetaMetadataField.class, MetaMetadataScalarField.class, MetaMetadataCompositeField.class,
 				MetaMetadataCollectionFieldWithoutChildComposite.class, });
 		mmdTScope = MetaMetadataTranslationScope.get();
