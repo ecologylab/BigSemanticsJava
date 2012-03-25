@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 @simpl_inherit
-public abstract class AnnotationDeclaration extends Metadata
+public class AnnotationDeclaration extends Metadata
 {
 	@simpl_scalar
 	private MetadataString text;

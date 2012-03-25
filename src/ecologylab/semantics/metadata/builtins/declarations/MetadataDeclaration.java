@@ -33,7 +33,7 @@ import java.util.Map;
  */ 
 @simpl_descriptor_classes({MetadataClassDescriptor.class, MetadataFieldDescriptor.class})
 @simpl_inherit
-public abstract class MetadataDeclaration
+public class MetadataDeclaration
 {
 	/** 
 	 *Stores the name of the meta-metadata, and is used on restoring from XML.

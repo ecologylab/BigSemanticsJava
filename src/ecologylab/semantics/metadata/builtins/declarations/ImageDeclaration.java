@@ -26,7 +26,7 @@ import java.util.Map;
  *The Image Base Class
  */ 
 @simpl_inherit
-public abstract class ImageDeclaration extends ClippableDocument<Image>
+public class ImageDeclaration extends ClippableDocument<Image>
 {
 	/** 
 	 *Relative location of local copy of image.

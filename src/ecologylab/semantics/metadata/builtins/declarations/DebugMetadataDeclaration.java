@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 @simpl_inherit
-public abstract class DebugMetadataDeclaration extends Metadata
+public class DebugMetadataDeclaration extends Metadata
 {
 	@simpl_scalar
 	private MetadataStringBuilder newTermVector;

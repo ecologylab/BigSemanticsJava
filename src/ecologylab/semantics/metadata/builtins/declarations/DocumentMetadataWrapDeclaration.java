@@ -24,7 +24,7 @@ import java.util.Map;
  *Used to disambiguated Document subclass composites.
  */ 
 @simpl_inherit
-public abstract class DocumentMetadataWrapDeclaration extends Metadata
+public class DocumentMetadataWrapDeclaration extends Metadata
 {
 	/** 
 	 *polymorphic across documents

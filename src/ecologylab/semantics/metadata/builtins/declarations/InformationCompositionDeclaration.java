@@ -10,7 +10,6 @@ package ecologylab.semantics.metadata.builtins.declarations;
 
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.builtins.Annotation;
-import ecologylab.semantics.metadata.builtins.Clipping;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.MetadataBuiltinsTypesScope;
 import ecologylab.semantics.metadata.mm_name;
@@ -27,17 +26,12 @@ import java.util.List;
 import java.util.Map;
 
 @simpl_inherit
-public abstract class InformationCompositionDeclaration extends Document
+public class InformationCompositionDeclaration extends Document
 {
 	@simpl_collection
-	@simpl_scope("repository_clippings")
-	@mm_name("clippings")
-	private List<Clipping> clippings;
-
-	@simpl_collection
-	@simpl_scope("repository_media")
-	@mm_name("media")
-	private List<Metadata> media;
+	@simpl_scope("repository_no_annotations")
+	@mm_name("metadata")
+	private List<Metadata> metadata;
 
 	/** 
 	 *User annotations.
@@ -60,24 +54,14 @@ public abstract class InformationCompositionDeclaration extends Document
 	}
 
 
-	public List<Clipping> getClippings()
+	public List<Metadata> getMetadata()
 	{
-		return clippings;
+		return metadata;
 	}
 
-	public void setClippings(List<Clipping> clippings)
+	public void setMetadata(List<Metadata> metadata)
 	{
-		this.clippings = clippings;
-	}
-
-	public List<Metadata> getMedia()
-	{
-		return media;
-	}
-
-	public void setMedia(List<Metadata> media)
-	{
-		this.media = media;
+		this.metadata = metadata;
 	}
 
 	public List<Annotation> getAnnotations()

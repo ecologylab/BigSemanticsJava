@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 @simpl_inherit
-public abstract class ClippingDeclaration extends Metadata
+public class ClippingDeclaration extends Metadata
 {
 	@simpl_scalar
 	private MetadataString context;

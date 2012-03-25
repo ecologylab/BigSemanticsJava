@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 @simpl_inherit
-public abstract class ClippableDocumentDeclaration<ME extends ClippableDocument<ME>> extends Document
+public class ClippableDocumentDeclaration<ME extends ClippableDocument<ME>> extends Document
 {
 	/** 
 	 *Clippings based on this.

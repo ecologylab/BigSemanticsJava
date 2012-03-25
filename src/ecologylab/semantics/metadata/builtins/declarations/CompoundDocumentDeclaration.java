@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 @simpl_inherit
-public abstract class CompoundDocumentDeclaration extends Document
+public class CompoundDocumentDeclaration extends Document
 {
 	/** 
 	 *For debugging. Type of the structure recognized by information extraction.

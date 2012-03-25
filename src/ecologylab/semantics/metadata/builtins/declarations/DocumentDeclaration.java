@@ -31,7 +31,7 @@ import java.util.Map;
  *The Document Class
  */ 
 @simpl_inherit
-public abstract class DocumentDeclaration extends Metadata
+public class DocumentDeclaration extends Metadata
 {
 	/** 
 	 *The Title of the Document

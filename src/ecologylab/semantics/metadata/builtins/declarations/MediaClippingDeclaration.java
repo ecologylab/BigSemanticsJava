@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 @simpl_inherit
-public abstract class MediaClippingDeclaration<ME extends ClippableDocument<ME>> extends Clipping
+public class MediaClippingDeclaration<ME extends ClippableDocument<ME>> extends Clipping
 {
 	/** 
 	 *The caption of the image.

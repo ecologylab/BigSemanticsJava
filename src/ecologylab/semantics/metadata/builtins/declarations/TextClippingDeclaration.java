@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 @simpl_inherit
-public abstract class TextClippingDeclaration extends Clipping
+public class TextClippingDeclaration extends Clipping
 {
 	@simpl_scalar
 	private MetadataString text;

@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 @simpl_inherit
-public abstract class ImageClippingDeclaration extends MediaClipping<Image>
+public class ImageClippingDeclaration extends MediaClipping<Image>
 {
 	public ImageClippingDeclaration()
 	{ super(); }
