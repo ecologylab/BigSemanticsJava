@@ -15,6 +15,7 @@ import ecologylab.serialization.annotations.simpl_collection;
 import ecologylab.serialization.annotations.simpl_composite;
 import ecologylab.serialization.annotations.simpl_inherit;
 import ecologylab.serialization.annotations.simpl_nowrap;
+import ecologylab.serialization.annotations.simpl_scalar;
 import ecologylab.serialization.annotations.simpl_tag;
 
 /**
@@ -40,6 +41,9 @@ public class FilterLocation extends SemanticAction
 
 	@simpl_composite
 	Regex								regex;
+	
+	@simpl_scalar
+	String							stripPrefix;
 	
 	/**
 	 * 
@@ -120,6 +124,20 @@ public class FilterLocation extends SemanticAction
 			ParsedURL regexURL	= regex.perform(location);
 			document.changeLocation(regexURL);
 			locationChanged			= true;
+		}
+		if (stripPrefix != null)
+		{
+			String origlLocationString	= origLocation.toString();
+			int index	= origlLocationString.indexOf(stripPrefix);
+			if (index > 6)
+			{
+				String newLocationString	= origlLocationString.substring(0, index);
+				ParsedURL newLocation			= ParsedURL.getAbsolute(newLocationString);
+				if (newLocation != null)
+				{
+					document.changeLocation(newLocation);
+				}
+			}
 		}
 		if (locationChanged)
 			documentParser.reConnect();		// changed the location, so we better connect again!
