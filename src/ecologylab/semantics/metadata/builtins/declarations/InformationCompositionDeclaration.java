@@ -10,6 +10,7 @@ package ecologylab.semantics.metadata.builtins.declarations;
 
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.builtins.Annotation;
+import ecologylab.semantics.metadata.builtins.Clipping;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.MetadataBuiltinsTypesScope;
 import ecologylab.semantics.metadata.mm_name;
@@ -39,6 +40,22 @@ public class InformationCompositionDeclaration extends Document
 	@simpl_collection("annotation")
 	@mm_name("annotations")
 	private List<Annotation> annotations;
+
+	/** 
+	 *for compatability w old compositions -- do not use!
+	 */ 
+	@simpl_collection
+	@simpl_scope("repository_clippings")
+	@mm_name("clippings")
+	private List<Clipping> clippings;
+
+	/** 
+	 *for compatability w old compositions -- do not use!
+	 */ 
+	@simpl_collection
+	@simpl_scope("repository_media")
+	@mm_name("media")
+	private List<Metadata> media;
 
 	@simpl_scalar
 	private MetadataFloat version;
@@ -72,6 +89,26 @@ public class InformationCompositionDeclaration extends Document
 	public void setAnnotations(List<Annotation> annotations)
 	{
 		this.annotations = annotations;
+	}
+
+	public List<Clipping> getClippings()
+	{
+		return clippings;
+	}
+
+	public void setClippings(List<Clipping> clippings)
+	{
+		this.clippings = clippings;
+	}
+
+	public List<Metadata> getMedia()
+	{
+		return media;
+	}
+
+	public void setMedia(List<Metadata> media)
+	{
+		this.media = media;
 	}
 
 	public MetadataFloat	version()
