@@ -495,7 +495,7 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 			{
 				// use type / extends
 				String inheritedMmdName = this.getType() == null ? this.getName() : this.getType();
-				if (inheritedMmdName == null || mmdScope.get(inheritedMmdName) == null)
+				if (inheritedMmdName == null || mmdScope == null || mmdScope.get(inheritedMmdName) == null)
 				{
 					inheritedMmdName = this.getExtendsAttribute();
 					if (inheritedMmdName == null)
