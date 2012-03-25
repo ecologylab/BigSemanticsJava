@@ -9,7 +9,7 @@ package ecologylab.semantics.metadata.builtins.declarations;
  */
 
 import ecologylab.semantics.metadata.Metadata;
-import ecologylab.semantics.metadata.builtins.MetadataBuiltinsTranslationScope;
+import ecologylab.semantics.metadata.builtins.MetadataBuiltinsTypesScope;
 import ecologylab.semantics.metadata.scalar.MetadataStringBuilder;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.namesandnums.SemanticsNames;

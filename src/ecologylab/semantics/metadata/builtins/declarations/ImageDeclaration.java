@@ -11,7 +11,7 @@ package ecologylab.semantics.metadata.builtins.declarations;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.metadata.builtins.ClippableDocument;
 import ecologylab.semantics.metadata.builtins.Image;
-import ecologylab.semantics.metadata.builtins.MetadataBuiltinsTranslationScope;
+import ecologylab.semantics.metadata.builtins.MetadataBuiltinsTypesScope;
 import ecologylab.semantics.metadata.scalar.MetadataDate;
 import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;

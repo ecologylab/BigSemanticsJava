@@ -56,46 +56,46 @@ implements SemanticsPrefs, ApplicationProperties, DocumentParserTagNames
 	/**
 	 * Construct with no Crawler, and empty Seeding.
 	 * 
-	 * @param metadataTranslationScope	Generated MetadataTranslationScope.
+	 * @param metadataTypesScope	Generated metadataTypesScope.
 	 */
-	public SemanticsSessionScope(SimplTypesScope metadataTranslationScope, Class<? extends IDOMProvider> domProviderClass)
+	public SemanticsSessionScope(SimplTypesScope metadataTypesScope, Class<? extends IDOMProvider> domProviderClass)
 	{
-		this(metadataTranslationScope, null, domProviderClass);
+		this(metadataTypesScope, null, domProviderClass);
 	}
 	
-	public SemanticsSessionScope(File repositoryLocation, SimplTypesScope metadataTranslationScope, Class<? extends IDOMProvider> domProviderClass)
+	public SemanticsSessionScope(File repositoryLocation, SimplTypesScope metadataTypesScope, Class<? extends IDOMProvider> domProviderClass)
 	{
-		this(repositoryLocation, metadataTranslationScope, null, domProviderClass);
+		this(repositoryLocation, metadataTypesScope, null, domProviderClass);
 	}
 	
-	public SemanticsSessionScope(File repositoryLocation, Format repositoryFormat, SimplTypesScope metadataTranslationScope, Class<? extends IDOMProvider> domProviderClass)
+	public SemanticsSessionScope(File repositoryLocation, Format repositoryFormat, SimplTypesScope metadataTypesScope, Class<? extends IDOMProvider> domProviderClass)
 	{
-		this(repositoryLocation, repositoryFormat, metadataTranslationScope, null, domProviderClass);
+		this(repositoryLocation, repositoryFormat, metadataTypesScope, null, domProviderClass);
 	}
 	
-	public SemanticsSessionScope(SimplTypesScope metadataTranslationScope, Crawler crawler, Class<? extends IDOMProvider> domProviderClass)
+	public SemanticsSessionScope(SimplTypesScope metadataTypesScope, Crawler crawler, Class<? extends IDOMProvider> domProviderClass)
 	{
-		this(null, MetaMetadataRepositoryInit.DEFAULT_REPOSITORY_FORMAT, metadataTranslationScope, new Seeding(), crawler, domProviderClass);
+		this(null, MetaMetadataRepositoryInit.DEFAULT_REPOSITORY_FORMAT, metadataTypesScope, new Seeding(), crawler, domProviderClass);
 	}
 	
-	public SemanticsSessionScope(File repositoryLocation, SimplTypesScope metadataTranslationScope, Crawler crawler, Class<? extends IDOMProvider> domProviderClass)
+	public SemanticsSessionScope(File repositoryLocation, SimplTypesScope metadataTypesScope, Crawler crawler, Class<? extends IDOMProvider> domProviderClass)
 	{
-		this(repositoryLocation, MetaMetadataRepositoryInit.DEFAULT_REPOSITORY_FORMAT, metadataTranslationScope, new Seeding(), crawler, domProviderClass);
+		this(repositoryLocation, MetaMetadataRepositoryInit.DEFAULT_REPOSITORY_FORMAT, metadataTypesScope, new Seeding(), crawler, domProviderClass);
 	}
 	
-	public SemanticsSessionScope(Format repositoryFormat, SimplTypesScope metadataTranslationScope, Crawler crawler, Class<? extends IDOMProvider> domProviderClass)
+	public SemanticsSessionScope(Format repositoryFormat, SimplTypesScope metadataTypesScope, Crawler crawler, Class<? extends IDOMProvider> domProviderClass)
 	{
-		this(null, repositoryFormat, metadataTranslationScope, new Seeding(), crawler, domProviderClass);
+		this(null, repositoryFormat, metadataTypesScope, new Seeding(), crawler, domProviderClass);
 	}
 	
-	public SemanticsSessionScope(File repositoryLocation, Format repositoryFormat, SimplTypesScope metadataTranslationScope, Crawler crawler, Class<? extends IDOMProvider> domProviderClass)
+	public SemanticsSessionScope(File repositoryLocation, Format repositoryFormat, SimplTypesScope metadataTypesScope, Crawler crawler, Class<? extends IDOMProvider> domProviderClass)
 	{
-		this(repositoryLocation, repositoryFormat, metadataTranslationScope, new Seeding(), crawler, domProviderClass);
+		this(repositoryLocation, repositoryFormat, metadataTypesScope, new Seeding(), crawler, domProviderClass);
 	}
 	
-	public SemanticsSessionScope(File repositoryLocation, Format repositoryFormat, SimplTypesScope metadataTranslationScope, Seeding seeding, Crawler crawler, Class<? extends IDOMProvider> domProviderClass)
+	public SemanticsSessionScope(File repositoryLocation, Format repositoryFormat, SimplTypesScope metadataTypesScope, Seeding seeding, Crawler crawler, Class<? extends IDOMProvider> domProviderClass)
 	{
-		super(repositoryLocation, repositoryFormat, metadataTranslationScope, domProviderClass);
+		super(repositoryLocation, repositoryFormat, metadataTypesScope, domProviderClass);
 		this.put(SemanticsSessionObjectNames.INFO_COLLECTOR, this);	//TODO make this unnecessary; its a band-aid on old code
 		this.crawler											= crawler;
 		this.seeding											= seeding;

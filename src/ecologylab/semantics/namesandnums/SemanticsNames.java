@@ -11,14 +11,16 @@ package ecologylab.semantics.namesandnums;
 public interface SemanticsNames
 {
 
-	public static final String	REPOSITORY_METADATA_TRANSLATIONS			= "repository_metadata";
+	public static final String	REPOSITORY_METADATA_TYPE_SCOPE							= "repository_metadata";
 
-	public static final String	REPOSITORY_DOCUMENT_TRANSLATIONS			= "repository_documents";
+	public static final String	REPOSITORY_DOCUMENTS_TYPE_SCOPE							= "repository_documents";
 
-	public static final String	REPOSITORY_MEDIA_TRANSLATIONS					= "repository_media";
+	public static final String	REPOSITORY_MEDIA_TYPE_SCOPE									= "repository_media";
 
-	public static final String	REPOSITORY_CLIPPING_TRANSLATIONS			= "repository_clippings";
+	public static final String	REPOSITORY_CLIPPINGS_TYPE_SCOPE							= "repository_clippings";
 
-	public static final String	REPOSITORY_BUILTIN_DECLARATIONS_SCOPE	= "repository_builtin_declarations_scope";
+	public static final String	REPOSITORY_NO_ANNOTATIONS_TYPE_SCOPE				= "repository_no_annotations";
+
+	public static final String	REPOSITORY_BUILTIN_DECLARATIONS_TYPE_SCOPE	= "repository_builtin_declarations_scope";
 
 }

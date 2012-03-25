@@ -12,7 +12,7 @@ import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.builtins.Annotation;
 import ecologylab.semantics.metadata.builtins.Clipping;
 import ecologylab.semantics.metadata.builtins.Document;
-import ecologylab.semantics.metadata.builtins.MetadataBuiltinsTranslationScope;
+import ecologylab.semantics.metadata.builtins.MetadataBuiltinsTypesScope;
 import ecologylab.semantics.metadata.mm_name;
 import ecologylab.semantics.metadata.scalar.MetadataFloat;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;

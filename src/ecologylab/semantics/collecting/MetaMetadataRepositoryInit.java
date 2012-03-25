@@ -56,17 +56,19 @@ public class MetaMetadataRepositoryInit extends Scope<Object> implements Documen
 		MetaMetadataRepository.initializeTypes();
 	}
 
-	private File																repositoryLocation;
+	private File												repositoryLocation;
 
 	private MetaMetadataRepository							metaMetadataRepository;
 
-	private SimplTypesScope											metadataTranslationScope;
+	private SimplTypesScope											metadataTypesScope;
 
-	private final SimplTypesScope								generatedDocumentTranslations;
+	private final SimplTypesScope								documentsScope;
 
-	private final SimplTypesScope								generatedMediaTranslations;
+	private final SimplTypesScope								mediaTypesScope;
 
-	private final SimplTypesScope								repositoryClippingTranslations;
+	private final SimplTypesScope								clippingsTypeScope;
+
+	private final SimplTypesScope								noAnnotationsScope;
 
 	public MetaMetadata													DOCUMENT_META_METADATA;
 
@@ -80,15 +82,15 @@ public class MetaMetadataRepositoryInit extends Scope<Object> implements Documen
 
 	public MetaMetadata													IMAGE_CLIPPING_META_METADATA;
 
-	protected MetaMetadataRepositoryInit(SimplTypesScope metadataTranslationScope)
+	protected MetaMetadataRepositoryInit(SimplTypesScope metadataTypesScope)
 	{
-		this(null, metadataTranslationScope);
+		this(null, metadataTypesScope);
 	}
 
 	protected MetaMetadataRepositoryInit(File repositoryLocation,
-			SimplTypesScope metadataTranslationScope)
+			SimplTypesScope metadataTypesScope)
 	{
-		this(repositoryLocation, DEFAULT_REPOSITORY_FORMAT, metadataTranslationScope);
+		this(repositoryLocation, DEFAULT_REPOSITORY_FORMAT, metadataTypesScope);
 	}
 
 	/**
@@ -97,7 +99,7 @@ public class MetaMetadataRepositoryInit extends Scope<Object> implements Documen
 	 * @param metadataTranslationScope
 	 */
 	protected MetaMetadataRepositoryInit(File repositoryLocation, Format repositoryFormat,
-			SimplTypesScope metadataTranslationScope)
+			SimplTypesScope metadataTypesScope)
 	{
 		if (SingletonApplicationEnvironment.isInUse()
 				&& !SingletonApplicationEnvironment.runningInEclipse())
@@ -129,18 +131,21 @@ public class MetaMetadataRepositoryInit extends Scope<Object> implements Documen
 			DEBUG_META_METADATA = metaMetadataRepository.getMMByName(DEBUG_TAG);
 			IMAGE_CLIPPING_META_METADATA = metaMetadataRepository.getMMByName(IMAGE_CLIPPING_TAG);
 
-			this.metadataTranslationScope = metadataTranslationScope;
-			this.generatedDocumentTranslations = metadataTranslationScope.getAssignableSubset(
-					REPOSITORY_DOCUMENT_TRANSLATIONS, Document.class);
-			this.generatedMediaTranslations = metadataTranslationScope.getAssignableSubset(
-					REPOSITORY_MEDIA_TRANSLATIONS, ClippableDocument.class);
-			this.repositoryClippingTranslations = metadataTranslationScope.getAssignableSubset(
-					REPOSITORY_CLIPPING_TRANSLATIONS, Clipping.class);
+			this.metadataTypesScope = metadataTypesScope;
+			this.documentsScope = metadataTypesScope.getAssignableSubset(
+					REPOSITORY_DOCUMENTS_TYPE_SCOPE, Document.class);
+			this.clippingsTypeScope = metadataTypesScope.getAssignableSubset(
+					REPOSITORY_CLIPPINGS_TYPE_SCOPE, Clipping.class);
 
-			this.generatedMediaTranslations.addTranslation(Clipping.class);
-			this.generatedMediaTranslations.addTranslation(Annotation.class);
+			this.noAnnotationsScope = metadataTypesScope.getSubtractedSubset(
+					REPOSITORY_NO_ANNOTATIONS_TYPE_SCOPE, Annotation.class);
 
-			metaMetadataRepository.bindMetadataClassDescriptorsToMetaMetadata(metadataTranslationScope);
+			this.mediaTypesScope = metadataTypesScope.getAssignableSubset(
+					REPOSITORY_MEDIA_TYPE_SCOPE, ClippableDocument.class);
+			this.mediaTypesScope.addTranslation(Clipping.class);
+			this.mediaTypesScope.addTranslation(Annotation.class);
+
+			metaMetadataRepository.bindMetadataClassDescriptorsToMetaMetadata(metadataTypesScope);
 		}
 		else
 		{
@@ -272,33 +277,38 @@ public class MetaMetadataRepositoryInit extends Scope<Object> implements Documen
 	/**
 	 * @return The SimplTypesScope for (generated) metadata semantics.
 	 */
-	public SimplTypesScope getMetadataTranslationScope()
+	public SimplTypesScope getMetadataTypesScope()
 	{
-		return metadataTranslationScope;
+		return metadataTypesScope;
 	}
 
 	/**
 	 * @return the generatedDocumentTranslations.
 	 */
-	public SimplTypesScope getGeneratedDocumentTranslations()
+	public SimplTypesScope getDocumentsTypeScope()
 	{
-		return generatedDocumentTranslations;
+		return documentsScope;
 	}
 
 	/**
 	 * @return the generatedMediaTranslations.
 	 */
-	public SimplTypesScope getGeneratedMediaTranslations()
+	public SimplTypesScope getMediaTypesScope()
 	{
-		return generatedMediaTranslations;
+		return mediaTypesScope;
 	}
 
 	/**
 	 * @return the repositoryClippingTranslations.
 	 */
-	public SimplTypesScope getRepositoryClippingTranslations()
+	public SimplTypesScope getClippingsTypesScope()
 	{
-		return repositoryClippingTranslations;
+		return clippingsTypeScope;
+	}
+
+	public SimplTypesScope getNoAnnotationsScope()
+	{
+		return noAnnotationsScope;
 	}
 
 }

@@ -654,7 +654,7 @@ implements IMappable<String>//, HasLocalTranslationScope
 		return thisCd;
 	}
 	
-	public SimplTypesScope getLocalMetadataTranslationScope()
+	public SimplTypesScope getLocalMetadataTypesScope()
 	{
 		return this.localMetadataTranslationScope;
 	}

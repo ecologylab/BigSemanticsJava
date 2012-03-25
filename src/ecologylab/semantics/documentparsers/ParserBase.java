@@ -751,7 +751,7 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 		int size = helper.getListSize();
 
 		// get class of elements in the collection
-		SimplTypesScope tscope = semanticsScope.getMetadataTranslationScope();
+		SimplTypesScope tscope = semanticsScope.getMetadataTypesScope();
 		Class elementClass = null;
 		MetadataScalarType scalarType = null;
 		MetadataFieldDescriptor metadataFieldDescriptor = mmdField.getMetadataFieldDescriptor();
@@ -776,7 +776,7 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 			ClassDescriptor elementClassDescriptor = metadataFieldDescriptor.getElementClassDescriptor();
 			if (metadataFieldDescriptor.isPolymorphic())
 			{
-				String polymorphTagName = mmdField.getChildComposite().getInheritedMmd().getTagForTranslationScope();
+				String polymorphTagName = mmdField.getChildComposite().getInheritedMmd().getTagForTypesScope();
 				if (polymorphTagName != null)
 					elementClassDescriptor = metadataFieldDescriptor.elementClassDescriptor(polymorphTagName);
 			}
@@ -1138,7 +1138,7 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 			// thus this conversion is safe
 			MetaMetadata metaMetadata = (MetaMetadata) this.getMetaMetadata();
 			
-			SimplTypesScope tscope = metaMetadata.getLocalMetadataTranslationScope();
+			SimplTypesScope tscope = metaMetadata.getLocalMetadataTypesScope();
 			newDocument = (Document) tscope.deserialize(purlConnection.getPurl(), this, Format.XML);
 			
 			SimplTypesScope.serialize(newDocument, System.out,  StringFormat.XML);
@@ -1179,7 +1179,7 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 			MetadataClassDescriptor mcd								= (MetadataClassDescriptor) ClassDescriptor.getClassDescriptor(deserializedMetadata);;
 			MetaMetadataCompositeField metaMetadata;
 			String tagName 														= mcd.getTagName();
-			if (preMM.getTagForTranslationScope().equals(tagName))
+			if (preMM.getTagForTypesScope().equals(tagName))
 			{
 				metaMetadata														= preMM;
 			}

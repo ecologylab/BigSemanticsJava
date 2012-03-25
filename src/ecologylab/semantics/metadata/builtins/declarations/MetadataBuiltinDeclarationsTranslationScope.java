@@ -8,7 +8,7 @@ package ecologylab.semantics.metadata.builtins.declarations;
  * Copyright (2012) Interface Ecology Lab.
  */
 
-import ecologylab.semantics.metadata.builtins.MetadataBuiltinsTranslationScope;
+import ecologylab.semantics.metadata.builtins.MetadataBuiltinsTypesScope;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.namesandnums.SemanticsNames;
 import ecologylab.serialization.SimplTypesScope;

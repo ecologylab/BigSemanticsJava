@@ -174,7 +174,7 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
 	// will get created during the inheritance process anyway. -- yin
 	// FIXME move this to NestedField.
 	@simpl_map
-	@simpl_scope(NestedMetaMetadataFieldTranslationScope.NAME)
+	@simpl_scope(NestedMetaMetadataFieldTypesScope.NAME)
 	@simpl_nowrap
 	protected HashMapArrayList<String, MetaMetadataField>	kids										= new HashMapArrayList<String, MetaMetadataField>();
 
@@ -511,7 +511,7 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
 	/**
 	 * 
 	 * @return the tag if existed, or the name of this field. this method is different from
-	 * getTagForTranslationScope() which is overridden in MetaMetadataCollectionField. they have
+	 * getTagForTypesScope() which is overridden in MetaMetadataCollectionField. they have
 	 * different purposes.
 	 */
 	public String getTagOrName()
@@ -521,9 +521,9 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
 	
 	/**
 	 * 
-	 * @return the tag used to look up metadata from MetadataTranslationScope.
+	 * @return the tag used to look up metadata from MetadataTypesScope.
 	 */
-	public String getTagForTranslationScope()
+	public String getTagForTypesScope()
 	{
 		return tag != null ? tag : name;
 	}

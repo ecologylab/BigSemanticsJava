@@ -60,7 +60,7 @@ public class MetaMetadataTranslationScope extends Debug
 	public static final SimplTypesScope[]	SCOPE_SET	= 
 	{
 		BASE_TRANSLATIONS, 
-		NestedMetaMetadataFieldTranslationScope.get(),
+		NestedMetaMetadataFieldTypesScope.get(),
 		SemanticActionTranslationScope.get(),
 		ConditionTranslationScope.get(),
 	};

@@ -59,9 +59,9 @@ public class SemanticsGlobalScope extends MetaMetadataRepositoryInit
 		this(repositoryLocation, MetaMetadataRepositoryInit.DEFAULT_REPOSITORY_FORMAT, metadataTScope, domProviderClass);
 	}
 	
-	public SemanticsGlobalScope(File repositoryLocation, Format repositoryFormat, SimplTypesScope metadataTScope, Class<? extends IDOMProvider> domProviderClass)
+	public SemanticsGlobalScope(File repositoryLocation, Format repositoryFormat, SimplTypesScope metadataTypesScope, Class<? extends IDOMProvider> domProviderClass)
 	{
-		super(repositoryLocation, repositoryFormat, metadataTScope);
+		super(repositoryLocation, repositoryFormat, metadataTypesScope);
 		this.domProviderClass = domProviderClass;
 		globalCollection = TNGGlobalCollections.getSingleton(getMetaMetadataRepository());
 		downloadMonitors = new SemanticsDownloadMonitors();

@@ -218,7 +218,7 @@ implements PackageSpecifier, DocumentParserTagNames
 		{
 			initializedTypes = true;
 			MetadataScalarType.init(); // register metadata-specific scalar types
-			ecologylab.semantics.metadata.builtins.MetadataBuiltinsTranslationScope.get();
+			ecologylab.semantics.metadata.builtins.MetadataBuiltinsTypesScope.get();
 		}
 	}
 

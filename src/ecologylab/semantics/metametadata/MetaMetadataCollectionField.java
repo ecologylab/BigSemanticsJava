@@ -129,7 +129,7 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 	}
 	
 	@Override
-	public String getTagForTranslationScope()
+	public String getTagForTypesScope()
 	{
 		// FIXME: seems broken when rewriting collection xpath without re-indicating child_type
 		return childType != null ? childType : tag != null ? tag : name;

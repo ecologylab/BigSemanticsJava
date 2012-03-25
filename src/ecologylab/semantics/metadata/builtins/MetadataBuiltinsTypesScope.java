@@ -12,7 +12,7 @@ import ecologylab.serialization.SimplTypesScope;
 /**
  * Encapsulates ClassDescriptors for Metadata and its subclasses that are coded by hand.
  */
-public class MetadataBuiltinsTranslationScope extends Debug
+public class MetadataBuiltinsTypesScope extends Debug
 {
 	public static final String NAME = "metadata_builtin_translations";
 	
