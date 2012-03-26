@@ -57,6 +57,26 @@ public class ClippableDocumentDeclaration<ME extends ClippableDocument<ME>> exte
 		return clippingsThisIsIn;
 	}
 
+  // lazy evaluation:
+  public List<MediaClipping<ME>> clippingsThisIsIn()
+  {
+    if (clippingsThisIsIn == null)
+      clippingsThisIsIn = new ArrayList<MediaClipping<ME>>();
+    return clippingsThisIsIn;
+  }
+
+  // addTo:
+  public void addToClippingsThisIsIn(MediaClipping<ME> element)
+  {
+    clippingsThisIsIn().add(element);
+  }
+
+  // size:
+  public int clippingsThisIsInSize()
+  {
+    return clippingsThisIsIn == null ? 0 : clippingsThisIsIn.size();
+  }
+
 	public void setClippingsThisIsIn(List<MediaClipping<ME>> clippingsThisIsIn)
 	{
 		this.clippingsThisIsIn = clippingsThisIsIn;

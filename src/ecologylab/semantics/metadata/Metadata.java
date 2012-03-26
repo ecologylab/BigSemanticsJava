@@ -276,7 +276,7 @@ ISimplSerializationPre, ISimplDeserializationPost
 	 * 
 	 * @return
 	 */
-	List<Metadata> mixins()
+	public List<Metadata> mixins()
 	{
 		List<Metadata> result = this.getMixins();
 		if (result == null)

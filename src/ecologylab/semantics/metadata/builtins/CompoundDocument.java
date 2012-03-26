@@ -290,7 +290,7 @@ public class CompoundDocument extends CompoundDocumentDeclaration
 	 * If rootDocument non-null, get and construct in that, as necessary; else get and construct in this, as necessary.
 	 * @return
 	 */
-	List<Clipping> clippings()
+	public List<Clipping> clippings()
 	{
 		return getRootDocument() != null ? getRootDocument().selfClippings() : selfClippings();
 	}

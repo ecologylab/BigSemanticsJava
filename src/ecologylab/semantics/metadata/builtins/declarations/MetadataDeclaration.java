@@ -93,6 +93,26 @@ public class MetadataDeclaration
 		return mixins;
 	}
 
+  // lazy evaluation:
+  public List<Metadata> mixins()
+  {
+    if (mixins == null)
+      mixins = new ArrayList<Metadata>();
+    return mixins;
+  }
+
+  // addTo:
+  public void addToMixins(Metadata element)
+  {
+    mixins().add(element);
+  }
+
+  // size:
+  public int mixinsSize()
+  {
+    return mixins == null ? 0 : mixins.size();
+  }
+
 	public void setMixins(List<Metadata> mixins)
 	{
 		this.mixins = mixins;
@@ -102,6 +122,26 @@ public class MetadataDeclaration
 	{
 		return linkedMetadataList;
 	}
+
+  // lazy evaluation:
+  public List<Metadata> linkedMetadataList()
+  {
+    if (linkedMetadataList == null)
+      linkedMetadataList = new ArrayList<Metadata>();
+    return linkedMetadataList;
+  }
+
+  // addTo:
+  public void addToLinkedMetadataList(Metadata element)
+  {
+    linkedMetadataList().add(element);
+  }
+
+  // size:
+  public int linkedMetadataListSize()
+  {
+    return linkedMetadataList == null ? 0 : linkedMetadataList.size();
+  }
 
 	public void setLinkedMetadataList(List<Metadata> linkedMetadataList)
 	{

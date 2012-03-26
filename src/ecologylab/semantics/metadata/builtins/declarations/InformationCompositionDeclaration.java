@@ -76,6 +76,26 @@ public class InformationCompositionDeclaration extends Document
 		return metadata;
 	}
 
+  // lazy evaluation:
+  public List<Metadata> metadata()
+  {
+    if (metadata == null)
+      metadata = new ArrayList<Metadata>();
+    return metadata;
+  }
+
+  // addTo:
+  public void addToMetadata(Metadata element)
+  {
+    metadata().add(element);
+  }
+
+  // size:
+  public int metadataSize()
+  {
+    return metadata == null ? 0 : metadata.size();
+  }
+
 	public void setMetadata(List<Metadata> metadata)
 	{
 		this.metadata = metadata;
@@ -85,6 +105,26 @@ public class InformationCompositionDeclaration extends Document
 	{
 		return annotations;
 	}
+
+  // lazy evaluation:
+  public List<Annotation> annotations()
+  {
+    if (annotations == null)
+      annotations = new ArrayList<Annotation>();
+    return annotations;
+  }
+
+  // addTo:
+  public void addToAnnotations(Annotation element)
+  {
+    annotations().add(element);
+  }
+
+  // size:
+  public int annotationsSize()
+  {
+    return annotations == null ? 0 : annotations.size();
+  }
 
 	public void setAnnotations(List<Annotation> annotations)
 	{
@@ -96,6 +136,26 @@ public class InformationCompositionDeclaration extends Document
 		return clippings;
 	}
 
+  // lazy evaluation:
+  public List<Clipping> clippings()
+  {
+    if (clippings == null)
+      clippings = new ArrayList<Clipping>();
+    return clippings;
+  }
+
+  // addTo:
+  public void addToClippings(Clipping element)
+  {
+    clippings().add(element);
+  }
+
+  // size:
+  public int clippingsSize()
+  {
+    return clippings == null ? 0 : clippings.size();
+  }
+
 	public void setClippings(List<Clipping> clippings)
 	{
 		this.clippings = clippings;
@@ -105,6 +165,26 @@ public class InformationCompositionDeclaration extends Document
 	{
 		return media;
 	}
+
+  // lazy evaluation:
+  public List<Metadata> media()
+  {
+    if (media == null)
+      media = new ArrayList<Metadata>();
+    return media;
+  }
+
+  // addTo:
+  public void addToMedia(Metadata element)
+  {
+    media().add(element);
+  }
+
+  // size:
+  public int mediaSize()
+  {
+    return media == null ? 0 : media.size();
+  }
 
 	public void setMedia(List<Metadata> media)
 	{

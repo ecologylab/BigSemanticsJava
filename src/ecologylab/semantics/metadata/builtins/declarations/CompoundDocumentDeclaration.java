@@ -133,6 +133,26 @@ public class CompoundDocumentDeclaration extends Document
 		return clippings;
 	}
 
+  // lazy evaluation:
+  public List<Clipping> clippings()
+  {
+    if (clippings == null)
+      clippings = new ArrayList<Clipping>();
+    return clippings;
+  }
+
+  // addTo:
+  public void addToClippings(Clipping element)
+  {
+    clippings().add(element);
+  }
+
+  // size:
+  public int clippingsSize()
+  {
+    return clippings == null ? 0 : clippings.size();
+  }
+
 	public void setClippings(List<Clipping> clippings)
 	{
 		this.clippings = clippings;

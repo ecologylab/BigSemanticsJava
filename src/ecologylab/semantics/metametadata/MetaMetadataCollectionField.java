@@ -1,12 +1,17 @@
 package ecologylab.semantics.metametadata;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
 import ecologylab.semantics.metadata.mm_dont_inherit;
 import ecologylab.semantics.metadata.scalar.types.MetadataScalarType;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField.AttributeChangeListener;
+import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.FieldTypes;
+import ecologylab.serialization.GenericTypeVar;
 import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.TranslationContext;
 import ecologylab.serialization.XMLTools;
@@ -284,6 +289,7 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 				tagName = null;
 			
 			String genericTypeName = null;
+			GenericTypeVar genericTypeVar = new GenericTypeVar();
 			int typeCode = this.getFieldType();
 			switch (typeCode)
 			{
@@ -306,6 +312,18 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 						null,
 						javaTypeName);
 				genericTypeName = fieldCd.getDescribedClassSimpleName();
+				genericTypeVar.setClassDescriptor(fieldCd);
+				// FIXME MetaMetadataGenericTypeVar and GenericTypeVar should be merged.
+				List<MetaMetadataGenericTypeVar> metaMetadataGenericTypeVars = this.getMetaMetadataGenericTypeVars();
+				if (metaMetadataGenericTypeVars != null && metaMetadataGenericTypeVars.size() > 0)
+				{
+					for (MetaMetadataGenericTypeVar mmdgtv : metaMetadataGenericTypeVars)
+					{
+						GenericTypeVar gtv = new GenericTypeVar();
+						gtv.setName(mmdgtv.getParameter()); // FIXME this is just one case.
+						genericTypeVar.addGenericTypeVar(gtv);
+					}
+				}
 				break;
 			}
 			case FieldTypes.COLLECTION_SCALAR:
@@ -326,11 +344,14 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 						null,
 						javaTypeName);
 				genericTypeName = scalarType.getCSharpTypeName();
+				genericTypeVar.setClassDescriptor(ClassDescriptor.getClassDescriptor(scalarType.getJavaClass()));
 				break;
 			}
 			}
 			fd.setWrapped(wrapped);
 			fd.setGeneric("<" + genericTypeName + ">");
+			fd.setGenericTypeVars(new ArrayList<GenericTypeVar>());
+			fd.getGenericTypeVars().add(genericTypeVar);
 		}
 		this.metadataFieldDescriptor = fd;
 		return fd;

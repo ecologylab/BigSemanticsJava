@@ -50,7 +50,7 @@ public class ClippableDocument<ME extends ClippableDocument<ME>> extends Clippab
 		super(metaMetadata);
 	}
 
-	private List<MediaClipping<ME>> clippingsThisIsIn()
+	public List<MediaClipping<ME>> clippingsThisIsIn()
 	{
 		List<MediaClipping<ME>> result = this.getClippingsThisIsIn();
 		if (result == null)

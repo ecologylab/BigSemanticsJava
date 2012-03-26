@@ -164,6 +164,26 @@ public class DocumentDeclaration extends Metadata
 		return additionalLocations;
 	}
 
+  // lazy evaluation:
+  public List<MetadataParsedURL> additionalLocations()
+  {
+    if (additionalLocations == null)
+      additionalLocations = new ArrayList<MetadataParsedURL>();
+    return additionalLocations;
+  }
+
+  // addTo:
+  public void addToAdditionalLocations(MetadataParsedURL element)
+  {
+    additionalLocations().add(element);
+  }
+
+  // size:
+  public int additionalLocationsSize()
+  {
+    return additionalLocations == null ? 0 : additionalLocations.size();
+  }
+
 	public void setAdditionalLocations(List<MetadataParsedURL> additionalLocations)
 	{
 		this.additionalLocations = additionalLocations;
