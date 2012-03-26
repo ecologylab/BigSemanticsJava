@@ -1037,6 +1037,7 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 		buffy.append("Exception Message::\t").append(e.getMessage()).append("\n");
 		String msg = buffy.toString();
 		StringBuilderUtils.release(buffy);
+		e.printStackTrace();
 		return msg;
 	}
 
