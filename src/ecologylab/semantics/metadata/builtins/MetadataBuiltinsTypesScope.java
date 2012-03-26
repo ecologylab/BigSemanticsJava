@@ -30,6 +30,7 @@ public class MetadataBuiltinsTypesScope extends Debug
 		ImageClipping.class,
 		MediaClipping.class,
 		TextClipping.class,
+		GeoLocation.class,
 	};
 	
 	static
