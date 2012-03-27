@@ -142,6 +142,11 @@ public class MetaMetadataRepositoryLoader extends Debug implements DocumentParse
 					result.integrateRepositoryWithThis(repoData);
 				}
 			}
+			catch(ClassCastException e) // So, this may be a bit overzealous but it covers the case of missing <meta_metadata_repository> tags 
+			{
+				Debug.error(this.getClassSimpleName(), "Please check the metametadata description in " + file.getAbsolutePath() + " \n <meta_metadata> must be surrounded by <meta_metadata_repository> tags");
+				e.printStackTrace();
+			}
 			catch (SIMPLTranslationException e)
 			{
 				Debug.error(this.getClassSimpleName(),

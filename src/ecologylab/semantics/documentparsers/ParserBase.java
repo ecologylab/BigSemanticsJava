@@ -700,7 +700,7 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 	}
 
 	/**
-	 * if we got a compound document, we may want to look up its true meta-metadata type by location.
+	 * if we got a document, we may want to look up its true meta-metadata type by location.
 	 * before doing connect(), what we can do to find out the true meta-metadata type is quite limited
 	 * (location, suffix, tag name). here we do location & suffix. tag name is mainly used by direct
 	 * binding cases.
@@ -710,7 +710,7 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 	 */
 	protected void lookupTrueMetaMetadata(MetaMetadataRepository repository, Metadata thisMetadata)
 	{
-		if (thisMetadata instanceof CompoundDocument)
+		if (thisMetadata instanceof Document)
 		{
 			ParsedURL thisMetadataLocation = thisMetadata.getLocation();
 			if (thisMetadataLocation != null)
@@ -825,7 +825,7 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 					}
 			
 					element.setMetaMetadata(mmdField);
-					lookupTrueMetaMetadata(mmdField.getRepository(), element);
+					lookupTrueMetaMetadata(mmdField.getRepository(), element); 
 					// TODO check for polymorphism. if this is an inherent polymorphic fields, we may need to
 					// replace element completely if its type changes.
 					

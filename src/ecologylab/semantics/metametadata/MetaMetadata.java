@@ -473,7 +473,7 @@ implements IMappable<String>//, HasLocalTranslationScope
 				throw new MetaMetadataException("no type/extends specified: " + this);
 			inheritedMmd = this.getMmdScope().get(inheritedMmdName);
 			if (inheritedMmd == null)
-				throw new MetaMetadataException("meta-metadata '" + inheritedMmdName + "' not found in " + this.getName() + ".");
+				throw new MetaMetadataException("meta-metadata '" + inheritedMmdName + "' not found in " + this.getName() + ". If this meta-metadata is defined in another file, make sure it compiled correcty.");
 			this.setInheritedMmd(inheritedMmd);
 		}
 		return inheritedMmd;
