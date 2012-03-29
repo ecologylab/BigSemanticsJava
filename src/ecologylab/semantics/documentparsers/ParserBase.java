@@ -29,6 +29,7 @@ import org.w3c.dom.NodeList;
 
 import ecologylab.appframework.types.prefs.Pref;
 import ecologylab.collections.Scope;
+import ecologylab.generic.DomTools;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.generic.ReflectionTools;
 import ecologylab.generic.StringTools;
@@ -121,6 +122,7 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 		truePURL = document.getLocation();
 
 		// build the metadata object
+//		DomTools.prettyPrint(DOM);
 		Document resultingMetadata = populateMetadata(document, metaMetadata, DOM, handler);
 		resultingMetadata.setMetadataChanged(true);
 
