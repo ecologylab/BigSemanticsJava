@@ -814,6 +814,16 @@ ISimplSerializationPre, ISimplDeserializationPost
 	{
 		return false;
 	}
+	
+	/** 
+	 * Convenience method for type checking related to InfoComposition-ness
+	 * Base implementation
+	 * @return false
+	 */
+	public boolean isInformationComposition()
+	{
+		return false;
+	}
 
 	/**
 	 * Convenience method for type checking related to CompoundDocument-ness.
