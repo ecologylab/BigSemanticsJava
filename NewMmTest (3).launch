@@ -7,7 +7,7 @@
 <listEntry value="1"/>
 </listAttribute>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="ecologylab.semantics.metametadata.test.NewMmTest"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="http://en.wikipedia.org/w/index.php?title=Special:Search&amp;profile=default&amp;search=type&amp;fulltext=Search&#13;&#10;//&#13;&#10;http://en.wikipedia.org/wiki/Type_system&#13;&#10;//&#13;&#10;http://www.imdb.com/title/tt0435761/&#13;&#10;http://www.imdb.com/title/tt1136608/&#13;&#10;http://www.rottentomatoes.com/m/district_9/"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="http://www.urbanspoon.com/r/114/875031/restaurant/College-Station/Christophers-World-Grill-Bryan&#13;&#10;http://www.google.com/patents/US20100045705"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="ecologylabSemanticsExample"/>
 <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Xms320m -Xmx320m"/>
 </launchConfiguration>
