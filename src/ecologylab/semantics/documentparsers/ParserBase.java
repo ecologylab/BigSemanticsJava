@@ -694,6 +694,7 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 				Document existingDoc = semanticsScope.lookupDocument(location);
 				if (existingDoc != null && existingDoc.getDownloadStatus() == DownloadStatus.DOWNLOAD_DONE)
 				{
+					existingDoc.addMixin(doc); // add the replaced Document object as a mixin in the downloaded Document.
 					return existingDoc;
 				}
 			}

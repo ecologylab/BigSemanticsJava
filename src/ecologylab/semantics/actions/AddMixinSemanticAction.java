@@ -30,10 +30,10 @@ public class AddMixinSemanticAction extends SemanticAction
 	@Override
 	public Object perform(Object obj)
 	{
-		Metadata metadata = (Metadata) obj;
+		Metadata target = (Metadata) obj;
 		Scope<Object> vars = semanticActionHandler.getSemanticActionVariableMap();
 		Metadata mixinMetadata = (Metadata) vars.get(mixin);
-		metadata.addMixin(mixinMetadata);
+		target.addMixin(mixinMetadata);
 		return null;
 	}
 
