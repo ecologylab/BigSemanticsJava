@@ -85,6 +85,28 @@ public class SemanticsDownloadMonitors extends Debug
 	{
 		pause(REGULAR_DOCUMENT_DOWNLOAD_MONITOR, pause);
 	}
+	
+	/**
+	 * Pause all DownloadMonitors and wait until all the ongoing parsing is done. After this we can
+	 * expect that all the metadata objects downloaded will not change due to downloading and parsing.
+	 * @param pause
+	 */
+	public void pauseAllAndWaitUntilNonePending(boolean pause)
+	{
+		// there has to be two loops, because we want to first request pause for every DownloadMonitor
+		// so that no new closures are processed, and then wait for them to finish their ongoing jobs.
+		// if we merge the two, we may wait for a longer time because some closures get processed
+		// when we are waiting on another DownloadMonitor to finish its ongoing job.
+		for (DownloadMonitor<DocumentClosure> downloadMonitor : DOWNLOAD_MONITORS)
+		{
+			downloadMonitor.pause(pause);
+		}
+		for (DownloadMonitor<DocumentClosure> downloadMonitor : DOWNLOAD_MONITORS)
+		{
+			downloadMonitor.waitUntilNonePending();
+		}
+	}
+	
 	/**
 	 * Pause a particular DownloadMonitor.
 	 * 
@@ -170,6 +192,14 @@ public class SemanticsDownloadMonitors extends Debug
 	{
 		DOWNLOAD_MONITORS[REGULAR_DOCUMENT_DOWNLOAD_MONITOR].unpause();
 		DOWNLOAD_MONITORS[REGULAR_IMAGE_DOWNLOAD_MONITOR].unpause();
+	}
+	
+	public void unpauseAll()
+	{
+		for (DownloadMonitor<DocumentClosure> downloadMonitor : DOWNLOAD_MONITORS)
+		{
+			downloadMonitor.unpause();
+		}
 	}
 	
 	/**
