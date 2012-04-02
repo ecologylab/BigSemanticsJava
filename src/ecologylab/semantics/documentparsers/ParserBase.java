@@ -721,8 +721,17 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 				MetaMetadata locMmd = repository.getCompoundDocumentMM(thisMetadataLocation);
 				if (locMmd != null && !locMmd.getName().equals(DocumentParserTagNames.COMPOUND_DOCUMENT_TAG))
 				{
-					debug("changing meta-metadata for extract value " + thisMetadata + " to " + locMmd);
-					thisMetadata.setMetaMetadata(locMmd);
+					if (thisMetadata.getClass().isAssignableFrom(locMmd.getMetadataClass()))
+					{
+						debug("changing meta-metadata for extracted value " + thisMetadata + " to " + locMmd);
+						thisMetadata.setMetaMetadata(locMmd);
+					}
+					else
+					{
+						error("cannot change meta-metadata fro extracted value " + thisMetadata + " to " + locMmd + " because the type doesn't match!\n"
+								  + "expected type: " + thisMetadata.getMetaMetadata() + "\n"
+								  + "check the <selector> to see if it is not specific enought!");
+					}
 				}
 			}
 		}
