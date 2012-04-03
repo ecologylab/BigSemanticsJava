@@ -9,11 +9,16 @@ import java.util.HashMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import ecologylab.generic.DomTools;
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.collecting.SemanticsGlobalScope;
 import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.html.DOMParserInterface;
 import ecologylab.semantics.html.ImgElement;
 import ecologylab.semantics.metadata.builtins.AnonymousDocument;
+import ecologylab.semantics.metadata.builtins.Document;
+import ecologylab.semantics.metadata.builtins.Image;
+import ecologylab.semantics.metadata.builtins.ImageClipping;
 import ecologylab.serialization.XMLTools;
 
 public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInterface
@@ -26,15 +31,14 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 	InputStream									fragmentStream;
 	
 	Reader											reader;
-
-	ArrayList<ImgElement>				imageElements	= new ArrayList<ImgElement>();
+	
+	ArrayList<ImageClipping>		imageClippings	= new ArrayList<ImageClipping>();
 
 	ParsedURL										containerPurl;
-
-	public ParsedURL getContainerPurl()
-	{
-		return containerPurl;
-	}
+	
+	Document										containerDocument;
+	
+	Document										textOutlink;
 
 	StringBuilder	bodyTextBuffy	= new StringBuilder();
 
@@ -107,15 +111,26 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 		return namesOfBreaklineNodeNames.containsKey(name);
 	}
 
-	public String walkDomAddingTextAndAddNewlines(Node bodyNode)
+	public void parseText(StringBuilder buffy, Node bodyNode)
 	{
 		//debug("Node:" + bodyNode.getNodeName() + ":" + bodyNode.getNodeValue());
-		String s = "";
+		
 		NodeList children = bodyNode.getChildNodes();
 		boolean addLine = false; // this is outside of the loop below to make it work correctly
 		for (int i = 0; i < children.getLength(); i++)
 		{
 			Node kid = children.item(i);
+			
+			if ("a".equals(kid.getNodeName()) && textOutlink == null)	// first cut; needs refinement
+			{
+				String hrefString	= DomTools.getAttribute(kid, "href");
+				if (hrefString != null)
+				{
+					ParsedURL aHref						= ImgElement.constructPurl(containerPurl, hrefString);
+					if (aHref != null)
+						textOutlink							= getSemanticsScope().getOrConstructDocument(aHref);
+				}
+			}
 
 			if (addLine == false)
 				addLine = shouldBreakLineWithNodeName(kid.getNodeName());
@@ -123,30 +138,33 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 			{
 				String v = kid.getNodeValue();
 				if (kid.getNodeName().equals("#comment"))
-					v = "";
-				s = addWithOneSpaceBetween(s, v, false);
+					continue;
+				addWithOneSpaceBetween(buffy, v, false);
 				if (addLine)
 				{
-					s += "\n";
+					buffy.append('\n');
 					addLine = false;
 				}
 			}
 			else if(shouldBreakLineWithNodeName(kid.getNodeName()))
 			{
-				s += "\n";
+				buffy.append('\n');
 			}
-			s = addWithOneSpaceBetween(s, walkDomAddingTextAndAddNewlines(kid), true);
+			//addWithOneSpaceBetween(buffy, walkDomAddingTextAndAddNewlines(kid), true);
+			parseText(buffy, kid);
 		}
-
-		//debug("Returning with:"+s);
-		return s;
 	}
 
-	private String addWithOneSpaceBetween(String s, String v, boolean newlineOK)
+	private static void addWithOneSpaceBetween(StringBuilder buffy, String v, boolean newlineOK)
 	{
-		if (!newlineOK)
-			v = v.replaceAll("\\n", "");
+		char lastChar	= buffy.charAt(buffy.length() - 1);
+		if (lastChar != '\n')
+			buffy.append(' ');
+		
+		if (!newlineOK )
+			v = v.replaceAll("\\n", " ");
 		v = v.replaceAll("^[\\s]+", "");
+		v = v.replaceAll("[\\s]+", " ");
 		if (v.length() > 0)
 		{
 //			if (s.length() > 0)
@@ -154,126 +172,102 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 //				{
 //					s += " ";
 //				}
-			s += v;
+			buffy.append(v);
 		}
-		return s;
 	}
 
-	void checkForContainerAndSetPURL(Node bodyNode)
+	void checkForSimplSourceLocation(Node node)
 	{
-		bodyNode.getAttributes();
-		if (bodyNode.getAttributes() != null)// bodyNode. .getNamedItem("container") != null)
+		node.getAttributes();
+		if (node.getAttributes() != null && setContainerDocument(node) != null)
 		{
-			//We are moving to use the simpl attribute instead of container.  
-			if (bodyNode.getAttributes().getNamedItem("simpl:source_location") != null)
-			{
-				String containerValue = bodyNode.getAttributes().getNamedItem("simpl:source_location").getTextContent();
-				if (containerValue != null && containerValue.length() > 0)
-				{
-					containerValue = XMLTools.unescapeXML(containerValue);
-					containerPurl = ParsedURL.getAbsolute(containerValue);
-					// debug("FOUND THER PURLLLL!!!"+containerValue);
-					return;
-				}
-			}
-			
-			if (bodyNode.getAttributes().getNamedItem("simpl") != null)
-			{
-				String containerValue = bodyNode.getAttributes().getNamedItem("simpl").getTextContent();
-				if (containerValue != null && containerValue.length() > 0)
-				{
-					containerValue = XMLTools.unescapeXML(containerValue);
-					containerPurl = ParsedURL.getAbsolute(containerValue);
-					// debug("FOUND THER PURLLLL!!!"+containerValue);
-					return;
-				}
-			}
-			
-			if (bodyNode.getAttributes().getNamedItem("container") != null)
-			{
-				String containerValue = bodyNode.getAttributes().getNamedItem("container").getTextContent();
-				if (containerValue != null && containerValue.length() > 0)
-				{
-					containerValue = XMLTools.unescapeXML(containerValue);
-					containerPurl = ParsedURL.getAbsolute(containerValue);
-					// debug("FOUND THER PURLLLL!!!"+containerValue);
-					return;
-				}
-			}
+			return;
 		}
-		NodeList children = bodyNode.getChildNodes();
+		NodeList children = node.getChildNodes();
 		for (int i = 0; i < children.getLength(); i++)
 		{
-			checkForContainerAndSetPURL(children.item(i));
+			checkForSimplSourceLocation(children.item(i));
 		}
 	}
 
 	@Override
 	public void parse() throws IOException
 	{
-		org.w3c.dom.Document doc = getDom();
+		org.w3c.dom.Document dom = getDom();
+		DomTools.prettyPrint(dom);
+		
 		int containerNodeIndex = 0;
-		NodeList bodyNodeList = doc.getElementsByTagName(HTML_TAG_BODY);
+		NodeList bodyNodeList = dom.getElementsByTagName(HTML_TAG_BODY);
 		if (bodyNodeList.getLength() > 0)
 		{
 			Node bodyNode = bodyNodeList.item(0);
-			bodyTextBuffy.append(walkDomAddingTextAndAddNewlines(bodyNode));
-			checkForContainerAndSetPURL(bodyNode);
+			parseText(bodyTextBuffy, bodyNode);
+			checkForSimplSourceLocation(bodyNode);
 		}
 
-		NodeList imgNodeList = doc.getElementsByTagName(HTML_TAG_IMG);
+		NodeList imgNodeList = dom.getElementsByTagName(HTML_TAG_IMG);
 		int numImages = imgNodeList.getLength();
 		if (numImages > 0)
 		{
 			for (int i = 0; i < numImages; i++)
 			{
-				
 				Node imgNode = imgNodeList.item(i);
 			  //make sure src is set...
-				if(imgNode.getAttributes().getNamedItem("src") == null)
+				String src 				= DomTools.getAttribute(imgNode, "src");
+				ParsedURL imgPurl	= ImgElement.constructPurl(containerPurl, src);
+				if (imgPurl == null)
 				{
 					System.out.println("Skipping img with no image source");
 					continue;
 				}
+				String altText = DomTools.getAttribute(imgNode, "alt");
 
-				if (containerPurl == null)
+				Document outlink	= null;
+				Node parent 		= imgNode.getParentNode();
+				do
 				{
-					setContainerPurl(getContainerAttrNode(imgNode));
-				}
-				// Add other information if available
-				String altText = null;
-				for (int k = 0; k < imgNode.getAttributes().getLength(); k++)
-				{
-					Node att = imgNode.getAttributes().item(k);
-					// debug(att.getNodeName());
-					if (att.getNodeName().toLowerCase().equals("alt"))
+					if ("a".equals(parent.getNodeName()))
 					{
-						altText = att.getNodeValue();
+						String hrefString	= DomTools.getAttribute(parent, "href");
+						if (hrefString != null)
+						{
+							ParsedURL aHref						= ImgElement.constructPurl(containerPurl, hrefString);
+							if (aHref != null)
+								outlink									= getSemanticsScope().getOrConstructDocument(aHref);
+						}
+						break;
 					}
-				}
-				ImgElement im = new ImgElement(imgNode, containerPurl);
-				im.setAlt(altText);
-				imageElements.add(im);
+					parent	= parent.getParentNode();		
+				} while (parent != null);
+				SemanticsGlobalScope semanticsSessionScope	= getSemanticsScope();
+				Image image		= semanticsSessionScope.getOrConstructImage(imgPurl);
+				if (image != null)
+				{
+					ImageClipping imageClipping = image.constructClipping(containerDocument, outlink, altText, null);
+					imageClippings.add(imageClipping);
+				}				
 			}
 		}
 	}
 
-	private Node getContainerAttrNode(Node elementNode)
+	private ParsedURL setContainerDocument(Node elementNode)
 	{
-		return elementNode.getAttributes().getNamedItem("container");
-	}
-
-	private void setContainerPurl(Node containerNode)
-	{
-		if (containerNode != null)
+		if (containerPurl == null && elementNode != null)
 		{
-			String containerValue = containerNode.getNodeValue();
+			String containerValue = DomTools.getAttribute(elementNode, "simpl:source_location");
+			if (containerValue == null || containerValue.length() == 0)
+				containerValue = DomTools.getAttribute(elementNode, "simpl");
+			if (containerValue == null || containerValue.length() == 0)
+				containerValue = DomTools.getAttribute(elementNode, "container");
+
 			if (containerValue != null && containerValue.length() > 0)
 			{
-				containerValue = XMLTools.unescapeXML(containerValue);
-				containerPurl = ParsedURL.getAbsolute(containerValue);
+				containerValue 		= XMLTools.unescapeXML(containerValue);
+				containerPurl 		= ParsedURL.getAbsolute(containerValue);
+				containerDocument	= getSemanticsScope().getOrConstructDocument(containerPurl);
 			}
 		}
+		return containerPurl;
 	}
 
 	@Override
@@ -287,15 +281,19 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 	{
 		return reader;
 	}
-	public String getDNDText()
+	public String getBodyText()
 	{
 		return bodyTextBuffy.toString();
 	}
+	public Document getTextOutlink()
+	{
+		return textOutlink;
+	}
 
-	public ArrayList<ImgElement> getDNDImages()
+	public ArrayList<ImageClipping> getImageClippings()
 	{
 
-		return imageElements;
+		return imageClippings;
 	}
 
 	public void setContent()
@@ -304,6 +302,16 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 
 	public void setIndexPage()
 	{
+	}
+
+	public Document getContainerDocument()
+	{
+		return containerDocument;
+	}
+
+	public ParsedURL getContainerPurl()
+	{
+		return containerPurl;
 	}
 
 }
