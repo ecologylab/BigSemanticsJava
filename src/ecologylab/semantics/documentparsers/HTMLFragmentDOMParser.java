@@ -157,7 +157,7 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 
 	private static void addWithOneSpaceBetween(StringBuilder buffy, String v, boolean newlineOK)
 	{
-		char lastChar	= buffy.charAt(buffy.length() - 1);
+		char lastChar	= (buffy.length() > 0) ? buffy.charAt(buffy.length() - 1) : ' ';
 		if (lastChar != '\n')
 			buffy.append(' ');
 		
@@ -194,7 +194,7 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 	public void parse() throws IOException
 	{
 		org.w3c.dom.Document dom = getDom();
-		DomTools.prettyPrint(dom);
+		//DomTools.prettyPrint(dom);
 		
 		int containerNodeIndex = 0;
 		NodeList bodyNodeList = dom.getElementsByTagName(HTML_TAG_BODY);
@@ -312,6 +312,20 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 	public ParsedURL getContainerPurl()
 	{
 		return containerPurl;
+	}
+	
+	@Override
+	public void recycle()
+	{
+		fragmentStream 		= null;
+		reader 						= null;
+		imageClippings.clear();
+		imageClippings 		= null;
+		containerPurl			= null;
+		containerDocument	= null;
+		textOutlink				= null;
+		bodyTextBuffy			= null;
+		super.recycle();
 	}
 
 }

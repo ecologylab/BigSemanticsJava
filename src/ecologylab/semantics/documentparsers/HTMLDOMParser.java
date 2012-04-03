@@ -109,6 +109,7 @@ implements DOMParserInterface
 	@Override
 	abstract public void parse() throws IOException;
 
+	@Override
 	public void recycle()
 	{
 		dom = null;
