@@ -49,7 +49,7 @@ public class ImgElement extends WithPurlElement
 	{
 		if (SRC.equals(key))
 		{
-			src 		= ((value != null) && value.startsWith("data:")) ? null : (basePurl == null) ? ParsedURL.getAbsolute(value) : basePurl.createFromHTML(value);
+			src 		= ((value != null) && value.startsWith("data:")) ? null : constructPurl(basePurl, value);
 		}
 		else if (ALT.equals(key))
 			alt			= value;
@@ -61,6 +61,11 @@ public class ImgElement extends WithPurlElement
 			isMap		= value != null && "true".equals(value);
 		else
 			super.setAttribute(key, value);
+	}
+
+	public static ParsedURL constructPurl(ParsedURL basePurl, String value)
+	{
+		return (basePurl == null) ? ParsedURL.getAbsolute(value) : basePurl.createFromHTML(value);
 	}
 
 	public ParsedURL getSrc()
