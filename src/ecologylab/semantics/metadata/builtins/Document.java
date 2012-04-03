@@ -575,16 +575,7 @@ public class Document extends DocumentDeclaration
 		return false;
 	}
 	
-	public String getQuery()
-	{
-		return null;
-	}
-	
-	public void setQuery(String query)
-	{
-		
-	}
-	
+
 	public void addCandidateOutlink (Document newOutlink )
 	{
 	}

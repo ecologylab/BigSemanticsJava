@@ -60,7 +60,8 @@ public class SearchParser extends LinksetParser implements CFPrefNames, Semantic
 
 			getMetaMetadataAndContainerAndQueue(infoCollector, searchURL, searchSeed, DocumentParserTagNames.SEARCH_TAG);
 
-			setQuery(searchSeed);
+			//setQuery(searchSeed);
+			throw new RuntimeException("not implemented");
 		}
 	}
 
@@ -70,6 +71,7 @@ public class SearchParser extends LinksetParser implements CFPrefNames, Semantic
 	/**
 	 * TODO implement this. This method set the query using reflecrtion on search class.
 	 */
+	/*
 	private void setQuery(SearchState searchSeed)
 	{
 		Document document	= getDocument();
@@ -78,7 +80,7 @@ public class SearchParser extends LinksetParser implements CFPrefNames, Semantic
 		else
 			warning("WEIRD problem: this.document == null! might have been recycled.");
 	}
-
+*/
 		
 	public ParsedURL purl()
 	{

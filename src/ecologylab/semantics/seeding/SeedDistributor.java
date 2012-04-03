@@ -249,11 +249,13 @@ public class SeedDistributor extends Debug implements Runnable
 				if (queuedResults.size() > 0)
 				{
 					DocumentClosure downloadable = queuedResults.poll();
-					String query = getQuery(downloadable);
+					/*String query = getQuery(downloadable);
 					int rank = getRank(downloadable);
 					debug(String.format("sending container to DownloadMonitor: [%s:%d]%s", query, rank,
 							downloadable));
 					// downloadable.setDispatchTarget(this);
+					 
+					
 					if (callbackMap.containsKey(downloadable))
 					{
 						callbackMap.get(downloadable).distribute(downloadable);
@@ -264,6 +266,9 @@ public class SeedDistributor extends Debug implements Runnable
 						downloadable.queueDownload();
 					}
 					i++;
+					* 
+					 */
+					throw new RuntimeException("not implemented");
 				}
 			}
 		}
@@ -278,7 +283,7 @@ public class SeedDistributor extends Debug implements Runnable
 
 		return r;
 	}
-
+/*
 	private static String getQuery(DocumentClosure downloadable)
 	{
 		String query = null;
@@ -289,6 +294,7 @@ public class SeedDistributor extends Debug implements Runnable
 		}
 		return query == null ? "" : query;
 	}
+*/
 
 	/**
 	 * Start the consumer thread.

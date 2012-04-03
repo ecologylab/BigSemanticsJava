@@ -89,8 +89,9 @@ public class DocumentState extends Seed
 	 		}
 	 		if (query != null)
 	 		{
-	 			document.setQuery(query);
-	 			InterestModel.expressInterest(query, (short)3);
+	 			//document.setQuery(query);
+	 			//InterestModel.expressInterest(query, (short)3);
+	 			throw new RuntimeException("not implemented");
 	 		}
 	 		document.queueDownload();
 		}

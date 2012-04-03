@@ -716,11 +716,6 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 		return continuations;
 	}
 
-	public String getQuery()
-	{
-		return document != null ? document.getQuery() : null;
-	}
-
 	public Seed getSeed()
 	{
 		return document != null ? document.getSeed() : null;

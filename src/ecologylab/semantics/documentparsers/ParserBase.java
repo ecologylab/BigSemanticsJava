@@ -145,8 +145,11 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 			handler.takeSemanticActions(resultingMetadata);
 
 			// make sure termVector is built here
-			resultingMetadata.rebuildCompositeTermVector();
-			
+			if(resultingMetadata.ignoreInTermVector())
+			{
+				debug("Do not build term vector because ignoreInTermVector is true");
+				resultingMetadata.rebuildCompositeTermVector();
+			}
 			// linking
 			MetaMetadataRepository metaMetaDataRepository = semanticsScope.getMetaMetadataRepository();
 			LinkedMetadataMonitor monitor = metaMetaDataRepository.getLinkedMetadataMonitor();
