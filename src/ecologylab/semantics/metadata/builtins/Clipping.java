@@ -102,7 +102,11 @@ public class Clipping extends ClippingDeclaration
 				clipping.setOutlink(outlink);
 			}
 			else
-				clipping.outlinkClosure	= outlink.getOrConstructClosure();
+			{
+				DocumentClosure outlinkClosure = outlink.getOrConstructClosure();
+				clipping.outlinkClosure	= outlinkClosure;
+				clipping.setOutlink(outlinkClosure.getDocument());
+			}
 		}
 		if (context != null)
 			clipping.setContext(context);
