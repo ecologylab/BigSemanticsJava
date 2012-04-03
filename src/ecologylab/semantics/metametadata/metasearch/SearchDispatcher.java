@@ -10,7 +10,7 @@ import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.cyberneko.CybernekoWrapper;
 import ecologylab.semantics.generated.library.RepositoryMetadataTranslationScope;
 import ecologylab.semantics.generated.library.search.Search;
-import ecologylab.semantics.generated.library.search.SearchResult;
+//import ecologylab.semantics.generated.library.search.SearchResult;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
 import ecologylab.semantics.metadata.output.HtmlRenderer;
@@ -69,8 +69,8 @@ public class SearchDispatcher extends Debug implements Continuation<DocumentClos
 			if (doc instanceof Search)
 			{
 				Search search = (Search) doc;
-
-				List<SearchResult> searchResults = search.getSearchResults();
+				throw new RuntimeException("Not Implemented!!!");
+				/*List<SearchResult> searchResults = search.getSearchResults();
 				int numSearchResults = searchResults == null ? 0 : searchResults.size();
 
 				debug("\nSearch results[" + numSearchResults +"] from: " + search.getLocation() + "\n");
@@ -79,6 +79,7 @@ public class SearchDispatcher extends Debug implements Continuation<DocumentClos
 				{
 					searchResultPages.add(search);
 				}
+				*/
 			}
 		}
 
@@ -96,13 +97,15 @@ public class SearchDispatcher extends Debug implements Continuation<DocumentClos
 						int numSearchResults = search.getSearchResults().size();
 						if (i < numSearchResults)
 						{
-							SearchResult result = search.getSearchResults().get(i);
+							throw new RuntimeException("Not Implemented!!!");
+							/*SearchResult result = search.getSearchResults().get(i);
 							if (result.getTitle() != null)
 							{
 								result.setEngine(search.getLocation().domain());
 								renderer.appendMetadata(result);
 								resultRendered = true;
 							}
+							*/
 						}
 					}
 					i++;
