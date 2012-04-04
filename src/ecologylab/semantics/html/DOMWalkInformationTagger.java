@@ -15,7 +15,7 @@ import org.w3c.dom.NodeList;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.html.documentstructure.ImageFeatures;
 import ecologylab.semantics.html.documentstructure.RecognizedDocumentStructure;
-import ecologylab.semantics.html.utils.HTMLAttributeNames;
+import ecologylab.semantics.html.utils.HTMLNames;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.serialization.XMLTools;
 
@@ -27,7 +27,7 @@ import ecologylab.serialization.XMLTools;
  * @author eunyee
  * 
  */
-public class DOMWalkInformationTagger implements HTMLAttributeNames
+public class DOMWalkInformationTagger implements HTMLNames
 {
 	protected static final int							MAX_LINKS_PER_PAGE			= 200;
 

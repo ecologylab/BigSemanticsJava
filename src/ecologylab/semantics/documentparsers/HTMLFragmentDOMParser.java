@@ -15,14 +15,14 @@ import ecologylab.semantics.collecting.SemanticsGlobalScope;
 import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.html.DOMParserInterface;
 import ecologylab.semantics.html.ImgElement;
-import ecologylab.semantics.html.utils.HTMLAttributeNames;
+import ecologylab.semantics.html.utils.HTMLNames;
 import ecologylab.semantics.metadata.builtins.AnonymousDocument;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.Image;
 import ecologylab.semantics.metadata.builtins.ImageClipping;
 import ecologylab.serialization.XMLTools;
 
-public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInterface, HTMLAttributeNames
+public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInterface, HTMLNames
 {
 	InputStream									fragmentStream;
 	

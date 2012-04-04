@@ -8,7 +8,7 @@ package ecologylab.semantics.html.utils;
  *
  * @author andruid 
  */
-public interface HTMLAttributeNames
+public interface HTMLNames
 {
 
 	public static final String EXTRACTED_CAPTION	= "EXTRACTED_CAPTION";

@@ -6,7 +6,7 @@ package ecologylab.semantics.html.documentstructure;
 import java.util.regex.Pattern;
 
 import ecologylab.generic.StringTools;
-import ecologylab.semantics.html.utils.HTMLAttributeNames;
+import ecologylab.semantics.html.utils.HTMLNames;
 
 /**
  * Static methods for operating on images, and recognizing features during information extraction.
@@ -14,7 +14,7 @@ import ecologylab.semantics.html.utils.HTMLAttributeNames;
  * @author andruid 
  */
 public class ImageFeatures
-implements HTMLAttributeNames, ImageConstants
+implements HTMLNames, ImageConstants
 {
 	/**
 	 * Test to see if alt attribute from HTML is garbage.

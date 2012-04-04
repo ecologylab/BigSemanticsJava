@@ -24,7 +24,7 @@ import ecologylab.semantics.html.documentstructure.ImageFeatures;
 import ecologylab.semantics.html.documentstructure.IndexPage;
 import ecologylab.semantics.html.documentstructure.RecognizedDocumentStructure;
 import ecologylab.semantics.html.documentstructure.TextOnlyPage;
-import ecologylab.semantics.html.utils.HTMLAttributeNames;
+import ecologylab.semantics.html.utils.HTMLNames;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.builtins.CompoundDocument;
 import ecologylab.semantics.metadata.builtins.Document;
@@ -41,7 +41,7 @@ import ecologylab.serialization.XMLTools;
  */
 public class HTMLDOMImageTextParser
 extends ParserBase<CompoundDocument>
-implements DOMParserInterface, HTMLAttributeNames
+implements DOMParserInterface, HTMLNames
 {
 	public HTMLDOMImageTextParser(SemanticsSessionScope infoCollector)	// this is of type In
 	{

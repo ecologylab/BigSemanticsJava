@@ -29,7 +29,7 @@ import ecologylab.semantics.html.documentstructure.IndexPage;
 import ecologylab.semantics.html.documentstructure.RecognizedDocumentStructure;
 import ecologylab.semantics.html.documentstructure.TextOnlyPage;
 import ecologylab.semantics.html.dom.IDOMProvider;
-import ecologylab.semantics.html.utils.HTMLAttributeNames;
+import ecologylab.semantics.html.utils.HTMLNames;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.serialization.XMLTools;
 
@@ -48,7 +48,7 @@ import ecologylab.serialization.XMLTools;
  */
 @Deprecated
 public class OldHTMLDOMParser
-implements HTMLAttributeNames, IDOMProvider
+implements HTMLNames, IDOMProvider
 {
 	PURLConnection purlConnection;
 	IDOMProvider provider;

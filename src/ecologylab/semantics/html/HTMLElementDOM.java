@@ -8,7 +8,7 @@ import org.w3c.dom.Node;
 import ecologylab.generic.Generic;
 import ecologylab.generic.StringTools;
 import ecologylab.semantics.html.documentstructure.ImageConstants;
-import ecologylab.semantics.html.utils.HTMLAttributeNames;
+import ecologylab.semantics.html.utils.HTMLNames;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 
 /**
@@ -18,7 +18,7 @@ import ecologylab.semantics.html.utils.StringBuilderUtils;
  *
  */    
 public class HTMLElementDOM
-implements HTMLAttributeNames, ImageConstants
+implements HTMLNames, ImageConstants
 {
 	public static final int	INDEX_NOT_CALCULATED	= -1;
 	protected	Node 			node;

@@ -19,7 +19,7 @@ import ecologylab.semantics.html.DOMWalkInformationTagger;
 import ecologylab.semantics.html.HTMLElementDOM;
 import ecologylab.semantics.html.ImgElement;
 import ecologylab.semantics.html.ParagraphText;
-import ecologylab.semantics.html.utils.HTMLAttributeNames;
+import ecologylab.semantics.html.utils.HTMLNames;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.model.text.TermVector;
 import ecologylab.serialization.XMLTools;
@@ -40,7 +40,7 @@ import ecologylab.serialization.XMLTools;
  * @author andruid
  */
 public class RecognizedDocumentStructure extends Debug
-implements HTMLAttributeNames
+implements HTMLNames
 {
 	static final int PARAGRAPH_COUNT_MINI_ARTICLE_THRESHOLD = 2;
 
