@@ -51,6 +51,12 @@ public class DocumentDeclaration extends Metadata
 	@simpl_scalar
 	private MetadataParsedURL location;
 
+	/** 
+	 *Relative location of a local copy of the document.
+	 */ 
+	@simpl_scalar
+	private MetadataParsedURL localLocation;
+
 	@simpl_collection("location")
 	@mm_name("additional_locations")
 	private List<MetadataParsedURL> additionalLocations;
@@ -157,6 +163,38 @@ public class DocumentDeclaration extends Metadata
 	public void setLocationMetadata(MetadataParsedURL location)
 	{
 		this.location = location;
+	}
+
+	public MetadataParsedURL	localLocation()
+	{
+		MetadataParsedURL	result = this.localLocation;
+		if (result == null)
+		{
+			result = new MetadataParsedURL();
+			this.localLocation = result;
+		}
+		return result;
+	}
+
+	public ParsedURL getLocalLocation()
+	{
+		return this.localLocation == null ? null : localLocation().getValue();
+	}
+
+	public MetadataParsedURL getLocalLocationMetadata()
+	{
+		return localLocation;
+	}
+
+	public void setLocalLocation(ParsedURL localLocation)
+	{
+		//if (localLocation != null)
+			this.localLocation().setValue(localLocation);
+	}
+
+	public void setLocalLocationMetadata(MetadataParsedURL localLocation)
+	{
+		this.localLocation = localLocation;
 	}
 
 	public List<MetadataParsedURL> getAdditionalLocations()

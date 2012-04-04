@@ -8,12 +8,10 @@ package ecologylab.semantics.metadata.builtins.declarations;
  * Copyright (2012) Interface Ecology Lab.
  */
 
-import ecologylab.net.ParsedURL;
 import ecologylab.semantics.metadata.builtins.ClippableDocument;
 import ecologylab.semantics.metadata.builtins.Image;
 import ecologylab.semantics.metadata.builtins.MetadataBuiltinsTypesScope;
 import ecologylab.semantics.metadata.scalar.MetadataDate;
-import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.namesandnums.SemanticsNames;
 import ecologylab.serialization.annotations.simpl_inherit;
@@ -28,12 +26,6 @@ import java.util.Map;
 @simpl_inherit
 public class ImageDeclaration extends ClippableDocument<Image>
 {
-	/** 
-	 *Relative location of local copy of image.
-	 */ 
-	@simpl_scalar
-	private MetadataParsedURL localLocation;
-
 	@simpl_scalar
 	private MetadataDate creationDate;
 
@@ -44,38 +36,6 @@ public class ImageDeclaration extends ClippableDocument<Image>
 		super(mmd);
 	}
 
-
-	public MetadataParsedURL	localLocation()
-	{
-		MetadataParsedURL	result = this.localLocation;
-		if (result == null)
-		{
-			result = new MetadataParsedURL();
-			this.localLocation = result;
-		}
-		return result;
-	}
-
-	public ParsedURL getLocalLocation()
-	{
-		return this.localLocation == null ? null : localLocation().getValue();
-	}
-
-	public MetadataParsedURL getLocalLocationMetadata()
-	{
-		return localLocation;
-	}
-
-	public void setLocalLocation(ParsedURL localLocation)
-	{
-		if (localLocation != null)
-			this.localLocation().setValue(localLocation);
-	}
-
-	public void setLocalLocationMetadata(MetadataParsedURL localLocation)
-	{
-		this.localLocation = localLocation;
-	}
 
 	public MetadataDate	creationDate()
 	{
