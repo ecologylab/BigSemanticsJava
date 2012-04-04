@@ -482,6 +482,18 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 		return (document == null) ? null : document.getSite();
 	}
 	
+	@Override
+	public SemanticsSite getDownloadSite()
+	{
+		Document document = this.document;
+		if(document != null)
+		{
+			if(document.getDownloadLocation().isFile())
+			 return null;
+		}
+		return (document == null) ? null : document.getSite();
+	}
+	
 	public boolean isFromSite(SemanticsSite site)
 	{
 		return site != null && site == getSite();
@@ -539,6 +551,13 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 	{
 		Document document = this.document;
 		return (document == null) ? null : document.getLocation();
+	}
+	
+	@Override
+	public ParsedURL getDownloadLocation()
+	{
+		Document document = this.document;
+		return (document == null) ? null : document.getDownloadLocation();
 	}
 
 	/**

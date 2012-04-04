@@ -90,26 +90,6 @@ implements MimeType, ImageConstants
 	{
 		return true;
 	}
-	
-	/**
-	 * Use the local location if there is one; otherwise, just use the regular location.
-	 * 
-	 * @return
-	 */
-	@Override
-	public ParsedURL getDownloadLocation()
-	{
-		ParsedURL result	= getLocation();
-		ParsedURL localLocation	= getLocalLocation();
-		if (localLocation != null)
-		{
-			File localFile	= localLocation.file();
-			if (localFile.exists())
-				result	= localLocation;
-		}
-		return result;
-	}
-
 	/**
 	 * Construct an ImageClipping object.
 	 * 

@@ -5,6 +5,7 @@ package ecologylab.semantics.metadata.builtins;
  * Metadata hierarchy. It is hand-authored in order to provide specific functionalities
  **/
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -153,13 +154,21 @@ public class Document extends DocumentDeclaration
 	}
 
 	/**
-	 * Just use the regular location.
+	 * Use the local location if there is one; otherwise, just use the regular location.
 	 * 
 	 * @return
 	 */
 	public ParsedURL getDownloadLocation()
 	{
-		return getLocation();
+		ParsedURL result	= getLocation();
+		ParsedURL localLocation	= getLocalLocation();
+		if (localLocation != null)
+		{
+			File localFile	= localLocation.file();
+			if (localFile.exists())
+				result	= localLocation;
+		}
+		return result;
 	}
 	
 	/**
