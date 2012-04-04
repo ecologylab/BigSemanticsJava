@@ -89,7 +89,7 @@ public class SearchParser extends LinksetParser implements CFPrefNames, Semantic
 
 	@Override
 	public Document populateMetadata(Document document,
-			MetaMetadataCompositeField metaMetadata, org.w3c.dom.Node DOM,
+			MetaMetadataCompositeField metaMetadata, org.w3c.dom.Document DOM,
 			SemanticActionHandler handler) throws IOException
 	{
 		Document resultingDocument	= document;

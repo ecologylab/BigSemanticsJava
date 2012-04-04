@@ -101,7 +101,7 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 
 	/**
 	 * populate associated metadata with the container and handler.
-	 * @param dOM 
+	 * @param dom 
 	 * @param metaMetadata 
 	 * @param document 
 	 * 
@@ -111,10 +111,10 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 	public abstract Document populateMetadata(
 			Document document,
 			MetaMetadataCompositeField metaMetadata,
-			Node dOM,
+			org.w3c.dom.Document dom,
 			SemanticActionHandler handler) throws IOException;
 
-	public final Document parse(Document document, MetaMetadataCompositeField metaMetadata, org.w3c.dom.Node DOM) throws IOException
+	public final Document parse(Document document, MetaMetadataCompositeField metaMetadata, org.w3c.dom.Document dom) throws IOException
 	{
 		// init
 		SemanticActionHandler handler = new SemanticActionHandler(semanticsScope, this);
@@ -123,7 +123,7 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 
 		// build the metadata object
 //		DomTools.prettyPrint(DOM);
-		Document resultingMetadata = populateMetadata(document, metaMetadata, DOM, handler);
+		Document resultingMetadata = populateMetadata(document, metaMetadata, dom, handler);
 		resultingMetadata.setMetadataChanged(true);
 
 		try

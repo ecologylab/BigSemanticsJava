@@ -28,7 +28,7 @@ public class DirectBindingParser extends ParserBase<Document>
 
 	@Override
 	public Document populateMetadata(Document document,
-			MetaMetadataCompositeField metaMetadata, org.w3c.dom.Node DOM,
+			MetaMetadataCompositeField metaMetadata, org.w3c.dom.Document DOM,
 			SemanticActionHandler handler)
 	 throws IOException
 	{

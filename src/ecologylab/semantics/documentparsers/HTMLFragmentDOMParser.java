@@ -15,19 +15,15 @@ import ecologylab.semantics.collecting.SemanticsGlobalScope;
 import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.html.DOMParserInterface;
 import ecologylab.semantics.html.ImgElement;
+import ecologylab.semantics.html.utils.HTMLAttributeNames;
 import ecologylab.semantics.metadata.builtins.AnonymousDocument;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.Image;
 import ecologylab.semantics.metadata.builtins.ImageClipping;
 import ecologylab.serialization.XMLTools;
 
-public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInterface
+public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInterface, HTMLAttributeNames
 {
-
-	public static final String	HTML_TAG_BODY	= "body";
-
-	public static final String	HTML_TAG_IMG	= "img";
-
 	InputStream									fragmentStream;
 	
 	Reader											reader;
@@ -42,73 +38,80 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 
 	StringBuilder	bodyTextBuffy	= new StringBuilder();
 
+	private static HashMap<String, Integer>	namesOfBreaklineNodeNames	= null;
+
+
 	public HTMLFragmentDOMParser(SemanticsSessionScope infoCollector, Reader reader, InputStream inputStream)
 	{
 		super(infoCollector);
-		fragmentStream 	= inputStream;
-		this.reader			= reader;
+		fragmentStream 			= inputStream;
+		this.reader					= reader;
 		AnonymousDocument anonymousDocument = new AnonymousDocument();
-		this.documentClosure = anonymousDocument.getOrConstructClosure();
+		this.documentClosure= anonymousDocument.getOrConstructClosure();
 	}
 
-	/*
-	 * This is the old parse method as of oct 13, 2011. This will be removed as soon as I am happy
-	 * tweaking the old one. -Rhema
-	 * 
-	 * @Override public void parse() throws IOException { org.w3c.dom.Document doc = getDom(); int
-	 * containerNodeIndex = 0; NodeList bodyNodeList = doc.getElementsByTagName(HTML_TAG_BODY);
-	 * //types not passed well... check here if (bodyNodeList.getLength() > 0) { Node bodyNode =
-	 * bodyNodeList.item(0);
-	 * 
-	 * NodeList children = bodyNode.getChildNodes(); if (children.getLength() > 0) { for (int i = 0; i
-	 * < children.getLength(); i++) { if (children.item(i).getNodeType() == Node.ELEMENT_NODE) {
-	 * containerNodeIndex = i; break; } } Node containerNode; if (containerNodeIndex == 0) {
-	 * containerNode = getContainerAttrNode(bodyNode); } else { containerNode =
-	 * getContainerAttrNode(children.item(containerNodeIndex)); } setContainerPurl(containerNode); }
-	 * DOMWalkInformationTagger.getTextInSubTree2(bodyNode, true, bodyTextBuffy, false, true); }
-	 * NodeList imgNodeList = doc.getElementsByTagName(HTML_TAG_IMG); int numImages =
-	 * imgNodeList.getLength(); if (numImages > 0) { for (int i = 0; i < numImages; i++) { Node
-	 * imgNode = imgNodeList.item(i); if (containerPurl == null) {
-	 * setContainerPurl(getContainerAttrNode(imgNode)); }
-	 * 
-	 * // Add other information if available String altText = null;
-	 * 
-	 * for (int k = 0; k < imgNode.getAttributes().getLength(); k++) { Node att =
-	 * imgNode.getAttributes().item(k); // debug(att.getNodeName()); if
-	 * (att.getNodeName().toLowerCase().equals("alt")) { altText = att.getNodeValue(); } }
-	 * 
-	 * ImgElement im = new ImgElement(imgNode, containerPurl); im.setAlt(altText);
-	 * imageElements.add(im); }
-	 * 
-	 * } // taggedDoc.generateCollectionsFromRoot(rootNode); }
-	 */
-
-	private static HashMap<String, Integer>	namesOfBreaklineNodeNames	= null;
-
-	/**
-	 * @author rhema returns true when a breakline would make sense based on the node name.
-	 * 
-	 * @param nodeName
-	 *          such as p, div, br
-	 * @return
-	 */
-	private boolean shouldBreakLineWithNodeName(String nodeName)
+	@Override
+	public void parse() throws IOException
 	{
-		String name = nodeName.toLowerCase();
-		if (namesOfBreaklineNodeNames == null)
+		org.w3c.dom.Document dom = getDom();
+		//DomTools.prettyPrint(dom);
+		
+		int containerNodeIndex = 0;
+		NodeList bodyNodeList = dom.getElementsByTagName(BODY);
+		if (bodyNodeList.getLength() > 0)
 		{
-			namesOfBreaklineNodeNames = new HashMap<String, Integer>();
-			namesOfBreaklineNodeNames.put("p", 1);
-			namesOfBreaklineNodeNames.put("h1", 1);
-			namesOfBreaklineNodeNames.put("h2", 1);
-			namesOfBreaklineNodeNames.put("h3", 1);
-			namesOfBreaklineNodeNames.put("h4", 1);
-			namesOfBreaklineNodeNames.put("h5", 1);
-			namesOfBreaklineNodeNames.put("h6", 1);
-			namesOfBreaklineNodeNames.put("br", 1);
-			namesOfBreaklineNodeNames.put("div", 1);
+			Node bodyNode = bodyNodeList.item(0);
+			parseText(bodyTextBuffy, bodyNode);
+			checkForSimplSourceLocation(bodyNode);
 		}
-		return namesOfBreaklineNodeNames.containsKey(name);
+
+		parseImages(dom);
+	}
+
+	private void parseImages(org.w3c.dom.Document dom)
+	{
+		NodeList imgNodeList	= dom.getElementsByTagName(IMG);
+		int numImages 				= imgNodeList.getLength();
+		if (numImages > 0)
+		{
+			for (int i = 0; i < numImages; i++)
+			{
+				Node imgNode = imgNodeList.item(i);
+
+				String src 				= DomTools.getAttribute(imgNode, SRC);
+				ParsedURL imgPurl	= ImgElement.constructPurl(containerPurl, src);
+				if (imgPurl == null)
+				{
+					continue;
+				}
+
+				Document outlink	= null;
+				Node parent 			= imgNode.getParentNode();
+				do
+				{
+					if (A.equals(parent.getNodeName()))
+					{
+						String hrefString	= DomTools.getAttribute(parent, HREF);
+						if (hrefString != null)
+						{
+							ParsedURL aHref						= ImgElement.constructPurl(containerPurl, hrefString);
+							if (aHref != null)
+								outlink									= getSemanticsScope().getOrConstructDocument(aHref);
+						}
+						break;
+					}
+					parent	= parent.getParentNode();		
+				} while (parent != null);
+				SemanticsGlobalScope semanticsSessionScope	= getSemanticsScope();
+				Image image																	= semanticsSessionScope.getOrConstructImage(imgPurl);
+				if (image != null)
+				{
+					String altText = DomTools.getAttribute(imgNode, ALT);
+					ImageClipping imageClipping = image.constructClipping(containerDocument, outlink, altText, null);
+					imageClippings.add(imageClipping);
+				}				
+			}
+		}
 	}
 
 	public void parseText(StringBuilder buffy, Node bodyNode)
@@ -121,9 +124,9 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 		{
 			Node kid = children.item(i);
 			
-			if ("a".equals(kid.getNodeName()) && textOutlink == null)	// first cut; needs refinement
+			if (A.equals(kid.getNodeName()) && textOutlink == null)	// first cut; needs refinement
 			{
-				String hrefString	= DomTools.getAttribute(kid, "href");
+				String hrefString	= DomTools.getAttribute(kid, HREF);
 				if (hrefString != null)
 				{
 					ParsedURL aHref						= ImgElement.constructPurl(containerPurl, hrefString);
@@ -137,7 +140,7 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 			if (kid.getNodeValue() != null)
 			{
 				String v = kid.getNodeValue();
-				if (kid.getNodeName().equals("#comment"))
+				if (kid.getNodeName().equals(HASH_COMMENT))
 					continue;
 				addWithOneSpaceBetween(buffy, v, false);
 				if (addLine)
@@ -166,14 +169,33 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 		v = v.replaceAll("^[\\s]+", "");
 		v = v.replaceAll("[\\s]+", " ");
 		if (v.length() > 0)
-		{
-//			if (s.length() > 0)
-//				if (s.charAt(s.length() - 1) != ' ')
-//				{
-//					s += " ";
-//				}
 			buffy.append(v);
+	}
+
+	/**
+	 * @author rhema returns true when a breakline would make sense based on the node name.
+	 * 
+	 * @param nodeName
+	 *          such as p, div, br
+	 * @return
+	 */
+	private static boolean shouldBreakLineWithNodeName(String nodeName)
+	{
+		String name = nodeName.toLowerCase();
+		if (namesOfBreaklineNodeNames == null)
+		{
+			namesOfBreaklineNodeNames = new HashMap<String, Integer>();
+			namesOfBreaklineNodeNames.put("p", 1);
+			namesOfBreaklineNodeNames.put("h1", 1);
+			namesOfBreaklineNodeNames.put("h2", 1);
+			namesOfBreaklineNodeNames.put("h3", 1);
+			namesOfBreaklineNodeNames.put("h4", 1);
+			namesOfBreaklineNodeNames.put("h5", 1);
+			namesOfBreaklineNodeNames.put("h6", 1);
+			namesOfBreaklineNodeNames.put("br", 1);
+			namesOfBreaklineNodeNames.put("div", 1);
 		}
+		return namesOfBreaklineNodeNames.containsKey(name);
 	}
 
 	void checkForSimplSourceLocation(Node node)
@@ -190,75 +212,15 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 		}
 	}
 
-	@Override
-	public void parse() throws IOException
-	{
-		org.w3c.dom.Document dom = getDom();
-		//DomTools.prettyPrint(dom);
-		
-		int containerNodeIndex = 0;
-		NodeList bodyNodeList = dom.getElementsByTagName(HTML_TAG_BODY);
-		if (bodyNodeList.getLength() > 0)
-		{
-			Node bodyNode = bodyNodeList.item(0);
-			parseText(bodyTextBuffy, bodyNode);
-			checkForSimplSourceLocation(bodyNode);
-		}
-
-		NodeList imgNodeList = dom.getElementsByTagName(HTML_TAG_IMG);
-		int numImages = imgNodeList.getLength();
-		if (numImages > 0)
-		{
-			for (int i = 0; i < numImages; i++)
-			{
-				Node imgNode = imgNodeList.item(i);
-			  //make sure src is set...
-				String src 				= DomTools.getAttribute(imgNode, "src");
-				ParsedURL imgPurl	= ImgElement.constructPurl(containerPurl, src);
-				if (imgPurl == null)
-				{
-					System.out.println("Skipping img with no image source");
-					continue;
-				}
-				String altText = DomTools.getAttribute(imgNode, "alt");
-
-				Document outlink	= null;
-				Node parent 		= imgNode.getParentNode();
-				do
-				{
-					if ("a".equals(parent.getNodeName()))
-					{
-						String hrefString	= DomTools.getAttribute(parent, "href");
-						if (hrefString != null)
-						{
-							ParsedURL aHref						= ImgElement.constructPurl(containerPurl, hrefString);
-							if (aHref != null)
-								outlink									= getSemanticsScope().getOrConstructDocument(aHref);
-						}
-						break;
-					}
-					parent	= parent.getParentNode();		
-				} while (parent != null);
-				SemanticsGlobalScope semanticsSessionScope	= getSemanticsScope();
-				Image image		= semanticsSessionScope.getOrConstructImage(imgPurl);
-				if (image != null)
-				{
-					ImageClipping imageClipping = image.constructClipping(containerDocument, outlink, altText, null);
-					imageClippings.add(imageClipping);
-				}				
-			}
-		}
-	}
-
 	private ParsedURL setContainerDocument(Node elementNode)
 	{
 		if (containerPurl == null && elementNode != null)
 		{
-			String containerValue = DomTools.getAttribute(elementNode, "simpl:source_location");
+			String containerValue = DomTools.getAttribute(elementNode, SIMPL_SOURCE_LOCATION);
 			if (containerValue == null || containerValue.length() == 0)
-				containerValue = DomTools.getAttribute(elementNode, "simpl");
+				containerValue = DomTools.getAttribute(elementNode, SIMPL);
 			if (containerValue == null || containerValue.length() == 0)
-				containerValue = DomTools.getAttribute(elementNode, "container");
+				containerValue = DomTools.getAttribute(elementNode, CONTAINER);
 
 			if (containerValue != null && containerValue.length() > 0)
 			{

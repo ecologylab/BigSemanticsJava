@@ -37,7 +37,7 @@ public class FeedParser extends LinksetParser
 	@Override
 	public Document populateMetadata(Document document,
 			MetaMetadataCompositeField metaMetadata,
-			org.w3c.dom.Node DOM, SemanticActionHandler handler) throws IOException
+			org.w3c.dom.Document DOM, SemanticActionHandler handler) throws IOException
 	{
 		return directBindingPopulateMetadata();
 	}

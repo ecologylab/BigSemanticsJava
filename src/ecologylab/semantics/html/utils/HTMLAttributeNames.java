@@ -27,4 +27,19 @@ public interface HTMLAttributeNames
 
 	public static final String	HREF							= "href";
 
+	public static final String	BODY	= "body";
+
+	public static final String	IMG		= "img";
+
+	public static final String	A			= "a";
+
+	public static final String	CONTAINER	= "container";
+
+	public static final String	SIMPL	= "simpl";
+
+	public static final String	SIMPL_SOURCE_LOCATION	= "simpl:source_location";
+
+	public static final String	HASH_COMMENT	= "#comment";
+
+
 }

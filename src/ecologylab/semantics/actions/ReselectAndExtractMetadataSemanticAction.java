@@ -52,8 +52,8 @@ public class ReselectAndExtractMetadataSemanticAction extends SemanticAction
 						CompoundDocument newDoc = (CompoundDocument) newMmd.constructMetadata();
 						newDoc.setLocation(doc.getLocation());
 						ParserBase newParserBase = (ParserBase) newParser;
-						Node DOM = ((ParserBase) documentParser).getDom();
-						newParserBase.parse(newDoc, newMmd, DOM);
+						org.w3c.dom.Document dom = ((ParserBase) documentParser).getDom();
+						newParserBase.parse(newDoc, newMmd, dom);
 
 						DocumentClosure closure = doc.getOrConstructClosure();
 						closure.changeDocument(newDoc);
