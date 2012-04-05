@@ -188,7 +188,7 @@ public class DocumentDeclaration extends Metadata
 
 	public void setLocalLocation(ParsedURL localLocation)
 	{
-		//if (localLocation != null)
+		if (localLocation != null)
 			this.localLocation().setValue(localLocation);
 	}
 
