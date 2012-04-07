@@ -238,6 +238,11 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 		super.setWrapped(wrapped);
 	}
 	
+	public void setWrappedFD(MetadataFieldDescriptor wrappedFD)
+	{
+		super.setWrappedFD(wrappedFD);
+	}
+	
 	@Override
 	public void setTagName(String tagName)
 	{

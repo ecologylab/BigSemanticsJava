@@ -900,11 +900,11 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
 							customizeFieldDescriptor(metadataTScope, fieldDescriptorProxy);
 						if (this.metadataFieldDescriptor != metadataFieldDescriptor)
 						{
-							String tagName = this.metadataFieldDescriptor.getTagName();
-							int fieldType = this.metadataFieldDescriptor.getType();
-							if (fieldType == FieldTypes.COLLECTION_ELEMENT || fieldType == FieldTypes.MAP_ELEMENT)
-								tagName = this.metadataFieldDescriptor.getCollectionOrMapTagName();
-							metadataClassDescriptor.getAllFieldDescriptorsByTagNames().put(tagName, this.metadataFieldDescriptor);
+							// the field descriptor has been modified in customizeFieldDescriptor()!
+							// we need to update it in the class descriptor so that deserialization of metadata
+							// objects can work correctly, e.g. using the right classDescriptor for a composite
+							// field or a right elementClassDescriptor for a collection field.
+							customizeFieldDescriptorInClass(metadataTScope, metadataClassDescriptor);
 						}
 					}
 				}
@@ -915,6 +915,27 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
 			}
 		}
 		return metadataFieldDescriptor;
+	}
+
+	private void customizeFieldDescriptorInClass(SimplTypesScope metadataTScope, MetadataClassDescriptor metadataClassDescriptor)
+	{
+		String tagName = this.metadataFieldDescriptor.getTagName();
+		int fieldType = this.metadataFieldDescriptor.getType();
+		if (fieldType == FieldTypes.COLLECTION_ELEMENT || fieldType == FieldTypes.MAP_ELEMENT)
+		{
+			MetadataFieldDescriptor oldFD = metadataClassDescriptor.getFieldDescriptorByTag(tagName, metadataTScope, null);
+			if (oldFD != null && oldFD.getWrappedFD() != null)
+			{
+				// for wrapped collection fields, we just need to update the wrapped FD.
+				oldFD.setWrappedFD(this.metadataFieldDescriptor);
+				return;
+			}
+			else
+			{
+				tagName = this.metadataFieldDescriptor.getCollectionOrMapTagName();
+			}
+		}
+		metadataClassDescriptor.getAllFieldDescriptorsByTagNames().put(tagName, this.metadataFieldDescriptor);
 	}
 
 	/**
