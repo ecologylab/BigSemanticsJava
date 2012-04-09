@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -58,7 +59,7 @@ import ecologylab.serialization.library.geom.PointInt;
 public class DocumentClosure extends SetElement
 implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuation<DocumentClosure>
 {
-	Document											document;
+	Document											document; 
 	
 	private PURLConnection				purlConnection;
 
@@ -197,13 +198,6 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 				if (listeners != null && listeners.size() > 0)
 					addContinuations(listeners);
 			}
-									
-//		 	if(Pref.lookupBoolean(CFPrefNames.CRAWL_CAREFULLY) && !documentParser.cacheHit) //infoCollector.getCrawlingSlow() && 
-//		 	{		 		
-//			  	int waitTime = (Pref.lookupInt(CFPrefNames.MIN_WAIT_TIME) * 1000) + (MathTools.random(100)*((Pref.lookupInt(CFPrefNames.MAX_WAIT_TIME)-Pref.lookupInt(CFPrefNames.MIN_WAIT_TIME)) * 10));
-//			 	System.out.println("Downloading slow, waiting: "+((float)waitTime/60000));
-//				infoCollector.crawlerDownloadMonitor().pause(waitTime);
-//		 	}
 		}
 		else
 		{
@@ -361,8 +355,22 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 		if (originalPURL.isFile())
 		{
 			File file	= originalPURL.file();
+			
+			// Handle localhost issues on mac? 
+			if(originalPURL.url().getAuthority().equals("localhost"))
+			{
+				String s = originalPURL.url().toString();
+				s = s.replaceFirst("localhost", "");
+				ParsedURL newPURL = new ParsedURL(new URL(s));
+				purlConnection = new PURLConnection(newPURL);
+				document.setLocation(newPURL);
+				file = newPURL.file();
+			}
+			
 			if (!file.exists())
 			{
+
+				
 				// this might be pointing to an entry in a ZIP file, e.g. the packed composition file.
 				File ancestor = Files.findFirstExistingAncestor(file);
 				if (ancestor != null && !ancestor.isDirectory() && Files.isZipFile(ancestor))
