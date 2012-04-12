@@ -332,6 +332,11 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 					warning("Ignoring nested fields inside " + this + " because child_scalar_type specified ...");
 				
 				ScalarType scalarType = this.getChildScalarType();
+				if (scalarType != null && childTag == null)
+				{
+					childTag = name.endsWith("s") ? name.substring(0, name.length() - 1) : name;
+					warning("child_tag is necessary when using collection of scalars! will use a default child_tag: " + childTag);
+				}
 				fd = new MetadataFieldDescriptor(
 						this,
 						tagName,

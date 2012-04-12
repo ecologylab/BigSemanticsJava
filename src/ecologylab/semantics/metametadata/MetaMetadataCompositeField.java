@@ -499,7 +499,8 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 				{
 					inheritedMmdName = this.getExtendsAttribute();
 					if (inheritedMmdName == null)
-						throw new MetaMetadataException("no type / extends defined for " + this);
+						throw new MetaMetadataException("no type / extends defined for " + this
+								+ " (note that due to a limitation explicit child_scalar_type is needed for scalar collection fields, even if it has been declared in super field).");
 					this.setNewMetadataClass(true);
 				}
 				inheritedMmd = mmdScope.get(inheritedMmdName);

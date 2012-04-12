@@ -971,7 +971,7 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 		}
 		else if (fieldParserKey != null)
 		{
-			evaluation = fieldParserContext.get(fieldParserKey);
+			evaluation = fieldParserContext == null ? null : fieldParserContext.get(fieldParserKey);
 		}
 		else if (!mmdField.hasConcatenateValues())			
 			return false; // This is the final catch all. 
