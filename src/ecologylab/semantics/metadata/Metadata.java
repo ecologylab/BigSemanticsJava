@@ -1037,7 +1037,10 @@ ISimplSerializationPre, ISimplDeserializationPost
 							}
 							else
 							{
-								Table nestedTable = addLabelAndReturnTable(compositeTr, ((Metadata)thatReferenceObject).numberOfVisibleFields(false), (Metadata)thatReferenceObject, (MetaMetadataCompositeField) mmdField);
+								int fieldsShownInHtml = ((Metadata)thatReferenceObject).numberOfVisibleFields(false);
+								if(((Metadata)thatReferenceObject).hasLocation())
+									fieldsShownInHtml -= 1;//not shown in HTML
+								Table nestedTable = addLabelAndReturnTable(compositeTr, fieldsShownInHtml, (Metadata)thatReferenceObject, (MetaMetadataCompositeField) mmdField);
 								nestedMD.renderHtml(nestedTable, serializationContext, true, false, true, bookKeeper);  //also called with a scholarly article...
 								compositeTd.items.add(nestedTable);								
 							}							
