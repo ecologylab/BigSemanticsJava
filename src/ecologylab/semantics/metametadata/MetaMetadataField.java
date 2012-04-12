@@ -190,6 +190,7 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
 	 * If true the field is shown even if its null or empty.
 	 */
 	@simpl_scalar
+	@mm_dont_inherit
 	protected boolean																			alwaysShow;
 
 	/**
