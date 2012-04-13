@@ -870,6 +870,8 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 				
 				if (value != null)
 				{
+					value = applyPrefixAndRegExOnEvaluation(value, mmdField);
+					
 					MetadataBase element;
 					element = (MetadataBase) scalarType.getInstance(value, null, this);
 					if (element != null)
@@ -1071,16 +1073,12 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 	 */
 	// FIXME -- make this operate directly on a StringBuilder (which will also change the return type
 	// to void
-	private String applyPrefixAndRegExOnEvaluation(String evaluation, MetaMetadataField mmdElement)
+	private String applyPrefixAndRegExOnEvaluation(String evaluation, MetaMetadataField field)
 	{
 		if (evaluation == null)
 			return null;
 
 		// regex replacing should happen only to scalar fields
-		if (!(mmdElement instanceof MetaMetadataScalarField))
-			return evaluation;
-
-		MetaMetadataScalarField field = (MetaMetadataScalarField) mmdElement;
 
 		// to remove unwanted XML characters
 		evaluation = XMLTools.unescapeXML(evaluation);

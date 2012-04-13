@@ -603,6 +603,8 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 			debugA("ERROR: cant queue download cause already recycled.");
 			return false;
 		}
+		if (this.getDownloadLocation() == null)
+			return false;
 		final boolean result = !filteredOut(); // for dashboard type on the fly filtering
 		if (result)
 		{

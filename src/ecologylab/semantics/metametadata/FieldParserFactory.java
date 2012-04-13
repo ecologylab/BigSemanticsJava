@@ -20,9 +20,9 @@ public class FieldParserFactory
 		registerFieldParser("bibtex", new FieldParserForBibTeX());
 		registerFieldParser("regex_find", new FieldParserForRegexFind());
 		registerFieldParser("regex_split", new FieldParserForRegexSplit());
-		registerFieldParser("acm_reference", new FieldParserForAcmReferences());
-		
 		registerFieldParser("regex_split_and_find", new FieldParserForRegexSplitAndFind());
+		registerFieldParser("acm_reference", new FieldParserForAcmReferences());
+		registerFieldParser("nsf_pub_list", new FieldParserForNsfPubList());
 	}
 
 	public void registerFieldParser(String name, FieldParser fieldParser)

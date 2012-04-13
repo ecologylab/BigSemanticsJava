@@ -77,7 +77,18 @@ public class FilterLocation extends SemanticAction
 	@Override
 	public Object perform(Object obj) throws IOException
 	{
+		boolean usingThisDoc						= true; // if we are changing this document's location, or its child field's location
 		Document document								= documentParser.getDocument();
+		if (getObject() != null)
+		{
+			Object o = getSemanticActionHandler().getSemanticActionVariableMap().get(getObject());
+			if (o != null && o instanceof Document)
+			{
+				document = (Document) o;
+				usingThisDoc = false;
+			}
+		}
+		
 		final ParsedURL origLocation 		= document.getLocation();
 		if (origLocation.isFile())
 		{
@@ -94,6 +105,7 @@ public class FilterLocation extends SemanticAction
 				parametersMap												= new HashMap<String, String>(paramOps.size());
 			for (ParamOp paramOp: paramOps)
 			{
+				paramOp.setSemanticHandler(getSemanticActionHandler());
 				paramOp.transformParams(parametersMap);
 			}
 			ParsedURL transformedLocation		= origLocation.updateParams(parametersMap);
@@ -139,7 +151,7 @@ public class FilterLocation extends SemanticAction
 				}
 			}
 		}
-		if (locationChanged)
+		if (locationChanged && usingThisDoc) // if we are just changing the location of a field, we don't have to reconnect.
 			documentParser.reConnect();		// changed the location, so we better connect again!
 		return null;
 	}

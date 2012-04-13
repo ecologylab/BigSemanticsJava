@@ -22,7 +22,14 @@ public class ParamOp extends ElementState
 	{
 		return name;
 	}
-
+	
+	protected SemanticActionHandler	handler;
+	
+	public void setSemanticHandler(SemanticActionHandler semanticActionHandler)
+	{
+		this.handler = semanticActionHandler;
+	}
+	
 	/**
 	 * 
 	 */
@@ -31,4 +38,5 @@ public class ParamOp extends ElementState
 	}
 
 	abstract void transformParams(HashMap<String, String> parametersMap);
+
 }

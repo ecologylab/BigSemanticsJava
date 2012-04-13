@@ -22,6 +22,7 @@ import ecologylab.serialization.annotations.simpl_hints;
 import ecologylab.serialization.annotations.simpl_inherit;
 import ecologylab.serialization.annotations.simpl_other_tags;
 import ecologylab.serialization.annotations.simpl_scalar;
+import ecologylab.serialization.annotations.simpl_tag;
 import java.lang.String;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +43,7 @@ public class DocumentDeclaration extends Metadata
 
 	@simpl_scalar
 	@simpl_hints({Hint.XML_LEAF})
+	@simpl_tag("abstract")
 	@simpl_other_tags({"abstract_field"})
 	private MetadataString description;
 

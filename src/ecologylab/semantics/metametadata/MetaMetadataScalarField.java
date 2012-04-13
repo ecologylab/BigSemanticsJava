@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import ecologylab.semantics.documentparsers.ParserBase;
-import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
 import ecologylab.semantics.metadata.scalar.types.MetadataScalarType;
@@ -17,11 +16,9 @@ import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.annotations.Hint;
 import ecologylab.serialization.annotations.simpl_collection;
-import ecologylab.serialization.annotations.simpl_composite;
 import ecologylab.serialization.annotations.simpl_composite_as_scalar;
 import ecologylab.serialization.annotations.simpl_filter;
 import ecologylab.serialization.annotations.simpl_inherit;
-import ecologylab.serialization.annotations.simpl_nowrap;
 import ecologylab.serialization.annotations.simpl_scalar;
 import ecologylab.serialization.annotations.simpl_tag;
 import ecologylab.serialization.formatenums.StringFormat;
@@ -41,9 +38,6 @@ public class MetaMetadataScalarField extends MetaMetadataField
 	@simpl_scalar
 	protected Hint								hint;
 
-	@simpl_composite
-	protected RegexFilter					filter;
-	
 	@simpl_collection("value")
 	protected List<MetaMetadataValueField> concatenateValues;
 
@@ -140,33 +134,6 @@ public class MetaMetadataScalarField extends MetaMetadataField
 		}
 	}
 			
-	/**
-	 * @return the regex pattern
-	 */
-	public Pattern getRegexPattern()
-	{
-		if (filter != null)
-			return filter.getRegex();
-		return null;
-	}
-	
-	public int getRegexGroup()
-	{
-		if (filter != null)
-			return filter.getGroup();
-		return 0;
-	}
-
-	/**
-	 * @return the replacement string
-	 */
-	public String getRegexReplacement()
-	{
-		if (filter != null)
-			return filter.getReplace();
-		return null;
-	}
-	
 	public boolean isCompositeScalar()
 	{
 		return compositeScalar;

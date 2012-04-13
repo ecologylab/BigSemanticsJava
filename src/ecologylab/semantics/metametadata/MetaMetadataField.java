@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.semantics.metadata.Metadata;
@@ -19,6 +20,7 @@ import ecologylab.serialization.FieldTypes;
 import ecologylab.serialization.MetaInformation;
 import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.XMLTools;
+import ecologylab.serialization.annotations.simpl_composite;
 import ecologylab.serialization.annotations.simpl_descriptor_classes;
 import ecologylab.serialization.annotations.simpl_inherit;
 import ecologylab.serialization.annotations.simpl_map;
@@ -269,6 +271,9 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
 	@simpl_scalar
 	protected boolean																			ignoreCompletely;
 
+	@simpl_composite
+	protected RegexFilter																	filter;
+	
 	// ///////////////////////////////// members /////////////////////////////////
 
 	HashSet<String>																				nonDisplayedFieldNames;
@@ -1163,4 +1168,31 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
 		this.usedForInlineMmdDef = usedForInlineMmdDef;
 	}
 
+	/**
+	 * @return the regex pattern
+	 */
+	public Pattern getRegexPattern()
+	{
+		if (filter != null)
+			return filter.getRegex();
+		return null;
+	}
+	
+	public int getRegexGroup()
+	{
+		if (filter != null)
+			return filter.getGroup();
+		return 0;
+	}
+
+	/**
+	 * @return the replacement string
+	 */
+	public String getRegexReplacement()
+	{
+		if (filter != null)
+			return filter.getReplace();
+		return null;
+	}
+	
 }

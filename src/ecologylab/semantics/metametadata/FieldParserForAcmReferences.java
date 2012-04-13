@@ -56,9 +56,9 @@ public class FieldParserForAcmReferences extends FieldParser
 						String title = titleAndOther[0];
 						String other0 = titleAndOther[1];
 						if (title != null)
-							result.put(TITLE, title.trim());
+							result.put(TITLE, trimUntilLetter(title).trim());
 						if (other0 != null)
-							result.put(OTHER, other0.trim());
+							result.put(OTHER, trimUntilLetter(other0).trim());
 					}
 				}
 			}
@@ -92,9 +92,9 @@ public class FieldParserForAcmReferences extends FieldParser
 				nextPos = skipChars(input, endTitle, ", .");
 			}
 			String title = input.substring(beginTitle, endTitle);
-			result.put(TITLE, title.trim());
+			result.put(TITLE, trimUntilLetter(title).trim());
 			String other = input.substring(nextPos);
-			result.put(OTHER, other.trim());
+			result.put(OTHER, trimUntilLetter(other).trim());
 			break;
 		default:
 			result.put(TITLE, input);
@@ -115,6 +115,18 @@ public class FieldParserForAcmReferences extends FieldParser
 		while (start < s.length() && chars.indexOf(s.charAt(start)) < 0)
 			start++;
 		return start;
+	}
+	
+	private static String trimUntilLetter(String s)
+	{
+		int p = 0;
+		while (p < s.length())
+		{
+			if (Character.isLetter(s.charAt(p)))
+				break;
+			p++;
+		}
+		return s.substring(p);
 	}
 
 	public static void main(String[] args)
