@@ -6,6 +6,9 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathExpressionException;
+
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -13,6 +16,7 @@ import ecologylab.generic.DomTools;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.collecting.SemanticsGlobalScope;
 import ecologylab.semantics.collecting.SemanticsSessionScope;
+import ecologylab.semantics.collecting.SemanticsSite;
 import ecologylab.semantics.html.DOMParserInterface;
 import ecologylab.semantics.html.ImgElement;
 import ecologylab.semantics.html.utils.HTMLNames;
@@ -170,8 +174,8 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 		v = v.replaceAll("[\\s]+", " ");
 		if (v.length() > 0)
 			buffy.append(v);
-	}
-
+	}		
+	
 	/**
 	 * @author rhema returns true when a breakline would make sense based on the node name.
 	 * 

@@ -5,8 +5,11 @@ package ecologylab.semantics.collecting;
 
 // import java.awt.Color;
 
+import java.util.HashMap;
+
 import ecologylab.concurrent.BasicSite;
 import ecologylab.generic.Colors;
+import ecologylab.net.ParsedURL;
 import ecologylab.semantics.platformspecifics.SemanticsPlatformSpecifics;
 import ecologylab.serialization.annotations.simpl_inherit;
 
@@ -56,7 +59,10 @@ public class SemanticsSite extends BasicSite implements Colors
 	private int									numSurrogatesFromSite			= 1;
 
 	private int									numContainers;
-
+	
+	ParsedURL pathToFavicon = null;
+	static public HashMap faviPathHash = new HashMap();
+	
 	/**
 	 * 
 	 * @param domain
@@ -66,6 +72,9 @@ public class SemanticsSite extends BasicSite implements Colors
 	public SemanticsSite(String domain, SemanticsGlobalScope infoCollector)
 	{
 		this.domain = domain;
+		//pathToFavicon = ParsedURL.getAbsolute("http://www." + domain + "/favicon.ico", "Bad favicon path.");
+		//faviPathHash.put(domain, pathToFavicon);
+
 		strokeHue = nextStrokeHue();
 		fontIndex = infoCollector.getAppropriateFontIndex();
 	}
@@ -76,6 +85,29 @@ public class SemanticsSite extends BasicSite implements Colors
 	public SemanticsSite()
 	{
 
+	}
+	
+	public void setFaviconPath(String path, ParsedURL site) 
+	{
+		ParsedURL favPath = ParsedURL.getAbsolute(path, "Malformed favicon path. Try with relative");
+		if(favPath == null) {
+			favPath = site.getRelative(path, "Still bad URL. Use root method.");
+			if(favPath == null) 
+			{
+				//I don't like this if statement
+				favPath = ParsedURL.getAbsolute("http://" + site.domain() + "/favicon.ico");
+			}
+		}
+		
+		if(favPath != null) {
+			pathToFavicon = favPath;
+			faviPathHash.put(domain, pathToFavicon);
+		}
+	}
+	
+	public ParsedURL getFaviconPath()
+	{
+		return pathToFavicon;
 	}
 
 	public void newCandidateImage(boolean inArticleBody)

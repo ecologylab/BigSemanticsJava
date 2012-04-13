@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.util.ArrayList;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathExpressionException;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -13,6 +15,7 @@ import ecologylab.generic.HashMapArrayList;
 import ecologylab.generic.StringTools;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.collecting.SemanticsGlobalScope;
+import ecologylab.semantics.collecting.SemanticsSite;
 import ecologylab.semantics.html.DOMParserInterface;
 import ecologylab.semantics.html.ImgElement;
 import ecologylab.semantics.html.ParagraphText;
@@ -429,6 +432,31 @@ implements DOMParserInterface
 	public boolean isSearchPage() 
 	{
 		return false;
+	}
+
+	protected void findFaviconPath(Document doc, XPath xpath)
+	{
+		String favi_res = "";
+		try
+		{
+			favi_res = xpath.evaluate("//link[@rel=\"shortcut icon\"]/@href", dom);
+		}
+		catch (XPathExpressionException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		if(favi_res != null && favi_res != "") {
+			//Found one
+			//System.out.println("Got a path: " + favi_res);
+			SemanticsSite site = doc.getSite();
+			site.setFaviconPath(favi_res, doc.getLocation());
+			
+		} else {
+			//Did not. Look in the root.
+		}
+		
 	}
 
 

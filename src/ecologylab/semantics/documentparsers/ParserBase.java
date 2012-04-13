@@ -41,6 +41,7 @@ import ecologylab.semantics.collecting.DocumentDownloadedEventHandler;
 import ecologylab.semantics.collecting.DownloadStatus;
 import ecologylab.semantics.collecting.LinkedMetadataMonitor;
 import ecologylab.semantics.collecting.SemanticsGlobalScope;
+import ecologylab.semantics.collecting.SemanticsSite;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataBase;
@@ -126,6 +127,8 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 		Document resultingMetadata = populateMetadata(document, metaMetadata, dom, handler);
 		resultingMetadata.setMetadataChanged(true);
 
+		findFaviconPath(resultingMetadata, xpath);
+		
 		try
 		{
 			debug("Metadata parsed from: " + document.getLocation());
