@@ -63,4 +63,10 @@ public class Annotation extends AnnotationDeclaration implements TextualMetadata
 		return text().getValue();
 	}
 	
+	@Override 
+	public String toString()
+	{
+		return super.toString() + "\r\ntext: " + this.getText();
+	}
+	
 }
