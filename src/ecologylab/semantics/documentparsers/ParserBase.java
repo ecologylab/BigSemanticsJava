@@ -344,9 +344,17 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 		if (fieldSet == null || fieldSet.isEmpty())
 			return false;
 		
-		params.put(SURROUNDING_META_METADATA_FIELD, mmdField);
+		Stack<MetaMetadataField> surroundingMmdStack = (Stack<MetaMetadataField>) params.get(SURROUNDING_META_METADATA_STACK);
+		if (surroundingMmdStack == null)
+		{
+			surroundingMmdStack = new Stack<MetaMetadataField>();
+			params.put(SURROUNDING_META_METADATA_STACK, surroundingMmdStack);
+		}
+		surroundingMmdStack.push(mmdField);
 
 		MetaMetadataNestedField targetParent = mmdField.isUsedForInlineMmdDef() ? mmdField.getInheritedMmd() : mmdField;
+		
+		boolean result = true;
 		
 		synchronized (fieldSet)
 		{
@@ -397,7 +405,10 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 						suc = extractScalar(mmsf, metadata, contextNode, fieldParserContext, params);
 					}
 					if (field.isRequired() && !suc)
-						return false;
+					{
+						result = false;
+						break;
+					}
 				}
 				catch (Exception e)
 				{
@@ -407,7 +418,8 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 			}
 		}
 
-		return true;
+		surroundingMmdStack.pop();
+		return result;
 	}
 	
 	/**
@@ -470,8 +482,9 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 		{
 			if (contextNode != null)
 			{
+				MetaMetadataField surroundingField = getCurrentSurroundingField(params);
 				if ((xpathString == null || xpathString.length() == 0)
-						&& mmdField.parent() == params.get(SURROUNDING_META_METADATA_FIELD))
+						&& mmdField.parent() == surroundingField)
 				{
 					// the condition above after '&&' holds when this field is actually authored there,
 					// but not purely inherited.
@@ -568,6 +581,16 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 			return null;
 
 		return result;
+	}
+
+	private MetaMetadataField getCurrentSurroundingField(Scope<Object> params)
+	{
+		Stack<MetaMetadataField> stack = (Stack<MetaMetadataField>) params.get(SURROUNDING_META_METADATA_STACK);
+		if (stack != null && stack.size() > 0)
+		{
+			return stack.peek();
+		}
+		return null;
 	}
 
 	private Node findContextNodeIfNecessary(MetaMetadataField mmdField, Node currentContextNode,

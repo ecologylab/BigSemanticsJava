@@ -76,5 +76,5 @@ public interface SemanticActionsKeyWords
 	
 	public static String DOCUMENT_CALLER						= "document_caller";
 	
-	public static String SURROUNDING_META_METADATA_FIELD = "__SurroundingMetaMetadataField__";
+	public static String SURROUNDING_META_METADATA_STACK = "__SurroundingMetaMetadataStack__";
 }
