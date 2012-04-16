@@ -261,6 +261,8 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 							debug("now inherit from " + inheritedMmd);
 							inheritFromInheritedMmd(inheritedMmd);
 							inheritMetaMetadataFrom(repository, inheritedMmd);
+							
+							inheritFromSuperField();
 						}
 					});
 				
@@ -274,6 +276,7 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 					});
 					
 					debug("delaying inheriting from " + inheritedMmd);
+					return;
 				}
 			}
 			else
@@ -283,6 +286,17 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 				inheritMetaMetadataFrom(repository, inheritedMmd);
 			}
 		}
+		
+		MetaMetadataCompositeField inheritedField = inheritFromSuperField();
+		
+		// for the root meta-metadata, this may happend
+		if (inheritedMmd == null && inheritedField == null)
+			inheritMetaMetadataFrom(repository, null);
+	}
+
+	private MetaMetadataCompositeField inheritFromSuperField()
+	{
+		final MetaMetadataRepository repository = this.getRepository();
 		
 		final MetaMetadataCompositeField inheritedField = (MetaMetadataCompositeField) this.getInheritedField();
 		if (inheritedField != null)
@@ -303,7 +317,7 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 						}
 					});
 				
-					inheritedMmd.addInheritFinishEventListener(new InheritFinishEventListener()
+					inheritedField.addInheritFinishEventListener(new InheritFinishEventListener()
 					{
 						@Override
 						public void inheritFinish(Object... eventArgs)
@@ -322,10 +336,7 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 				inheritMetaMetadataFrom(repository, inheritedField);
 			}
 		}
-		
-		// for the root meta-metadata, this may happend
-		if (inheritedMmd == null && inheritedField == null)
-			inheritMetaMetadataFrom(repository, null);
+		return inheritedField;
 	}
 	
 	private void processWaitingInheritanceCommands()

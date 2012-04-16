@@ -1092,6 +1092,11 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 		if (regularExpression != null)
 		{
 			int group = field.getRegexGroup();
+			if (field.isNormalizeText())
+			{
+				evaluation = evaluation.replaceAll("\\s+", " ").trim();
+				evaluation = evaluation.replaceAll("\u00A0", " ").trim(); // &nbsp;
+			}
 			Matcher matcher = regularExpression.matcher(evaluation);
 			String replacementString = field.getRegexReplacement();
 			if (replacementString == null)

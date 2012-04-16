@@ -17,7 +17,7 @@ public class RegexFilter extends ElementState
 	@simpl_scalar
 	@simpl_hints(Hint.XML_ATTRIBUTE)
 	private Pattern	regex;
-	
+
 	@simpl_scalar
 	@simpl_hints(Hint.XML_ATTRIBUTE)
 	private int			group;
@@ -26,15 +26,19 @@ public class RegexFilter extends ElementState
 	@simpl_hints(Hint.XML_ATTRIBUTE)
 	private String	replace;
 
+	@simpl_scalar
+	@simpl_hints(Hint.XML_ATTRIBUTE)
+	private boolean	normalizeText	= true;
+
 	private String	javaRegex;
 
 	private String	javaReplace;
-	
+
 	public RegexFilter()
 	{
-		
+
 	}
-	
+
 	public RegexFilter(Pattern regex, String replace)
 	{
 		this.regex = regex;
@@ -64,7 +68,7 @@ public class RegexFilter extends ElementState
 			javaReplace = replace.replaceAll("\\\\", "\\\\\\\\");
 		return javaReplace;
 	}
-	
+
 	public int getGroup()
 	{
 		return group;
@@ -77,10 +81,8 @@ public class RegexFilter extends ElementState
 
 	public static void main(String[] args)
 	{
-		String[] testPatterns = {
-			"\\s+",
-			"\\\\\\\\ 4 back slashes",
-		};
+		String[] testPatterns =
+		{ "\\s+", "\\\\\\\\ 4 back slashes", };
 		String testReplace = "";
 		for (String p : testPatterns)
 		{
@@ -92,5 +94,15 @@ public class RegexFilter extends ElementState
 			System.out.println();
 		}
 	}
-	
+
+	public boolean isNormalizeText()
+	{
+		return normalizeText;
+	}
+
+	public void setNormalizeText(boolean normalizeText)
+	{
+		this.normalizeText = normalizeText;
+	}
+
 }

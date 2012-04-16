@@ -100,7 +100,7 @@ public class FilterLocation extends SemanticAction
 		boolean locationChanged					= false;
 		if (paramOps != null && paramOps.size() > 0)
 		{
-			HashMap<String, String>	parametersMap	= origLocation.extractParams();
+			HashMap<String, String>	parametersMap	= origLocation.extractParams(true);
 			if (parametersMap == null)
 				parametersMap												= new HashMap<String, String>(paramOps.size());
 			for (ParamOp paramOp: paramOps)

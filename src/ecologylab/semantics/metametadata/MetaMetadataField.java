@@ -139,6 +139,7 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
 	/**
 	 * Context node for xpath based extarction rules for this field. Default value is document root.
 	 */
+	@mm_dont_inherit
 	@simpl_scalar
 	protected String																			contextNode;
 
@@ -1193,6 +1194,11 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
 		if (filter != null)
 			return filter.getReplace();
 		return null;
+	}
+	
+	public boolean isNormalizeText()
+	{
+		return filter == null ? false : filter.isNormalizeText();
 	}
 	
 }
