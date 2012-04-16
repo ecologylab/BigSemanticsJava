@@ -70,6 +70,9 @@ public class FieldParserElement extends ElementState
 	@simpl_scalar
 	private boolean	trim							= true;
 
+	@simpl_scalar
+	private boolean	normalize_text					= true;
+
 	public FieldParserElement()
 	{
 
@@ -114,6 +117,16 @@ public class FieldParserElement extends ElementState
 	public boolean isTrim()
 	{
 		return trim;
+	}
+
+	public boolean isNormalizeText()
+	{
+		return normalize_text;
+	}
+
+	public void setNormalizeText(boolean joinLines)
+	{
+		this.normalize_text = joinLines;
 	}
 
 }

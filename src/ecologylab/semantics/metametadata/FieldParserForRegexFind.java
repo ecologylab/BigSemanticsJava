@@ -18,6 +18,11 @@ public class FieldParserForRegexFind extends FieldParser
 		
 		if (input != null)
 		{
+			if (parserElement.isNormalizeText())
+			{
+				input = input.replaceAll("\\s+", " ").trim();
+			}
+			
 			Pattern p = parserElement.getRegexFind();
 			if (p == null || p.pattern() == null || p.pattern().length() == 0)
 				p = parserElement.getRegex();

@@ -1,5 +1,7 @@
 package ecologylab.semantics.metametadata;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -12,7 +14,19 @@ public class FieldParserForRegexSplitAndFind extends FieldParserForRegexSplit
 	public List<Map<String, String>> getCollectionResult(FieldParserElement parserElement,
 			String input)
 	{
-		List<Map<String, String>> splitResults = super.getCollectionResult(parserElement, input);
+		List<Map<String, String>> splitResults = null;
+		if (parserElement.getRegex() != null)
+		{
+			splitResults = super.getCollectionResult(parserElement, input);
+		}
+		else
+		{
+			splitResults = new ArrayList<Map<String,String>>();
+			Map<String, String> onlyResult = new HashMap<String, String>();
+			onlyResult.put(FieldParserForRegexSplit.DEFAULT_KEY, input);
+			splitResults.add(onlyResult);
+		}
+		
 		if (splitResults != null)
 		{
 			for (Map<String, String> splitResult : splitResults)
