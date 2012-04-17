@@ -35,6 +35,7 @@ import com.drew.metadata.exif.ExifReader;
 import com.drew.metadata.exif.GpsDirectory;
 
 import ecologylab.generic.Debug;
+import ecologylab.net.PURLConnection;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionsKeyWords;
 import ecologylab.semantics.collecting.SemanticsSessionScope;
@@ -138,19 +139,20 @@ public class ImageParserAwt extends DocumentParser<Image>
 		ImageIO.scanForPlugins();
 
 		ParsedURL location = getDocument().getLocation();
-		
-		String suffix = location.suffix();
-		//String exnt = suffix.substring(suffix.length()-3);
 
-		//Ugly ICO test - will be removed.
-		boolean is_ico = false;
-		if("ico".equals(suffix)) 
+		PURLConnection connection = purlConnection();
+		
+		boolean is_ico = false; 
+		//Mime type is checked to determine if the incoming file is a ICO file format 
+		if (connection.mimeType() == "image/x-icon")
 		{
-			//USE ICO READER			
 			is_ico = true;
 		}
-		
-	
+		else if ("ico".equals(location.suffix()))
+		{
+			is_ico = true;
+		}
+
 		imageInputStream = ImageIO.createImageInputStream(inputStream);
 		if (imageInputStream == null)
 			error("Cant open ImageInputStream for " + location);
@@ -164,15 +166,16 @@ public class ImageParserAwt extends DocumentParser<Image>
 				while (imageReadersIterator.hasNext())
 				{
 					imageReader = imageReadersIterator.next();
-					
-					
-					if(is_ico == true ) { //if .ico, force ICOReader to be used
-						if(!(imageReader.toString().contains("ICOReader"))) {
-							//ystem.out.println("WRONG READER HERE: " + imageReader.toString() + "says it's type is " + imageReader.getFormatName());
+
+					if (is_ico == true)
+					{
+						// if ICO file, force ICOReader to be used
+						if (!(imageReader.toString().contains("ICOReader")))
+						{
 							continue;
 						}
 					}
-					
+
 					imageReader.setInput(imageInputStream, true, true);
 
 					ImageReadParam param = imageReader.getDefaultReadParam();
@@ -269,22 +272,22 @@ public class ImageParserAwt extends DocumentParser<Image>
 							}
 						}
 					}
-					if (bufferedImage == null)
+
+					if (bufferedImage != null)
 					{
-						imageInputStream = ImageIO.createImageInputStream(inputStream);
-						continue;
+						String formatName = imageReader.getFormatName();
+						if ("JPEG".equals(formatName))
+							readMetadata(false);
+						// desparate attempts to reduce referentiality :-)
+						param.setDestination(null);
+						param.setSourceBands(null);
+						param.setDestinationBands(null);
+						param.setDestinationType(null);
+						param.setController(null);
+						break;
 					}
 
-					String formatName = imageReader.getFormatName();
-					if ("JPEG".equals(formatName))
-						readMetadata(false);
-					// desparate attempts to reduce referentiality :-)
-					param.setDestination(null);
-					param.setSourceBands(null);
-					param.setDestinationBands(null);
-					param.setDestinationType(null);
-					param.setController(null);
-					break;
+					imageInputStream = ImageIO.createImageInputStream(inputStream);
 				}
 
 				if (bufferedImage == null)
