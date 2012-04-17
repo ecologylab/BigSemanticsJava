@@ -619,7 +619,7 @@ implements IMappable<String>//, HasLocalTranslationScope
 			return this.metadataClassDescriptor;
 		
 		// create a temporary local metadata translation scope
-		SimplTypesScope localMetadataTScope = SimplTypesScope.get("mmd_local_tscope:" + this.getName(), new SimplTypesScope[] { metadataTScope });
+		SimplTypesScope localMetadataTScope = localMetadataTypesScope(metadataTScope);
 		
 		// record the initial number of classes in the local translation scope
 		int initialLocalTScopeSize = localMetadataTScope.entriesByClassName().size();
@@ -657,6 +657,11 @@ implements IMappable<String>//, HasLocalTranslationScope
 	public SimplTypesScope getLocalMetadataTypesScope()
 	{
 		return this.localMetadataTranslationScope;
+	}
+	
+	SimplTypesScope localMetadataTypesScope(SimplTypesScope metadataTScope)
+	{
+		return localMetadataTranslationScope != null ? localMetadataTranslationScope : SimplTypesScope.get("mmd_local_tscope:" + this.getName(), new SimplTypesScope[] { metadataTScope });
 	}
 
 	public ArrayList<SemanticAction> getBeforeSemanticActions()

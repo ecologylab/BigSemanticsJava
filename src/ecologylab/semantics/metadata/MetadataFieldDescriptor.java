@@ -258,9 +258,7 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 	@Override
 	public MetadataFieldDescriptor clone()
 	{
-		MetadataFieldDescriptor cloned = null;
-		cloned = (MetadataFieldDescriptor) super.clone();
-		return cloned;
+		return (MetadataFieldDescriptor) super.clone();
 	}
 	
 	public void setGeneric(String genericParametersString)

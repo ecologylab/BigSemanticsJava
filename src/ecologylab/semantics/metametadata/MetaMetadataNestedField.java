@@ -457,6 +457,18 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 		MetadataClassDescriptor metadataCd = this.metadataClassDescriptor;
 		if (metadataCd == null)
 		{
+			metadataCd = metadataClassDescriptor(metadataTScope);
+			this.metadataClassDescriptor = metadataCd; // early assignment to prevent infinite loop
+			this.bindMetadataFieldDescriptors(metadataTScope, metadataCd);
+		}
+		return metadataCd;
+	}
+
+	MetadataClassDescriptor metadataClassDescriptor(SimplTypesScope metadataTScope)
+	{
+		MetadataClassDescriptor metadataCd = this.metadataClassDescriptor;
+		if (metadataCd == null)
+		{
 			this.inheritMetaMetadata();
 			
 			String metadataClassSimpleName = this.getMetadataClassSimpleName();
@@ -482,12 +494,6 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 						error("Cannot find metadata class: " + metadataClassName);
 					}
 				}
-			}
-			
-			if (metadataCd != null)
-			{
-				this.metadataClassDescriptor = metadataCd; // early assignment to prevent infinite loop
-				this.bindMetadataFieldDescriptors(metadataTScope, metadataCd);
 			}
 		}
 		return metadataCd;
@@ -522,8 +528,9 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 			if (thisMmd.isDerivedFrom(superMmd))
 			{
 				// extending type!
-				MetadataClassDescriptor metadataClassDescriptor = thisMmd.bindMetadataClassDescriptor(metadataTScope);
-				fdProxy.setElementClassDescriptor(metadataClassDescriptor);
+//				MetadataClassDescriptor metadataClassDescriptor = thisMmd.bindMetadataClassDescriptor(metadataTScope);
+				MetadataClassDescriptor elementMetadataCD = thisMmd.metadataClassDescriptor(metadataTScope);
+				fdProxy.setElementClassDescriptor(elementMetadataCD);
 			}
 			else
 			{

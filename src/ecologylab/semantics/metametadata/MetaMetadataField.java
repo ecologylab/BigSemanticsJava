@@ -893,8 +893,6 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
 					metadataFieldDescriptor = (MetadataFieldDescriptor) metadataClassDescriptor.getFieldDescriptorByFieldName(fieldName);
 					if (metadataFieldDescriptor != null)
 					{
-						// FIXME is the following "if" statement still useful? I never see the condition is
-						// true. can we remove it? -- yin 7/26/2011
 						// if we don't have a field, then this is a wrapped collection, so we need to get the
 						// wrapped field descriptor
 						if (metadataFieldDescriptor.getField() == null)
@@ -926,23 +924,30 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
 
 	private void customizeFieldDescriptorInClass(SimplTypesScope metadataTScope, MetadataClassDescriptor metadataClassDescriptor)
 	{
-		String tagName = this.metadataFieldDescriptor.getTagName();
+		MetadataFieldDescriptor oldFD = metadataClassDescriptor.getFieldDescriptorByFieldName(this.getName()); // oldFD is the non-wrapper one
+		String newTagName = this.metadataFieldDescriptor.getTagName();
+		
+		metadataClassDescriptor.replace(oldFD, this.metadataFieldDescriptor);
+		
+		MetadataFieldDescriptor wrapperFD = (MetadataFieldDescriptor) this.metadataFieldDescriptor.getWrapper();
+		if (wrapperFD != null)
+		{
+			MetadataFieldDescriptor clonedWrapperFD = wrapperFD.clone();
+			clonedWrapperFD.setTagName(newTagName);
+			clonedWrapperFD.setWrappedFD(this.metadataFieldDescriptor);
+			metadataClassDescriptor.replace(wrapperFD, clonedWrapperFD);
+		}
+		
 		int fieldType = this.metadataFieldDescriptor.getType();
 		if (fieldType == FieldTypes.COLLECTION_ELEMENT || fieldType == FieldTypes.MAP_ELEMENT)
 		{
-			MetadataFieldDescriptor oldFD = metadataClassDescriptor.getFieldDescriptorByTag(tagName, metadataTScope, null);
-			if (oldFD != null && oldFD.getWrappedFD() != null)
+			if (!this.metadataFieldDescriptor.isWrapped())
 			{
-				// for wrapped collection fields, we just need to update the wrapped FD.
-				oldFD.setWrappedFD(this.metadataFieldDescriptor);
-				return;
-			}
-			else
-			{
-				tagName = this.metadataFieldDescriptor.getCollectionOrMapTagName();
+				String childTagName = this.metadataFieldDescriptor.getCollectionOrMapTagName();
+				oldFD = metadataClassDescriptor.getFieldDescriptorByTag(childTagName, metadataTScope);
+				metadataClassDescriptor.replace(oldFD, this.metadataFieldDescriptor);
 			}
 		}
-		metadataClassDescriptor.getAllFieldDescriptorsByTagNames().put(tagName, this.metadataFieldDescriptor);
 	}
 
 	/**
@@ -954,11 +959,16 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
 	 */
 	protected class MetadataFieldDescriptorProxy
 	{
+		
+		boolean fieldDescriptorCloned = false;
 
 		private void cloneFieldDescriptorOnWrite()
 		{
-			if (MetaMetadataField.this.metadataFieldDescriptor.getDescriptorClonedFrom() == null)
+			if (!fieldDescriptorCloned)
+			{
 				MetaMetadataField.this.metadataFieldDescriptor = MetaMetadataField.this.metadataFieldDescriptor.clone();
+				fieldDescriptorCloned = true;
+			}
 		}
 
 		public void setTagName(String newTagName)
@@ -1000,7 +1010,7 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
 	}
 	
 	private MetadataFieldDescriptorProxy fieldDescriptorProxy = new MetadataFieldDescriptorProxy();
-
+	
 	/**
 	 * this method customizes field descriptor for this field, e.g. specific type or tag.
 	 * 
