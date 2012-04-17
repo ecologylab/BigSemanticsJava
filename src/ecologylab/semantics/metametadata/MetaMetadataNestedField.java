@@ -458,8 +458,11 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 		if (metadataCd == null)
 		{
 			metadataCd = metadataClassDescriptor(metadataTScope);
-			this.metadataClassDescriptor = metadataCd; // early assignment to prevent infinite loop
-			this.bindMetadataFieldDescriptors(metadataTScope, metadataCd);
+			if (metadataCd != null)
+			{
+				this.metadataClassDescriptor = metadataCd; // early assignment to prevent infinite loop
+				this.bindMetadataFieldDescriptors(metadataTScope, metadataCd);
+			}
 		}
 		return metadataCd;
 	}

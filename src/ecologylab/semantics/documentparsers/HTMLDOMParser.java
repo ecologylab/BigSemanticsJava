@@ -443,7 +443,7 @@ implements DOMParserInterface
 		}
 		catch (XPathExpressionException e)
 		{
-			// TODO Auto-generated catch block
+			warning("Cannot find favicon path: " + e.getMessage() + "\n Stack trace:");
 			e.printStackTrace();
 		}
 		
