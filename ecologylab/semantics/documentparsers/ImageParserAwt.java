@@ -46,26 +46,37 @@ import ecologylab.serialization.types.PlatformSpecificTypesSun;
 
 /**
  * @author andruid
- *
+ * 
  */
 public class ImageParserAwt extends DocumentParser<Image>
 {
-	private static final String	MM_TAG_GPS_LOCATION	= "gps_location";
-	private static final String	MM_TAG_CAMERA_SETTINGS	= "camera_settings";
-	private static final int	EXIF_TAG_ORIGINAL_DATE	= 0x9003;
-	ImageInputStream	imageInputStream;
-	ImageReader				imageReader;
+	private static final String		MM_TAG_GPS_LOCATION			= "gps_location";
 
-	static Class cameraClass, gpsClass;
-	
-	static final DirectColorModel ARGB_MODEL	= new DirectColorModel(32, 0x00ff0000, 0x0000ff00, 0xff, 0xff000000);
+	private static final String		MM_TAG_CAMERA_SETTINGS	= "camera_settings";
 
-	//static final DirectColorModel RGB_MODEL	= new DirectColorModel(32, 0xff0000, 0x00ff00, 0xff);
-	static final PackedColorModel RGB_MODEL	= new DirectColorModel(24, 0xff0000, 0xff00, 0xff, 0);
+	private static final int			EXIF_TAG_ORIGINAL_DATE	= 0x9003;
 
-	static final int[] ARGB_MASKS			= { 0xff0000, 0xff00, 0xff, 0xff000000, };
-	static final int[] RGB_MASKS				= { 0xff0000, 0xff00, 0xff,  };
-	static final int[] RGB_BANDS				= { 0, 1, 2  };
+	ImageInputStream							imageInputStream;
+
+	ImageReader										imageReader;
+
+	static Class									cameraClass, gpsClass;
+
+	static final DirectColorModel	ARGB_MODEL							= new DirectColorModel(32, 0x00ff0000,
+																														0x0000ff00, 0xff, 0xff000000);
+
+	// static final DirectColorModel RGB_MODEL = new DirectColorModel(32, 0xff0000, 0x00ff00, 0xff);
+	static final PackedColorModel	RGB_MODEL								= new DirectColorModel(24, 0xff0000,
+																														0xff00, 0xff, 0);
+
+	static final int[]						ARGB_MASKS							=
+																												{ 0xff0000, 0xff00, 0xff, 0xff000000, };
+
+	static final int[]						RGB_MASKS								=
+																												{ 0xff0000, 0xff00, 0xff, };
+
+	static final int[]						RGB_BANDS								=
+																												{ 0, 1, 2 };
 
 	private static boolean				inited;
 
@@ -73,13 +84,14 @@ public class ImageParserAwt extends DocumentParser<Image>
 	{
 		if (!inited)
 		{
-			inited		= true;
-			//new PlatformSpecificTypesSun();
-			
+			inited = true;
+			// new PlatformSpecificTypesSun();
+
 			DocumentParser.init();
 			bindingParserMap.put(SemanticActionsKeyWords.IMAGE_PARSER, ImageParserAwt.class);
 		}
 	}
+
 	/**
 	 * 
 	 */
@@ -94,14 +106,14 @@ public class ImageParserAwt extends DocumentParser<Image>
 	public ImageParserAwt(SemanticsSessionScope infoCollector)
 	{
 		super(infoCollector);
-		cameraClass	= infoCollector.getMetadataTypesScope().getClassByTag(MM_TAG_CAMERA_SETTINGS);
-		gpsClass		= infoCollector.getMetadataTypesScope().getClassByTag(MM_TAG_GPS_LOCATION);
+		cameraClass = infoCollector.getMetadataTypesScope().getClassByTag(MM_TAG_CAMERA_SETTINGS);
+		gpsClass = infoCollector.getMetadataTypesScope().getClassByTag(MM_TAG_GPS_LOCATION);
 	}
 
-/**
- * 
- * @see ecologylab.semantics.documentparsers.DocumentParser#parse()
- */
+	/**
+	 * 
+	 * @see ecologylab.semantics.documentparsers.DocumentParser#parse()
+	 */
 	@Override
 	public void parse() throws IOException
 	{
@@ -117,179 +129,220 @@ public class ImageParserAwt extends DocumentParser<Image>
 			Debug.error(image, "ImageParserAwt failed for " + image.getLocation());
 	}
 
-	public static final int MIN_DIM	= 10;
+	public static final int	MIN_DIM	= 10;
 
-	protected BufferedImage imageIORead(InputStream		inputStream) throws IOException
+	protected BufferedImage imageIORead(InputStream inputStream) throws IOException
 	{
-		BufferedImage	bufferedImage		= null;
+		BufferedImage bufferedImage = null;
 
-		ParsedURL location					= getDocument().getLocation();
-		imageInputStream	= ImageIO.createImageInputStream(inputStream);
+		ImageIO.scanForPlugins();
+
+		ParsedURL location = getDocument().getLocation();
+		
+		String suffix = location.suffix();
+		String exnt = suffix.substring(suffix.length()-3);
+
+		//Ugly ICO test - will be removed.
+		boolean is_ico = false;
+		if(exnt.contains("ico")) {
+			//USE ICO READER			
+			is_ico = true;
+		}
+		
+	
+		imageInputStream = ImageIO.createImageInputStream(inputStream);
 		if (imageInputStream == null)
 			error("Cant open ImageInputStream for " + location);
 		else
 		{
-			Iterator<ImageReader> imageReadersIterator		= ImageIO.getImageReaders(imageInputStream);
+			Iterator<ImageReader> imageReadersIterator = ImageIO.getImageReaders(imageInputStream);
 			if (!imageReadersIterator.hasNext())
 				error("Cant get reader for " + location);
 			else
 			{
-				imageReader	= imageReadersIterator.next();
-				imageReader.setInput(imageInputStream, true, true);
-				
-				ImageReadParam param	= imageReader.getDefaultReadParam();
-				int width		= imageReader.getWidth(0);
-				int height	= imageReader.getHeight(0);
-
-				if ((width > MIN_DIM) && (height > MIN_DIM))
+				while (imageReadersIterator.hasNext())
 				{
-					// try to setup the BufferedImage we use for the read to be structured
-					// the way we like the data -- as an array of int[].
-					// this means trying to find out about the image's structure,
-					// in particular, if its rgb -- 3 color "bands", or argb alread -- 4 bands
-					int readImageType	= -1;
-					//TODO this line is creating byte arrays :-(
-					ImageTypeSpecifier rawImageType	= imageReader.getRawImageType(0);
-					// try to find out directly from ImageIO about the file's header
-					if (rawImageType != null) // unfortunately this doesnt seem to work much for URLConnection images
+					imageReader = imageReadersIterator.next();
+					
+					
+					if(is_ico == true ) { //if .ico, force ICOReader to be used
+						if(!(imageReader.toString().contains("ICOReader"))) {
+							//ystem.out.println("WRONG READER HERE: " + imageReader.toString() + "says it's type is " + imageReader.getFormatName());
+							continue;
+						}
+					}
+					
+					imageReader.setInput(imageInputStream, true, true);
+
+					ImageReadParam param = imageReader.getDefaultReadParam();
+					int width = imageReader.getWidth(0);
+					int height = imageReader.getHeight(0);
+
+					if ((width > MIN_DIM) && (height > MIN_DIM))
 					{
-						int rawNumBands	= rawImageType.getNumBands();
-						switch (rawNumBands)
+						// try to setup the BufferedImage we use for the read to be structured
+						// the way we like the data -- as an array of int[].
+						// this means trying to find out about the image's structure,
+						// in particular, if its rgb -- 3 color "bands", or argb alread -- 4 bands
+						int readImageType = -1;
+						// TODO this line is creating byte arrays :-(
+						ImageTypeSpecifier rawImageType = imageReader.getRawImageType(0);
+						// try to find out directly from ImageIO about the file's header
+						if (rawImageType != null) // unfortunately this doesnt seem to work much for
+																			// URLConnection images
 						{
-						case 4:
-							readImageType= BufferedImage.TYPE_INT_ARGB;
-							break;
-						case 3:
-							readImageType= BufferedImage.TYPE_INT_RGB;
-							break;
-						default:
-							if (rawImageType.getColorModel() instanceof IndexColorModel)
+							int rawNumBands = rawImageType.getNumBands();
+							switch (rawNumBands)
 							{
-								//									readImageType= BufferedImage.TYPE_BYTE_INDEXED;
+							case 4:
+								readImageType = BufferedImage.TYPE_INT_ARGB;
+								break;
+							case 3:
+								readImageType = BufferedImage.TYPE_INT_RGB;
+								break;
+							default:
+								if (rawImageType.getColorModel() instanceof IndexColorModel)
+								{
+									// readImageType= BufferedImage.TYPE_BYTE_INDEXED;
+								}
+								break;
 							}
-							break;
+							// debug("gotRawImageType! numBands="+rawNumBands+ " readImageType="+readImageType);
 						}
-						//debug("gotRawImageType! numBands="+rawNumBands+ " readImageType="+readImageType);
-					}
-					// look in the URL itself
-					else if (location.isNoAlpha() || purlConnection.isNoAlpha())
-					{
-						readImageType	= BufferedImage.TYPE_INT_RGB;
-					}
-					int[] 			pixels			= null;
-					DataBufferInt	dataBuffer		= null;
-					if (readImageType != -1)
-					{
-						ColorModel	cm;
-						int[]		masks;
-						if (readImageType == BufferedImage.TYPE_INT_RGB)
+						// look in the URL itself
+						else if (location.isNoAlpha() || purlConnection.isNoAlpha())
 						{
-							cm		= RGB_MODEL;
-							masks	= RGB_MASKS;
-							//param.setDestinationBands(RGB_BANDS);
+							readImageType = BufferedImage.TYPE_INT_RGB;
 						}
-						else
+						int[] pixels = null;
+						DataBufferInt dataBuffer = null;
+						if (readImageType != -1)
 						{
-							cm		= ARGB_MODEL;
-							masks	= ARGB_MASKS;
+							ColorModel cm;
+							int[] masks;
+							if (readImageType == BufferedImage.TYPE_INT_RGB)
+							{
+								cm = RGB_MODEL;
+								masks = RGB_MASKS;
+								// param.setDestinationBands(RGB_BANDS);
+							}
+							else
+							{
+								cm = ARGB_MODEL;
+								masks = ARGB_MASKS;
+							}
+							SampleModel sm = new SinglePixelPackedSampleModel(DataBuffer.TYPE_INT, width, height,
+									masks);
+							int numPixels = width * height;
+							pixels = new int[numPixels];
+							dataBuffer = new DataBufferInt(pixels, numPixels);
+							WritableRaster wr = Raster.createWritableRaster(sm, dataBuffer, null);
+							bufferedImage = new BufferedImage(cm, wr, false, null);
+							/*
+							 * if (graphicsConfiguration != null) { int transparency = (readImageType ==
+							 * BufferedImage.TYPE_INT_ARGB) ? Transparency.TRANSLUCENT : Transparency.OPAQUE;
+							 * bufferedImage = graphicsConfiguration.createCompatibleImage(width, height,
+							 * transparency); } else bufferedImage = new BufferedImage(width, height,
+							 * readImageType);
+							 */
+							param.setDestination(bufferedImage);
 						}
-						SampleModel		sm		= new SinglePixelPackedSampleModel(DataBuffer.TYPE_INT, width, height, masks);
-						int numPixels				= width*height;
-						pixels							= new int[numPixels];
-						dataBuffer					= new DataBufferInt(pixels, numPixels);
-						WritableRaster	wr	= Raster.createWritableRaster(sm, dataBuffer, null);
-						bufferedImage				= new BufferedImage(cm, wr, false, null);
-						/*
-						 if (graphicsConfiguration != null)
-						 {
-						 int transparency = (readImageType == BufferedImage.TYPE_INT_ARGB) ?
-						 Transparency.TRANSLUCENT : Transparency.OPAQUE;
-						 bufferedImage =
-						 graphicsConfiguration.createCompatibleImage(width, height, transparency);
-						 }
-						 else
-						 bufferedImage		= new BufferedImage(width, height, readImageType);
-						 */
-						param.setDestination(bufferedImage);
-					}
-					// read, using the BufferedImage we made, or the default
-					// if we set result in the line above, we'll just get it back, so no problem.
-					bufferedImage			= imageReader.read(0, param);
-					if (readImageType == -1)
-					{
+						// read, using the BufferedImage we made, or the default
+						// if we set result in the line above, we'll just get it back, so no problem.
+						bufferedImage = imageReader.read(0, param);
+						if (readImageType == -1)
+						{
 
-					}
+						}
 
+						if (bufferedImage != null)
+						{
+							// throw new IOException("ImageParserAwt Cant read from imageReader for " + location);
+
+							while (imageReadersIterator.hasNext())
+							{
+								ImageReader nextReader = imageReadersIterator.next();
+								debug("COOL: Freeing resources on additional readers! " + nextReader);
+								nextReader.reset();
+								nextReader.dispose();
+							}
+						}
+					}
 					if (bufferedImage == null)
 					{
-						throw new IOException("ImageParserAwt Cant read from imageReader for " + location);
+						imageInputStream = ImageIO.createImageInputStream(inputStream);
+						continue;
 					}
-					while (imageReadersIterator.hasNext())
-					{
-						ImageReader nextReader	= imageReadersIterator.next();
-						debug("COOL: Freeing resources on additional readers! " + nextReader);
-						nextReader.reset();
-						nextReader.dispose();
-					}
+
+					String formatName = imageReader.getFormatName();
+					if ("JPEG".equals(formatName))
+						readMetadata(false);
+					// desparate attempts to reduce referentiality :-)
+					param.setDestination(null);
+					param.setSourceBands(null);
+					param.setDestinationBands(null);
+					param.setDestinationType(null);
+					param.setController(null);
+					break;
 				}
-				String formatName			= imageReader.getFormatName();
-				if ("JPEG".equals(formatName))
-					readMetadata(false);
-				// desparate attempts to reduce referentiality :-)
-				param.setDestination(null);
-				param.setSourceBands(null);
-				param.setDestinationBands(null);
-				param.setDestinationType(null);
-				param.setController(null);
+
+				if (bufferedImage == null)
+				{
+					throw new IOException("ImageParserAwt Cant read from imageReader for " + location);
+				}
 			}
 		}
 		freeImageIOResources();
 
 		return bufferedImage;
 	}
-	
+
 	private void readMetadata(boolean reread) throws IOException
 	{
 		try
 		{
-			IIOMetadata metadata	= imageReader.getImageMetadata(0);
-	
-			String name						= metadata.getNativeMetadataFormatName();
-			IIOMetadataNode node	=(IIOMetadataNode) metadata.getAsTree(name);
-	//		printTree(node);
+			IIOMetadata metadata = imageReader.getImageMetadata(0);
+
+			String name = metadata.getNativeMetadataFormatName();
+			IIOMetadataNode node = (IIOMetadataNode) metadata.getAsTree(name);
+			// printTree(node);
 			extractMetadataFeatures(node);
-		} catch (javax.imageio.IIOException iioex)
+		}
+		catch (javax.imageio.IIOException iioex)
 		{
-			// Crazy good workaround for java.imageio bug, from http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4924909
-			if (!reread && iioex.getMessage() != null &&
-          iioex.getMessage().endsWith("without prior JFIF!"))
+			// Crazy good workaround for java.imageio bug, from
+			// http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4924909
+			if (!reread && iioex.getMessage() != null
+					&& iioex.getMessage().endsWith("without prior JFIF!"))
 			{
 				warning("Trying workaround for java bug");
 				closeImageInputStream();
-				InputStream newInputSteam	= reConnect();
+				InputStream newInputSteam = reConnect();
 				imageInputStream = patch(newInputSteam);
 				imageReader.setInput(imageInputStream);
 				readMetadata(true);
-//				IIOImage newImage = imageReader.readAll(0, null);
-       }
+				// IIOImage newImage = imageReader.readAll(0, null);
+			}
 			else
 				warning("Couldn't extract metadata from image: " + iioex);
 		}
-//		byte[] iptc						=(byte[]) iptcNode.getUserObject();
+		// byte[] iptc =(byte[]) iptcNode.getUserObject();
 	}
-	
+
 	private static ImageInputStream patch(InputStream in) throws IOException
 	{
 		in = new BufferedInputStream(in);
 		in = new PatchInputStream(in);
 		return ImageIO.createImageInputStream(in);
 	}
-  /** Patches a JPEG file that is missing a JFIF marker **/
+
+	/** Patches a JPEG file that is missing a JFIF marker **/
 	private static class PatchInputStream extends FilterInputStream
 	{
 		private static final int[]	JFIF			=
 																					{ 0xFF, 0xE0, 0x00, 0x10, 0x4A, 0x46, 0x49, 0x46, 0x00,
 																							0x01, 0x02, 0x00, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00 };
+
 		int													position	= 0;
 
 		public PatchInputStream(InputStream in)
@@ -344,68 +397,75 @@ public class ImageParserAwt extends DocumentParser<Image>
 	}
 
 	public static String	EXIF_ELEMENT_TAG_NAME	= "unknown";
+
 	/**
 	 * @param node
 	 * @param exifTag
 	 */
 	public void extractMetadataFeatures(IIOMetadataNode node)
 	{
-		NodeList unknownElements			= node.getElementsByTagName(EXIF_ELEMENT_TAG_NAME);
-		for (int i=0; i<unknownElements.getLength(); i++)
+		NodeList unknownElements = node.getElementsByTagName(EXIF_ELEMENT_TAG_NAME);
+		for (int i = 0; i < unknownElements.getLength(); i++)
 		{
-			IIOMetadataNode foundUnknownNode			= (IIOMetadataNode) unknownElements.item(i);
+			IIOMetadataNode foundUnknownNode = (IIOMetadataNode) unknownElements.item(i);
 			if ("225".equals(foundUnknownNode.getAttribute("MarkerTag")))
 			{
-				boolean dated 			= false;
-				byte[] 	exifSegment	= (byte[]) foundUnknownNode.getUserObject();
+				boolean dated = false;
+				byte[] exifSegment = (byte[]) foundUnknownNode.getUserObject();
 
 				final com.drew.metadata.Metadata exifMetadata = new com.drew.metadata.Metadata();
 				new ExifReader(exifSegment).extract(exifMetadata);
 				com.drew.metadata.Directory exifDir = exifMetadata.getDirectory(ExifDirectory.class);
 
 				Image image = getDocument();
-				boolean mixedIn			= image.containsMixin(MM_TAG_CAMERA_SETTINGS);
+				boolean mixedIn = image.containsMixin(MM_TAG_CAMERA_SETTINGS);
 				if (!mixedIn && !GisFeatures.containsGisMixin(image))
 				{
 					if (!dated && ORIG_DATE_FEATURE.extract(image, exifDir) == null)
 					{
-						dated		= true;
+						dated = true;
 						DATE_FEATURE.extract(image, exifDir);
 					}
 					if (!mixedIn && CAMERA_MODEL_FEATURE.getStringValue(exifDir) != null)
 					{
-						mixedIn	= true;
+						mixedIn = true;
 						extractMixin(exifDir, EXIF_METADATA_FEATURES, MM_TAG_CAMERA_SETTINGS);
 					}
 					com.drew.metadata.Directory gpsDir = exifMetadata.getDirectory(GpsDirectory.class);
-					Metadata gpsMixin	= GisFeatures.extractMixin(gpsDir, semanticsScope, image);
+					Metadata gpsMixin = GisFeatures.extractMixin(gpsDir, semanticsScope, image);
 					Iterator<com.drew.metadata.Tag> gpsList = printDirectory(gpsDir);
 					int qq = 33;
 				}
 			}
 		}
 	}
-	static final MetadataExifFeature	DATE_FEATURE	= new MetadataExifFeature("creation_date", ExifDirectory.TAG_DATETIME);
-	static final MetadataExifFeature	ORIG_DATE_FEATURE	= new MetadataExifFeature("creation_date", ExifDirectory.TAG_DATETIME_ORIGINAL);
-	
-	static final MetadataExifFeature	CAMERA_MODEL_FEATURE	= new MetadataExifFeature("model", ExifDirectory.TAG_MODEL);
+
+	static final MetadataExifFeature				DATE_FEATURE							= new MetadataExifFeature(
+																																				"creation_date",
+																																				ExifDirectory.TAG_DATETIME);
+
+	static final MetadataExifFeature				ORIG_DATE_FEATURE					= new MetadataExifFeature(
+																																				"creation_date",
+																																				ExifDirectory.TAG_DATETIME_ORIGINAL);
+
+	static final MetadataExifFeature				CAMERA_MODEL_FEATURE			= new MetadataExifFeature(
+																																				"model",
+																																				ExifDirectory.TAG_MODEL);
 
 	// // http://www.awaresystems.be/imaging/tiff/tifftags/privateifd/exif.html
-	public static final MetadataExifFeature EXIF_METADATA_FEATURES[]	=
-	{
-		CAMERA_MODEL_FEATURE,
-		new MetadataExifFeature("orientation", ExifDirectory.TAG_ORIENTATION),
-		new MetadataExifFeature("resolution", ExifDirectory.TAG_X_RESOLUTION),
-		new MetadataExifFeature("exposure_time", ExifDirectory.TAG_EXPOSURE_TIME),
-		new MetadataExifFeature("aperture", ExifDirectory.TAG_APERTURE),
-		new MetadataExifFeature("shutter_speed", ExifDirectory.TAG_SHUTTER_SPEED),
-		new MetadataExifFeature("subject_distance", ExifDirectory.TAG_SUBJECT_DISTANCE),
-	};
+	public static final MetadataExifFeature	EXIF_METADATA_FEATURES[]	=
+																																		{ CAMERA_MODEL_FEATURE,
+			new MetadataExifFeature("orientation", ExifDirectory.TAG_ORIENTATION),
+			new MetadataExifFeature("resolution", ExifDirectory.TAG_X_RESOLUTION),
+			new MetadataExifFeature("exposure_time", ExifDirectory.TAG_EXPOSURE_TIME),
+			new MetadataExifFeature("aperture", ExifDirectory.TAG_APERTURE),
+			new MetadataExifFeature("shutter_speed", ExifDirectory.TAG_SHUTTER_SPEED),
+			new MetadataExifFeature("subject_distance", ExifDirectory.TAG_SUBJECT_DISTANCE), };
 
-
-	public void extractMixin(com.drew.metadata.Directory dir, MetadataExifFeature[] features, String metaMetadataTag)
+	public void extractMixin(com.drew.metadata.Directory dir, MetadataExifFeature[] features,
+			String metaMetadataTag)
 	{
-		Metadata mixin	= semanticsScope.getMetaMetadataRepository().constructByName(metaMetadataTag);
+		Metadata mixin = semanticsScope.getMetaMetadataRepository().constructByName(metaMetadataTag);
 		if (mixin != null)
 		{
 			extractMetadata(dir, features, mixin);
@@ -413,19 +473,22 @@ public class ImageParserAwt extends DocumentParser<Image>
 		}
 	}
 
-	public void extractMetadata(com.drew.metadata.Directory dir, MetadataExifFeature[] features, ecologylab.semantics.metadata.Metadata metadata)
+	public void extractMetadata(com.drew.metadata.Directory dir, MetadataExifFeature[] features,
+			ecologylab.semantics.metadata.Metadata metadata)
 	{
-		for (MetadataExifFeature feature: features)
+		for (MetadataExifFeature feature : features)
 		{
 			feature.extract(metadata, dir);
 		}
 	}
+
 	public static String getString(com.drew.metadata.Directory dir, int tag)
 	{
-		String result	= null;
-		
+		String result = null;
+
 		return result;
 	}
+
 	/**
 	 * @param exifDirectory
 	 * @return
@@ -435,15 +498,15 @@ public class ImageParserAwt extends DocumentParser<Image>
 		Iterator<com.drew.metadata.Tag> tagList = exifDirectory.getTagIterator();
 		while (tagList.hasNext())
 		{
-			com.drew.metadata.Tag tag	= tagList.next();
+			com.drew.metadata.Tag tag = tagList.next();
 			System.out.print(tag + " | ");
-//			if (tag.toString().toLowerCase().contains("gps"))
-//				System.out.println("EUREKA EURKEA EUREKA! GPS: " + tag + ", ");
+			// if (tag.toString().toLowerCase().contains("gps"))
+			// System.out.println("EUREKA EURKEA EUREKA! GPS: " + tag + ", ");
 		}
 		System.out.println();
 		return tagList;
 	}
-	
+
 	@Override
 	public synchronized void recycle()
 	{
@@ -453,33 +516,35 @@ public class ImageParserAwt extends DocumentParser<Image>
 
 	private boolean freeImageIOResources()
 	{
-		boolean result			= false;
+		boolean result = false;
 		if (imageReader != null)
 		{
-			imageReader.reset();  // release all resources and set to initial state
+			imageReader.reset(); // release all resources and set to initial state
 			imageReader.dispose();
-			imageReader			= null;
-			result				= true;
+			imageReader = null;
+			result = true;
 		}
 		result = closeImageInputStream();
 		return result;
 	}
+
 	private boolean closeImageInputStream()
 	{
-		boolean result	= false;
+		boolean result = false;
 		if (imageInputStream != null)
 		{
 			try
 			{
 				imageInputStream.flush();
 				imageInputStream.close();
-				imageInputStream= null;
-				result			= true;
-			} catch (IOException e)
+				imageInputStream = null;
+				result = true;
+			}
+			catch (IOException e)
 			{
 				e.printStackTrace();
 			}
-			this.imageInputStream= null;
+			this.imageInputStream = null;
 		}
 		return result;
 	}
