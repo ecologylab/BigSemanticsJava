@@ -140,11 +140,12 @@ public class ImageParserAwt extends DocumentParser<Image>
 		ParsedURL location = getDocument().getLocation();
 		
 		String suffix = location.suffix();
-		String exnt = suffix.substring(suffix.length()-3);
+		//String exnt = suffix.substring(suffix.length()-3);
 
 		//Ugly ICO test - will be removed.
 		boolean is_ico = false;
-		if(exnt.contains("ico")) {
+		if("ico".equals(suffix)) 
+		{
 			//USE ICO READER			
 			is_ico = true;
 		}
