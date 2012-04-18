@@ -71,7 +71,7 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	
 	@simpl_collection("generic_type_var")
 	@simpl_nowrap
-	private List<MetaMetadataGenericTypeVar>	genericTypeVars;
+	private List<MmdGenericTypeVar>	genericTypeVars;
 
 	/**
 	 * the mmd used by this nested field. corresponding attributes: (child_)type/extends. could be a
@@ -521,14 +521,17 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	{
 		super.customizeFieldDescriptor(metadataTScope, fdProxy);
 		
+		MetaMetadata thisMmd = this.getInheritedMmd();
+		if (thisMmd == null)
+			return; // could be collection of scalars
+		
 		MetaMetadataNestedField inheritedField = (MetaMetadataNestedField) this.getInheritedField();
 		if (inheritedField != null)
 		{
 			MetaMetadata superMmd = inheritedField.getInheritedMmd();
-			MetaMetadata thisMmd = this.getInheritedMmd();
-			if (thisMmd == superMmd)
-				return;
-			if (thisMmd.isDerivedFrom(superMmd))
+//			if (thisMmd == superMmd)
+//				return;
+			if (thisMmd == superMmd || thisMmd.isDerivedFrom(superMmd))
 			{
 				// extending type!
 //				MetadataClassDescriptor metadataClassDescriptor = thisMmd.bindMetadataClassDescriptor(metadataTScope);
@@ -621,12 +624,12 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 			metaInfoBuf.add(new MetaInformation(semantics_mixin.class));
 	}
 
-	public List<MetaMetadataGenericTypeVar> getMetaMetadataGenericTypeVars()
+	public List<MmdGenericTypeVar> getMetaMetadataGenericTypeVars()
 	{
 		return genericTypeVars;
 	}
 
-	public void setMetaMetadataGenericTypeVars(List<MetaMetadataGenericTypeVar> genericTypeVars)
+	public void setMetaMetadataGenericTypeVars(List<MmdGenericTypeVar> genericTypeVars)
 	{
 		this.genericTypeVars = genericTypeVars;
 	}

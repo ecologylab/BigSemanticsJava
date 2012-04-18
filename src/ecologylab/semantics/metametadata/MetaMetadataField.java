@@ -587,16 +587,16 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
 
 	public String parentString()
 	{
-		String result = "";
+		StringBuilder result = new StringBuilder();
 	
 		ElementState parent = parent();
 		while (parent instanceof MetaMetadataField)
 		{
 			MetaMetadataField pf = (MetaMetadataField) parent;
-			result = "<" + pf.name + ">";
+			result.insert(0, "<" + pf.name + ">");
 			parent = parent.parent();
 		}
-		return result;
+		return result.toString();
 	}
 
 	public String shadows()
@@ -667,7 +667,7 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
 	{
 		return name;
 	}
-
+	
 	@Override
 	public String toString()
 	{

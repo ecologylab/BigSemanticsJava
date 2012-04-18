@@ -18,7 +18,7 @@ import ecologylab.serialization.annotations.simpl_tag;
  */
 @simpl_tag("generic_type_var")
 @simpl_inherit
-public class MetaMetadataGenericTypeVar extends ElementState
+public class MmdGenericTypeVar extends ElementState
 {
 
 	/**
@@ -52,7 +52,7 @@ public class MetaMetadataGenericTypeVar extends ElementState
 	 */
 	@simpl_collection("generic_type_var")
 	@simpl_nowrap
-	private List<MetaMetadataGenericTypeVar>	genericTypeVars;
+	private List<MmdGenericTypeVar>	genericTypeVars;
 
 	public String getName()
 	{
@@ -94,12 +94,12 @@ public class MetaMetadataGenericTypeVar extends ElementState
 		this.genericType = genericType;
 	}
 
-	public List<MetaMetadataGenericTypeVar> getGenericTypeVars()
+	public List<MmdGenericTypeVar> getGenericTypeVars()
 	{
 		return genericTypeVars;
 	}
 
-	public void setGenericTypeVars(List<MetaMetadataGenericTypeVar> genericTypeVars)
+	public void setGenericTypeVars(List<MmdGenericTypeVar> genericTypeVars)
 	{
 		this.genericTypeVars = genericTypeVars;
 	}

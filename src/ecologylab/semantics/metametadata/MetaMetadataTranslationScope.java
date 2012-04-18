@@ -25,7 +25,7 @@ public class MetaMetadataTranslationScope extends Debug
 	{
 		MetadataClassDescriptor.class,
 		MetadataFieldDescriptor.class,
-		MetaMetadataGenericTypeVar.class,
+		MmdGenericTypeVar.class,
 		MetaMetadataNestedField.class,
 		MetaMetadata.class,
 		SearchEngines.class,

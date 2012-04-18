@@ -21,6 +21,6 @@ public interface MmdCompilerService
 
 	void addLibraryTScopeDependency(String name);
 	
-	void appendGenericTypeVarParameterizations(Appendable appendable, List<MetaMetadataGenericTypeVar> mmdGenericTypeVars, MetaMetadataRepository repository) throws IOException;
+	void appendGenericTypeVarParameterizations(Appendable appendable, List<MmdGenericTypeVar> mmdGenericTypeVars, MetaMetadataRepository repository) throws IOException;
 	
 }

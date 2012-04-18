@@ -314,10 +314,10 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 				genericTypeName = fieldCd.getDescribedClassSimpleName();
 				genericTypeVar.setClassDescriptor(fieldCd);
 				// FIXME MetaMetadataGenericTypeVar and GenericTypeVar should be merged.
-				List<MetaMetadataGenericTypeVar> metaMetadataGenericTypeVars = this.getMetaMetadataGenericTypeVars();
+				List<MmdGenericTypeVar> metaMetadataGenericTypeVars = this.getMetaMetadataGenericTypeVars();
 				if (metaMetadataGenericTypeVars != null && metaMetadataGenericTypeVars.size() > 0)
 				{
-					for (MetaMetadataGenericTypeVar mmdgtv : metaMetadataGenericTypeVars)
+					for (MmdGenericTypeVar mmdgtv : metaMetadataGenericTypeVars)
 					{
 						GenericTypeVar gtv = new GenericTypeVar();
 						gtv.setName(mmdgtv.getParameter()); // FIXME this is just one case.
@@ -406,5 +406,5 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 		}
 		warning("collection field without a (correct) child composite: " + this);
 	}
-
+	
 }

@@ -15,7 +15,7 @@ import ecologylab.semantics.gui.EditValueNotifier;
 import ecologylab.semantics.metadata.scalar.MetadataScalarBase;
 import ecologylab.semantics.metametadata.MetaMetadataCollectionField;
 import ecologylab.semantics.metametadata.MetaMetadataField;
-import ecologylab.semantics.metametadata.MetaMetadataGenericTypeVar;
+import ecologylab.semantics.metametadata.MmdGenericTypeVar;
 import ecologylab.semantics.metametadata.MetaMetadataNestedField;
 import ecologylab.semantics.metametadata.MmdCompilerService;
 import ecologylab.serialization.ClassDescriptor;
@@ -288,7 +288,7 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 		if (compilerService != null && collectionType != null && definingMmdField instanceof MetaMetadataNestedField)
 		{
 			MetaMetadataNestedField nested = (MetaMetadataNestedField) definingMmdField;
-			List<MetaMetadataGenericTypeVar> mmdGenericTypeVars = nested.getMetaMetadataGenericTypeVars();
+			List<MmdGenericTypeVar> mmdGenericTypeVars = nested.getMetaMetadataGenericTypeVars();
 			if (mmdGenericTypeVars != null && mmdGenericTypeVars.size() > 0)
 			{
 				StringBuilder sb = new StringBuilder();
@@ -312,10 +312,10 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 		if (getType() == COMPOSITE_ELEMENT)
 		{
 			MetaMetadataNestedField nested = (MetaMetadataNestedField) definingMmdField;
-			List<MetaMetadataGenericTypeVar> mmdGenericTypeVars = nested.getMetaMetadataGenericTypeVars();
+			List<MmdGenericTypeVar> mmdGenericTypeVars = nested.getMetaMetadataGenericTypeVars();
 			if (mmdGenericTypeVars != null && mmdGenericTypeVars.size() > 0)
 			{
-				for (MetaMetadataGenericTypeVar mmdGenericTypeVar : mmdGenericTypeVars)
+				for (MmdGenericTypeVar mmdGenericTypeVar : mmdGenericTypeVars)
 				{
 					if (mmdGenericTypeVar.getGenericType() != null)
 					{
@@ -344,7 +344,7 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 		if (compilerService != null && collectionType != null && definingMmdField instanceof MetaMetadataNestedField)
 		{
 			MetaMetadataNestedField nested = (MetaMetadataNestedField) definingMmdField;
-			List<MetaMetadataGenericTypeVar> mmdGenericTypeVars = nested.getMetaMetadataGenericTypeVars();
+			List<MmdGenericTypeVar> mmdGenericTypeVars = nested.getMetaMetadataGenericTypeVars();
 			if (mmdGenericTypeVars != null && mmdGenericTypeVars.size() > 0)
 			{
 				StringBuilder sb = new StringBuilder();
@@ -368,10 +368,10 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 		if (getType() == COMPOSITE_ELEMENT)
 		{
 			MetaMetadataNestedField nested = (MetaMetadataNestedField) definingMmdField;
-			List<MetaMetadataGenericTypeVar> mmdGenericTypeVars = nested.getMetaMetadataGenericTypeVars();
+			List<MmdGenericTypeVar> mmdGenericTypeVars = nested.getMetaMetadataGenericTypeVars();
 			if (mmdGenericTypeVars != null && mmdGenericTypeVars.size() > 0)
 			{
-				for (MetaMetadataGenericTypeVar mmdGenericTypeVar : mmdGenericTypeVars)
+				for (MmdGenericTypeVar mmdGenericTypeVar : mmdGenericTypeVars)
 				{
 					if (mmdGenericTypeVar.getGenericType() != null)
 					{
