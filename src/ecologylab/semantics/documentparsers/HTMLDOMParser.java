@@ -436,6 +436,12 @@ implements DOMParserInterface
 
 	protected void findFaviconPath(Document doc, XPath xpath)
 	{
+		if (dom == null)
+		{
+			warning("DOM is null (maybe direct binding case), not doing favicon looking up by xpath.");
+			return;
+		}
+		
 		String favi_res = "";
 		try
 		{
@@ -443,7 +449,6 @@ implements DOMParserInterface
 		}
 		catch (XPathExpressionException e)
 		{
-			warning("Cannot find favicon path: " + e.getMessage() + "\n Stack trace:");
 			e.printStackTrace();
 		}
 		
