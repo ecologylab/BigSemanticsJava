@@ -924,7 +924,7 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
 
 	private void customizeFieldDescriptorInClass(SimplTypesScope metadataTScope, MetadataClassDescriptor metadataClassDescriptor)
 	{
-		MetadataFieldDescriptor oldFD = metadataClassDescriptor.getFieldDescriptorByFieldName(this.getName()); // oldFD is the non-wrapper one
+		MetadataFieldDescriptor oldFD = metadataClassDescriptor.getFieldDescriptorByFieldName(this.getFieldNameInJava(false)); // oldFD is the non-wrapper one
 		String newTagName = this.metadataFieldDescriptor.getTagName();
 		
 		metadataClassDescriptor.replace(oldFD, this.metadataFieldDescriptor);

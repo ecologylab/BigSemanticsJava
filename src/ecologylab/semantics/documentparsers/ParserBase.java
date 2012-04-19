@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -36,18 +35,16 @@ import ecologylab.generic.StringTools;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.actions.SemanticActionsKeyWords;
-import ecologylab.semantics.collecting.DocumentDownloadingMonitor;
 import ecologylab.semantics.collecting.DocumentDownloadedEventHandler;
+import ecologylab.semantics.collecting.DocumentDownloadingMonitor;
 import ecologylab.semantics.collecting.DownloadStatus;
 import ecologylab.semantics.collecting.LinkedMetadataMonitor;
 import ecologylab.semantics.collecting.SemanticsGlobalScope;
-import ecologylab.semantics.collecting.SemanticsSite;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataBase;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
-import ecologylab.semantics.metadata.builtins.CompoundDocument;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.scalar.types.MetadataScalarType;
 import ecologylab.semantics.metametadata.DefVar;
@@ -86,13 +83,15 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 		SemanticActionsKeyWords, DeserializationHookStrategy<Metadata, MetadataFieldDescriptor>
 {
 
-	public static final boolean	DONOT_LOOKUP_DOWNLOADED_DOCUMENT			= Pref.lookupBoolean("donot_lookup_downloaded_documents", false);
+	public static final boolean			DONOT_LOOKUP_DOWNLOADED_DOCUMENT			= Pref.lookupBoolean("donot_lookup_downloaded_documents", false);
 
-	public static final boolean	DONOT_SETUP_DOCUMENT_GRAPH_CALLBACKS	= Pref.lookupBoolean("donot_setup_document_graph_callbacks", false);
-	
-	protected XPath			xpath;
+	public static final boolean			DONOT_SETUP_DOCUMENT_GRAPH_CALLBACKS	= Pref.lookupBoolean("donot_setup_document_graph_callbacks", false);
 
-	protected ParsedURL	truePURL;
+	protected XPath									xpath;
+
+	protected ParsedURL							truePURL;
+
+	protected SemanticActionHandler	handler;
 
 	public ParserBase(SemanticsGlobalScope infoCollector)
 	{
@@ -118,9 +117,9 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 	public final Document parse(Document document, MetaMetadataCompositeField metaMetadata, org.w3c.dom.Document dom) throws IOException
 	{
 		// init
-		SemanticActionHandler handler = new SemanticActionHandler(semanticsScope, this);
-		instantiateSemanticActionXPathVars(handler);
+		handler = new SemanticActionHandler(semanticsScope, this);
 		truePURL = document.getLocation();
+		initializeParameterScope(metaMetadata);
 
 		// build the metadata object
 //		DomTools.prettyPrint(DOM);
@@ -181,86 +180,71 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 	 * Instantiate MetaMetadata variables that are used during XPath information extraction, and in
 	 * semantic actions.
 	 * 
-	 * @param document
-	 *          The root of the document
+	 * @param metaMetadata
 	 */
-	private void instantiateSemanticActionXPathVars(SemanticActionHandler handler)
+	private void initializeParameterScope(MetaMetadataCompositeField metaMetadata)
 	{
-		// get the list of all variable defintions
-		ArrayList<DefVar> defVars = getMetaMetadata().getDefVars();
-
-		// get the parameters
-		Scope<Object> parameters = handler.getSemanticActionVariableMap();
-		
+		Node documentRoot = null;
 		try
 		{
-			Node documentRoot = getDom();
-			parameters.put(DOCUMENT_ROOT_NODE, documentRoot);
+			documentRoot = getDom();
+			if (documentRoot != null)
+			{
+				Scope<Object> parameters = handler.getSemanticActionVariableMap();
+				parameters.put(DOCUMENT_ROOT_NODE, documentRoot);
+				updateDefVars(metaMetadata, documentRoot);
+			}
 		}
-		catch (IOException e1)
+		catch (IOException e)
 		{
 			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			e.printStackTrace();
 		}
-		
+	}
+
+	private void updateDefVars(MetaMetadataNestedField nestedField, Node contextNode)
+	{
+		assert(handler != null);
+		Scope<Object> parameters = handler.getSemanticActionVariableMap();
+		ArrayList<DefVar> defVars = nestedField.getDefVars();
 		if (defVars != null)
 		{
-			// only if some variables are there we create a DOM[for diect binidng types for others DOM is
-			// already there]
-			// TODO -- if direct binding, make sure that there are vars that use xPath.
 			for (DefVar defVar : defVars)
 			{
-				String xpathExpression = defVar.getXpath();
-				String nodeName 	= defVar.getNode();
-				String varName 		= defVar.getName();
-				QName varType 		= defVar.getType();
-				String varValue		= defVar.getValue();
-				Node contextNode	= null;
-				
+				String xpathExpression = ".";
+				String varName = "NO_VAR_NAME";
+				QName varType = null;
 				try
 				{
+					xpathExpression = defVar.getXpath();
+					varName = defVar.getName();
+					varType = defVar.getType();
+					String contextNodeName = defVar.getContextNode();
+					String varValue = defVar.getValue();
+					
 					// Does the var have a constant value?
 					if(varValue == null)
 					{
 						// No. Evaluate the Xpath to obtain the value. 
-						if (nodeName == null)
-						{
-							// apply the XPath on the document root.
-							contextNode = getDom();
-						}
-						else
+						if (contextNodeName != null)
 						{
 							// get the context node from parameters
-							contextNode = (Node) parameters.get(nodeName);
+							contextNode = (Node) parameters.get(contextNodeName);
 						}
 	
 						if (varType != null)
 						{
-							// apply xpath and get the node list
-							if (varType == XPathConstants.NODESET)
-							{
-								NodeList nList = (NodeList) xpath.evaluate(xpathExpression, contextNode, varType);
-	
-								// put the value in the parametrers
-								parameters.put(varName, nList);
-							}
-							else if (varType == XPathConstants.NODE)
-							{
-								Node n = (Node) xpath.evaluate(xpathExpression, contextNode, varType);
-	
-								// put the value in the parametrers
-								parameters.put(varName, n);
-							}
+							Object evalResult = xpath.evaluate(xpathExpression, contextNode, varType);
+							parameters.put(varName, evalResult);
 						}
 						else
 						{
 							// its gonna be a simple string evaluation
 							String evaluation = xpath.evaluate(xpathExpression, contextNode);
-	
-							// put it into returnValueMap
 							parameters.put(varName, evaluation);
 						}
-					}else
+					}
+					else
 					{
 						// If we have a variable value, we'll just use it! 
 						parameters.put(varName, varValue);
@@ -269,19 +253,14 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 				catch (Exception e)
 				{
 					StringBuilder buffy = StringBuilderUtils.acquire();
-					buffy
-							.append("################### ERROR IN VARIABLE DEFINTION ##############################\n");
+					buffy.append("################### ERROR IN VARIABLE DEFINTION ##############################\n");
 					buffy.append("Variable Name::\t").append(varName).append("\n");
-					buffy.append("Check if the context node is not null::\t").append(contextNode)
-							.append("\n");
-					buffy.append("Check if the XPath Expression is valid::\t").append(xpathExpression)
-							.append("\n");
-					buffy.append("Check if the return object type of Xpath evaluation is corect::\t").append(
-							varType).append("\n");
+					buffy.append("Check if the context node is not null::\t").append(contextNode).append("\n");
+					buffy.append("Check if the XPath Expression is valid::\t").append(xpathExpression).append("\n");
+					buffy.append("Check if the return object type of Xpath evaluation is corect::\t").append(varType).append("\n");
 					debug(buffy);
 					StringBuilderUtils.release(buffy);
 				}
-
 			}
 		}
 	}
@@ -351,6 +330,9 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 			params.put(SURROUNDING_META_METADATA_STACK, surroundingMmdStack);
 		}
 		surroundingMmdStack.push(mmdField);
+		
+		updateDefVars(mmdField, contextNode);
+//		DomTools.prettyPrint(contextNode);
 
 		MetaMetadataNestedField targetParent = mmdField.isUsedForInlineMmdDef() ? mmdField.getInheritedMmd() : mmdField;
 		
@@ -360,7 +342,8 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 		{
 			if(fieldsetContainsFieldsWithDependencies(fieldSet))
 			{
-				try{
+				try
+				{
 					ScalarDependencyManager d = new ScalarDependencyManager(fieldSet);
 					fieldSet = d.sortFieldSetByDependencies(metadata);
 				}

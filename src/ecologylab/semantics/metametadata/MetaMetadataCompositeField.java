@@ -56,13 +56,6 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 	protected String					userAgentString;
 
 	/**
-	 * def_vars, used as variables during the extraction and semantic action processes.
-	 */
-	@simpl_collection("def_var")
-	@simpl_nowrap
-	private ArrayList<DefVar>	defVars;
-	
-	/**
 	 * if this composite should be wrapped.
 	 */
 	@simpl_scalar
@@ -166,14 +159,6 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 			userAgentString = (userAgentName == null) ? getRepository().getDefaultUserAgentString() : getRepository().getUserAgentString(userAgentName);
 		}
 		return userAgentString;
-	}
-
-	/**
-	 * @return the defVars
-	 */
-	public final ArrayList<DefVar> getDefVars()
-	{
-		return defVars;
 	}
 
 	@Override

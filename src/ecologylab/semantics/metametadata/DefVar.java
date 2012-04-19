@@ -8,44 +8,49 @@ import ecologylab.serialization.ElementState;
 import ecologylab.serialization.annotations.simpl_scalar;
 import ecologylab.serialization.types.ScalarType;
 
-public class DefVar  extends ElementState
+public class DefVar extends ElementState
 {
 	/**
 	 * Name of the variable to be declared
 	 */
-	@simpl_scalar private String name;
-	
+	@simpl_scalar
+	private String			name;
+
 	/**
 	 * XPath to evaluate this variable
 	 */
-	@simpl_scalar private String xpath;
-	
-	
+	@simpl_scalar
+	private String			xpath;
+
 	/**
 	 * The return type of this evaluation after applicatiopn of XPath
 	 */
-	@simpl_scalar private String type;
-	
+	@simpl_scalar
+	private String			type;
+
 	/**
 	 * Node on which this XPath has to be applied
 	 */
-	@simpl_scalar private String contextNode;
-	
-	
+	@simpl_scalar
+	private String			contextNode;
+
 	/**
 	 * scalar type of variable
 	 */
-	@simpl_scalar	private ScalarType													scalarType;			
-	
+	@simpl_scalar
+	private ScalarType	scalarType;
+
 	/**
-	 *  Value of variable
+	 * Value of variable
 	 */
-	@simpl_scalar private String 						value;
-	
+	@simpl_scalar
+	private String			value;
+
 	/**
 	 * comment for this variable
 	 */
-	@simpl_scalar private String comment;
+	@simpl_scalar
+	private String			comment;
 
 	/**
 	 * @return the name
@@ -56,7 +61,8 @@ public class DefVar  extends ElementState
 	}
 
 	/**
-	 * @param name the name to set
+	 * @param name
+	 *          the name to set
 	 */
 	public final void setName(String name)
 	{
@@ -72,7 +78,8 @@ public class DefVar  extends ElementState
 	}
 
 	/**
-	 * @param xpath the xpath to set
+	 * @param xpath
+	 *          the xpath to set
 	 */
 	public final void setXpath(String xpath)
 	{
@@ -84,11 +91,11 @@ public class DefVar  extends ElementState
 	 */
 	public final QName getType()
 	{
-		if(SemanticActionsKeyWords.NODE_SET.equals(type))
+		if (SemanticActionsKeyWords.NODE_SET.equals(type))
 		{
 			return XPathConstants.NODESET;
 		}
-		else if(SemanticActionsKeyWords.NODE.equals(type))
+		else if (SemanticActionsKeyWords.NODE.equals(type))
 		{
 			return XPathConstants.NODE;
 		}
@@ -96,7 +103,8 @@ public class DefVar  extends ElementState
 	}
 
 	/**
-	 * @param type the type to set
+	 * @param type
+	 *          the type to set
 	 */
 	public final void setType(String type)
 	{
@@ -112,7 +120,8 @@ public class DefVar  extends ElementState
 	}
 
 	/**
-	 * @param comment the comment to set
+	 * @param comment
+	 *          the comment to set
 	 */
 	public final void setComment(String comment)
 	{
@@ -122,15 +131,16 @@ public class DefVar  extends ElementState
 	/**
 	 * @return the node
 	 */
-	public final String getNode()
+	public final String getContextNode()
 	{
 		return contextNode;
 	}
 
 	/**
-	 * @param node the node to set
+	 * @param node
+	 *          the node to set
 	 */
-	public final void setNode(String node)
+	public final void setContextNode(String node)
 	{
 		this.contextNode = node;
 	}
@@ -144,7 +154,8 @@ public class DefVar  extends ElementState
 	}
 
 	/**
-	 * @param scalarType the scalarType to set
+	 * @param scalarType
+	 *          the scalarType to set
 	 */
 	public void setScalarType(ScalarType scalarType)
 	{
@@ -158,5 +169,5 @@ public class DefVar  extends ElementState
 	{
 		return value;
 	}
-	
+
 }

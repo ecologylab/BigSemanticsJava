@@ -69,9 +69,16 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	@simpl_scalar
 	private boolean														showExpandedInitially;
 	
+	/**
+	 * def_vars, used as variables during the extraction and semantic action processes.
+	 */
+	@simpl_collection("def_var")
+	@simpl_nowrap
+	private ArrayList<DefVar>									defVars;
+
 	@simpl_collection("generic_type_var")
 	@simpl_nowrap
-	private List<MmdGenericTypeVar>	genericTypeVars;
+	private List<MmdGenericTypeVar>						genericTypeVars;
 
 	/**
 	 * the mmd used by this nested field. corresponding attributes: (child_)type/extends. could be a
@@ -159,6 +166,14 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	public MultiAncestorScope<MetaMetadata> getMmdScope()
 	{
 		return mmdScope;
+	}
+
+	/**
+	 * @return the defVars
+	 */
+	public final ArrayList<DefVar> getDefVars()
+	{
+		return defVars;
 	}
 
 	public MetaMetadataField findField(String name)
