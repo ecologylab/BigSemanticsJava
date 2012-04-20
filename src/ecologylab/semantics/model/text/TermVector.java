@@ -433,7 +433,7 @@ public class TermVector extends FeatureVector<Term> implements ITermVector
 		{
 			if (d2 > d1)
 				return 1;
-			else if (d2 == d1)
+			else if (d2.equals(d1))
 				return 0;
 			else
 				return -1;
