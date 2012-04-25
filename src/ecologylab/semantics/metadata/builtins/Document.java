@@ -344,7 +344,7 @@ public class Document extends DocumentDeclaration
 				}
 			}
 		}
-		return result.downloadStatus == DownloadStatus.RECYCLED ? null : result;
+		return result == null || result.downloadStatus == DownloadStatus.RECYCLED ? null : result;
 	}
 
 	/**
