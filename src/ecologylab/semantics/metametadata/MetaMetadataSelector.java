@@ -49,6 +49,9 @@ class MetaMetadataSelector extends ElementState implements IMappable<String>
 	 */
 	@simpl_scalar
 	private Pattern											urlRegex;
+	
+	@simpl_scalar
+	private Pattern											urlRegexFragment;
 
 	/**
 	 * This key is *required* for urlPatterns, so that we can organize them efficiently.
@@ -107,6 +110,11 @@ class MetaMetadataSelector extends ElementState implements IMappable<String>
 	public void setUrlRegex(Pattern urlRegex)
 	{
 		this.urlRegex = urlRegex;
+	}
+	
+	public Pattern getUrlRegexFragment()
+	{
+		return urlRegexFragment;
 	}
 
 	public String getDomain()

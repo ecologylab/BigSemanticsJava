@@ -586,8 +586,10 @@ implements PackageSpecifier, DocumentParserTagNames
 							for (RepositoryPatternEntry entry : entries)
 							{
 								Matcher matcher = entry.getPattern().matcher(purlString);
-								if (matcher.find())
+								boolean matched = entry.isPatternFragment() ? matcher.find() : matcher.matches();
+								if (matched)
 								{
+									debug(entry.isPatternFragment() ? "matched URL fragment by regex." : "matched whole URL by regex.");
 									result = entry.getMetaMetadata();
 									break;
 								}
@@ -860,7 +862,13 @@ implements PackageSpecifier, DocumentParserTagNames
 					{
 						// use .pattern() for comparison
 						String domain = selector.getDomain();
+						boolean isPatternFragment = false;
 						Pattern urlPattern = selector.getUrlRegex();
+						if (urlPattern == null || urlPattern.pattern().length() <= 0)
+						{
+							urlPattern = selector.getUrlRegexFragment();
+							isPatternFragment = true;
+						}
 						if (domain != null)
 						{
 							if (urlPattern != null)
@@ -871,7 +879,7 @@ implements PackageSpecifier, DocumentParserTagNames
 									bucket = new ArrayList<RepositoryPatternEntry>(2);
 									repositoryByPattern.put(domain, bucket);
 								}
-								bucket.add(new RepositoryPatternEntry(urlPattern, metaMetadata));
+								bucket.add(new RepositoryPatternEntry(urlPattern, metaMetadata, isPatternFragment));
 								metaMetadata.setMmSelectorType(MMSelectorType.LOCATION);
 							}
 							else
