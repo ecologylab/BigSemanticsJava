@@ -357,7 +357,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 			File file	= originalPURL.file();
 			
 			// Handle localhost issues on mac? 
-			if(originalPURL.url().getAuthority().equals("localhost"))
+			if("localhost".equals(originalPURL.url().getAuthority()))
 			{
 				String s = originalPURL.url().toString();
 				s = s.replaceFirst("localhost", "");
