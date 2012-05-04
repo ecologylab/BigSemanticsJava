@@ -170,7 +170,7 @@ public class ImageParserAwt extends DocumentParser<Image>
 					if (is_ico == true)
 					{
 						// if ICO file, force ICOReader to be used
-						if (!(imageReader.toString().contains("ICOReader")))
+						if ((imageReader.toString().contains("WBMPImageReader")))
 						{
 							continue;
 						}
@@ -249,7 +249,9 @@ public class ImageParserAwt extends DocumentParser<Image>
 							 * transparency); } else bufferedImage = new BufferedImage(width, height,
 							 * readImageType);
 							 */
-							param.setDestination(bufferedImage);
+							
+							//Not needed since bufferedImage is filled by the read() call
+							//param.setDestination(bufferedImage);
 						}
 						// read, using the BufferedImage we made, or the default
 						// if we set result in the line above, we'll just get it back, so no problem.
