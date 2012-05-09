@@ -700,7 +700,10 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
 
 	public NamedStyle lookupStyle()
 	{
-		return (style != null) ? getRepository().lookupStyle(style) : getRepository().getDefaultStyle();
+		NamedStyle result = null;
+		if (style != null)
+			getRepository().lookupStyle(style);
+		return (result != null) ? result : getRepository().getDefaultStyle();
 	}
 
 	/**
