@@ -321,7 +321,7 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 					{
 						GenericTypeVar gtv = new GenericTypeVar();
 						gtv.setName(mmdgtv.getParameter()); // FIXME this is just one case.
-						genericTypeVar.addGenericTypeVar(gtv);
+						genericTypeVar.addGenericTypeVarArg(gtv);
 					}
 				}
 				break;
@@ -355,8 +355,9 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 			}
 			fd.setWrapped(wrapped);
 			fd.setGeneric("<" + genericTypeName + ">");
-			fd.setGenericTypeVars(new ArrayList<GenericTypeVar>());
-			fd.getGenericTypeVars().add(genericTypeVar);
+			ArrayList<GenericTypeVar> derivedGenericTypeVariables = new ArrayList<GenericTypeVar>();
+			derivedGenericTypeVariables.add(genericTypeVar);
+			fd.setGenericTypeVars(derivedGenericTypeVariables);
 		}
 		this.metadataFieldDescriptor = fd;
 		return fd;

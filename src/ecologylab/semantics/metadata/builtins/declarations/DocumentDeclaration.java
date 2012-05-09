@@ -40,16 +40,16 @@ public class DocumentDeclaration extends Metadata
 	@simpl_hints({Hint.XML_LEAF})
 	private MetadataString title;
 
-	@simpl_scalar
-	@simpl_hints({Hint.XML_LEAF})
-	@simpl_other_tags({"abstract_field"})
-	private MetadataString description;
-
 	/** 
 	 *The document's actual location.
 	 */ 
 	@simpl_scalar
 	private MetadataParsedURL location;
+
+	@simpl_scalar
+	@simpl_hints({Hint.XML_LEAF})
+	@simpl_other_tags({"abstract_field"})
+	private MetadataString description;
 
 	/** 
 	 *Relative location of a local copy of the document.
@@ -101,38 +101,6 @@ public class DocumentDeclaration extends Metadata
 		this.title = title;
 	}
 
-	public MetadataString	description()
-	{
-		MetadataString	result = this.description;
-		if (result == null)
-		{
-			result = new MetadataString();
-			this.description = result;
-		}
-		return result;
-	}
-
-	public String getDescription()
-	{
-		return this.description == null ? null : description().getValue();
-	}
-
-	public MetadataString getDescriptionMetadata()
-	{
-		return description;
-	}
-
-	public void setDescription(String description)
-	{
-		if (description != null)
-			this.description().setValue(description);
-	}
-
-	public void setDescriptionMetadata(MetadataString description)
-	{
-		this.description = description;
-	}
-
 	public MetadataParsedURL	location()
 	{
 		MetadataParsedURL	result = this.location;
@@ -163,6 +131,38 @@ public class DocumentDeclaration extends Metadata
 	public void setLocationMetadata(MetadataParsedURL location)
 	{
 		this.location = location;
+	}
+
+	public MetadataString	description()
+	{
+		MetadataString	result = this.description;
+		if (result == null)
+		{
+			result = new MetadataString();
+			this.description = result;
+		}
+		return result;
+	}
+
+	public String getDescription()
+	{
+		return this.description == null ? null : description().getValue();
+	}
+
+	public MetadataString getDescriptionMetadata()
+	{
+		return description;
+	}
+
+	public void setDescription(String description)
+	{
+		if (description != null)
+			this.description().setValue(description);
+	}
+
+	public void setDescriptionMetadata(MetadataString description)
+	{
+		this.description = description;
 	}
 
 	public MetadataParsedURL	localLocation()
