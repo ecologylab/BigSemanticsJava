@@ -1,11 +1,14 @@
 package ecologylab.semantics.metametadata;
 
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
+import ecologylab.semantics.metametadata.exceptions.MetaMetadataException;
 import ecologylab.serialization.ElementState;
-import ecologylab.serialization.annotations.simpl_collection;
 import ecologylab.serialization.annotations.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_map;
+import ecologylab.serialization.annotations.simpl_map_key_field;
 import ecologylab.serialization.annotations.simpl_nowrap;
 import ecologylab.serialization.annotations.simpl_scalar;
 import ecologylab.serialization.annotations.simpl_tag;
@@ -22,37 +25,35 @@ public class MmdGenericTypeVar extends ElementState
 {
 
 	/**
-	 * the name of the generic type variable. recommend capital for each letter.
+	 * the name of the generic type variable. should be all capitalized.
 	 */
 	@simpl_scalar
-	private String														name;
+	private String									name;
 
 	/**
-	 * the name of the bound (e.g. Media in &lt;M extends Media&gt;). cound be another generic type
-	 * variable name that has been defined before.
+	 * the (covariant) bound of the generic type. it could be either a concrete meta-metadata type
+	 * name, or an already defined generic type variable name.
 	 */
 	@simpl_scalar
-	private String														bound;
+	@simpl_tag("extends")
+	private String									extendsAttribute;
+
+	// TODO @simpl_scalar @simpl_tag("super") private String superAttribute;
 
 	/**
-	 * used only for parameterization of this generic type variable, with either a concrete
-	 * meta-metadata name or an already-defined generic type variable name.
+	 * the type used to instantiate this generic type variable. it could be either a concrete
+	 * meta-metadata type name, or an already defined generic type variable name.
 	 */
 	@simpl_scalar
-	private String														parameter;
+	private String									arg;
 
 	/**
-	 * used for specifying generic types for composite fields.
+	 * a scope of nested generic type variables. e.g. A, B in &lt;M extends Media&lt;A, B&gt;&gt;.
 	 */
-	@simpl_scalar
-	private String														genericType;
-	
-	/**
-	 * a list of nested generic type variables. e.g. A, B in &lt;M extends Media&lt;A, B&gt;&gt;.
-	 */
-	@simpl_collection("generic_type_var")
+	@simpl_map("generic_type_var")
+	@simpl_map_key_field("name")
 	@simpl_nowrap
-	private List<MmdGenericTypeVar>	genericTypeVars;
+	private MmdGenericTypeVarScope	nestedGenericTypeVars;
 
 	public String getName()
 	{
@@ -64,44 +65,41 @@ public class MmdGenericTypeVar extends ElementState
 		this.name = name;
 	}
 
-	public String getBound()
+	public String getExtendsAttribute()
 	{
-		return bound;
+		return extendsAttribute;
 	}
 
-	public void setBound(String bound)
+	public void setExtendsAttribute(String extendsAttribute)
 	{
-		this.bound = bound;
+		this.extendsAttribute = extendsAttribute;
 	}
 
-	public String getParameter()
+	public String getArg()
 	{
-		return parameter;
+		return arg;
 	}
 
-	public void setParameter(String parameter)
+	public void setArg(String arg)
 	{
-		this.parameter = parameter;
+		this.arg = arg;
 	}
 
-	public String getGenericType()
+	public MmdGenericTypeVarScope getNestedGenericTypeVarScope()
 	{
-		return genericType;
+		return nestedGenericTypeVars;
+	}
+	
+	static Collection<MmdGenericTypeVar> EMPTY_COLLECTION = new ArrayList<MmdGenericTypeVar>();
+	
+	public Collection<MmdGenericTypeVar> getNestedGenericTypeVars()
+	{
+		return nestedGenericTypeVars == null ? EMPTY_COLLECTION : nestedGenericTypeVars.values();
 	}
 
-	public void setGenericType(String genericType)
+	public void setNestedGenericTypeVars(MmdGenericTypeVarScope nestedGenericTypeVars)
 	{
-		this.genericType = genericType;
-	}
-
-	public List<MmdGenericTypeVar> getGenericTypeVars()
-	{
-		return genericTypeVars;
-	}
-
-	public void setGenericTypeVars(List<MmdGenericTypeVar> genericTypeVars)
-	{
-		this.genericTypeVars = genericTypeVars;
+		this.nestedGenericTypeVars = nestedGenericTypeVars;
 	}
 
 	public static String getMdClassNameFromMmdOrNoChange(String mmdName,
@@ -119,6 +117,53 @@ public class MmdGenericTypeVar extends ElementState
 				compilerService.addCurrentClassDependency(metadataClassDescriptor);
 			return metadataClassDescriptor.getDescribedClassSimpleName();
 		}
+	}
+
+	public boolean isAssignment()
+	{
+		return arg != null;
+	}
+
+	public boolean isBound()
+	{
+		return extendsAttribute != null /* || superAttribute != null */;
+	}
+
+	public void resolveArgAndBounds(MmdGenericTypeVarScope genericTypeVarScope)
+	{
+		if (isAssignment())
+		{
+			MmdGenericTypeVar gtv = genericTypeVarScope.get(arg);
+			if (gtv != null)
+			{
+				gtv.resolveArgAndBounds(genericTypeVarScope);
+
+				if (gtv.isAssignment())
+				{
+					arg = gtv.arg;
+				}
+				else if (gtv.isBound())
+				{
+					arg = null;
+					extendsAttribute = gtv.extendsAttribute;
+					// superAttribute = gtv.superAttribute;
+				}
+			}
+		}
+		else if (isBound())
+		{
+			MmdGenericTypeVar extendsGtv = genericTypeVarScope.get(extendsAttribute);
+			if (extendsGtv != null)
+			{
+				extendsGtv.resolveArgAndBounds(genericTypeVarScope);
+				extendsAttribute = extendsGtv.arg != null ? extendsGtv.arg : extendsGtv.extendsAttribute;
+			}
+			
+			// TODO superAttribute
+		}
+		else
+			throw new MetaMetadataException(
+					"wrong meta-metadata generic type var type! must either be an assignment or a bound.");
 	}
 
 }

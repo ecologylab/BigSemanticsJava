@@ -2,6 +2,7 @@ package ecologylab.semantics.metametadata;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -19,11 +20,13 @@ import ecologylab.serialization.ElementState;
 import ecologylab.serialization.FieldTypes;
 import ecologylab.serialization.MetaInformation;
 import ecologylab.serialization.SimplTypesScope;
+import ecologylab.serialization.TranslationContext;
 import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.annotations.simpl_composite;
 import ecologylab.serialization.annotations.simpl_descriptor_classes;
 import ecologylab.serialization.annotations.simpl_inherit;
 import ecologylab.serialization.annotations.simpl_map;
+import ecologylab.serialization.annotations.simpl_map_key_field;
 import ecologylab.serialization.annotations.simpl_nowrap;
 import ecologylab.serialization.annotations.simpl_scalar;
 import ecologylab.serialization.annotations.simpl_scope;
@@ -275,6 +278,11 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
 	@simpl_composite
 	protected RegexFilter																	filter;
 	
+	@simpl_map("generic_type_var")
+	@simpl_map_key_field("name")
+	@simpl_nowrap
+	MmdGenericTypeVarScope																genericTypeVars;
+	
 	// ///////////////////////////////// members /////////////////////////////////
 
 	HashSet<String>																				nonDisplayedFieldNames;
@@ -324,8 +332,12 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
 	 */
 	private MetaMetadata																	declaringMmd						= null;
 	
-	private boolean														usedForInlineMmdDef						= false;
-	
+	/**
+	 * if this field is used to define inline meta-metadata types. this flag is used by extraction
+	 * module to determine the true root element for child fields inside this field.
+	 */
+	private boolean																				usedForInlineMmdDef			= false;
+
 	public MetaMetadataField()
 	{
 
@@ -535,13 +547,15 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
 		return tag != null ? tag : name;
 	}
 
-	// FIXME move this to NestedField or CompositeField.
-	@Deprecated
 	public String getType()
 	{
 		return null;
 	}
 
+	public String getExtendsAttribute()
+	{
+		return null;
+	}
 	/**
 	 * the xpath of this field.
 	 * @return
@@ -1212,6 +1226,18 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
 	public boolean isNormalizeText()
 	{
 		return filter == null ? false : filter.isNormalizeText();
+	}
+	
+	public MmdGenericTypeVarScope getMetaMetadataGenericTypeVarScope()
+	{
+		return genericTypeVars;
+	}
+	
+	static Collection<MmdGenericTypeVar> EMPTY_GENERIC_TYPE_VAR_COLLECTION = new ArrayList<MmdGenericTypeVar>();
+	
+	public Collection<MmdGenericTypeVar> getMetaMetadataGenericTypeVars()
+	{
+		return genericTypeVars == null ? EMPTY_GENERIC_TYPE_VAR_COLLECTION : genericTypeVars.values();
 	}
 	
 }

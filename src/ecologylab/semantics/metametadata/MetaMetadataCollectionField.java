@@ -1,9 +1,10 @@
 package ecologylab.semantics.metametadata;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
 import ecologylab.generic.HashMapArrayList;
+import ecologylab.generic.StringTools;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
 import ecologylab.semantics.metadata.mm_dont_inherit;
@@ -88,6 +89,18 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 	public boolean isNoWrap()
 	{
 		return noWrap;
+	}
+	
+	@Override
+	public String getType()
+	{
+		return getChildType();
+	}
+	
+	@Override
+	public String getExtendsAttribute()
+	{
+		return getChildExtends();
 	}
 
 	@Override
@@ -232,7 +245,7 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 	}
 	
 	@Override
-	protected void inheritMetaMetadataHelper()
+	protected void inheritMetaMetadataHelper(InheritanceHandler inheritanceHandler)
 	{
 		/*
 		 * the childComposite should hide all complexity between collection fields and composite fields,
@@ -259,7 +272,7 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 			childComposite.setDeclaringMmd(this.getDeclaringMmd());
 			childComposite.setMmdScope(this.getMmdScope());
 
-			childComposite.inheritMetaMetadata(); // inheritedMmd might be inferred from type/extends
+			childComposite.inheritMetaMetadata(inheritanceHandler); // inheritedMmd might be inferred from type/extends
 			
 			this.setInheritedMmd(childComposite.getInheritedMmd());
 			this.setMmdScope(childComposite.getMmdScope());
@@ -312,15 +325,18 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 						null,
 						javaTypeName);
 				genericTypeName = fieldCd.getDescribedClassSimpleName();
-				genericTypeVar.setClassDescriptor(fieldCd);
+				if (StringTools.isUpperCase(childType))
+					genericTypeVar.setName(childType);
+				else
+					genericTypeVar.setClassDescriptor(fieldCd);
 				// FIXME MetaMetadataGenericTypeVar and GenericTypeVar should be merged.
-				List<MmdGenericTypeVar> metaMetadataGenericTypeVars = this.getMetaMetadataGenericTypeVars();
+				Collection<MmdGenericTypeVar> metaMetadataGenericTypeVars = this.getMetaMetadataGenericTypeVars();
 				if (metaMetadataGenericTypeVars != null && metaMetadataGenericTypeVars.size() > 0)
 				{
 					for (MmdGenericTypeVar mmdgtv : metaMetadataGenericTypeVars)
 					{
 						GenericTypeVar gtv = new GenericTypeVar();
-						gtv.setName(mmdgtv.getParameter()); // FIXME this is just one case.
+						gtv.setName(mmdgtv.getArg()); // FIXME this is just one case.
 						genericTypeVar.addGenericTypeVarArg(gtv);
 					}
 				}

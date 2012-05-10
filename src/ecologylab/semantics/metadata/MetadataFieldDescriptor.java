@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import ecologylab.semantics.gui.EditValueEvent;
@@ -15,9 +16,9 @@ import ecologylab.semantics.gui.EditValueNotifier;
 import ecologylab.semantics.metadata.scalar.MetadataScalarBase;
 import ecologylab.semantics.metametadata.MetaMetadataCollectionField;
 import ecologylab.semantics.metametadata.MetaMetadataField;
-import ecologylab.semantics.metametadata.MmdGenericTypeVar;
 import ecologylab.semantics.metametadata.MetaMetadataNestedField;
 import ecologylab.semantics.metametadata.MmdCompilerService;
+import ecologylab.semantics.metametadata.MmdGenericTypeVar;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.FieldDescriptor;
 import ecologylab.serialization.ScalarUnmarshallingContext;
@@ -288,8 +289,8 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 		if (compilerService != null && collectionType != null && definingMmdField instanceof MetaMetadataNestedField)
 		{
 			MetaMetadataNestedField nested = (MetaMetadataNestedField) definingMmdField;
-			List<MmdGenericTypeVar> mmdGenericTypeVars = nested.getMetaMetadataGenericTypeVars();
-			if (mmdGenericTypeVars != null && mmdGenericTypeVars.size() > 0)
+			Collection<MmdGenericTypeVar> genericTypeVars = nested.getMetaMetadataGenericTypeVars();
+			if (genericTypeVars != null && genericTypeVars.size() > 0)
 			{
 				StringBuilder sb = new StringBuilder();
 				sb.append(javaType.substring(0, javaType.indexOf('<')));
@@ -297,7 +298,7 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 				sb.append(this.getElementClassDescriptor().getDescribedClassSimpleName());
 				try
 				{
-					compilerService.appendGenericTypeVarParameterizations(sb, mmdGenericTypeVars, nested.getRepository());
+					compilerService.appendGenericTypeVarParameterizations(sb, nested.getMetaMetadataGenericTypeVars(), nested.getRepository());
 				}
 				catch (IOException e)
 				{
@@ -311,17 +312,15 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 		
 		if (getType() == COMPOSITE_ELEMENT)
 		{
+			// FIXME this part needs to be debugged!!!!
 			MetaMetadataNestedField nested = (MetaMetadataNestedField) definingMmdField;
-			List<MmdGenericTypeVar> mmdGenericTypeVars = nested.getMetaMetadataGenericTypeVars();
-			if (mmdGenericTypeVars != null && mmdGenericTypeVars.size() > 0)
+			Collection<MmdGenericTypeVar> genericTypeVars = nested.getMetaMetadataGenericTypeVars();
+			for (MmdGenericTypeVar mmdGenericTypeVar : genericTypeVars)
 			{
-				for (MmdGenericTypeVar mmdGenericTypeVar : mmdGenericTypeVars)
+				if (mmdGenericTypeVar.getNestedGenericTypeVarScope() == null || mmdGenericTypeVar.getNestedGenericTypeVars().size() == 0)
 				{
-					if (mmdGenericTypeVar.getGenericType() != null)
-					{
-						javaType = mmdGenericTypeVar.getGenericType();
-						break;
-					}
+					javaType = mmdGenericTypeVar.getName();
+					break;
 				}
 			}
 		}
@@ -344,40 +343,32 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 		if (compilerService != null && collectionType != null && definingMmdField instanceof MetaMetadataNestedField)
 		{
 			MetaMetadataNestedField nested = (MetaMetadataNestedField) definingMmdField;
-			List<MmdGenericTypeVar> mmdGenericTypeVars = nested.getMetaMetadataGenericTypeVars();
-			if (mmdGenericTypeVars != null && mmdGenericTypeVars.size() > 0)
+			StringBuilder sb = new StringBuilder();
+			sb.append(csType.substring(0, csType.indexOf('<')));
+			sb.append("<");
+			sb.append(this.getElementClassDescriptor().getDescribedClassSimpleName());
+			try
 			{
-				StringBuilder sb = new StringBuilder();
-				sb.append(csType.substring(0, csType.indexOf('<')));
-				sb.append("<");
-				sb.append(this.getElementClassDescriptor().getDescribedClassSimpleName());
-				try
-				{
-					compilerService.appendGenericTypeVarParameterizations(sb, mmdGenericTypeVars, nested.getRepository());
-				}
-				catch (IOException e)
-				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				sb.append(">");
-				return sb.toString();
+				compilerService.appendGenericTypeVarParameterizations(sb, nested.getMetaMetadataGenericTypeVars(), nested.getRepository());
 			}
+			catch (IOException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			sb.append(">");
+			return sb.toString();
 		}
 		
 		if (getType() == COMPOSITE_ELEMENT)
 		{
 			MetaMetadataNestedField nested = (MetaMetadataNestedField) definingMmdField;
-			List<MmdGenericTypeVar> mmdGenericTypeVars = nested.getMetaMetadataGenericTypeVars();
-			if (mmdGenericTypeVars != null && mmdGenericTypeVars.size() > 0)
+			for (MmdGenericTypeVar mmdGenericTypeVar : nested.getMetaMetadataGenericTypeVars())
 			{
-				for (MmdGenericTypeVar mmdGenericTypeVar : mmdGenericTypeVars)
+				if (mmdGenericTypeVar.getNestedGenericTypeVarScope() == null || mmdGenericTypeVar.getNestedGenericTypeVars().size() == 0)
 				{
-					if (mmdGenericTypeVar.getGenericType() != null)
-					{
-						csType = mmdGenericTypeVar.getGenericType();
-						break;
-					}
+					csType = mmdGenericTypeVar.getName();
+					break;
 				}
 			}
 		}

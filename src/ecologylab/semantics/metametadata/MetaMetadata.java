@@ -430,29 +430,46 @@ implements IMappable<String>//, HasLocalTranslationScope
 	{
 		return file;
 	}
+	
+	public void inheritMetaMetadata()
+	{
+		this.inheritMetaMetadata(null);
+	}
 
 	@Override
-	protected void inheritMetaMetadataHelper()
+	protected void inheritMetaMetadataHelper(InheritanceHandler inheritanceHandler)
 	{
 //		debug("processing mmd: " + this);
+		inheritanceHandler = new InheritanceHandler(this);
 		
 		// init each field's declaringMmd to this (some of them may change during inheritance)
 		for (MetaMetadataField field : this.getChildMetaMetadata())
 			field.setDeclaringMmd(this);
 
-		super.inheritMetaMetadataHelper();
+		super.inheritMetaMetadataHelper(inheritanceHandler);
 	}
 	
 	@Override
-	protected void inheritFromInheritedMmd(MetaMetadata inheritedMmd)
+	protected void inheritFromInheritedMmd(MetaMetadata inheritedMmd, InheritanceHandler inheritanceHandler)
 	{
-		super.inheritFromInheritedMmd(inheritedMmd);
+		super.inheritFromInheritedMmd(inheritedMmd, inheritanceHandler);
 		this.inheritAttributes(inheritedMmd);
+		if (this.genericTypeVars != null)
+			this.genericTypeVars.inheritFrom(inheritedMmd.genericTypeVars, inheritanceHandler);
+//		if (inheritedMmd.genericTypeVars != null)
+//		{
+//			if (this.genericTypeVars == null)
+//			{
+//				this.genericTypeVars = new MmdGenericTypeVarScope();
+//				inheritanceHandler.addGenericTypeVarScope(this.genericTypeVars);
+//			}
+//			this.genericTypeVars.inheritFrom(inheritedMmd.genericTypeVars, inheritanceHandler);
+//		}
 		inheritSemanticActions(inheritedMmd);
 	}
 	
 	@Override
-	protected MetaMetadata findOrGenerateInheritedMetaMetadata(MetaMetadataRepository repository)
+	protected MetaMetadata findOrGenerateInheritedMetaMetadata(MetaMetadataRepository repository, InheritanceHandler inheritanceHandler)
 	{
 		if (MetaMetadata.isRootMetaMetadata(this))
 		{
@@ -480,24 +497,24 @@ implements IMappable<String>//, HasLocalTranslationScope
 	}
 	
 	@Override
-	protected void inheritMetaMetadataFrom(MetaMetadataRepository repository, MetaMetadataCompositeField inheritedStructure)
+	protected void inheritFrom(MetaMetadataRepository repository, MetaMetadataCompositeField inheritedStructure, InheritanceHandler inheritanceHandler)
 	{
-		super.inheritMetaMetadataFrom(repository, inheritedStructure);
+		super.inheritFrom(repository, inheritedStructure, inheritanceHandler);
 		
 		// for fields referring to this meta-metadata type
 		// need to do inheritMetaMetadata() again after copying fields from this.getInheritedMmd()
-		for (MetaMetadataField f : this.getChildMetaMetadata())
-		{
-			if (f instanceof MetaMetadataNestedField)
-			{
-				MetaMetadataNestedField nested = (MetaMetadataNestedField) f;
-				if (nested.getInheritedMmd() == this)
-				{
-					nested.clearInheritFinishedOrInProgressFlag();
-					nested.inheritMetaMetadata();
-				}
-			}
-		}
+//		for (MetaMetadataField f : this.getChildMetaMetadata())
+//		{
+//			if (f instanceof MetaMetadataNestedField)
+//			{
+//				MetaMetadataNestedField nested = (MetaMetadataNestedField) f;
+//				if (nested.getInheritedMmd() == this)
+//				{
+//					nested.clearInheritFinishedOrInProgressFlag();
+//					nested.inheritMetaMetadata();
+//				}
+//			}
+//		}
 	}
 	
 	@Override
@@ -505,7 +522,7 @@ implements IMappable<String>//, HasLocalTranslationScope
 	{
 		if (this.metadataClassDescriptor == null)
 		{
-			this.inheritMetaMetadata();
+//			this.inheritMetaMetadata(inheritanceHandler);
 			MetaMetadata inheritedMmd = this.getInheritedMmd();
 			if (inheritedMmd != null)
 				inheritedMmd.findOrGenerateMetadataClassDescriptor(tscope);
@@ -598,8 +615,6 @@ implements IMappable<String>//, HasLocalTranslationScope
 			// re-using existing type
 			// do not use this.type directly because we don't know if that is a definition or just re-using exsiting type
 			MetaMetadata inheritedMmd = this.getInheritedMmd();
-			if (inheritedMmd == null)
-				this.inheritMetaMetadata(); // currently, this should never happend because we call this method after inheritance process.
 			return inheritedMmd == null ? null : inheritedMmd.getMetadataClassSimpleName();
 		}
 	}

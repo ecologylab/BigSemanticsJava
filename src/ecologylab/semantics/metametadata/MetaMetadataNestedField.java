@@ -76,10 +76,6 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	@simpl_nowrap
 	private ArrayList<DefVar>									defVars;
 
-	@simpl_collection("generic_type_var")
-	@simpl_nowrap
-	private List<MmdGenericTypeVar>						genericTypeVars;
-
 	/**
 	 * the mmd used by this nested field. corresponding attributes: (child_)type/extends. could be a
 	 * generated one for inline definitions.
@@ -231,16 +227,16 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	 * <li>for all (first-level) fields, attributes inherited from their inheritedField. (enabling
 	 * recursion)</li>
 	 * </ul>
-	 * 
+	 * @param inheritanceHandler TODO
 	 * @param mmdScope a scope used for looking up meta-metadata & perhaps adding new meta-metadata.
 	 */
-	public void inheritMetaMetadata()
+	public void inheritMetaMetadata(InheritanceHandler inheritanceHandler)
 	{
 		if (!inheritFinished && !inheritInProcess)
 		{
 //			debug("inheriting " + this.toString());
 			inheritInProcess = true;
-			this.inheritMetaMetadataHelper();
+			this.inheritMetaMetadataHelper(inheritanceHandler);
 			this.sortForDisplay();
 			inheritInProcess = false;
 			inheritFinished = true;
@@ -278,10 +274,10 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	/**
 	 * Helper method that actually does the inheritance process. This should be overridden in
 	 * sub-classes to fine-control the inheritance process.
-	 * 
+	 * @param inheritanceHandler TODO
 	 * @param mmdScope a scope used for looking up meta-metadata & perhaps adding new meta-metadata.
 	 */
-	abstract protected void inheritMetaMetadataHelper();
+	abstract protected void inheritMetaMetadataHelper(InheritanceHandler inheritanceHandler);
 
 	/**
 	 * Get the MetaMetadataCompositeField associated with this.
@@ -487,7 +483,7 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 		MetadataClassDescriptor metadataCd = this.metadataClassDescriptor;
 		if (metadataCd == null)
 		{
-			this.inheritMetaMetadata();
+//			this.inheritMetaMetadata(inheritanceHandler);
 			
 			String metadataClassSimpleName = this.getMetadataClassSimpleName();
 			// first look up by simple name, since package names for some built-ins are wrong
@@ -637,16 +633,6 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 		metaInfoBuf.add(new MetaInformation(mm_name.class, false, getName()));
 		if (this.name.equals("mixins") && this.getDeclaringMmd().name.equals("metadata"))
 			metaInfoBuf.add(new MetaInformation(semantics_mixin.class));
-	}
-
-	public List<MmdGenericTypeVar> getMetaMetadataGenericTypeVars()
-	{
-		return genericTypeVars;
-	}
-
-	public void setMetaMetadataGenericTypeVars(List<MmdGenericTypeVar> genericTypeVars)
-	{
-		this.genericTypeVars = genericTypeVars;
 	}
 
 	public boolean isShowExpandedInitially()

@@ -1,7 +1,7 @@
 package ecologylab.semantics.metametadata;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Collection;
 
 import ecologylab.serialization.ClassDescriptor;
 
@@ -21,6 +21,6 @@ public interface MmdCompilerService
 
 	void addLibraryTScopeDependency(String name);
 	
-	void appendGenericTypeVarParameterizations(Appendable appendable, List<MmdGenericTypeVar> mmdGenericTypeVars, MetaMetadataRepository repository) throws IOException;
+	void appendGenericTypeVarParameterizations(Appendable appendable, Collection<MmdGenericTypeVar> mmdGenericTypeVars, MetaMetadataRepository repository) throws IOException;
 	
 }

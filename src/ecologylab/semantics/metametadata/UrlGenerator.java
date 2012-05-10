@@ -101,7 +101,7 @@ public class UrlGenerator extends ElementState
 		else if (TYPE_PATTERN.equals(getType()) && naturalId.equals(getPatternInvolvedId()))
 		{
 			String url = new String(pattern);
-			url.replace("{" + naturalId + "}", value);
+			url = url.replace("{" + naturalId + "}", value);
 			return ParsedURL.getAbsolute(url);
 		}
 		
