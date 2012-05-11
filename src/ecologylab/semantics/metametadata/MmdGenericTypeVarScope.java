@@ -73,10 +73,12 @@ public class MmdGenericTypeVarScope extends MultiAncestorScope<MmdGenericTypeVar
 	private void checkBoundsWithBounds(String name, MmdGenericTypeVar local, MmdGenericTypeVar other,
 			InheritanceHandler inheritanceHandler)
 	{
-		MetaMetadata lowerBoundMmdLocal = inheritanceHandler
-				.resolveMmdName(local.getExtendsAttribute());
-		MetaMetadata lowerBoundMmdOther = inheritanceHandler
-				.resolveMmdName(other.getExtendsAttribute());
+		MetaMetadata lowerBoundMmdLocal = inheritanceHandler.resolveMmdName(local.getExtendsAttribute());
+		lowerBoundMmdLocal.inheritMetaMetadata();
+		
+		MetaMetadata lowerBoundMmdOther = inheritanceHandler.resolveMmdName(other.getExtendsAttribute());
+		lowerBoundMmdOther.inheritMetaMetadata();
+		
 		boolean lowerBoundsCompatible = lowerBoundMmdOther == null
 				|| lowerBoundMmdLocal.isDerivedFrom(lowerBoundMmdOther);
 
