@@ -329,7 +329,6 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 					genericTypeVar.setName(childType);
 				else
 					genericTypeVar.setClassDescriptor(fieldCd);
-				// FIXME MetaMetadataGenericTypeVar and GenericTypeVar should be merged.
 				Collection<MmdGenericTypeVar> metaMetadataGenericTypeVars = this.getMetaMetadataGenericTypeVars();
 				if (metaMetadataGenericTypeVars != null && metaMetadataGenericTypeVars.size() > 0)
 				{
