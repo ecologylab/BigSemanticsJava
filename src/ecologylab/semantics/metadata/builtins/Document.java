@@ -7,10 +7,13 @@ package ecologylab.semantics.metadata.builtins;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
 import ecologylab.generic.Continuation;
+import ecologylab.generic.HashMappableArrayList;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.collecting.DownloadStatus;
 import ecologylab.semantics.collecting.SemanticsGlobalScope;
@@ -98,6 +101,7 @@ public class Document extends DocumentDeclaration
 	static public final Document 	RECYCLED_DOCUMENT	= new Document(ParsedURL.getAbsolute("http://recycled.document"));
 	static public final Document 	UNDEFINED_DOCUMENT= new Document(ParsedURL.getAbsolute("http://undefined.document"));
 	
+	
 	/**
 	 * used in the database.
 	 */
@@ -113,9 +117,18 @@ public class Document extends DocumentDeclaration
 //	@simpl_scalar MetadataParsedURL	navLocation;
 	
 	/**
+	 * Used to keep track of transition times.
+	 */
+	private long lastActionTimestamp = 0;
+	/**
+	 * Stores time in milliseconds taken before reaching a download status.
+	 */
+  private HashMap<DownloadStatus, Long> transitionTimeToDownloadStatus = new HashMap<DownloadStatus, Long>();
+
+	/**
 	 * Constructor
 	 **/
-
+	
 	public Document()
 	{
 		super();
@@ -724,9 +737,22 @@ public class Document extends DocumentDeclaration
 		return downloadStatus;
 	}
 
+		public HashMap<DownloadStatus, Long> getTransitionTimeToDownloadStatus()
+	{
+		return transitionTimeToDownloadStatus;
+	}
+
 	public void setDownloadStatus(DownloadStatus downloadStatus)
 	{
+		if(lastActionTimestamp == 0)
+		{
+			lastActionTimestamp = System.currentTimeMillis( );
+		}
+		long now = System.currentTimeMillis( );
+		long delta = now - lastActionTimestamp;
+		transitionTimeToDownloadStatus.put(downloadStatus, delta);
 		this.downloadStatus = downloadStatus;
+		lastActionTimestamp = now;
 	}
 	
 	public ParsedURL getLocationOrFirstAdditionLocation()

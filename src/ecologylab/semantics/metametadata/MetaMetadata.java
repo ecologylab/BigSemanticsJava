@@ -57,6 +57,11 @@ implements IMappable<String>//, HasLocalTranslationScope
 	@simpl_nowrap
 	ArrayList<ExampleUrl>														exampleUrls;
 
+	public ArrayList<ExampleUrl> getExampleUrls()
+	{
+		return exampleUrls;
+	}
+
 	@simpl_scalar
 	private String																	parser												= null;
 
