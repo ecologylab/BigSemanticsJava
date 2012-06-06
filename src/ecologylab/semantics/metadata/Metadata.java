@@ -519,6 +519,11 @@ ISimplSerializationPre, ISimplDeserializationPost
 		return (termVector = tv);
 	}
 	
+	public void clearOrderedNormalizedTermVectorCache()
+	{
+		orderedCompositeTermVectorCache = null;
+	}
+	
 	public OrderedNormalizedTermVectorCache getOrCreateOrderedNormalizedTermVectorCache()
 	{
 		if(orderedCompositeTermVectorCache == null)

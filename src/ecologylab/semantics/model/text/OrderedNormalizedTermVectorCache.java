@@ -1,5 +1,7 @@
 package ecologylab.semantics.model.text;
 
+import java.text.DecimalFormat;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
@@ -16,12 +18,12 @@ import ecologylab.generic.Debug;
 public class OrderedNormalizedTermVectorCache extends Debug
 {
 	protected Vector<TermWithScore> orderedTerms;
-	protected HashMap<Integer, Vector<TermWithScore>> cachedNormalizedVectors; 
+	protected HashMap<String, Vector<TermWithScore>> cachedNormalizedVectors; 
 	
 	public OrderedNormalizedTermVectorCache()
 	{
 		orderedTerms = new Vector<TermWithScore>();
-		cachedNormalizedVectors = new HashMap<Integer, Vector<TermWithScore>>();
+		cachedNormalizedVectors = new HashMap<String, Vector<TermWithScore>>();
 	}
 	
 	public OrderedNormalizedTermVectorCache(CompositeTermVector compositeTermVector)
@@ -41,6 +43,7 @@ public class OrderedNormalizedTermVectorCache extends Debug
 				//debug("Why is this null?");
 			}
 		}
+		Collections.sort(orderedTerms);
 	}
 	
 
@@ -50,10 +53,24 @@ public class OrderedNormalizedTermVectorCache extends Debug
   }
   
   public static int NO_MAX = -1;
+  public static double TF_ONLY = .5;
+  
   public Vector<TermWithScore> getNormalizedOrderedTerms(int max)
   {
-  	if(cachedNormalizedVectors.containsKey(max))
-  		return cachedNormalizedVectors.get(max);
+    return getNormalizedOrderedTerms(max, TF_ONLY);
+  }
+  
+  	
+  
+  public Vector<TermWithScore> getNormalizedOrderedTerms(int max, double dfBonus)
+  {
+  	
+  	DecimalFormat twoDForm = new DecimalFormat("#.#");
+  	dfBonus = Double.valueOf(twoDForm.format(dfBonus));
+  	String key = max+":"+String.format("%.2g%n", dfBonus);
+  	
+  	if(cachedNormalizedVectors.containsKey(key))
+  		return cachedNormalizedVectors.get(key);
   	Vector<TermWithScore> returnVector = new Vector<TermWithScore>();
   	if(max == NO_MAX)
   		max = orderedTerms.size();
@@ -74,11 +91,11 @@ public class OrderedNormalizedTermVectorCache extends Debug
   	for(TermWithScore nt : orderedTerms)
   	{
   		foundSoFar += 1;
-  		returnVector.add(new TermWithScore(nt,nt.getScore()/totalScore));
+  		returnVector.add(new TermWithScore(nt,nt.getScore()/totalScore, dfBonus));
   		if(foundSoFar >= max)
   			break;
   	}
-  	cachedNormalizedVectors.put(max, returnVector);
+  	cachedNormalizedVectors.put(key, returnVector);
   	return returnVector;
   }
 }

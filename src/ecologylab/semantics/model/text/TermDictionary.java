@@ -140,7 +140,8 @@ public class TermDictionary implements ApplicationProperties
 
 			// certain site-specific
 			"picture", "pictures", "screensaver", "screensavers", "links", "bios", "gallery",
-			"galleries", "archive", "archives", "photo", "photos", "photogallery", "bbc", "news" };
+			"galleries", "archive", "archives", "photo", "photos", "photogallery", "bbc", "news", "answers", "yahoo", "btn" };
+
 
 	public final static HashMap<String, String>	mostObviousStopWordTerms	= CollectionTools
 																					.buildHashMapFromStrings(mostObviousStopWordStrings);
@@ -229,6 +230,8 @@ public class TermDictionary implements ApplicationProperties
 		return newTerm;
 	}
 
+	public static boolean USE_STEMMING = true;
+	
 	private static void readFromDictionaryFile ( File inputDictionaryFile ) throws Exception
 	{
 		String thisTerm;
@@ -268,23 +271,43 @@ public class TermDictionary implements ApplicationProperties
 		double avgIDF = 0;
 
 		corpusSize = Double.parseDouble(myInput.readLine());
+		int number_of_stems = 0;
+		int number_of_terms = 0;
+		PorterStemmer p = new PorterStemmer();
+
 		while ((thisTerm = myInput.readLine()) != null)
 		{
+			number_of_terms += 1;
 			// Regexes for the dictionary are very costly.
 			// substring methods are way cheaper
 			// String[] term = thisTerm.split("\t");
 
 			int indexOfTab = thisTerm.indexOf('\t');
-			String stem = Term.getUniqueStem(thisTerm.substring(0, indexOfTab));
+			String word = thisTerm.substring(0, indexOfTab);
+			
+			String stem = word;
+			if(USE_STEMMING)
+				stem = Term.getUniqueStem(getStemForWord(word));
 
 			if (stopWordTerms.containsKey(stem))
+			{
+				//System.out.println("Skipping because stem already created:"+word+"    at the stem:"+stem);
 				continue;
+			}
+			else
+			{
+				number_of_stems += 1;
+			}
 			double freq = Double.parseDouble(thisTerm.substring(indexOfTab, thisTerm.length()));
 			frequencies.put(stem, freq);
 			double idf = Math.log(corpusSize / freq);
 			dictionary.put(stem, new Term(stem, idf));
 			avgIDF += idf;
 		}
+
+		//System.out.println("Number of terms is: "+number_of_terms);
+		//System.out.println("Number of stems is: "+number_of_stems);
+		
 		avgIDF /= frequencies.size();
 		averageIDF = avgIDF;
 		TermDictionary.dictionary = dictionary;
@@ -293,6 +316,17 @@ public class TermDictionary implements ApplicationProperties
 		myInput = null;
 	}
 
+	private static String getStemForWord(String s)
+	{
+		if(!USE_STEMMING)
+		    return s;
+		PorterStemmer p = new PorterStemmer();
+		for (int j = 0; j < s.length(); j++)
+			p.add(s.charAt(j));
+		p.stem();
+		return p.toString();
+	}
+	
 	private static void stemStopWords ( )
 	{
 		String s;
@@ -318,6 +352,11 @@ public class TermDictionary implements ApplicationProperties
 	 */
 	public static Term getTermForWord ( CharSequence s )
 	{
+		if(USE_STEMMING == false)
+		{
+			return getTerm(s.toString(), s.toString());
+		}
+		
 		PorterStemmer p = stemmer;
 		synchronized (p)
 		{
