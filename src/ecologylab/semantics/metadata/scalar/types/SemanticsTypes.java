@@ -33,7 +33,7 @@ public class SemanticsTypes
 	
 	public static final ScalarType METADATA_DATE_TYPE 						= new MetadataDateScalarType();
 	
-	public static final ScalarType METADATA_IMAGE_TYPE 						= new MetadataImageScalarType();
+//	public static final ScalarType METADATA_IMAGE_TYPE 						= new MetadataImageScalarType();
 	
 	public static final ScalarType METADATA_SCALAR_TYPE_TYPE 			= new MetadataScalarTypeType();
 
