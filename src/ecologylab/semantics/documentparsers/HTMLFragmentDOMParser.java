@@ -14,6 +14,7 @@ import org.w3c.dom.NodeList;
 
 import ecologylab.generic.DomTools;
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.collecting.DownloadStatus;
 import ecologylab.semantics.collecting.SemanticsGlobalScope;
 import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.collecting.SemanticsSite;
@@ -24,7 +25,11 @@ import ecologylab.semantics.metadata.builtins.AnonymousDocument;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.Image;
 import ecologylab.semantics.metadata.builtins.ImageClipping;
+import ecologylab.serialization.SIMPLTranslationException;
+import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.XMLTools;
+import ecologylab.serialization.formatenums.Format;
+import ecologylab.serialization.formatenums.StringFormat;
 
 public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInterface, HTMLNames
 {
@@ -67,6 +72,8 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 			Node bodyNode = bodyNodeList.item(0);
 			parseText(bodyTextBuffy, bodyNode);
 			checkForSimplSourceLocation(bodyNode);
+			
+			checkForMetadata(bodyNode);
 		}
 
 		parseImages(dom);
@@ -205,7 +212,7 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 	void checkForSimplSourceLocation(Node node)
 	{
 		node.getAttributes();
-		if (node.getAttributes() != null && setContainerDocument(node) != null)
+		if (node.getAttributes() != null && setContainerLocation(node) != null)
 		{
 			return;
 		}
@@ -215,22 +222,74 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 			checkForSimplSourceLocation(children.item(i));
 		}
 	}
+	
+	private ParsedURL setContainerLocation(Node elementNode)
+	{
+		if (containerPurl == null && elementNode != null)
+		{
+			String containerLocation = DomTools.getAttribute(elementNode, SIMPL_SOURCE_LOCATION);
+			
+			if (containerLocation == null || containerLocation.length() == 0)
+				containerLocation = DomTools.getAttribute(elementNode, SIMPL);
+			
+			if (containerLocation == null || containerLocation.length() == 0)
+				containerLocation = DomTools.getAttribute(elementNode, CONTAINER);
+
+			if (containerLocation != null && containerLocation.length() > 0)
+			{
+				containerLocation 	= XMLTools.unescapeXML(containerLocation);
+				containerPurl 		= ParsedURL.getAbsolute(containerLocation);
+				containerDocument	= getSemanticsScope().getOrConstructDocument(containerPurl);
+			}
+		}
+		return containerPurl;
+	}
+	
+	void checkForMetadata(Node node)
+	{
+		node.getAttributes();
+		if (node.getAttributes() != null && setContainerDocument(node) != null)
+		{
+			return;
+		}
+		NodeList children = node.getChildNodes();
+		for (int i = 0; i < children.getLength(); i++)
+		{
+			checkForMetadata(children.item(i));
+		}
+	}
 
 	private ParsedURL setContainerDocument(Node elementNode)
 	{
 		if (containerPurl == null && elementNode != null)
 		{
-			String containerValue = DomTools.getAttribute(elementNode, SIMPL_SOURCE_LOCATION);
-			if (containerValue == null || containerValue.length() == 0)
-				containerValue = DomTools.getAttribute(elementNode, SIMPL);
-			if (containerValue == null || containerValue.length() == 0)
-				containerValue = DomTools.getAttribute(elementNode, CONTAINER);
-
-			if (containerValue != null && containerValue.length() > 0)
+			String containerMetadata = DomTools.getAttribute(elementNode, METADATA);
+			
+			if (containerMetadata != null && containerMetadata.length() > 0)
 			{
-				containerValue 		= XMLTools.unescapeXML(containerValue);
-				containerPurl 		= ParsedURL.getAbsolute(containerValue);
-				containerDocument	= getSemanticsScope().getOrConstructDocument(containerPurl);
+				System.out.println("\n\nMetadata:\n"+containerMetadata+"\n\n");
+				Object doc = null;
+				try {
+					doc = getSemanticsScope().getDocumentsTypeScope().deserialize(containerMetadata, StringFormat.JSON);
+				} catch (SIMPLTranslationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				//containerPurl 		= ParsedURL.getAbsolute(containerLocation);
+				if(doc != null) {
+					
+					// workflows need to be modified to accomodate metadata coming from drag
+					/*
+					System.out.println("\nSetting container document to injected metadata\n");
+					
+					containerDocument	= (Document) doc;
+					containerPurl = containerDocument.getLocation();
+					
+					containerDocument.setSemanticsSessionScope(getSemanticsScope());
+					containerDocument.setDownloadDone(true);
+					*/
+				}				
 			}
 		}
 		return containerPurl;
