@@ -43,13 +43,12 @@ import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.builtins.Image;
 import ecologylab.semantics.sensing.GisFeatures;
 import ecologylab.semantics.sensing.MetadataExifFeature;
-import ecologylab.serialization.types.PlatformSpecificTypesSun;
 
 /**
  * @author andruid
  * 
  */
-public class ImageParserAwt extends DocumentParser<Image>
+public class ImageParserAwt extends ImageParser
 {
 	private static final String		MM_TAG_GPS_LOCATION			= "gps_location";
 
@@ -98,7 +97,7 @@ public class ImageParserAwt extends DocumentParser<Image>
 	 */
 	public ImageParserAwt()
 	{
-		// TODO Auto-generated constructor stub
+		super();// TODO Auto-generated constructor stub
 	}
 
 	/**
