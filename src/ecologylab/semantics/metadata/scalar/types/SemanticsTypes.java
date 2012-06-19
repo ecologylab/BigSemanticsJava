@@ -31,7 +31,7 @@ public class SemanticsTypes
 	
 	public static final ScalarType METADATA_FILE_TYPE 						= new MetadataFileScalarType();
 	
-	public static final ScalarType METADATA_BINARY_DATA_TYPE				= new MetadataBinaryDataScalarType();
+//	public static final ScalarType METADATA_BINARY_DATA_TYPE				= new MetadataBinaryDataScalarType();
 	
 	public static final ScalarType METADATA_DATE_TYPE 						= new MetadataDateScalarType();
 	
