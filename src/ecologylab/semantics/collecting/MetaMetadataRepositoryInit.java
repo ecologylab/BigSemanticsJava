@@ -56,7 +56,7 @@ public class MetaMetadataRepositoryInit extends Scope<Object> implements Documen
 		MetaMetadataRepository.initializeTypes();
 	}
 
-	private File												repositoryLocation;
+	private File																repositoryLocation;
 
 	private MetaMetadataRepository							metaMetadataRepository;
 

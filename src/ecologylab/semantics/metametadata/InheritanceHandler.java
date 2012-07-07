@@ -117,7 +117,7 @@ public class InheritanceHandler implements InheritanceComponentNames, Cloneable
 		if (field instanceof MetaMetadataNestedField)
 		{
 			MetaMetadataNestedField nested = (MetaMetadataNestedField) field;
-			result = nested.getMmdScope().get(mmdName);
+			result = (MetaMetadata) nested.getMmdScope().get(mmdName);
 			if (result != null)
 				if (nameType != null && nameType.length > 0)
 					nameType[0] = NameType.MMD;
