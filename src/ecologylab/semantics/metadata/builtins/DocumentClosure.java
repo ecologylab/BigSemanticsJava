@@ -3,26 +3,17 @@
  */
 package ecologylab.semantics.metadata.builtins;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URI;
-import java.net.URL;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 import ecologylab.collections.SetElement;
 import ecologylab.concurrent.Downloadable;
 import ecologylab.generic.Continuation;
 import ecologylab.io.DownloadProcessor;
-import ecologylab.io.Files;
-import ecologylab.net.ConnectionHelperJustRemote;
 import ecologylab.net.PURLConnection;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticAction;
@@ -34,11 +25,13 @@ import ecologylab.semantics.collecting.SemanticsGlobalScope;
 import ecologylab.semantics.collecting.SemanticsSite;
 import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.documentparsers.ParserBase;
+import ecologylab.semantics.downloaders.controllers.DefaultDownloadController;
+import ecologylab.semantics.downloaders.controllers.DownloadController;
+import ecologylab.semantics.downloaders.controllers.DownloadControllerType;
+import ecologylab.semantics.downloaders.controllers.OODSSDownloadController;
 import ecologylab.semantics.html.documentstructure.SemanticInLinks;
 import ecologylab.semantics.metametadata.MetaMetadata;
-import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
-import ecologylab.semantics.metametadata.RedirectHandling;
 import ecologylab.semantics.model.text.ITermVector;
 import ecologylab.semantics.model.text.TermVectorFeature;
 import ecologylab.semantics.seeding.SearchResult;
@@ -62,6 +55,8 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 	Document											document; 
 	
 	private PURLConnection				purlConnection;
+	
+	private DownloadController		downloadController;
 
 	private DocumentParser				documentParser;
 	
@@ -97,21 +92,25 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 	 */
 	boolean							crawlLinks		= true;
 	
-	private boolean 		cacheHit = false;
-
 	private final Object DOWNLOAD_STATUS_LOCK			= new Object();
 	private final Object DOCUMENT_LOCK						= new Object();   
 	
 	/**
 	 * 
 	 */
-	private DocumentClosure(Document document, SemanticsGlobalScope semanticsSessionScope, SemanticInLinks semanticInlinks)
+	private DocumentClosure(Document document, SemanticsGlobalScope semanticsSessionScope,
+			SemanticInLinks semanticInlinks, DownloadControllerType downloadControllerType)
 	{
 		super();
-		this.document							= document;
-		this.semanticsScope				= semanticsSessionScope;
-		this.semanticInlinks			= semanticInlinks;
-		this.continuations 				= new ArrayList<Continuation<DocumentClosure>>();
+		this.document = document;
+		this.semanticsScope = semanticsSessionScope;
+		this.semanticInlinks = semanticInlinks;
+		this.continuations = new ArrayList<Continuation<DocumentClosure>>();
+
+		if (downloadControllerType == DownloadControllerType.DEFAULT)
+			this.downloadController = new DefaultDownloadController();
+		else if (downloadControllerType == DownloadControllerType.OODSS)
+			this.downloadController = new OODSSDownloadController();
 	}
 
 	/**
@@ -120,9 +119,10 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 	 * @param document
 	 * @param semanticInlinks
 	 */
-	DocumentClosure(Document document, SemanticInLinks semanticInlinks)
+	DocumentClosure(Document document, SemanticInLinks semanticInlinks,
+			DownloadControllerType downloadControllerType)
 	{
-		this(document, document.getSemanticsScope(), semanticInlinks);
+		this(document, document.getSemanticsScope(), semanticInlinks, downloadControllerType);
 	}
 
 	/////////////////////// methods for downloadable //////////////////////////
@@ -164,10 +164,38 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 			println("ERROR: Trying to downloadAndParse() page that's already recycled -- "+ location());
 			return;
 		}
-
+		
 		ParsedURL location = location();
-		connect();					// evolves Document based on redirects & mime-type; sets the documentParser
+		// connect call also evolves Document based on redirects & mime-type;
+		//the parameter is used to get and set document properties with request and response respectively
+		downloadController.connect(this);  
 
+		/*MetaMetadataCompositeField*/MetaMetadata metaMetadata = (MetaMetadata) document.getMetaMetadata();
+		//check for more specific meta-metadata
+		if (metaMetadata.isGenericMetadata())
+		{ // see if we can find more specifc meta-metadata using mimeType
+			MetaMetadataRepository repository = semanticsScope.getMetaMetadataRepository();
+			MetaMetadata mimeMmd	= repository.getMMByMime(purlConnection.mimeType());
+			if (mimeMmd != null && !mimeMmd.equals(metaMetadata))
+			{	// new meta-metadata!
+				if (!mimeMmd.getMetadataClass().isAssignableFrom(document.getClass()))
+				{	// more specifc so we need new metadata!
+					Document document	= (Document) mimeMmd.constructMetadata(); // set temporary on stack
+					changeDocument(document);
+				}
+				metaMetadata	= mimeMmd;
+			}
+		}
+		//determine document parser	
+		if (documentParser == null)
+			documentParser = DocumentParser.get(/*(MetaMetadata)*/ metaMetadata, semanticsScope);
+		if (documentParser != null)
+		{
+			documentParser.fillValues(purlConnection, this, semanticsScope);
+		}
+		else if (!DocumentParser.isRegisteredNoParser(purlConnection.getPurl()))
+			warning("No DocumentParser found: " + metaMetadata);
+		
 		if (purlConnection.isGood() && documentParser != null)
 		{
 			// container or not (it could turn out to be an image or some other mime type), parse the baby!
@@ -175,7 +203,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 			if (documentParser.downloadingMessageOnConnect())
 				semanticsScope.displayStatus("Downloading " + location(), 2);
 			
-			MetaMetadata metaMetadata	= (MetaMetadata) document.getMetaMetadata();
+			//MetaMetadata metaMetadata	= (MetaMetadata) document.getMetaMetadata();
 			ArrayList<SemanticAction> beforeSemanticActions	= metaMetadata.getBeforeSemanticActions();
 			if (beforeSemanticActions != null)
 			{
@@ -213,251 +241,6 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 		purlConnection	= null;
 	}
 	
-	/**
-	 * Open a connection to the URL. Read the header, but not the content. Look at if the path exists,
-	 * if there is a redirect, and the mime type. If there is a redirect, process it.
-	 * <p/>
-	 * Create an InputStream. Using reflection (Class.newInstance()), create the appropriate
-	 * DocumentParser, based on that mimeType, using the allTypes HashMap. Return it.
-	 * 
-	 * This method returns the parser using one of the cases:
-	 * 1) Use URL based look up and find meta-metadata and use binding if (direct or xpath)
-	 *    to find the parser.
-	 * 2) Else find meta-metadata using URL suffix and mime type and make a direct binding parser.
-	 * 3) If still parser is null and binding is also null, use in-build tables to find the parser.
-	 * @throws Exception 
-	 * @throws IOException 
-	 */
-	private void connect() throws IOException
-	{
-		assert(document != null);
-		final Document 	orignalDocument	= document;
-		final ParsedURL originalPURL		= document.getDownloadLocation();
-		
-		ConnectionHelperJustRemote documentParserConnectHelper = new ConnectionHelperJustRemote()
-		{
-			public void handleFileDirectory(File file)
-			{
-					warning("DocumentClosure.connect(): Need to implement handleFileDirectory().");
-			}
-
-			/**
-			 * For use in local file processing, not for http.
-			 */
-			public boolean parseFilesWithSuffix(String suffix)
-			{
-				Document result = semanticsScope.getMetaMetadataRepository().constructDocumentBySuffix(suffix);
-				changeDocument(result);
-				return (result != null);
-			}
-
-			@Override
-			public void displayStatus(String message)
-			{
-				semanticsScope.displayStatus(message);
-			}
-			
-			@Override
-			public boolean processRedirect(URL redirectedURL) throws IOException
-			{
-				ParsedURL redirectedPURL	= new ParsedURL(redirectedURL);
-				displayStatus("try redirecting: " + originalPURL + " > " + redirectedURL);
-				Document redirectedDocument	= semanticsScope.getOrConstructDocument(redirectedPURL); // documentLocationMap.getOrCreate(connectionPURL);
-				//TODO -- what if redirectedDocument is already in the queue or being downloaded already?
-				if (redirectedDocument != null)	// existing document
-				{	// the redirected url has been visited already.
-					
-					// it seems we don't need to track where the inlinks are from, 
-					// though we could in SemanticInlinks, if we kept a DocumentClosure in there
-//					if (container != null)
-//						container.redirectInlinksTo(redirectedAbstractContainer);
-
-					if (!originalPURL.equals(redirectedPURL))
-						redirectedDocument.addAdditionalLocation(redirectedPURL);
-					//TODO -- copy metadata from originalDocument?!!
-					changeDocument(redirectedDocument);
-					//TODO -- reconnect
-					
-					// redirectedAbstractContainer.performDownload();
-
-					// we dont need the new container object that was passed in
-					// TODO recycle it!
-					return true;
-				}
-				else
-				// FIXME this will never happen now! since getOrConstructDocument() never returns null.
-				// redirect to a new url
-				{
-					MetaMetadata originalMM						= (MetaMetadata) orignalDocument.getMetaMetadata();
-					RedirectHandling redirectHandling = originalMM.getRedirectHandling();
-
-					if (document.isAlwaysAcceptRedirect() || semanticsScope.accept(redirectedPURL))
-					{
-						println("\tredirect: " + originalPURL + " -> " + redirectedPURL);
-						String domain 				= redirectedPURL.domain();
-						String connPURLSuffix = redirectedPURL.suffix();
-						// add entry to GlobalCollections containersHash
-
-						// FIXME:hack for acmPortal pdf containers.
-						// The redirected URL has a timeout...which creates
-						// a problem while
-						// opening the saved xml.
-						// if(connectionPURL.toString().startsWith(
-						// "http://delivery.acm.org"))
-						// {
-						// return true;
-						// }
-						Document 				newMetadata;
-
-						/*
-						 * Was unnecessary  because of how ecocache handles the acm gateway pages
-						 * But actually, we are not using ecocache :-(
-						 */
-						//FIXME -- use meta-metadata to express this case!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-						if (/* !Pref.lookupBoolean(CFPrefNames.USING_PROXY) && */
-								"acm.org".equals(domain) && "pdf".equals(connPURLSuffix))
-						{
-							MetaMetadata pdfMetaMetadata = semanticsScope.getMetaMetadataRepository().getMMBySuffix(connPURLSuffix);
-							newMetadata = (Document) pdfMetaMetadata.constructMetadata();
-							newMetadata.setLocation(redirectedPURL);
-							return true;
-						}
-						else
-						{
-							// regular get new metadata
-							newMetadata	= semanticsScope.getOrConstructDocument(redirectedPURL);
-						}
-
-						if (redirectHandling == RedirectHandling.REDIRECT_FOLLOW_DONT_RESET_LOCATION)
-						{
-							newMetadata.setLocation(originalPURL);
-							newMetadata.addAdditionalLocation(redirectedPURL);
-						}
-						else
-							newMetadata.addAdditionalLocation(originalPURL);
-						
-						changeDocument(newMetadata);
-
-						return true;
-					}
-					else
-						println("rejecting redirect: " + originalPURL + " -> " + redirectedPURL);
-				}
-				return false;
-			}
-		};
-
-
-		MetaMetadataCompositeField metaMetadata = document.getMetaMetadata();
-		// then try to create a connection using the PURL
-		String userAgentString				= metaMetadata.getUserAgentString();
-		purlConnection								= new PURLConnection(originalPURL);
-		if (originalPURL.isFile())
-		{
-			File file	= originalPURL.file();
-			
-			// Handle localhost issues on mac? 
-			if("localhost".equals(originalPURL.url().getAuthority()))
-			{
-				String s = originalPURL.url().toString();
-				s = s.replaceFirst("localhost", "");
-				ParsedURL newPURL = new ParsedURL(new URL(s));
-				purlConnection = new PURLConnection(newPURL);
-				document.setLocation(newPURL);
-				file = newPURL.file();
-			}
-			
-			if (!file.exists())
-			{
-
-				
-				// this might be pointing to an entry in a ZIP file, e.g. the packed composition file.
-				File ancestor = Files.findFirstExistingAncestor(file);
-				if (ancestor != null && !ancestor.isDirectory() && Files.isZipFile(ancestor))
-				{
-					// read from a ZIP file, which should be the packed composition file
-					String entryName = ancestor.toURI().relativize(file.toURI()).toString();
-					entryName = URLDecoder.decode(entryName, "utf-8");
-					ZipFile zipFile = new ZipFile(ancestor);
-					ZipEntry entry = zipFile.getEntry(entryName);
-					if (entry == null)
-					{
-						warning("No zip entry found: " + entryName);
-					}
-					else
-					{
-						InputStream in = zipFile.getInputStream(entry);
-						purlConnection.streamConnect(in);
-					}
-				}
-			}
-			else if (file.isDirectory())
-			{
-				// FileDirectoryParser
-				documentParser	= DocumentParser.getParserInstanceFromBindingMap(FILE_DIRECTORY_PARSER, semanticsScope);
-			}
-			else
-			{
-				purlConnection.fileConnect();
-				// we already have the correct meta-metadata, having used suffix to construct, or having gotten it from a restore.
-			}
-		}
-		else
-		{
-			purlConnection.networkConnect(documentParserConnectHelper, userAgentString);	// HERE!
-
-			if (purlConnection.isGood())
-			{
-				Document document				= this.document;					// may have changed during redirect processing
-				metaMetadata						= document.getMetaMetadata();
-				
-		
-				// check for a parser that was discovered while processing a re-direct
-				
-				SemanticsSite site 					= document.getSite();
-		
-				// if a parser was preset for this container, use it
-		//		if ((result == null) && (container != null))
-		//			result = container.getDocumentParser();
-			
-				// if we made PURL connection but could not find parser using container
-				if ((purlConnection != null) && !originalPURL.isFile())
-				{
-					String cacheValue = purlConnection.urlConnection().getHeaderField("X-Cache");
-					cacheHit = cacheValue != null && cacheValue.contains("HIT");
-		
-					if (metaMetadata.isGenericMetadata())
-					{ // see if we can find more specifc meta-metadata using mimeType
-						final MetaMetadataRepository repository = semanticsScope.getMetaMetadataRepository();
-						String mimeType = purlConnection.mimeType();
-						MetaMetadata mimeMmd	= repository.getMMByMime(mimeType);
-						if (mimeMmd != null && !mimeMmd.equals(metaMetadata))
-						{	// new meta-metadata!
-							if (!mimeMmd.getMetadataClass().isAssignableFrom(document.getClass()))
-							{	// more specifc so we need new metadata!
-								document	= (Document) mimeMmd.constructMetadata(); // set temporary on stack
-								changeDocument(document);
-							}
-							metaMetadata	= mimeMmd;
-						}
-					}
-				}
-			}
-		}
-	//		String parserName				= metaMetadata.getParser();	
-	//		if (parserName == null)			//FIXME Hook HTMLDOMImageText up to html mime-type & suffixes; drop defaultness of parser
-	//			parserName = SemanticActionsKeyWords.HTML_IMAGE_DOM_TEXT_PARSER;
-			
-		if (documentParser == null)
-			documentParser = DocumentParser.get((MetaMetadata) metaMetadata, semanticsScope);
-		if (documentParser != null)
-		{
-			documentParser.fillValues(purlConnection, this, semanticsScope);
-		}
-		else if (!DocumentParser.isRegisteredNoParser(purlConnection.getPurl()))
-			warning("No DocumentParser found: " + metaMetadata);
-	}
-
 	/**
 	 * Document metadata object must change, because we learned something new about its type.
 	 * @param newDocument
@@ -874,6 +657,10 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 		}
 	}
 	
+	public void setPurlConnection(PURLConnection purlConnection) {
+		this.purlConnection = purlConnection;
+	}
+
 	/**
 	 * Close the current connection.
 	 * Re-open a connection to the same location.

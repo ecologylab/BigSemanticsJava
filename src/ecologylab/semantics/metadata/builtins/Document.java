@@ -21,6 +21,7 @@ import ecologylab.semantics.collecting.SemanticsSite;
 import ecologylab.semantics.collecting.TNGGlobalCollections;
 import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.documentparsers.ParserResult;
+import ecologylab.semantics.downloaders.controllers.DownloadControllerType;
 import ecologylab.semantics.html.documentstructure.SemanticAnchor;
 import ecologylab.semantics.html.documentstructure.SemanticInLinks;
 import ecologylab.semantics.metadata.Metadata;
@@ -124,6 +125,8 @@ public class Document extends DocumentDeclaration
 	 * Stores time in milliseconds taken before reaching a download status.
 	 */
   private HashMap<DownloadStatus, Long> transitionTimeToDownloadStatus = new HashMap<DownloadStatus, Long>();
+  
+  private DownloadControllerType	downloadControllerType	=	DownloadControllerType.DEFAULT;
 
 	/**
 	 * Constructor
@@ -361,11 +364,21 @@ public class Document extends DocumentDeclaration
 	}
 
 	/**
+	 * 
+	 * @return A closure for this, or null, if this is not fit to be parsed.
+	 */
+	public DocumentClosure getOrConstructClosure(DownloadControllerType downloadControllerType)
+	{
+		this.downloadControllerType = downloadControllerType;
+		return getOrConstructClosure();
+	}
+	
+	/**
 	 * @return
 	 */
 	public DocumentClosure constructClosure()
 	{
-		return new DocumentClosure(this, semanticInlinks);
+		return new DocumentClosure(this, semanticInlinks, downloadControllerType);
 	}
 
 	/**
