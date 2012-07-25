@@ -3,7 +3,6 @@
  */
 package ecologylab.semantics.metadata.builtins;
 
-import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.metadata.builtins.declarations.DocumentMetadataWrapDeclaration;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
@@ -30,15 +29,16 @@ public class DocumentMetadataWrap extends DocumentMetadataWrapDeclaration
 
 	public DocumentMetadataWrap()
 	{
-		MetaMetadataRepository repository = SemanticsSessionScope.get().getMetaMetadataRepository();
-		MetaMetadata mm = repository.getMMByClass(this.getClass());
-		setMetaMetadata(mm);
+		
 	}
 
 	public DocumentMetadataWrap(Document document)
 	{
 		this();
 		this.setDocument(document);
+		MetaMetadataRepository repository = document.getSemanticsScope().getMetaMetadataRepository();
+		MetaMetadata mm = repository.getMMByClass(this.getClass());
+		setMetaMetadata(mm);
 	}
 	
 	@Override

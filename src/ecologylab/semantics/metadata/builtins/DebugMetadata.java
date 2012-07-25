@@ -3,7 +3,7 @@
  */
 package ecologylab.semantics.metadata.builtins;
 
-import ecologylab.semantics.collecting.SemanticsSessionScope;
+import ecologylab.semantics.collecting.SemanticsGlobalScope;
 import ecologylab.semantics.metadata.builtins.declarations.DebugMetadataDeclaration;
 import ecologylab.semantics.metadata.scalar.MetadataStringBuilder;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
@@ -33,9 +33,9 @@ public class DebugMetadata extends DebugMetadataDeclaration
 		super(mmd);
 	}
 	
-	public DebugMetadata(MetadataStringBuilder newTermVector)
+	public DebugMetadata(MetadataStringBuilder newTermVector, SemanticsGlobalScope scope)
 	{
-		super(SemanticsSessionScope.get().DEBUG_META_METADATA);
+		super(scope.DEBUG_META_METADATA);
 		this.setNewTermVectorMetadata(newTermVector);
 	}
 

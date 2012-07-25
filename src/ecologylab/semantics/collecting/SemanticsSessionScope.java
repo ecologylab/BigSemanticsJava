@@ -32,17 +32,7 @@ import ecologylab.serialization.formatenums.Format;
  */
 public class SemanticsSessionScope extends SemanticsGlobalScope
 implements SemanticsPrefs, ApplicationProperties, DocumentParserTagNames
-{
-	
-	private static SemanticsSessionScope	globalSemanticsScope;
-
-	public static SemanticsSessionScope get()
-	{
-		return globalSemanticsScope;
-	}
-	
-	////////////////////////////////////////////////////////////////////////
-	
+{	
 	private final Crawler												crawler;
 	
 	protected  WindowSystemBridge								guiBridge;
@@ -106,7 +96,6 @@ implements SemanticsPrefs, ApplicationProperties, DocumentParserTagNames
 			crawler.setSeeding(seeding);
 		}
 		Debug.println("");
-		globalSemanticsScope = this;
 	}
 
 	///////////////////////////////////////// WindowSystem / Display Stuff ////////////////////////////////////////
