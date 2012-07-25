@@ -56,6 +56,8 @@ public class ClassAndCollectionIterator implements Iterator<MetadataBase>
 	 * @return The next field in the Object.<br>
 	 *         If the next object is a non-null collection, it iterates through the objects of that
 	 *         collection
+	 *         
+	 *         Note: returned field can be null. use {@link #hasNext()} to see if there are more elements. 
 	 */
 	public MetadataBase next()
 	{
@@ -160,6 +162,10 @@ public class ClassAndCollectionIterator implements Iterator<MetadataBase>
 		throw new UnsupportedOperationException();
 	}
 
+	/**
+	 * 
+	 * @return Returns true if the iteration has more elements.
+	 */
 	public boolean hasNext()
 	{
 		return iterator.hasNext() || (collectionIterator != null && collectionIterator.hasNext());
