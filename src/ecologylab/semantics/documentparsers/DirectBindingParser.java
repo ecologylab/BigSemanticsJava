@@ -6,7 +6,7 @@ package ecologylab.semantics.documentparsers;
 import java.io.IOException;
 
 import ecologylab.semantics.actions.SemanticActionHandler;
-import ecologylab.semantics.collecting.SemanticsSessionScope;
+import ecologylab.semantics.collecting.SemanticsGlobalScope;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.serialization.XMLTools;
@@ -21,7 +21,7 @@ import ecologylab.serialization.XMLTools;
 public class DirectBindingParser extends ParserBase<Document>
 {
 
-	public DirectBindingParser(SemanticsSessionScope infoCollector)
+	public DirectBindingParser(SemanticsGlobalScope infoCollector)
 	{
 		super(infoCollector);
 	}

@@ -1,3 +1,6 @@
+/**
+ * 
+ */
 package ecologylab.semantics.downloaders.oodss;
 
 import ecologylab.collections.Scope;
@@ -5,37 +8,50 @@ import ecologylab.net.ParsedURL;
 import ecologylab.oodss.messages.ResponseMessage;
 import ecologylab.serialization.annotations.simpl_scalar;
 
-public class DownloadResponse extends ResponseMessage {
-	
+/**
+ * Response message with downloaded document information
+ * 
+ * @author ajit
+ *
+ */
+
+public class DownloadResponse extends ResponseMessage
+{
+
 	@simpl_scalar
-	ParsedURL redirectedLocation;
-	
+	ParsedURL	redirectedLocation;
+
 	@simpl_scalar
-	String location;
-	
+	String		location;
+
 	@simpl_scalar
-	String mimeType;
-	
-	public DownloadResponse() {}
-	
+	String		mimeType;
+
+	public DownloadResponse()
+	{
+	}
+
 	public DownloadResponse(ParsedURL redirectedLocation, String location, String mimeType)
 	{
 		this.redirectedLocation = redirectedLocation;
 		this.location = location;
 		this.mimeType = mimeType;
 	}
-	
+
 	/*
 	 * Called automatically by OODSS on client
-     */
-	@Override public void processResponse(Scope appObjScope)
+	 */
+	@Override
+	public void processResponse(Scope appObjScope)
 	{
-		//MetadataResponseListener responseListener = (MetadataResponseListener) appObjScope.get("RESPONSE_LISTENER");
-		//responseListener.setResponse(this.metadata);
+		// MetadataResponseListener responseListener = (MetadataResponseListener)
+		// appObjScope.get("RESPONSE_LISTENER");
+		// responseListener.setResponse(this.metadata);
 	}
 
 	@Override
-	public boolean isOK() {
+	public boolean isOK()
+	{
 		return true;
 	}
 
@@ -44,11 +60,13 @@ public class DownloadResponse extends ResponseMessage {
 		return redirectedLocation;
 	}
 
-	public String getLocation() {
+	public String getLocation()
+	{
 		return location;
 	}
 
-	public String getMimeType() {
+	public String getMimeType()
+	{
 		return mimeType;
 	}
 }

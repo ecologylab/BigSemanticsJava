@@ -1,3 +1,6 @@
+/**
+ * 
+ */
 package ecologylab.semantics.filestorage;
 
 import java.util.Date;
@@ -5,27 +8,36 @@ import java.util.Date;
 import ecologylab.net.ParsedURL;
 import ecologylab.serialization.annotations.simpl_scalar;
 
+/**
+ * file metadata for downloaded resource
+ * 
+ * @author ajit
+ *
+ */
+
 public class FileMetadata
 {
 	@simpl_scalar
-	private ParsedURL				location;
-	
-	@simpl_scalar
-	private ParsedURL				redirectedLocation;
+	private ParsedURL	location;
 
 	@simpl_scalar
-	private String					localLocation;
-	
+	private ParsedURL	redirectedLocation;
+
 	@simpl_scalar
-	private String					mimeType;
-	
+	private String		localLocation;
+
 	@simpl_scalar
-	private String					downloadTime;
-	
-	public FileMetadata() {}
-	
-	public FileMetadata(ParsedURL location, ParsedURL redirectedLocation,
-			String localLocation, String mimeType, Date date)
+	private String		mimeType;
+
+	@simpl_scalar
+	private String		downloadTime;
+
+	public FileMetadata()
+	{
+	}
+
+	public FileMetadata(ParsedURL location, ParsedURL redirectedLocation, String localLocation,
+			String mimeType, Date date)
 	{
 		this.location = location;
 		this.redirectedLocation = redirectedLocation;
@@ -58,5 +70,5 @@ public class FileMetadata
 	{
 		return downloadTime;
 	}
-	
+
 }

@@ -1,3 +1,6 @@
+/**
+ * 
+ */
 package ecologylab.semantics.downloaders;
 
 import java.io.File;
@@ -12,6 +15,15 @@ import ecologylab.net.ParsedURL;
 import ecologylab.semantics.filestorage.FileStorageProvider;
 import ecologylab.semantics.filestorage.FileSystemStorage;
 import ecologylab.semantics.filestorage.SHA256FileNameGenerator;
+
+/**
+ * url connection to network resource
+ * has been kept minimal for the worker machines
+ * 
+ * @author andruid
+ * @author ajit
+ *
+ */
 
 public class NetworkDocumentDownloader extends Debug {
 	

@@ -1,3 +1,6 @@
+/**
+ * 
+ */
 package ecologylab.semantics.filestorage;
 
 import java.io.File;
@@ -11,6 +14,13 @@ import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.formatenums.Format;
 
+/**
+ * file system based implementation of FileStorageProvider
+ * 
+ * @author ajit
+ * 
+ */
+
 public class FileSystemStorage implements FileStorageProvider
 {
 	private static FileSystemStorage	fsStorageProvider	= null;
@@ -22,9 +32,9 @@ public class FileSystemStorage implements FileStorageProvider
 	private static String							metaFileDirectory	= downloadDirectory + "/meta";
 
 	private static SimplTypesScope		META_TSCOPE				= SimplTypesScope.get("fileMetadata",
-																									FileMetadata.class);
-	
-	private String outFileName;
+																													FileMetadata.class);
+
+	private String										outFileName;
 
 	static
 	{
@@ -82,9 +92,9 @@ public class FileSystemStorage implements FileStorageProvider
 	{
 		FileMetadata fileMetadata = new FileMetadata(location, additionalLocation, localLocation,
 				mimeType, date);
-		if(outFileName == null)
+		if (outFileName == null)
 			outFileName = SHA256FileNameGenerator.getName(location);
-		File metaFile = new File(metaFileDirectory, (outFileName+".meta"));
+		File metaFile = new File(metaFileDirectory, (outFileName + ".meta"));
 		try
 		{
 			SimplTypesScope.serialize(fileMetadata, metaFile, Format.XML);
@@ -98,12 +108,12 @@ public class FileSystemStorage implements FileStorageProvider
 	@Override
 	public FileMetadata getFileMetadata(ParsedURL location)
 	{
-		if(outFileName == null)
+		if (outFileName == null)
 			outFileName = SHA256FileNameGenerator.getName(location);
-		File metaFile = new File(metaFileDirectory, (outFileName+".meta"));
+		File metaFile = new File(metaFileDirectory, (outFileName + ".meta"));
 		try
 		{
-			return (FileMetadata)META_TSCOPE.deserialize(metaFile, Format.XML);
+			return (FileMetadata) META_TSCOPE.deserialize(metaFile, Format.XML);
 		}
 		catch (SIMPLTranslationException e)
 		{

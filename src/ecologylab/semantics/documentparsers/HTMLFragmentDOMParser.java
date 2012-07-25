@@ -50,7 +50,7 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 	private static HashMap<String, Integer>	namesOfBreaklineNodeNames	= null;
 
 
-	public HTMLFragmentDOMParser(SemanticsSessionScope infoCollector, Reader reader, InputStream inputStream)
+	public HTMLFragmentDOMParser(SemanticsGlobalScope infoCollector, Reader reader, InputStream inputStream)
 	{
 		super(infoCollector);
 		fragmentStream 			= inputStream;

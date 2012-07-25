@@ -23,6 +23,7 @@ import ecologylab.semantics.collecting.DocumentDownloadedEventHandler;
 import ecologylab.semantics.collecting.DownloadStatus;
 import ecologylab.semantics.collecting.SemanticsGlobalScope;
 import ecologylab.semantics.collecting.SemanticsSite;
+import ecologylab.semantics.dbinterface.IDBDocumentProvider;
 import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.documentparsers.ParserBase;
 import ecologylab.semantics.downloaders.controllers.DefaultDownloadController;
@@ -165,6 +166,18 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 			return;
 		}
 		
+		//if the semantics scope provides DB lookup
+		IDBDocumentProvider dbProvider = semanticsScope.getDBDocumentProvider();
+		if (dbProvider != null)
+		{
+			Document document = dbProvider.retrieveDocument(this);
+			if (document != null)
+			{
+				this.document = document;
+				return;
+			}
+		}
+		
 		ParsedURL location = location();
 		// connect call also evolves Document based on redirects & mime-type;
 		//the parameter is used to get and set document properties with request and response respectively
@@ -225,6 +238,12 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 				Set<DocumentDownloadedEventHandler> listeners = semanticsScope.getDocumentDownloadingMonitor().getListenersForDocument(document);
 				if (listeners != null && listeners.size() > 0)
 					addContinuations(listeners);
+			}
+			
+			//store document in DB
+			if (dbProvider != null)
+			{
+				dbProvider.storeDocument(this.document);
 			}
 		}
 		else

@@ -11,7 +11,7 @@ import org.w3c.dom.NodeList;
 import ecologylab.generic.StringTools;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionHandler;
-import ecologylab.semantics.collecting.SemanticsSessionScope;
+import ecologylab.semantics.collecting.SemanticsGlobalScope;
 import ecologylab.semantics.html.AElement;
 import ecologylab.semantics.html.DOMParserInterface;
 import ecologylab.semantics.html.DOMWalkInformationTagger;
@@ -43,7 +43,7 @@ public class HTMLDOMImageTextParser
 extends ParserBase<CompoundDocument>
 implements DOMParserInterface, HTMLNames
 {
-	public HTMLDOMImageTextParser(SemanticsSessionScope infoCollector)	// this is of type In
+	public HTMLDOMImageTextParser(SemanticsGlobalScope infoCollector)	// this is of type In
 	{
 		super(infoCollector);
 	}

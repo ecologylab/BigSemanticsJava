@@ -1,3 +1,6 @@
+/**
+ * 
+ */
 package ecologylab.semantics.downloaders.controllers;
 
 import java.io.IOException;
@@ -20,29 +23,34 @@ import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
 import ecologylab.serialization.SimplTypesScope;
 
+/**
+ * OODSS download controller request network download to an OODSS server / worker
+ * 
+ * @author ajit
+ *
+ */
+
 public class OODSSDownloadController implements DownloadController
 {
 
 	@Override
 	public void connect(DocumentClosure documentClosure) throws IOException
 	{
-		Document	document		 = documentClosure.getDocument();
+		Document document = documentClosure.getDocument();
 		ParsedURL originalPURL = documentClosure.getDownloadLocation();
 		PURLConnection purlConnection;
 		String mimeType = null;
 		DocumentParser documentParser = null;
-		//boolean bChanged = false;
-		
+
 		FileStorageProvider storageProvider = FileSystemStorage.getStorageProvider();
 
 		if (!originalPURL.isFile())
 		{
 			// get equivalent path and check if file exists
-			String filePath = storageProvider.lookupFilePath(originalPURL); 
+			String filePath = storageProvider.lookupFilePath(originalPURL);
 			if (filePath == null)
 			{
-				//Network download
-				
+				// Network download
 				SimplTypesScope lookupMetadataTranslations = SemanticServiceOODSSTranslationScope
 						.getOODSSTranslationScope();
 
@@ -54,8 +62,8 @@ public class OODSSDownloadController implements DownloadController
 						sessionScope);
 				client.connect();
 
-				DownloadRequest requestMessage = new DownloadRequest(originalPURL,
-																				document.getMetaMetadata().getUserAgentString());
+				DownloadRequest requestMessage = new DownloadRequest(originalPURL, document
+						.getMetaMetadata().getUserAgentString());
 
 				DownloadResponse responseMessage;
 
@@ -69,13 +77,13 @@ public class OODSSDownloadController implements DownloadController
 					{
 						SemanticsGlobalScope semanticScope = document.getSemanticsScope();
 						Document newDocument = semanticScope.getOrConstructDocument(redirectedLocation);
-						newDocument.addAdditionalLocation(originalPURL); //TODO: confirm this!
+						newDocument.addAdditionalLocation(originalPURL); // TODO: confirm this!
 						documentClosure.changeDocument(newDocument);
 					}
 
 					// set local location
-					document.setLocalLocation(ParsedURL.getAbsolute("file://" + 
-																												responseMessage.getLocation()));
+					document
+							.setLocalLocation(ParsedURL.getAbsolute("file://" + responseMessage.getLocation()));
 					// mimetype
 					mimeType = responseMessage.getMimeType();
 				}
@@ -89,9 +97,9 @@ public class OODSSDownloadController implements DownloadController
 			}
 			else
 			{
-				//document is present in local cache. read meta information as well
+				// document is present in local cache. read meta information as well
 				document.setLocalLocation(ParsedURL.getAbsolute("file://" + filePath));
-				
+
 				FileMetadata fileMetadata = storageProvider.getFileMetadata(originalPURL);
 				// additional location
 				ParsedURL redirectedLocation = fileMetadata.getRedirectedLocation();
@@ -99,7 +107,7 @@ public class OODSSDownloadController implements DownloadController
 				{
 					SemanticsGlobalScope semanticScope = document.getSemanticsScope();
 					Document newDocument = semanticScope.getOrConstructDocument(redirectedLocation);
-					newDocument.addAdditionalLocation(originalPURL); //TODO:confirm+multiple redirects
+					newDocument.addAdditionalLocation(originalPURL); // TODO:confirm+multiple redirects
 					documentClosure.changeDocument(newDocument);
 				}
 				// mimetype
@@ -107,7 +115,7 @@ public class OODSSDownloadController implements DownloadController
 			}
 		}
 
-		//irrespective of document origin, its now saved to a local location
+		// irrespective of document origin, its now saved to a local location
 		LocalDocumentCache localDocumentCache = new LocalDocumentCache(document);
 		localDocumentCache.connect();
 		purlConnection = localDocumentCache.getPurlConnection();
@@ -121,7 +129,5 @@ public class OODSSDownloadController implements DownloadController
 		// document parser is set only when URL is local directory
 		if (documentParser != null)
 			documentClosure.setDocumentParser(documentParser);
-
-		//return bChanged;
 	}
 }

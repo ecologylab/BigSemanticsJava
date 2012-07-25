@@ -1,3 +1,6 @@
+/**
+ * 
+ */
 package ecologylab.semantics.downloaders;
 
 import java.io.File;
@@ -17,33 +20,42 @@ import ecologylab.semantics.collecting.SemanticsGlobalScope;
 import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.metadata.builtins.Document;
 
-public class LocalDocumentCache extends Debug implements SemanticActionsKeyWords {
+/**
+ * url connection to local file store
+ * 
+ * @author andruid
+ * @author ajit
+ *
+ */
 
-	private Document				document;
-	
+public class LocalDocumentCache extends Debug implements SemanticActionsKeyWords
+{
+
+	private Document							document;
+
 	private SemanticsGlobalScope	semanticsScope;
-	
-	private PURLConnection			purlConnection;
-	
-	private DocumentParser			documentParser;
-	
+
+	private PURLConnection				purlConnection;
+
+	private DocumentParser				documentParser;
+
 	public LocalDocumentCache(Document document)
 	{
-		this.document				= document;
-		this.semanticsScope	= document.getSemanticsScope();
+		this.document = document;
+		this.semanticsScope = document.getSemanticsScope();
 	}
-	
-	public void connect() throws IOException 
+
+	public void connect() throws IOException
 	{
-		ParsedURL originalPURL	= document.getDownloadLocation();
-		purlConnection			= new PURLConnection(originalPURL);
-		
+		ParsedURL originalPURL = document.getDownloadLocation();
+		purlConnection = new PURLConnection(originalPURL);
+
 		if (originalPURL.isFile())
 		{
-			File file	= originalPURL.file();
-			
-			// Handle localhost issues on mac? 
-			if("localhost".equals(originalPURL.url().getAuthority()))
+			File file = originalPURL.file();
+
+			// Handle localhost issues on mac?
+			if ("localhost".equals(originalPURL.url().getAuthority()))
 			{
 				String s = originalPURL.url().toString();
 				s = s.replaceFirst("localhost", "");
@@ -52,7 +64,7 @@ public class LocalDocumentCache extends Debug implements SemanticActionsKeyWords
 				document.setLocation(newPURL);
 				file = newPURL.file();
 			}
-			
+
 			if (!file.exists())
 			{
 				// this might be pointing to an entry in a ZIP file, e.g. the packed composition file.
@@ -78,21 +90,25 @@ public class LocalDocumentCache extends Debug implements SemanticActionsKeyWords
 			else if (file.isDirectory())
 			{
 				// FileDirectoryParser
-				documentParser	= DocumentParser.getParserInstanceFromBindingMap(FILE_DIRECTORY_PARSER, semanticsScope);
+				documentParser = DocumentParser.getParserInstanceFromBindingMap(FILE_DIRECTORY_PARSER,
+						semanticsScope);
 			}
 			else
 			{
 				purlConnection.fileConnect();
-				// we already have the correct meta-metadata, having used suffix to construct, or having gotten it from a restore.
+				// we already have the correct meta-metadata, having used suffix to construct, or having
+				// gotten it from a restore.
 			}
 		}
 	}
 
-	public PURLConnection getPurlConnection() {
+	public PURLConnection getPurlConnection()
+	{
 		return purlConnection;
 	}
 
-	public DocumentParser getDocumentParser() {
+	public DocumentParser getDocumentParser()
+	{
 		return documentParser;
 	}
 }

@@ -320,7 +320,7 @@ abstract public class DocumentParser<D extends Document>
 		return registryByMimeType.containsKey(mimeType);
 	}
 	
-	static final Class[]  DEFAULT_DOCUMENTPARSER_ARG        = {SemanticsSessionScope.class};
+	static final Class[]  DEFAULT_DOCUMENTPARSER_ARG        = {SemanticsGlobalScope.class};
 	/**
 	 * Given one of our registries, and a key, do a lookup in the registry to obtain the Class
 	 * object for the DocumentType subclass corresponding to the key -- in that registry.

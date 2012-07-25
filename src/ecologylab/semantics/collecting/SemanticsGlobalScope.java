@@ -8,6 +8,7 @@ import java.io.File;
 import ecologylab.generic.Debug;
 import ecologylab.generic.ReflectionTools;
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.dbinterface.IDBDocumentProvider;
 import ecologylab.semantics.gui.InteractiveSpace;
 import ecologylab.semantics.html.dom.IDOMProvider;
 import ecologylab.semantics.metadata.builtins.Document;
@@ -218,4 +219,8 @@ public class SemanticsGlobalScope extends MetaMetadataRepositoryInit
 		return documentDownloadingMonitor;
 	}
 
+	public IDBDocumentProvider getDBDocumentProvider()
+	{
+		return null;
+	}
 }

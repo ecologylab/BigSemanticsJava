@@ -5,7 +5,7 @@ package ecologylab.semantics.documentparsers;
 
 import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.actions.SemanticActionsKeyWords;
-import ecologylab.semantics.collecting.SemanticsSessionScope;
+import ecologylab.semantics.collecting.SemanticsGlobalScope;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 
@@ -17,7 +17,7 @@ public class XPathParser extends ParserBase<Document> implements
 		SemanticActionsKeyWords
 {
 
-	public XPathParser(SemanticsSessionScope infoCollector)
+	public XPathParser(SemanticsGlobalScope infoCollector)
 	{
 		super(infoCollector);
 	}
