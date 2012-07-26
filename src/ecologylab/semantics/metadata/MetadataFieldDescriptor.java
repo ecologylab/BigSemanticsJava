@@ -14,6 +14,7 @@ import ecologylab.semantics.gui.EditValueEvent;
 import ecologylab.semantics.gui.EditValueListener;
 import ecologylab.semantics.gui.EditValueNotifier;
 import ecologylab.semantics.metadata.scalar.MetadataScalarBase;
+import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataCollectionField;
 import ecologylab.semantics.metametadata.MetaMetadataField;
 import ecologylab.semantics.metametadata.MetaMetadataNestedField;
@@ -22,6 +23,7 @@ import ecologylab.semantics.metametadata.MmdGenericTypeVar;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.FieldDescriptor;
 import ecologylab.serialization.ScalarUnmarshallingContext;
+import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.annotations.Hint;
 import ecologylab.serialization.annotations.simpl_scalar;
@@ -340,24 +342,60 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 		CollectionType collectionType = this.getCollectionType();
 		String csType = super.getCSharpType();
 		
-		if (compilerService != null && collectionType != null && definingMmdField instanceof MetaMetadataNestedField)
+		String typeName = (csType.indexOf("<") < 0) ? 
+							csType :
+							csType.substring(csType.indexOf("<") + 1, csType.indexOf(">"));
+		
+		if (compilerService != null && definingMmdField instanceof MetaMetadataNestedField)
 		{
 			MetaMetadataNestedField nested = (MetaMetadataNestedField) definingMmdField;
-			StringBuilder sb = new StringBuilder();
-			sb.append(csType.substring(0, csType.indexOf('<')));
-			sb.append("<");
-			sb.append(this.getElementClassDescriptor().getDescribedClassSimpleName());
-			try
+			Collection<MmdGenericTypeVar> genericTypeVars = nested.getMetaMetadataGenericTypeVars();
+			Collection<MmdGenericTypeVar> superMmdGenericTypeVars = ((nested.getInheritedMmd() != null )? 
+																		nested.getInheritedMmd().getMetaMetadataGenericTypeVars() :
+																		null);
+			if (collectionType != null && genericTypeVars != null && genericTypeVars.size() > 0)
 			{
-				compilerService.appendGenericTypeVarParameterizations(sb, nested.getMetaMetadataGenericTypeVars(), nested.getRepository());
-			}
-			catch (IOException e)
+				StringBuilder sb = new StringBuilder();
+				sb.append(csType.substring(0, csType.indexOf('<')));
+				sb.append("<");
+				sb.append(this.getElementClassDescriptor().getDescribedClassSimpleName());
+				try
+				{
+					compilerService.appendGenericTypeVarParameterizations(sb, nested.getMetaMetadataGenericTypeVars(), nested.getRepository());
+				}
+				catch (IOException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				sb.append(">");
+				return sb.toString();
+			}			
+			else if (nested.getRepository().getMMByName(XMLTools.getXmlTagName(typeName, null)) != null && 
+						superMmdGenericTypeVars != null && superMmdGenericTypeVars.size() > 0)
 			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			sb.append(">");
-			return sb.toString();
+				StringBuilder sb = new StringBuilder();
+				
+				if (collectionType != null)
+					sb.append(csType.substring(0, csType.indexOf(">")));
+				else
+					sb.append(csType);
+				//sb.append(this.getElementClassDescriptor().getDescribedClassSimpleName());
+				try
+				{
+					compilerService.appendGenericTypeVarExtends(sb, superMmdGenericTypeVars, nested.getRepository());
+				}
+				catch (IOException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				if (collectionType != null)
+					sb.append(">");
+								
+				return sb.toString();
+			}	
 		}
 		
 		if (getType() == COMPOSITE_ELEMENT)
