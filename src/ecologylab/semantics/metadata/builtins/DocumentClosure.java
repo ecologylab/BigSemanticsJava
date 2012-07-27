@@ -173,7 +173,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 			Document document = dbProvider.retrieveDocument(this);
 			if (document != null)
 			{
-				this.document = document;
+				changeDocument(document);
 				return;
 			}
 		}
