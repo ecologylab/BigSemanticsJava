@@ -38,7 +38,7 @@ import ecologylab.generic.Debug;
 import ecologylab.net.PURLConnection;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionsKeyWords;
-import ecologylab.semantics.collecting.SemanticsSessionScope;
+import ecologylab.semantics.collecting.SemanticsGlobalScope;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.builtins.Image;
 import ecologylab.semantics.sensing.GisFeatures;
@@ -103,7 +103,7 @@ public class ImageParserAwt extends ImageParser
 	/**
 	 * @param infoCollector
 	 */
-	public ImageParserAwt(SemanticsSessionScope infoCollector)
+	public ImageParserAwt(SemanticsGlobalScope infoCollector)
 	{
 		super(infoCollector);
 		cameraClass = infoCollector.getMetadataTypesScope().getClassByTag(MM_TAG_CAMERA_SETTINGS);
