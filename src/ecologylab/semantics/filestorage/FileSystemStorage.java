@@ -7,8 +7,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Date;
 
+import ecologylab.generic.Debug;
 import ecologylab.net.ParsedURL;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.SimplTypesScope;
@@ -21,7 +21,7 @@ import ecologylab.serialization.formatenums.Format;
  * 
  */
 
-public class FileSystemStorage implements FileStorageProvider
+public class FileSystemStorage extends Debug implements FileStorageProvider
 {
 	private static FileSystemStorage	fsStorageProvider	= null;
 
@@ -71,7 +71,7 @@ public class FileSystemStorage implements FileStorageProvider
 			return null;
 		}
 
-		System.out.println("Saved inputstream to " + outFile.getAbsolutePath());
+		debug("Saved inputstream to " + outFile.getAbsolutePath());
 		return outFile.getAbsolutePath();
 	}
 
@@ -87,13 +87,10 @@ public class FileSystemStorage implements FileStorageProvider
 	}
 
 	@Override
-	public void saveFileMetadata(ParsedURL location, ParsedURL additionalLocation,
-			String localLocation, String mimeType, Date date)
+	public void saveFileMetadata(FileMetadata fileMetadata)
 	{
-		FileMetadata fileMetadata = new FileMetadata(location, additionalLocation, localLocation,
-				mimeType, date);
 		if (outFileName == null)
-			outFileName = SHA256FileNameGenerator.getName(location);
+			outFileName = SHA256FileNameGenerator.getName(fileMetadata.getLocation());
 		File metaFile = new File(metaFileDirectory, (outFileName + ".meta"));
 		try
 		{

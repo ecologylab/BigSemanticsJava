@@ -23,6 +23,8 @@ public class OODSSDownloaderInstance
 	private static final int	idleTimeout	= -1;
 
 	private static final int	MTU					= 10000000;
+	
+	private static final int 	port				=	2107;
 
 	public static void main(String[] args) throws IOException
 	// public static void runInstance() throws IOException
@@ -47,7 +49,7 @@ public class OODSSDownloaderInstance
 		/*
 		 * Create the server and start the server so that it can accept incoming connections.
 		 */
-		DoubleThreadedNIOServer metadataServer = DoubleThreadedNIOServer.getInstance(2107, locals,
+		DoubleThreadedNIOServer metadataServer = DoubleThreadedNIOServer.getInstance(port, locals,
 				lookupMetadataTranslations, sessionScope, idleTimeout, MTU);
 		metadataServer.start();
 	}

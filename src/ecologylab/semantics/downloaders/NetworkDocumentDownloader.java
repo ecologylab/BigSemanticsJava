@@ -12,9 +12,9 @@ import ecologylab.generic.Debug;
 import ecologylab.net.ConnectionHelperJustRemote;
 import ecologylab.net.PURLConnection;
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.filestorage.FileMetadata;
 import ecologylab.semantics.filestorage.FileStorageProvider;
 import ecologylab.semantics.filestorage.FileSystemStorage;
-import ecologylab.semantics.filestorage.SHA256FileNameGenerator;
 
 /**
  * url connection to network resource
@@ -240,7 +240,9 @@ public class NetworkDocumentDownloader extends Debug {
 				{
 					FileStorageProvider storageProvider = FileSystemStorage.getStorageProvider();
 					localLocation = storageProvider.saveFile(originalPURL, purlConnection.inputStream());
-					storageProvider.saveFileMetadata(originalPURL, redirectedLocation, localLocation, purlConnection.mimeType(), new Date());
+					FileMetadata fileMetadata = new FileMetadata(originalPURL, redirectedLocation,
+							localLocation, purlConnection.mimeType(), new Date());
+					storageProvider.saveFileMetadata(fileMetadata);
 				}
 			}
 		}
