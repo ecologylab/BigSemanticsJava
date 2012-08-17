@@ -223,4 +223,9 @@ public class SemanticsGlobalScope extends MetaMetadataRepositoryInit
 	{
 		return null;
 	}
+	
+	public boolean isService()
+	{
+		return false;
+	}
 }

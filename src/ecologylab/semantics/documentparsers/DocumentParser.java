@@ -211,7 +211,20 @@ abstract public class DocumentParser<D extends Document>
 	public ParsedURL purl ( )
 	{
 		Document document	= documentClosure.getDocument();
-		return purlConnection != null ? purlConnection.getPurl() : (document != null) ? document.getLocation() : null;
+		ParsedURL docPurl = null;
+		if (document != null)
+			docPurl = document.getLocation();
+		if (purlConnection != null)
+		{
+			ParsedURL connPurl = purlConnection.getPurl();
+			if (semanticsScope.isService() && connPurl.isFile()	&& docPurl != null && !docPurl.isFile())
+			{
+				return docPurl;
+			}
+			return connPurl;
+		}
+		return docPurl;
+		//return purlConnection != null ? purlConnection.getPurl() : (document != null) ? document.getLocation() : null;
 	}
 
 	public String toString ( )
