@@ -20,6 +20,9 @@ public class MetadataComparator extends Debug implements Comparator<Metadata>
 	@Override
 	public int compare(Metadata m1, Metadata m2)
 	{
+		if (m1 == null || m2 == null)
+			return compareNull(m1, m2);
+		
 		MetaMetadata mmd1 = (MetaMetadata) m1.getMetaMetadata();
 		MetaMetadata mmd2 = (MetaMetadata) m2.getMetaMetadata();
 		
@@ -92,6 +95,9 @@ public class MetadataComparator extends Debug implements Comparator<Metadata>
 	
 	private int compareScalar(Object c1, Object c2)
 	{
+		if (c1 == null || c2 == null)
+			return compareNull(c1, c2);
+				
 		if (c1.equals(c2))
 			return 0;
 		else
@@ -104,11 +110,11 @@ public class MetadataComparator extends Debug implements Comparator<Metadata>
 		Field javaField = mmsf.getMetadataFieldDescriptor().getField();
 		Object o1 = ReflectionTools.getFieldValue(m1, javaField);
 		Object o2 = ReflectionTools.getFieldValue(m2, javaField);
-		if (o1.equals(o2))
-			return 0;
-		else
+		
+		int suc = compareScalar(o1, o2);
+		if (suc != 0)
 			error("scalar field " + javaField + " not equal");
-		return -1;
+		return suc;
 	}
 
 	private int compareCollectionField(Metadata m1, Metadata m2, MetaMetadataCollectionField mmcf)
@@ -158,5 +164,24 @@ public class MetadataComparator extends Debug implements Comparator<Metadata>
 			error("in composite field " + javaField);
 		return suc;
 	}
-
+	
+	private int compareNull(Object o1, Object o2)
+	{
+		int suc = 0;
+		if ((o1 != null) && (o2 == null))
+		{
+			error("object1 is null");
+			suc = -1;
+		}
+		else if ((o1 == null) && (o2 != null))
+		{
+			error("object2 is null");
+			suc = 1;
+		}
+		else if ((o1 == null) && (o2 == null))
+		{
+			suc = 0;
+		}
+		return suc;
+	}
 }
