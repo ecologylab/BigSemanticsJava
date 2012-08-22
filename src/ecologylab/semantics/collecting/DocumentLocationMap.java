@@ -40,21 +40,28 @@ public class DocumentLocationMap<D extends Document> extends ConcurrentHashMap<P
 	 */
 	public D getOrConstruct(ParsedURL location, boolean isImage)
 	{
-    D result = this.get(location);
-    if (result == null) 
-    {
-    	// record does not yet exist
-    	D newValue = mapHelper.constructValue(location, isImage);
-    	result = this.putIfAbsent(location, newValue);
-    	if (result == null) 
-    	{
-    		// put succeeded, use new value
-    		result = newValue;
-    	}
-    }
-    return result;
+		D result = this.get(location);
+		if (result == null) 
+		{
+			// record does not yet exist
+			D newValue = mapHelper.constructValue(location, isImage);
+			result = this.putIfAbsent(location, newValue);
+			if (result == null) 
+			{
+				// put succeeded, use new value
+				result = newValue;
+			}
+		}
+		return result;
 	}	
-	
+	public void putIfAbsent(D document)
+	{
+		ParsedURL location	= document.getLocation();
+		if (location != null)
+		{
+			this.putIfAbsent(location, document);
+		}
+	}
 	public D getOrConstruct(MetaMetadata mmd, ParsedURL location)
 	{
     D result = this.get(location);

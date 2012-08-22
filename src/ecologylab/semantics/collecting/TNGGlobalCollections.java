@@ -110,7 +110,10 @@ public class TNGGlobalCollections extends Debug
 	{
 		return allDocuments.getOrConstruct(location, isImage);
 	}
-
+	public void putIfAbsent(Document document)
+	{
+		allDocuments.putIfAbsent(document);
+	}
 	/**
 	 * Put a special entry into the DocumentLocationMap for the passed in location, 
 	 * saying that it refers to an uninformative image that should be forever ignored.

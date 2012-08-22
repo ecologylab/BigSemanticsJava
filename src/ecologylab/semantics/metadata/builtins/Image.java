@@ -103,7 +103,7 @@ implements MimeType, ImageConstants
 	 */
 	public ImageClipping constructClipping(Document sourceDocument, Document outlink, String caption, String context)
 	{
-		SemanticsGlobalScope scope = sourceDocument.getSemanticsScope();
+		SemanticsGlobalScope scope = this.getSemanticsScope();
 		ImageClipping result	= new ImageClipping(scope.IMAGE_CLIPPING_META_METADATA, this, sourceDocument, outlink, caption, context);
 		this.addClipping(result);
 		

@@ -119,6 +119,11 @@ public class SemanticsGlobalScope extends MetaMetadataRepositoryInit
 		return result;
 	}
 	
+	public void putDocumentIfAbsent(Document document)
+	{
+		globalCollection.putIfAbsent(document);
+	}
+	
 	public Image getOrConstructImage(ParsedURL location)
 	{
 		if (location == null)
