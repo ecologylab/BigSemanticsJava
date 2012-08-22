@@ -225,7 +225,7 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 	
 	private ParsedURL setContainerLocation(Node elementNode)
 	{
-		if (containerPurl == null && elementNode != null)
+		if (containerPurl == null && elementNode != null && containerDocument != null)
 		{
 			String containerLocation = DomTools.getAttribute(elementNode, SIMPL_SOURCE_LOCATION);
 			
@@ -248,7 +248,7 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 	void checkForMetadata(Node node)
 	{
 		node.getAttributes();
-		if (node.getAttributes() != null && setContainerDocument(node) != null)
+		if (node.getAttributes() != null && parseInjectedMetadata(node) != null)
 		{
 			return;
 		}
@@ -259,36 +259,38 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 		}
 	}
 
-	private ParsedURL setContainerDocument(Node elementNode)
+	private ParsedURL parseInjectedMetadata(Node elementNode)
 	{
 		if (containerPurl == null && elementNode != null)
 		{
 			String containerMetadata = DomTools.getAttribute(elementNode, METADATA);
+			DomTools.prettyPrint(elementNode);
 			
 			if (containerMetadata != null && containerMetadata.length() > 0)
 			{
 				System.out.println("\n\nMetadata:\n"+containerMetadata+"\n\n");
-				Object doc = null;
-				try {
-					doc = getSemanticsScope().getDocumentsTypeScope().deserialize(containerMetadata, StringFormat.JSON);
+				Document document = null;
+				try 
+				{
+					document = (Document) getSemanticsScope().getDocumentsTypeScope().deserialize(containerMetadata, StringFormat.JSON);
 				} catch (SIMPLTranslationException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				
 				//containerPurl 		= ParsedURL.getAbsolute(containerLocation);
-				if(doc != null) {
+				if(document != null) {
 					
 					// workflows need to be modified to accomodate metadata coming from drag
-					/*
 					System.out.println("\nSetting container document to injected metadata\n");
 					
-					containerDocument	= (Document) doc;
+					containerDocument	= document;
 					containerPurl = containerDocument.getLocation();
 					
-					containerDocument.setSemanticsSessionScope(getSemanticsScope());
-					containerDocument.setDownloadDone(true);
-					*/
+					containerDocument.setSemanticsSessionScope(semanticsScope);
+					
+					semanticsScope.putDocumentIfAbsent(document);
+//					containerDocument.setDownloadDone(true);
 				}				
 			}
 		}
