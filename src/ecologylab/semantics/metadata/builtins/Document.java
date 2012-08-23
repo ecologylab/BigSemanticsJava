@@ -33,10 +33,13 @@ import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.seeding.SearchState;
 import ecologylab.semantics.seeding.Seed;
+import ecologylab.serialization.SIMPLTranslationException;
+import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.annotations.FieldUsage;
 import ecologylab.serialization.annotations.simpl_exclude_usage;
 import ecologylab.serialization.annotations.simpl_inherit;
 import ecologylab.serialization.annotations.simpl_scalar;
+import ecologylab.serialization.formatenums.StringFormat;
 
 /**
  * The Document Class
@@ -785,5 +788,49 @@ public class Document extends DocumentDeclaration
 	public List<Clipping> getClippings()
 	{
 		return null;
+	}
+
+	/**
+	 * Deserialize A JSON metadataString to form a Document.
+	 * If that works, add it to the global collection, with location as key.
+	 * Set its downloadStatus to DOWNLOAD_DONE.
+	 * 
+	 * @param metadataString
+	 * @param semanticsScope
+	 * @param metadataFormat
+	 * @return
+	 */
+	public static Document constructAndMapFromJson(String jsonMetadata, SemanticsGlobalScope semanticsScope)
+	{
+		return constructAndMapFromSerialized(jsonMetadata, semanticsScope, StringFormat.JSON);
+	}
+	/**
+	 * Deserialize the metadataString to form a Document.
+	 * If that works, add it to the global collection, with location as key.
+	 * Set its downloadStatus to DOWNLOAD_DONE.
+	 * 
+	 * @param metadataString
+	 * @param semanticsScope
+	 * @param metadataFormat
+	 * @return
+	 */
+	public static Document constructAndMapFromSerialized(String metadataString, SemanticsGlobalScope semanticsScope, StringFormat metadataFormat)
+	{
+		Document document = null;
+		try 
+		{
+			SimplTypesScope documentsTypeScope	= semanticsScope.getDocumentsTypeScope();
+			document 														= (Document) documentsTypeScope.deserialize(metadataString, metadataFormat);
+			if (document != null) 
+			{
+				document.setSemanticsSessionScope(semanticsScope);
+				document.setDownloadStatus(DownloadStatus.DOWNLOAD_DONE);
+				semanticsScope.putDocumentIfAbsent(document);	// andruid 2012/08 -- perhaps this should be unconditional put to change map to latest extracted metadata
+			}
+		} catch (SIMPLTranslationException e) 
+		{
+			e.printStackTrace();
+		}
+		return document;
 	}
 }
