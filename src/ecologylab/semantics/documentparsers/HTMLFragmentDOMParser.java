@@ -25,11 +25,8 @@ import ecologylab.semantics.metadata.builtins.AnonymousDocument;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.Image;
 import ecologylab.semantics.metadata.builtins.ImageClipping;
-import ecologylab.serialization.SIMPLTranslationException;
-import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.formatenums.Format;
-import ecologylab.serialization.formatenums.StringFormat;
 
 public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInterface, HTMLNames
 {
@@ -263,35 +260,22 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 	{
 		if (containerPurl == null && elementNode != null)
 		{
-			String containerMetadata = DomTools.getAttribute(elementNode, METADATA);
+			String containerMetadata = DomTools.getAttribute(elementNode, SIMPL_METADATA);
 			DomTools.prettyPrint(elementNode);
 			
 			if (containerMetadata != null && containerMetadata.length() > 0)
 			{
-				System.out.println("\n\nMetadata:\n"+containerMetadata+"\n\n");
-				Document document = null;
-				try 
+				System.out.println("\n\nsimpl:metadata:\n"+containerMetadata+"\n\n");
+				Document metadataFromBrowser	= Document.constructAndMapFromJson(containerMetadata, getSemanticsScope());				
+				if (metadataFromBrowser != null) 
 				{
-					document = (Document) getSemanticsScope().getDocumentsTypeScope().deserialize(containerMetadata, StringFormat.JSON);
-				} catch (SIMPLTranslationException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				
-				//containerPurl 		= ParsedURL.getAbsolute(containerLocation);
-				if(document != null) {
 					
 					// workflows need to be modified to accomodate metadata coming from drag
 					System.out.println("\nSetting container document to injected metadata\n");
 					
-					containerDocument	= document;
-					containerPurl = containerDocument.getLocation();
-					
-					containerDocument.setSemanticsSessionScope(semanticsScope);
-					
-					semanticsScope.putDocumentIfAbsent(document);
-//					containerDocument.setDownloadDone(true);
-				}				
+					containerDocument	= metadataFromBrowser;
+					containerPurl 		= metadataFromBrowser.getLocation();
+				}
 			}
 		}
 		return containerPurl;
