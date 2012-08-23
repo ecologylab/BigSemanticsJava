@@ -39,7 +39,7 @@ public interface HTMLNames
 
 	public static final String	SIMPL_SOURCE_LOCATION	= "simpl:source_location";
 	
-	public static final String	METADATA	= "metadata";
+	public static final String	SIMPL_METADATA	= "simpl:metadata";
 
 	public static final String	HASH_COMMENT	= "#comment";
 
