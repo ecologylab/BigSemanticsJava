@@ -203,9 +203,10 @@ implements SemanticActionStandardMethods
 
 					//try to download or make closure et cetera...
 					sessionScope.getOrConstructImage(bestImageClipping.getMedia().getLocation());
-					bestImageClipping.getMedia().getOrConstructClosure().addContinuation(new DropImageContinuation(bestImageClipping));
-					bestImageClipping.getMedia().getOrConstructClosure().setDndPoint(closure.getDndPoint());
-					bestImageClipping.getMedia().getOrConstructClosure().queueDownload();
+					DocumentClosure bestImageClippingClosure = bestImageClipping.getMedia().getOrConstructClosure();
+					bestImageClippingClosure.addContinuation(new DropImageContinuation(bestImageClipping));
+					bestImageClippingClosure.setDndPoint(closure.getDndPoint());
+					bestImageClippingClosure.queueDownload();
 
 					if(bestImageClipping.getMedia().isDownloadDone())
 					{
