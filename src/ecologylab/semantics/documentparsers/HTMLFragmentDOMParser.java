@@ -3,21 +3,19 @@ package ecologylab.semantics.documentparsers;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathExpressionException;
+import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import ecologylab.generic.DomTools;
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.collecting.DownloadStatus;
 import ecologylab.semantics.collecting.SemanticsGlobalScope;
-import ecologylab.semantics.collecting.SemanticsSessionScope;
-import ecologylab.semantics.collecting.SemanticsSite;
 import ecologylab.semantics.html.DOMParserInterface;
 import ecologylab.semantics.html.ImgElement;
 import ecologylab.semantics.html.utils.HTMLNames;
@@ -26,7 +24,6 @@ import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.Image;
 import ecologylab.semantics.metadata.builtins.ImageClipping;
 import ecologylab.serialization.XMLTools;
-import ecologylab.serialization.formatenums.Format;
 
 public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInterface, HTMLNames
 {
@@ -87,6 +84,7 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 				Node imgNode = imgNodeList.item(i);
 
 				String src 				= DomTools.getAttribute(imgNode, SRC);
+				src               = changeImageUrlIfNeeded(src);
 				ParsedURL imgPurl	= ImgElement.constructPurl(containerPurl, src);
 				if (imgPurl == null)
 				{
@@ -102,6 +100,16 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 						String hrefString	= DomTools.getAttribute(parent, HREF);
 						if (hrefString != null)
 						{
+							try
+							{
+								hrefString = changeImageRefUrlIfNeeded(hrefString);
+							}
+							catch (UnsupportedEncodingException e)
+							{
+								error("Image ref URL cannot be decoded because it is using unsupported encoding. " +
+										  "We support UTF-8 only.");
+								e.printStackTrace();
+							}
 							ParsedURL aHref						= ImgElement.constructPurl(containerPurl, hrefString);
 							if (aHref != null)
 								outlink									= getSemanticsScope().getOrConstructDocument(aHref);
@@ -120,6 +128,57 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 				}				
 			}
 		}
+	}
+	
+	/**
+	 * For Google Image, we need to change the source of the image since we don't support HTTPS.
+	 * 
+	 * @param imgSrcAttr
+	 *          The HTTPS image source.
+	 * @return The HTTP image source that points to the same image.
+	 */
+	protected String changeImageUrlIfNeeded(String imgSrcAttr)
+	{
+		if (imgSrcAttr != null)
+		{
+	    if (Pattern.matches("https://encrypted-tbn\\d+.google.com/images?.*", imgSrcAttr))
+			{
+				imgSrcAttr = imgSrcAttr.replace("https://", "http://");
+				imgSrcAttr = imgSrcAttr.replace("//encrypted-tbn", "//tbn");
+			}
+		}
+		return imgSrcAttr;
+	}
+	
+	/**
+	 * Image ref URL is the URL of the referring page where the image appears in. In some cases, like
+	 * Google Image, this ref URL is encoded as a URL parameter, and we need to extract it.
+	 * 
+	 * @param imgHrefAttr
+	 *          The original image ref URL.
+	 * @return The extracted image ref URL.
+	 * @throws UnsupportedEncodingException
+	 */
+	protected String changeImageRefUrlIfNeeded(String imgHrefAttr)
+			throws UnsupportedEncodingException
+	{
+		if (imgHrefAttr != null)
+		{
+			if (imgHrefAttr.startsWith("http://www.google.com/imgres?"))
+			{
+				ParsedURL hrefPURL = ParsedURL.getAbsolute(imgHrefAttr);
+				Map<String, String> params = hrefPURL.extractParams(false);
+				if (params != null)
+				{
+					if (params.containsKey("imgrefurl"))
+					{
+						imgHrefAttr = params.get("imgrefurl");
+						imgHrefAttr = URLDecoder.decode(imgHrefAttr, "utf-8");
+					}
+				}
+			}
+		}
+		return imgHrefAttr;
 	}
 
 	public void parseText(StringBuilder buffy, Node bodyNode)
