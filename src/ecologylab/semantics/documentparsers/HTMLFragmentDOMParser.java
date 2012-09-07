@@ -65,8 +65,8 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 		{
 			Node bodyNode = bodyNodeList.item(0);
 			parseText(bodyTextBuffy, bodyNode);
-			checkForSimplSourceLocation(bodyNode);
 			
+			checkForSimplSourceLocation(bodyNode);
 			checkForMetadata(bodyNode);
 		}
 
@@ -281,7 +281,7 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 	
 	private ParsedURL setContainerLocation(Node elementNode)
 	{
-		if (containerPurl == null && elementNode != null && containerDocument != null)
+		if (containerPurl == null && elementNode != null)
 		{
 			String containerLocation = DomTools.getAttribute(elementNode, SIMPL_SOURCE_LOCATION);
 			
@@ -328,7 +328,6 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 				Document metadataFromBrowser	= Document.constructAndMapFromJson(containerMetadata, getSemanticsScope());				
 				if (metadataFromBrowser != null) 
 				{
-					
 					// workflows need to be modified to accomodate metadata coming from drag
 					System.out.println("\nSetting container document to injected metadata\n");
 					
