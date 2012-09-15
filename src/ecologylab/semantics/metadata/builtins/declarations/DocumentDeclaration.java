@@ -18,6 +18,7 @@ import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.semantics.namesandnums.SemanticsNames;
 import ecologylab.serialization.annotations.Hint;
 import ecologylab.serialization.annotations.simpl_collection;
+import ecologylab.serialization.annotations.simpl_composite_as_scalar;
 import ecologylab.serialization.annotations.simpl_hints;
 import ecologylab.serialization.annotations.simpl_inherit;
 import ecologylab.serialization.annotations.simpl_other_tags;
@@ -38,6 +39,7 @@ public class DocumentDeclaration extends Metadata
 	 */ 
 	@simpl_scalar
 	@simpl_hints({Hint.XML_LEAF})
+	@simpl_composite_as_scalar
 	private MetadataString title;
 
 	/** 

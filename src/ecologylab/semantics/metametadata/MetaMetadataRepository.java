@@ -517,6 +517,11 @@ implements PackageSpecifier, DocumentParserTagNames
 			}
 		}
 	}
+	
+	public Collection<MetaMetadata> getMetaMetadataCollection()
+	{
+	  return repositoryByName.values();
+	}
 
 	public MetaMetadata getMMByName(String name)
 	{
