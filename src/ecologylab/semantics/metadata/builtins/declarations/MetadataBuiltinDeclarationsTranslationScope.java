@@ -40,8 +40,6 @@ public class MetadataBuiltinDeclarationsTranslationScope
 
 		ecologylab.semantics.metadata.builtins.ImageClipping.class,
 
-		ecologylab.semantics.metadata.builtins.InformationComposition.class,
-
 		ecologylab.semantics.metadata.builtins.MediaClipping.class,
 
 		ecologylab.semantics.metadata.builtins.TextClipping.class,
