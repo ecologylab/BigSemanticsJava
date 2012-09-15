@@ -12,7 +12,7 @@ import ecologylab.net.ParsedURL;
 import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.cyberneko.CybernekoWrapper;
 import ecologylab.semantics.generated.library.RepositoryMetadataTranslationScope;
-import ecologylab.semantics.generated.library.scholarlyPublication.ScholarlyArticle;
+import ecologylab.semantics.generated.library.scholarlyArticle.ScholarlyArticle;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
 import ecologylab.semantics.metadata.output.HtmlRenderer;
