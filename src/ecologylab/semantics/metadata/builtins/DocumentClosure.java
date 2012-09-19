@@ -21,6 +21,7 @@ import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.actions.SemanticActionsKeyWords;
 import ecologylab.semantics.collecting.DocumentDownloadedEventHandler;
 import ecologylab.semantics.collecting.DownloadStatus;
+import ecologylab.semantics.collecting.SemanticsDownloadMonitors;
 import ecologylab.semantics.collecting.SemanticsGlobalScope;
 import ecologylab.semantics.collecting.SemanticsSite;
 import ecologylab.semantics.dbinterface.IDBDocumentProvider;
@@ -448,7 +449,8 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 
 	public DownloadProcessor<DocumentClosure> downloadMonitor()
 	{
-		return  semanticsScope.getDownloadMonitors().downloadProcessor(document.isImage(), isDnd(), isSeed(), document.isGui());
+		SemanticsDownloadMonitors downloadMonitors = semanticsScope.getDownloadMonitors();
+    return downloadMonitors.downloadProcessor(document.isImage(), isDnd(), isSeed(), document.isGui());
 	}
 
 	

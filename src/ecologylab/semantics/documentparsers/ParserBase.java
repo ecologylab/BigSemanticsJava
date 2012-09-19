@@ -28,7 +28,6 @@ import org.w3c.dom.NodeList;
 
 import ecologylab.appframework.types.prefs.Pref;
 import ecologylab.collections.Scope;
-import ecologylab.generic.DomTools;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.generic.ReflectionTools;
 import ecologylab.generic.StringTools;
@@ -649,7 +648,13 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 			}
 			
 			thisMetadata.setMetaMetadata(mmdField);
-			lookupTrueMetaMetadata(mmdField.getRepository(), thisMetadata);
+			Metadata changedMetadata = lookupTrueMetaMetadata(mmdField.getRepository(), thisMetadata);
+			if (changedMetadata != null)
+			{
+			  Metadata.fieldWiseCopy(changedMetadata, thisMetadata);
+			  thisMetadata = changedMetadata;
+			}
+			
 			// TODO check for polymorphism. if this is an inherent polymorphic fields, we may need to
 			// replace thisMetadata completely if its type changes.
 			
@@ -727,7 +732,7 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 	 * @param repository
 	 * @param thisMetadata
 	 */
-	protected void lookupTrueMetaMetadata(MetaMetadataRepository repository, Metadata thisMetadata)
+	protected Metadata lookupTrueMetaMetadata(MetaMetadataRepository repository, Metadata thisMetadata)
 	{
 		if (thisMetadata instanceof Document)
 		{
@@ -737,10 +742,14 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 				MetaMetadata locMmd = repository.getCompoundDocumentMM(thisMetadataLocation);
 				if (locMmd != null && !locMmd.getName().equals(DocumentParserTagNames.COMPOUND_DOCUMENT_TAG))
 				{
-					if (thisMetadata.getClass().isAssignableFrom(locMmd.getMetadataClass()))
+				  Class thisMetadataClass = thisMetadata.getClass();
+				  Class trueMetadataClass = locMmd.getMetadataClass();
+					if (thisMetadataClass.isAssignableFrom(trueMetadataClass))
 					{
 						debug("changing meta-metadata for extracted value " + thisMetadata + " to " + locMmd);
-						thisMetadata.setMetaMetadata(locMmd);
+						Metadata changedMetadata = locMmd.constructMetadata();
+						changedMetadata.setMetaMetadata(locMmd);
+						return changedMetadata;
 					}
 					else
 					{
@@ -751,6 +760,7 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 				}
 			}
 		}
+		return null;
 	}
 
 	/**
@@ -853,7 +863,13 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 					}
 			
 					element.setMetaMetadata(mmdField);
-					lookupTrueMetaMetadata(mmdField.getRepository(), element); 
+    			Metadata changedElement = lookupTrueMetaMetadata(mmdField.getRepository(), element); 
+    			if (changedElement != null)
+    			{
+    			  Metadata.fieldWiseCopy(changedElement, element);
+    			  element = changedElement;
+    			}
+			
 					// TODO check for polymorphism. if this is an inherent polymorphic fields, we may need to
 					// replace element completely if its type changes.
 					

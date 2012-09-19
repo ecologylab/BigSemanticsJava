@@ -783,7 +783,8 @@ implements PackageSpecifier, DocumentParserTagNames
 		Image result = null;
 		if (metaMetadata != null)
 		{
-			result = (Image) metaMetadata.constructMetadata(metadataTScope);
+			Metadata constructed = metaMetadata.constructMetadata(metadataTScope);
+      result = (Image) constructed;
 			result.setLocation(purl);
 		}
 		return result;

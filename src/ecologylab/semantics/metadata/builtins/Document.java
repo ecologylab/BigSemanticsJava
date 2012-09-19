@@ -365,7 +365,7 @@ public class Document extends DocumentDeclaration
 		}
 		return result == null || result.downloadStatus == DownloadStatus.RECYCLED ? null : result;
 	}
-
+	
 	/**
 	 * 
 	 * @return A closure for this, or null, if this is not fit to be parsed.

@@ -17,6 +17,8 @@ import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.semantics.collecting.LinkedMetadataMonitor;
 import ecologylab.semantics.collecting.SemanticsGlobalScope;
+import ecologylab.semantics.metadata.builtins.Document;
+import ecologylab.semantics.metadata.builtins.DocumentClosure;
 import ecologylab.semantics.metadata.builtins.declarations.MetadataDeclaration;
 import ecologylab.semantics.metadata.output.MetadataConstants;
 import ecologylab.semantics.metadata.scalar.MetadataString;
@@ -1290,11 +1292,49 @@ ISimplSerializationPre, ISimplDeserializationPost
 	{
 		return false;
 	}
+	
 	/**
 	 * Base class method for overriding. Does nothing.
 	 * @param semanticsSessionScope
 	 */
 	public void setSemanticsSessionScope(SemanticsGlobalScope semanticsSessionScope)
 	{
+	  // FIXME ??? who did this? please add comment on what's happening here
 	}
+	
+	/**
+	 * dest should be of the same type or a subtype of src.
+	 * 
+	 * @param dest
+	 * @param src
+	 */
+	public static void fieldWiseCopy(Metadata dest, Metadata src)
+	{
+	  if (src != null && dest != null && src.getClass().isAssignableFrom(dest.getClass()))
+	  {
+  	  Map<String, MetadataFieldDescriptor> fields = src.getFieldDescriptorsByFieldName();
+  	  for (String fieldName : fields.keySet())
+  	  {
+  	    MetadataFieldDescriptor fd = fields.get(fieldName);
+  	    Object value = fd.getValue(src);
+  	    if (value != null)
+  	    {
+  	      MetadataFieldDescriptor destFd = dest.getFieldDescriptorsByFieldName().get(fieldName);
+  	      if (destFd != null)
+  	      {
+  	        destFd.setField(dest, value);
+  	      }
+  	    }
+  	  }
+  	  
+  	  if (dest instanceof Document && src instanceof Document)
+  	  {
+  	    Document srcDoc = (Document) src;
+        Document destDoc = (Document) dest;
+        DocumentClosure downloadClosure = srcDoc.getOrConstructClosure();
+        downloadClosure.changeDocument(destDoc);
+  	  }
+	  }
+	}
+	
 }
