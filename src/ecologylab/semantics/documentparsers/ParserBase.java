@@ -811,15 +811,22 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 		else
 		{
 //			elementClass = tscope.getClassByTag(mmdField.getChildType());
-			ClassDescriptor elementClassDescriptor = metadataFieldDescriptor.getElementClassDescriptor();
-			if (metadataFieldDescriptor.isPolymorphic())
-			{
-				String polymorphTagName = mmdField.getChildComposite().getInheritedMmd().getTagForTypesScope();
-				if (polymorphTagName != null)
-					elementClassDescriptor = metadataFieldDescriptor.elementClassDescriptor(polymorphTagName);
-			}
-			if (elementClassDescriptor != null)
-				elementClass = elementClassDescriptor.getDescribedClass();
+		  if (metadataFieldDescriptor != null)
+		  {
+  			ClassDescriptor elementClassDescriptor = metadataFieldDescriptor.getElementClassDescriptor();
+  			if (metadataFieldDescriptor.isPolymorphic())
+  			{
+  				String polymorphTagName = mmdField.getChildComposite().getInheritedMmd().getTagForTypesScope();
+  				if (polymorphTagName != null)
+  					elementClassDescriptor = metadataFieldDescriptor.elementClassDescriptor(polymorphTagName);
+  			}
+  			if (elementClassDescriptor != null)
+  				elementClass = elementClassDescriptor.getDescribedClass();
+		  }
+		  else
+		  {
+		    warning("metadataFieldDescriptor not found in " + mmdField);
+		  }
 		}
 		
 		if (elementClass == null)
