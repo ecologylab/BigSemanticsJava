@@ -716,7 +716,7 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
 	{
 		NamedStyle result = null;
 		if (style != null)
-			getRepository().lookupStyle(style);
+			result = getRepository().lookupStyle(style);
 		return (result != null) ? result : getRepository().getDefaultStyle();
 	}
 
