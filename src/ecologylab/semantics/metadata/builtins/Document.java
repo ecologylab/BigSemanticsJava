@@ -481,10 +481,14 @@ public class Document extends DocumentDeclaration
 			for (Metadata oldMixin : oldMixins)
 				addMixin(oldMixin);
 
-		List<MetadataParsedURL> oldAdditionalLocations = oldDocument.getAdditionalLocations();
-		if (oldAdditionalLocations != null)
-			for (MetadataParsedURL otherLocation : oldAdditionalLocations)
-				addAdditionalLocation(otherLocation);
+		if (getAdditionalLocations() != null)
+		{
+  		List<MetadataParsedURL> oldAdditionalLocations =
+  		    new ArrayList<MetadataParsedURL>(getAdditionalLocations());
+  		if (oldAdditionalLocations != null)
+  			for (MetadataParsedURL otherLocation : oldAdditionalLocations)
+  				addAdditionalLocation(otherLocation);
+		}
 		
 		//TODO -- are there other values that should be propagated?! -- can use MetadataFieldDescriptors.
 	}
