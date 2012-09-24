@@ -17,7 +17,7 @@ public interface SemanticsAssetVersions
 {
 	public static final float	DICTIONARY_ASSET_VERSION 	    = 2.123f;
 	
-	public static final float 	METAMETADATA_ASSET_VERSION		= 2.87f;
+	public static final float 	METAMETADATA_ASSET_VERSION		= 2.89f;
 	
 	public static final AssetsRoot	SEMANTICS_ASSETS_ROOT =  new AssetsRoot("", SingletonApplicationEnvironment.runningInEclipse() ? EnvironmentGeneric.configDir().file() : null);
 }
