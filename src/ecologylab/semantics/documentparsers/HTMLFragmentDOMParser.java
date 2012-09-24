@@ -83,18 +83,15 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 			for (int i = 0; i < numImages; i++)
 			{
 				Node imgNode = imgNodeList.item(i);
+				Node parent 			= imgNode.getParentNode();
 
+				Document outlink	= null;
+				boolean changeSourceDoc = false;
+				
 				String src 				= DomTools.getAttribute(imgNode, SRC);
 				src               = changeImageUrlIfNeeded(src);
 				ParsedURL imgPurl	= ImgElement.constructPurl(containerPurl, src);
-				if (imgPurl == null)
-				{
-					continue;
-				}
 
-				Document outlink	= null;
-				Node parent 			= imgNode.getParentNode();
-				boolean changeSourceDoc = false;
 				do
 				{
 					if (A.equals(parent.getNodeName()))
@@ -104,6 +101,16 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 						{
 							try
 							{
+							  if (imgPurl == null)
+							  {
+							    String srcUrl = getImageUrlFromParameters(hrefString);
+							    if (srcUrl != null)
+							      imgPurl = ImgElement.constructPurl(containerPurl, srcUrl);
+							  }
+							  
+							  if (imgPurl == null)
+							    break;
+							  
 							  StringBuilder newImgHrefBuf = StringBuilderUtils.acquire();
 								changeSourceDoc = changeImageRefUrlAndSourceDocIfNeeded(hrefString, newImgHrefBuf);
 								hrefString = newImgHrefBuf.length() > 0 ? newImgHrefBuf.toString() : hrefString;
@@ -123,6 +130,10 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 					}
 					parent	= parent.getParentNode();		
 				} while (parent != null);
+				
+				if (imgPurl == null)
+				  continue;
+				
 				SemanticsGlobalScope semanticsSessionScope	= getSemanticsScope();
 				Image image																	= semanticsSessionScope.getOrConstructImage(imgPurl);
 				if (image != null)
@@ -144,7 +155,7 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 		}
 	}
 	
-	/**
+  /**
 	 * For Google Image, we need to change the source of the image since we don't support HTTPS.
 	 * 
 	 * @param imgSrcAttr
@@ -166,6 +177,22 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 		return imgSrcAttr;
 	}
 	
+	protected String getImageUrlFromParameters(String hrefString)
+  {
+	  if (hrefString != null)
+	  {
+			if (hrefString.startsWith("http://www.google.com/imgres?")
+			    || hrefString.startsWith("http://images.google.com/imgres?"))
+			{
+				ParsedURL hrefPURL = ParsedURL.getAbsolute(hrefString);
+				Map<String, String> params = hrefPURL.extractParams(false);
+				if (params != null && params.containsKey("imgurl"))
+					  return params.get("imgurl");
+			}
+	  }
+    return null;
+  }
+
   /**
    * Image ref URL is the URL of the referring page where the image appears in. In some cases, like
    * Google Image, this ref URL is encoded as a URL parameter, and we need to extract it.
@@ -184,7 +211,8 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 	{
 		if (imgHref != null)
 		{
-			if (imgHref.startsWith("http://www.google.com/imgres?"))
+			if (imgHref.startsWith("http://www.google.com/imgres?")
+			    || imgHref.startsWith("http://images.google.com/imgres?"))
 			{
 				ParsedURL hrefPURL = ParsedURL.getAbsolute(imgHref);
 				Map<String, String> params = hrefPURL.extractParams(false);
