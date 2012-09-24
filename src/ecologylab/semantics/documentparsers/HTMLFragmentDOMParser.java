@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import ecologylab.generic.Continuation;
 import ecologylab.generic.DomTools;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.collecting.SemanticsGlobalScope;
@@ -22,6 +23,7 @@ import ecologylab.semantics.html.utils.HTMLNames;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.builtins.AnonymousDocument;
 import ecologylab.semantics.metadata.builtins.Document;
+import ecologylab.semantics.metadata.builtins.DocumentClosure;
 import ecologylab.semantics.metadata.builtins.Image;
 import ecologylab.semantics.metadata.builtins.ImageClipping;
 import ecologylab.serialization.XMLTools;
@@ -139,15 +141,23 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 				if (image != null)
 				{
 					String altText = DomTools.getAttribute(imgNode, ALT);
-					ImageClipping imageClipping = null;
+					final ImageClipping imageClipping = image.constructClipping(containerDocument, outlink, altText, null);
 					if (changeSourceDoc)
 					{
-					  outlink.queueDownload();
-				    imageClipping = image.constructClipping(outlink, null, altText, null);
-					}
-					else
-					{
-				    imageClipping = image.constructClipping(containerDocument, outlink, altText, null);
+					  outlink.queueDownload(new Continuation<DocumentClosure>()
+            {
+              @Override
+              public void callback(DocumentClosure o)
+              {
+                Document downloadedDoc = o.getDocument();
+                if (downloadedDoc != null && !downloadedDoc.isRecycled())
+                {
+                  imageClipping.setSourceDoc(downloadedDoc);
+                  imageClipping.setOutlink(null);
+                  imageClipping.setMetadataChanged(true);
+                }
+              }
+            });
 					}
 					imageClippings.add(imageClipping);
 				}				
