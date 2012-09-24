@@ -19,6 +19,7 @@ import ecologylab.semantics.collecting.SemanticsGlobalScope;
 import ecologylab.semantics.html.DOMParserInterface;
 import ecologylab.semantics.html.ImgElement;
 import ecologylab.semantics.html.utils.HTMLNames;
+import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.builtins.AnonymousDocument;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.Image;
@@ -93,6 +94,7 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 
 				Document outlink	= null;
 				Node parent 			= imgNode.getParentNode();
+				boolean changeSourceDoc = false;
 				do
 				{
 					if (A.equals(parent.getNodeName()))
@@ -102,7 +104,10 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 						{
 							try
 							{
-								hrefString = changeImageRefUrlIfNeeded(hrefString);
+							  StringBuilder newImgHrefBuf = StringBuilderUtils.acquire();
+								changeSourceDoc = changeImageRefUrlAndSourceDocIfNeeded(hrefString, newImgHrefBuf);
+								hrefString = newImgHrefBuf.length() > 0 ? newImgHrefBuf.toString() : hrefString;
+								StringBuilderUtils.release(newImgHrefBuf);
 							}
 							catch (UnsupportedEncodingException e)
 							{
@@ -123,7 +128,16 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 				if (image != null)
 				{
 					String altText = DomTools.getAttribute(imgNode, ALT);
-					ImageClipping imageClipping = image.constructClipping(containerDocument, outlink, altText, null);
+					ImageClipping imageClipping = null;
+					if (changeSourceDoc)
+					{
+					  outlink.queueDownload();
+				    imageClipping = image.constructClipping(outlink, null, altText, null);
+					}
+					else
+					{
+				    imageClipping = image.constructClipping(containerDocument, outlink, altText, null);
+					}
 					imageClippings.add(imageClipping);
 				}				
 			}
@@ -141,44 +155,58 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 	{
 		if (imgSrcAttr != null)
 		{
-	    if (Pattern.matches("https://encrypted-tbn\\d+.google.com/images?.*", imgSrcAttr))
+	    if (Pattern.matches("https://encrypted-tbn\\d+.google.com/images?.*", imgSrcAttr)
+	        || Pattern.matches("https://encrypted-tbn\\d+.gstatic.com/images?.*", imgSrcAttr))
 			{
 				imgSrcAttr = imgSrcAttr.replace("https://", "http://");
 				imgSrcAttr = imgSrcAttr.replace("//encrypted-tbn", "//tbn");
+				imgSrcAttr = imgSrcAttr.replace("gstatic.com", "google.com");
 			}
 		}
 		return imgSrcAttr;
 	}
 	
-	/**
-	 * Image ref URL is the URL of the referring page where the image appears in. In some cases, like
-	 * Google Image, this ref URL is encoded as a URL parameter, and we need to extract it.
-	 * 
-	 * @param imgHrefAttr
-	 *          The original image ref URL.
-	 * @return The extracted image ref URL.
-	 * @throws UnsupportedEncodingException
-	 */
-	protected String changeImageRefUrlIfNeeded(String imgHrefAttr)
+  /**
+   * Image ref URL is the URL of the referring page where the image appears in. In some cases, like
+   * Google Image, this ref URL is encoded as a URL parameter, and we need to extract it.
+   * 
+   * @param imgHref
+   *          The original image ref URL.
+   * @param outNewImgHref
+   *          Buffer to hold the real image ref URL. By default it is the same as the imgHref, but
+   *          in cases needed it will be different.
+   * @return If we should change the image's source_doc to outNewImgHref.
+   * @throws UnsupportedEncodingException
+   */
+	protected boolean changeImageRefUrlAndSourceDocIfNeeded(String imgHref,
+	                                                        StringBuilder outNewImgHref)
 			throws UnsupportedEncodingException
 	{
-		if (imgHrefAttr != null)
+		if (imgHref != null)
 		{
-			if (imgHrefAttr.startsWith("http://www.google.com/imgres?"))
+			if (imgHref.startsWith("http://www.google.com/imgres?"))
 			{
-				ParsedURL hrefPURL = ParsedURL.getAbsolute(imgHrefAttr);
+				ParsedURL hrefPURL = ParsedURL.getAbsolute(imgHref);
 				Map<String, String> params = hrefPURL.extractParams(false);
 				if (params != null)
 				{
 					if (params.containsKey("imgrefurl"))
 					{
-						imgHrefAttr = params.get("imgrefurl");
-						imgHrefAttr = URLDecoder.decode(imgHrefAttr, "utf-8");
+						String newImgHref = params.get("imgrefurl");
+						newImgHref = URLDecoder.decode(newImgHref, "utf-8");
+						if (outNewImgHref != null)
+						  outNewImgHref.append(newImgHref);
+						return true;
 					}
 				}
 			}
+			else
+			{
+			  if (outNewImgHref != null)
+			    outNewImgHref.append(imgHref);
+			}
 		}
-		return imgHrefAttr;
+		return false;
 	}
 
 	public void parseText(StringBuilder buffy, Node bodyNode)

@@ -184,7 +184,8 @@ implements DOMParserInterface
 			{ // The href associated is actually an image. Create a new img element and associate text to
 				// it.
 				Image newImage					= semanticsScope.getOrConstructImage(destHref);
-				newImage.constructClipping(getDocument(), null, null, anchorContext.getAnchorText());
+				if (newImage != null)
+  				newImage.constructClipping(getDocument(), null, null, anchorContext.getAnchorText());
 				continue;
 			}
 
