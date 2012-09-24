@@ -3,6 +3,7 @@ package ecologylab.semantics.metametadata;
 import ecologylab.collections.Scope;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
+import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.annotations.Hint;
 import ecologylab.serialization.annotations.simpl_hints;
 import ecologylab.serialization.annotations.simpl_scalar;
@@ -98,7 +99,9 @@ public class MetaMetadataValueField
 	{
 		if(this.fromScalar != null)
 		{
-			return metadata.getFieldDescriptorByTagName(this.fromScalar);
+		  String fieldName = XMLTools.fieldNameFromElementName(this.fromScalar);
+		  return metadata.getFieldDescriptorsByFieldName().get(fieldName);
+//			return metadata.getFieldDescriptorByTagName(this.fromScalar);
 		}else{
 			return null;
 		}
