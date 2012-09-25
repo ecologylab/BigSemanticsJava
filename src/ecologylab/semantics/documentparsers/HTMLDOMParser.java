@@ -352,8 +352,8 @@ implements DOMParserInterface
 	{
 		CompoundDocument source	= (CompoundDocument)documentClosure.getDocument();
 		ImageClipping clipping = constructImageClipping(getDocument(), source, null, imgNode);
-		CompoundDocument outlink	= (CompoundDocument) semanticsScope.getOrConstructDocument(anchorHref);
-		clipping.setOutlink(outlink);
+		//CompoundDocument outlink	= (CompoundDocument) semanticsScope.getOrConstructDocument(anchorHref);
+		//clipping.setOutlink(outlink);
 		return clipping;
 	}
 	/**

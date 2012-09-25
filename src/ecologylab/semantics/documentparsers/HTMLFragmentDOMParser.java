@@ -141,7 +141,7 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 				if (image != null)
 				{
 					String altText = DomTools.getAttribute(imgNode, ALT);
-					final ImageClipping imageClipping = image.constructClipping(containerDocument, outlink, altText, null);
+					final ImageClipping imageClipping = image.constructClipping(containerDocument, null /*outlink*/, altText, null);
 					if (changeSourceDoc)
 					{
 					  outlink.queueDownload(new Continuation<DocumentClosure>()
