@@ -9,6 +9,7 @@ import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.Image;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
+import ecologylab.semantics.metametadata.exceptions.MetaMetadataException;
 
 /**
  * Singleton class, this master maps ParsedURLs to Document Metadata subclasses.
@@ -63,7 +64,16 @@ public class TNGGlobalCollections extends Debug
 					@Override
 					public Document constructValue(ParsedURL location, boolean isImage)
 					{
-						return repository.constructDocument(location, isImage);
+					  Document result = null;
+					  try
+					  {
+					    result = repository.constructDocument(location, isImage);
+					  }
+					  catch (MetaMetadataException e)
+					  {
+					    e.printStackTrace();
+					  }
+						return result;
 					}
 					/**
 					 * Construct a new Document, using the supplied MetaMetadata.

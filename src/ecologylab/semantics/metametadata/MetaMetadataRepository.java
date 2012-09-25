@@ -30,6 +30,7 @@ import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.Image;
 import ecologylab.semantics.metadata.scalar.types.MetadataScalarType;
+import ecologylab.semantics.metametadata.exceptions.MetaMetadataException;
 import ecologylab.semantics.namesandnums.DocumentParserTagNames;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.SimplTypesScope;
@@ -784,6 +785,14 @@ implements PackageSpecifier, DocumentParserTagNames
 		if (metaMetadata != null)
 		{
 			Metadata constructed = metaMetadata.constructMetadata(metadataTScope);
+			if (!(constructed instanceof Image))
+			{
+			  throw new MetaMetadataException("Cannot convert " + constructed + " to an Image object.\n"
+			                                  + "This is usually caused by inaccurate URL patterns in "
+			                                  + "meta-metadata repository, that match a non-Image URL "
+			                                  + "with an Image or Image-derived meta-metadata type.\n"
+			                                  + "The accessed URL: " + purl);
+			}
       result = (Image) constructed;
 			result.setLocation(purl);
 		}
