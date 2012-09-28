@@ -117,6 +117,9 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 			else
 			{
 				String typeName = getTypeName();
+				MetaMetadata mmd = getRepository().getMMByName(typeName);
+				if (mmd != null && mmd.getType() != null && mmd.getExtendsAttribute() == null)
+				  typeName = mmd.getType();
 				className = XMLTools.classNameFromElementName(typeName);
 			}
 //			rst = "ArrayList<" + className + ">";

@@ -755,7 +755,7 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 					{
 						error("cannot change meta-metadata fro extracted value " + thisMetadata + " to " + locMmd + " because the type doesn't match!\n"
 								  + "expected type: " + thisMetadata.getMetaMetadata() + "\n"
-								  + "check the <selector> to see if it is not specific enought!");
+								  + "check the <selector> to see if it is not specific enough!");
 					}
 				}
 			}

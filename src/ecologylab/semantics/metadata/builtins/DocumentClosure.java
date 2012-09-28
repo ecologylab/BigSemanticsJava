@@ -274,7 +274,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 			
 			newDocument.inheritValues(oldDocument);	
 			
-			SimplTypesScope.serializeOut(newDocument, "After changeDocument()", StringFormat.XML);
+//			SimplTypesScope.serializeOut(newDocument, "After changeDocument()", StringFormat.XML);
 			
 			semanticInlinks				= newDocument.semanticInlinks; // probably not needed, but just in case.
 			oldDocument.recycle();
