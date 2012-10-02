@@ -7,6 +7,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -766,8 +767,22 @@ implements PackageSpecifier, DocumentParserTagNames
 			return constructImage(purl);
 		
 		MetaMetadata metaMetadata = getCompoundDocumentMM(purl);
+	  List<ParsedURL> additionalLocations = new ArrayList<ParsedURL>();
+		if (metaMetadata.filterLocation != null)
+		{
+		  ParsedURL newPurl = metaMetadata.filterLocation.filter(purl, additionalLocations);
+		  if (!purl.equals(newPurl))
+		  {
+		    // if the purl has been changed by the filter, add the old one as additional locations,
+		    // and use the new one as the primary location.
+		    additionalLocations.add(purl);
+		    purl = newPurl;
+		  }
+		}
 		Document result = (Document) metaMetadata.constructMetadata(metadataTScope);
 		result.setLocation(purl);
+		for (ParsedURL additionalLocation : additionalLocations)
+		  result.addAdditionalLocation(additionalLocation);
 		return result;
 	}
 

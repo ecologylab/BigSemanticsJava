@@ -45,11 +45,14 @@ import ecologylab.semantics.metadata.MetadataBase;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
 import ecologylab.semantics.metadata.builtins.Document;
+import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
+import ecologylab.semantics.metadata.scalar.types.MetadataParsedURLScalarType;
 import ecologylab.semantics.metadata.scalar.types.MetadataScalarType;
 import ecologylab.semantics.metametadata.DefVar;
 import ecologylab.semantics.metametadata.FieldParser;
 import ecologylab.semantics.metametadata.FieldParserElement;
 import ecologylab.semantics.metametadata.FieldParserForRegexSplit;
+import ecologylab.semantics.metametadata.FilterLocation;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataCollectionField;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
@@ -747,9 +750,21 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 					if (thisMetadataClass.isAssignableFrom(trueMetadataClass))
 					{
 						debug("changing meta-metadata for extracted value " + thisMetadata + " to " + locMmd);
-						Metadata changedMetadata = locMmd.constructMetadata();
-						changedMetadata.setMetaMetadata(locMmd);
-						return changedMetadata;
+					  if (thisMetadataClass == trueMetadataClass)
+					  {
+					    // when the two metadata classes are the same, we can safely change the meta-metadata
+					    // since they have exactly the same set of fields, and thus no binding errors will
+					    // occur.
+					    thisMetadata.setMetaMetadata(locMmd);
+					  }
+					  else
+					  {
+					    // when the two metadata classes are not the same, we need to be careful. create
+					    // the right metadata object and copy values.
+  						Metadata changedMetadata = locMmd.constructMetadata();
+  						changedMetadata.setMetaMetadata(locMmd);
+  						return changedMetadata;
+					  }
 					}
 					else
 					{
@@ -1022,9 +1037,28 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 		evaluation = applyPrefixAndRegExOnEvaluation(evaluation, mmdField);
 		if (StringTools.isNullOrEmpty(evaluation))
 			return false;
-
-//		metadata.setByTagName(mmdField.getTagForTranslationScope(), evaluation, this);
-		metadata.setByFieldName(mmdField.getFieldNameInJava(false), evaluation, this);
+		
+	  MetadataFieldDescriptor fd = mmdField.getMetadataFieldDescriptor();
+	  ScalarType fdScalarType = fd == null ? null : fd.getScalarType();
+		if (fdScalarType != null && fdScalarType instanceof MetadataParsedURLScalarType)
+		{
+		  // if this is a ParsedURL, we try to filter it using <filter_location>, if applicable.
+	    MetadataParsedURL metadataPurl = (MetadataParsedURL) fdScalarType.getInstance(evaluation, null, this);
+	    if (metadataPurl != null)
+	    {
+	      ParsedURL filteredPurl = 
+	          FilterLocation.filterIfNeeded(metadataPurl.getValue(), null, semanticsScope);
+	      if (!metadataPurl.getValue().equals(filteredPurl))
+  	      metadataPurl.setValue(filteredPurl);
+	    }
+	    fd.setField(metadata, metadataPurl);
+		}
+		else
+		{
+      // for other scalar types, we only need to create and assign the value.
+  		metadata.setByFieldName(mmdField.getFieldNameInJava(false), evaluation, this);
+		}
+		
 		return true;
 	}
 

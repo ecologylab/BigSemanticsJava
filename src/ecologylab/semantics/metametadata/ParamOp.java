@@ -1,10 +1,11 @@
 /**
  * 
  */
-package ecologylab.semantics.actions;
+package ecologylab.semantics.metametadata;
 
 import java.util.HashMap;
 
+import ecologylab.semantics.actions.SemanticActionHandler;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.annotations.simpl_scalar;
 

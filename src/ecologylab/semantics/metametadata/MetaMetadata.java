@@ -21,6 +21,7 @@ import ecologylab.semantics.metametadata.exceptions.MetaMetadataException;
 import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.annotations.simpl_collection;
+import ecologylab.serialization.annotations.simpl_composite;
 import ecologylab.serialization.annotations.simpl_inherit;
 import ecologylab.serialization.annotations.simpl_map;
 import ecologylab.serialization.annotations.simpl_nowrap;
@@ -56,10 +57,18 @@ implements IMappable<String>//, HasLocalTranslationScope
 	@simpl_collection("example_url")
 	@simpl_nowrap
 	ArrayList<ExampleUrl>														exampleUrls;
-
+	
 	public ArrayList<ExampleUrl> getExampleUrls()
 	{
 		return exampleUrls;
+	}
+
+	@simpl_composite
+	FilterLocation                                  filterLocation;
+	
+	public FilterLocation getFilterLocation()
+	{
+	  return filterLocation;
 	}
 
 	@simpl_scalar

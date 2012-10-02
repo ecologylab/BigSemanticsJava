@@ -529,6 +529,42 @@ public class Document extends DocumentDeclaration
 		return queueDownload(null);
 	}
 	
+  /**
+   * Queue this document for downloading, and then block to wait for it to be downloaded and parsed
+   * done.
+   * 
+   * @param timeoutMs
+   *          The longest time to wait, in milliseconds.
+   * @return If the downloading and parsing succeeded, as queueDownload().
+   * @throws InterruptedException
+   */
+	public boolean queueDownloadAndWait(long timeoutMs) throws InterruptedException
+	{
+	  if (!isDownloadDone())
+	  {
+	    final Object lock = new Object();
+	    boolean result = false;
+	    synchronized (lock)
+	    {
+  	    result = queueDownload(new Continuation<DocumentClosure>()
+        {
+          @Override
+          public void callback(DocumentClosure o)
+          {
+            synchronized (lock)
+            {
+              lock.notifyAll();
+            }
+          }
+        });
+  	    if (!isDownloadDone())
+  	      lock.wait(timeoutMs);
+	    }
+	    return result;
+	  }
+	  return true;
+	}
+	
 //	@Override
 //	public void recycle()
 //	{

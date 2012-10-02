@@ -45,7 +45,7 @@ public class DocumentLocationMap<D extends Document> extends ConcurrentHashMap<P
 		{
 			// record does not yet exist
 			D newValue = mapHelper.constructValue(location, isImage);
-			result = this.putIfAbsent(location, newValue);
+			result = this.putIfAbsent(newValue.getLocation(), newValue);
 			if (result == null) 
 			{
 				// put succeeded, use new value
@@ -54,6 +54,7 @@ public class DocumentLocationMap<D extends Document> extends ConcurrentHashMap<P
 		}
 		return result;
 	}	
+	
 	public void putIfAbsent(D document)
 	{
 		ParsedURL location	= document.getLocation();
@@ -62,6 +63,7 @@ public class DocumentLocationMap<D extends Document> extends ConcurrentHashMap<P
 			this.putIfAbsent(location, document);
 		}
 	}
+	
 	public D getOrConstruct(MetaMetadata mmd, ParsedURL location)
 	{
     D result = this.get(location);

@@ -75,6 +75,7 @@ public class TNGGlobalCollections extends Debug
 					  }
 						return result;
 					}
+					
 					/**
 					 * Construct a new Document, using the supplied MetaMetadata.
 					 * Set its location.
@@ -120,10 +121,12 @@ public class TNGGlobalCollections extends Debug
 	{
 		return allDocuments.getOrConstruct(location, isImage);
 	}
+	
 	public void putIfAbsent(Document document)
 	{
 		allDocuments.putIfAbsent(document);
 	}
+	
 	/**
 	 * Put a special entry into the DocumentLocationMap for the passed in location, 
 	 * saying that it refers to an uninformative image that should be forever ignored.
@@ -167,6 +170,16 @@ public class TNGGlobalCollections extends Debug
 	public void addMapping(ParsedURL location, Document document)
 	{
 		allDocuments.addMapping(location, document);
+	}
+	
+	public String debugString()
+	{
+	  StringBuilder sb = new StringBuilder();
+	  for (ParsedURL key : allDocuments.keySet())
+	  {
+      sb.append(key).append("    ==>    ").append(allDocuments.get(key)).append("\n");
+	  }
+	  return sb.toString();
 	}
 	
 }

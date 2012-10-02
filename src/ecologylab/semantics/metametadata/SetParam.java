@@ -1,7 +1,7 @@
 /**
  * 
  */
-package ecologylab.semantics.actions;
+package ecologylab.semantics.metametadata;
 
 import java.util.HashMap;
 import java.util.List;

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package ecologylab.semantics.actions;
+package ecologylab.semantics.metametadata;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -24,7 +24,7 @@ public class Regex extends ElementState
 	
 	ParsedURL perform(ParsedURL input)
 	{
-		ParsedURL result	= null;
+		ParsedURL result	= input;
 		if (input != null && match != null)
 		{
 			String 		string	= input.toString();
