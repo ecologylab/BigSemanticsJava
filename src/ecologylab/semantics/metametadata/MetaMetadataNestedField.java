@@ -419,13 +419,13 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 				// bind class descriptor for nested sub-fields
 				MetaMetadataNestedField nested = (MetaMetadataNestedField) thatChild;
 				MetadataFieldDescriptor fd = nested.getMetadataFieldDescriptor();
-				if (fd.isPolymorphic())
-				{
+//				if (fd.isPolymorphic())
+//				{
 					// do not bind descriptor for truely polymorphic fields
 //					debug("Polymorphic field: " + nested + ", not binding an element class descriptor.");
-				}
-				else
-				{
+//				}
+//				else
+//				{
 					MetadataClassDescriptor elementClassDescriptor = ((MetaMetadataNestedField) thatChild).bindMetadataClassDescriptor(metadataTScope);
 					if (elementClassDescriptor != null)
 					{
@@ -439,7 +439,7 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 						warning("Cannot determine elementClassDescriptor for " + thatChild);
 						this.kids.remove(thatChild.getName());
 					}
-				}
+//				}
 			}
 
 			if (this instanceof MetaMetadata)
