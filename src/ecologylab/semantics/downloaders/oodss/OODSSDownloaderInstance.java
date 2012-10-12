@@ -29,8 +29,8 @@ public class OODSSDownloaderInstance
 	public static void main(String[] args) throws IOException
 	// public static void runInstance() throws IOException
 	{
-		SimplTypesScope lookupMetadataTranslations = SemanticServiceOODSSTranslationScope
-				.getOODSSTranslationScope();
+		SimplTypesScope lookupMetadataTranslations = SemanticsServiceDownloadMessageScope
+				.get();
 
 		/*
 		 * Creates a scope for the server to use as an application scope as well as individual client

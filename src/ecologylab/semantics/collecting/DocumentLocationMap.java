@@ -51,6 +51,13 @@ public class DocumentLocationMap<D extends Document> extends ConcurrentHashMap<P
 				// put succeeded, use new value
 				result = newValue;
 			}
+			else if (result != newValue)
+			{
+			  result.addAdditionalLocation(newValue.getLocationMetadata());
+			  if (newValue.additionalLocations() != null)
+			    for (MetadataParsedURL newLoc : newValue.getAdditionalLocations())
+			      result.addAdditionalLocation(newLoc);
+			}
 		}
 		return result;
 	}	

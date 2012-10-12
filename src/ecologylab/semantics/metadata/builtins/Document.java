@@ -427,11 +427,25 @@ public class Document extends DocumentDeclaration
 	
 	public void addAdditionalLocation(MetadataParsedURL newMPurl)
 	{
+	  if (location().equals(newMPurl.getValue()))
+	    return;
+	  if (containsPURL(getAdditionalLocations(), newMPurl.getValue()))
+      return;
+	  
 		if (getAdditionalLocations() == null)
 			setAdditionalLocations(new ArrayList<MetadataParsedURL>(3));
 		getAdditionalLocations().add(newMPurl);
 	}
 	
+  private boolean containsPURL(List<MetadataParsedURL> list, ParsedURL purl)
+  {
+    if (list != null)
+      for (MetadataParsedURL metadataPurl : list)
+        if (purl.equals(metadataPurl.getValue()))
+          return true;
+    return false;
+  }
+  
 	/**
 	 * Get the old location from this.
 	 * Set the location of this to the newLocation.

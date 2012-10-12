@@ -15,7 +15,7 @@ import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.downloaders.LocalDocumentCache;
 import ecologylab.semantics.downloaders.oodss.DownloadRequest;
 import ecologylab.semantics.downloaders.oodss.DownloadResponse;
-import ecologylab.semantics.downloaders.oodss.SemanticServiceOODSSTranslationScope;
+import ecologylab.semantics.downloaders.oodss.SemanticsServiceDownloadMessageScope;
 import ecologylab.semantics.filestorage.FileMetadata;
 import ecologylab.semantics.filestorage.FileStorageProvider;
 import ecologylab.semantics.filestorage.FileSystemStorage;
@@ -51,8 +51,8 @@ public class OODSSDownloadController implements DownloadController
 			if (filePath == null)
 			{
 				// Network download
-				SimplTypesScope lookupMetadataTranslations = SemanticServiceOODSSTranslationScope
-						.getOODSSTranslationScope();
+				SimplTypesScope lookupMetadataTranslations = SemanticsServiceDownloadMessageScope
+						.get();
 
 				Scope sessionScope = new Scope();
 
