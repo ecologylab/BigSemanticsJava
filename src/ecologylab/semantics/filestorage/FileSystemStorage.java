@@ -23,26 +23,26 @@ import ecologylab.serialization.formatenums.Format;
 
 public class FileSystemStorage extends Debug implements FileStorageProvider
 {
-	private static FileSystemStorage	fsStorageProvider	= null;
+	private static FileSystemStorage	fsStorageProvider = null;
 
-	private static String							userhome					= System.getProperty("user.home");
+	private static String				downloadDirectory;
 
-	private static String							downloadDirectory	= userhome + "/Downloads/LocalDocumentCache";
-
-	private static String							metaFileDirectory	= downloadDirectory + "/meta";
+	private static String				metaFileDirectory;
 
 	private static SimplTypesScope		META_TSCOPE				= SimplTypesScope.get("fileMetadata",
 																													FileMetadata.class);
-
-	private String										outFileName;
-
-	static
+	public static void setDownloadDirectory(String downloadDir)
 	{
+		downloadDirectory = downloadDir;
+		metaFileDirectory = downloadDirectory + "/meta";
+		
 		File f = new File(downloadDirectory);
 		f.mkdirs();
 		f = new File(metaFileDirectory);
 		f.mkdir();
 	}
+
+	private String										outFileName;
 
 	private FileSystemStorage()
 	{
@@ -80,6 +80,7 @@ public class FileSystemStorage extends Debug implements FileStorageProvider
 	{
 		String fileName = SHA256FileNameGenerator.getName(originalPURL);
 		File f = new File(downloadDirectory, fileName);
+		debug("Checking for cached HTML file at [" + f.getAbsolutePath() + "]: exists? " + f.exists());
 		if (f.exists())
 			return f.getAbsolutePath();
 		else

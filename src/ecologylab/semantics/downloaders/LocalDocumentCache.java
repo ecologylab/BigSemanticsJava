@@ -48,6 +48,7 @@ public class LocalDocumentCache extends Debug implements SemanticActionsKeyWords
 	public void connect() throws IOException
 	{
 		ParsedURL originalPURL = document.getDownloadLocation();
+		debug("Document[" + document.getLocation() + "] will be accessed at " + originalPURL);
 		purlConnection = new PURLConnection(originalPURL);
 
 		if (originalPURL.isFile())
@@ -60,6 +61,7 @@ public class LocalDocumentCache extends Debug implements SemanticActionsKeyWords
 				String s = originalPURL.url().toString();
 				s = s.replaceFirst("localhost", "");
 				ParsedURL newPURL = new ParsedURL(new URL(s));
+				debug("Document[" + document.getLocation() + "].location and purlConnection changed to " + newPURL);
 				purlConnection = new PURLConnection(newPURL);
 				document.setLocation(newPURL);
 				file = newPURL.file();

@@ -6,6 +6,7 @@ package ecologylab.semantics.downloaders.controllers;
 import java.io.IOException;
 
 import ecologylab.collections.Scope;
+import ecologylab.generic.Debug;
 import ecologylab.net.PURLConnection;
 import ecologylab.net.ParsedURL;
 import ecologylab.oodss.distributed.client.NIOClient;
@@ -19,6 +20,7 @@ import ecologylab.semantics.downloaders.oodss.SemanticsServiceDownloadMessageSco
 import ecologylab.semantics.filestorage.FileMetadata;
 import ecologylab.semantics.filestorage.FileStorageProvider;
 import ecologylab.semantics.filestorage.FileSystemStorage;
+import ecologylab.semantics.filestorage.SHA256FileNameGenerator;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
 import ecologylab.serialization.SimplTypesScope;
@@ -30,7 +32,7 @@ import ecologylab.serialization.SimplTypesScope;
  *
  */
 
-public class OODSSDownloadController implements DownloadController
+public class OODSSDownloadController extends Debug implements DownloadController
 {
 
 	@Override
@@ -50,6 +52,8 @@ public class OODSSDownloadController implements DownloadController
 			String filePath = storageProvider.lookupFilePath(originalPURL);
 			if (filePath == null)
 			{
+				debug("Uncached URL: " + originalPURL);
+				
 				// Network download
 				SimplTypesScope lookupMetadataTranslations = SemanticsServiceDownloadMessageScope
 						.get();
@@ -69,7 +73,12 @@ public class OODSSDownloadController implements DownloadController
 
 				try
 				{
+					debug("Sending OODSS request for accessing " + originalPURL);
 					responseMessage = (DownloadResponse) client.sendMessage(requestMessage);
+					String fileLoc = responseMessage.getLocation();
+					if (fileLoc != null && fileLoc.length() > 0)
+						debug("HTML page cached at " + fileLoc);
+						
 
 					// additional location
 					ParsedURL redirectedLocation = responseMessage.getRedirectedLocation();
@@ -82,8 +91,7 @@ public class OODSSDownloadController implements DownloadController
 					}
 
 					// set local location
-					document
-							.setLocalLocation(ParsedURL.getAbsolute("file://" + responseMessage.getLocation()));
+					document.setLocalLocation(ParsedURL.getAbsolute("file://" + fileLoc));
 					// mimetype
 					mimeType = responseMessage.getMimeType();
 				}
@@ -97,6 +105,8 @@ public class OODSSDownloadController implements DownloadController
 			}
 			else
 			{
+				debug("Cached URL[" + originalPURL + "] at " + filePath);
+				
 				// document is present in local cache. read meta information as well
 				document.setLocalLocation(ParsedURL.getAbsolute("file://" + filePath));
 
@@ -124,6 +134,7 @@ public class OODSSDownloadController implements DownloadController
 		// set mime type
 		if (mimeType != null)
 			purlConnection.setMimeType(mimeType);
+		debug("Setting purlConnection[" + purlConnection.getPurl() + "] to documentClosure");
 		documentClosure.setPurlConnection(purlConnection);
 
 		// document parser is set only when URL is local directory

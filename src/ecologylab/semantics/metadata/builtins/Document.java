@@ -376,6 +376,11 @@ public class Document extends DocumentDeclaration
 		return getOrConstructClosure();
 	}
 	
+	public DocumentClosure documentClosure()
+	{
+		return documentClosure;
+	}
+	
 	/**
 	 * @return
 	 */
