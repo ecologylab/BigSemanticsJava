@@ -161,6 +161,11 @@ public class TNGGlobalCollections extends Debug
 		allDocuments.remap(oldDocument, newDocument);
 	}
 	
+	public void removed(ParsedURL location)
+	{
+	  allDocuments.remove(location);
+	}
+	
 	/**
 	 * Add a new mapping, down the line, for an already mapped document, in the global map.
 	 * 

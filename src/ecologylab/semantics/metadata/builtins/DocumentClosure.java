@@ -184,31 +184,36 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 		//the parameter is used to get and set document properties with request and response respectively
 		downloadController.connect(this);  
 
-		/*MetaMetadataCompositeField*/MetaMetadata metaMetadata = (MetaMetadata) document.getMetaMetadata();
+		MetaMetadata metaMetadata = (MetaMetadata) document.getMetaMetadata();
 		//check for more specific meta-metadata
 		if (metaMetadata.isGenericMetadata())
 		{ // see if we can find more specifc meta-metadata using mimeType
 			MetaMetadataRepository repository = semanticsScope.getMetaMetadataRepository();
-			MetaMetadata mimeMmd	= repository.getMMByMime(purlConnection.mimeType());
+			MetaMetadata mimeMmd = repository.getMMByMime(purlConnection.mimeType());
 			if (mimeMmd != null && !mimeMmd.equals(metaMetadata))
-			{	// new meta-metadata!
+			{
+			  // new meta-metadata!
 				if (!mimeMmd.getMetadataClass().isAssignableFrom(document.getClass()))
-				{	// more specifc so we need new metadata!
+				{
+				  // more specifc so we need new metadata!
 					Document document	= (Document) mimeMmd.constructMetadata(); // set temporary on stack
 					changeDocument(document);
 				}
 				metaMetadata	= mimeMmd;
 			}
 		}
+		
 		//determine document parser	
 		if (documentParser == null)
-			documentParser = DocumentParser.get(/*(MetaMetadata)*/ metaMetadata, semanticsScope);
+			documentParser = DocumentParser.get(metaMetadata, semanticsScope);
 		if (documentParser != null)
 		{
 			documentParser.fillValues(purlConnection, this, semanticsScope);
 		}
 		else if (!DocumentParser.isRegisteredNoParser(purlConnection.getPurl()))
+		{
 			warning("No DocumentParser found: " + metaMetadata);
+		}
 		
 		if (purlConnection.isGood() && documentParser != null)
 		{
@@ -253,8 +258,8 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 				warning("Error opening connection for " + location);
 			recycle();
 		}
-		document.setDownloadDone(true);
 		
+		document.setDownloadDone(true);
 		document.downloadAndParseDone(documentParser);
 		
 		purlConnection.recycle();
@@ -271,6 +276,15 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 		{
 			Document oldDocument	= document;
 			this.document					= newDocument;
+			
+			SemanticsSite oldSite = oldDocument.site();
+			SemanticsSite newSite = newDocument.site();
+			if (oldSite != null && oldSite != newSite)
+			{
+			  // calling changeDocument() because of redirecting?
+			  if (oldSite.isDownloading())
+  			  oldSite.endDownload();
+			}
 			
 			newDocument.inheritValues(oldDocument);	
 			
@@ -334,7 +348,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 		semanticInlinks	= null;
 
 		initialPURL			= null;
-
+		
 //		if (continuations != null)
 //			continuations.clear();	
 //		continuations		= null;

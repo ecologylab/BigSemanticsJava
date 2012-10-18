@@ -12,6 +12,7 @@ import ecologylab.net.ParsedURL;
 import ecologylab.oodss.distributed.client.NIOClient;
 import ecologylab.oodss.distributed.exception.MessageTooLargeException;
 import ecologylab.semantics.collecting.SemanticsGlobalScope;
+import ecologylab.semantics.collecting.SemanticsSite;
 import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.downloaders.LocalDocumentCache;
 import ecologylab.semantics.downloaders.oodss.DownloadRequest;
@@ -20,7 +21,6 @@ import ecologylab.semantics.downloaders.oodss.SemanticsServiceDownloadMessageSco
 import ecologylab.semantics.filestorage.FileMetadata;
 import ecologylab.semantics.filestorage.FileStorageProvider;
 import ecologylab.semantics.filestorage.FileSystemStorage;
-import ecologylab.semantics.filestorage.SHA256FileNameGenerator;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
 import ecologylab.serialization.SimplTypesScope;
@@ -29,116 +29,126 @@ import ecologylab.serialization.SimplTypesScope;
  * OODSS download controller request network download to an OODSS server / worker
  * 
  * @author ajit
- *
+ * 
  */
 
 public class OODSSDownloadController extends Debug implements DownloadController
 {
 
-	@Override
-	public void connect(DocumentClosure documentClosure) throws IOException
-	{
-		Document document = documentClosure.getDocument();
-		ParsedURL originalPURL = documentClosure.getDownloadLocation();
-		PURLConnection purlConnection;
-		String mimeType = null;
-		DocumentParser documentParser = null;
+  public static int OODSS_DOWNLOAD_REQUEST_TIMEOUT = 45000;
 
-		FileStorageProvider storageProvider = FileSystemStorage.getStorageProvider();
+  @Override
+  public void connect(DocumentClosure documentClosure) throws IOException
+  {
+    Document document = documentClosure.getDocument();
+    ParsedURL originalPURL = documentClosure.getDownloadLocation();
+    String mimeType = null;
 
-		if (!originalPURL.isFile())
-		{
-			// get equivalent path and check if file exists
-			String filePath = storageProvider.lookupFilePath(originalPURL);
-			if (filePath == null)
-			{
-				debug("Uncached URL: " + originalPURL);
-				
-				// Network download
-				SimplTypesScope lookupMetadataTranslations = SemanticsServiceDownloadMessageScope
-						.get();
+    FileStorageProvider storageProvider = FileSystemStorage.getStorageProvider();
 
-				Scope sessionScope = new Scope();
+    if (!originalPURL.isFile())
+    {
+      // get equivalent path and check if file exists
+      String filePath = storageProvider.lookupFilePath(originalPURL);
+      if (filePath == null)
+      {
+        debug("Uncached URL: " + originalPURL);
 
-				// sessionScope.put("RESPONSE_LISTENER", this);
+        // Network download
+        SimplTypesScope lookupMetadataTranslations = SemanticsServiceDownloadMessageScope.get();
+        Scope sessionScope = new Scope();
+        // sessionScope.put("RESPONSE_LISTENER", this);
+        NIOClient client = new NIOClient("localhost",
+                                         2107,
+                                         lookupMetadataTranslations,
+                                         sessionScope);
+        if (client.connect(OODSS_DOWNLOAD_REQUEST_TIMEOUT))
+        {
+          String userAgentString = document.getMetaMetadata().getUserAgentString();
+          DownloadRequest requestMessage = new DownloadRequest(originalPURL, userAgentString);
+          DownloadResponse responseMessage = null;
+          try
+          {
+            debug("Sending OODSS request for accessing " + originalPURL);
+            responseMessage = (DownloadResponse) client.sendMessage(requestMessage,
+                                                                    OODSS_DOWNLOAD_REQUEST_TIMEOUT);
+            String fileLoc = responseMessage == null ? null : responseMessage.getLocation();
+            if (fileLoc != null && fileLoc.length() > 0)
+            {
+              debug("HTML page cached at " + fileLoc);
 
-				NIOClient client = new NIOClient("localhost", 2107, lookupMetadataTranslations,
-						sessionScope);
-				client.connect();
+              // additional location
+              ParsedURL redirectedLocation = responseMessage.getRedirectedLocation();
+              if (redirectedLocation != null)
+              {
+                SemanticsGlobalScope semanticScope = document.getSemanticsScope();
+                Document newDocument = semanticScope.getOrConstructDocument(redirectedLocation);
+                newDocument.addAdditionalLocation(originalPURL);
+                documentClosure.changeDocument(newDocument);
+              }
 
-				DownloadRequest requestMessage = new DownloadRequest(originalPURL, document
-						.getMetaMetadata().getUserAgentString());
+              // set local location
+              document.setLocalLocation(ParsedURL.getAbsolute("file://" + fileLoc));
 
-				DownloadResponse responseMessage;
+              // mimetype
+              mimeType = responseMessage.getMimeType();
+            }
+            else
+            {
+              error("No response from downloader(s) for " + originalPURL);
+            }
+          }
+          catch (MessageTooLargeException e)
+          {
+            System.err.println("The message was too large!");
+            e.printStackTrace();
+          }
 
-				try
-				{
-					debug("Sending OODSS request for accessing " + originalPURL);
-					responseMessage = (DownloadResponse) client.sendMessage(requestMessage);
-					String fileLoc = responseMessage.getLocation();
-					if (fileLoc != null && fileLoc.length() > 0)
-						debug("HTML page cached at " + fileLoc);
-						
+          client.disconnect();
+        }
+      }
+      else
+      {
+        debug("Cached URL[" + originalPURL + "] at " + filePath);
 
-					// additional location
-					ParsedURL redirectedLocation = responseMessage.getRedirectedLocation();
-					if (redirectedLocation != null)
-					{
-						SemanticsGlobalScope semanticScope = document.getSemanticsScope();
-						Document newDocument = semanticScope.getOrConstructDocument(redirectedLocation);
-						newDocument.addAdditionalLocation(originalPURL); // TODO: confirm this!
-						documentClosure.changeDocument(newDocument);
-					}
+        // document is present in local cache. read meta information as well
+        document.setLocalLocation(ParsedURL.getAbsolute("file://" + filePath));
 
-					// set local location
-					document.setLocalLocation(ParsedURL.getAbsolute("file://" + fileLoc));
-					// mimetype
-					mimeType = responseMessage.getMimeType();
-				}
-				catch (MessageTooLargeException e)
-				{
-					System.err.println("The message was too large!");
-					e.printStackTrace();
-				}
+        FileMetadata fileMetadata = storageProvider.getFileMetadata(originalPURL);
+        if (fileMetadata != null)
+        {
+          // additional location
+          ParsedURL redirectLoc = fileMetadata == null ? null : fileMetadata.getRedirectedLocation();
+          if (redirectLoc != null)
+          {
+            SemanticsGlobalScope semanticScope = document.getSemanticsScope();
+            debug("Changing " + document + " using redirected location " + redirectLoc);
+            Document newDocument = semanticScope.getOrConstructDocument(redirectLoc);
+            newDocument.addAdditionalLocation(originalPURL); // TODO multiple redirects
+            documentClosure.changeDocument(newDocument);
+          }
+  
+          // mimetype
+          mimeType = fileMetadata.getMimeType();
+        }
+      }
+    }
 
-				client.disconnect();
-			}
-			else
-			{
-				debug("Cached URL[" + originalPURL + "] at " + filePath);
-				
-				// document is present in local cache. read meta information as well
-				document.setLocalLocation(ParsedURL.getAbsolute("file://" + filePath));
+    // irrespective of document origin, its now saved to a local location
+    LocalDocumentCache localDocumentCache = new LocalDocumentCache(document);
+    localDocumentCache.connect();
+    PURLConnection purlConnection = localDocumentCache.getPurlConnection();
+    DocumentParser documentParser = localDocumentCache.getDocumentParser();
 
-				FileMetadata fileMetadata = storageProvider.getFileMetadata(originalPURL);
-				// additional location
-				ParsedURL redirectedLocation = fileMetadata.getRedirectedLocation();
-				if (redirectedLocation != null)
-				{
-					SemanticsGlobalScope semanticScope = document.getSemanticsScope();
-					Document newDocument = semanticScope.getOrConstructDocument(redirectedLocation);
-					newDocument.addAdditionalLocation(originalPURL); // TODO:confirm+multiple redirects
-					documentClosure.changeDocument(newDocument);
-				}
-				// mimetype
-				mimeType = fileMetadata.getMimeType();
-			}
-		}
+    // set mime type
+    if (mimeType != null)
+      purlConnection.setMimeType(mimeType);
+    debug("Setting purlConnection[" + purlConnection.getPurl() + "] to documentClosure");
+    documentClosure.setPurlConnection(purlConnection);
 
-		// irrespective of document origin, its now saved to a local location
-		LocalDocumentCache localDocumentCache = new LocalDocumentCache(document);
-		localDocumentCache.connect();
-		purlConnection = localDocumentCache.getPurlConnection();
-		documentParser = localDocumentCache.getDocumentParser();
-
-		// set mime type
-		if (mimeType != null)
-			purlConnection.setMimeType(mimeType);
-		debug("Setting purlConnection[" + purlConnection.getPurl() + "] to documentClosure");
-		documentClosure.setPurlConnection(purlConnection);
-
-		// document parser is set only when URL is local directory
-		if (documentParser != null)
-			documentClosure.setDocumentParser(documentParser);
-	}
+    // document parser is set only when URL is local directory
+    if (documentParser != null)
+      documentClosure.setDocumentParser(documentParser);
+  }
+  
 }

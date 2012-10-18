@@ -85,9 +85,9 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 		SemanticActionsKeyWords, DeserializationHookStrategy<Metadata, MetadataFieldDescriptor>
 {
 
-	public static final boolean			DONOT_LOOKUP_DOWNLOADED_DOCUMENT			= Pref.lookupBoolean("donot_lookup_downloaded_documents", false);
+	public static boolean			DONOT_LOOKUP_DOWNLOADED_DOCUMENT			= Pref.lookupBoolean("donot_lookup_downloaded_documents", false);
 
-	public static final boolean			DONOT_SETUP_DOCUMENT_GRAPH_CALLBACKS	= Pref.lookupBoolean("donot_setup_document_graph_callbacks", false);
+	public static boolean			DONOT_SETUP_DOCUMENT_GRAPH_CALLBACKS	= Pref.lookupBoolean("donot_setup_document_graph_callbacks", false);
 
 	protected XPath									xpath;
 

@@ -7,13 +7,11 @@ package ecologylab.semantics.metadata.builtins;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
 import ecologylab.generic.Continuation;
-import ecologylab.generic.HashMappableArrayList;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.collecting.DownloadStatus;
 import ecologylab.semantics.collecting.SemanticsGlobalScope;
@@ -408,6 +406,11 @@ public class Document extends DocumentDeclaration
 		return result;
 	}
 	
+	SemanticsSite site()
+	{
+	  return site;
+	}
+	
 	/**
 	 * @return the infoCollector
 	 */
@@ -616,6 +619,11 @@ public class Document extends DocumentDeclaration
 		return false;
 	}
 	
+	public boolean isRecycled()
+	{
+	  return super.isRecycled() || downloadStatus == DownloadStatus.RECYCLED;
+	}
+	
 	void setRecycled()
 	{
 		TNGGlobalCollections globalCollection = semanticsScope.getGlobalCollection();
@@ -647,6 +655,7 @@ public class Document extends DocumentDeclaration
 			parserResult.recycle();
 			parserResult		= null;
 		}
+		this.downloadStatus = DownloadStatus.RECYCLED;
 	}
 	
 	@Override
