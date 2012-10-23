@@ -69,4 +69,12 @@ public class DefaultDownloadController implements DownloadController
 		if (documentParser != null)
 			documentClosure.setDocumentParser(documentParser);
 	}
+
+  @Override
+  public boolean isCached(ParsedURL purl)
+  {
+    // TODO Auto-generated method stub
+    return false;
+  }
+  
 }

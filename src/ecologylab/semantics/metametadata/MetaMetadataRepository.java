@@ -596,7 +596,7 @@ implements PackageSpecifier, DocumentParserTagNames
 								boolean matched = entry.isPatternFragment() ? matcher.find() : matcher.matches();
 								if (matched)
 								{
-									debug(entry.isPatternFragment() ? "matched URL fragment by regex." : "matched whole URL by regex.");
+//									debug(entry.isPatternFragment() ? "matched URL fragment by regex." : "matched whole URL by regex.");
 									result = entry.getMetaMetadata();
 									break;
 								}

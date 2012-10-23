@@ -737,6 +737,19 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 	{
 		return documentParser;
 	}
+
+	/**
+	 * This method is called before we actually hit the website. Thus, it uses the initial URL to
+	 * test if we need to hit the website. If it returns true, we definitely don't need to hit the
+	 * website; if it returns false, we need to hit the website, but the actual document might have
+	 * been cached using another URL.
+	 */
+  @Override
+  public boolean isCached()
+  {
+    if (document == null || document.getLocation() == null)
+      return false;
+    return this.downloadController.isCached(document.getLocation());
+  }
 	
-	
-	}
+}

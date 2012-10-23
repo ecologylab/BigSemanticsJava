@@ -21,6 +21,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Node;
@@ -465,33 +466,6 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 
 		try
 		{
-			if (contextNode != null)
-			{
-				MetaMetadataField surroundingField = getCurrentSurroundingField(params);
-				if ((xpathString == null || xpathString.length() == 0)
-						&& mmdField.parent() == surroundingField)
-				{
-					// the condition above after '&&' holds when this field is actually authored there,
-					// but not purely inherited.
-					xpathString = ".";
-				}
-				
-				if (xpathString != null)
-				{
-					// if at this point of time xpathString is null, this field must be purely inherited,
-					// thus we may want to ignore it.
-					// this behavior, as documented in recursiveExtraction(), is not necessarily required.
-					// it basically prevents xpaths to be inherited by a subtype meta-metadata.
-					// further extension may allow this inheritance, e.g. by explicitly saying 'I want to
-					// inherit xpaths from the super wrapper', using some attribute on <meta-metadata>.
-					// -- yin qu, 2/23/2012
-					if (mmdField instanceof MetaMetadataCompositeField)
-						result.node = (Node) xpath.evaluate(xpathString, contextNode, XPathConstants.NODE);
-					else if (mmdField instanceof MetaMetadataCollectionField)
-						result.nodeList = (NodeList) xpath.evaluate(xpathString, contextNode, XPathConstants.NODESET);
-				}
-			}
-			
 			if (fieldParserElement != null)
 			{
 				FieldParser fieldParser = this.getSemanticsScope().getFieldParserFactory().get(fieldParserElement.getName());
@@ -501,13 +475,17 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 					String valueString = null;
 					if (fieldParserKey != null && fieldParserKey.length() > 0)
 						valueString = getFieldParserValueByKey(fieldParserContext, fieldParserKey);
-					else if (result.node != null)
-					{
-						if (mmdField.isExtractAsHtml())
-							valueString = getInnerHtml(result.node);
-						else
-							valueString = result.node.getTextContent();
-					}
+					else
+				  {
+        		xpathString = evaluateXpathForField(mmdField, contextNode, params, xpathString, result);
+					  if (result.node != null)
+  					{
+  						if (mmdField.isExtractAsHtml())
+  							valueString = getInnerHtml(result.node);
+  						else
+  							valueString = result.node.getTextContent();
+  					}
+				  }
 						
 					if (valueString != null && valueString.length() > 0)
 						result.fieldParserContext = fieldParser.getKeyValuePairResult(fieldParserElement, valueString.trim());
@@ -516,6 +494,7 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 				{
 					if (!((MetaMetadataCollectionField) mmdField).isCollectionOfScalars() && fieldParserElement.isForEachElement())
 					{
+        		xpathString = evaluateXpathForField(mmdField, contextNode, params, xpathString, result);
 						result.fieldParserContextList = new ArrayList<Map<String,String>>();
 						for (int i = 0; i < result.nodeList.getLength(); ++i)
 						{
@@ -541,12 +520,16 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 						String valueString = null;
 						if (fieldParserKey != null && fieldParserKey.length() > 0)
 							valueString = getFieldParserValueByKey(fieldParserContext, fieldParserKey);
-						else if (result.nodeList != null && result.nodeList.getLength() >= 1)
-						{
-							if (mmdField.isExtractAsHtml())
-								valueString = getInnerHtml(result.nodeList.item(0));
-							else
-								valueString = result.nodeList.item(0).getTextContent();
+						else
+						{  
+          		xpathString = evaluateXpathForField(mmdField, contextNode, params, xpathString, result);
+						  if (result.nodeList != null && result.nodeList.getLength() >= 1)
+  						{
+  							if (mmdField.isExtractAsHtml())
+  								valueString = getInnerHtml(result.nodeList.item(0));
+  							else
+  								valueString = result.nodeList.item(0).getTextContent();
+  						}
 						}
 						
 						if (valueString != null && valueString.length() > 0)
@@ -567,6 +550,47 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 
 		return result;
 	}
+
+  String evaluateXpathForField(MetaMetadataNestedField mmdField,
+                               Node contextNode,
+                               Scope<Object> params,
+                               String xpathString,
+                               NestedFieldHelper result) throws XPathExpressionException
+  {
+    if (contextNode != null)
+    {
+    	MetaMetadataField surroundingField = getCurrentSurroundingField(params);
+    	if ((xpathString == null || xpathString.length() == 0)
+    			&& mmdField.parent() == surroundingField)
+    	{
+    		// the condition above after '&&' holds when this field is actually authored there,
+    		// but not purely inherited.
+    		xpathString = ".";
+    	}
+    	
+    	if (xpathString != null)
+    	{
+    		// if at this point of time xpathString is null, this field must be purely inherited,
+    		// thus we may want to ignore it.
+    		// this behavior, as documented in recursiveExtraction(), is not necessarily required.
+    		// it basically prevents xpaths to be inherited by a subtype meta-metadata.
+    		// further extension may allow this inheritance, e.g. by explicitly saying 'I want to
+    		// inherit xpaths from the super wrapper', using some attribute on <meta-metadata>.
+    		// -- yin qu, 2/23/2012
+    	  
+    	  // change absolute path to relative path, so that when we are doing evaluate() we don't
+    	  // go through the whole document again
+    	  if (xpathString.startsWith("//"))
+    	    xpathString = "." + xpathString;
+    	  
+    		if (mmdField instanceof MetaMetadataCompositeField)
+    			result.node = (Node) xpath.evaluate(xpathString, contextNode, XPathConstants.NODE);
+    		else if (mmdField instanceof MetaMetadataCollectionField)
+    			result.nodeList = (NodeList) xpath.evaluate(xpathString, contextNode, XPathConstants.NODESET);
+    	}
+    }
+    return xpathString;
+  }
 
 	private MetaMetadataField getCurrentSurroundingField(Scope<Object> params)
 	{
@@ -749,7 +773,7 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 				  Class trueMetadataClass = locMmd.getMetadataClass();
 					if (thisMetadataClass.isAssignableFrom(trueMetadataClass))
 					{
-						debug("changing meta-metadata for extracted value " + thisMetadata + " to " + locMmd);
+//						debug("changing meta-metadata for extracted value " + thisMetadata + " to " + locMmd);
 					  if (thisMetadataClass == trueMetadataClass)
 					  {
 					    // when the two metadata classes are the same, we can safely change the meta-metadata
@@ -1000,6 +1024,10 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 		{
 			try
 			{
+			  // absolute path to relative path, so that we don't go through the document again
+			  if (xpathString.startsWith("//"))
+			    xpathString = "." + xpathString;
+			  
 				if (mmdField.isExtractAsHtml())
 				{
 					Node targetNode = (Node) xpath.evaluate(xpathString, contextNode, XPathConstants.NODE);

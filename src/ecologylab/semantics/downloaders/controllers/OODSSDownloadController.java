@@ -3,7 +3,9 @@
  */
 package ecologylab.semantics.downloaders.controllers;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.LinkedHashMap;
 
 import ecologylab.collections.Scope;
 import ecologylab.generic.Debug;
@@ -12,7 +14,6 @@ import ecologylab.net.ParsedURL;
 import ecologylab.oodss.distributed.client.NIOClient;
 import ecologylab.oodss.distributed.exception.MessageTooLargeException;
 import ecologylab.semantics.collecting.SemanticsGlobalScope;
-import ecologylab.semantics.collecting.SemanticsSite;
 import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.downloaders.LocalDocumentCache;
 import ecologylab.semantics.downloaders.oodss.DownloadRequest;
@@ -35,7 +36,16 @@ import ecologylab.serialization.SimplTypesScope;
 public class OODSSDownloadController extends Debug implements DownloadController
 {
 
-  public static int OODSS_DOWNLOAD_REQUEST_TIMEOUT = 45000;
+  public static int                 OODSS_DOWNLOAD_REQUEST_TIMEOUT = 45000;
+
+  LinkedHashMap<ParsedURL, Boolean> recentlyCached;
+
+  Object                            lockRecentlyCached             = new Object();
+
+  public OODSSDownloadController()
+  {
+    recentlyCached = new LinkedHashMap<ParsedURL, Boolean>(1000);
+  }
 
   @Override
   public void connect(DocumentClosure documentClosure) throws IOException
@@ -77,10 +87,14 @@ public class OODSSDownloadController extends Debug implements DownloadController
             {
               debug("HTML page cached at " + fileLoc);
 
+              setCached(originalPURL);
+
               // additional location
               ParsedURL redirectedLocation = responseMessage.getRedirectedLocation();
               if (redirectedLocation != null)
               {
+                setCached(redirectedLocation);
+
                 SemanticsGlobalScope semanticScope = document.getSemanticsScope();
                 Document newDocument = semanticScope.getOrConstructDocument(redirectedLocation);
                 newDocument.addAdditionalLocation(originalPURL);
@@ -118,7 +132,8 @@ public class OODSSDownloadController extends Debug implements DownloadController
         if (fileMetadata != null)
         {
           // additional location
-          ParsedURL redirectLoc = fileMetadata == null ? null : fileMetadata.getRedirectedLocation();
+          ParsedURL redirectLoc = fileMetadata == null ? null : fileMetadata
+              .getRedirectedLocation();
           if (redirectLoc != null)
           {
             SemanticsGlobalScope semanticScope = document.getSemanticsScope();
@@ -127,7 +142,7 @@ public class OODSSDownloadController extends Debug implements DownloadController
             newDocument.addAdditionalLocation(originalPURL); // TODO multiple redirects
             documentClosure.changeDocument(newDocument);
           }
-  
+
           // mimetype
           mimeType = fileMetadata.getMimeType();
         }
@@ -150,5 +165,41 @@ public class OODSSDownloadController extends Debug implements DownloadController
     if (documentParser != null)
       documentClosure.setDocumentParser(documentParser);
   }
-  
+
+  /**
+   * This method sets the cache status of the input URL to 'cached'. Note that this status is only a
+   * temporary status in memory, for quick deciding if this document has been cached or not without
+   * hitting the disk, and does not necessarily reflect the real cache status on disk.
+   * 
+   * @param url
+   */
+  void setCached(ParsedURL url)
+  {
+    synchronized (lockRecentlyCached)
+    {
+      recentlyCached.put(url, true);
+    }
+  }
+
+  @Override
+  public boolean isCached(ParsedURL purl)
+  {
+    if (!recentlyCached.containsKey(purl))
+    {
+      synchronized (lockRecentlyCached)
+      {
+        if (!recentlyCached.containsKey(purl))
+        {
+          FileStorageProvider storageProvider = FileSystemStorage.getStorageProvider();
+          String filePath = storageProvider.lookupFilePath(purl);
+          File cachedFile = filePath == null ? null : new File(filePath);
+          boolean cached = cachedFile != null && cachedFile.exists();
+          recentlyCached.put(purl, cached);
+          return cached;
+        }
+      }
+    }
+    return recentlyCached.get(purl);
+  }
+
 }
