@@ -4,9 +4,7 @@ import java.util.EmptyStackException;
 import java.util.Stack;
 
 import ecologylab.generic.Debug;
-import ecologylab.semantics.collecting.SemanticsSessionScope;
-import ecologylab.semantics.metadata.Metadata;
-import ecologylab.semantics.metadata.MetadataFieldDescriptor;
+import ecologylab.semantics.collecting.SemanticsGlobalScope;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
@@ -17,13 +15,13 @@ import ecologylab.serialization.FieldDescriptor;
 public class MetadataDeserializationHookStrategy implements
     DeserializationHookStrategy<Object, FieldDescriptor>
 {
-  SemanticsSessionScope          semanticsSessionScope;
+  SemanticsGlobalScope           semanticsSessionScope;
 
   Stack<MetaMetadataNestedField> currentMMStack = new Stack<MetaMetadataNestedField>();
 
   boolean                        polymorphMmd   = false;
 
-  public MetadataDeserializationHookStrategy(SemanticsSessionScope sss)
+  public MetadataDeserializationHookStrategy(SemanticsGlobalScope sss)
   {
     this.semanticsSessionScope = sss;
   }

@@ -42,6 +42,7 @@ import ecologylab.serialization.ScalarUnmarshallingContext;
 import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.TranslationContext;
 import ecologylab.serialization.XMLTools;
+import ecologylab.serialization.annotations.simpl_scalar;
 import ecologylab.serialization.deserializers.ISimplDeserializationPost;
 import ecologylab.serialization.formatenums.StringFormat;
 import ecologylab.serialization.library.html.Div;
@@ -118,6 +119,9 @@ ISimplSerializationPre, ISimplDeserializationPost
 	 * systems.
 	 */
 	private long													ormId;
+	
+	@simpl_scalar
+	private float                         repositoryVersion;
 
 	/**
 	 * the (composite) term vector for this field.
@@ -198,7 +202,17 @@ ISimplSerializationPre, ISimplDeserializationPost
 		this.ormId = ormId;
 	}
 
-	/**
+	public float getRepositoryVersion()
+  {
+    return repositoryVersion;
+  }
+
+  public void setRepositoryVersion(float repositoryVersion)
+  {
+    this.repositoryVersion = repositoryVersion;
+  }
+
+  /**
 	 * Don't exclude the mixins field from Metadata.
 	 * 
 	 * @param tagName

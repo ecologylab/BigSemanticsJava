@@ -11,7 +11,7 @@ package ecologylab.semantics.dbinterface;
  *
  */
 
-public interface IDBDocumentProviderFactory
+public interface IDocumentCacheFactory
 {
-	public IDBDocumentProvider getDBDocumentProvider();
+	public IDocumentCache getDBDocumentProvider();
 }

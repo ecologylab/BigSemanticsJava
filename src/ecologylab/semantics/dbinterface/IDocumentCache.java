@@ -13,7 +13,7 @@ import ecologylab.semantics.metadata.builtins.DocumentClosure;
  * 
  */
 
-public interface IDBDocumentProvider
+public interface IDocumentCache
 {
 	/**
 	 * Returns a document or null corresponding to location in DocumentClosure

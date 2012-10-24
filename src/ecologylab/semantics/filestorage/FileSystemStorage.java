@@ -23,12 +23,14 @@ import ecologylab.serialization.formatenums.Format;
  */
 public class FileSystemStorage extends Debug implements FileStorageProvider
 {
-  
+
   private static FileSystemStorage fsStorageProvider = null;
 
   private static String            downloadDirectory;
 
   private static String            metaFileDirectory;
+
+  public static String             semanticsFileDirectory;
 
   private static SimplTypesScope   META_TSCOPE       = SimplTypesScope.get("fileMetadata",
                                                                            FileMetadata.class);
@@ -39,10 +41,13 @@ public class FileSystemStorage extends Debug implements FileStorageProvider
     if (downloadDirectory == null)
       throw new RuntimeException("Property LOCAL_DOCUMENT_CACHE_DIR is required!");
     metaFileDirectory = downloadDirectory + "/meta";
+    semanticsFileDirectory = downloadDirectory + "/semantics";
 
     File f = new File(downloadDirectory);
     f.mkdirs();
     f = new File(metaFileDirectory);
+    f.mkdir();
+    f = new File(semanticsFileDirectory);
     f.mkdir();
   }
 
@@ -109,6 +114,9 @@ public class FileSystemStorage extends Debug implements FileStorageProvider
   {
     String outFileName = SHA256FileNameGenerator.getName(location);
     File metaFile = new File(metaFileDirectory, (outFileName + ".meta"));
+    if (!metaFile.exists())
+      return null;
+    
     FileMetadata result = null;
     try
     {

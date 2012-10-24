@@ -32,6 +32,9 @@ public class FileMetadata
 	@simpl_scalar
 	private String		downloadTime;
 
+	@simpl_scalar
+	private float 		repositoryVersion;
+	
 	public FileMetadata()
 	{
 	}
@@ -70,5 +73,15 @@ public class FileMetadata
 	{
 		return downloadTime;
 	}
+
+  public float getRepositoryVersion()
+  {
+    return repositoryVersion;
+  }
+
+  public void setRepositoryVersion(float repositoryVersion)
+  {
+    this.repositoryVersion = repositoryVersion;
+  }
 
 }

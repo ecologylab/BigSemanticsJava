@@ -24,7 +24,7 @@ import ecologylab.semantics.collecting.DownloadStatus;
 import ecologylab.semantics.collecting.SemanticsDownloadMonitors;
 import ecologylab.semantics.collecting.SemanticsGlobalScope;
 import ecologylab.semantics.collecting.SemanticsSite;
-import ecologylab.semantics.dbinterface.IDBDocumentProvider;
+import ecologylab.semantics.dbinterface.IDocumentCache;
 import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.documentparsers.ParserBase;
 import ecologylab.semantics.downloaders.controllers.DefaultDownloadController;
@@ -168,7 +168,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 		}
 		
 		//if the semantics scope provides DB lookup
-		IDBDocumentProvider dbProvider = semanticsScope.getDBDocumentProvider();
+		IDocumentCache dbProvider = semanticsScope.getDBDocumentProvider();
 		if (dbProvider != null)
 		{
 			Document document = dbProvider.retrieveDocument(this);
