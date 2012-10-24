@@ -466,7 +466,11 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 
 		try
 		{
-			if (fieldParserElement != null)
+			if (fieldParserElement == null)
+			{
+			  xpathString = evaluateXpathForField(mmdField, contextNode, params, xpathString, result);
+			}
+			else
 			{
 				FieldParser fieldParser = this.getSemanticsScope().getFieldParserFactory().get(fieldParserElement.getName());
 
