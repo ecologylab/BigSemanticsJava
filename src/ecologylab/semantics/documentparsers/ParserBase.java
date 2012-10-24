@@ -90,6 +90,8 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 
 	public static boolean			DONOT_SETUP_DOCUMENT_GRAPH_CALLBACKS	= Pref.lookupBoolean("donot_setup_document_graph_callbacks", false);
 
+	public static boolean			DONOT_LOOK_FOR_FAVICON                = Pref.lookupBoolean("donot_look_for_favicon", false);
+
 	protected XPath									xpath;
 
 	protected ParsedURL							truePURL;
@@ -129,7 +131,8 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 		Document resultingMetadata = populateMetadata(document, metaMetadata, dom, handler);
 		resultingMetadata.setMetadataChanged(true);
 
-		findFaviconPath(resultingMetadata, xpath);
+		if (!DONOT_LOOK_FOR_FAVICON)
+  		findFaviconPath(resultingMetadata, xpath);
 		
 		try
 		{
