@@ -503,15 +503,21 @@ implements PackageSpecifier, DocumentParserTagNames
 		}
 	}
 	
+	RepositoryOrdering ordering;
+	
 	/**
 	 * traverse the repository and do inheritance on each meta-metadata.
 	 */
 	public void traverseAndInheritMetaMetadata()
 	{
+	  if (ordering == null)
+	    ordering = new RepositoryOrderingByGeneration();
+	  
 		if (this.repositoryByName != null && this.repositoryByName.size() > 0)
 		{
 			// make another copy because we may modify the collection (e.g. for adding inline definitions)
-			ArrayList<MetaMetadata> mmds = new ArrayList<MetaMetadata>(repositoryByName.values());
+			List<MetaMetadata> mmds = new ArrayList<MetaMetadata>(repositoryByName.values());
+			mmds = ordering.orderMetaMetadataForInheritance(mmds);
 			for (MetaMetadata metaMetadata : mmds)
 			{
 				metaMetadata.setRepository(this);
