@@ -151,6 +151,9 @@ public class MmdTypeHierarchyVisualizer extends SingletonApplicationEnvironment
       if (rootNames.contains(root.name))
       {
         String dotScriptSrc = generateDotScript(root, showTypeMmds);
+        System.out.println("\n========Dot script begins(root name: " + root.name + ")========\n");
+        System.out.println(dotScriptSrc);
+        System.out.println("\n========Dot script ends========\n");
         generateSvg(dotScriptSrc, outSvgPathPrefix + "-" + root.name + ".svg");
       }
     }
