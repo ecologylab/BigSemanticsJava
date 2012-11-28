@@ -7,13 +7,17 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
+
+import org.apache.log4j.Logger;
 
 import ecologylab.collections.SetElement;
 import ecologylab.concurrent.Downloadable;
 import ecologylab.generic.Continuation;
 import ecologylab.io.DownloadProcessor;
+import ecologylab.logging.BaseLogger;
 import ecologylab.net.PURLConnection;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticAction;
@@ -97,6 +101,8 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 	private final Object DOWNLOAD_STATUS_LOCK			= new Object();
 	private final Object DOCUMENT_LOCK						= new Object();   
 	
+	private static Logger baseLog				= Logger.getLogger(BaseLogger.baseLogger);
+	
 	/**
 	 * 
 	 */
@@ -143,6 +149,9 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 	public void performDownload()
 	throws IOException
 	{
+		long millis = System.currentTimeMillis();
+		baseLog.debug("Closure performDownload started at: " + (new Date(millis)));
+		
 		synchronized (DOWNLOAD_STATUS_LOCK)
 		{
 			if (!(downloadStatus == DownloadStatus.QUEUED || downloadStatus == DownloadStatus.UNPROCESSED))
@@ -180,10 +189,12 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 		}
 		
 		ParsedURL location = location();
+		millis = System.currentTimeMillis();
 		// connect call also evolves Document based on redirects & mime-type;
 		//the parameter is used to get and set document properties with request and response respectively
 		downloadController.connect(this);  
-
+		baseLog.debug("document downloaded in " + (System.currentTimeMillis() - millis) + "(ms)");
+		
 		MetaMetadata metaMetadata = (MetaMetadata) document.getMetaMetadata();
 		//check for more specific meta-metadata
 		if (metaMetadata.isGenericMetadata())
@@ -229,7 +240,9 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 				SemanticActionHandler handler	= new SemanticActionHandler(semanticsScope, documentParser);
 				handler.takeSemanticActions(metaMetadata, document, beforeSemanticActions);
 			}
+			millis = System.currentTimeMillis();
 			documentParser.parse();
+			baseLog.debug("document parsed in " + (System.currentTimeMillis() - millis) + "(ms)");
 			
 			ArrayList<SemanticAction> afterSemanticActions	= metaMetadata.getAfterSemanticActions();
 			if (afterSemanticActions != null)

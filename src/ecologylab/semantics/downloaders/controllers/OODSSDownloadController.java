@@ -7,8 +7,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 
+import org.apache.log4j.Logger;
+
 import ecologylab.collections.Scope;
 import ecologylab.generic.Debug;
+import ecologylab.logging.BaseLogger;
 import ecologylab.net.PURLConnection;
 import ecologylab.net.ParsedURL;
 import ecologylab.oodss.distributed.client.NIOClient;
@@ -41,6 +44,8 @@ public class OODSSDownloadController extends Debug implements DownloadController
   LinkedHashMap<ParsedURL, Boolean> recentlyCached;
 
   Object                            lockRecentlyCached             = new Object();
+  
+  private static	Logger			htmlCacheLog						   = Logger.getLogger(BaseLogger.htmlCacheLogger);
 
   public OODSSDownloadController()
   {
@@ -62,7 +67,7 @@ public class OODSSDownloadController extends Debug implements DownloadController
       String filePath = storageProvider.lookupFilePath(originalPURL);
       if (filePath == null)
       {
-        debug("Uncached URL: " + originalPURL);
+    	htmlCacheLog.debug("Uncached URL: " + originalPURL);
 
         // Network download
         SimplTypesScope lookupMetadataTranslations = SemanticsServiceDownloadMessageScope.get();
@@ -79,13 +84,13 @@ public class OODSSDownloadController extends Debug implements DownloadController
           DownloadResponse responseMessage = null;
           try
           {
-            debug("Sending OODSS request for accessing " + originalPURL);
+        	htmlCacheLog.debug("Sending OODSS request for accessing " + originalPURL);
             responseMessage = (DownloadResponse) client.sendMessage(requestMessage,
                                                                     OODSS_DOWNLOAD_REQUEST_TIMEOUT);
             String fileLoc = responseMessage == null ? null : responseMessage.getLocation();
             if (fileLoc != null && fileLoc.length() > 0)
             {
-              debug("HTML page cached at " + fileLoc);
+              htmlCacheLog.debug("HTML page cached at " + fileLoc);
 
               setCached(originalPURL);
 
@@ -109,12 +114,12 @@ public class OODSSDownloadController extends Debug implements DownloadController
             }
             else
             {
-              error("No response from downloader(s) for " + originalPURL);
+              htmlCacheLog.error("No response from downloader(s) for " + originalPURL);
             }
           }
           catch (MessageTooLargeException e)
           {
-            System.err.println("The message was too large!");
+        	htmlCacheLog.error("The message was too large!");
             e.printStackTrace();
           }
 
@@ -123,7 +128,7 @@ public class OODSSDownloadController extends Debug implements DownloadController
       }
       else
       {
-        debug("Cached URL[" + originalPURL + "] at " + filePath);
+    	htmlCacheLog.debug("Cached URL[" + originalPURL + "] at " + filePath);
 
         // document is present in local cache. read meta information as well
         document.setLocalLocation(ParsedURL.getAbsolute("file://" + filePath));

@@ -13,12 +13,15 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
+
 import ecologylab.appframework.types.prefs.Pref;
 import ecologylab.collections.MultiAncestorScope;
 import ecologylab.collections.PrefixCollection;
 import ecologylab.collections.PrefixPhrase;
 import ecologylab.generic.Debug;
 import ecologylab.generic.HashMapArrayList;
+import ecologylab.logging.BaseLogger;
 import ecologylab.net.ParsedURL;
 import ecologylab.net.UserAgent;
 import ecologylab.semantics.collecting.CookieProcessing;
@@ -201,6 +204,8 @@ implements PackageSpecifier, DocumentParserTagNames
 	private SimplTypesScope metadataTScope;
 
 	private LinkedMetadataMonitor linkedMetadataMonitor = new LinkedMetadataMonitor();
+	
+	static Logger							log4j					= Logger.getLogger(BaseLogger.baseLogger);
 
 	/**
 	 * for debug.
@@ -570,6 +575,8 @@ implements PackageSpecifier, DocumentParserTagNames
 	 */
 	public MetaMetadata getDocumentMM(final ParsedURL purl, final String tagName)
 	{
+		long millis = System.currentTimeMillis();
+			
 		MetaMetadata result = null;
 		if (purl != null)
 		{
@@ -628,6 +635,8 @@ implements PackageSpecifier, DocumentParserTagNames
 		if (result == null)
 			result = getMMByName(tagName);
 
+		log4j.debug(this.getClassSimpleName() + " getDocumentMM - Time taken (ms): " + (System.currentTimeMillis() - millis));
+		
 		return result;
 	}
 
