@@ -9,6 +9,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 import ecologylab.net.ParsedURL;
+import ecologylab.semantics.html.utils.StringBuilderUtils;
 
 /**
  * file name generator for filesystem storage of downloaded resource
@@ -32,20 +33,19 @@ public class SHA256FileNameGenerator
 			byte[] digest = md.digest();
 			
 			// Using Arrays.toString doesn't look very good.
-			// Please change to something like:
-//			char[] hex = "0123456789ABCDEF".toCharArray();  // this should go static
-//			StringBuilder sb = StringBuilderUtils.acquire();
-//			for (byte b : digest)
-//			{
-//				sb.append(hex[(b & 0xF0) >> 4]);
-//				sb.append(hex[b & 0x0F]);
-//			}
-//			String hashStr = sb.toString();
-//			StringBuilderUtils.release(sb);
-			String hashStr = Arrays.toString(digest);
-
-			OUT_PREFIX = hashStr.substring(1, (hashStr.length() - 1));
-			OUT_PREFIX = OUT_PREFIX.replace(", ", "");
+			char[] hex = "0123456789ABCDEF".toCharArray();  // this should go static
+			StringBuilder sb = StringBuilderUtils.acquire();
+			for (byte b : digest)
+			{
+				sb.append(hex[(b & 0xF0) >> 4]);
+				sb.append(hex[b & 0x0F]);
+			}
+			OUT_PREFIX = sb.toString();
+			StringBuilderUtils.release(sb);
+			
+			//String hashStr = Arrays.toString(digest);
+			//OUT_PREFIX = hashStr.substring(1, (hashStr.length() - 1));
+			//OUT_PREFIX = OUT_PREFIX.replace(", ", "");
 		}
 		catch (NoSuchAlgorithmException e)
 		{
