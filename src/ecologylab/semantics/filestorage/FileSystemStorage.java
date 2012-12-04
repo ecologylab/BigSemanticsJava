@@ -131,7 +131,7 @@ public class FileSystemStorage extends Debug implements FileStorageProvider
 		return result;
 	}
 
-	private static String destination(String topdir, ParsedURL originalPURL)
+	public static String destination(String topdir, ParsedURL originalPURL)
 	{
 		String outFileName = SHA256FileNameGenerator.getName(originalPURL);
 

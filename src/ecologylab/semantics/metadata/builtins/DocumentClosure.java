@@ -18,6 +18,7 @@ import ecologylab.concurrent.Downloadable;
 import ecologylab.generic.Continuation;
 import ecologylab.io.DownloadProcessor;
 import ecologylab.logging.BaseLogger;
+import ecologylab.logging.DownloadableLogRecord;
 import ecologylab.net.PURLConnection;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticAction;
@@ -36,6 +37,7 @@ import ecologylab.semantics.downloaders.controllers.DownloadController;
 import ecologylab.semantics.downloaders.controllers.DownloadControllerType;
 import ecologylab.semantics.downloaders.controllers.OODSSDownloadController;
 import ecologylab.semantics.html.documentstructure.SemanticInLinks;
+import ecologylab.semantics.metadata.output.DocumentLogRecord;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.model.text.ITermVector;
@@ -77,6 +79,10 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 	
 	DownloadStatus								downloadStatus	= DownloadStatus.UNPROCESSED;
 	
+	DocumentLogRecord							logRecord;
+	
+	long													downloadEnqueTimestamp;
+	
 	PointInt											dndPoint;
 
 	protected		SemanticsGlobalScope	semanticsScope;
@@ -101,7 +107,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 	private final Object DOWNLOAD_STATUS_LOCK			= new Object();
 	private final Object DOCUMENT_LOCK						= new Object();   
 	
-	private static Logger baseLog				= Logger.getLogger(BaseLogger.baseLogger);
+	//private static Logger baseLog				= Logger.getLogger(BaseLogger.baseLogger);
 	
 	/**
 	 * 
@@ -150,7 +156,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 	throws IOException
 	{
 		long millis = System.currentTimeMillis();
-		baseLog.debug("Closure performDownload started at: " + (new Date(millis)));
+		//baseLog.debug("Closure performDownload started at: " + (new Date(millis)));
 		
 		synchronized (DOWNLOAD_STATUS_LOCK)
 		{
@@ -183,6 +189,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 			Document document = dbProvider.retrieveDocument(this);
 			if (document != null)
 			{
+				if (logRecord != null) logRecord.setSemanticsDiskCacheHit(true);
 				changeDocument(document);
 				return;
 			}
@@ -192,8 +199,9 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 		millis = System.currentTimeMillis();
 		// connect call also evolves Document based on redirects & mime-type;
 		//the parameter is used to get and set document properties with request and response respectively
-		downloadController.connect(this);  
-		baseLog.debug("document downloaded in " + (System.currentTimeMillis() - millis) + "(ms)");
+		downloadController.connect(this);
+		logRecord.setSecondsInHtmlDownload((System.currentTimeMillis() - millis)/1000);
+		//baseLog.debug("document downloaded in " + (System.currentTimeMillis() - millis) + "(ms)");
 		
 		MetaMetadata metaMetadata = (MetaMetadata) document.getMetaMetadata();
 		//check for more specific meta-metadata
@@ -242,7 +250,8 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 			}
 			millis = System.currentTimeMillis();
 			documentParser.parse();
-			baseLog.debug("document parsed in " + (System.currentTimeMillis() - millis) + "(ms)");
+			logRecord.setSecondsInExtraction((System.currentTimeMillis() - millis)/1000);
+			//baseLog.debug("document parsed in " + (System.currentTimeMillis() - millis) + "(ms)");
 			
 			ArrayList<SemanticAction> afterSemanticActions	= metaMetadata.getAfterSemanticActions();
 			if (afterSemanticActions != null)
@@ -764,5 +773,15 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
       return false;
     return this.downloadController.isCached(document.getLocation());
   }
-	
+
+	@Override
+	public DownloadableLogRecord getLogRecord()
+	{
+		return logRecord;
+	}
+
+	public void setLogRecord(DocumentLogRecord logRecord)
+	{
+		this.logRecord = logRecord;
+	}
 }
