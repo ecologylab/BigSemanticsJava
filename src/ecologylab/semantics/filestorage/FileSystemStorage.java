@@ -10,6 +10,7 @@ import java.io.OutputStream;
 import java.util.Properties;
 
 import ecologylab.generic.Debug;
+import ecologylab.io.Files;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.serialization.SIMPLTranslationException;
@@ -61,7 +62,7 @@ public class FileSystemStorage extends Debug implements FileStorageProvider
 	@Override
 	public String saveFile(ParsedURL originalPURL, InputStream input)
 	{
-		File outFile = new File(destination(downloadDirectory, originalPURL));
+		File outFile = new File(getDestinationFileAndCreateDirs(downloadDirectory, originalPURL));
 		try
 		{
 			InputStream in = input;
@@ -86,7 +87,7 @@ public class FileSystemStorage extends Debug implements FileStorageProvider
 	@Override
 	public String lookupFilePath(ParsedURL originalPURL)
 	{
-		File f = new File(destination(downloadDirectory, originalPURL));
+		File f = new File(getDestinationFileAndCreateDirs(downloadDirectory, originalPURL));
 		debug("Checking for cached HTML file at [" + f.getAbsolutePath() + "]: exists? " + f.exists());
 		if (f.exists())
 			return f.getAbsolutePath();
@@ -97,7 +98,7 @@ public class FileSystemStorage extends Debug implements FileStorageProvider
 	@Override
 	public void saveFileMetadata(FileMetadata fileMetadata)
 	{
-		File metaFile = new File(destination(metaFileDirectory, fileMetadata.getLocation()) + ".meta");
+		File metaFile = new File(getDestinationFileAndCreateDirs(metaFileDirectory, fileMetadata.getLocation()) + ".meta");
 		try
 		{
 			SimplTypesScope.serialize(fileMetadata, metaFile, Format.XML);
@@ -111,7 +112,7 @@ public class FileSystemStorage extends Debug implements FileStorageProvider
 	@Override
 	public FileMetadata getFileMetadata(ParsedURL location)
 	{
-		File metaFile = new File(destination(metaFileDirectory, location) + ".meta");
+		File metaFile = new File(getDestinationFileAndCreateDirs(metaFileDirectory, location) + ".meta");
 		if (!metaFile.exists())
 			return null;
 
@@ -131,21 +132,13 @@ public class FileSystemStorage extends Debug implements FileStorageProvider
 		return result;
 	}
 
-	public static String destination(String topdir, ParsedURL originalPURL)
+	public static String getDestinationFileAndCreateDirs(String topdir, ParsedURL originalPURL)
 	{
 		String outFileName = SHA256FileNameGenerator.getName(originalPURL);
-
-		StringBuilder sb = StringBuilderUtils.acquire();
-		int i = 0, j = subdirectoryNameLength;
-		while (j < outFileName.length())
-		{
-			sb.append("/" + outFileName.substring(i, j));
-			i = j;
-			j += subdirectoryNameLength;
-		}
-		(new File(topdir + sb.toString())).mkdirs();
-		
-		return topdir + sb.toString() + "/" + outFileName;
+		File subdir = new File(topdir, outFileName.substring(0, subdirectoryNameLength));
+		subdir.mkdirs();
+		File file = new File(subdir, outFileName);
+	  return file.getPath();
 	}
 
 	public static FileStorageProvider getStorageProvider()

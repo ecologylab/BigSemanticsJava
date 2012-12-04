@@ -6,7 +6,6 @@ package ecologylab.semantics.filestorage;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
@@ -20,7 +19,9 @@ import ecologylab.semantics.html.utils.StringBuilderUtils;
 
 public class SHA256FileNameGenerator
 {
-	public static String getName(ParsedURL originalPURL)
+	static final char[] HEX = "0123456789ABCDEF".toCharArray();
+
+  public static String getName(ParsedURL originalPURL)
 	{
 		String OUT_PREFIX = "nwDownloaded";
 		// String OUT_SUFFIX = ".html";
@@ -32,13 +33,11 @@ public class SHA256FileNameGenerator
 			md.update(originalPURL.toString().getBytes("UTF-8")); // Change this to "UTF-16" if needed
 			byte[] digest = md.digest();
 			
-			// Using Arrays.toString doesn't look very good.
-			char[] hex = "0123456789ABCDEF".toCharArray();  // this should go static
 			StringBuilder sb = StringBuilderUtils.acquire();
 			for (byte b : digest)
 			{
-				sb.append(hex[(b & 0xF0) >> 4]);
-				sb.append(hex[b & 0x0F]);
+				sb.append(HEX[(b & 0xF0) >> 4]);
+				sb.append(HEX[b & 0x0F]);
 			}
 			OUT_PREFIX = sb.toString();
 			StringBuilderUtils.release(sb);
