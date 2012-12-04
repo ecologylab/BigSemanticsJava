@@ -325,17 +325,20 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
 	/**
 	 * from which field this one inherits. could be null if this field is declared for the first time.
 	 */
+	@simpl_composite
 	private MetaMetadataField															inheritedField					= null;
 
 	/**
 	 * in which meta-metadata this field is declared.
 	 */
+	@simpl_composite
 	private MetaMetadata																	declaringMmd						= null;
 	
 	/**
 	 * if this field is used to define inline meta-metadata types. this flag is used by extraction
 	 * module to determine the true root element for child fields inside this field.
 	 */
+	@simpl_scalar
 	private boolean																				usedForInlineMmdDef			= false;
 
 	public MetaMetadataField()

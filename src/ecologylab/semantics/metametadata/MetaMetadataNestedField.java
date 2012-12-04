@@ -80,6 +80,7 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	 * the mmd used by this nested field. corresponding attributes: (child_)type/extends. could be a
 	 * generated one for inline definitions.
 	 */
+	@simpl_composite
 	private MetaMetadata											inheritedMmd;
 
 	/**
@@ -90,6 +91,7 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	/**
 	 * should we generate a metadata class descriptor for this field. used by the compiler.
 	 */
+	@simpl_scalar
 	private boolean														newMetadataClass							= false;
 	
 	private boolean														mmdScopeTraversed							= false;
