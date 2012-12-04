@@ -30,6 +30,7 @@ import ecologylab.serialization.annotations.simpl_map_key_field;
 import ecologylab.serialization.annotations.simpl_nowrap;
 import ecologylab.serialization.annotations.simpl_scalar;
 import ecologylab.serialization.annotations.simpl_scope;
+import ecologylab.serialization.annotations.simpl_wrap;
 import ecologylab.serialization.types.ScalarType;
 import ecologylab.serialization.types.element.IMappable;
 import ecologylab.textformat.NamedStyle;
@@ -326,6 +327,8 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
 	 * from which field this one inherits. could be null if this field is declared for the first time.
 	 */
 	@simpl_composite
+  @simpl_scope(NestedMetaMetadataFieldTypesScope.NAME)
+	@simpl_wrap
 	private MetaMetadataField															inheritedField					= null;
 
 	/**
