@@ -59,7 +59,7 @@ public class MetaMetadataRepositoryLoader extends Debug implements DocumentParse
 	{
 		MetaMetadataRepository result = new MetaMetadataRepository();
 		result.repositoryByName = new HashMapArrayList<String, MetaMetadata>();
-		result.packageMmdScopes = new HashMap<String, MultiAncestorScope<MetaMetadata>>();
+		result.packageMmdScopes = new HashMap<String, MmdScope>();
 
 		SimplTypesScope mmdTScope = MetaMetadataTranslationScope.get();
 
@@ -99,11 +99,11 @@ public class MetaMetadataRepositoryLoader extends Debug implements DocumentParse
 									throw new MetaMetadataException("no package name specified for " + mmd);
 								mmd.setPackageName(packageName);
 							}
-							MultiAncestorScope<MetaMetadata> packageMmdScope = result.packageMmdScopes
-									.get(packageName);
+							MmdScope packageMmdScope = result.packageMmdScopes.get(packageName);
 							if (packageMmdScope == null)
 							{
-								packageMmdScope = new MultiAncestorScope<MetaMetadata>(result.repositoryByName);
+								packageMmdScope = new MmdScope(result.repositoryByName);
+								packageMmdScope.name = packageName;
 								result.packageMmdScopes.put(packageName, packageMmdScope);
 							}
 
@@ -132,8 +132,7 @@ public class MetaMetadataRepositoryLoader extends Debug implements DocumentParse
 
 						for (MetaMetadata mmd : repoData.repositoryByName.values())
 						{
-							MultiAncestorScope<MetaMetadata> packageMmdScope = result.packageMmdScopes.get(mmd
-									.packageName());
+							MmdScope packageMmdScope = result.packageMmdScopes.get(mmd.packageName());
 							mmd.setMmdScope(packageMmdScope);
 						}
 					}

@@ -142,7 +142,8 @@ implements PackageSpecifier, DocumentParserTagNames
 	/**
 	 * package mmd scopes.
 	 */
-	Map<String, MultiAncestorScope<MetaMetadata>>	packageMmdScopes;
+	@simpl_map("mmd_scope")
+	Map<String, MmdScope>                   packageMmdScopes;
 
 	// [region] repository maps generated from repositoryByName. used for look-up.
 
@@ -319,7 +320,7 @@ implements PackageSpecifier, DocumentParserTagNames
 		return (repositoryByName == null) ? null : repositoryByName.values();
 	}
 	
-	public Map<String, MultiAncestorScope<MetaMetadata>> getPackageMmdScopes()
+	public Map<String, MmdScope> getPackageMmdScopes()
 	{
 		return this.packageMmdScopes;
 	}
@@ -476,7 +477,7 @@ implements PackageSpecifier, DocumentParserTagNames
 			addToRepositoryByClassName(mmd);
 			mmd.setUpLinkWith(this);
 		}
-		for (MultiAncestorScope<MetaMetadata> scope : packageMmdScopes.values())
+		for (MmdScope scope : packageMmdScopes.values())
 		{
 			for (MetaMetadata mmd : scope.values())
 			{
