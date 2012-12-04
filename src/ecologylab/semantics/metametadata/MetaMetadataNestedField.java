@@ -18,6 +18,7 @@ import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.annotations.simpl_collection;
 import ecologylab.serialization.annotations.simpl_composite;
 import ecologylab.serialization.annotations.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_map;
 import ecologylab.serialization.annotations.simpl_nowrap;
 import ecologylab.serialization.annotations.simpl_scalar;
 import ecologylab.serialization.annotations.simpl_tag;
@@ -86,7 +87,8 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	/**
 	 * the (local) scope of visible meta-metadata for this nested field.
 	 */
-	private MultiAncestorScope<MetaMetadata>	mmdScope;
+	@simpl_composite
+	private MmdScope                          mmdScope;
 
 	/**
 	 * should we generate a metadata class descriptor for this field. used by the compiler.
@@ -156,12 +158,12 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 		this.packageName = packageName;
 	}
 
-	protected void setMmdScope(MultiAncestorScope<MetaMetadata> mmdScope)
+	protected void setMmdScope(MmdScope mmdScope)
 	{
 		this.mmdScope = mmdScope;
 	}
 
-	public MultiAncestorScope<MetaMetadata> getMmdScope()
+	public MmdScope getMmdScope()
 	{
 		return mmdScope;
 	}
