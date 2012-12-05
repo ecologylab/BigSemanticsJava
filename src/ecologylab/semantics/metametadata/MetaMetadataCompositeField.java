@@ -470,7 +470,7 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 	 */
 	protected void inheritFromInheritedMmd(MetaMetadata inheritedMmd, InheritanceHandler inheritanceHandler)
 	{
-		this.setMmdScope(new MultiAncestorScope<MetaMetadata>(this.getMmdScope(), inheritedMmd.getMmdScope()));
+		this.setMmdScope(new MmdScope(this.getMmdScope(), inheritedMmd.getMmdScope()));
 	}
 
 	/**
@@ -487,7 +487,7 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
  		MetaMetadata inheritedMmd = this.getInheritedMmd();
 		if (inheritedMmd == null)
 		{
-			MultiAncestorScope<MetaMetadata> mmdScope = this.getMmdScope();
+			MmdScope mmdScope = this.getMmdScope();
 			
 			String typeName = getType() == null ? getName() : getType();
 			String extendsName = getExtendsAttribute();
@@ -562,7 +562,7 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 		generatedMmd.setExtendsAttribute(inheritedMmd.getName());
 		generatedMmd.setRepository(this.getRepository());
 		generatedMmd.visibility = Visibility.PACKAGE;
-		generatedMmd.setMmdScope(new MultiAncestorScope<MetaMetadata>(this.getMmdScope(), inheritedMmd.getMmdScope()));
+		generatedMmd.setMmdScope(new MmdScope(this.getMmdScope(), inheritedMmd.getMmdScope()));
 		if (this.getSchemaOrgItemtype() != null)
 			generatedMmd.setSchemaOrgItemtype(this.getSchemaOrgItemtype());
 		generatedMmd.setNewMetadataClass(true);

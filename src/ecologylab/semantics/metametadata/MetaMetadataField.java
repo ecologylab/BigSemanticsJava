@@ -30,6 +30,7 @@ import ecologylab.serialization.annotations.simpl_map_key_field;
 import ecologylab.serialization.annotations.simpl_nowrap;
 import ecologylab.serialization.annotations.simpl_scalar;
 import ecologylab.serialization.annotations.simpl_scope;
+import ecologylab.serialization.annotations.simpl_wrap;
 import ecologylab.serialization.types.ScalarType;
 import ecologylab.serialization.types.element.IMappable;
 import ecologylab.textformat.NamedStyle;
@@ -325,17 +326,22 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
 	/**
 	 * from which field this one inherits. could be null if this field is declared for the first time.
 	 */
+	@simpl_composite
+  @simpl_scope(NestedMetaMetadataFieldTypesScope.NAME)
+	@simpl_wrap
 	private MetaMetadataField															inheritedField					= null;
 
 	/**
 	 * in which meta-metadata this field is declared.
 	 */
+	@simpl_composite
 	private MetaMetadata																	declaringMmd						= null;
 	
 	/**
 	 * if this field is used to define inline meta-metadata types. this flag is used by extraction
 	 * module to determine the true root element for child fields inside this field.
 	 */
+	@simpl_scalar
 	private boolean																				usedForInlineMmdDef			= false;
 
 	public MetaMetadataField()

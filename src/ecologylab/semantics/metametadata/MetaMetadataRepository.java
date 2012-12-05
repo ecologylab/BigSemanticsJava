@@ -14,7 +14,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import ecologylab.appframework.types.prefs.Pref;
-import ecologylab.collections.MultiAncestorScope;
 import ecologylab.collections.PrefixCollection;
 import ecologylab.collections.PrefixPhrase;
 import ecologylab.generic.Debug;
@@ -142,7 +141,8 @@ implements PackageSpecifier, DocumentParserTagNames
 	/**
 	 * package mmd scopes.
 	 */
-	Map<String, MultiAncestorScope<MetaMetadata>>	packageMmdScopes;
+	@simpl_map("mmd_scope")
+	Map<String, MmdScope>                   packageMmdScopes;
 
 	// [region] repository maps generated from repositoryByName. used for look-up.
 
@@ -201,6 +201,8 @@ implements PackageSpecifier, DocumentParserTagNames
 	private SimplTypesScope metadataTScope;
 
 	private LinkedMetadataMonitor linkedMetadataMonitor = new LinkedMetadataMonitor();
+	
+	//static Logger							log4j					= Logger.getLogger(BaseLogger.baseLogger);
 
 	/**
 	 * for debug.
@@ -319,7 +321,7 @@ implements PackageSpecifier, DocumentParserTagNames
 		return (repositoryByName == null) ? null : repositoryByName.values();
 	}
 	
-	public Map<String, MultiAncestorScope<MetaMetadata>> getPackageMmdScopes()
+	public Map<String, MmdScope> getPackageMmdScopes()
 	{
 		return this.packageMmdScopes;
 	}
@@ -476,7 +478,7 @@ implements PackageSpecifier, DocumentParserTagNames
 			addToRepositoryByClassName(mmd);
 			mmd.setUpLinkWith(this);
 		}
-		for (MultiAncestorScope<MetaMetadata> scope : packageMmdScopes.values())
+		for (MmdScope scope : packageMmdScopes.values())
 		{
 			for (MetaMetadata mmd : scope.values())
 			{
@@ -570,6 +572,8 @@ implements PackageSpecifier, DocumentParserTagNames
 	 */
 	public MetaMetadata getDocumentMM(final ParsedURL purl, final String tagName)
 	{
+		//long millis = System.currentTimeMillis();
+			
 		MetaMetadata result = null;
 		if (purl != null)
 		{
@@ -628,6 +632,8 @@ implements PackageSpecifier, DocumentParserTagNames
 		if (result == null)
 			result = getMMByName(tagName);
 
+		//log4j.debug(this.getClassSimpleName() + " getDocumentMM - Time taken (ms): " + (System.currentTimeMillis() - millis));
+		
 		return result;
 	}
 
