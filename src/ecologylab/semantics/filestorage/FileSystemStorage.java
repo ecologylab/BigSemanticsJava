@@ -62,7 +62,7 @@ public class FileSystemStorage extends Debug implements FileStorageProvider
 	@Override
 	public String saveFile(ParsedURL originalPURL, InputStream input)
 	{
-		File outFile = new File(getDestinationFileAndCreateDirs(downloadDirectory, originalPURL));
+		File outFile = getDestinationFileAndCreateDirs(downloadDirectory, originalPURL, "html");
 		try
 		{
 			InputStream in = input;
@@ -87,7 +87,7 @@ public class FileSystemStorage extends Debug implements FileStorageProvider
 	@Override
 	public String lookupFilePath(ParsedURL originalPURL)
 	{
-		File f = new File(getDestinationFileAndCreateDirs(downloadDirectory, originalPURL));
+		File f = getDestinationFileAndCreateDirs(downloadDirectory, originalPURL, "html");
 		debug("Checking for cached HTML file at [" + f.getAbsolutePath() + "]: exists? " + f.exists());
 		if (f.exists())
 			return f.getAbsolutePath();
@@ -98,7 +98,7 @@ public class FileSystemStorage extends Debug implements FileStorageProvider
 	@Override
 	public void saveFileMetadata(FileMetadata fileMetadata)
 	{
-		File metaFile = new File(getDestinationFileAndCreateDirs(metaFileDirectory, fileMetadata.getLocation()) + ".meta");
+		File metaFile = getDestinationFileAndCreateDirs(metaFileDirectory, fileMetadata.getLocation(), "meta");
 		try
 		{
 			SimplTypesScope.serialize(fileMetadata, metaFile, Format.XML);
@@ -112,7 +112,7 @@ public class FileSystemStorage extends Debug implements FileStorageProvider
 	@Override
 	public FileMetadata getFileMetadata(ParsedURL location)
 	{
-		File metaFile = new File(getDestinationFileAndCreateDirs(metaFileDirectory, location) + ".meta");
+		File metaFile = getDestinationFileAndCreateDirs(metaFileDirectory, location, "meta");
 		if (!metaFile.exists())
 			return null;
 
@@ -132,13 +132,13 @@ public class FileSystemStorage extends Debug implements FileStorageProvider
 		return result;
 	}
 
-	public static String getDestinationFileAndCreateDirs(String topdir, ParsedURL originalPURL)
+	public static File getDestinationFileAndCreateDirs(String topdir, ParsedURL originalPURL, String suffix)
 	{
-		String outFileName = SHA256FileNameGenerator.getName(originalPURL);
+		String outFileName = SHA256FileNameGenerator.getName(originalPURL) + "." + suffix;
 		File subdir = new File(topdir, outFileName.substring(0, subdirectoryNameLength));
 		subdir.mkdirs();
 		File file = new File(subdir, outFileName);
-	  return file.getPath();
+	  return file;
 	}
 
 	public static FileStorageProvider getStorageProvider()

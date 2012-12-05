@@ -5,7 +5,6 @@ package ecologylab.semantics.metametadata;
 
 import java.lang.reflect.Field;
 
-import ecologylab.semantics.metadata.mm_dont_inherit;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.FieldDescriptor;
 

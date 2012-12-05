@@ -1,4 +1,4 @@
-package ecologylab.semantics.metadata;
+package ecologylab.semantics.metametadata;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;

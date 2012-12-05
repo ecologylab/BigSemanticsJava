@@ -17,7 +17,7 @@ import ecologylab.serialization.annotations.simpl_map;
 import ecologylab.serialization.formatenums.StringFormat;
 import ecologylab.serialization.types.element.IMappable;
 
-public class TestSimplWithMultiAncestorScope
+public class TestSimplWithMmdScope
 {
 
   @simpl_composite
@@ -60,7 +60,7 @@ public class TestSimplWithMultiAncestorScope
   String serialize() throws SIMPLTranslationException
   {
     SimplTypesScope tscope = SimplTypesScope.get("test_simpl_w_mas",
-                                                 TestSimplWithMultiAncestorScope.class,
+                                                 TestSimplWithMmdScope.class,
                                                  MmdScope.class);
     StringBuilder sb = tscope.serialize(this, StringFormat.XML);
     return sb == null ? null : sb.toString();
@@ -74,9 +74,9 @@ public class TestSimplWithMultiAncestorScope
     Assert.assertTrue(xml.length() > 0);
 
     SimplTypesScope tscope = SimplTypesScope.get("test_simpl_w_mas",
-                                                 TestSimplWithMultiAncestorScope.class,
+                                                 TestSimplWithMmdScope.class,
                                                  MmdScope.class);
-    TestSimplWithMultiAncestorScope test = (TestSimplWithMultiAncestorScope) tscope
+    TestSimplWithMmdScope test = (TestSimplWithMmdScope) tscope
         .deserialize(xml, StringFormat.XML);
 
     Assert.assertNotNull(test);
@@ -93,9 +93,9 @@ public class TestSimplWithMultiAncestorScope
     Assert.assertTrue(xml.length() > 0);
 
     SimplTypesScope tscope = SimplTypesScope.get("test_simpl_w_mas",
-                                                 TestSimplWithMultiAncestorScope.class,
+                                                 TestSimplWithMmdScope.class,
                                                  MmdScope.class);
-    TestSimplWithMultiAncestorScope test = (TestSimplWithMultiAncestorScope) tscope
+    TestSimplWithMmdScope test = (TestSimplWithMmdScope) tscope
         .deserialize(xml, StringFormat.XML);
 
     Assert.assertNotNull(test.packages);
