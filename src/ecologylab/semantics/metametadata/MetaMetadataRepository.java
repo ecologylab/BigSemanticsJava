@@ -13,15 +13,11 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
-
 import ecologylab.appframework.types.prefs.Pref;
-import ecologylab.collections.MultiAncestorScope;
 import ecologylab.collections.PrefixCollection;
 import ecologylab.collections.PrefixPhrase;
 import ecologylab.generic.Debug;
 import ecologylab.generic.HashMapArrayList;
-import ecologylab.logging.BaseLogger;
 import ecologylab.net.ParsedURL;
 import ecologylab.net.UserAgent;
 import ecologylab.semantics.collecting.CookieProcessing;

@@ -20,12 +20,12 @@ public class MmdScope implements Map<String, MetaMetadata>, IMappable<String>
 
   public MmdScope()
   {
-    mmds = new MultiAncestorScope<>();
+    mmds = new MultiAncestorScope<MetaMetadata>();
   }
 
   public MmdScope(Map<String, MetaMetadata>... ancestors)
   {
-    mmds = new MultiAncestorScope<>(ancestors);
+    mmds = new MultiAncestorScope<MetaMetadata>(ancestors);
   }
 
   @Override
