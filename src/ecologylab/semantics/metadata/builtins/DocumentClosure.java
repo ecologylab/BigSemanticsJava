@@ -7,17 +7,13 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
-
-import org.apache.log4j.Logger;
 
 import ecologylab.collections.SetElement;
 import ecologylab.concurrent.Downloadable;
 import ecologylab.generic.Continuation;
 import ecologylab.io.DownloadProcessor;
-import ecologylab.logging.BaseLogger;
 import ecologylab.logging.DownloadableLogRecord;
 import ecologylab.net.PURLConnection;
 import ecologylab.net.ParsedURL;
