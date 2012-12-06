@@ -12,9 +12,9 @@ import java.util.Set;
 
 import ecologylab.collections.SetElement;
 import ecologylab.concurrent.Downloadable;
+import ecologylab.concurrent.DownloadableLogRecord;
 import ecologylab.generic.Continuation;
 import ecologylab.io.DownloadProcessor;
-import ecologylab.logging.DownloadableLogRecord;
 import ecologylab.net.PURLConnection;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.actions.SemanticAction;
