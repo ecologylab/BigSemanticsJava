@@ -185,7 +185,8 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 			Document document = dbProvider.retrieveDocument(this);
 			if (document != null)
 			{
-				if (logRecord != null) logRecord.setSemanticsDiskCacheHit(true);
+				if (logRecord != null)
+				  logRecord.setSemanticsDiskCacheHit(true);
 				changeDocument(document);
 				return;
 			}
@@ -196,7 +197,8 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 		// connect call also evolves Document based on redirects & mime-type;
 		//the parameter is used to get and set document properties with request and response respectively
 		downloadController.connect(this);
-		logRecord.setSecondsInHtmlDownload((System.currentTimeMillis() - millis)/1000);
+		if (logRecord != null)
+  		logRecord.setSecondsInHtmlDownload((System.currentTimeMillis() - millis)/1000);
 		//baseLog.debug("document downloaded in " + (System.currentTimeMillis() - millis) + "(ms)");
 		
 		MetaMetadata metaMetadata = (MetaMetadata) document.getMetaMetadata();
@@ -246,7 +248,8 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 			}
 			millis = System.currentTimeMillis();
 			documentParser.parse();
-			logRecord.setSecondsInExtraction((System.currentTimeMillis() - millis)/1000);
+			if (logRecord != null)
+  			logRecord.setSecondsInExtraction((System.currentTimeMillis() - millis)/1000);
 			//baseLog.debug("document parsed in " + (System.currentTimeMillis() - millis) + "(ms)");
 			
 			ArrayList<SemanticAction> afterSemanticActions	= metaMetadata.getAfterSemanticActions();
