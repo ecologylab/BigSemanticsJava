@@ -7,6 +7,8 @@ import java.io.File;
 
 import ecologylab.generic.Debug;
 import ecologylab.generic.ReflectionTools;
+import ecologylab.logging.ILoggerFactory;
+import ecologylab.logging.SimpleLoggerFactory;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.dbinterface.IDocumentCache;
 import ecologylab.semantics.gui.InteractiveSpace;
@@ -33,6 +35,8 @@ import ecologylab.serialization.formatenums.Format;
 public class SemanticsGlobalScope extends MetaMetadataRepositoryInit
 {
 	
+  public static final String KEY_LOGGER_FACTORY = "key_logger_factory";
+  
 	/**
 	 * Maps locations to Document Metadata subclasses. Constructs these Document instances as needed
 	 * using the MetaMetadataRepository.
@@ -233,4 +237,14 @@ public class SemanticsGlobalScope extends MetaMetadataRepositoryInit
 	{
 		return false;
 	}
+	
+	public ILoggerFactory getLoggerFactory()
+	{
+	  if (!this.containsKey(KEY_LOGGER_FACTORY))
+	  {
+	    this.put(KEY_LOGGER_FACTORY, new SimpleLoggerFactory());
+	  }
+	  return (ILoggerFactory) this.get(KEY_LOGGER_FACTORY);
+	}
+	
 }

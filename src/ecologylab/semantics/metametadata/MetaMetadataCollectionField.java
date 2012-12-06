@@ -7,7 +7,6 @@ import ecologylab.generic.HashMapArrayList;
 import ecologylab.generic.StringTools;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
-import ecologylab.semantics.metadata.mm_dont_inherit;
 import ecologylab.semantics.metadata.scalar.types.MetadataScalarType;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField.AttributeChangeListener;
 import ecologylab.serialization.ClassDescriptor;
@@ -191,6 +190,9 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 	 */
 	public void deserializationPostHook(TranslationContext translationContext, Object object)
 	{
+	  if (this.inheritFinished)
+	    return;
+	  
 		int typeCode = this.getFieldType();
 		if (typeCode == FieldTypes.COLLECTION_SCALAR)
 			return;

@@ -8,8 +8,8 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 
 import ecologylab.collections.Scope;
+import ecologylab.concurrent.DownloadableLogRecord;
 import ecologylab.generic.Debug;
-import ecologylab.logging.DownloadableLogRecord;
 import ecologylab.net.PURLConnection;
 import ecologylab.net.ParsedURL;
 import ecologylab.oodss.distributed.client.NIOClient;

@@ -16,7 +16,6 @@ import ecologylab.semantics.collecting.LinkedMetadataMonitor;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
-import ecologylab.semantics.metadata.mm_dont_inherit;
 import ecologylab.semantics.metametadata.exceptions.MetaMetadataException;
 import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.XMLTools;

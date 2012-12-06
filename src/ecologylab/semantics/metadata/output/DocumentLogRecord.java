@@ -1,6 +1,6 @@
 package ecologylab.semantics.metadata.output;
 
-import ecologylab.logging.DownloadableLogRecord;
+import ecologylab.concurrent.DownloadableLogRecord;
 import ecologylab.net.ParsedURL;
 import ecologylab.serialization.annotations.simpl_composite;
 import ecologylab.serialization.annotations.simpl_inherit;

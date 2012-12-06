@@ -9,7 +9,6 @@ import ecologylab.generic.ReflectionTools;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
-import ecologylab.semantics.metadata.mm_dont_inherit;
 import ecologylab.semantics.metametadata.InheritanceHandler.NameType;
 import ecologylab.semantics.metametadata.MetaMetadata.Visibility;
 import ecologylab.semantics.metametadata.exceptions.MetaMetadataException;

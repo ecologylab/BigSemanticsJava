@@ -82,18 +82,21 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	 * generated one for inline definitions.
 	 */
 	@simpl_composite
+	@mm_dont_inherit
 	private MetaMetadata											inheritedMmd;
 
 	/**
 	 * the (local) scope of visible meta-metadata for this nested field.
 	 */
 	@simpl_composite
+	@mm_dont_inherit
 	private MmdScope                          mmdScope;
 
 	/**
 	 * should we generate a metadata class descriptor for this field. used by the compiler.
 	 */
 	@simpl_scalar
+	@mm_dont_inherit
 	private boolean														newMetadataClass							= false;
 	
 	private boolean														mmdScopeTraversed							= false;

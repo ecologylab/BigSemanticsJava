@@ -14,7 +14,6 @@ import ecologylab.generic.HashMapArrayList;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
-import ecologylab.semantics.metadata.mm_dont_inherit;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.FieldTypes;
@@ -297,6 +296,8 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
 	 */
 	private MetaMetadataRepository												repository;
 	
+	@simpl_scalar
+	@mm_dont_inherit
 	protected boolean																			inheritFinished					= false;
 
 	/**
@@ -329,12 +330,14 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
 	@simpl_composite
   @simpl_scope(NestedMetaMetadataFieldTypesScope.NAME)
 	@simpl_wrap
+	@mm_dont_inherit
 	private MetaMetadataField															inheritedField					= null;
 
 	/**
 	 * in which meta-metadata this field is declared.
 	 */
 	@simpl_composite
+	@mm_dont_inherit
 	private MetaMetadata																	declaringMmd						= null;
 	
 	/**
@@ -342,6 +345,7 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
 	 * module to determine the true root element for child fields inside this field.
 	 */
 	@simpl_scalar
+	@mm_dont_inherit
 	private boolean																				usedForInlineMmdDef			= false;
 
 	public MetaMetadataField()
