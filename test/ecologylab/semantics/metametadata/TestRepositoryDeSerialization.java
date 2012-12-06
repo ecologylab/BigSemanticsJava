@@ -11,6 +11,8 @@ import ecologylab.appframework.PropertiesAndDirectories;
 import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.cyberneko.CybernekoWrapper;
 import ecologylab.semantics.generated.library.RepositoryMetadataTranslationScope;
+import ecologylab.serialization.ClassDescriptor;
+import ecologylab.serialization.FieldDescriptor;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.SimplTypesScope.GRAPH_SWITCH;
@@ -46,6 +48,45 @@ public class TestRepositoryDeSerialization extends Assert
     for (String mmdName : repo.keySet())
       assertNotNull(repo1.getMMByName(mmdName));
     assertNotNull(getSampleInheritedMmd(repo1));
+  }
+  @Test
+  public void testRepositoryScopeDeSerializationXML() throws SIMPLTranslationException
+  {
+	    SimplTypesScope.graphSwitch = GRAPH_SWITCH.ON;
+
+	    SimplTypesScope scope = RepositoryMetadataTranslationScope.get();
+	    //This below doesn't help
+		//scope.addTranslation(SimplTypesScope.class);
+		//scope.addTranslation(ClassDescriptor.class);
+		//scope.addTranslation(FieldDescriptor.class);
+	    StringBuilder serialized = SimplTypesScope.serialize(scope, StringFormat.XML);
+	    
+	    assertNotNull(serialized);
+	    assertTrue(serialized.length() > 0);
+
+	    String serializedString = serialized.toString();
+	    saveRepositoryToFile(serializedString, "mmd_repo_scope.xml");
+
+	    SimplTypesScope scopeFromSerialized =  (SimplTypesScope) scope.deserialize(serializedString, StringFormat.XML);
+	    assertNotNull(scopeFromSerialized);
+  }
+  
+  @Test
+  public void testRepositoryScopeDeSerializationJSON() throws SIMPLTranslationException
+  {
+	    SimplTypesScope.graphSwitch = GRAPH_SWITCH.ON;
+
+	    SimplTypesScope scope = RepositoryMetadataTranslationScope.get();
+	    StringBuilder serialized = SimplTypesScope.serialize(scope, StringFormat.JSON);
+	    
+	    assertNotNull(serialized);
+	    assertTrue(serialized.length() > 0);
+
+	    String serializedString = serialized.toString();
+	    saveRepositoryToFile(serializedString, "mmd_repo_scope.json");
+
+	    SimplTypesScope scopeFromSerialized =  (SimplTypesScope) scope.deserialize(serializedString, StringFormat.JSON);
+	    assertNotNull(scopeFromSerialized);
   }
 
   void saveRepositoryToFile(String repoStr, String fileName)
