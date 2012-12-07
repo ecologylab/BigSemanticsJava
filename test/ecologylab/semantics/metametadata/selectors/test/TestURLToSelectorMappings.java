@@ -2,6 +2,9 @@ package ecologylab.semantics.metametadata.selectors.test;
 
 import static org.junit.Assert.*;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -12,12 +15,15 @@ import org.junit.runners.Parameterized.Parameters;
 
 
 
+import ecologylab.semantics.generated.library.RepositoryMetadataTranslationScope;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metametadata.ExampleUrl;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.metametadata.test.NewMmTest;
 import ecologylab.serialization.SIMPLTranslationException;
+import ecologylab.serialization.SimplTypesScope;
+import ecologylab.serialization.formatenums.Format;
 
 
 
@@ -68,6 +74,43 @@ public class TestURLToSelectorMappings {
     			fail("Can't load MetaMetadata repository!");
     		}
     		MetaMetadataRepository repository = testMmd.getMetaMetadataRepository();
+    		
+    		/***
+    		 * 
+    		 * 
+    		 * Remove me do not push
+    		 */
+    		
+    		File repoScopeFile = new File("/tmp/mmd_repo_scope.json");
+    		FileOutputStream repoScopeOutstream = null;
+			try {
+				repoScopeOutstream = new FileOutputStream(repoScopeFile);
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    		try {
+				SimplTypesScope.serialize(RepositoryMetadataTranslationScope.get(),repoScopeOutstream, Format.JSON);
+			} catch (SIMPLTranslationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    		
+    		File repoInstanceFile = new File("/tmp/mmd_repo_instance.json");
+    		FileOutputStream repoInstanceStream = null;
+			try {
+				repoInstanceStream = new FileOutputStream(repoInstanceFile);
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    		try {
+				SimplTypesScope.serialize(repository,repoInstanceStream, Format.JSON);
+			} catch (SIMPLTranslationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    		
     		
     		ArrayList<String> mmdsByName = repository.getMMNameList();
     		for(String mmdName : mmdsByName)

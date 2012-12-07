@@ -3,6 +3,8 @@ package ecologylab.semantics.metametadata;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -33,7 +35,8 @@ public class TestRepositoryDeSerialization extends Assert
     assertNotNull(getSampleInheritedMmd(repo));
 
     SimplTypesScope mmdTScope = MetaMetadataTranslationScope.get();
-    StringBuilder sb = mmdTScope.serialize(repo, StringFormat.XML);
+    
+    StringBuilder sb = mmdTScope.serialize(repo, StringFormat.XML);// has bad hash value
     assertNotNull(sb);
     assertTrue(sb.length() > 0);
 
@@ -88,6 +91,7 @@ public class TestRepositoryDeSerialization extends Assert
 	    SimplTypesScope scopeFromSerialized =  (SimplTypesScope) scope.deserialize(serializedString, StringFormat.JSON);
 	    assertNotNull(scopeFromSerialized);
   }
+  
 
   void saveRepositoryToFile(String repoStr, String fileName)
   {
