@@ -13,6 +13,7 @@ import ecologylab.appframework.PropertiesAndDirectories;
 import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.cyberneko.CybernekoWrapper;
 import ecologylab.semantics.generated.library.RepositoryMetadataTranslationScope;
+import ecologylab.semantics.generated.library.urbanspoon.UrbanSpoonSearch;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.FieldDescriptor;
 import ecologylab.serialization.SIMPLTranslationException;
@@ -50,6 +51,7 @@ public class TestRepositoryDeSerialization extends Assert
 //        (MetaMetadataRepository) mmdTScope.deserialize(savedRepoXml, Format.XML);
     for (String mmdName : repo.keySet())
       assertNotNull(repo1.getMMByName(mmdName));
+    
     assertNotNull(getSampleInheritedMmd(repo1));
   }
   @Test
@@ -92,6 +94,45 @@ public class TestRepositoryDeSerialization extends Assert
 	    assertNotNull(scopeFromSerialized);
   }
   
+  @Test
+  public void testSpecificMetadataXML() throws SIMPLTranslationException
+  {
+	    SimplTypesScope.graphSwitch = GRAPH_SWITCH.ON;
+	    
+		SimplTypesScope scope = SimplTypesScope.get("urbanSpoonSearch", UrbanSpoonSearch.class);		
+	    StringBuilder serialized = SimplTypesScope.serialize(scope, StringFormat.XML);
+	    
+	    assertNotNull(serialized);
+	    assertTrue(serialized.length() > 0);
+
+	    String serializedString = serialized.toString();
+	    saveRepositoryToFile(serializedString, "urbanSpoonSearch.xml");
+
+	    SimplTypesScope basicScope = SimplTypesScope.get("basic+Urban", SimplTypesScope.getBasicTranslations(), UrbanSpoonSearch.class);
+	    
+	    SimplTypesScope scopeFromSerialized =  (SimplTypesScope) basicScope.deserialize(serializedString, StringFormat.XML);
+	    assertNotNull(scopeFromSerialized);
+  }
+  
+  @Test
+  public void testSpecificMetadataJSON() throws SIMPLTranslationException
+  {
+	  	SimplTypesScope.graphSwitch = GRAPH_SWITCH.ON;
+		
+		SimplTypesScope scope = SimplTypesScope.get("urbanSpoonSearch", UrbanSpoonSearch.class);		
+		StringBuilder serialized = SimplTypesScope.serialize(scope, StringFormat.JSON);
+		
+		assertNotNull(serialized);
+		assertTrue(serialized.length() > 0);
+		
+		String serializedString = serialized.toString();
+		saveRepositoryToFile(serializedString, "urbanSpoonSearch.json");
+		
+		SimplTypesScope basicScope = SimplTypesScope.get("basic+Urban", SimplTypesScope.getBasicTranslations(), UrbanSpoonSearch.class);
+		    
+		SimplTypesScope scopeFromSerialized =  (SimplTypesScope) basicScope.deserialize(serializedString, StringFormat.JSON);
+		assertNotNull(scopeFromSerialized);
+  }  
 
   void saveRepositoryToFile(String repoStr, String fileName)
   {
