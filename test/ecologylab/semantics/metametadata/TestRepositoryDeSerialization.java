@@ -14,11 +14,13 @@ import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.cyberneko.CybernekoWrapper;
 import ecologylab.semantics.generated.library.RepositoryMetadataTranslationScope;
 import ecologylab.semantics.generated.library.urbanspoon.UrbanSpoonSearch;
+import ecologylab.semantics.metadata.mm_name;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.FieldDescriptor;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.SimplTypesScope.GRAPH_SWITCH;
+import ecologylab.serialization.annotations.FieldUsage;
 import ecologylab.serialization.formatenums.Format;
 import ecologylab.serialization.formatenums.StringFormat;
 
@@ -60,10 +62,12 @@ public class TestRepositoryDeSerialization extends Assert
 	    SimplTypesScope.graphSwitch = GRAPH_SWITCH.ON;
 
 	    SimplTypesScope scope = RepositoryMetadataTranslationScope.get();
-	    //This below doesn't help
-		//scope.addTranslation(SimplTypesScope.class);
-		//scope.addTranslation(ClassDescriptor.class);
-		//scope.addTranslation(FieldDescriptor.class);
+	    
+	    SimplTypesScope scopeWithBasic = SimplTypesScope.get("mmd_and_translation_scope", scope);
+	    scopeWithBasic.addTranslation(SimplTypesScope.class);
+	    scopeWithBasic.addTranslation(ClassDescriptor.class);
+	    scopeWithBasic.addTranslation(FieldDescriptor.class);
+
 	    StringBuilder serialized = SimplTypesScope.serialize(scope, StringFormat.XML);
 	    
 	    assertNotNull(serialized);
@@ -72,7 +76,7 @@ public class TestRepositoryDeSerialization extends Assert
 	    String serializedString = serialized.toString();
 	    saveRepositoryToFile(serializedString, "mmd_repo_scope.xml");
 
-	    SimplTypesScope scopeFromSerialized =  (SimplTypesScope) scope.deserialize(serializedString, StringFormat.XML);
+	    SimplTypesScope scopeFromSerialized =  (SimplTypesScope) scopeWithBasic.deserialize(serializedString, StringFormat.XML);
 	    assertNotNull(scopeFromSerialized);
   }
   
@@ -83,6 +87,10 @@ public class TestRepositoryDeSerialization extends Assert
 
 	    SimplTypesScope scope = RepositoryMetadataTranslationScope.get();
 	    StringBuilder serialized = SimplTypesScope.serialize(scope, StringFormat.JSON);
+	    SimplTypesScope scopeWithBasic = SimplTypesScope.get("mmd_and_translation_scope", scope);
+	    scopeWithBasic.addTranslation(SimplTypesScope.class);
+	    scopeWithBasic.addTranslation(ClassDescriptor.class);
+	    scopeWithBasic.addTranslation(FieldDescriptor.class);
 	    
 	    assertNotNull(serialized);
 	    assertTrue(serialized.length() > 0);
@@ -90,7 +98,7 @@ public class TestRepositoryDeSerialization extends Assert
 	    String serializedString = serialized.toString();
 	    saveRepositoryToFile(serializedString, "mmd_repo_scope.json");
 
-	    SimplTypesScope scopeFromSerialized =  (SimplTypesScope) scope.deserialize(serializedString, StringFormat.JSON);
+	    SimplTypesScope scopeFromSerialized =  (SimplTypesScope) scopeWithBasic.deserialize(serializedString, StringFormat.JSON);
 	    assertNotNull(scopeFromSerialized);
   }
   
