@@ -3,9 +3,6 @@ package ecologylab.semantics.metametadata;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -14,14 +11,11 @@ import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.cyberneko.CybernekoWrapper;
 import ecologylab.semantics.generated.library.RepositoryMetadataTranslationScope;
 import ecologylab.semantics.generated.library.urbanspoon.UrbanSpoonSearch;
-import ecologylab.semantics.metadata.mm_name;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.FieldDescriptor;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.SimplTypesScope.GRAPH_SWITCH;
-import ecologylab.serialization.annotations.FieldUsage;
-import ecologylab.serialization.formatenums.Format;
 import ecologylab.serialization.formatenums.StringFormat;
 
 public class TestRepositoryDeSerialization extends Assert
@@ -78,6 +72,7 @@ public class TestRepositoryDeSerialization extends Assert
 
 	    SimplTypesScope scopeFromSerialized =  (SimplTypesScope) scopeWithBasic.deserialize(serializedString, StringFormat.XML);
 	    assertNotNull(scopeFromSerialized);
+	    System.out.println("----------------------- end xml ----------------------");
   }
   
   @Test
