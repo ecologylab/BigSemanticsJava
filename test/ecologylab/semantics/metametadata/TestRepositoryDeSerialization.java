@@ -63,7 +63,7 @@ public class TestRepositoryDeSerialization extends Assert
 	    scopeWithBasic.addTranslation(SimplTypesScope.class);
 	    scopeWithBasic.addTranslation(ClassDescriptor.class);
 	    scopeWithBasic.addTranslation(FieldDescriptor.class);
-	    SimplTypesScope.augmentTranslationScope(scopeWithBasic);
+	    //SimplTypesScope.augmentTranslationScope(scopeWithBasic);
 	    
 	    StringBuilder serialized = SimplTypesScope.serialize(scope, StringFormat.XML);
 	    
@@ -89,7 +89,7 @@ public class TestRepositoryDeSerialization extends Assert
 	    scopeWithBasic.addTranslation(SimplTypesScope.class);
 	    scopeWithBasic.addTranslation(ClassDescriptor.class);
 	    scopeWithBasic.addTranslation(FieldDescriptor.class);
-	    SimplTypesScope.augmentTranslationScope(scopeWithBasic);
+	    //SimplTypesScope.augmentTranslationScope(scopeWithBasic);
 	    
 	    assertNotNull(serialized);
 	    assertTrue(serialized.length() > 0);
@@ -119,7 +119,7 @@ public class TestRepositoryDeSerialization extends Assert
 	    basicScope.addTranslation(SimplTypesScope.class);
 	    basicScope.addTranslation(ClassDescriptor.class);
 	    basicScope.addTranslation(FieldDescriptor.class);
-	    SimplTypesScope.augmentTranslationScope(basicScope);
+	    //SimplTypesScope.augmentTranslationScope(basicScope);
 	    
 	    SimplTypesScope scopeFromSerialized =  (SimplTypesScope) basicScope.deserialize(serializedString, StringFormat.XML);
 	    assertNotNull(scopeFromSerialized);
@@ -143,7 +143,7 @@ public class TestRepositoryDeSerialization extends Assert
 		basicScope.addTranslation(SimplTypesScope.class);
 	    basicScope.addTranslation(ClassDescriptor.class);
 	    basicScope.addTranslation(FieldDescriptor.class);
-	    SimplTypesScope.augmentTranslationScope(basicScope);
+	    //SimplTypesScope.augmentTranslationScope(basicScope);
 		    
 		SimplTypesScope scopeFromSerialized =  (SimplTypesScope) basicScope.deserialize(serializedString, StringFormat.JSON);
 		assertNotNull(scopeFromSerialized);
