@@ -33,6 +33,7 @@ public class TestRepositoryDeSerialization extends Assert
 
     SimplTypesScope mmdTScope = MetaMetadataTranslationScope.get();
     
+    
     StringBuilder sb = mmdTScope.serialize(repo, StringFormat.XML);// has bad hash value
     assertNotNull(sb);
     assertTrue(sb.length() > 0);
@@ -58,10 +59,12 @@ public class TestRepositoryDeSerialization extends Assert
 	    SimplTypesScope scope = RepositoryMetadataTranslationScope.get();
 	    
 	    SimplTypesScope scopeWithBasic = SimplTypesScope.get("mmd_and_translation_scope", scope);
+	    
 	    scopeWithBasic.addTranslation(SimplTypesScope.class);
 	    scopeWithBasic.addTranslation(ClassDescriptor.class);
 	    scopeWithBasic.addTranslation(FieldDescriptor.class);
-
+	    SimplTypesScope.augmentTranslationScope(scopeWithBasic);
+	    
 	    StringBuilder serialized = SimplTypesScope.serialize(scope, StringFormat.XML);
 	    
 	    assertNotNull(serialized);
@@ -86,6 +89,7 @@ public class TestRepositoryDeSerialization extends Assert
 	    scopeWithBasic.addTranslation(SimplTypesScope.class);
 	    scopeWithBasic.addTranslation(ClassDescriptor.class);
 	    scopeWithBasic.addTranslation(FieldDescriptor.class);
+	    SimplTypesScope.augmentTranslationScope(scopeWithBasic);
 	    
 	    assertNotNull(serialized);
 	    assertTrue(serialized.length() > 0);
@@ -111,7 +115,11 @@ public class TestRepositoryDeSerialization extends Assert
 	    String serializedString = serialized.toString();
 	    saveRepositoryToFile(serializedString, "urbanSpoonSearch.xml");
 
-	    SimplTypesScope basicScope = SimplTypesScope.get("basic+Urban", SimplTypesScope.getBasicTranslations(), UrbanSpoonSearch.class);
+	    SimplTypesScope basicScope = SimplTypesScope.get("basic+Urban", scope);
+	    basicScope.addTranslation(SimplTypesScope.class);
+	    basicScope.addTranslation(ClassDescriptor.class);
+	    basicScope.addTranslation(FieldDescriptor.class);
+	    SimplTypesScope.augmentTranslationScope(basicScope);
 	    
 	    SimplTypesScope scopeFromSerialized =  (SimplTypesScope) basicScope.deserialize(serializedString, StringFormat.XML);
 	    assertNotNull(scopeFromSerialized);
@@ -131,7 +139,11 @@ public class TestRepositoryDeSerialization extends Assert
 		String serializedString = serialized.toString();
 		saveRepositoryToFile(serializedString, "urbanSpoonSearch.json");
 		
-		SimplTypesScope basicScope = SimplTypesScope.get("basic+Urban", SimplTypesScope.getBasicTranslations(), UrbanSpoonSearch.class);
+		SimplTypesScope basicScope = SimplTypesScope.get("basic+Urban", scope);
+		basicScope.addTranslation(SimplTypesScope.class);
+	    basicScope.addTranslation(ClassDescriptor.class);
+	    basicScope.addTranslation(FieldDescriptor.class);
+	    SimplTypesScope.augmentTranslationScope(basicScope);
 		    
 		SimplTypesScope scopeFromSerialized =  (SimplTypesScope) basicScope.deserialize(serializedString, StringFormat.JSON);
 		assertNotNull(scopeFromSerialized);
