@@ -13,7 +13,6 @@ import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.SimplTypesScope.GRAPH_SWITCH;
 import ecologylab.serialization.TranslationContext;
-import ecologylab.serialization.TranslationContextPool;
 
 public class MmToHtmlTest extends NewMmTest
 {
@@ -61,9 +60,8 @@ public class MmToHtmlTest extends NewMmTest
 		{
 			Document document = documentClosure.getDocument();
 
-			TranslationContext translationContext = TranslationContextPool.get().acquire();
+			TranslationContext translationContext = new TranslationContext();
 			document.serializeToHtml(print, translationContext);
-			TranslationContextPool.get().release(translationContext);
 		}
 		appendFooter(print);
 		print.close();
