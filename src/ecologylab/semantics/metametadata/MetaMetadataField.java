@@ -16,7 +16,7 @@ import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.MetadataFieldDescriptor;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.ElementState;
-import ecologylab.serialization.FieldTypes;
+import ecologylab.serialization.FieldType;
 import ecologylab.serialization.MetaInformation;
 import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.TranslationContext;
@@ -965,8 +965,8 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
 			metadataClassDescriptor.replace(wrapperFD, clonedWrapperFD);
 		}
 		
-		int fieldType = this.metadataFieldDescriptor.getType();
-		if (fieldType == FieldTypes.COLLECTION_ELEMENT || fieldType == FieldTypes.MAP_ELEMENT)
+		FieldType fieldType = this.metadataFieldDescriptor.getType();
+		if (fieldType == FieldType.COLLECTION_ELEMENT || fieldType == FieldType.MAP_ELEMENT)
 		{
 			if (!this.metadataFieldDescriptor.isWrapped())
 			{
@@ -1074,24 +1074,24 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
 		this.inheritedField = inheritedField;
 	}
 	
-	public int getFieldType()
+	public FieldType getFieldType()
 	{
 		if (this.metadataFieldDescriptor != null)
 			return metadataFieldDescriptor.getType();
 		else
 		{
 			if (this instanceof MetaMetadataCompositeField)
-				return FieldTypes.COMPOSITE_ELEMENT;
+				return FieldType.COMPOSITE_ELEMENT;
 			else if (this instanceof MetaMetadataCollectionField)
 			{
 				MetaMetadataCollectionField coll = (MetaMetadataCollectionField) this;
 				if (coll.getChildScalarType() != null)
-					return FieldTypes.COLLECTION_SCALAR;
+					return FieldType.COLLECTION_SCALAR;
 				else
-					return FieldTypes.COLLECTION_ELEMENT;
+					return FieldType.COLLECTION_ELEMENT;
 			}
 			else
-				return FieldTypes.SCALAR;
+				return FieldType.SCALAR;
 		}
 	}
 

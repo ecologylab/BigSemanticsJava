@@ -22,6 +22,7 @@ import ecologylab.semantics.metametadata.MmdCompilerService;
 import ecologylab.semantics.metametadata.MmdGenericTypeVar;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.FieldDescriptor;
+import ecologylab.serialization.FieldType;
 import ecologylab.serialization.ScalarUnmarshallingContext;
 import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.XMLTools;
@@ -57,7 +58,7 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 
 	private boolean												startedTraversalForPolymorphism	= false;
 	
-	public MetadataFieldDescriptor(ClassDescriptor declaringClassDescriptor, Field field, int annotationType) // String nameSpacePrefix
+	public MetadataFieldDescriptor(ClassDescriptor declaringClassDescriptor, Field field, FieldType annotationType) // String nameSpacePrefix
 	{
 		super(declaringClassDescriptor, field, annotationType);
 		if (field != null)
@@ -81,7 +82,7 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 		checkScalarType();
 	}
 	
-	public MetadataFieldDescriptor(MetaMetadataField definingMmdField, String tagName, String comment, int type, ClassDescriptor elementClassDescriptor,
+	public MetadataFieldDescriptor(MetaMetadataField definingMmdField, String tagName, String comment, FieldType type, ClassDescriptor elementClassDescriptor,
 			ClassDescriptor declaringClassDescriptor, String fieldName, ScalarType scalarType,
 			Hint xmlHint, String fieldType)
 	{
@@ -232,7 +233,7 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 	{
 		String name = getName(); if (name == null) name = "NO_FIELD";
 		return this.getClassSimpleName() + "[" + name + " < " + declaringClassDescriptor.getDescribedClass()
-				+ " type=0x" + Integer.toHexString(getType()) + "]";
+				+ " type=0x" + Integer.toHexString(getType().getTypeID()) + "]";
 	}
 	
 	@Override
@@ -312,7 +313,7 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 			}
 		}
 		
-		if (getType() == COMPOSITE_ELEMENT)
+		if (getType() == FieldType.COMPOSITE_ELEMENT)
 		{
 			// FIXME this part needs to be debugged!!!!
 			MetaMetadataNestedField nested = (MetaMetadataNestedField) definingMmdField;
@@ -398,7 +399,7 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 			}	
 		}
 		
-		if (getType() == COMPOSITE_ELEMENT)
+		if (getType() == FieldType.COMPOSITE_ELEMENT)
 		{
 			MetaMetadataNestedField nested = (MetaMetadataNestedField) definingMmdField;
 			for (MmdGenericTypeVar mmdGenericTypeVar : nested.getMetaMetadataGenericTypeVars())
