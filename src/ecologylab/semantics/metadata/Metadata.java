@@ -36,7 +36,7 @@ import ecologylab.semantics.model.text.OrderedNormalizedTermVectorCache;
 import ecologylab.semantics.model.text.TermVectorFeature;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.FieldDescriptor;
-import ecologylab.serialization.FieldType;
+import ecologylab.serialization.FieldTypes;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.ScalarUnmarshallingContext;
 import ecologylab.serialization.SimplTypesScope;
@@ -62,13 +62,43 @@ import ecologylab.serialization.serializers.ISimplSerializationPre;
  * 
  */
 public abstract class Metadata extends MetadataDeclaration
-implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>,
+implements MetadataBase, TermVectorFeature, Iterable<MetadataFieldDescriptor>, FieldTypes,
 ISimplSerializationPre, ISimplDeserializationPost
 {
 	
 	final static int											INITIAL_SIZE							= 5;
 
 	private static final String						MIXINS_FIELD_NAME					= "mixins";
+
+//	/**
+//	 * The meta-metadata name of this metadata.
+//	 */
+//	@simpl_scalar
+//	@simpl_tag("mm_name")
+//	MetadataString												metaMetadataName;
+//
+//	/**
+//	 * Allows combining instantiated Metadata subclass declarations without hierarchy.
+//	 * 
+//	 * Could help, for example, to support user annotation.
+//	 */
+//	@semantics_mixin
+//	@simpl_collection
+//	@simpl_scope(SemanticsNames.REPOSITORY_METADATA_TRANSLATIONS)
+//	@mm_name("mixins")
+//	List<Metadata>												mixins;
+//
+//	/**
+//	 * a list of linked metadata, which is used for de/serialization. the map (linkedMetadata) is not
+//	 * used for de/serialization because the key really should not be meta-metadata type. instead,
+//	 * this field serves as a surrogate for de/serialization. at runtime, whenever the map is updated
+//	 * this field is updated accordingly. also, linkedMetadata will be initialized using this field
+//	 * in lazy evaluation.
+//	 */
+//	@mm_name("linked_metadata_list")
+//	@simpl_collection
+//	@simpl_scope(SemanticsNames.REPOSITORY_METADATA_TRANSLATIONS)
+//	private List<Metadata>								linkedMetadataList;
 	
 	/**
 	 * Hidden reference to the MetaMetadataRepository. DO NOT access this field directly. DO NOT
@@ -921,11 +951,11 @@ ISimplSerializationPre, ISimplDeserializationPost
 				FieldDescriptor navigatesFD = this.getFieldDescriptorByTagName(mmdField.getNavigatesTo());
 				if (!mmdField.isHide())
 				{
-					FieldType type = childFD.getType();
+					final int type = childFD.getType();
 					String textCssClass = mmdField.getStyle();
 					if (MetadataConstants.DEFAULT.equals(textCssClass))
 							textCssClass		= MetadataConstants.METADATA_TEXT;
-					if (type == FieldType.SCALAR)
+					if (type == SCALAR)
 					{
 						if (!childFD.getScalarType().isDefaultValue(childFD.getField(), currentMetadata))
 						{

@@ -7,7 +7,6 @@ import java.lang.reflect.Field;
 
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.FieldDescriptor;
-import ecologylab.serialization.FieldType;
 
 /**
  * @author andrew
@@ -21,8 +20,7 @@ public class MetaMetadataFieldDescriptor extends FieldDescriptor
 	 */
 	final private boolean		isInheritable;
 	
-	
-	public MetaMetadataFieldDescriptor(ClassDescriptor declaringClassDescriptor, Field field, FieldType annotationType) // String nameSpacePrefix
+	public MetaMetadataFieldDescriptor(ClassDescriptor declaringClassDescriptor, Field field, int annotationType) // String nameSpacePrefix
 	{
 		super(declaringClassDescriptor, field, annotationType);
 		if (field != null)

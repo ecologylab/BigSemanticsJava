@@ -179,6 +179,11 @@ public abstract class MetadataScalarType<M, T> extends ReferenceType<M>
 		return result;
 	}
 
+	public String toString(T instance)
+	{
+		return instance.toString();
+	}
+
 	public boolean isDefaultValue(String value)
 	{
 		return valueScalarType.isDefaultValue(value);
