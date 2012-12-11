@@ -921,7 +921,7 @@ ISimplSerializationPre, ISimplDeserializationPost
 				FieldDescriptor navigatesFD = this.getFieldDescriptorByTagName(mmdField.getNavigatesTo());
 				if (!mmdField.isHide())
 				{
-					FieldType type = childFD.getType();
+					final FieldType type = childFD.getType();
 					String textCssClass = mmdField.getStyle();
 					if (MetadataConstants.DEFAULT.equals(textCssClass))
 							textCssClass		= MetadataConstants.METADATA_TEXT;

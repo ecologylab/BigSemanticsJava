@@ -1086,12 +1086,18 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
 			{
 				MetaMetadataCollectionField coll = (MetaMetadataCollectionField) this;
 				if (coll.getChildScalarType() != null)
+				{
 					return FieldType.COLLECTION_SCALAR;
+				}
 				else
+				{
 					return FieldType.COLLECTION_ELEMENT;
+				}
 			}
 			else
+			{
 				return FieldType.SCALAR;
+			}
 		}
 	}
 

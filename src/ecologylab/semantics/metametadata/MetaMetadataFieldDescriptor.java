@@ -20,8 +20,7 @@ public class MetaMetadataFieldDescriptor extends FieldDescriptor
 	 * Should this field be inherited in meta-metadata
 	 */
 	final private boolean		isInheritable;
-	
-	
+		
 	public MetaMetadataFieldDescriptor(ClassDescriptor declaringClassDescriptor, Field field, FieldType annotationType) // String nameSpacePrefix
 	{
 		super(declaringClassDescriptor, field, annotationType);

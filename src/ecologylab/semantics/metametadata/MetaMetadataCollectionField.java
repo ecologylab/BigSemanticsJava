@@ -190,12 +190,16 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 	 */
 	public void deserializationPostHook(TranslationContext translationContext, Object object)
 	{
-	  if (this.inheritFinished)
-	    return;
-	  
+		  if (this.inheritFinished)
+		  {
+			  return;
+		  }
+		  
 		FieldType typeCode = this.getFieldType();
 		if (typeCode == FieldType.COLLECTION_SCALAR)
+		{
 			return;
+		}
 		
 		String childType = getChildType();
 		String childCompositeName = childType != null ? childType : UNRESOLVED_NAME;
