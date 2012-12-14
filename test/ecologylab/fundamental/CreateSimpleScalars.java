@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 
+import com.google.common.io.Files;
 import com.google.common.base.Charsets;
 
 public class CreateSimpleScalars {
@@ -47,7 +48,7 @@ public class CreateSimpleScalars {
 	static void Create(String name, String type, String include) throws IOException
 	{
 		File f = getFor(name);
-		com.google.common.io.Files.write(getRepr(name, type, include), f, Charsets.UTF_8);
+		Files.write(getRepr(name, type, include), f, Charsets.UTF_8);
 	}
 	
 	/**
