@@ -13,5 +13,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/MetaMetadataRepository"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/ecologylabFundamentalSun"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/ecologylabSemanticsSun"/>
+	<classpathentry kind="lib" path="lib/guava-14.0-rc1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
