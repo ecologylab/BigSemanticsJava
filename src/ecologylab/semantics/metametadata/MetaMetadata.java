@@ -119,6 +119,9 @@ implements IMappable<String>//, HasLocalTranslationScope
 	@simpl_scalar
 	protected Visibility														visibility										= Visibility.GLOBAL;
 
+	@simpl_scalar
+	private boolean																	noCache;
+	
 	private Map<MetaMetadataSelector, MetaMetadata>	reselectMap;
 
 	private File																		file;
@@ -706,6 +709,11 @@ implements IMappable<String>//, HasLocalTranslationScope
 	public boolean isRootMetaMetadata()
 	{
 		return isRootMetaMetadata(this);
+	}
+
+	public boolean isNoCache()
+	{
+		return noCache;
 	}
 
 }

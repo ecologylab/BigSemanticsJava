@@ -3,6 +3,7 @@
  */
 package ecologylab.semantics.dbinterface;
 
+import ecologylab.net.ParsedURL;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
 
@@ -30,4 +31,11 @@ public interface IDocumentCache
 	 * @param document
 	 */
 	public void storeDocument(Document document);
+	
+	/**
+	 * Removes document corresponding to this url
+	 *
+	 * @param url
+	 */
+	public void removeDocument(ParsedURL url);
 }

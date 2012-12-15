@@ -98,7 +98,8 @@ public class FileSystemStorage extends Debug implements FileStorageProvider
 	@Override
 	public void saveFileMetadata(FileMetadata fileMetadata)
 	{
-		File metaFile = getDestinationFileAndCreateDirs(metaFileDirectory, fileMetadata.getLocation(), "meta");
+		File metaFile = getDestinationFileAndCreateDirs(metaFileDirectory, fileMetadata.getLocation(),
+				"meta");
 		try
 		{
 			SimplTypesScope.serialize(fileMetadata, metaFile, Format.XML);
@@ -132,13 +133,28 @@ public class FileSystemStorage extends Debug implements FileStorageProvider
 		return result;
 	}
 
-	public static File getDestinationFileAndCreateDirs(String topdir, ParsedURL originalPURL, String suffix)
+	@Override
+	public void removeFileAndMetadata(ParsedURL location)
+	{
+		File file = getDestinationFileAndCreateDirs(downloadDirectory, location, "html");
+		if (file.exists() && !file.delete())
+			warning("cached HTML " + file.getAbsolutePath() + " for url " + location.toString()
+					+ " could not be deleted");
+
+		File metaFile = getDestinationFileAndCreateDirs(metaFileDirectory, location, "meta");
+		if (metaFile.exists() && !metaFile.delete())
+			warning("cached HTML " + metaFile.getAbsolutePath() + " for url " + location.toString()
+					+ " could not be deleted");
+	}
+
+	public static File getDestinationFileAndCreateDirs(String topdir, ParsedURL originalPURL,
+			String suffix)
 	{
 		String outFileName = SHA256FileNameGenerator.getName(originalPURL) + "." + suffix;
 		File subdir = new File(topdir, outFileName.substring(0, subdirectoryNameLength));
 		subdir.mkdirs();
 		File file = new File(subdir, outFileName);
-	  return file;
+		return file;
 	}
 
 	public static FileStorageProvider getStorageProvider()

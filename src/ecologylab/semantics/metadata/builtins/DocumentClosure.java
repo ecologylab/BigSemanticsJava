@@ -178,9 +178,11 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 			return;
 		}
 		
+		boolean noCache = ((MetaMetadata)document.getMetaMetadata()).isNoCache();
+		
 		//if the semantics scope provides DB lookup
 		IDocumentCache dbProvider = semanticsScope.getDBDocumentProvider();
-		if (dbProvider != null)
+		if (!noCache && dbProvider != null)
 		{
 			Document document = dbProvider.retrieveDocument(this);
 			if (document != null)
@@ -268,7 +270,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 			}
 			
 			//store document in DB
-			if (dbProvider != null)
+			if (!noCache && dbProvider != null)
 			{
 				dbProvider.storeDocument(this.document);
 			}

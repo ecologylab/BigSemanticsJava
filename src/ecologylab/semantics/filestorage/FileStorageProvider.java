@@ -46,4 +46,11 @@ public interface FileStorageProvider
 	 * @return
 	 */
 	public FileMetadata getFileMetadata(ParsedURL location);
+	
+	/**
+	 * remove file and file metadata
+	 * 
+	 * @param location
+	 */
+	public void removeFileAndMetadata(ParsedURL location);
 }
