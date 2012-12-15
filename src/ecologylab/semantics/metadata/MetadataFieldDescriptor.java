@@ -115,6 +115,12 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 		checkScalarType();
 	}
 	
+	public MetadataFieldDescriptor()
+	{
+		isMixin = false;
+		// empty constructor to satisfy S.IM.PL
+	}
+	
 	private void checkScalarType()
 	{
 		if (this.field != null
@@ -228,11 +234,17 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 		this.definingMmdField = mmdField;
 	}
 	
+
+	private String fixNull(String s)
+	{
+		return s == null ? "NULL" : s;
+	}
 	@Override
 	public String toString()
 	{
 		String name = getName(); if (name == null) name = "NO_FIELD";
-		return this.getClassSimpleName() + "[" + name + " < " + declaringClassDescriptor.getDescribedClass()
+		
+		return fixNull(this.getClassSimpleName()) + "[" + fixNull(name) + " < " + fixNull(declaringClassDescriptor == null ? null : declaringClassDescriptor.getDescribedClass().getName())
 				+ " type=0x" + Integer.toHexString(getType().getTypeID()) + "]";
 	}
 	
