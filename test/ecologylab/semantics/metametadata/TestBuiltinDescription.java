@@ -29,7 +29,7 @@ public class TestBuiltinDescription {
 	}
 	@Test
 	public void testThatCreationDoesntThrowAnException() {
-		SimplTypesScope defaultGet = RepositoryMetadataTranslationScope.get();
+		//SimplTypesScope defaultGet = RepositoryMetadataTranslationScope.get();
 
 		ClassDescriptor<?> cd = ClassDescriptor.getClassDescriptor(MetadataString.class);	
 		ClassDescriptor<?> mdCD = ClassDescriptor.getClassDescriptor(MetadataDeclaration.class);
