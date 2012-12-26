@@ -17,7 +17,7 @@ public class SemanticsTypes
 	
 	public static final ScalarType METADATA_INTEGER_TYPE 					= new MetadataIntegerScalarType();
 	
-//	public static final ScalarType METADATA_LONG_TYPE 					= new MetadataLongScalarType();
+//	public static final ScalarType METADATA_LONG_TYPE 					= new MetadataLongScalarType(); ?? ?? ? ? ? ? 
 //	
 //	public static final ScalarType METADATA_SHORT_TYPE 					= new MetadataShortScalarType();
 //	

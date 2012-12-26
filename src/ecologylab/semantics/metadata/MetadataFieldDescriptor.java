@@ -14,6 +14,7 @@ import ecologylab.semantics.gui.EditValueEvent;
 import ecologylab.semantics.gui.EditValueListener;
 import ecologylab.semantics.gui.EditValueNotifier;
 import ecologylab.semantics.metadata.scalar.MetadataScalarBase;
+import ecologylab.semantics.metadata.scalar.types.MetadataScalarType;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataCollectionField;
 import ecologylab.semantics.metametadata.MetaMetadataField;
@@ -38,6 +39,11 @@ import ecologylab.serialization.types.scalar.CompositeAsScalarType;
  */
 public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor implements EditValueNotifier
 {
+	
+	static{
+		System.out.println("LASDFHASDFD");
+		MetadataScalarType.init();
+	}
 	
 	final private boolean									isMixin;
 
@@ -245,7 +251,7 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 		String name = getName(); if (name == null) name = "NO_FIELD";
 		
 		return fixNull(this.getClassSimpleName()) + "[" + fixNull(name) + " < " + fixNull(declaringClassDescriptor == null ? null : declaringClassDescriptor.getDescribedClass().getName())
-				+ " type=0x" + Integer.toHexString(getType().getTypeID()) + "]";
+				+ " type=0x" + (getType()!= null ? Integer.toHexString(getType().getTypeID()) : "NULL") + "]";
 	}
 	
 	@Override

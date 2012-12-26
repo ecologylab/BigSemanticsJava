@@ -348,12 +348,6 @@ ISimplSerializationPre, ISimplDeserializationPost
 				}
 			}
 
-			// "null" happens with mixins fieldAccessor b'coz getValueString() returns "null".
-
-			// TODO use MetaMetadataField.numNonDisplayedFields()
-//			boolean isVisibleField = !metaMetadataField.isHide()
-//					&& ((considerAlwaysShow && metaMetadataField.isAlwaysShow()) || hasVisibleNonNullField);
-
 			if (hasVisibleNonNullField)
 				size++;
 		}
@@ -364,7 +358,10 @@ ISimplSerializationPre, ISimplDeserializationPost
 	public void rebuildTotally()
 	{
 		if (termVector != null)
+		{
 			termVector.reinitialize();
+		}
+		
 		rebuildCompositeTermVector();
 	}
 
@@ -395,7 +392,9 @@ ISimplSerializationPre, ISimplDeserializationPost
 				// if mb is a Metadata object, this call may recursively initialize its CompositeTermVector
 				ITermVector mTermVector = mb.termVector(visitedMetadata);
 				if (mb != null && !vectors.contains(mTermVector))
+				{
 					termVector.add(mTermVector);
+				}
 			}
 		}
 	}

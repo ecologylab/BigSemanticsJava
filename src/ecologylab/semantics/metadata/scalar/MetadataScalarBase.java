@@ -47,13 +47,6 @@ public class MetadataScalarBase<T> extends ElementState implements MetadataBase
 		return (value == null) ? "null" : value.toString();
 	}
 	
-
-//	public MetaMetadataField metaMetadataField()
-//	{
-//		Metadata parent	= (Metadata) this.parent();
-//		return (parent == null) ? null : parent.getMetaMetadata();
-//	}
-
 	/**
 	 * compare two MetadataScalarBase objects according to their enclosed value. use that value's
 	 * equal() method for actual comparison. note that we treat null == null as true.
