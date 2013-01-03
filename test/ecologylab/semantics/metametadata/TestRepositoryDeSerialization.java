@@ -11,6 +11,10 @@ import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.cyberneko.CybernekoWrapper;
 import ecologylab.semantics.generated.library.RepositoryMetadataTranslationScope;
 import ecologylab.semantics.generated.library.urbanspoon.UrbanSpoonSearch;
+import ecologylab.semantics.metadata.builtins.Annotation;
+import ecologylab.semantics.metadata.builtins.ClippableDocument;
+import ecologylab.semantics.metadata.builtins.Clipping;
+import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.FieldDescriptor;
 import ecologylab.serialization.SIMPLTranslationException;
@@ -32,8 +36,7 @@ public class TestRepositoryDeSerialization extends Assert
     assertNotNull(getSampleInheritedMmd(repo));
 
     SimplTypesScope mmdTScope = MetaMetadataTranslationScope.get();
-    
-    
+
     StringBuilder sb = mmdTScope.serialize(repo, StringFormat.XML);// has bad hash value
     assertNotNull(sb);
     assertTrue(sb.length() > 0);
@@ -43,111 +46,139 @@ public class TestRepositoryDeSerialization extends Assert
 
     MetaMetadataRepository repo1 =
         (MetaMetadataRepository) mmdTScope.deserialize(repoXml, StringFormat.XML);
-//    File savedRepoXml = new File(PropertiesAndDirectories.userDocumentDir(), "repo.xml");
-//    MetaMetadataRepository repo1 =
-//        (MetaMetadataRepository) mmdTScope.deserialize(savedRepoXml, Format.XML);
+    // File savedRepoXml = new File(PropertiesAndDirectories.userDocumentDir(), "repo.xml");
+    // MetaMetadataRepository repo1 =
+    // (MetaMetadataRepository) mmdTScope.deserialize(savedRepoXml, Format.XML);
     for (String mmdName : repo.keySet())
       assertNotNull(repo1.getMMByName(mmdName));
-    
+
     assertNotNull(getSampleInheritedMmd(repo1));
   }
+
   @Test
   public void testRepositoryScopeDeSerializationXML() throws SIMPLTranslationException
   {
-	    SimplTypesScope.graphSwitch = GRAPH_SWITCH.ON;
+    SimplTypesScope.graphSwitch = GRAPH_SWITCH.ON;
 
-	    SimplTypesScope scope = RepositoryMetadataTranslationScope.get();
-	    
-	    SimplTypesScope scopeWithBasic = SimplTypesScope.get("mmd_and_translation_scope", scope);
-	    
-	    scopeWithBasic.addTranslation(SimplTypesScope.class);
-	    scopeWithBasic.addTranslation(ClassDescriptor.class);
-	    scopeWithBasic.addTranslation(FieldDescriptor.class);
-	    //SimplTypesScope.augmentTranslationScope(scopeWithBasic);
-	    
-	    StringBuilder serialized = SimplTypesScope.serialize(scope, StringFormat.XML);
-	    
-	    assertNotNull(serialized);
-	    assertTrue(serialized.length() > 0);
+    SimplTypesScope scope = RepositoryMetadataTranslationScope.get();
+    createDerivedScopes(scope);
 
-	    String serializedString = serialized.toString();
-	    saveRepositoryToFile(serializedString, "mmd_repo_scope.xml");
+    SimplTypesScope scopeWithBasic = SimplTypesScope.get("mmd_and_translation_scope", scope);
 
-	    SimplTypesScope scopeFromSerialized =  (SimplTypesScope) scopeWithBasic.deserialize(serializedString, StringFormat.XML);
-	    assertNotNull(scopeFromSerialized);
-	    System.out.println("----------------------- end xml ----------------------");
+    scopeWithBasic.addTranslation(SimplTypesScope.class);
+    scopeWithBasic.addTranslation(ClassDescriptor.class);
+    scopeWithBasic.addTranslation(FieldDescriptor.class);
+    // SimplTypesScope.augmentTranslationScope(scopeWithBasic);
+
+    StringBuilder serialized = SimplTypesScope.serialize(scope, StringFormat.XML);
+
+    assertNotNull(serialized);
+    assertTrue(serialized.length() > 0);
+
+    String serializedString = serialized.toString();
+    saveRepositoryToFile(serializedString, "mmd_repo_scope.xml");
+
+    SimplTypesScope scopeFromSerialized = (SimplTypesScope) scopeWithBasic
+        .deserialize(serializedString, StringFormat.XML);
+    assertNotNull(scopeFromSerialized);
+    System.out.println("----------------------- end xml ----------------------");
   }
-  
+
   @Test
   public void testRepositoryScopeDeSerializationJSON() throws SIMPLTranslationException
   {
-	    SimplTypesScope.graphSwitch = GRAPH_SWITCH.ON;
+    SimplTypesScope.graphSwitch = GRAPH_SWITCH.ON;
 
-	    SimplTypesScope scope = RepositoryMetadataTranslationScope.get();
-	    StringBuilder serialized = SimplTypesScope.serialize(scope, StringFormat.JSON);
-	    SimplTypesScope scopeWithBasic = SimplTypesScope.get("mmd_and_translation_scope", scope);
-	    scopeWithBasic.addTranslation(SimplTypesScope.class);
-	    scopeWithBasic.addTranslation(ClassDescriptor.class);
-	    scopeWithBasic.addTranslation(FieldDescriptor.class);
-	    //SimplTypesScope.augmentTranslationScope(scopeWithBasic);
-	    
-	    assertNotNull(serialized);
-	    assertTrue(serialized.length() > 0);
+    SimplTypesScope scope = RepositoryMetadataTranslationScope.get();
+    createDerivedScopes(scope);
 
-	    String serializedString = serialized.toString();
-	    saveRepositoryToFile(serializedString, "mmd_repo_scope.json");
+    StringBuilder serialized = SimplTypesScope.serialize(scope, StringFormat.JSON);
+    SimplTypesScope scopeWithBasic = SimplTypesScope.get("mmd_and_translation_scope", scope);
+    scopeWithBasic.addTranslation(SimplTypesScope.class);
+    scopeWithBasic.addTranslation(ClassDescriptor.class);
+    scopeWithBasic.addTranslation(FieldDescriptor.class);
+    // SimplTypesScope.augmentTranslationScope(scopeWithBasic);
 
-	    SimplTypesScope scopeFromSerialized =  (SimplTypesScope) scopeWithBasic.deserialize(serializedString, StringFormat.JSON);
-	    assertNotNull(scopeFromSerialized);
+    assertNotNull(serialized);
+    assertTrue(serialized.length() > 0);
+
+    String serializedString = serialized.toString();
+    saveRepositoryToFile(serializedString, "mmd_repo_scope.json");
+
+    SimplTypesScope scopeFromSerialized = (SimplTypesScope) scopeWithBasic
+        .deserialize(serializedString, StringFormat.JSON);
+    assertNotNull(scopeFromSerialized);
   }
-  
+
+  /**
+   * Derived scopes are referred to in simpl_scope annotations. They have to be created so that
+   * those annotations can be resolved correctly during de/serialization.
+   * 
+   * @param repositoryMetadata
+   */
+  void createDerivedScopes(SimplTypesScope repositoryMetadata)
+  {
+    SimplTypesScope documentsScope = repositoryMetadata.getAssignableSubset("repository_documents",
+                                                                            Document.class);
+    SimplTypesScope clippingsTypeScope = repositoryMetadata
+        .getAssignableSubset("repository_clippings", Clipping.class);
+    SimplTypesScope noAnnotationsScope = repositoryMetadata
+        .getSubtractedSubset("repository_no_annotations", Annotation.class);
+    SimplTypesScope mediaTypesScope = repositoryMetadata
+        .getAssignableSubset("repository_media", ClippableDocument.class);
+    mediaTypesScope.addTranslation(Clipping.class);
+    mediaTypesScope.addTranslation(Annotation.class);
+  }
+
   @Test
   public void testSpecificMetadataXML() throws SIMPLTranslationException
   {
-	    SimplTypesScope.graphSwitch = GRAPH_SWITCH.ON;
-	    
-		SimplTypesScope scope = SimplTypesScope.get("urbanSpoonSearch", UrbanSpoonSearch.class);		
-	    StringBuilder serialized = SimplTypesScope.serialize(scope, StringFormat.XML);
-	    
-	    assertNotNull(serialized);
-	    assertTrue(serialized.length() > 0);
+    SimplTypesScope.graphSwitch = GRAPH_SWITCH.ON;
 
-	    String serializedString = serialized.toString();
-	    saveRepositoryToFile(serializedString, "urbanSpoonSearch.xml");
+    SimplTypesScope scope = SimplTypesScope.get("urbanSpoonSearch", UrbanSpoonSearch.class);
+    StringBuilder serialized = SimplTypesScope.serialize(scope, StringFormat.XML);
 
-	    SimplTypesScope basicScope = SimplTypesScope.get("basic+Urban", scope);
-	    basicScope.addTranslation(SimplTypesScope.class);
-	    basicScope.addTranslation(ClassDescriptor.class);
-	    basicScope.addTranslation(FieldDescriptor.class);
-	    //SimplTypesScope.augmentTranslationScope(basicScope);
-	    
-	    SimplTypesScope scopeFromSerialized =  (SimplTypesScope) basicScope.deserialize(serializedString, StringFormat.XML);
-	    assertNotNull(scopeFromSerialized);
+    assertNotNull(serialized);
+    assertTrue(serialized.length() > 0);
+
+    String serializedString = serialized.toString();
+    saveRepositoryToFile(serializedString, "urbanSpoonSearch.xml");
+
+    SimplTypesScope basicScope = SimplTypesScope.get("basic+Urban", scope);
+    basicScope.addTranslation(SimplTypesScope.class);
+    basicScope.addTranslation(ClassDescriptor.class);
+    basicScope.addTranslation(FieldDescriptor.class);
+    // SimplTypesScope.augmentTranslationScope(basicScope);
+
+    SimplTypesScope scopeFromSerialized = (SimplTypesScope) basicScope
+        .deserialize(serializedString, StringFormat.XML);
+    assertNotNull(scopeFromSerialized);
   }
-  
+
   @Test
   public void testSpecificMetadataJSON() throws SIMPLTranslationException
   {
-	  	SimplTypesScope.graphSwitch = GRAPH_SWITCH.ON;
-		
-		SimplTypesScope scope = SimplTypesScope.get("urbanSpoonSearch", UrbanSpoonSearch.class);		
-		StringBuilder serialized = SimplTypesScope.serialize(scope, StringFormat.JSON);
-		
-		assertNotNull(serialized);
-		assertTrue(serialized.length() > 0);
-		
-		String serializedString = serialized.toString();
-		saveRepositoryToFile(serializedString, "urbanSpoonSearch.json");
-		
-		SimplTypesScope basicScope = SimplTypesScope.get("basic+Urban", scope);
-		basicScope.addTranslation(SimplTypesScope.class);
-	    basicScope.addTranslation(ClassDescriptor.class);
-	    basicScope.addTranslation(FieldDescriptor.class);
-	    //SimplTypesScope.augmentTranslationScope(basicScope);
-		    
-		SimplTypesScope scopeFromSerialized =  (SimplTypesScope) basicScope.deserialize(serializedString, StringFormat.JSON);
-		assertNotNull(scopeFromSerialized);
-  }  
+    SimplTypesScope.graphSwitch = GRAPH_SWITCH.ON;
+
+    SimplTypesScope scope = SimplTypesScope.get("urbanSpoonSearch", UrbanSpoonSearch.class);
+    StringBuilder serialized = SimplTypesScope.serialize(scope, StringFormat.JSON);
+
+    assertNotNull(serialized);
+    assertTrue(serialized.length() > 0);
+
+    String serializedString = serialized.toString();
+    saveRepositoryToFile(serializedString, "urbanSpoonSearch.json");
+
+    SimplTypesScope basicScope = SimplTypesScope.get("basic+Urban", scope);
+    basicScope.addTranslation(SimplTypesScope.class);
+    basicScope.addTranslation(ClassDescriptor.class);
+    basicScope.addTranslation(FieldDescriptor.class);
+    // SimplTypesScope.augmentTranslationScope(basicScope);
+
+    SimplTypesScope scopeFromSerialized = (SimplTypesScope) basicScope
+        .deserialize(serializedString, StringFormat.JSON);
+    assertNotNull(scopeFromSerialized);
+  }
 
   void saveRepositoryToFile(String repoStr, String fileName)
   {
