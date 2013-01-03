@@ -34,35 +34,36 @@ import ecologylab.serialization.types.ScalarType;
 import ecologylab.serialization.types.scalar.CompositeAsScalarType;
 
 /**
+ * 
  * @author andruid
  *
  */
 public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor implements EditValueNotifier
 {
 	
-	static{
-		System.out.println("LASDFHASDFD");
+	static
+	{
 		MetadataScalarType.init();
 	}
 	
-	final private boolean									isMixin;
+	final private boolean isMixin;
 
-	Method																hwSetMethod;
+	Method hwSetMethod;
 
-	Method																getter;
+	Method getter;
 	
 	/**
 	 * The name in the MetaMetadataComposite field whose declaration resulted in the generation of
 	 * this.
 	 */
 	@simpl_scalar
-	private String												mmName;
+	private String mmName;
 
-	private ArrayList<EditValueListener>	editValueListeners							= new ArrayList<EditValueListener>();
+	private ArrayList<EditValueListener> editValueListeners = new ArrayList<EditValueListener>();
 
-	private MetaMetadataField							definingMmdField;
+	private MetaMetadataField definingMmdField;
 
-	private boolean												startedTraversalForPolymorphism	= false;
+	private boolean startedTraversalForPolymorphism	= false;
 	
 	public MetadataFieldDescriptor(ClassDescriptor declaringClassDescriptor, Field field, FieldType annotationType) // String nameSpacePrefix
 	{
@@ -245,6 +246,7 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 	{
 		return s == null ? "NULL" : s;
 	}
+	
 	@Override
 	public String toString()
 	{
