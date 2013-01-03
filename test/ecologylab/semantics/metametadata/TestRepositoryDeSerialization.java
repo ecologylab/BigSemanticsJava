@@ -63,7 +63,7 @@ public class TestRepositoryDeSerialization extends Assert
     SimplTypesScope scope = RepositoryMetadataTranslationScope.get();
     createDerivedScopes(scope);
 
-    SimplTypesScope scopeWithBasic = SimplTypesScope.get("mmd_and_translation_scope", scope);
+    SimplTypesScope scopeWithBasic = SimplTypesScope.get("mmd_and_translation_scope", scope, (Class[]) null);
 
     scopeWithBasic.addTranslation(SimplTypesScope.class);
     scopeWithBasic.addTranslation(ClassDescriptor.class);
@@ -93,7 +93,7 @@ public class TestRepositoryDeSerialization extends Assert
     createDerivedScopes(scope);
 
     StringBuilder serialized = SimplTypesScope.serialize(scope, StringFormat.JSON);
-    SimplTypesScope scopeWithBasic = SimplTypesScope.get("mmd_and_translation_scope", scope);
+    SimplTypesScope scopeWithBasic = SimplTypesScope.get("mmd_and_translation_scope", scope, (Class[]) null);
     scopeWithBasic.addTranslation(SimplTypesScope.class);
     scopeWithBasic.addTranslation(ClassDescriptor.class);
     scopeWithBasic.addTranslation(FieldDescriptor.class);
@@ -144,7 +144,7 @@ public class TestRepositoryDeSerialization extends Assert
     String serializedString = serialized.toString();
     saveRepositoryToFile(serializedString, "urbanSpoonSearch.xml");
 
-    SimplTypesScope basicScope = SimplTypesScope.get("basic+Urban", scope);
+    SimplTypesScope basicScope = SimplTypesScope.get("basic+Urban", scope, (Class[]) null);
     basicScope.addTranslation(SimplTypesScope.class);
     basicScope.addTranslation(ClassDescriptor.class);
     basicScope.addTranslation(FieldDescriptor.class);
@@ -169,7 +169,7 @@ public class TestRepositoryDeSerialization extends Assert
     String serializedString = serialized.toString();
     saveRepositoryToFile(serializedString, "urbanSpoonSearch.json");
 
-    SimplTypesScope basicScope = SimplTypesScope.get("basic+Urban", scope);
+    SimplTypesScope basicScope = SimplTypesScope.get("basic+Urban", scope, (Class[]) null);
     basicScope.addTranslation(SimplTypesScope.class);
     basicScope.addTranslation(ClassDescriptor.class);
     basicScope.addTranslation(FieldDescriptor.class);
