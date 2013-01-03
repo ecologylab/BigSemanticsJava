@@ -10,7 +10,6 @@ import ecologylab.semantics.metadata.scalar.types.MetadataStringScalarType;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.FieldDescriptor;
 import ecologylab.serialization.FieldType;
-import ecologylab.serialization.SIMPLDescriptionException;
 import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.annotations.simpl_scalar;
@@ -28,13 +27,9 @@ public class TestBuiltinDescription {
 		final class myMetadataStringScalar
 		{
 			@simpl_scalar
-			private MetadataString myString;
-			
+			private MetadataString myString;			
 		}
-		
-		
-		
-		
+
 		ClassDescriptor cd = ClassDescriptor.getClassDescriptor(myMetadataStringScalar.class);
 		
 		assertEquals(1, cd.allFieldDescriptors().size());
@@ -50,6 +45,7 @@ public class TestBuiltinDescription {
 	public void testThatMetadataCanBeDescribed()
 	{
 		ClassDescriptor cd = ClassDescriptor.getClassDescriptor(Metadata.class);
+		
 	}
 	
 	@Test
@@ -66,7 +62,7 @@ public class TestBuiltinDescription {
 		
 	}
 	
-	public void invalidClassDescriptionWillThrowException() throws SIMPLDescriptionException {
+	public void invalidClassDescriptionWillThrowException() {
 		//SimplTypesScope defaultGet = RepositoryMetadataTranslationScope.get();
 
 		ClassDescriptor<?> cd = ClassDescriptor.getClassDescriptor(MetadataDeclaration.class);	
