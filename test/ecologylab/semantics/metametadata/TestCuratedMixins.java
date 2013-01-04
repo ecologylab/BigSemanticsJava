@@ -48,9 +48,7 @@ public class TestCuratedMixins extends Assert{
 	@Test
 	public void TestDeSerializeOfCurated() throws SIMPLTranslationException
 	{
-
 		SimplTypesScope.serialize(curationRecord, System.out, Format.JSON);
-		assertTrue(false);
 	}
 	
 	@Test
