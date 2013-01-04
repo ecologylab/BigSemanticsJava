@@ -34,7 +34,7 @@ import ecologylab.serialization.types.scalar.ByteType;
 import ecologylab.serialization.types.scalar.CharType;
 import ecologylab.serialization.types.scalar.DateType;
 import ecologylab.serialization.types.scalar.DoubleType;
-import ecologylab.serialization.types.scalar.FieldType;
+import ecologylab.serialization.FieldType;
 import ecologylab.serialization.types.scalar.FloatType;
 import ecologylab.serialization.types.scalar.IntType;
 import ecologylab.serialization.types.scalar.LongType;
