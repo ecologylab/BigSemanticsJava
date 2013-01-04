@@ -16,10 +16,16 @@ import ecologylab.serialization.annotations.simpl_scalar;
 import ecologylab.serialization.types.TypeRegistry;
 
 
+import org.junit.Before;
 import org.junit.Test;
 
 public class TestBuiltinDescription {
 
+	@Before
+	public void ResetSTSBeforeExecution()
+	{
+		SimplTypesScope.ResetAllTypesScopes();
+	}
 	
 	@Test
 	public void testThatMetadataStringsAreDescribedAsScalars()
