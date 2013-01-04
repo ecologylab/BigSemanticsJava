@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import ecologylab.serialization.ClassDescriptor;
+import ecologylab.serialization.EnumerationDescription;
 import ecologylab.serialization.FieldDescriptor;
 import ecologylab.serialization.SimplTypesScope;
 
@@ -21,4 +22,16 @@ public class DescriptorsCanBeDescribedTests {
 	{
 		ClassDescriptor cd = ClassDescriptor.getClassDescriptor(FieldDescriptor.class);
 	}
+	
+	@Test
+	public void ClassDescriptorCanBeDescribed()
+	{
+		ClassDescriptor cd = ClassDescriptor.getClassDescriptor(ClassDescriptor.class);
+	}
+	
+	//TODO: Better validation on these.
+	//They're sparse because they're just trying to catch silly exceptions.
+	
+	
+	
 }

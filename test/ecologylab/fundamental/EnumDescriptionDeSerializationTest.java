@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.EnumerationDescription;
 import ecologylab.serialization.SIMPLDescriptionException;
 import ecologylab.serialization.SIMPLTranslationException;
@@ -14,6 +15,13 @@ import ecologylab.serialization.formatenums.StringFormat;
 
 public class EnumDescriptionDeSerializationTest {
 
+
+	@Test
+	public void EnumDescriptorCanBeDescribed()
+	{
+		ClassDescriptor cd = ClassDescriptor.getClassDescriptor(EnumerationDescription.class);
+	}
+	
 	@Test
 	public void descriptionWillCorrectlySerializeToXML() throws SIMPLDescriptionException, SIMPLTranslationException
 	{
