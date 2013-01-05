@@ -7,12 +7,14 @@ import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.builtins.declarations.MetadataDeclaration;
 import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.semantics.metadata.scalar.types.MetadataStringScalarType;
+import ecologylab.semantics.metadata.scalar.types.SemanticsTypes;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.FieldDescriptor;
 import ecologylab.serialization.FieldType;
 import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.annotations.simpl_scalar;
+import ecologylab.serialization.types.ScalarType;
 import ecologylab.serialization.types.TypeRegistry;
 
 
@@ -30,6 +32,8 @@ public class TestBuiltinDescription {
 	@Test
 	public void testThatMetadataStringsAreDescribedAsScalars()
 	{
+	  new SemanticsTypes(); // this registers all metadata scalar types.
+	  
 		final class myMetadataStringScalar
 		{
 			@simpl_scalar
@@ -41,11 +45,10 @@ public class TestBuiltinDescription {
 		assertEquals(1, cd.allFieldDescriptors().size());
 		FieldDescriptor theField = (FieldDescriptor)cd.allFieldDescriptors().get(0);	
 		
-		assertEquals(MetadataStringScalarType.class, TypeRegistry.getScalarType(MetadataString.class));
-		
-		assertFalse("This is a scalar value, not a composite as scalar", XMLTools.isCompositeAsScalarvalue(theField.getField()));
-		assertEquals("This should be a scalar field.", FieldType.SCALAR, theField.getType());
-		assertEquals(MetadataStringScalarType.class, theField.getScalarType());
+		ScalarType<MetadataString> scalarType = TypeRegistry.getScalarType(MetadataString.class);
+    assertEquals(MetadataStringScalarType.class, scalarType.getClass());
+		assertFalse("This is a scalar value, not a composite as scalar", XMLTools.isCompositeAsScalarvalue(theField.getField())); assertEquals("This should be a scalar field.", FieldType.SCALAR, theField.getType());
+		assertEquals(MetadataStringScalarType.class, theField.getScalarType().getClass());
 	}
 	
 	@Test
