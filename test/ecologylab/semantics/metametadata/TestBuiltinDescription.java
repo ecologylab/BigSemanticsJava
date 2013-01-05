@@ -42,6 +42,7 @@ public class TestBuiltinDescription {
 		FieldDescriptor theField = (FieldDescriptor)cd.allFieldDescriptors().get(0);	
 		
 		assertEquals(MetadataStringScalarType.class, TypeRegistry.getScalarType(MetadataString.class));
+		
 		assertFalse("This is a scalar value, not a composite as scalar", XMLTools.isCompositeAsScalarvalue(theField.getField()));
 		assertEquals("This should be a scalar field.", FieldType.SCALAR, theField.getType());
 		assertEquals(MetadataStringScalarType.class, theField.getScalarType());

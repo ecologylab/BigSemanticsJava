@@ -7,6 +7,7 @@ import static org.junit.Assert.*;
 
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.FieldDescriptor;
+import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.annotations.FieldUsage;
 import ecologylab.serialization.annotations.simpl_collection;
 import ecologylab.serialization.annotations.simpl_scalar;
@@ -20,9 +21,13 @@ public class DBALTests {
 	{
 		final class myCollectionClass
 		{
-			@simpl_collection("excluded_usage")
-			private ArrayList<FieldUsage> excludedUsages;	
+			@simpl_collection("collection_test")
+			private ArrayList<FieldUsage> collectionTest;	
 		}
+		
+		String tagName = XMLTools.getXmlTagName(myCollectionClass.class.getDeclaredFields()[0]);
+		assertNotNull(tagName);
+		System.out.println(tagName);
 		
 		ClassDescriptor cd = ClassDescriptor.getClassDescriptor(myCollectionClass.class);
 		FieldDescriptor fd = (FieldDescriptor)cd.allFieldDescriptors().get(0);
