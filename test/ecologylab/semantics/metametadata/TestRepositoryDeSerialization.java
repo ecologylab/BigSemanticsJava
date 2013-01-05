@@ -84,6 +84,9 @@ public class TestRepositoryDeSerialization
     assertTrue(serialized.length() > 0);
 
     String serializedString = serialized.toString();
+
+    System.out.println(serializedString);
+    
     saveRepositoryToFile(serializedString, "mmd_repo_scope.xml");
 
     SimplTypesScope scopeFromSerialized = (SimplTypesScope) scopeWithBasic
