@@ -41,7 +41,7 @@ public class EnumerationSerializationDeserialization {
 		public ArrayList<secondaryScenarioEnum> ourEnumList;
 	}
 	
-	// TODO: MAPS.
+	// TODO: MAPS... OTHER FORMATS. :3 
 
 	private void validateBasicSerializationCases(Object toSerialize, String toExpect, StringFormat format) throws SIMPLTranslationException
 	{
@@ -112,12 +112,15 @@ public class EnumerationSerializationDeserialization {
 	{
 		validateDeserialization("<custom_valued_enumeration_scalar our_enum=\"secondValue\"/>", StringFormat.XML, secondaryScenarioEnum.secondValue);
 		validateDeserialization("<custom_valued_enumeration_scalar our_enum=\"5\"/>", StringFormat.XML, secondaryScenarioEnum.secondValue);
-			
-		
+				
 		validateDeserialization("{\"custom_valued_enumeration_scalar\":{\"our_enum\":\"secondValue\"}}", StringFormat.JSON, secondaryScenarioEnum.secondValue);
 		validateDeserialization("{\"custom_valued_enumeration_scalar\":{\"our_enum\":\"5\"}}", StringFormat.JSON, secondaryScenarioEnum.secondValue);
-		
-	
 	}
+	
+
+	// TODO: Tests for lists; let's get the base case fixed first. 
+	
+	
+	
 
 }

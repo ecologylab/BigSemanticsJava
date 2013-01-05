@@ -15,6 +15,13 @@ import ecologylab.serialization.formatenums.StringFormat;
 
 public class EnumDescriptionDeSerializationTest {
 
+	
+	@Test
+	public void letsTrySomethingTricksy()
+	{
+		ClassDescriptor cd = ClassDescriptor.getClassDescriptor(primaryScenarioEnum.class);
+		cd.toString();
+	}
 
 	@Test
 	public void EnumDescriptorCanBeDescribed()
