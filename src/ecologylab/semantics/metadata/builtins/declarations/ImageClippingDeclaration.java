@@ -10,12 +10,8 @@ package ecologylab.semantics.metadata.builtins.declarations;
 
 import ecologylab.semantics.metadata.builtins.Image;
 import ecologylab.semantics.metadata.builtins.MediaClipping;
-import ecologylab.semantics.metadata.builtins.MetadataBuiltinsTypesScope;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
-import ecologylab.semantics.namesandnums.SemanticsNames;
 import ecologylab.serialization.annotations.simpl_inherit;
-import java.util.List;
-import java.util.Map;
 
 @simpl_inherit
 public class ImageClippingDeclaration extends MediaClipping<Image>

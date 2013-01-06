@@ -7,7 +7,6 @@ import java.util.ArrayList;
 
 import ecologylab.appframework.SimpleDownloadProcessor;
 import ecologylab.appframework.types.prefs.Pref;
-import ecologylab.appframework.types.prefs.PrefSet;
 import ecologylab.concurrent.BasicSite;
 import ecologylab.concurrent.DownloadMonitor;
 import ecologylab.generic.Debug;

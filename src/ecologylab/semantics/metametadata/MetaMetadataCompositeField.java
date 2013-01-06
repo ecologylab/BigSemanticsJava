@@ -1,9 +1,7 @@
 package ecologylab.semantics.metametadata;
 
-import java.util.ArrayList;
 import java.util.Stack;
 
-import ecologylab.collections.MultiAncestorScope;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.generic.ReflectionTools;
 import ecologylab.semantics.html.utils.StringBuilderUtils;
@@ -14,9 +12,7 @@ import ecologylab.semantics.metametadata.MetaMetadata.Visibility;
 import ecologylab.semantics.metametadata.exceptions.MetaMetadataException;
 import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.XMLTools;
-import ecologylab.serialization.annotations.simpl_collection;
 import ecologylab.serialization.annotations.simpl_inherit;
-import ecologylab.serialization.annotations.simpl_nowrap;
 import ecologylab.serialization.annotations.simpl_scalar;
 import ecologylab.serialization.annotations.simpl_tag;
 

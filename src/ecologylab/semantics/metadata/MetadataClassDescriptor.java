@@ -4,8 +4,6 @@
 package ecologylab.semantics.metadata;
 
 import java.util.ArrayList;
-import java.util.Collection;
-
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MmdGenericTypeVar;
 import ecologylab.serialization.ClassDescriptor;

@@ -10,19 +10,15 @@ package ecologylab.semantics.metadata.builtins.declarations;
 
 import ecologylab.semantics.metadata.builtins.ClippableDocument;
 import ecologylab.semantics.metadata.builtins.Clipping;
-import ecologylab.semantics.metadata.builtins.MetadataBuiltinsTypesScope;
 import ecologylab.semantics.metadata.mm_name;
 import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
-import ecologylab.semantics.namesandnums.SemanticsNames;
 import ecologylab.serialization.annotations.simpl_composite;
 import ecologylab.serialization.annotations.simpl_inherit;
 import ecologylab.serialization.annotations.simpl_scalar;
 import ecologylab.serialization.annotations.simpl_scope;
 import ecologylab.serialization.annotations.simpl_wrap;
 import java.lang.String;
-import java.util.List;
-import java.util.Map;
 
 @simpl_inherit
 public class MediaClippingDeclaration<ME extends ClippableDocument<ME>> extends Clipping

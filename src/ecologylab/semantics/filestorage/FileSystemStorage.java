@@ -10,9 +10,7 @@ import java.io.OutputStream;
 import java.util.Properties;
 
 import ecologylab.generic.Debug;
-import ecologylab.io.Files;
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.html.utils.StringBuilderUtils;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.formatenums.Format;

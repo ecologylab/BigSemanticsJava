@@ -9,15 +9,11 @@ package ecologylab.semantics.metadata.builtins.declarations;
  */
 
 import ecologylab.semantics.metadata.Metadata;
-import ecologylab.semantics.metadata.builtins.MetadataBuiltinsTypesScope;
 import ecologylab.semantics.metadata.scalar.MetadataStringBuilder;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
-import ecologylab.semantics.namesandnums.SemanticsNames;
 import ecologylab.serialization.annotations.simpl_inherit;
 import ecologylab.serialization.annotations.simpl_scalar;
 import java.lang.StringBuilder;
-import java.util.List;
-import java.util.Map;
 
 @simpl_inherit
 public class DebugMetadataDeclaration extends Metadata
