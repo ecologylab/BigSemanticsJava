@@ -3,13 +3,10 @@ package ecologylab.semantics.metametadata.test;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import ecologylab.net.ParsedURL;
 import ecologylab.semantics.collecting.DownloadStatus;
 import ecologylab.semantics.metadata.Metadata;
 import ecologylab.semantics.metadata.builtins.Document;

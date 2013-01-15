@@ -2,8 +2,6 @@ package ecologylab.fundamental;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.UUID;
-
 import com.google.common.io.Files;
 import com.google.common.base.Charsets;
 

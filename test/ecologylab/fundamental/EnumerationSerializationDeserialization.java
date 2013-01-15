@@ -12,27 +12,14 @@ import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.primaryScenarioEnum;
 import ecologylab.serialization.secondaryScenarioEnum;
 import ecologylab.serialization.annotations.simpl_collection;
-import ecologylab.serialization.annotations.simpl_scalar;
 import ecologylab.serialization.formatenums.StringFormat;
 
 public class EnumerationSerializationDeserialization {
 
-	final class basicEnumerationScalar
-	{
-		@simpl_scalar
-		public primaryScenarioEnum ourEnum;
-	}
-	
 	final class basicEnumerationList
 	{
 		@simpl_collection("enums")
 		public ArrayList<primaryScenarioEnum> ourEnumList;
-	}
-	
-	final class customValuedEnumerationScalar
-	{
-		@simpl_scalar
-		public secondaryScenarioEnum ourEnum;
 	}
 	
 	final class customValuedEnumerationLst
@@ -104,7 +91,7 @@ public class EnumerationSerializationDeserialization {
 		baseCase.ourEnum = primaryScenarioEnum.firstValue;
 	
 		validateDeserialization("<basic_enumeration_scalar our_enum=\"firstValue\"/>", StringFormat.XML, primaryScenarioEnum.firstValue);
-		validateDeserialization("{\"basic_enumeration_scalar\":{\"our_enum\":\"secondValue\"}}", StringFormat.JSON, primaryScenarioEnum.firstValue);
+		validateDeserialization("{\"basic_enumeration_scalar\":{\"our_enum\":\"secondValue\"}}", StringFormat.JSON, primaryScenarioEnum.secondValue);
 	}
 	
 	@Test

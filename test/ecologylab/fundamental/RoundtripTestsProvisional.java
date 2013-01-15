@@ -6,7 +6,6 @@ import org.junit.Test;
 
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.SimplTypesScope;
-import ecologylab.serialization.annotations.simpl_scalar;
 import ecologylab.serialization.formatenums.StringFormat;
 
 public class RoundtripTestsProvisional {
