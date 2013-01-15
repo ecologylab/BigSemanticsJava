@@ -3,7 +3,6 @@ package ecologylab.semantics.metametadata;
 import static org.junit.Assert.*;
 import ecologylab.semantics.generated.library.RepositoryMetadataTranslationScope;
 import ecologylab.semantics.metadata.Metadata;
-import ecologylab.semantics.metadata.MetadataClassDescriptor;
 import ecologylab.semantics.metadata.builtins.declarations.MetadataDeclaration;
 import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.semantics.metadata.scalar.types.MetadataStringScalarType;

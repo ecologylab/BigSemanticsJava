@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import ecologylab.serialization.ClassDescriptor;
-import ecologylab.serialization.EnumerationDescription;
+import ecologylab.serialization.EnumerationDescriptor;
 import ecologylab.serialization.SIMPLDescriptionException;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.SimplTypesScope;
@@ -26,7 +26,7 @@ public class EnumDescriptionDeSerializationTest {
 	@Test
 	public void EnumDescriptorCanBeDescribed()
 	{
-		ClassDescriptor cd = ClassDescriptor.getClassDescriptor(EnumerationDescription.class);
+		ClassDescriptor cd = ClassDescriptor.getClassDescriptor(EnumerationDescriptor.class);
 	}
 	
 	@Test
@@ -55,9 +55,9 @@ public class EnumDescriptionDeSerializationTest {
 	
 	private void EnumerationDescriptionTestPerFormat(Class<?> forEnumClass, StringFormat theFormat, boolean validateValues) throws SIMPLDescriptionException, SIMPLTranslationException
 	{
-		EnumerationDescription primaryScenario = EnumerationDescription.get(forEnumClass);
+		EnumerationDescriptor primaryScenario = EnumerationDescriptor.get(forEnumClass);
 		
-		SimplTypesScope sts = SimplTypesScope.get("enumTest", EnumerationDescription.class);
+		SimplTypesScope sts = SimplTypesScope.get("enumTest", EnumerationDescriptor.class);
 		StringBuilder staticSerialized = SimplTypesScope.serialize(primaryScenario, theFormat);
 		StringBuilder specificSTSSerialized = sts.serialize(primaryScenario, theFormat);
 		
@@ -65,7 +65,7 @@ public class EnumDescriptionDeSerializationTest {
 		System.out.println(staticSerialized.toString());
 		System.out.println(specificSTSSerialized.toString());
 		
-		EnumerationDescription recaptured = (EnumerationDescription) sts.deserialize(staticSerialized.toString(), theFormat);
+		EnumerationDescriptor recaptured = (EnumerationDescriptor) sts.deserialize(staticSerialized.toString(), theFormat);
 		performBasicValidations(forEnumClass, recaptured);	
 		
 		if(validateValues)
@@ -80,7 +80,7 @@ public class EnumDescriptionDeSerializationTest {
 	 * I could have refactored this in the first test case to a method call, but I felt it was nicer w/ the core assumptions there.
 	 * @param ed
 	 */
-	private void performBasicValidations(Class<?> enumClass, EnumerationDescription ed)
+	private void performBasicValidations(Class<?> enumClass, EnumerationDescriptor ed)
 	{
 		
 		assertEquals("The packageName must be correct" , enumClass.getPackage().getName(), ed.getPackageName());
@@ -96,7 +96,7 @@ public class EnumDescriptionDeSerializationTest {
 		assertFalse("Should be case sensitive! FIRSTENTRY ignores casing.", ed.containsEntry("FIRSTENTRY"));
 	}
 
-	private void performValueValidation(EnumerationDescription ed)
+	private void performValueValidation(EnumerationDescriptor ed)
 	{
 		assertEquals(new Integer(3), ed.getEntryEnumIntegerValue("firstValue"));
 		assertEquals(new Integer(5), ed.getEntryEnumIntegerValue("secondValue"));

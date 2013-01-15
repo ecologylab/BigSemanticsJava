@@ -4,7 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import ecologylab.serialization.ClassDescriptor;
-import ecologylab.serialization.EnumerationDescription;
 import ecologylab.serialization.FieldDescriptor;
 import ecologylab.serialization.SimplTypesScope;
 
