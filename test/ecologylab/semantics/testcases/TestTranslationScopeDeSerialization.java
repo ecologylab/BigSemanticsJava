@@ -72,7 +72,7 @@ public class TestTranslationScopeDeSerialization extends TestTranslationScope
 				ClassDescriptor.class,
 				FieldDescriptor.class);
 		SimplTypesScope newTs = (SimplTypesScope) tsts.deserialize(xml, emptyStrategy, StringFormat.XML);
-		for (Class clazz : newTs.getAllClasses())
+		for (Class<?> clazz : newTs.getAllClasses())
 		{
 			System.out.println(clazz);
 		}

@@ -679,39 +679,6 @@ ISimplSerializationPre, ISimplDeserializationPost
 				repository.metadataTranslationScope());
 	}
 
-	/**
-	 * Sets the field to the specified value and wont rebuild composteTermVector
-	 * 
-	 * @param fieldName
-	 * @param value
-	 */
-	// TODO -- May throw exception if there is no field accessor.
-	// FIXME -- resolve with MetadataBase
-	// public boolean setByTagName(String tagName, String value)
-	// {
-	// tagName = tagName.toLowerCase();
-	// // Taking care of mixins
-	// Metadata metadata = getMetadataWhichContainsField(tagName);
-	//
-	// if (value != null && value.length() != 0)
-	// {
-	// if (metadata != null)
-	// {
-	// FieldDescriptor fieldAccessor = getFieldDescriptorByTagName(tagName);
-	// if (fieldAccessor != null && value != null && value.length() != 0)
-	// {
-	// fieldAccessor.set(metadata, value);
-	// return true;
-	// }
-	// else
-	// {
-	// debug("Not Able to set the field: " + tagName);
-	// return false;
-	// }
-	// }
-	// }
-	// return false;
-	// }
 
 	public boolean setByTagName(String tagName, String value)
 	{
