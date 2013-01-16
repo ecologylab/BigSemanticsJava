@@ -3,8 +3,6 @@ package ecologylab.semantics.html.documentstructure;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.TreeMap;
-import java.util.jar.Attributes.Name;
-
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 

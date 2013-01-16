@@ -9,9 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import ecologylab.appframework.ApplicationEnvironment;
 import ecologylab.appframework.SingletonApplicationEnvironment;
-import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.metametadata.MetaMetadataRepositoryLoader;
 import ecologylab.semantics.metametadata.MetaMetadataTranslationScope;

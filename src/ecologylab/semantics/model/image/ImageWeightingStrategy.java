@@ -2,7 +2,6 @@ package ecologylab.semantics.model.image;
 
 import ecologylab.collections.WeightingStrategy;
 import ecologylab.semantics.metadata.builtins.DocumentClosure;
-import ecologylab.semantics.metadata.builtins.Image;
 
 /**
  * This strategy uses mediaWeight from AbstractImgElement to sort all the elements in the set.

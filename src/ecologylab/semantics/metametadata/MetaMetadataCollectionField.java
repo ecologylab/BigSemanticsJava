@@ -10,6 +10,7 @@ import ecologylab.semantics.metadata.MetadataFieldDescriptor;
 import ecologylab.semantics.metadata.scalar.types.MetadataScalarType;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField.AttributeChangeListener;
 import ecologylab.serialization.ClassDescriptor;
+import ecologylab.serialization.FieldType;
 import ecologylab.serialization.FieldTypes;
 import ecologylab.serialization.GenericTypeVar;
 import ecologylab.serialization.SimplTypesScope;
@@ -109,7 +110,7 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 		if (rst == null)
 		{
 			String className = null;
-			if (this.getFieldType() == FieldTypes.COLLECTION_SCALAR)
+			if (this.getFieldType() == FieldType.COLLECTION_SCALAR)
 			{
 				className = this.getChildScalarType().getJavaClass().getSimpleName();
 			}
@@ -190,12 +191,16 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 	 */
 	public void deserializationPostHook(TranslationContext translationContext, Object object)
 	{
-	  if (this.inheritFinished)
-	    return;
-	  
-		int typeCode = this.getFieldType();
-		if (typeCode == FieldTypes.COLLECTION_SCALAR)
+		  if (this.inheritFinished)
+		  {
+			  return;
+		  }
+		  
+		FieldType typeCode = this.getFieldType();
+		if (typeCode == FieldType.COLLECTION_SCALAR)
+		{
 			return;
+		}
 		
 		String childType = getChildType();
 		String childCompositeName = childType != null ? childType : UNRESOLVED_NAME;
@@ -256,10 +261,10 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 		 * the childComposite should hide all complexity between collection fields and composite fields,
 		 * through hooks when necessary.
 		 */
-		int typeCode = this.getFieldType();
+		FieldType typeCode = this.getFieldType();
 		switch (typeCode)
 		{
-		case FieldTypes.COLLECTION_ELEMENT:
+		case COLLECTION_ELEMENT:
 		{
 			// prepare childComposite: possibly new name, type, extends, tag and inheritedField
 			MetaMetadataCompositeField childComposite = this.getChildComposite();
@@ -283,7 +288,7 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 			this.setMmdScope(childComposite.getMmdScope());
 			break;
 		}
-		case FieldTypes.COLLECTION_SCALAR:
+		case COLLECTION_SCALAR:
 		{
 			MetaMetadataField inheritedField = this.getInheritedField();
 			if (inheritedField != null)
@@ -308,10 +313,10 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 			
 			String genericTypeName = null;
 			GenericTypeVar genericTypeVar = new GenericTypeVar();
-			int typeCode = this.getFieldType();
+			FieldType typeCode = this.getFieldType();
 			switch (typeCode)
 			{
-			case FieldTypes.COLLECTION_ELEMENT:
+			case COLLECTION_ELEMENT:
 			{
 				MetaMetadata inheritedMmd = this.getInheritedMmd();
 				assert inheritedMmd != null : "IMPOSSIBLE: inheritedMmd == null: something wrong in the inheritance process!";
@@ -346,7 +351,7 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 				}
 				break;
 			}
-			case FieldTypes.COLLECTION_SCALAR:
+			case COLLECTION_SCALAR:
 			{
 				if (this.kids.size() > 0)
 					warning("Ignoring nested fields inside " + this + " because child_scalar_type specified ...");
@@ -404,8 +409,8 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 	@Override
 	public void recursivelyRestoreChildComposite()
 	{
-		int typeCode = this.getFieldType();
-		if (typeCode == FieldTypes.COLLECTION_SCALAR)
+		FieldType typeCode = this.getFieldType();
+		if (typeCode == FieldType.COLLECTION_SCALAR)
 			return;
 		
 		if (kids != null && kids.size() == 1)
