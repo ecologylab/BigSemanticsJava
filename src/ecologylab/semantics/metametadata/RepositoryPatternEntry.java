@@ -13,18 +13,25 @@ import ecologylab.generic.Debug;
  */
 public class RepositoryPatternEntry extends Debug
 {
-	final Pattern				pattern;
-	final MetaMetadata	metaMetadata;
-	
-	final private boolean isPatternFragment;
+  final private Pattern              pattern;
+
+  final private MetaMetadata         metaMetadata;
+
+  final private MetaMetadataSelector selector;
+
+  final private boolean              isPatternFragment;
 	
 	/**
 	 * 
 	 */
-	public RepositoryPatternEntry(Pattern pattern, MetaMetadata metaMetadata, boolean isPatternFragment)
+  public RepositoryPatternEntry(Pattern pattern,
+                                MetaMetadata metaMetadata,
+                                MetaMetadataSelector selector,
+                                boolean isPatternFragment)
 	{
 		this.pattern			= pattern;
 		this.metaMetadata	= metaMetadata;
+		this.selector     = selector;
 		this.isPatternFragment = isPatternFragment;
 	}
 
@@ -42,6 +49,11 @@ public class RepositoryPatternEntry extends Debug
 	public MetaMetadata getMetaMetadata()
 	{
 		return metaMetadata;
+	}
+	
+	public MetaMetadataSelector getSelector()
+	{
+	  return selector;
 	}
 	
 	public boolean isPatternFragment()

@@ -30,21 +30,23 @@ import ecologylab.serialization.XMLTools;
 
 public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInterface, HTMLNames
 {
-	InputStream									fragmentStream;
-	
-	Reader											reader;
-	
-	ArrayList<ImageClipping>		imageClippings	= new ArrayList<ImageClipping>();
+  InputStream                             fragmentStream;
 
-	ParsedURL										containerPurl;
-	
-	Document										containerDocument;
-	
-	Document										textOutlink;
+  Reader                                  reader;
 
-	StringBuilder	bodyTextBuffy	= new StringBuilder();
+  ArrayList<ImageClipping>                imageClippings            = new ArrayList<ImageClipping>();
 
-	private static HashMap<String, Integer>	namesOfBreaklineNodeNames	= null;
+  ParsedURL                               containerPurl;
+
+  Document                                containerDocument;
+
+  Document                                textOutlink;
+
+  StringBuilder                           bodyTextBuffy             = new StringBuilder();
+
+  SpecialImageUrlHandler                  specialImageUrlHandler    = new SpecialImageUrlHandler();
+
+  private static HashMap<String, Integer> namesOfBreaklineNodeNames = null;
 
 
 	public HTMLFragmentDOMParser(SemanticsGlobalScope infoCollector, Reader reader, InputStream inputStream)
@@ -91,7 +93,7 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 				boolean changeSourceDoc = false;
 				
 				String src 				= DomTools.getAttribute(imgNode, SRC);
-				src               = changeImageUrlIfNeeded(src);
+				src               = specialImageUrlHandler.changeImageUrlIfNeeded(src);
 				ParsedURL imgPurl	= ImgElement.constructPurl(containerPurl, src);
 
 				do
@@ -105,7 +107,7 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 							{
 							  if (imgPurl == null)
 							  {
-							    String srcUrl = getImageUrlFromParameters(hrefString);
+							    String srcUrl = specialImageUrlHandler.getImageUrlFromParameters(hrefString);
 							    if (srcUrl != null)
 							      imgPurl = ImgElement.constructPurl(containerPurl, srcUrl);
 							  }
@@ -114,7 +116,7 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 							    break;
 							  
 							  StringBuilder newImgHrefBuf = StringBuilderUtils.acquire();
-								changeSourceDoc = changeImageRefUrlAndSourceDocIfNeeded(hrefString, newImgHrefBuf);
+								changeSourceDoc = specialImageUrlHandler.changeImageRefUrlAndSourceDocIfNeeded(hrefString, newImgHrefBuf);
 								hrefString = newImgHrefBuf.length() > 0 ? newImgHrefBuf.toString() : hrefString;
 								StringBuilderUtils.release(newImgHrefBuf);
 							}
@@ -165,88 +167,6 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
 		}
 	}
 	
-  /**
-	 * For Google Image, we need to change the source of the image since we don't support HTTPS.
-	 * 
-	 * @param imgSrcAttr
-	 *          The HTTPS image source.
-	 * @return The HTTP image source that points to the same image.
-	 */
-	protected String changeImageUrlIfNeeded(String imgSrcAttr)
-	{
-		if (imgSrcAttr != null)
-		{
-	    if (Pattern.matches("https://encrypted-tbn\\d+.google.com/images?.*", imgSrcAttr)
-	        || Pattern.matches("https://encrypted-tbn\\d+.gstatic.com/images?.*", imgSrcAttr))
-			{
-				imgSrcAttr = imgSrcAttr.replace("https://", "http://");
-				imgSrcAttr = imgSrcAttr.replace("//encrypted-tbn", "//tbn");
-				imgSrcAttr = imgSrcAttr.replace("gstatic.com", "google.com");
-			}
-		}
-		return imgSrcAttr;
-	}
-	
-	protected String getImageUrlFromParameters(String hrefString)
-  {
-	  if (hrefString != null)
-	  {
-			if (hrefString.startsWith("http://www.google.com/imgres?")
-			    || hrefString.startsWith("http://images.google.com/imgres?"))
-			{
-				ParsedURL hrefPURL = ParsedURL.getAbsolute(hrefString);
-				Map<String, String> params = hrefPURL.extractParams(false);
-				if (params != null && params.containsKey("imgurl"))
-					  return params.get("imgurl");
-			}
-	  }
-    return null;
-  }
-
-  /**
-   * Image ref URL is the URL of the referring page where the image appears in. In some cases, like
-   * Google Image, this ref URL is encoded as a URL parameter, and we need to extract it.
-   * 
-   * @param imgHref
-   *          The original image ref URL.
-   * @param outNewImgHref
-   *          Buffer to hold the real image ref URL. By default it is the same as the imgHref, but
-   *          in cases needed it will be different.
-   * @return If we should change the image's source_doc to outNewImgHref.
-   * @throws UnsupportedEncodingException
-   */
-	protected boolean changeImageRefUrlAndSourceDocIfNeeded(String imgHref,
-	                                                        StringBuilder outNewImgHref)
-			throws UnsupportedEncodingException
-	{
-		if (imgHref != null)
-		{
-			if (imgHref.startsWith("http://www.google.com/imgres?")
-			    || imgHref.startsWith("http://images.google.com/imgres?"))
-			{
-				ParsedURL hrefPURL = ParsedURL.getAbsolute(imgHref);
-				Map<String, String> params = hrefPURL.extractParams(false);
-				if (params != null)
-				{
-					if (params.containsKey("imgrefurl"))
-					{
-						String newImgHref = params.get("imgrefurl");
-						newImgHref = URLDecoder.decode(newImgHref, "utf-8");
-						if (outNewImgHref != null)
-						  outNewImgHref.append(newImgHref);
-						return true;
-					}
-				}
-			}
-			else
-			{
-			  if (outNewImgHref != null)
-			    outNewImgHref.append(imgHref);
-			}
-		}
-		return false;
-	}
-
 	public void parseText(StringBuilder buffy, Node bodyNode)
 	{
 		//debug("Node:" + bodyNode.getNodeName() + ":" + bodyNode.getNodeValue());

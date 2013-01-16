@@ -174,7 +174,7 @@ implements PackageSpecifier, DocumentParserTagNames
 	/**
 	 * Repository of documents with noAnchorNoQuery URL string as key.
 	 */
-	private HashMap<String, MetaMetadata> documentRepositoryByUrlStripped	= new HashMap<String, MetaMetadata>();
+	private HashMap<String, ArrayList<StrippedUrlEntry>> documentRepositoryByUrlStripped	= new HashMap<String, ArrayList<StrippedUrlEntry>>();
 
 	/**
 	 * Repository of documents with URL pattern as key.
@@ -580,7 +580,18 @@ implements PackageSpecifier, DocumentParserTagNames
 			if (!purl.isFile())
 			{
 				String noAnchorNoQueryPageString = purl.noAnchorNoQueryPageString();
-				result = documentRepositoryByUrlStripped.get(noAnchorNoQueryPageString);
+				ArrayList<StrippedUrlEntry> strippedUrlEntries = documentRepositoryByUrlStripped.get(noAnchorNoQueryPageString);
+				if (strippedUrlEntries != null)
+				{
+				  for (StrippedUrlEntry strippedUrlEntry : strippedUrlEntries)
+				  {
+    				if (strippedUrlEntry.getSelector().checkForParams(purl))
+    				{
+    				  result = strippedUrlEntry.getMetaMetadata();
+    				  break;
+    				}
+				  }
+				}
 
 				if (result == null)
 				{
@@ -604,11 +615,11 @@ implements PackageSpecifier, DocumentParserTagNames
 							{
 								Matcher matcher = entry.getPattern().matcher(purlString);
 								boolean matched = entry.isPatternFragment() ? matcher.find() : matcher.matches();
-								if (matched)
+								if (matched && entry.getSelector().checkForParams(purl))
 								{
 //									debug(entry.isPatternFragment() ? "matched URL fragment by regex." : "matched whole URL by regex.");
 									result = entry.getMetaMetadata();
-									break;
+  								break;
 								}
 							}
 						}
@@ -621,6 +632,7 @@ implements PackageSpecifier, DocumentParserTagNames
 					}
 				}
 			}
+			
 			if (result == null)
 			{
 				String suffix = purl.suffix();
@@ -629,6 +641,7 @@ implements PackageSpecifier, DocumentParserTagNames
 					result = getMMBySuffix(suffix);
 			}
 		}
+		
 		if (result == null)
 			result = getMMByName(tagName);
 
@@ -636,7 +649,7 @@ implements PackageSpecifier, DocumentParserTagNames
 		
 		return result;
 	}
-
+	
 	// TODO implement get by domain too
 	/**
 	 * Find the best matching MetaMetadata for the ParsedURL. Otherwise, return the default Document
@@ -844,7 +857,7 @@ implements PackageSpecifier, DocumentParserTagNames
 				continue;
 			}
 
-			HashMap<String, MetaMetadata> repositoryByUrlStripped;
+			HashMap<String, ArrayList<StrippedUrlEntry>> repositoryByUrlStripped;
 			HashMap<String, ArrayList<RepositoryPatternEntry>> repositoryByPattern;
 
 //			if (Image.class.isAssignableFrom(metadataClass))
@@ -885,7 +898,13 @@ implements PackageSpecifier, DocumentParserTagNames
 				if (strippedPurl != null)
 				{
 					String noAnchorNoQueryPageString = strippedPurl.noAnchorNoQueryPageString();
-					repositoryByUrlStripped.put(noAnchorNoQueryPageString, metaMetadata);
+					ArrayList<StrippedUrlEntry> strippedUrlEntries = repositoryByUrlStripped.get(noAnchorNoQueryPageString);
+					if (strippedUrlEntries == null)
+					{
+					  strippedUrlEntries = new ArrayList<StrippedUrlEntry>();
+					  repositoryByUrlStripped.put(noAnchorNoQueryPageString, strippedUrlEntries);
+					}
+				  strippedUrlEntries.add(new StrippedUrlEntry(metaMetadata, selector));
 					metaMetadata.setMmSelectorType(MMSelectorType.LOCATION);
 				}
 				else
@@ -921,7 +940,7 @@ implements PackageSpecifier, DocumentParserTagNames
 									bucket = new ArrayList<RepositoryPatternEntry>(2);
 									repositoryByPattern.put(domain, bucket);
 								}
-								bucket.add(new RepositoryPatternEntry(urlPattern, metaMetadata, isPatternFragment));
+								bucket.add(new RepositoryPatternEntry(urlPattern, metaMetadata, selector, isPatternFragment));
 								metaMetadata.setMmSelectorType(MMSelectorType.LOCATION);
 							}
 							else
