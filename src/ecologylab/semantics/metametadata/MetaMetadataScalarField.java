@@ -10,7 +10,7 @@ import ecologylab.semantics.metadata.MetadataFieldDescriptor;
 import ecologylab.semantics.metadata.scalar.types.MetadataScalarType;
 import ecologylab.semantics.metadata.scalar.types.MetadataStringScalarType;
 import ecologylab.semantics.metametadata.exceptions.MetaMetadataException;
-import ecologylab.serialization.FieldTypes;
+import ecologylab.serialization.FieldType;
 import ecologylab.serialization.MetaInformation;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.SimplTypesScope;
@@ -286,7 +286,7 @@ public class MetaMetadataScalarField extends MetaMetadataField
 						this,
 						tagName,
 						this.getComment(),
-						FieldTypes.SCALAR,
+						FieldType.SCALAR,
 						null,
 						contextCd,
 						fieldName,

@@ -3,8 +3,6 @@ package ecologylab.semantics.actions;
 import java.io.IOException;
 import java.util.Map;
 
-import org.w3c.dom.Node;
-
 import ecologylab.semantics.documentparsers.DocumentParser;
 import ecologylab.semantics.documentparsers.ParserBase;
 import ecologylab.semantics.metadata.builtins.CompoundDocument;

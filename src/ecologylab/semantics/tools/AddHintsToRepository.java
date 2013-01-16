@@ -2,8 +2,6 @@ package ecologylab.semantics.tools;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.io.IOException;
-
 import ecologylab.semantics.actions.SemanticActionTranslationScope;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataField;

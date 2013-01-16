@@ -8,13 +8,11 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
-
 import ecologylab.semantics.gui.EditValueEvent;
 import ecologylab.semantics.gui.EditValueListener;
 import ecologylab.semantics.gui.EditValueNotifier;
 import ecologylab.semantics.metadata.scalar.MetadataScalarBase;
-import ecologylab.semantics.metametadata.MetaMetadata;
+import ecologylab.semantics.metadata.scalar.types.MetadataScalarType;
 import ecologylab.semantics.metametadata.MetaMetadataCollectionField;
 import ecologylab.semantics.metametadata.MetaMetadataField;
 import ecologylab.semantics.metametadata.MetaMetadataNestedField;
@@ -22,8 +20,8 @@ import ecologylab.semantics.metametadata.MmdCompilerService;
 import ecologylab.semantics.metametadata.MmdGenericTypeVar;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.FieldDescriptor;
+import ecologylab.serialization.FieldType;
 import ecologylab.serialization.ScalarUnmarshallingContext;
-import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.annotations.Hint;
 import ecologylab.serialization.annotations.simpl_scalar;
@@ -32,32 +30,38 @@ import ecologylab.serialization.types.ScalarType;
 import ecologylab.serialization.types.scalar.CompositeAsScalarType;
 
 /**
+ * 
  * @author andruid
  *
  */
 public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor implements EditValueNotifier
 {
 	
-	final private boolean									isMixin;
+	static
+	{
+		MetadataScalarType.init();
+	}
+	
+	final private boolean isMixin;
 
-	Method																hwSetMethod;
+	Method hwSetMethod;
 
-	Method																getter;
+	Method getter;
 	
 	/**
 	 * The name in the MetaMetadataComposite field whose declaration resulted in the generation of
 	 * this.
 	 */
 	@simpl_scalar
-	private String												mmName;
+	private String mmName;
 
-	private ArrayList<EditValueListener>	editValueListeners							= new ArrayList<EditValueListener>();
+	private ArrayList<EditValueListener> editValueListeners = new ArrayList<EditValueListener>();
 
-	private MetaMetadataField							definingMmdField;
+	private MetaMetadataField definingMmdField;
 
-	private boolean												startedTraversalForPolymorphism	= false;
+	private boolean startedTraversalForPolymorphism	= false;
 	
-	public MetadataFieldDescriptor(ClassDescriptor declaringClassDescriptor, Field field, int annotationType) // String nameSpacePrefix
+	public MetadataFieldDescriptor(ClassDescriptor declaringClassDescriptor, Field field, FieldType annotationType) // String nameSpacePrefix
 	{
 		super(declaringClassDescriptor, field, annotationType);
 		if (field != null)
@@ -81,7 +85,7 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 		checkScalarType();
 	}
 	
-	public MetadataFieldDescriptor(MetaMetadataField definingMmdField, String tagName, String comment, int type, ClassDescriptor elementClassDescriptor,
+	public MetadataFieldDescriptor(MetaMetadataField definingMmdField, String tagName, String comment, FieldType type, ClassDescriptor elementClassDescriptor,
 			ClassDescriptor declaringClassDescriptor, String fieldName, ScalarType scalarType,
 			Hint xmlHint, String fieldType)
 	{
@@ -112,6 +116,12 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 		}
 		
 		checkScalarType();
+	}
+	
+	public MetadataFieldDescriptor()
+	{
+		isMixin = false;
+		// empty constructor to satisfy S.IM.PL
 	}
 	
 	private void checkScalarType()
@@ -227,12 +237,19 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 		this.definingMmdField = mmdField;
 	}
 	
+
+	private String fixNull(String s)
+	{
+		return s == null ? "NULL" : s;
+	}
+	
 	@Override
 	public String toString()
 	{
 		String name = getName(); if (name == null) name = "NO_FIELD";
-		return this.getClassSimpleName() + "[" + name + " < " + declaringClassDescriptor.getDescribedClass()
-				+ " type=0x" + Integer.toHexString(getType()) + "]";
+		
+		return fixNull(this.getClassSimpleName()) + "[" + fixNull(name) + " < " + fixNull(declaringClassDescriptor == null ? null : declaringClassDescriptor.getDescribedClass().getName())
+				+ " type=0x" + (getType()!= null ? Integer.toHexString(getType().getTypeID()) : "NULL") + "]";
 	}
 	
 	@Override
@@ -312,7 +329,7 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 			}
 		}
 		
-		if (getType() == COMPOSITE_ELEMENT)
+		if (getType() == FieldType.COMPOSITE_ELEMENT)
 		{
 			// FIXME this part needs to be debugged!!!!
 			MetaMetadataNestedField nested = (MetaMetadataNestedField) definingMmdField;
@@ -398,7 +415,7 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 			}	
 		}
 		
-		if (getType() == COMPOSITE_ELEMENT)
+		if (getType() == FieldType.COMPOSITE_ELEMENT)
 		{
 			MetaMetadataNestedField nested = (MetaMetadataNestedField) definingMmdField;
 			for (MmdGenericTypeVar mmdGenericTypeVar : nested.getMetaMetadataGenericTypeVars())

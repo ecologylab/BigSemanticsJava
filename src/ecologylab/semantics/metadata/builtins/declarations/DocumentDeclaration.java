@@ -10,12 +10,10 @@ package ecologylab.semantics.metadata.builtins.declarations;
 
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.metadata.Metadata;
-import ecologylab.semantics.metadata.builtins.MetadataBuiltinsTypesScope;
 import ecologylab.semantics.metadata.mm_name;
 import ecologylab.semantics.metadata.scalar.MetadataParsedURL;
 import ecologylab.semantics.metadata.scalar.MetadataString;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
-import ecologylab.semantics.namesandnums.SemanticsNames;
 import ecologylab.serialization.annotations.Hint;
 import ecologylab.serialization.annotations.simpl_collection;
 import ecologylab.serialization.annotations.simpl_composite_as_scalar;
@@ -26,7 +24,6 @@ import ecologylab.serialization.annotations.simpl_scalar;
 import java.lang.String;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /** 
  *The Document Class

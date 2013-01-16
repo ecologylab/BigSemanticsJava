@@ -4,8 +4,6 @@
 package ecologylab.semantics.metadata;
 
 import java.util.ArrayList;
-import java.util.Collection;
-
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MmdGenericTypeVar;
 import ecologylab.serialization.ClassDescriptor;
@@ -61,19 +59,7 @@ public class MetadataClassDescriptor extends ClassDescriptor<MetadataFieldDescri
 	 */
 	public MetaMetadata getDefiningMmd()
 	{
-//		if (definingMmd == null)
-//		{
-//			SemanticsSessionScope globalSemanticsSessionScope = SemanticsSessionScope.get();
-//			if (globalSemanticsSessionScope != null)
-//			{
-//				MetaMetadataRepository repository = globalSemanticsSessionScope.getMetaMetadataRepository();
-//				if (repository != null)
-//				{
-//					if (this.getDescribedClass() != null)
-//					definingMmd = repository.getMMByClass((Class<? extends Metadata>) this.getDescribedClass());
-//				}
-//			}
-//		}
+
 		return definingMmd;
 	}
 	

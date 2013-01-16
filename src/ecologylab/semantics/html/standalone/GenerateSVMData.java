@@ -9,7 +9,6 @@ import java.io.StringWriter;
 import org.w3c.dom.Node;
 
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.documentparsers.HTMLDOMParser;
 import ecologylab.semantics.html.DOMWalkInformationTagger;
 
 
