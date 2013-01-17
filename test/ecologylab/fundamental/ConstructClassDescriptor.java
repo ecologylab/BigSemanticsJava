@@ -34,7 +34,7 @@ import ecologylab.serialization.types.scalar.ByteType;
 import ecologylab.serialization.types.scalar.CharType;
 import ecologylab.serialization.types.scalar.DateType;
 import ecologylab.serialization.types.scalar.DoubleType;
-import ecologylab.serialization.types.scalar.FieldType;
+import ecologylab.serialization.FieldType;
 import ecologylab.serialization.types.scalar.FloatType;
 import ecologylab.serialization.types.scalar.IntType;
 import ecologylab.serialization.types.scalar.LongType;
@@ -64,7 +64,7 @@ public class ConstructClassDescriptor {
 	{
 		ClassDescriptor<?> cd = ConstructClassDescriptor(lass);
 		
-		// Get the one field that is in the simple scalar class
+		// Get the one field that is in 	the simple scalar class
 		assertEquals(1, cd.allFieldDescriptors().size());	
 		FieldDescriptor fd = cd.allFieldDescriptors().get(0);
 		assertEquals(lass.getSimpleName().toLowerCase(), fd.getName());

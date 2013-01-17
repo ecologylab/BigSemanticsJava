@@ -3,7 +3,8 @@ package ecologylab.semantics.metametadata;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import org.junit.Assert;
+import static org.junit.Assert.*;
+import org.junit.Before;
 import org.junit.Test;
 
 import ecologylab.appframework.PropertiesAndDirectories;
@@ -22,16 +23,23 @@ import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.SimplTypesScope.GRAPH_SWITCH;
 import ecologylab.serialization.formatenums.StringFormat;
 
-public class TestRepositoryDeSerialization extends Assert
+
+public class TestRepositoryDeSerialization 
 {
+	@Before
+	public void CleanUpSimplTypesScope()
+	{
+		SimplTypesScope.ResetAllTypesScopes();
+	}
+	
 
   @Test
   public void testRepositoryDeSerialization() throws SIMPLTranslationException
   {
     SimplTypesScope.graphSwitch = GRAPH_SWITCH.ON;
-
-    SemanticsSessionScope scope = new SemanticsSessionScope(RepositoryMetadataTranslationScope.get(),
-                                                            CybernekoWrapper.class);
+	
+	    SemanticsSessionScope scope = new SemanticsSessionScope(RepositoryMetadataTranslationScope.get(),
+	                                                            CybernekoWrapper.class);
     MetaMetadataRepository repo = scope.getMetaMetadataRepository();
     assertNotNull(getSampleInheritedMmd(repo));
 
@@ -76,6 +84,9 @@ public class TestRepositoryDeSerialization extends Assert
     assertTrue(serialized.length() > 0);
 
     String serializedString = serialized.toString();
+
+    System.out.println(serializedString);
+    
     saveRepositoryToFile(serializedString, "mmd_repo_scope.xml");
 
     SimplTypesScope scopeFromSerialized = (SimplTypesScope) scopeWithBasic
