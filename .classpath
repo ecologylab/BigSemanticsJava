@@ -4,9 +4,8 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/ecologylabFundamental"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/ecologylabSemantics"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/metadataExtractor"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/ecologylabSemanticsLocationAware"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/ecologylabGeneratedSemantics"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/ecologylabFundamentalSun"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/metadataExtractor"/>
 	<classpathentry kind="output" path=""/>
 </classpath>
