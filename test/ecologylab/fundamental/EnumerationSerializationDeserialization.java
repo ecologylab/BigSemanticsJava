@@ -4,9 +4,13 @@ import static org.junit.Assert.*;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Test;
 
+import ecologylab.serialization.ClassDescriptor;
+import ecologylab.serialization.FieldDescriptor;
+import ecologylab.serialization.FieldType;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.primaryScenarioEnum;
@@ -15,18 +19,6 @@ import ecologylab.serialization.annotations.simpl_collection;
 import ecologylab.serialization.formatenums.StringFormat;
 
 public class EnumerationSerializationDeserialization {
-
-	final class basicEnumerationList
-	{
-		@simpl_collection("enums")
-		public ArrayList<primaryScenarioEnum> ourEnumList;
-	}
-	
-	final class customValuedEnumerationLst
-	{
-		@simpl_collection("enums")
-		public ArrayList<secondaryScenarioEnum> ourEnumList;
-	}
 	
 	// TODO: MAPS... OTHER FORMATS. :3 
 
@@ -70,7 +62,7 @@ public class EnumerationSerializationDeserialization {
 	}
 	
 	private static SimplTypesScope ourSTS = SimplTypesScope.get("enumTestsDeSerialize", primaryScenarioEnum.class, secondaryScenarioEnum.class,
-			customValuedEnumerationScalar.class, basicEnumerationScalar.class);
+			customValuedEnumerationScalar.class, basicEnumerationScalar.class, basicEnumerationList.class);
 
 	
 	private void validateDeserialization(String representation, StringFormat format, Object expected) throws SIMPLTranslationException, IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException
@@ -105,6 +97,26 @@ public class EnumerationSerializationDeserialization {
 	}
 	
 
+	
+	@Test
+	public void EnumerationListsCanBeDescribed()
+	{
+		ClassDescriptor cd = ClassDescriptor.getClassDescriptor(basicEnumerationList.class);
+		assertEquals(1,cd.allFieldDescriptors().size());
+		
+		FieldDescriptor fd = (FieldDescriptor) cd.allFieldDescriptors().get(0);
+	
+		// Yeah, that's not a guarentee. I don't feel comfy making enums "elements" 
+		// but it makes sense insofar as they rely upon the type scope. :\
+		
+		
+		assertEquals(FieldType.COLLECTION_ELEMENT, fd.getType());
+		assertEquals("ourEnumList", fd.getName());
+	}
+	
+	
+	
+	
 	// TODO: Tests for lists; let's get the base case fixed first. 
 	
 	
