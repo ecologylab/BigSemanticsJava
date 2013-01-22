@@ -1,0 +1,984 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<composition version="3.0">
+  <preferences>
+    <screen height="695" size="2" width="634"/>
+  </preferences>
+  <seed_set>
+    <curated_seeding name="news"/>
+  </seed_set>
+  <site_set>
+    <site domain="bbc.co.uk" font_index="4"/>
+    <site domain="nytimes.com" stroke_hue="0.16666667"/>
+    <site domain="cnn.com" font_index="1" stroke_hue="0.3611111"/>
+  </site_set>
+  <traversable_set>
+    <traversable url_string="nytimes.com"/>
+    <traversable url_string="www10.nytimes.com"/>
+    <traversable url_string="www.cnn.com"/>
+    <traversable url_string="thecaucus.blogs.nytimes.com/2008/04/18/new-obama-endorsements"/>
+    <traversable url_string="movies.nytimes.com/2008/04/18/movies"/>
+    <traversable url_string="theater2.nytimes.com/2008/04/18/theater/reviews"/>
+    <traversable url_string="my.abcnews.go.com/rsspublic"/>
+    <traversable url_string="rss.cnn.com/rss"/>
+    <traversable url_string="www.guardian.co.uk/rssfeed"/>
+    <traversable url_string="cityroom.blogs.nytimes.com/2008/04/18/return-of-lost-bass-proves-to-be-a-jazzy-but-thankless-effort"/>
+    <traversable url_string="thelede.blogs.nytimes.com/2008/04/18/an-earthquake-rattles-the-midwest"/>
+    <traversable url_string="abcnews.go.com"/>
+    <traversable url_string="newsrss.bbc.co.uk/rss/newsonline_uk_edition/sci/tech"/>
+    <traversable url_string="news.bbc.co.uk"/>
+    <traversable url_string="dotearth.blogs.nytimes.com/2008/04/18/looking-forward-an-energy-scramble-or-a-blueprint"/>
+    <traversable url_string="bits.blogs.nytimes.com/2008/04/17/three-certain-things-death-taxes-and-the-shift-to-the-web"/>
+    <traversable url_string="bits.blogs.nytimes.com/2008/04/17/the-raggie-grannies-greet-the-fcc"/>
+    <traversable url_string="bits.blogs.nytimes.com/2008/04/17/comcasts-concession-to-net-neutrality"/>
+    <traversable url_string="bits.blogs.nytimes.com/2008/04/17/amazon-gains-share-of-shrinking-paid-music-market"/>
+    <traversable url_string="bits.blogs.nytimes.com/2008/04/18/how-much-should-microsoft-charge-for-its-home-software-subscription"/>
+    <traversable url_string="cnn.com"/>
+    <traversable url_string="www.nytimes.com/2008/04/20/magazine"/>
+    <traversable url_string="www.nytimes.com/2008/04/19/washington"/>
+    <traversable url_string="www.nytimes.com/2008/04/19/technology"/>
+    <traversable url_string="www.nytimes.com/2008/04/19/us"/>
+    <traversable url_string="www.nytimes.com/2008/04/19/business"/>
+    <traversable url_string="www.nytimes.com/2008/04/19/world/asia"/>
+    <traversable url_string="www.nytimes.com/2008/04/19/world/africa"/>
+    <traversable url_string="www.nytimes.com/2008/04/17/technology"/>
+    <traversable url_string="www.nytimes.com/2008/04/17/business"/>
+    <traversable url_string="www.nytimes.com/2008/04/18/books"/>
+    <traversable url_string="www.nytimes.com/2008/04/18/technology"/>
+    <traversable url_string="www.nytimes.com/2008/04/18/nyregion"/>
+    <traversable url_string="www.nytimes.com/2008/04/18/arts"/>
+    <traversable url_string="www.nytimes.com/2008/04/18/style"/>
+    <traversable url_string="www.nytimes.com/2008/04/18/movies"/>
+    <traversable url_string="www.nytimes.com/2008/04/18/us/nationalspecial2"/>
+    <traversable url_string="www.nytimes.com/2008/04/18/business"/>
+    <traversable url_string="www.nytimes.com/2008/04/15/movies/homevideo"/>
+    <traversable url_string="www.nytimes.com/2008/04/16/arts/design"/>
+    <traversable url_string="www.nytimes.com/2008/04/16/business/media"/>
+    <traversable url_string="www.nytimes.com/2008/04/13/magazine"/>
+    <traversable url_string="www.nytimes.com/services/xml/rss/nyt"/>
+    <traversable url_string="www.nytimes.com/2007/11/29/business/media"/>
+    <traversable url_string="www.nytimes.com/2007/12/08/movies"/>
+    <traversable url_string="www.nytimes.com/2007/12/09/fashion"/>
+    <traversable url_string="www.nytimes.com/2007/12/09/theater"/>
+    <traversable url_string="www.nytimes.com/2007/12/04/movies/homevideo"/>
+    <traversable url_string="www.nytimes.com/2007/12/05/education"/>
+    <traversable url_string="www.nytimes.com/2007/12/06/movies/awardsseason"/>
+    <traversable url_string="www.nytimes.com/2007/12/02/movies"/>
+    <traversable url_string="www.nytimes.com/2007/12/02/world/americas"/>
+    <traversable url_string="www.nytimes.com/2007/12/03/movies"/>
+    <traversable url_string="www.nytimes.com/idg"/>
+    <traversable url_string="www.nytimes.com/interactive/2008/04/02/us"/>
+    <traversable url_string="www.nytimes.com/slideshow/2008/04/02/sports"/>
+    <traversable url_string="www.nytimes.com/slideshow/2008/04/02/us"/>
+    <traversable url_string="www.nytimes.com/slideshow/2008/04/02/world"/>
+    <traversable url_string="www.nytimes.com/slideshow/2008/04/03/world"/>
+    <traversable url_string="www.nytimes.com/aponline/technology"/>
+    <traversable url_string="www.nytimes.com/aponline/business"/>
+  </traversable_set>
+  <untraversable_set>
+    <untraversable>transcripts.cnn.com</untraversable>
+  </untraversable_set>
+  <reject_domain_set>
+    <reject>joshualandis.com</reject>
+    <reject>digg.com</reject>
+    <reject>typepad.com</reject>
+    <reject>dooce.com</reject>
+    <reject>unitedway.org</reject>
+    <reject>powells.com</reject>
+    <reject>amys.com</reject>
+    <reject>zeralko.az</reject>
+    <reject>amazon.com</reject>
+    <reject>ccidnet.com</reject>
+    <reject>uwint.org</reject>
+    <reject>careerbuilder.com</reject>
+    <reject>earth-netone.com</reject>
+    <reject>hitbox.com</reject>
+    <reject>avenuea.com</reject>
+    <reject>dmiblog.com</reject>
+    <reject>skepticseye.com</reject>
+  </reject_domain_set>
+  <term_set/>
+  <container_set>
+    <container bias="1.0" document_type="HTMLDOMImageText" generation="2" purl="http://news.bbc.co.uk/1/hi/health/7348900.stm">
+      <participant/>
+      <metadata>
+        <metadata_field name="Title" value="'Big brain' keeps dementia at bay"/>
+        <metadata_field name="Description" value="An Alzheimer's study suggests sufferers do not show dementia symptoms when their brain's hippocampus is larger."/>
+      </metadata>
+    </container>
+    <container bias="1.0" document_type="HTMLDOMImageText" generation="3" purl="http://news.bbc.co.uk/sport2/hi/football/teams/m/man_utd/live_text/default.stm">
+      <participant/>
+      <metadata>
+        <metadata_field name="Title" value="BBC SPORT | Football | My Club | Man Utd | Live Text"/>
+      </metadata>
+    </container>
+    <container bias="1.0" document_type="HTMLDOMImageText" generation="2" purl="http://bits.blogs.nytimes.com/2008/04/17/three-certain-things-death-taxes-and-the-shift-to-the-web/index.html">
+      <participant/>
+      <metadata>
+        <metadata_field name="Title" value="Bits: Three Certain Things: Death, Taxes and the Shift to the Web"/>
+        <metadata_field name="Description" value="For the first time, more people filled out their tax forms using TurboTax’s online product than the store-bought packaged software."/>
+      </metadata>
+    </container>
+    <container bias="1.0" document_type="HTMLDOMImageText" generation="2" purl="http://movies.nytimes.com/2008/04/18/movies/18glas.html">
+      <participant/>
+      <metadata>
+        <metadata_field name="Title" value="Movie Review | 'Glass: A Portrait of Philip in Twelve Parts': A Deeply Spiritual Life"/>
+        <metadata_field name="Description" value="A hair’s breadth from hagiography, Scott Hicks’s “Glass: A Portrait of Philip in Twelve Parts” is much like its subject: affable, quotable and emotionally guarded in the extreme."/>
+      </metadata>
+    </container>
+    <container bias="1.0" document_type="HTMLDOMImageText" generation="2" purl="http://news.bbc.co.uk/2/hi/americas/7353304.stm">
+      <participant/>
+      <metadata>
+        <metadata_field name="Title" value="Chaos at polygamy hearing"/>
+        <metadata_field name="Description" value="Chaotic scenes disrupt the custody hearings for 416 children removed from a ranch owned by a Texan sect."/>
+      </metadata>
+    </container>
+    <container bias="1.0" document_type="HTMLDOMImageText" generation="2" purl="http://www.cnn.com/2008/SHOWBIZ/TV/04/18/apontv.sweetnothing.ap/index.html?eref=rss_showbiz">
+      <participant/>
+      <metadata>
+        <metadata_field name="Title" value="Loss of hearing leads to emotional battles"/>
+      </metadata>
+    </container>
+    <container bias="1.0" document_type="HTMLDOMImageText" generation="2" purl="http://movies.nytimes.com/2008/04/18/movies/18minu.html">
+      <participant/>
+      <metadata>
+        <metadata_field name="Title" value="Movie Review | '88 Minutes': Psychopath Calling: Prepare to Die"/>
+        <metadata_field name="Description" value="The execrable “88 Minutes” has many of the main ingredients for a camp lollapalooza."/>
+      </metadata>
+    </container>
+    <container bias="1.0" document_type="HTMLDOMImageText" generation="2" purl="http://www.cnn.com/2008/SHOWBIZ/Movies/04/18/review.bin.laden/index.html?eref=rss_showbiz">
+      <participant/>
+      <metadata>
+        <metadata_field name="Title" value="'Bin Laden' too much after 'Super Size' "/>
+      </metadata>
+    </container>
+    <container bias="1.0" document_type="HTMLDOMImageText" generation="2" purl="http://www.cnn.com/2008/US/04/18/church.victims/index.html?eref=rss_topstories">
+      <participant/>
+      <metadata>
+        <metadata_field name="Title" value="Church victim: 'My tears alone spoke'"/>
+      </metadata>
+    </container>
+    <container bias="1.0" document_type="HTMLDOMImageText" generation="2" purl="http://movies.nytimes.com/2008/04/18/movies/18anam.html">
+      <participant/>
+      <metadata>
+        <metadata_field name="Title" value="Movie Review | 'Anamorph': Clues to the Killings May Be Optical Illusions"/>
+        <metadata_field name="Description" value="The serial killer in “Anamorph” shows promise, even if some of his best moves are derivative."/>
+      </metadata>
+    </container>
+    <container bias="1.0" document_type="HTMLDOMImageText" generation="2" purl="http://www.nytimes.com/2008/04/19/world/asia/19tibet.html">
+      <participant/>
+      <metadata>
+        <metadata_field name="Title" value="China Said to Arrest 100 Protesting Monks"/>
+        <metadata_field name="Description" value="As many as 100 Tibetans were arrested in northwest China on Thursday after they took part in a demonstration to protest the earlier detention of monks from a nearby monastery."/>
+      </metadata>
+    </container>
+    <container bias="1.0" document_type="HTMLDOMImageText" generation="2" purl="http://www.cnn.com/2008/WORLD/europe/04/18/spain.drought/index.html?eref=rss_world">
+      <participant/>
+      <metadata>
+        <metadata_field name="Title" value="Spain suffers worst drought"/>
+      </metadata>
+    </container>
+    <container bias="1.0" document_type="HTMLDOMImageText" generation="2" purl="http://www.nytimes.com/2008/04/19/us/18cnd-polygamy.html">
+      <participant/>
+      <metadata>
+        <metadata_field name="Title" value="Testimony on Under-Age Pregnancies in Sect"/>
+        <metadata_field name="Description" value="An investigator said that there was evidence that 20 or more girls had given birth as a result of sexual contact with older men in the polygamous sect."/>
+      </metadata>
+    </container>
+    <container bias="1.0" document_type="HTMLDOMImageText" generation="2" purl="http://theater2.nytimes.com/2008/04/18/theater/reviews/18cate.html">
+      <participant/>
+      <metadata>
+        <metadata_field name="Title" value="Theater Review | 'A Catered Affair': Here Comes the Bride, All Wrapped in Gloom"/>
+        <metadata_field name="Description" value="“A Catered Affair,” the undramatic new musical drama of disappointed lives, is all pale, tasteful understatement that seems to be apologizing for asking for your attention."/>
+      </metadata>
+    </container>
+    <container bias="1.0" document_type="HTMLDOMImageText" generation="2" purl="http://thelede.blogs.nytimes.com/2008/04/18/an-earthquake-rattles-the-midwest/index.html">
+      <participant/>
+      <metadata>
+        <metadata_field name="Title" value="The Lede: Earthquake Rattles the Midwest"/>
+        <metadata_field name="Description" value="A part of the country prone to earthquakes but not known for them gets a predawn shaking."/>
+      </metadata>
+    </container>
+    <container bias="1.0" document_type="HTMLDOMImageText" generation="2" purl="http://www.nytimes.com/2008/04/18/us/nationalspecial2/18cnd-pope.html?_r=1&amp;oref=slogin">
+      <participant/>
+      <metadata>
+        <metadata_field name="Title" value="In Speech, Pope Urges Promotion of Human Rights"/>
+        <metadata_field name="Description" value="Pope Benedict XVI told the United Nations that human rights — more than force or pragmatic politics — should be the basis for ending war and poverty."/>
+      </metadata>
+    </container>
+    <container bias="1.0" document_type="HTMLDOMImageText" generation="2" purl="http://www.nytimes.com/2008/04/19/washington/19hudcnd.html">
+      <participant/>
+      <metadata>
+        <metadata_field name="Title" value="Bush Announces HUD Pick"/>
+        <metadata_field name="Description" value="President Bush has chosen Steve Preston, the head of the Small Business Administration, as his nominee to become the nation’s new housing secretary."/>
+      </metadata>
+    </container>
+    <container bias="1.0" document_type="HTMLDOMImageText" generation="2" purl="http://www.cnn.com/2008/WORLD/europe/04/18/putin.denial.ap/index.html?eref=rss_world">
+      <participant/>
+      <metadata>
+        <metadata_field name="Title" value="Putin denies planning to marry gymnast, 24"/>
+      </metadata>
+    </container>
+    <container bias="1.0" document_type="HTMLDOMImageText" generation="2" purl="http://www.nytimes.com/interactive/2008/04/02/us/20080402_OVERDOSE_FEATURE.html">
+      <participant/>
+      <metadata>
+        <metadata_field name="Title" value="A Multi-Generational Plague"/>
+        <metadata_field name="Description" value="Erik Eckholm reports on the heroin epidemic in pastoral Rio Arriba County, N.M."/>
+      </metadata>
+    </container>
+    <container bias="1.0" document_type="HTMLDOMImageText" generation="2" purl="http://thecaucus.blogs.nytimes.com/2008/04/18/new-obama-endorsements/index.html">
+      <participant/>
+      <metadata>
+        <metadata_field name="Title" value="The Caucus: New Endorsements for Obama Announced"/>
+        <metadata_field name="Description" value="Former Labor Secretary Robert Reich and two popular former senators, David Boren of Oklahoma and Sam Nunn of Georgia, endorsed Barack Obama."/>
+      </metadata>
+    </container>
+    <container bias="1.0" document_type="HTMLDOMImageText" generation="2" purl="http://www.cnn.com/2008/WORLD/meast/04/18/carter.hamas/index.html?eref=rss_topstories">
+      <participant/>
+      <metadata>
+        <metadata_field name="Title" value="Carter meets with exiled Hamas leader"/>
+      </metadata>
+    </container>
+    <container bias="1.0" document_type="HTMLDOMImageText" generation="2" purl="http://news.bbc.co.uk/2/hi/middle_east/7354027.stm">
+      <participant/>
+      <metadata>
+        <metadata_field name="Title" value="Carter meets Hamas chief in Syria"/>
+        <metadata_field name="Description" value="Former US President Jimmy Carter meets Hamas's political chief in Syria, despite Israeli and US opposition."/>
+      </metadata>
+    </container>
+    <container bias="1.0" document_type="HTMLDOMImageText" generation="2" purl="http://www.cnn.com/2008/WORLD/africa/04/18/zimbabwe.court/index.html?eref=rss_world">
+      <participant/>
+      <metadata>
+        <metadata_field name="Title" value="Judge orders Zimbabwe recount"/>
+      </metadata>
+    </container>
+    <container bias="1.0" document_type="HTMLDOMImageText" generation="2" purl="http://www.cnn.com/2008/POLITICS/04/18/colbert.candidates.ap/index.html?eref=rss_showbiz">
+      <participant/>
+      <metadata>
+        <metadata_field name="Title" value="Clinton, Obama yuk it up with Colbert"/>
+      </metadata>
+    </container>
+    <container bias="1.0" document_type="HTMLDOMImageText" generation="2" purl="http://bits.blogs.nytimes.com/2008/04/17/the-raggie-grannies-greet-the-fcc/index.html">
+      <participant/>
+      <metadata>
+        <metadata_field name="Title" value="Bits: The Raging Grannies Greet the F.C.C."/>
+        <metadata_field name="Description" value="The Federal Communications Commission on Thursday held its second public hearing focusing on the issue of network neutrality."/>
+      </metadata>
+    </container>
+    <container bias="1.0" document_type="HTMLDOMImageText" generation="2" purl="http://news.bbc.co.uk/2/hi/uk_news/7355402.stm">
+      <participant/>
+      <metadata>
+        <metadata_field name="Title" value="Police to hold terror suspect"/>
+        <metadata_field name="Description" value="Police in Bristol are given a further seven days to question a 19-year-old man under the Terrorism Act."/>
+      </metadata>
+    </container>
+    <container bias="1.0" document_type="HTMLDOMImageText" generation="2" purl="http://dotearth.blogs.nytimes.com/2008/04/18/looking-forward-an-energy-scramble-or-a-blueprint/index.html">
+      <participant/>
+      <metadata>
+        <metadata_field name="Title" value="Dot Earth: 2 Options for the Energy Future"/>
+        <metadata_field name="Description" value="Is it worth drawing blueprints for the future?."/>
+      </metadata>
+    </container>
+    <container bias="1.0" document_type="HTMLDOMImageText" generation="2" purl="http://bits.blogs.nytimes.com/2008/04/17/amazon-gains-share-of-shrinking-paid-music-market/index.html">
+      <participant/>
+      <metadata>
+        <metadata_field name="Title" value="Bits: Amazon Gains Share of Paid Music Market"/>
+        <metadata_field name="Description" value="Amazon’s digital download store has become the distant No. 2 to Apple, according to NPD. Other data show that people still borrow and steal music more often than they buy it."/>
+      </metadata>
+    </container>
+    <container bias="1.0" document_type="HTMLDOMImageText" generation="2" purl="http://www.cnn.com/2008/WORLD/asiapcf/04/18/thailand.torch/index.html?eref=rss_world">
+      <participant/>
+      <metadata>
+        <metadata_field name="Title" value="Buddhist temple withdraws from relay"/>
+      </metadata>
+    </container>
+    <container bias="1.0" document_type="HTMLDOMImageText" generation="2" purl="http://www.nytimes.com/idg/IDG_852573C4006938800025742F00302ADC.html">
+      <participant/>
+      <metadata>
+        <metadata_field name="Title" value="British Police Use Facebook to Gather Evidence"/>
+        <metadata_field name="Description" value="The Greater Manchester police force has created a Facebook application to collect leads for investigations, marking the first use of the social networking site by U.K. law enforcement."/>
+      </metadata>
+    </container>
+    <container bias="1.0" document_type="HTMLDOMImageText" generation="2" purl="http://www.cnn.com/2008/WORLD/asiapcf/04/18/afghanistan.ap/index.html?eref=rss_topstories">
+      <participant/>
+      <metadata>
+        <metadata_field name="Title" value="Suicide bomb kills 24 in Afghanistan "/>
+      </metadata>
+    </container>
+    <container bias="1.0" document_type="HTMLDOMImageText" generation="2" purl="http://www.cnn.com/2008/WORLD/americas/04/18/argentina.fires/index.html?eref=rss_topstories">
+      <participant/>
+      <metadata>
+        <metadata_field name="Title" value="Smoke chokes Argentina's capital"/>
+      </metadata>
+    </container>
+    <container bias="1.0" document_type="HTMLDOMImageText" generation="2" purl="http://movies.nytimes.com/2008/04/18/movies/18forg.html">
+      <participant/>
+      <metadata>
+        <metadata_field name="Title" value="Movie Review | 'Forgetting Sarah Marshall': There’s Just No Getting Away From an Old Flame, Even in Hawaii"/>
+        <metadata_field name="Description" value="“Forgetting Sarah Marshall” does not entirely play by the established conventions of its genre."/>
+      </metadata>
+    </container>
+    <container bias="1.0" document_type="HTMLDOMImageText" generation="2" purl="http://bits.blogs.nytimes.com/2008/04/18/how-much-should-microsoft-charge-for-its-home-software-subscription/index.html">
+      <participant/>
+      <metadata>
+        <metadata_field name="Title" value="Bits: How Much Should Microsoft Charge for Its Home Software Subscription?"/>
+        <metadata_field name="Description" value="Microsoft is starting to test a package that includes the home version of Office and its OneCare anti-virus service, but the company won’t say how much it wants to charge."/>
+      </metadata>
+    </container>
+    <container bias="1.0" document_type="HTMLDOMImageText" generation="2" purl="http://www.cnn.com/2008/US/04/18/pope.fri/index.html?eref=rss_world">
+      <participant/>
+      <metadata>
+        <metadata_field name="Title" value="Pope promotes human rights at U.N."/>
+      </metadata>
+    </container>
+    <container bias="1.0" document_type="HTMLDOMImageText" generation="2" purl="http://news.bbc.co.uk/2/hi/in_pictures/7354412.stm">
+      <participant/>
+      <metadata>
+        <metadata_field name="Title" value="Day in pictures"/>
+        <metadata_field name="Description" value="Striking images from around the world"/>
+      </metadata>
+    </container>
+    <container bias="1.0" document_type="HTMLDOMImageText" generation="2" purl="http://www.cnn.com/2008/CRIME/04/18/polygamy.custody/index.html?eref=rss_topstories">
+      <participant/>
+      <metadata>
+        <metadata_field name="Title" value="Judge tightens reins at FLDS hearing"/>
+      </metadata>
+    </container>
+    <container bias="1.0" document_type="HTMLDOMImageText" generation="2" purl="http://www.nytimes.com/2008/04/19/world/africa/19zimbabwe.html">
+      <participant/>
+      <metadata>
+        <metadata_field name="Title" value="Mugabe Casts Zimbabwe Dispute as Colonial Fight"/>
+        <metadata_field name="Description" value="In a fiery speech, President Robert Mugabe accused Britain of interfering in the country’s election dispute."/>
+      </metadata>
+    </container>
+    <container bias="1.0" document_type="HTMLDOMImageText" generation="2" purl="http://movies.nytimes.com/2008/04/18/movies/18swor.html">
+      <participant/>
+      <metadata>
+        <metadata_field name="Title" value="Movie Review | 'Constantine’s Sword': When Love of Religion Leads to Hatred of Others"/>
+        <metadata_field name="Description" value="“Constantine’s Sword” asks: When your core beliefs conflict with church doctrine, how far should your loyalty to the church extend?"/>
+      </metadata>
+    </container>
+  </container_set>
+  <surrogate_set>
+    <surrogate containerURL="http://www.cnn.com/2008/US/04/18/church.victims/index.html?eref=rss_topstories" history_num="2">
+      <text_element bias="1.0" face_index="1" font_color="88000000" stroke_color="e07efc93">
+        <text_chunk font_size="13" non_stop_index="0.16666667">
+          <cf_text_token delims_before="" string="&quot;This"/>
+          <cf_text_token delims_before=" " string="is"/>
+          <cf_text_token delims_before=" " string="a"/>
+          <cf_text_token delims_before=" " string="small,"/>
+          <cf_text_token delims_before=" " string="long"/>
+          <cf_text_token delims_before=" " string="overdue"/>
+        </text_chunk>
+        <participant/>
+        <metadata>
+          <metadata_field name="Context" value="&quot;This is a small, long overdue step forward on a very long road. We're confident the meeting was meaningful for the participants, and we're grateful that these victims have had the courage to come forward and speak up,&quot; the group said."/>
+        </metadata>
+      </text_element>
+      <visual>
+        <extent height="51" width="96" x="30" y="66"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.cnn.com/2008/US/04/18/church.victims/index.html?eref=rss_topstories" history_num="1">
+      <image_element bias="1.0" has_transparency="true" purl="http://i.l.cnn.net/cnn/2008/US/04/18/church.victims/art.clergy.victims.cnn.jpg">
+        <participant/>
+        <metadata>
+          <metadata_field name="Context" value="&quot;This is a small, long overdue step forward on a very long road. We're confident the meeting was meaningful for the participants, and we're grateful that these victims have had the courage to come forward and speak up,&quot; the group said."/>
+        </metadata>
+      </image_element>
+      <visual>
+        <extent height="67" width="90"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.nytimes.com/2008/04/19/world/asia/19tibet.html" history_num="5">
+      <text_element bias="1.0" font_color="a6000000" stroke_color="fefcfc64">
+        <text_chunk font_size="11" non_stop_index="0.5714286">
+          <cf_text_token delims_before="" string="Tashi"/>
+          <cf_text_token delims_before=" " string="Choephel,"/>
+          <cf_text_token delims_before=" " string="a"/>
+          <cf_text_token delims_before=" " string="researcher"/>
+          <cf_text_token delims_before=" " string="at"/>
+          <cf_text_token delims_before=" " string="the"/>
+          <cf_text_token delims_before=" " string="Tibetan"/>
+        </text_chunk>
+        <participant/>
+        <metadata>
+          <metadata_field name="Context" value="Tashi Choephel, a researcher at the Tibetan Center for Human Rights and Democracy in India, who said he had spoken to three witnesses, said many of those arrested on Thursday were monks from the Rong Gonchen Monastery in Tongren. He said the monks had been at the center of previous clashes with the authorities. &amp;ldquo;It&amp;rsquo;s very, very tense,&amp;rdquo; Tashi Choephel said, adding that the police were preventing anyone from entering or leaving the monastery."/>
+        </metadata>
+      </text_element>
+      <visual>
+        <extent height="60" width="84" x="540"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://thecaucus.blogs.nytimes.com/2008/04/18/new-obama-endorsements/index.html" history_num="9">
+      <text_element bias="1.0" font_color="52000000" stroke_color="89fcfc64">
+        <text_chunk font_size="11" non_stop_index="0.6666667">
+          <cf_text_token delims_before="" string="&amp;ldquo;Although"/>
+          <cf_text_token delims_before=" " string="Hillary"/>
+          <cf_text_token delims_before=" " string="Clinton"/>
+        </text_chunk>
+        <participant/>
+        <metadata>
+          <metadata_field name="Context" value="&amp;ldquo;Although Hillary Clinton has offered solid and sensible policy proposals, Obama&amp;rsquo;s strike me as even more so,&amp;rdquo; Mr. Reich adds. &amp;ldquo;His plans for reforming Social Security and health care have a better chance of succeeding. His approaches to the housing crisis and the failures of our financial markets are sounder than hers. His ideas for improving our public schools and confronting the problems of poverty and inequality are more coherent and compelling. He has put forward the more enlightened foreign policy and the more thoughtful plan for controlling global warming.&amp;rdquo;"/>
+        </metadata>
+      </text_element>
+      <visual>
+        <extent height="30" width="94" x="450"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.nytimes.com/2008/04/19/us/18cnd-polygamy.html" history_num="13">
+      <text_element bias="1.0" font_color="89000000" stroke_color="e1fcfc64">
+        <text_chunk font_size="11" non_stop_index="0.4">
+          <cf_text_token delims_before="" string="The"/>
+          <cf_text_token delims_before=" " string="416"/>
+          <cf_text_token delims_before=" " string="children,"/>
+          <cf_text_token delims_before=" " string="ranging"/>
+          <cf_text_token delims_before=" " string="from"/>
+        </text_chunk>
+        <participant/>
+        <metadata>
+          <metadata_field name="Context" value="The 416 children, ranging from infants to 17 years old, were removed from the communal ranch near Eldorado starting April 3, after authorities said they had received a phone call from a 16 year old girl saying she had a child and had been beaten and raped by her 50-year-old spiritual husband. During Thursday&amp;rsquo;s hearing, authorities admitted that they had not identified the girl among the children removed from the ranch."/>
+        </metadata>
+      </text_element>
+      <visual>
+        <extent height="45" width="88" x="540" y="66"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://bits.blogs.nytimes.com/2008/04/18/how-much-should-microsoft-charge-for-its-home-software-subscription/index.html" history_num="7">
+      <image_element bias="1.0" has_transparency="true" purl="http://graphics8.nytimes.com/images/2008/04/18/technology/cashregister.75.jpg">
+        <participant/>
+        <metadata>
+          <metadata_field name="Caption" value="Cash register"/>
+          <metadata_field name="Context" value="More interesting, of course, would be if Microsoft found a way to offer a version free with advertising. That wouldn&amp;rsquo;t be for everyone, but it is a fine option. One hint that Microsoft is thinking in that direction is the fact the Albany package will include a &amp;ldquo;Microsoft Office toolbar, so users can save documents to their own dedicated online workspace and invite friends and classmates to collaborate and share.&amp;rdquo; Whatever features they may promote, toolbars are really about one thing: Getting users to use a certain search service."/>
+        </metadata>
+      </image_element>
+      <visual>
+        <extent height="60" width="60" x="480" y="165"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.cnn.com/2008/WORLD/meast/04/18/carter.hamas/index.html?eref=rss_topstories" history_num="4">
+      <image_element bias="1.0" has_transparency="true" purl="http://i.l.cnn.net/cnn/2008/WORLD/meast/04/18/carter.hamas/art.carter.afp.gi.jpg">
+        <participant/>
+        <metadata>
+          <metadata_field name="Context" value="&quot;Any democratic government finds it very, very hard to talk to people who are killing their people. It is a very difficult thing to do,&quot; Powell said. &quot;But my argument is that you have to have that contact unless you believe that in some way, it's going to be solved militarily.&quot;"/>
+        </metadata>
+      </image_element>
+      <visual>
+        <extent height="67" width="90" x="60" y="264"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.cnn.com/2008/WORLD/europe/04/18/putin.denial.ap/index.html?eref=rss_world" history_num="3">
+      <image_element bias="1.0" has_transparency="true" purl="http://i.l.cnn.net/cnn/2008/WORLD/europe/04/18/putin.denial.ap/art.putin.afp.gi.jpg">
+        <participant/>
+        <metadata>
+          <metadata_field name="Context" value="The Moscow tabloid, Moskovsky Korrespondent, reported this month that Putin, 55, had divorced his wife, Lyudmila, two months ago and intended to marry Alina Kabayeva, 24, a former champion rhythmic gymnast who is now a Russian lawmaker."/>
+        </metadata>
+      </image_element>
+      <visual>
+        <extent height="67" width="90" y="165"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.nytimes.com/idg/IDG_852573C4006938800025742F00302ADC.html" history_num="17">
+      <text_element bias="1.0" font_color="8f000000" stroke_color="e7fcfc64">
+        <text_chunk font_size="11" non_stop_index="0.5">
+          <cf_text_token delims_before="" string="The"/>
+          <cf_text_token delims_before=" " string="application"/>
+          <cf_text_token delims_before=" " string="has"/>
+          <cf_text_token delims_before=" " string="received"/>
+        </text_chunk>
+        <participant/>
+        <metadata>
+          <metadata_field name="Context" value="The application has received a universally positive response. &quot;Good thinking GMP [Greater Manchester Police]!&quot; wrote Facebook user Sammie Jane. &quot;This is a sure-fire way to branch out to the younger generation and also to encourage anonymous information.&quot;"/>
+        </metadata>
+      </text_element>
+      <visual>
+        <extent height="45" width="81" x="540" y="198"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.nytimes.com/2008/04/19/washington/19hudcnd.html" history_num="21">
+      <text_element bias="1.0" font_color="6b000000" stroke_color="a5fcfc64">
+        <text_chunk font_size="11" non_stop_index="0.5">
+          <cf_text_token delims_before="" string="Officials"/>
+          <cf_text_token delims_before=" " string="said"/>
+          <cf_text_token delims_before=" " string="in"/>
+          <cf_text_token delims_before=" " string="advance"/>
+        </text_chunk>
+        <participant/>
+        <metadata>
+          <metadata_field name="Context" value="Officials said in advance of the announcement that Mr. Preston would be well positioned to handle the housing crisis, given his experience in government and in the private sector. &amp;ldquo;He has a strong financial background and understands the important role the housing market plays in our economy,&amp;rdquo; said a senior administration official. Before being named S.B.A. administrator in 2006, Mr. Preston served as executive vice president of the ServiceMaster Company, a multibillion-dollar corporation whose businesses include TruGreen ChemLawn, a lawn care company, and Terminix, a pest control company."/>
+        </metadata>
+      </text_element>
+      <visual>
+        <extent height="45" width="69" x="330" y="33"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://bits.blogs.nytimes.com/2008/04/17/amazon-gains-share-of-shrinking-paid-music-market/index.html" history_num="34">
+      <text_element bias="1.0" font_color="9c000000" stroke_color="f4fcfc64">
+        <text_chunk font_size="11" non_stop_index="0.2857143">
+          <cf_text_token delims_before="" string="The"/>
+          <cf_text_token delims_before=" " string="NPD"/>
+          <cf_text_token delims_before=" " string="data"/>
+          <cf_text_token delims_before=" " string="for"/>
+          <cf_text_token delims_before=" " string="February"/>
+          <cf_text_token delims_before=" " string="show"/>
+          <cf_text_token delims_before=" " string="that"/>
+        </text_chunk>
+        <participant/>
+        <metadata>
+          <metadata_field name="Context" value="The NPD data for February show that so far Amazon has had a strong start, although it is still tiny. It now has one-tenth the market share of Apple in the United States. Since Apple has largely dominated the per-track download sales, that makes Amazon the distant No.2 in the market, said Russ Crupnick, who runs NPD&amp;rsquo;s music service. That would give Amazon&amp;rsquo;s digital store an overall share of the American music market of about 2 percent."/>
+        </metadata>
+      </text_element>
+      <visual>
+        <extent height="45" width="106" x="450" y="330"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://dotearth.blogs.nytimes.com/2008/04/18/looking-forward-an-energy-scramble-or-a-blueprint/index.html" history_num="6">
+      <image_element bias="1.0" has_transparency="true" purl="http://graphics8.nytimes.com/images/2007/10/16/science/iceberg.165span.jpg">
+        <participant/>
+        <metadata>
+          <metadata_field name="Caption" value="arctic melt"/>
+        </metadata>
+      </image_element>
+      <visual>
+        <extent height="51" width="90" x="450" y="99"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.nytimes.com/interactive/2008/04/02/us/20080402_OVERDOSE_FEATURE.html" history_num="25">
+      <text_element bias="1.0" font_color="a7000000" stroke_color="fcfc64">
+        <text_chunk font_size="11" non_stop_index="0.5">
+          <cf_text_token delims_before="" string="The"/>
+          <cf_text_token delims_before=" " string="New"/>
+          <cf_text_token delims_before=" " string="York"/>
+          <cf_text_token delims_before=" " string="Times"/>
+        </text_chunk>
+        <participant/>
+        <metadata>
+          <metadata_field name="Context" value="The New York Times &amp;gt; US &amp;gt; Interactive Feature &amp;gt; A Multi-Generational Plague"/>
+        </metadata>
+      </text_element>
+      <visual>
+        <extent height="45" width="58" x="450" y="396"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.cnn.com/2008/CRIME/04/18/polygamy.custody/index.html?eref=rss_topstories" history_num="8">
+      <image_element bias="1.0" has_transparency="true" purl="http://i.l.cnn.net/cnn/2008/CRIME/04/18/polygamy.custody/art.polygamist.02.ap.jpg">
+        <participant/>
+        <metadata>
+          <metadata_field name="Context" value="While the men at the ranch said there were no Sarahs there, Voss testified, investigators learned through interviews there were five Sarahs at the compound -- and that one of them, like the caller, was 16 and had a baby. The women told investigators they did not know where that woman was, and her name was not Sarah Jessop Barlow. It remains unclear whether the 16-year-old who made the calls has been located by authorities. "/>
+        </metadata>
+      </image_element>
+      <visual>
+        <extent height="90" width="120" x="150" y="99"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://movies.nytimes.com/2008/04/18/movies/18minu.html" history_num="30">
+      <text_element bias="1.0" font_color="7d000000" stroke_color="bffcfc64">
+        <text_chunk font_size="11" non_stop_index="0.6666667">
+          <cf_text_token delims_before="" string="Outside"/>
+          <cf_text_token delims_before=" " string="of"/>
+          <cf_text_token delims_before=" " string="Ms."/>
+        </text_chunk>
+        <participant/>
+        <metadata>
+          <metadata_field name="Context" value="Outside of Ms. Unger, who delivers one of her singular and eminently watchable narcoleptic turns (and seems to have actually done a little of her own stunt work), the performances are risible. The usually appealing Ms. Witt and Ms. Sobieski fare less well than Ms. Unger does, largely because one is forced to vamp Dr. Jack while the other assumes a naughtier role, and in leather pants, no less. Mr. Pacino, who spends much of his screen time talking and occasionally shouting into a cellphone, barely seems to register that he&amp;acirc;&amp;euro;&amp;trade;s sharing the screen with any other actors, perhaps because in a very fundamental way he isn&amp;acirc;&amp;euro;&amp;trade;t. There&amp;acirc;&amp;euro;&amp;trade;s nothing to be said about "/>
+        </metadata>
+      </text_element>
+      <visual>
+        <extent height="15" width="81" x="330" y="561"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.cnn.com/2008/WORLD/asiapcf/04/18/thailand.torch/index.html?eref=rss_world" history_num="10">
+      <image_element bias="1.0" has_transparency="true" purl="http://i.l.cnn.net/cnn/2008/WORLD/asiapcf/04/18/thailand.torch/art.nagano.ap.jpg">
+        <participant/>
+        <metadata>
+          <metadata_field name="Context" value="Police sealed off roads, shuttered nearby shops, banned mobile phones in the area, and ordered windows and doors on buildings along the route closed. In order to avoid giving protesters a head start, Indian authorities did not disclose the relay route or the start time until 24 hours before the event."/>
+        </metadata>
+      </image_element>
+      <visual>
+        <extent height="67" width="90" x="450" y="33"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://bits.blogs.nytimes.com/2008/04/17/the-raggie-grannies-greet-the-fcc/index.html" history_num="16">
+      <image_element bias="1.0" has_transparency="true" purl="http://graphics8.nytimes.com/images/blogs/bits/quotes.gif">
+        <participant/>
+        <metadata>
+          <metadata_field name="Caption" value="“"/>
+        </metadata>
+      </image_element>
+      <visual>
+        <extent height="32" width="41" x="420" y="165"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://theater2.nytimes.com/2008/04/18/theater/reviews/18cate.html" history_num="11">
+      <image_element bias="1.0" has_transparency="true" purl="http://graphics8.nytimes.com/images/2008/04/17/theater/Cater1190.jpg">
+        <participant/>
+        <metadata>
+          <metadata_field name="Context" value="; directed by John Doyle; sets by David Gallo; costumes by Ann Hould-Ward; lighting by Brian MacDevitt; sound by Dan Moses Schreier; projections by Zachary Borovay; hair design by David Lawrence; associate director, Adam John Hunter; music director and arrangements, Constantine Kitsopoulos; orchestrations by Jonathan Tunick; music coordinator, John Miller; associate producers, Stacey Mindich and Rhoda Mayerson; production manager, Juniper Street Productions; general manager, Alan Wasser-Allan Williams. Presented by Jujamcyn Theaters, Jordan Roth, Harvey Entertainment/Ron Fierstein, Richie Jackson, Daryl Roth, John O&amp;rsquo;Boyle/Ricky Stevens/Davis-Tolentino and Barbra Russell/Ron Sharpe, in association with Frankel-Baruch-Viertel-Routh Group, Broadway Across America, True Love Productions, Rick Steiner/Mayerson-Bell-Staton-Osher Group and Jan Kallish. At the Walter Kerr Theater, 219 West 48th Street, Manhattan, (212) 239-6200. Running time: 1 hour 30 minutes."/>
+        </metadata>
+      </image_element>
+      <visual>
+        <extent height="100" width="150" x="480" y="264"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://news.bbc.co.uk/2/hi/americas/7353304.stm" history_num="38">
+      <text_element bias="1.0" face_index="4" font_color="8e000000" stroke_color="e6fc9292">
+        <text_chunk font_size="11" non_stop_index="0.33333334">
+          <cf_text_token delims_before="" string="Polygamy"/>
+          <cf_text_token delims_before=" " string="is"/>
+          <cf_text_token delims_before=" " string="illegal"/>
+          <cf_text_token delims_before=" " string="in"/>
+          <cf_text_token delims_before=" " string="the"/>
+          <cf_text_token delims_before=" " string="US,"/>
+        </text_chunk>
+        <participant/>
+        <metadata>
+          <metadata_field name="Context" value="Polygamy is illegal in the US, but the authorities have reportedly been reluctant to confront the FLDS for fear of sparking a tragedy similar to the 1993 siege of the Branch Davidian sect in Waco, Texas, which led to the deaths of about 80 members."/>
+        </metadata>
+      </text_element>
+      <visual>
+        <extent height="45" width="83" x="270" y="132"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://movies.nytimes.com/2008/04/18/movies/18forg.html" history_num="14">
+      <image_element bias="1.0" has_transparency="true" purl="http://graphics8.nytimes.com/images/2008/04/18/movies/18forgetting01-600.jpg">
+        <participant/>
+        <metadata>
+          <metadata_field name="Caption" value="Forgetting Sarah Marshall"/>
+          <metadata_field name="Context" value="So is his ability to display both Peter&amp;acirc;&amp;euro;&amp;trade;s charms and his unappealing traits &amp;acirc;&amp;euro;&amp;rdquo; he is a loose-faced, needy, ingratiating Labrador retriever of a man &amp;acirc;&amp;euro;&amp;rdquo; and to orchestrate a comedy of betrayal and cruelty that rarely feels meanspirited. For much of the movie&amp;acirc;&amp;euro;&amp;trade;s first half, Sarah seems to be a climber and a two-timer, cheating on her devoted, unglamorous boyfriend and then ditching him for an oversexed celebrity. But at least briefly the perspective is flipped, as Sarah, accompanied by illustrative flashbacks, gently and persuasively explains to Peter what a drag he was when they were together &amp;acirc;&amp;euro;&amp;rdquo; what a mopey, self-absorbed loser."/>
+        </metadata>
+      </image_element>
+      <visual>
+        <extent height="59" width="90" x="510" y="429"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.cnn.com/2008/WORLD/americas/04/18/argentina.fires/index.html?eref=rss_topstories" history_num="15">
+      <image_element bias="1.0" has_transparency="true" purl="http://i.l.cnn.net/cnn/2008/WORLD/americas/04/18/argentina.fires/art.smoke.afp.gi.jpg">
+        <participant/>
+        <metadata>
+          <metadata_field name="Context" value="The smoke has obscured views of some of the capital's landmarks, such the Obelisco monument and the government house, Casa Rosada, and people were seen walking on the city streets covering their faces with clothes."/>
+        </metadata>
+      </image_element>
+      <visual>
+        <extent height="67" width="90" x="30" y="330"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://bits.blogs.nytimes.com/2008/04/17/three-certain-things-death-taxes-and-the-shift-to-the-web/index.html" history_num="12">
+      <image_element bias="1.0" has_transparency="true" purl="http://graphics8.nytimes.com/images/2008/04/17/technology/taxform75.jpg">
+        <participant/>
+        <metadata>
+          <metadata_field name="Caption" value="taxform"/>
+        </metadata>
+      </image_element>
+      <visual>
+        <extent height="75" width="75" x="510" y="363"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://bits.blogs.nytimes.com/2008/04/17/amazon-gains-share-of-shrinking-paid-music-market/index.html" history_num="33">
+      <image_element bias="1.0" has_transparency="true" purl="http://graphics8.nytimes.com/images/2008/04/16/technology/Slide2.jpg">
+        <participant/>
+        <metadata>
+          <metadata_field name="Caption" value="INSERT DESCRIPTION"/>
+          <metadata_field name="Context" value="The NPD data for February show that so far Amazon has had a strong start, although it is still tiny. It now has one-tenth the market share of Apple in the United States. Since Apple has largely dominated the per-track download sales, that makes Amazon the distant No.2 in the market, said Russ Crupnick, who runs NPD&amp;rsquo;s music service. That would give Amazon&amp;rsquo;s digital store an overall share of the American music market of about 2 percent."/>
+        </metadata>
+      </image_element>
+      <visual>
+        <extent height="62" width="90" x="450" y="264"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://thelede.blogs.nytimes.com/2008/04/18/an-earthquake-rattles-the-midwest/index.html" history_num="26">
+      <image_element bias="1.0" has_transparency="true" purl="http://graphics8.nytimes.com/images/blogs/thelede/themajlis-icon.gif">
+        <participant/>
+        <metadata>
+          <metadata_field name="Caption" value="The Majlis : Talking about Islam"/>
+        </metadata>
+      </image_element>
+      <visual>
+        <extent height="119" width="76" x="90" y="396"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.nytimes.com/2008/04/19/world/africa/19zimbabwe.html" history_num="24">
+      <image_element bias="1.0" purl="http://graphics8.nytimes.com/images/2008/04/18/world/mugabe_190.jpg">
+        <participant/>
+        <metadata>
+          <metadata_field name="Context" value="Many Zimbabweans fear that the situation could become bloodier. A court case on the government&amp;rsquo;s demand for a partial recount of parliamentary election results, which were released, was postponed for a day on Thursday. If no ruling comes on Friday, the electoral commission may go ahead Saturday with the recount it has promised in 23 parliamentary districts. Mr. Mugabe&amp;rsquo;s party lost control of Parliament in the elections, but any recount could return that control."/>
+        </metadata>
+      </image_element>
+      <visual>
+        <extent height="72" width="90" x="450" y="198"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.cnn.com/2008/WORLD/europe/04/18/spain.drought/index.html?eref=rss_world" history_num="28">
+      <image_element bias="1.0" has_transparency="true" purl="http://i.l.cnn.net/cnn/2008/WORLD/europe/04/18/spain.drought/art.reservoir.afp.gi.jpg">
+        <participant/>
+        <metadata>
+          <metadata_field name="Context" value="The government has decided to quickly build a water pipeline for 60 kilometers (37 miles) along the major AP-7 highway, to pump water in to Barcelona, if necessary by the autumn and depending on reservoir levels at that time. The project would cost 180 million euros ($280 million)."/>
+        </metadata>
+      </image_element>
+      <visual>
+        <extent height="67" width="90" x="150"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://movies.nytimes.com/2008/04/18/movies/18swor.html" history_num="27">
+      <image_element bias="1.0" purl="http://graphics.nytimes.com/images/2008/04/18/arts/18sword-190.jpg">
+        <participant/>
+        <metadata>
+          <metadata_field name="Context" value="The movie then dives into the distant past for Mr. Carroll&amp;acirc;&amp;euro;&amp;trade;s alternative, shadow history of the Catholic Church. He dates the notion of Christian militancy to the early fourth century, when the future emperor Constantine I, on the eve of a battle for control of the Roman Empire, had a vision of the cross in the sky inscribed with words promising that under its sign he would conquer. After the battle, in which he led a victorious army wielding a sword in the shape of a cross, he legalized Christianity and the cross, previously a minor symbol, became synonymous with Christian might."/>
+        </metadata>
+      </image_element>
+      <visual>
+        <extent height="60" width="90" x="450" y="561"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://movies.nytimes.com/2008/04/18/movies/18anam.html" history_num="20">
+      <image_element bias="1.0" has_transparency="true" purl="http://graphics8.nytimes.com/images/2008/04/18/arts/18anamorph01-600.jpg">
+        <participant/>
+        <metadata>
+          <metadata_field name="Caption" value="Anamorph"/>
+          <metadata_field name="Context" value="The character charged with putting the pieces together here is Stan Aubray, a zonked-out New York City detective played by an especially cadaverous-looking Willem Dafoe. With his wild eyes and sharp bones, his parchment-thin skin stretched across his face like a drying animal hide, Mr. Dafoe has always made for an unsettling screen presence. He doesn&amp;acirc;&amp;euro;&amp;trade;t have much to work with in &amp;acirc;&amp;euro;&amp;oelig;Anamorph&amp;acirc;&amp;euro; beyond some laborious bits of business and character tics &amp;acirc;&amp;euro;&amp;rdquo; Stan guzzles his booze out of little airliner bottles and owns an antique armchair &amp;acirc;&amp;euro;&amp;rdquo; but he makes even these trivial moments count. Mostly, he plays Stan without a trace of pity, laying bare a man who seems to have been so hollowed out by his gruesome work that he&amp;acirc;&amp;euro;&amp;trade;s as lifeless as a corpse."/>
+        </metadata>
+      </image_element>
+      <visual>
+        <extent height="53" width="90" x="420" y="627"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.nytimes.com/2008/04/18/us/nationalspecial2/18cnd-pope.html?_r=1&amp;oref=slogin" history_num="35">
+      <image_element bias="1.0" has_transparency="true" purl="http://graphics8.nytimes.com/images/2008/04/18/us/pope_190.8.jpg">
+        <participant/>
+        <metadata>
+          <metadata_field name="Context" value="On Friday afternoon, Benedict is scheduled to meet with local Jewish clergy at the Park East Synagogue, a historic Orthodox congregation founded by Austro-Hungarian Jews in 1890. Its leader since 1962, Rabbi Arthur Schneier, is a Holocaust survivor with longtime ties to the Vatican; he has met with two previous popes."/>
+        </metadata>
+      </image_element>
+      <visual>
+        <extent height="108" width="90" x="90" y="165"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://dotearth.blogs.nytimes.com/2008/04/18/looking-forward-an-energy-scramble-or-a-blueprint/index.html" history_num="23">
+      <image_element bias="1.0" purl="http://graphics8.nytimes.com/images/2008/04/18/world/18food.ms.190.jpg">
+        <participant/>
+        <metadata>
+          <metadata_field name="Caption" value="dump in Haiti"/>
+        </metadata>
+      </image_element>
+      <visual>
+        <extent height="61" width="90" x="330" y="99"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://movies.nytimes.com/2008/04/18/movies/18glas.html" history_num="18">
+      <image_element bias="1.0" has_transparency="true" purl="http://graphics8.nytimes.com/images/2008/04/18/arts/18glass-600.jpg">
+        <participant/>
+        <metadata>
+          <metadata_field name="Caption" value="Glass: A Portrait of Philip in Twelve Parts"/>
+          <metadata_field name="Context" value="Planned as a tribute to this work-obsessed musician, &amp;acirc;&amp;euro;&amp;oelig;Glass&amp;acirc;&amp;euro; proceeds genteelly through an intellectually inquisitive and deeply spiritual life. Balancing prodigious musical commitments with qigong and Taoism, Mr. Glass, who turned 71 in January, maintains a rigorous daily schedule that would daunt any man half his age. Somewhere on the fringes his current wife, Holly Critchlow, and two infant children provide the sounds and comforts of family."/>
+        </metadata>
+      </image_element>
+      <visual>
+        <extent height="53" width="90" x="540" y="561"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.cnn.com/2008/WORLD/africa/04/18/zimbabwe.court/index.html?eref=rss_world" history_num="22">
+      <image_element bias="1.0" has_transparency="true" purl="http://i.l.cnn.net/cnn/2008/WORLD/africa/04/18/zimbabwe.court/art.speech.ap.jpg">
+        <participant/>
+        <metadata>
+          <metadata_field name="Context" value="Mugabe, whose speech was translated by CNN, said it was ironic that Britain would accuse his country of lacking democracy, of oppressing its citizens, of having a dictatorship, and of ignoring human rights and the rule of law when, he contended, it was Britain who incarcerated people fighting for democracy when Zimbabwe was Rhodesia."/>
+        </metadata>
+      </image_element>
+      <visual>
+        <extent height="67" width="90" x="540" y="132"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.cnn.com/2008/WORLD/asiapcf/04/18/afghanistan.ap/index.html?eref=rss_topstories" history_num="19">
+      <image_element bias="1.0" has_transparency="true" purl="http://i.l.cnn.net/cnn/2008/WORLD/asiapcf/04/18/afghanistan.ap/art.peter.ap.jpg">
+        <participant/>
+        <metadata>
+          <metadata_field name="Context" value="Lt. Dennis van Uhm, 23, was one of two Dutch soldiers killed in the explosion 7 miles (12 kilometers) northwest of Camp Holland, the Dutch military base in restive Uruzgan province, spokesman Lt. Gen. Freek Meulman said. Two more soldiers were injured, one critically."/>
+        </metadata>
+      </image_element>
+      <visual>
+        <extent height="67" width="90" y="462"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://movies.nytimes.com/2008/04/18/movies/18minu.html" history_num="29">
+      <image_element bias="1.0" has_transparency="true" purl="http://graphics8.nytimes.com/images/2008/04/18/arts/18minutes-600.jpg">
+        <participant/>
+        <metadata>
+          <metadata_field name="Caption" value="88 Minutes"/>
+          <metadata_field name="Context" value="Outside of Ms. Unger, who delivers one of her singular and eminently watchable narcoleptic turns (and seems to have actually done a little of her own stunt work), the performances are risible. The usually appealing Ms. Witt and Ms. Sobieski fare less well than Ms. Unger does, largely because one is forced to vamp Dr. Jack while the other assumes a naughtier role, and in leather pants, no less. Mr. Pacino, who spends much of his screen time talking and occasionally shouting into a cellphone, barely seems to register that he&amp;acirc;&amp;euro;&amp;trade;s sharing the screen with any other actors, perhaps because in a very fundamental way he isn&amp;acirc;&amp;euro;&amp;trade;t. There&amp;acirc;&amp;euro;&amp;trade;s nothing to be said about "/>
+        </metadata>
+      </image_element>
+      <visual>
+        <extent height="53" width="90" x="330" y="495"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://dotearth.blogs.nytimes.com/2008/04/18/looking-forward-an-energy-scramble-or-a-blueprint/index.html" history_num="36">
+      <image_element bias="1.0" has_transparency="true" purl="http://graphics8.nytimes.com/images/2007/10/17/science/biology.165span.jpg">
+        <participant/>
+        <metadata>
+          <metadata_field name="Caption" value="wildlife"/>
+        </metadata>
+      </image_element>
+      <visual>
+        <extent height="51" width="90" x="360"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.cnn.com/2008/SHOWBIZ/Movies/04/18/review.bin.laden/index.html?eref=rss_showbiz" history_num="31">
+      <image_element bias="1.0" has_transparency="true" purl="http://i.l.cnn.net/cnn/2008/SHOWBIZ/Movies/04/18/review.bin.laden/art.osama.jpg">
+        <participant/>
+        <metadata>
+          <metadata_field name="Caption" value="Spurlock"/>
+          <metadata_field name="Context" value="And so it goes. In Saudi Arabia, he unearths political repression and self-censorship. In Afghanistan, there seems to be some sort of war going on. Nobody can raise bin Laden on the phone, though several helpful natives point convincingly in the direction of the mountains. &quot;Would it be dangerous for me to go there?&quot; he asks, nervously. They laugh and reassure him that it would most certainly prove fatal."/>
+        </metadata>
+      </image_element>
+      <visual>
+        <extent height="67" width="90" x="30" y="627"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://news.bbc.co.uk/2/hi/americas/7353304.stm" history_num="37">
+      <image_element bias="1.0" has_transparency="true" purl="http://newsimg.bbc.co.uk/media/images/44578000/jpg/_44578848_woman_ap226b.jpg">
+        <participant/>
+        <metadata>
+          <metadata_field name="Caption" value="A member of the Fundamentalist Church of Jesus Christ of Latter Day Saints at the Yearning For Zion ranch in Eldorado, Texas, 14 April, 2008"/>
+          <metadata_field name="Context" value="Polygamy is illegal in the US, but the authorities have reportedly been reluctant to confront the FLDS for fear of sparking a tragedy similar to the 1993 siege of the Branch Davidian sect in Waco, Texas, which led to the deaths of about 80 members."/>
+        </metadata>
+      </image_element>
+      <visual>
+        <extent height="67" width="90" x="240" y="33"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.cnn.com/2008/POLITICS/04/18/colbert.candidates.ap/index.html?eref=rss_showbiz" history_num="32">
+      <image_element bias="1.0" has_transparency="true" purl="http://i.l.cnn.net/cnn/2008/POLITICS/04/18/colbert.candidates.ap/art.colbert.gi.jpg">
+        <participant/>
+        <metadata>
+          <metadata_field name="Context" value="Clinton emerged just as host Stephen Colbert, broadcasting from the University of Pennsylvania ahead of the state's primary Tuesday, was lamenting that he had no technicians to repair the lost signal on his giant rear projector screen."/>
+        </metadata>
+      </image_element>
+      <visual>
+        <extent height="135" width="180" x="420" y="33"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://news.bbc.co.uk/2/hi/middle_east/7354027.stm" history_num="39">
+      <image_element bias="1.0" has_transparency="true" purl="http://newsimg.bbc.co.uk/media/images/44579000/jpg/_44579746_meshalafp2005_226.jpg">
+        <participant/>
+        <metadata>
+          <metadata_field name="Caption" value="Khaled Meshaal in August 2005"/>
+          <metadata_field name="Context" value="Such a meeting involving Mr Yishai - the leader of the orthodox Shas party - would be against Israeli government policy. Shas is an important member of the governing coalition in Israel, holding four cabinet posts."/>
+        </metadata>
+      </image_element>
+      <visual>
+        <extent height="67" width="90" y="396"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.cnn.com/2008/SHOWBIZ/TV/04/18/apontv.sweetnothing.ap/index.html?eref=rss_showbiz" history_num="40">
+      <image_element bias="1.0" has_transparency="true" purl="http://i.l.cnn.net/cnn/2008/SHOWBIZ/TV/04/18/apontv.sweetnothing.ap/art.daniels.ap.jpg">
+        <participant/>
+        <metadata>
+          <metadata_field name="Caption" value="Sweet Nothing"/>
+          <metadata_field name="Context" value="An interpreter also assisted production consultant Linda Bove, who is deaf herself, communicate with the cast and crew. One of Bove's responsibilities was to make sure the actors' hands didn't drop out of sight of the camera while they signed during scenes. She also coached Daniels as he immersed himself in sign language for a few weeks before and during production."/>
+        </metadata>
+      </image_element>
+      <visual>
+        <extent height="67" width="90" x="300" y="594"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://news.bbc.co.uk/sport2/hi/football/teams/m/man_utd/live_text/default.stm" history_num="41">
+      <text_element bias="1.0" face_index="4" font_color="8d000000" stroke_color="e5fb9e9e">
+        <text_chunk font_size="11" non_stop_index="0.5">
+          <cf_text_token delims_before="" string=" "/>
+          <cf_text_token delims_before="" string="Outswinging"/>
+          <cf_text_token delims_before=" " string="corner"/>
+          <cf_text_token delims_before=" " string="from"/>
+          <cf_text_token delims_before=" " string="right"/>
+          <cf_text_token delims_before=" " string="by-line"/>
+          <cf_text_token delims_before=" " string="taken"/>
+          <cf_text_token delims_before=" " string="right-footed"/>
+          <cf_text_token delims_before=" " string="by"/>
+          <cf_text_token delims_before=" " string="Owen"/>
+        </text_chunk>
+        <participant/>
+        <metadata>
+          <metadata_field name="Context" value=" Outswinging corner from right by-line taken right-footed by Owen Hargreaves (Man Utd) to centre, resulting in ball out of play. Outswinging corner from right by-line taken right-footed by Owen Hargreaves (Man Utd) to centre, clearance by Emmanuel Adebayor (Arsenal). Shot by Wayne Rooney (Man Utd) right-footed from centre of penalty area (18 yards), over the bar. Goal kick taken long by Jens Lehmann (Arsenal)."/>
+        </metadata>
+      </text_element>
+      <visual>
+        <extent height="60" width="126" x="480" y="495"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://news.bbc.co.uk/2/hi/in_pictures/7354412.stm" history_num="42">
+      <image_element bias="1.0" has_transparency="true" purl="http://newsimg.bbc.co.uk/media/images/44579000/jpg/_44579944_hungary_afp_466.jpg">
+        <participant/>
+        <metadata>
+          <metadata_field name="Caption" value="Policeman in Budapest"/>
+        </metadata>
+      </image_element>
+      <visual>
+        <extent height="57" width="90" x="390" y="66"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://dotearth.blogs.nytimes.com/2008/04/18/looking-forward-an-energy-scramble-or-a-blueprint/index.html" history_num="43">
+      <image_element bias="1.0" has_transparency="true" purl="http://graphics8.nytimes.com/images/2007/10/24/science/dotearth165.jpg">
+        <participant/>
+        <metadata>
+          <metadata_field name="Caption" value="pollution"/>
+        </metadata>
+      </image_element>
+      <visual>
+        <extent height="59" width="90" x="330"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://news.bbc.co.uk/1/hi/health/7348900.stm" history_num="44">
+      <image_element bias="1.0" has_transparency="true" purl="http://newsimg.bbc.co.uk/media/images/44570000/jpg/_44570705_hippocampussplbody.jpg">
+        <participant/>
+        <metadata>
+          <metadata_field name="Caption" value="Brain image"/>
+          <metadata_field name="Context" value="&quot;However this work is consistent with increasing research that has shown that people with higher levels of education or cognitive reserve may be protected from some of the effects of dementia,&quot; said Professor Clive Ballard."/>
+        </metadata>
+      </image_element>
+      <visual>
+        <extent height="67" width="90" x="120" y="33"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.cnn.com/2008/US/04/18/pope.fri/index.html?eref=rss_world" history_num="45">
+      <image_element bias="1.0" has_transparency="true" purl="http://i.l.cnn.net/cnn/2008/US/04/18/pope.fri/art.after.ap.jpg">
+        <participant/>
+        <metadata>
+          <metadata_field name="Context" value="&quot;It is in the context of this hope, born of God's love and fidelity, that I acknowledge the pain which the church in America has experienced as the result of sexual abuse of minors,&quot; Benedict said. &quot;No words of mine could describe the pain and harm inflicted by such abuse. It is important that those who have suffered be given loving pastoral attention.&quot;"/>
+        </metadata>
+      </image_element>
+      <visual>
+        <extent height="67" width="90" y="231"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.cnn.com/2008/US/04/18/pope.fri/index.html?eref=rss_world" history_num="46">
+      <text_element bias="1.0" face_index="1" font_color="97000000" stroke_color="ef7efc93">
+        <text_chunk font_size="11" non_stop_index="0.33333334">
+          <cf_text_token delims_before="" string="&quot;It"/>
+          <cf_text_token delims_before=" " string="is"/>
+          <cf_text_token delims_before=" " string="in"/>
+          <cf_text_token delims_before=" " string="the"/>
+          <cf_text_token delims_before=" " string="context"/>
+          <cf_text_token delims_before=" " string="of"/>
+          <cf_text_token delims_before=" " string="this"/>
+          <cf_text_token delims_before=" " string="hope,"/>
+          <cf_text_token delims_before=" " string="born"/>
+        </text_chunk>
+        <participant/>
+        <metadata>
+          <metadata_field name="Context" value="&quot;It is in the context of this hope, born of God's love and fidelity, that I acknowledge the pain which the church in America has experienced as the result of sexual abuse of minors,&quot; Benedict said. &quot;No words of mine could describe the pain and harm inflicted by such abuse. It is important that those who have suffered be given loving pastoral attention.&quot;"/>
+        </metadata>
+      </text_element>
+      <visual>
+        <extent height="45" width="107" x="30" y="297"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://news.bbc.co.uk/2/hi/uk_news/7355402.stm" history_num="47">
+      <image_element bias="1.0" has_transparency="true" purl="http://newsimg.bbc.co.uk/media/images/44579000/jpg/_44579325_combpaddock_bbc226.jpg">
+        <participant/>
+        <metadata>
+          <metadata_field name="Caption" value="Police in Comb Paddock, Westbury-on-Trym "/>
+          <metadata_field name="Context" value="While refusing to speculate on the suspect's religion, Mr Hansen said: &quot;Drawing on the lessons learned from other incidents around the country, we are liaising with specific sections of the community including worshippers at mosques and community leaders."/>
+        </metadata>
+      </image_element>
+      <visual>
+        <extent height="67" width="90" y="429"/>
+      </visual>
+    </surrogate>
+  </surrogate_set>
+</composition>

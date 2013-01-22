@@ -1,0 +1,747 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<composition version="3.0">
+  <preferences>
+    <screen height="695" width="634"/>
+  </preferences>
+  <seed_set>
+    <search engine="flickr" query="sunset"/>
+  </seed_set>
+  <site_set>
+    <site domain="flickr.com" stroke_hue="0.16666667"/>
+  </site_set>
+  <traversable_set>
+    <traversable url_string="www.flickr.com/photos"/>
+    <traversable url_string="www.flickr.com/services/feeds"/>
+  </traversable_set>
+  <untraversable_set>
+    <untraversable>null</untraversable>
+  </untraversable_set>
+  <reject_domain_set/>
+  <term_set/>
+  <container_set>
+    <container bias="1.0" document_type="HTMLPage" generation="2" purl="http://www.flickr.com/photos/jeannoetsteph/2308870020/">
+      <participant/>
+      <metadata>
+        <gist>Search</gist>
+      </metadata>
+    </container>
+    <container bias="1.0" document_type="HTMLPage" generation="2" purl="http://www.flickr.com/photos/amoraleda/2308051403/">
+      <participant/>
+      <metadata>
+        <gist>Search</gist>
+      </metadata>
+    </container>
+    <container bias="1.0" document_type="HTMLPage" generation="2" purl="http://www.flickr.com/photos/freethemonster/2308867320/">
+      <participant/>
+      <metadata>
+        <gist>Search</gist>
+      </metadata>
+    </container>
+    <container bias="1.0" document_type="HTMLPage" generation="2" purl="http://www.flickr.com/photos/peteredin/2308059471/">
+      <participant/>
+      <metadata>
+        <gist>Search</gist>
+      </metadata>
+    </container>
+    <container bias="1.0" document_type="HTMLPage" generation="2" purl="http://www.flickr.com/photos/gems3/2308071781/">
+      <participant/>
+      <metadata>
+        <gist>Search</gist>
+      </metadata>
+    </container>
+    <container bias="1.0" document_type="HTMLPage" generation="2" purl="http://www.flickr.com/photos/23539669@N08/2308061947/">
+      <participant/>
+      <metadata>
+        <gist>Search</gist>
+      </metadata>
+    </container>
+    <container bias="1.0" document_type="HTMLPage" generation="2" purl="http://www.flickr.com/photos/lifein2-d/2308839184/">
+      <participant/>
+      <metadata>
+        <gist>Search</gist>
+      </metadata>
+    </container>
+    <container bias="1.0" document_type="FlickrSearch" generation="1" purl="http://www.flickr.com/services/feeds/photos_public.gne?format=rss_200&amp;tags=sunset">
+      <participant/>
+      <metadata query="sunset">
+        <gist>Search</gist>
+      </metadata>
+    </container>
+    <container bias="1.0" document_type="HTMLPage" generation="2" purl="http://www.flickr.com/photos/7858817@N07/2308045761/">
+      <participant/>
+      <metadata>
+        <gist>Search</gist>
+      </metadata>
+    </container>
+    <container bias="1.0" document_type="HTMLPage" generation="2" purl="http://www.flickr.com/photos/_echoes_/2308866392/">
+      <participant/>
+      <metadata>
+        <gist>Search</gist>
+      </metadata>
+    </container>
+    <container bias="1.0" document_type="HTMLPage" generation="2" purl="http://www.flickr.com/photos/_echoes_/2308866390/">
+      <participant/>
+      <metadata>
+        <gist>Search</gist>
+      </metadata>
+    </container>
+    <container bias="1.0" document_type="HTMLPage" generation="2" purl="http://www.flickr.com/photos/georgiafzeringota/2308046015/">
+      <participant/>
+      <metadata>
+        <gist>Search</gist>
+      </metadata>
+    </container>
+    <container bias="1.0" document_type="HTMLPage" generation="2" purl="http://www.flickr.com/photos/jfmarrero/2308855768/">
+      <participant/>
+      <metadata>
+        <gist>Search</gist>
+      </metadata>
+    </container>
+  </container_set>
+  <collage_element_set>
+    <surrogate containerURL="http://www.flickr.com/services/feeds/photos_public.gne?format=rss_200&amp;tags=sunset" history_num="1">
+      <image_element bias="1.0" href="http://www.flickr.com/photos/georgiafzeringota/2308046015/" purl="http://farm3.static.flickr.com/2195/2308046015_809f422df6_m.jpg">
+        <participant/>
+      </image_element>
+      <visual>
+        <extent height="40" width="60" x="510" y="660"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/photos/freethemonster/2308867320/" history_num="5">
+      <text_element bias="1.0" font_color="56000000" stroke_color="87fcfc64">
+        <text_chunk font_size="11" non_stop_index="0.5">
+          <cf_text_token delims_before="" string="userAgent)"/>
+          <cf_text_token delims_before=" " string="//"/>
+          <cf_text_token delims_before=" " string="sniff"/>
+          <cf_text_token delims_before=" " string="F."/>
+        </text_chunk>
+        <participant/>
+      </text_element>
+      <visual>
+        <extent height="30" width="63" x="480" y="396"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/photos/jeannoetsteph/2308870020/" history_num="8">
+      <text_element bias="1.0" font_color="53000000" stroke_color="88fcfc64">
+        <text_chunk font_size="11" non_stop_index="0.35714287">
+          <cf_text_token delims_before="" href="http://www.flickr.com/search/" string="Everyone'" underline="4"/>
+          <cf_text_token delims_before=" " href="http://www.flickr.com/search/" string="s" underline="5"/>
+          <cf_text_token delims_before=" " href="http://www.flickr.com/search/" string="Photos" underline="5"/>
+          <cf_text_token delims_before=" " href="http://www.flickr.com/search/groups/" string="Groups" underline="5"/>
+          <cf_text_token delims_before=" " href="http://www.flickr.com/search/people/" string="Flickr" underline="5"/>
+          <cf_text_token delims_before=" " href="http://www.flickr.com/search/people/" string="Members" underline="5"/>
+          <cf_text_token delims_before=" " href="http://www.flickr.com/map/" string="For" underline="5"/>
+          <cf_text_token delims_before=" " href="http://www.flickr.com/map/" string="a" underline="5"/>
+          <cf_text_token delims_before=" " href="http://www.flickr.com/map/" string="Location" underline="5"/>
+          <cf_text_token delims_before=" " href="http://www.flickr.com/search/" string="Justine," underline="5"/>
+          <cf_text_token delims_before=" " href="http://www.flickr.com/search/" string="Steph" underline="5"/>
+          <cf_text_token delims_before=" " href="http://www.flickr.com/search/" string="Jeanno'" underline="5"/>
+          <cf_text_token delims_before=" " href="http://www.flickr.com/search/" string="s" underline="5"/>
+          <cf_text_token delims_before=" " href="http://www.flickr.com/search/" string="Photos" underline="5"/>
+        </text_chunk>
+        <participant/>
+      </text_element>
+      <visual>
+        <extent height="90" width="127" x="450" y="231"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/photos/jeannoetsteph/2308870020/" history_num="6">
+      <text_element bias="1.0" font_color="53000000" stroke_color="88fcfc64">
+        <text_chunk font_size="11" non_stop_index="0.75">
+          <cf_text_token delims_before="" string="by"/>
+          <cf_text_token delims_before=" " href="http://www.flickr.com/photos/jeannoetsteph/" string="Justine," style_plus_one="2" underline="4"/>
+          <cf_text_token delims_before=" " href="http://www.flickr.com/photos/jeannoetsteph/" string="Steph" style_plus_one="2" underline="5"/>
+          <cf_text_token delims_before=" " href="http://www.flickr.com/photos/jeannoetsteph/" string="Jeanno" style_plus_one="2" underline="5"/>
+        </text_chunk>
+        <participant/>
+      </text_element>
+      <visual>
+        <extent height="45" width="71" x="450" y="396"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/photos/jeannoetsteph/2308870020/" history_num="11">
+      <text_element bias="1.0" font_color="57000000" stroke_color="8cfcfc64">
+        <text_chunk font_size="11" non_stop_index="0.8">
+          <cf_text_token delims_before="" string="7006-"/>
+          <cf_text_token delims_before=" " string="Une"/>
+          <cf_text_token delims_before=" " string="belle"/>
+          <cf_text_token delims_before=" " string="chapelle"/>
+          <cf_text_token delims_before=" " string="sur"/>
+          <cf_text_token delims_before=" " string="le"/>
+          <cf_text_token delims_before=" " string="chemin"/>
+          <cf_text_token delims_before=" " string="du"/>
+          <cf_text_token delims_before=" " string="retour"/>
+          <cf_text_token delims_before=" " string="10022008"/>
+        </text_chunk>
+        <participant/>
+      </text_element>
+      <visual>
+        <extent height="60" width="113" x="330" y="561"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/photos/freethemonster/2308867320/" history_num="7">
+      <text_element bias="1.0" font_color="5a000000" stroke_color="8cfcfc64">
+        <text_chunk font_size="11" non_stop_index="0.25">
+          <cf_text_token delims_before="" string="onreadystatechange"/>
+          <cf_text_token delims_before=" " string="function("/>
+          <cf_text_token delims_before=" " string="if"/>
+          <cf_text_token delims_before=" " string="(this."/>
+        </text_chunk>
+        <participant/>
+      </text_element>
+      <visual>
+        <extent height="30" width="116" x="450" y="330"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/services/feeds/photos_public.gne?format=rss_200&amp;tags=sunset" history_num="2">
+      <image_element alpha_radius="37" bias="1.0" has_transparency="true" href="http://www.flickr.com/photos/jeannoetsteph/2308869590/" min_alpha="4653056" purl="http://farm3.static.flickr.com/2311/2308869590_fd08035ecf_m.jpg">
+        <participant/>
+      </image_element>
+      <visual>
+        <extent height="100" width="150" x="450" y="462"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/services/feeds/photos_public.gne?format=rss_200&amp;tags=sunset" history_num="4">
+      <image_element alpha_radius="19" bias="1.0" has_transparency="true" href="http://www.flickr.com/photos/amoraleda/2308852672/" min_alpha="3932160" purl="http://farm4.static.flickr.com/3007/2308852672_68e6bf010e_m.jpg">
+        <participant/>
+      </image_element>
+      <visual>
+        <extent height="40" width="60" x="480" y="363"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/photos/_echoes_/2308866392/" history_num="15">
+      <text_element bias="1.0" font_color="63000000" stroke_color="98fcfc64">
+        <text_chunk font_size="11" non_stop_index="0.71428573">
+          <cf_text_token delims_before="" string="gaviota"/>
+          <cf_text_token delims_before=" " string="panganina-"/>
+          <cf_text_token delims_before=" " string="ballenera"/>
+          <cf_text_token delims_before=" " string="en"/>
+          <cf_text_token delims_before=" " string="el"/>
+          <cf_text_token delims_before=" " string="sunset"/>
+          <cf_text_token delims_before=" " string="men."/>
+        </text_chunk>
+        <participant/>
+      </text_element>
+      <visual>
+        <extent height="60" width="91" x="240" y="627"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/services/feeds/photos_public.gne?format=rss_200&amp;tags=sunset" history_num="3">
+      <image_element alpha_radius="42" bias="1.0" has_transparency="true" href="http://www.flickr.com/photos/jeannoetsteph/2308870020/" min_alpha="327680" purl="http://farm3.static.flickr.com/2140/2308870020_b5a7d98e80_m.jpg">
+        <participant/>
+      </image_element>
+      <visual>
+        <extent height="198" width="133" x="480" y="429"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/photos/peteredin/2308059471/" history_num="19">
+      <text_element bias="1.0" font_color="68000000" stroke_color="9efcfc64">
+        <text_chunk font_size="11" non_stop_index="0.25">
+          <cf_text_token delims_before="" href="http://www.flickr.com/search/" string="Everyone'" underline="4"/>
+          <cf_text_token delims_before=" " href="http://www.flickr.com/search/" string="s" underline="5"/>
+          <cf_text_token delims_before=" " href="http://www.flickr.com/search/" string="Photos" underline="5"/>
+          <cf_text_token delims_before=" " href="http://www.flickr.com/search/groups/" string="Groups" underline="5"/>
+          <cf_text_token delims_before=" " href="http://www.flickr.com/search/people/" string="Flickr" underline="5"/>
+          <cf_text_token delims_before=" " href="http://www.flickr.com/search/people/" string="Members" underline="5"/>
+          <cf_text_token delims_before=" " href="http://www.flickr.com/map/" string="For" underline="5"/>
+          <cf_text_token delims_before=" " href="http://www.flickr.com/map/" string="a" underline="5"/>
+          <cf_text_token delims_before=" " href="http://www.flickr.com/map/" string="Location" underline="5"/>
+          <cf_text_token delims_before=" " href="http://www.flickr.com/search/" string="PeterEdin'" underline="5"/>
+          <cf_text_token delims_before=" " href="http://www.flickr.com/search/" string="s" underline="5"/>
+          <cf_text_token delims_before=" " href="http://www.flickr.com/search/" string="Photos" underline="5"/>
+        </text_chunk>
+        <participant/>
+      </text_element>
+      <visual>
+        <extent height="75" width="110" x="510" y="297"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/services/feeds/photos_public.gne?format=rss_200&amp;tags=sunset" history_num="10">
+      <image_element bias="1.0" href="http://www.flickr.com/photos/gems3/2308071781/" purl="http://farm3.static.flickr.com/2200/2308071781_d8e5a903f2_m.jpg">
+        <participant/>
+      </image_element>
+      <visual>
+        <extent height="70" width="90" x="330" y="627"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/photos/freethemonster/2308867320/" history_num="23">
+      <text_element bias="1.0" font_color="6e000000" stroke_color="a4fcfc64">
+        <text_chunk font_size="11" non_stop_index="0.27272728">
+          <cf_text_token delims_before="" href="http://www.flickr.com/search/" string="Everyone'" underline="4"/>
+          <cf_text_token delims_before=" " href="http://www.flickr.com/search/" string="s" underline="5"/>
+          <cf_text_token delims_before=" " href="http://www.flickr.com/search/" string="Photos" underline="5"/>
+          <cf_text_token delims_before=" " href="http://www.flickr.com/search/groups/" string="Groups" underline="5"/>
+          <cf_text_token delims_before=" " href="http://www.flickr.com/search/people/" string="Flickr" underline="5"/>
+          <cf_text_token delims_before=" " href="http://www.flickr.com/search/people/" string="Members" underline="5"/>
+          <cf_text_token delims_before=" " href="http://www.flickr.com/map/" string="For" underline="5"/>
+          <cf_text_token delims_before=" " href="http://www.flickr.com/map/" string="a" underline="5"/>
+          <cf_text_token delims_before=" " href="http://www.flickr.com/map/" string="Location" underline="5"/>
+          <cf_text_token delims_before=" " href="http://www.flickr.com/search/" string="designingmonsters'" underline="5"/>
+          <cf_text_token delims_before=" " href="http://www.flickr.com/search/" string="Photos" underline="5"/>
+        </text_chunk>
+        <participant/>
+      </text_element>
+      <visual>
+        <extent height="90" width="121" x="510" y="99"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/photos/freethemonster/2308867320/" history_num="35">
+      <text_element bias="1.0" font_color="7d000000" stroke_color="bbfcfc64">
+        <text_chunk font_size="11" non_stop_index="0.5">
+          <cf_text_token delims_before="" string="readyState"/>
+          <cf_text_token delims_before=" " string="=="/>
+          <cf_text_token delims_before=" " string="&quot;complete&quot;)"/>
+          <cf_text_token delims_before=" " string="F."/>
+        </text_chunk>
+        <participant/>
+      </text_element>
+      <visual>
+        <extent height="30" width="85" x="540" y="66"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/photos/amoraleda/2308051403/" history_num="31">
+      <text_element bias="1.0" font_color="72000000" stroke_color="b0fcfc64">
+        <text_chunk font_size="11" non_stop_index="0.25">
+          <cf_text_token delims_before="" href="http://www.flickr.com/search/" string="Everyone'" underline="4"/>
+          <cf_text_token delims_before=" " href="http://www.flickr.com/search/" string="s" underline="5"/>
+          <cf_text_token delims_before=" " href="http://www.flickr.com/search/" string="Photos" underline="5"/>
+          <cf_text_token delims_before=" " href="http://www.flickr.com/search/groups/" string="Groups" underline="5"/>
+          <cf_text_token delims_before=" " href="http://www.flickr.com/search/people/" string="Flickr" underline="5"/>
+          <cf_text_token delims_before=" " href="http://www.flickr.com/search/people/" string="Members" underline="5"/>
+          <cf_text_token delims_before=" " href="http://www.flickr.com/map/" string="For" underline="5"/>
+          <cf_text_token delims_before=" " href="http://www.flickr.com/map/" string="a" underline="5"/>
+          <cf_text_token delims_before=" " href="http://www.flickr.com/map/" string="Location" underline="5"/>
+          <cf_text_token delims_before=" " href="http://www.flickr.com/search/" string="amoraleda'" underline="5"/>
+          <cf_text_token delims_before=" " href="http://www.flickr.com/search/" string="s" underline="5"/>
+          <cf_text_token delims_before=" " href="http://www.flickr.com/search/" string="Photos" underline="5"/>
+        </text_chunk>
+        <participant/>
+      </text_element>
+      <visual>
+        <extent height="90" width="112" x="390" y="33"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/photos/jeannoetsteph/2308870020/" history_num="39">
+      <text_element bias="1.0" font_color="7b000000" stroke_color="c0fcfc64">
+        <text_chunk font_size="11" non_stop_index="0.33333334">
+          <cf_text_token delims_before="" string="Part"/>
+          <cf_text_token delims_before=" " string="of:"/>
+          <cf_text_token delims_before=" " href="http://www.flickr.com/photos/jeannoetsteph/collections/72157602273088088/" string="Nos" underline="4"/>
+          <cf_text_token delims_before=" " href="http://www.flickr.com/photos/jeannoetsteph/collections/72157602273088088/" string="supers" underline="5"/>
+          <cf_text_token delims_before=" " href="http://www.flickr.com/photos/jeannoetsteph/collections/72157602273088088/" string="week-" underline="5"/>
+          <cf_text_token delims_before=" " href="http://www.flickr.com/photos/jeannoetsteph/collections/72157602273088088/" string="ends" underline="5"/>
+        </text_chunk>
+        <participant/>
+      </text_element>
+      <visual>
+        <extent height="45" width="90" x="480" y="132"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/photos/7858817@N07/2308045761/" history_num="27">
+      <text_element bias="1.0" font_color="75000000" stroke_color="affcfc64">
+        <text_chunk font_size="11" non_stop_index="0.75">
+          <cf_text_token delims_before="" string="Kite"/>
+          <cf_text_token delims_before=" " string="Flier"/>
+          <cf_text_token delims_before=" " string="at"/>
+          <cf_text_token delims_before=" " string="Sunset"/>
+        </text_chunk>
+        <participant/>
+      </text_element>
+      <visual>
+        <extent height="30" width="54" x="570" y="462"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/services/feeds/photos_public.gne?format=rss_200&amp;tags=sunset" history_num="12">
+      <image_element alpha_radius="13" bias="1.0" has_transparency="true" href="http://www.flickr.com/photos/23539669@N08/2308061947/" min_alpha="4915200" purl="http://farm3.static.flickr.com/2147/2308061947_6e4f81fb42_m.jpg">
+        <participant/>
+      </image_element>
+      <visual>
+        <extent height="67" width="90" x="330" y="495"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/services/feeds/photos_public.gne?format=rss_200&amp;tags=sunset" history_num="13">
+      <image_element bias="1.0" href="http://www.flickr.com/photos/_echoes_/2308866392/" purl="http://farm4.static.flickr.com/3285/2308866392_00f814ca66_m.jpg">
+        <participant/>
+      </image_element>
+      <visual>
+        <extent height="67" width="90" x="300" y="528"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/photos/jfmarrero/2308855768/" history_num="47">
+      <text_element bias="1.0" font_color="85000000" stroke_color="cefcfc64">
+        <text_chunk font_size="11" non_stop_index="1.0">
+          <cf_text_token delims_before="" string="Roque" style_plus_one="2"/>
+          <cf_text_token delims_before=" " string="(El"/>
+          <cf_text_token delims_before=" " string="Altillo)"/>
+          <cf_text_token delims_before=" " string="desde" style_plus_one="3"/>
+          <cf_text_token delims_before=" " string="San" style_plus_one="3"/>
+          <cf_text_token delims_before=" " string="Felipe" style_plus_one="3"/>
+        </text_chunk>
+        <participant/>
+      </text_element>
+      <visual>
+        <extent height="45" width="98" x="90" y="429"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/photos/23539669@N08/2308061947/" history_num="9">
+      <image_element alpha_radius="54" bias="1.0" has_transparency="true" min_alpha="851968" purl="http://farm3.static.flickr.com/2147/2308061947_6e4f81fb42.jpg?v=0">
+        <participant/>
+      </image_element>
+      <visual>
+        <extent height="135" width="180" x="450" y="363"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/photos/jfmarrero/2308855768/" history_num="51">
+      <text_element bias="1.0" font_color="8c000000" stroke_color="dcfcfc64">
+        <text_chunk font_size="11" non_stop_index="1.0">
+          <cf_text_token delims_before="" string="Apareces"/>
+          <cf_text_token delims_before=" " string="poco"/>
+          <cf_text_token delims_before=" " string="ultimamente"/>
+          <cf_text_token delims_before=" " string="con"/>
+          <cf_text_token delims_before=" " string="fotos"/>
+          <cf_text_token delims_before=" " string="pero"/>
+          <cf_text_token delims_before=" " string="vale"/>
+          <cf_text_token delims_before=" " string="la"/>
+          <cf_text_token delims_before=" " string="pena"/>
+          <cf_text_token delims_before=" " string="esperarlas"/>
+          <cf_text_token delims_before=" " string="es"/>
+          <cf_text_token delims_before=" " string="muy"/>
+          <cf_text_token delims_before=" " string="buena"/>
+          <cf_text_token delims_before=" " string="un"/>
+          <cf_text_token delims_before=" " string="beso"/>
+          <cf_text_token delims_before=" " string="xD"/>
+        </text_chunk>
+        <participant/>
+      </text_element>
+      <visual>
+        <extent height="75" width="134" x="360" y="528"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/services/feeds/photos_public.gne?format=rss_200&amp;tags=sunset" history_num="21">
+      <image_element alpha_radius="11" bias="1.0" has_transparency="true" href="http://www.flickr.com/photos/amoraleda/2308051403/" min_alpha="5111808" purl="http://farm3.static.flickr.com/2303/2308051403_1e44eb6b91_m.jpg">
+        <participant/>
+      </image_element>
+      <visual>
+        <extent height="60" width="90" x="450" y="165"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/services/feeds/photos_public.gne?format=rss_200&amp;tags=sunset" history_num="16">
+      <image_element alpha_radius="15" bias="1.0" has_transparency="true" href="http://www.flickr.com/photos/jfmarrero/2308855768/" min_alpha="5767168" purl="http://farm3.static.flickr.com/2021/2308855768_05479ff95f_m.jpg">
+        <participant/>
+      </image_element>
+      <visual>
+        <extent height="132" width="90" x="240" y="495"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/services/feeds/photos_public.gne?format=rss_200&amp;tags=sunset" history_num="17">
+      <image_element alpha_radius="26" bias="1.0" has_transparency="true" href="http://www.flickr.com/photos/lifein2-d/2308839184/" min_alpha="5439488" purl="http://farm3.static.flickr.com/2363/2308839184_46826d3ddc_m.jpg">
+        <participant/>
+      </image_element>
+      <visual>
+        <extent height="72" width="90" x="180" y="627"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/photos/jfmarrero/2308855768/" history_num="43">
+      <text_element bias="1.0" font_color="81000000" stroke_color="c8fcfc64">
+        <text_chunk font_size="11" non_stop_index="0.6666667">
+          <cf_text_token delims_before="" string="Majoseca" style_plus_one="2"/>
+          <cf_text_token delims_before=" " string="':"/>
+          <cf_text_token delims_before=" " string="Gracias"/>
+          <cf_text_token delims_before=" " string="Jill"/>
+          <cf_text_token delims_before=" " string=":-"/>
+          <cf_text_token delims_before=" " string="Saludos."/>
+        </text_chunk>
+        <participant/>
+      </text_element>
+      <visual>
+        <extent height="45" width="98" x="510" y="165"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/services/feeds/photos_public.gne?format=rss_200&amp;tags=sunset" history_num="18">
+      <image_element alpha_radius="30" bias="1.0" has_transparency="true" href="http://www.flickr.com/photos/7858817@N07/2308045761/" min_alpha="5701632" purl="http://farm3.static.flickr.com/2299/2308045761_b0f36b06a8_m.jpg">
+        <participant/>
+      </image_element>
+      <visual>
+        <extent height="67" width="90" x="180" y="495"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/services/feeds/photos_public.gne?format=rss_200&amp;tags=sunset" history_num="20">
+      <image_element alpha_radius="24" bias="1.0" has_transparency="true" href="http://www.flickr.com/photos/7858817@N07/2308045979/" min_alpha="1703936" purl="http://farm3.static.flickr.com/2239/2308045979_7f68438472_m.jpg">
+        <participant/>
+      </image_element>
+      <visual>
+        <extent height="67" width="90" x="210" y="594"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/photos/peteredin/2308059471/" history_num="14">
+      <image_element alpha_radius="19" bias="1.0" has_transparency="true" href="http://www.flickr.com/photos/peteredin/2269529574/in/set-72157594567049924/" min_alpha="5177344" purl="http://farm3.static.flickr.com/2038/2269529574_205aaac291_s.jpg">
+        <participant/>
+      </image_element>
+      <visual>
+        <extent height="75" width="75" x="180" y="528"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/services/feeds/photos_public.gne?format=rss_200&amp;tags=sunset" history_num="28">
+      <image_element alpha_radius="19" bias="1.0" has_transparency="true" href="http://www.flickr.com/photos/freethemonster/2308867320/" min_alpha="5373952" purl="http://farm4.static.flickr.com/3154/2308867320_74653891ff_m.jpg">
+        <participant/>
+      </image_element>
+      <visual>
+        <extent height="60" width="90" x="510" y="165"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/services/feeds/photos_public.gne?format=rss_200&amp;tags=sunset" history_num="22">
+      <image_element alpha_radius="24" bias="1.0" has_transparency="true" href="http://www.flickr.com/photos/thonda/2308071495/" min_alpha="3801088" purl="http://farm3.static.flickr.com/2087/2308071495_a6f0211b96_m.jpg">
+        <participant/>
+      </image_element>
+      <visual>
+        <extent height="61" width="90" x="180" y="594"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/photos/georgiafzeringota/2308046015/" history_num="25">
+      <image_element alpha_radius="16" bias="1.0" has_transparency="true" href="http://www.flickr.com/photos/quimgranell/" min_alpha="6029312" purl="http://farm3.static.flickr.com/2232/buddyicons/8376270@N08.jpg?1193639344">
+        <participant/>
+      </image_element>
+      <visual>
+        <extent height="48" width="48" x="570" y="462"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/photos/georgiafzeringota/2308046015/" history_num="26">
+      <image_element alpha_radius="9" bias="1.0" has_transparency="true" href="http://www.flickr.com/photos/secreti/" min_alpha="6422528" purl="http://farm3.static.flickr.com/2200/buddyicons/22127771@N04.jpg?1203115296">
+        <participant/>
+      </image_element>
+      <visual>
+        <extent height="48" width="48" x="360" y="528"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/photos/georgiafzeringota/2308046015/" history_num="34">
+      <image_element alpha_radius="29" bias="1.0" has_transparency="true" min_alpha="851968" purl="http://farm3.static.flickr.com/2195/2308046015_809f422df6.jpg?v=0">
+        <participant/>
+      </image_element>
+      <visual>
+        <extent height="60" width="90" x="510" y="165"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/photos/georgiafzeringota/2308046015/" history_num="36">
+      <image_element alpha_radius="30" bias="1.0" has_transparency="true" href="http://www.flickr.com/photos/georgiafzeringota/2306051850/in/photostream/" min_alpha="65536" purl="http://farm4.static.flickr.com/3014/2306051850_87de71e690_s.jpg">
+        <participant/>
+      </image_element>
+      <visual>
+        <extent height="75" width="75" x="510"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/photos/georgiafzeringota/2308046015/" history_num="38">
+      <image_element alpha_radius="20" bias="1.0" has_transparency="true" href="http://www.flickr.com/groups/spiritofphotography/" min_alpha="6553600" purl="http://farm3.static.flickr.com/2309/buddyicons/642723@N21.jpg?1200673339">
+        <participant/>
+      </image_element>
+      <visual>
+        <extent height="48" width="48" x="330" y="66"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/photos/georgiafzeringota/2308046015/" history_num="44">
+      <image_element alpha_radius="10" bias="1.0" has_transparency="true" href="http://www.flickr.com/photos/marcosamend/" min_alpha="6356992" purl="http://farm3.static.flickr.com/2348/buddyicons/35315834@N00.jpg?1192386629">
+        <participant/>
+      </image_element>
+      <visual>
+        <extent height="48" width="48" x="360" y="528"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/photos/lifein2-d/2308839184/" history_num="48">
+      <image_element alpha_radius="16" bias="1.0" has_transparency="true" href="http://www.flickr.com/photos/lifein2-d/2307318434/in/photostream/" min_alpha="5701632" purl="http://farm3.static.flickr.com/2280/2307318434_6f8933b9bf_s.jpg">
+        <participant/>
+      </image_element>
+      <visual>
+        <extent height="75" width="75" x="510" y="165"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/photos/georgiafzeringota/2308046015/" history_num="52">
+      <image_element bias="1.0" href="http://www.flickr.com/groups/landscape-dream/" purl="http://farm2.static.flickr.com/1083/744075572_b76c2c12e3_s.jpg">
+        <participant/>
+      </image_element>
+      <visual>
+        <extent height="75" width="75" x="510" y="165"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/photos/23539669@N08/2308061947/" history_num="24">
+      <image_element alpha_radius="30" bias="1.0" has_transparency="true" href="http://www.flickr.com/photos/23539669@N08/2308060927/in/photostream/" min_alpha="2097152" purl="http://farm3.static.flickr.com/2394/2308060927_5eeb99694b_s.jpg">
+        <participant/>
+      </image_element>
+      <visual>
+        <extent height="75" width="75" x="510" y="165"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/photos/freethemonster/2308867320/" history_num="29">
+      <image_element alpha_radius="27" bias="1.0" has_transparency="true" href="http://www.flickr.com/photos/freethemonster/2308085113/in/photostream/" min_alpha="5111808" purl="http://farm3.static.flickr.com/2342/2308085113_eb8a7fc4c9_s.jpg">
+        <participant/>
+      </image_element>
+      <visual>
+        <extent height="75" width="75" x="360" y="528"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/photos/23539669@N08/2308061947/" history_num="30">
+      <image_element alpha_radius="29" bias="1.0" has_transparency="true" href="http://www.flickr.com/photos/23539669@N08/2302336512/in/set-72157603853382533/" min_alpha="655360" purl="http://farm3.static.flickr.com/2254/2302336512_22ef543ae3_s.jpg">
+        <participant/>
+      </image_element>
+      <visual>
+        <extent height="75" width="75" x="510" y="165"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/photos/7858817@N07/2308045761/" history_num="32">
+      <image_element alpha_radius="32" bias="1.0" has_transparency="true" href="http://www.flickr.com/photos/7858817@N07/2308045979/in/photostream/" min_alpha="458752" purl="http://farm3.static.flickr.com/2239/2308045979_7f68438472_s.jpg">
+        <participant/>
+      </image_element>
+      <visual>
+        <extent height="75" width="75" x="510" y="165"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/photos/gems3/2308071781/" history_num="33">
+      <image_element alpha_radius="53" bias="1.0" has_transparency="true" min_alpha="5046272" purl="http://farm3.static.flickr.com/2200/2308071781_d8e5a903f2.jpg?v=0">
+        <participant/>
+      </image_element>
+      <visual>
+        <extent height="141" width="180" x="450" y="165"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/photos/peteredin/2308059471/" history_num="37">
+      <image_element alpha_radius="35" bias="1.0" has_transparency="true" href="http://www.flickr.com/photos/peteredin/2180784265/in/set-72157603550343535/" min_alpha="1572864" purl="http://farm3.static.flickr.com/2072/2180784265_b9410a4890_s.jpg">
+        <participant/>
+      </image_element>
+      <visual>
+        <extent height="75" width="75" x="330" y="132"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/photos/_echoes_/2308866392/" history_num="40">
+      <image_element alpha_radius="18" bias="1.0" has_transparency="true" href="http://www.flickr.com/photos/_echoes_/2308866390/in/photostream/" min_alpha="1769472" purl="http://farm3.static.flickr.com/2374/2308866390_b4acd92907_s.jpg">
+        <participant/>
+      </image_element>
+      <visual>
+        <extent height="75" width="75" x="330"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/photos/_echoes_/2308866392/" history_num="41">
+      <image_element alpha_radius="32" bias="1.0" has_transparency="true" min_alpha="1179648" purl="http://farm4.static.flickr.com/3285/2308866392_00f814ca66.jpg?v=0">
+        <participant/>
+      </image_element>
+      <visual>
+        <extent height="135" width="180" x="360" y="528"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/photos/amoraleda/2308051403/" history_num="42">
+      <image_element alpha_radius="55" bias="1.0" has_transparency="true" min_alpha="4128768" purl="http://farm3.static.flickr.com/2303/2308051403_1e44eb6b91.jpg?v=0">
+        <participant/>
+      </image_element>
+      <visual>
+        <extent height="119" width="180" x="360" y="528"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/photos/freethemonster/2308867320/" history_num="45">
+      <image_element bias="1.0" href="http://www.flickr.com/photos/freethemonster/255307704/in/set-72157594277510956/" purl="http://farm1.static.flickr.com/85/255307704_8187e370f3_s.jpg">
+        <participant/>
+      </image_element>
+      <visual>
+        <extent height="75" width="75" x="510" y="165"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/photos/peteredin/2308059471/" history_num="46">
+      <image_element alpha_radius="55" bias="1.0" has_transparency="true" min_alpha="4325376" purl="http://farm3.static.flickr.com/2150/2308059471_5006c33618.jpg?v=0">
+        <participant/>
+      </image_element>
+      <visual>
+        <extent height="135" width="180" x="360" y="528"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/photos/_echoes_/2308866390/" history_num="49">
+      <image_element alpha_radius="24" bias="1.0" has_transparency="true" href="http://www.flickr.com/photos/_echoes_/2308866392/in/photostream/" min_alpha="327680" purl="http://farm4.static.flickr.com/3285/2308866392_00f814ca66_s.jpg">
+        <participant/>
+      </image_element>
+      <visual>
+        <extent height="75" width="75" x="360" y="528"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/photos/jeannoetsteph/2308870020/" history_num="50">
+      <image_element alpha_radius="23" bias="1.0" has_transparency="true" min_alpha="6356992" purl="http://farm3.static.flickr.com/2140/2308870020_b5a7d98e80.jpg?v=0">
+        <participant/>
+      </image_element>
+      <visual>
+        <extent height="198" width="133" x="480" y="165"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/photos/jeannoetsteph/2308870020/" history_num="53">
+      <image_element alpha_radius="26" bias="1.0" has_transparency="true" href="http://www.flickr.com/photos/jeannoetsteph/2308064819/in/photostream/" min_alpha="3670016" purl="http://farm4.static.flickr.com/3267/2308064819_d2005325ea_s.jpg">
+        <participant/>
+      </image_element>
+      <visual>
+        <extent height="75" width="75" x="360" y="528"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/photos/_echoes_/2308866390/" history_num="54">
+      <image_element alpha_radius="29" bias="1.0" has_transparency="true" href="http://www.flickr.com/photos/_echoes_/2279431487/in/photostream/" min_alpha="4390912" purl="http://farm3.static.flickr.com/2145/2279431487_6f70eebc54_s.jpg">
+        <participant/>
+      </image_element>
+      <visual>
+        <extent height="75" width="75" x="510" y="165"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/photos/jfmarrero/2308855768/" history_num="55">
+      <text_element bias="1.0" font_color="90000000" stroke_color="e3fcfc64">
+        <text_chunk font_size="11" non_stop_index="0.75">
+          <cf_text_token delims_before="" href="http://www.flickr.com/photos/eugalia/" string="abre" underline="4"/>
+          <cf_text_token delims_before=" " href="http://www.flickr.com/photos/eugalia/" string="tus" underline="5"/>
+          <cf_text_token delims_before=" " href="http://www.flickr.com/photos/eugalia/" string="alas" underline="5"/>
+          <cf_text_token delims_before=" " string="says:"/>
+        </text_chunk>
+        <participant/>
+      </text_element>
+      <visual>
+        <extent height="45" width="54" x="360" y="528"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/photos/freethemonster/2308867320/" history_num="56">
+      <image_element bias="1.0" href="http://www.flickr.com/photos/freethemonster/2308052427/in/photostream/" purl="http://farm4.static.flickr.com/3140/2308052427_8fc5b034ef_s.jpg">
+        <participant/>
+      </image_element>
+      <visual>
+        <extent height="75" width="75" x="510" y="165"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/photos/jfmarrero/2308855768/" history_num="57">
+      <image_element alpha_radius="22" bias="1.0" has_transparency="true" href="http://www.flickr.com/photos/eugalia/" min_alpha="4784128" purl="http://farm3.static.flickr.com/2225/buddyicons/7606847@N06.jpg?1199399068">
+        <participant/>
+      </image_element>
+      <visual>
+        <extent height="48" width="48" x="360" y="528"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/photos/peteredin/2308059471/" history_num="58">
+      <image_element alpha_radius="34" bias="1.0" has_transparency="true" href="http://www.flickr.com/photos/peteredin/2308054275/in/photostream/" min_alpha="3145728" purl="http://farm3.static.flickr.com/2183/2308054275_b8ccc0fa8b_s.jpg">
+        <participant/>
+      </image_element>
+      <visual>
+        <extent height="75" width="75" x="540" y="627"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/photos/lifein2-d/2308839184/" history_num="59">
+      <image_element bias="1.0" purl="http://farm3.static.flickr.com/2363/2308839184_46826d3ddc.jpg?v=0">
+        <participant/>
+      </image_element>
+      <visual>
+        <extent height="72" width="90" x="360" y="528"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/photos/jfmarrero/2308855768/" history_num="60">
+      <image_element alpha_radius="57" bias="1.0" has_transparency="true" min_alpha="1638400" purl="http://farm3.static.flickr.com/2021/2308855768_05479ff95f.jpg?v=0">
+        <participant/>
+      </image_element>
+      <visual>
+        <extent height="198" width="134" x="450" y="132"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/photos/gems3/2308071781/" history_num="61">
+      <image_element alpha_radius="13" bias="1.0" has_transparency="true" href="http://www.flickr.com/photos/gems3/2293054401/in/photostream/" min_alpha="6160384" purl="http://farm3.static.flickr.com/2024/2293054401_6efeebf9c3_s.jpg">
+        <participant/>
+      </image_element>
+      <visual>
+        <extent height="75" width="75" x="360" y="528"/>
+      </visual>
+    </surrogate>
+  </collage_element_set>
+</composition>

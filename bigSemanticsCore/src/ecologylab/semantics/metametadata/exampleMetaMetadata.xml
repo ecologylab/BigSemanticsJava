@@ -1,0 +1,40 @@
+<extraction_patterns domain="http://portal.acm.org/">	
+	<html_dom_extraction_pattern name="ArticlePage" url_base="http://portal.acm.org/citation.cfm?">
+		<meta_metadata_field name='Title' scalar_type="String" xpath=".//td[@class='medium-text']/strong/child::text()"/>
+		<meta_metadata_field name='FullText' scalar_type="ParsedURL" xpath=".//a[@name='FullText']/@href" is_link='true'/>
+		<meta_metadata_field name='Source'>
+			<meta_metadata_field name='Heading' scalar_type='String' xpath=".//span[@class='mediumb-text']/child::text()" is_facet='true'/>
+			<meta_metadata_field name='Archive' scalar_type="ParsedURL" xpath=".//span[@class='mediumb-text']/../a[child::text()='archive']/@href" 
+				is_link='true'/>
+			<meta_metadata_field name='TableofContents' scalar_type="ParsedURL" xpath=".//span[@class='mediumb-text']/../a[child::text()='table of contents']/@href" is_link='true'/>
+			<meta_metadata_field name="Pages" scalar_type="String" xpath=".//div[@class='small-text']/child::text()[starts-with(.,'Pages:')]" 
+				string_prefix="Pages:"/>
+			<meta_metadata_field name="YearofPublication" scalar_type="String" xpath=".//div[@class='small-text']/child::text()[starts-with(.,'Year of Publication:')]"
+	 			string_prefix="Year of Publication:" is_facet='true'/>
+			<meta_metadata_field name="ISBN|ISSN" scalar_type="String" xpath=".//div[@class='small-text']/child::text()[starts-with(.,'ISSN:') or starts-with(.,'ISBN:')]"
+				string_prefix="ISBN"/>
+		</meta_metadata_field>
+		<meta_metadata_field name='Authors'>
+			<meta_metadata_field name='AuthorsNames' scalar_type="String" xpath=".//div[@class='authors']//a/child::text()" is_list='true' is_facet='true'/>
+			<meta_metadata_field name="Affiliation" scalar_type="String" xpath=".//div[@class='authors']//small/child::text()" is_list='true'/>
+			<meta_metadata_field name="AuthorResultsPage" scalar_type="ParsedURL" xpath=".//div[@class='authors']//a/@href" is_link='true' is_list='true'/>
+		</meta_metadata_field>
+		<meta_metadata_field name="Abstract" scalar_type="String" xpath=".//p[@class='abstract']/child::text()"/>
+		<meta_metadata_field name='References'>
+			<meta_metadata_field name='ReferencesLinks' scalar_type="ParsedURL" xpath=".//a[@name='references']/../following-sibling::table//@href[starts-with(.,'citation')]" 
+				is_link="true" is_list='true'/>
+			<meta_metadata_field name="ReferencesBibTex" scalar_type="String" xpath="//a[@name='references']/../following-sibling::table//@href[starts-with(.,'citation')]/../child::text()"
+				is_list='true'/>
+		</meta_metadata_field>
+		<meta_metadata_field name="Citations">
+			<meta_metadata_field name="CitationsLinks" scalar_type="ParsedURL" xpath=".//a[@name='citings']/../following-sibling::table//@href[starts-with(.,'citation')]" 
+				is_link='true' is_list='true'/>
+			<meta_metadata_field name="CitationBibTex" scalar_type="String" xpath=".//a[@name='citings']/../following-sibling::table//@href[starts-with(.,'citation')]/../child::text()"
+				is_list='true'/>
+		</meta_metadata_field>
+	</html_dom_extraction_pattern>
+	<html_dom_extraction_pattern name="SearchPage" url_base="http://portal.acm.org/results.cfm?">
+		<meta_metadata_field name='ResultTitle' xpath=".//td[@class='medium-text']/strong/child::text()"/>
+		<meta_metadata_field name='LinkToArticle' xpath=".//a[@name='FullText']/@href" is_link='true'/>
+	</html_dom_extraction_pattern>
+</extraction_patterns>	
