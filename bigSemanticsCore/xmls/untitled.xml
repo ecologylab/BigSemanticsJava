@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<composition version="3.0">
+  <preferences>
+    <screen height="695" width="634"/>
+  </preferences>
+  <seed_set>
+    <search engine="flickr" query="sunset"/>
+  </seed_set>
+  <site_set>
+    <site domain="flickr.com" stroke_hue="0.16666667"/>
+  </site_set>
+  <traversable_set>
+    <traversable url_string="www.flickr.com/photos"/>
+    <traversable url_string="www.flickr.com/services/feeds"/>
+  </traversable_set>
+  <untraversable_set>
+    <untraversable>null</untraversable>
+  </untraversable_set>
+  <reject_domain_set/>
+  <term_set/>
+  <container_set>
+    <container bias="1.0" document_type="FlickrSearch" generation="1" purl="http://www.flickr.com/services/feeds/photos_public.gne?format=rss_200&amp;tags=sunset">
+      <participant/>
+      <metadata location="http://www.flickr.com/services/feeds/photos_public.gne?format=rss_200&amp;tags=sunset" query="sunset" title="Photos from everyone tagged sunset">
+        <gist>Search</gist>
+        <context>Search</context>
+      </metadata>
+    </container>
+  </container_set>
+  <collage_element_set>
+    <surrogate containerURL="http://www.flickr.com/services/feeds/photos_public.gne?format=rss_200&amp;tags=sunset" history_num="1">
+      <image_element bias="1.0" href="http://www.flickr.com/photos/21939272@N07/2308228935/" purl="http://farm4.static.flickr.com/3278/2308228935_2d59f3e6bb_m.jpg">
+        <participant/>
+      </image_element>
+      <visual>
+        <extent height="132" width="90" x="341" y="29"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/services/feeds/photos_public.gne?format=rss_200&amp;tags=sunset" history_num="2">
+      <image_element alpha_radius="40" bias="1.0" has_transparency="true" href="http://www.flickr.com/photos/bronwens_pics/2309038426/" min_alpha="3538944" purl="http://farm3.static.flickr.com/2397/2309038426_720bbb16eb_m.jpg">
+        <participant/>
+      </image_element>
+      <visual>
+        <extent height="120" width="90" x="36" y="456"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/services/feeds/photos_public.gne?format=rss_200&amp;tags=sunset" history_num="3">
+      <image_element alpha_radius="17" bias="1.0" has_transparency="true" href="http://www.flickr.com/photos/jasongrover/2309026990/" min_alpha="6422528" purl="http://farm3.static.flickr.com/2221/2309026990_db506f4873_m.jpg">
+        <participant/>
+      </image_element>
+      <visual>
+        <extent height="198" width="56" x="107" y="176"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/services/feeds/photos_public.gne?format=rss_200&amp;tags=sunset" history_num="4">
+      <image_element alpha_radius="30" bias="1.0" has_transparency="true" href="http://www.flickr.com/photos/imbala/2308238295/" min_alpha="3801088" purl="http://farm3.static.flickr.com/2349/2308238295_023727d7d8_m.jpg">
+        <participant/>
+      </image_element>
+      <visual>
+        <extent height="67" width="90" x="32" y="307"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/services/feeds/photos_public.gne?format=rss_200&amp;tags=sunset" history_num="5">
+      <image_element alpha_radius="32" bias="1.0" has_transparency="true" href="http://www.flickr.com/photos/one24eightyone/2309037214/" min_alpha="5570560" purl="http://farm4.static.flickr.com/3006/2309037214_04a381dd42_m.jpg">
+        <participant/>
+      </image_element>
+      <visual>
+        <extent height="135" width="180" x="441" y="231"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/services/feeds/photos_public.gne?format=rss_200&amp;tags=sunset" history_num="6">
+      <image_element alpha_radius="16" bias="1.0" has_transparency="true" href="http://www.flickr.com/photos/estevesm/2308217789/" min_alpha="393216" purl="http://farm3.static.flickr.com/2130/2308217789_b17a8454a3_m.jpg">
+        <participant/>
+      </image_element>
+      <visual>
+        <extent height="39" width="60" x="120" y="660"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/services/feeds/photos_public.gne?format=rss_200&amp;tags=sunset" history_num="7">
+      <image_element alpha_radius="55" bias="1.0" has_transparency="true" href="http://www.flickr.com/photos/beakers_glass/2308231995/" min_alpha="131072" purl="http://farm3.static.flickr.com/2014/2308231995_bf51d12e4e_m.jpg">
+        <participant/>
+      </image_element>
+      <visual>
+        <extent height="120" width="180" x="233" y="254"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/services/feeds/photos_public.gne?format=rss_200&amp;tags=sunset" history_num="8">
+      <image_element alpha_radius="54" bias="1.0" has_transparency="true" href="http://www.flickr.com/photos/ijohnw/2308228655/" min_alpha="4980736" purl="http://farm3.static.flickr.com/2244/2308228655_10d3b9dae4_m.jpg">
+        <participant/>
+      </image_element>
+      <visual>
+        <extent height="198" width="148" x="183" y="-16"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/services/feeds/photos_public.gne?format=rss_200&amp;tags=sunset" history_num="9">
+      <image_element alpha_radius="30" bias="1.0" has_transparency="true" href="http://www.flickr.com/photos/imbala/2309043554/" min_alpha="65536" purl="http://farm4.static.flickr.com/3113/2309043554_0bba90e1fd_m.jpg">
+        <participant/>
+      </image_element>
+      <visual>
+        <extent height="67" width="90" x="480" y="627"/>
+      </visual>
+    </surrogate>
+    <surrogate containerURL="http://www.flickr.com/services/feeds/photos_public.gne?format=rss_200&amp;tags=sunset" history_num="10">
+      <image_element alpha_radius="13" bias="1.0" has_transparency="true" href="http://www.flickr.com/photos/12946248@N02/2308223303/" min_alpha="2162688" purl="http://farm3.static.flickr.com/2197/2308223303_2e668f2188_m.jpg">
+        <participant/>
+      </image_element>
+      <visual>
+        <extent height="45" width="60" x="270" y="627"/>
+      </visual>
+    </surrogate>
+  </collage_element_set>
+</composition>
