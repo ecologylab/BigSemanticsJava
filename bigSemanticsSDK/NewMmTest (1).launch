@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
+<listEntry value="/ecologylabSemanticsExample/src/ecologylab/semantics/metametadata/test/NewMmTest.java"/>
+</listAttribute>
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
+<listEntry value="1"/>
+</listAttribute>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="ecologylab.semantics.metametadata.test.NewMmTest"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="http://www.nsf.gov/awardsearch/showAward.do?AwardNumber=0747428&#13;&#10;http://www.nsf.gov/awardsearch/showAward.do?AwardNumber=0803854&#13;&#10;//&#13;&#10;http://news.blogs.cnn.com/2011/04/14/predator-dinosaurs-may-have-been-night-hunters/?hpt=C2&#13;&#10;//&#13;&#10;http://buzzlog.yahoo.com/feeds/buzzsportm.xml&#13;&#13;&#10;//&#13;&#13;&#10;http://www.informaworld.com/smpp/content~db=all?content=10.1080/10447310802142243&#13;&#13;&#13;&#10;http://ecologylab.net&#13;&#13;&#10;//&#13;&#13;&#10;http://portal.acm.org/citation.cfm?id=1416955&#13;&#13;&#10;//&#13;&#13;&#10;http://www.nytimes.com/2011/04/14/world/asia/14quake.html&#13;&#13;&#13;&#10;//&#13;&#13;&#10;//&#13;&#13;&#10;http://remodelista.com/products/victoria-and-albert-wessex-bath&#13;&#13;&#13;&#10;//&#13;&#13;&#10;http://news.blogs.cnn.com/2011/04/14/predator-dinosaurs-may-have-been-night-hunters/?hpt=C2&#13;&#13;&#13;&#10;//&#13;&#13;&#10;&#13;&#13;&#10;http://www.flickr.com/search/?q=summer&amp;z=m&#13;&#13;&#10;http://ecologylab.net"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="ecologylabSemanticsExample"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Xms320m -Xmx320m"/>
+</launchConfiguration>

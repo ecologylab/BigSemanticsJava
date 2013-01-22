@@ -1,0 +1,81 @@
+body {
+	font-family: sans-serif;
+ 	padding-top: 30px;
+ 	padding-bottom: 30px;
+	min-width: 600px;
+	background-color: #FEF5CA
+}
+
+h1 {
+	font-weight: bold;
+ 	text-align: center;
+ 	font-size: 24pt;
+}
+
+div.footer {
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 50px;
+	text-align: center;
+	font-size: small;
+	font-family: monospace;
+}
+
+div#data {
+	width: 70%;
+	margin-top: 10px;
+ 	margin-bottom: 10px;
+	margin-left: auto;
+	margin-right: auto;
+	padding: 5px;
+}
+
+div#data > table, div.linked_metadata > table {
+	margin-top: 20px;
+	margin-bottom: 40px;
+	border-spacing: 4px;
+	border-radius: 10px;
+	background-color: #B4EEB4;
+	padding: 5px;
+}
+
+div.linked_metadata {
+	margin-left: 10%;
+}
+
+div.linked_metadata > table {
+	margin-top: 5px;
+	background-color: #BFEFFF;
+}
+
+table {
+	width: 100%;
+}
+
+td {
+	padding-left: 15px;
+	padding-right: 15px;
+	background-color: #F0FFFF;
+	font-family: Garamond, Times New Roman, Serif;
+	border-radius: 10px;
+}
+
+td.metadata_field_name, td.metadata_field_name div.metadata_text{
+	text-align: right;
+	min-width: 20%;
+	background-color: #BCD2EE;
+	font-family: Verdana, Sans-serif;
+	font-size: small;
+}
+
+.metadata_text a {
+	font-family: monospace;
+	font-size: 9pt;
+ 	color: green;
+}
+
+div.metadata_h1
+{
+	font-weight: bold;
+}
+
