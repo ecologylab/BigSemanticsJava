@@ -113,7 +113,7 @@ public class MetaMetadataRepositoryLocator extends Debug
       debug("trying to locate meta-metadata repository as java resources...");
       n = locateRepositoryAsJavaResourcesAndOpenStreams(result);
     }
-    debug(n + "repository file(s) or resource(s) found.");
+    debug(n + " repository file(s) or resource(s) found.");
 
     return result;
   }

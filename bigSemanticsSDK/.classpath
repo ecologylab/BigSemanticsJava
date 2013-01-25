@@ -4,6 +4,7 @@
 	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="lib" path="/cyberneko/lib/xercesMinimal.jar"/>
 	<classpathentry kind="lib" path="lib/guava-14.0-rc1.jar"/>
+	<classpathentry kind="lib" path="lib/bigSemanticsWrappers.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/bigSemanticsCore"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/bigSemanticsCybernekoWrapper"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/bigSemanticsSunSpecifics"/>
