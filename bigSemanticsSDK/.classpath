@@ -2,17 +2,14 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="test"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/ecologylabSemantics"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/ecologylabFundamental"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/ecologylabGeneratedSemantics"/>
-	<classpathentry kind="src" path="/ecologylabSemanticsCyberneko"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/cyberneko"/>
 	<classpathentry kind="lib" path="/cyberneko/lib/xercesMinimal.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/MetaMetadataRepository"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/ecologylabFundamentalSun"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/ecologylabSemanticsSun"/>
 	<classpathentry kind="lib" path="lib/guava-14.0-rc1.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/bigSemanticsCore"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/bigSemanticsCybernekoWrapper"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/bigSemanticsSunSpecifics"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/imageMetadataExtractor"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/cyberneko"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -1,6 +1,7 @@
 package ecologylab.semantics.metametadata;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import static org.junit.Assert.*;
@@ -34,7 +35,7 @@ public class TestRepositoryDeSerialization
 	
 
   @Test
-  public void testRepositoryDeSerialization() throws SIMPLTranslationException
+  public void testRepositoryDeSerialization() throws SIMPLTranslationException, FileNotFoundException
   {
     SimplTypesScope.graphSwitch = GRAPH_SWITCH.ON;
 	

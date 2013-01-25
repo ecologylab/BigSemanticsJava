@@ -2,6 +2,9 @@ package ecologylab.semantics.metametadata;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,201 +30,242 @@ import ecologylab.serialization.formatenums.Format;
 public class MetaMetadataRepositoryLoader extends Debug implements DocumentParserTagNames
 {
 
-	/**
-	 * registry of formats to file name extensions.
-	 */
-	private static final Map<Format, String>	fileNameExts	= new HashMap<Format, String>();
-	
-	static
-	{
-		fileNameExts.put(Format.XML, ".xml");
-		fileNameExts.put(Format.JSON, ".json");
-	}
-	
-	/**
-	 * Load the repository from a set of files, in a specified format.
-	 * <p />
-	 * Meta-metadata types will be placed into corresponding packages, each with a package-wide type
-	 * scope. The local type scope for each meta-metadata is initialized.
-	 * <p />
-	 * MIME type and suffix based selectors are processed. Location based selectors will not be
-	 * processed here because that requires the metadata translation scope, which is not yet
-	 * determined at this stage.
-	 * 
-	 * @param files
-	 *          The list of files storing the repository.
-	 * @param format
-	 *          The format of the repository.
-	 * @return An integrated representation of the repository.
-	 */
-	public MetaMetadataRepository loadFromFiles(List<File> files, Format format)
-	{
-		MetaMetadataRepository result = new MetaMetadataRepository();
-		result.repositoryByName = new HashMapArrayList<String, MetaMetadata>();
-		result.packageMmdScopes = new HashMap<String, MmdScope>();
+  static final SimplTypesScope     mmdTScope    = MetaMetadataTranslationScope.get();
 
-		SimplTypesScope mmdTScope = MetaMetadataTranslationScope.get();
+  /**
+   * registry of formats to file name extensions.
+   */
+  static final Map<Format, String> fileNameExts = new HashMap<Format, String>();
 
-		for (File file : files)
-		{
-			if (file == null || !file.exists())
-			{
-				result.warning("ignoring " + file);
-				continue;
-			}
+  static
+  {
+    fileNameExts.put(Format.XML, ".xml");
+    fileNameExts.put(Format.JSON, ".json");
+  }
 
-			println("MetaMetadataRepository read:\t" + file.getPath());
+  /**
+   * Load meta-metadata from repository files from a directory.
+   * <p />
+   * Order: base level, then repositorySources, then powerUser.
+   * 
+   * @see loadFromFiles()
+   * 
+   * @param dir
+   *          The repository directory.
+   * @param format
+   *          The format of the repository.
+   * @return An integrated representation of the repository.
+   * @throws FileNotFoundException
+   * @throws SIMPLTranslationException
+   */
+  public MetaMetadataRepository loadFromDir(File dir, Format format) throws FileNotFoundException,
+      SIMPLTranslationException
+  {
+    if (!dir.exists())
+    {
+      throw new MetaMetadataException("MetaMetadataRepository directory does not exist : "
+          + dir.getAbsolutePath());
+    }
+    final String fileNameSuffix = fileNameExts.get(format);
+    if (fileNameSuffix == null)
+    {
+      throw new MetaMetadataException("Unregistered or unknown format: " + format);
+    }
 
-			try
-			{
-				MetaMetadataRepository repoData = (MetaMetadataRepository) mmdTScope.deserialize(file,
-						format);
-				if (repoData != null)
-				{
-					repoData.file = file;
+    println("MetaMetadataRepository directory : " + dir + "\n");
 
-					// sort meta-metadata into result.repositoryByName and mmd scope for that package.
-					if (repoData.repositoryByName != null)
-					{
-						for (String mmdName : repoData.repositoryByName.keySet())
-						{
-							MetaMetadata mmd = repoData.repositoryByName.get(mmdName);
-							mmd.setFile(file);
-							mmd.setParent(result);
-							mmd.setRepository(result);
+    FileFilter fileFilter = new FileFilter()
+    {
+      public boolean accept(File dir)
+      {
+        return dir.getName().endsWith(fileNameSuffix);
+      }
+    };
 
-							String packageName = mmd.packageName();
-							if (packageName == null)
-							{
-								packageName = repoData.packageName();
-								if (packageName == null)
-									throw new MetaMetadataException("no package name specified for " + mmd);
-								mmd.setPackageName(packageName);
-							}
-							MmdScope packageMmdScope = result.packageMmdScopes.get(packageName);
-							if (packageMmdScope == null)
-							{
-								packageMmdScope = new MmdScope(result.repositoryByName);
-								packageMmdScope.name = packageName;
-								result.packageMmdScopes.put(packageName, packageMmdScope);
-							}
+    File repositorySources = new File(dir, "repositorySources");
+    File powerUserDir = new File(dir, "powerUser");
 
-							switch (mmd.visibility)
-							{
-							case GLOBAL:
-							{
-								MetaMetadata existingMmd = result.repositoryByName.get(mmdName);
-								if (existingMmd != null && existingMmd != mmd)
-									throw new MetaMetadataException("meta-metadata already exists: " + mmdName
-											+ " in " + file);
-								result.repositoryByName.put(mmdName, mmd);
-								break;
-							}
-							case PACKAGE:
-							{
-								MetaMetadata existingMmd = packageMmdScope.get(mmdName);
-								if (existingMmd != null && existingMmd != mmd)
-									throw new MetaMetadataException("meta-metadata already exists: " + mmdName
-											+ " in " + file);
-								packageMmdScope.put(mmdName, mmd);
-								break;
-							}
-							}
-						}
+    List<File> allFiles = new ArrayList<File>();
+    addFilesInDirToList(dir, fileFilter, allFiles);
+    addFilesInDirToList(repositorySources, fileFilter, allFiles);
+    addFilesInDirToList(powerUserDir, fileFilter, allFiles);
 
-						for (MetaMetadata mmd : repoData.repositoryByName.values())
-						{
-							MmdScope packageMmdScope = result.packageMmdScopes.get(mmd.packageName());
-							mmd.setMmdScope(packageMmdScope);
-						}
-					}
+    return loadFromFiles(allFiles, format);
+  }
 
-					// combine other parts
-					result.integrateRepositoryWithThis(repoData);
-				}
-			}
-			catch(ClassCastException e) // So, this may be a bit overzealous but it covers the case of missing <meta_metadata_repository> tags 
-			{
-				Debug.error(this.getClassSimpleName(), "Please check the metametadata description in " + file.getAbsolutePath() + " \n <meta_metadata> must be surrounded by <meta_metadata_repository> tags");
-				e.printStackTrace();
-			}
-			catch (SIMPLTranslationException e)
-			{
-				Debug.error(this.getClassSimpleName(),
-						"translating repository source file " + file.getAbsolutePath());
-				e.printStackTrace();
-			}
-		}
+  /**
+   * Load the repository from a set of files, in a specified format.
+   * <p />
+   * Meta-metadata types will be placed into corresponding packages, each with a package-wide type
+   * scope. The local type scope for each meta-metadata is initialized.
+   * <p />
+   * MIME type and suffix based selectors are processed. Location based selectors will not be
+   * processed here because that requires the metadata translation scope, which is not yet
+   * determined at this stage.
+   * 
+   * @param files
+   *          The list of files storing the repository.
+   * @param format
+   *          The format of the repository.
+   * @return An integrated representation of the repository.
+   * @throws FileNotFoundException
+   * @throws SIMPLTranslationException
+   */
+  public MetaMetadataRepository loadFromFiles(List<File> files, Format format)
+      throws FileNotFoundException, SIMPLTranslationException
+  {
+    List<InputStream> istreams = new ArrayList<InputStream>();
+    for (File file : files)
+    {
+      if (file == null || !file.exists())
+      {
+        warning("Ignoring " + file);
+        continue;
+      }
+      println("Opening MetaMetadataRepository:\t" + file.getPath());
+      InputStream istream = new FileInputStream(file);
+      istreams.add(istream);
+    }
 
-		// initialize meta-metadata look-up maps
-		// result.initializeLocationBasedMaps(); // cannot do this since it needs the metadata TScope.
-		result.initializeSuffixAndMimeBasedMaps();
+    return loadFromInputStreams(istreams, format);
+  }
 
-		// We might want to do this only if we have some policies worth enforcing.
-		ParsedURL.cookieManager.setCookiePolicy(CookieProcessing.semanticsCookiePolicy);
+  /**
+   * Load the repository from a list of InputStreams. This is useful for loading the repository from
+   * jar'ed resources.
+   * 
+   * @param istreams
+   * @param format
+   * @return
+   * @throws SIMPLTranslationException
+   */
+  public MetaMetadataRepository loadFromInputStreams(List<InputStream> istreams, Format format)
+      throws SIMPLTranslationException
+  {
+    List<MetaMetadataRepository> repositories = deserializeRepositories(istreams, format);
+    MetaMetadataRepository result = mergeRepositories(repositories);
+    initializeRepository(result);
+    return result;
+  }
 
-		// FIXME -- get rid of this?!
-		Metadata.setRepository(result);
+  List<MetaMetadataRepository> deserializeRepositories(List<InputStream> streams,
+                                                       Format format)
+      throws SIMPLTranslationException
+  {
+    List<MetaMetadataRepository> result = new ArrayList<MetaMetadataRepository>(streams.size());
+    for (InputStream istream : streams)
+    {
+      MetaMetadataRepository repo = (MetaMetadataRepository) mmdTScope.deserialize(istream, format);
+      if (repo != null)
+      {
+        result.add(repo);
+        println("Deserialized " + repo);
+      }
+    }
+    return result;
+  }
 
-		MetaMetadataRepository.baseDocumentMM = result.getMMByName(DOCUMENT_TAG);
-		MetaMetadataRepository.baseImageMM = result.getMMByName(IMAGE_TAG);
+  MetaMetadataRepository mergeRepositories(List<MetaMetadataRepository> repositories)
+  {
+    MetaMetadataRepository result = new MetaMetadataRepository();
+    result.repositoryByName = new HashMapArrayList<String, MetaMetadata>();
+    result.packageMmdScopes = new HashMap<String, MmdScope>();
 
-		return result;
-	}
+    for (MetaMetadataRepository repo : repositories)
+    {
+      mergeOneRepositoryIntoAnother(result, repo);
+    }
+    return result;
+  }
 
-	/**
-	 * Load meta-metadata from repository files from a directory.
-	 * <p />
-	 * Order: base level, then repositorySources, then powerUser.
-	 * 
-	 * @see loadFromFiles()
-	 * 
-	 * @param dir
-	 *          The repository directory.
-	 * @param format
-	 *          The format of the repository.
-	 * @return An integrated representation of the repository.
-	 */
-	public MetaMetadataRepository loadFromDir(File dir, Format format)
-	{
-		if (!dir.exists())
-		{
-			throw new MetaMetadataException("MetaMetadataRepository directory does not exist : "
-					+ dir.getAbsolutePath());
-		}
-		final String fileNameSuffix = fileNameExts.get(format);
-		if (fileNameSuffix == null)
-		{
-			throw new MetaMetadataException("Unregistered or unknown format: " + format);
-		}
+  void mergeOneRepositoryIntoAnother(MetaMetadataRepository toRepository,
+                                     MetaMetadataRepository fromRepository)
+  {
+    if (fromRepository != null)
+    {
+      // sort meta-metadata into toRepository.repositoryByName and mmdScope for that package.
+      if (fromRepository.repositoryByName != null)
+      {
+        for (String mmdName : fromRepository.repositoryByName.keySet())
+        {
+          MetaMetadata mmd = fromRepository.repositoryByName.get(mmdName);
+          mmd.setParent(toRepository);
+          mmd.setRepository(toRepository);
 
-		println("MetaMetadataRepository directory : " + dir + "\n");
+          String packageName = mmd.packageName();
+          if (packageName == null)
+          {
+            packageName = fromRepository.packageName();
+            if (packageName == null)
+              throw new MetaMetadataException("no package name specified for " + mmd);
+            mmd.setPackageName(packageName);
+          }
 
-		FileFilter fileFilter = new FileFilter()
-		{
-			public boolean accept(File dir)
-			{
-				return dir.getName().endsWith(fileNameSuffix);
-			}
-		};
+          MmdScope packageMmdScope = toRepository.packageMmdScopes.get(packageName);
+          if (packageMmdScope == null)
+          {
+            packageMmdScope = new MmdScope(toRepository.repositoryByName);
+            packageMmdScope.name = packageName;
+            toRepository.packageMmdScopes.put(packageName, packageMmdScope);
+          }
 
-		File repositorySources = new File(dir, "repositorySources");
-		File powerUserDir = new File(dir, "powerUser");
+          switch (mmd.visibility)
+          {
+          case GLOBAL:
+          {
+            MetaMetadata existingMmd = toRepository.repositoryByName.get(mmdName);
+            if (existingMmd != null && existingMmd != mmd)
+              throw new MetaMetadataException("meta-metadata already exists: " + mmdName + " in "
+                  + fromRepository);
+            toRepository.repositoryByName.put(mmdName, mmd);
+            break;
+          }
+          case PACKAGE:
+          {
+            MetaMetadata existingMmd = packageMmdScope.get(mmdName);
+            if (existingMmd != null && existingMmd != mmd)
+              throw new MetaMetadataException("meta-metadata already exists: " + mmdName + " in "
+                  + fromRepository);
+            packageMmdScope.put(mmdName, mmd);
+            break;
+          }
+          }
+        }
 
-		List<File> allFiles = new ArrayList<File>();
-		addFilesInDirToList(dir, fileFilter, allFiles);
-		addFilesInDirToList(repositorySources, fileFilter, allFiles);
-		addFilesInDirToList(powerUserDir, fileFilter, allFiles);
+        for (MetaMetadata mmd : fromRepository.repositoryByName.values())
+        {
+          MmdScope packageMmdScope = toRepository.packageMmdScopes.get(mmd.packageName());
+          mmd.setMmdScope(packageMmdScope);
+        }
+      }
 
-		return loadFromFiles(allFiles, format);
-	}
+      // combine other parts
+      toRepository.integrateRepositoryWithThis(fromRepository);
+    }
+  }
 
-	private static void addFilesInDirToList(File dir, FileFilter filter, List<File> buf)
-	{
-		if (dir == null || !dir.exists())
-			return;
-		for (File f : dir.listFiles(filter))
-			buf.add(f);
-	}
-	
+  void initializeRepository(MetaMetadataRepository result)
+  {
+    // initialize meta-metadata look-up maps
+    // result.initializeLocationBasedMaps(); // cannot do this since it needs the metadata TScope.
+    result.initializeSuffixAndMimeBasedMaps();
+
+    // We might want to do this only if we have some policies worth enforcing.
+    ParsedURL.cookieManager.setCookiePolicy(CookieProcessing.semanticsCookiePolicy);
+
+    // FIXME -- get rid of this?!
+    Metadata.setRepository(result);
+
+    MetaMetadataRepository.baseDocumentMM = result.getMMByName(DOCUMENT_TAG);
+    MetaMetadataRepository.baseImageMM = result.getMMByName(IMAGE_TAG);
+  }
+
+  private static void addFilesInDirToList(File dir, FileFilter filter, List<File> buf)
+  {
+    if (dir == null || !dir.exists())
+      return;
+    for (File f : dir.listFiles(filter))
+      buf.add(f);
+  }
+
 }
