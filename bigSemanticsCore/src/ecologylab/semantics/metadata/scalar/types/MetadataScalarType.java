@@ -165,12 +165,12 @@ public abstract class MetadataScalarType<M, T> extends ReferenceType<M>
 			{
 				T instance = (T) valueField().get(metadataScalarContext);
 				if (instance == null)
-					result = DEFAULT_VALUE_STRING;
+					result = null;
 				else
 					result = toString(instance);
 			}
 			else
-				result = DEFAULT_VALUE_STRING;
+				result = null;
 		}
 		catch (Exception e)
 		{

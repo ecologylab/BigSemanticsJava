@@ -10,6 +10,7 @@ import ecologylab.appframework.SingletonApplicationEnvironment;
 import ecologylab.generic.Continuation;
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.collecting.MetaMetadataRepositoryInit;
+import ecologylab.semantics.collecting.MetaMetadataRepositoryLocator;
 import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.cyberneko.CybernekoWrapper;
 import ecologylab.semantics.generated.library.RepositoryMetadataTranslationScope;
@@ -177,8 +178,9 @@ implements	Continuation<DocumentClosure>
 	{
 		try
 		{
-			File outFile = new File(MetaMetadataRepositoryInit.DEFAULT_REPOSITORY_LOCATION + "/../testData/"
-					+ OUT_NAME);
+			File outFile = new File(MetaMetadataRepositoryLocator.locateRepositoryByDefaultLocations()
+			                        + "/../testData/"
+			                        + OUT_NAME);
 			
 			SimplTypesScope.serialize(informationComposition, outFile, Format.XML);
 			System.out.println("Wrote to: " + outFile.getAbsolutePath());

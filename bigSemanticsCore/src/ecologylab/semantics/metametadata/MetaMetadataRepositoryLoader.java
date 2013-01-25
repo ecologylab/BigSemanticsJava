@@ -8,7 +8,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import ecologylab.generic.Debug;
 import ecologylab.generic.HashMapArrayList;
@@ -33,17 +32,6 @@ public class MetaMetadataRepositoryLoader extends Debug implements DocumentParse
   static final SimplTypesScope     mmdTScope    = MetaMetadataTranslationScope.get();
 
   /**
-   * registry of formats to file name extensions.
-   */
-  static final Map<Format, String> fileNameExts = new HashMap<Format, String>();
-
-  static
-  {
-    fileNameExts.put(Format.XML, ".xml");
-    fileNameExts.put(Format.JSON, ".json");
-  }
-
-  /**
    * Load meta-metadata from repository files from a directory.
    * <p />
    * Order: base level, then repositorySources, then powerUser.
@@ -66,21 +54,10 @@ public class MetaMetadataRepositoryLoader extends Debug implements DocumentParse
       throw new MetaMetadataException("MetaMetadataRepository directory does not exist : "
           + dir.getAbsolutePath());
     }
-    final String fileNameSuffix = fileNameExts.get(format);
-    if (fileNameSuffix == null)
-    {
-      throw new MetaMetadataException("Unregistered or unknown format: " + format);
-    }
-
+    
     println("MetaMetadataRepository directory : " + dir + "\n");
 
-    FileFilter fileFilter = new FileFilter()
-    {
-      public boolean accept(File dir)
-      {
-        return dir.getName().endsWith(fileNameSuffix);
-      }
-    };
+    FileFilter fileFilter = MetaMetadataRepositoryFileFormats.getFileFilter(format);
 
     File repositorySources = new File(dir, "repositorySources");
     File powerUserDir = new File(dir, "powerUser");

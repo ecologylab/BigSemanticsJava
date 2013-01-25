@@ -1,8 +1,10 @@
 package ecologylab.semantics.metametadata.test;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 
 import ecologylab.semantics.collecting.MetaMetadataRepositoryInit;
+import ecologylab.semantics.collecting.MetaMetadataRepositoryLocator;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataField;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
@@ -14,11 +16,11 @@ import ecologylab.serialization.formatenums.Format;
 public class TestMmdSerialization
 {
 	
-	public static void main(String[] args) throws SIMPLTranslationException
+	public static void main(String[] args) throws SIMPLTranslationException, FileNotFoundException
 	{
 		MetaMetadataRepositoryLoader loader = new MetaMetadataRepositoryLoader();
 		
-		File repositoryDir = MetaMetadataRepositoryInit.findRepositoryLocation();
+		File repositoryDir = MetaMetadataRepositoryLocator.locateRepositoryByDefaultLocations();
 		
 		MetaMetadataRepository repository = loader.loadFromDir(repositoryDir, Format.XML);
 		repository.traverseAndInheritMetaMetadata();
