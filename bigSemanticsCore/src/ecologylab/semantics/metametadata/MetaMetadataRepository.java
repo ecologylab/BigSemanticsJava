@@ -204,11 +204,6 @@ implements PackageSpecifier, DocumentParserTagNames
 	
 	//static Logger							log4j					= Logger.getLogger(BaseLogger.baseLogger);
 
-	/**
-	 * for debug.
-	 */
-	File file;
-
 	private static boolean initializedTypes;
 
 	static
@@ -1078,8 +1073,8 @@ implements PackageSpecifier, DocumentParserTagNames
 	public String toString()
 	{
 		String result = "MetaMetadataRepository";
-		if (file != null)
-			result += "[" + file + "]";
+		if (name != null)
+			result += "[" + name + "]";
 		return result;
 	}
 
