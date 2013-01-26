@@ -4,6 +4,7 @@
 package ecologylab.semantics.tools.old;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,7 +34,7 @@ public class MetaMetadataCompiler extends SingletonApplicationEnvironment
 		super("MetadataCompiler", MetaMetadataTranslationScope.get(), args, 1.0F);
 	}
 
-	public void compile()
+	public void compile() throws FileNotFoundException, SIMPLTranslationException
 	{
 
 		compile(DEFAULT_REPOSITORY_DIRECTORY, MetaMetadataCompilerUtils.DEFAULT_GENERATED_SEMANTICS_LOCATION);
@@ -60,12 +61,12 @@ public class MetaMetadataCompiler extends SingletonApplicationEnvironment
 		}
 	}
 	
-	public void compile(String mmdRepositoryDir)
+	public void compile(String mmdRepositoryDir) throws FileNotFoundException, SIMPLTranslationException
 	{
 		compile(mmdRepositoryDir, MetaMetadataCompilerUtils.DEFAULT_GENERATED_SEMANTICS_LOCATION);
 	}
 	
-	public void compile(String mmdRepositoryDir, String generatedSemanticsLocation)
+	public void compile(String mmdRepositoryDir, String generatedSemanticsLocation) throws FileNotFoundException, SIMPLTranslationException
 	{
 		MetaMetadataRepositoryLoader loader = new MetaMetadataRepositoryLoader();
 		MetaMetadataRepository metaMetadataRepository = loader.loadFromDir(new File(mmdRepositoryDir), Format.XML);
@@ -133,5 +134,10 @@ public class MetaMetadataCompiler extends SingletonApplicationEnvironment
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+    catch (FileNotFoundException e)
+    {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
 	}
 }

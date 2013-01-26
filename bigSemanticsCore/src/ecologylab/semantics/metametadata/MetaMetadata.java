@@ -123,8 +123,6 @@ implements IMappable<String>//, HasLocalTranslationScope
 	private boolean																	noCache;
 	
 	private Map<MetaMetadataSelector, MetaMetadata>	reselectMap;
-
-	private File																		file;
 	
 	SimplTypesScope																localMetadataTranslationScope;
 
@@ -437,17 +435,6 @@ implements IMappable<String>//, HasLocalTranslationScope
 		}
 	}
 
-	public void setFile(File file)
-	{
-		this.file = file;
-	}
-
-	@Override
-	public File getFile()
-	{
-		return file;
-	}
-	
 	public void inheritMetaMetadata()
 	{
 		this.inheritMetaMetadata(null);
