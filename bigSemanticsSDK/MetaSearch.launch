@@ -8,6 +8,6 @@
 </listAttribute>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="ecologylab.semantics.metametadata.metasearch.MetaSearch"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="meta_search.html&#13;&#10;http://www.tumblr.com/tagged/bin+laden&#13;&#10;http://www.google.com/search?hl=en&amp;q=bin+laden&#13;&#10;http://slashdot.com/index2.pl?fhfilter=bin+laden&#13;&#10;http://www.delicious.com/search?p=bin+laden&#13;&#10;//&#13;&#10;http://www.bing.com/search?q=bin+laden&#13;&#10;http://buzz.yahoo.com/search?p=bin+laden"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="ecologylabSemanticsExample"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="bigSemanticsSDK"/>
 <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Xms512m"/>
 </launchConfiguration>

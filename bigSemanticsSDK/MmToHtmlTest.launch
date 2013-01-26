@@ -8,6 +8,6 @@
 </listAttribute>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="ecologylab.semantics.metametadata.test.MmToHtmlTest"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="http://portal.acm.org/citation.cfm?id=1416955"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="ecologylabSemanticsExample"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="bigSemanticsSDK"/>
 <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Xms320m -Xmx320m"/>
 </launchConfiguration>
