@@ -5,15 +5,17 @@ package ecologylab.semantics.metadata.builtins.declarations;
  *
  * DO NOT modify this code manually: All your changes may get lost!
  *
- * Copyright (2012) Interface Ecology Lab.
+ * Copyright (2013) Interface Ecology Lab.
  */
 
 import ecologylab.semantics.metadata.builtins.ClippableDocument;
 import ecologylab.semantics.metadata.builtins.Document;
 import ecologylab.semantics.metadata.builtins.MediaClipping;
+import ecologylab.semantics.metadata.builtins.MetadataBuiltinsTypesScope;
 import ecologylab.semantics.metadata.mm_name;
 import ecologylab.semantics.metadata.scalar.MetadataInteger;
 import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
+import ecologylab.semantics.namesandnums.SemanticsNames;
 import ecologylab.serialization.annotations.simpl_collection;
 import ecologylab.serialization.annotations.simpl_inherit;
 import ecologylab.serialization.annotations.simpl_other_tags;
@@ -22,6 +24,7 @@ import ecologylab.serialization.annotations.simpl_scope;
 import java.lang.Integer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @simpl_inherit
 public class ClippableDocumentDeclaration<ME extends ClippableDocument<ME>> extends Document
