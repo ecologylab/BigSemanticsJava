@@ -4,8 +4,8 @@
 	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="lib" path="/cyberneko/lib/xercesMinimal.jar"/>
 	<classpathentry kind="lib" path="lib/guava-14.0-rc1.jar"/>
-	<classpathentry kind="lib" path="lib/bigSemanticsWrappers.jar"/>
-	<classpathentry kind="lib" path="lib/simplTranslators.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/bigSemanticsWrappers.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/simplTranslators.jar"/>
 	<classpathentry kind="lib" path="lib/antlr-3.3-complete.jar"/>
 	<classpathentry kind="lib" path="lib/ST-4.0.5.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/bigSemanticsCore"/>
