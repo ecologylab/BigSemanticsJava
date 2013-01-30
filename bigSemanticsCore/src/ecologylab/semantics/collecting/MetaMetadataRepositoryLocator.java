@@ -67,6 +67,8 @@ public class MetaMetadataRepositoryLocator extends Debug
    * resources.
    * 
    * @param repositoryLocation
+   *          the location of the repository. this can be null, in which case the locator will try
+   *          to locate the repository automatically.
    * @param repositoryFormat
    * @return
    */
