@@ -40,6 +40,8 @@ public class DownloadRequest extends RequestMessage
 	@Override
 	public DownloadResponse performService(Scope clientSessionScope)
 	{
+		debug("document download url: " + this.location);
+		
 		NetworkDocumentDownloader documentDownloader = new NetworkDocumentDownloader(location,
 				userAgentString);
 		// boolean bChanged = false;
@@ -61,6 +63,7 @@ public class DownloadRequest extends RequestMessage
 			e.printStackTrace();
 		}
 
+		debug("document from url: " + this.location + " downloaded to: " + location);
 		return new DownloadResponse(redirectedLocation, location, mimeType);
 	}
 }
