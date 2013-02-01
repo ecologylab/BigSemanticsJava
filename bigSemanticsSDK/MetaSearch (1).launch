@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
-<listEntry value="/ecologylabSemanticsExample/ecologylab/semantics/metametadata/metasearch/MetaSearch.java"/>
+<listEntry value="/bigSemanticsSDK/src/ecologylab/semantics/example/metasearch/MetaSearch.java"/>
 </listAttribute>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
 <listEntry value="1"/>
 </listAttribute>
-<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="ecologylab.semantics.metametadata.metasearch.MetaSearch"/>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="ecologylab.semantics.example.metasearch.MetaSearch"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="meta_search_cross_sources.html&#13;&#10;http://www.google.com/search?tbm=pts&amp;q=novel+interface&#13;&#10;http://www.google.com/search?tbm=bks&amp;q=exploratory+search&#13;&#10;http://dl.acm.org/results.cfm?query=collection+user+interface&#13;&#10;http://dl.acm.org/results.cfm?query=exploratory+search&#13;&#10;http://en.wikipedia.org/w/index.php?title=Special%3ASearch&amp;fulltext=1&amp;search=modern+art+collection&#13;&#10;http://en.wikipedia.org/w/index.php?title=Special%3ASearch&amp;fulltext=1&amp;search=modern+art&#13;&#10;http://en.wikipedia.org/w/index.php?title=Special%3ASearch&amp;fulltext=1&amp;search=exploratory+search&#13;&#10;http://moma.org/collection/browse_results.php?criteria=O%3ADE%3AI%3A1|G%3AHI%3AE%3A1|A%3AHO%3AE%3A1&amp;page_number=1&amp;template_id=6&amp;sort_order=2"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="bigSemanticsSDK"/>
 <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Xms512m"/>

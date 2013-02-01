@@ -7,6 +7,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import ecologylab.semantics.metadata.scalar.types.MetadataParsedURLScalarType;
+import ecologylab.semantics.metametadata.MetaMetadataCollectionField;
+import ecologylab.semantics.metametadata.MetaMetadataRepository;
+import ecologylab.semantics.metametadata.MetaMetadataTranslationScope;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.SimplTypesScope.GRAPH_SWITCH;
