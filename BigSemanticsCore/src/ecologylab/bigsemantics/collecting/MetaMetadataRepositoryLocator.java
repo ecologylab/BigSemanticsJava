@@ -122,18 +122,11 @@ public class MetaMetadataRepositoryLocator extends Debug
 
   public static File locateRepositoryByDefaultLocations()
   {
-    if (PropertiesAndDirectories.os() == PropertiesAndDirectories.ANDROID)
+    for (String defaultLocation : DEFAULT_REPOSITORY_LOCATIONS)
     {
-      return locateRepositoryForAndroid();
-    }
-    else
-    {
-      for (String defaultLocation : DEFAULT_REPOSITORY_LOCATIONS)
-      {
-        File possibleRepositoryDir = new File(defaultLocation);
-        if (possibleRepositoryDir.exists() && possibleRepositoryDir.isDirectory())
-          return possibleRepositoryDir;
-      }
+      File possibleRepositoryDir = new File(defaultLocation);
+      if (possibleRepositoryDir.exists() && possibleRepositoryDir.isDirectory())
+        return possibleRepositoryDir;
     }
     return null;
   }
