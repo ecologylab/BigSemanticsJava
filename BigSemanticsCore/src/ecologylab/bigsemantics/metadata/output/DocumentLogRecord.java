@@ -13,13 +13,13 @@ public class DocumentLogRecord extends DownloadableLogRecord
 	ParsedURL documentUrl;
 	
 	@simpl_scalar
-	float secondsInHtmlDownload;
+	long mSecInHtmlDownload;
 	
 	@simpl_scalar
-	float secondsInExtraction;
+	long mSecInExtraction;
 	
 	@simpl_scalar
-	float secondsInSerialization;
+	long mSecInSerialization;
 	
 	@simpl_scalar
 	boolean DocumentCollectionCacheHit;
@@ -59,34 +59,28 @@ public class DocumentLogRecord extends DownloadableLogRecord
 	{
 		SemanticsDiskCacheHit = semanticsDiskCacheHit;
 	}
-	
-	public float getSecondsInHtmlDownload()
-	{
-		return secondsInHtmlDownload;
+
+	public long getmSecInHtmlDownload() {
+		return mSecInHtmlDownload;
 	}
 
-	public void setSecondsInHtmlDownload(float secondsInHtmlDownload)
-	{
-		this.secondsInHtmlDownload = secondsInHtmlDownload;
+	public void setmSecInHtmlDownload(long mSecInHtmlDownload) {
+		this.mSecInHtmlDownload = mSecInHtmlDownload;
 	}
 
-	public float getSecondsInExtraction()
-	{
-		return secondsInExtraction;
+	public long getmSecInExtraction() {
+		return mSecInExtraction;
 	}
 
-	public void setSecondsInExtraction(float secondsInExtraction)
-	{
-		this.secondsInExtraction = secondsInExtraction;
+	public void setmSecInExtraction(long mSecInExtraction) {
+		this.mSecInExtraction = mSecInExtraction;
 	}
 
-	public float getSecondsInSerialization()
-	{
-		return secondsInSerialization;
+	public long getmSecInSerialization() {
+		return mSecInSerialization;
 	}
 
-	public void setSecondsInSerialization(float secondsInSerialization)
-	{
-		this.secondsInSerialization = secondsInSerialization;
-	}
+	public void setmSecInSerialization(long mSecInSerialization) {
+		this.mSecInSerialization = mSecInSerialization;
+	}	
 }

@@ -200,7 +200,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 		//the parameter is used to get and set document properties with request and response respectively
 		downloadController.connect(this);
 		if (logRecord != null)
-  		logRecord.setSecondsInHtmlDownload((System.currentTimeMillis() - millis)/1000);
+  		logRecord.setmSecInHtmlDownload(System.currentTimeMillis() - millis);
 		//baseLog.debug("document downloaded in " + (System.currentTimeMillis() - millis) + "(ms)");
 		
 		MetaMetadata metaMetadata = (MetaMetadata) document.getMetaMetadata();
@@ -251,7 +251,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 			millis = System.currentTimeMillis();
 			documentParser.parse();
 			if (logRecord != null)
-  			logRecord.setSecondsInExtraction((System.currentTimeMillis() - millis)/1000);
+  			logRecord.setmSecInExtraction(System.currentTimeMillis() - millis);
 			//baseLog.debug("document parsed in " + (System.currentTimeMillis() - millis) + "(ms)");
 			
 			ArrayList<SemanticAction> afterSemanticActions	= metaMetadata.getAfterSemanticActions();

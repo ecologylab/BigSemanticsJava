@@ -15,7 +15,7 @@ import ecologylab.serialization.annotations.simpl_scalar;
  * Request message for dowanloading the document over network
  * 
  * @author ajit
- *
+ * 
  */
 
 public class DownloadRequest extends RequestMessage
@@ -41,7 +41,8 @@ public class DownloadRequest extends RequestMessage
 	public DownloadResponse performService(Scope clientSessionScope)
 	{
 		debug("document download url: " + this.location);
-		
+		long millis = System.currentTimeMillis();
+
 		NetworkDocumentDownloader documentDownloader = new NetworkDocumentDownloader(location,
 				userAgentString);
 		// boolean bChanged = false;
@@ -63,7 +64,8 @@ public class DownloadRequest extends RequestMessage
 			e.printStackTrace();
 		}
 
-		debug("document from url: " + this.location + " downloaded to: " + location);
+		debug("document from url: " + this.location + " downloaded to: " + location + " in total "
+				+ (System.currentTimeMillis() - millis) + "ms");
 		return new DownloadResponse(redirectedLocation, location, mimeType);
 	}
 }
