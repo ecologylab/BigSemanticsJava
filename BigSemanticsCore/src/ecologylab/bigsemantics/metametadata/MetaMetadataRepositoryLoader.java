@@ -1,6 +1,7 @@
 package ecologylab.bigsemantics.metametadata;
 
 import java.io.File;
+import java.io.FileDescriptor;
 import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -117,7 +118,6 @@ public class MetaMetadataRepositoryLoader extends Debug implements DocumentParse
    * @throws SIMPLTranslationException
    */
   public MetaMetadataRepository loadFromInputStreams(List<InputStream> istreams, Format format)
-      throws SIMPLTranslationException
   {
     List<MetaMetadataRepository> repositories = deserializeRepositories(istreams, format);
     MetaMetadataRepository result = mergeRepositories(repositories);
@@ -127,12 +127,20 @@ public class MetaMetadataRepositoryLoader extends Debug implements DocumentParse
 
   List<MetaMetadataRepository> deserializeRepositories(List<InputStream> streams,
                                                        Format format)
-      throws SIMPLTranslationException
   {
     List<MetaMetadataRepository> result = new ArrayList<MetaMetadataRepository>(streams.size());
     for (InputStream istream : streams)
     {
-      MetaMetadataRepository repo = (MetaMetadataRepository) mmdTScope.deserialize(istream, format);
+      MetaMetadataRepository repo = null;
+      try
+      {
+        repo = (MetaMetadataRepository) mmdTScope.deserialize(istream, format);
+      }
+      catch (SIMPLTranslationException e)
+      {
+        error("Cannot deserialize repository from InputStream: " + istream);
+        e.printStackTrace();
+      }
       if (repo != null)
       {
         result.add(repo);

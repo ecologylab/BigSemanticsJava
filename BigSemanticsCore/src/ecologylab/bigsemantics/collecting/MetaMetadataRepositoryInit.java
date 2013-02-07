@@ -94,17 +94,8 @@ public class MetaMetadataRepositoryInit extends Scope<Object> implements Documen
 	  
 		List<InputStream> repositoryIStreams =
 		    repositoryLocator.locateRepositoryAndOpenStreams(repositoryLocation, repositoryFormat);
-		try
-    {
-      metaMetadataRepository = repositoryLoader.loadFromInputStreams(repositoryIStreams,
-                                                                     repositoryFormat);
-    }
-    catch (SIMPLTranslationException e)
-    {
-      Debug.error(this, "Cannot load meta-metadata repository.");
-      e.printStackTrace();
-    }
-		
+    metaMetadataRepository = repositoryLoader.loadFromInputStreams(repositoryIStreams,
+                                                                   repositoryFormat);
 		if (metaMetadataRepository != null)
 		{
 			DOCUMENT_META_METADATA = metaMetadataRepository.getMMByName(DOCUMENT_TAG);

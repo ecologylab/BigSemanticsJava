@@ -43,7 +43,7 @@ public class MetaMetadataRepositoryLocator extends Debug
     SEMANTICS = "semantics/";
     DEFAULT_REPOSITORY_LOCATIONS = new String[]
     {
-      "../../bigSemanticsWrapperRepository/bigSemanticsWrappers/MmdRepository/mmdrepository",
+      "../../BigSemanticsWrapperRepository/BigSemanticsWrappers/MmdRepository/mmdrepository",
       "../../MetaMetadataRepository/MmdRepository/mmdrepository",
       "../ecologylabSemantics/repository",
     };

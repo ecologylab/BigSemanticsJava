@@ -1,11 +1,7 @@
 package ecologylab.bigsemantics.metametadata;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -14,133 +10,81 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
+import ecologylab.bigsemantics.collecting.SemanticsSessionScope;
 import ecologylab.bigsemantics.generated.library.RepositoryMetadataTranslationScope;
 import ecologylab.bigsemantics.metadata.builtins.Document;
-import ecologylab.bigsemantics.tools.MmTest;
-import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.SimplTypesScope;
-import ecologylab.serialization.formatenums.Format;
-
-
 
 @RunWith(Parameterized.class)
-public class TestURLToSelectorMappings {
+public class TestURLToSelectorMappings
+{
 
-	//setup constructs
-	class TestMmd extends MmTest
-	{
+  private String testUrl = "";
 
-		public MetaMetadataRepository getMetaMetadataRepository()
-		{
-			return this.semanticsSessionScope.getMetaMetadataRepository();
-		}
+  private String expectedMmdName;
 
-		public TestMmd(String appName) throws SIMPLTranslationException {
-			super(appName);
-		}
-		
-	}
-	MetaMetadataRepository getRepository()
-	{
-		return null;
-	}
+  private String foundMmdName;
 
-	private String testUrl = "";
-	private String expectedMmd;
-	private String foundMmd;
-	static int i = 0;
-	public TestURLToSelectorMappings(Object[] tripple)
-	{
-		this.testUrl = (String)tripple[0];
-		this.expectedMmd = (String)tripple[1];
-		this.foundMmd =  (String)tripple[2];
-	}
-	
-	
-	//Found structrue from http://stackoverflow.com/questions/358802/junit-test-with-dynamic-number-of-tests
-    @Parameters
-    public static Collection<Object[]> getFiles() {
-    	//Setup that constucts a parameterized test for each example URL
-    	Collection<Object[]> params = new ArrayList<Object[]>();
-    	TestURLToSelectorMappings accessClass = new TestURLToSelectorMappings(new Object[]{"","",""});
-    		TestMmd testMmd = null;
-    		try {
-    			testMmd = accessClass.new TestMmd("TestMmdExampleCoverage");
-    		} catch (SIMPLTranslationException e1) {
-    			fail("Can't load MetaMetadata repository!");
-    		}
-    		MetaMetadataRepository repository = testMmd.getMetaMetadataRepository();
-    		
-    		/***
-    		 * 
-    		 * 
-    		 * Remove me do not push
-    		 */
-    		
-    		File repoScopeFile = new File("/tmp/mmd_repo_scope.json");
-    		FileOutputStream repoScopeOutstream = null;
-			try {
-				repoScopeOutstream = new FileOutputStream(repoScopeFile);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-    		try {
-				SimplTypesScope.serialize(RepositoryMetadataTranslationScope.get(),repoScopeOutstream, Format.JSON);
-			} catch (SIMPLTranslationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-    		
-    		File repoInstanceFile = new File("/tmp/mmd_repo_instance.json");
-    		FileOutputStream repoInstanceStream = null;
-			try {
-				repoInstanceStream = new FileOutputStream(repoInstanceFile);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-    		try {
-				SimplTypesScope.serialize(repository,repoInstanceStream, Format.JSON);
-			} catch (SIMPLTranslationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-    		
-    		
-    		ArrayList<String> mmdsByName = repository.getMMNameList();
-    		for(String mmdName : mmdsByName)
-    		{
-    			///System.out.println("MMD:"+mmdName);
-    			MetaMetadata mmd = repository.getMMByName(mmdName);
-    			ArrayList<ExampleUrl> examples = mmd.getExampleUrls();
-    			if(examples != null)
-    			{
-    				////System.out.println("No example urls!!!");
-    				for(ExampleUrl example : examples)
-    				{
-    					if(example.getUrl() == null)
-    					{
-    						continue;
-    					}
-    					Document d = repository.constructDocument(example.getUrl());
-    					System.out.println(mmdName);
-    					System.out.println(d.getMetaMetadataName());
-    					System.out.println(example.getUrl().toString());    					
-    					Object[] arr = new Object[] {new Object[]{example.getUrl().toString() ,mmdName,d.getMetaMetadataName()}};
-    		    		params.add(arr);
-    				}
-    			}	
-    		}
-  
-    	return params;
+  public TestURLToSelectorMappings(Object[] tripple)
+  {
+    this.testUrl = (String) tripple[0];
+    this.expectedMmdName = (String) tripple[1];
+    this.foundMmdName = (String) tripple[2];
+  }
+
+  // Found structrue from
+  // http://stackoverflow.com/questions/358802/junit-test-with-dynamic-number-of-tests
+  @Parameters
+  public static Collection<Object[]> getFiles()
+  {
+    // Setup that constucts a parameterized test for each example URL
+    Collection<Object[]> params = new ArrayList<Object[]>();
+
+    SimplTypesScope metadataTScope = RepositoryMetadataTranslationScope.get();
+    SemanticsSessionScope sss = new SemanticsSessionScope(metadataTScope, null);
+    MetaMetadataRepository repository = sss.getMetaMetadataRepository();
+
+    Collection<MetaMetadata> mmds = repository.getMetaMetadataCollection();
+
+    for (MetaMetadata mmd : mmds)
+    {
+      ArrayList<ExampleUrl> examples = mmd.getExampleUrls();
+      if (examples != null)
+      {
+        for (ExampleUrl example : examples)
+        {
+          if (example.getUrl() == null)
+          {
+            continue;
+          }
+          Document doc = repository.constructDocument(example.getUrl());
+          // System.out.println(mmd.getName());
+          // System.out.println(doc.getMetaMetadataName());
+          // System.out.println(example.getUrl().toString());
+          Object[] arr = new Object[]
+          {
+              new Object[]
+              {
+                  example.getUrl().toString(),
+                  mmd.getName(),
+                  doc.getMetaMetadataName()
+              }
+          };
+          params.add(arr);
+        }
+      }
     }
-	
-	@Test
-	public void test() {
-		String message = "MMD named "+expectedMmd+
-				" expects url "+testUrl+") to reslove to itself.\n"+
-				"Please check the selectors.";
-		assertEquals(message, expectedMmd, foundMmd);
-	}
+
+    return params;
+  }
+
+  @Test
+  public void test()
+  {
+    String message = String.format("MMD named %s expects URL [%s] to reslove to itself.\n",
+                                   expectedMmdName,
+                                   testUrl);
+    message += " Please check the selector(s).";
+    assertEquals(message, expectedMmdName, foundMmdName);
+  }
 }
