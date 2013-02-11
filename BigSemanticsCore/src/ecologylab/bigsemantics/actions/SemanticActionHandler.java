@@ -307,10 +307,11 @@ public class SemanticActionHandler
 					}
 
 					// now take all the actions nested inside for loop
-					for (SemanticAction nestedSemanticAction : nestedSemanticActions)
-					{
-						handleSemanticAction(nestedSemanticAction, parser, infoCollector);
-					}
+					if (nestedSemanticActions != null)
+  					for (SemanticAction nestedSemanticAction : nestedSemanticActions)
+  					{
+  						handleSemanticAction(nestedSemanticAction, parser, infoCollector);
+  					}
 
 					if (requestWaiting)
 						break;

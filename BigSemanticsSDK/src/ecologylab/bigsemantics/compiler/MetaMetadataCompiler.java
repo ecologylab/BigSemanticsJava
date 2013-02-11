@@ -74,12 +74,12 @@ public class MetaMetadataCompiler extends Debug // ApplicationEnvironment
 //			compiler.translate(cd, config.getGeneratedBuiltinDeclarationsLocation(), config,
 //					newPackageName, newSimpleName, GenerateAbstractClass.TRUE);
 		CompilerConfig newConfig = (CompilerConfig) config.clone();
-		newConfig.setLibraryTScopeClassPackage("ecologylab.semantics.metadata.builtins.declarations");
+		newConfig.setLibraryTScopeClassPackage("ecologylab.bigsemantics.metadata.builtins.declarations");
 		newConfig.setLibraryTScopeClassSimpleName("MetadataBuiltinDeclarationsTranslationScope");
 //		newConfig.setGenerateAbstractClass(true);
 		newConfig.setBuiltinDeclarationScopeName(SemanticsNames.REPOSITORY_BUILTIN_DECLARATIONS_TYPE_SCOPE);
 		newConfig.getClassesExcludedFromGeneratedTScopeClass()
-		    .add("ecologylab.semantics.metadata.builtins.InformationComposition");
+		    .add("ecologylab.bigsemantics.metadata.builtins.InformationComposition");
 		ClassDescriptor infoCompCD = builtinDeclarationsScope.getClassDescriptorBySimpleName("InformationCompositionDeclaration");
     compiler.excludeClassFromTranslation(infoCompCD);
 		compiler.translate(config.getGeneratedBuiltinDeclarationsLocation(), builtinDeclarationsScope, newConfig);

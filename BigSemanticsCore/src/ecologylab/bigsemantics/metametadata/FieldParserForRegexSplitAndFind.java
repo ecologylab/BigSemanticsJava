@@ -31,7 +31,7 @@ public class FieldParserForRegexSplitAndFind extends FieldParserForRegexSplit
 		{
 			for (Map<String, String> splitResult : splitResults)
 			{
-				if (splitResult.size() > 0)
+				if (splitResult != null && splitResult.size() > 0)
 				{
 					String split = splitResult.values().iterator().next();
 					splitResult.clear();

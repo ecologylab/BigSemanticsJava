@@ -59,13 +59,14 @@ public abstract class NestedSemanticAction
 	@Override
 	void setNestedActionState(String name, Object value)
 	{
-		for (SemanticAction action : nestedSemanticActionList)
-		{
-			SemanticActionHandler handler = getSemanticActionHandler();
-			action.setSemanticActionHandler(handler);
-			handler.setActionState(action, name, value);
-			action.setNestedActionState(name, value);
-		}
+	  if (nestedSemanticActionList != null)
+  		for (SemanticAction action : nestedSemanticActionList)
+  		{
+  			SemanticActionHandler handler = getSemanticActionHandler();
+  			action.setSemanticActionHandler(handler);
+  			handler.setActionState(action, name, value);
+  			action.setNestedActionState(name, value);
+  		}
 	}
 	
 }

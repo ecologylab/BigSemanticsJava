@@ -6,8 +6,8 @@
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
 <listEntry value="1"/>
 </listAttribute>
-<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="ecologylab.semantics.compiler.MetaMetadataCompiler"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="java ../../bigSemanticsWrapperRepository/bigSemanticsGeneratedClassesJava/src ../bigSemanticsCore/src"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="bigSemanticsSDK"/>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="ecologylab.bigsemantics.compiler.MetaMetadataCompiler"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="java ../../BigSemanticsWrapperRepository/BigSemanticsGeneratedClassesJava/src ../BigSemanticsCore/src"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="BigSemanticsSDK"/>
 <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-ea"/>
 </launchConfiguration>
