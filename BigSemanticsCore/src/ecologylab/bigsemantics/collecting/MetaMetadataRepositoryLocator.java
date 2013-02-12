@@ -206,37 +206,47 @@ public class MetaMetadataRepositoryLocator extends Debug
     }
     return n;
   }
-
-  int openStreams(List<InputStream> result, File repositoryDir, Format repositoryFormat)
+  
+  public static List<File> listRepositoryFiles(File repositoryDir, Format repositoryFormat)
   {
     FileFilter fileFilter = MetaMetadataRepositoryFileFormats.getFileFilter(repositoryFormat);
+    assert fileFilter != null;
+    
+    List<File> allFiles = new ArrayList<File>();
+    
+    File repositorySources = new File(repositoryDir, "repositorySources");
+    File powerUserDir = new File(repositoryDir, "powerUser");
 
-    int n = 0;
-    n += openStreamsHelper(result, repositoryDir, fileFilter);
-    n += openStreamsHelper(result, new File(repositoryDir, "repositorySources"), fileFilter);
-    n += openStreamsHelper(result, new File(repositoryDir, "powerUser"), fileFilter);
-    return n;
+    addFilesInDirToList(repositoryDir, fileFilter, allFiles);
+    addFilesInDirToList(repositorySources, fileFilter, allFiles);
+    addFilesInDirToList(powerUserDir, fileFilter, allFiles);
+    
+    return allFiles;
   }
 
-  int openStreamsHelper(List<InputStream> result, File dir, FileFilter fileFilter)
+  private static void addFilesInDirToList(File dir, FileFilter filter, List<File> buf)
   {
-    int n = 0;
-    if (dir != null && dir.exists())
+    if (dir == null || !dir.exists())
+      return;
+    for (File f : dir.listFiles(filter))
+      buf.add(f);
+  }
+
+  public static int openStreams(List<InputStream> result, File repositoryDir, Format repositoryFormat)
+  {
+    List<File> repoFiles = listRepositoryFiles(repositoryDir, repositoryFormat);
+    for (File file : repoFiles)
     {
-      for (File f : dir.listFiles(fileFilter))
+      try
       {
-        try
-        {
-          result.add(new FileInputStream(f));
-          n++;
-        }
-        catch (FileNotFoundException e)
-        {
-          error("Cannot open input stream for " + f);
-        }
+        result.add(new FileInputStream(file));
+      }
+      catch (FileNotFoundException e)
+      {
+        Debug.error(MetaMetadataRepositoryLocator.class, "Cannot open input stream for " + file);
       }
     }
-    return n;
+    return repoFiles.size();
   }
 
 }

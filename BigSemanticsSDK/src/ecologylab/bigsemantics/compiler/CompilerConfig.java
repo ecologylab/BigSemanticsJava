@@ -142,6 +142,16 @@ public class CompilerConfig extends CodeTranslatorConfig
 	{
 		return this.targetLanguage;
 	}
+	
+	public File getRepositoryLocation()
+	{
+	  return repositoryLocation;
+	}
+	
+	public Format getRepositoryFormat()
+	{
+	  return repositoryFormat;
+	}
 
 	/**
 	 * @return The repository loader.

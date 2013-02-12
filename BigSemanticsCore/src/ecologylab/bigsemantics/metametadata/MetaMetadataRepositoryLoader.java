@@ -1,8 +1,6 @@
 package ecologylab.bigsemantics.metametadata;
 
 import java.io.File;
-import java.io.FileDescriptor;
-import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -11,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import ecologylab.bigsemantics.collecting.CookieProcessing;
+import ecologylab.bigsemantics.collecting.MetaMetadataRepositoryLocator;
 import ecologylab.bigsemantics.metadata.Metadata;
 import ecologylab.bigsemantics.metametadata.exceptions.MetaMetadataException;
 import ecologylab.bigsemantics.namesandnums.DocumentParserTagNames;
@@ -57,17 +56,8 @@ public class MetaMetadataRepositoryLoader extends Debug implements DocumentParse
     }
     
     println("MetaMetadataRepository directory : " + dir + "\n");
-
-    FileFilter fileFilter = MetaMetadataRepositoryFileFormats.getFileFilter(format);
-
-    File repositorySources = new File(dir, "repositorySources");
-    File powerUserDir = new File(dir, "powerUser");
-
-    List<File> allFiles = new ArrayList<File>();
-    addFilesInDirToList(dir, fileFilter, allFiles);
-    addFilesInDirToList(repositorySources, fileFilter, allFiles);
-    addFilesInDirToList(powerUserDir, fileFilter, allFiles);
-
+    
+    List<File> allFiles = MetaMetadataRepositoryLocator.listRepositoryFiles(dir, format);
     return loadFromFiles(allFiles, format);
   }
 
@@ -243,14 +233,6 @@ public class MetaMetadataRepositoryLoader extends Debug implements DocumentParse
 
     MetaMetadataRepository.baseDocumentMM = result.getMMByName(DOCUMENT_TAG);
     MetaMetadataRepository.baseImageMM = result.getMMByName(IMAGE_TAG);
-  }
-
-  private static void addFilesInDirToList(File dir, FileFilter filter, List<File> buf)
-  {
-    if (dir == null || !dir.exists())
-      return;
-    for (File f : dir.listFiles(filter))
-      buf.add(f);
   }
 
 }
