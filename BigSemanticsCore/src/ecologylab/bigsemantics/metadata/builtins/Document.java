@@ -64,6 +64,7 @@ public class Document extends DocumentDeclaration
 
 	SemanticInLinks									semanticInlinks;
 
+	@Deprecated
 	private boolean									downloadDone;
 
 	SemanticsSite										site;
@@ -595,6 +596,7 @@ public class Document extends DocumentDeclaration
 	/**
 	 * @return the downloadDone
 	 */
+	@Deprecated
 	public boolean isDownloadDone()
 	{
 		return downloadDone;
@@ -603,6 +605,7 @@ public class Document extends DocumentDeclaration
 	/**
 	 * @param downloadDone the downloadDone to set
 	 */
+	@Deprecated
 	void setDownloadDone(boolean downloadDone)
 	{
 		this.downloadDone = downloadDone;

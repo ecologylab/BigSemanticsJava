@@ -190,6 +190,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 				if (logRecord != null)
 				  logRecord.setSemanticsDiskCacheHit(true);
 				changeDocument(document);
+    		document.setDownloadDone(true);
 				return;
 			}
 		}
