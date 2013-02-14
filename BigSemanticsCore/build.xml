@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="BigSemanticsCore" basedir="." default="main">
+	<property name="src.dir" value="src" />
+	<property name="resources.dir" value="resources" />
+	<property name="test.dir" value="test" />
+	
+	<property name="lib.dir" value="lib" />
+		
+	<property name="build.dir" value="build" />
+	<property name="classes.dir" value="${build.dir}/classes" />
+	<property name="test-classes.dir" value="${build.dir}/test-classes" />
+	<property name="junit-report.dir" value="${build.dir}/junit-report" />
+	<property name="jar.dir" value="${build.dir}/jar" />
+	<property name="jar.file" value="${jar.dir}/${ant.project.name}.jar" />
+	
+  <target name="clean">
+    <delete dir="${build.dir}" />
+  </target>
+ 
+	<path id="classpath">
+	  <fileset dir="${lib.dir}" includes="**/*.jar" />
+  </path>
+	
+	<target name="compile">
+		<mkdir dir="${classes.dir}" />
+		<javac srcdir="${src.dir}" destdir="${classes.dir}" source="1.6" target="1.6" classpathref="classpath" />
+		<copy todir="${classes.dir}">
+		  <fileset dir="${resources.dir}" />
+		</copy>
+	</target>
+		
+	<target name="junit" depends="compile">
+		<path id="test-classpath">
+			<path refid="classpath" />
+		  <pathelement location="${classes.dir}" />
+		  <pathelement location="${resources.dir}" />
+		</path>
+			
+		<mkdir dir="${test-classes.dir}" />
+		<javac srcdir="${test.dir}" destdir="${test-classes.dir}" source="1.6" target="1.6" classpathref="test-classpath" />
+		
+		<path id="junit-classpath">
+		  <path refid="test-classpath" />
+    	<pathelement location="${test-classes.dir}" />
+	  	<pathelement location="../BigSemanticsSunSpecifics/lib/simplSunSpecifics.jar" />
+		</path>
+			
+		<mkdir dir="${junit-report.dir}" />
+		<junit printsummary="yes" showoutput="yes" haltonfailure="yes">
+		  <classpath>
+			  <path refid="junit-classpath" />
+		  </classpath>
+			
+			<formatter type="plain" />
+			
+			<batchtest todir="${junit-report.dir}">
+			  <fileset dir="${test-classes.dir}" includes="**/*.class" excludes="**/testcases/*.class" />
+			</batchtest>
+		</junit>
+  </target>
+	
+	<target name="jar" depends="compile,junit">
+	  <mkdir dir="${jar.dir}" />
+		<jar destfile="${jar.file}" basedir="${classes.dir}">
+			<zipgroupfileset dir="${lib.dir}" includes="*.jar" />
+		</jar>
+	</target>
+	
+	<target name="main" depends="clean,jar" />
+	
+</project>
