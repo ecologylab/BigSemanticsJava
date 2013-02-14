@@ -13,6 +13,7 @@ Servers/
 META-INF/
 .settings/
 bin/
+build/
 target/
 
 # Package Files #

@@ -10,6 +10,7 @@ import java.io.OutputStream;
 import java.util.Properties;
 
 import ecologylab.generic.Debug;
+import ecologylab.logging.ILogger;
 import ecologylab.net.ParsedURL;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.SimplTypesScope;
@@ -23,6 +24,8 @@ import ecologylab.serialization.formatenums.Format;
  */
 public class FileSystemStorage extends Debug implements FileStorageProvider
 {
+  
+  static ILogger logger;
 
 	private static FileSystemStorage	fsStorageProvider				= null;
 
@@ -51,6 +54,18 @@ public class FileSystemStorage extends Debug implements FileStorageProvider
 		f.mkdir();
 		f = new File(semanticsFileDirectory);
 		f.mkdir();
+		
+		if (logger != null)
+		{
+		  logger.debug("Downloaded HTML directory: %s", downloadDirectory);
+		  logger.debug("Meta directory: %s", metaFileDirectory);
+		  logger.debug("Downloaded Semantics directory: %s", semanticsFileDirectory);
+		}
+	}
+	
+	public static void setLogger(ILogger logger)
+	{
+	  FileSystemStorage.logger = logger;
 	}
 
 	private FileSystemStorage()

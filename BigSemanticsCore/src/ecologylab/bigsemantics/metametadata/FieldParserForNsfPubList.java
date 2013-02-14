@@ -1,14 +1,8 @@
 package ecologylab.bigsemantics.metametadata;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import org.junit.Test;
 
 import ecologylab.generic.StringTools;
 import ecologylab.serialization.XMLTools;
@@ -53,50 +47,4 @@ public class FieldParserForNsfPubList extends FieldParserForAcmReferences
 		return results;
 	}
 	
-	@Test
-	public void testRemovingHtmlTag()
-	{
-		BufferedReader br = null;
-		try
-		{
-			br = new BufferedReader(new FileReader("data/testRemovingHtmlTag.html"));
-			StringBuilder sb = new StringBuilder();
-			while (true)
-			{
-				String line = br.readLine();
-				if (line == null)
-					break;
-				sb.append(line).append("\n");
-			}
-			String input = sb.toString();
-			
-			getCollectionResult(null, input);
-		}
-		catch (FileNotFoundException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		catch (IOException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		finally
-		{
-			if (br != null)
-			{
-				try
-				{
-					br.close();
-				}
-				catch (IOException e)
-				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		}
-	}
-
 }

@@ -53,13 +53,18 @@ public class SemanticsPlatformSpecifics
 						e.printStackTrace();
 						throw new RuntimeException("Can't initialize FundamentalPlatformSpecifics" + className);
 					}
-					if (platformSpecificsClass == null)
+					
+					if (platformSpecificsClass != null
+					    && ISemanticsPlatformSpecifics.class.isAssignableFrom(platformSpecificsClass))
+					{
+						iSemanticplatformSpecifics =
+						    (ISemanticsPlatformSpecifics) ReflectionTools.getInstance(platformSpecificsClass);
+					}
+					else
 					{
 						dead = true;
 						throw new RuntimeException("Can't initialize FundamentalPlatformSpecifics");
 					}
-					else
-						iSemanticplatformSpecifics = ReflectionTools.getInstance(platformSpecificsClass);
 				}
 			}
 

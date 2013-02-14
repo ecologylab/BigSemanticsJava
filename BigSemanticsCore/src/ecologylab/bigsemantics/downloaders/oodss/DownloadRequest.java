@@ -61,6 +61,7 @@ public class DownloadRequest extends RequestMessage
 		}
 		catch (IOException e)
 		{
+		  error("Cannot download url: " + this.location + " because of error: " + e.getMessage());
 			e.printStackTrace();
 		}
 
