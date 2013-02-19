@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.FileSystem;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,6 +15,7 @@ import java.util.Map;
 
 import ecologylab.bigsemantics.collecting.MetaMetadataRepositoryLocator;
 import ecologylab.bigsemantics.metadata.MetadataClassDescriptor;
+import ecologylab.bigsemantics.metametadata.FileTools;
 import ecologylab.bigsemantics.metametadata.MetaMetadata;
 import ecologylab.bigsemantics.metametadata.MetaMetadataRepository;
 import ecologylab.bigsemantics.namesandnums.SemanticsNames;
@@ -161,15 +163,15 @@ public class MetaMetadataCompiler extends Debug // ApplicationEnvironment
 
   private List<String> getRepositoryFileItems(File repositoryLocation, Format repositoryFormat)
   {
-    Path repositoryPath = repositoryLocation.toPath();
+    String repositoryPath = repositoryLocation.getAbsolutePath();
 	  
     List<File> files = MetaMetadataRepositoryLocator.listRepositoryFiles(repositoryLocation,
                                                                          repositoryFormat);
     List<String> items = new ArrayList<String>();
     for (File file : files)
     {
-      String item = repositoryPath.relativize(file.toPath()).toString();
-      item = item.replace('\\', '/');
+      String item = FileTools.getRelativePath(repositoryPath, file.getAbsolutePath());
+      item = item.replace('\\', '/'); // when specifying java resources use '/'
       debug("  Repository files list item: " + item);
       items.add(item);
     }
