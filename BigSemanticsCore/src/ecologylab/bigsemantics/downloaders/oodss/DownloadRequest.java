@@ -58,6 +58,9 @@ public class DownloadRequest extends RequestMessage
 			location = documentDownloader.getLocalLocation();
 			// mimeType
 			mimeType = documentDownloader.mimeType();
+			
+			debug("document from url: " + this.location + " downloaded to: " + location + " in total "
+					+ (System.currentTimeMillis() - millis) + "ms");
 		}
 		catch (IOException e)
 		{
@@ -65,8 +68,6 @@ public class DownloadRequest extends RequestMessage
 			e.printStackTrace();
 		}
 
-		debug("document from url: " + this.location + " downloaded to: " + location + " in total "
-				+ (System.currentTimeMillis() - millis) + "ms");
 		return new DownloadResponse(redirectedLocation, location, mimeType);
 	}
 }

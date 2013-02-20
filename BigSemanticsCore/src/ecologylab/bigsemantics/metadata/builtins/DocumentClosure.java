@@ -24,6 +24,7 @@ import ecologylab.bigsemantics.documentparsers.ParserBase;
 import ecologylab.bigsemantics.downloaders.controllers.DefaultDownloadController;
 import ecologylab.bigsemantics.downloaders.controllers.DownloadController;
 import ecologylab.bigsemantics.downloaders.controllers.DownloadControllerType;
+import ecologylab.bigsemantics.downloaders.controllers.HTTPDownloadController;
 import ecologylab.bigsemantics.downloaders.controllers.OODSSDownloadController;
 import ecologylab.bigsemantics.html.documentstructure.SemanticInLinks;
 import ecologylab.bigsemantics.metadata.output.DocumentLogRecord;
@@ -117,10 +118,15 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 		this.semanticInlinks = semanticInlinks;
 		this.continuations = new ArrayList<Continuation<DocumentClosure>>();
 
-		if (downloadControllerType == DownloadControllerType.DEFAULT)
-			this.downloadController = new DefaultDownloadController();
-		else if (downloadControllerType == DownloadControllerType.OODSS)
-			this.downloadController = new OODSSDownloadController();
+		switch (downloadControllerType)
+		{
+		case DEFAULT:
+			this.downloadController = new DefaultDownloadController(); break;
+		case OODSS:
+			this.downloadController = new OODSSDownloadController(); break;
+		case HTTP:
+			this.downloadController = new HTTPDownloadController(); break;
+		}
 	}
 
 	/**

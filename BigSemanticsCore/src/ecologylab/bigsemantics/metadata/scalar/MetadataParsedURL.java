@@ -30,4 +30,22 @@ public class MetadataParsedURL extends MetadataScalarBase<ParsedURL>
 	{
 		return NullTermVector.singleton();
 	}
+	
+  public int hashCode()
+  {
+  	return value == null ? 0 : value.hashCode();
+  }
+  
+  public boolean equals(Object otherPurl)
+  {
+  	if (otherPurl != null && otherPurl instanceof MetadataParsedURL)
+  	{
+  		if (value != null && ((MetadataParsedURL) otherPurl).value != null)
+  		  return value.equals(((MetadataParsedURL) otherPurl).value);
+  		if (value == null && ((MetadataParsedURL) otherPurl).value == null)
+  			return true;
+  	}
+  	return false;
+  }
+  
 }
