@@ -41,7 +41,7 @@ public class HTTPDownloadController extends Debug implements DownloadController
 
 	public static int									HTTP_DOWNLOAD_REQUEST_TIMEOUT	= 45000;
 
-	private static final String				SERVICE_LOC										= "http://localhost:8080/BigSemanticsService/download?";
+	private static final String				SERVICE_LOC										= "http://localhost/BigSemanticsService/download?";
 
 	private static SimplTypesScope		tscope;
 
