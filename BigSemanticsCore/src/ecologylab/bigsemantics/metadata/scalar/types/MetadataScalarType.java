@@ -167,7 +167,8 @@ public abstract class MetadataScalarType<M, T> extends ReferenceType<M>
 				if (instance == null)
 					result = null;
 				else
-					result = toString(instance);
+//					result = toString(instance);
+					result = instance.toString();
 			}
 			else
 				result = null;

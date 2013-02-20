@@ -30,7 +30,7 @@ public class FieldParserForRegexSplit extends FieldParser
 					b = parts.length;
 				if (a < 0)
 					a += parts.length;
-				if (b < 0)
+				if (b <= 0)
 					b += parts.length;
 				for (int i = 0; i < parts.length; ++i)
 				{

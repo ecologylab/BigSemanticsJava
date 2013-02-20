@@ -230,6 +230,13 @@ class MetaMetadataSelector extends ElementState implements IMappable<String>
 	  return params;
 	}
 	
+	void addParam(MetaMetadataSelectorParam param)
+	{
+	  if (params == null)
+	    params = new HashMapArrayList<String, MetaMetadataSelectorParam>();
+	  params.put(param.getName(), param);
+	}
+	
 	public boolean checkForParams(final ParsedURL purl)
 	{
 	  if (params != null)
@@ -239,9 +246,19 @@ class MetaMetadataSelector extends ElementState implements IMappable<String>
 	    {
 	      String paramName = param.getName();
 	      String paramValue = param.getValue();
-        if (!purlParams.containsKey(paramName)
-	          || (paramValue != null && !paramValue.equals(purlParams.get(paramName))))
+        if (purlParams == null || !purlParams.containsKey(paramName))
           return false;
+        String actualValue = purlParams.get(paramName);
+        
+        if (paramValue != null && !paramValue.equals(actualValue))
+          return false;
+        
+        if (actualValue == null)
+          actualValue = "";
+        if (!param.isAllowEmptyValue() && actualValue.length() == 0)
+        {
+          return false;
+        }
 	    }
 	  }
 	  return true;
