@@ -7,7 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.LinkedHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
@@ -39,15 +39,13 @@ import ecologylab.serialization.formatenums.StringFormat;
 public class HTTPDownloadController extends Debug implements DownloadController
 {
 
-	public static int									HTTP_DOWNLOAD_REQUEST_TIMEOUT	= 45000;
+  public static int                     HTTP_DOWNLOAD_REQUEST_TIMEOUT = 45000;
 
-	private static final String				SERVICE_LOC										= "http://localhost/BigSemanticsService/download?";
+  public static String                  SERVICE_LOC;
 
-	private static SimplTypesScope		tscope;
+  private static SimplTypesScope        tscope;
 
-	LinkedHashMap<ParsedURL, Boolean>	recentlyCached;
-
-	Object														lockRecentlyCached						= new Object();
+  ConcurrentHashMap<ParsedURL, Boolean> recentlyCached;
 
 	// private static Logger htmlCacheLog = Logger.getLogger(BaseLogger.htmlCacheLogger);
 
@@ -58,7 +56,7 @@ public class HTTPDownloadController extends Debug implements DownloadController
 
 	public HTTPDownloadController()
 	{
-		recentlyCached = new LinkedHashMap<ParsedURL, Boolean>(1000);
+		recentlyCached = new ConcurrentHashMap<ParsedURL, Boolean>(1000);
 	}
 
 	@Override
@@ -187,7 +185,7 @@ public class HTTPDownloadController extends Debug implements DownloadController
 			client.setFollowRedirects(true);
 			client.setReadTimeout(HTTP_DOWNLOAD_REQUEST_TIMEOUT);
 
-			String requestUri = SERVICE_LOC + "url="
+			String requestUri = SERVICE_LOC + "?url="
 					+ URLEncoder.encode(originalPurl.toString(), "UTF-8") + "&userAgentString="
 					+ URLEncoder.encode(userAgentString, "UTF-8");
 			WebResource r = client.resource(requestUri);
@@ -218,29 +216,25 @@ public class HTTPDownloadController extends Debug implements DownloadController
 	 */
 	void setCached(ParsedURL url)
 	{
-		synchronized (lockRecentlyCached)
-		{
-			recentlyCached.put(url, true);
-		}
+	  if (url != null)
+  		recentlyCached.put(url, true);
 	}
 
 	@Override
 	public boolean isCached(ParsedURL purl)
 	{
+	  if (purl == null)
+	    return false;
 		if (!recentlyCached.containsKey(purl))
 		{
-			synchronized (lockRecentlyCached)
-			{
-				if (!recentlyCached.containsKey(purl))
-				{
-					FileStorageProvider storageProvider = FileSystemStorage.getStorageProvider();
-					String filePath = storageProvider.lookupFilePath(purl);
-					File cachedFile = filePath == null ? null : new File(filePath);
-					boolean cached = cachedFile != null && cachedFile.exists();
-					recentlyCached.put(purl, cached);
-					return cached;
-				}
-			}
+			FileStorageProvider storageProvider = FileSystemStorage.getStorageProvider();
+			String filePath = storageProvider.lookupFilePath(purl);
+			File cachedFile = filePath == null ? null : new File(filePath);
+			boolean cached = cachedFile != null && cachedFile.exists();
+			Boolean previous = recentlyCached.putIfAbsent(purl, cached);
+			if (previous != null)
+			  cached = previous;
+			return cached;
 		}
 		return recentlyCached.get(purl);
 	}

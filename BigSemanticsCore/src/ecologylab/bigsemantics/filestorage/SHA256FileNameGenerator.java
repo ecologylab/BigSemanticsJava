@@ -21,7 +21,12 @@ public class SHA256FileNameGenerator
 {
 	static final char[] HEX = "0123456789ABCDEF".toCharArray();
 
-  public static String getName(ParsedURL originalPURL)
+  public static String getName(ParsedURL purl)
+  {
+    return getName(purl.toString());
+  }
+  
+  public static String getName(String url)
 	{
 		String OUT_PREFIX = "nwDownloaded";
 		// String OUT_SUFFIX = ".html";
@@ -30,7 +35,7 @@ public class SHA256FileNameGenerator
 		try
 		{
 			md = MessageDigest.getInstance("SHA-256");
-			md.update(originalPURL.toString().getBytes("UTF-8")); // Change this to "UTF-16" if needed
+			md.update(url.getBytes("UTF-8")); // Change this to "UTF-16" if needed
 			byte[] digest = md.digest();
 			
 			StringBuilder sb = StringBuilderUtils.acquire();

@@ -46,7 +46,7 @@ public class SemanticsDownloadMonitors extends Debug
 	public static final SimpleDownloadProcessor<DocumentClosure>	ASSETS_DOWNLOAD_PROCESSOR	=
 		new SimpleDownloadProcessor<DocumentClosure>();
 
-	static final int														NUM_CRAWLER_DOWNLOAD_THREADS	= Pref.lookupInt("num_crawler_download_threads", 2);
+	static final int														NUM_CRAWLER_DOWNLOAD_THREADS	= Pref.lookupInt("num_crawler_download_threads", 10);
 
 	static final int														NUM_SEEDING_DOWNLOAD_THREADS	= 4;
 	

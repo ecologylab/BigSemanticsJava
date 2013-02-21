@@ -1081,10 +1081,14 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 	    MetadataParsedURL metadataPurl = (MetadataParsedURL) fdScalarType.getInstance(evaluation, null, this);
 	    if (metadataPurl != null)
 	    {
+	      ParsedURL purl = metadataPurl.getValue();
 	      ParsedURL filteredPurl = 
 	          FilterLocation.filterIfNeeded(metadataPurl.getValue(), null, semanticsScope);
-	      if (!metadataPurl.getValue().equals(filteredPurl))
-  	      metadataPurl.setValue(filteredPurl);
+	      if (filteredPurl != null)
+	      {
+  	      if (purl == null || !purl.equals(filteredPurl))
+    	      metadataPurl.setValue(filteredPurl);
+	      }
 	    }
 	    fd.setField(metadata, metadataPurl);
 		}

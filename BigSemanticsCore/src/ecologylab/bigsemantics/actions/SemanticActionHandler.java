@@ -336,11 +336,13 @@ public class SemanticActionHandler
 		{
 			setActionState(action, "state", SemanticAction.INTER);
 			ArrayList<SemanticAction> nestedSemanticActions = action.getNestedSemanticActionList();
-			for (SemanticAction nestedSemanticAction : nestedSemanticActions)
-				handleSemanticAction(nestedSemanticAction, parser, infoCollector);
+			if (nestedSemanticActions != null)
+  			for (SemanticAction nestedSemanticAction : nestedSemanticActions)
+  				handleSemanticAction(nestedSemanticAction, parser, infoCollector);
 		}
 		catch (Exception e)
 		{
+			e.printStackTrace();
 			throw new IfActionException(e, action, semanticActionVariableMap);
 		}
 	}
