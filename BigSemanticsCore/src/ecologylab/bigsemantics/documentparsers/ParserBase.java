@@ -780,7 +780,7 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 				  Class trueMetadataClass = locMmd.getMetadataClass();
 					if (thisMetadataClass.isAssignableFrom(trueMetadataClass))
 					{
-//						debug("changing meta-metadata for extracted value " + thisMetadata + " to " + locMmd);
+						debug("changing meta-metadata for extracted value " + thisMetadata + " to " + locMmd);
 					  if (thisMetadataClass == trueMetadataClass)
 					  {
 					    // when the two metadata classes are the same, we can safely change the meta-metadata
