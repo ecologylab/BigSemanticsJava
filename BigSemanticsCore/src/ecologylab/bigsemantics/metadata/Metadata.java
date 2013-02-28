@@ -467,9 +467,7 @@ ISimplSerializationPre, ISimplDeserializationPost
 			this.metaMetadata = metaMetadata.getInheritedMmd();
 		
 		String metaMetadataName = metaMetadata.getName();
-		if (!getMetadataClassDescriptor().getTagName().equals(metaMetadataName)) // avoid writing these when you
-																																	// don't need them
-			this.setMetaMetadataNameMetadata(new MetadataString(metaMetadataName));
+		this.setMetaMetadataNameMetadata(new MetadataString(metaMetadataName));
 	}
 
 	@Override
