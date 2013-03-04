@@ -10,12 +10,15 @@ import ecologylab.serialization.types.element.IMappable;
  * 
  * <pre>
  * &lt;selector url_stripped=...&gt
- * &nbsp;&nbsp;&nbsp;&nbsp;&lt;param name=... value=... /&gt;
+ * &nbsp;&nbsp;&nbsp;&nbsp;&lt;param name=... value=... allow_empty_value=... /&gt;
  * &lt;/selector&gt;
  * </pre>
  * 
  * Name is required. When value is set, the actual parameter value must be the same as this value to
- * match. When value is not set, it only requires that the URL contains this parameter.
+ * match. When value is not set, it looks at the boolean attribute allow_empty_value: if
+ * allow_empty_value is false, it requires that the URL contains this parameter and its value be
+ * non-empty; if allow_empty_value is true, it only requires that the URL contains this parameter,
+ * with empty or non-empty values.
  * <p>
  * Currently, This only supports url_stripped and url_regex.
  * 
