@@ -35,7 +35,7 @@ public class MetaMetadataDotNetTranslator extends DotNetTranslator implements Mm
 	
 	private static String[]			metaMetadataDefaultImports	= {
 		"Ecologylab.Semantics.MetaMetadataNS",
-		"Ecologylab.Semantics.Metadata.Builtins",
+		"Ecologylab.Semantics.MetadataNS.Builtins",
 	};
 
 	public MetaMetadataDotNetTranslator()
@@ -57,6 +57,7 @@ public class MetaMetadataDotNetTranslator extends DotNetTranslator implements Mm
 	protected String javaPackage2CSharpNamespace(String packageName)
 	{
 	  String ns = super.javaPackage2CSharpNamespace(packageName);
+    ns = ns.replace("Ecologylab.Bigsemantics.", "Ecologylab.Semantics.");
 	  
 	  if (ns.startsWith(csharpNSMetadata)
 	      && !ns.startsWith(csharpNSMetadataNS))
@@ -100,6 +101,7 @@ public class MetaMetadataDotNetTranslator extends DotNetTranslator implements Mm
 	protected String[] getGeneratedClassFileDirStructure(String classPackageName)
 	{
     String csharpNamespace = javaPackage2CSharpNamespace(classPackageName);
+    csharpNamespace = csharpNamespace.replace("Ecologylab.Bigsemantics.", "Ecologylab.Semantics.");
     if (csharpNamespace.startsWith(csharpGeneratedSemanticsNamespacePrefix))
     {
       String dirStructureStr = csharpNamespace.substring(csharpGeneratedSemanticsNamespacePrefix.length());
