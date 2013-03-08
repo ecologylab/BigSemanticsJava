@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="BigSemanticsSDK" basedir="." default="main" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+	<!-- project dependencies -->
+	<property name="project.names" value="cyberneko,BigSemanticsCore,BigSemanticsCybernekoWrapper,imageMetadataExtractor,BigSemanticsSunSpecifics" />
+	<property name="cyberneko.dir" value="${basedir}/../cyberneko" />
+	<property name="BigSemanticsCore.dir" value="${basedir}/../BigSemanticsCore" />
+	<property name="BigSemanticsCybernekoWrapper.dir" value="${basedir}/../BigSemanticsCybernekoWrapper" />
+	<property name="imageMetadataExtractor.dir" value="${basedir}/../imageMetadataExtractor" />
+	<property name="BigSemanticsSunSpecifics.dir" value="${basedir}/../BigSemanticsSunSpecifics" />
+	<property name="deps.default.target" value="jar"/>
+	
+	<!-- sub-directories -->
+	<property name="src.dir" value="src" />
+	<property name="test.dir" value="test" />
+	<property name="build.dir" value="build" />
+	<property name="mavenlib.dir" value="build/lib" />
+	<property name="lib.dir" value="lib" />
+	<property name="resource.dir" value="resources" />
+	<property name="classes.dir" value="${build.dir}/classes" />
+	<property name="jar.dir" value="${build.dir}/jar" />
+	<property name="jar.file" value="${jar.dir}/${ant.project.name}.jar" />
+	
+	<!-- declare ant-contrib -->
+	<taskdef resource="net/sf/antcontrib/antlib.xml">
+		<classpath>
+			<pathelement location="${BigSemanticsCore.dir}/lib/ant-contrib-1.0b3.jar" />
+		</classpath>
+	</taskdef>
+	
+	<!-- declare maven -->
+	<path id="maven-ant-tasks.classpath" path="${BigSemanticsCore.dir}/lib/maven-ant-tasks-2.1.1.jar" />
+	<typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="antlib:org.apache.maven.artifact.ant" classpathref="maven-ant-tasks.classpath" />
+	
+	<artifact:pom id="sdkpom" file="${basedir}/pom.xml" />
+	<artifact:dependencies filesetId="mavendeps" pomRefId="sdkpom" />
+		
+  	<target name="clean">
+  		<delete dir="${build.dir}" />
+  	</target>
+ 
+	<path id="classpath">
+		<fileset dir="${cyberneko.dir}/${jar.dir}" includes="**/*.jar" />
+		<fileset dir="${BigSemanticsCore.dir}/${jar.dir}" includes="**/*.jar" />
+		<fileset dir="${BigSemanticsCybernekoWrapper.dir}/${jar.dir}" includes="**/*.jar" />
+		<fileset dir="${imageMetadataExtractor.dir}/${jar.dir}" includes="**/*.jar" />
+	  	<fileset dir="${BigSemanticsSunSpecifics.dir}/${jar.dir}" includes="**/*.jar" />
+		<fileset dir="${BigSemanticsCore.dir}/lib" includes="simplCore.jar" />
+		<fileset dir="${BigSemanticsSunSpecifics.dir}/lib/" includes="**/*.jar" />
+		<fileset dir="${lib.dir}" includes="**/*.jar" />
+		<fileset refid="mavendeps" />
+  	</path>
+	
+	<target name="copy-xml">
+		<copy todir="${classes.dir}">
+	        <fileset dir="${resource.dir}" includes="**/*.xml" />
+	        <fileset dir="${src.dir}" includes="**/*.xml" />
+	    </copy>
+	</target>
+	
+	<target name="build-library">
+		<echo>Ant build project ${project.name}</echo>
+		<propertycopy name="project.location" from="${project.name}.dir" />
+		
+		<echo>${project.location}/build.xml</echo>
+		<ant dir="${project.location}" useNativeBasedir="true" target="${deps.default.target}" inheritAll="false" />
+	</target>
+	
+	<target name="build-project-libraries">
+		<echo>list of projects to build: ${project.names}</echo>
+		<foreach list="${project.names}" target="build-library" param="project.name" trim="yes" />
+	</target>
+	
+	<target name="compile">
+		<antcall target="build-project-libraries" />
+		<mkdir dir="${classes.dir}" />
+		<javac srcdir="${src.dir}" destdir="${classes.dir}" source="1.6" target="1.6" classpathref="classpath" />
+		<javac srcdir="${test.dir}" destdir="${classes.dir}" source="1.6" target="1.6" classpathref="classpath" />
+	</target>
+		
+	<target name="jar" depends="compile">
+		<antcall target="copy-xml" />
+		<mkdir dir="${jar.dir}" />
+		<jar destfile="${jar.file}" basedir="${classes.dir}" />
+	</target>
+	
+	<target name="main" depends="clean,jar" />
+	
+</project>

@@ -203,7 +203,7 @@ public class CompilerConfig extends CodeTranslatorConfig
 			{
 				try
 				{
-					Class TC =  Class.forName(codeTranslatorClass);
+					Class<? extends CodeTranslator> TC =  (Class<? extends CodeTranslator>) Class.forName(codeTranslatorClass);
 					compiler = ReflectionTools.getInstance(TC);
 				}
 				catch (ClassNotFoundException e)
