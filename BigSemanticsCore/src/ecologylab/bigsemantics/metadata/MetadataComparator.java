@@ -1,3 +1,6 @@
+/**
+ * 
+ */
 package ecologylab.bigsemantics.metadata;
 
 import java.lang.reflect.Field;
@@ -14,6 +17,13 @@ import ecologylab.bigsemantics.metametadata.MetaMetadataScalarField;
 import ecologylab.generic.Debug;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.generic.ReflectionTools;
+
+/**
+ * MetadataComparator implements the java.util.Comparator for Metadata
+ * 
+ * @author ajit
+ *
+ */
 
 public class MetadataComparator extends Debug implements Comparator<Metadata>
 {
@@ -122,6 +132,10 @@ public class MetadataComparator extends Debug implements Comparator<Metadata>
 		Field javaField = mmcf.getMetadataFieldDescriptor().getField();
 		Collection cf1 = (Collection) ReflectionTools.getFieldValue(m1, javaField);
 		Collection cf2 = (Collection) ReflectionTools.getFieldValue(m2, javaField);
+		if (cf1 == null || cf2 == null)
+		{
+			return compareNull(cf1, cf2);
+		}
 		if (cf1.size() != cf2.size())
 		{
 			error("collection field " + javaField + " not having same size in metadata");
@@ -159,6 +173,9 @@ public class MetadataComparator extends Debug implements Comparator<Metadata>
 		Field javaField = mmcf.getMetadataFieldDescriptor().getField();
 		Metadata mf1 = (Metadata) ReflectionTools.getFieldValue(m1, javaField);
 		Metadata mf2 = (Metadata) ReflectionTools.getFieldValue(m2, javaField);
+		if (mf1 == null || mf2 == null)
+			return compareNull(mf1, mf2);
+		
 		int suc = recursiveComparison(mf1, mf2, mmcf);
 		if (suc != 0)
 			error("in composite field " + javaField);
