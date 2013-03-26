@@ -1,5 +1,6 @@
 package ecologylab.bigsemantics.metadata;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -17,11 +18,14 @@ import ecologylab.serialization.formatenums.StringFormat;
 
 public class RoundTripTest
 {
+  
+	static SimplTypesScope			metadataTScope	= RepositoryMetadataTranslationScope.get();
+	
+  static SemanticsSessionScope sss = new SemanticsSessionScope(metadataTScope, CybernekoWrapper.class);
+
 	private Object			lockDoc					= new Object();
 
 	Document						document;
-
-	SimplTypesScope			metadataTScope	= RepositoryMetadataTranslationScope.get();
 
 	MetadataComparator	comparator			= new MetadataComparator();
 
@@ -32,7 +36,10 @@ public class RoundTripTest
 		Document doc = getMetadata(purl);
 
 		String xml = SimplTypesScope.serialize(doc, StringFormat.XML).toString();
-		Document newDoc = (Document) metadataTScope.deserialize(xml, StringFormat.XML);
+		assertNotNull(xml);
+		assertTrue(xml.length() > 0);
+		MetadataDeserializationHookStrategy strategy = new MetadataDeserializationHookStrategy(sss);
+		Document newDoc = (Document) metadataTScope.deserialize(xml, strategy, StringFormat.XML);
 		
 		assertTrue(comparator.compare(doc, newDoc) == 0);
 	}
@@ -45,7 +52,6 @@ public class RoundTripTest
 
 	private void requestMetadata(ParsedURL purl) throws InterruptedException
 	{
-		SemanticsSessionScope sss = new SemanticsSessionScope(metadataTScope, CybernekoWrapper.class);
 		document = sss.getOrConstructDocument(purl);
 
 		DocumentClosure closure = document.getOrConstructClosure();
