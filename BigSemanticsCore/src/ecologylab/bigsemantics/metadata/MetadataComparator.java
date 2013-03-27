@@ -92,7 +92,7 @@ public class MetadataComparator extends Debug implements Comparator<Metadata>
 				}
 				if (suc != 0)
 				{
-					error("in metadata " + mmd.getMetadataFieldDescriptor().getField());
+					error("in metadata " + mmd.getMetadataClassDescriptor());
 					return -1;
 				}
 			}
@@ -141,6 +141,7 @@ public class MetadataComparator extends Debug implements Comparator<Metadata>
 		{
 			return compareNull(cf1, cf2);
 		}
+		
 		if (cf1.size() != cf2.size())
 		{
 			error("collection field " + javaField + " not having same size in metadata");
