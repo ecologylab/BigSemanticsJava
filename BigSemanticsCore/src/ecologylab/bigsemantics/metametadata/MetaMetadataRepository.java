@@ -487,11 +487,14 @@ implements PackageSpecifier, DocumentParserTagNames
 	
 	private void addToRepositoryByClassName(MetaMetadata mmd)
 	{
-		if (mmd.getExtendsAttribute() != null)
+		if (mmd.getExtendsAttribute() != null || mmd.isNewMetadataClass())
 		{
 			MetadataClassDescriptor mcd = mmd.getMetadataClassDescriptor();
 			if (mcd != null)
+			{
+				debug("Adding mapping from " + mcd + " to type " + mmd.getName());
 				repositoryByClassName.put(mcd.getDescribedClass().getName(), mmd);
+			}
 			
 			for (MetaMetadata localMmd : mmd.getMmdScope().values())
 			{

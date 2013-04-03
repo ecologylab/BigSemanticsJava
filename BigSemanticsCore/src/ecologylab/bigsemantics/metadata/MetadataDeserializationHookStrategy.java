@@ -26,7 +26,17 @@ public class MetadataDeserializationHookStrategy implements
     this.semanticsSessionScope = sss;
   }
 
-  @Override
+  private void pushToMmStack(MetaMetadataCompositeField field) {
+	currentMMStack.push(field);
+	Debug.debugT(this, "\tpushed " + field);
+}
+
+private void popFromMmStack() {
+	MetaMetadataNestedField field = currentMMStack.pop();
+	Debug.debugT(this, "\tpopped " + field);
+}
+
+@Override
   public void deserializationPreHook(Object e, FieldDescriptor fd)
   {
     if (e instanceof Metadata)
@@ -35,7 +45,7 @@ public class MetadataDeserializationHookStrategy implements
       if (currentMMStack.isEmpty())
       {
         MetaMetadataCompositeField deserializationMM = deserializedMetadata.getMetaMetadata();
-        currentMMStack.push(deserializationMM);
+        pushToMmStack(deserializationMM);
       }
       else if (fd instanceof MetadataFieldDescriptor)
       {
@@ -56,7 +66,7 @@ public class MetadataDeserializationHookStrategy implements
           childMMComposite = childMMNested.metaMetadataCompositeField();
         }
         deserializedMetadata.setMetaMetadata(childMMComposite);
-        currentMMStack.push(childMMComposite);
+        pushToMmStack(childMMComposite);
       }
       else if (fd instanceof FieldDescriptor)
       {
@@ -64,7 +74,7 @@ public class MetadataDeserializationHookStrategy implements
         MetaMetadataCompositeField childMMComposite =
             semanticsSessionScope.getMetaMetadataRepository().getMMByName(tagName);
         deserializedMetadata.setMetaMetadata(childMMComposite);
-        currentMMStack.push(childMMComposite);
+        pushToMmStack(childMMComposite);
       }
 
       if (e instanceof Document)
@@ -72,7 +82,7 @@ public class MetadataDeserializationHookStrategy implements
     }
   }
 
-  @Override
+	@Override
   public void deserializationInHook(Object e, FieldDescriptor fd)
   {
     if (e instanceof Metadata)
@@ -118,7 +128,7 @@ public class MetadataDeserializationHookStrategy implements
       {
         try
         {
-          currentMMStack.pop();
+          popFromMmStack();
         }
         catch (EmptyStackException exception)
         {
@@ -128,7 +138,7 @@ public class MetadataDeserializationHookStrategy implements
     }
   }
 
-  @Override
+@Override
   public Object changeObjectIfNecessary(Object o, FieldDescriptor fd)
   {
     return o;
