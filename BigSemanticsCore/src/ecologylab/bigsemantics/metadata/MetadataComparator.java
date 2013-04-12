@@ -1,3 +1,6 @@
+/**
+ * 
+ */
 package ecologylab.bigsemantics.metadata;
 
 import java.lang.reflect.Field;
@@ -15,6 +18,13 @@ import ecologylab.generic.Debug;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.generic.ReflectionTools;
 
+/**
+ * MetadataComparator implements the java.util.Comparator for Metadata
+ * 
+ * @author ajit
+ *
+ */
+
 public class MetadataComparator extends Debug implements Comparator<Metadata>
 {
 	@Override
@@ -22,6 +32,9 @@ public class MetadataComparator extends Debug implements Comparator<Metadata>
 	{
 		if (m1 == null || m2 == null)
 			return compareNull(m1, m2);
+		
+		if (m1.getClass() != m2.getClass())
+		  return -1;
 		
 		MetaMetadata mmd1 = (MetaMetadata) m1.getMetaMetadata();
 		MetaMetadata mmd2 = (MetaMetadata) m2.getMetaMetadata();
@@ -79,7 +92,7 @@ public class MetadataComparator extends Debug implements Comparator<Metadata>
 				}
 				if (suc != 0)
 				{
-					error("in metadata " + mmd.getMetadataFieldDescriptor().getField());
+					error("in metadata " + mmd.getMetadataClassDescriptor());
 					return -1;
 				}
 			}
@@ -120,8 +133,15 @@ public class MetadataComparator extends Debug implements Comparator<Metadata>
 	private int compareCollectionField(Metadata m1, Metadata m2, MetaMetadataCollectionField mmcf)
 	{
 		Field javaField = mmcf.getMetadataFieldDescriptor().getField();
+		javaField.setAccessible(true);
 		Collection cf1 = (Collection) ReflectionTools.getFieldValue(m1, javaField);
-		Collection cf2 = (Collection) ReflectionTools.getFieldValue(m2, javaField);
+		Object fieldValue2 = ReflectionTools.getFieldValue(m2, javaField);
+    Collection cf2 = (Collection) fieldValue2;
+		if (cf1 == null || cf2 == null)
+		{
+			return compareNull(cf1, cf2);
+		}
+		
 		if (cf1.size() != cf2.size())
 		{
 			error("collection field " + javaField + " not having same size in metadata");
@@ -159,6 +179,9 @@ public class MetadataComparator extends Debug implements Comparator<Metadata>
 		Field javaField = mmcf.getMetadataFieldDescriptor().getField();
 		Metadata mf1 = (Metadata) ReflectionTools.getFieldValue(m1, javaField);
 		Metadata mf2 = (Metadata) ReflectionTools.getFieldValue(m2, javaField);
+		if (mf1 == null || mf2 == null)
+			return compareNull(mf1, mf2);
+		
 		int suc = recursiveComparison(mf1, mf2, mmcf);
 		if (suc != 0)
 			error("in composite field " + javaField);

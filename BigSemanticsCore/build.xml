@@ -14,13 +14,13 @@
 	<property name="jar.dir" value="${build.dir}/jar" />
 	<property name="jar.file" value="${jar.dir}/${ant.project.name}.jar" />
 	
-  <target name="clean">
-    <delete dir="${build.dir}" />
-  </target>
+	<target name="clean">
+		<delete dir="${build.dir}" />
+	</target>
  
 	<path id="classpath">
-	  <fileset dir="${lib.dir}" includes="**/*.jar" />
-  </path>
+	  	<fileset dir="${lib.dir}" includes="**/*.jar" />
+  	</path>
 	
 	<target name="compile">
 		<mkdir dir="${classes.dir}" />
@@ -58,13 +58,11 @@
 			  <fileset dir="${test-classes.dir}" includes="**/*.class" excludes="**/testcases/*.class" />
 			</batchtest>
 		</junit>
-  </target>
+  	</target>
 	
 	<target name="jar" depends="compile">
 	  <mkdir dir="${jar.dir}" />
-		<jar destfile="${jar.file}" basedir="${classes.dir}">
-			<zipgroupfileset dir="${lib.dir}" includes="*.jar" />
-		</jar>
+		<jar destfile="${jar.file}" basedir="${classes.dir}"/>
 	</target>
 	
 	<target name="main" depends="clean,jar" />
