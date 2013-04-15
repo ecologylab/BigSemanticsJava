@@ -1,9 +1,11 @@
 <?xml version="1.0"?>
 
-<project name="metadata-extractor" default="test" basedir=".">
+<project name="metadata-extractor" default="jar" basedir=".">
 
 	<!-- update the java runtime location (esp. if in *nix environment) -->
+	<!--
 	<property name="java.rt.dir" value="/usr/local/jdk1.7.0_03/jre/lib" />
+	-->
 	
     <description>metadata-extractor for java build file</description>
 
@@ -17,13 +19,15 @@
     <property name="version" value="2.4.0-beta-1"/>
     <property name="classpath" value="${lib}/junit.jar"/>
 	
+	<!--
 	<path id="bootclasspath">
 		<fileset dir="${java.rt.dir}" includes="rt.jar" />
 	</path>
+	-->
 	
 	<target name="clean" description="deletes and recreates the destination directory">
         <delete verbose="${verbose}" dir="${build}"/>
-        <delete dir="build"/>
+        <delete dir="${build}"/>
         <mkdir dir="${build}"/>
         <mkdir dir="${dist}"/>
     </target>
@@ -96,7 +100,7 @@ urchinTracker();
 
 	<target name="copy-jpg">
 		<copy todir="build/classes/com">
-	            <fileset dir="com" includes="**/*.jpg" />
+	            <fileset dir="src/com" includes="**/*.jpg" />
 	    	</copy>
 	</target>	
 
@@ -104,7 +108,16 @@ urchinTracker();
 	<target name="jar">
 		<mkdir dir="build/jar" />
 		<mkdir dir="build/classes" />
-		<javac srcdir="." destdir="build/classes" bootclasspathref="bootclasspath" classpath="${classpath}" source="1.6" target="1.6" encoding="iso-8859-1" />
+		<!--
+		<javac srcdir="." destdir="build/classes"
+			bootclasspathref="bootclasspath"
+			classpath="${classpath}" source="1.6" target="1.6" encoding="iso-8859-1" />
+			-->
+		<javac srcdir="src" destdir="build/classes" includeJavaRuntime="yes"
+			classpath="${classpath}" source="1.6" target="1.6" encoding="iso-8859-1">
+			<compilerarg value="-XDignore.symbol.file" />
+	  </javac>
+			
 		<antcall target="copy-jpg" />
 		<jar destfile="build/jar/imageMetadataExtractor.jar" basedir="build/classes" />
 	</target>
