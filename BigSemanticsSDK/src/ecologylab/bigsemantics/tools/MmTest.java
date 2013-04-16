@@ -3,7 +3,11 @@
  */
 package ecologylab.bigsemantics.tools;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -130,11 +134,44 @@ public class MmTest extends SingletonApplicationEnvironment implements
 
 	public static void main(String[] args)
 	{
+	  String urlListFile = null;
+	  
+	  int i = 0;
+	  while (i < args.length)
+	  {
+	    String a = args[i];
+	    if ("-h".equals(a))
+	    {
+	      helpAndExit();
+	    }
+	    else if ("-f".equals(a))
+	    {
+	      i += 1;
+	      if (i < args.length)
+	      {
+	        urlListFile = args[i];
+	      }
+	    }
+	    
+	    i += 1;
+	  }
+	  
+	  String[] urlList = null;
+	  if (urlListFile == null)
+	  {
+	    urlList = args;
+	  }
+	  else
+	  {
+	    urlList = readLines(new File(urlListFile));
+	  }
+	  
+	  
 		MmTest mmTest;
 		try
 		{
 			mmTest = new MmTest("NewMmTest");
-			mmTest.collect(args);
+			mmTest.collect(urlList);
 		}
 		catch (SIMPLTranslationException e)
 		{
@@ -142,7 +179,60 @@ public class MmTest extends SingletonApplicationEnvironment implements
 		}
 	}
 
-	@Override
+	private static void helpAndExit()
+  {
+	  System.err.println("Args: <URL-list> | -f <URL-list-file>");
+	  System.err.println("Note: a single argument or line of double slash (//) terminates the input URL list.");
+  }
+
+  private static String[] readLines(File file)
+  {
+	  if (file == null)
+      return null;
+	  
+	  List<String> lines = new ArrayList<String>();
+    BufferedReader br = null;
+	  try
+    {
+	    br = new BufferedReader(new FileReader(file));
+	    while (true)
+	    {
+  	    String line = br.readLine();
+  	    if (line == null)
+  	      break;
+  	    line = line.trim();
+  	    if (line.length() > 0)
+  	      lines.add(line);
+	    }
+    }
+    catch (FileNotFoundException e)
+    {
+      e.printStackTrace();
+    }
+    catch (IOException e)
+    {
+      e.printStackTrace();
+    }
+	  finally
+	  {
+	    if (br != null)
+	    {
+        try
+        {
+          br.close();
+        }
+        catch (IOException e)
+        {
+          e.printStackTrace();
+        }
+	    }
+	  }
+	  
+	  System.err.println(lines.size() + " line(s) are read.");
+    return lines.toArray(new String[] {});
+  }
+
+  @Override
 	public synchronized void callback(DocumentClosure incomingClosure)
 	{
 		if (outputOneAtATime)
@@ -181,8 +271,6 @@ public class MmTest extends SingletonApplicationEnvironment implements
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
 	}
 
 	protected void output(DocumentClosure incomingClosure)

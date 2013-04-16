@@ -86,4 +86,27 @@
 	
 	<target name="main" depends="clean,jar" />
 	
+	<property name="BigSemanticsWrappers.dir" value="${basedir}/../../BigSemanticsWrapperRepository/BigSemanticsWrappers" />
+	<property name="BigSemanticsGeneratedClassesJava.dir" value="${basedir}/../../BigSemanticsWrapperRepository/BigSemanticsGeneratedClassesJava" />
+	
+	<path id="jar_classpath">
+	  <path refid="classpath" />
+		<file file="${jar.file}" />
+	</path>
+	
+	<target name="compile-wrappers" depends="jar">
+  	<!-- run the compiler. -->
+		<java classname="ecologylab.bigsemantics.compiler.MetaMetadataCompiler"
+			    classpathref="jar_classpath" fork="yes" failonerror="true">
+			<arg value="java" />
+			<arg value="../../BigSemanticsWrapperRepository/BigSemanticsGeneratedClassesJava/src" />
+			<arg value="../BigSemanticsCore/src" />
+		  <jvmarg value="-Xms512m" />
+		</java>
+		
+  	<!-- run the Ant build in GeneratedClassesJava project to generated a new jar of metadata classes. -->
+		<ant antfile="${BigSemanticsGeneratedClassesJava.dir}/build.xml"
+		     target="main" useNativeBasedir="yes" inheritAll="false" />
+	</target>
+	
 </project>

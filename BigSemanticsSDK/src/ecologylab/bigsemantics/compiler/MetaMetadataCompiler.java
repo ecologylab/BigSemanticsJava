@@ -95,7 +95,8 @@ public class MetaMetadataCompiler extends Debug // ApplicationEnvironment
 		    .add("ecologylab.bigsemantics.metadata.builtins.InformationComposition");
 		ClassDescriptor infoCompCD = builtinDeclarationsScope.getClassDescriptorBySimpleName("InformationCompositionDeclaration");
     compiler.excludeClassFromTranslation(infoCompCD);
-		compiler.translate(config.getGeneratedBuiltinDeclarationsLocation(), builtinDeclarationsScope, newConfig);
+    if (config.getGeneratedBuiltinDeclarationsLocation() != null)
+  		compiler.translate(config.getGeneratedBuiltinDeclarationsLocation(), builtinDeclarationsScope, newConfig);
 		
 		// generate normal metadata classes
 		for (ClassDescriptor mdCD : tscope.getClassDescriptors())
@@ -245,6 +246,11 @@ public class MetaMetadataCompiler extends Debug // ApplicationEnvironment
       e.printStackTrace();
     }
   }
+  
+  private static void error(String msg)
+  {
+    Debug.error(MetaMetadataCompiler.class, msg);
+  }
 
 	/**
 	 * @param args
@@ -256,26 +262,22 @@ public class MetaMetadataCompiler extends Debug // ApplicationEnvironment
 	public static void main(String[] args) throws IOException, SIMPLTranslationException,
 			CodeTranslationException
 	{
-		if (args.length < 3)
+		if (args.length < 2 || args.length > 3)
 		{
-			error(MetaMetadataCompiler.class, "lacking argument(s).");
-			error(MetaMetadataCompiler.class,
-					"args: <target-language> <generated-semantics-location> <generated-builtin-declarations-location");
-			error(MetaMetadataCompiler.class, "  - <target-language>: e.g. java or csharp (cs, c#).");
-			error(MetaMetadataCompiler.class,
-					"  - <generated-semantics-location>: the path to the location for generated semantics.");
-			error(
-					MetaMetadataCompiler.class,
-					"  - <generated-builtin-declarations-location>: the path to the location for generated builtin declarations.");
+			error("args: <target-language> <generated-semantics-location> [<generated-builtin-declarations-location>]");
+			error("  - <target-language>: e.g. java or csharp (cs, c#).");
+			error("  - <generated-semantics-location>: the path to the location for generated semantics.");
+			error("  - <generated-builtin-declarations-location>: the path to the location for generated builtin declarations.");
 			System.exit(-1);
 		}
 
 		String lang = args[0].toLowerCase();
 		String semanticsLoc = args[1];
-		String builtinDeclarationsLoc = args[2];
+		String builtinDeclarationsLoc = args.length == 3 ? args[2] : null;
 
-		CompilerConfig config = new CompilerConfig(lang, new File(semanticsLoc), new File(
-				builtinDeclarationsLoc));
+		CompilerConfig config = new CompilerConfig(lang,
+		                                           new File(semanticsLoc),
+		                                           builtinDeclarationsLoc == null ? null : new File(builtinDeclarationsLoc));
 		MetaMetadataCompiler compiler = new MetaMetadataCompiler();
 		compiler.compile(config);
 	}
