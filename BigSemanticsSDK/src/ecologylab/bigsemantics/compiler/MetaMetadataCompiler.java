@@ -275,9 +275,9 @@ public class MetaMetadataCompiler extends Debug // ApplicationEnvironment
 		String semanticsLoc = args[1];
 		String builtinDeclarationsLoc = args.length == 3 ? args[2] : null;
 
-		CompilerConfig config = new CompilerConfig(lang,
-		                                           new File(semanticsLoc),
-		                                           builtinDeclarationsLoc == null ? null : new File(builtinDeclarationsLoc));
+		File generatedSemanticsLocation = new File(semanticsLoc);
+		File generatedBuiltinSemanticsLocation = builtinDeclarationsLoc == null ? null : new File(builtinDeclarationsLoc);
+    CompilerConfig config = new CompilerConfig(lang, generatedSemanticsLocation, generatedBuiltinSemanticsLocation);
 		MetaMetadataCompiler compiler = new MetaMetadataCompiler();
 		compiler.compile(config);
 	}
