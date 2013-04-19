@@ -94,7 +94,7 @@
 		<file file="${jar.file}" />
 	</path>
 	
-	<target name="compile-wrappers" depends="jar">
+	<target name="compile-wrappers-java" depends="jar">
   	<!-- run the compiler. -->
 		<java classname="ecologylab.bigsemantics.compiler.MetaMetadataCompiler"
 			    classpathref="jar_classpath" fork="yes" failonerror="true">
@@ -109,4 +109,19 @@
 		     target="main" useNativeBasedir="yes" inheritAll="false" />
 	</target>
 	
+	<target name="compile-wrappers-csharp" depends="jar">
+  	<!-- update wrappers jar file. the compiler uses this jar file to load wrappers. -->
+		<copy file="${jar.file}" tofile="${lib.dir}/${jar.filename}" />
+		
+  	<!-- run the compiler. -->
+		<java classname="ecologylab.bigsemantics.compiler.MetaMetadataCompiler"
+			    classpathref="jars_classpath" fork="yes" failonerror="true">
+			<arg value="csharp" />
+			<arg value="../BigSemanticsWrapperRepository/BigSemantics.GeneratedClassesCSharp" />
+			<arg value="../../BigSemanticsCSharp/Ecologylab.Semantics" />
+		  <jvmarg value="-Xms512m" />
+		</java>
+		
+		<echo message="Metadata classes have been generated in C#. You still need to run a C# compiler to compile them into an assembly!" /> 
+	</target>
 </project>
