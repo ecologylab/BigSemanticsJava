@@ -155,7 +155,7 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
                 if (downloadedDoc != null && !downloadedDoc.isRecycled())
                 {
                   imageClipping.setSourceDoc(downloadedDoc);
-                  imageClipping.setOutlink(null);
+                  imageClipping.setOutlinks(null);
                   imageClipping.setMetadataChanged(true);
                 }
               }

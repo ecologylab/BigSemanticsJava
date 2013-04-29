@@ -12,10 +12,12 @@ import ecologylab.bigsemantics.metadata.Metadata;
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metadata.builtins.MetadataBuiltinsTypesScope;
 import ecologylab.bigsemantics.metadata.mm_name;
+import ecologylab.bigsemantics.metadata.scalar.MetadataParsedURL;
 import ecologylab.bigsemantics.metadata.scalar.MetadataString;
 import ecologylab.bigsemantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.bigsemantics.namesandnums.SemanticsNames;
 import ecologylab.serialization.annotations.Hint;
+import ecologylab.serialization.annotations.simpl_collection;
 import ecologylab.serialization.annotations.simpl_composite;
 import ecologylab.serialization.annotations.simpl_hints;
 import ecologylab.serialization.annotations.simpl_inherit;
@@ -23,6 +25,7 @@ import ecologylab.serialization.annotations.simpl_scalar;
 import ecologylab.serialization.annotations.simpl_scope;
 import ecologylab.serialization.annotations.simpl_wrap;
 import java.lang.String;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -44,12 +47,12 @@ public class ClippingDeclaration extends Metadata
 	@simpl_scope("repository_documents")
 	@mm_name("source_doc")
 	private Document sourceDoc;
-
-	@simpl_composite
+	
+	@simpl_collection("outlinks")
 	@simpl_wrap
 	@simpl_scope("repository_documents")
 	@mm_name("outlink")
-	private Document outlink;
+	private List<Document> outlinks;
 
 	public ClippingDeclaration()
 	{ super(); }
@@ -165,13 +168,26 @@ public class ClippingDeclaration extends Metadata
 		this.sourceDoc = sourceDoc;
 	}
 
-	public Document getOutlink()
+	public List<Document> getOutlinks()
 	{
-		return outlink;
+		return outlinks;
 	}
 
-	public void setOutlink(Document outlink)
+	public void setOutlinks(List<Document> outlinks)
 	{
-		this.outlink = outlink;
+		this.outlinks = outlinks;
+	}
+	
+	public void addOutlink(Document outlink)
+	{
+		if(this.outlinks == null)
+		{
+			this.outlinks = new ArrayList<Document>();
+		}
+		
+		if(!this.outlinks.contains(outlink))
+		{
+			this.outlinks.add(outlink);
+		}
 	}
 }
