@@ -313,7 +313,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 			{
 			  // calling changeDocument() because of redirecting?
 			  if (oldSite.isDownloading())
-  			  oldSite.endDownload();
+  			  oldSite.endDownload(oldDocument.getDownloadLocation());
 			}
 			
 			newDocument.inheritValues(oldDocument);	
