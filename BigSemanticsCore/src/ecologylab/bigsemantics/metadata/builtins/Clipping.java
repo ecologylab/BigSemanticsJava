@@ -4,13 +4,18 @@
 package ecologylab.bigsemantics.metadata.builtins;
 
 import java.util.HashSet;
+import java.util.List;
 
 import ecologylab.bigsemantics.metadata.Metadata;
+import ecologylab.bigsemantics.metadata.mm_name;
 import ecologylab.bigsemantics.metadata.builtins.declarations.ClippingDeclaration;
 import ecologylab.bigsemantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.net.ParsedURL;
 import ecologylab.serialization.TranslationContext;
+import ecologylab.serialization.annotations.simpl_collection;
 import ecologylab.serialization.annotations.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_scope;
+import ecologylab.serialization.annotations.simpl_wrap;
 
 /**
  * Mix-in for adding the context of a clipping to the description of a Document.
@@ -54,11 +59,11 @@ public class Clipping extends ClippingDeclaration
 //	/**
 //	 * A hyperlinked Document.
 //	 */
-//	@simpl_composite
-//	@mm_name("outlink")
+//	@simpl_collection("outlinks")
 //	@simpl_wrap
-//	@simpl_scope(SemanticsNames.REPOSITORY_DOCUMENT_TRANSLATIONS)
-//	private Document				outlink;
+//	@simpl_scope("repository_documents")
+//	@mm_name("outlink")
+//	private List<Document> outlinks;
 
 	private DocumentClosure	outlinkClosure;
 
@@ -99,13 +104,13 @@ public class Clipping extends ClippingDeclaration
 		{
 			if (outlink.isDownloadDone())
 			{
-				clipping.setOutlink(outlink);
+				clipping.addOutlink(outlink);
 			}
 			else
 			{
 				DocumentClosure outlinkClosure = outlink.getOrConstructClosure();
 				clipping.outlinkClosure	= outlinkClosure;
-				clipping.setOutlink(outlinkClosure.getDocument());
+				clipping.addOutlink(outlinkClosure.getDocument());
 			}
 		}
 		if (context != null)
@@ -116,7 +121,7 @@ public class Clipping extends ClippingDeclaration
 	public void serializationPreHook(TranslationContext translationContext)
 	{
 		if (outlinkClosure != null && !outlinkClosure.isRecycled())
-			setOutlink(outlinkClosure.getDocument());
+			addOutlink(outlinkClosure.getDocument());
 	}
 	
 	/**
@@ -189,10 +194,10 @@ public class Clipping extends ClippingDeclaration
 			getSourceDoc().recycle();
 			setSourceDoc(null);
 		}
-		if (getOutlink() != null)
+		if (getOutlinks() != null)
 		{
-			getOutlink().recycle();
-			setOutlink(null);
+			getOutlinks().clear();
+			setOutlinks(null);
 		}
 		outlinkClosure	= null;
 		super.recycle(visitedMetadata);

@@ -3,6 +3,8 @@
  */
 package ecologylab.bigsemantics.documentparsers;
 
+import java.util.List;
+
 import ecologylab.bigsemantics.collecting.ContainerWeightingStrategy;
 import ecologylab.bigsemantics.collecting.Crawler;
 import ecologylab.bigsemantics.collecting.DownloadStatus;
@@ -159,9 +161,9 @@ implements ParserResult
 		DocumentClosure outlinkClosure	= clipping.getOutlinkClosure();
 		if (outlinkClosure == null)
 		{
-			Document outlink							= clipping.getOutlink();
-			if (outlink != null)
-				outlinkClosure							= outlink.getOrConstructClosure();
+			List<Document> outlinks							= clipping.getOutlinks();
+			if(outlinks != null && outlinks.size() > 0)
+				outlinkClosure							= outlinks.get(0).getOrConstructClosure();
 		}
 		if (outlinkClosure != null && semanticsSessionScope.isLocationNew(outlinkClosure.location()))
 			crawler.addClosureToPool(outlinkClosure);
