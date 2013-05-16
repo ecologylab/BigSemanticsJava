@@ -107,6 +107,9 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 	//private static Logger baseLog				= Logger.getLogger(BaseLogger.baseLogger);
 	
 	/**
+	 * @throws IllegalAccessException 
+	 * @throws InstantiationException 
+	 * @throws ClassNotFoundException 
 	 * 
 	 */
 	private DocumentClosure(Document document, SemanticsGlobalScope semanticsSessionScope,
@@ -126,8 +129,24 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 			this.downloadController = new OODSSDownloadController(); break;
 		case HTTP:
 			this.downloadController = new HTTPDownloadController(); break;
+		case DPOOL:
+			this.downloadController = createDPoolDownloadController(); break;
 		}
 	}
+	
+	public static Class<? extends DownloadController> controllerClass;
+	
+  private static DownloadController createDPoolDownloadController()
+  {
+    try
+    {
+      return controllerClass.newInstance();
+    }
+    catch (Exception e)
+    {
+      throw new RuntimeException(e);
+    }
+  }
 
 	/**
 	 * Should only be called by Document.getOrCreateClosure().
