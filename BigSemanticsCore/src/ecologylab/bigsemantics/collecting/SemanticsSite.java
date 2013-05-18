@@ -23,6 +23,8 @@ import ecologylab.serialization.annotations.simpl_inherit;
 public class SemanticsSite extends BasicSite implements Colors
 {
 	// static ConcurrentHashMap<String, SemanticsSite> allSites = new ConcurrentHashMap(50);
+  
+  public static boolean       disableDownloadInterval   = false;
 
 	/**
 	 * true if any Container from this Site is a Seed.
@@ -196,6 +198,12 @@ public class SemanticsSite extends BasicSite implements Colors
 	public boolean isSeed()
 	{
 		return isSeed;
+	}
+
+	@Override
+  public boolean isDownloadingConstrained()
+	{
+		return !disableDownloadInterval && minDownloadInterval > 0;
 	}
 
 	// /////////////////////////////////////// text color stuff

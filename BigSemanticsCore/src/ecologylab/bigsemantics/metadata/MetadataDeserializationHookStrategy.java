@@ -28,12 +28,12 @@ public class MetadataDeserializationHookStrategy implements
 
   private void pushToMmStack(MetaMetadataCompositeField field) {
 	currentMMStack.push(field);
-	Debug.debugT(this, "\tpushed " + field);
+	// Debug.debugT(this, "\tpushed " + field);
 }
 
 private void popFromMmStack() {
 	MetaMetadataNestedField field = currentMMStack.pop();
-	Debug.debugT(this, "\tpopped " + field);
+	// Debug.debugT(this, "\tpopped " + field);
 }
 
 @Override
@@ -98,10 +98,10 @@ private void popFromMmStack() {
               .getMMByName(mmName);
           if (trueMm != null)
           {
-            Debug.println(String.format("setting [%s].metaMetadata to %s (mm_name=%s)...",
-                                        metadata,
-                                        trueMm,
-                                        mmName));
+//            Debug.println(String.format("setting [%s].metaMetadata to %s (mm_name=%s)...",
+//                                        metadata,
+//                                        trueMm,
+//                                        mmName));
             metadata.setMetaMetadata(trueMm);
           }
           else

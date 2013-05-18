@@ -101,7 +101,8 @@
 			<arg value="java" />
 			<arg value="../../BigSemanticsWrapperRepository/BigSemanticsGeneratedClassesJava/src" />
 			<arg value="../BigSemanticsCore/src" />
-		  <jvmarg value="-Xms512m" />
+		  <jvmarg value="-Xms256" />
+		  <jvmarg value="-Xmx512m" />
 		</java>
 		
   	<!-- run the Ant build in GeneratedClassesJava project to generated a new jar of metadata classes. -->
@@ -119,7 +120,8 @@
 			<arg value="csharp" />
 			<arg value="../BigSemanticsWrapperRepository/BigSemantics.GeneratedClassesCSharp" />
 			<arg value="../../BigSemanticsCSharp/Ecologylab.Semantics" />
-		  <jvmarg value="-Xms512m" />
+		  <jvmarg value="-Xms256m" />
+		  <jvmarg value="-Xmx512m" />
 		</java>
 		
 		<echo message="Metadata classes have been generated in C#. You still need to run a C# compiler to compile them into an assembly!" /> 

@@ -104,13 +104,13 @@ public class Clipping extends ClippingDeclaration
 		{
 			if (outlink.isDownloadDone())
 			{
-				clipping.addOutlink(outlink);
+				clipping.addToOutlinks(outlink);
 			}
 			else
 			{
 				DocumentClosure outlinkClosure = outlink.getOrConstructClosure();
 				clipping.outlinkClosure	= outlinkClosure;
-				clipping.addOutlink(outlinkClosure.getDocument());
+				clipping.addToOutlinks(outlinkClosure.getDocument());
 			}
 		}
 		if (context != null)
@@ -121,7 +121,7 @@ public class Clipping extends ClippingDeclaration
 	public void serializationPreHook(TranslationContext translationContext)
 	{
 		if (outlinkClosure != null && !outlinkClosure.isRecycled())
-			addOutlink(outlinkClosure.getDocument());
+			addToOutlinks(outlinkClosure.getDocument());
 	}
 	
 	/**

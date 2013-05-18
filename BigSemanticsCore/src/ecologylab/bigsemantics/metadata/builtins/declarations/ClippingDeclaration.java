@@ -12,7 +12,6 @@ import ecologylab.bigsemantics.metadata.Metadata;
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metadata.builtins.MetadataBuiltinsTypesScope;
 import ecologylab.bigsemantics.metadata.mm_name;
-import ecologylab.bigsemantics.metadata.scalar.MetadataParsedURL;
 import ecologylab.bigsemantics.metadata.scalar.MetadataString;
 import ecologylab.bigsemantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.bigsemantics.namesandnums.SemanticsNames;
@@ -47,11 +46,10 @@ public class ClippingDeclaration extends Metadata
 	@simpl_scope("repository_documents")
 	@mm_name("source_doc")
 	private Document sourceDoc;
-	
-	@simpl_collection("outlinks")
-	@simpl_wrap
+
+	@simpl_collection
 	@simpl_scope("repository_documents")
-	@mm_name("outlink")
+	@mm_name("outlinks")
 	private List<Document> outlinks;
 
 	public ClippingDeclaration()
@@ -173,21 +171,28 @@ public class ClippingDeclaration extends Metadata
 		return outlinks;
 	}
 
+  // lazy evaluation:
+  public List<Document> outlinks()
+  {
+    if (outlinks == null)
+      outlinks = new ArrayList<Document>();
+    return outlinks;
+  }
+
+  // addTo:
+  public void addToOutlinks(Document element)
+  {
+    outlinks().add(element);
+  }
+
+  // size:
+  public int outlinksSize()
+  {
+    return outlinks == null ? 0 : outlinks.size();
+  }
+
 	public void setOutlinks(List<Document> outlinks)
 	{
 		this.outlinks = outlinks;
-	}
-	
-	public void addOutlink(Document outlink)
-	{
-		if(this.outlinks == null)
-		{
-			this.outlinks = new ArrayList<Document>();
-		}
-		
-		if(!this.outlinks.contains(outlink))
-		{
-			this.outlinks.add(outlink);
-		}
 	}
 }
