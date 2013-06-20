@@ -18,14 +18,12 @@ import ecologylab.bigsemantics.collecting.DownloadStatus;
 import ecologylab.bigsemantics.collecting.SemanticsDownloadMonitors;
 import ecologylab.bigsemantics.collecting.SemanticsGlobalScope;
 import ecologylab.bigsemantics.collecting.SemanticsSite;
-import ecologylab.bigsemantics.dbinterface.IDocumentCache;
+import ecologylab.bigsemantics.documentcache.IDocumentCache;
 import ecologylab.bigsemantics.documentparsers.DocumentParser;
 import ecologylab.bigsemantics.documentparsers.ParserBase;
 import ecologylab.bigsemantics.downloaders.controllers.DefaultDownloadController;
 import ecologylab.bigsemantics.downloaders.controllers.DownloadController;
 import ecologylab.bigsemantics.downloaders.controllers.DownloadControllerType;
-import ecologylab.bigsemantics.downloaders.controllers.HTTPDownloadController;
-import ecologylab.bigsemantics.downloaders.controllers.OODSSDownloadController;
 import ecologylab.bigsemantics.html.documentstructure.SemanticInLinks;
 import ecologylab.bigsemantics.metadata.output.DocumentLogRecord;
 import ecologylab.bigsemantics.metametadata.MetaMetadata;
@@ -125,10 +123,6 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 		{
 		case DEFAULT:
 			this.downloadController = new DefaultDownloadController(); break;
-		case OODSS:
-			this.downloadController = new OODSSDownloadController(); break;
-		case HTTP:
-			this.downloadController = new HTTPDownloadController(); break;
 		case DPOOL:
 			this.downloadController = createDPoolDownloadController(); break;
 		}
