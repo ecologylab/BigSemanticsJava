@@ -31,13 +31,13 @@ public class TestMmdDeSerialization
   {
     String mmdStr =
         "<meta_metadata>" +
-    		"  <semantic_actions>" +
-    		"    <if></if>" +
-    		"    <for_each></for_each>" +
-    		"    <parse_document></parse_document>" +
-    		"    <reselect_meta_metadata_and_extract></reselect_meta_metadata_and_extract>" +
-    		"  </semantic_actions>" +
-    		"</meta_metadata>";
+        "  <semantic_actions>" +
+        "    <if></if>" +
+        "    <for_each></for_each>" +
+        "    <parse_document></parse_document>" +
+        "    <reselect_meta_metadata_and_extract></reselect_meta_metadata_and_extract>" +
+        "  </semantic_actions>" +
+        "</meta_metadata>";
     
     SimplTypesScope mmdTScope = MetaMetadataTranslationScope.get();
     MetaMetadata mmd = (MetaMetadata) mmdTScope.deserialize(mmdStr, StringFormat.XML);
@@ -48,23 +48,23 @@ public class TestMmdDeSerialization
     assertTrue(mmd.getSemanticActions().get(1) instanceof ForEachSemanticAction);
     assertTrue(mmd.getSemanticActions().get(2) instanceof ParseDocumentSemanticAction);
   }
-	
-//	public static void main(String[] args) throws SIMPLTranslationException, FileNotFoundException
-//	{
-//		MetaMetadataRepositoryLoader loader = new MetaMetadataRepositoryLoader();
-//		
-//		File repositoryDir = MetaMetadataRepositoryLocator.locateRepositoryByDefaultLocations();
-//		
-//		MetaMetadataRepository repository = loader.loadFromDir(repositoryDir, Format.XML);
-//		repository.traverseAndInheritMetaMetadata();
-//		
-//		MetaMetadata acmMmd = repository.getMMByName("acm_portal");
-//		
-//		SimplTypesScope.serialize(acmMmd, new File("c:/tmp/test_mmd.xml"), Format.XML);
-//		
-//		MetaMetadataField authorsField = acmMmd.getChildMetaMetadata().get("authors");
-//		
-//		System.out.println(authorsField);
-//	}
+  
+//  public static void main(String[] args) throws SIMPLTranslationException, FileNotFoundException
+//  {
+//    MetaMetadataRepositoryLoader loader = new MetaMetadataRepositoryLoader();
+//    
+//    File repositoryDir = MetaMetadataRepositoryLocator.locateRepositoryByDefaultLocations();
+//    
+//    MetaMetadataRepository repository = loader.loadFromDir(repositoryDir, Format.XML);
+//    repository.traverseAndInheritMetaMetadata();
+//    
+//    MetaMetadata acmMmd = repository.getMMByName("acm_portal");
+//    
+//    SimplTypesScope.serialize(acmMmd, new File("c:/tmp/test_mmd.xml"), Format.XML);
+//    
+//    MetaMetadataField authorsField = acmMmd.getChildMetaMetadata().get("authors");
+//    
+//    System.out.println(authorsField);
+//  }
 
 }
