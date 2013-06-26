@@ -228,7 +228,7 @@ public class SemanticsGlobalScope extends MetaMetadataRepositoryInit
 		return documentDownloadingMonitor;
 	}
 
-	public IDocumentCache getDBDocumentProvider()
+	public IDocumentCache getDocumentCache()
 	{
 		return null;
 	}

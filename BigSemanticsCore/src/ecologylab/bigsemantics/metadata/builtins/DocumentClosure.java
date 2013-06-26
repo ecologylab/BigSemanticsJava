@@ -200,7 +200,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 		boolean noCache = ((MetaMetadata)document.getMetaMetadata()).isNoCache();
 		
 		//if the semantics scope provides DB lookup
-		IDocumentCache dbProvider = semanticsScope.getDBDocumentProvider();
+		IDocumentCache dbProvider = semanticsScope.getDocumentCache();
 		if (!noCache && dbProvider != null)
 		{
 			Document document = dbProvider.retrieveDocument(this);
