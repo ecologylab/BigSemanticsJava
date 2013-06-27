@@ -1,7 +1,7 @@
 /**
  * 
  */
-package ecologylab.bigsemantics.dbinterface;
+package ecologylab.bigsemantics.documentcache;
 
 /**
  * Provides an instance of IDBDocumentProvider

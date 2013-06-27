@@ -5,7 +5,7 @@ package ecologylab.bigsemantics.collecting;
 
 import java.io.File;
 
-import ecologylab.bigsemantics.dbinterface.IDocumentCache;
+import ecologylab.bigsemantics.documentcache.IDocumentCache;
 import ecologylab.bigsemantics.gui.InteractiveSpace;
 import ecologylab.bigsemantics.html.dom.IDOMProvider;
 import ecologylab.bigsemantics.metadata.builtins.Document;
@@ -228,7 +228,7 @@ public class SemanticsGlobalScope extends MetaMetadataRepositoryInit
 		return documentDownloadingMonitor;
 	}
 
-	public IDocumentCache getDBDocumentProvider()
+	public IDocumentCache getDocumentCache()
 	{
 		return null;
 	}

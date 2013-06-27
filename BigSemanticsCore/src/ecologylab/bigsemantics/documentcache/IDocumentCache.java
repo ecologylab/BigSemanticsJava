@@ -1,7 +1,7 @@
 /**
  * 
  */
-package ecologylab.bigsemantics.dbinterface;
+package ecologylab.bigsemantics.documentcache;
 
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metadata.builtins.DocumentClosure;
