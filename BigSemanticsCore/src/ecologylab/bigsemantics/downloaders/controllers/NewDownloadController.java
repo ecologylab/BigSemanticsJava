@@ -6,25 +6,93 @@ import ecologylab.net.ParsedURL;
 
 public interface NewDownloadController
 {
-    public void setUserAgent(String userAgent);
+	/**
+	 * Sets the user agent
+	 * 
+	 * @param userAgent a string representation of the user agent
+	 */
+	public void setUserAgent(String userAgent);
 
-    public boolean connect(ParsedURL location) throws IOException;
+	/**
+	 * Opens the HttpURLConnection to the specified location and downloads the
+	 * resource
+	 * 
+	 * @param location a ParsedURL object pointing to a resource
+	 * @return a boolean indicating the success status of the connection
+	 */
+	public boolean accessAndDownload(ParsedURL location) throws IOException;
 
-    public boolean isGood();
+	/**
+	 * Returns a boolean indicating if the HTTP response code is that of a good
+	 * connection
+	 * 
+	 * @return a boolean indicating if the HTTP response code is that of a good
+	 *         connection
+	 */
+	public boolean isGood();
 
-    public int getStatus();
+	/**
+	 * Returns the status code of the HTTP response message for the connection
+	 * 
+	 * @return the status code of the HTTP response message for the connection
+	 */
+	public int getStatus();
 
-    public String getStatusMessage();
+	/**
+	 * Returns the message from the HTTP response message
+	 * 
+	 * @return the messgae from the HTTP response message
+	 */
+	public String getStatusMessage();
 
-    public ParsedURL getLocation();
+	/**
+	 * Returns a ParsedURL object corresponding to the original resource
+	 * location used to initiate the connection. This value does not change if
+	 * the connection is redirected
+	 * 
+	 * @return a ParsedURL object corresponding to the original resource
+	 *         location used to initiate the connection
+	 */
+	public ParsedURL getLocation();
 
-    public ParsedURL getRedirectedLocation();
+	/**
+	 * Returns a ParsedURL object corresponding to the location of the resource
+	 * with which the connection is associated. This value does change with
+	 * redirects
+	 * 
+	 * @return a ParsedURL object corresponding to the location of the resource
+	 *         with which the connection is associated
+	 */
+	public ParsedURL getRedirectedLocation();
 
-    public String getMimeType();
+	/**
+	 * Returns the String representation of the content type
+	 * 
+	 * @return the String representation of the content type
+	 */
+	public String getMimeType();
 
-    public String getCharset();
+	/**
+	 * Returns the content encoding type (character set)
+	 * 
+	 * @return a String representation of the content encoding type (character
+	 *         set)
+	 */
+	public String getCharset();
 
-    public String getHeader(String name);
+	/**
+	 * Returns the content of the named header field
+	 * 
+	 * @param name
+	 *            the name of the requested header field
+	 * @return a String of the content of the named header field
+	 */
+	public String getHeader(String name);
 
-    public InputStream getInputStream();
+	/**
+	 * Returns an input stream which reads from the connection
+	 * 
+	 * @return an input stream which reads from the connection
+	 */
+	public InputStream getInputStream();
 }
