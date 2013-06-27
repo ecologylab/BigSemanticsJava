@@ -6,7 +6,6 @@ import ecologylab.net.ParsedURL;
 
 public interface NewDownloadController
 {
-<<<<<<< HEAD
 	/**
 	 * Sets the user agent
 	 * 
@@ -96,27 +95,4 @@ public interface NewDownloadController
 	 * @return an input stream which reads from the connection
 	 */
 	public InputStream getInputStream();
-=======
-    public void setUserAgent(String userAgent);
-
-    public boolean connect(ParsedURL location) throws IOException;
-
-    public boolean isGood();
-
-    public int getStatus();
-
-    public String getStatusMessage();
-
-    public ParsedURL getLocation();
-
-    public ParsedURL getRedirectedLocation();
-
-    public String getMimeType();
-
-    public String getCharset();
-
-    public String getHeader(String name);
-
-    public InputStream getInputStream();
->>>>>>> b0d474b2c0e93d896d7f1ddd1038bcf65d0bc20d
 }
