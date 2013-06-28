@@ -2,9 +2,9 @@ package ecologylab.bigsemantics.downloaders.controllers;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.URL;
 
 import ecologylab.net.ParsedURL;
 
@@ -15,6 +15,7 @@ import ecologylab.net.ParsedURL;
  */
 public class NewDefaultDownloadController implements NewDownloadController
 {
+	private final int MAX_REDIRECTS = 10;
 	private boolean connectedStatus;
 	private int httpStatus;
 	private String charset;
@@ -45,9 +46,9 @@ public class NewDefaultDownloadController implements NewDownloadController
 
 			httpStatus = connection.getResponseCode();
 
-			if (httpStatus != HttpURLConnection.HTTP_OK
+			for (int redirects = 0; redirects < MAX_REDIRECTS && httpStatus != HttpURLConnection.HTTP_OK
 				&& (httpStatus == HttpURLConnection.HTTP_MOVED_PERM
-				|| httpStatus == HttpURLConnection.HTTP_MOVED_TEMP))
+				|| httpStatus == HttpURLConnection.HTTP_MOVED_TEMP); redirects++)
 			{
 				connection = (HttpURLConnection) new URL(connection.getHeaderField("Location")).openConnection();
 				
@@ -65,10 +66,14 @@ public class NewDefaultDownloadController implements NewDownloadController
 				charset = contentType.length > 1 ? contentType[1].substring(" charset=".length()) : null;
 			}
 			
-			connectionStream = connection.getInputStream();
-			connectionPurl = new ParsedURL(connection.getURL());
-			httpStatusMessage = connection.getResponseMessage();
 			connectedStatus = (200 <= httpStatus && httpStatus < 300);
+			
+			if (connectedStatus)
+			{
+				connectionStream = connection.getInputStream();
+				connectionPurl = new ParsedURL(connection.getURL());
+				httpStatusMessage = connection.getResponseMessage();
+			}
 		}
 		catch (MalformedURLException e)
 		{

@@ -95,4 +95,5 @@ public interface NewDownloadController
 	 * @return an input stream which reads from the connection
 	 */
 	public InputStream getInputStream();
+
 }
