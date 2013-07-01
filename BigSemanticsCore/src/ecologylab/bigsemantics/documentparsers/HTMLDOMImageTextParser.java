@@ -62,7 +62,7 @@ implements DOMParserInterface, HTMLNames
 	@Override
 	public void parse() throws IOException
 	{
-		DOMWalkInformationTagger taggedDoc = new DOMWalkInformationTagger(purlConnection.getPurl(), this);
+		DOMWalkInformationTagger taggedDoc = new DOMWalkInformationTagger(documentClosure.getDocument().getLocation(), this);
 		// this function actually traverse the dom tree
 		taggedDoc.generateCollections(getDom());
 		
@@ -109,7 +109,7 @@ implements DOMParserInterface, HTMLNames
 		if (contentBody == null)
 			return null;
 		
-		DOMWalkInformationTagger domTagger = new DOMWalkInformationTagger(purlConnection.getPurl(), htmlType);
+		DOMWalkInformationTagger domTagger = new DOMWalkInformationTagger(documentClosure.getDocument().getLocation(), htmlType);
 		domTagger.generateCollectionsFromRoot(contentBody);
 		// walk through the HTML document object.
 		// gather all paragraphText and image objects in the data structure.

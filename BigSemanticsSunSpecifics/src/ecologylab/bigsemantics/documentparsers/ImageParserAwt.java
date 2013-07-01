@@ -18,6 +18,7 @@ import java.io.BufferedInputStream;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.Iterator;
 
 import javax.imageio.ImageIO;
@@ -36,12 +37,11 @@ import com.drew.metadata.exif.GpsDirectory;
 
 import ecologylab.bigsemantics.actions.SemanticActionsKeyWords;
 import ecologylab.bigsemantics.collecting.SemanticsGlobalScope;
-import ecologylab.bigsemantics.documentparsers.DocumentParser;
-import ecologylab.bigsemantics.documentparsers.ImageParser;
 import ecologylab.bigsemantics.metadata.Metadata;
 import ecologylab.bigsemantics.metadata.builtins.Image;
 import ecologylab.bigsemantics.sensing.GisFeatures;
 import ecologylab.bigsemantics.sensing.MetadataExifFeature;
+import ecologylab.collections.CollectionTools;
 import ecologylab.generic.Debug;
 import ecologylab.net.PURLConnection;
 import ecologylab.net.ParsedURL;
@@ -133,6 +133,13 @@ public class ImageParserAwt extends ImageParser
 
 	public static final int	MIN_DIM	= 10;
 
+	static final String[]									noAlphaMimeStrings					=
+	{ 
+		"image/jpeg", "image/bmp", 
+	};
+
+	static final HashMap<String, String>	noAlphaMimeMap						= CollectionTools.buildHashMapFromStrings(noAlphaMimeStrings);
+
 	protected BufferedImage imageIORead(InputStream inputStream) throws IOException
 	{
 		BufferedImage bufferedImage = null;
@@ -215,7 +222,7 @@ public class ImageParserAwt extends ImageParser
 							// debug("gotRawImageType! numBands="+rawNumBands+ " readImageType="+readImageType);
 						}
 						// look in the URL itself
-						else if (location.isNoAlpha() || purlConnection.isNoAlpha())
+						else if (location.isNoAlpha() || downloadController.getMimeType() != null && noAlphaMimeMap.containsKey(downloadController.getMimeType()))
 						{
 							readImageType = BufferedImage.TYPE_INT_RGB;
 						}

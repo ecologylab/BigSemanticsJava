@@ -21,9 +21,10 @@ import ecologylab.bigsemantics.collecting.SemanticsSite;
 import ecologylab.bigsemantics.documentcache.IDocumentCache;
 import ecologylab.bigsemantics.documentparsers.DocumentParser;
 import ecologylab.bigsemantics.documentparsers.ParserBase;
-import ecologylab.bigsemantics.downloaders.controllers.DefaultDownloadController;
 import ecologylab.bigsemantics.downloaders.controllers.DownloadController;
 import ecologylab.bigsemantics.downloaders.controllers.DownloadControllerType;
+import ecologylab.bigsemantics.downloaders.controllers.NewDefaultDownloadController;
+import ecologylab.bigsemantics.downloaders.controllers.NewDownloadController;
 import ecologylab.bigsemantics.html.documentstructure.SemanticInLinks;
 import ecologylab.bigsemantics.metadata.output.DocumentLogRecord;
 import ecologylab.bigsemantics.metametadata.MetaMetadata;
@@ -57,9 +58,9 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 {
 	Document											document; 
 	
-	private PURLConnection				purlConnection;
-	
-	private DownloadController		downloadController;
+	private DownloadControllerType downloadControllerType;
+
+	private NewDownloadController	downloadController;
 
 	private DocumentParser				documentParser;
 	
@@ -118,14 +119,26 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 		this.semanticsScope = semanticsSessionScope;
 		this.semanticInlinks = semanticInlinks;
 		this.continuations = new ArrayList<Continuation<DocumentClosure>>();
-
+		this.downloadControllerType = downloadControllerType;
+		this.downloadController = createDownloadController(downloadControllerType);
+	}
+	
+	protected NewDownloadController createDownloadController(DownloadControllerType downloadControllerType)
+	{
 		switch (downloadControllerType)
 		{
 		case DEFAULT:
-			this.downloadController = new DefaultDownloadController(); break;
+			return new NewDefaultDownloadController();
 		case DPOOL:
-			this.downloadController = createDPoolDownloadController(); break;
+//			this.downloadController = createDPoolDownloadController();
+		  return null;
 		}
+		return null;
+	}
+	
+	public NewDownloadController getDownloadController()
+	{
+	  return downloadController;
 	}
 	
 	public static Class<? extends DownloadController> controllerClass;
@@ -218,17 +231,26 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 		millis = System.currentTimeMillis();
 		// connect call also evolves Document based on redirects & mime-type;
 		//the parameter is used to get and set document properties with request and response respectively
-		downloadController.connect(this);
+		downloadController.accessAndDownload(location);
 		if (logRecord != null)
   		logRecord.setmSecInHtmlDownload(System.currentTimeMillis() - millis);
 		//baseLog.debug("document downloaded in " + (System.currentTimeMillis() - millis) + "(ms)");
 		
+		ParsedURL redirectedLocation = downloadController.getRedirectedLocation();
+		if (redirectedLocation != null)
+		{
+			SemanticsGlobalScope semanticScope = document.getSemanticsScope();
+			Document newDocument = semanticScope.getOrConstructDocument(redirectedLocation);
+			newDocument.addAdditionalLocation(location); // TODO: confirm this!
+			changeDocument(newDocument);
+		}
+
 		MetaMetadata metaMetadata = (MetaMetadata) document.getMetaMetadata();
 		//check for more specific meta-metadata
 		if (metaMetadata.isGenericMetadata())
 		{ // see if we can find more specifc meta-metadata using mimeType
 			MetaMetadataRepository repository = semanticsScope.getMetaMetadataRepository();
-			MetaMetadata mimeMmd = repository.getMMByMime(purlConnection.mimeType());
+			MetaMetadata mimeMmd = repository.getMMByMime(downloadController.getMimeType());
 			if (mimeMmd != null && !mimeMmd.equals(metaMetadata))
 			{
 			  // new meta-metadata!
@@ -247,14 +269,14 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 			documentParser = DocumentParser.get(metaMetadata, semanticsScope);
 		if (documentParser != null)
 		{
-			documentParser.fillValues(purlConnection, this, semanticsScope);
+			documentParser.fillValues(downloadController, this, semanticsScope);
 		}
-		else if (!DocumentParser.isRegisteredNoParser(purlConnection.getPurl()))
+		else if (!DocumentParser.isRegisteredNoParser(downloadController.getRedirectedLocation()))
 		{
 			warning("No DocumentParser found: " + metaMetadata);
 		}
 		
-		if (purlConnection.isGood() && documentParser != null)
+		if (downloadController.isGood() && documentParser != null)
 		{
 			// container or not (it could turn out to be an image or some other mime type), parse the baby!
 			setDownloadStatusInternal(DownloadStatus.PARSING);
@@ -305,8 +327,8 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 		document.setDownloadDone(true);
 		document.downloadAndParseDone(documentParser);
 		
-		purlConnection.recycle();
-		purlConnection	= null;
+//		purlConnection.recycle();
+//		purlConnection	= null;
 	}
 	
 	/**
@@ -385,8 +407,8 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 		if (documentParser != null)
 			documentParser.recycle();
 
-		if (purlConnection != null)
-			purlConnection.recycle();
+//		if (purlConnection != null)
+//			purlConnection.recycle();
 
 		semanticInlinks	= null;
 
@@ -736,7 +758,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 	}
 	
 	public void setPurlConnection(PURLConnection purlConnection) {
-		this.purlConnection = purlConnection;
+//		this.purlConnection = purlConnection;
 	}
 
 	/**
@@ -746,13 +768,17 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 	 * Re-connect simply.
 	 * 
 	 * @return	PURLConnection for the new connection.
+	 * @throws IOException 
 	 */
-	public PURLConnection reConnect()
+	public NewDownloadController reConnect() throws IOException
 	{
-		purlConnection.close();
-		purlConnection.recycle();
-		purlConnection	= document.getLocation().connect(document.getMetaMetadata().getUserAgentString());
-		return purlConnection;
+	  downloadController = createDownloadController(downloadControllerType);
+	  downloadController.accessAndDownload(document.getLocation());
+	  return downloadController;
+//		purlConnection.close();
+//		purlConnection.recycle();
+//		purlConnection	= document.getLocation().connect(document.getMetaMetadata().getUserAgentString());
+//		return purlConnection;
 	}
 
 	@Override
@@ -792,7 +818,8 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
   {
     if (document == null || document.getLocation() == null)
       return false;
-    return this.downloadController.isCached(document.getLocation());
+//    return this.downloadController.isCached(document.getLocation());
+    return false;
   }
 
 	@Override

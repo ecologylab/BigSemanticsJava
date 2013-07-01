@@ -11,6 +11,7 @@ import java.util.HashSet;
 import ecologylab.bigsemantics.actions.SemanticActionsKeyWords;
 import ecologylab.bigsemantics.collecting.SemanticsGlobalScope;
 import ecologylab.bigsemantics.collecting.SemanticsSessionScope;
+import ecologylab.bigsemantics.downloaders.controllers.NewDownloadController;
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metadata.builtins.DocumentClosure;
 import ecologylab.bigsemantics.metametadata.MetaMetadata;
@@ -43,12 +44,14 @@ import ecologylab.net.ParsedURL;
 abstract public class DocumentParser<D extends Document>
 		extends Debug
 {
-	/**
-	 * All information about the connection. Filled out by the connect() method.
-	 */
-	protected PURLConnection		purlConnection;
+//	/**
+//	 * All information about the connection. Filled out by the connect() method.
+//	 */
+//	protected PURLConnection		purlConnection;
 
 	protected DocumentClosure		documentClosure;
+	
+	protected NewDownloadController downloadController;
 
 	public boolean 					cacheHit = false;
 
@@ -107,6 +110,11 @@ abstract public class DocumentParser<D extends Document>
 	
 	public abstract void parse ( ) throws IOException;
 	
+	public NewDownloadController getDownloadController()
+	{
+	  return downloadController;
+	}
+
 	/**
 	 * Fill out the instance of this resulting from a successful connect().
 	 * 
@@ -114,9 +122,10 @@ abstract public class DocumentParser<D extends Document>
 	 * @param documentClosure TODO
 	 * @param infoCollector
 	 */
-	public void fillValues ( PURLConnection purlConnection, DocumentClosure documentClosure, SemanticsGlobalScope infoCollector )
+//	public void fillValues ( PURLConnection purlConnection, DocumentClosure documentClosure, SemanticsGlobalScope infoCollector )
+	public void fillValues ( NewDownloadController downloadController, DocumentClosure documentClosure, SemanticsGlobalScope infoCollector )
 	{
-		this.purlConnection		= purlConnection;
+		this.downloadController		= downloadController;
 		this.documentClosure	= documentClosure;
 		this.semanticsScope = infoCollector;
 	}
@@ -138,11 +147,11 @@ abstract public class DocumentParser<D extends Document>
 	 */
 	public void recycle ( )
 	{
-		if (purlConnection != null)
-		{
-			purlConnection.recycle();
-			purlConnection	= null;
-		}
+//		if (purlConnection != null)
+//		{
+//			purlConnection.recycle();
+//			purlConnection	= null;
+//		}
 		semanticsScope 		= null;
 		documentClosure		= null;
 	}
@@ -172,7 +181,7 @@ abstract public class DocumentParser<D extends Document>
 
 	protected InputStream inputStream ( )
 	{
-		return (purlConnection == null) ? null : purlConnection.inputStream();
+		return (downloadController == null) ? null : downloadController.getInputStream();
 	}
 	
 	protected Reader reader()
@@ -188,18 +197,8 @@ abstract public class DocumentParser<D extends Document>
 
 	public PURLConnection purlConnection ( )
 	{
-		return purlConnection;
-	}
-
-	/**
-	 * Set the inputStream of this documeType object. Called from HTMLFragment.
-	 * 
-	 * @param inputStream
-	 */
-	public void setPURLConnection ( InputStream inputStream )
-	{
-		// this.inputStream = inputStream;
-		purlConnection = new PURLConnection(purl(), null, inputStream);
+//		return purlConnection;
+	  return null;
 	}
 
 	/**
@@ -214,9 +213,13 @@ abstract public class DocumentParser<D extends Document>
 		ParsedURL docPurl = null;
 		if (document != null)
 			docPurl = document.getLocation();
-		if (purlConnection != null)
+		if (downloadController != null)
 		{
-			ParsedURL connPurl = purlConnection.getPurl();
+			ParsedURL connPurl = downloadController.getRedirectedLocation();
+			if (connPurl == null)
+			{
+			  connPurl = downloadController.getLocation();
+			}
 			if (semanticsScope.isService() && connPurl.isFile()	&& docPurl != null && !docPurl.isFile())
 			{
 				return docPurl;
@@ -522,11 +525,12 @@ abstract public class DocumentParser<D extends Document>
 	 * Reset the purlConnection field of this to the new PURLConnection.
 	 * 
 	 * @return	InputStream for the new connection.
+	 * @throws IOException 
 	 */
-	public InputStream reConnect()
+	public InputStream reConnect() throws IOException
 	{
-		PURLConnection purlConnection = documentClosure.reConnect();
-		this.purlConnection	= purlConnection;
-		return purlConnection.inputStream();
+		NewDownloadController downloadController = documentClosure.reConnect();
+		this.downloadController	= downloadController;
+		return downloadController.getInputStream();
 	}
 }

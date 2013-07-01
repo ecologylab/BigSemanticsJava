@@ -44,7 +44,7 @@ public class ReselectAndExtractMetadataSemanticAction extends SemanticAction
 				{
 					MetaMetadata newMmd = reselectMap.get(selector);
 					DocumentParser newParser = DocumentParser.get(newMmd, sessionScope);
-					newParser.fillValues(documentParser.purlConnection(), doc.getOrConstructClosure(), sessionScope);
+					newParser.fillValues(documentParser.getDownloadController(), doc.getOrConstructClosure(), sessionScope);
 					if (documentParser instanceof ParserBase && newParser instanceof ParserBase)
 					{
 						CompoundDocument newDoc = (CompoundDocument) newMmd.constructMetadata();
