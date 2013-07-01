@@ -1,4 +1,4 @@
-package ecologylab.bigsemantics.testcases;
+package ecologylab.bigsemantics.oldtestcases;
 
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.DeserializationHookStrategy;

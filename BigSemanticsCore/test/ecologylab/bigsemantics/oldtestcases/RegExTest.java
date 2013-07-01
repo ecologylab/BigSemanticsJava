@@ -1,4 +1,4 @@
-package ecologylab.bigsemantics.testcases;
+package ecologylab.bigsemantics.oldtestcases;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

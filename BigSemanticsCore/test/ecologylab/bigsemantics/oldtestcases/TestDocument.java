@@ -1,4 +1,4 @@
-package ecologylab.bigsemantics.testcases;
+package ecologylab.bigsemantics.oldtestcases;
 
 import ecologylab.bigsemantics.metadata.scalar.MetadataString;
 import ecologylab.serialization.ElementState;

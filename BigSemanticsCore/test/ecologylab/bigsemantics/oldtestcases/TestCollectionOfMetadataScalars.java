@@ -1,4 +1,4 @@
-package ecologylab.bigsemantics.testcases;
+package ecologylab.bigsemantics.oldtestcases;
 
 import ecologylab.bigsemantics.metadata.Metadata;
 import ecologylab.bigsemantics.metadata.builtins.Document;
