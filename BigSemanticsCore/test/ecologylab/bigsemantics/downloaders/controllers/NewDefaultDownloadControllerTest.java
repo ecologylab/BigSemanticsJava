@@ -88,22 +88,13 @@ public class NewDefaultDownloadControllerTest
 		}
 	}
 	
-	@Test
-	public void testAccessAndDownload_Bad() throws MalformedURLException
+	@Test (expected = IOException.class)
+	public void testAccessAndDownload_Bad() throws MalformedURLException, IOException
 	{
 		URL url = new URL(BAD_ADDRESS);
 		ParsedURL purl = new ParsedURL(url);
-		
-		try
-		{
-			// Connection should be indicated as bad (blocked) or an exception should be thrown
-			assertFalse("bad connection is indicated as such", controller.accessAndDownload(purl));
-			fail("Connection to bad url accepted");
-		}
-		catch (IOException e)
-		{
-			// Being here is expected
-		}
+
+		assertFalse("bad connection is indicated as such", controller.accessAndDownload(purl));
 	}
 	
 	@Test
@@ -175,7 +166,7 @@ public class NewDefaultDownloadControllerTest
 		}
 		catch (IOException e)
 		{
-			fail("connecting failed");
+			fail("connection failed");
 		}
 		
 		assertTrue("getStatus returns a valid HTTP status code", (controller.getStatus() >= 100 && controller.getStatus() < 600));	}
@@ -192,7 +183,7 @@ public class NewDefaultDownloadControllerTest
 		}
 		catch (IOException e)
 		{
-			fail("connecting failed");
+			fail("connection failed");
 		}
 		
 		assertTrue("getStatus returns a message", controller.getStatusMessage() != null);
@@ -210,7 +201,7 @@ public class NewDefaultDownloadControllerTest
 		}
 		catch (IOException e)
 		{
-			fail("connecting failed");
+			fail("connection failed");
 		}
 		
 		assertEquals("getLocation returns the expected (original) location", controller.getLocation(), purl);
@@ -228,7 +219,7 @@ public class NewDefaultDownloadControllerTest
 		}
 		catch (IOException e)
 		{
-			fail("connecting failed");
+			fail("connection failed");
 		}
 		
 		assertEquals("getLocation returns the expected (original) location", controller.getLocation(), purl);
@@ -247,7 +238,7 @@ public class NewDefaultDownloadControllerTest
 		}
 		catch (IOException e)
 		{
-			fail("connecting failed");
+			fail("connection failed");
 		}
 		
 		assertEquals("redirected location is expected location", expectedFinalDestination, controller.getRedirectedLocation().url());
@@ -265,7 +256,7 @@ public class NewDefaultDownloadControllerTest
 		}
 		catch (IOException e)
 		{
-			fail("connecting failed");
+			fail("connection failed");
 		}
 		
 		assertTrue("getMimeType returns a valid string", controller.getMimeType() != null);
@@ -283,7 +274,7 @@ public class NewDefaultDownloadControllerTest
 		}
 		catch (IOException e)
 		{
-			fail("connecting failed");
+			fail("connection failed");
 		}
 		
 		assertTrue("getCharset returns a valid string", controller.getCharset() != null);
