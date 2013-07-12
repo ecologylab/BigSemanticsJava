@@ -88,13 +88,27 @@ public class NewDefaultDownloadControllerTest
 		}
 	}
 	
-	@Test (expected = IOException.class)
-	public void testAccessAndDownload_Bad() throws MalformedURLException, IOException
+	@Test
+	public void testAccessAndDownload_Bad() throws MalformedURLException
 	{
+		boolean exceptionThrown = false;
 		URL url = new URL(BAD_ADDRESS);
 		ParsedURL purl = new ParsedURL(url);
-
-		assertFalse("bad connection is indicated as such", controller.accessAndDownload(purl));
+		
+		try
+		{
+			// Connection should be indicated as bad (blocked) or an exception should be thrown
+		
+			assertFalse("bad connection is indicated as such", controller.accessAndDownload(purl));
+	
+		}
+		catch (IOException e)
+		{
+			// Being here is expected
+			exceptionThrown = true;
+		}
+		
+		assertTrue("An IOException was correctly thrown", exceptionThrown);
 	}
 	
 	@Test
