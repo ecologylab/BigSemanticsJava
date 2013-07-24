@@ -171,9 +171,24 @@ public class MetaMetadataJavaTranslator extends JavaTranslator implements MmdCom
 						first = false;
 					}
 					else
+					{
 						appendable.append(", ");
+					}
 					appendable.append(MmdGenericTypeVar.getMdClassNameFromMmdOrNoChange(argName, repository, this));
 					appendGenericTypeVarParameterizations(appendable, mmdGenericTypeVar.getNestedGenericTypeVars(), repository);
+				}
+				else if (argName == null && extendsName != null && mmdGenericTypeVar.isRebound())
+				{
+				  if (first)
+				  {
+				    appendable.append("<");
+				    first = false;
+				  }
+				  else
+				  {
+				    appendable.append(", ");
+				  }
+				  appendable.append(varName);
 				}
 			}
 			if (!first)

@@ -54,6 +54,8 @@ public class MmdGenericTypeVar extends ElementState
 	@simpl_map_key_field("name")
 	@simpl_nowrap
 	private MmdGenericTypeVarScope	nestedGenericTypeVars;
+	
+	private boolean                 rebound;
 
 	public String getName()
 	{
@@ -128,6 +130,11 @@ public class MmdGenericTypeVar extends ElementState
 	{
 		return extendsAttribute != null /* || superAttribute != null */;
 	}
+	
+	public boolean isRebound()
+	{
+	  return rebound;
+	}
 
 	public void resolveArgAndBounds(MmdGenericTypeVarScope genericTypeVarScope)
 	{
@@ -160,6 +167,11 @@ public class MmdGenericTypeVar extends ElementState
 			}
 			
 			// TODO superAttribute
+			
+			if (genericTypeVarScope.get(name) != null)
+			{
+				rebound = true;
+			}
 		}
 		else
 			throw new MetaMetadataException(

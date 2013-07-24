@@ -1,0 +1,42 @@
+<meta_metadata_repository name="generics_test"
+  package="ecologylab.bigsemantics.test.library.generics">
+
+  <meta_metadata name="some_type">
+    <generic_type_var name="T1" extends="t1" />
+    <generic_type_var name="T2" extends="t2" /><!-- scope: T1 extends t1, T2 extends t2 -->
+  </meta_metadata>
+
+  <meta_metadata name="another_type">
+  	<generic_type_var name="S1" extends="s1" /><!-- s1 extends t1 -->
+  	<generic_type_var name="S2" extends="s2" /><!-- s2 extends t2 -->
+  	<composite type="some_type">
+  		<generic_type_var name="T1" arg="S1" />
+      <!-- scope: S1 extends s1, S2 extends s2, T1=S1, T2=S2;
+           check: if S1 extends t1, if S2 extends t2 -->
+  		<generic_type_var name="T2" arg="S2" />
+  		<composite type="T1" /><!-- T1=S1 extends s1, will inherit from s1 -->
+  		<collection child_type="T2" />
+  	</composite>
+  </meta_metadata>
+
+  <meta_metadata name="third_type" extends="another_type">
+  	<generic_type_var name="S1" arg="v1" />
+    <!-- scope: S1=v1, S2=v2; check: if v1 extends s1, if v2 extends s2 -->
+  	<generic_type_var name="S2" arg="v2" />
+  	<!-- implicitly:
+  	<composite type="some_type">
+  		<generic_type_var name="T1" arg="v1" />
+      <!- - scope: S1=v1, S2=v2, T1=S1, T2=S2; for inherited fields no checks needed - ->
+  		<generic_type_var name="T2" arg="v2" />
+      <!- - T1=v1, should inherit from v1! - ->
+  		<composite type="T1" />
+  		<collection child_type="T2" />
+  	</composite>
+  	-->
+  	<composite type="forth_type">
+      <!-- for new fields, need to check if S1 conforms to TT -->
+  		<generic_type_var name="TT" arg="S1" />
+  	</composite>
+  </meta_metadata>
+
+</meta_metadata_repository>
