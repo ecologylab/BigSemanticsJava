@@ -21,9 +21,7 @@ import ecologylab.bigsemantics.collecting.SemanticsSite;
 import ecologylab.bigsemantics.documentcache.IDocumentCache;
 import ecologylab.bigsemantics.documentparsers.DocumentParser;
 import ecologylab.bigsemantics.documentparsers.ParserBase;
-import ecologylab.bigsemantics.downloaders.controllers.DownloadController;
-import ecologylab.bigsemantics.downloaders.controllers.DownloadControllerType;
-import ecologylab.bigsemantics.downloaders.controllers.NewDefaultDownloadController;
+import ecologylab.bigsemantics.downloaders.controllers.DownloadControllerFactory;
 import ecologylab.bigsemantics.downloaders.controllers.NewDownloadController;
 import ecologylab.bigsemantics.html.documentstructure.SemanticInLinks;
 import ecologylab.bigsemantics.metadata.output.DocumentLogRecord;
@@ -58,7 +56,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 {
 	Document											document; 
 	
-	private DownloadControllerType downloadControllerType;
+	DownloadControllerFactory     downloadControllerFactory;
 
 	private NewDownloadController	downloadController;
 
@@ -112,61 +110,34 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 	 * 
 	 */
 	private DocumentClosure(Document document, SemanticsGlobalScope semanticsSessionScope,
-			SemanticInLinks semanticInlinks, DownloadControllerType downloadControllerType)
+			SemanticInLinks semanticInlinks, DownloadControllerFactory downloadControllerFactory)
 	{
 		super();
 		this.document = document;
 		this.semanticsScope = semanticsSessionScope;
 		this.semanticInlinks = semanticInlinks;
 		this.continuations = new ArrayList<Continuation<DocumentClosure>>();
-		this.downloadControllerType = downloadControllerType;
-		this.downloadController = createDownloadController(downloadControllerType);
+		this.downloadControllerFactory = downloadControllerFactory;
+		this.downloadController = downloadControllerFactory.createDownloadController();
 	}
 	
-	protected NewDownloadController createDownloadController(DownloadControllerType downloadControllerType)
-	{
-		switch (downloadControllerType)
-		{
-		case DEFAULT:
-			return new NewDefaultDownloadController();
-		case DPOOL:
-//			this.downloadController = createDPoolDownloadController();
-		  return null;
-		}
-		return null;
-	}
-	
-	public NewDownloadController getDownloadController()
+	/**
+   * Should only be called by Document.getOrCreateClosure().
+   * 
+   * @param document
+   * @param semanticInlinks
+   */
+  DocumentClosure(Document document, SemanticInLinks semanticInlinks,
+  		DownloadControllerFactory downloadControllerFactory)
+  {
+  	this(document, document.getSemanticsScope(), semanticInlinks, downloadControllerFactory);
+  }
+
+  public NewDownloadController getDownloadController()
 	{
 	  return downloadController;
 	}
 	
-	public static Class<? extends DownloadController> controllerClass;
-	
-  private static DownloadController createDPoolDownloadController()
-  {
-    try
-    {
-      return controllerClass.newInstance();
-    }
-    catch (Exception e)
-    {
-      throw new RuntimeException(e);
-    }
-  }
-
-	/**
-	 * Should only be called by Document.getOrCreateClosure().
-	 * 
-	 * @param document
-	 * @param semanticInlinks
-	 */
-	DocumentClosure(Document document, SemanticInLinks semanticInlinks,
-			DownloadControllerType downloadControllerType)
-	{
-		this(document, document.getSemanticsScope(), semanticInlinks, downloadControllerType);
-	}
-
 	/////////////////////// methods for downloadable //////////////////////////
 	/**
 	 * Called by DownloadMonitor to initiate download, and cleanup afterward.
@@ -772,7 +743,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 	 */
 	public NewDownloadController reConnect() throws IOException
 	{
-	  downloadController = createDownloadController(downloadControllerType);
+	  downloadController = downloadControllerFactory.createDownloadController();
 	  downloadController.accessAndDownload(document.getLocation());
 	  return downloadController;
 //		purlConnection.close();
