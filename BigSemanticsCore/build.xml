@@ -24,7 +24,7 @@
 	
 	<target name="compile">
 		<mkdir dir="${classes.dir}" />
-		<javac srcdir="${src.dir}" destdir="${classes.dir}" source="1.6" target="1.6" classpathref="classpath" />
+		<javac srcdir="${src.dir}" destdir="${classes.dir}" source="1.6" target="1.6" classpathref="classpath" debug="yes" debuglevel="lines,vars,source" verbose="yes" />
 		<copy todir="${classes.dir}">
 		  <fileset dir="${resources.dir}" />
 		</copy>
