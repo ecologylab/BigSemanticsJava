@@ -1,5 +1,7 @@
 package ecologylab.bigsemantics.downloaders.controllers;
 
+import ecologylab.bigsemantics.metadata.builtins.DocumentClosure;
+
 /**
  * Factory for NewDefaultDownloadControllerFactory.
  * 
@@ -9,7 +11,7 @@ public class NewDefaultDownloadControllerFactory implements DownloadControllerFa
 {
 
   @Override
-  public NewDownloadController createDownloadController()
+  public NewDownloadController createDownloadController(DocumentClosure closure)
   {
     return new NewDefaultDownloadController();
   }

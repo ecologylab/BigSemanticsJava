@@ -118,7 +118,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 		this.semanticInlinks = semanticInlinks;
 		this.continuations = new ArrayList<Continuation<DocumentClosure>>();
 		this.downloadControllerFactory = downloadControllerFactory;
-		this.downloadController = downloadControllerFactory.createDownloadController();
+		this.downloadController = downloadControllerFactory.createDownloadController(this);
 	}
 	
 	/**
@@ -743,7 +743,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 	 */
 	public NewDownloadController reConnect() throws IOException
 	{
-	  downloadController = downloadControllerFactory.createDownloadController();
+	  downloadController = downloadControllerFactory.createDownloadController(this);
 	  downloadController.accessAndDownload(document.getLocation());
 	  return downloadController;
 //		purlConnection.close();
