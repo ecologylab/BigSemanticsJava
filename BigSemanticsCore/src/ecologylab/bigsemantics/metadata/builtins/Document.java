@@ -19,6 +19,7 @@ import ecologylab.bigsemantics.documentparsers.DocumentParser;
 import ecologylab.bigsemantics.documentparsers.ParserResult;
 import ecologylab.bigsemantics.downloaders.controllers.DownloadControllerFactory;
 import ecologylab.bigsemantics.downloaders.controllers.NewDefaultDownloadController;
+import ecologylab.bigsemantics.downloaders.controllers.NewDefaultDownloadControllerFactory;
 import ecologylab.bigsemantics.downloaders.controllers.NewDownloadController;
 import ecologylab.bigsemantics.html.documentstructure.SemanticAnchor;
 import ecologylab.bigsemantics.html.documentstructure.SemanticInLinks;
@@ -346,6 +347,15 @@ public class Document extends DocumentDeclaration
 	 */
 	public DocumentClosure getOrConstructClosure()
 	{
+		return getOrConstructClosure(new NewDefaultDownloadControllerFactory());
+	}
+	
+	/**
+	 * 
+	 * @return A closure for this, or null, if this is not fit to be parsed.
+	 */
+	public DocumentClosure getOrConstructClosure(DownloadControllerFactory downloadControllerFactory)
+	{
 		DocumentClosure result	= this.documentClosure;
 		if (result == null && !isRecycled() && getLocation() != null)
 		{
@@ -357,21 +367,12 @@ public class Document extends DocumentDeclaration
 					if (semanticInlinks == null)
 						semanticInlinks	= new SemanticInLinks();
 					
-					result	= constructClosure();
+					result	= constructClosure(downloadControllerFactory);
 					this.documentClosure	= result;
 				}
 			}
 		}
 		return result == null || result.downloadStatus == DownloadStatus.RECYCLED ? null : result;
-	}
-	
-	/**
-	 * 
-	 * @return A closure for this, or null, if this is not fit to be parsed.
-	 */
-	public DocumentClosure getOrConstructClosure(DownloadControllerFactory downloadControllerFactory)
-	{
-		return getOrConstructClosure();
 	}
 	
 	public DocumentClosure documentClosure()
@@ -384,16 +385,7 @@ public class Document extends DocumentDeclaration
 	 */
 	public DocumentClosure constructClosure()
 	{
-		return new DocumentClosure(this,
-		                           semanticInlinks,
-		                           new DownloadControllerFactory()
-                               {
-                                 @Override
-                                 public NewDownloadController createDownloadController()
-                                 {
-                                   return new NewDefaultDownloadController();
-                                 }
-                               });
+		return constructClosure(new NewDefaultDownloadControllerFactory());
 	}
 	
 	private DocumentClosure constructClosure(DownloadControllerFactory downloadControllerFactory)
