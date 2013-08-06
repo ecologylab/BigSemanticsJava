@@ -95,7 +95,7 @@ public class DeserializationTest
 		assertNotNull(doc.getClippings());
 	}
 
-	@Test
+	//@Test
 	public void validateMetadataDeserializationPresetJSON()
 			throws SIMPLTranslationException, InterruptedException
 	{
