@@ -1,0 +1,31 @@
+<meta_metadata_repository name="generics_test"
+  package="ecologylab.bigsemantics.test.library.generics">
+
+  <!-- Type1<R, S, T extends SomeType<R, S>, U extends R, V extends S, SR> -->
+  <meta_metadata name="type1">
+    <generic_type_var name="R" extends="metadata" />
+    <generic_type_var name="S" /><!-- default bound = metadata -->
+    <generic_type_var name="T" extends="some_type">
+      <generic_type_var name="T1" arg="R" />
+      <generic_type_var arg="S" />
+    </generic_type_var>
+    <generic_type_var name="U" extends="R" />
+    <generic_type_var name="V" extends="S" />
+    <generic_type_var name="SR" />
+  </meta_metadata>
+
+  <!-- Type2<R extends TypeR, S, T extends SomeSubType<R, S>, U extends R, V extends S, NT>
+           extends Type1<R, S, T, U, V, SearchResult> -->
+  <meta_metadata name="type2" extends="type1">
+    <generic_type_var name="R" extends="type_r" />
+    <!-- if the bounding type is not changed, we should be able to omit T also -->
+    <generic_type_var name="T" extends="some_sub_type">
+      <generic_type_var arg="R" />
+      <generic_type_var arg="S" />
+    </generic_type_var>
+    <!-- no changes to S, U, V, so they can be omitted -->
+    <generic_type_var name="SR" arg="search_result" />
+    <generic_type_var name="NT" /><!-- a new generic type var definition -->
+  </meta_metadata>
+
+</meta_metadata_repository>
