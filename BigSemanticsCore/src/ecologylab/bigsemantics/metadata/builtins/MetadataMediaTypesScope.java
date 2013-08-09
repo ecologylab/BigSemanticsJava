@@ -12,25 +12,15 @@ import ecologylab.serialization.SimplTypesScope;
 /**
  * Encapsulates ClassDescriptors for Metadata and its subclasses that are coded by hand.
  */
-public class MetadataBuiltinsTypesScope extends Debug
+public class MetadataMediaTypesScope extends Debug
 {
-	public static final String NAME = "metadata_builtin_translations";
+	public static final String NAME = "repository_media";
 	
 	protected static final Class CLASSES[] = 
 	{
-		Metadata.class, 
-		ClippableDocument.class,
-		Clipping.class,
-		CompoundDocument.class,
-		DebugMetadata.class,
-		Document.class, 
-		DocumentMetadataWrap.class,
+		HtmlText.class,
 		Image.class, 
-		ImageClipping.class,
-		GeoLocation.class,
-		RichArtifact.class,
-		RichBookmark.class,
-		CreativeAct.class,
+
 	};
 	
 	static
@@ -40,6 +30,6 @@ public class MetadataBuiltinsTypesScope extends Debug
 
 	public static SimplTypesScope get()
 	{
-		return SimplTypesScope.get(NAME, MetadataBuiltinDeclarationsTranslationScope.get(), MetadataMediaTypesScope.get(), CLASSES);
+		return SimplTypesScope.get(NAME, CLASSES);
 	}	
 }

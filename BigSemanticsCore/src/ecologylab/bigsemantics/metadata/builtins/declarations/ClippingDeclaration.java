@@ -11,46 +11,40 @@ package ecologylab.bigsemantics.metadata.builtins.declarations;
 import ecologylab.bigsemantics.metadata.Metadata;
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metadata.builtins.MetadataBuiltinsTypesScope;
+import ecologylab.bigsemantics.metadata.builtins.RichArtifact;
 import ecologylab.bigsemantics.metadata.mm_name;
 import ecologylab.bigsemantics.metadata.scalar.MetadataString;
 import ecologylab.bigsemantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.bigsemantics.namesandnums.SemanticsNames;
-import ecologylab.serialization.annotations.Hint;
-import ecologylab.serialization.annotations.simpl_collection;
 import ecologylab.serialization.annotations.simpl_composite;
-import ecologylab.serialization.annotations.simpl_hints;
 import ecologylab.serialization.annotations.simpl_inherit;
 import ecologylab.serialization.annotations.simpl_scalar;
 import ecologylab.serialization.annotations.simpl_scope;
 import ecologylab.serialization.annotations.simpl_wrap;
 import java.lang.String;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 @simpl_inherit
-public class ClippingDeclaration extends Metadata
+public class ClippingDeclaration<M extends Metadata> extends RichArtifact<M>
 {
-	@simpl_scalar
-	private MetadataString context;
-
-	@simpl_scalar
-	@simpl_hints({Hint.XML_LEAF_CDATA})
-	private MetadataString contextHtml;
-
-	@simpl_scalar
-	private MetadataString xpath;
-
 	@simpl_composite
 	@simpl_wrap
 	@simpl_scope("repository_documents")
 	@mm_name("source_doc")
 	private Document sourceDoc;
 
-	@simpl_collection
-	@simpl_scope("repository_documents")
-	@mm_name("outlinks")
-	private List<Document> outlinks;
+	@simpl_scalar
+	private MetadataString context;
+
+	@simpl_scalar
+	private MetadataString contextHtml;
+
+	@simpl_scalar
+	private MetadataString xpath;
+
+	@simpl_scalar
+	private MetadataString caption;
 
 	public ClippingDeclaration()
 	{ super(); }
@@ -59,6 +53,16 @@ public class ClippingDeclaration extends Metadata
 		super(mmd);
 	}
 
+
+	public Document getSourceDoc()
+	{
+		return sourceDoc;
+	}
+
+	public void setSourceDoc(Document sourceDoc)
+	{
+		this.sourceDoc = sourceDoc;
+	}
 
 	public MetadataString	context()
 	{
@@ -156,43 +160,35 @@ public class ClippingDeclaration extends Metadata
 		this.xpath = xpath;
 	}
 
-	public Document getSourceDoc()
+	public MetadataString	caption()
 	{
-		return sourceDoc;
+		MetadataString	result = this.caption;
+		if (result == null)
+		{
+			result = new MetadataString();
+			this.caption = result;
+		}
+		return result;
 	}
 
-	public void setSourceDoc(Document sourceDoc)
+	public String getCaption()
 	{
-		this.sourceDoc = sourceDoc;
+		return this.caption == null ? null : caption().getValue();
 	}
 
-	public List<Document> getOutlinks()
+	public MetadataString getCaptionMetadata()
 	{
-		return outlinks;
+		return caption;
 	}
 
-  // lazy evaluation:
-  public List<Document> outlinks()
-  {
-    if (outlinks == null)
-      outlinks = new ArrayList<Document>();
-    return outlinks;
-  }
-
-  // addTo:
-  public void addToOutlinks(Document element)
-  {
-    outlinks().add(element);
-  }
-
-  // size:
-  public int outlinksSize()
-  {
-    return outlinks == null ? 0 : outlinks.size();
-  }
-
-	public void setOutlinks(List<Document> outlinks)
+	public void setCaption(String caption)
 	{
-		this.outlinks = outlinks;
+		if (caption != null)
+			this.caption().setValue(caption);
+	}
+
+	public void setCaptionMetadata(MetadataString caption)
+	{
+		this.caption = caption;
 	}
 }

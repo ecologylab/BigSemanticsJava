@@ -3,7 +3,6 @@ package ecologylab.bigsemantics.tools;
 import java.io.File;
 
 import ecologylab.bigsemantics.generated.library.RepositoryMetadataTranslationScope;
-import ecologylab.bigsemantics.metadata.builtins.Annotation;
 import ecologylab.bigsemantics.metadata.builtins.ClippableDocument;
 import ecologylab.bigsemantics.metadata.builtins.Clipping;
 import ecologylab.bigsemantics.metadata.builtins.Document;
@@ -47,12 +46,11 @@ public class MetadataTypeScopeSerializer
                                                                             Document.class);
     SimplTypesScope clippingsTypeScope = repositoryMetadata
         .getAssignableSubset("repository_clippings", Clipping.class);
-    SimplTypesScope noAnnotationsScope = repositoryMetadata
-        .getSubtractedSubset("repository_no_annotations", Annotation.class);
+//    SimplTypesScope noAnnotationsScope = repositoryMetadata
+//        .getSubtractedSubset("repository_no_annotations", Annotation.class);
     SimplTypesScope mediaTypesScope = repositoryMetadata
         .getAssignableSubset("repository_media", ClippableDocument.class);
     mediaTypesScope.addTranslation(Clipping.class);
-    mediaTypesScope.addTranslation(Annotation.class);
   }
 
   /**

@@ -116,7 +116,7 @@
 		
   	<!-- run the compiler. -->
 		<java classname="ecologylab.bigsemantics.compiler.MetaMetadataCompiler"
-			    classpathref="jars_classpath" fork="yes" failonerror="true">
+			    classpathref="jar_classpath" fork="yes" failonerror="true">
 			<arg value="csharp" />
 			<arg value="../BigSemanticsWrapperRepository/BigSemantics.GeneratedClassesCSharp" />
 			<arg value="../../BigSemanticsCSharp/Ecologylab.Semantics" />

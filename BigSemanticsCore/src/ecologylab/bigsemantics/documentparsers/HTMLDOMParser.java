@@ -157,7 +157,7 @@ implements DOMParserInterface
 				TextClipping textClipping = new TextClipping(semanticsScope.getMetaMetadataRepository().getMMByName(semanticsScope.TEXT_TAG));
 				textClipping.setText(StringTools.toString(buffy));
 				textClipping.setSourceDoc(getDocument());
-				getDocument().addClipping(textClipping);
+				((CompoundDocument) getDocument()).addClipping(textClipping);
 			}
 		}
 	}

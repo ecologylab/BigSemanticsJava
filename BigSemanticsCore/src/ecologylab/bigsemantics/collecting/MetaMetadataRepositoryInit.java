@@ -8,7 +8,6 @@ import java.io.InputStream;
 import java.util.List;
 
 import ecologylab.appframework.ApplicationProperties;
-import ecologylab.bigsemantics.metadata.builtins.Annotation;
 import ecologylab.bigsemantics.metadata.builtins.ClippableDocument;
 import ecologylab.bigsemantics.metadata.builtins.Clipping;
 import ecologylab.bigsemantics.metadata.builtins.Document;
@@ -55,8 +54,6 @@ public class MetaMetadataRepositoryInit extends Scope<Object> implements Documen
 	private final SimplTypesScope								mediaTypesScope;
 
 	private final SimplTypesScope								clippingsTypeScope;
-
-	private final SimplTypesScope								noAnnotationsScope;
 
 	public MetaMetadata													DOCUMENT_META_METADATA;
 
@@ -111,13 +108,9 @@ public class MetaMetadataRepositoryInit extends Scope<Object> implements Documen
 			this.clippingsTypeScope = metadataTypesScope.getAssignableSubset(
 					REPOSITORY_CLIPPINGS_TYPE_SCOPE, Clipping.class);
 
-			this.noAnnotationsScope = metadataTypesScope.getSubtractedSubset(
-					REPOSITORY_NO_ANNOTATIONS_TYPE_SCOPE, Annotation.class);
-
 			this.mediaTypesScope = metadataTypesScope.getAssignableSubset(
 					REPOSITORY_MEDIA_TYPE_SCOPE, ClippableDocument.class);
 			this.mediaTypesScope.addTranslation(Clipping.class);
-			this.mediaTypesScope.addTranslation(Annotation.class);
 
 			metaMetadataRepository.bindMetadataClassDescriptorsToMetaMetadata(metadataTypesScope);
 		}
@@ -165,11 +158,6 @@ public class MetaMetadataRepositoryInit extends Scope<Object> implements Documen
 	public SimplTypesScope getClippingsTypesScope()
 	{
 		return clippingsTypeScope;
-	}
-
-	public SimplTypesScope getNoAnnotationsScope()
-	{
-		return noAnnotationsScope;
 	}
 
 }

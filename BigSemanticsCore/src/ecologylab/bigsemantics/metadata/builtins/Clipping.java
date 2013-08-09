@@ -3,6 +3,7 @@
  */
 package ecologylab.bigsemantics.metadata.builtins;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
@@ -24,47 +25,9 @@ import ecologylab.serialization.annotations.simpl_wrap;
  * @author andruid
  */
 @simpl_inherit
-public class Clipping extends ClippingDeclaration
+public class Clipping<CM extends Metadata> extends ClippingDeclaration<CM>
 {
 	
-//	/**
-//	 * Text connected to the clipping in the source document.
-//	 */
-//	@simpl_scalar
-//	private MetadataString	context;
-//
-//	/**
-//	 * Text connected to the clipping in the source document.
-//	 */
-//	// TODO use html context -- need methods to strip tags to set regular context from it.
-//	@simpl_scalar
-//	@simpl_hints(Hint.XML_LEAF_CDATA)
-//	private MetadataString	contextHtml;
-//
-//	/**
-//	 * Location of the clipping in the source document.
-//	 */
-//	@simpl_scalar
-//	private MetadataString	xpath;
-//
-//	/**
-//	 * The source document.
-//	 */
-//	@simpl_composite
-//	@simpl_wrap
-//	@mm_name("source_doc")
-//	@simpl_scope(SemanticsNames.REPOSITORY_DOCUMENT_TRANSLATIONS)
-//	private Document				sourceDoc;
-//
-//	/**
-//	 * A hyperlinked Document.
-//	 */
-//	@simpl_collection("outlinks")
-//	@simpl_wrap
-//	@simpl_scope("repository_documents")
-//	@mm_name("outlink")
-//	private List<Document> outlinks;
-
 	private DocumentClosure	outlinkClosure;
 
 	protected static int		numWithCaption;
@@ -104,24 +67,35 @@ public class Clipping extends ClippingDeclaration
 		{
 			if (outlink.isDownloadDone())
 			{
-				clipping.addToOutlinks(outlink);
+				//clipping.addToOutlinks(outlink);
 			}
 			else
 			{
 				DocumentClosure outlinkClosure = outlink.getOrConstructClosure();
 				clipping.outlinkClosure	= outlinkClosure;
-				clipping.addToOutlinks(outlinkClosure.getDocument());
+				//clipping.addToOutlinks(outlinkClosure.getDocument());
 			}
 		}
 		if (context != null)
 			clipping.setContext(context);
 	}
 	
+	public static void initMediaClipping(
+			Clipping mediaClipping, Metadata clippedMedia, Document source, Document outlink,
+			String caption, String context)
+	{
+		mediaClipping.setSourceDoc(source);
+		Clipping.initClipping(mediaClipping, outlink, context);
+		if (caption != null)
+			mediaClipping.setCaption(caption);
+		mediaClipping.setMedia(clippedMedia);
+	}
+	
 	@Override
 	public void serializationPreHook(TranslationContext translationContext)
 	{
-		if (outlinkClosure != null && !outlinkClosure.isRecycled())
-			addToOutlinks(outlinkClosure.getDocument());
+		//if (outlinkClosure != null && !outlinkClosure.isRecycled())
+		//	addToOutlinks(outlinkClosure.getDocument());
 	}
 	
 	/**
@@ -194,11 +168,11 @@ public class Clipping extends ClippingDeclaration
 			getSourceDoc().recycle();
 			setSourceDoc(null);
 		}
-		if (getOutlinks() != null)
+		/*if (getOutlinks() != null)
 		{
 			getOutlinks().clear();
 			setOutlinks(null);
-		}
+		}*/
 		outlinkClosure	= null;
 		super.recycle(visitedMetadata);
 	}

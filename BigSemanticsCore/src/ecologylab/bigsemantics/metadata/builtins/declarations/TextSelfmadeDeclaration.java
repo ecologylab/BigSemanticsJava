@@ -8,9 +8,9 @@ package ecologylab.bigsemantics.metadata.builtins.declarations;
  * Copyright (2013) Interface Ecology Lab.
  */
 
-import ecologylab.bigsemantics.metadata.builtins.Clipping;
 import ecologylab.bigsemantics.metadata.builtins.HtmlText;
 import ecologylab.bigsemantics.metadata.builtins.MetadataBuiltinsTypesScope;
+import ecologylab.bigsemantics.metadata.builtins.RichArtifact;
 import ecologylab.bigsemantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.bigsemantics.namesandnums.SemanticsNames;
 import ecologylab.serialization.annotations.simpl_inherit;
@@ -18,12 +18,12 @@ import java.util.List;
 import java.util.Map;
 
 @simpl_inherit
-public class TextClippingDeclaration extends Clipping<HtmlText>
+public class TextSelfmadeDeclaration extends RichArtifact<HtmlText>
 {
-	public TextClippingDeclaration()
+	public TextSelfmadeDeclaration()
 	{ super(); }
 
-	public TextClippingDeclaration(MetaMetadataCompositeField mmd) {
+	public TextSelfmadeDeclaration(MetaMetadataCompositeField mmd) {
 		super(mmd);
 	}
 

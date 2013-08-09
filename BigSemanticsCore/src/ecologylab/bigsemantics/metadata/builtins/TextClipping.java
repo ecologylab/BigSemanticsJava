@@ -45,19 +45,31 @@ public class TextClipping extends TextClippingDeclaration implements TextualMeta
 		trimmedChunk.recycle();
 	}
 
+	@Override
+	public void setText(String newText)
+	{
+		getMedia().setText(newText);
+	}
+
+	@Override
+	public String getText()
+	{
+		return getMedia().getText();
+	}
+
 	/**
 	 * The heavy weight setter method for field text
 	 **/
 
 	public void hwSetText(String text)
 	{
-		this.text().setValue(text);
+		this.getMedia().text().setValue(text);
 		rebuildCompositeTermVector();
 	}
 
 	public void setText(CharSequence textSequence)
 	{
-		setTextMetadata(new MetadataString(textSequence.toString()));
+		this.getMedia().setTextMetadata(new MetadataString(textSequence.toString()));
 	}
 	
 	/**
@@ -66,8 +78,8 @@ public class TextClipping extends TextClippingDeclaration implements TextualMeta
 	public void hwSetTextMetadata(MetadataString text)
 	{
 		if (getText() != null && hasTermVector())
-			termVector().remove(this.getTextMetadata().termVector());
-		this.setTextMetadata(text);
+			termVector().remove(this.getMedia().getTextMetadata().termVector());
+		this.getMedia().setTextMetadata(text);
 		rebuildCompositeTermVector();
 	}
 

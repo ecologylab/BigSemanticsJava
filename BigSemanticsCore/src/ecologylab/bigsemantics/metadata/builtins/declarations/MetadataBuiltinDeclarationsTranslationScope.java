@@ -22,7 +22,7 @@ public class MetadataBuiltinDeclarationsTranslationScope
 	{
 		ecologylab.bigsemantics.metadata.Metadata.class,
 
-		ecologylab.bigsemantics.metadata.builtins.Annotation.class,
+		ecologylab.bigsemantics.metadata.builtins.Annotate.class,
 
 		ecologylab.bigsemantics.metadata.builtins.ClippableDocument.class,
 
@@ -30,19 +30,29 @@ public class MetadataBuiltinDeclarationsTranslationScope
 
 		ecologylab.bigsemantics.metadata.builtins.CompoundDocument.class,
 
+		ecologylab.bigsemantics.metadata.builtins.CreativeAct.class,
+
+		ecologylab.bigsemantics.metadata.builtins.CurateLink.class,
+
 		ecologylab.bigsemantics.metadata.builtins.DebugMetadata.class,
 
 		ecologylab.bigsemantics.metadata.builtins.Document.class,
 
 		ecologylab.bigsemantics.metadata.builtins.DocumentMetadataWrap.class,
 
+		ecologylab.bigsemantics.metadata.builtins.HtmlText.class,
+
 		ecologylab.bigsemantics.metadata.builtins.Image.class,
 
 		ecologylab.bigsemantics.metadata.builtins.ImageClipping.class,
 
-		ecologylab.bigsemantics.metadata.builtins.MediaClipping.class,
+		ecologylab.bigsemantics.metadata.builtins.ImageSelfmade.class,
+
+		ecologylab.bigsemantics.metadata.builtins.RichArtifact.class,
 
 		ecologylab.bigsemantics.metadata.builtins.TextClipping.class,
+
+		ecologylab.bigsemantics.metadata.builtins.TextSelfmade.class,
 
 	};
 
