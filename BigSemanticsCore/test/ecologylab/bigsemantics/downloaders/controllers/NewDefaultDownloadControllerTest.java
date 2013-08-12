@@ -12,6 +12,11 @@ import java.net.MalformedURLException;
 
 import ecologylab.net.ParsedURL;
 
+/**
+ * JUnit tests for the NewDefaultDownloadController class
+ * 
+ * @author colton
+ */
 public class NewDefaultDownloadControllerTest
 {
 	// This address should return both a mime type and char set

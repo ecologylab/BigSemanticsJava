@@ -11,6 +11,10 @@ import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.formatenums.StringFormat;
 
+/**
+ * 
+ * @author colton
+ */
 public class DeserializationTest
 {
 	MetadataComparator comparator = new MetadataComparator();

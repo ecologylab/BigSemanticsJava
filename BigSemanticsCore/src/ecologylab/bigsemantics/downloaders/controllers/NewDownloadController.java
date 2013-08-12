@@ -4,6 +4,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import ecologylab.net.ParsedURL;
 
+/** 
+ * Interface for download controllers which rely only on a ParsedURL
+ * 
+ * @author colton
+ */
 public interface NewDownloadController
 {
 	/**
@@ -41,7 +46,7 @@ public interface NewDownloadController
 	/**
 	 * Returns the message from the HTTP response message
 	 * 
-	 * @return the messgae from the HTTP response message
+	 * @return the message from the HTTP response message
 	 */
 	public String getStatusMessage();
 

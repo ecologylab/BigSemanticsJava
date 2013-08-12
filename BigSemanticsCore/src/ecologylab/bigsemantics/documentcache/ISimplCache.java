@@ -1,5 +1,10 @@
 package ecologylab.bigsemantics.documentcache;
 
+/**
+ * Interface to be implemented by caching mechanisms
+ * 
+ * @author colton
+ */
 public interface ISimplCache
 {
 	/**
@@ -21,15 +26,15 @@ public interface ISimplCache
 	 *         no mapping exists
 	 */
 	public Object get(String key);
-	
+
 	/**
 	 * Gets the object mapped to the specified key. Returns <code>null</code> if
 	 * the key is not mapped to an object
 	 * 
 	 * @param key
 	 *            the key to search by
-	 * @param revision 
-	 * 			  the revision number to retrieve
+	 * @param revision
+	 *            the revision number to retrieve
 	 * @return the object mapped to the specified key, or <code>null</code> if
 	 *         no mapping exists
 	 */
@@ -52,7 +57,8 @@ public interface ISimplCache
 	 * @param key
 	 *            the key to search by
 	 * @param obj
-	 *            the Simpl-serializable object to potentially be added to the cache
+	 *            the Simpl-serializable object to potentially be added to the
+	 *            cache
 	 * @return the object mapped to the key
 	 */
 	public Object putIfAbsent(String key, Object obj);
@@ -64,13 +70,13 @@ public interface ISimplCache
 	 * @param key
 	 *            the key to search by
 	 * @param oldObj
-	 *            the Simpl-serializable object which is thought to be associated with the
-	 *            key
+	 *            the Simpl-serializable object which is thought to be
+	 *            associated with the key
 	 * @param newObj
-	 *            the Simpl-serializable object with which to replace the original object with if
-	 *            conditions are satisfied
-	 * @return the object mapped to the key, or
-	 *         <code>null</code> if no previous mapping existed
+	 *            the Simpl-serializable object with which to replace the
+	 *            original object with if conditions are satisfied
+	 * @return the object mapped to the key, or <code>null</code> if no previous
+	 *         mapping existed
 	 */
 	public boolean replace(String key, Object oldObj, Object newObj);
 
@@ -95,7 +101,7 @@ public interface ISimplCache
 	public void remove(String key);
 
 	/**
-	 * Removes the key and entry from the cache, only is the key maps to the
+	 * Removes the key and entry from the cache, only if the key maps to the
 	 * object also given in the call
 	 * 
 	 * @param key
