@@ -1,5 +1,7 @@
 package ecologylab.bigsemantics.metadata;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -7,8 +9,10 @@ import org.junit.Test;
 
 import ecologylab.bigsemantics.generated.library.RepositoryMetadataTranslationScope;
 import ecologylab.bigsemantics.metadata.builtins.CreativeAct;
+import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metadata.builtins.HtmlText;
 import ecologylab.bigsemantics.metadata.builtins.RichArtifact;
+import ecologylab.net.ParsedURL;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.formatenums.Format;
@@ -22,7 +26,7 @@ public class AnnotationSerializeDeserialize
 	
 	RichArtifact<HtmlText> annotation;
 	
-	public AnnotationSerializeDeserialize()
+	public AnnotationSerializeDeserialize() throws MalformedURLException
 	{
 		annotation = new RichArtifact<HtmlText>();
 		HtmlText text = new HtmlText();
@@ -31,9 +35,12 @@ public class AnnotationSerializeDeserialize
 		annotation.setMedia(text);
 		
 		CreativeAct creativeAct = new CreativeAct();
-		creativeAct.setType(2);
-		creativeAct.setCreator("andrew");
-		creativeAct.setCreationTime(new Date());
+		creativeAct.setAction(2);
+		Document creator = new Document();
+		creator.setTitle("andrew");
+		creator.setLocation(new ParsedURL(new URL("http://ecologylab.net/people/andrew")));
+		creativeAct.setCreator(creator);
+		creativeAct.setTime(new Date());
 		ArrayList<CreativeAct> creativeActs = new ArrayList<CreativeAct>();
 		creativeActs.add(creativeAct);
 		annotation.setCreativeActs(creativeActs);
@@ -62,9 +69,17 @@ public class AnnotationSerializeDeserialize
 
 	public static void main(String[] args)
 	{
-		AnnotationSerializeDeserialize test = new AnnotationSerializeDeserialize();
-		test.testAnnotationSerializeDeserialize();
-
+		AnnotationSerializeDeserialize test;
+		try
+		{
+			test = new AnnotationSerializeDeserialize();
+			test.testAnnotationSerializeDeserialize();
+		} 
+		catch (MalformedURLException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }
