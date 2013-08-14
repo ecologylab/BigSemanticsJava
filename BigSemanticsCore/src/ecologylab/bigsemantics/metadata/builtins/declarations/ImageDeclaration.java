@@ -9,7 +9,6 @@ package ecologylab.bigsemantics.metadata.builtins.declarations;
  */
 
 import ecologylab.bigsemantics.metadata.builtins.ClippableDocument;
-import ecologylab.bigsemantics.metadata.builtins.Image;
 import ecologylab.bigsemantics.metadata.builtins.MetadataBuiltinsTypesScope;
 import ecologylab.bigsemantics.metadata.scalar.MetadataDate;
 import ecologylab.bigsemantics.metametadata.MetaMetadataCompositeField;
@@ -24,7 +23,7 @@ import java.util.Map;
  *The Image Base Class
  */ 
 @simpl_inherit
-public class ImageDeclaration extends ClippableDocument<Image>
+public class ImageDeclaration extends ClippableDocument
 {
 	@simpl_scalar
 	private MetadataDate creationDate;

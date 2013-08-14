@@ -10,33 +10,28 @@ package ecologylab.bigsemantics.metadata.builtins.declarations;
 
 import ecologylab.bigsemantics.metadata.Metadata;
 import ecologylab.bigsemantics.metadata.builtins.MetadataBuiltinsTypesScope;
-import ecologylab.bigsemantics.metadata.scalar.MetadataDate;
 import ecologylab.bigsemantics.metadata.scalar.MetadataString;
 import ecologylab.bigsemantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.bigsemantics.namesandnums.SemanticsNames;
 import ecologylab.serialization.annotations.simpl_inherit;
 import ecologylab.serialization.annotations.simpl_scalar;
 import java.lang.String;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 @simpl_inherit
-public class AnnotationDeclaration extends Metadata
+public class HtmlTextDeclaration extends Metadata
 {
 	@simpl_scalar
 	private MetadataString text;
 
 	@simpl_scalar
-	private MetadataString author;
+	private MetadataString htmlString;
 
-	@simpl_scalar
-	private MetadataDate creationTime;
-
-	public AnnotationDeclaration()
+	public HtmlTextDeclaration()
 	{ super(); }
 
-	public AnnotationDeclaration(MetaMetadataCompositeField mmd) {
+	public HtmlTextDeclaration(MetaMetadataCompositeField mmd) {
 		super(mmd);
 	}
 
@@ -73,67 +68,35 @@ public class AnnotationDeclaration extends Metadata
 		this.text = text;
 	}
 
-	public MetadataString	author()
+	public MetadataString	htmlString()
 	{
-		MetadataString	result = this.author;
+		MetadataString	result = this.htmlString;
 		if (result == null)
 		{
 			result = new MetadataString();
-			this.author = result;
+			this.htmlString = result;
 		}
 		return result;
 	}
 
-	public String getAuthor()
+	public String getHtmlString()
 	{
-		return this.author == null ? null : author().getValue();
+		return this.htmlString == null ? null : htmlString().getValue();
 	}
 
-	public MetadataString getAuthorMetadata()
+	public MetadataString getHtmlStringMetadata()
 	{
-		return author;
+		return htmlString;
 	}
 
-	public void setAuthor(String author)
+	public void setHtmlString(String htmlString)
 	{
-		if (author != null)
-			this.author().setValue(author);
+		if (htmlString != null)
+			this.htmlString().setValue(htmlString);
 	}
 
-	public void setAuthorMetadata(MetadataString author)
+	public void setHtmlStringMetadata(MetadataString htmlString)
 	{
-		this.author = author;
-	}
-
-	public MetadataDate	creationTime()
-	{
-		MetadataDate	result = this.creationTime;
-		if (result == null)
-		{
-			result = new MetadataDate();
-			this.creationTime = result;
-		}
-		return result;
-	}
-
-	public Date getCreationTime()
-	{
-		return this.creationTime == null ? null : creationTime().getValue();
-	}
-
-	public MetadataDate getCreationTimeMetadata()
-	{
-		return creationTime;
-	}
-
-	public void setCreationTime(Date creationTime)
-	{
-		if (creationTime != null)
-			this.creationTime().setValue(creationTime);
-	}
-
-	public void setCreationTimeMetadata(MetadataDate creationTime)
-	{
-		this.creationTime = creationTime;
+		this.htmlString = htmlString;
 	}
 }

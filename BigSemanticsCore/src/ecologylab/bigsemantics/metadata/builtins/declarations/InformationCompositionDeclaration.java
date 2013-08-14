@@ -10,7 +10,6 @@ package ecologylab.bigsemantics.metadata.builtins.declarations;
 
 import ecologylab.bigsemantics.metadata.Metadata;
 import ecologylab.bigsemantics.metadata.mm_name;
-import ecologylab.bigsemantics.metadata.builtins.Annotation;
 import ecologylab.bigsemantics.metadata.builtins.Clipping;
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metadata.scalar.MetadataFloat;
@@ -30,13 +29,6 @@ public class InformationCompositionDeclaration extends Document
 	@simpl_scope("repository_no_annotations")
 	@mm_name("metadata")
 	private List<Metadata> metadata;
-
-	/** 
-	 *User annotations.
-	 */ 
-	@simpl_collection("annotation")
-	@mm_name("annotations")
-	private List<Annotation> annotations;
 
 	/** 
 	 *for compatability w old compositions -- do not use!
@@ -97,37 +89,7 @@ public class InformationCompositionDeclaration extends Document
 	{
 		this.metadata = metadata;
 	}
-
-	public List<Annotation> getAnnotations()
-	{
-		return annotations;
-	}
-
-  // lazy evaluation:
-  public List<Annotation> annotations()
-  {
-    if (annotations == null)
-      annotations = new ArrayList<Annotation>();
-    return annotations;
-  }
-
-  // addTo:
-  public void addToAnnotations(Annotation element)
-  {
-    annotations().add(element);
-  }
-
-  // size:
-  public int annotationsSize()
-  {
-    return annotations == null ? 0 : annotations.size();
-  }
-
-	public void setAnnotations(List<Annotation> annotations)
-	{
-		this.annotations = annotations;
-	}
-
+	
 	public List<Clipping> getClippings()
 	{
 		return clippings;

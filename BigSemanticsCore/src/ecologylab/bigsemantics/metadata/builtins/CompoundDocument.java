@@ -317,7 +317,6 @@ public class CompoundDocument extends CompoundDocumentDeclaration
 	/**
 	 * Add to collection of clippings, representing our compound documentness.
 	 */
-	@Override
 	public void addClipping(Clipping clipping)
 	{
 		clippings().add(clipping);

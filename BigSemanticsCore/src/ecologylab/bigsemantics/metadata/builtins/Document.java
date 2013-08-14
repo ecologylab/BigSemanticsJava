@@ -696,14 +696,6 @@ public class Document extends DocumentDeclaration
 	{
 	}
 	
-	/**
-	 * Base class does not keep track of clippings, so does nothing.
-	 */
-	public void addClipping(Clipping clipping)
-	{
-		
-	}
-	
 	public String getLocationsString()
 	{
 		String result;

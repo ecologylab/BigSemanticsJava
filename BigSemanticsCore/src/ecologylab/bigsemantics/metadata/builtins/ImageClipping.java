@@ -29,7 +29,7 @@ public class ImageClipping extends ImageClippingDeclaration
 	public ImageClipping(MetaMetadataCompositeField metaMetadata, Image clippedMedia, Document source, Document outlink, String caption, String context)
 	{
 		this(metaMetadata);
-		MediaClipping.initMediaClipping(this, clippedMedia, source, outlink, caption, context);
+		Clipping.initMediaClipping(this, clippedMedia, source, outlink, caption, context);
 	}
 	
 	@Override

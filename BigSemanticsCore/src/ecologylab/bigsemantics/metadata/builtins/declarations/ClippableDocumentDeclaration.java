@@ -8,9 +8,8 @@ package ecologylab.bigsemantics.metadata.builtins.declarations;
  * Copyright (2013) Interface Ecology Lab.
  */
 
-import ecologylab.bigsemantics.metadata.builtins.ClippableDocument;
+import ecologylab.bigsemantics.metadata.builtins.Clipping;
 import ecologylab.bigsemantics.metadata.builtins.Document;
-import ecologylab.bigsemantics.metadata.builtins.MediaClipping;
 import ecologylab.bigsemantics.metadata.builtins.MetadataBuiltinsTypesScope;
 import ecologylab.bigsemantics.metadata.mm_name;
 import ecologylab.bigsemantics.metadata.scalar.MetadataInteger;
@@ -27,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 @simpl_inherit
-public class ClippableDocumentDeclaration<ME extends ClippableDocument<ME>> extends Document
+public class ClippableDocumentDeclaration extends Document
 {
 	/** 
 	 *Clippings based on this.
@@ -36,7 +35,7 @@ public class ClippableDocumentDeclaration<ME extends ClippableDocument<ME>> exte
 	@simpl_other_tags({"clippings"})
 	@simpl_scope("repository_clippings")
 	@mm_name("clippings_this_is_in")
-	private List<MediaClipping<ME>> clippingsThisIsIn;
+	private List<Clipping> clippingsThisIsIn;
 
 	@simpl_scalar
 	private MetadataInteger width;
@@ -52,21 +51,21 @@ public class ClippableDocumentDeclaration<ME extends ClippableDocument<ME>> exte
 	}
 
 
-	public List<MediaClipping<ME>> getClippingsThisIsIn()
+	public List<Clipping> getClippingsThisIsIn()
 	{
 		return clippingsThisIsIn;
 	}
 
   // lazy evaluation:
-  public List<MediaClipping<ME>> clippingsThisIsIn()
+  public List<Clipping> clippingsThisIsIn()
   {
     if (clippingsThisIsIn == null)
-      clippingsThisIsIn = new ArrayList<MediaClipping<ME>>();
+      clippingsThisIsIn = new ArrayList<Clipping>();
     return clippingsThisIsIn;
   }
 
   // addTo:
-  public void addToClippingsThisIsIn(MediaClipping<ME> element)
+  public void addToClippingsThisIsIn(Clipping element)
   {
     clippingsThisIsIn().add(element);
   }
@@ -77,7 +76,7 @@ public class ClippableDocumentDeclaration<ME extends ClippableDocument<ME>> exte
     return clippingsThisIsIn == null ? 0 : clippingsThisIsIn.size();
   }
 
-	public void setClippingsThisIsIn(List<MediaClipping<ME>> clippingsThisIsIn)
+	public void setClippingsThisIsIn(List<Clipping> clippingsThisIsIn)
 	{
 		this.clippingsThisIsIn = clippingsThisIsIn;
 	}

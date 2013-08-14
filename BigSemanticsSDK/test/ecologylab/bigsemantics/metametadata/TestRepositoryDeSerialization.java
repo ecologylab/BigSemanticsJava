@@ -16,10 +16,10 @@ import ecologylab.bigsemantics.collecting.SemanticsSessionScope;
 import ecologylab.bigsemantics.cyberneko.CybernekoWrapper;
 import ecologylab.bigsemantics.generated.library.RepositoryMetadataTranslationScope;
 import ecologylab.bigsemantics.generated.library.urbanspoon.UrbanSpoonSearch;
-import ecologylab.bigsemantics.metadata.builtins.Annotation;
 import ecologylab.bigsemantics.metadata.builtins.ClippableDocument;
 import ecologylab.bigsemantics.metadata.builtins.Clipping;
 import ecologylab.bigsemantics.metadata.builtins.Document;
+import ecologylab.bigsemantics.metadata.builtins.TextSelfmade;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.FieldDescriptor;
 import ecologylab.serialization.SIMPLTranslationException;
@@ -138,11 +138,11 @@ public class TestRepositoryDeSerialization
     SimplTypesScope clippingsTypeScope = repositoryMetadata
         .getAssignableSubset("repository_clippings", Clipping.class);
     SimplTypesScope noAnnotationsScope = repositoryMetadata
-        .getSubtractedSubset("repository_no_annotations", Annotation.class);
+        .getSubtractedSubset("repository_no_annotations", TextSelfmade.class);
     SimplTypesScope mediaTypesScope = repositoryMetadata
         .getAssignableSubset("repository_media", ClippableDocument.class);
     mediaTypesScope.addTranslation(Clipping.class);
-    mediaTypesScope.addTranslation(Annotation.class);
+    mediaTypesScope.addTranslation(TextSelfmade.class);
   }
 
   @Test

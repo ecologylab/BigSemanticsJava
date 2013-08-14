@@ -8,8 +8,8 @@ package ecologylab.bigsemantics.metadata.builtins.declarations;
  * Copyright (2013) Interface Ecology Lab.
  */
 
+import ecologylab.bigsemantics.metadata.builtins.Clipping;
 import ecologylab.bigsemantics.metadata.builtins.Image;
-import ecologylab.bigsemantics.metadata.builtins.MediaClipping;
 import ecologylab.bigsemantics.metadata.builtins.MetadataBuiltinsTypesScope;
 import ecologylab.bigsemantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.bigsemantics.namesandnums.SemanticsNames;
@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 @simpl_inherit
-public class ImageClippingDeclaration extends MediaClipping<Image>
+public class ImageClippingDeclaration extends Clipping<Image>
 {
 	public ImageClippingDeclaration()
 	{ super(); }
