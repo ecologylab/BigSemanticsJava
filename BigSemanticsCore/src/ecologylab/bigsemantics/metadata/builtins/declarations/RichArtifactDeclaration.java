@@ -10,6 +10,7 @@ package ecologylab.bigsemantics.metadata.builtins.declarations;
 
 import ecologylab.bigsemantics.metadata.Metadata;
 import ecologylab.bigsemantics.metadata.builtins.CreativeAct;
+import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metadata.builtins.MetadataBuiltinsTypesScope;
 import ecologylab.bigsemantics.metadata.mm_name;
 import ecologylab.bigsemantics.metametadata.MetaMetadataCompositeField;
@@ -36,6 +37,10 @@ public class RichArtifactDeclaration<M extends Metadata> extends Metadata
 	@simpl_scope("creative_acts_scope")
 	@mm_name("creative_acts")
 	private List<CreativeAct> creativeActs;
+
+	@simpl_collection("document")
+	@mm_name("outlinks")
+	private List<Document> outlinks;
 
 	public RichArtifactDeclaration()
 	{ super(); }
@@ -83,5 +88,35 @@ public class RichArtifactDeclaration<M extends Metadata> extends Metadata
 	public void setCreativeActs(List<CreativeAct> creativeActs)
 	{
 		this.creativeActs = creativeActs;
+	}
+
+	public List<Document> getOutlinks()
+	{
+		return outlinks;
+	}
+
+  // lazy evaluation:
+  public List<Document> outlinks()
+  {
+    if (outlinks == null)
+      outlinks = new ArrayList<Document>();
+    return outlinks;
+  }
+
+  // addTo:
+  public void addToOutlinks(Document element)
+  {
+    outlinks().add(element);
+  }
+
+  // size:
+  public int outlinksSize()
+  {
+    return outlinks == null ? 0 : outlinks.size();
+  }
+
+	public void setOutlinks(List<Document> outlinks)
+	{
+		this.outlinks = outlinks;
 	}
 }

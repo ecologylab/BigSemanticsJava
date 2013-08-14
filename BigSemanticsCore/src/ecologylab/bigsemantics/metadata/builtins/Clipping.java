@@ -99,16 +99,6 @@ public class Clipping<CM extends Metadata> extends ClippingDeclaration<CM>
 	}
 	
 	/**
-	 * The heavy weight setter method for field context
-	 **/
-	@Override
-	public void hwSetContext(String context)
-	{
-		this.context().setValue(context);
-		rebuildCompositeTermVector();
-	}
-	
-	/**
 	 * used for deriving statistics that track how many images
 	 * on the web have alt text.
 	 * @return
@@ -116,11 +106,6 @@ public class Clipping<CM extends Metadata> extends ClippingDeclaration<CM>
 	public static int hasCaptionPercent()
 	{
 		return (int) (100.0f * numWithCaption / numConstructed);
-	}
-
-	public boolean isNullContext()
-	{
-		return getContextMetadata() == null || getContextMetadata().getValue() == null;
 	}
 	
 	public boolean isNullXpath()

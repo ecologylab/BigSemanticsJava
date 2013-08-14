@@ -35,12 +35,6 @@ public class ClippingDeclaration<M extends Metadata> extends RichArtifact<M>
 	private Document sourceDoc;
 
 	@simpl_scalar
-	private MetadataString context;
-
-	@simpl_scalar
-	private MetadataString contextHtml;
-
-	@simpl_scalar
 	private MetadataString xpath;
 
 	@simpl_scalar
@@ -62,70 +56,6 @@ public class ClippingDeclaration<M extends Metadata> extends RichArtifact<M>
 	public void setSourceDoc(Document sourceDoc)
 	{
 		this.sourceDoc = sourceDoc;
-	}
-
-	public MetadataString	context()
-	{
-		MetadataString	result = this.context;
-		if (result == null)
-		{
-			result = new MetadataString();
-			this.context = result;
-		}
-		return result;
-	}
-
-	public String getContext()
-	{
-		return this.context == null ? null : context().getValue();
-	}
-
-	public MetadataString getContextMetadata()
-	{
-		return context;
-	}
-
-	public void setContext(String context)
-	{
-		if (context != null)
-			this.context().setValue(context);
-	}
-
-	public void setContextMetadata(MetadataString context)
-	{
-		this.context = context;
-	}
-
-	public MetadataString	contextHtml()
-	{
-		MetadataString	result = this.contextHtml;
-		if (result == null)
-		{
-			result = new MetadataString();
-			this.contextHtml = result;
-		}
-		return result;
-	}
-
-	public String getContextHtml()
-	{
-		return this.contextHtml == null ? null : contextHtml().getValue();
-	}
-
-	public MetadataString getContextHtmlMetadata()
-	{
-		return contextHtml;
-	}
-
-	public void setContextHtml(String contextHtml)
-	{
-		if (contextHtml != null)
-			this.contextHtml().setValue(contextHtml);
-	}
-
-	public void setContextHtmlMetadata(MetadataString contextHtml)
-	{
-		this.contextHtml = contextHtml;
 	}
 
 	public MetadataString	xpath()

@@ -24,6 +24,8 @@ public class MetadataBuiltinDeclarationsTranslationScope
 
 		ecologylab.bigsemantics.metadata.builtins.Annotate.class,
 
+		ecologylab.bigsemantics.metadata.builtins.AssignPrimaryLink.class,
+
 		ecologylab.bigsemantics.metadata.builtins.ClippableDocument.class,
 
 		ecologylab.bigsemantics.metadata.builtins.Clipping.class,
