@@ -1,61 +1,60 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <project name="BigSemanticsSunSpecifics" basedir="." default="main">
-	<!-- project dependencies -->
-	<property name="project.names" value="BigSemanticsCore,imageMetadataExtractor" />
-	<property name="BigSemanticsCore.dir" value="${basedir}/../BigSemanticsCore" />
-	<property name="imageMetadataExtractor.dir" value="${basedir}/../imageMetadataExtractor" />
-	<property name="deps.default.target" value="jar"/>
-	
-	<property name="src.dir" value="src" />
-	<property name="build.dir" value="build" />
-	<property name="lib.dir" value="../lib" />
-	<property name="classes.dir" value="${build.dir}/classes" />
-	<property name="jar.dir" value="${build.dir}/jar" />
-	<property name="jar.file" value="${jar.dir}/${ant.project.name}.jar" />
-	
-	<!-- optional: declare ant-contrib -->
-	<taskdef resource="net/sf/antcontrib/antlib.xml">
-		<classpath>
-			<pathelement location="${BigSemanticsCore.dir}/lib/ant-contrib-1.0b3.jar" />
-		</classpath>
-	</taskdef>
-	
-  	<target name="clean">
-  		<delete dir="${build.dir}" />
-  	</target>
- 
-	<path id="classpath">
-		<fileset dir="${BigSemanticsCore.dir}/${jar.dir}" includes="**/*.jar" />
-	  	<fileset dir="${imageMetadataExtractor.dir}/${jar.dir}" includes="**/*.jar" />
-		<fileset dir="${BigSemanticsCore.dir}/lib" includes="simplCore.jar" />
-		<fileset dir="${lib.dir}" includes="**/*.jar" />
-  	</path>
-	
-	<target name="build-library">
-		<echo>Ant build project ${project.name}</echo>
-		<propertycopy name="project.location" from="${project.name}.dir" />
-		
-		<echo>${project.location}/build.xml</echo>
-		<ant dir="${project.location}" useNativeBasedir="true" target="${deps.default.target}" inheritAll="false" />
-	</target>
-	
-	<target name="build-project-libraries">
-		<echo>list of projects to build: ${project.names}</echo>
-		<foreach list="${project.names}" target="build-library" param="project.name" trim="yes" />
-	</target>
-	
-	<target name="compile">
-		<antcall target="build-project-libraries" />
-		<mkdir dir="${classes.dir}" />
-		<javac srcdir="${src.dir}" destdir="${classes.dir}" source="1.6" target="1.6" classpathref="classpath" />
-	</target>
-		
-	<target name="jar" depends="compile">
-		<mkdir dir="${jar.dir}" />
-		<jar destfile="${jar.file}" basedir="${classes.dir}" />
-	</target>
-	
-	<target name="main" depends="clean,jar" />
-	
+  <!-- project dependencies -->
+  <property name="project.names" value="BigSemanticsCore,imageMetadataExtractor" />
+  <property name="BigSemanticsCore.dir" value="${basedir}/../BigSemanticsCore" />
+  <property name="imageMetadataExtractor.dir" value="${basedir}/../imageMetadataExtractor" />
+  <property name="deps.default.target" value="jar" />
+
+  <property name="src.dir" value="src" />
+  <property name="build.dir" value="build" />
+  <property name="lib.dir" value="../lib" />
+  <property name="classes.dir" value="${build.dir}/classes" />
+  <property name="jar.dir" value="${build.dir}/jar" />
+  <property name="jar.file" value="${jar.dir}/${ant.project.name}.jar" />
+
+  <!-- optional: declare ant-contrib -->
+  <taskdef resource="net/sf/antcontrib/antlib.xml">
+    <classpath>
+      <pathelement location="${BigSemanticsCore.dir}/lib/ant-contrib-1.0b3.jar" />
+    </classpath>
+  </taskdef>
+
+  <target name="clean">
+    <delete dir="${build.dir}" />
+  </target>
+
+  <path id="classpath">
+    <fileset dir="${BigSemanticsCore.dir}/${jar.dir}" includes="**/*.jar" />
+    <fileset dir="${imageMetadataExtractor.dir}/${jar.dir}" includes="**/*.jar" />
+    <fileset dir="${lib.dir}" includes="**/*.jar" />
+  </path>
+
+  <target name="build-library">
+    <echo>Ant build project ${project.name}</echo>
+    <propertycopy name="project.location" from="${project.name}.dir" />
+
+    <echo>${project.location}/build.xml</echo>
+    <ant dir="${project.location}" useNativeBasedir="true" target="${deps.default.target}" inheritAll="false" />
+  </target>
+
+  <target name="build-project-libraries">
+    <echo>list of projects to build: ${project.names}</echo>
+    <foreach list="${project.names}" target="build-library" param="project.name" trim="yes" />
+  </target>
+
+  <target name="compile">
+    <antcall target="build-project-libraries" />
+    <mkdir dir="${classes.dir}" />
+    <javac srcdir="${src.dir}" destdir="${classes.dir}" source="1.6" target="1.6" classpathref="classpath" />
+  </target>
+
+  <target name="jar" depends="compile">
+    <mkdir dir="${jar.dir}" />
+    <jar destfile="${jar.file}" basedir="${classes.dir}" />
+  </target>
+
+  <target name="main" depends="clean,jar" />
+
 </project>
