@@ -38,7 +38,7 @@ public class SimplMemCacheTest
 	@Test (expected = NullPointerException.class)
 	public void testGet_empty()
 	{
-		int testInt = (int) cache.get("someKey");
+		int testInt = (Integer) cache.get("someKey");
 		
 		fail("Should have returned null, resulting in an exception");
 	}

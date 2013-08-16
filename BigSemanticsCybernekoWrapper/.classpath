@@ -3,7 +3,7 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/BigSemanticsCore"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/cyberneko"/>
-	<classpathentry exported="true" kind="lib" path="/cyberneko/lib/xercesMinimal.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="/lib/xercesMinimal.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

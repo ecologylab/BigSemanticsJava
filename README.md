@@ -1,4 +1,4 @@
-bigSemanticsJava
+BigSemanticsJava
 ================
 
-project for big semantics
+Projects for BigSemantics.

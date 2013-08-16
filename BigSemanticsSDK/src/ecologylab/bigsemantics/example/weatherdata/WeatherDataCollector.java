@@ -55,13 +55,13 @@ public class WeatherDataCollector implements Continuation<DocumentClosure>
 		if (doc != null && doc instanceof WeatherReport)
 		{
 			WeatherReport report = (WeatherReport) doc;
-			if (report.getCity() != null)
+			if (report.getTitle() != null)
 			{
 				synchronized (out)
 				{
 					String s = String.format(
 							"%s,%s,%s,%s,%s,%s\n",
-							report.getCity(),
+							report.getTitle(),
 							report.getWeather(),
 							report.getTemperature(),
 							report.getHumidity(),

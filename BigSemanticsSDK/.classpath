@@ -8,13 +8,15 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/BigSemanticsSunSpecifics"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/cyberneko"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/imageMetadataExtractor"/>
-	<classpathentry kind="lib" path="lib/BigSemanticsWrappers.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/simplTranslators.jar"/>
-	<classpathentry kind="lib" path="lib/guava-14.0-rc1.jar"/>
-	<classpathentry kind="lib" path="lib/ST-4.0.7.jar"/>
-	<classpathentry kind="lib" path="lib/antlr-3.5-complete.jar"/>
 	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="/lib/simplCore.jar"/>
+	<classpathentry kind="lib" path="/lib/simplTranslators.jar"/>
+	<classpathentry kind="lib" path="/lib/BigSemanticsWrappers.jar"/>
+	<classpathentry kind="lib" path="/lib/guava-14.0-rc1.jar"/>
+	<classpathentry kind="lib" path="/lib/ST-4.0.7.jar"/>
+	<classpathentry kind="lib" path="/lib/antlr-3.5-complete.jar"/>
+	<classpathentry kind="lib" path="/lib/BigSemanticsGeneratedClassesJava.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
