@@ -202,6 +202,8 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 		millis = System.currentTimeMillis();
 		// connect call also evolves Document based on redirects & mime-type;
 		//the parameter is used to get and set document properties with request and response respectively
+		String userAgent = document.getMetaMetadata().getUserAgentString();
+		downloadController.setUserAgent(userAgent);
 		downloadController.accessAndDownload(location);
 		if (logRecord != null)
   		logRecord.setmSecInHtmlDownload(System.currentTimeMillis() - millis);

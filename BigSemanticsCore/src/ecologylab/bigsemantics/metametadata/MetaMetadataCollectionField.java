@@ -391,9 +391,12 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 	@Override
 	protected MetadataClassDescriptor bindMetadataClassDescriptor(SimplTypesScope metadataTScope)
 	{
-		MetaMetadataCompositeField childComposite = getChildComposite();
-		if (childComposite != null)
-			return childComposite.bindMetadataClassDescriptor(metadataTScope);
+	  FieldType fieldType = getFieldType();
+	  if (fieldType == FieldType.COLLECTION_ELEMENT) {
+  		MetaMetadataCompositeField childComposite = getChildComposite();
+  		if (childComposite != null)
+  			return childComposite.bindMetadataClassDescriptor(metadataTScope);
+	  }
 		return null;
 	}
 
