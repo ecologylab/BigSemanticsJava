@@ -38,6 +38,6 @@ public class RichArtifactsTypesScope extends Debug
 
 	public static SimplTypesScope get()
 	{
-		return SimplTypesScope.get(NAME, MetadataBuiltinDeclarationsTranslationScope.get(), MetadataMediaTypesScope.get(), CLASSES);
+		return SimplTypesScope.get(NAME, CLASSES);
 	}	
 }
