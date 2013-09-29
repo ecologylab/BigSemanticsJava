@@ -12,10 +12,11 @@ import ecologylab.bigsemantics.collecting.MetaMetadataRepositoryLocator;
 import ecologylab.bigsemantics.collecting.SemanticsSessionScope;
 import ecologylab.bigsemantics.cyberneko.CybernekoWrapper;
 import ecologylab.bigsemantics.generated.library.RepositoryMetadataTranslationScope;
+import ecologylab.bigsemantics.generated.library.creative_work.Curation;
 import ecologylab.bigsemantics.metadata.Metadata;
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metadata.builtins.DocumentClosure;
-import ecologylab.bigsemantics.metadata.builtins.declarations.InformationCompositionDeclaration;
+import ecologylab.bigsemantics.metadata.builtins.RichArtifact;
 import ecologylab.bigsemantics.metametadata.ExampleUrl;
 import ecologylab.bigsemantics.metametadata.MetaMetadata;
 import ecologylab.generic.Continuation;
@@ -47,7 +48,7 @@ implements	Continuation<DocumentClosure>
 	
 	protected SemanticsSessionScope	semanticsSessionScope;
 	
-	protected InformationCompositionDeclaration informationComposition = new InformationCompositionDeclaration();
+	protected Curation curation = new Curation();
 	
 	public CollectExampleUrlMetadata(String appName) throws SIMPLTranslationException
 	{
@@ -182,7 +183,7 @@ implements	Continuation<DocumentClosure>
 			                        + "/../testData/"
 			                        + OUT_NAME);
 			
-			SimplTypesScope.serialize(informationComposition, outFile, Format.XML);
+			SimplTypesScope.serialize(curation, outFile, Format.XML);
 			System.out.println("Wrote to: " + outFile.getAbsolutePath());
 		}
 		catch (Exception e)
@@ -198,13 +199,9 @@ implements	Continuation<DocumentClosure>
 		Document document	= incomingClosure.getDocument();
 		if (document != null)
 		{
-			List<Metadata>	allMetadata	= informationComposition.getMetadata();
-			if (allMetadata == null)
-			{
-				allMetadata	= new ArrayList<Metadata>();
-				informationComposition.setMetadata(allMetadata);
-			}
-			allMetadata.add(document);
+		  RichArtifact<Metadata> artifact = new RichArtifact<Metadata>();
+		  artifact.outlinks().add(document);
+		  curation.metadataCollection().add(artifact);
 		}
 	}
 }
