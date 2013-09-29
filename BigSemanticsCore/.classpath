@@ -9,6 +9,6 @@
 	<classpathentry kind="lib" path="/lib/httpcore-4.2.4.jar"/>
 	<classpathentry kind="lib" path="/lib/jersey-client-1.12.jar"/>
 	<classpathentry kind="lib" path="/lib/jersey-core-1.12.jar"/>
-	<classpathentry kind="lib" path="/lib/simplCore.jar"/>
+	<classpathentry exported="true" kind="lib" path="/lib/simplCore.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
