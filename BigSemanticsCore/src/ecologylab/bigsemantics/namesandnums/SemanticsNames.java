@@ -19,7 +19,9 @@ public interface SemanticsNames
 
 	public static final String	REPOSITORY_CLIPPINGS_TYPE_SCOPE							= "repository_clippings";
 	
-	public static final String  REPOSITORY_RICH_ARTIFACT_TYPE_SCOPE         = "rich_artifacts_scope";
+	public static final String  REPOSITORY_RICH_ARTIFACTS_TYPE_SCOPE         = "rich_artifacts_scope";
+	
+	public static final String	REPOSITORY_CREATIVE_ACTS_TYPE_SCOPE			= "creative_acts_scope";
 	
 	public static final String	REPOSITORY_NO_ANNOTATIONS_TYPE_SCOPE				= "repository_no_annotations";
 
