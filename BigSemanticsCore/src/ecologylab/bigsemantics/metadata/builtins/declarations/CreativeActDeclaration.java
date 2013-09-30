@@ -19,6 +19,8 @@ import ecologylab.bigsemantics.namesandnums.SemanticsNames;
 import ecologylab.serialization.annotations.simpl_composite;
 import ecologylab.serialization.annotations.simpl_inherit;
 import ecologylab.serialization.annotations.simpl_scalar;
+import ecologylab.serialization.annotations.simpl_scope;
+import ecologylab.serialization.annotations.simpl_wrap;
 import java.lang.Integer;
 import java.util.Date;
 import java.util.List;
@@ -31,6 +33,8 @@ public class CreativeActDeclaration extends Metadata
 	private MetadataInteger action;
 
 	@simpl_composite
+	@simpl_wrap
+	@simpl_scope("repository_documents")
 	@mm_name("creator")
 	private Document creator;
 
