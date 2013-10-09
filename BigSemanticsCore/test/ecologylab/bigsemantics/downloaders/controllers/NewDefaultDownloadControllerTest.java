@@ -322,7 +322,7 @@ public class NewDefaultDownloadControllerTest
 	{
 		URL url = new URL(GOOD_ADDRESS_NO_REDIRECT);
 		ParsedURL purl = new ParsedURL(url);
-		InputStream is;
+		InputStream is = null;
 		
 		try
 		{

@@ -3,11 +3,11 @@
  */
 package ecologylab.bigsemantics.collecting;
 
-import ecologylab.bigsemantics.collecting.MetadataElement;
 import ecologylab.bigsemantics.documentparsers.CompoundDocumentParserCrawlerResult;
 import ecologylab.bigsemantics.metadata.builtins.Clipping;
 import ecologylab.bigsemantics.metadata.builtins.CompoundDocument;
 import ecologylab.bigsemantics.metadata.builtins.DocumentClosure;
+import ecologylab.bigsemantics.metadata.builtins.Image;
 import ecologylab.bigsemantics.metadata.builtins.ImageClipping;
 import ecologylab.bigsemantics.metadata.builtins.TextClipping;
 import ecologylab.bigsemantics.model.text.InterestModel;
@@ -164,7 +164,11 @@ implements Continuation<DocumentClosure>
 	{
 		if (candidateImageClosures == null)
 			candidateImageClosures	=  new WeightSet<DocumentClosure>(new TermVectorWeightStrategy(InterestModel.getPIV()));
-		candidateImageClosures.insert(imageClipping.getMedia().getOrConstructClosure());
+		Image media = imageClipping.getMedia();
+		if (media != null)
+		{
+  		candidateImageClosures.insert(media.getOrConstructClosure());
+		}
 	}
 	/**
 	 * Add a TextClipping to our candidates collection.

@@ -17,7 +17,7 @@
   <!-- optional: declare ant-contrib -->
   <taskdef resource="net/sf/antcontrib/antlib.xml">
     <classpath>
-      <pathelement location="${BigSemanticsCore.dir}/lib/ant-contrib-1.0b3.jar" />
+      <pathelement location="${lib.dir}/ant-contrib-1.0b3.jar" />
     </classpath>
   </taskdef>
 

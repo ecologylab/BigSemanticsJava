@@ -198,7 +198,7 @@ implements SemanticActionStandardMethods
 					}
 				}
 				//TODO: Handle piles et cetera
-				if(bestImageClipping != null)
+				if(bestImageClipping != null && bestImageClipping.getMedia() != null)
 				{
 
 					//try to download or make closure et cetera...
