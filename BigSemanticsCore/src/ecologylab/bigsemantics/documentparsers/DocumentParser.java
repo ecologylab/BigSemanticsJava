@@ -14,10 +14,12 @@ import ecologylab.bigsemantics.collecting.SemanticsSessionScope;
 import ecologylab.bigsemantics.downloaders.controllers.NewDownloadController;
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metadata.builtins.DocumentClosure;
+import ecologylab.bigsemantics.metadata.output.DocumentLogRecord;
 import ecologylab.bigsemantics.metametadata.MetaMetadata;
 import ecologylab.bigsemantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.bigsemantics.seeding.Seed;
 import ecologylab.collections.Scope;
+import ecologylab.concurrent.DownloadableLogRecord;
 import ecologylab.generic.Debug;
 import ecologylab.generic.ReflectionTools;
 import ecologylab.net.PURLConnection;
@@ -492,6 +494,17 @@ abstract public class DocumentParser<D extends Document>
 	public D getDocument()
 	{
 		return (D) documentClosure.getDocument();
+	}
+	
+	public DocumentLogRecord getLogRecord()
+	{
+	  DocumentClosure documentClosure = getDocumentClosure();
+	  DownloadableLogRecord downloadableLogRecord = documentClosure.getLogRecord();
+	  if (downloadableLogRecord instanceof DocumentLogRecord)
+	  {
+	    return (DocumentLogRecord) downloadableLogRecord;
+	  }
+	  return DocumentLogRecord.DUMMY;
 	}
 	
 	public static DocumentParser get(MetaMetadata mmd, SemanticsGlobalScope infoCollector)

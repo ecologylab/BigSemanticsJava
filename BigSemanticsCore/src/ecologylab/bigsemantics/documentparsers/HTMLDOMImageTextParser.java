@@ -64,7 +64,10 @@ implements DOMParserInterface, HTMLNames
 	{
 		DOMWalkInformationTagger taggedDoc = new DOMWalkInformationTagger(documentClosure.getDocument().getLocation(), this);
 		// this function actually traverse the dom tree
-		taggedDoc.generateCollections(getDom());
+		org.w3c.dom.Document dom = getDom();
+		
+		long t0 = System.currentTimeMillis();
+    taggedDoc.generateCollections(dom);
 		
 		Node contentBody = getContentBody(taggedDoc);
 		DOMWalkInformationTagger taggedContentNode = walkAndTagDom(contentBody, this);
@@ -90,10 +93,15 @@ implements DOMParserInterface, HTMLNames
 		
 		if (fromContentBody)
 			taggedContentNode.recycle();
+		getLogRecord().setMsContentBodyAndClippings(System.currentTimeMillis() - t0);
 		
 		MetaMetadata metaMetadata	= (MetaMetadata) getMetaMetadata();
 		if (metaMetadata.getSemanticActions() != null || metaMetadata.hasChildren())
+		{
+		  t0 = System.currentTimeMillis();
 			super.parse();
+			getLogRecord().setMsImageTextParserCallingSuperParse(System.currentTimeMillis() - t0);
+		}
 	}
 
 	

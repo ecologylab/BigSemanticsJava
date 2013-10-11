@@ -187,7 +187,12 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 		IDocumentCache dbProvider = semanticsScope.getDocumentCache();
 		if (!noCache && dbProvider != null)
 		{
+		  long t0 = System.currentTimeMillis();
 			Document document = dbProvider.retrieveDocument(this);
+			if (logRecord != null)
+			{
+			  logRecord.setMsMetadataCacheLookup(System.currentTimeMillis() - t0);
+			}
 			if (document != null)
 			{
 				if (logRecord != null)
@@ -287,7 +292,12 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 			//store document in DB
 			if (!noCache && dbProvider != null)
 			{
+			  long t0 = System.currentTimeMillis();
 				dbProvider.storeDocument(this.document);
+				if (logRecord != null)
+				{
+				  logRecord.setMsMetadataCaching(System.currentTimeMillis() - t0);
+				}
 			}
 		}
 		else

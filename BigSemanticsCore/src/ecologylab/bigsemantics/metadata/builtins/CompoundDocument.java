@@ -185,6 +185,8 @@ public class CompoundDocument extends CompoundDocumentDeclaration
 	@Override
 	public void downloadAndParseDone(DocumentParser documentParser)
 	{
+	  long t0 = System.currentTimeMillis();
+	  
 		if (numClippings() > 0)
 		{	
 			getSite(); // initialize this.site if haven't
@@ -215,6 +217,11 @@ public class CompoundDocument extends CompoundDocumentDeclaration
 			// we didnt actually turn out to be a Container object.
 			// or, the parse didn't collect any information!
 			//			recycle();	// so free all resources, including connectionRecycle()
+		}
+		
+		if (documentParser != null)
+		{
+  		documentParser.getLogRecord().setMsCompoundDocumentDnpDone(System.currentTimeMillis() - t0);
 		}
 	}
 

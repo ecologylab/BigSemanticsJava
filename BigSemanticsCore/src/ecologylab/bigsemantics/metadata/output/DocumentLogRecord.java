@@ -9,7 +9,8 @@ import ecologylab.serialization.annotations.simpl_scalar;
 @simpl_inherit
 public class DocumentLogRecord extends DownloadableLogRecord
 {
-	@simpl_scalar
+
+  @simpl_scalar
 	ParsedURL documentUrl;
 	
 	@simpl_scalar
@@ -21,6 +22,24 @@ public class DocumentLogRecord extends DownloadableLogRecord
 	@simpl_scalar
 	long mSecInSerialization;
 	
+	@simpl_scalar
+	long msContentReadingAndDomCreation;
+	
+	@simpl_scalar
+	long msContentBodyAndClippings;
+	
+	@simpl_scalar
+	long msImageTextParserCallingSuperParse;
+	
+	@simpl_scalar
+	long msMetadataCacheLookup;
+	
+	@simpl_scalar
+	long msMetadataCaching;
+	
+	@simpl_scalar
+  long msCompoundDocumentDnpDone;
+
 	@simpl_scalar
 	boolean DocumentCollectionCacheHit;
 	
@@ -83,4 +102,72 @@ public class DocumentLogRecord extends DownloadableLogRecord
 	public void setmSecInSerialization(long mSecInSerialization) {
 		this.mSecInSerialization = mSecInSerialization;
 	}	
+
+  public long getMsContentReadingAndDomCreation()
+  {
+    return msContentReadingAndDomCreation;
+  }
+
+  public void setMsContentReadingAndDomCreation(long msContentReadingAndDomCreation)
+  {
+    this.msContentReadingAndDomCreation = msContentReadingAndDomCreation;
+  }
+
+  public long getMsContentBodyAndClippings()
+  {
+    return msContentBodyAndClippings;
+  }
+
+  public void setMsContentBodyAndClippings(long msContentBodyAndClippings)
+  {
+    this.msContentBodyAndClippings = msContentBodyAndClippings;
+  }
+
+  public long getMsImageTextParserCallingSuperParse()
+  {
+    return msImageTextParserCallingSuperParse;
+  }
+
+  public void setMsImageTextParserCallingSuperParse(long msImageTextParserCallingSuperParse)
+  {
+    this.msImageTextParserCallingSuperParse = msImageTextParserCallingSuperParse;
+  }
+
+  public long getMsMetadataCacheLookup()
+  {
+    return msMetadataCacheLookup;
+  }
+
+  public void setMsMetadataCacheLookup(long msMetadataCacheLookup)
+  {
+    this.msMetadataCacheLookup = msMetadataCacheLookup;
+  }
+
+  public long getMsMetadataCaching()
+  {
+    return msMetadataCaching;
+  }
+
+  public void setMsMetadataCaching(long msMetadataCaching)
+  {
+    this.msMetadataCaching = msMetadataCaching;
+  }
+
+  public long getMsCompoundDocumentDnpDone()
+  {
+    return msCompoundDocumentDnpDone;
+  }
+
+  public void setMsCompoundDocumentDnpDone(long msCompoundDocumentDnpDone)
+  {
+    this.msCompoundDocumentDnpDone = msCompoundDocumentDnpDone;
+  }
+
+  static final public DocumentLogRecord DUMMY;
+	
+	static
+	{
+	  DUMMY = new DocumentLogRecord();
+	}
+
 }
