@@ -11,7 +11,7 @@ package ecologylab.bigsemantics.documentcache;
  *
  */
 
-public interface IDocumentCacheFactory
+public interface PersistentDocumentCacheFactory
 {
-	public IDocumentCache getDBDocumentProvider();
+	public PersistentDocumentCache getDBDocumentProvider();
 }

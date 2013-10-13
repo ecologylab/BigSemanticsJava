@@ -1,20 +1,20 @@
 package ecologylab.bigsemantics.documentcache;
 
 import java.util.concurrent.ConcurrentHashMap;
-import java.lang.UnsupportedOperationException;
 
 import ecologylab.bigsemantics.collecting.DocumentCache;
 import ecologylab.bigsemantics.metadata.builtins.Document;
+import ecologylab.net.ParsedURL;
 
 /**
  * A Document cache using ConcurrentHashMap.
  * 
  * @author colton
  */
-public class HashMapDocumentCache implements DocumentCache<String, Document>
+public class HashMapDocumentCache implements DocumentCache<ParsedURL, Document>
 {
 
-  private ConcurrentHashMap<String, Document> map = new ConcurrentHashMap<String, Document>();
+  private ConcurrentHashMap<ParsedURL, Document> map = new ConcurrentHashMap<ParsedURL, Document>();
 
   /**
    * Tests if the specified key is present in the cache
@@ -24,7 +24,7 @@ public class HashMapDocumentCache implements DocumentCache<String, Document>
    * @return a boolean indicating the presence of the given key in the cache
    */
   @Override
-  public boolean containsKey(String key)
+  public boolean containsKey(ParsedURL key)
   {
     return map.containsKey(key);
   }
@@ -38,7 +38,7 @@ public class HashMapDocumentCache implements DocumentCache<String, Document>
    * @return the object mapped to the specified key, or <code>null</code> if no mapping exists
    */
   @Override
-  public Document get(String key)
+  public Document get(ParsedURL key)
   {
     return map.get(key);
   }
@@ -56,7 +56,7 @@ public class HashMapDocumentCache implements DocumentCache<String, Document>
    *           always
    */
   @Override
-  public Document get(String key, String revision)
+  public Document get(ParsedURL key, String revision)
   {
     throw new UnsupportedOperationException();
   }
@@ -70,7 +70,7 @@ public class HashMapDocumentCache implements DocumentCache<String, Document>
    *          the object to be added to the cache
    */
   @Override
-  public void put(String key, Document obj)
+  public void put(ParsedURL key, Document obj)
   {
     map.put(key, obj);
   }
@@ -86,7 +86,7 @@ public class HashMapDocumentCache implements DocumentCache<String, Document>
    * @return the object mapped to the key
    */
   @Override
-  public Document putIfAbsent(String key, Document obj)
+  public Document putIfAbsent(ParsedURL key, Document obj)
   {
     map.putIfAbsent(key, obj);
 
@@ -106,7 +106,7 @@ public class HashMapDocumentCache implements DocumentCache<String, Document>
    * @return the object mapped to the key, or <code>null</code> if no previous mapping existed
    */
   @Override
-  public boolean replace(String key, Document oldObj, Document newObj)
+  public boolean replace(ParsedURL key, Document oldObj, Document newObj)
   {
     return map.replace(key, oldObj, newObj);
   }
@@ -122,7 +122,7 @@ public class HashMapDocumentCache implements DocumentCache<String, Document>
    *         mapping existed
    */
   @Override
-  public Document replace(String key, Document newObj)
+  public Document replace(ParsedURL key, Document newObj)
   {
     return map.replace(key, newObj);
   }
@@ -134,7 +134,7 @@ public class HashMapDocumentCache implements DocumentCache<String, Document>
    *          the key to search by
    */
   @Override
-  public void remove(String key)
+  public void remove(ParsedURL key)
   {
     map.remove(key);
   }
@@ -150,7 +150,7 @@ public class HashMapDocumentCache implements DocumentCache<String, Document>
    * @return a boolean indicating if the conditions were met, and a deletion occurred
    */
   @Override
-  public boolean remove(String key, Document obj)
+  public boolean remove(ParsedURL key, Document obj)
   {
     return map.remove(key, obj);
   }

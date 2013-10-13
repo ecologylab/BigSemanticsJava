@@ -1,32 +1,49 @@
 package ecologylab.bigsemantics.documentcache;
 
-import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 import ecologylab.bigsemantics.collecting.DocumentCache;
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.net.ParsedURL;
 
+/**
+ * This class uses EhCache to provide a configuration cache for documents.
+ * 
+ * @author quyin
+ */
 public class EhCacheDocumentCache implements DocumentCache<ParsedURL, Document>
 {
 
-  private Cache cache;
-  
+  /**
+   * The name of the underlying cache in the Ehcache system.
+   */
+  static final String EHCACHE_NAME = "bigsemantics-document-cache";
+
+  private Ehcache     cache;
+
   public EhCacheDocumentCache()
   {
-    cache = CacheManager.getInstance().getCache("document-cache");
+    CacheManager cacheManager = CacheManager.getInstance();
+    if (cacheManager.cacheExists(EHCACHE_NAME))
+    {
+      cacheManager.removeCache(EHCACHE_NAME);
+    }
+    cacheManager.addCache(EHCACHE_NAME);
+    cache = cacheManager.getCache(EHCACHE_NAME);
   }
-  
+
   @Override
   public boolean containsKey(ParsedURL key)
   {
-    return cache.isKeyInCache(key.toString());
+    return cache.isKeyInCache(key);
   }
 
   @Override
   public Document get(ParsedURL key)
   {
-    return (Document) cache.get(key).getObjectValue();
+    Element element = cache.get(key);
+    return element == null ? null : (Document) element.getObjectValue();
   }
 
   @Override

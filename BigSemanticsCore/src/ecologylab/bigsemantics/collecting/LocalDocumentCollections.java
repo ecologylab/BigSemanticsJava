@@ -2,7 +2,6 @@ package ecologylab.bigsemantics.collecting;
 
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metadata.builtins.Image;
-import ecologylab.bigsemantics.metametadata.MetaMetadataRepository;
 import ecologylab.generic.Debug;
 import ecologylab.net.ParsedURL;
 
@@ -13,21 +12,6 @@ import ecologylab.net.ParsedURL;
  */
 public class LocalDocumentCollections extends Debug
 {
-  /**
-   * Singleton instance because we only allow construction of one of this.
-   */
-  private static LocalDocumentCollections singleton;
-
-  public static final synchronized LocalDocumentCollections getSingleton(MetaMetadataRepository repository)
-  {
-    LocalDocumentCollections result = singleton;
-    if (result == null)
-    {
-      result = new LocalDocumentCollections(new DefaultDocumentMapHelper(repository));
-      singleton = result;
-    }
-    return result;
-  }
 
   static public final Image             RECYCLED_IMAGE       = new Image(ParsedURL.getAbsolute("http://recycled.image"));
 
@@ -37,13 +21,11 @@ public class LocalDocumentCollections extends Debug
 
   private DocumentLocationMap<Document> allDocuments;
 
-  /**
-   * @param documentMapHelper
-   */
-  private LocalDocumentCollections(DocumentMapHelper<Document> documentMapHelper)
+  LocalDocumentCollections(DocumentMapHelper<Document> documentMapHelper,
+                           DocumentCache<ParsedURL, Document> documentCache)
   {
     super();
-    allDocuments = new DocumentLocationMap<Document>(documentMapHelper);
+    allDocuments = new DocumentLocationMap<Document>(documentMapHelper, documentCache);
   }
 
   public Document lookupDocument(ParsedURL location)

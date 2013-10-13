@@ -95,6 +95,7 @@ implements DOMParserInterface
     Reader reader						= reader();
 		org.w3c.dom.Document document = reader != null ? provider.parseDOM(reader, null) : provider.parseDOM(inputStream, null);
 		getLogRecord().setMsContentReadingAndDomCreation(System.currentTimeMillis() - t0);
+		inputStream.close();
     return document;
 	}
 

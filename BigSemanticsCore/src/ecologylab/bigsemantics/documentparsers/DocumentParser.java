@@ -534,12 +534,15 @@ abstract public class DocumentParser<D extends Document>
 	public static boolean isRegisteredNoParser(ParsedURL purl)
 	{
 		boolean result	= false;
-		String suffix		= purl.suffix();
-		if (suffix != null && suffix.length() > 0)
+		if (purl != null)
 		{
-			result				= NO_PARSER_SUFFIX_MAP.contains(suffix);
-			if (!result)
-				NO_PARSER_SUFFIX_MAP.add(suffix);
+  		String suffix		= purl.suffix();
+  		if (suffix != null && suffix.length() > 0)
+  		{
+  			result				= NO_PARSER_SUFFIX_MAP.contains(suffix);
+  			if (!result)
+  				NO_PARSER_SUFFIX_MAP.add(suffix);
+  		}
 		}
 		return result;
 	}

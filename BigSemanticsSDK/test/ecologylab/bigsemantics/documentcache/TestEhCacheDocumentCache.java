@@ -13,23 +13,22 @@ import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.net.ParsedURL;
 
 /**
- * JUnit test for the SimplMemCache class
+ * Unit test for EhCacheDocumentCache.
  * 
- * @author colton
- * 
+ * @author quyin
  */
-public class TestHashMapDocumentCache
+public class TestEhCacheDocumentCache
 {
 
-  private HashMapDocumentCache cache;
+  private EhCacheDocumentCache cache;
 
   private ParsedURL            key;
 
   @Before
   public void setUp() throws Exception
   {
-    cache = new HashMapDocumentCache();
-    key = ParsedURL.getAbsolute("http://example.com");
+    cache = new EhCacheDocumentCache();
+    key = ParsedURL.getAbsolute("http://example.com/");
   }
 
   @Test
@@ -39,12 +38,12 @@ public class TestHashMapDocumentCache
   }
 
   @Test
-  public void testContainsKey_shouldContain()
-  {
-    cache.put(key, new Document());
-
-    assertTrue("Map contains previously added key and value", cache.containsKey(key));
-  }
+	public void testContainsKey_shouldContain()
+	{
+		cache.put(key, new Document());
+		
+		assertTrue("Map contains previously added key and value", cache.containsKey(key));
+	}
 
   @Test
   public void testGet_empty()

@@ -18,10 +18,11 @@ public class DocumentLocationMap<D extends Document>
 
   DocumentCache<ParsedURL, D> documentCache;
 
-  public DocumentLocationMap(DocumentMapHelper<D> mapHelper)
+  public DocumentLocationMap(DocumentMapHelper<D> mapHelper,
+                             DocumentCache<ParsedURL, D> documentCache)
   {
     this.mapHelper = mapHelper;
-    this.documentCache = null; // TODO construct document cache
+    this.documentCache = documentCache;
   }
 
   public Document get(ParsedURL location)

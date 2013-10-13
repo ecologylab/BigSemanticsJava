@@ -14,7 +14,7 @@ import ecologylab.net.ParsedURL;
  * 
  */
 
-public interface IDocumentCache
+public interface PersistentDocumentCache
 {
 	/**
 	 * Returns a document or null corresponding to location in DocumentClosure

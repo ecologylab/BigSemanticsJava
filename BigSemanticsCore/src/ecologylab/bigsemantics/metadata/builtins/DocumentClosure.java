@@ -18,7 +18,7 @@ import ecologylab.bigsemantics.collecting.DownloadStatus;
 import ecologylab.bigsemantics.collecting.SemanticsDownloadMonitors;
 import ecologylab.bigsemantics.collecting.SemanticsGlobalScope;
 import ecologylab.bigsemantics.collecting.SemanticsSite;
-import ecologylab.bigsemantics.documentcache.IDocumentCache;
+import ecologylab.bigsemantics.documentcache.PersistentDocumentCache;
 import ecologylab.bigsemantics.documentparsers.DocumentParser;
 import ecologylab.bigsemantics.documentparsers.ParserBase;
 import ecologylab.bigsemantics.downloaders.controllers.DownloadControllerFactory;
@@ -184,7 +184,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 		boolean noCache = ((MetaMetadata)document.getMetaMetadata()).isNoCache();
 		
 		//if the semantics scope provides DB lookup
-		IDocumentCache dbProvider = semanticsScope.getDocumentCache();
+		PersistentDocumentCache dbProvider = semanticsScope.getPersistentDocumentCache();
 		if (!noCache && dbProvider != null)
 		{
 		  long t0 = System.currentTimeMillis();
