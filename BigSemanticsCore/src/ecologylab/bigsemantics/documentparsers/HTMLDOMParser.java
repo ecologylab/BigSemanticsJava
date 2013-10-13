@@ -415,7 +415,7 @@ implements DOMParserInterface
 				break;
 			case ImageFeatures.UN_INFORMATIVE:
 			default:
-				semanticsScope.getGlobalCollection().registerUninformativeImage(srcPurl);
+				semanticsScope.getLocalDocumentCollection().registerUninformativeImage(srcPurl);
 			}
 		}
 		return result;

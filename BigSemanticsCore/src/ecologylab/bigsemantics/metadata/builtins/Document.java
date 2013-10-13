@@ -14,7 +14,7 @@ import java.util.List;
 import ecologylab.bigsemantics.collecting.DownloadStatus;
 import ecologylab.bigsemantics.collecting.SemanticsGlobalScope;
 import ecologylab.bigsemantics.collecting.SemanticsSite;
-import ecologylab.bigsemantics.collecting.TNGGlobalCollections;
+import ecologylab.bigsemantics.collecting.LocalDocumentCollections;
 import ecologylab.bigsemantics.documentparsers.DocumentParser;
 import ecologylab.bigsemantics.documentparsers.ParserResult;
 import ecologylab.bigsemantics.downloaders.controllers.DownloadControllerFactory;
@@ -476,7 +476,7 @@ public class Document extends DocumentDeclaration
 			if (!origLocation.equals(newLocation));
 			{
 				setLocation(newLocation);
-				getSemanticsScope().getGlobalCollection().addMapping(newLocation, this);
+				getSemanticsScope().getLocalDocumentCollection().addMapping(newLocation, this);
 				addAdditionalLocation(origLocation);
 			}
 		}
@@ -488,7 +488,7 @@ public class Document extends DocumentDeclaration
 	 */
 	public void inheritValues(Document oldDocument)
 	{
-		oldDocument.getSemanticsScope().getGlobalCollection().remap(oldDocument, this);
+		oldDocument.getSemanticsScope().getLocalDocumentCollection().remap(oldDocument, this);
 		if (getLocationMetadata() == null)
 		{
 			setLocationMetadata(oldDocument.getLocationMetadata());
@@ -632,7 +632,7 @@ public class Document extends DocumentDeclaration
 	
 	void setRecycled()
 	{
-		TNGGlobalCollections globalCollection = semanticsScope.getGlobalCollection();
+		LocalDocumentCollections globalCollection = semanticsScope.getLocalDocumentCollection();
 		globalCollection.setRecycled(getLocation());
 		if (getAdditionalLocations() != null)
 		{

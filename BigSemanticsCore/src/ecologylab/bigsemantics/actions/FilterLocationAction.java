@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import ecologylab.bigsemantics.collecting.TNGGlobalCollections;
+import ecologylab.bigsemantics.collecting.LocalDocumentCollections;
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metametadata.FilterLocation;
 import ecologylab.bigsemantics.metametadata.ParamOp;
@@ -113,7 +113,7 @@ public class FilterLocationAction extends SemanticAction
 			}
 		}
 		
-		final TNGGlobalCollections globalCollection = documentParser.getSemanticsScope().getGlobalCollection();
+		final LocalDocumentCollections globalCollection = documentParser.getSemanticsScope().getLocalDocumentCollection();
 		
 		final ParsedURL origLocation 		= document.getLocation();
 		if (origLocation.isFile())
@@ -145,7 +145,7 @@ public class FilterLocationAction extends SemanticAction
 		return null;
 	}
 
-	static void changeLocation(final TNGGlobalCollections globalCollection, Document document,
+	static void changeLocation(final LocalDocumentCollections globalCollection, Document document,
 			final ParsedURL origLocation, ParsedURL transformedLocation)
 	{
 		document.addAdditionalLocation(origLocation);

@@ -41,7 +41,7 @@ public class SemanticsGlobalScope extends MetaMetadataRepositoryInit
 	 * Maps locations to Document Metadata subclasses. Constructs these Document instances as needed
 	 * using the MetaMetadataRepository.
 	 */
-	final protected TNGGlobalCollections				globalCollection;
+	final protected LocalDocumentCollections				globalCollection;
 
 	/**
 	 * Pool of DownloadMonitors used for parsing Documents of various types.
@@ -68,7 +68,7 @@ public class SemanticsGlobalScope extends MetaMetadataRepositoryInit
 	{
 		super(repositoryLocation, repositoryFormat, metadataTypesScope);
 		this.domProviderClass = domProviderClass;
-		globalCollection = TNGGlobalCollections.getSingleton(getMetaMetadataRepository());
+		globalCollection = LocalDocumentCollections.getSingleton(getMetaMetadataRepository());
 		downloadMonitors = new SemanticsDownloadMonitors();
 		fieldParserFactory = new FieldParserFactory();
 	}
@@ -76,7 +76,7 @@ public class SemanticsGlobalScope extends MetaMetadataRepositoryInit
 	/**
 	 * @return the globalCollection
 	 */
-	public TNGGlobalCollections getGlobalCollection()
+	public LocalDocumentCollections getLocalDocumentCollection()
 	{
 		return globalCollection;
 	}

@@ -83,7 +83,7 @@ abstract public class DocumentParser<D extends Document>
 			bindingParserMap.put(SemanticActionsKeyWords.PDF_PARSER, PdfParser.class);
 		}
 	}
-
+	
 	private static final HashSet<String>	NO_PARSER_SUFFIX_MAP	= new HashSet<String>();
 	
 	/**
@@ -339,6 +339,7 @@ abstract public class DocumentParser<D extends Document>
 	}
 	
 	static final Class[]  DEFAULT_DOCUMENTPARSER_ARG        = {SemanticsGlobalScope.class};
+
 	/**
 	 * Given one of our registries, and a key, do a lookup in the registry to obtain the Class
 	 * object for the DocumentType subclass corresponding to the key -- in that registry.
@@ -507,6 +508,19 @@ abstract public class DocumentParser<D extends Document>
 	  return DocumentLogRecord.DUMMY;
 	}
 	
+  /**
+   * Allow clients to map or remap parsers by name. This can be useful when a client needs to
+   * provide an alternative implementation for an parser. For example, the semantics service may
+   * need to use a different algorithm for HTML image text clipping derivation in another parser.
+   * 
+   * @param parserName
+   * @param parserClass
+   */
+	public static void map(String parserName, Class<? extends DocumentParser> parserClass)
+	{
+	  bindingParserMap.put(parserName, parserClass);
+	}
+
 	public static DocumentParser get(MetaMetadata mmd, SemanticsGlobalScope infoCollector)
 	{
 		String parserName = mmd.getParser();
