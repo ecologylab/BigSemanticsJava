@@ -18,9 +18,9 @@ import ecologylab.bigsemantics.collecting.LocalDocumentCollections;
 import ecologylab.bigsemantics.documentparsers.DocumentParser;
 import ecologylab.bigsemantics.documentparsers.ParserResult;
 import ecologylab.bigsemantics.downloaders.controllers.DownloadControllerFactory;
-import ecologylab.bigsemantics.downloaders.controllers.NewDefaultDownloadController;
-import ecologylab.bigsemantics.downloaders.controllers.NewDefaultDownloadControllerFactory;
-import ecologylab.bigsemantics.downloaders.controllers.NewDownloadController;
+import ecologylab.bigsemantics.downloaders.controllers.DefaultDownloadController;
+import ecologylab.bigsemantics.downloaders.controllers.DefaultDownloadControllerFactory;
+import ecologylab.bigsemantics.downloaders.controllers.DownloadController;
 import ecologylab.bigsemantics.html.documentstructure.SemanticAnchor;
 import ecologylab.bigsemantics.html.documentstructure.SemanticInLinks;
 import ecologylab.bigsemantics.metadata.Metadata;
@@ -347,7 +347,7 @@ public class Document extends DocumentDeclaration
 	 */
 	public DocumentClosure getOrConstructClosure()
 	{
-		return getOrConstructClosure(new NewDefaultDownloadControllerFactory());
+		return getOrConstructClosure(new DefaultDownloadControllerFactory());
 	}
 	
 	/**
@@ -385,7 +385,7 @@ public class Document extends DocumentDeclaration
 	 */
 	public DocumentClosure constructClosure()
 	{
-		return constructClosure(new NewDefaultDownloadControllerFactory());
+		return constructClosure(new DefaultDownloadControllerFactory());
 	}
 	
 	private DocumentClosure constructClosure(DownloadControllerFactory downloadControllerFactory)

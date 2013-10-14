@@ -7,13 +7,13 @@ import ecologylab.bigsemantics.metadata.builtins.DocumentClosure;
  * 
  * @author quyin
  */
-public class NewDefaultDownloadControllerFactory implements DownloadControllerFactory
+public class DefaultDownloadControllerFactory implements DownloadControllerFactory
 {
 
   @Override
-  public NewDownloadController createDownloadController(DocumentClosure closure)
+  public DownloadController createDownloadController(DocumentClosure closure)
   {
-    return new NewDefaultDownloadController();
+    return new DefaultDownloadController();
   }
 
 }

@@ -9,7 +9,7 @@ import ecologylab.net.ParsedURL;
  * 
  * @author colton
  */
-public interface NewDownloadController
+public interface DownloadController
 {
 	/**
 	 * Sets the user agent

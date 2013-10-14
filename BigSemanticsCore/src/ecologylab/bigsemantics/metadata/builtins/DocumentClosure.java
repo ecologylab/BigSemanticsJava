@@ -22,7 +22,7 @@ import ecologylab.bigsemantics.documentcache.PersistentDocumentCache;
 import ecologylab.bigsemantics.documentparsers.DocumentParser;
 import ecologylab.bigsemantics.documentparsers.ParserBase;
 import ecologylab.bigsemantics.downloaders.controllers.DownloadControllerFactory;
-import ecologylab.bigsemantics.downloaders.controllers.NewDownloadController;
+import ecologylab.bigsemantics.downloaders.controllers.DownloadController;
 import ecologylab.bigsemantics.html.documentstructure.SemanticInLinks;
 import ecologylab.bigsemantics.metadata.output.DocumentLogRecord;
 import ecologylab.bigsemantics.metametadata.MetaMetadata;
@@ -58,7 +58,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 	
 	DownloadControllerFactory     downloadControllerFactory;
 
-	private NewDownloadController	downloadController;
+	private DownloadController	downloadController;
 
 	private DocumentParser				documentParser;
 	
@@ -133,7 +133,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
   	this(document, document.getSemanticsScope(), semanticInlinks, downloadControllerFactory);
   }
 
-  public NewDownloadController getDownloadController()
+  public DownloadController getDownloadController()
 	{
 	  return downloadController;
 	}
@@ -753,7 +753,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 	 * @return	PURLConnection for the new connection.
 	 * @throws IOException 
 	 */
-	public NewDownloadController reConnect() throws IOException
+	public DownloadController reConnect() throws IOException
 	{
 	  downloadController = downloadControllerFactory.createDownloadController(this);
 	  downloadController.accessAndDownload(document.getLocation());

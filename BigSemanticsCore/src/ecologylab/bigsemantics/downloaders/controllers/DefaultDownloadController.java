@@ -13,7 +13,7 @@ import ecologylab.net.ParsedURL;
  * 
  * @author colton
  */
-public class NewDefaultDownloadController implements NewDownloadController
+public class DefaultDownloadController implements DownloadController
 {
 	private final int MAX_REDIRECTS = 10;
 	private boolean connectedStatus;
@@ -27,7 +27,7 @@ public class NewDefaultDownloadController implements NewDownloadController
 	private ParsedURL connectionPurl;
 	private HttpURLConnection connection;
 
-	public NewDefaultDownloadController()
+	public DefaultDownloadController()
 	{
 	}
 

@@ -11,7 +11,7 @@ import java.util.HashSet;
 import ecologylab.bigsemantics.actions.SemanticActionsKeyWords;
 import ecologylab.bigsemantics.collecting.SemanticsGlobalScope;
 import ecologylab.bigsemantics.collecting.SemanticsSessionScope;
-import ecologylab.bigsemantics.downloaders.controllers.NewDownloadController;
+import ecologylab.bigsemantics.downloaders.controllers.DownloadController;
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metadata.builtins.DocumentClosure;
 import ecologylab.bigsemantics.metadata.output.DocumentLogRecord;
@@ -53,7 +53,7 @@ abstract public class DocumentParser<D extends Document>
 
 	protected DocumentClosure		documentClosure;
 	
-	protected NewDownloadController downloadController;
+	protected DownloadController downloadController;
 
 	public boolean 					cacheHit = false;
 
@@ -112,7 +112,7 @@ abstract public class DocumentParser<D extends Document>
 	
 	public abstract void parse ( ) throws IOException;
 	
-	public NewDownloadController getDownloadController()
+	public DownloadController getDownloadController()
 	{
 	  return downloadController;
 	}
@@ -125,7 +125,7 @@ abstract public class DocumentParser<D extends Document>
 	 * @param infoCollector
 	 */
 //	public void fillValues ( PURLConnection purlConnection, DocumentClosure documentClosure, SemanticsGlobalScope infoCollector )
-	public void fillValues ( NewDownloadController downloadController, DocumentClosure documentClosure, SemanticsGlobalScope infoCollector )
+	public void fillValues ( DownloadController downloadController, DocumentClosure documentClosure, SemanticsGlobalScope infoCollector )
 	{
 		this.downloadController		= downloadController;
 		this.documentClosure	= documentClosure;
@@ -500,10 +500,17 @@ abstract public class DocumentParser<D extends Document>
 	public DocumentLogRecord getLogRecord()
 	{
 	  DocumentClosure documentClosure = getDocumentClosure();
-	  DownloadableLogRecord downloadableLogRecord = documentClosure.getLogRecord();
-	  if (downloadableLogRecord instanceof DocumentLogRecord)
+	  if (documentClosure != null)
 	  {
-	    return (DocumentLogRecord) downloadableLogRecord;
+  	  DownloadableLogRecord downloadableLogRecord = documentClosure.getLogRecord();
+  	  if (downloadableLogRecord instanceof DocumentLogRecord)
+  	  {
+  	    return (DocumentLogRecord) downloadableLogRecord;
+  	  }
+	  }
+	  else
+	  {
+	    debug("weird: documentClosure is null!");
 	  }
 	  return DocumentLogRecord.DUMMY;
 	}
@@ -559,7 +566,7 @@ abstract public class DocumentParser<D extends Document>
 	 */
 	public InputStream reConnect() throws IOException
 	{
-		NewDownloadController downloadController = documentClosure.reConnect();
+		DownloadController downloadController = documentClosure.reConnect();
 		this.downloadController	= downloadController;
 		return downloadController.getInputStream();
 	}
