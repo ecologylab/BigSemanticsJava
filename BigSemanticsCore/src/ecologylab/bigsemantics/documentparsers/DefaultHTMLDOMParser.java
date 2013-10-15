@@ -27,6 +27,7 @@ public class DefaultHTMLDOMParser extends ParserBase<CompoundDocument>
                                    org.w3c.dom.Document dom,
                                    SemanticActionHandler handler) throws IOException
   {
+		recursiveExtraction(metaMetadata, document, dom, null, handler.getSemanticActionVariableMap());
     return document;
   }
 

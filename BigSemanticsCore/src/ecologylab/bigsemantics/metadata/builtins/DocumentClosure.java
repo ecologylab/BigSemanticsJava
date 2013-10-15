@@ -239,6 +239,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 					changeDocument(document);
 				}
 				metaMetadata	= mimeMmd;
+				document.setMetaMetadata(mimeMmd);
 			}
 		}
 		

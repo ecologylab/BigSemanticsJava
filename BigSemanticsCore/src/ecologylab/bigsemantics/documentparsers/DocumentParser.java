@@ -211,10 +211,14 @@ abstract public class DocumentParser<D extends Document>
 	 */
 	public ParsedURL purl ( )
 	{
+	  if (documentClosure == null)
+	    return null;
+	  
 		Document document	= documentClosure.getDocument();
-		ParsedURL docPurl = null;
-		if (document != null)
-			docPurl = document.getLocation();
+		if (document == null)
+		  return null;
+		
+		ParsedURL docPurl = document.getLocation();
 		if (downloadController != null)
 		{
 			ParsedURL connPurl = downloadController.getRedirectedLocation();

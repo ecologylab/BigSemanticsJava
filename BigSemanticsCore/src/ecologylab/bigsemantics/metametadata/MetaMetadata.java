@@ -187,6 +187,7 @@ implements IMappable<String>//, HasLocalTranslationScope
 				}
 			}
 			result.setMetaMetadataName(getName());
+			result.setMetaMetadata(this);
 		}
 		return result;
 	}
