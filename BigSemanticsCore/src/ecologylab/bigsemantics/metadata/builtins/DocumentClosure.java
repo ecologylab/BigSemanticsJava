@@ -199,6 +199,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 				  logRecord.setSemanticsDiskCacheHit(true);
 				changeDocument(document);
     		document.setDownloadDone(true);
+    		setDownloadStatusInternal(DownloadStatus.DOWNLOAD_DONE);
 				return;
 			}
 		}
@@ -282,7 +283,6 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 				handler.takeSemanticActions(metaMetadata, document, afterSemanticActions);
 			}
 			
-			setDownloadStatusInternal(DownloadStatus.DOWNLOAD_DONE);
 			if (!ParserBase.DONOT_SETUP_DOCUMENT_GRAPH_CALLBACKS)
 			{
 				Set<DocumentDownloadedEventHandler> listeners = semanticsScope.getDocumentDownloadingMonitor().getListenersForDocument(document);
@@ -310,9 +310,41 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 		
 		document.setDownloadDone(true);
 		document.downloadAndParseDone(documentParser);
-		
+		setDownloadStatusInternal(DownloadStatus.DOWNLOAD_DONE);
+
 //		purlConnection.recycle();
 //		purlConnection	= null;
+	}
+	
+  /**
+   * Add a continuation to this closure before it is downloaded (i.e. before its performDownload()
+   * method finishes).
+   * 
+   * This gives the client the possibility of making sure the continuation will be called when the
+   * closure finishes downloading.
+   * 
+   * @param continuation
+   * @return true if the continuation is added before the closure finishes downloading; false if the
+   *         closure is already downloaded.
+   */
+	public boolean addContinuationBeforeDownloadDone(Continuation<DocumentClosure> continuation)
+	{
+	  if (downloadStatus != DownloadStatus.DOWNLOAD_DONE
+	      && downloadStatus != DownloadStatus.IOERROR
+	      && downloadStatus != DownloadStatus.RECYCLED)
+	  {
+	    synchronized (DOWNLOAD_STATUS_LOCK)
+	    {
+    	  if (downloadStatus != DownloadStatus.DOWNLOAD_DONE
+    	      && downloadStatus != DownloadStatus.IOERROR
+    	      && downloadStatus != DownloadStatus.RECYCLED)
+    	  {
+    	    addContinuation(continuation);
+    	    return true;
+    	  }
+	    }
+	  }
+	  return false;
 	}
 	
 	/**
