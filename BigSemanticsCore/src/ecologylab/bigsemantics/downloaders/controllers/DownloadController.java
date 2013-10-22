@@ -11,6 +11,7 @@ import ecologylab.net.ParsedURL;
  */
 public interface DownloadController
 {
+
 	/**
 	 * Sets the user agent
 	 * 

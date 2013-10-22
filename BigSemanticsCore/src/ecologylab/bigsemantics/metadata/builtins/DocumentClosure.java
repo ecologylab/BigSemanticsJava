@@ -21,8 +21,8 @@ import ecologylab.bigsemantics.collecting.SemanticsSite;
 import ecologylab.bigsemantics.documentcache.PersistentDocumentCache;
 import ecologylab.bigsemantics.documentparsers.DocumentParser;
 import ecologylab.bigsemantics.documentparsers.ParserBase;
-import ecologylab.bigsemantics.downloaders.controllers.DownloadControllerFactory;
 import ecologylab.bigsemantics.downloaders.controllers.DownloadController;
+import ecologylab.bigsemantics.downloaders.controllers.DownloadControllerFactory;
 import ecologylab.bigsemantics.html.documentstructure.SemanticInLinks;
 import ecologylab.bigsemantics.metadata.output.DocumentLogRecord;
 import ecologylab.bigsemantics.metametadata.MetaMetadata;
@@ -117,8 +117,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 		this.semanticsScope = semanticsSessionScope;
 		this.semanticInlinks = semanticInlinks;
 		this.continuations = new ArrayList<Continuation<DocumentClosure>>();
-		this.downloadControllerFactory = downloadControllerFactory;
-		this.downloadController = downloadControllerFactory.createDownloadController(this);
+		this.downloadController = semanticsScope.createDownloadController();
 	}
 	
 	/**
@@ -196,10 +195,10 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 			if (document != null)
 			{
 				if (logRecord != null)
-				  logRecord.setSemanticsDiskCacheHit(true);
+				  logRecord.setPersisentDocumentCacheHit(true);
 				changeDocument(document);
     		document.setDownloadDone(true);
-    		setDownloadStatusInternal(DownloadStatus.DOWNLOAD_DONE);
+    		setDownloadStatus(DownloadStatus.DOWNLOAD_DONE);
 				return;
 			}
 		}
@@ -212,7 +211,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 		downloadController.setUserAgent(userAgent);
 		downloadController.accessAndDownload(location);
 		if (logRecord != null)
-  		logRecord.setmSecInHtmlDownload(System.currentTimeMillis() - millis);
+  		logRecord.setMsHtmlDownload(System.currentTimeMillis() - millis);
 		//baseLog.debug("document downloaded in " + (System.currentTimeMillis() - millis) + "(ms)");
 		
 		ParsedURL redirectedLocation = downloadController.getRedirectedLocation();
@@ -259,7 +258,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 		if (downloadController.isGood() && documentParser != null)
 		{
 			// container or not (it could turn out to be an image or some other mime type), parse the baby!
-			setDownloadStatusInternal(DownloadStatus.PARSING);
+			setDownloadStatus(DownloadStatus.PARSING);
 			if (documentParser.downloadingMessageOnConnect())
 				semanticsScope.displayStatus("Downloading " + location(), 2);
 			
@@ -273,7 +272,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 			millis = System.currentTimeMillis();
 			documentParser.parse();
 			if (logRecord != null)
-  			logRecord.setmSecInExtraction(System.currentTimeMillis() - millis);
+  			logRecord.setMsExtraction(System.currentTimeMillis() - millis);
 			//baseLog.debug("document parsed in " + (System.currentTimeMillis() - millis) + "(ms)");
 			
 			ArrayList<SemanticAction> afterSemanticActions	= metaMetadata.getAfterSemanticActions();
@@ -310,7 +309,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 		
 		document.setDownloadDone(true);
 		document.downloadAndParseDone(documentParser);
-		setDownloadStatusInternal(DownloadStatus.DOWNLOAD_DONE);
+		setDownloadStatus(DownloadStatus.DOWNLOAD_DONE);
 
 //		purlConnection.recycle();
 //		purlConnection	= null;
@@ -572,7 +571,7 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 	@Override
 	public void handleIoError(Throwable e)
 	{
-		setDownloadStatusInternal(DownloadStatus.IOERROR);
+		setDownloadStatus(DownloadStatus.IOERROR);
 		document.setDownloadDone(true);
 		if (documentParser != null)
 			documentParser.handleIoError(e);
@@ -658,6 +657,25 @@ implements TermVectorFeature, Downloadable, SemanticActionsKeyWords, Continuatio
 		{
 			return downloadStatus;
 		}
+	}
+	
+	/**
+	 * Resets download status to unprocessed.
+	 */
+	public void resetDownloadStatus()
+	{
+	  synchronized (DOWNLOAD_STATUS_LOCK)
+	  {
+	    downloadStatus = DownloadStatus.UNPROCESSED;
+	  }
+	}
+	
+	private void setDownloadStatus(DownloadStatus newStatus)
+	{
+	  synchronized (DOWNLOAD_STATUS_LOCK)
+	  {
+	    setDownloadStatusInternal(newStatus);
+	  }
 	}
 	
 	/**

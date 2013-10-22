@@ -93,9 +93,19 @@ implements DOMParserInterface
 		provider											= semanticsScope.constructDOMProvider();
     InputStream inputStream = inputStream();
     Reader reader						= reader();
-		org.w3c.dom.Document document = reader != null ? provider.parseDOM(reader, null) : provider.parseDOM(inputStream, null);
-		getLogRecord().setMsContentReadingAndDomCreation(System.currentTimeMillis() - t0);
-		inputStream.close();
+		org.w3c.dom.Document document = null;
+    try
+    {
+  		document = reader != null ? provider.parseDOM(reader, null) : provider.parseDOM(inputStream, null);
+  		getLogRecord().setMsContentReadingAndDomCreation(System.currentTimeMillis() - t0);
+    }
+    finally
+    {
+      if (inputStream != null)
+      {
+    		inputStream.close();
+      }
+    }
     return document;
 	}
 

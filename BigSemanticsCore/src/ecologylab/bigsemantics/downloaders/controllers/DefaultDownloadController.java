@@ -9,202 +9,208 @@ import java.net.MalformedURLException;
 import ecologylab.net.ParsedURL;
 
 /**
- * Replaces the default download controller by implementing NewDownloadConroller
+ * The default class that handles document downloading.
  * 
  * @author colton
  */
 public class DefaultDownloadController implements DownloadController
 {
-	private final int MAX_REDIRECTS = 10;
-	private boolean connectedStatus;
-	private int httpStatus;
-	private String charset;
-	private String mimeType;
-	private String userAgent;
-	private String httpStatusMessage;
-	private InputStream connectionStream;
-	private ParsedURL originalPurl;
-	private ParsedURL connectionPurl;
-	private HttpURLConnection connection;
 
-	public DefaultDownloadController()
-	{
-	}
+  public static final int   MAX_REDIRECTS = 10;
 
-	/**
-	 * Opens the HttpURLConnection to the specified location and downloads the
-	 * resource
-	 * 
-	 * @param location
-	 *            a ParsedURL object pointing to a resource
-	 * @return a boolean indicating the success status of the connection
-	 */
-	public boolean accessAndDownload(ParsedURL location) throws IOException
-	{
-		String[] contentType;
+  private boolean           successStatus;
 
-		originalPurl = location;
+  private int               httpStatus;
 
-		try
-		{
-			connection = (HttpURLConnection) originalPurl.url()
-					.openConnection();
+  private String            charset;
 
-			if (userAgent != null)
-				connection.setRequestProperty("User-Agent", userAgent);
+  private String            mimeType;
 
-			httpStatus = connection.getResponseCode();
+  private String            userAgent;
 
-			// Attempt to follow redirects until redirect limit is reached
-			for (int redirects = 0; redirects < MAX_REDIRECTS
-					&& httpStatus != HttpURLConnection.HTTP_OK
-					&& (httpStatus == HttpURLConnection.HTTP_MOVED_PERM 
-					|| httpStatus == HttpURLConnection.HTTP_MOVED_TEMP); redirects++)
-			{
-				connection = (HttpURLConnection) new URL(
-						connection.getHeaderField("Location")).openConnection();
+  private String            httpStatusMessage;
 
-				if (userAgent != null)
-					connection.setRequestProperty("User-Agent", userAgent);
+  private InputStream       connectionStream;
 
-				httpStatus = connection.getResponseCode();
-			}
+  private ParsedURL         originalPurl;
 
-			if (connection.getContentType() != null)
-			{
-				contentType = connection.getContentType().split(";");
+  private ParsedURL         connectionPurl;
 
-				mimeType = contentType[0];
-				charset = contentType.length > 1 ? contentType[1]
-						.substring(" charset=".length()) : null;
-			}
+  private HttpURLConnection connection;
 
-			connectedStatus = (200 <= httpStatus && httpStatus < 300);
+  /**
+   * Opens the HttpURLConnection to the specified location and downloads the resource
+   * 
+   * @param location
+   *          a ParsedURL object pointing to a resource
+   * @return a boolean indicating the success status of the connection
+   */
+  public boolean accessAndDownload(ParsedURL location) throws IOException
+  {
 
-			if (connectedStatus)
-			{
-				connectionStream = connection.getInputStream();
-				connectionPurl = new ParsedURL(connection.getURL());
-				httpStatusMessage = connection.getResponseMessage();
-			}
-		}
-		catch (MalformedURLException e)
-		{
-			connectedStatus = false;
-		}
+    originalPurl = location;
 
-		return connectedStatus;
-	}
+    try
+    {
+      connection = (HttpURLConnection) originalPurl.url().openConnection();
+      if (userAgent != null)
+      {
+        connection.setRequestProperty("User-Agent", userAgent);
+      }
 
-	/**
-	 * Sets the user agent
-	 * 
-	 * @param userAgent
-	 *            a string representation of the user agent
-	 */
-	public void setUserAgent(String userAgent)
-	{
-		this.userAgent = userAgent;
-	}
+      httpStatus = connection.getResponseCode();
 
-	/**
-	 * Returns a boolean indicating if the HTTP response code is that of a good
-	 * connection
-	 * 
-	 * @return a boolean indicating if the HTTP response code is that of a good
-	 *         connection
-	 */
-	public boolean isGood()
-	{
-		return connectedStatus;
-	}
+      // Attempt to follow redirects until redirect limit is reached
+      for (int redirects = 0; redirects < MAX_REDIRECTS && isRedirecting(httpStatus); redirects++)
+      {
+        String redirectedLoc = connection.getHeaderField("Location");
+        connection = (HttpURLConnection) new URL(redirectedLoc).openConnection();
+        if (userAgent != null)
+        {
+          connection.setRequestProperty("User-Agent", userAgent);
+        }
 
-	/**
-	 * Returns the status code of the HTTP response message for the connection
-	 * 
-	 * @return the status code of the HTTP response message for the connection
-	 */
-	public int getStatus()
-	{
-		return httpStatus;
-	}
+        httpStatus = connection.getResponseCode();
+      }
 
-	/**
-	 * Returns the message from the HTTP response message
-	 * 
-	 * @return the message from the HTTP response message
-	 */
-	public String getStatusMessage()
-	{
-		return httpStatusMessage;
-	}
+      if (connection.getContentType() != null)
+      {
+        String[] contentType = connection.getContentType().split(";");
 
-	/**
-	 * Returns a ParsedURL object corresponding to the original resource
-	 * location used to initiate the connection. This value does not change if
-	 * the connection is redirected
-	 * 
-	 * @return a ParsedURL object corresponding to the original resource
-	 *         location used to initiate the connection
-	 */
-	public ParsedURL getLocation()
-	{
-		return originalPurl;
-	}
+        mimeType = contentType[0];
+        charset = contentType.length > 1
+            ? contentType[1].trim().substring("charset=".length())
+            : null;
+      }
 
-	/**
-	 * Returns a ParsedURL object corresponding to the location of the resource
-	 * with which the connection is associated. This value does change with
-	 * redirects
-	 * 
-	 * @return a ParsedURL object corresponding to the location of the resource
-	 *         with which the connection is associated
-	 */
-	public ParsedURL getRedirectedLocation()
-	{
-		return connectionPurl;
-	}
+      successStatus = (200 <= httpStatus && httpStatus < 300);
 
-	/**
-	 * Returns the String representation of the content type
-	 * 
-	 * @return the String representation of the content type
-	 */
-	public String getMimeType()
-	{
-		return mimeType;
-	}
+      if (successStatus)
+      {
+        connectionStream = connection.getInputStream();
+        connectionPurl = new ParsedURL(connection.getURL());
+        httpStatusMessage = connection.getResponseMessage();
+      }
+    }
+    catch (MalformedURLException e)
+    {
+      successStatus = false;
+    }
 
-	/**
-	 * Returns the content encoding type (character set)
-	 * 
-	 * @return a String representation of the content encoding type (character
-	 *         set)
-	 */
-	public String getCharset()
-	{
-		return charset;
-	}
+    return successStatus;
+  }
+  
+  private boolean isRedirecting(int httpStatus)
+  {
+    return httpStatus == HttpURLConnection.HTTP_MOVED_PERM
+           || httpStatus == HttpURLConnection.HTTP_MOVED_TEMP;
+  }
 
-	/**
-	 * Returns the content of the named header field
-	 * 
-	 * @param name
-	 *            the name of the requested header field
-	 * @return a String of the content of the named header field
-	 */
-	public String getHeader(String name)
-	{
-		return connection.getHeaderField(name);
-	}
+  /**
+   * Sets the user agent
+   * 
+   * @param userAgent
+   *          a string representation of the user agent
+   */
+  public void setUserAgent(String userAgent)
+  {
+    this.userAgent = userAgent;
+  }
 
-	/**
-	 * Returns an input stream which reads from the connection
-	 * 
-	 * @return an input stream which reads from the connection
-	 */
-	public InputStream getInputStream()
-	{
-		return connectionStream;
-	}
+  /**
+   * Returns a boolean indicating if the HTTP response code is that of a good connection
+   * 
+   * @return a boolean indicating if the HTTP response code is that of a good connection
+   */
+  public boolean isGood()
+  {
+    return successStatus;
+  }
+
+  /**
+   * Returns the status code of the HTTP response message for the connection
+   * 
+   * @return the status code of the HTTP response message for the connection
+   */
+  public int getStatus()
+  {
+    return httpStatus;
+  }
+
+  /**
+   * Returns the message from the HTTP response message
+   * 
+   * @return the message from the HTTP response message
+   */
+  public String getStatusMessage()
+  {
+    return httpStatusMessage;
+  }
+
+  /**
+   * Returns a ParsedURL object corresponding to the original resource location used to initiate the
+   * connection. This value does not change if the connection is redirected
+   * 
+   * @return a ParsedURL object corresponding to the original resource location used to initiate the
+   *         connection
+   */
+  public ParsedURL getLocation()
+  {
+    return originalPurl;
+  }
+
+  /**
+   * Returns a ParsedURL object corresponding to the location of the resource with which the
+   * connection is associated. This value does change with redirects
+   * 
+   * @return a ParsedURL object corresponding to the location of the resource with which the
+   *         connection is associated
+   */
+  public ParsedURL getRedirectedLocation()
+  {
+    return connectionPurl;
+  }
+
+  /**
+   * Returns the String representation of the content type
+   * 
+   * @return the String representation of the content type
+   */
+  public String getMimeType()
+  {
+    return mimeType;
+  }
+
+  /**
+   * Returns the content encoding type (character set)
+   * 
+   * @return a String representation of the content encoding type (character set)
+   */
+  public String getCharset()
+  {
+    return charset;
+  }
+
+  /**
+   * Returns the content of the named header field
+   * 
+   * @param name
+   *          the name of the requested header field
+   * @return a String of the content of the named header field
+   */
+  public String getHeader(String name)
+  {
+    return connection.getHeaderField(name);
+  }
+
+  /**
+   * Returns an input stream which reads from the connection
+   * 
+   * @return an input stream which reads from the connection
+   */
+  public InputStream getInputStream()
+  {
+    return connectionStream;
+  }
+
 }

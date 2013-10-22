@@ -7,6 +7,8 @@ import java.io.File;
 
 import ecologylab.bigsemantics.documentcache.HashMapDocumentCache;
 import ecologylab.bigsemantics.documentcache.PersistentDocumentCache;
+import ecologylab.bigsemantics.downloaders.controllers.DefaultDownloadController;
+import ecologylab.bigsemantics.downloaders.controllers.DownloadController;
 import ecologylab.bigsemantics.gui.InteractiveSpace;
 import ecologylab.bigsemantics.html.dom.IDOMProvider;
 import ecologylab.bigsemantics.metadata.builtins.Document;
@@ -258,6 +260,11 @@ public class SemanticsGlobalScope extends MetaMetadataRepositoryInit
 	    this.put(KEY_LOGGER_FACTORY, new SimpleLoggerFactory());
 	  }
 	  return (ILoggerFactory) this.get(KEY_LOGGER_FACTORY);
+	}
+	
+	public DownloadController createDownloadController()
+	{
+	  return new DefaultDownloadController();
 	}
 	
 }

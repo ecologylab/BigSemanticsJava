@@ -5,6 +5,7 @@ package ecologylab.bigsemantics.filestorage;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Properties;
@@ -76,10 +77,11 @@ public class FileSystemStorage extends Debug implements FileStorageProvider
 	public String saveFile(ParsedURL originalPURL, InputStream input)
 	{
 		File outFile = getDestinationFileAndCreateDirs(downloadDirectory, originalPURL, "html");
+		InputStream in = input;
+		OutputStream out = null;
 		try
 		{
-			InputStream in = input;
-			OutputStream out = new FileOutputStream(outFile);
+			out = new FileOutputStream(outFile);
 			byte buf[] = new byte[1024];
 			int len;
 			while ((len = in.read(buf)) > 0)
@@ -91,6 +93,21 @@ public class FileSystemStorage extends Debug implements FileStorageProvider
 		{
 			e.printStackTrace();
 			return null;
+		}
+		finally
+		{
+		  if (out != null)
+		  {
+		    try
+        {
+          out.close();
+        }
+        catch (IOException e)
+        {
+          error("Critical: Can't close file!");
+          e.printStackTrace();
+        }
+		  }
 		}
 
 		debug("Saved inputstream to " + outFile.getAbsolutePath());

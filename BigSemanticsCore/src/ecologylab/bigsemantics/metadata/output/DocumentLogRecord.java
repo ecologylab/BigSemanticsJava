@@ -11,97 +11,83 @@ public class DocumentLogRecord extends DownloadableLogRecord
 {
 
   @simpl_scalar
-	ParsedURL documentUrl;
-	
-	@simpl_scalar
-	long mSecInHtmlDownload;
-	
-	@simpl_scalar
-	long mSecInExtraction;
-	
-	@simpl_scalar
-	long mSecInSerialization;
-	
-	@simpl_scalar
-	long msContentReadingAndDomCreation;
-	
-	@simpl_scalar
-	long msContentBodyAndClippings;
-	
-	@simpl_scalar
-	long msImageTextParserCallingSuperParse;
-	
-	@simpl_scalar
-	long msMetadataCacheLookup;
-	
-	@simpl_scalar
-	long msMetadataCaching;
-	
-	@simpl_scalar
-  long msCompoundDocumentDnpDone;
+  private ParsedURL           documentUrl;
 
-	@simpl_scalar
-	boolean DocumentCollectionCacheHit;
-	
-	@simpl_scalar
-	boolean SemanticsDiskCacheHit;
-	
-	@simpl_composite
-	DocumentErrorRecord	errorRecord;
+  @simpl_scalar
+  private long                msHtmlDownload;
 
-	public ParsedURL getDocumentUrl()
-	{
-		return documentUrl;
-	}
+  @simpl_scalar
+  private long                msExtraction;
 
-	public void setDocumentUrl(ParsedURL documentUrl)
-	{
-		this.documentUrl = documentUrl;
-	}
+  @simpl_scalar
+  private long                msSerialization;
 
-	public boolean isDocumentCollectionCacheHit()
-	{
-		return DocumentCollectionCacheHit;
-	}
+  @simpl_scalar
+  private long                msContentReadingAndDomCreation;
 
-	public void setDocumentCollectionCacheHit(boolean documentCollectionCacheHit)
-	{
-		DocumentCollectionCacheHit = documentCollectionCacheHit;
-	}
+  @simpl_scalar
+  private long                msContentBodyAndClippings;
 
-	public boolean isSemanticsDiskCacheHit()
-	{
-		return SemanticsDiskCacheHit;
-	}
+  @simpl_scalar
+  private long                msImageTextParserCallingSuperParse;
 
-	public void setSemanticsDiskCacheHit(boolean semanticsDiskCacheHit)
-	{
-		SemanticsDiskCacheHit = semanticsDiskCacheHit;
-	}
+  @simpl_scalar
+  private long                msMetadataCacheLookup;
 
-	public long getmSecInHtmlDownload() {
-		return mSecInHtmlDownload;
-	}
+  @simpl_scalar
+  private long                msMetadataCaching;
 
-	public void setmSecInHtmlDownload(long mSecInHtmlDownload) {
-		this.mSecInHtmlDownload = mSecInHtmlDownload;
-	}
+  @simpl_scalar
+  private long                msCompoundDocumentDnpDone;
 
-	public long getmSecInExtraction() {
-		return mSecInExtraction;
-	}
+  @simpl_scalar
+  private boolean             InMemDocumentCacheHit;
 
-	public void setmSecInExtraction(long mSecInExtraction) {
-		this.mSecInExtraction = mSecInExtraction;
-	}
+  @simpl_scalar
+  private boolean             PersistentDocumentCacheHit;
 
-	public long getmSecInSerialization() {
-		return mSecInSerialization;
-	}
+  @simpl_composite
+  private DocumentErrorRecord errorRecord;
 
-	public void setmSecInSerialization(long mSecInSerialization) {
-		this.mSecInSerialization = mSecInSerialization;
-	}	
+  public ParsedURL getDocumentUrl()
+  {
+    return documentUrl;
+  }
+
+  public void setDocumentUrl(ParsedURL documentUrl)
+  {
+    this.documentUrl = documentUrl;
+  }
+
+  public long getMsHtmlDownload()
+  {
+    return msHtmlDownload;
+  }
+
+  public void setMsHtmlDownload(long msHtmlDownload)
+  {
+    this.msHtmlDownload = msHtmlDownload;
+  }
+
+  public long getMsExtraction()
+  {
+    return msExtraction;
+  }
+
+  public void setMsExtraction(long msExtraction)
+  {
+    this.msExtraction = msExtraction;
+  }
+
+  public long getMsSerialization()
+  {
+    return msSerialization;
+  }
+
+  public void setMsSerialization(long msSerialization)
+  {
+    this.msSerialization = msSerialization;
+  }
 
   public long getMsContentReadingAndDomCreation()
   {
@@ -163,11 +149,41 @@ public class DocumentLogRecord extends DownloadableLogRecord
     this.msCompoundDocumentDnpDone = msCompoundDocumentDnpDone;
   }
 
+  public boolean isInMemDocumentCacheHit()
+  {
+    return InMemDocumentCacheHit;
+  }
+
+  public void setInMemDocumentCacheHit(boolean documentCollectionCacheHit)
+  {
+    InMemDocumentCacheHit = documentCollectionCacheHit;
+  }
+
+  public boolean isPersistentDocumentCacheHit()
+  {
+    return PersistentDocumentCacheHit;
+  }
+
+  public void setPersisentDocumentCacheHit(boolean semanticsDiskCacheHit)
+  {
+    PersistentDocumentCacheHit = semanticsDiskCacheHit;
+  }
+
+  public DocumentErrorRecord getErrorRecord()
+  {
+    return errorRecord;
+  }
+
+  public void setErrorRecord(DocumentErrorRecord errorRecord)
+  {
+    this.errorRecord = errorRecord;
+  }
+
   static final public DocumentLogRecord DUMMY;
-	
-	static
-	{
-	  DUMMY = new DocumentLogRecord();
-	}
+
+  static
+  {
+    DUMMY = new DocumentLogRecord();
+  }
 
 }

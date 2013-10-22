@@ -3,6 +3,7 @@ package ecologylab.bigsemantics.collecting;
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metadata.scalar.MetadataParsedURL;
 import ecologylab.bigsemantics.metametadata.MetaMetadata;
+import ecologylab.generic.Debug;
 import ecologylab.net.ParsedURL;
 
 /**
@@ -129,10 +130,17 @@ public class DocumentLocationMap<D extends Document>
    */
   public void remap(ParsedURL location, Document newDocument)
   {
-    documentCache.put(location, (D) newDocument);
-    ParsedURL newDocumentLocation = newDocument.getLocation();
-    if (newDocumentLocation != null && !location.equals(newDocumentLocation))
-      documentCache.put(newDocumentLocation, (D) newDocument); // just to make sure
+    if (location != null)
+    {
+      documentCache.put(location, (D) newDocument);
+      ParsedURL newDocumentLocation = newDocument.getLocation();
+      if (newDocumentLocation != null && !location.equals(newDocumentLocation))
+        documentCache.put(newDocumentLocation, (D) newDocument); // just to make sure
+    }
+    else
+    {
+      Debug.warning(this, "Location to remap is null! New doc: " + newDocument);
+    }
   }
 
   /**
