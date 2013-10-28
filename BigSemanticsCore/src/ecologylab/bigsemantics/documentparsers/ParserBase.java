@@ -1267,8 +1267,8 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 			MetaMetadata metaMetadata = (MetaMetadata) this.getMetaMetadata();
 			
 			SimplTypesScope tscope = metaMetadata.getLocalMetadataTypesScope();
-			newDocument = (Document) tscope.deserialize(
-			    documentClosure.getDownloadController().getInputStream(), this, Format.XML);
+			newDocument =
+			    (Document) tscope.deserialize(downloadController.getInputStream(), this, Format.XML);
 			
 			SimplTypesScope.serialize(newDocument, System.out,  StringFormat.XML);
 			

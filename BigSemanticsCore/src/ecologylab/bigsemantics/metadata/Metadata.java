@@ -642,6 +642,11 @@ ISimplSerializationPre, ISimplDeserializationPost
 	{
 		return recycled; // (termVector != null && termVector.isRecycled());
 	}
+	
+	public void resetRecycleStatus()
+	{
+	  recycled = false;
+	}
 
 	public MetaMetadataOneLevelNestingIterator fullNonRecursiveMetaMetadataIterator(
 			MetaMetadataField metaMetadataField)

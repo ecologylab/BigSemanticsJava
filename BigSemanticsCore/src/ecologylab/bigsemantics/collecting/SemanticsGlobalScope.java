@@ -9,9 +9,11 @@ import ecologylab.bigsemantics.documentcache.HashMapDocumentCache;
 import ecologylab.bigsemantics.documentcache.PersistentDocumentCache;
 import ecologylab.bigsemantics.downloaders.controllers.DefaultDownloadController;
 import ecologylab.bigsemantics.downloaders.controllers.DownloadController;
+import ecologylab.bigsemantics.downloaders.controllers.DownloadControllerFactory;
 import ecologylab.bigsemantics.gui.InteractiveSpace;
 import ecologylab.bigsemantics.html.dom.IDOMProvider;
 import ecologylab.bigsemantics.metadata.builtins.Document;
+import ecologylab.bigsemantics.metadata.builtins.DocumentClosure;
 import ecologylab.bigsemantics.metadata.builtins.Image;
 import ecologylab.bigsemantics.metametadata.FieldParserFactory;
 import ecologylab.bigsemantics.metametadata.MetaMetadataRepository;
@@ -37,6 +39,7 @@ import ecologylab.serialization.formatenums.Format;
  * @author andruid
  */
 public class SemanticsGlobalScope extends MetaMetadataRepositoryInit
+implements DownloadControllerFactory
 {
 	
   public static final String KEY_LOGGER_FACTORY = "key_logger_factory";
@@ -262,7 +265,7 @@ public class SemanticsGlobalScope extends MetaMetadataRepositoryInit
 	  return (ILoggerFactory) this.get(KEY_LOGGER_FACTORY);
 	}
 	
-	public DownloadController createDownloadController()
+	public DownloadController createDownloadController(DocumentClosure closure)
 	{
 	  return new DefaultDownloadController();
 	}

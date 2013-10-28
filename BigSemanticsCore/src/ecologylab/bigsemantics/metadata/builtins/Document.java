@@ -341,20 +341,16 @@ public class Document extends DocumentDeclaration
 	
 	final Object CREATE_CLOSURE_LOCK	= new Object();
 	
-	/**
+	public DocumentClosure documentClosure()
+  {
+  	return documentClosure;
+  }
+
+  /**
 	 * 
 	 * @return A closure for this, or null, if this is not fit to be parsed.
 	 */
 	public DocumentClosure getOrConstructClosure()
-	{
-		return getOrConstructClosure(new DefaultDownloadControllerFactory());
-	}
-	
-	/**
-	 * 
-	 * @return A closure for this, or null, if this is not fit to be parsed.
-	 */
-	public DocumentClosure getOrConstructClosure(DownloadControllerFactory downloadControllerFactory)
 	{
 		DocumentClosure result	= this.documentClosure;
 		if (result == null && !isRecycled() && getLocation() != null)
@@ -367,30 +363,17 @@ public class Document extends DocumentDeclaration
 					if (semanticInlinks == null)
 						semanticInlinks	= new SemanticInLinks();
 					
-					result	= constructClosure(downloadControllerFactory);
+					result	= constructClosure();
 					this.documentClosure	= result;
 				}
 			}
 		}
-		return result == null || result.downloadStatus == DownloadStatus.RECYCLED ? null : result;
+		return result == null || result.getDownloadStatus() == DownloadStatus.RECYCLED ? null : result;
 	}
 	
-	public DocumentClosure documentClosure()
+	private DocumentClosure constructClosure()
 	{
-		return documentClosure;
-	}
-	
-	/**
-	 * @return
-	 */
-	public DocumentClosure constructClosure()
-	{
-		return constructClosure(new DefaultDownloadControllerFactory());
-	}
-	
-	private DocumentClosure constructClosure(DownloadControllerFactory downloadControllerFactory)
-	{
-	  return new DocumentClosure(this, semanticInlinks, downloadControllerFactory);
+	  return new DocumentClosure(this, semanticInlinks);
 	}
 
 	/**

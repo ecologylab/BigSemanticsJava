@@ -3,7 +3,7 @@
 	xsi:noNamespaceSchemaLocation="http://ehcache.org/ehcache.xsd"
 	dynamicConfig="true">
 
-	<defaultCache maxEntriesLocalHeap="10" eternal="true"
+	<defaultCache maxEntriesLocalHeap="1000" eternal="true"
 		memoryStoreEvictionPolicy="LRU" />
 
 </ehcache>
