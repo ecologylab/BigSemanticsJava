@@ -43,6 +43,11 @@ class CreateAndVisualizeImgSurrogateSemanticAction
 	@Override
 	public Object perform(Object obj)
 	{
+	  if (sessionScope.isService())
+	  {
+	    return null;
+	  }
+
 		Document source					= resolveSourceDocument();
 
 		Image image 						= (Image) getArgumentObject(SemanticActionNamedArguments.METADATA);

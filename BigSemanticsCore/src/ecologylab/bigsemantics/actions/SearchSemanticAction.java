@@ -34,6 +34,11 @@ public class SearchSemanticAction
 	@Override
 	public Object perform(Object obj)
 	{
+	  if (sessionScope.isService())
+	  {
+	    return null;
+	  }
+
 		String query = (String) getArgumentObject(ARG_QUERY);
 		if (StringTools.isNullOrEmpty(query))
 			return null;

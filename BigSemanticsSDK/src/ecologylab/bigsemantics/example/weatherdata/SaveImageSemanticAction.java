@@ -40,6 +40,11 @@ public class SaveImageSemanticAction extends SemanticAction
 	@Override
 	public Object perform(Object obj)
 	{
+	  if (sessionScope.isService())
+	  {
+	    return null;
+	  }
+
 		/*
 		 * use getArgument*() methods to retrieve argument values. note that getArgumentValue() allows
 		 * you retrieve the literal in meta-metadata XML. other getArgument*() methods will use that

@@ -187,7 +187,7 @@ public class CompoundDocument extends CompoundDocumentDeclaration
 	{
 	  long t0 = System.currentTimeMillis();
 	  
-		if (numClippings() > 0)
+		if (documentParser != null && numClippings() > 0)
 		{	
 			getSite(); // initialize this.site if haven't
 			if (documentParser.isIndexPage())
@@ -203,9 +203,10 @@ public class CompoundDocument extends CompoundDocumentDeclaration
 
 			// When downloadDone, add best surrogate and best container to infoCollector
 			Crawler crawler	= semanticsScope.getCrawler();
-			if (documentParser != null && crawler != null)
+			if (crawler != null)
 			{
-				CompoundDocumentParserCrawlerResult	crawlerResult	= crawler.constructCompoundDocumentParserResult(this, isJustCrawl());
+				CompoundDocumentParserCrawlerResult	crawlerResult	=
+				    crawler.constructCompoundDocumentParserResult(this, isJustCrawl());
 				crawlerResult.collect();
 			}
 

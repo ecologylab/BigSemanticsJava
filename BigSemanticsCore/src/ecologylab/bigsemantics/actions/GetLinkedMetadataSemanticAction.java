@@ -29,6 +29,11 @@ public class GetLinkedMetadataSemanticAction extends SemanticAction
 	@Override
 	public Object perform(Object obj)
 	{
+	  if (sessionScope.isService())
+	  {
+	    return null;
+	  }
+
 		if (obj != null && obj instanceof Metadata)
 		{
 			Metadata metadata = (Metadata) obj;

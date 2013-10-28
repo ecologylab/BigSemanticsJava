@@ -143,6 +143,11 @@ implements SemanticActionStandardMethods
 	@Override
 	public Object perform(Object obj) throws IOException
 	{
+	  if (sessionScope.isService())
+	  {
+	    return null;
+	  }
+
 		InteractiveSpace interactiveSpace = sessionScope.getInteractiveSpace();
 		Document sourceDocument = resolveSourceDocument();
 		DocumentClosure closure = documentParser.getDocumentClosure();
