@@ -91,6 +91,8 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 	public static boolean			DONOT_SETUP_DOCUMENT_GRAPH_CALLBACKS	= Pref.lookupBoolean("donot_setup_document_graph_callbacks", false);
 
 	public static boolean			DONOT_LOOK_FOR_FAVICON                = Pref.lookupBoolean("donot_look_for_favicon", false);
+	
+	public static String      ELEMENT_INDEX_IN_COLLECTION           = "element_index_in_collection";
 
 	protected XPath									xpath;
 
@@ -450,6 +452,8 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 		
 		String xpathString = mmdField.getXpath();
 		
+	  xpathString = assignVariablesInXPathString(params, xpathString);
+			  
 //		if (xpathString != null && xpathString.length() > 0)		
 //			xpathString = provider.xPathTagNamesToLower(xpathString);
 		
@@ -557,6 +561,16 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 
 		return result;
 	}
+
+  private String assignVariablesInXPathString(Scope<Object> params, String xpathString)
+  {
+    if (xpathString.contains("$i"))
+	  {
+	    int elementIndex = (Integer) params.get(ELEMENT_INDEX_IN_COLLECTION);
+	    xpathString = xpathString.replaceAll("\\$i", String.valueOf(elementIndex + 1));
+	  }
+    return xpathString;
+  }
 
   String evaluateXpathForField(MetaMetadataNestedField mmdField,
                                Node contextNode,
@@ -898,6 +912,10 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 				Metadata element = (Metadata) ReflectionTools.getInstance(elementClass, argClasses, argObjects);
 				element.setSemanticsSessionScope(semanticsScope);
 				
+				// the index of the current element in the current collection may be useful for further
+				// extraction.
+				params.put(ELEMENT_INDEX_IN_COLLECTION, i);
+				
 //				if (recursiveExtraction(mmdField.getChildComposite(), element, thisNode, thisFieldParserContext, params))
 				if (recursiveExtraction(mmdField, element, thisNode, thisFieldParserContext, params))
 				{
@@ -1034,6 +1052,8 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D> im
 			  // absolute path to relative path, so that we don't go through the document again
 			  if (xpathString.startsWith("//"))
 			    xpathString = "." + xpathString;
+			  
+			  xpathString = assignVariablesInXPathString(params, xpathString);
 			  
 				if (mmdField.isExtractAsHtml())
 				{
