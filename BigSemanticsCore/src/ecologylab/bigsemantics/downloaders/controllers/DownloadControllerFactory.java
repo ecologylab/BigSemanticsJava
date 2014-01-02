@@ -13,6 +13,6 @@ public interface DownloadControllerFactory
   /**
    * @return A new DownloadController object.
    */
-  NewDownloadController createDownloadController(DocumentClosure closure);
+  DownloadController createDownloadController(DocumentClosure closure);
 
 }

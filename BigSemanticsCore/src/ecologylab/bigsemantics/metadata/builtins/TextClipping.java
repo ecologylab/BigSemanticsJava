@@ -48,13 +48,22 @@ public class TextClipping extends TextClippingDeclaration implements TextualMeta
 	@Override
 	public void setText(String newText)
 	{
-		getMedia().setText(newText);
+		HtmlText media = getMedia();
+		if (media != null)
+		{
+		  media.setText(newText);
+		}
 	}
 
 	@Override
 	public String getText()
 	{
-		return getMedia().getText();
+		HtmlText media = getMedia();
+		if (media != null)
+		{
+  		return media.getText();
+		}
+		return "";
 	}
 
 	/**
@@ -63,13 +72,21 @@ public class TextClipping extends TextClippingDeclaration implements TextualMeta
 
 	public void hwSetText(String text)
 	{
-		this.getMedia().text().setValue(text);
-		rebuildCompositeTermVector();
+		HtmlText media = getMedia();
+		if (media != null)
+		{
+  		media.text().setValue(text);
+  		rebuildCompositeTermVector();
+		}
 	}
 
 	public void setText(CharSequence textSequence)
 	{
-		this.getMedia().setTextMetadata(new MetadataString(textSequence.toString()));
+		HtmlText media = getMedia();
+		if (media != null)
+		{
+  		media.setTextMetadata(new MetadataString(textSequence.toString()));
+		}
 	}
 	
 	/**
@@ -77,10 +94,14 @@ public class TextClipping extends TextClippingDeclaration implements TextualMeta
 	 **/
 	public void hwSetTextMetadata(MetadataString text)
 	{
-		if (getText() != null && hasTermVector())
-			termVector().remove(this.getMedia().getTextMetadata().termVector());
-		this.getMedia().setTextMetadata(text);
-		rebuildCompositeTermVector();
+		HtmlText media = getMedia();
+		if (media != null)
+		{
+  		if (getText() != null && hasTermVector())
+  			termVector().remove(media.getTextMetadata().termVector());
+  		media.setTextMetadata(text);
+  		rebuildCompositeTermVector();
+		}
 	}
 
 }

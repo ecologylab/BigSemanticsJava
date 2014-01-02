@@ -5,12 +5,18 @@ package ecologylab.bigsemantics.collecting;
 
 import java.io.File;
 
-import ecologylab.bigsemantics.documentcache.IDocumentCache;
+import ecologylab.bigsemantics.documentcache.HashMapDocumentCache;
+import ecologylab.bigsemantics.documentcache.PersistentDocumentCache;
+import ecologylab.bigsemantics.downloaders.controllers.DefaultDownloadController;
+import ecologylab.bigsemantics.downloaders.controllers.DownloadController;
+import ecologylab.bigsemantics.downloaders.controllers.DownloadControllerFactory;
 import ecologylab.bigsemantics.gui.InteractiveSpace;
 import ecologylab.bigsemantics.html.dom.IDOMProvider;
 import ecologylab.bigsemantics.metadata.builtins.Document;
+import ecologylab.bigsemantics.metadata.builtins.DocumentClosure;
 import ecologylab.bigsemantics.metadata.builtins.Image;
 import ecologylab.bigsemantics.metametadata.FieldParserFactory;
+import ecologylab.bigsemantics.metametadata.MetaMetadataRepository;
 import ecologylab.generic.Debug;
 import ecologylab.generic.ReflectionTools;
 import ecologylab.logging.ILoggerFactory;
@@ -33,6 +39,7 @@ import ecologylab.serialization.formatenums.Format;
  * @author andruid
  */
 public class SemanticsGlobalScope extends MetaMetadataRepositoryInit
+implements DownloadControllerFactory
 {
 	
   public static final String KEY_LOGGER_FACTORY = "key_logger_factory";
@@ -41,7 +48,7 @@ public class SemanticsGlobalScope extends MetaMetadataRepositoryInit
 	 * Maps locations to Document Metadata subclasses. Constructs these Document instances as needed
 	 * using the MetaMetadataRepository.
 	 */
-	final protected TNGGlobalCollections				globalCollection;
+	final protected LocalDocumentCollections				localDocumentCollection;
 
 	/**
 	 * Pool of DownloadMonitors used for parsing Documents of various types.
@@ -68,7 +75,9 @@ public class SemanticsGlobalScope extends MetaMetadataRepositoryInit
 	{
 		super(repositoryLocation, repositoryFormat, metadataTypesScope);
 		this.domProviderClass = domProviderClass;
-		globalCollection = TNGGlobalCollections.getSingleton(getMetaMetadataRepository());
+		MetaMetadataRepository repository = this.getMetaMetadataRepository();
+		localDocumentCollection = new LocalDocumentCollections(new DefaultDocumentMapHelper(repository),
+		                                                       getDocumentCache());
 		downloadMonitors = new SemanticsDownloadMonitors();
 		fieldParserFactory = new FieldParserFactory();
 	}
@@ -76,9 +85,9 @@ public class SemanticsGlobalScope extends MetaMetadataRepositoryInit
 	/**
 	 * @return the globalCollection
 	 */
-	public TNGGlobalCollections getGlobalCollection()
+	public LocalDocumentCollections getLocalDocumentCollection()
 	{
-		return globalCollection;
+		return localDocumentCollection;
 	}
 
 	/**
@@ -111,28 +120,28 @@ public class SemanticsGlobalScope extends MetaMetadataRepositoryInit
 	
 	public Document lookupDocument(ParsedURL location)
 	{
-		return location == null ? null : globalCollection.lookupDocument(location);
+		return location == null ? null : localDocumentCollection.lookupDocument(location);
 	}
 
 	public Document getOrConstructDocument(ParsedURL location)
 	{
 		if (location == null)
 			return null;
-		Document result	= globalCollection.getOrConstruct(location, false);
+		Document result	= localDocumentCollection.getOrConstruct(location, false);
 		result.setSemanticsSessionScope(this);
 		return result;
 	}
 	
 	public void putDocumentIfAbsent(Document document)
 	{
-		globalCollection.putIfAbsent(document);
+		localDocumentCollection.putIfAbsent(document);
 	}
 	
 	public Image getOrConstructImage(ParsedURL location)
 	{
 		if (location == null)
 			return null;
-		Document constructDocument = globalCollection.getOrConstruct(location, true);
+		Document constructDocument = localDocumentCollection.getOrConstruct(location, true);
 
 		Image result	= null;
 		if (constructDocument.isImage())
@@ -227,8 +236,17 @@ public class SemanticsGlobalScope extends MetaMetadataRepositoryInit
 	{
 		return documentDownloadingMonitor;
 	}
+	
+  /**
+   * @return A DocumentCache for caching extracted Document objects. Subclasses can override this
+   *         method to use different caches.
+   */
+	protected DocumentCache<ParsedURL, Document> getDocumentCache()
+	{
+	  return new HashMapDocumentCache();
+	}
 
-	public IDocumentCache getDocumentCache()
+	public PersistentDocumentCache getPersistentDocumentCache()
 	{
 		return null;
 	}
@@ -245,6 +263,11 @@ public class SemanticsGlobalScope extends MetaMetadataRepositoryInit
 	    this.put(KEY_LOGGER_FACTORY, new SimpleLoggerFactory());
 	  }
 	  return (ILoggerFactory) this.get(KEY_LOGGER_FACTORY);
+	}
+	
+	public DownloadController createDownloadController(DocumentClosure closure)
+	{
+	  return new DefaultDownloadController();
 	}
 	
 }

@@ -14,13 +14,13 @@ import java.util.List;
 import ecologylab.bigsemantics.collecting.DownloadStatus;
 import ecologylab.bigsemantics.collecting.SemanticsGlobalScope;
 import ecologylab.bigsemantics.collecting.SemanticsSite;
-import ecologylab.bigsemantics.collecting.TNGGlobalCollections;
+import ecologylab.bigsemantics.collecting.LocalDocumentCollections;
 import ecologylab.bigsemantics.documentparsers.DocumentParser;
 import ecologylab.bigsemantics.documentparsers.ParserResult;
 import ecologylab.bigsemantics.downloaders.controllers.DownloadControllerFactory;
-import ecologylab.bigsemantics.downloaders.controllers.NewDefaultDownloadController;
-import ecologylab.bigsemantics.downloaders.controllers.NewDefaultDownloadControllerFactory;
-import ecologylab.bigsemantics.downloaders.controllers.NewDownloadController;
+import ecologylab.bigsemantics.downloaders.controllers.DefaultDownloadController;
+import ecologylab.bigsemantics.downloaders.controllers.DefaultDownloadControllerFactory;
+import ecologylab.bigsemantics.downloaders.controllers.DownloadController;
 import ecologylab.bigsemantics.html.documentstructure.SemanticAnchor;
 import ecologylab.bigsemantics.html.documentstructure.SemanticInLinks;
 import ecologylab.bigsemantics.metadata.Metadata;
@@ -341,20 +341,16 @@ public class Document extends DocumentDeclaration
 	
 	final Object CREATE_CLOSURE_LOCK	= new Object();
 	
-	/**
+	public DocumentClosure documentClosure()
+  {
+  	return documentClosure;
+  }
+
+  /**
 	 * 
 	 * @return A closure for this, or null, if this is not fit to be parsed.
 	 */
 	public DocumentClosure getOrConstructClosure()
-	{
-		return getOrConstructClosure(new NewDefaultDownloadControllerFactory());
-	}
-	
-	/**
-	 * 
-	 * @return A closure for this, or null, if this is not fit to be parsed.
-	 */
-	public DocumentClosure getOrConstructClosure(DownloadControllerFactory downloadControllerFactory)
 	{
 		DocumentClosure result	= this.documentClosure;
 		if (result == null && !isRecycled() && getLocation() != null)
@@ -367,30 +363,17 @@ public class Document extends DocumentDeclaration
 					if (semanticInlinks == null)
 						semanticInlinks	= new SemanticInLinks();
 					
-					result	= constructClosure(downloadControllerFactory);
+					result	= constructClosure();
 					this.documentClosure	= result;
 				}
 			}
 		}
-		return result == null || result.downloadStatus == DownloadStatus.RECYCLED ? null : result;
+		return result == null || result.getDownloadStatus() == DownloadStatus.RECYCLED ? null : result;
 	}
 	
-	public DocumentClosure documentClosure()
+	private DocumentClosure constructClosure()
 	{
-		return documentClosure;
-	}
-	
-	/**
-	 * @return
-	 */
-	public DocumentClosure constructClosure()
-	{
-		return constructClosure(new NewDefaultDownloadControllerFactory());
-	}
-	
-	private DocumentClosure constructClosure(DownloadControllerFactory downloadControllerFactory)
-	{
-	  return new DocumentClosure(this, semanticInlinks, downloadControllerFactory);
+	  return new DocumentClosure(this, semanticInlinks);
 	}
 
 	/**
@@ -476,7 +459,7 @@ public class Document extends DocumentDeclaration
 			if (!origLocation.equals(newLocation));
 			{
 				setLocation(newLocation);
-				getSemanticsScope().getGlobalCollection().addMapping(newLocation, this);
+				getSemanticsScope().getLocalDocumentCollection().addMapping(newLocation, this);
 				addAdditionalLocation(origLocation);
 			}
 		}
@@ -488,7 +471,7 @@ public class Document extends DocumentDeclaration
 	 */
 	public void inheritValues(Document oldDocument)
 	{
-		oldDocument.getSemanticsScope().getGlobalCollection().remap(oldDocument, this);
+		oldDocument.getSemanticsScope().getLocalDocumentCollection().remap(oldDocument, this);
 		if (getLocationMetadata() == null)
 		{
 			setLocationMetadata(oldDocument.getLocationMetadata());
@@ -632,7 +615,7 @@ public class Document extends DocumentDeclaration
 	
 	void setRecycled()
 	{
-		TNGGlobalCollections globalCollection = semanticsScope.getGlobalCollection();
+		LocalDocumentCollections globalCollection = semanticsScope.getLocalDocumentCollection();
 		globalCollection.setRecycled(getLocation());
 		if (getAdditionalLocations() != null)
 		{

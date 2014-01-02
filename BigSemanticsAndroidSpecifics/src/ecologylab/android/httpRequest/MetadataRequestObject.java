@@ -1,6 +1,7 @@
 package ecologylab.android.httpRequest;
 
 import ecologylab.net.ParsedURL;
+import ecologylab.bigsemantics.metadata.Metadata;
 
 /**
  * a request object for requesting metadata from the semantics service.

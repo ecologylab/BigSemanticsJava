@@ -56,6 +56,12 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 	 * for caching getTypeNameInJava().
 	 */
 	private String								typeNameInJava	= null;
+	
+	/**
+	 * Another field name whose value can be used as label for each child
+	 */
+	@simpl_scalar
+	protected String							childUseValueAsLabel;
 
 	public MetaMetadataCollectionField()
 	{
@@ -391,9 +397,12 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 	@Override
 	protected MetadataClassDescriptor bindMetadataClassDescriptor(SimplTypesScope metadataTScope)
 	{
-		MetaMetadataCompositeField childComposite = getChildComposite();
-		if (childComposite != null)
-			return childComposite.bindMetadataClassDescriptor(metadataTScope);
+	  FieldType fieldType = getFieldType();
+	  if (fieldType == FieldType.COLLECTION_ELEMENT) {
+  		MetaMetadataCompositeField childComposite = getChildComposite();
+  		if (childComposite != null)
+  			return childComposite.bindMetadataClassDescriptor(metadataTScope);
+	  }
 		return null;
 	}
 
@@ -431,6 +440,10 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 			return;
 		}
 		warning("collection field without a (correct) child composite: " + this);
+	}
+
+	public String getChildUseValueAsLabel() {
+		return childUseValueAsLabel;
 	}
 	
 }

@@ -346,6 +346,30 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
 	@simpl_scalar
 	@mm_dont_inherit
 	private boolean																				usedForInlineMmdDef			= false;
+	
+	/**
+	 * hint for renderer to not label the extracted value in presentation
+	 */
+	@simpl_scalar
+	private boolean																				hideLabel;
+	
+	/**
+	 * Another field name whose value can be used as label for this field
+	 */
+	@simpl_scalar
+	protected String																			useValueAsLabel;
+	
+	/**
+	 * hint for renderer to concatenate this field to another 
+	 */
+	@simpl_scalar
+	protected String																			concatenatesTo;
+	
+	/**
+	 * hint for renderer how to position label w.r.t. value
+	 */
+	@simpl_scalar
+	protected String																			labelAt;
 
 	public MetaMetadataField()
 	{
@@ -1253,6 +1277,22 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
 	public Collection<MmdGenericTypeVar> getMetaMetadataGenericTypeVars()
 	{
 		return genericTypeVars == null ? EMPTY_GENERIC_TYPE_VAR_COLLECTION : genericTypeVars.values();
+	}
+
+	public boolean isHideLabel() {
+		return hideLabel;
+	}
+
+	public String getUseValueAsLabel() {
+		return useValueAsLabel;
+	}
+
+	public String getConcatenatesTo() {
+		return concatenatesTo;
+	}
+
+	public String getLabelAt() {
+		return labelAt;
 	}
 	
 }

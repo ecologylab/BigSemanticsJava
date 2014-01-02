@@ -30,12 +30,12 @@ public class NewDefaultDownloadControllerTest
 	private final String MULT_REDIRECT_EXPECTED_FINAL = "https://www.facebook.com/";
 	private final String BAD_ADDRESS = "http://www.badurl781471099989943.org";
 
-	private NewDefaultDownloadController controller;
+	private DefaultDownloadController controller;
 	
 	@Before
 	public void setUp() throws Exception
 	{
-		controller = new NewDefaultDownloadController();
+		controller = new DefaultDownloadController();
 	}
 
 	@Test
@@ -322,7 +322,7 @@ public class NewDefaultDownloadControllerTest
 	{
 		URL url = new URL(GOOD_ADDRESS_NO_REDIRECT);
 		ParsedURL purl = new ParsedURL(url);
-		InputStream is;
+		InputStream is = null;
 		
 		try
 		{

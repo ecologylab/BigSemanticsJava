@@ -10,7 +10,9 @@ import java.util.List;
 import ecologylab.appframework.ApplicationProperties;
 import ecologylab.bigsemantics.metadata.builtins.ClippableDocument;
 import ecologylab.bigsemantics.metadata.builtins.Clipping;
+import ecologylab.bigsemantics.metadata.builtins.CreativeAct;
 import ecologylab.bigsemantics.metadata.builtins.Document;
+import ecologylab.bigsemantics.metadata.builtins.RichArtifact;
 import ecologylab.bigsemantics.metametadata.MetaMetadata;
 import ecologylab.bigsemantics.metametadata.MetaMetadataRepository;
 import ecologylab.bigsemantics.metametadata.MetaMetadataRepositoryLoader;
@@ -54,7 +56,11 @@ public class MetaMetadataRepositoryInit extends Scope<Object> implements Documen
 	private final SimplTypesScope								mediaTypesScope;
 
 	private final SimplTypesScope								clippingsTypeScope;
+	
+	private final SimplTypesScope               richArtifactsTypeScope;
 
+	private final SimplTypesScope				creativeActsTypesScope;
+	
 	public MetaMetadata													DOCUMENT_META_METADATA;
 
 	public MetaMetadata													PDF_META_METADATA;
@@ -107,7 +113,11 @@ public class MetaMetadataRepositoryInit extends Scope<Object> implements Documen
 					REPOSITORY_DOCUMENTS_TYPE_SCOPE, Document.class);
 			this.clippingsTypeScope = metadataTypesScope.getAssignableSubset(
 					REPOSITORY_CLIPPINGS_TYPE_SCOPE, Clipping.class);
-
+			this.richArtifactsTypeScope = metadataTypesScope.getAssignableSubset(
+					REPOSITORY_RICH_ARTIFACTS_TYPE_SCOPE, RichArtifact.class);
+			this.creativeActsTypesScope = metadataTypesScope.getAssignableSubset(
+					REPOSITORY_CREATIVE_ACTS_TYPE_SCOPE, CreativeAct.class);
+			
 			this.mediaTypesScope = metadataTypesScope.getAssignableSubset(
 					REPOSITORY_MEDIA_TYPE_SCOPE, ClippableDocument.class);
 			this.mediaTypesScope.addTranslation(Clipping.class);

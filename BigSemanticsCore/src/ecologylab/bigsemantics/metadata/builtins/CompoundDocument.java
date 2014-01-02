@@ -185,7 +185,9 @@ public class CompoundDocument extends CompoundDocumentDeclaration
 	@Override
 	public void downloadAndParseDone(DocumentParser documentParser)
 	{
-		if (numClippings() > 0)
+	  long t0 = System.currentTimeMillis();
+	  
+		if (documentParser != null && numClippings() > 0)
 		{	
 			getSite(); // initialize this.site if haven't
 			if (documentParser.isIndexPage())
@@ -201,9 +203,10 @@ public class CompoundDocument extends CompoundDocumentDeclaration
 
 			// When downloadDone, add best surrogate and best container to infoCollector
 			Crawler crawler	= semanticsScope.getCrawler();
-			if (documentParser != null && crawler != null)
+			if (crawler != null)
 			{
-				CompoundDocumentParserCrawlerResult	crawlerResult	= crawler.constructCompoundDocumentParserResult(this, isJustCrawl());
+				CompoundDocumentParserCrawlerResult	crawlerResult	=
+				    crawler.constructCompoundDocumentParserResult(this, isJustCrawl());
 				crawlerResult.collect();
 			}
 
@@ -215,6 +218,11 @@ public class CompoundDocument extends CompoundDocumentDeclaration
 			// we didnt actually turn out to be a Container object.
 			// or, the parse didn't collect any information!
 			//			recycle();	// so free all resources, including connectionRecycle()
+		}
+		
+		if (documentParser != null)
+		{
+  		documentParser.getLogRecord().setMsCompoundDocumentDnpDone(System.currentTimeMillis() - t0);
 		}
 	}
 

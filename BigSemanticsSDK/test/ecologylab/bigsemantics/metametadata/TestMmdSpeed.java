@@ -3,14 +3,13 @@ package ecologylab.bigsemantics.metametadata;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import ecologylab.bigsemantics.collecting.DownloadStatus;
 import ecologylab.bigsemantics.metadata.Metadata;
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metadata.builtins.DocumentClosure;
+import ecologylab.bigsemantics.metadata.builtins.RichArtifact;
 import ecologylab.bigsemantics.tools.MmTest;
 import ecologylab.serialization.SIMPLTranslationException;
 
@@ -53,13 +52,10 @@ public class TestMmdSpeed extends MmTest
 		Document document	= incomingClosure.getDocument();
 		if (document != null)
 		{
-			List<Metadata>	allMetadata	= informationComposition.getMetadata();
-			if (allMetadata == null)
-			{
-				allMetadata	= new ArrayList<Metadata>();
-				informationComposition.setMetadata(allMetadata);
-			}
-			allMetadata.add(document);
+		  RichArtifact<Metadata> artifact = new RichArtifact<Metadata>();
+		  artifact.outlinks().add(document);
+		  curation.metadataCollection().add(artifact);
+
 			String outline = ""+document.getLocation().toString();
 			HashMap<DownloadStatus, Long> statusChanges = document.getTransitionTimeToDownloadStatus();
 			

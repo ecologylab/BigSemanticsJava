@@ -100,6 +100,11 @@ class ParseDocumentSemanticAction
 	@Override
 	public Object perform(Object obj)
 	{
+	  if (sessionScope.isService())
+	  {
+	    return null;
+	  }
+
 		//TODO -- add pref to choose performFull!
 		return sessionScope.hasCrawler() ? performBasic(obj) : null;
 	}

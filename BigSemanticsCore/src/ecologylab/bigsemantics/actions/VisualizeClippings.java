@@ -143,6 +143,11 @@ implements SemanticActionStandardMethods
 	@Override
 	public Object perform(Object obj) throws IOException
 	{
+	  if (sessionScope.isService())
+	  {
+	    return null;
+	  }
+
 		InteractiveSpace interactiveSpace = sessionScope.getInteractiveSpace();
 		Document sourceDocument = resolveSourceDocument();
 		DocumentClosure closure = documentParser.getDocumentClosure();
@@ -198,7 +203,7 @@ implements SemanticActionStandardMethods
 					}
 				}
 				//TODO: Handle piles et cetera
-				if(bestImageClipping != null)
+				if(bestImageClipping != null && bestImageClipping.getMedia() != null)
 				{
 
 					//try to download or make closure et cetera...

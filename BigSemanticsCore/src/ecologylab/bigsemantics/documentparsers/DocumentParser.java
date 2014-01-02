@@ -11,13 +11,15 @@ import java.util.HashSet;
 import ecologylab.bigsemantics.actions.SemanticActionsKeyWords;
 import ecologylab.bigsemantics.collecting.SemanticsGlobalScope;
 import ecologylab.bigsemantics.collecting.SemanticsSessionScope;
-import ecologylab.bigsemantics.downloaders.controllers.NewDownloadController;
+import ecologylab.bigsemantics.downloaders.controllers.DownloadController;
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metadata.builtins.DocumentClosure;
+import ecologylab.bigsemantics.metadata.output.DocumentLogRecord;
 import ecologylab.bigsemantics.metametadata.MetaMetadata;
 import ecologylab.bigsemantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.bigsemantics.seeding.Seed;
 import ecologylab.collections.Scope;
+import ecologylab.concurrent.DownloadableLogRecord;
 import ecologylab.generic.Debug;
 import ecologylab.generic.ReflectionTools;
 import ecologylab.net.PURLConnection;
@@ -51,7 +53,7 @@ abstract public class DocumentParser<D extends Document>
 
 	protected DocumentClosure		documentClosure;
 	
-	protected NewDownloadController downloadController;
+	protected DownloadController downloadController;
 
 	public boolean 					cacheHit = false;
 
@@ -81,7 +83,7 @@ abstract public class DocumentParser<D extends Document>
 			bindingParserMap.put(SemanticActionsKeyWords.PDF_PARSER, PdfParser.class);
 		}
 	}
-
+	
 	private static final HashSet<String>	NO_PARSER_SUFFIX_MAP	= new HashSet<String>();
 	
 	/**
@@ -110,7 +112,7 @@ abstract public class DocumentParser<D extends Document>
 	
 	public abstract void parse ( ) throws IOException;
 	
-	public NewDownloadController getDownloadController()
+	public DownloadController getDownloadController()
 	{
 	  return downloadController;
 	}
@@ -123,7 +125,7 @@ abstract public class DocumentParser<D extends Document>
 	 * @param infoCollector
 	 */
 //	public void fillValues ( PURLConnection purlConnection, DocumentClosure documentClosure, SemanticsGlobalScope infoCollector )
-	public void fillValues ( NewDownloadController downloadController, DocumentClosure documentClosure, SemanticsGlobalScope infoCollector )
+	public void fillValues ( DownloadController downloadController, DocumentClosure documentClosure, SemanticsGlobalScope infoCollector )
 	{
 		this.downloadController		= downloadController;
 		this.documentClosure	= documentClosure;
@@ -209,10 +211,14 @@ abstract public class DocumentParser<D extends Document>
 	 */
 	public ParsedURL purl ( )
 	{
+	  if (documentClosure == null)
+	    return null;
+	  
 		Document document	= documentClosure.getDocument();
-		ParsedURL docPurl = null;
-		if (document != null)
-			docPurl = document.getLocation();
+		if (document == null)
+		  return null;
+		
+		ParsedURL docPurl = document.getLocation();
 		if (downloadController != null)
 		{
 			ParsedURL connPurl = downloadController.getRedirectedLocation();
@@ -337,6 +343,7 @@ abstract public class DocumentParser<D extends Document>
 	}
 	
 	static final Class[]  DEFAULT_DOCUMENTPARSER_ARG        = {SemanticsGlobalScope.class};
+
 	/**
 	 * Given one of our registries, and a key, do a lookup in the registry to obtain the Class
 	 * object for the DocumentType subclass corresponding to the key -- in that registry.
@@ -494,6 +501,37 @@ abstract public class DocumentParser<D extends Document>
 		return (D) documentClosure.getDocument();
 	}
 	
+	public DocumentLogRecord getLogRecord()
+	{
+	  DocumentClosure documentClosure = getDocumentClosure();
+	  if (documentClosure != null)
+	  {
+  	  DownloadableLogRecord downloadableLogRecord = documentClosure.getLogRecord();
+  	  if (downloadableLogRecord instanceof DocumentLogRecord)
+  	  {
+  	    return (DocumentLogRecord) downloadableLogRecord;
+  	  }
+	  }
+	  else
+	  {
+	    debug("weird: documentClosure is null!");
+	  }
+	  return DocumentLogRecord.DUMMY;
+	}
+	
+  /**
+   * Allow clients to map or remap parsers by name. This can be useful when a client needs to
+   * provide an alternative implementation for an parser. For example, the semantics service may
+   * need to use a different algorithm for HTML image text clipping derivation in another parser.
+   * 
+   * @param parserName
+   * @param parserClass
+   */
+	public static void map(String parserName, Class<? extends DocumentParser> parserClass)
+	{
+	  bindingParserMap.put(parserName, parserClass);
+	}
+
 	public static DocumentParser get(MetaMetadata mmd, SemanticsGlobalScope infoCollector)
 	{
 		String parserName = mmd.getParser();
@@ -507,12 +545,15 @@ abstract public class DocumentParser<D extends Document>
 	public static boolean isRegisteredNoParser(ParsedURL purl)
 	{
 		boolean result	= false;
-		String suffix		= purl.suffix();
-		if (suffix != null && suffix.length() > 0)
+		if (purl != null)
 		{
-			result				= NO_PARSER_SUFFIX_MAP.contains(suffix);
-			if (!result)
-				NO_PARSER_SUFFIX_MAP.add(suffix);
+  		String suffix		= purl.suffix();
+  		if (suffix != null && suffix.length() > 0)
+  		{
+  			result				= NO_PARSER_SUFFIX_MAP.contains(suffix);
+  			if (!result)
+  				NO_PARSER_SUFFIX_MAP.add(suffix);
+  		}
 		}
 		return result;
 	}
@@ -529,7 +570,7 @@ abstract public class DocumentParser<D extends Document>
 	 */
 	public InputStream reConnect() throws IOException
 	{
-		NewDownloadController downloadController = documentClosure.reConnect();
+		DownloadController downloadController = documentClosure.reConnect();
 		this.downloadController	= downloadController;
 		return downloadController.getInputStream();
 	}

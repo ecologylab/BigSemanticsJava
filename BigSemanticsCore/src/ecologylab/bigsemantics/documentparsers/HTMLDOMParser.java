@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.util.ArrayList;
+
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpressionException;
 
@@ -88,10 +89,23 @@ implements DOMParserInterface
 	 */
 	private org.w3c.dom.Document createDom() throws IOException
 	{
+    long t0 = System.currentTimeMillis();
 		provider											= semanticsScope.constructDOMProvider();
     InputStream inputStream = inputStream();
     Reader reader						= reader();
-		org.w3c.dom.Document document = reader != null ? provider.parseDOM(reader, null) : provider.parseDOM(inputStream, null);
+		org.w3c.dom.Document document = null;
+    try
+    {
+  		document = reader != null ? provider.parseDOM(reader, null) : provider.parseDOM(inputStream, null);
+  		getLogRecord().setMsContentReadingAndDomCreation(System.currentTimeMillis() - t0);
+    }
+    finally
+    {
+      if (inputStream != null)
+      {
+    		inputStream.close();
+      }
+    }
     return document;
 	}
 
@@ -412,7 +426,7 @@ implements DOMParserInterface
 				break;
 			case ImageFeatures.UN_INFORMATIVE:
 			default:
-				semanticsScope.getGlobalCollection().registerUninformativeImage(srcPurl);
+				semanticsScope.getLocalDocumentCollection().registerUninformativeImage(srcPurl);
 			}
 		}
 		return result;

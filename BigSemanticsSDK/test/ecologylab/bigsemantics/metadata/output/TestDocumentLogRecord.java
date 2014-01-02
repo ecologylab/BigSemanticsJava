@@ -53,8 +53,8 @@ public class TestDocumentLogRecord
 		Assert.assertNotNull(logRecord.getQueuePeekIntervals());
 		Assert.assertFalse(logRecord.getQueuePeekIntervals().isEmpty());
 
-		Assert.assertTrue(logRecord.getmSecInExtraction() > 0);
-		Assert.assertTrue(logRecord.getmSecInHtmlDownload() > 0);
+		Assert.assertTrue(logRecord.getMsExtraction() > 0);
+		Assert.assertTrue(logRecord.getMsHtmlDownload() > 0);
 		Assert.assertTrue(logRecord.getEnQueueTimestamp() > 0);
 	}
 

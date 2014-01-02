@@ -529,7 +529,8 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	 */
 	protected String getMetadataClassSimpleName()
 	{
-		return this.getInheritedMmd().getMetadataClassSimpleName();
+	  MetaMetadata inheritedMmd = this.getInheritedMmd();
+		return inheritedMmd.getMetadataClassSimpleName();
 	}
 	
 	@Override
