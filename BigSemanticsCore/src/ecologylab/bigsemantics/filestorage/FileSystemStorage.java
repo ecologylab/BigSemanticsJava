@@ -10,6 +10,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Properties;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ecologylab.generic.Debug;
 import ecologylab.logging.ILogger;
 import ecologylab.net.ParsedURL;
@@ -26,7 +29,7 @@ import ecologylab.serialization.formatenums.Format;
 public class FileSystemStorage extends Debug implements FileStorageProvider
 {
   
-  static ILogger logger;
+  static Logger logger = LoggerFactory.getLogger(FileSystemStorage.class);
 
 	private static FileSystemStorage	fsStorageProvider				= null;
 
@@ -41,38 +44,30 @@ public class FileSystemStorage extends Debug implements FileStorageProvider
 
 	private static int								subdirectoryNameLength	= 3;
 
-	public static void setDownloadDirectory(Properties props)
+	public static void setDownloadDirectory(Properties props) throws IOException
 	{
 		downloadDirectory = props.getProperty("LOCAL_DOCUMENT_CACHE_DIR");
-		if (downloadDirectory == null)
-			throw new RuntimeException("Property LOCAL_DOCUMENT_CACHE_DIR is required!");
-		metaFileDirectory = downloadDirectory + "/meta";
-		semanticsFileDirectory = downloadDirectory + "/semantics";
-
-		File f = new File(downloadDirectory);
-		f.mkdirs();
-		f = new File(metaFileDirectory);
-		f.mkdir();
-		f = new File(semanticsFileDirectory);
-		f.mkdir();
-		
-		if (logger != null)
+		File f = downloadDirectory == null ? null : new File(downloadDirectory);
+		if (f == null || !f.mkdirs())
 		{
-		  logger.debug("Downloaded HTML directory: %s", downloadDirectory);
-		  logger.debug("Meta directory: %s", metaFileDirectory);
-		  logger.debug("Downloaded Semantics directory: %s", semanticsFileDirectory);
+		  f = File.createTempFile("bsservice", null);
+		  f.delete();
+		  f.mkdirs();
+		  downloadDirectory = f.getAbsolutePath();
 		}
+		
+		File fMeta = new File(f, "meta");
+		fMeta.mkdir();
+		metaFileDirectory = fMeta.getAbsolutePath();
+		File fSemantics = new File(f, "semantics");
+		fSemantics.mkdir();
+		semanticsFileDirectory = fSemantics.getAbsolutePath();
+
+	  logger.debug("Downloaded HTML directory: {}", downloadDirectory);
+	  logger.debug("Meta directory: {}", metaFileDirectory);
+	  logger.debug("Downloaded Semantics directory: {}", semanticsFileDirectory);
 	}
 	
-	public static void setLogger(ILogger logger)
-	{
-	  FileSystemStorage.logger = logger;
-	}
-
-	private FileSystemStorage()
-	{
-	}
-
 	@Override
 	public String saveFile(ParsedURL originalPURL, InputStream input)
 	{
