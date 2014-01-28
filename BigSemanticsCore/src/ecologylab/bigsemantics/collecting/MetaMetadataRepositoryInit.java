@@ -31,8 +31,8 @@ import ecologylab.serialization.formatenums.Format;
  * 
  * @author andruid
  */
-public class MetaMetadataRepositoryInit extends Scope<Object> implements DocumentParserTagNames,
-		ApplicationProperties, SemanticsNames
+public class MetaMetadataRepositoryInit extends Scope<Object>
+implements DocumentParserTagNames, ApplicationProperties, SemanticsNames
 {
 
 	public static Format												DEFAULT_REPOSITORY_FORMAT		= Format.XML;

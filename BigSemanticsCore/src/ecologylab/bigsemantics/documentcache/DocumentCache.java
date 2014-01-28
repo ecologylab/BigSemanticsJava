@@ -1,4 +1,4 @@
-package ecologylab.bigsemantics.collecting;
+package ecologylab.bigsemantics.documentcache;
 
 import ecologylab.bigsemantics.metadata.builtins.Document;
 

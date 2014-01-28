@@ -43,10 +43,7 @@ public class HTMLDOMImageTextParser
 extends ParserBase<CompoundDocument>
 implements DOMParserInterface, HTMLNames
 {
-	public HTMLDOMImageTextParser(SemanticsGlobalScope infoCollector)	// this is of type In
-	{
-		super(infoCollector);
-	}
+
 	HashMap<Node, String> tdNodeAnchorContextStringCache;
 	
 	DOMWalkInformationTagger taggedDoc;
@@ -62,7 +59,7 @@ implements DOMParserInterface, HTMLNames
 	@Override
 	public void parse() throws IOException
 	{
-		DOMWalkInformationTagger taggedDoc = new DOMWalkInformationTagger(documentClosure.getDocument().getLocation(), this);
+		DOMWalkInformationTagger taggedDoc = new DOMWalkInformationTagger(getDocumentClosure().getDocument().getLocation(), this);
 		// this function actually traverse the dom tree
 		org.w3c.dom.Document dom = getDom();
 		
@@ -117,7 +114,7 @@ implements DOMParserInterface, HTMLNames
 		if (contentBody == null)
 			return null;
 		
-		DOMWalkInformationTagger domTagger = new DOMWalkInformationTagger(documentClosure.getDocument().getLocation(), htmlType);
+		DOMWalkInformationTagger domTagger = new DOMWalkInformationTagger(getDocumentClosure().getDocument().getLocation(), htmlType);
 		domTagger.generateCollectionsFromRoot(contentBody);
 		// walk through the HTML document object.
 		// gather all paragraphText and image objects in the data structure.

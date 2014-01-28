@@ -1,15 +1,23 @@
 package ecologylab.bigsemantics.downloaders.controllers;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.MalformedURLException;
-
+import ecologylab.bigsemantics.downloadcontrollers.DefaultDownloadController;
 import ecologylab.net.ParsedURL;
 
 /**
@@ -260,7 +268,15 @@ public class NewDefaultDownloadControllerTest
 			fail("connection failed");
 		}
 		
-		assertEquals("redirected location is expected location", expectedFinalDestination, controller.getRedirectedLocation().url());
+		List<ParsedURL> redirects = controller.getRedirectedLocations();
+		assertNotNull(redirects);
+		Set<String> redirectStrs = new HashSet<String>();
+		for (ParsedURL redirect : redirects)
+		{
+		  redirectStrs.add(redirect.toString());
+		}
+		assertTrue("redirected location is expected location",
+		           redirectStrs.contains(expectedFinalDestination.toString()));
 	}
 
 	@Test

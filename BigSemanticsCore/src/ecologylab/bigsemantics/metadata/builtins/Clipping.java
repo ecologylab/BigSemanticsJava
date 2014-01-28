@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import ecologylab.bigsemantics.collecting.DownloadStatus;
 import ecologylab.bigsemantics.metadata.Metadata;
 import ecologylab.bigsemantics.metadata.mm_name;
 import ecologylab.bigsemantics.metadata.builtins.declarations.ClippingDeclaration;
@@ -65,7 +66,7 @@ public class Clipping<CM extends Metadata> extends ClippingDeclaration<CM>
 	{
 		if (outlink != null)
 		{
-			if (outlink.isDownloadDone())
+			if (outlink.getDownloadStatus() == DownloadStatus.DOWNLOAD_DONE)
 			{
 				//clipping.addToOutlinks(outlink);
 			}

@@ -1,5 +1,6 @@
 package ecologylab.bigsemantics.collecting;
 
+import ecologylab.bigsemantics.documentcache.DocumentCache;
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metadata.scalar.MetadataParsedURL;
 import ecologylab.bigsemantics.metametadata.MetaMetadata;

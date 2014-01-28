@@ -3,7 +3,6 @@ package ecologylab.bigsemantics.documentparsers;
 import java.io.IOException;
 
 import ecologylab.bigsemantics.actions.SemanticActionHandler;
-import ecologylab.bigsemantics.collecting.SemanticsGlobalScope;
 import ecologylab.bigsemantics.metadata.builtins.CompoundDocument;
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metametadata.MetaMetadataCompositeField;
@@ -15,11 +14,6 @@ import ecologylab.bigsemantics.metametadata.MetaMetadataCompositeField;
  */
 public class DefaultHTMLDOMParser extends ParserBase<CompoundDocument>
 {
-
-  public DefaultHTMLDOMParser(SemanticsGlobalScope semanticsScope)
-  {
-    super(semanticsScope);
-  }
 
   @Override
   public Document populateMetadata(Document document,

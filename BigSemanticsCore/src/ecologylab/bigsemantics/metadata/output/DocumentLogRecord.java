@@ -23,7 +23,7 @@ public class DocumentLogRecord extends DownloadableLogRecord
   private long                msSerialization;
 
   @simpl_scalar
-  private long                msContentReadingAndDomCreation;
+  private long                msDomCreation;
 
   @simpl_scalar
   private long                msContentBodyAndClippings;
@@ -89,14 +89,14 @@ public class DocumentLogRecord extends DownloadableLogRecord
     this.msSerialization = msSerialization;
   }
 
-  public long getMsContentReadingAndDomCreation()
+  public long getMsDomCreation()
   {
-    return msContentReadingAndDomCreation;
+    return msDomCreation;
   }
 
-  public void setMsContentReadingAndDomCreation(long msContentReadingAndDomCreation)
+  public void setMsDomCreation(long msDomCreation)
   {
-    this.msContentReadingAndDomCreation = msContentReadingAndDomCreation;
+    this.msDomCreation = msDomCreation;
   }
 
   public long getMsContentBodyAndClippings()

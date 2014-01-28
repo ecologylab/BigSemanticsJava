@@ -3,7 +3,6 @@ package ecologylab.bigsemantics.documentcache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
-import ecologylab.bigsemantics.collecting.DocumentCache;
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.net.ParsedURL;
 

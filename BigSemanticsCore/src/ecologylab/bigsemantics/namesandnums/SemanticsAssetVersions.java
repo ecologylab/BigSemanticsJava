@@ -13,6 +13,7 @@ import ecologylab.io.AssetsRoot;
  * @author andruid
  * @author abhinav
  */
+@Deprecated
 public interface SemanticsAssetVersions
 {
 	public static final float	DICTIONARY_ASSET_VERSION 	    = 2.123f;

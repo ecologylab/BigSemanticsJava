@@ -18,7 +18,6 @@ import org.apache.http.client.ClientProtocolException;
 import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.formatenums.StringFormat;
 import ecologylab.serialization.SIMPLTranslationException;
-import ecologylab.bigsemantics.collecting.DocumentCache;
 import ecologylab.bigsemantics.collecting.SemanticsSessionScope;
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metadata.MetadataDeserializationHookStrategy;

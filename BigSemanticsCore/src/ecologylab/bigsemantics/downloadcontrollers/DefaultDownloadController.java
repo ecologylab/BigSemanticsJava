@@ -1,11 +1,23 @@
-package ecologylab.bigsemantics.downloaders.controllers;
+package ecologylab.bigsemantics.downloadcontrollers;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Charsets;
+
+import ecologylab.bigsemantics.Utils;
 import ecologylab.net.ParsedURL;
 
 /**
@@ -15,6 +27,13 @@ import ecologylab.net.ParsedURL;
  */
 public class DefaultDownloadController implements DownloadController
 {
+
+  static Logger             logger;
+
+  static
+  {
+    logger = LoggerFactory.getLogger(DefaultDownloadController.class);
+  }
 
   public static final int   MAX_REDIRECTS = 10;
 
@@ -32,11 +51,17 @@ public class DefaultDownloadController implements DownloadController
 
   private InputStream       connectionStream;
 
-  private ParsedURL         originalPurl;
+  private ParsedURL         originalLocation;
 
-  private ParsedURL         connectionPurl;
+  private List<ParsedURL>   redirectedLocations;
 
   private HttpURLConnection connection;
+
+  private String            content;
+
+  private Object            contentLock   = new Object();
+
+  private InputStream       contentStream;
 
   /**
    * Opens the HttpURLConnection to the specified location and downloads the resource
@@ -48,29 +73,40 @@ public class DefaultDownloadController implements DownloadController
   public boolean accessAndDownload(ParsedURL location) throws IOException
   {
 
-    originalPurl = location;
+    originalLocation = location;
 
     try
     {
-      connection = (HttpURLConnection) originalPurl.url().openConnection();
-      if (userAgent != null)
-      {
-        connection.setRequestProperty("User-Agent", userAgent);
-      }
-
-      httpStatus = connection.getResponseCode();
+      connection = (HttpURLConnection) originalLocation.url().openConnection();
 
       // Attempt to follow redirects until redirect limit is reached
-      for (int redirects = 0; redirects < MAX_REDIRECTS && isRedirecting(httpStatus); redirects++)
+      int redirects = 0;
+      Set<String> redirectedLocs = new HashSet<String>();
+      while (true)
       {
-        String redirectedLoc = connection.getHeaderField("Location");
-        connection = (HttpURLConnection) new URL(redirectedLoc).openConnection();
         if (userAgent != null)
         {
           connection.setRequestProperty("User-Agent", userAgent);
         }
-
         httpStatus = connection.getResponseCode();
+
+        if (isRedirecting(httpStatus) && redirects <= MAX_REDIRECTS)
+        {
+          String redirectedLoc = connection.getHeaderField("Location");
+          addRedirectedLocation(redirectedLocs, redirectedLoc);
+          connection = (HttpURLConnection) new URL(redirectedLoc).openConnection();
+        }
+        else
+        {
+          break;
+        }
+      }
+      if (redirectedLocs.size() > 0)
+      {
+        for (String loc : redirectedLocs)
+        {
+          redirectedLocations().add(ParsedURL.getAbsolute(loc));
+        }
       }
 
       if (connection.getContentType() != null)
@@ -88,22 +124,22 @@ public class DefaultDownloadController implements DownloadController
       if (successStatus)
       {
         connectionStream = connection.getInputStream();
-        connectionPurl = new ParsedURL(connection.getURL());
         httpStatusMessage = connection.getResponseMessage();
       }
     }
     catch (MalformedURLException e)
     {
+      logger.error("Error connecting to " + location, e);
       successStatus = false;
     }
 
     return successStatus;
   }
-  
+
   private boolean isRedirecting(int httpStatus)
   {
     return httpStatus == HttpURLConnection.HTTP_MOVED_PERM
-           || httpStatus == HttpURLConnection.HTTP_MOVED_TEMP;
+        || httpStatus == HttpURLConnection.HTTP_MOVED_TEMP;
   }
 
   /**
@@ -156,7 +192,16 @@ public class DefaultDownloadController implements DownloadController
    */
   public ParsedURL getLocation()
   {
-    return originalPurl;
+    return originalLocation;
+  }
+
+  private List<ParsedURL> redirectedLocations()
+  {
+    if (redirectedLocations == null)
+    {
+      redirectedLocations = new ArrayList<ParsedURL>();
+    }
+    return redirectedLocations;
   }
 
   /**
@@ -166,9 +211,17 @@ public class DefaultDownloadController implements DownloadController
    * @return a ParsedURL object corresponding to the location of the resource with which the
    *         connection is associated
    */
-  public ParsedURL getRedirectedLocation()
+  public List<ParsedURL> getRedirectedLocations()
   {
-    return connectionPurl;
+    return redirectedLocations;
+  }
+
+  private void addRedirectedLocation(Set<String> redirectedLocs, String redirectedLoc)
+  {
+    if (redirectedLoc != null && !redirectedLoc.equals(originalLocation.toString()))
+    {
+      redirectedLocs.add(redirectedLoc);
+    }
   }
 
   /**
@@ -203,6 +256,24 @@ public class DefaultDownloadController implements DownloadController
     return connection.getHeaderField(name);
   }
 
+  public String getContent() throws IOException
+  {
+    if (content == null)
+    {
+      synchronized (contentLock)
+      {
+        if (content == null)
+        {
+          content = Utils.readInputStream(connectionStream);
+          String charsetName = this.getCharset();
+          Charset charset = Utils.getCharsetByName(charsetName, Charsets.UTF_8);
+          contentStream = new ByteArrayInputStream(content.getBytes(charset));
+        }
+      }
+    }
+    return content;
+  }
+
   /**
    * Returns an input stream which reads from the connection
    * 
@@ -210,7 +281,18 @@ public class DefaultDownloadController implements DownloadController
    */
   public InputStream getInputStream()
   {
-    return connectionStream;
+    if (content == null)
+    {
+      try
+      {
+        getContent();
+      }
+      catch (IOException e)
+      {
+        logger.error("Error when reading content from the network connection", e);
+      }
+    }
+    return contentStream;
   }
 
 }

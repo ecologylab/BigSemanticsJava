@@ -3,10 +3,10 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
-
 import ecologylab.appframework.types.prefs.Pref;
 import ecologylab.bigsemantics.actions.SemanticAction;
 import ecologylab.bigsemantics.actions.SemanticActionStandardMethods;
+import ecologylab.bigsemantics.collecting.DownloadStatus;
 import ecologylab.bigsemantics.gui.InteractiveSpace;
 import ecologylab.bigsemantics.metadata.Metadata;
 import ecologylab.bigsemantics.metadata.builtins.Clipping;
@@ -213,7 +213,7 @@ implements SemanticActionStandardMethods
 					bestImageClippingClosure.setDndPoint(closure.getDndPoint());
 					bestImageClippingClosure.queueDownload();
 
-					if(bestImageClipping.getMedia().isDownloadDone())
+					if(bestImageClipping.getMedia().getDownloadStatus() == DownloadStatus.DOWNLOAD_DONE)
 					{
 						debug("image already exists");
 						interactiveSpace.createAndAddClipping((ImageClipping)bestImageClipping, closure.getDndPoint().getX(), closure.getDndPoint().getY());

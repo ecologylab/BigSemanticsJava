@@ -21,9 +21,9 @@ import ecologylab.serialization.XMLTools;
 public class DirectBindingParser extends ParserBase<Document>
 {
 
-	public DirectBindingParser(SemanticsGlobalScope infoCollector)
+	public DirectBindingParser()
 	{
-		super(infoCollector);
+		super();
 	}
 
 	@Override
