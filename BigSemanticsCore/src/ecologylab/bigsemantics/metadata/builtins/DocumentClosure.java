@@ -459,20 +459,22 @@ public class DocumentClosure extends SetElement
           {
             doPersist(pCache, downloadController);
           }
-          document.downloadAndParseDone(documentParser);
-          setDownloadStatus(DownloadStatus.DOWNLOAD_DONE);
-          // Successfully finished.
-          return;
         }
       }
       else
       {
         logger.error("Network connection error: " + document);
+        recycle();
+        return;
       }
     }
+    else
+    {
+      changeDocument(cachedDoc);
+    }
 
-    // Error happened.
-    recycle();
+    document.downloadAndParseDone(documentParser);
+    setDownloadStatus(DownloadStatus.DOWNLOAD_DONE);
   }
 
   private Document retrieveFromPersistentCache(PersistentDocumentCache pCache, ParsedURL location)
