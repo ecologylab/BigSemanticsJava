@@ -362,7 +362,9 @@ public class DocumentClosure extends SetElement
   {
     this.downloadStatus = newStatus;
     if (this.document != null)
+    {
       document.setDownloadStatus(newStatus);
+    }
   }
 
   public DownloadProcessor<DocumentClosure> downloadMonitor()
@@ -464,7 +466,7 @@ public class DocumentClosure extends SetElement
       else
       {
         logger.error("Network connection error: " + document);
-        recycle();
+        setDownloadStatus(DownloadStatus.IOERROR);
         return;
       }
     }
