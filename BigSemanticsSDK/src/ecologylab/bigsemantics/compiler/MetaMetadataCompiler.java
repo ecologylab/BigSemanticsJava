@@ -16,6 +16,7 @@ import ecologylab.bigsemantics.metadata.MetadataClassDescriptor;
 import ecologylab.bigsemantics.metametadata.FileTools;
 import ecologylab.bigsemantics.metametadata.MetaMetadata;
 import ecologylab.bigsemantics.metametadata.MetaMetadataRepository;
+import ecologylab.bigsemantics.metametadata.RepositoryOrderingByGeneration;
 import ecologylab.bigsemantics.namesandnums.SemanticsNames;
 import ecologylab.generic.Debug;
 import ecologylab.serialization.ClassDescriptor;
@@ -126,11 +127,13 @@ public class MetaMetadataCompiler extends Debug // ApplicationEnvironment
 		
 		// serialize post-inheritance repository files:
 		serializePostInheritanceRepository(config.getRepositoryLocation(), repository);
+		
+		generateTreeVizData(config.getRepositoryLocation(), repository);
 
 		debug("\n\n compiler finished.");
 	}
 
-	static private String REPOSITORY_FILES_LST = "repositoryFiles.lst";
+  static private String REPOSITORY_FILES_LST = "repositoryFiles.lst";
 	
 	public void generateRepositoryFileList(CompilerConfig config)
 	{
@@ -204,6 +207,30 @@ public class MetaMetadataCompiler extends Debug // ApplicationEnvironment
       
       writeStringToFile(xmlPostInheritanceRepositoryFile, strs.get(StringFormat.XML));
       writeStringToFile(jsonPostInheritanceRepositoryFile, strs.get(StringFormat.JSON));
+    }
+  }
+
+  public static void generateTreeVizData(File repositoryLocation, MetaMetadataRepository repository)
+  {
+    File treeVizDataDir = new File(repositoryLocation.getParentFile().getParentFile(), "OntoViz");
+    File treeVizDataFile = null;
+    if (treeVizDataDir.exists() && treeVizDataDir.isDirectory())
+    {
+      treeVizDataFile = new File(treeVizDataDir, "mmd_repo.json");
+      if (repository.ordering instanceof RepositoryOrderingByGeneration)
+      {
+        RepositoryOrderingByGeneration ordering =
+            (RepositoryOrderingByGeneration) repository.ordering;
+        try
+        {
+          SimplTypesScope.serialize(ordering.root, treeVizDataFile, Format.JSON);
+        }
+        catch (SIMPLTranslationException e)
+        {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+      }
     }
   }
 

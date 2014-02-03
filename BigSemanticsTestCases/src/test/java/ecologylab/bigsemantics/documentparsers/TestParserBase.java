@@ -14,7 +14,6 @@ import org.junit.Test;
 import org.w3c.dom.Node;
 
 import ecologylab.bigsemantics.actions.SemanticActionHandler;
-import ecologylab.bigsemantics.collecting.SemanticsGlobalScope;
 import ecologylab.bigsemantics.collecting.SemanticsSessionScope;
 import ecologylab.bigsemantics.cyberneko.CybernekoWrapper;
 import ecologylab.bigsemantics.downloadcontrollers.DefaultDownloadController;
@@ -106,7 +105,8 @@ public class TestParserBase
     TestProduct testProduct = new TestProduct();
 
     IDOMProvider domProvider = semanticsSessionScope.constructDOMProvider();
-    InputStream testDocStream = getClass().getResourceAsStream("/testProduct.html");
+    InputStream testDocStream =
+        getClass().getResourceAsStream("/ecologylab/bigsemantics/documentparsers/testProduct.html");
     assertNotNull(testDocStream);
     Node docNode = domProvider.parseDOM(testDocStream, null);
     Map<String, String> fieldParserContext = new HashMap<String, String>();
