@@ -5,30 +5,48 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ecologylab.net.ParsedURL;
+import ecologylab.serialization.annotations.simpl_collection;
+import ecologylab.serialization.annotations.simpl_scalar;
+import ecologylab.serialization.annotations.simpl_tag;
+
 public class RepositoryOrderingByGeneration implements RepositoryOrdering
 {
 
-  static class TreeNode
+  @simpl_tag("node")
+  public static class TreeNode
   {
+
+    @simpl_scalar
     String       name;
 
     MetaMetadata mmd;
 
-    List<TreeNode> children;
+    @simpl_scalar
+    String exampleUrl;
+    
+    @simpl_collection("all_example_url")
+    List<String> allExampleUrls;
 
-    public void addChild(TreeNode child)
+    @simpl_collection("subtype")
+    List<TreeNode> subtypes;
+    
+    public void addSubtype(TreeNode child)
     {
-      if (children == null)
-        children = new ArrayList<TreeNode>();
-      children.add(child);
+      if (subtypes == null)
+        subtypes = new ArrayList<TreeNode>();
+      subtypes.add(child);
     }
+
   }
+  
+  public TreeNode root;
 
   @Override
   public List<MetaMetadata> orderMetaMetadataForInheritance(List<MetaMetadata> mmds)
   {
     Map<String, TreeNode> nodes = new HashMap<String, TreeNode>(mmds.size());
-    TreeNode root = null;
+    root = null;
     
     // build the tree
     for (MetaMetadata mmd : mmds)
@@ -36,6 +54,24 @@ public class RepositoryOrderingByGeneration implements RepositoryOrdering
       TreeNode node = new TreeNode();
       node.name = mmd.getName();
       node.mmd = mmd;
+      ArrayList<ExampleUrl> exampleUrls = mmd.getExampleUrls();
+      List<String> nodeExampleUrls = new ArrayList<String>();
+      if (exampleUrls != null && exampleUrls.size() > 0)
+      {
+        for (ExampleUrl url : exampleUrls)
+        {
+          ParsedURL purl = url.getUrl();
+          if (purl != null)
+          {
+            nodeExampleUrls.add(purl.toString());
+          }
+        }
+        if (nodeExampleUrls.size() > 0)
+        {
+          node.allExampleUrls = nodeExampleUrls;
+          node.exampleUrl = node.allExampleUrls.get(0);
+        }
+      }
       if (MetaMetadata.isRootMetaMetadata(mmd))
       {
         root = node;
@@ -51,7 +87,7 @@ public class RepositoryOrderingByGeneration implements RepositoryOrdering
         if (superName == null)
           throw new RuntimeException("Non-root mmd without base mmd: " + mmd.getName());
         TreeNode superNode = nodes.get(superName);
-        superNode.addChild(node);
+        superNode.addSubtype(node);
       }
     }
     
@@ -64,9 +100,9 @@ public class RepositoryOrderingByGeneration implements RepositoryOrdering
     while (p < result.size())
     {
       TreeNode node = nodes.get(result.get(p++).getName());
-      if (node.children != null)
+      if (node.subtypes != null)
       {
-        for (TreeNode child : node.children)
+        for (TreeNode child : node.subtypes)
           result.add(child.mmd);
       }
     }

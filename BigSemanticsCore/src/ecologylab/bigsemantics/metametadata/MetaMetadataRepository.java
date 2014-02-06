@@ -503,7 +503,7 @@ implements PackageSpecifier, DocumentParserTagNames
 		}
 	}
 	
-	RepositoryOrdering ordering;
+	public RepositoryOrdering ordering;
 	
 	/**
 	 * traverse the repository and do inheritance on each meta-metadata.

@@ -1,4 +1,4 @@
-package ecologylab.bigsemantics.downloaders.controllers;
+package ecologylab.bigsemantics.downloadcontrollers;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -25,7 +25,7 @@ import ecologylab.net.ParsedURL;
  * 
  * @author colton
  */
-public class NewDefaultDownloadControllerTest
+public class TestDefaultDownloadController
 {
 	// This address should return both a mime type and char set
 	// If this server does not return both, the test will fail
