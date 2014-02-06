@@ -98,7 +98,7 @@
       <arg value="java" />
       <arg value="../../BigSemanticsWrapperRepository/BigSemanticsGeneratedClassesJava/src" />
       <arg value="../BigSemanticsCore/src" />
-      <jvmarg value="-Xms256" />
+      <jvmarg value="-Xms256m" />
       <jvmarg value="-Xmx512m" />
     </java>
 
