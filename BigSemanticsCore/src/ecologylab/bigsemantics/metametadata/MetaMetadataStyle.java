@@ -18,16 +18,16 @@ class MetaMetadataStyle {
 	}
 
 	@simpl_scalar
-	boolean isSameMetadata;
+	String isSameMetadata;
 	
 	@simpl_scalar
-	boolean isOnlyElement;
+	String isOnlyElement;
 	
 	@simpl_scalar
-	boolean isTopLevel;
+	String isTopLevel;
 	
 	@simpl_scalar
-	boolean isChildMetadata;
+	String isChildMetadata;
 	
 	@simpl_scalar
 	boolean hide;
