@@ -109,16 +109,9 @@ public class SemanticsGlobalScope extends MetaMetadataRepositoryInit
     documentDownloadingMonitor = new DocumentDownloadingMonitor(this);
   }
   
-  public long getMetaMetadataRepositoryVersion()
-  {
-    // TODO Implement the versioning scheme.
-    return 10000;
-  }
-  
   public String getMetaMetadataRepositoryHash()
   {
-    // TODO Implement the versioning scheme.
-    return "HASH";
+    return getMetaMetadataRepository().getHash();
   }
 
   public IDOMProvider constructDOMProvider()

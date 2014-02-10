@@ -4,6 +4,7 @@
 package ecologylab.bigsemantics.collecting;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
@@ -19,8 +20,6 @@ import ecologylab.bigsemantics.metametadata.MetaMetadataRepositoryLoader;
 import ecologylab.bigsemantics.namesandnums.DocumentParserTagNames;
 import ecologylab.bigsemantics.namesandnums.SemanticsNames;
 import ecologylab.collections.Scope;
-import ecologylab.generic.Debug;
-import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.SimplTypesScope.GRAPH_SWITCH;
 import ecologylab.serialization.formatenums.Format;
@@ -97,10 +96,21 @@ implements DocumentParserTagNames, ApplicationProperties, SemanticsNames
 	  
 		List<InputStream> repositoryIStreams =
 		    repositoryLocator.locateRepositoryAndOpenStreams(repositoryLocation, repositoryFormat);
-    metaMetadataRepository = repositoryLoader.loadFromInputStreams(repositoryIStreams,
-                                                                   repositoryFormat);
+    try
+    {
+      metaMetadataRepository =
+          repositoryLoader.loadFromInputStreams(repositoryIStreams, repositoryFormat);
+    }
+    catch (IOException e)
+    {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+
 		if (metaMetadataRepository != null)
 		{
+		  metaMetadataRepository.setHash(repositoryLoader.getRepositoryHash());
+
 			DOCUMENT_META_METADATA = metaMetadataRepository.getMMByName(DOCUMENT_TAG);
 			PDF_META_METADATA = metaMetadataRepository.getMMByName(PDF_TAG);
 			SEARCH_META_METADATA = metaMetadataRepository.getMMByName(SEARCH_TAG);
