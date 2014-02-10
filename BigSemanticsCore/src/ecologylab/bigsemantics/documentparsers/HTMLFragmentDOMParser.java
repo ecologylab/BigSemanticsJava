@@ -4,11 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.regex.Pattern;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -49,13 +46,13 @@ public class HTMLFragmentDOMParser extends HTMLDOMParser implements DOMParserInt
   private static HashMap<String, Integer> namesOfBreaklineNodeNames = null;
 
 
-	public HTMLFragmentDOMParser(SemanticsGlobalScope infoCollector, Reader reader, InputStream inputStream)
+	public HTMLFragmentDOMParser(Reader reader, InputStream inputStream)
 	{
-		super(infoCollector);
+	  super();
 		fragmentStream 			= inputStream;
 		this.reader					= reader;
 		AnonymousDocument anonymousDocument = new AnonymousDocument();
-		this.documentClosure= anonymousDocument.getOrConstructClosure();
+		setDocumentClosure(anonymousDocument.getOrConstructClosure());
 	}
 
 	@Override

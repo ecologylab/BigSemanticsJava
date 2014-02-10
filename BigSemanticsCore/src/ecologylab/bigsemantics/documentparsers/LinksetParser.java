@@ -22,11 +22,6 @@ public abstract class LinksetParser
 		extends ParserBase<Document> implements Continuation<DocumentClosure>
 {
 
-	public LinksetParser(SemanticsGlobalScope infoCollector)
-	{
-		super(infoCollector);
-	}
-
 	/**
 	 * @param infoCollector
 	 * @param seed
@@ -56,7 +51,7 @@ public abstract class LinksetParser
 		Seed seed = sourceClosure.getSeed();
 		if (seed != null)
 		{
-			SeedDistributor aggregator = seed.seedDistributer(semanticsScope);
+			SeedDistributor aggregator = seed.seedDistributer(getSemanticsScope());
 			if (aggregator != null)
 				aggregator.doneQueueing(sourceClosure.getDocument());
 		}

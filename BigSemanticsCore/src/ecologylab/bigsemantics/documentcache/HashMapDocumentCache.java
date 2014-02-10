@@ -2,7 +2,6 @@ package ecologylab.bigsemantics.documentcache;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-import ecologylab.bigsemantics.collecting.DocumentCache;
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.net.ParsedURL;
 

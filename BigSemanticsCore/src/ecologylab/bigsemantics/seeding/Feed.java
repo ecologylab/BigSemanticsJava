@@ -34,7 +34,7 @@ public class Feed extends DocumentState
   @Override
 	public void performInternalSeedingSteps(SemanticsGlobalScope infoCollector)
 	{
-	 new FeedParser(infoCollector, this);
+    new FeedParser(this);
 	}
   
 	/**

@@ -1,5 +1,13 @@
 package ecologylab.bigsemantics;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -8,6 +16,7 @@ import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
 import com.google.common.io.BaseEncoding;
 
+import ecologylab.generic.StringBuilderBaseUtils;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.formatenums.StringFormat;
@@ -27,6 +36,8 @@ public class Utils
   private static HashFunction secureHashFunc;
 
   private static BaseEncoding base64Encoder;
+
+  private static final int    BUF_SIZE = 1024;
 
   static
   {
@@ -80,6 +91,60 @@ public class Utils
       logger.error("Cannot serialize " + obj, e);
     }
     return "ERROR";
+  }
+
+  public static Charset getCharsetByName(String charsetName, Charset defaultCharset)
+  {
+    try
+    {
+      return Charset.forName(charsetName);
+    }
+    catch (Exception e)
+    {
+      logger.error("Unknown charset: " + charsetName, e);
+    }
+    return defaultCharset;
+  }
+
+  public static String readInputStream(InputStream inputStream) throws IOException
+  {
+    BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
+    StringBuilder sb = StringBuilderBaseUtils.acquire();
+    char[] buf = new char[BUF_SIZE];
+    while (true)
+    {
+      int n = br.read(buf, 0, BUF_SIZE);
+      if (n < 0)
+      {
+        break;
+      }
+      sb.append(buf, 0, n);
+    }
+    String result = sb.toString();
+    StringBuilderBaseUtils.release(sb);
+    return result;
+  }
+
+  public static void writeToFile(File dest, String content) throws IOException
+  {
+    FileWriter fw = null;
+    try
+    {
+      fw = new FileWriter(dest);
+      fw.write(content);
+    }
+    catch (IOException e)
+    {
+      logger.error("Cannot write to file: " + dest, e);
+      throw e;
+    }
+    finally
+    {
+      if (fw != null)
+      {
+        fw.close();
+      }
+    }
   }
 
 }

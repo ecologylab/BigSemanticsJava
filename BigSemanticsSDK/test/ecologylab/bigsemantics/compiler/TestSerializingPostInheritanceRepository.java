@@ -3,7 +3,7 @@ package ecologylab.bigsemantics.compiler;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,8 +17,8 @@ import ecologylab.bigsemantics.metametadata.MetaMetadataRepositoryLoader;
 import ecologylab.serialization.JSONTools;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.SimplTypesScope;
-import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.SimplTypesScope.GRAPH_SWITCH;
+import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.formatenums.Format;
 import ecologylab.serialization.formatenums.StringFormat;
 
@@ -28,7 +28,7 @@ public class TestSerializingPostInheritanceRepository
   Map<StringFormat, String> strs;
 
   @Before
-  public void prepareSerializedStrings() throws FileNotFoundException, SIMPLTranslationException
+  public void prepareSerializedStrings() throws IOException, SIMPLTranslationException
   {
     SimplTypesScope.graphSwitch = GRAPH_SWITCH.ON;
     new SemanticsTypes();

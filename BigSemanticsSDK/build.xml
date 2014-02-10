@@ -8,15 +8,13 @@
   <property name="BigSemanticsCybernekoWrapper.dir" value="${basedir}/../BigSemanticsCybernekoWrapper" />
   <property name="imageMetadataExtractor.dir" value="${basedir}/../imageMetadataExtractor" />
   <property name="BigSemanticsSunSpecifics.dir" value="${basedir}/../BigSemanticsSunSpecifics" />
-  <property name="deps.default.target" value="jar" />
 
   <!-- sub-directories -->
   <property name="src.dir" value="src" />
-  <property name="test.dir" value="test" />
-  <property name="build.dir" value="build" />
-  <property name="mavenlib.dir" value="build/lib" />
-  <property name="lib.dir" value="../lib" />
   <property name="resource.dir" value="resources" />
+  <property name="test.dir" value="test" />
+  <property name="lib.dir" value="../lib" />
+  <property name="build.dir" value="build" />
   <property name="classes.dir" value="${build.dir}/classes" />
   <property name="jar.dir" value="${build.dir}/jar" />
   <property name="jar.file" value="${jar.dir}/${ant.project.name}.jar" />
@@ -29,8 +27,9 @@
   </taskdef>
 
   <!-- declare maven -->
-  <path id="maven-ant-tasks.classpath" path="${BigSemanticsCore.dir}/lib/maven-ant-tasks-2.1.1.jar" />
-  <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="antlib:org.apache.maven.artifact.ant" classpathref="maven-ant-tasks.classpath" />
+  <path id="maven-ant-tasks.classpath" path="${lib.dir}/maven-ant-tasks-2.1.1.jar" />
+  <typedef resource="org/apache/maven/artifact/ant/antlib.xml"
+  	       uri="antlib:org.apache.maven.artifact.ant" classpathref="maven-ant-tasks.classpath" />
 
   <artifact:pom id="sdkpom" file="${basedir}/pom.xml" />
   <artifact:dependencies filesetId="mavendeps" pomRefId="sdkpom" />
@@ -49,19 +48,12 @@
     <fileset refid="mavendeps" />
   </path>
 
-  <target name="copy-xml">
-    <copy todir="${classes.dir}">
-      <fileset dir="${resource.dir}" includes="**/*.xml" />
-      <fileset dir="${src.dir}" includes="**/*.xml" />
-    </copy>
-  </target>
-
   <target name="build-library">
     <echo>Ant build project ${project.name}</echo>
     <propertycopy name="project.location" from="${project.name}.dir" />
 
     <echo>${project.location}/build.xml</echo>
-    <ant dir="${project.location}" useNativeBasedir="true" target="${deps.default.target}" inheritAll="false" />
+    <ant dir="${project.location}" useNativeBasedir="true" target="jar" inheritAll="false" />
   </target>
 
   <target name="build-project-libraries">
@@ -76,6 +68,13 @@
     <javac srcdir="${test.dir}" destdir="${classes.dir}" source="1.6" target="1.6" classpathref="classpath" />
   </target>
 
+  <target name="copy-xml">
+    <copy todir="${classes.dir}">
+      <fileset dir="${resource.dir}" includes="**/*.xml" />
+      <fileset dir="${src.dir}" includes="**/*.xml" />
+    </copy>
+  </target>
+
   <target name="jar" depends="compile">
     <antcall target="copy-xml" />
     <mkdir dir="${jar.dir}" />
@@ -84,8 +83,10 @@
 
   <target name="main" depends="clean,jar" />
 
-  <property name="BigSemanticsWrappers.dir" value="${basedir}/../../BigSemanticsWrapperRepository/BigSemanticsWrappers" />
-  <property name="BigSemanticsGeneratedClassesJava.dir" value="${basedir}/../../BigSemanticsWrapperRepository/BigSemanticsGeneratedClassesJava" />
+  <property name="BigSemanticsWrappers.dir"
+  	value="${basedir}/../../BigSemanticsWrapperRepository/BigSemanticsWrappers" />
+  <property name="BigSemanticsGeneratedClassesJava.dir"
+  	value="${basedir}/../../BigSemanticsWrapperRepository/BigSemanticsGeneratedClassesJava" />
 
   <path id="jar_classpath">
     <path refid="classpath" />
@@ -98,7 +99,7 @@
       <arg value="java" />
       <arg value="../../BigSemanticsWrapperRepository/BigSemanticsGeneratedClassesJava/src" />
       <arg value="../BigSemanticsCore/src" />
-      <jvmarg value="-Xms256" />
+      <jvmarg value="-Xms256m" />
       <jvmarg value="-Xmx512m" />
     </java>
 

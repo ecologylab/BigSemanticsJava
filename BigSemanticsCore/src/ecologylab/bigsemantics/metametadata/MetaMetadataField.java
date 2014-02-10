@@ -20,6 +20,7 @@ import ecologylab.serialization.FieldType;
 import ecologylab.serialization.MetaInformation;
 import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.XMLTools;
+import ecologylab.serialization.annotations.simpl_collection;
 import ecologylab.serialization.annotations.simpl_composite;
 import ecologylab.serialization.annotations.simpl_descriptor_classes;
 import ecologylab.serialization.annotations.simpl_inherit;
@@ -371,6 +372,13 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
 	@simpl_scalar
 	protected String																			labelAt;
 
+	/**
+	 * collection of styles
+	 */
+	@simpl_collection("style")
+	@simpl_nowrap
+	List<MetaMetadataStyle>																		styles;
+	
 	public MetaMetadataField()
 	{
 

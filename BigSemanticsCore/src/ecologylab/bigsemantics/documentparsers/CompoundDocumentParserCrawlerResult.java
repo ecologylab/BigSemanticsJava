@@ -55,7 +55,7 @@ implements ParserResult
 	//////////////////////////////////////// candidates loops state ////////////////////////////////////////////////////////////
 	public void addCandidateOutlink (Document newOutlink )
 	{
-		if (!newOutlink.isSeed() && !newOutlink.isDownloadDone())	// a seed is never a candidate
+		if (!newOutlink.isSeed() && newOutlink.getDownloadStatus() != DownloadStatus.DOWNLOAD_DONE)
 		{
 			DocumentClosure documentClosure	= newOutlink.getOrConstructClosure();
 			if (documentClosure != null && documentClosure.getDownloadStatus() == DownloadStatus.UNPROCESSED)

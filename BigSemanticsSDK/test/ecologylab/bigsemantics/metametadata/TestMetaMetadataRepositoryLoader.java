@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +34,7 @@ public class TestMetaMetadataRepositoryLoader
   }
   
   @Test
-  public void testDeserializeRepositoryFile() throws FileNotFoundException, SIMPLTranslationException
+  public void testDeserializeRepositoryFile() throws SIMPLTranslationException, IOException
   {
     File sampleRepoFile = new File("data/sampleRepositoryFileSearch.xml");
     assertTrue(sampleRepoFile.exists());

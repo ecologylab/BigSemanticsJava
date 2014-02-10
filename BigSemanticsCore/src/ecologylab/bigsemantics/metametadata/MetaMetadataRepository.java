@@ -72,6 +72,8 @@ implements PackageSpecifier, DocumentParserTagNames
 	 */
 	@simpl_scalar
 	private String				name;
+	
+	private String        hash;
 
 	/**
 	 * The package in which the class files have to be generated.
@@ -503,7 +505,7 @@ implements PackageSpecifier, DocumentParserTagNames
 		}
 	}
 	
-	RepositoryOrdering ordering;
+	public RepositoryOrdering ordering;
 	
 	/**
 	 * traverse the repository and do inheritance on each meta-metadata.
@@ -1097,4 +1099,19 @@ implements PackageSpecifier, DocumentParserTagNames
 		return baseImageMM;
 	}
 	
+	/**
+	 * This is not Object.getHashCode()! This is for repository versioning.
+	 * 
+	 * @return The hash of the whole repository.
+	 */
+	public String getHash()
+	{
+	  return hash;
+	}
+	
+	public void setHash(String hash)
+	{
+	  this.hash = hash;
+	}
+
 }

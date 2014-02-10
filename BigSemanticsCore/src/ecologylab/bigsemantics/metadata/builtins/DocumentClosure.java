@@ -10,6 +10,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ecologylab.bigsemantics.actions.SemanticAction;
 import ecologylab.bigsemantics.actions.SemanticActionHandler;
 import ecologylab.bigsemantics.actions.SemanticActionsKeyWords;
@@ -18,11 +21,10 @@ import ecologylab.bigsemantics.collecting.DownloadStatus;
 import ecologylab.bigsemantics.collecting.SemanticsDownloadMonitors;
 import ecologylab.bigsemantics.collecting.SemanticsGlobalScope;
 import ecologylab.bigsemantics.collecting.SemanticsSite;
+import ecologylab.bigsemantics.documentcache.PersistenceMetadata;
 import ecologylab.bigsemantics.documentcache.PersistentDocumentCache;
 import ecologylab.bigsemantics.documentparsers.DocumentParser;
-import ecologylab.bigsemantics.documentparsers.ParserBase;
-import ecologylab.bigsemantics.downloaders.controllers.DownloadController;
-import ecologylab.bigsemantics.downloaders.controllers.DownloadControllerFactory;
+import ecologylab.bigsemantics.downloadcontrollers.DownloadController;
 import ecologylab.bigsemantics.html.documentstructure.SemanticInLinks;
 import ecologylab.bigsemantics.metadata.output.DocumentLogRecord;
 import ecologylab.bigsemantics.metametadata.MetaMetadata;
@@ -49,55 +51,64 @@ import ecologylab.serialization.library.geom.PointInt;
  * 
  * @author andruid
  */
+@SuppressWarnings(
+{ "rawtypes", "unchecked" })
 public class DocumentClosure extends SetElement
     implements TermVectorFeature, Downloadable, SemanticActionsKeyWords,
     Continuation<DocumentClosure>
 {
 
-  private SemanticsGlobalScope                     semanticsScope;
+  static Logger                               logger;
+
+  static
+  {
+    logger = LoggerFactory.getLogger(DocumentClosure.class);
+  }
+
+  private SemanticsGlobalScope                semanticsScope;
 
   /**
    * This is tracked mainly for debugging, so we can see what pURL was fed into the meta-metadata
    * address resolver machine.
    */
-  private ParsedURL                                initialPURL;
+  private ParsedURL                           initialPURL;
 
-  private Document                                 document;
+  private Document                            document;
 
-  private final Object                             DOCUMENT_LOCK        = new Object();
+  private final Object                        DOCUMENT_LOCK        = new Object();
 
-  private DownloadStatus                           downloadStatus       = DownloadStatus.UNPROCESSED;
+  private DownloadStatus                      downloadStatus       = DownloadStatus.UNPROCESSED;
 
-  private final Object                             DOWNLOAD_STATUS_LOCK = new Object();
+  private final Object                        DOWNLOAD_STATUS_LOCK = new Object();
 
-  private DocumentParser                           documentParser;
+  private DocumentParser                      documentParser;
 
-  private SemanticInLinks                          semanticInlinks;
+  private SemanticInLinks                     semanticInlinks;
 
-  private ArrayList<Continuation<DocumentClosure>> continuations;
+  private List<Continuation<DocumentClosure>> continuations;
 
   /**
    * Keeps state about the search process, if this is encapsulates a search result;
    */
-  private SearchResult                             searchResult;
+  private SearchResult                        searchResult;
 
-  private DocumentLogRecord                        logRecord;
+  private DocumentLogRecord                   logRecord;
 
-  private PointInt                                 dndPoint;
+  private PointInt                            dndPoint;
 
   /**
    * If true (the normal case), then any MediaElements encountered will be added to the candidates
    * collection, for possible inclusion in the visual information space.
    */
-  private boolean                                  collectMedia         = true;
+  private boolean                             collectMedia         = true;
 
   /**
    * If true (the normal case), then hyperlinks encounted will be fed to the web crawler, providing
    * that they are traversable() and of the right mime types.
    */
-  private boolean                                  crawlLinks           = true;
-  
-  private final Object                             DOWNLOAD_LOCK        = new Object();
+  private boolean                             crawlLinks           = true;
+
+  private final Object                        DOWNLOAD_LOCK        = new Object();
 
   /**
    * @throws IllegalAccessException
@@ -351,7 +362,9 @@ public class DocumentClosure extends SetElement
   {
     this.downloadStatus = newStatus;
     if (this.document != null)
+    {
       document.setDownloadStatus(newStatus);
+    }
   }
 
   public DownloadProcessor<DocumentClosure> downloadMonitor()
@@ -406,142 +419,118 @@ public class DocumentClosure extends SetElement
   {
     if (recycled() || document.isRecycled())
     {
-      println("ERROR: Trying to performDownload() on page already recycled -- " + location());
+      logger.error("Recycled document closure in performDownload(): " + document);
       return;
     }
 
     synchronized (DOWNLOAD_STATUS_LOCK)
     {
       if (!(downloadStatus == DownloadStatus.QUEUED || downloadStatus == DownloadStatus.UNPROCESSED))
+      {
         return;
+      }
       setDownloadStatusInternal(DownloadStatus.CONNECTING);
     }
 
-    if (semanticsScope == null) // this should NEVER happen!!!!!!!!!!!!!!!!!!!!
+    ParsedURL location = location();
+    MetaMetadata metaMetadata = (MetaMetadata) document.getMetaMetadata();
+    boolean noCache = metaMetadata.isNoCache();
+    PersistentDocumentCache pCache = semanticsScope.getPersistentDocumentCache();
+
+    // Check the persistent cache first
+    Document cachedDoc = null;
+    if (pCache != null && !noCache)
     {
-      SemanticsGlobalScope semanticsScope = document.getSemanticsScope();
-      if (semanticsScope == null)
-      {
-        error("Error in performDownload(): semanticsScope == null.");
-        return;
-      }
-      this.semanticsScope = semanticsScope;
+      cachedDoc = retrieveFromPersistentCache(pCache, location);
     }
-    document.setSemanticsSessionScope(semanticsScope);
 
-    PersistentDocumentCache persistDocCache = semanticsScope.getPersistentDocumentCache();
-    boolean noCache = ((MetaMetadata) document.getMetaMetadata()).isNoCache();
-    if (persistDocCache == null || noCache || !getDocumentFromPersistentCache(persistDocCache))
+    // If not in the persistent cache, download the raw page and parse
+    if (cachedDoc == null)
     {
-      // if the semantics scope does not provide a persist doc cache, or we
-      // can't use it, or we didn't find the cached doc:
-      
-      // 1. Access and download the page:
-      ParsedURL location = location();
-      long t0download = System.currentTimeMillis();
-      // connect call also evolves Document based on redirects & mime-type; the
-      // parameter is used to get and set document properties with request and
-      // response respectively.
-      String userAgent = document.getMetaMetadata().getUserAgentString();
-      DownloadController downloadController = semanticsScope.createDownloadController(this);
-      downloadController.setUserAgent(userAgent);
-      downloadController.accessAndDownload(location);
-      if (logRecord != null)
+      DownloadController downloadController = downloadRawPage(location);
+      if (downloadController.isGood())
       {
-        logRecord.setMsHtmlDownload(System.currentTimeMillis() - t0download);
-      }
-      // handle redirection:
-      ParsedURL redirectedLocation = downloadController.getRedirectedLocation();
-      if (redirectedLocation != null)
-      {
-        SemanticsGlobalScope semanticScope = document.getSemanticsScope();
-        Document newDocument = semanticScope.getOrConstructDocument(redirectedLocation);
-        newDocument.addAdditionalLocation(location);
-        changeDocument(newDocument);
-      }
-      MetaMetadata metaMetadata = changeMetaMetadataIfNeeded(downloadController.getMimeType());
+        handleRedirections(downloadController, location);
+        metaMetadata = changeMetaMetadataIfNeeded(downloadController.getMimeType());
 
-      // 2. Parse the downloaded page:
-      // determine document parser:
-      if (documentParser == null)
-      {
-        documentParser = DocumentParser.get(metaMetadata, semanticsScope);
-      }
-      if (documentParser != null)
-      {
-        documentParser.fillValues(downloadController, this, semanticsScope);
-      }
-      else if (!DocumentParser.isRegisteredNoParser(downloadController.getRedirectedLocation()))
-      {
-        warning("No DocumentParser found: " + metaMetadata);
-      }
-
-      // parse:
-      if (downloadController.isGood() && documentParser != null)
-      {
-        // container or not (it could turn out to be an image or some other mime type), parse the
-        // baby!
-        setDownloadStatus(DownloadStatus.PARSING);
-        if (documentParser.downloadingMessageOnConnect())
+        findParser(metaMetadata, downloadController);
+        if (documentParser != null)
         {
-          semanticsScope.displayStatus("Downloading " + location(), 2);
-        }
-  
-        takeSemanticActions(metaMetadata, metaMetadata.getBeforeSemanticActions());
-        long t0extraction = System.currentTimeMillis();
-        documentParser.parse();
-        if (logRecord != null)
-        {
-          logRecord.setMsExtraction(System.currentTimeMillis() - t0extraction);
-        }
-        takeSemanticActions(metaMetadata, metaMetadata.getAfterSemanticActions());
-  
-        addDocGraphCallbacksIfNeeded();
-  
-        // store document in DB
-        if (persistDocCache != null && !noCache)
-        {
-          long t0persist = System.currentTimeMillis();
-          persistDocCache.storeDocument(this.document);
-          if (logRecord != null)
+          doParse(metaMetadata);
+          if (pCache != null && !noCache)
           {
-            logRecord.setMsMetadataCaching(System.currentTimeMillis() - t0persist);
+            doPersist(pCache, downloadController);
           }
         }
       }
       else
       {
-        if (documentParser != null)
-        {
-          warning("Error opening connection for " + location);
-        }
-        recycle();
+        logger.error("Network connection error: " + document);
+        setDownloadStatus(DownloadStatus.IOERROR);
+        return;
       }
+    }
+    else
+    {
+      changeDocument(cachedDoc);
     }
 
     document.downloadAndParseDone(documentParser);
-    document.setDownloadDone(true);
     setDownloadStatus(DownloadStatus.DOWNLOAD_DONE);
   }
 
-  private boolean getDocumentFromPersistentCache(PersistentDocumentCache persistDocCache)
+  private Document retrieveFromPersistentCache(PersistentDocumentCache pCache, ParsedURL location)
   {
+    Document cachedDoc = null;
     long t0 = System.currentTimeMillis();
-    Document document = persistDocCache.retrieveDocument(this);
+    PersistenceMetadata pMetadata = pCache.getMetadata(location);
+    String repoHash = semanticsScope.getMetaMetadataRepositoryHash();
+    if (pMetadata != null && repoHash.equals(pMetadata.getRepositoryHash()))
+    {
+      cachedDoc = pCache.retrieve(location);
+    }
     if (logRecord != null)
     {
       logRecord.setMsMetadataCacheLookup(System.currentTimeMillis() - t0);
-    }
-    if (document != null)
-    {
-      if (logRecord != null)
+      if (cachedDoc != null)
       {
         logRecord.setPersisentDocumentCacheHit(true);
       }
-      changeDocument(document);
-      return true;
     }
-    return false;
+    return cachedDoc;
+  }
+
+  private DownloadController downloadRawPage(ParsedURL location) throws IOException
+  {
+    String userAgent = document.getMetaMetadata().getUserAgentString();
+    DownloadController downloadController = semanticsScope.createDownloadController(this);
+    downloadController.setUserAgent(userAgent);
+    long t0download = System.currentTimeMillis();
+    downloadController.accessAndDownload(location);
+    if (logRecord != null)
+    {
+      logRecord.setMsHtmlDownload(System.currentTimeMillis() - t0download);
+    }
+    return downloadController;
+  }
+
+  private void handleRedirections(DownloadController downloadController, ParsedURL location)
+  {
+    // handle redirections:
+    List<ParsedURL> redirectedLocations = downloadController.getRedirectedLocations();
+    if (redirectedLocations != null)
+    {
+      for (ParsedURL redirectedLocation : redirectedLocations)
+      {
+        if (redirectedLocation != null)
+        {
+          document.addAdditionalLocation(redirectedLocation);
+          Document newDocument = semanticsScope.getOrConstructDocument(redirectedLocation);
+          newDocument.addAdditionalLocation(location);
+          changeDocument(newDocument);
+        }
+      }
+    }
   }
 
   private MetaMetadata changeMetaMetadataIfNeeded(String mimeType)
@@ -568,6 +557,57 @@ public class DocumentClosure extends SetElement
     return metaMetadata;
   }
 
+  private void findParser(MetaMetadata metaMetadata, DownloadController downloadController)
+  {
+    if (documentParser == null)
+    {
+      boolean noParser = false;
+
+      // // First check if registered no parser
+      // boolean noParser = DocumentParser.isRegisteredNoParser(document.getLocation());
+      // List<MetadataParsedURL> additionalLocations = document.getAdditionalLocations();
+      // if (additionalLocations != null)
+      // {
+      // for (int i = 0; i < additionalLocations.size() && !noParser; ++i)
+      // {
+      // noParser |= DocumentParser.isRegisteredNoParser(additionalLocations.get(i).getValue());
+      // }
+      // }
+
+      if (noParser)
+      {
+        logger.warn("Registered no parser: " + document);
+      }
+      else
+      {
+        // If not registered no parser, try to find one
+        documentParser =
+            DocumentParser.getByMmd(metaMetadata, semanticsScope, this, downloadController);
+        if (documentParser == null)
+        {
+          logger.warn("No parser found: " + metaMetadata);
+        }
+      }
+    }
+  }
+
+  private void doParse(MetaMetadata metaMetadata) throws IOException
+  {
+    // container or not (it could turn out to be an image or some other mime type), parse the baby!
+    setDownloadStatus(DownloadStatus.PARSING);
+
+    takeSemanticActions(metaMetadata, metaMetadata.getBeforeSemanticActions());
+    long t0extraction = System.currentTimeMillis();
+    documentParser.parse();
+    if (logRecord != null)
+    {
+      logRecord.setMsExtraction(System.currentTimeMillis() - t0extraction);
+    }
+    takeSemanticActions(metaMetadata, metaMetadata.getAfterSemanticActions());
+
+    addDocGraphCallbacksIfNeeded();
+  }
+
   private void takeSemanticActions(MetaMetadata metaMetadata, ArrayList<SemanticAction> actions)
   {
     if (metaMetadata != null && actions != null)
@@ -579,7 +619,7 @@ public class DocumentClosure extends SetElement
 
   private void addDocGraphCallbacksIfNeeded()
   {
-    if (!ParserBase.DONOT_SETUP_DOCUMENT_GRAPH_CALLBACKS)
+    if (this.getSemanticsScope().ifAutoUpdateDocRefs())
     {
       // add callbacks so that when this document is downloaded and parsed, references to it will
       // be updated automatically.
@@ -592,12 +632,26 @@ public class DocumentClosure extends SetElement
     }
   }
 
+  private void doPersist(PersistentDocumentCache pCache, DownloadController downloadController)
+      throws IOException
+  {
+    long t0persist = System.currentTimeMillis();
+    PersistenceMetadata pMetadata = new PersistenceMetadata();
+    pMetadata.setMimeType(downloadController.getMimeType());
+    String rawDoc = downloadController.getContent();
+    pCache.store(document, rawDoc, pMetadata);
+    if (logRecord != null)
+    {
+      logRecord.setMsMetadataCaching(System.currentTimeMillis() - t0persist);
+    }
+  }
+
   /**
    * In use cases such as the service, we want to be able to call performDownload() synchronously,
    * and in the same time make sure that the same closure will be downloaded by one thread at a
    * time. This method uses a lock to implement this.
    * 
-   * @throws IOException 
+   * @throws IOException
    */
   public void performDownloadSynchronously() throws IOException
   {
@@ -613,9 +667,6 @@ public class DocumentClosure extends SetElement
   @Override
   public void callback(DocumentClosure o)
   {
-    // FIXME callback() could be called from different DownloadMonitor threads! and this is causing
-    // concurrent modification problems for this.continuations collection in some cases.
-    // we may need a synchronization mechanism here, but should look out for performance.
     if (continuations == null)
       return;
 
@@ -634,8 +685,7 @@ public class DocumentClosure extends SetElement
         }
         catch (Exception e)
         {
-          error("EXCEPTION INVOKING CALLBACK ON " + o + ": " + continuation);
-          e.printStackTrace();
+          logger.error("Error calling back: " + o + ": " + continuation, e);
         }
       }
     }
@@ -648,12 +698,12 @@ public class DocumentClosure extends SetElement
     }
   }
 
-  public ArrayList<Continuation<DocumentClosure>> getContinuations()
+  public List<Continuation<DocumentClosure>> getContinuations()
   {
     return continuations;
   }
 
-  private ArrayList<Continuation<DocumentClosure>> continuations()
+  private List<Continuation<DocumentClosure>> continuations()
   {
     return continuations;
   }
@@ -670,7 +720,7 @@ public class DocumentClosure extends SetElement
   {
     synchronized (continuations)
     {
-      ArrayList<Continuation<DocumentClosure>> continuations = continuations();
+      List<Continuation<DocumentClosure>> continuations = continuations();
       for (Continuation<DocumentClosure> continuation : incomingContinuations)
         continuations.add(continuation);
     }
@@ -725,7 +775,7 @@ public class DocumentClosure extends SetElement
     synchronized (DOCUMENT_LOCK)
     {
       Document oldDocument = document;
-      this.document = newDocument;
+      document = newDocument;
 
       SemanticsSite oldSite = oldDocument.site();
       SemanticsSite newSite = newDocument.site();
@@ -738,9 +788,7 @@ public class DocumentClosure extends SetElement
 
       newDocument.inheritValues(oldDocument);
 
-      // SimplTypesScope.serializeOut(newDocument, "After changeDocument()", StringFormat.XML);
-
-      semanticInlinks = newDocument.semanticInlinks; // probably not needed, but just in case.
+      semanticInlinks = newDocument.getSemanticInlinks(); // probably not needed, but just in case.
       oldDocument.recycle();
     }
   }
@@ -757,11 +805,6 @@ public class DocumentClosure extends SetElement
     DownloadController downloadController = semanticsScope.createDownloadController(this);
     downloadController.accessAndDownload(document.getLocation());
     return downloadController;
-    // purlConnection.close();
-    // purlConnection.recycle();
-    // purlConnection =
-    // document.getLocation().connect(document.getMetaMetadata().getUserAgentString());
-    // return purlConnection;
   }
 
   @Override
@@ -783,16 +826,9 @@ public class DocumentClosure extends SetElement
     if (documentParser != null)
       documentParser.recycle();
 
-    // if (purlConnection != null)
-    // purlConnection.recycle();
-
     semanticInlinks = null;
 
     initialPURL = null;
-
-    // if (continuations != null)
-    // continuations.clear();
-    // continuations = null;
 
     // ??? should we recycle Document here -- under what circumstances???
     if (recycleDocument)
@@ -849,10 +885,10 @@ public class DocumentClosure extends SetElement
   public void handleIoError(Throwable e)
   {
     setDownloadStatus(DownloadStatus.IOERROR);
-    document.setDownloadDone(true);
     if (documentParser != null)
+    {
       documentParser.handleIoError(e);
-
+    }
     recycle();
   }
 

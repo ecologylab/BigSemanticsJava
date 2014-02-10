@@ -2,6 +2,7 @@ package ecologylab.bigsemantics.compiler;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -170,7 +171,7 @@ public class CompilerConfig extends CodeTranslatorConfig
 	 * @throws SIMPLTranslationException 
 	 * @throws FileNotFoundException 
 	 */
-	public MetaMetadataRepository loadRepository() throws FileNotFoundException, SIMPLTranslationException
+	public MetaMetadataRepository loadRepository() throws IOException, SIMPLTranslationException
 	{
 		if (repository == null)
 			repository = getRepositoryLoader().loadFromDir(repositoryLocation, repositoryFormat);

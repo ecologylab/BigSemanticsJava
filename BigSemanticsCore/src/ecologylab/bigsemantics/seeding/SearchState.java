@@ -166,7 +166,7 @@ implements SemanticsPrefs
    {
   	 //  	 InterestModel.expressInterest(query, interestLevel);
   	 //infoCollector.instantiateDocumentType(SEARCH_DOCUMENT_TYPE_REGISTRY, engine, this);		
-  	 new SearchParser(infoCollector, this);
+  	 new SearchParser(this);
    }
 
 	/**

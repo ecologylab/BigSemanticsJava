@@ -13,6 +13,9 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ecologylab.appframework.EnvironmentGeneric;
 import ecologylab.appframework.PropertiesAndDirectories;
 import ecologylab.appframework.SingletonApplicationEnvironment;
@@ -34,12 +37,15 @@ import ecologylab.serialization.formatenums.Format;
 public class MetaMetadataRepositoryLocator extends Debug
 {
 
+  static final Logger           logger;
+
   private static final String   SEMANTICS;
 
   private static final String[] DEFAULT_REPOSITORY_LOCATIONS;
 
   static
   {
+    logger = LoggerFactory.getLogger(MetaMetadataRepositoryLocator.class);
     SEMANTICS = "semantics/";
     DEFAULT_REPOSITORY_LOCATIONS = new String[]
     {
@@ -142,7 +148,7 @@ public class MetaMetadataRepositoryLocator extends Debug
         Method m = environmentClass.getMethod("getExternalStorageDirectory");
         File sdCard = (File) m.invoke(null, null);
         File ecologylabDir = new File(sdCard.getAbsolutePath()
-            + "/Android/data/com.ecologyAndroid.ecoDroidTest/files/");
+                                      + "/Android/data/com.ecologyAndroid.ecoDroidTest/files/");
         File mmdrepositoryDir = new File(ecologylabDir + "/mmdrepository/");
         return mmdrepositoryDir;
       }
@@ -204,23 +210,24 @@ public class MetaMetadataRepositoryLocator extends Debug
         n++;
       }
     }
+
     return n;
   }
-  
+
   public static List<File> listRepositoryFiles(File repositoryDir, Format repositoryFormat)
   {
     FileFilter fileFilter = MetaMetadataRepositoryFileFormats.getFileFilter(repositoryFormat);
     assert fileFilter != null;
-    
+
     List<File> allFiles = new ArrayList<File>();
-    
+
     File repositorySources = new File(repositoryDir, "repositorySources");
     File powerUserDir = new File(repositoryDir, "powerUser");
 
     addFilesInDirToList(repositoryDir, fileFilter, allFiles);
     addFilesInDirToList(repositorySources, fileFilter, allFiles);
     addFilesInDirToList(powerUserDir, fileFilter, allFiles);
-    
+
     return allFiles;
   }
 
@@ -232,7 +239,9 @@ public class MetaMetadataRepositoryLocator extends Debug
       buf.add(f);
   }
 
-  public static int openStreams(List<InputStream> result, File repositoryDir, Format repositoryFormat)
+  public int openStreams(List<InputStream> result,
+                         File repositoryDir,
+                         Format repositoryFormat)
   {
     List<File> repoFiles = listRepositoryFiles(repositoryDir, repositoryFormat);
     for (File file : repoFiles)
