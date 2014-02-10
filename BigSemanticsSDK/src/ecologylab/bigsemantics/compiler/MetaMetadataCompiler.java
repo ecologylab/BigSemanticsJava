@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import ecologylab.bigsemantics.Utils;
 import ecologylab.bigsemantics.collecting.MetaMetadataRepositoryLocator;
 import ecologylab.bigsemantics.metadata.MetadataClassDescriptor;
 import ecologylab.bigsemantics.metametadata.FileTools;
@@ -126,9 +125,6 @@ public class MetaMetadataCompiler extends Debug // ApplicationEnvironment
 		// generate repository file list:
 		generateRepositoryFileList(config);
 		
-		// write repository hash to a file
-		writeRepositoryHash(config);
-		
 		// serialize post-inheritance repository files:
 		serializePostInheritanceRepository(config.getRepositoryLocation(), repository);
 		
@@ -184,16 +180,6 @@ public class MetaMetadataCompiler extends Debug // ApplicationEnvironment
     return items;
   }
   
-  static private String REPOSITORY_HASH_FILE = "repositoryHash.txt";
-  
-  private void writeRepositoryHash(CompilerConfig config) throws IOException
-  {
-    File repoLocation = config.getRepositoryLocation();
-    File repoHashFile = new File(repoLocation, REPOSITORY_HASH_FILE);
-    String repositoryHash = config.getRepositoryLoader().getRepositoryHash();
-    Utils.writeToFile(repoHashFile, repositoryHash);
-  }
-
   static private String POST_INHERITANCE_REPOSITORY_DIR = "PostInheritanceRepository";
   
   static private String POST_INHERITANCE_REPOSITORY_FILE_NAME = "post-inheritance-repository";
