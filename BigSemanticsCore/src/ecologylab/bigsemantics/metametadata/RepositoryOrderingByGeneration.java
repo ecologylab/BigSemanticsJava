@@ -7,6 +7,7 @@ import java.util.Map;
 
 import ecologylab.net.ParsedURL;
 import ecologylab.serialization.annotations.simpl_collection;
+import ecologylab.serialization.annotations.simpl_nowrap;
 import ecologylab.serialization.annotations.simpl_scalar;
 import ecologylab.serialization.annotations.simpl_tag;
 
@@ -26,9 +27,11 @@ public class RepositoryOrderingByGeneration implements RepositoryOrdering
     String exampleUrl;
     
     @simpl_collection("all_example_url")
+    @simpl_nowrap
     List<String> allExampleUrls;
 
     @simpl_collection("subtype")
+    @simpl_nowrap
     List<TreeNode> subtypes;
     
     public void addSubtype(TreeNode child)
