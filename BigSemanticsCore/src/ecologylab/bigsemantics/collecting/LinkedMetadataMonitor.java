@@ -7,6 +7,7 @@ import ecologylab.bigsemantics.actions.SemanticActionHandler;
 import ecologylab.bigsemantics.metadata.Metadata;
 import ecologylab.bigsemantics.metametadata.LinkWith;
 import ecologylab.bigsemantics.metametadata.MetaMetadata;
+import ecologylab.bigsemantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.bigsemantics.metametadata.MetaMetadataRepository;
 
 /**
@@ -103,19 +104,26 @@ public class LinkedMetadataMonitor
 	public boolean tryLink(MetaMetadataRepository repository, Metadata parsedMetadata)
 	{
 		if (parsedMetadata == null)
+		{
 			return false;
+		}
+		MetaMetadataCompositeField composite = parsedMetadata.getMetaMetadata();
+		if (composite == null)
+		{
+		  return false;
+		}
 
 		MetaMetadata mmd;
 		String mmdName;
 
-		if (parsedMetadata.getMetaMetadata() instanceof MetaMetadata)
+    if (composite instanceof MetaMetadata)
 		{
-			mmd = (MetaMetadata) parsedMetadata.getMetaMetadata();
+			mmd = (MetaMetadata) composite;
 			mmdName = mmd.getName();
 		}
 		else
 		{
-			mmdName = parsedMetadata.getMetaMetadata().getTypeName();
+			mmdName = composite.getTypeName();
 			mmd = repository.getMMByName(mmdName);
 		}
 

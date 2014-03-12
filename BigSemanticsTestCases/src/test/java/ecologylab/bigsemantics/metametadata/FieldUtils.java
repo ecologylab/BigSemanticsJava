@@ -1,5 +1,6 @@
 package ecologylab.bigsemantics.metametadata;
 
+import ecologylab.bigsemantics.metadata.MetadataClassDescriptor;
 import ecologylab.bigsemantics.metadata.MetadataFieldDescriptor;
 
 /**
@@ -14,6 +15,12 @@ public class FieldUtils
                                                 MetadataFieldDescriptor descriptor)
   {
     field.setMetadataFieldDescriptor(descriptor);
+  }
+
+  public static void setMetadataClassDescriptor(MetaMetadataField field,
+                                                MetadataClassDescriptor descriptor)
+  {
+    field.setMetadataClassDescriptor(descriptor);
   }
 
 }

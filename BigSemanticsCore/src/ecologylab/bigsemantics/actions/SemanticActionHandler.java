@@ -28,7 +28,7 @@ import ecologylab.serialization.formatenums.StringFormat;
 // TODO Might want to implement lexical scoping in variables.
 public class SemanticActionHandler
 		extends Debug
-		implements SemanticActionStandardMethods, SemanticActionsKeyWords, SemanticActionNamedArguments
+		implements SemanticActionStandardMethods, SemanticsConstants, SemanticActionNamedArguments
 {
 
 	static final Scope<Object>												BUILT_IN_SCOPE	= new Scope<Object>();
@@ -74,7 +74,7 @@ public class SemanticActionHandler
 		this.semanticsScope 			= semanticsScope;
 		this.documentParser 			= documentParser;
 		semanticActionVariableMap.put(
-				SemanticActionsKeyWords.PURLCONNECTION_MIME,
+				SemanticsConstants.PURLCONNECTION_MIME,
 				documentParser.getDownloadController().getMimeType());
 		this.semanticActionVariableMap	= semanticActionVariableMap;
 	}
@@ -117,7 +117,7 @@ public class SemanticActionHandler
 
 			//FIXME -- should not have SemanticActionsKeyWords && SemanticActionsNamedArguments as separate sets !!!
 			semanticActionVariableMap.put(DOCUMENT_TYPE, documentParser);
-			semanticActionVariableMap.put(SemanticActionsKeyWords.METADATA, metadata);
+			semanticActionVariableMap.put(SemanticsConstants.METADATA, metadata);
 			semanticActionVariableMap.put(TRUE_PURL, documentParser.getTruePURL());
 
 			preSemanticActionsHook(metadata);
@@ -216,7 +216,7 @@ public class SemanticActionHandler
 		// get the object on which the action has to be taken
 		String objectName = action.getObject();
 		if (objectName == null)
-			objectName = SemanticActionsKeyWords.METADATA;
+			objectName = SemanticsConstants.METADATA;
 		Object object = semanticActionVariableMap.get(objectName);
 
 		try

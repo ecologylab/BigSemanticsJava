@@ -35,7 +35,7 @@ import com.drew.metadata.exif.ExifDirectory;
 import com.drew.metadata.exif.ExifReader;
 import com.drew.metadata.exif.GpsDirectory;
 
-import ecologylab.bigsemantics.actions.SemanticActionsKeyWords;
+import ecologylab.bigsemantics.actions.SemanticsConstants;
 import ecologylab.bigsemantics.collecting.SemanticsGlobalScope;
 import ecologylab.bigsemantics.downloadcontrollers.DownloadController;
 import ecologylab.bigsemantics.metadata.Metadata;
@@ -112,7 +112,7 @@ public class ImageParserAwt extends ImageParser
 
   static
   {
-    bindingParserMap.put(SemanticActionsKeyWords.IMAGE_PARSER, ImageParserAwt.class);
+    bindingParserMap.put(SemanticsConstants.IMAGE_PARSER, ImageParserAwt.class);
   }
 
   /** Patches a JPEG file that is missing a JFIF marker **/

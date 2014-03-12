@@ -133,8 +133,9 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
 	@simpl_scalar
 	private String																				otherTags;
 
-	@simpl_scalar
-	protected String																			xpath;
+	@simpl_collection("xpath")
+	@simpl_nowrap
+	protected List<String>  															xpaths;
 	
 	@simpl_scalar
 	private boolean																				extractAsHtml						=	false;
@@ -603,7 +604,30 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
 	 */
 	public String getXpath()
 	{
-		return xpath;
+	  return getXpath(0);
+	}
+	
+	public List<String> getXpaths()
+	{
+	  return xpaths;
+	}
+	
+	public String getXpath(int i)
+	{
+	  if (xpaths == null || xpaths.size() == 0 || i > xpaths.size())
+	  {
+	    return null;
+	  }
+	  return xpaths.get(i);
+	}
+	
+	public int xpathsSize()
+	{
+	  if (xpaths == null)
+	  {
+	    return 0;
+	  }
+	  return xpaths.size();
 	}
 
 	/**
@@ -794,6 +818,15 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
 	void setMetadataFieldDescriptor(MetadataFieldDescriptor metadataFieldDescriptor)
 	{
 		this.metadataFieldDescriptor = metadataFieldDescriptor;
+	}
+	
+	/**
+	 * @param metadataClassDescriptor
+	 *          the metadataClassDescriptor to set
+	 */
+	void setMetadataClassDescriptor(MetadataClassDescriptor metadataClassDescriptor)
+	{
+	  this.metadataClassDescriptor = metadataClassDescriptor;
 	}
 
 	protected String generateNewClassName()

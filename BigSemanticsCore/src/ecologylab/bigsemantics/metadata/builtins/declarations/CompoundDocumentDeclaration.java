@@ -5,12 +5,13 @@ package ecologylab.bigsemantics.metadata.builtins.declarations;
  *
  * DO NOT modify this code manually: All your changes may get lost!
  *
- * Copyright (2013) Interface Ecology Lab.
+ * Copyright (2014) Interface Ecology Lab.
  */
 
 import ecologylab.bigsemantics.metadata.builtins.Clipping;
 import ecologylab.bigsemantics.metadata.builtins.CompoundDocument;
 import ecologylab.bigsemantics.metadata.builtins.Document;
+import ecologylab.bigsemantics.metadata.builtins.Image;
 import ecologylab.bigsemantics.metadata.builtins.MetadataBuiltinsTypesScope;
 import ecologylab.bigsemantics.metadata.mm_name;
 import ecologylab.bigsemantics.metadata.scalar.MetadataString;
@@ -55,6 +56,10 @@ public class CompoundDocumentDeclaration extends Document
 	@simpl_composite
 	@mm_name("root_document")
 	private CompoundDocument rootDocument;
+
+	@simpl_collection("image")
+	@mm_name("main_images")
+	private List<Image> mainImages;
 
 	public CompoundDocumentDeclaration()
 	{ super(); }
@@ -166,5 +171,35 @@ public class CompoundDocumentDeclaration extends Document
 	public void setRootDocument(CompoundDocument rootDocument)
 	{
 		this.rootDocument = rootDocument;
+	}
+
+	public List<Image> getMainImages()
+	{
+		return mainImages;
+	}
+
+  // lazy evaluation:
+  public List<Image> mainImages()
+  {
+    if (mainImages == null)
+      mainImages = new ArrayList<Image>();
+    return mainImages;
+  }
+
+  // addTo:
+  public void addToMainImages(Image element)
+  {
+    mainImages().add(element);
+  }
+
+  // size:
+  public int mainImagesSize()
+  {
+    return mainImages == null ? 0 : mainImages.size();
+  }
+
+	public void setMainImages(List<Image> mainImages)
+	{
+		this.mainImages = mainImages;
 	}
 }

@@ -4,7 +4,7 @@
 package ecologylab.bigsemantics.documentparsers;
 
 import ecologylab.bigsemantics.actions.SemanticActionHandler;
-import ecologylab.bigsemantics.actions.SemanticActionsKeyWords;
+import ecologylab.bigsemantics.actions.SemanticsConstants;
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metametadata.MetaMetadataCompositeField;
 
@@ -13,7 +13,7 @@ import ecologylab.bigsemantics.metametadata.MetaMetadataCompositeField;
  * 
  */
 public class XPathParser extends ParserBase<Document> implements
-    SemanticActionsKeyWords
+    SemanticsConstants
 {
 
   @Override

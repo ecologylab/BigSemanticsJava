@@ -9,7 +9,7 @@ import java.io.Reader;
 import java.util.HashSet;
 import java.util.List;
 
-import ecologylab.bigsemantics.actions.SemanticActionsKeyWords;
+import ecologylab.bigsemantics.actions.SemanticsConstants;
 import ecologylab.bigsemantics.collecting.SemanticsGlobalScope;
 import ecologylab.bigsemantics.downloadcontrollers.DownloadController;
 import ecologylab.bigsemantics.metadata.builtins.Document;
@@ -58,12 +58,12 @@ abstract public class DocumentParser<D extends Document> extends Debug
 
   static
   {
-    register(SemanticActionsKeyWords.DIRECT_BINDING_PARSER, DirectBindingParser.class);
-    register(SemanticActionsKeyWords.XPATH_PARSER, XPathParser.class);
-    register(SemanticActionsKeyWords.FEED_PARSER, FeedParser.class);
-    register(SemanticActionsKeyWords.HTML_IMAGE_DOM_TEXT_PARSER,
+    register(SemanticsConstants.DIRECT_BINDING_PARSER, DirectBindingParser.class);
+    register(SemanticsConstants.XPATH_PARSER, XPathParser.class);
+    register(SemanticsConstants.FEED_PARSER, FeedParser.class);
+    register(SemanticsConstants.HTML_IMAGE_DOM_TEXT_PARSER,
              HTMLDOMImageTextParser.class);
-    register(SemanticActionsKeyWords.PDF_PARSER, PdfParser.class);
+    register(SemanticsConstants.PDF_PARSER, PdfParser.class);
   }
 
   /**
