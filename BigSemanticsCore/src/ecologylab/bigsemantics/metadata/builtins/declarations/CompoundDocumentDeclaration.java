@@ -8,11 +8,13 @@ package ecologylab.bigsemantics.metadata.builtins.declarations;
  * Copyright (2014) Interface Ecology Lab.
  */
 
+import ecologylab.bigsemantics.metadata.builtins.Audio;
 import ecologylab.bigsemantics.metadata.builtins.Clipping;
 import ecologylab.bigsemantics.metadata.builtins.CompoundDocument;
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metadata.builtins.Image;
 import ecologylab.bigsemantics.metadata.builtins.MetadataBuiltinsTypesScope;
+import ecologylab.bigsemantics.metadata.builtins.Video;
 import ecologylab.bigsemantics.metadata.mm_name;
 import ecologylab.bigsemantics.metadata.scalar.MetadataString;
 import ecologylab.bigsemantics.metametadata.MetaMetadataCompositeField;
@@ -60,6 +62,14 @@ public class CompoundDocumentDeclaration extends Document
 	@simpl_collection("image")
 	@mm_name("main_images")
 	private List<Image> mainImages;
+
+	@simpl_collection("video")
+	@mm_name("main_videos")
+	private List<Video> mainVideos;
+
+	@simpl_collection("audio")
+	@mm_name("main_audio")
+	private List<Audio> mainAudio;
 
 	public CompoundDocumentDeclaration()
 	{ super(); }
@@ -201,5 +211,65 @@ public class CompoundDocumentDeclaration extends Document
 	public void setMainImages(List<Image> mainImages)
 	{
 		this.mainImages = mainImages;
+	}
+
+	public List<Video> getMainVideos()
+	{
+		return mainVideos;
+	}
+
+  // lazy evaluation:
+  public List<Video> mainVideos()
+  {
+    if (mainVideos == null)
+      mainVideos = new ArrayList<Video>();
+    return mainVideos;
+  }
+
+  // addTo:
+  public void addToMainVideos(Video element)
+  {
+    mainVideos().add(element);
+  }
+
+  // size:
+  public int mainVideosSize()
+  {
+    return mainVideos == null ? 0 : mainVideos.size();
+  }
+
+	public void setMainVideos(List<Video> mainVideos)
+	{
+		this.mainVideos = mainVideos;
+	}
+
+	public List<Audio> getMainAudio()
+	{
+		return mainAudio;
+	}
+
+  // lazy evaluation:
+  public List<Audio> mainAudio()
+  {
+    if (mainAudio == null)
+      mainAudio = new ArrayList<Audio>();
+    return mainAudio;
+  }
+
+  // addTo:
+  public void addToMainAudio(Audio element)
+  {
+    mainAudio().add(element);
+  }
+
+  // size:
+  public int mainAudioSize()
+  {
+    return mainAudio == null ? 0 : mainAudio.size();
+  }
+
+	public void setMainAudio(List<Audio> mainAudio)
+	{
+		this.mainAudio = mainAudio;
 	}
 }
