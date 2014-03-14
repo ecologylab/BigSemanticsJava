@@ -9,6 +9,7 @@ package ecologylab.bigsemantics.metadata.builtins.declarations;
  */
 
 import ecologylab.bigsemantics.metadata.Metadata;
+import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metadata.builtins.MetadataBuiltinsTypesScope;
 import ecologylab.bigsemantics.metadata.mm_name;
 import ecologylab.bigsemantics.metadata.scalar.MetadataParsedURL;
@@ -18,6 +19,7 @@ import ecologylab.bigsemantics.namesandnums.SemanticsNames;
 import ecologylab.net.ParsedURL;
 import ecologylab.serialization.annotations.Hint;
 import ecologylab.serialization.annotations.simpl_collection;
+import ecologylab.serialization.annotations.simpl_composite;
 import ecologylab.serialization.annotations.simpl_composite_as_scalar;
 import ecologylab.serialization.annotations.simpl_hints;
 import ecologylab.serialization.annotations.simpl_inherit;
@@ -66,6 +68,10 @@ public class DocumentDeclaration extends Metadata
 	@simpl_collection("location")
 	@mm_name("additional_locations")
 	private List<MetadataParsedURL> additionalLocations;
+
+	@simpl_composite
+	@mm_name("see_also")
+	private Document seeAlso;
 
 	public DocumentDeclaration()
 	{ super(); }
@@ -263,5 +269,15 @@ public class DocumentDeclaration extends Metadata
 	public void setAdditionalLocations(List<MetadataParsedURL> additionalLocations)
 	{
 		this.additionalLocations = additionalLocations;
+	}
+
+	public Document getSeeAlso()
+	{
+		return seeAlso;
+	}
+
+	public void setSeeAlso(Document seeAlso)
+	{
+		this.seeAlso = seeAlso;
 	}
 }
