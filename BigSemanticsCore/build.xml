@@ -103,7 +103,14 @@
     <copy file="${jar.file}" todir="${bsservice.lib}" />
   </target>
   
-  <target name="update-deps" depends="update-deps-bsservice">
+  <property name="bswrappers.lib" value="../../BigSemanticsWrapperRepository/BigSemanticsWrappers/lib" />
+  <available property="bswrappers.lib.exists" file="${bswrappers.lib}" type="dir" />
+
+  <target name="update-deps-bswrappers" depends="jar" if="bswrappers.lib.exists">
+    <copy file="${jar.file}" todir="${bswrappers.lib}" />
+  </target>
+  
+  <target name="update-deps" depends="update-deps-bsservice,update-deps-bswrappers">
   </target>
     
   <target name="main" depends="clean,update-deps" />
