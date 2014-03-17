@@ -26,6 +26,8 @@ public class MetadataBuiltinDeclarationsTranslationScope
 
 		ecologylab.bigsemantics.metadata.builtins.AssignPrimaryLink.class,
 
+		ecologylab.bigsemantics.metadata.builtins.Audio.class,
+
 		ecologylab.bigsemantics.metadata.builtins.ClippableDocument.class,
 
 		ecologylab.bigsemantics.metadata.builtins.Clipping.class,
@@ -52,9 +54,13 @@ public class MetadataBuiltinDeclarationsTranslationScope
 
 		ecologylab.bigsemantics.metadata.builtins.RichArtifact.class,
 
+		ecologylab.bigsemantics.metadata.builtins.SequencedClippableDocument.class,
+
 		ecologylab.bigsemantics.metadata.builtins.TextClipping.class,
 
 		ecologylab.bigsemantics.metadata.builtins.TextSelfmade.class,
+
+		ecologylab.bigsemantics.metadata.builtins.Video.class,
 
 	};
 
