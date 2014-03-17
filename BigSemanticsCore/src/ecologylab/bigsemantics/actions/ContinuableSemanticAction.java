@@ -46,7 +46,7 @@ implements Continuation<DocumentClosure>
 			new SemanticActionHandler(documentParser.getSemanticsScope(), documentParser,
 					newVariableMap);
 		
-		newVariableMap.put(SemanticActionsKeyWords.DOCUMENT_CALLER, documentParser.getDocument());
+		newVariableMap.put(SemanticsConstants.DOCUMENT_CALLER, documentParser.getDocument());
 		
 		//TODO -- how to make old and new Document available
 		continuationHandler.takeSemanticActions(originalHandler.metaMetadata, documentClosure.getDocument(), continuation);

@@ -39,7 +39,6 @@ public class MetaMetadataTranslationScope extends Debug
 		BasicSite.class,
 		Argument.class,
 		
-		RegexFilter.class,
 		FieldParserElement.class,
 		
 		CookieProcessing.class,
@@ -48,8 +47,12 @@ public class MetaMetadataTranslationScope extends Debug
 		
 		MetaMetadataSelector.class,
 		MetaMetadataSelectorReselectField.class,
-		
-		DefVar.class,	// cannot be in NestedSemanticActionsTranslationScope because these are collected separtely in MetaMetadataField
+
+		/**
+		 * This cannot be in NestedSemanticActionsTranslationScope because these are collected
+		 * separately in MetaMetadataField.
+		 */
+		DefVar.class,	
 		
 		UrlGenerator.class,
 		LinkWith.class,
@@ -60,6 +63,7 @@ public class MetaMetadataTranslationScope extends Debug
 	public static final SimplTypesScope[]	SCOPE_SET	= 
 	{
 		BASE_TRANSLATIONS, 
+		FieldOpScope.get(),
 		NestedMetaMetadataFieldTypesScope.get(),
 		SemanticActionTranslationScope.get(),
 		ConditionTranslationScope.get(),

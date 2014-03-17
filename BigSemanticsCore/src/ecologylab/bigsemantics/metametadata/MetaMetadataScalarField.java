@@ -188,27 +188,37 @@ public class MetaMetadataScalarField extends MetaMetadataField
 		if (this.compositeScalar)
 			metaInfoBuf.add(new MetaInformation(simpl_composite_as_scalar.class));
 
-		// @simpl_filter
-		if (filter != null && filter.getRegex() != null && filter.getRegex().pattern().length() > 0
-				&& getMetaMetadataParser().equals(ParserBase.DIRECT_BINDING_PARSER))
-		{
-			List<String> argNames = new ArrayList<String>();
-			List<Object> argValues = new ArrayList<Object>();
-			argNames.add("regex");
-			argValues.add(filter.getJavaRegex());
-			if (filter.getGroup() > 0)
-			{
-				argNames.add("group");
-				argValues.add(filter.getGroup());
-			}
-			if (filter.getReplace() != null)
-			{
-				argNames.add("replace");
-				argValues.add(filter.getReplace());
-			}
-			metaInfoBuf.add(new MetaInformation(simpl_filter.class, argNames.toArray(new String[] {}),
-					argValues.toArray()));
-		}
+    if (fieldOps != null && fieldOps.size() > 0)
+    {
+      // TODO currently we can have only one @simpl_filter for a field.
+      FieldOp op = fieldOps.get(0);
+      if (op instanceof RegexOp)
+      {
+        // @simpl_filter
+        RegexOp filter = (RegexOp) op;
+        if (filter != null && filter.getRegex() != null && filter.getRegex().pattern().length() > 0
+            && getMetaMetadataParser().equals(ParserBase.DIRECT_BINDING_PARSER))
+        {
+          List<String> argNames = new ArrayList<String>();
+          List<Object> argValues = new ArrayList<Object>();
+          argNames.add("regex");
+          argValues.add(filter.getJavaRegex());
+          if (filter.getGroup() > 0)
+          {
+            argNames.add("group");
+            argValues.add(filter.getGroup());
+          }
+          if (filter.getReplace() != null)
+          {
+            argNames.add("replace");
+            argValues.add(filter.getReplace());
+          }
+          metaInfoBuf.add(new MetaInformation(simpl_filter.class,
+                                              argNames.toArray(new String[] {}),
+                                              argValues.toArray()));
+        }
+      }
+    }
 	}
 
 	@Override
@@ -256,7 +266,8 @@ public class MetaMetadataScalarField extends MetaMetadataField
 		MetaMetadataScalarField mmsf = new MetaMetadataScalarField();
 		mmsf.scalarType = new MetadataStringScalarType();
 		mmsf.hint = Hint.XML_LEAF;
-		mmsf.filter = new RegexFilter(Pattern.compile("regex"), "replace");
+		mmsf.fieldOps = new ArrayList<FieldOp>();
+		mmsf.fieldOps.add(new RegexOp(Pattern.compile("regex"), "replace"));
 		System.out.println(SimplTypesScope.serialize(mmsf, StringFormat.XML));
 	}
 

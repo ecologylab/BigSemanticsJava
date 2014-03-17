@@ -6,7 +6,7 @@ package ecologylab.bigsemantics.documentparsers;
 import java.io.IOException;
 
 import ecologylab.bigsemantics.actions.SemanticActionHandler;
-import ecologylab.bigsemantics.actions.SemanticActionsKeyWords;
+import ecologylab.bigsemantics.actions.SemanticsConstants;
 import ecologylab.bigsemantics.collecting.SemanticsGlobalScope;
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metadata.builtins.DocumentClosure;
@@ -21,7 +21,7 @@ import ecologylab.net.ParsedURL;
  * @author amathur
  * 
  */
-public class SearchParser extends LinksetParser implements CFPrefNames, SemanticActionsKeyWords
+public class SearchParser extends LinksetParser implements CFPrefNames, SemanticsConstants
 {
 
   /**

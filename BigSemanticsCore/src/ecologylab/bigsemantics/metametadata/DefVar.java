@@ -3,7 +3,7 @@ package ecologylab.bigsemantics.metametadata;
 import javax.xml.namespace.QName;
 import javax.xml.xpath.XPathConstants;
 
-import ecologylab.bigsemantics.actions.SemanticActionsKeyWords;
+import ecologylab.bigsemantics.actions.SemanticsConstants;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.annotations.simpl_scalar;
 import ecologylab.serialization.types.ScalarType;
@@ -91,11 +91,11 @@ public class DefVar extends ElementState
 	 */
 	public final QName getType()
 	{
-		if (SemanticActionsKeyWords.NODE_SET.equals(type))
+		if (SemanticsConstants.NODE_SET.equals(type))
 		{
 			return XPathConstants.NODESET;
 		}
-		else if (SemanticActionsKeyWords.NODE.equals(type))
+		else if (SemanticsConstants.NODE.equals(type))
 		{
 			return XPathConstants.NODE;
 		}

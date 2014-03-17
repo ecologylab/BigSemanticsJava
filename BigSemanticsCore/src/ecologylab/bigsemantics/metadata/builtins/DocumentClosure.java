@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import ecologylab.bigsemantics.actions.SemanticAction;
 import ecologylab.bigsemantics.actions.SemanticActionHandler;
-import ecologylab.bigsemantics.actions.SemanticActionsKeyWords;
+import ecologylab.bigsemantics.actions.SemanticsConstants;
 import ecologylab.bigsemantics.collecting.DocumentDownloadedEventHandler;
 import ecologylab.bigsemantics.collecting.DownloadStatus;
 import ecologylab.bigsemantics.collecting.SemanticsDownloadMonitors;
@@ -54,7 +54,7 @@ import ecologylab.serialization.library.geom.PointInt;
 @SuppressWarnings(
 { "rawtypes", "unchecked" })
 public class DocumentClosure extends SetElement
-    implements TermVectorFeature, Downloadable, SemanticActionsKeyWords,
+    implements TermVectorFeature, Downloadable, SemanticsConstants,
     Continuation<DocumentClosure>
 {
 

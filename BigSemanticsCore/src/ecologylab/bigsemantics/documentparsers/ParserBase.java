@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Stack;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.xml.namespace.QName;
 import javax.xml.transform.OutputKeys;
@@ -24,11 +22,13 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import ecologylab.bigsemantics.actions.SemanticActionHandler;
-import ecologylab.bigsemantics.actions.SemanticActionsKeyWords;
+import ecologylab.bigsemantics.actions.SemanticsConstants;
 import ecologylab.bigsemantics.collecting.DocumentDownloadedEventHandler;
 import ecologylab.bigsemantics.collecting.DocumentDownloadingMonitor;
 import ecologylab.bigsemantics.collecting.DownloadStatus;
@@ -43,6 +43,7 @@ import ecologylab.bigsemantics.metadata.scalar.MetadataParsedURL;
 import ecologylab.bigsemantics.metadata.scalar.types.MetadataParsedURLScalarType;
 import ecologylab.bigsemantics.metadata.scalar.types.MetadataScalarType;
 import ecologylab.bigsemantics.metametadata.DefVar;
+import ecologylab.bigsemantics.metametadata.FieldOp;
 import ecologylab.bigsemantics.metametadata.FieldParser;
 import ecologylab.bigsemantics.metametadata.FieldParserElement;
 import ecologylab.bigsemantics.metametadata.FieldParserForRegexSplit;
@@ -80,12 +81,15 @@ import ecologylab.serialization.types.ScalarType;
  * 
  */
 @SuppressWarnings("rawtypes")
-public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D>
-    implements ScalarUnmarshallingContext, SemanticActionsKeyWords,
+public abstract class ParserBase<D extends Document>
+    extends HTMLDOMParser<D>
+    implements
+    ScalarUnmarshallingContext,
+    SemanticsConstants,
     DeserializationHookStrategy<Metadata, MetadataFieldDescriptor>
 {
 
-  public static String            ELEMENT_INDEX_IN_COLLECTION = "element_index_in_collection";
+  static Logger                   logger = LoggerFactory.getLogger(ParserBase.class);
 
   protected XPath                 xpath;
 
@@ -335,8 +339,8 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D>
     if (fieldSet == null || fieldSet.isEmpty())
       return false;
 
-    Stack<MetaMetadataField> surroundingMmdStack = (Stack<MetaMetadataField>) params
-        .get(SURROUNDING_META_METADATA_STACK);
+    Stack<MetaMetadataField> surroundingMmdStack =
+        (Stack<MetaMetadataField>) params.get(SURROUNDING_META_METADATA_STACK);
     if (surroundingMmdStack == null)
     {
       surroundingMmdStack = new Stack<MetaMetadataField>();
@@ -459,23 +463,13 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D>
                                                 Map<String, String> fieldParserContext,
                                                 Scope<Object> params)
   {
-    // get xpath, context node, field parser defintion & key: basic information for following
-
-    String xpathString = mmdField.getXpath();
-
-    xpathString = assignVariablesInXPathString(params, xpathString);
-
-    // if (xpathString != null && xpathString.length() > 0)
-    // xpathString = provider.xPathTagNamesToLower(xpathString);
-
+    // get context node, field parser definition & key: basic information for following
     contextNode = findContextNodeIfNecessary(mmdField, contextNode, params);
-
     FieldParserElement fieldParserElement = mmdField.getFieldParserElement();
     String fieldParserKey = mmdField.getFieldParserKey();
 
     // init result
     NestedFieldHelper result = new NestedFieldHelper();
-
     if (mmdField instanceof MetaMetadata) // this should not happen, currently
     {
       result.node = contextNode;
@@ -486,7 +480,7 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D>
     {
       if (fieldParserElement == null)
       {
-        xpathString = evaluateXpathForField(mmdField, contextNode, params, xpathString, result);
+        evaluateXpathForField(mmdField, contextNode, params, result);
       }
       else
       {
@@ -500,7 +494,7 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D>
             valueString = getFieldParserValueByKey(fieldParserContext, fieldParserKey);
           else
           {
-            xpathString = evaluateXpathForField(mmdField, contextNode, params, xpathString, result);
+            evaluateXpathForField(mmdField, contextNode, params, result);
             if (result.node != null)
             {
               if (mmdField.isExtractAsHtml())
@@ -519,7 +513,7 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D>
           if (!((MetaMetadataCollectionField) mmdField).isCollectionOfScalars()
               && fieldParserElement.isForEachElement())
           {
-            xpathString = evaluateXpathForField(mmdField, contextNode, params, xpathString, result);
+            evaluateXpathForField(mmdField, contextNode, params, result);
             result.fieldParserContextList = new ArrayList<Map<String, String>>();
             for (int i = 0; i < result.nodeList.getLength(); ++i)
             {
@@ -548,11 +542,7 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D>
               valueString = getFieldParserValueByKey(fieldParserContext, fieldParserKey);
             else
             {
-              xpathString = evaluateXpathForField(mmdField,
-                                                  contextNode,
-                                                  params,
-                                                  xpathString,
-                                                  result);
+              evaluateXpathForField(mmdField, contextNode, params, result);
               if (result.nodeList != null && result.nodeList.getLength() >= 1)
               {
                 if (mmdField.isExtractAsHtml())
@@ -571,8 +561,9 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D>
     }
     catch (Exception e)
     {
-      String msg = getErrorMessage(mmdField, contextNode, xpathString, e);
+      String msg = getErrorMessage(mmdField, contextNode, e);
       debug(msg);
+      logger.error(msg, e);
       e.printStackTrace();
     }
 
@@ -585,6 +576,13 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D>
     return result;
   }
 
+  /**
+   * Allow using variables, such as indexing ($i), in xpath expressions, to enhance its ability.
+   * 
+   * @param params
+   * @param xpathString
+   * @return
+   */
   private String assignVariablesInXPathString(Scope<Object> params, String xpathString)
   {
     if (xpathString != null && xpathString.contains("$i"))
@@ -595,53 +593,116 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D>
     return xpathString;
   }
 
-  String evaluateXpathForField(MetaMetadataNestedField mmdField,
-                               Node contextNode,
-                               Scope<Object> params,
-                               String xpathString,
-                               NestedFieldHelper result) throws XPathExpressionException
+  /**
+   * Evaluate the xpath associated with a field.
+   * 
+   * For a scalar field, returns the evaluation results as a string.
+   * 
+   * For a nested field, returns null, but fills the result parameter for outputing.
+   * 
+   * @param mmdField
+   * @param contextNode
+   * @param params
+   * @param result
+   * @return
+   * @throws XPathExpressionException
+   */
+  private String evaluateXpathForField(MetaMetadataField mmdField,
+                                       Node contextNode,
+                                       Scope<Object> params,
+                                       NestedFieldHelper result) throws XPathExpressionException
   {
+    String evaluation = null;
     if (contextNode != null)
     {
       MetaMetadataField surroundingField = getCurrentSurroundingField(params);
-      if ((xpathString == null || xpathString.length() == 0)
-          && mmdField.parent() == surroundingField)
+
+      int i = 0;
+      do
       {
-        // the condition above after '&&' holds when this field is actually authored there,
-        // but not purely inherited.
-        xpathString = ".";
-      }
+        // This loop need to be executed at least once.
+        // If there is no xpath associated with the current (nested) field, it will just create the
+        // structure, and pass the contextNode to nested fields.
 
-      if (xpathString != null)
-      {
-        // if at this point of time xpathString is null, this field must be purely inherited,
-        // thus we may want to ignore it.
-        // this behavior, as documented in recursiveExtraction(), is not necessarily required.
-        // it basically prevents xpaths to be inherited by a subtype meta-metadata.
-        // further extension may allow this inheritance, e.g. by explicitly saying 'I want to
-        // inherit xpaths from the super wrapper', using some attribute on <meta-metadata>.
-        // -- yin qu, 2/23/2012
-
-        // change absolute path to relative path, so that when we are doing evaluate() we don't
-        // go through the whole document again
-        if (xpathString.startsWith("//"))
-          xpathString = "." + xpathString;
-
-        if (mmdField instanceof MetaMetadataCompositeField)
-          result.node = (Node) xpath.evaluate(xpathString, contextNode, XPathConstants.NODE);
-        else if (mmdField instanceof MetaMetadataCollectionField)
-          result.nodeList = (NodeList) xpath.evaluate(xpathString,
-                                                      contextNode,
-                                                      XPathConstants.NODESET);
-      }
+        String xpathString = mmdField.getXpath(i);
+        if ((xpathString == null || xpathString.length() == 0)
+            && mmdField instanceof MetaMetadataNestedField
+            && mmdField.parent() == surroundingField)
+        {
+          // the condition above after the 2nd '&&' holds when this field is actually authored
+          // there, but not purely inherited.
+          xpathString = ".";
+        }
+  
+        if (xpathString != null)
+        {
+          // if at this point of time xpathString is null, this field must be purely inherited,
+          // thus we may want to ignore it.
+          // this behavior, as documented in recursiveExtraction(), is not necessarily required.
+          // it basically prevents xpaths to be inherited by a subtype meta-metadata.
+          // further extension may allow this inheritance, e.g. by explicitly saying 'I want to
+          // inherit xpaths from the super wrapper', using some attribute on <meta-metadata>.
+          // -- yin qu, 2/23/2012
+  
+          // change absolute path to relative path, so that when we are doing evaluate() we don't
+          // go through the whole document again
+          if (xpathString.startsWith("//"))
+          {
+            xpathString = "." + xpathString;
+          }
+  
+          xpathString = assignVariablesInXPathString(params, xpathString);
+  
+          if (mmdField instanceof MetaMetadataCompositeField)
+          {
+            result.node = (Node) xpath.evaluate(xpathString, contextNode, XPathConstants.NODE);
+            if (result.node != null)
+            {
+              return null;
+            }
+          }
+          else if (mmdField instanceof MetaMetadataCollectionField)
+          {
+            result.nodeList = (NodeList) xpath.evaluate(xpathString,
+                                                        contextNode,
+                                                        XPathConstants.NODESET);
+            if (result.nodeList != null && result.nodeList.getLength() > 0)
+            {
+              return null;
+            }
+          }
+          else if (mmdField instanceof MetaMetadataScalarField)
+          {
+            if (mmdField.isExtractAsHtml())
+            {
+              Node targetNode =
+                  (Node) xpath.evaluate(xpathString, contextNode, XPathConstants.NODE);
+              if (targetNode != null)
+              {
+                evaluation = getInnerHtml(targetNode);
+              }
+            }
+            else
+            {
+              evaluation = xpath.evaluate(xpathString, contextNode);
+            }
+            if (evaluation != null && evaluation.length() > 0)
+            {
+              return evaluation;
+            }
+          } // if .. else if .. else if ..
+        } // if(xpathString != null)
+        
+        i++;
+      } while (i < mmdField.xpathsSize());
     }
-    return xpathString;
+    return evaluation;
   }
 
   private MetaMetadataField getCurrentSurroundingField(Scope<Object> params)
   {
-    Stack<MetaMetadataField> stack = (Stack<MetaMetadataField>) params
-        .get(SURROUNDING_META_METADATA_STACK);
+    Stack<MetaMetadataField> stack =
+        (Stack<MetaMetadataField>) params.get(SURROUNDING_META_METADATA_STACK);
     if (stack != null && stack.size() > 0)
     {
       return stack.peek();
@@ -704,10 +765,8 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D>
 
     // create a metadata instance for this field
     Class<? extends Metadata> metadataClass = mmdField.getMetadataClass();
-    Class[] argClasses = new Class[]
-    { MetaMetadataCompositeField.class };
-    Object[] argObjects = new Object[]
-    { mmdField };
+    Class[] argClasses = new Class[] { MetaMetadataCompositeField.class };
+    Object[] argObjects = new Object[] { mmdField };
     Metadata thisMetadata = ReflectionTools.getInstance(metadataClass, argClasses, argObjects);
     thisMetadata.setSemanticsSessionScope(getSemanticsScope());
 
@@ -1094,9 +1153,7 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D>
                                 Scope<Object> params)
   {
     String xpathString = mmdField.getXpath();
-
     String fieldParserKey = mmdField.getFieldParserKey();
-
     contextNode = findContextNodeIfNecessary(mmdField, contextNode, params);
 
     String evaluation = null;
@@ -1107,27 +1164,13 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D>
     {
       try
       {
-        // absolute path to relative path, so that we don't go through the document again
-        if (xpathString.startsWith("//"))
-          xpathString = "." + xpathString;
-
-        xpathString = assignVariablesInXPathString(params, xpathString);
-
-        if (mmdField.isExtractAsHtml())
-        {
-          Node targetNode = (Node) xpath.evaluate(xpathString, contextNode, XPathConstants.NODE);
-          if (targetNode != null)
-            evaluation = getInnerHtml(targetNode);
-        }
-        else
-        {
-          evaluation = xpath.evaluate(xpathString, contextNode);
-        }
+        evaluation = evaluateXpathForField(mmdField, contextNode, params, null);
       }
       catch (Exception e)
       {
-        String msg = getErrorMessage(mmdField, contextNode, xpathString, e);
+        String msg = getErrorMessage(mmdField, contextNode, e);
         debug(msg);
+        logger.error(msg, e);
         e.printStackTrace();
       }
     }
@@ -1136,7 +1179,9 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D>
       evaluation = fieldParserContext == null ? null : fieldParserContext.get(fieldParserKey);
     }
     else if (!mmdField.hasConcatenateValues())
+    {
       return false; // This is the final catch all.
+    }
 
     evaluation = concatenateValues(evaluation, mmdField, metadata, params);
 
@@ -1234,22 +1279,24 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D>
    * 
    * @param mmdField
    * @param contextNode
-   * @param xpathString
    * @param e
    * @return
    */
-  private String getErrorMessage(MetaMetadataField mmdField, Node contextNode, String xpathString,
-                                 Exception e)
+  private String getErrorMessage(MetaMetadataField mmdField, Node contextNode, Exception e)
   {
-    StringBuilder buffy = StringBuilderUtils.acquire();
-    buffy.append("################# ERROR IN EVALUATION OF A FIELD########################\n");
-    buffy.append("Field Name::\t").append(mmdField.getName()).append("\n");
-    buffy.append("ContextNode::\t").append(contextNode.getTextContent()).append("\n");
-    buffy.append("XPath Expression::\t").append(xpathString).append("\n");
-    buffy.append("Exception Message::\t").append(e.getMessage()).append("\n");
-    String msg = buffy.toString();
-    StringBuilderUtils.release(buffy);
-    e.printStackTrace();
+    StringBuilder buf = StringBuilderUtils.acquire();
+    buf.append("ERROR (XPATH EVAL): ");
+    buf.append("field=").append(mmdField).append(", ");
+    buf.append("contextNode=").append(contextNode.getNodeName()).append(", ");
+    buf.append("xpaths={");
+    for (int i = 0; i < mmdField.xpathsSize(); ++i)
+    {
+      buf.append(i==0?"":", ").append(mmdField.getXpath(i));
+    }
+    buf.append("}, ");
+    buf.append("message: " + e.getMessage());
+    String msg = buf.toString();
+    StringBuilderUtils.release(buf);
     return msg;
   }
 
@@ -1275,48 +1322,12 @@ public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D>
     evaluation = XMLTools.unescapeXML(evaluation);
 
     // get the regular expression
-    Pattern regularExpression = field.getRegexPattern();
-
-    if (regularExpression != null)
+    List<FieldOp> fieldOps = field.getFieldOps();
+    if (fieldOps != null)
     {
-      int group = field.getRegexGroup();
-      if (field.isNormalizeText())
+      for (int i = 0; i < fieldOps.size(); ++i)
       {
-        evaluation = evaluation.replaceAll("\\s+", " ").trim();
-        evaluation = evaluation.replaceAll("\u00A0", " ").trim(); // &nbsp;
-      }
-      Matcher matcher = regularExpression.matcher(evaluation);
-      String replacementString = field.getRegexReplacement();
-      if (replacementString == null)
-      {
-        // without replacementString, we search for the input pattern as the evaluation result
-        if (matcher.find())
-        {
-          if (group <= matcher.groupCount())
-            evaluation = matcher.group(field.getRegexGroup());
-          // debug(String.format("regex pattern hit: regex=%s", regularExpression));
-          else
-          {
-            warning("RegEx capturing group not found: regex="
-                    + regularExpression
-                    + ", content="
-                    + evaluation);
-            evaluation = "";
-          }
-        }
-        else
-        {
-          evaluation = ""; // because nothing matched, we return an empty string
-          // debug(String.format("regex pattern not hit: regex=%s", regularExpression));
-        }
-      }
-      else
-      {
-        // with replacementString, we replace occurrences of input pattern with the
-        // replacementString
-        evaluation = matcher.replaceAll(replacementString);
-        // debug(String.format("regex replacement: regex=%s, replace=%s", regularExpression,
-        // replacementString));
+        evaluation = fieldOps.get(i).operateOn(evaluation);
       }
     }
 

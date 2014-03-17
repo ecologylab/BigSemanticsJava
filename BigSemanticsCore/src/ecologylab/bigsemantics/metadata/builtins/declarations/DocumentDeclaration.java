@@ -5,7 +5,7 @@ package ecologylab.bigsemantics.metadata.builtins.declarations;
  *
  * DO NOT modify this code manually: All your changes may get lost!
  *
- * Copyright (2013) Interface Ecology Lab.
+ * Copyright (2014) Interface Ecology Lab.
  */
 
 import ecologylab.bigsemantics.metadata.Metadata;
@@ -23,7 +23,6 @@ import ecologylab.serialization.annotations.simpl_composite;
 import ecologylab.serialization.annotations.simpl_composite_as_scalar;
 import ecologylab.serialization.annotations.simpl_hints;
 import ecologylab.serialization.annotations.simpl_inherit;
-import ecologylab.serialization.annotations.simpl_other_tags;
 import ecologylab.serialization.annotations.simpl_scalar;
 import java.lang.String;
 import java.util.ArrayList;
@@ -52,7 +51,6 @@ public class DocumentDeclaration extends Metadata
 
 	@simpl_scalar
 	@simpl_hints({Hint.XML_LEAF})
-	@simpl_other_tags({"abstract_field"})
 	private MetadataString description;
 
 	/** 
@@ -60,6 +58,12 @@ public class DocumentDeclaration extends Metadata
 	 */ 
 	@simpl_scalar
 	private MetadataParsedURL localLocation;
+
+	/** 
+	 *Huamn readable name of the site.
+	 */ 
+	@simpl_scalar
+	private MetadataString siteName;
 
 	@simpl_collection("location")
 	@mm_name("additional_locations")
@@ -203,6 +207,38 @@ public class DocumentDeclaration extends Metadata
 	public void setLocalLocationMetadata(MetadataParsedURL localLocation)
 	{
 		this.localLocation = localLocation;
+	}
+
+	public MetadataString	siteName()
+	{
+		MetadataString	result = this.siteName;
+		if (result == null)
+		{
+			result = new MetadataString();
+			this.siteName = result;
+		}
+		return result;
+	}
+
+	public String getSiteName()
+	{
+		return this.siteName == null ? null : siteName().getValue();
+	}
+
+	public MetadataString getSiteNameMetadata()
+	{
+		return siteName;
+	}
+
+	public void setSiteName(String siteName)
+	{
+		if (siteName != null)
+			this.siteName().setValue(siteName);
+	}
+
+	public void setSiteNameMetadata(MetadataString siteName)
+	{
+		this.siteName = siteName;
 	}
 
 	public List<MetadataParsedURL> getAdditionalLocations()

@@ -1,9 +1,8 @@
 package ecologylab.bigsemantics.metadata.builtins;
 
-import ecologylab.bigsemantics.metadata.builtins.declarations.SequencedClippableDocumentDeclaration;
 import ecologylab.bigsemantics.metametadata.MetaMetadataCompositeField;
 
-public class SequencedClippableDocument extends SequencedClippableDocumentDeclaration
+public class SequencedClippableDocument extends ClippableDocument
 {
 
   public SequencedClippableDocument()
@@ -11,9 +10,9 @@ public class SequencedClippableDocument extends SequencedClippableDocumentDeclar
     super();
   }
 
-  public SequencedClippableDocument(MetaMetadataCompositeField mmd)
+  public SequencedClippableDocument(MetaMetadataCompositeField metaMetadata)
   {
-    super(mmd);
+    super(metaMetadata);
   }
 
 }
