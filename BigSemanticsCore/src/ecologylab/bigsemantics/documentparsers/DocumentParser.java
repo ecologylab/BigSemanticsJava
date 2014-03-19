@@ -12,11 +12,13 @@ import java.util.List;
 import ecologylab.bigsemantics.actions.SemanticsConstants;
 import ecologylab.bigsemantics.collecting.SemanticsGlobalScope;
 import ecologylab.bigsemantics.downloadcontrollers.DownloadController;
+import ecologylab.bigsemantics.metadata.Metadata;
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metadata.builtins.DocumentClosure;
 import ecologylab.bigsemantics.metadata.output.DocumentLogRecord;
 import ecologylab.bigsemantics.metametadata.MetaMetadata;
 import ecologylab.bigsemantics.metametadata.MetaMetadataCompositeField;
+import ecologylab.bigsemantics.metametadata.MetaMetadataRepository;
 import ecologylab.bigsemantics.seeding.Seed;
 import ecologylab.collections.Scope;
 import ecologylab.concurrent.DownloadableLogRecord;
@@ -212,6 +214,30 @@ abstract public class DocumentParser<D extends Document> extends Debug
   public D getDocument()
   {
     return (D) documentClosure.getDocument();
+  }
+
+  /**
+   * Subclasses can implement this for looking up downloaded document.
+   * 
+   * @param metadata
+   * @return
+   */
+  protected Document lookupDownloadedDocument(Metadata metadata)
+  {
+    return null;
+  }
+
+  /**
+   * Subclasses can implement this for looking up true meta-metadata and returning the right
+   * metadata object.
+   * 
+   * @param repository
+   * @param thisMetadata
+   * @return
+   */
+  protected Metadata lookupTrueMetaMetadata(MetaMetadataRepository repository, Metadata thisMetadata)
+  {
+    return null;
   }
 
   /**

@@ -2,6 +2,7 @@ package ecologylab.bigsemantics.documentparsers;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -13,8 +14,6 @@ import java.util.Stack;
 import javax.xml.namespace.QName;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPath;
@@ -33,7 +32,6 @@ import ecologylab.bigsemantics.collecting.DocumentDownloadedEventHandler;
 import ecologylab.bigsemantics.collecting.DocumentDownloadingMonitor;
 import ecologylab.bigsemantics.collecting.DownloadStatus;
 import ecologylab.bigsemantics.collecting.LinkedMetadataMonitor;
-import ecologylab.bigsemantics.html.utils.StringBuilderUtils;
 import ecologylab.bigsemantics.metadata.Metadata;
 import ecologylab.bigsemantics.metadata.MetadataBase;
 import ecologylab.bigsemantics.metadata.MetadataClassDescriptor;
@@ -80,13 +78,9 @@ import ecologylab.serialization.types.ScalarType;
  * @author amathur
  * 
  */
-@SuppressWarnings("rawtypes")
-public abstract class ParserBase<D extends Document>
-    extends HTMLDOMParser<D>
-    implements
-    ScalarUnmarshallingContext,
-    SemanticsConstants,
-    DeserializationHookStrategy<Metadata, MetadataFieldDescriptor>
+@SuppressWarnings({"rawtypes", "unchecked"})
+public abstract class ParserBase<D extends Document> extends HTMLDOMParser<D>
+implements ScalarUnmarshallingContext, SemanticsConstants
 {
 
   static Logger                   logger = LoggerFactory.getLogger(ParserBase.class);
@@ -103,12 +97,30 @@ public abstract class ParserBase<D extends Document>
     xpath = XPathFactory.newInstance().newXPath();
   }
 
+  @Override
+  public ParsedURL purlContext()
+  {
+    return purl();
+  }
+
+  @Override
+  public File fileContext()
+  {
+    return null;
+  }
+
+  @Override
+  public ParsedURL getTruePURL()
+  {
+    return (truePURL != null) ? truePURL : super.getTruePURL();
+  }
+
   /**
    * populate associated metadata with the container and handler.
    * 
-   * @param dom
-   * @param metaMetadata
    * @param document
+   * @param metaMetadata
+   * @param dom
    * 
    * @param handler
    * @return
@@ -133,22 +145,24 @@ public abstract class ParserBase<D extends Document>
     resultingMetadata.setMetadataChanged(true);
 
     if (this.getSemanticsScope().ifLookForFavicon())
+    {
       findFaviconPath(resultingMetadata, xpath);
+    }
 
     try
     {
-      debug("Metadata parsed from: " + document.getLocation());
+      logger.info("Metadata parsed from: " + document.getLocation());
       if (resultingMetadata != null)
       {
-        debug(SimplTypesScope.serialize(resultingMetadata, StringFormat.XML));
+        logger.debug(SimplTypesScope.serialize(resultingMetadata, StringFormat.XML).toString());
       }
     }
     catch (Exception e)
     {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      logger.error("Cannot serialize extracted metadata in XML: " + resultingMetadata, e);
       return null;
     }
+
     if (resultingMetadata != null)
     {
       handler.takeSemanticActions(resultingMetadata);
@@ -156,16 +170,16 @@ public abstract class ParserBase<D extends Document>
       // make sure termVector is built here
       if (!resultingMetadata.ignoreInTermVector())
       {
-        // debug("Building term vector for a metadata of type: "+resultingMetadata.getMetaMetadataName());
         resultingMetadata.rebuildCompositeTermVector();
       }
       else
       {
-        debug("Do not build term vector because ignore_in_term_vector is true");
+        logger.debug("Do not build term vector because ignore_in_term_vector is true");
       }
+
       // linking
-      MetaMetadataRepository metaMetaDataRepository = getSemanticsScope()
-          .getMetaMetadataRepository();
+      MetaMetadataRepository metaMetaDataRepository =
+          getSemanticsScope().getMetaMetadataRepository();
       LinkedMetadataMonitor monitor = metaMetaDataRepository.getLinkedMetadataMonitor();
       monitor.tryLink(metaMetaDataRepository, resultingMetadata);
       monitor.addMonitors(resultingMetadata);
@@ -206,8 +220,7 @@ public abstract class ParserBase<D extends Document>
     }
     catch (IOException e)
     {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      logger.error("Cannot get DOM for document " + truePURL, e);
     }
   }
 
@@ -261,18 +274,10 @@ public abstract class ParserBase<D extends Document>
         }
         catch (Exception e)
         {
-          StringBuilder buffy = StringBuilderUtils.acquire();
-          buffy
-              .append("################### ERROR IN VARIABLE DEFINTION ##############################\n");
-          buffy.append("Variable Name::\t").append(varName).append("\n");
-          buffy.append("Check if the context node is not null::\t").append(contextNode)
-              .append("\n");
-          buffy.append("Check if the XPath Expression is valid::\t").append(xpathExpression)
-              .append("\n");
-          buffy.append("Check if the return object type of Xpath evaluation is corect::\t")
-              .append(varType).append("\n");
-          debug(buffy);
-          StringBuilderUtils.release(buffy);
+          String msg =
+              String.format("Error in <def_var>: contextNode=%s, xpath=%s, returnObjectType=%s",
+                            contextNode, xpathExpression, varType);
+          logger.error(msg, e);
         }
       }
     }
@@ -282,10 +287,10 @@ public abstract class ParserBase<D extends Document>
    * This helper class is used for returning information from extractNestedHelper().
    * 
    * @author quyin
-   * 
    */
   private static class NestedFieldHelper
   {
+
     public Node                      node;
 
     public Map<String, String>       fieldParserContext;
@@ -337,23 +342,11 @@ public abstract class ParserBase<D extends Document>
   {
     HashMapArrayList<String, MetaMetadataField> fieldSet = mmdField.getChildMetaMetadata();
     if (fieldSet == null || fieldSet.isEmpty())
-      return false;
-
-    Stack<MetaMetadataField> surroundingMmdStack =
-        (Stack<MetaMetadataField>) params.get(SURROUNDING_META_METADATA_STACK);
-    if (surroundingMmdStack == null)
     {
-      surroundingMmdStack = new Stack<MetaMetadataField>();
-      params.put(SURROUNDING_META_METADATA_STACK, surroundingMmdStack);
+      return false;
     }
-    surroundingMmdStack.push(mmdField);
-
+    pushSurroundingMmd(params, mmdField);
     updateDefVars(mmdField, contextNode);
-    // DomTools.prettyPrint(contextNode);
-
-    MetaMetadataNestedField targetParent = mmdField.isUsedForInlineMmdDef() ? mmdField
-        .getInheritedMmd() : mmdField;
-
     boolean result = true;
 
     synchronized (fieldSet)
@@ -362,30 +355,19 @@ public abstract class ParserBase<D extends Document>
       {
         try
         {
-          ScalarDependencyManager d = new ScalarDependencyManager(fieldSet);
-          fieldSet = d.sortFieldSetByDependencies(metadata);
+          ScalarDependencyManager depMan = new ScalarDependencyManager(fieldSet);
+          fieldSet = depMan.sortFieldSetByDependencies(metadata);
         }
         catch (ScalarDependencyException e)
         {
-          error(e.getMessage()
-                + " \n Proceeding with extraction anyways; will result in null values.");
-          e.printStackTrace();
+          logger.error("Error resolving scalar dependencies; "
+                       + "proceeding anyway but will result in null values.",
+                       e);
         }
       }
 
       for (MetaMetadataField field : fieldSet)
       {
-        if (!field.isAuthoredChildOf(targetParent))
-        {
-          // if 'field' is purely inherited, we ignore it to prevent infinite loops.
-          // infinite loops can happen when 'field' uses the same mmd type as where it is defined,
-          // e.g. google_patent.references are google_patent too.
-          // this behavior is not necessarily required to prevent infinite loops, but it works
-          // for our use cases now.
-          // -- yin qu, 2/21/2012
-          continue;
-        }
-
         try
         {
           boolean suc = false;
@@ -398,7 +380,9 @@ public abstract class ParserBase<D extends Document>
           {
             MetaMetadataCollectionField mmcf = (MetaMetadataCollectionField) field;
             if (mmcf != null)
+            {
               suc = extractCollection(mmcf, metadata, contextNode, fieldParserContext, params);
+            }
           }
           else
           {
@@ -406,6 +390,7 @@ public abstract class ParserBase<D extends Document>
             MetaMetadataScalarField mmsf = (MetaMetadataScalarField) field;
             suc = extractScalar(mmsf, metadata, contextNode, fieldParserContext, params);
           }
+
           if (field.isRequired() && !suc)
           {
             result = false;
@@ -414,14 +399,47 @@ public abstract class ParserBase<D extends Document>
         }
         catch (Exception e)
         {
-          error(String.format("EXCEPTION when extracting %s: %s", field, e.getMessage()));
-          e.printStackTrace();
+          logger.error("Error extracting " + field,e);
         }
       }
     }
 
-    surroundingMmdStack.pop();
+    popSurroundingMmd(params);
+
     return result;
+  }
+
+  private void pushSurroundingMmd(Scope<Object> params, MetaMetadataNestedField surroundingMmd)
+  {
+    Stack<MetaMetadataField> surroundingMmdStack =
+        (Stack<MetaMetadataField>) params.get(SURROUNDING_META_METADATA_STACK);
+    if (surroundingMmdStack == null)
+    {
+      surroundingMmdStack = new Stack<MetaMetadataField>();
+      params.put(SURROUNDING_META_METADATA_STACK, surroundingMmdStack);
+    }
+    surroundingMmdStack.push(surroundingMmd);
+  }
+  
+  private void popSurroundingMmd(Scope<Object> params)
+  {
+    Stack<MetaMetadataField> surroundingMmdStack =
+        (Stack<MetaMetadataField>) params.get(SURROUNDING_META_METADATA_STACK);
+    if (surroundingMmdStack != null && surroundingMmdStack.size() > 0)
+    {
+      surroundingMmdStack.pop();
+    }
+  }
+
+  private MetaMetadataField getCurrentSurroundingField(Scope<Object> params)
+  {
+    Stack<MetaMetadataField> stack =
+        (Stack<MetaMetadataField>) params.get(SURROUNDING_META_METADATA_STACK);
+    if (stack != null && stack.size() > 0)
+    {
+      return stack.peek();
+    }
+    return null;
   }
 
   /**
@@ -432,17 +450,17 @@ public abstract class ParserBase<D extends Document>
    *          The set of metametadata fields to check.
    * @return True if there are dependencies that need to be handled correctly
    */
-  private Boolean fieldsetContainsFieldsWithDependencies(HashMapArrayList<String, MetaMetadataField> fieldSet)
+  private boolean fieldsetContainsFieldsWithDependencies(HashMapArrayList<String, MetaMetadataField> fieldSet)
   {
-    // TODO: refactor to predicate w/ Google Guava
-    Boolean hasDependency = false;
     for (MetaMetadataField field : fieldSet)
     {
       if (field instanceof MetaMetadataScalarField)
       {
         MetaMetadataScalarField m = (MetaMetadataScalarField) field;
         if (m.hasValueDependencies())
+        {
           return true;
+        }
       }
     }
     return false;
@@ -484,29 +502,37 @@ public abstract class ParserBase<D extends Document>
       }
       else
       {
-        FieldParser fieldParser = this.getSemanticsScope().getFieldParserRegistry()
-            .get(fieldParserElement.getName());
+        FieldParser fieldParser =
+            getSemanticsScope().getFieldParserRegistry().get(fieldParserElement.getName());
 
         if (mmdField instanceof MetaMetadataCompositeField)
         {
           String valueString = null;
           if (fieldParserKey != null && fieldParserKey.length() > 0)
+          {
             valueString = getFieldParserValueByKey(fieldParserContext, fieldParserKey);
+          }
           else
           {
             evaluateXpathForField(mmdField, contextNode, params, result);
             if (result.node != null)
             {
               if (mmdField.isExtractAsHtml())
+              {
                 valueString = getInnerHtml(result.node);
+              }
               else
+              {
                 valueString = result.node.getTextContent();
+              }
             }
           }
 
           if (valueString != null && valueString.length() > 0)
-            result.fieldParserContext = fieldParser.getKeyValuePairResult(fieldParserElement,
-                                                                          valueString.trim());
+          {
+            result.fieldParserContext =
+                fieldParser.getKeyValuePairResult(fieldParserElement, valueString.trim());
+          }
         }
         else if (mmdField instanceof MetaMetadataCollectionField)
         {
@@ -529,8 +555,8 @@ public abstract class ParserBase<D extends Document>
               }
               if (valueString != null && valueString.length() > 0)
               {
-                Map<String, String> aContext = fieldParser
-                    .getKeyValuePairResult(fieldParserElement, valueString.trim());
+                Map<String, String> aContext =
+                    fieldParser.getKeyValuePairResult(fieldParserElement, valueString.trim());
                 result.fieldParserContextList.add(aContext);
               }
             }
@@ -539,58 +565,63 @@ public abstract class ParserBase<D extends Document>
           {
             String valueString = null;
             if (fieldParserKey != null && fieldParserKey.length() > 0)
+            {
               valueString = getFieldParserValueByKey(fieldParserContext, fieldParserKey);
+            }
             else
             {
               evaluateXpathForField(mmdField, contextNode, params, result);
               if (result.nodeList != null && result.nodeList.getLength() >= 1)
               {
                 if (mmdField.isExtractAsHtml())
+                {
                   valueString = getInnerHtml(result.nodeList.item(0));
+                }
                 else
+                {
                   valueString = result.nodeList.item(0).getTextContent();
+                }
               }
             }
 
             if (valueString != null && valueString.length() > 0)
-              result.fieldParserContextList = fieldParser.getCollectionResult(fieldParserElement,
-                                                                              valueString.trim());
+            {
+              result.fieldParserContextList = 
+                  fieldParser.getCollectionResult(fieldParserElement, valueString.trim());
+            }
           }
         }
       }
     }
     catch (Exception e)
     {
-      String msg = getErrorMessage(mmdField, contextNode, e);
-      debug(msg);
-      logger.error(msg, e);
-      e.printStackTrace();
+      logger.error("Error extracting " + mmdField + ", contextNode=" + contextNode.getNodeName(),
+                   e);
     }
 
     if (result.node == null
         && result.nodeList == null
         && result.fieldParserContext == null
         && result.fieldParserContextList == null)
+    {
       return null;
-
+    }
     return result;
   }
 
-  /**
-   * Allow using variables, such as indexing ($i), in xpath expressions, to enhance its ability.
-   * 
-   * @param params
-   * @param xpathString
-   * @return
-   */
-  private String assignVariablesInXPathString(Scope<Object> params, String xpathString)
+  private Node findContextNodeIfNecessary(MetaMetadataField mmdField, Node currentContextNode,
+                                          Scope<Object> params)
   {
-    if (xpathString != null && xpathString.contains("$i"))
+    String contextNodeName = mmdField.getContextNode();
+    if (contextNodeName != null)
     {
-      int elementIndex = (Integer) params.get(ELEMENT_INDEX_IN_COLLECTION);
-      xpathString = xpathString.replaceAll("\\$i", String.valueOf(elementIndex + 1));
+      currentContextNode = (Node) params.get(contextNodeName);
     }
-    return xpathString;
+    if (currentContextNode == null)
+    {
+      currentContextNode = (Node) params.get(DOCUMENT_ROOT_NODE);
+    }
+    return currentContextNode;
   }
 
   /**
@@ -621,36 +652,31 @@ public abstract class ParserBase<D extends Document>
       do
       {
         // This loop need to be executed at least once.
-        // If there is no xpath associated with the current (nested) field, it will just create the
-        // structure, and pass the contextNode to nested fields.
 
         String xpathString = mmdField.getXpath(i);
         if ((xpathString == null || xpathString.length() == 0)
             && mmdField instanceof MetaMetadataNestedField
             && mmdField.parent() == surroundingField)
         {
-          // the condition above after the 2nd '&&' holds when this field is actually authored
-          // there, but not purely inherited.
+          // If there is no xpath associated with the current nested field, and
+          // the current field is intentionally authored, the runtime will just
+          // create the structure, and pass the contextNode to nested fields.
           xpathString = ".";
         }
+        
+        // at this point, if the xpathString is still null, then:
+        // - if this field is a scalar, it has no xpath attached, and can be ignored safely;
+        // - if this field is a nested, it has no xpath attached and is purely inherited, thus can
+        //   be ignored safely.
   
         if (xpathString != null)
         {
-          // if at this point of time xpathString is null, this field must be purely inherited,
-          // thus we may want to ignore it.
-          // this behavior, as documented in recursiveExtraction(), is not necessarily required.
-          // it basically prevents xpaths to be inherited by a subtype meta-metadata.
-          // further extension may allow this inheritance, e.g. by explicitly saying 'I want to
-          // inherit xpaths from the super wrapper', using some attribute on <meta-metadata>.
-          // -- yin qu, 2/23/2012
-  
-          // change absolute path to relative path, so that when we are doing evaluate() we don't
-          // go through the whole document again
-          if (xpathString.startsWith("//"))
+          // change absolute path to relative path to prevent infinite loop when
+          // a type refers to itself, e.g. <google_patent>.<references>
+          if (xpathString.startsWith("/"))
           {
             xpathString = "." + xpathString;
           }
-  
           xpathString = assignVariablesInXPathString(params, xpathString);
   
           if (mmdField instanceof MetaMetadataCompositeField)
@@ -690,39 +716,31 @@ public abstract class ParserBase<D extends Document>
             {
               return evaluation;
             }
-          } // if .. else if .. else if ..
-        } // if(xpathString != null)
+          } // composite / collection / scalar
+        } // if (xpathString != null)
         
         i++;
       } while (i < mmdField.xpathsSize());
     }
+
     return evaluation;
   }
 
-  private MetaMetadataField getCurrentSurroundingField(Scope<Object> params)
+  /**
+   * Allow using variables, such as indexing ($i), in xpath expressions, to enhance its ability.
+   * 
+   * @param params
+   * @param xpathString
+   * @return
+   */
+  private String assignVariablesInXPathString(Scope<Object> params, String xpathString)
   {
-    Stack<MetaMetadataField> stack =
-        (Stack<MetaMetadataField>) params.get(SURROUNDING_META_METADATA_STACK);
-    if (stack != null && stack.size() > 0)
+    if (xpathString != null && xpathString.contains("$i"))
     {
-      return stack.peek();
+      int elementIndex = (Integer) params.get(ELEMENT_INDEX_IN_COLLECTION);
+      xpathString = xpathString.replaceAll("\\$i", String.valueOf(elementIndex + 1));
     }
-    return null;
-  }
-
-  private Node findContextNodeIfNecessary(MetaMetadataField mmdField, Node currentContextNode,
-                                          Scope<Object> params)
-  {
-    String contextNodeName = mmdField.getContextNode();
-    if (contextNodeName != null)
-    {
-      currentContextNode = (Node) params.get(contextNodeName);
-    }
-    if (currentContextNode == null)
-    {
-      currentContextNode = (Node) params.get(DOCUMENT_ROOT_NODE);
-    }
-    return currentContextNode;
+    return xpathString;
   }
 
   private String getFieldParserValueByKey(Map<String, String> fieldParserContext,
@@ -746,7 +764,7 @@ public abstract class ParserBase<D extends Document>
    * @param contextNode
    * @param fieldParserContext
    * @param params
-   * @return
+   * @return if extraction was successful.
    */
   private boolean extractComposite(MetaMetadataCompositeField mmdField,
                                    Metadata metadata,
@@ -772,17 +790,13 @@ public abstract class ParserBase<D extends Document>
 
     if (recursiveExtraction(mmdField, thisMetadata, thisNode, thisFieldParserContext, params))
     {
-      if (this.getSemanticsScope().ifAutoUpdateDocRefs())
+      if (getSemanticsScope().ifAutoUpdateDocRefs())
       {
         Document downloadedMetadata = lookupDownloadedDocument(thisMetadata);
         if (downloadedMetadata != null)
         {
           thisMetadata = downloadedMetadata;
         }
-      }
-
-      if (this.getSemanticsScope().ifAutoUpdateDocRefs())
-      {
         setupDocumentChangedEventListener(mmdField, metadata, thisMetadata);
       }
 
@@ -829,9 +843,9 @@ public abstract class ParserBase<D extends Document>
       {
         ParsedURL listeningLoc = doc.getLocation();
         DocumentDownloadingMonitor monitor = getSemanticsScope().getDocumentDownloadingMonitor();
-        DocumentDownloadedEventHandler downloadedEventListener = new DocumentDownloadedEventHandler();
-        monitor.listenForDocumentDownloading(hostMetadata, listeningLoc, mmdField
-            .getMetadataFieldDescriptor().getField(), downloadedEventListener);
+        DocumentDownloadedEventHandler listener = new DocumentDownloadedEventHandler();
+        Field javaField = mmdField.getMetadataFieldDescriptor().getField();
+        monitor.listenForDocumentDownloading(hostMetadata, listeningLoc, javaField, listener);
       }
     }
   }
@@ -854,8 +868,8 @@ public abstract class ParserBase<D extends Document>
         Document existingDoc = getSemanticsScope().lookupDocument(location);
         if (existingDoc != null && existingDoc.getDownloadStatus() == DownloadStatus.DOWNLOAD_DONE)
         {
-          existingDoc.addMixin(doc); // add the replaced Document object as a mixin in the
-                                     // downloaded Document.
+          // add the replaced Document object as a mixin in the downloaded Document.
+          existingDoc.addMixin(doc); 
           return existingDoc;
         }
       }
@@ -872,7 +886,8 @@ public abstract class ParserBase<D extends Document>
    * @param repository
    * @param thisMetadata
    */
-  protected Metadata lookupTrueMetaMetadata(MetaMetadataRepository repository, Metadata thisMetadata)
+  protected Metadata lookupTrueMetaMetadata(MetaMetadataRepository repository,
+                                            Metadata thisMetadata)
   {
     if (thisMetadata instanceof Document)
     {
@@ -887,7 +902,7 @@ public abstract class ParserBase<D extends Document>
           Class trueMetadataClass = locMmd.getMetadataClass();
           if (thisMetadataClass.isAssignableFrom(trueMetadataClass))
           {
-            debug("changing meta-metadata for extracted value " + thisMetadata + " to " + locMmd);
+            logger.info("Changing mmd for extracted value {} to {}", thisMetadata, locMmd);
             if (thisMetadataClass == trueMetadataClass)
             {
               // when the two metadata classes are the same, we can safely change the meta-metadata
@@ -906,15 +921,10 @@ public abstract class ParserBase<D extends Document>
           }
           else
           {
-            error("cannot change meta-metadata fro extracted value "
-                  + thisMetadata
-                  + " to "
-                  + locMmd
-                  + " because the type doesn't match!\n"
-                  + "expected type: "
-                  + thisMetadata.getMetaMetadata()
-                  + "\n"
-                  + "check the <selector> to see if it is not specific enough!");
+            logger.error("Type mismatch when changing mmd for extracted value {} to {}, "
+                         + "expected type: {}; "
+                         + "check <selector> to see if it is not specific enough.",
+                         thisMetadata, locMmd, thisMetadata.getMetaMetadata());
           }
         }
       }
@@ -930,11 +940,11 @@ public abstract class ParserBase<D extends Document>
    * @param contextNode
    * @param fieldParserContext
    * @param params
-   * @return true if the result collection is not empty, or false. The result collection field will
-   *         not contain null references or failed elements (elements that has no actual information
-   *         or lacks required field values).
+   * @return true if the extraction was successful and the result collection is not empty; otherwise
+   *         false. The result collection field will not contain null references or failed elements
+   *         (elements that has no actual information or lacks required field values).
    */
-  boolean extractCollection(MetaMetadataCollectionField mmdField,
+  private boolean extractCollection(MetaMetadataCollectionField mmdField,
                             Metadata metadata,
                             Node contextNode,
                             Map<String, String> fieldParserContext,
@@ -951,7 +961,6 @@ public abstract class ParserBase<D extends Document>
     int size = helper.getListSize();
 
     // get class of elements in the collection
-    SimplTypesScope tscope = getSemanticsScope().getMetadataTypesScope();
     Class elementClass = null;
     MetadataScalarType scalarType = null;
     MetadataFieldDescriptor metadataFieldDescriptor = mmdField.getMetadataFieldDescriptor();
@@ -966,31 +975,34 @@ public abstract class ParserBase<D extends Document>
       }
       else
       {
-        // error!
-        throw new RuntimeException("child_scalar_type not specified or registered: " + mmdField);
+        logger.error("child_scalar_type not specified or registered: " + mmdField);
+        return false;
       }
     }
     else
     {
-      // elementClass = tscope.getClassByTag(mmdField.getChildType());
       if (metadataFieldDescriptor != null)
       {
-        ClassDescriptor elementClassDescriptor = metadataFieldDescriptor
-            .getElementClassDescriptor();
+        ClassDescriptor elementClassDescriptor =
+            metadataFieldDescriptor.getElementClassDescriptor();
         if (metadataFieldDescriptor.isPolymorphic())
         {
-          String polymorphTagName = mmdField.getChildComposite().getInheritedMmd()
-              .getTagForTypesScope();
+          String polymorphTagName =
+              mmdField.getChildComposite().getInheritedMmd().getTagForTypesScope();
           if (polymorphTagName != null)
-            elementClassDescriptor = metadataFieldDescriptor
-                .elementClassDescriptor(polymorphTagName);
+          {
+            elementClassDescriptor =
+                metadataFieldDescriptor.elementClassDescriptor(polymorphTagName);
+          }
         }
         if (elementClassDescriptor != null)
+        {
           elementClass = elementClassDescriptor.getDescribedClass();
+        }
       }
       else
       {
-        warning("metadataFieldDescriptor not found in " + mmdField);
+        logger.warn("metadataFieldDescriptor not found in " + mmdField);
       }
     }
 
@@ -1003,43 +1015,33 @@ public abstract class ParserBase<D extends Document>
 
     // build the result list and populate
     ArrayList elements = new ArrayList();
-    Class[] argClasses = new Class[]
-    { MetaMetadataCompositeField.class };
-    Object[] argObjects = new Object[]
-    { mmdField.getChildComposite() };
-    String[] fieldParserContextValues = null;
+    Class[] argClasses = new Class[] { MetaMetadataCompositeField.class };
+    Object[] argObjects = new Object[] { mmdField.getChildComposite() };
     for (int i = 0; i < size; ++i)
     {
       Node thisNode = (nodeList == null) ? null : nodeList.item(i);
-      Map<String, String> thisFieldParserContext = (fieldParserContextList == null) ? null
-          : fieldParserContextList.get(i);
+      Map<String, String> thisFieldParserContext =
+          (fieldParserContextList == null) ? null : fieldParserContextList.get(i);
 
       if (!mmdField.isCollectionOfScalars())
       {
-        Metadata element = (Metadata) ReflectionTools.getInstance(elementClass,
-                                                                  argClasses,
-                                                                  argObjects);
+        Metadata element =
+            (Metadata) ReflectionTools.getInstance(elementClass, argClasses, argObjects);
         element.setSemanticsSessionScope(getSemanticsScope());
 
         // the index of the current element in the current collection may be useful for further
         // extraction.
         params.put(ELEMENT_INDEX_IN_COLLECTION, i);
 
-        // if (recursiveExtraction(mmdField.getChildComposite(), element, thisNode,
-        // thisFieldParserContext, params))
         if (recursiveExtraction(mmdField, element, thisNode, thisFieldParserContext, params))
         {
-          if (this.getSemanticsScope().ifAutoUpdateDocRefs())
+          if (getSemanticsScope().ifAutoUpdateDocRefs())
           {
             Document downloadedDocument = lookupDownloadedDocument(element);
             if (downloadedDocument != null)
             {
               element = downloadedDocument;
             }
-          }
-
-          if (this.getSemanticsScope().ifAutoUpdateDocRefs())
-          {
             setupDocumentChangedEventListener(mmdField, metadata, element);
           }
 
@@ -1061,8 +1063,12 @@ public abstract class ParserBase<D extends Document>
       {
         String value = null;
         if (fieldParserContextList != null)
-          value = thisFieldParserContext == null ? null : thisFieldParserContext
-              .get(FieldParserForRegexSplit.DEFAULT_KEY);
+        {
+          if (thisFieldParserContext != null)
+          {
+            value = thisFieldParserContext.get(FieldParserForRegexSplit.DEFAULT_KEY);
+          }
+        }
         else if (thisNode != null)
         {
           if (mmdField.isExtractAsHtml())
@@ -1077,12 +1083,14 @@ public abstract class ParserBase<D extends Document>
 
         if (value != null)
         {
-          value = applyPrefixAndRegExOnEvaluation(value, mmdField);
+          value = applyFieldOps(value, mmdField);
 
           MetadataBase element;
           element = (MetadataBase) scalarType.getInstance(value, null, this);
           if (element != null)
+          {
             elements.add(element);
+          }
         }
       }
     }
@@ -1096,43 +1104,6 @@ public abstract class ParserBase<D extends Document>
     }
 
     return false;
-  }
-
-  private static Properties innerHtmlProps = new Properties();
-  static
-  {
-    innerHtmlProps.put(OutputKeys.METHOD, "html");
-    innerHtmlProps.put(OutputKeys.INDENT, "yes");
-  }
-
-  /**
-   * using javax.xml.transform.Transformer to get the inner HTML of a node.
-   * 
-   * @param node
-   * @return
-   */
-  private String getInnerHtml(Node node)
-  {
-    node.normalize();
-    StringWriter w = new StringWriter();
-    try
-    {
-      Transformer t = XmlTransformerPool.get().acquire();
-      t.setOutputProperties(innerHtmlProps);
-      t.transform(new DOMSource(node), new StreamResult(w));
-      XmlTransformerPool.get().release(t);
-    }
-    catch (TransformerConfigurationException e)
-    {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-    catch (TransformerException e)
-    {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-    return w.toString();
   }
 
   /**
@@ -1155,7 +1126,7 @@ public abstract class ParserBase<D extends Document>
     String xpathString = mmdField.getXpath();
     String fieldParserKey = mmdField.getFieldParserKey();
     contextNode = findContextNodeIfNecessary(mmdField, contextNode, params);
-
+  
     String evaluation = null;
     if (xpathString != null
         && xpathString.length() > 0
@@ -1168,10 +1139,8 @@ public abstract class ParserBase<D extends Document>
       }
       catch (Exception e)
       {
-        String msg = getErrorMessage(mmdField, contextNode, e);
-        debug(msg);
-        logger.error(msg, e);
-        e.printStackTrace();
+        logger.error("Error extracting " + mmdField + ", contextNode=" + contextNode.getNodeName(),
+                     e);
       }
     }
     else if (fieldParserKey != null)
@@ -1182,14 +1151,14 @@ public abstract class ParserBase<D extends Document>
     {
       return false; // This is the final catch all.
     }
-
+  
     evaluation = concatenateValues(evaluation, mmdField, metadata, params);
-
+  
     // after we have evaluated the expression we might need to modify it.
-    evaluation = applyPrefixAndRegExOnEvaluation(evaluation, mmdField);
+    evaluation = applyFieldOps(evaluation, mmdField);
     if (StringTools.isNullOrEmpty(evaluation))
       return false;
-
+  
     MetadataFieldDescriptor fd = mmdField.getMetadataFieldDescriptor();
     ScalarType fdScalarType = fd == null ? null : fd.getScalarType();
     if (fdScalarType != null && fdScalarType instanceof MetadataParsedURLScalarType)
@@ -1209,7 +1178,7 @@ public abstract class ParserBase<D extends Document>
             metadataPurl.setValue(filteredPurl);
         }
       }
-
+  
       if (metadataPurl != null && metadataPurl.getValue() != null)
       {
         fd.setField(metadata, metadataPurl);
@@ -1220,7 +1189,7 @@ public abstract class ParserBase<D extends Document>
       // for other scalar types, we only need to create and assign the value.
       metadata.setByFieldName(mmdField.getFieldNameInJava(false), evaluation, this);
     }
-
+  
     return true;
   }
 
@@ -1237,35 +1206,37 @@ public abstract class ParserBase<D extends Document>
    *          Scope of parsing with variables / etc
    * @return String value concatenated to pass onto other tasks (like regexing)
    */
-  private String concatenateValues(String evaluation, MetaMetadataScalarField mmdField,
-                                   Metadata metadata, Scope<Object> params)
+  private String concatenateValues(String evaluation,
+                                   MetaMetadataScalarField mmdField,
+                                   Metadata metadata,
+                                   Scope<Object> params)
   {
     if (mmdField.hasConcatenateValues())
     {
       List<MetaMetadataValueField> fields = mmdField.getConcatenateValues();
-
+  
       StringBuffer buffy = new StringBuffer();
-
+  
       if (evaluation != null)
       {
         // If we have a value already for the mmd field, append it at the beginning
         buffy.append(evaluation);
       }
-
+  
       for (MetaMetadataValueField v : fields)
       {
         String varValue = v.getReferencedValue(mmdField, metadata, params);
-
+  
         if (varValue == null)
         {
           varValue = "";
-          warning("Attempted to concatenate null value from value referenced as: "
-                  + v.getReferenceName());
+          logger.warn("Attempted to concatenate null value from value referenced as: "
+                      + v.getReferenceName());
         }
-
+  
         buffy.append(varValue);
       }
-
+  
       return buffy.toString();
     }
     else
@@ -1275,53 +1246,22 @@ public abstract class ParserBase<D extends Document>
   }
 
   /**
-   * Generate an error message containing parsing context information.
-   * 
-   * @param mmdField
-   * @param contextNode
-   * @param e
-   * @return
-   */
-  private String getErrorMessage(MetaMetadataField mmdField, Node contextNode, Exception e)
-  {
-    StringBuilder buf = StringBuilderUtils.acquire();
-    buf.append("ERROR (XPATH EVAL): ");
-    buf.append("field=").append(mmdField).append(", ");
-    buf.append("contextNode=").append(contextNode.getNodeName()).append(", ");
-    buf.append("xpaths={");
-    for (int i = 0; i < mmdField.xpathsSize(); ++i)
-    {
-      buf.append(i==0?"":", ").append(mmdField.getXpath(i));
-    }
-    buf.append("}, ");
-    buf.append("message: " + e.getMessage());
-    String msg = buf.toString();
-    StringBuilderUtils.release(buf);
-    return msg;
-  }
-
-  /**
-   * This function does all the modifications on the evalaution based on string prefix as well as on
-   * regular expressions. TODO we might not even need the string prefix if we can write good regular
-   * expressions.
+   * Modifies evaluation results based on FieldOps defined for that field.
    * 
    * @param evaluation
-   * @param mmdElement
-   * @return
+   * @param field
+   * @return Modified evaluation.
    */
-  // FIXME -- make this operate directly on a StringBuilder (which will also change the return type
-  // to void
-  private String applyPrefixAndRegExOnEvaluation(String evaluation, MetaMetadataField field)
+  private String applyFieldOps(String evaluation, MetaMetadataField field)
   {
     if (evaluation == null)
+    {
       return null;
-
-    // regex replacing should happen only to scalar fields
-
+    }
+  
     // to remove unwanted XML characters
     evaluation = XMLTools.unescapeXML(evaluation);
-
-    // get the regular expression
+  
     List<FieldOp> fieldOps = field.getFieldOps();
     if (fieldOps != null)
     {
@@ -1330,28 +1270,42 @@ public abstract class ParserBase<D extends Document>
         evaluation = fieldOps.get(i).operateOn(evaluation);
       }
     }
-
+  
     // remove white spaces if any
     evaluation = evaluation.trim();
     return evaluation;
   }
 
-  @Override
-  public ParsedURL purlContext()
+  private static Properties innerHtmlProps = new Properties();
+  static
   {
-    return purl();
+    innerHtmlProps.put(OutputKeys.METHOD, "html");
+    innerHtmlProps.put(OutputKeys.INDENT, "yes");
   }
 
-  @Override
-  public File fileContext()
+  /**
+   * using javax.xml.transform.Transformer to get the inner HTML of a node.
+   * 
+   * @param node
+   * @return
+   */
+  private static String getInnerHtml(Node node)
   {
-    return null;
-  }
-
-  @Override
-  public ParsedURL getTruePURL()
-  {
-    return (truePURL != null) ? truePURL : super.getTruePURL();
+    node.normalize();
+    StringWriter w = new StringWriter();
+    try
+    {
+      Transformer t = XmlTransformerPool.get().acquire();
+      t.setOutputProperties(innerHtmlProps);
+      t.transform(new DOMSource(node), new StreamResult(w));
+      XmlTransformerPool.get().release(t);
+    }
+    catch (Exception e)
+    {
+      logger.error("Error getting inner HTML for " + node, e);
+      return null;
+    }
+    return w.toString();
   }
 
   /**
@@ -1369,138 +1323,161 @@ public abstract class ParserBase<D extends Document>
       MetaMetadata metaMetadata = (MetaMetadata) this.getMetaMetadata();
 
       SimplTypesScope tscope = metaMetadata.getLocalMetadataTypesScope();
-      newDocument =
-          (Document) tscope.deserialize(getDownloadController().getInputStream(), this, Format.XML);
+      InputStream istream = getDownloadController().getInputStream();
+      DeserializationHookStrategy<Metadata, MetadataFieldDescriptor> strategy =
+          new ParserDeserializationHookStrategy(this);
+      newDocument = (Document) tscope.deserialize(istream, strategy, Format.XML);
 
-      SimplTypesScope.serialize(newDocument, System.out, StringFormat.XML);
+      logger.debug(SimplTypesScope.serialize(newDocument, StringFormat.XML).toString());
 
-      System.out.println();
       // the old document is basic, so give it basic meta-metadata (so recycle does not tank)
       Document oldDocument = getDocumentClosure().getDocument();
       oldDocument.setMetaMetadata(getSemanticsScope().DOCUMENT_META_METADATA);
       getDocumentClosure().changeDocument(newDocument);
-
-      System.out.println();
     }
     catch (SIMPLTranslationException e)
     {
-      warning("Direct binding failed " + e);
+      logger.error("Cannot serialize direct binding result metadata: " + newDocument, e);
     }
     return newDocument;
   }
-
-  Stack<MetaMetadataNestedField> currentMMstack    = new Stack<MetaMetadataNestedField>();
-
-  boolean                        deserializingRoot = true;
-
-  boolean                        polymorphMmd      = false;
-
+  
   /**
-   * For the root, compare the meta-metadata from the binding with the one we started with. Down the
-   * hierarchy, try to perform similar bindings.
+   * Helper class for direct binding.
+   * 
+   * @author quyin
    */
-  @Override
-  public void deserializationPreHook(Metadata deserializedMetadata, MetadataFieldDescriptor mfd)
+  public static class ParserDeserializationHookStrategy
+  implements DeserializationHookStrategy<Metadata, MetadataFieldDescriptor>
   {
-    if (deserializingRoot)
+    
+    DocumentParser                 parser;
+
+    Stack<MetaMetadataNestedField> currentMMstack    = new Stack<MetaMetadataNestedField>();
+
+    boolean                        deserializingRoot = true;
+
+    boolean                        polymorphMmd      = false;
+    
+    public ParserDeserializationHookStrategy(DocumentParser parser)
     {
-      deserializingRoot = false;
-      Document document = getDocument();
-      MetaMetadataCompositeField preMM = document.getMetaMetadata();
-      MetadataClassDescriptor mcd = (MetadataClassDescriptor) ClassDescriptor
-          .getClassDescriptor(deserializedMetadata);
-      ;
-      MetaMetadataCompositeField metaMetadata;
-      String tagName = mcd.getTagName();
-      if (preMM.getTagForTypesScope().equals(tagName))
-      {
-        metaMetadata = preMM;
-      }
-      else
-      { // just match in translation scope
-        // TODO use local TranslationScope if there is one
-        metaMetadata = getSemanticsScope().getMetaMetadataRepository().getMMByName(tagName);
-      }
-      deserializedMetadata.setMetaMetadata(metaMetadata);
-
-      polymorphMmd = true;
-
-      currentMMstack.push(metaMetadata);
+      this.parser = parser;
     }
-    else
-    {
-      String mmName = mfd.getMmName();
-      MetaMetadataNestedField currentMM = currentMMstack.peek();
-      MetaMetadataNestedField childMMNested = (MetaMetadataNestedField) currentMM
-          .lookupChild(mmName); // this fails for collections :-(
-      if (childMMNested == null)
-        throw new RuntimeException("Can't find composite child meta-metadata for "
-                                   + mmName
-                                   + " amidst "
-                                   + mfd
-                                   +
-                                   "\n\tThis probably means there is a conflict between the meta-metadata repository and the runtime."
-                                   +
-                                   "\n\tProgrammer: Have you Changed the fields in built-in Metadata subclasses without updating primitives.xml???!");
-      MetaMetadataCompositeField childMMComposite = null;
-      if (childMMNested.isPolymorphicInherently())
-      {
-        String tagName = ClassDescriptor.getClassDescriptor(deserializedMetadata).getTagName();
-        childMMComposite = getSemanticsScope().getMetaMetadataRepository().getMMByName(tagName);
-        polymorphMmd = true;
-      }
-      else
-      {
-        childMMComposite = childMMNested.metaMetadataCompositeField();
-      }
-      deserializedMetadata.setMetaMetadata(childMMComposite);
-      currentMMstack.push(childMMComposite);
-    }
-  }
 
-  @Override
-  public void deserializationInHook(Metadata deserializedMetadata, MetadataFieldDescriptor mfd)
-  {
-    if (polymorphMmd) // for efficiency; if it is not polymorphic case we don't have to look up mmd
-                      // at this point of time
+    /**
+     * For the root, compare the meta-metadata from the binding with the one we started with. Down
+     * the hierarchy, try to perform similar bindings.
+     */
+    @Override
+    public void deserializationPreHook(Metadata deserializedMetadata, MetadataFieldDescriptor mfd)
     {
-      String mmName = deserializedMetadata.getMetaMetadataName();
-      if (mmName != null && mmName.length() > 0)
+      if (deserializingRoot)
       {
-        MetaMetadata trueMm = getSemanticsScope().getMetaMetadataRepository().getMMByName(mmName);
-        if (trueMm != null)
+        deserializingRoot = false;
+        Document document = parser.getDocument();
+        MetaMetadataCompositeField preMM = document.getMetaMetadata();
+        MetadataClassDescriptor mcd =
+            (MetadataClassDescriptor) ClassDescriptor.getClassDescriptor(deserializedMetadata);
+        MetaMetadataCompositeField metaMetadata;
+        String tagName = mcd.getTagName();
+        if (preMM.getTagForTypesScope().equals(tagName))
         {
-          debug(String.format("setting [%s].metaMetadata to %s (mm_name=%s)...",
-                              deserializedMetadata,
-                              trueMm,
-                              mmName));
-          deserializedMetadata.setMetaMetadata(trueMm);
+          metaMetadata = preMM;
         }
         else
         {
-          warning("polymorphicly looking up meta-metadata failed: cannot find mmd named as "
-                  + mmName);
+          // just match in translation scope
+          // TODO use local TranslationScope if there is one
+          metaMetadata = parser.getSemanticsScope().getMetaMetadataRepository()
+              .getMMByName(tagName);
         }
+        deserializedMetadata.setMetaMetadata(metaMetadata);
+
+        polymorphMmd = true;
+
+        currentMMstack.push(metaMetadata);
       }
-      polymorphMmd = true;
+      else
+      {
+        String mmName = mfd.getMmName();
+        MetaMetadataNestedField currentMM = currentMMstack.peek();
+        // the following fails for collections :-(
+        MetaMetadataNestedField childMMNested =
+            (MetaMetadataNestedField) currentMM.lookupChild(mmName);
+        if (childMMNested == null)
+        {
+          String msg =
+              String.format("Can't find composite child meta-metadata for %s amidst %s; "
+                            + "This probably means mmd repository do not match metadata classes; "
+                            + "Have you changed built-in metadata classes w/o updating primitives.xml?",
+                            mmName,
+                            mfd);
+          logger.error(msg);
+          throw new RuntimeException(msg);
+        }
+        MetaMetadataCompositeField childMMComposite = null;
+        if (childMMNested.isPolymorphicInherently())
+        {
+          String tagName = ClassDescriptor.getClassDescriptor(deserializedMetadata).getTagName();
+          childMMComposite =
+              parser.getSemanticsScope().getMetaMetadataRepository().getMMByName(tagName);
+          polymorphMmd = true;
+        }
+        else
+        {
+          childMMComposite = childMMNested.metaMetadataCompositeField();
+        }
+        deserializedMetadata.setMetaMetadata(childMMComposite);
+        currentMMstack.push(childMMComposite);
+      }
     }
-  }
 
-  @Override
-  public void deserializationPostHook(Metadata deserializedMetadata, MetadataFieldDescriptor mfd)
-  {
-    currentMMstack.pop();
-  }
-
-  @Override
-  public Metadata changeObjectIfNecessary(Metadata deserializedMetadata, MetadataFieldDescriptor mdf)
-  {
-    if (this.getSemanticsScope().ifAutoUpdateDocRefs())
+    @Override
+    public void deserializationInHook(Metadata deserializedMetadata, MetadataFieldDescriptor mfd)
     {
-      Document downloadedDoc = lookupDownloadedDocument(deserializedMetadata);
-      return downloadedDoc == null ? deserializedMetadata : downloadedDoc;
+      // for efficiency; if it is not polymorphic case we don't have to look up mmd
+      // at this point of time
+      if (polymorphMmd)
+      {
+        String mmName = deserializedMetadata.getMetaMetadataName();
+        if (mmName != null && mmName.length() > 0)
+        {
+          MetaMetadata trueMmd =
+              parser.getSemanticsScope().getMetaMetadataRepository().getMMByName(mmName);
+          if (trueMmd != null)
+          {
+            logger.debug("setting [{}].metaMetadata to {} (mm_name={})...",
+                         deserializedMetadata, trueMmd, mmName);
+            deserializedMetadata.setMetaMetadata(trueMmd);
+          }
+          else
+          {
+            logger.warn("polymorphicly looking up meta-metadata failed: cannot find mmd named as "
+                        + mmName);
+          }
+        }
+        polymorphMmd = true;
+      }
     }
-    return deserializedMetadata;
+
+    @Override
+    public void deserializationPostHook(Metadata deserializedMetadata, MetadataFieldDescriptor mfd)
+    {
+      currentMMstack.pop();
+    }
+
+    @Override
+    public Metadata changeObjectIfNecessary(Metadata deserializedMetadata,
+                                            MetadataFieldDescriptor mdf)
+    {
+      if (parser.getSemanticsScope().ifAutoUpdateDocRefs())
+      {
+        Document downloadedDoc = parser.lookupDownloadedDocument(deserializedMetadata);
+        return downloadedDoc == null ? deserializedMetadata : downloadedDoc;
+      }
+      return deserializedMetadata;
+    }
+
   }
 
 }
