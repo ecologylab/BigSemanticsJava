@@ -68,6 +68,9 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	@simpl_scalar
 	private boolean														showExpandedInitially;
 	
+	@simpl_scalar
+	private boolean														showExpandedAlways;
+	
 	/**
 	 * def_vars, used as variables during the extraction and semantic action processes.
 	 */
@@ -644,6 +647,11 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	public boolean isShowExpandedInitially()
 	{
 		return showExpandedInitially;
+	}
+	
+	public boolean isShowExpandedAlways()
+	{
+	    return showExpandedAlways;
 	}
 
 }

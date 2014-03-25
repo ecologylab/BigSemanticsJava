@@ -205,7 +205,7 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
    * name of a style.
    */
   @simpl_scalar
-  protected String                                      style;
+  protected String                                      styleName;
 
   /**
    * Specifies the order in which a field is displayed in relation to other fields.
@@ -540,7 +540,7 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
    */
   public String getStyle()
   {
-    return style;
+    return styleName;
   }
 
   /**
@@ -783,8 +783,8 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
   public NamedStyle lookupStyle()
   {
     NamedStyle result = null;
-    if (style != null)
-      result = getRepository().lookupStyle(style);
+    if (styleName != null)
+      result = getRepository().lookupStyle(styleName);
     return (result != null) ? result : getRepository().getDefaultStyle();
   }
 
