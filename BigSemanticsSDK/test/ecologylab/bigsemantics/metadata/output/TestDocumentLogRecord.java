@@ -31,8 +31,8 @@ public class TestDocumentLogRecord
 		SemanticsSessionScope sss = new SemanticsSessionScope(metadataTScope, CybernekoWrapper.class);
 		ParsedURL purl = ParsedURL.getAbsolute("http://dl.acm.org/citation.cfm?id=1835572");
 		Document doc = sss.getOrConstructDocument(purl);
+		doc.setLogRecord(logRecord);
 		DocumentClosure closure = doc.getOrConstructClosure();
-		closure.setLogRecord(logRecord);
 		closure.addContinuation(new Continuation<DocumentClosure>()
 		{
 			@Override
@@ -50,12 +50,8 @@ public class TestDocumentLogRecord
 			lockDoc.wait();
 		}
 
-		Assert.assertNotNull(logRecord.getQueuePeekIntervals());
-		Assert.assertFalse(logRecord.getQueuePeekIntervals().isEmpty());
-
 		Assert.assertTrue(logRecord.getMsExtraction() > 0);
 		Assert.assertTrue(logRecord.getMsHtmlDownload() > 0);
-		Assert.assertTrue(logRecord.getEnQueueTimestamp() > 0);
 	}
 
 	private String serializeToJson(Object myObject) throws SIMPLTranslationException
@@ -69,11 +65,10 @@ public class TestDocumentLogRecord
 		DownloadableLogRecord logRecord = new DownloadableLogRecord();
 		
 		logRecord.setHtmlCacheHit(false);
-		logRecord.setUrlHash("eqwewqewqe");
+		logRecord.setId("eqwewqewqe");
 		ArrayList<Long> peekIntervals = new ArrayList<Long>();
 		peekIntervals.add(100L);
 		peekIntervals.add(1000L);
-		logRecord.setQueuePeekIntervals(peekIntervals);
 
 		String json = serializeToJson(logRecord);
 		Assert.assertNotNull(json);
@@ -83,12 +78,8 @@ public class TestDocumentLogRecord
 				DownloadableLogRecord.class);
 		logRecord = (DownloadableLogRecord) tscope.deserialize(json, StringFormat.JSON);
 		
-		Assert.assertNotNull(logRecord.getQueuePeekIntervals());
-		Assert.assertFalse(logRecord.getQueuePeekIntervals().isEmpty());
 		Assert.assertFalse(logRecord.isHtmlCacheHit());
-		Assert.assertTrue(logRecord.getUrlHash().equals("eqwewqewqe"));
-		Assert.assertTrue(logRecord.getQueuePeekIntervals().get(0) == 100L);
-		Assert.assertTrue(logRecord.getQueuePeekIntervals().get(1) == 1000L);
+		Assert.assertTrue(logRecord.getId().equals("eqwewqewqe"));
 	}
 
 }

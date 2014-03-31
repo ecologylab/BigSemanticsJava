@@ -92,8 +92,6 @@ public class DocumentClosure extends SetElement
    */
   private SearchResult                        searchResult;
 
-  private DocumentLogRecord                   logRecord;
-
   private PointInt                            dndPoint;
 
   /**
@@ -249,14 +247,9 @@ public class DocumentClosure extends SetElement
   }
 
   @Override
-  public DownloadableLogRecord getLogRecord()
+  public DocumentLogRecord getLogRecord()
   {
-    return logRecord;
-  }
-
-  public void setLogRecord(DocumentLogRecord logRecord)
-  {
-    this.logRecord = logRecord;
+    return document == null ? DocumentLogRecord.DUMMY : document.getLogRecord();
   }
 
   @Override
@@ -489,13 +482,10 @@ public class DocumentClosure extends SetElement
     {
       cachedDoc = pCache.retrieve(location);
     }
-    if (logRecord != null)
+    getLogRecord().setMsMetadataCacheLookup(System.currentTimeMillis() - t0);
+    if (cachedDoc != null)
     {
-      logRecord.setMsMetadataCacheLookup(System.currentTimeMillis() - t0);
-      if (cachedDoc != null)
-      {
-        logRecord.setPersisentDocumentCacheHit(true);
-      }
+      getLogRecord().setPersisentDocumentCacheHit(true);
     }
     return cachedDoc;
   }
@@ -507,10 +497,7 @@ public class DocumentClosure extends SetElement
     downloadController.setUserAgent(userAgent);
     long t0download = System.currentTimeMillis();
     downloadController.accessAndDownload(location);
-    if (logRecord != null)
-    {
-      logRecord.setMsHtmlDownload(System.currentTimeMillis() - t0download);
-    }
+    getLogRecord().setMsHtmlDownload(System.currentTimeMillis() - t0download);
     return downloadController;
   }
 
@@ -599,10 +586,7 @@ public class DocumentClosure extends SetElement
     takeSemanticActions(metaMetadata, metaMetadata.getBeforeSemanticActions());
     long t0extraction = System.currentTimeMillis();
     documentParser.parse();
-    if (logRecord != null)
-    {
-      logRecord.setMsExtraction(System.currentTimeMillis() - t0extraction);
-    }
+    getLogRecord().setMsExtraction(System.currentTimeMillis() - t0extraction);
     takeSemanticActions(metaMetadata, metaMetadata.getAfterSemanticActions());
 
     addDocGraphCallbacksIfNeeded();
@@ -640,10 +624,7 @@ public class DocumentClosure extends SetElement
     pMetadata.setMimeType(downloadController.getMimeType());
     String rawDoc = downloadController.getContent();
     pCache.store(document, rawDoc, pMetadata);
-    if (logRecord != null)
-    {
-      logRecord.setMsMetadataCaching(System.currentTimeMillis() - t0persist);
-    }
+    getLogRecord().setMsMetadataCaching(System.currentTimeMillis() - t0persist);
   }
 
   /**
