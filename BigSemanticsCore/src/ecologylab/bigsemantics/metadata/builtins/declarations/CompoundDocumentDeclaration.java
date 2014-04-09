@@ -59,6 +59,10 @@ public class CompoundDocumentDeclaration extends Document
 	@mm_name("root_document")
 	private CompoundDocument rootDocument;
 
+	@simpl_composite
+	@mm_name("thumbnail")
+	private Image thumbnail;
+
 	@simpl_collection("image")
 	@mm_name("main_images")
 	private List<Image> mainImages;
@@ -181,6 +185,16 @@ public class CompoundDocumentDeclaration extends Document
 	public void setRootDocument(CompoundDocument rootDocument)
 	{
 		this.rootDocument = rootDocument;
+	}
+
+	public Image getThumbnail()
+	{
+		return thumbnail;
+	}
+
+	public void setThumbnail(Image thumbnail)
+	{
+		this.thumbnail = thumbnail;
 	}
 
 	public List<Image> getMainImages()
