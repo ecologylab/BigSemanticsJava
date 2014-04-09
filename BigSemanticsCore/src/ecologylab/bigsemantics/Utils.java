@@ -95,6 +95,10 @@ public class Utils
 
   public static Charset getCharsetByName(String charsetName, Charset defaultCharset)
   {
+    if (charsetName == null)
+    {
+      charsetName = "UTF8";
+    }
     try
     {
       return Charset.forName(charsetName);

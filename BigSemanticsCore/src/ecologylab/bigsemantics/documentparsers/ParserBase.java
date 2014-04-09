@@ -254,16 +254,19 @@ implements ScalarUnmarshallingContext, SemanticsConstants
               contextNode = (Node) parameters.get(contextNodeName);
             }
 
-            if (varType != null)
+            if (contextNode != null)
             {
-              Object evalResult = xpath.evaluate(xpathExpression, contextNode, varType);
-              parameters.put(varName, evalResult);
-            }
-            else
-            {
-              // its gonna be a simple string evaluation
-              String evaluation = xpath.evaluate(xpathExpression, contextNode);
-              parameters.put(varName, evaluation);
+              if (varType != null)
+              {
+                Object evalResult = xpath.evaluate(xpathExpression, contextNode, varType);
+                parameters.put(varName, evalResult);
+              }
+              else
+              {
+                // its gonna be a simple string evaluation
+                String evaluation = xpath.evaluate(xpathExpression, contextNode);
+                parameters.put(varName, evaluation);
+              }
             }
           }
           else
@@ -595,7 +598,7 @@ implements ScalarUnmarshallingContext, SemanticsConstants
     }
     catch (Exception e)
     {
-      logger.error("Error extracting " + mmdField + ", contextNode=" + contextNode.getNodeName(),
+      logger.error("Error extracting " + mmdField + ", contextNode=" + contextNode,
                    e);
     }
 
@@ -617,10 +620,10 @@ implements ScalarUnmarshallingContext, SemanticsConstants
     {
       currentContextNode = (Node) params.get(contextNodeName);
     }
-    if (currentContextNode == null)
-    {
-      currentContextNode = (Node) params.get(DOCUMENT_ROOT_NODE);
-    }
+//    if (currentContextNode == null)
+//    {
+//      currentContextNode = (Node) params.get(DOCUMENT_ROOT_NODE);
+//    }
     return currentContextNode;
   }
 
@@ -902,7 +905,7 @@ implements ScalarUnmarshallingContext, SemanticsConstants
           Class trueMetadataClass = locMmd.getMetadataClass();
           if (thisMetadataClass.isAssignableFrom(trueMetadataClass))
           {
-            logger.info("Changing mmd for extracted value {} to {}", thisMetadata, locMmd);
+            logger.debug("Changing mmd for extracted value {} to {}", thisMetadata, locMmd);
             if (thisMetadataClass == trueMetadataClass)
             {
               // when the two metadata classes are the same, we can safely change the meta-metadata

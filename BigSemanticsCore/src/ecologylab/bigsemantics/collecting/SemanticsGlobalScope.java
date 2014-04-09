@@ -18,6 +18,7 @@ import ecologylab.bigsemantics.html.dom.IDOMProvider;
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metadata.builtins.DocumentClosure;
 import ecologylab.bigsemantics.metadata.builtins.Image;
+import ecologylab.bigsemantics.metadata.output.DocumentLogRecord;
 import ecologylab.bigsemantics.metametadata.FieldParserRegistry;
 import ecologylab.bigsemantics.metametadata.MetaMetadataRepository;
 import ecologylab.generic.ReflectionTools;
@@ -155,6 +156,10 @@ public class SemanticsGlobalScope extends MetaMetadataRepositoryInit
       return null;
     Document result = localDocumentCollection.getOrConstruct(location, false);
     result.setSemanticsSessionScope(this);
+    if (!result.hasLogRecord())
+    {
+      result.setLogRecord(createLogRecord());
+    }
     return result;
   }
 
@@ -293,6 +298,11 @@ public class SemanticsGlobalScope extends MetaMetadataRepositoryInit
   public PersistentDocumentCache getPersistentDocumentCache()
   {
     return null;
+  }
+  
+  public DocumentLogRecord createLogRecord()
+  {
+    return new DocumentLogRecord();
   }
 
 	public void displayStatus(String message)

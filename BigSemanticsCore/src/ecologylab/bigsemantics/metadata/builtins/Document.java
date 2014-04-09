@@ -22,6 +22,7 @@ import ecologylab.bigsemantics.html.documentstructure.SemanticInLinks;
 import ecologylab.bigsemantics.metadata.Metadata;
 import ecologylab.bigsemantics.metadata.mm_no;
 import ecologylab.bigsemantics.metadata.builtins.declarations.DocumentDeclaration;
+import ecologylab.bigsemantics.metadata.output.DocumentLogRecord;
 import ecologylab.bigsemantics.metadata.scalar.MetadataParsedURL;
 import ecologylab.bigsemantics.metadata.scalar.MetadataString;
 import ecologylab.bigsemantics.metametadata.MetaMetadataCompositeField;
@@ -33,6 +34,7 @@ import ecologylab.net.ParsedURL;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.annotations.FieldUsage;
+import ecologylab.serialization.annotations.simpl_composite;
 import ecologylab.serialization.annotations.simpl_exclude_usage;
 import ecologylab.serialization.annotations.simpl_inherit;
 import ecologylab.serialization.annotations.simpl_scalar;
@@ -45,20 +47,6 @@ import ecologylab.serialization.formatenums.StringFormat;
 public class Document extends DocumentDeclaration
 {
 
-  // @mm_name("location")
-  // @simpl_scalar
-  // MetadataParsedURL location;
-  //
-  // @mm_name("title")
-  // @simpl_scalar MetadataString title;
-  //
-  // @mm_name("description")
-  // @simpl_scalar MetadataString description;
-  //
-  // @mm_name("additional_locations")
-  // @simpl_collection("location")
-  // List<MetadataParsedURL> additionalLocations;
-
   static public final Document          RECYCLED_DOCUMENT              = new Document(ParsedURL.getAbsolute("http://recycled.document"));
 
   static public final Document          UNDEFINED_DOCUMENT             = new Document(ParsedURL.getAbsolute("http://undefined.document"));
@@ -69,6 +57,9 @@ public class Document extends DocumentDeclaration
 
   private SemanticInLinks               semanticInlinks;
 
+  @simpl_composite
+  private DocumentLogRecord             logRecord;
+
   private DocumentClosure               documentClosure;
 
   private ParserResult                  parserResult;
@@ -78,7 +69,7 @@ public class Document extends DocumentDeclaration
   private boolean                       sameDomainAsPrevious;
 
   private boolean                       alwaysAcceptRedirect;
-
+  
   /**
    * Seed object associated with this, if this is a seed.
    */
@@ -354,6 +345,25 @@ public class Document extends DocumentDeclaration
   public void setSemanticsSessionScope(SemanticsGlobalScope semanticsSessionScope)
   {
     this.semanticsScope = semanticsSessionScope;
+  }
+  
+  public boolean hasLogRecord()
+  {
+    return logRecord != null;
+  }
+  
+  public DocumentLogRecord getLogRecord()
+  {
+    if (logRecord == null)
+    {
+      return DocumentLogRecord.DUMMY;
+    }
+    return logRecord;
+  }
+  
+  public void setLogRecord(DocumentLogRecord logRecord)
+  {
+    this.logRecord = logRecord;
   }
 
   public void addAdditionalLocation(ParsedURL newPurl)
