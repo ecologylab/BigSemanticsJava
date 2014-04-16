@@ -681,6 +681,7 @@ implements ScalarUnmarshallingContext, SemanticsConstants
             xpathString = "." + xpathString;
           }
           xpathString = assignVariablesInXPathString(params, xpathString);
+          xpathString = removeInvalidChars(xpathString);
   
           if (mmdField instanceof MetaMetadataCompositeField)
           {
@@ -727,6 +728,21 @@ implements ScalarUnmarshallingContext, SemanticsConstants
     }
 
     return evaluation;
+  }
+
+  /**
+   * Remove invalid characters, such as new lines, from xpath.
+   * 
+   * @param xpathString
+   * @return The new xpathString with invalid characters removed.
+   */
+  private String removeInvalidChars(String xpathString)
+  {
+    if (xpathString != null)
+    {
+      return xpathString.replace("\n", "").replace("\r", "");
+    }
+    return null;
   }
 
   /**
