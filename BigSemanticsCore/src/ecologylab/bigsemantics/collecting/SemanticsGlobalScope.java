@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import ecologylab.bigsemantics.documentcache.DocumentCache;
 import ecologylab.bigsemantics.documentcache.HashMapDocumentCache;
 import ecologylab.bigsemantics.documentcache.PersistentDocumentCache;
+import ecologylab.bigsemantics.documentparsers.XPathAmender;
 import ecologylab.bigsemantics.downloadcontrollers.DefaultDownloadController;
 import ecologylab.bigsemantics.downloadcontrollers.DownloadController;
 import ecologylab.bigsemantics.gui.InteractiveSpace;
@@ -78,6 +79,8 @@ public class SemanticsGlobalScope extends MetaMetadataRepositoryInit
    */
   final private DocumentDownloadingMonitor    documentDownloadingMonitor;
 
+  private XPathAmender                        xpathAmender;
+
   public SemanticsGlobalScope(SimplTypesScope metadataTScope,
                               Class<? extends IDOMProvider> domProviderClass)
   {
@@ -108,6 +111,7 @@ public class SemanticsGlobalScope extends MetaMetadataRepositoryInit
     localDocumentCollection = new LocalDocumentCollections(documentMapHelper, documentCache);
     downloadMonitors = new SemanticsDownloadMonitors();
     documentDownloadingMonitor = new DocumentDownloadingMonitor(this);
+    xpathAmender = createXPathAmender();
   }
   
   public String getMetaMetadataRepositoryHash()
@@ -248,6 +252,16 @@ public class SemanticsGlobalScope extends MetaMetadataRepositoryInit
   public Seeding getSeeding()
   {
     return null;
+  }
+  
+  public XPathAmender getXPathAmender()
+  {
+    return xpathAmender;
+  }
+
+  protected XPathAmender createXPathAmender()
+  {
+    return new XPathAmender();
   }
 
   /**

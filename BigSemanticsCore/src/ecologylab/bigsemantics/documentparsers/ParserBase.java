@@ -233,56 +233,74 @@ implements ScalarUnmarshallingContext, SemanticsConstants
     {
       for (DefVar defVar : defVars)
       {
-        String xpathExpression = ".";
-        String varName = "NO_VAR_NAME";
-        QName varType = null;
-        try
+        List<String> xpaths = defVar.getXpaths();
+        if (xpaths != null)
         {
-          xpathExpression = defVar.getXpath();
-          varName = defVar.getName();
-          varType = defVar.getType();
-          String contextNodeName = defVar.getContextNode();
-          String varValue = defVar.getValue();
-
-          // Does the var have a constant value?
-          if (varValue == null)
+          for (String xpath : xpaths)
           {
-            // No. Evaluate the Xpath to obtain the value.
-            if (contextNodeName != null)
+            if (extractDefVar(defVar, contextNode, xpath, parameters))
             {
-              // get the context node from parameters
-              contextNode = (Node) parameters.get(contextNodeName);
+              break;
             }
+          }
+        }
+      }
+    }
+  }
 
-            if (contextNode != null)
-            {
-              if (varType != null)
-              {
-                Object evalResult = xpath.evaluate(xpathExpression, contextNode, varType);
-                parameters.put(varName, evalResult);
-              }
-              else
-              {
-                // its gonna be a simple string evaluation
-                String evaluation = xpath.evaluate(xpathExpression, contextNode);
-                parameters.put(varName, evaluation);
-              }
-            }
+  private boolean extractDefVar(DefVar defVar,
+                                Node contextNode,
+                                String xpathExpression,
+                                Scope<Object> params)
+  {
+    String varName = defVar.getName();
+    QName varType = defVar.getType();
+
+    try
+    {
+      String contextNodeName = defVar.getContextNode();
+      String varValue = defVar.getValue();
+
+      // Does the var have a constant value?
+      if (varValue == null)
+      {
+        // No. Evaluate the Xpath to obtain the value.
+        if (contextNodeName != null)
+        {
+          // get the context node from parameters
+          contextNode = (Node) params.get(contextNodeName);
+        }
+
+        if (contextNode != null)
+        {
+          if (varType != null)
+          {
+            Object evalResult = xpath.evaluate(xpathExpression, contextNode, varType);
+            params.put(varName, evalResult);
           }
           else
           {
-            // If we have a variable value, we'll just use it!
-            parameters.put(varName, varValue);
+            // its gonna be a simple string evaluation
+            String evaluation = xpath.evaluate(xpathExpression, contextNode);
+            params.put(varName, evaluation);
           }
         }
-        catch (Exception e)
-        {
-          String msg =
-              String.format("Error in <def_var>: contextNode=%s, xpath=%s, returnObjectType=%s",
-                            contextNode, xpathExpression, varType);
-          logger.error(msg, e);
-        }
       }
+      else
+      {
+        // If we have a variable value, we'll just use it!
+        params.put(varName, varValue);
+      }
+      
+      return true;
+    }
+    catch (Exception e)
+    {
+      String msg =
+          String.format("Error in <def_var>: contextNode=%s, xpath=%s, returnObjectType=%s",
+                        contextNode, xpathExpression, varType);
+      logger.error(msg, e);
+      return false;
     }
   }
 
@@ -674,15 +692,8 @@ implements ScalarUnmarshallingContext, SemanticsConstants
   
         if (xpathString != null)
         {
-          // change absolute path to relative path to prevent infinite loop when
-          // a type refers to itself, e.g. <google_patent>.<references>
-          if (xpathString.startsWith("/"))
-          {
-            xpathString = "." + xpathString;
-          }
-          xpathString = assignVariablesInXPathString(params, xpathString);
-          xpathString = removeInvalidChars(xpathString);
-  
+          xpathString = getSemanticsScope().getXPathAmender().amend(xpathString, params);
+
           if (mmdField instanceof MetaMetadataCompositeField)
           {
             result.node = (Node) xpath.evaluate(xpathString, contextNode, XPathConstants.NODE);
@@ -728,38 +739,6 @@ implements ScalarUnmarshallingContext, SemanticsConstants
     }
 
     return evaluation;
-  }
-
-  /**
-   * Remove invalid characters, such as new lines, from xpath.
-   * 
-   * @param xpathString
-   * @return The new xpathString with invalid characters removed.
-   */
-  private String removeInvalidChars(String xpathString)
-  {
-    if (xpathString != null)
-    {
-      return xpathString.replace("\n", "").replace("\r", "");
-    }
-    return null;
-  }
-
-  /**
-   * Allow using variables, such as indexing ($i), in xpath expressions, to enhance its ability.
-   * 
-   * @param params
-   * @param xpathString
-   * @return
-   */
-  private String assignVariablesInXPathString(Scope<Object> params, String xpathString)
-  {
-    if (xpathString != null && xpathString.contains("$i"))
-    {
-      int elementIndex = (Integer) params.get(ELEMENT_INDEX_IN_COLLECTION);
-      xpathString = xpathString.replaceAll("\\$i", String.valueOf(elementIndex + 1));
-    }
-    return xpathString;
   }
 
   private String getFieldParserValueByKey(Map<String, String> fieldParserContext,

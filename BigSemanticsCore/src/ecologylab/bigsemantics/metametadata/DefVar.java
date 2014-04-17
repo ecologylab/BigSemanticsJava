@@ -1,10 +1,14 @@
 package ecologylab.bigsemantics.metametadata;
 
+import java.util.List;
+
 import javax.xml.namespace.QName;
 import javax.xml.xpath.XPathConstants;
 
 import ecologylab.bigsemantics.actions.SemanticsConstants;
 import ecologylab.serialization.ElementState;
+import ecologylab.serialization.annotations.simpl_collection;
+import ecologylab.serialization.annotations.simpl_nowrap;
 import ecologylab.serialization.annotations.simpl_scalar;
 import ecologylab.serialization.types.ScalarType;
 
@@ -19,8 +23,9 @@ public class DefVar extends ElementState
 	/**
 	 * XPath to evaluate this variable
 	 */
-	@simpl_scalar
-	private String			xpath;
+	@simpl_collection("xpath")
+	@simpl_nowrap
+	private List<String> xpaths;
 
 	/**
 	 * The return type of this evaluation after applicatiopn of XPath
@@ -72,18 +77,9 @@ public class DefVar extends ElementState
 	/**
 	 * @return the xpath
 	 */
-	public final String getXpath()
+	public final List<String> getXpaths()
 	{
-		return xpath;
-	}
-
-	/**
-	 * @param xpath
-	 *          the xpath to set
-	 */
-	public final void setXpath(String xpath)
-	{
-		this.xpath = xpath;
+		return xpaths;
 	}
 
 	/**
