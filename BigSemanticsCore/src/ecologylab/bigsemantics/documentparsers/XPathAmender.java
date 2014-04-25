@@ -68,7 +68,7 @@ public class XPathAmender implements SemanticsConstants
     if (xpath.contains(LOOP_VAR))
     {
       int elementIndex = (Integer) params.get(ELEMENT_INDEX_IN_COLLECTION);
-      xpath.replace(LOOP_VAR, String.valueOf(elementIndex + 1));
+      xpath = xpath.replace(LOOP_VAR, String.valueOf(elementIndex + 1));
     }
     return xpath;
   }
