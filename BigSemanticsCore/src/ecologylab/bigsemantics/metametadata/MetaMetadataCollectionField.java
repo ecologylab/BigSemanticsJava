@@ -62,6 +62,15 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 	 */
 	@simpl_scalar
 	protected String							childUseValueAsLabel;
+	
+	/**
+	 * to show composite children expanded
+	 */
+	@simpl_scalar
+	private boolean								childShowExpandedInitially;
+	
+	@simpl_scalar
+	private boolean								childShowExpandedAlways;
 
 	public MetaMetadataCollectionField()
 	{
@@ -444,6 +453,14 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 
 	public String getChildUseValueAsLabel() {
 		return childUseValueAsLabel;
+	}
+	
+	public boolean isChildShowExpandedInitially() {
+		return childShowExpandedInitially;
+	}
+
+	public boolean isChildShowExpandedAlways() {
+		return childShowExpandedAlways;
 	}
 	
 }
