@@ -1,12 +1,10 @@
 package ecologylab.bigsemantics.downloadcontrollers;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -15,9 +13,6 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Charsets;
-
-import ecologylab.bigsemantics.Utils;
 import ecologylab.net.ParsedURL;
 
 /**
@@ -25,7 +20,7 @@ import ecologylab.net.ParsedURL;
  * 
  * @author colton
  */
-public class DefaultDownloadController implements DownloadController
+public class DefaultDownloadController extends AbstractDownloadController
 {
 
   static Logger             logger;
@@ -49,19 +44,11 @@ public class DefaultDownloadController implements DownloadController
 
   private String            httpStatusMessage;
 
-  private InputStream       connectionStream;
-
   private ParsedURL         originalLocation;
 
   private List<ParsedURL>   redirectedLocations;
 
   private HttpURLConnection connection;
-
-  private String            content;
-
-  private Object            contentLock   = new Object();
-
-  private InputStream       contentStream;
 
   /**
    * Opens the HttpURLConnection to the specified location and downloads the resource
@@ -123,7 +110,8 @@ public class DefaultDownloadController implements DownloadController
 
       if (successStatus)
       {
-        connectionStream = connection.getInputStream();
+        InputStream contentStream = connection.getInputStream();
+        this.setInputStream(contentStream);
         httpStatusMessage = connection.getResponseMessage();
       }
     }
@@ -254,45 +242,6 @@ public class DefaultDownloadController implements DownloadController
   public String getHeader(String name)
   {
     return connection.getHeaderField(name);
-  }
-
-  public String getContent() throws IOException
-  {
-    if (content == null)
-    {
-      synchronized (contentLock)
-      {
-        if (content == null)
-        {
-          content = Utils.readInputStream(connectionStream);
-          String charsetName = this.getCharset();
-          Charset charset = Utils.getCharsetByName(charsetName, Charsets.UTF_8);
-          contentStream = new ByteArrayInputStream(content.getBytes(charset));
-        }
-      }
-    }
-    return content;
-  }
-
-  /**
-   * Returns an input stream which reads from the connection
-   * 
-   * @return an input stream which reads from the connection
-   */
-  public InputStream getInputStream()
-  {
-    if (content == null)
-    {
-      try
-      {
-        getContent();
-      }
-      catch (IOException e)
-      {
-        logger.error("Error when reading content from the network connection", e);
-      }
-    }
-    return contentStream;
   }
 
 }

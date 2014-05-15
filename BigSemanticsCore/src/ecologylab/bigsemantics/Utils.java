@@ -97,7 +97,7 @@ public class Utils
   {
     if (charsetName == null)
     {
-      charsetName = "UTF8";
+      return defaultCharset;
     }
     try
     {
@@ -112,7 +112,12 @@ public class Utils
 
   public static String readInputStream(InputStream inputStream) throws IOException
   {
-    BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
+    return readInputStream(inputStream, Charsets.UTF_8);
+  }
+
+  public static String readInputStream(InputStream inputStream, Charset charset) throws IOException
+  {
+    BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, charset));
     StringBuilder sb = StringBuilderBaseUtils.acquire();
     char[] buf = new char[BUF_SIZE];
     while (true)

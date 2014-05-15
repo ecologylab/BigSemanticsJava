@@ -466,7 +466,7 @@ ISimplSerializationPre, ISimplDeserializationPost
 		else
 			this.metaMetadata = metaMetadata.getInheritedMmd();
 		
-		String metaMetadataName = metaMetadata.getName();
+		String metaMetadataName = this.metaMetadata.getName();
 		this.setMetaMetadataNameMetadata(new MetadataString(metaMetadataName));
 	}
 
