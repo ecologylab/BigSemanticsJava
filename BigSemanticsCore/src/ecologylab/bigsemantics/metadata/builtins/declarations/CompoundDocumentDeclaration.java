@@ -75,6 +75,10 @@ public class CompoundDocumentDeclaration extends Document
 	@mm_name("main_audio")
 	private List<Audio> mainAudio;
 
+	@simpl_collection("document")
+	@mm_name("article_bodies")
+	private List<Document> articleBodies;
+
 	public CompoundDocumentDeclaration()
 	{ super(); }
 
@@ -285,5 +289,35 @@ public class CompoundDocumentDeclaration extends Document
 	public void setMainAudio(List<Audio> mainAudio)
 	{
 		this.mainAudio = mainAudio;
+	}
+
+	public List<Document> getArticleBodies()
+	{
+		return articleBodies;
+	}
+
+  // lazy evaluation:
+  public List<Document> articleBodies()
+  {
+    if (articleBodies == null)
+      articleBodies = new ArrayList<Document>();
+    return articleBodies;
+  }
+
+  // addTo:
+  public void addToArticleBodies(Document element)
+  {
+    articleBodies().add(element);
+  }
+
+  // size:
+  public int articleBodiesSize()
+  {
+    return articleBodies == null ? 0 : articleBodies.size();
+  }
+
+	public void setArticleBodies(List<Document> articleBodies)
+	{
+		this.articleBodies = articleBodies;
 	}
 }
