@@ -21,9 +21,9 @@ public class FieldParserForAcmReferences extends FieldParser
 
 	public static final String	AUTHOR_LIST						= "$author_list";
 
-	private static final int		MINIMAL_TITLE_LENGTH	= 5;
+	private static final int		MINIMAL_TITLE_LENGTH	= 10;
 
-	private Pattern							pAuthors							= Pattern.compile("\\s*(?:and\\s*)?([A-Z][a-z]+(-[A-Z][a-z]+)?, [A-Z]\\.(?:\\s*[A-Z]\\.)?)(?:\\s*,)?");
+	private Pattern							pAuthors							= Pattern.compile("\\s*(?:and\\s*)?((?:v[ao]n\\s*)?[A-Z][a-z]+(-[A-Z][a-z]+)?, [A-Z]\\.(?:\\s*[A-Z]\\.)?)(?:\\s*,)?");
 
 	@Override
 	public Map<String, String> getKeyValuePairResult(FieldParserElement parserElement, String input)
@@ -35,66 +35,16 @@ public class FieldParserForAcmReferences extends FieldParser
 		Flavor flavor = Flavor.UNKNOWN;
 		if (input.contains(" , ") || input.contains("doi>") || !input.contains("."))
 			flavor = Flavor.ACM_STANDARD;
-		else if (input.matches("^[A-Z][a-z]+, [A-Z]\\..*"))
+		else if (input.matches("^(\\d+\\.\\s*)?[A-Z][a-z]+, [A-Z]\\..*"))
 			flavor = Flavor.BRIEF;
 
 		switch (flavor)
 		{
 		case ACM_STANDARD:
-			String[] authorListAndOther = input.split("(?<=\\S),\\s", 2);
-			if (authorListAndOther.length == 2)
-			{
-				String authorList = authorListAndOther[0];
-				if (authorList != null)
-					result.put(AUTHOR_LIST, authorList.trim());
-				String other = authorListAndOther[1];
-				if (other != null)
-				{
-					String[] titleAndOther = other.split(",\\s(?=[A-Z])", 2);
-					if (titleAndOther.length == 2)
-					{
-						String title = titleAndOther[0];
-						String other0 = titleAndOther[1];
-						if (title != null)
-							result.put(TITLE, trimUntilLetter(title).trim());
-						if (other0 != null)
-							result.put(OTHER, trimUntilLetter(other0).trim());
-					}
-				}
-			}
+			parseStandard(input, result);
 			break;
 		case BRIEF:
-			Matcher m = pAuthors.matcher(input);
-			int nextPos = 0;
-			StringBuilder authors = new StringBuilder();
-			while (m.find())
-			{
-				if (nextPos != m.start()) // assume that author names must be adjacent
-					break;
-				if (nextPos > 0)
-					authors.append(" , ");
-				authors.append(m.group(1));
-				nextPos = m.end();
-			}
-			result.put(AUTHOR_LIST, authors.toString());
-
-			int beginTitle = nextPos;
-			nextPos = nextPos + MINIMAL_TITLE_LENGTH;
-			if (nextPos > input.length())
-				nextPos = input.length();
-			nextPos = skipCharsUntil(input, nextPos, ",.");
-			int endTitle = nextPos;
-
-			nextPos = skipChars(input, nextPos, ", .");
-			if (Character.isLowerCase(input.charAt(nextPos)) && !input.startsWith("in ", nextPos))
-			{
-				endTitle = skipCharsUntil(input, nextPos, ",.");
-				nextPos = skipChars(input, endTitle, ", .");
-			}
-			String title = input.substring(beginTitle, endTitle);
-			result.put(TITLE, trimUntilLetter(title).trim());
-			String other = input.substring(nextPos);
-			result.put(OTHER, trimUntilLetter(other).trim());
+			parseBrief(input, result);
 			break;
 		default:
 			result.put(TITLE, input);
@@ -102,6 +52,95 @@ public class FieldParserForAcmReferences extends FieldParser
 
 		return result;
 	}
+
+	/**
+	 * Parse ACM references in standard format.
+	 * @param input
+	 * @param result
+	 */
+  private void parseStandard(String input, Map<String, String> result)
+  {
+    String[] authorListAndOther = input.split("(?<=\\S),\\s", 2);
+    if (authorListAndOther.length == 2)
+    {
+    	String authorList = authorListAndOther[0];
+    	if (authorList != null)
+    		result.put(AUTHOR_LIST, authorList.trim());
+    	String other = authorListAndOther[1];
+    	if (other != null)
+    	{
+    		String[] titleAndOther = other.split(",\\s(?=[A-Z])", 2);
+    		if (titleAndOther.length == 2)
+    		{
+    			String title = titleAndOther[0];
+    			String other0 = titleAndOther[1];
+    			if (title != null)
+    				result.put(TITLE, trimUntilLetter(title).trim());
+    			if (other0 != null)
+    				result.put(OTHER, trimUntilLetter(other0).trim());
+    		}
+    	}
+    }
+  }
+
+	/**
+	 * Parse ACM references in a non-standard, brief format.
+	 * 
+	 * @param input
+	 * @param result
+	 */
+  private void parseBrief(String input, Map<String, String> result)
+  {
+    if (input == null)
+    {
+      return;
+    }
+
+    input = trimUntilLetter(input);
+    
+    String authorList = null;
+    int nextPos = 0;
+    int et_al_pos = input.indexOf("et al.");
+    if (et_al_pos >= 0)
+    {
+      authorList = input.substring(0, et_al_pos + 6);
+      nextPos = et_al_pos + 6;
+    }
+    else
+    {
+      Matcher m = pAuthors.matcher(input);
+      StringBuilder authors = new StringBuilder();
+      while (m.find())
+      {
+        if (nextPos != m.start()) // assume that author names must be adjacent
+          break;
+        if (nextPos > 0)
+          authors.append(" , ");
+        authors.append(m.group(1));
+        nextPos = m.end();
+      }
+      authorList = authors.toString();
+    }
+    result.put(AUTHOR_LIST, authorList);
+
+    int beginTitle = nextPos;
+    nextPos = nextPos + MINIMAL_TITLE_LENGTH;
+    if (nextPos > input.length())
+    	nextPos = input.length();
+    nextPos = skipCharsUntil(input, nextPos, ",.");
+    int endTitle = nextPos;
+
+    nextPos = skipChars(input, nextPos, ", .");
+    if (Character.isLowerCase(input.charAt(nextPos)) && !input.startsWith("in ", nextPos))
+    {
+    	endTitle = skipCharsUntil(input, nextPos, ",.");
+    	nextPos = skipChars(input, endTitle, ", .");
+    }
+    String title = input.substring(beginTitle, endTitle);
+    result.put(TITLE, trimUntilLetter(title).trim());
+    String other = input.substring(nextPos);
+    result.put(OTHER, trimUntilLetter(other).trim());
+  }
 
 	private static int skipChars(String s, int start, String chars)
 	{
