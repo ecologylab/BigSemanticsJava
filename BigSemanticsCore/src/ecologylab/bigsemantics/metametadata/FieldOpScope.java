@@ -10,6 +10,7 @@ public class FieldOpScope
   static final Class[]       CLASSES =
                                      {
                                      RegexOp.class,
+                                     UrlDecodeOp.class,
                                      };
 
   public static SimplTypesScope get()
