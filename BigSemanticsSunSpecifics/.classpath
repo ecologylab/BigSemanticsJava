@@ -3,9 +3,9 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/BigSemanticsCore"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/imageMetadataExtractor"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/simplCore"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/simplSunSpecifics"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/BigSemanticsGeneratedClassesJava"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="/lib/BigSemanticsGeneratedClassesJava.jar"/>
-	<classpathentry kind="lib" path="/lib/simplSunSpecifics.jar"/>
-	<classpathentry kind="lib" path="/lib/simplCore.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
