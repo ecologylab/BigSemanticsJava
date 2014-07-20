@@ -5,9 +5,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -32,22 +30,6 @@ public class DefaultDownloadController extends AbstractDownloadController
 
   public static final int   MAX_REDIRECTS = 10;
 
-  private boolean           successStatus;
-
-  private int               httpStatus;
-
-  private String            charset;
-
-  private String            mimeType;
-
-  private String            userAgent;
-
-  private String            httpStatusMessage;
-
-  private ParsedURL         originalLocation;
-
-  private List<ParsedURL>   redirectedLocations;
-
   private HttpURLConnection connection;
 
   /**
@@ -59,28 +41,29 @@ public class DefaultDownloadController extends AbstractDownloadController
    */
   public boolean accessAndDownload(ParsedURL location) throws IOException
   {
-
-    originalLocation = location;
+    setLocation(location);
 
     try
     {
-      connection = (HttpURLConnection) originalLocation.url().openConnection();
+      connection = (HttpURLConnection) location.url().openConnection();
 
       // Attempt to follow redirects until redirect limit is reached
       int redirects = 0;
       Set<String> redirectedLocs = new HashSet<String>();
       while (true)
       {
+        String userAgent = getUserAgent();
         if (userAgent != null)
         {
           connection.setRequestProperty("User-Agent", userAgent);
         }
-        httpStatus = connection.getResponseCode();
+        int httpStatus = connection.getResponseCode();
+        setStatus(httpStatus);
 
         if (isRedirecting(httpStatus) && redirects <= MAX_REDIRECTS)
         {
           String redirectedLoc = connection.getHeaderField("Location");
-          addRedirectedLocation(redirectedLocs, redirectedLoc);
+          addToSet(redirectedLocs, redirectedLoc);
           connection = (HttpURLConnection) new URL(redirectedLoc).openConnection();
         }
         else
@@ -92,7 +75,7 @@ public class DefaultDownloadController extends AbstractDownloadController
       {
         for (String loc : redirectedLocs)
         {
-          redirectedLocations().add(ParsedURL.getAbsolute(loc));
+          addRedirectedLocation(ParsedURL.getAbsolute(loc));
         }
       }
 
@@ -100,28 +83,31 @@ public class DefaultDownloadController extends AbstractDownloadController
       {
         String[] contentType = connection.getContentType().split(";");
 
-        mimeType = contentType[0];
-        charset = contentType.length > 1
+        setMimeType(contentType[0]);
+        String charset = contentType.length > 1
             ? contentType[1].trim().substring("charset=".length())
             : null;
+        setCharset(charset);
       }
 
-      successStatus = (200 <= httpStatus && httpStatus < 300);
+      int httpStatus = getStatus();
+      boolean isGood = (200 <= httpStatus && httpStatus < 300);
+      setIsGood(isGood);
 
-      if (successStatus)
+      if (isGood)
       {
         InputStream contentStream = connection.getInputStream();
         this.setInputStream(contentStream);
-        httpStatusMessage = connection.getResponseMessage();
+        setStatusMessage(connection.getResponseMessage());
       }
     }
     catch (MalformedURLException e)
     {
       logger.error("Error connecting to " + location, e);
-      successStatus = false;
+      setIsGood(false);
     }
 
-    return successStatus;
+    return isGood();
   }
 
   private boolean isRedirecting(int httpStatus)
@@ -130,118 +116,12 @@ public class DefaultDownloadController extends AbstractDownloadController
         || httpStatus == HttpURLConnection.HTTP_MOVED_TEMP;
   }
 
-  /**
-   * Sets the user agent
-   * 
-   * @param userAgent
-   *          a string representation of the user agent
-   */
-  public void setUserAgent(String userAgent)
+  private void addToSet(Set<String> redirectedLocs, String redirectedLoc)
   {
-    this.userAgent = userAgent;
-  }
-
-  /**
-   * Returns a boolean indicating if the HTTP response code is that of a good connection
-   * 
-   * @return a boolean indicating if the HTTP response code is that of a good connection
-   */
-  public boolean isGood()
-  {
-    return successStatus;
-  }
-
-  /**
-   * Returns the status code of the HTTP response message for the connection
-   * 
-   * @return the status code of the HTTP response message for the connection
-   */
-  public int getStatus()
-  {
-    return httpStatus;
-  }
-
-  /**
-   * Returns the message from the HTTP response message
-   * 
-   * @return the message from the HTTP response message
-   */
-  public String getStatusMessage()
-  {
-    return httpStatusMessage;
-  }
-
-  /**
-   * Returns a ParsedURL object corresponding to the original resource location used to initiate the
-   * connection. This value does not change if the connection is redirected
-   * 
-   * @return a ParsedURL object corresponding to the original resource location used to initiate the
-   *         connection
-   */
-  public ParsedURL getLocation()
-  {
-    return originalLocation;
-  }
-
-  private List<ParsedURL> redirectedLocations()
-  {
-    if (redirectedLocations == null)
-    {
-      redirectedLocations = new ArrayList<ParsedURL>();
-    }
-    return redirectedLocations;
-  }
-
-  /**
-   * Returns a ParsedURL object corresponding to the location of the resource with which the
-   * connection is associated. This value does change with redirects
-   * 
-   * @return a ParsedURL object corresponding to the location of the resource with which the
-   *         connection is associated
-   */
-  public List<ParsedURL> getRedirectedLocations()
-  {
-    return redirectedLocations;
-  }
-
-  private void addRedirectedLocation(Set<String> redirectedLocs, String redirectedLoc)
-  {
-    if (redirectedLoc != null && !redirectedLoc.equals(originalLocation.toString()))
+    if (redirectedLoc != null && !redirectedLoc.equals(getLocation().toString()))
     {
       redirectedLocs.add(redirectedLoc);
     }
-  }
-
-  /**
-   * Returns the String representation of the content type
-   * 
-   * @return the String representation of the content type
-   */
-  public String getMimeType()
-  {
-    return mimeType;
-  }
-
-  /**
-   * Returns the content encoding type (character set)
-   * 
-   * @return a String representation of the content encoding type (character set)
-   */
-  public String getCharset()
-  {
-    return charset;
-  }
-
-  /**
-   * Returns the content of the named header field
-   * 
-   * @param name
-   *          the name of the requested header field
-   * @return a String of the content of the named header field
-   */
-  public String getHeader(String name)
-  {
-    return connection.getHeaderField(name);
   }
 
 }

@@ -15,7 +15,7 @@ public class HttpResponse
 {
 
   @simpl_scalar
-  private String       requestedUrl;
+  private String       location;
 
   @simpl_scalar
   private int          httpRespCode;
@@ -42,16 +42,16 @@ public class HttpResponse
    * Other locations, e.g. redirected locations.
    */
   @simpl_collection("location")
-  private List<String> otherLocations;
+  private List<String> additionalLocations;
 
-  public String getRequestedUrl()
+  public String getLocation()
   {
-    return requestedUrl;
+    return location;
   }
 
-  public void setRequestedUrl(String requestedUrl)
+  public void setLocation(String location)
   {
-    this.requestedUrl = requestedUrl;
+    this.location = location;
   }
 
   public int getHttpRespCode()
@@ -104,23 +104,23 @@ public class HttpResponse
     this.content = content;
   }
 
-  public List<String> getOtherLocations()
+  public List<String> getAdditionalLocations()
   {
-    return otherLocations;
+    return additionalLocations;
   }
 
-  public void setOtherLocations(List<String> otherLocations)
+  public void setAdditionalLocations(List<String> additionalLocations)
   {
-    this.otherLocations = otherLocations;
+    this.additionalLocations = additionalLocations;
   }
 
-  public void addOtherLocation(String location)
+  public void addAdditionalLocation(String location)
   {
-    if (otherLocations == null)
+    if (additionalLocations == null)
     {
-      otherLocations = new ArrayList<String>();
+      additionalLocations = new ArrayList<String>();
     }
-    otherLocations.add(location);
+    additionalLocations.add(location);
   }
 
 }

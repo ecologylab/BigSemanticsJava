@@ -102,7 +102,7 @@ public class TestMmName
     HttpResponse response = newDefaultResponse();
     String initialUrl = "http://redirect.com/";
     String realUrl = "http://dl.acm.org/citation.cfm?id=1234567";
-    response.addOtherLocation(realUrl); // mimic redirection.
+    response.addAdditionalLocation(realUrl); // mimic redirection.
     factory.setResponse(initialUrl, response);
 
     Document doc = getDocument(initialUrl);

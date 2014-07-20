@@ -672,5 +672,5 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 		if (this.attributeChangeListener != null)
 			attributeChangeListener.usedForInlineMmdDefChanged(usedForInlineMmdDef);
 	}
-	
+
 }

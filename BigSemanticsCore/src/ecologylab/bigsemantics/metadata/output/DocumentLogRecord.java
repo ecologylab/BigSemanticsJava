@@ -49,6 +49,9 @@ public class DocumentLogRecord extends DownloadableLogRecord
   @simpl_composite
   private DocumentErrorRecord errorRecord;
 
+  @simpl_scalar
+  private long msPageCacheLookup;
+
   public ParsedURL getDocumentUrl()
   {
     return documentUrl;
@@ -177,6 +180,16 @@ public class DocumentLogRecord extends DownloadableLogRecord
   public void setErrorRecord(DocumentErrorRecord errorRecord)
   {
     this.errorRecord = errorRecord;
+  }
+
+  public long getMsPageCacheLookup()
+  {
+    return msPageCacheLookup;
+  }
+
+  public void setMsPageCacheLookup(long msPageCacheLookup)
+  {
+    this.msPageCacheLookup = msPageCacheLookup;
   }
 
   static final public DocumentLogRecord DUMMY;

@@ -71,16 +71,16 @@ public class FakeDownloadController extends AbstractDownloadController
   @Override
   public ParsedURL getLocation()
   {
-    return result == null ? null : ParsedURL.getAbsolute(result.getRequestedUrl());
+    return result == null ? null : ParsedURL.getAbsolute(result.getLocation());
   }
 
   @Override
   public List<ParsedURL> getRedirectedLocations()
   {
-    if (result != null && result.getOtherLocations() != null && redirectedPurls == null)
+    if (result != null && result.getAdditionalLocations() != null && redirectedPurls == null)
     {
       redirectedPurls = new ArrayList<ParsedURL>();
-      for (String otherLoc : result.getOtherLocations())
+      for (String otherLoc : result.getAdditionalLocations())
       {
         redirectedPurls.add(ParsedURL.getAbsolute(otherLoc));
       }

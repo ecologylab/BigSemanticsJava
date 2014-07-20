@@ -3,7 +3,6 @@
  */
 package ecologylab.bigsemantics.metametadata;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -122,9 +121,14 @@ implements IMappable<String>//, HasLocalTranslationScope
 	@simpl_scalar
 	private boolean																	noCache;
 	
+	@simpl_scalar
+	private String                                  cacheLife;
+	
+	private long                                    cacheLifeMs                   = -1;
+	
 	private Map<MetaMetadataSelector, MetaMetadata>	reselectMap;
 	
-	SimplTypesScope																localMetadataTranslationScope;
+	SimplTypesScope																  localMetadataTranslationScope;
 
 	public MetaMetadata()
 	{
@@ -702,6 +706,69 @@ implements IMappable<String>//, HasLocalTranslationScope
 	public boolean isNoCache()
 	{
 		return noCache;
+	}
+	
+	public long getCacheLifeMs()
+	{
+	  if (cacheLifeMs >= 0)
+	  {
+	    return cacheLifeMs;
+	  }
+	  
+	  cacheLifeMs = getCacheLifeMsHelper(cacheLife);
+	  if (cacheLifeMs < 0)
+	  {
+      cacheLifeMs = getCacheLifeMsHelper(getRepository().getDefaultCacheLife());
+	  }
+	  if (cacheLifeMs < 0)
+	  {
+	    cacheLifeMs = 0;
+	  }
+	  return cacheLifeMs;
+	}
+	  
+	private long getCacheLifeMsHelper(String cacheLifeSpec)
+	{
+	  long num = -1;
+	  String unit = null;
+	  
+	  // parse cacheLife
+	  int i = 0;
+	  while (i < cacheLifeSpec.length() && Character.isDigit(cacheLifeSpec.charAt(i)))
+	  {
+      ++i;
+	  }
+	  if (i > 0 && i < cacheLifeSpec.length())
+	  {
+      num = Long.parseLong(cacheLifeSpec.substring(0, i));
+      unit = cacheLifeSpec.substring(i);
+	  }
+	  
+	  if (num > 0 && unit != null)
+	  {
+	    if (unit.equals("ms"))
+	    {
+	      return num;
+	    }
+	    if (unit.equals("s"))
+	    {
+	      return num * 1000;
+	    }
+	    if (unit.equals("m"))
+	    {
+	      return num * 1000 * 60;
+	    }
+	    if (unit.equals("h"))
+	    {
+	      return num * 1000 * 60 * 60;
+	    }
+	    if (unit.equals("d"))
+	    {
+	      return num * 1000 * 60 * 60 * 24;
+	    }
+	  }
+
+	  return -1;
 	}
 
 }

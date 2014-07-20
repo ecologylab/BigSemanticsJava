@@ -58,154 +58,157 @@ public class MetaMetadataRepository extends ElementState
 implements PackageSpecifier, DocumentParserTagNames
 {
 
-	private static final String	DEFAULT_STYLE_NAME = "default";
+  private static final String                                DEFAULT_STYLE_NAME              = "default";
 
-	static MetaMetadata			baseDocumentMM;
+  static MetaMetadata                                        baseDocumentMM;
 
-	static MetaMetadata			baseImageMM;
+  static MetaMetadata                                        baseImageMM;
 
-	// [region] de/serializable data fields.
+  // [region] de/serializable data fields.
 
-	/**
-	 * The name of the repository.
-	 */
-	@simpl_scalar
-	private String				name;
-	
-	private String        hash;
+  /**
+   * The name of the repository.
+   */
+  @simpl_scalar
+  private String                                             name;
 
-	/**
-	 * The package in which the class files have to be generated.
-	 */
-	@simpl_tag("package")
-	@simpl_scalar
-	private String				packageAttribute;
+  private String                                             hash;
 
-	/**
-	 * user agent strings.
-	 */
-	@simpl_map("user_agent")
-	private Map<String, UserAgent> userAgents;
+  /**
+   * The package in which the class files have to be generated.
+   */
+  @simpl_tag("package")
+  @simpl_scalar
+  private String                                             packageAttribute;
 
-	/**
-	 * default user agent string name.
-	 */
-	@simpl_scalar
-	private String 				defaultUserAgentName;
+  /**
+   * user agent strings.
+   */
+  @simpl_map("user_agent")
+  private Map<String, UserAgent>                             userAgents;
 
-	/**
-	 * definition of search engines.
-	 */
-	@simpl_composite
-	private SearchEngines 		searchEngines;
+  /**
+   * default user agent string name.
+   */
+  @simpl_scalar
+  private String                                             defaultUserAgentName;
+  
+  @simpl_scalar
+  private String                                             defaultCacheLife;
 
-	/**
-	 * definition of sites.
-	 */
-	@simpl_map("site")
-	private SemanticsSiteMap 	sites;
+  /**
+   * definition of search engines.
+   */
+  @simpl_composite
+  private SearchEngines                                      searchEngines;
 
-	/**
-	 * definition of name styles.
-	 */
-	@simpl_map("named_style")
-	private Map<String, NamedStyle> namedStyles;
+  /**
+   * definition of sites.
+   */
+  @simpl_map("site")
+  private SemanticsSiteMap                                   sites;
 
-	/**
-	 * definition of cookie processors.
-	 */
-	@simpl_nowrap
-	@simpl_collection("cookie_processing")
-	private ArrayList<CookieProcessing> cookieProcessors;
+  /**
+   * definition of name styles.
+   */
+  @simpl_map("named_style")
+  private Map<String, NamedStyle>                            namedStyles;
 
-	/**
-	 * definition of selectors. selectors are used to select a meta-metadata based on URL pattern or
-	 * MIME type / suffix.
-	 */
-	@simpl_map("selector")
-	@simpl_nowrap
-	private HashMapArrayList<String, MetaMetadataSelector> selectorsByName;
+  /**
+   * definition of cookie processors.
+   */
+  @simpl_nowrap
+  @simpl_collection("cookie_processing")
+  private ArrayList<CookieProcessing>                        cookieProcessors;
 
-	/**
-	 * The map from meta-metadata name (currently simple name, but might be extended to fully
-	 * qualified name in the future) to meta-metadata objects. This collection is filled during the
-	 * loading process.
-	 * 
-	 * @see {@code MetaMetadata}, {@code Mappable}
-	 */
-	@simpl_map("meta_metadata")
-	@simpl_nowrap
-	HashMapArrayList<String, MetaMetadata>	repositoryByName;
+  /**
+   * definition of selectors. selectors are used to select a meta-metadata based on URL pattern or
+   * MIME type / suffix.
+   */
+  @simpl_map("selector")
+  @simpl_nowrap
+  private HashMapArrayList<String, MetaMetadataSelector>     selectorsByName;
 
-	// [endregion]
+  /**
+   * The map from meta-metadata name (currently simple name, but might be extended to fully
+   * qualified name in the future) to meta-metadata objects. This collection is filled during the
+   * loading process.
+   * 
+   * @see {@code MetaMetadata}, {@code Mappable}
+   */
+  @simpl_map("meta_metadata")
+  @simpl_nowrap
+  HashMapArrayList<String, MetaMetadata>                     repositoryByName;
 
-	/**
-	 * package mmd scopes.
-	 */
-	@simpl_map("mmd_scope")
-	Map<String, MmdScope>                   packageMmdScopes;
+  // [endregion]
 
-	// [region] repository maps generated from repositoryByName. used for look-up.
+  /**
+   * package mmd scopes.
+   */
+  @simpl_map("mmd_scope")
+  Map<String, MmdScope>                                      packageMmdScopes;
 
-	/**
-	 * meta-metadata sorted by metadata class name.
-	 */
-	private HashMap<String, MetaMetadata> repositoryByClassName		= new HashMap<String, MetaMetadata>();
+  // [region] repository maps generated from repositoryByName. used for look-up.
 
-	/**
-	 * Repository by MIME type.
-	 */
-	private HashMap<String, MetaMetadata> repositoryByMime			= new HashMap<String, MetaMetadata>();
+  /**
+   * meta-metadata sorted by metadata class name.
+   */
+  private HashMap<String, MetaMetadata>                      repositoryByClassName           = new HashMap<String, MetaMetadata>();
 
-	/**
-	 * Repository by suffix.
-	 */
-	private HashMap<String, MetaMetadata> repositoryBySuffix		= new HashMap<String, MetaMetadata>();
+  /**
+   * Repository by MIME type.
+   */
+  private HashMap<String, MetaMetadata>                      repositoryByMime                = new HashMap<String, MetaMetadata>();
 
-	/**
-	 * Collection of URL prefixes.
-	 */
-	private PrefixCollection urlPrefixCollection					= new PrefixCollection('/');
+  /**
+   * Repository by suffix.
+   */
+  private HashMap<String, MetaMetadata>                      repositoryBySuffix              = new HashMap<String, MetaMetadata>();
 
-	/**
-	 * Repository of documents with domain as key.
-	 */
-	private HashMap<String, MetaMetadata> documentRepositoryByDomain= new HashMap<String, MetaMetadata>();
+  /**
+   * Collection of URL prefixes.
+   */
+  private PrefixCollection                                   urlPrefixCollection             = new PrefixCollection('/');
 
-	/**
-	 * Repository of documents with noAnchorNoQuery URL string as key.
-	 */
-	private HashMap<String, ArrayList<StrippedUrlEntry>> documentRepositoryByUrlStripped	= new HashMap<String, ArrayList<StrippedUrlEntry>>();
+  /**
+   * Repository of documents with domain as key.
+   */
+  private HashMap<String, MetaMetadata>                      documentRepositoryByDomain      = new HashMap<String, MetaMetadata>();
 
-	/**
-	 * Repository of documents with URL pattern as key.
-	 */
-	private HashMap<String, ArrayList<RepositoryPatternEntry>> documentRepositoryByPattern = new HashMap<String, ArrayList<RepositoryPatternEntry>>();
+  /**
+   * Repository of documents with noAnchorNoQuery URL string as key.
+   */
+  private HashMap<String, ArrayList<StrippedUrlEntry>>       documentRepositoryByUrlStripped = new HashMap<String, ArrayList<StrippedUrlEntry>>();
 
-	/**
-	 * Repository of images with noAnchroNoQuery URL string as key.
-	 */
-	// private HashMap<String, MetaMetadata> imageRepositoryByUrlStripped = new HashMap<String,
-	// MetaMetadata>();
+  /**
+   * Repository of documents with URL pattern as key.
+   */
+  private HashMap<String, ArrayList<RepositoryPatternEntry>> documentRepositoryByPattern     = new HashMap<String, ArrayList<RepositoryPatternEntry>>();
 
-	/**
-	 * Repository of images with URL pattern as key.
-	 */
-	// private HashMap<String, ArrayList<RepositoryPatternEntry>> imageRepositoryByPattern = new
-	// HashMap<String, ArrayList<RepositoryPatternEntry>>();
+  /**
+   * Repository of images with noAnchroNoQuery URL string as key.
+   */
+  // private HashMap<String, MetaMetadata> imageRepositoryByUrlStripped = new HashMap<String,
+  // MetaMetadata>();
 
-	// [endregion]
+  /**
+   * Repository of images with URL pattern as key.
+   */
+  // private HashMap<String, ArrayList<RepositoryPatternEntry>> imageRepositoryByPattern = new
+  // HashMap<String, ArrayList<RepositoryPatternEntry>>();
 
-	/**
-	 * The metadata translation scope used by this repository.
-	 */
-	private SimplTypesScope metadataTScope;
+  // [endregion]
 
-	private LinkedMetadataMonitor linkedMetadataMonitor = new LinkedMetadataMonitor();
-	
-	//static Logger							log4j					= Logger.getLogger(BaseLogger.baseLogger);
+  /**
+   * The metadata translation scope used by this repository.
+   */
+  private SimplTypesScope                                    metadataTScope;
 
-	private static boolean initializedTypes;
+  private LinkedMetadataMonitor                              linkedMetadataMonitor           = new LinkedMetadataMonitor();
+
+  // static Logger log4j = Logger.getLogger(BaseLogger.baseLogger);
+
+  private static boolean                                     initializedTypes;
 
 	static
 	{
@@ -248,6 +251,11 @@ implements PackageSpecifier, DocumentParserTagNames
 	public NamedStyle lookupStyle(String styleName)
 	{
 		return namedStyles == null ? null : namedStyles.get(styleName);
+	}
+	
+	public String getDefaultCacheLife()
+	{
+	  return defaultCacheLife;
 	}
 	
 	public String getDefaultUserAgentString()

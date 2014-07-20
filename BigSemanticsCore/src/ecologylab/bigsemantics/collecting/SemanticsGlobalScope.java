@@ -114,11 +114,6 @@ public class SemanticsGlobalScope extends MetaMetadataRepositoryInit
     xpathAmender = createXPathAmender();
   }
   
-  public String getMetaMetadataRepositoryHash()
-  {
-    return getMetaMetadataRepository().getHash();
-  }
-
   public IDOMProvider constructDOMProvider()
   {
     return ReflectionTools.getInstance(domProviderClass);

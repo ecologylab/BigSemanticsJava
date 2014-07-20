@@ -16,7 +16,7 @@ import ecologylab.serialization.annotations.simpl_scalar;
  * 
  * @author ajit
  */
-public class PersistenceMetadata
+public class PersistenceMetaInfo
 {
 
   /**
@@ -38,16 +38,17 @@ public class PersistenceMetadata
   private List<ParsedURL> additionalLocations;
 
   /**
-   * Helper object for synchronization.
+   * The charset of the stored raw page.
    */
-  final private Object    additionalLocationsLock = new Object();
+  @simpl_scalar
+  private String          charset;
 
   /**
    * The MIME type when accessing the document on the web.
    */
   @simpl_scalar
   private String          mimeType;
-
+  
   /**
    * The time when accessing the original raw document on the web.
    */
@@ -62,16 +63,10 @@ public class PersistenceMetadata
   private Date            persistenceTime;
 
   /**
-   * The version number of the meta-metadata repository used to extract this document.
-   */
-  @simpl_scalar
-  private long            repositoryVersion;
-
-  /**
    * The hash of the meta-metadata repository used to extract this document.
    */
   @simpl_scalar
-  private String          repositoryHash;
+  private String          mmdHash;
 
   public String getDocId()
   {
@@ -107,7 +102,7 @@ public class PersistenceMetadata
   {
     if (additionalLocations == null)
     {
-      synchronized (additionalLocationsLock)
+      synchronized (this)
       {
         if (additionalLocations == null)
         {
@@ -123,6 +118,13 @@ public class PersistenceMetadata
     this.additionalLocations().add(additionalLocation);
   }
 
+  /**
+   * If the given location is a location of this document (can be the canonical location or an
+   * additional location).
+   * 
+   * @param location
+   * @return
+   */
   public boolean isOneLocation(ParsedURL location)
   {
     if (this.location == location)
@@ -134,6 +136,16 @@ public class PersistenceMetadata
       return true;
     }
     return false;
+  }
+
+  public String getCharset()
+  {
+    return charset;
+  }
+
+  public void setCharset(String charset)
+  {
+    this.charset = charset;
   }
 
   public String getMimeType()
@@ -166,24 +178,14 @@ public class PersistenceMetadata
     this.persistenceTime = persistenceTime;
   }
 
-  public long getRepositoryVersion()
+  public String getMmdHash()
   {
-    return repositoryVersion;
+    return mmdHash;
   }
 
-  public void setRepositoryVersion(long repositoryVersion)
+  public void setMmdHash(String mmdHash)
   {
-    this.repositoryVersion = repositoryVersion;
-  }
-
-  public String getRepositoryHash()
-  {
-    return repositoryHash;
-  }
-
-  public void setRepositoryHash(String repositoryHash)
-  {
-    this.repositoryHash = repositoryHash;
+    this.mmdHash = mmdHash;
   }
 
 }

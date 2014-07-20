@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -21,12 +22,15 @@ import ecologylab.bigsemantics.collecting.DownloadStatus;
 import ecologylab.bigsemantics.collecting.SemanticsDownloadMonitors;
 import ecologylab.bigsemantics.collecting.SemanticsGlobalScope;
 import ecologylab.bigsemantics.collecting.SemanticsSite;
-import ecologylab.bigsemantics.documentcache.PersistenceMetadata;
+import ecologylab.bigsemantics.documentcache.PersistenceMetaInfo;
 import ecologylab.bigsemantics.documentcache.PersistentDocumentCache;
 import ecologylab.bigsemantics.documentparsers.DocumentParser;
+import ecologylab.bigsemantics.downloadcontrollers.CachedPageDownloadController;
 import ecologylab.bigsemantics.downloadcontrollers.DownloadController;
+import ecologylab.bigsemantics.downloadcontrollers.HttpResponse;
 import ecologylab.bigsemantics.html.documentstructure.SemanticInLinks;
 import ecologylab.bigsemantics.metadata.output.DocumentLogRecord;
+import ecologylab.bigsemantics.metadata.scalar.MetadataParsedURL;
 import ecologylab.bigsemantics.metametadata.MetaMetadata;
 import ecologylab.bigsemantics.metametadata.MetaMetadataRepository;
 import ecologylab.bigsemantics.model.text.ITermVector;
@@ -36,7 +40,6 @@ import ecologylab.bigsemantics.seeding.Seed;
 import ecologylab.bigsemantics.seeding.SeedDistributor;
 import ecologylab.collections.SetElement;
 import ecologylab.concurrent.Downloadable;
-import ecologylab.concurrent.DownloadableLogRecord;
 import ecologylab.generic.Continuation;
 import ecologylab.io.DownloadProcessor;
 import ecologylab.net.ParsedURL;
@@ -431,16 +434,72 @@ public class DocumentClosure extends SetElement
     PersistentDocumentCache pCache = semanticsScope.getPersistentDocumentCache();
 
     // Check the persistent cache first
+    PersistenceMetaInfo cacheMetaInfo = null;
+    String cachedRawContent = null;
     Document cachedDoc = null;
     if (pCache != null && !noCache)
     {
-      cachedDoc = retrieveFromPersistentCache(pCache, location);
+      long t0 = System.currentTimeMillis();
+      cacheMetaInfo = pCache.getMetaInfo(location);
+      getLogRecord().setMsPageCacheLookup(System.currentTimeMillis() - t0);
+
+      if (pCache != null && cacheMetaInfo != null)
+      {
+        getLogRecord().setId(cacheMetaInfo.getDocId());
+
+        // check if cached raw content is too old.
+        Date accessTime = cacheMetaInfo.getAccessTime();
+        Date currentTime = new Date();
+        long diff = currentTime.getTime() - accessTime.getTime();
+        if (diff <= metaMetadata.getCacheLifeMs())
+        {
+          // it's not too old, we should use the cached raw content.
+          cachedRawContent = pCache.retrieveRawContent(cacheMetaInfo);
+
+          getLogRecord().setHtmlCacheHit(true);
+        }
+        
+        // check if cached document needs to be re-extracted
+        String currentHash = metaMetadata.getHash();
+        if (currentHash.equals(cacheMetaInfo.getMmdHash()))
+        {
+          cachedDoc = pCache.retrieveDoc(cacheMetaInfo);
+        }
+      }
+
+      getLogRecord().setMsMetadataCacheLookup(System.currentTimeMillis() - t0);
+      if (cachedDoc != null)
+      {
+        getLogRecord().setPersisentDocumentCacheHit(true);
+      }
     }
 
     // If not in the persistent cache, download the raw page and parse
-    if (cachedDoc == null)
+    if (cachedDoc != null)
     {
-      DownloadController downloadController = downloadRawPage(location);
+      changeDocument(cachedDoc);
+    }
+    else
+    {
+      DownloadController downloadController = null;
+      boolean rawContentDownloaded = false;
+      if (cachedRawContent != null)
+      {
+        downloadController =
+            new CachedPageDownloadController(cacheMetaInfo.getLocation(),
+                                             cacheMetaInfo.getAdditionalLocations(),
+                                             cacheMetaInfo.getCharset(),
+                                             cacheMetaInfo.getMimeType(),
+                                             200,
+                                             "OK",
+                                             cachedRawContent);
+      }
+      else
+      {
+        downloadController = downloadRawPage(location);
+        rawContentDownloaded = true;
+      }
+
       if (downloadController.isGood())
       {
         handleRedirections(downloadController, location);
@@ -452,7 +511,7 @@ public class DocumentClosure extends SetElement
           doParse(metaMetadata);
           if (pCache != null && !noCache)
           {
-            doPersist(pCache, downloadController);
+            doPersist(pCache, downloadController, document, rawContentDownloaded);
           }
         }
       }
@@ -463,31 +522,9 @@ public class DocumentClosure extends SetElement
         return;
       }
     }
-    else
-    {
-      changeDocument(cachedDoc);
-    }
 
     document.downloadAndParseDone(documentParser);
     setDownloadStatus(DownloadStatus.DOWNLOAD_DONE);
-  }
-
-  private Document retrieveFromPersistentCache(PersistentDocumentCache pCache, ParsedURL location)
-  {
-    Document cachedDoc = null;
-    long t0 = System.currentTimeMillis();
-    PersistenceMetadata pMetadata = pCache.getMetadata(location);
-    String repoHash = semanticsScope.getMetaMetadataRepositoryHash();
-    if (pMetadata != null && repoHash.equals(pMetadata.getRepositoryHash()))
-    {
-      cachedDoc = pCache.retrieve(location);
-    }
-    getLogRecord().setMsMetadataCacheLookup(System.currentTimeMillis() - t0);
-    if (cachedDoc != null)
-    {
-      getLogRecord().setPersisentDocumentCacheHit(true);
-    }
-    return cachedDoc;
   }
 
   private DownloadController downloadRawPage(ParsedURL location) throws IOException
@@ -548,18 +585,16 @@ public class DocumentClosure extends SetElement
   {
     if (documentParser == null)
     {
-      boolean noParser = false;
-
-      // // First check if registered no parser
-      // boolean noParser = DocumentParser.isRegisteredNoParser(document.getLocation());
-      // List<MetadataParsedURL> additionalLocations = document.getAdditionalLocations();
-      // if (additionalLocations != null)
-      // {
-      // for (int i = 0; i < additionalLocations.size() && !noParser; ++i)
-      // {
-      // noParser |= DocumentParser.isRegisteredNoParser(additionalLocations.get(i).getValue());
-      // }
-      // }
+      // First check if registered no parser
+      boolean noParser = DocumentParser.isRegisteredNoParser(document.getLocation());
+      List<MetadataParsedURL> additionalLocations = document.getAdditionalLocations();
+      if (additionalLocations != null)
+      {
+        for (int i = 0; i < additionalLocations.size() && !noParser; ++i)
+        {
+          noParser |= DocumentParser.isRegisteredNoParser(additionalLocations.get(i).getValue());
+        }
+      }
 
       if (noParser)
       {
@@ -616,14 +651,30 @@ public class DocumentClosure extends SetElement
     }
   }
 
-  private void doPersist(PersistentDocumentCache pCache, DownloadController downloadController)
+  private void doPersist(PersistentDocumentCache pCache,
+                         DownloadController downloadController,
+                         Document doc,
+                         boolean rawContentDownloaded)
       throws IOException
   {
     long t0persist = System.currentTimeMillis();
-    PersistenceMetadata pMetadata = new PersistenceMetadata();
-    pMetadata.setMimeType(downloadController.getMimeType());
-    String rawDoc = downloadController.getContent();
-    pCache.store(document, rawDoc, pMetadata);
+
+    if (rawContentDownloaded)
+    {
+      PersistenceMetaInfo metaInfo =
+          pCache.store(doc,
+                       downloadController.getContent(),
+                       downloadController.getCharset(),
+                       downloadController.getMimeType(),
+                       doc.getMetaMetadata().getHash());
+      getLogRecord().setId(metaInfo.getDocId());
+    }
+    else
+    {
+      PersistenceMetaInfo metaInfo = pCache.getMetaInfo(doc.getLocation());
+      pCache.updateDoc(metaInfo, doc);
+    }
+
     getLogRecord().setMsMetadataCaching(System.currentTimeMillis() - t0persist);
   }
 

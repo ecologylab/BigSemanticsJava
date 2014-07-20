@@ -1315,4 +1315,15 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
     return labelAt;
   }
   
+	/**
+	 * NOTE: This is not Object.getHashCode()!
+	 * 
+	 * @return A hash that is used for versioning.
+	 */
+  public String getHash()
+  {
+    // TODO calculate the hash for this mmd only!
+    return getRepository().getHash();
+  }
+	
 }

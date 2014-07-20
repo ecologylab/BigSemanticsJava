@@ -45,9 +45,9 @@ public class FakeDownloadControllerFactory
    */
   public void setResponse(String location, HttpResponse response)
   {
-    if (response.getRequestedUrl() == null)
+    if (response.getLocation() == null)
     {
-      response.setRequestedUrl(location.toString());
+      response.setLocation(location.toString());
     }
     presetResponses.put(location, response);
   }

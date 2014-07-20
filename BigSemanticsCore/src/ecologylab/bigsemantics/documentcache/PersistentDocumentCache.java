@@ -10,6 +10,7 @@ import ecologylab.net.ParsedURL;
  * A persistent cache that provides storage and retrieval for documents.
  * 
  * @author ajit
+ * @author quyin
  */
 public interface PersistentDocumentCache<D extends Document>
 {
@@ -17,79 +18,59 @@ public interface PersistentDocumentCache<D extends Document>
   /**
    * Get the persistence metadata for a given document.
    * 
-   * @param docId
-   * @return
-   */
-  PersistenceMetadata getMetadata(String docId);
-
-  /**
-   * Get the persistence metadata for a given document.
-   * 
    * @param location
-   * @return
+   * @return The meta info for the given location, or null if not found in the cache.
    */
-  PersistenceMetadata getMetadata(ParsedURL location);
-
+  PersistenceMetaInfo getMetaInfo(ParsedURL location);
+  
   /**
-   * Stores a document and raw page into the persistent cache.
+   * Stores a document and raw page content into the persistent cache.
    * 
    * @param document
-   * @param rawDocument
-   * @param metadata
-   *          The method will use some metadata fields as input (e.g. MIME type), and fill in other
-   *          fields as output.
-   * @return True if successfully stored the document, otherwise false.
+   * @param rawContent
+   * @param charset
+   * @param mimeType
+   * @param mmdVersion
+   * @param mmdHash
+   * @return The corresponding PersistenceMetaInfo object.
    */
-  boolean store(D document, String rawDocument, PersistenceMetadata metadata);
+  PersistenceMetaInfo store(D document,
+                            String rawContent,
+                            String charset,
+                            String mimeType,
+                            String mmdHash);
+  
+  /**
+   * Update the cached document. Keeps the cache raw page content unchanged. 
+   * 
+   * @param metaInfo
+   * @param newDoc
+   * @return true if the operation was successful; otherwise false.
+   */
+  boolean updateDoc(PersistenceMetaInfo metaInfo, D newDoc);
 
   /**
-   * Retrieves a document by document ID.
+   * Retrieve a document.
    * 
-   * @param docId
+   * @param metaInfo
+   * @return The doc, or null if not found.
+   */
+  D retrieveDoc(PersistenceMetaInfo metaInfo);
+
+  /**
+   * Retrieve the raw page content.
+   * 
+   * @param metaInfo
    * @return
    */
-  D retrieve(String docId);
+  String retrieveRawContent(PersistenceMetaInfo metaInfo);
 
   /**
-   * Retrieve a document by location.
+   * Removes a document and corresponding raw page content from the cacle.
    * 
-   * @param location
-   * @return
+   * @param metaInfo
+   * @return true if the operation was successful; otherwise false.
    */
-  D retrieve(ParsedURL location);
-
-  /**
-   * Retrieve the raw web document by document ID.
-   * 
-   * @param docId
-   * @return
-   */
-  String retrieveRaw(String docId);
-
-  /**
-   * Retrieve the raw web document by document location.
-   * 
-   * @param location
-   * @return
-   */
-  String retrieveRaw(ParsedURL location);
-
-  /**
-   * Remove a document with the given docId from persistence. This will remove metadata and raw
-   * document too.
-   * 
-   * @param docId
-   * @return true if the document existed and operation was successful; otherwise false.
-   */
-  boolean remove(String docId);
-
-  /**
-   * Removes a document with the given location from persistence. This will remove metadata and raw
-   * document too.
-   * 
-   * @param location
-   * @return true if the document existed and operation was successful; otherwise false.
-   */
-  boolean remove(ParsedURL location);
+  boolean remove(PersistenceMetaInfo metaInfo);
 
 }
