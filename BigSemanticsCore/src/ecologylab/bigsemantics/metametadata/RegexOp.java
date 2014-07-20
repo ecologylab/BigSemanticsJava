@@ -6,8 +6,10 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ecologylab.bigsemantics.Utils;
 import ecologylab.serialization.annotations.simpl_inherit;
 import ecologylab.serialization.annotations.simpl_scalar;
+import ecologylab.serialization.formatenums.StringFormat;
 
 /**
  * Operates on extraction results using regular expressions.
@@ -164,6 +166,24 @@ public class RegexOp implements FieldOp
       logger.info("Extraction result normalized to {}", text);
     }
     return text;
+  }
+
+  private String toStringCache;
+
+  @Override
+  public String toString()
+  {
+    if (toStringCache == null)
+    {
+      synchronized (this)
+      {
+        if (toStringCache == null)
+        {
+          toStringCache = Utils.serializeToString(this, StringFormat.XML);
+        }
+      }
+    }
+    return toStringCache;
   }
 
 }

@@ -5,11 +5,13 @@ import java.util.List;
 import javax.xml.namespace.QName;
 import javax.xml.xpath.XPathConstants;
 
+import ecologylab.bigsemantics.Utils;
 import ecologylab.bigsemantics.actions.SemanticsConstants;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.annotations.simpl_collection;
 import ecologylab.serialization.annotations.simpl_nowrap;
 import ecologylab.serialization.annotations.simpl_scalar;
+import ecologylab.serialization.formatenums.StringFormat;
 import ecologylab.serialization.types.ScalarType;
 
 public class DefVar extends ElementState
@@ -164,6 +166,12 @@ public class DefVar extends ElementState
 	public String getValue()
 	{
 		return value;
+	}
+	
+	@Override
+	public String toString()
+	{
+	  return Utils.serializeToString(this, StringFormat.XML).toString();
 	}
 
 }

@@ -386,6 +386,11 @@ implements PackageSpecifier, DocumentParserTagNames
 		this.namedStyles = combineMap(this.namedStyles, theOtherRepository.namedStyles);
 
 		this.sites = combineMap(this.sites, theOtherRepository.sites);
+		
+		if (this.defaultCacheLife == null)
+		{
+		  this.defaultCacheLife = theOtherRepository.defaultCacheLife;
+		}
 	}
 	
 	/**

@@ -27,7 +27,6 @@ import ecologylab.bigsemantics.documentcache.PersistentDocumentCache;
 import ecologylab.bigsemantics.documentparsers.DocumentParser;
 import ecologylab.bigsemantics.downloadcontrollers.CachedPageDownloadController;
 import ecologylab.bigsemantics.downloadcontrollers.DownloadController;
-import ecologylab.bigsemantics.downloadcontrollers.HttpResponse;
 import ecologylab.bigsemantics.html.documentstructure.SemanticInLinks;
 import ecologylab.bigsemantics.metadata.output.DocumentLogRecord;
 import ecologylab.bigsemantics.metadata.scalar.MetadataParsedURL;
@@ -451,19 +450,20 @@ public class DocumentClosure extends SetElement
         Date accessTime = cacheMetaInfo.getAccessTime();
         Date currentTime = new Date();
         long diff = currentTime.getTime() - accessTime.getTime();
-        if (diff <= metaMetadata.getCacheLifeMs())
+        long cacheLifeMs = metaMetadata.getCacheLifeMs();
+        if (diff <= cacheLifeMs)
         {
           // it's not too old, we should use the cached raw content.
           cachedRawContent = pCache.retrieveRawContent(cacheMetaInfo);
 
           getLogRecord().setHtmlCacheHit(true);
-        }
-        
-        // check if cached document needs to be re-extracted
-        String currentHash = metaMetadata.getHash();
-        if (currentHash.equals(cacheMetaInfo.getMmdHash()))
-        {
-          cachedDoc = pCache.retrieveDoc(cacheMetaInfo);
+
+          // check if cached document needs to be re-extracted
+          String currentHash = metaMetadata.getHashForExtraction();
+          if (currentHash.equals(cacheMetaInfo.getMmdHash()))
+          {
+            cachedDoc = pCache.retrieveDoc(cacheMetaInfo);
+          }
         }
       }
 
@@ -666,7 +666,7 @@ public class DocumentClosure extends SetElement
                        downloadController.getContent(),
                        downloadController.getCharset(),
                        downloadController.getMimeType(),
-                       doc.getMetaMetadata().getHash());
+                       doc.getMetaMetadata().getHashForExtraction());
       getLogRecord().setId(metaInfo.getDocId());
     }
     else

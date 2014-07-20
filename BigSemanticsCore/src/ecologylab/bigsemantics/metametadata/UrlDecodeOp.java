@@ -6,8 +6,10 @@ import java.net.URLDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ecologylab.bigsemantics.Utils;
 import ecologylab.serialization.annotations.simpl_inherit;
 import ecologylab.serialization.annotations.simpl_scalar;
+import ecologylab.serialization.formatenums.StringFormat;
 
 /**
  * A field op that allows one to extract query string from another URL.
@@ -56,6 +58,24 @@ public class UrlDecodeOp implements FieldOp
     }
 
     return rawValue;
+  }
+
+  private String toStringCache;
+  
+  @Override
+  public String toString()
+  {
+    if (toStringCache == null)
+    {
+      synchronized (this)
+      {
+        if (toStringCache == null)
+        {
+          toStringCache = Utils.serializeToString(this, StringFormat.XML);
+        }
+      }
+    }
+    return toStringCache;
   }
 
 }

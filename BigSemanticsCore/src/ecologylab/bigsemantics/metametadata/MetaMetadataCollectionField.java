@@ -3,6 +3,8 @@ package ecologylab.bigsemantics.metametadata;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import ecologylab.bigsemantics.Utils;
+import ecologylab.bigsemantics.html.utils.StringBuilderUtils;
 import ecologylab.bigsemantics.metadata.MetadataClassDescriptor;
 import ecologylab.bigsemantics.metadata.MetadataFieldDescriptor;
 import ecologylab.bigsemantics.metadata.scalar.types.MetadataScalarType;
@@ -11,7 +13,6 @@ import ecologylab.generic.HashMapArrayList;
 import ecologylab.generic.StringTools;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.FieldType;
-import ecologylab.serialization.FieldTypes;
 import ecologylab.serialization.GenericTypeVar;
 import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.TranslationContext;
@@ -19,6 +20,7 @@ import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.annotations.simpl_inherit;
 import ecologylab.serialization.annotations.simpl_scalar;
 import ecologylab.serialization.annotations.simpl_tag;
+import ecologylab.serialization.formatenums.StringFormat;
 import ecologylab.serialization.types.ScalarType;
 
 @SuppressWarnings("rawtypes")
@@ -463,4 +465,19 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 		return childShowExpandedAlways;
 	}
 	
+	@Override
+  protected String getFingerprintString()
+	{
+	  StringBuilder sb = StringBuilderUtils.acquire();
+	  sb.append(super.getFingerprintString());
+	  addToFp(sb, childTag);
+	  addToFp(sb, childType);
+	  addToFp(sb, childExtends);
+	  addToFp(sb, childScalarType);
+	  addToFp(sb, noWrap);
+	  String fp = sb.toString();
+	  StringBuilderUtils.release(sb);
+	  return fp;
+	}
+
 }

@@ -10,6 +10,7 @@ import java.util.Map;
 import ecologylab.bigsemantics.actions.SemanticAction;
 import ecologylab.bigsemantics.actions.SemanticActionTranslationScope;
 import ecologylab.bigsemantics.collecting.LinkedMetadataMonitor;
+import ecologylab.bigsemantics.html.utils.StringBuilderUtils;
 import ecologylab.bigsemantics.metadata.Metadata;
 import ecologylab.bigsemantics.metadata.MetadataClassDescriptor;
 import ecologylab.bigsemantics.metadata.MetadataFieldDescriptor;
@@ -729,46 +730,62 @@ implements IMappable<String>//, HasLocalTranslationScope
 	  
 	private long getCacheLifeMsHelper(String cacheLifeSpec)
 	{
-	  long num = -1;
-	  String unit = null;
-	  
-	  // parse cacheLife
-	  int i = 0;
-	  while (i < cacheLifeSpec.length() && Character.isDigit(cacheLifeSpec.charAt(i)))
-	  {
-      ++i;
-	  }
-	  if (i > 0 && i < cacheLifeSpec.length())
-	  {
-      num = Long.parseLong(cacheLifeSpec.substring(0, i));
-      unit = cacheLifeSpec.substring(i);
-	  }
-	  
-	  if (num > 0 && unit != null)
-	  {
-	    if (unit.equals("ms"))
-	    {
-	      return num;
-	    }
-	    if (unit.equals("s"))
-	    {
-	      return num * 1000;
-	    }
-	    if (unit.equals("m"))
-	    {
-	      return num * 1000 * 60;
-	    }
-	    if (unit.equals("h"))
-	    {
-	      return num * 1000 * 60 * 60;
-	    }
-	    if (unit.equals("d"))
-	    {
-	      return num * 1000 * 60 * 60 * 24;
-	    }
-	  }
+    if (cacheLifeSpec != null)
+    {
+      long num = -1;
+      String unit = null;
+
+      // parse cacheLife
+      int i = 0;
+      while (i < cacheLifeSpec.length() && Character.isDigit(cacheLifeSpec.charAt(i)))
+      {
+        ++i;
+      }
+      if (i > 0 && i < cacheLifeSpec.length())
+      {
+        num = Long.parseLong(cacheLifeSpec.substring(0, i));
+        unit = cacheLifeSpec.substring(i);
+      }
+
+      if (num > 0 && unit != null)
+      {
+        if (unit.equals("ms"))
+        {
+          return num;
+        }
+        if (unit.equals("s"))
+        {
+          return num * 1000;
+        }
+        if (unit.equals("m"))
+        {
+          return num * 1000 * 60;
+        }
+        if (unit.equals("h"))
+        {
+          return num * 1000 * 60 * 60;
+        }
+        if (unit.equals("d"))
+        {
+          return num * 1000 * 60 * 60 * 24;
+        }
+      }
+    }
 
 	  return -1;
+	}
+
+	@Override
+  protected String getFingerprintString()
+	{
+	  StringBuilder sb = StringBuilderUtils.acquire();
+	  sb.append(super.getFingerprintString());
+	  addToFp(sb, parser);
+	  addToFp(sb, extendsAttribute);
+	  addCollectionToFp(sb, mixins);
+	  String fp = sb.toString();
+	  StringBuilderUtils.release(sb);
+	  return fp;
 	}
 
 }

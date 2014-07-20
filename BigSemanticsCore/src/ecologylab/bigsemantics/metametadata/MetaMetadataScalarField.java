@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import ecologylab.bigsemantics.documentparsers.ParserBase;
+import ecologylab.bigsemantics.html.utils.StringBuilderUtils;
 import ecologylab.bigsemantics.metadata.MetadataClassDescriptor;
 import ecologylab.bigsemantics.metadata.MetadataFieldDescriptor;
 import ecologylab.bigsemantics.metadata.scalar.types.MetadataScalarType;
@@ -310,6 +311,19 @@ public class MetaMetadataScalarField extends MetaMetadataField
 			}
 		}
 		return fd;
+	}
+
+	@Override
+  protected String getFingerprintString()
+	{
+	  StringBuilder sb = StringBuilderUtils.acquire();
+	  sb.append(super.getFingerprintString());
+	  addToFp(sb, scalarType);
+	  addToFp(sb, compositeScalar);
+	  addCollectionToFp(sb, concatenateValues);
+	  String fp = sb.toString();
+	  StringBuilderUtils.release(sb);
+	  return fp;
 	}
 
 }

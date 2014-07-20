@@ -673,4 +673,17 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 			attributeChangeListener.usedForInlineMmdDefChanged(usedForInlineMmdDef);
 	}
 
+	@Override
+  protected String getFingerprintString()
+	{
+	  StringBuilder sb = StringBuilderUtils.acquire();
+	  sb.append(super.getFingerprintString());
+	  addToFp(sb, type);
+	  addToFp(sb, extendsAttribute);
+	  addToFp(sb, wrap);
+	  String fp = sb.toString();
+	  StringBuilderUtils.release(sb);
+	  return fp;
+	}
+
 }

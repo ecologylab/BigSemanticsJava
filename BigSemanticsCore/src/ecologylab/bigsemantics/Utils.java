@@ -82,6 +82,11 @@ public class Utils
 
   public static String serializeToString(Object obj, StringFormat format)
   {
+    if (obj == null)
+    {
+      return null;
+    }
+
     try
     {
       return SimplTypesScope.serialize(obj, format).toString();

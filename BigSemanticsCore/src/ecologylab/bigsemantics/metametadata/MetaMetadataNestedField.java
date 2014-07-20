@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Stack;
 
+import ecologylab.bigsemantics.Utils;
+import ecologylab.bigsemantics.html.utils.StringBuilderUtils;
 import ecologylab.bigsemantics.metadata.MetadataClassDescriptor;
 import ecologylab.bigsemantics.metadata.MetadataFieldDescriptor;
 import ecologylab.bigsemantics.metadata.mm_name;
@@ -20,6 +22,7 @@ import ecologylab.serialization.annotations.simpl_inherit;
 import ecologylab.serialization.annotations.simpl_nowrap;
 import ecologylab.serialization.annotations.simpl_scalar;
 import ecologylab.serialization.annotations.simpl_tag;
+import ecologylab.serialization.formatenums.StringFormat;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 @simpl_inherit
@@ -652,6 +655,21 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	public boolean isShowExpandedAlways()
 	{
 	    return showExpandedAlways;
+	}
+	
+	@Override
+  protected String getFingerprintString()
+	{
+	  StringBuilder sb = StringBuilderUtils.acquire();
+	  sb.append(super.getFingerprintString());
+	  addToFp(sb, Utils.serializeToString(fieldParserElement, StringFormat.XML));
+	  addToFp(sb, polymorphicScope);
+	  addToFp(sb, polymorphicClasses);
+	  addToFp(sb, schemaOrgItemtype);
+	  addCollectionToFp(sb, defVars);
+	  String fp = sb.toString();
+	  StringBuilderUtils.release(sb);
+	  return fp;
 	}
 
 }

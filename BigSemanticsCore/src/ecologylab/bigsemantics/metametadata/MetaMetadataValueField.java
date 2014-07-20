@@ -1,5 +1,6 @@
 package ecologylab.bigsemantics.metametadata;
 
+import ecologylab.bigsemantics.Utils;
 import ecologylab.bigsemantics.metadata.Metadata;
 import ecologylab.bigsemantics.metadata.MetadataFieldDescriptor;
 import ecologylab.collections.Scope;
@@ -8,6 +9,7 @@ import ecologylab.serialization.annotations.Hint;
 import ecologylab.serialization.annotations.simpl_hints;
 import ecologylab.serialization.annotations.simpl_scalar;
 import ecologylab.serialization.annotations.simpl_tag;
+import ecologylab.serialization.formatenums.StringFormat;
 
 /**
  * Represents a constant, scalar, or variable value which can be referenced in metametadata semantics.
@@ -65,20 +67,10 @@ public class MetaMetadataValueField
 		this.constantValue = value;
 	}	
 	
-	private String n(String s)
-	{
-		if(s == null)
-		{
-			return "";
-		}else{
-			return s;
-		}
-	}
-	
 	@Override
 	public String toString()
 	{
-		return "from_var: \"" + n(this.fromVar) + "\" from_scalar: \""+ n(this.fromScalar) + "\" Constant value: \"" + n(this.constantValue)+"\"";
+	  return Utils.serializeToString(this, StringFormat.XML).toString();
 	}
 	
 	public String getReferenceName()

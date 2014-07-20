@@ -8,8 +8,9 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.regex.Pattern;
 
+import ecologylab.bigsemantics.Utils;
+import ecologylab.bigsemantics.html.utils.StringBuilderUtils;
 import ecologylab.bigsemantics.metadata.Metadata;
 import ecologylab.bigsemantics.metadata.MetadataClassDescriptor;
 import ecologylab.bigsemantics.metadata.MetadataFieldDescriptor;
@@ -69,6 +70,7 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
   // FIXME move this to NestedField.
   class MetaMetadataFieldIterator implements Iterator<MetaMetadataField>
   {
+
     int currentIndex = 0;
   
     @Override
@@ -382,6 +384,10 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
   @simpl_collection("style")
   @simpl_nowrap
   List<MetaMetadataStyle>                               styles;
+  
+  private String                                        hashForExtraction;
+  
+  private boolean                                       hashForExtractionInProgress;
   
   public MetaMetadataField()
   {
@@ -1320,10 +1326,71 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
 	 * 
 	 * @return A hash that is used for versioning.
 	 */
-  public String getHash()
+  public String getHashForExtraction()
   {
-    // TODO calculate the hash for this mmd only!
-    return getRepository().getHash();
+    if (hashForExtraction == null)
+    {
+      synchronized (this)
+      {
+        if (hashForExtraction == null)
+        {
+          hashForExtractionInProgress = true;
+          String fp = getFingerprintString();
+          byte[] bytes = Utils.secureHashBytes(fp);
+          hashForExtraction = Utils.base64urlEncode(bytes);
+          hashForExtractionInProgress = false;
+        }
+      }
+    }
+    
+    return hashForExtraction;
   }
 	
+  protected String getFingerprintString()
+  {
+    StringBuilder sb = StringBuilderUtils.acquire();
+    addToFp(sb, name);
+    addToFp(sb, required);
+    addToFp(sb, tag);
+    addToFp(sb, schemaOrgItemprop);
+    addToFp(sb, contextNode);
+    addToFp(sb, extractAsHtml);
+    addToFp(sb, fieldParserKey);
+    addToFp(sb, format);
+    addCollectionToFp(sb, xpaths);
+    addCollectionToFp(sb, fieldOps);
+    for (MetaMetadataField field : kids)
+    {
+      if (field.hashForExtractionInProgress)
+      {
+        addToFp(sb, "self ref to " + field.name);
+      }
+      else
+      {
+        sb.append(field.name).append(" : ");
+        addToFp(sb, field.getHashForExtraction());
+      }
+    }
+    
+    String fp = sb.toString();
+    StringBuilderUtils.release(sb);
+    return fp;
+  }
+  
+  protected void addToFp(StringBuilder fpBuilder, Object obj)
+  {
+    fpBuilder.append(obj).append("\n");
+  }
+  
+  protected void addCollectionToFp(StringBuilder fpBuilder, Collection collection)
+  {
+    if (collection != null)
+    {
+      for (Object obj : collection)
+      {
+        addToFp(fpBuilder, obj);
+      }
+    }
+  }
+
 }

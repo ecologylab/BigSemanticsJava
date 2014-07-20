@@ -16,4 +16,9 @@ public interface FieldOp
    */
   String operateOn(String rawValue);
 
+  /**
+   * @return A serialized form of this FieldOp. Used as the fingerprint string of this object.
+   */
+  String toString();
+  
 }
