@@ -12,8 +12,8 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/simplTranslators"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/cyberneko"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/imageMetadataExtractor"/>
-	<classpathentry kind="lib" path="/core-lib/ST-4.0.7.jar"/>
-	<classpathentry kind="lib" path="/core-lib/antlr-3.5-complete.jar"/>
+	<classpathentry kind="lib" path="/bscore-lib/ST-4.0.7.jar"/>
+	<classpathentry kind="lib" path="/bscore-lib/antlr-3.5-complete.jar"/>
 	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>

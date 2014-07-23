@@ -72,11 +72,11 @@ public class ExifDescriptorTest extends TestCase
 
     public void testUserCommentDescription_AsciiHeaderExtendedAsciiEncoding() throws Exception
     {
-        byte[] commentBytes = "ASCII\0\0This is a comment with extended characters æøå ÆØÅ".getBytes();
+        byte[] commentBytes = "ASCII\0\0This is a comment with extended characters Ã¦Ã¸Ã¥ Ã†Ã˜Ã…".getBytes();
         ExifDirectory directory = new ExifDirectory();
         directory.setByteArray(ExifDirectory.TAG_USER_COMMENT, commentBytes);
         ExifDescriptor descriptor = new ExifDescriptor(directory);
-        assertEquals("This is a comment with extended characters æøå ÆØÅ", descriptor.getDescription(ExifDirectory.TAG_USER_COMMENT));
+        assertEquals("This is a comment with extended characters Ã¦Ã¸Ã¥ Ã†Ã˜Ã…", descriptor.getDescription(ExifDirectory.TAG_USER_COMMENT));
     }
 
     public void testUserCommentDescription_AsciiHeaderAsciiEncoding() throws Exception

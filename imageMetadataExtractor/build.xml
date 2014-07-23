@@ -1,125 +1,35 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="imageMetadataExtractor" basedir="." default="jar"
+         xmlns:artifact="antlib:org.apache.maven.artifact.ant">
 
-<project name="metadata-extractor" default="jar" basedir=".">
+  <!-- dependent project -->
+  <path id="dep_projs">
+  </path>
+  
+  <import file="../lib/build-common.xml" />
 
-	<!-- update the java runtime location (esp. if in *nix environment) -->
-	<!--
-	<property name="java.rt.dir" value="/usr/local/jdk1.7.0_03/jre/lib" />
-	-->
-	
-    <description>metadata-extractor for java build file</description>
-
-    <property name="dist" location="Releases"/>
-    <property name="build" value="Output"/>
-    <property name="src" value="Source"/>
-    <property name="javadoc" value="Javadoc"/>
-    <property name="lib" value="Libraries"/>
-    <property name="verbose" value="true"/>
-    <property name="debug" value="off"/>
-    <property name="version" value="2.4.0-beta-1"/>
-    <property name="classpath" value="${lib}/junit.jar"/>
-	
-	<!--
-	<path id="bootclasspath">
-		<fileset dir="${java.rt.dir}" includes="rt.jar" />
-	</path>
-	-->
-	
-	<target name="clean" description="deletes and recreates the destination directory">
-        <delete verbose="${verbose}" dir="${build}"/>
-        <delete dir="${build}"/>
-        <mkdir dir="${build}"/>
-        <mkdir dir="${dist}"/>
-    </target>
-
-    <target name="compile" description="compile the source">
-        <javac classpath="${classpath}"
-            srcdir="${src}"
-            destdir="${build}"
-            debug="${debug}"
-            verbose="${verbose}"/>
-    </target>
-
-    <target name="dist-binaries" depends="clean, compile, test" description="generate binary distribution">
-        <jar destfile="${dist}/metadata-extractor-${version}.jar" update="false">
-            <manifest>
-                <attribute name="Main-Class" value="com.drew.imaging.ImageMetadataReader"/>
-            </manifest>
-            <fileset dir="${build}" excludes="**/test/*.class" />
-        </jar>
-    </target>
-
-    <target name="dist-source" depends="clean, compile, test" description="generate source distribution">
-        <jar destfile="${dist}/metadata-extractor-${version}-src.jar" update="false">
-            <fileset dir="."
-                includes="${src}/**/*.java, ${src}/**/*.jpg, ${src}/**/*.metadata, ${src}/**/package.html, ${lib}/junit.jar, build.xml, ChangeLog.txt"/>
-        </jar>
-    </target>
-
-    <target name="test" depends="compile" description="run all junit tests">
-        <junit printsummary="yes" fork="yes" haltonfailure="yes">
-            <classpath>
-                <pathelement location="${build}"/>
-                <pathelement path="${java.class.path}"/>
-            </classpath>
-            <formatter type="plain"/>
-            <test name="com.drew.metadata.test.AllTests"/>
-        </junit>
-    </target>
-
-    <target name="javadoc" description="generate javadoc documentation">
-        <copy file="Website/metadata-extractor-logo-30px.gif" todir="${javadoc}"  />
-        <javadoc
-            destdir="${javadoc}"
-            defaultexcludes="yes"
-            author="true"
-            version="true"
-            use="true"
-            access="protected"
-            windowtitle="metadata-extractor javadoc"
-            failonerror="true">
-            <!-- be sure to only use single quotes in the CDATA sections below -->
-            <header><![CDATA[<link rel='shortcut icon' href='http://www.drewnoakes.com/code/exif/MetadataExtractor.ico' /><a href='http://www.drewnoakes.com/code/exif/' title='Go to the project home page.'><img src='http://www.drewnoakes.com/code/exif/javadoc/metadata-extractor-logo-30px.gif' border="0" alt='Metadata Extractor Logo'></a>]]></header>
-            <bottom><![CDATA[<i>Copyright &#169; 2006 Drew Noakes. All Rights Reserved.</i>
-<script src="http://www.google-analytics.com/urchin.js" type="text/javascript"></script>
-<script type="text/javascript">
-_uacct = "UA-936661-1";
-urchinTracker();
-</script>]]></bottom>
-
-            <packageset dir="${src}" defaultexcludes="yes">
-                <include name="com/**"/>
-                <exclude name="com/**/test"/>
-            </packageset>
-
-        </javadoc>
-        <copy file="Website/javadoc-stylesheet.css" tofile="${javadoc}/stylesheet.css" overwrite="yes" /> 
-    </target>
-
-    <target name="all" depends="dist-source, dist-binaries, javadoc" description="prepare source and binary distributions, and javadoc"/>
-
-	<target name="copy-jpg">
-		<copy todir="build/classes/com">
-	            <fileset dir="src/com" includes="**/*.jpg" />
-	    	</copy>
-	</target>	
-
-	<!-- a separate rule added as a build.xml was already existing in the directory -->
-	<target name="jar">
-		<mkdir dir="build/jar" />
-		<mkdir dir="build/classes" />
-		<!--
-		<javac srcdir="." destdir="build/classes"
-			bootclasspathref="bootclasspath"
-			classpath="${classpath}" source="1.6" target="1.6" encoding="iso-8859-1" />
-			-->
-		<javac srcdir="src" destdir="build/classes" includeJavaRuntime="yes"
-			classpath="${classpath}" source="1.6" target="1.6" encoding="iso-8859-1">
-			<compilerarg value="-XDignore.symbol.file" />
-	  </javac>
-			
-		<antcall target="copy-jpg" />
-		<jar destfile="build/jar/imageMetadataExtractor.jar" basedir="build/classes" />
-	</target>
+  <target name="build-dep">
+    <echo message="Building dependent project at ${proj_path} ..." />
+    <ant antfile="${proj_path}/build.xml" target="jar" inheritAll="no" useNativeBasedir="yes" />
+  </target>
+  
+  <target name="compile" depends="build-deps">
+    <mkdir dir="${classes.dir}" />
+    <javac srcdir="${src.dir}" destdir="${classes.dir}" source="1.6" target="1.6" fork="yes"
+           excludes="**/test/*"
+           encoding="UTF-8" classpathref="classpath">
+      <compilerarg line="-XDignore.symbol.file" />
+    </javac>
+    
+    <!-- copy resources -->
+    <if>
+      <available file="${resource.dir}" />
+      <then>
+        <copy todir="${classes.dir}">
+          <fileset dir="${resource.dir}" includes="**/*" />
+        </copy>
+      </then>
+    </if>
+  </target>
 
 </project>

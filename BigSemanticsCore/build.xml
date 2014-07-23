@@ -1,117 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<project name="BigSemanticsCore"
-         basedir="."
-         default="main"
+<project name="BigSemanticsCore" basedir="." default="jar"
          xmlns:artifact="antlib:org.apache.maven.artifact.ant">
-  <property name="src.dir" value="src" />
-  <property name="resources.dir" value="resources" />
-  <property name="test.dir" value="test" />
 
-  <property name="lib.dir" value="../lib" />
-
-  <property name="build.dir" value="build" />
-  <property name="classes.dir" value="${build.dir}/classes" />
-  <property name="test-classes.dir" value="${build.dir}/test-classes" />
-  <property name="junit-report.dir" value="${build.dir}/junit-report" />
-  <property name="jar.dir" value="${build.dir}/jar" />
-  <property name="jar.file" value="${jar.dir}/${ant.project.name}.jar" />
-
-  <!-- declare ant-contrib -->
-  <taskdef resource="net/sf/antcontrib/antlib.xml">
-    <classpath>
-      <pathelement location="${lib.dir}/ant-contrib-1.0b3.jar" />
-    </classpath>
-  </taskdef>
-
-  <!-- declare maven -->
-  <path id="maven-ant-tasks.classpath" path="${lib.dir}/maven-ant-tasks-2.1.1.jar" />
-  <typedef resource="org/apache/maven/artifact/ant/antlib.xml"
-           uri="antlib:org.apache.maven.artifact.ant"
-           classpathref="maven-ant-tasks.classpath" />
-
-  <artifact:pom id="pom" file="${basedir}/pom.xml" />
-  <artifact:dependencies filesetId="mavendeps" pomRefId="pom" />
-
-  <target name="clean">
-    <delete dir="${build.dir}" />
-  </target>
-
-  <path id="classpath">
-    <fileset dir="${lib.dir}" includes="**/*.jar" />
-    <fileset refid="mavendeps" />
+  <!-- dependent project -->
+  <path id="dep_projs">
+    <pathelement path="../../simplJava/simplCore" />
   </path>
-
-  <target name="compile">
-    <mkdir dir="${classes.dir}" />
-    <javac srcdir="${src.dir}"
-           destdir="${classes.dir}"
-           source="1.6"
-           target="1.6"
-           classpathref="classpath"
-           debug="yes"
-           debuglevel="lines,vars,source"
-           verbose="yes" />
-    <copy todir="${classes.dir}">
-      <fileset dir="${resources.dir}" />
-    </copy>
-  </target>
-
-  <target name="junit" depends="compile">
-    <path id="test-classpath">
-      <path refid="classpath" />
-      <pathelement location="${classes.dir}" />
-      <pathelement location="${resources.dir}" />
-    </path>
-
-    <mkdir dir="${test-classes.dir}" />
-    <javac srcdir="${test.dir}"
-           destdir="${test-classes.dir}"
-           source="1.6"
-           target="1.6"
-           classpathref="test-classpath" />
-
-    <path id="junit-classpath">
-      <path refid="test-classpath" />
-      <pathelement location="${test-classes.dir}" />
-      <pathelement location="../BigSemanticsSunSpecifics/lib/simplSunSpecifics.jar" />
-    </path>
-
-    <mkdir dir="${junit-report.dir}" />
-    <junit printsummary="yes" showoutput="yes" haltonfailure="yes">
-      <classpath>
-        <path refid="junit-classpath" />
-      </classpath>
-
-      <formatter type="plain" />
-
-      <batchtest todir="${junit-report.dir}">
-        <fileset dir="${test-classes.dir}" includes="**/*.class" excludes="**/testcases/*.class" />
-      </batchtest>
-    </junit>
-  </target>
-
-  <target name="jar" depends="compile">
-    <mkdir dir="${jar.dir}" />
-    <jar destfile="${jar.file}" basedir="${classes.dir}" />
-  </target>
-
-  <property name="bsservice.lib" value="../../BigSemanticsService/lib" />
-  <available property="bsservice.lib.exists" file="${bsservice.lib}" type="dir" />
-
-  <target name="update-deps-bsservice" depends="jar" if="bsservice.lib.exists">
-    <copy file="${jar.file}" todir="${bsservice.lib}" />
-  </target>
   
-  <property name="bswrappers.lib" value="../../BigSemanticsWrapperRepository/BigSemanticsWrappers/lib" />
-  <available property="bswrappers.lib.exists" file="${bswrappers.lib}" type="dir" />
+  <import file="../lib/build-common.xml" />
 
-  <target name="update-deps-bswrappers" depends="jar" if="bswrappers.lib.exists">
-    <copy file="${jar.file}" todir="${bswrappers.lib}" />
-  </target>
-  
-  <target name="update-deps" depends="update-deps-bsservice,update-deps-bswrappers">
-  </target>
-    
-  <target name="main" depends="clean,update-deps" />
 </project>

@@ -10,7 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import ecologylab.bigsemantics.generated.library.creative_work.Author;
-import ecologylab.bigsemantics.generated.library.curated.CurationRecord;
+// import ecologylab.bigsemantics.generated.library.curated.CurationRecord;
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metadata.scalar.MetadataString;
 import ecologylab.net.ParsedURL;
@@ -20,6 +20,7 @@ import ecologylab.serialization.formatenums.Format;
 
 public class TestCuratedMixins extends Assert{
 
+	/*
 	CurationRecord curationRecord;
 	
 	CurationRecord generateCurationRecord()
@@ -65,5 +66,6 @@ public class TestCuratedMixins extends Assert{
 		d.setMixins(mixins);
 		SimplTypesScope.serialize(d, System.out, Format.JSON);
 	}
+	*/
 	
 }

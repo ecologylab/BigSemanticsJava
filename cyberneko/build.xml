@@ -1,41 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<project name="cyberneko" basedir="." default="jar"
+         xmlns:artifact="antlib:org.apache.maven.artifact.ant">
 
-<project name="cyberneko" basedir="." default="main">
-	<property name="src.dir" value="src" />
-	<property name="lib.dir" value="../lib" />
-	<property name="build.dir" value="build" />
-	<property name="classes.dir" value="${build.dir}/classes" />
-	<property name="jar.dir" value="${build.dir}/jar" />
-	<property name="jar.file" value="${jar.dir}/${ant.project.name}.jar" />
-	
-  	<target name="clean">
-  		<delete dir="${build.dir}" />
-  	</target>
- 
-	<path id="classpath">
-	  	<fileset dir="${lib.dir}" includes="**/*.jar" />
-  	</path>
+  <!-- dependent project -->
+  <path id="dep_projs">
+  </path>
+  
+  <import file="../lib/build-common.xml" />
 
-	<target name="copy-properties">
-		<copy todir="${classes.dir}">
-	        <fileset dir="${src.dir}">
-	            <include name="**/*.properties" />
-	        	<include name="**/*.txt" />
-	        </fileset>
-	    </copy>
-	</target>
-	
-	<target name="compile">
-		<mkdir dir="${classes.dir}" />
-		<javac srcdir="${src.dir}" destdir="${classes.dir}" source="1.6" target="1.6" classpathref="classpath" encoding="iso-8859-1" />
-	</target>
-		
-	<target name="jar" depends="compile">
-		<mkdir dir="${jar.dir}" />
-		<antcall target="copy-properties" />
-		<jar destfile="${jar.file}" basedir="${classes.dir}" />
-	</target>
-	
-	<target name="main" depends="clean,jar" />
-	
 </project>
