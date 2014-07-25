@@ -68,7 +68,6 @@
          target="war" inheritall="no" />
   </target>
 
-  <!-- TODO depends -->
   <target name="depend.WrapperDevAssist">
     <ant antfile="${ant.file.bs-projects}/../../../BigSemanticsWrapperRepository/WrapperDevAssist/build.xml"
          target="jar" inheritall="no" />
