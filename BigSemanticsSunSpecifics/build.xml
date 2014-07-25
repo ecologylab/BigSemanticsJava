@@ -11,6 +11,6 @@
     <pathelement path="../../BigSemanticsWrapperRepository/BigSemanticsGeneratedClassesJava" />
   </path>
   
-  <import file="../lib/build-common.xml" />
+  <import file="../lib/bs-build-common.xml" />
 
 </project>

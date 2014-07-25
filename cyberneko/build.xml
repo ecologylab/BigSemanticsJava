@@ -6,6 +6,31 @@
   <path id="dep_projs">
   </path>
   
-  <import file="../lib/build-common.xml" />
+  <import file="../lib/bs-build-common.xml" />
+  
+  <target name="compile">
+    <echo message="Compiling project ${ant.project.name} ..." />
+
+    <mkdir dir="${classes.dir}" />
+    <javac srcdir="${src.dir}" destdir="${classes.dir}" source="1.6" target="1.6" fork="yes"
+           encoding="UTF-8" classpathref="classpath" />
+    
+    <!-- resources needed by cyberneko -->
+    <mkdir dir="${classes.dir}/org/cyberneko/html/res" />
+    <copy todir="${classes.dir}/org/cyberneko/html/res">
+      <fileset dir="${src.dir}/org/cyberneko/html/res" includes="**/*" />
+    </copy>
+    
+    <!-- copy resources -->
+    <if>
+      <available file="${resources.dir}" />
+      <then>
+        <copy todir="${classes.dir}">
+          <fileset dir="${resources.dir}" includes="**/*" />
+        </copy>
+      </then>
+    </if>
+  </target>
+
 
 </project>

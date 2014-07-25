@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="BigSemanticsCore" basedir="." default="jar"
+<project name="BigSemanticsCore" basedir="." default="main"
          xmlns:artifact="antlib:org.apache.maven.artifact.ant">
 
   <!-- dependent project -->
@@ -7,6 +7,6 @@
     <pathelement path="../../simplJava/simplCore" />
   </path>
   
-  <import file="../lib/build-common.xml" />
+  <import file="../lib/bs-build-common.xml" />
 
 </project>

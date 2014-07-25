@@ -1,19 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="imageMetadataExtractor" basedir="." default="jar"
+<project name="imageMetadataExtractor" basedir="." default="main"
          xmlns:artifact="antlib:org.apache.maven.artifact.ant">
 
   <!-- dependent project -->
   <path id="dep_projs">
   </path>
   
-  <import file="../lib/build-common.xml" />
+  <import file="../lib/bs-build-common.xml" />
 
-  <target name="build-dep">
-    <echo message="Building dependent project at ${proj_path} ..." />
-    <ant antfile="${proj_path}/build.xml" target="jar" inheritAll="no" useNativeBasedir="yes" />
-  </target>
-  
-  <target name="compile" depends="build-deps">
+  <target name="compile">
     <mkdir dir="${classes.dir}" />
     <javac srcdir="${src.dir}" destdir="${classes.dir}" source="1.6" target="1.6" fork="yes"
            excludes="**/test/*"

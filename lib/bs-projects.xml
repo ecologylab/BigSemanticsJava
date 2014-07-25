@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="bs-projects" basedir="." default="depend.all"
+         xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+
+  <import file="${ant.file.bs-projects}/../../../simplJava/lib/simpl-projects.xml" />
+  
+  <!-- Core projects -->
+  
+  <target name="depend.BigSemanticsCore" depends="depend.simplCore">
+    <ant antfile="${ant.file.bs-projects}/../../BigSemanticsCore/build.xml"
+         target="jar" inheritall="no" />
+  </target>
+
+  <target name="depend.cyberneko">
+    <ant antfile="${ant.file.bs-projects}/../../cyberneko/build.xml"
+         target="jar" inheritall="no" />
+  </target>
+
+  <target name="depend.BigSemanticsCybernekoWrapper" depends="depend.BigSemanticsCore,depend.cyberneko">
+    <ant antfile="${ant.file.bs-projects}/../../BigSemanticsCybernekoWrapper/build.xml"
+         target="jar" inheritall="no" />
+  </target>
+
+  <target name="depend.imageMetadataExtractor">
+    <ant antfile="${ant.file.bs-projects}/../../imageMetadataExtractor/build.xml"
+         target="jar" inheritall="no" />
+  </target>
+
+  <target name="depend.BigSemanticsSunSpecifics" depends="depend.simplCore,depend.simplSunSpecifics,depend.BigSemanticsCore,depend.imageMetadataExtractor,depend.BigSemanticsGeneratedClassesJava">
+    <ant antfile="${ant.file.bs-projects}/../../BigSemanticsSunSpecifics/build.xml"
+         target="jar" inheritall="no" />
+  </target>
+
+  <target name="depend.BigSemanticsGeneratedClassesJava" depends="depend.simplCore,depend.simplSunSpecifics,depend.BigSemanticsCore">
+    <ant antfile="${ant.file.bs-projects}/../../../BigSemanticsWrapperRepository/BigSemanticsGeneratedClassesJava/build.xml"
+         target="jar" inheritall="no" />
+  </target>
+
+  <target name="depend.BigSemanticsSDK" depends="depend.simplCore,depend.simplSunSpecifics,depend.simplTranslators,depend.BigSemanticsCore,depend.cyberneko,depend.BigSemanticsCybernekoWrapper,depend.imageMetadataExtractor,depend.BigSemanticsSunSpecifics,depend.BigSemanticsGeneratedClassesJava">
+    <ant antfile="${ant.file.bs-projects}/../../BigSemanticsSDK/build.xml"
+         target="jar" inheritall="no" />
+  </target>
+
+  <target name="depend.BigSemanticsWrappers" depends="depend.simplCore,depend.simplSunSpecifics,depend.simplTranslators,depend.BigSemanticsCore,depend.cyberneko,depend.BigSemanticsCybernekoWrapper,depend.imageMetadataExtractor,depend.BigSemanticsSunSpecifics,depend.BigSemanticsGeneratedClassesJava,depend.BigSemanticsSDK">
+    <ant antfile="${ant.file.bs-projects}/../../../BigSemanticsWrapperRepository/BigSemanticsWrappers/build.xml"
+         target="jar" inheritall="no" />
+  </target>
+
+  <!-- Service projects -->
+    
+  <target name="depend.DownloaderPoolMessages" depends="depend.simplCore,depend.simplSunSpecifics">
+    <ant antfile="${ant.file.bs-projects}/../../../BigSemanticsService/DownloaderPoolMessages/build.xml"
+         target="jar" inheritall="no" />
+  </target>
+
+  <target name="depend.ModifiedHttpClient" depends="depend.DownloaderPoolMessages">
+    <ant antfile="${ant.file.bs-projects}/../../../BigSemanticsService/ModifiedHttpClient/build.xml"
+         target="jar" inheritall="no" />
+  </target>
+
+  <target name="depend.DownloaderPool" depends="depend.simplCore,depend.simplSunSpecifics,depend.DownloaderPoolMessages,depend.ModifiedHttpClient">
+    <ant antfile="${ant.file.bs-projects}/../../../BigSemanticsService/DownloaderPool/build.xml"
+         target="war" inheritall="no" />
+  </target>
+
+  <target name="depend.BigSemanticsService" depends="depend.simplCore,depend.simplSunSpecifics,depend.DownloaderPoolMessages,depend.ModifiedHttpClient,depend.BigSemanticsCore,depend.cyberneko,depend.BigSemanticsCybernekoWrapper,depend.imageMetadataExtractor,depend.BigSemanticsSunSpecifics,depend.BigSemanticsGeneratedClassesJava,depend.BigSemanticsWrappers">
+    <ant antfile="${ant.file.bs-projects}/../../../BigSemanticsService/BigSemanticsService/build.xml"
+         target="war" inheritall="no" />
+  </target>
+
+  <!-- TODO depends -->
+  <target name="depend.WrapperDevAssist">
+    <ant antfile="${ant.file.bs-projects}/../../../BigSemanticsWrapperRepository/WrapperDevAssist/build.xml"
+         target="jar" inheritall="no" />
+  </target>
+
+  <target name="depend.all" depends="depend.BigSemanticsCore,depend.cyberneko,depend.BigSemanticsCybernekoWrapper,depend.imageMetadataExtractor,depend.BigSemanticsSunSpecifics,depend.BigSemanticsGeneratedClassesJava,depend.BigSemanticsSDK,depend.BigSemanticsWrappers,depend.DownloaderPoolMessages,depend.ModifiedHttpClient,depend.DownloaderPool,depend.BigSemanticsService,depend.WrapperDevAssist">
+  </target>
+
+</project>
