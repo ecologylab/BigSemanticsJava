@@ -4,8 +4,12 @@
 
   <!-- dependent jars -->
   <pathconvert property="dep_jars" refid="dep_projs" pathsep=",">
-    <mapper type="regexp" from="^(.*)/([^/]+)/?$" to="\1/\2/build/jar/\2.jar" /> 
+    <mapper type="regexp"
+    	    from="^(.*)([/\\])([^/\\]+)[/\\]?$"
+    	    to="\1\2\3\2build\2jar\2\3.jar" />
   </pathconvert>
+
+  <echo message="Dependent jars: ${dep_jars}" />
   
   <!-- sub-directories -->
   <property name="src.dir" value="src" />
@@ -66,6 +70,9 @@
   <target name="compile">
     <echo message="Compiling project ${ant.project.name} ..." />
 
+  	<pathconvert property="classpath_prop" refid="classpath" />
+  	<echo message="Classpath: ${classpath_prop}" />
+  	
     <mkdir dir="${classes.dir}" />
     <javac srcdir="${src.dir}" destdir="${classes.dir}" source="1.6" target="1.6" fork="yes"
            encoding="UTF-8" classpathref="classpath" />
