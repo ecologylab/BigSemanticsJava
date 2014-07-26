@@ -98,7 +98,7 @@ public class SampleUsage
             BufferedImage image = jpegDecoder.decodeAsBufferedImage();
             // now you can use the image
             JPEGDecodeParam decodeParam = jpegDecoder.getJPEGDecodeParam();
-            Metadata metadata = JpegMetadataReader.readMetadata(decodeParam);
+            Metadata metadata = JpegMetadataReaderSunUtils.readMetadata(decodeParam);
             printImageTags(4, metadata);
         } catch (FileNotFoundException e) {
             System.err.println("error 4a: " + e);
