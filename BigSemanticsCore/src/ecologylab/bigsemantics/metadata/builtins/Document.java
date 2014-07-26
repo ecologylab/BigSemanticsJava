@@ -38,6 +38,7 @@ import ecologylab.serialization.annotations.simpl_composite;
 import ecologylab.serialization.annotations.simpl_exclude_usage;
 import ecologylab.serialization.annotations.simpl_inherit;
 import ecologylab.serialization.annotations.simpl_scalar;
+import ecologylab.serialization.annotations.simpl_scope;
 import ecologylab.serialization.formatenums.StringFormat;
 
 /**
@@ -58,6 +59,7 @@ public class Document extends DocumentDeclaration
   private SemanticInLinks               semanticInlinks;
 
   @simpl_composite
+  @simpl_scope(DocumentLogRecordScope.NAME)
   private DocumentLogRecord             logRecord;
 
   private DocumentClosure               documentClosure;
@@ -364,6 +366,7 @@ public class Document extends DocumentDeclaration
   public void setLogRecord(DocumentLogRecord logRecord)
   {
     this.logRecord = logRecord;
+    logRecord.setDocumentUrl(this.getLocation());
   }
 
   public void addAdditionalLocation(ParsedURL newPurl)

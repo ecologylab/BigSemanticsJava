@@ -64,7 +64,7 @@ public class TestDocumentLogRecord
 	{
 		DownloadableLogRecord logRecord = new DownloadableLogRecord();
 		
-		logRecord.setHtmlCacheHit(false);
+//		logRecord.setHtmlCacheHit(false);
 		logRecord.setId("eqwewqewqe");
 		ArrayList<Long> peekIntervals = new ArrayList<Long>();
 		peekIntervals.add(100L);
@@ -78,7 +78,7 @@ public class TestDocumentLogRecord
 				DownloadableLogRecord.class);
 		logRecord = (DownloadableLogRecord) tscope.deserialize(json, StringFormat.JSON);
 		
-		Assert.assertFalse(logRecord.isHtmlCacheHit());
+//		Assert.assertFalse(logRecord.isHtmlCacheHit());
 		Assert.assertTrue(logRecord.getId().equals("eqwewqewqe"));
 	}
 

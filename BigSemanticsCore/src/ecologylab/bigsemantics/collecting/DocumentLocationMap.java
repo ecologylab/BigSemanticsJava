@@ -2,6 +2,7 @@ package ecologylab.bigsemantics.collecting;
 
 import ecologylab.bigsemantics.documentcache.DocumentCache;
 import ecologylab.bigsemantics.metadata.builtins.Document;
+import ecologylab.bigsemantics.metadata.output.DocumentLogRecord;
 import ecologylab.bigsemantics.metadata.scalar.MetadataParsedURL;
 import ecologylab.bigsemantics.metametadata.MetaMetadata;
 import ecologylab.generic.Debug;
@@ -60,6 +61,17 @@ public class DocumentLocationMap<D extends Document>
         if (newValue.additionalLocations() != null)
           for (MetadataParsedURL newLoc : newValue.getAdditionalLocations())
             result.addAdditionalLocation(newLoc);
+      }
+    }
+    else
+    {
+      if (result.getDownloadStatus() == DownloadStatus.DOWNLOAD_DONE)
+      {
+        DocumentLogRecord logRecord = result.getLogRecord();
+        if (logRecord != null)
+        {
+          logRecord.setInMemDocumentCacheHit(true);
+        }
       }
     }
     return result;

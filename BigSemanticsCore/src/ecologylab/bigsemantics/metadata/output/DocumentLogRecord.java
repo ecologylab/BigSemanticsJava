@@ -14,16 +14,34 @@ public class DocumentLogRecord extends DownloadableLogRecord
   private ParsedURL           documentUrl;
 
   @simpl_scalar
+  private boolean             InMemDocumentCacheHit;
+
+  @simpl_scalar
+  private boolean             persistentCacheHit;
+
+  @simpl_scalar
+  private long                msPersistentHtmlRead;
+
+  @simpl_scalar
+  private long                msPersistentDocumentRead;
+
+  @simpl_scalar
+  private long                msPersistentCacheWrite;
+
+  @simpl_scalar
+  private long                msPersistentCacheUpdate;
+
+  @simpl_scalar
   private long                msHtmlDownload;
 
   @simpl_scalar
   private long                msExtraction;
 
   @simpl_scalar
-  private long                msSerialization;
+  private long                msDomCreation;
 
   @simpl_scalar
-  private long                msDomCreation;
+  private long                msCompoundDocumentDnpDone;
 
   @simpl_scalar
   private long                msContentBodyAndClippings;
@@ -32,25 +50,10 @@ public class DocumentLogRecord extends DownloadableLogRecord
   private long                msImageTextParserCallingSuperParse;
 
   @simpl_scalar
-  private long                msMetadataCacheLookup;
-
-  @simpl_scalar
-  private long                msMetadataCaching;
-
-  @simpl_scalar
-  private long                msCompoundDocumentDnpDone;
-
-  @simpl_scalar
-  private boolean             InMemDocumentCacheHit;
-
-  @simpl_scalar
-  private boolean             PersistentDocumentCacheHit;
+  private long                msSerialization;
 
   @simpl_composite
   private DocumentErrorRecord errorRecord;
-
-  @simpl_scalar
-  private long msPageCacheLookup;
 
   public ParsedURL getDocumentUrl()
   {
@@ -60,6 +63,66 @@ public class DocumentLogRecord extends DownloadableLogRecord
   public void setDocumentUrl(ParsedURL documentUrl)
   {
     this.documentUrl = documentUrl;
+  }
+
+  public boolean isInMemDocumentCacheHit()
+  {
+    return InMemDocumentCacheHit;
+  }
+
+  public void setInMemDocumentCacheHit(boolean inMemDocumentCacheHit)
+  {
+    InMemDocumentCacheHit = inMemDocumentCacheHit;
+  }
+
+  public boolean isPersistentCacheHit()
+  {
+    return persistentCacheHit;
+  }
+
+  public void setPersistentCacheHit(boolean persistentCacheHit)
+  {
+    this.persistentCacheHit = persistentCacheHit;
+  }
+
+  public long getMsPersistentHtmlRead()
+  {
+    return msPersistentHtmlRead;
+  }
+
+  public void setMsPersistentHtmlRead(long msPersistentHtmlRead)
+  {
+    this.msPersistentHtmlRead = msPersistentHtmlRead;
+  }
+
+  public long getMsPersistentDocumentRead()
+  {
+    return msPersistentDocumentRead;
+  }
+
+  public void setMsPersistentDocumentRead(long msPersistentDocumentRead)
+  {
+    this.msPersistentDocumentRead = msPersistentDocumentRead;
+  }
+
+  public long getMsPersistentCacheWrite()
+  {
+    return msPersistentCacheWrite;
+  }
+
+  public void setMsPersistentCacheWrite(long msPersistentCacheWrite)
+  {
+    this.msPersistentCacheWrite = msPersistentCacheWrite;
+  }
+
+  public long getMsPersistentCacheUpdate()
+  {
+    return msPersistentCacheUpdate;
+  }
+
+  public void setMsPersistentCacheUpdate(long msPersistentCacheUpdate)
+  {
+    this.msPersistentCacheUpdate = msPersistentCacheUpdate;
   }
 
   public long getMsHtmlDownload()
@@ -82,16 +145,6 @@ public class DocumentLogRecord extends DownloadableLogRecord
     this.msExtraction = msExtraction;
   }
 
-  public long getMsSerialization()
-  {
-    return msSerialization;
-  }
-
-  public void setMsSerialization(long msSerialization)
-  {
-    this.msSerialization = msSerialization;
-  }
-
   public long getMsDomCreation()
   {
     return msDomCreation;
@@ -100,6 +153,16 @@ public class DocumentLogRecord extends DownloadableLogRecord
   public void setMsDomCreation(long msDomCreation)
   {
     this.msDomCreation = msDomCreation;
+  }
+
+  public long getMsCompoundDocumentDnpDone()
+  {
+    return msCompoundDocumentDnpDone;
+  }
+
+  public void setMsCompoundDocumentDnpDone(long msCompoundDocumentDnpDone)
+  {
+    this.msCompoundDocumentDnpDone = msCompoundDocumentDnpDone;
   }
 
   public long getMsContentBodyAndClippings()
@@ -122,54 +185,14 @@ public class DocumentLogRecord extends DownloadableLogRecord
     this.msImageTextParserCallingSuperParse = msImageTextParserCallingSuperParse;
   }
 
-  public long getMsMetadataCacheLookup()
+  public long getMsSerialization()
   {
-    return msMetadataCacheLookup;
+    return msSerialization;
   }
 
-  public void setMsMetadataCacheLookup(long msMetadataCacheLookup)
+  public void setMsSerialization(long msSerialization)
   {
-    this.msMetadataCacheLookup = msMetadataCacheLookup;
-  }
-
-  public long getMsMetadataCaching()
-  {
-    return msMetadataCaching;
-  }
-
-  public void setMsMetadataCaching(long msMetadataCaching)
-  {
-    this.msMetadataCaching = msMetadataCaching;
-  }
-
-  public long getMsCompoundDocumentDnpDone()
-  {
-    return msCompoundDocumentDnpDone;
-  }
-
-  public void setMsCompoundDocumentDnpDone(long msCompoundDocumentDnpDone)
-  {
-    this.msCompoundDocumentDnpDone = msCompoundDocumentDnpDone;
-  }
-
-  public boolean isInMemDocumentCacheHit()
-  {
-    return InMemDocumentCacheHit;
-  }
-
-  public void setInMemDocumentCacheHit(boolean documentCollectionCacheHit)
-  {
-    InMemDocumentCacheHit = documentCollectionCacheHit;
-  }
-
-  public boolean isPersistentDocumentCacheHit()
-  {
-    return PersistentDocumentCacheHit;
-  }
-
-  public void setPersisentDocumentCacheHit(boolean semanticsDiskCacheHit)
-  {
-    PersistentDocumentCacheHit = semanticsDiskCacheHit;
+    this.msSerialization = msSerialization;
   }
 
   public DocumentErrorRecord getErrorRecord()
@@ -180,16 +203,6 @@ public class DocumentLogRecord extends DownloadableLogRecord
   public void setErrorRecord(DocumentErrorRecord errorRecord)
   {
     this.errorRecord = errorRecord;
-  }
-
-  public long getMsPageCacheLookup()
-  {
-    return msPageCacheLookup;
-  }
-
-  public void setMsPageCacheLookup(long msPageCacheLookup)
-  {
-    this.msPageCacheLookup = msPageCacheLookup;
   }
 
   static final public DocumentLogRecord DUMMY;

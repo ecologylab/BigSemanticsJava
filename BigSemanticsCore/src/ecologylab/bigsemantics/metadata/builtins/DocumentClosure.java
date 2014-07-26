@@ -251,7 +251,15 @@ public class DocumentClosure extends SetElement
   @Override
   public DocumentLogRecord getLogRecord()
   {
-    return document == null ? DocumentLogRecord.DUMMY : document.getLogRecord();
+    if (document != null)
+    {
+      DocumentLogRecord record = document.getLogRecord();
+      if (record != null)
+      {
+        return record;
+      }
+    }
+    return DocumentLogRecord.DUMMY;
   }
 
   @Override
@@ -420,7 +428,8 @@ public class DocumentClosure extends SetElement
 
     synchronized (DOWNLOAD_STATUS_LOCK)
     {
-      if (!(downloadStatus == DownloadStatus.QUEUED || downloadStatus == DownloadStatus.UNPROCESSED))
+      if (!(downloadStatus == DownloadStatus.QUEUED
+          || downloadStatus == DownloadStatus.UNPROCESSED))
       {
         return;
       }
@@ -428,6 +437,7 @@ public class DocumentClosure extends SetElement
     }
 
     ParsedURL location = location();
+    DocumentLogRecord logRecord = getLogRecord();
     MetaMetadata metaMetadata = (MetaMetadata) document.getMetaMetadata();
     boolean noCache = metaMetadata.isNoCache();
     PersistentDocumentCache pCache = semanticsScope.getPersistentDocumentCache();
@@ -438,13 +448,12 @@ public class DocumentClosure extends SetElement
     Document cachedDoc = null;
     if (pCache != null && !noCache)
     {
-      long t0 = System.currentTimeMillis();
       cacheMetaInfo = pCache.getMetaInfo(location);
-      getLogRecord().setMsPageCacheLookup(System.currentTimeMillis() - t0);
 
-      if (pCache != null && cacheMetaInfo != null)
+      if (cacheMetaInfo != null)
       {
-        getLogRecord().setId(cacheMetaInfo.getDocId());
+        logRecord.setId(cacheMetaInfo.getDocId());
+        logRecord.setPersistentCacheHit(true);
 
         // check if cached raw content is too old.
         Date accessTime = cacheMetaInfo.getAccessTime();
@@ -454,23 +463,19 @@ public class DocumentClosure extends SetElement
         if (diff <= cacheLifeMs)
         {
           // it's not too old, we should use the cached raw content.
+          long t0 = System.currentTimeMillis();
           cachedRawContent = pCache.retrieveRawContent(cacheMetaInfo);
-
-          getLogRecord().setHtmlCacheHit(true);
+          logRecord.setMsPersistentHtmlRead(System.currentTimeMillis() - t0);
 
           // check if cached document needs to be re-extracted
           String currentHash = metaMetadata.getHashForExtraction();
           if (currentHash.equals(cacheMetaInfo.getMmdHash()))
           {
+            long t1 = System.currentTimeMillis();
             cachedDoc = pCache.retrieveDoc(cacheMetaInfo);
+            logRecord.setMsPersistentDocumentRead(System.currentTimeMillis() - t1);
           }
         }
-      }
-
-      getLogRecord().setMsMetadataCacheLookup(System.currentTimeMillis() - t0);
-      if (cachedDoc != null)
-      {
-        getLogRecord().setPersisentDocumentCacheHit(true);
       }
     }
 
@@ -532,9 +537,9 @@ public class DocumentClosure extends SetElement
     String userAgent = document.getMetaMetadata().getUserAgentString();
     DownloadController downloadController = semanticsScope.createDownloadController(this);
     downloadController.setUserAgent(userAgent);
-    long t0download = System.currentTimeMillis();
+    long t0 = System.currentTimeMillis();
     downloadController.accessAndDownload(location);
-    getLogRecord().setMsHtmlDownload(System.currentTimeMillis() - t0download);
+    getLogRecord().setMsHtmlDownload(System.currentTimeMillis() - t0);
     return downloadController;
   }
 
@@ -585,16 +590,18 @@ public class DocumentClosure extends SetElement
   {
     if (documentParser == null)
     {
-      // First check if registered no parser
-      boolean noParser = DocumentParser.isRegisteredNoParser(document.getLocation());
-      List<MetadataParsedURL> additionalLocations = document.getAdditionalLocations();
-      if (additionalLocations != null)
-      {
-        for (int i = 0; i < additionalLocations.size() && !noParser; ++i)
-        {
-          noParser |= DocumentParser.isRegisteredNoParser(additionalLocations.get(i).getValue());
-        }
-      }
+      boolean noParser = false;
+      
+//      // First check if registered no parser
+//      noParser = DocumentParser.isRegisteredNoParser(document.getLocation());
+//      List<MetadataParsedURL> additionalLocations = document.getAdditionalLocations();
+//      if (additionalLocations != null)
+//      {
+//        for (int i = 0; i < additionalLocations.size() && !noParser; ++i)
+//        {
+//          noParser |= DocumentParser.isRegisteredNoParser(additionalLocations.get(i).getValue());
+//        }
+//      }
 
       if (noParser)
       {
@@ -618,11 +625,11 @@ public class DocumentClosure extends SetElement
     // container or not (it could turn out to be an image or some other mime type), parse the baby!
     setDownloadStatus(DownloadStatus.PARSING);
 
+    long t0 = System.currentTimeMillis();
     takeSemanticActions(metaMetadata, metaMetadata.getBeforeSemanticActions());
-    long t0extraction = System.currentTimeMillis();
     documentParser.parse();
-    getLogRecord().setMsExtraction(System.currentTimeMillis() - t0extraction);
     takeSemanticActions(metaMetadata, metaMetadata.getAfterSemanticActions());
+    getLogRecord().setMsExtraction(System.currentTimeMillis() - t0);
 
     addDocGraphCallbacksIfNeeded();
   }
@@ -657,8 +664,7 @@ public class DocumentClosure extends SetElement
                          boolean rawContentDownloaded)
       throws IOException
   {
-    long t0persist = System.currentTimeMillis();
-
+    long t0 = System.currentTimeMillis();
     if (rawContentDownloaded)
     {
       PersistenceMetaInfo metaInfo =
@@ -668,14 +674,14 @@ public class DocumentClosure extends SetElement
                        downloadController.getMimeType(),
                        doc.getMetaMetadata().getHashForExtraction());
       getLogRecord().setId(metaInfo.getDocId());
+      getLogRecord().setMsPersistentCacheWrite(System.currentTimeMillis() - t0);
     }
     else
     {
       PersistenceMetaInfo metaInfo = pCache.getMetaInfo(doc.getLocation());
       pCache.updateDoc(metaInfo, doc);
+      getLogRecord().setMsPersistentCacheUpdate(System.currentTimeMillis() - t0);
     }
-
-    getLogRecord().setMsMetadataCaching(System.currentTimeMillis() - t0persist);
   }
 
   /**
@@ -806,6 +812,12 @@ public class DocumentClosure extends SetElement
   {
     synchronized (DOCUMENT_LOCK)
     {
+      DocumentLogRecord logRecord = getLogRecord();
+      if (logRecord  != DocumentLogRecord.DUMMY)
+      {
+        newDocument.setLogRecord(logRecord);
+      }
+
       Document oldDocument = document;
       document = newDocument;
 
