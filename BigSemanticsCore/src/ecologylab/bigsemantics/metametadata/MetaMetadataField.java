@@ -638,34 +638,6 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
     }
     return xpaths.size();
   }
-  
-  public boolean hasXpath()
-  {
-    if (xpaths != null)
-    {
-      for (int i = 0; i < xpaths.size(); ++i)
-      {
-        String xpath = xpaths.get(i);
-        if (xpath != null && xpath.length() > 0)
-        {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-  
-  protected void addXpath(String xpath)
-  {
-    if (xpaths == null)
-    {
-      xpaths = new ArrayList<String>();
-    }
-    if (!xpaths.contains(xpath))
-    {
-      xpaths.add(xpath);
-    }
-  }
 
   /**
    * if this field should always be shown in visualization.
@@ -972,15 +944,6 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
         {
           e.printStackTrace();
         }
-      }
-    }
-    
-    for (int i = 0; i < inheritFrom.xpathsSize(); ++i)
-    {
-      String xpath = inheritFrom.getXpath(i);
-      if (xpath != null && xpath.length() > 0)
-      {
-        addXpath(xpath);
       }
     }
   }
