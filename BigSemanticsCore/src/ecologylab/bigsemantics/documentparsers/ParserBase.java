@@ -1121,13 +1121,11 @@ implements ScalarUnmarshallingContext, SemanticsConstants
                                 Map<String, String> fieldParserContext,
                                 Scope<Object> params)
   {
-    String xpathString = mmdField.getXpath();
     String fieldParserKey = mmdField.getFieldParserKey();
     contextNode = findContextNodeIfNecessary(mmdField, contextNode, params);
   
     String evaluation = null;
-    if (xpathString != null
-        && xpathString.length() > 0
+    if (mmdField.hasXpath()
         && contextNode != null
         && fieldParserKey == null)
     {
