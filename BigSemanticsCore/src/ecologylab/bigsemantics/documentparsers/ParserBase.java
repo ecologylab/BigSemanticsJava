@@ -729,6 +729,8 @@ implements ScalarUnmarshallingContext, SemanticsConstants
             }
             if (evaluation != null && evaluation.length() > 0)
             {
+              logger.debug("Extraction succeeded for {}, using xpath \"{}\", result={}",
+                           mmdField, xpathString, evaluation);
               return evaluation;
             }
           } // composite / collection / scalar

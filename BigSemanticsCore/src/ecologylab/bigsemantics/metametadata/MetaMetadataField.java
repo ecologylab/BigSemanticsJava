@@ -338,6 +338,8 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
   @simpl_wrap
   @mm_dont_inherit
   private MetaMetadataField                             inheritedField         = null;
+  
+  private MetaMetadataField                             clonedFrom             = null;
 
   /**
    * in which meta-metadata this field is declared.
@@ -1428,6 +1430,23 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
         addToFp(fpBuilder, obj);
       }
     }
+  }
+  
+  @Override
+  public MetaMetadataField clone()
+  {
+    try
+    {
+      MetaMetadataField cloned = (MetaMetadataField) super.clone();
+      cloned.clonedFrom = this;
+      return cloned;
+    }
+    catch (CloneNotSupportedException e)
+    {
+      // This should never happen
+      e.printStackTrace();
+    }
+    return null;
   }
 
 }
