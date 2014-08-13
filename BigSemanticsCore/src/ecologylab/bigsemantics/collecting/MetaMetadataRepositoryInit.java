@@ -20,6 +20,7 @@ import ecologylab.bigsemantics.metametadata.MetaMetadataRepositoryLoader;
 import ecologylab.bigsemantics.namesandnums.DocumentParserTagNames;
 import ecologylab.bigsemantics.namesandnums.SemanticsNames;
 import ecologylab.collections.Scope;
+import ecologylab.io.NamedInputStream;
 import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.SimplTypesScope.GRAPH_SWITCH;
 import ecologylab.serialization.formatenums.Format;
@@ -94,7 +95,7 @@ implements DocumentParserTagNames, ApplicationProperties, SemanticsNames
 	  repositoryLocator = new MetaMetadataRepositoryLocator(USE_ASSETS_CACHE);
 	  repositoryLoader = new MetaMetadataRepositoryLoader();
 	  
-		List<InputStream> repositoryIStreams =
+		List<NamedInputStream> repositoryIStreams =
 		    repositoryLocator.locateRepositoryAndOpenStreams(repositoryLocation, repositoryFormat);
     try
     {

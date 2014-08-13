@@ -521,7 +521,7 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 				NameType[] nameType = new NameType[1];
 				inheritedMmd = inheritanceHandler.resolveMmdName(typeName, nameType);
 				if (inheritedMmd == null)
-					throw new MetaMetadataException("meta-metadata not found: " + typeName + " (if you want to define new types inline, you need to specify extends/child_extends).");
+					throw new MetaMetadataException("meta-metadata not found: " + this + "." + typeName + " (if you want to define new types inline, you need to specify extends/child_extends).");
 				if (!typeName.equals(inheritedMmd.getName()) && nameType[0] == NameType.MMD)
 				{
 					// could be inline mmd

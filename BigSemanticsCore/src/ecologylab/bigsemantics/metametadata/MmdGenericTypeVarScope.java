@@ -67,7 +67,8 @@ public class MmdGenericTypeVarScope extends MultiAncestorScope<MmdGenericTypeVar
 		// boolean satisfyUpperBound = upperBoundMmd == null || upperBoundMmd.isDerivedFrom(argMmd);
 
 		if (!satisfyLowerBound /* || !satisfyUpperBound */)
-			throw new MetaMetadataException("generic type bound(s) not satisfied: " + name);
+			throw new MetaMetadataException("generic type bound(s) not satisfied: " + name
+					                            + ": arg type=" + argMmd + ", lowerBound=" + lowerBoundMmd);
 	}
 
 	private void checkBoundsWithBounds(String name, MmdGenericTypeVar local, MmdGenericTypeVar other,

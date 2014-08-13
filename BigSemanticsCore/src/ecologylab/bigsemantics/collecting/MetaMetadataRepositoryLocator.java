@@ -25,6 +25,7 @@ import ecologylab.generic.Debug;
 import ecologylab.io.Assets;
 import ecologylab.io.AssetsRoot;
 import ecologylab.io.Files;
+import ecologylab.io.NamedInputStream;
 import ecologylab.net.ParsedURL;
 import ecologylab.serialization.formatenums.Format;
 
@@ -78,10 +79,10 @@ public class MetaMetadataRepositoryLocator extends Debug
    * @param repositoryFormat
    * @return
    */
-  public List<InputStream> locateRepositoryAndOpenStreams(File repositoryLocation,
+  public List<NamedInputStream> locateRepositoryAndOpenStreams(File repositoryLocation,
                                                           Format repositoryFormat)
   {
-    List<InputStream> result = new ArrayList<InputStream>();
+    List<NamedInputStream> result = new ArrayList<NamedInputStream>();
 
     if (repositoryLocation == null)
     {
@@ -181,7 +182,7 @@ public class MetaMetadataRepositoryLocator extends Debug
     return null;
   }
 
-  int locateRepositoryAsJavaResourcesAndOpenStreams(List<InputStream> result)
+  int locateRepositoryAsJavaResourcesAndOpenStreams(List<NamedInputStream> result)
   {
     InputStream repositoryListStream =
         this.getClass().getResourceAsStream("/mmdrepository/repositoryFiles.lst");
@@ -206,7 +207,8 @@ public class MetaMetadataRepositoryLocator extends Debug
       if (line.length() > 0)
       {
         String repositoryFileResourceName = "/mmdrepository/" + line;
-        result.add(this.getClass().getResourceAsStream(repositoryFileResourceName));
+        result.add(new NamedInputStream(repositoryFileResourceName,
+        																this.getClass().getResourceAsStream(repositoryFileResourceName)));
         n++;
       }
     }
@@ -239,7 +241,7 @@ public class MetaMetadataRepositoryLocator extends Debug
       buf.add(f);
   }
 
-  public int openStreams(List<InputStream> result,
+  public int openStreams(List<NamedInputStream> result,
                          File repositoryDir,
                          Format repositoryFormat)
   {
@@ -248,7 +250,7 @@ public class MetaMetadataRepositoryLocator extends Debug
     {
       try
       {
-        result.add(new FileInputStream(file));
+        result.add(new NamedInputStream(file));
       }
       catch (FileNotFoundException e)
       {

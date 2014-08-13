@@ -22,6 +22,7 @@ import ecologylab.bigsemantics.metametadata.exceptions.MetaMetadataException;
 import ecologylab.bigsemantics.namesandnums.DocumentParserTagNames;
 import ecologylab.generic.Debug;
 import ecologylab.generic.HashMapArrayList;
+import ecologylab.io.NamedInputStream;
 import ecologylab.net.ParsedURL;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.SimplTypesScope;
@@ -100,7 +101,7 @@ public class MetaMetadataRepositoryLoader extends Debug implements DocumentParse
   public MetaMetadataRepository loadFromFiles(List<File> files, Format format)
       throws IOException, SIMPLTranslationException
   {
-    List<InputStream> istreams = new ArrayList<InputStream>();
+    List<NamedInputStream> nistreams = new ArrayList<NamedInputStream>();
     for (File file : files)
     {
       if (file == null || !file.exists())
@@ -109,57 +110,64 @@ public class MetaMetadataRepositoryLoader extends Debug implements DocumentParse
         continue;
       }
       println("Opening MetaMetadataRepository:\t" + file.getPath());
-      InputStream istream = new FileInputStream(file);
-      istreams.add(istream);
+      NamedInputStream nistream = new NamedInputStream(file);
+      nistreams.add(nistream);
     }
-    return loadFromInputStreams(istreams, format);
+    return loadFromInputStreams(nistreams, format);
   }
 
   /**
    * Load the repository from a list of InputStreams. This is useful for loading the repository from
    * jar'ed resources.
    * 
-   * @param istreams
+   * @param nistreams
    * @param format
-   * @return
+ * @return
    * @throws IOException 
    * @throws SIMPLTranslationException
    */
-  public MetaMetadataRepository loadFromInputStreams(List<InputStream> istreams, Format format)
+  public MetaMetadataRepository loadFromInputStreams(List<NamedInputStream> nistreams, Format format)
       throws IOException
   {
-    List<MetaMetadataRepository> repositories = deserializeRepositories(istreams, format);
+    List<MetaMetadataRepository> repositories = deserializeRepositories(nistreams, format);
     MetaMetadataRepository result = mergeRepositories(repositories);
     initializeRepository(result);
     return result;
   }
 
-  List<MetaMetadataRepository> deserializeRepositories(List<InputStream> streams,
+  List<MetaMetadataRepository> deserializeRepositories(List<NamedInputStream> streams,
                                                        Format format) throws IOException
   {
     List<MetaMetadataRepository> result = new ArrayList<MetaMetadataRepository>(streams.size());
     List<HashCode> fileHashes = new ArrayList<HashCode>();
-    for (InputStream istream : streams)
+    for (NamedInputStream nistream : streams)
     {
+    	InputStream istream	= nistream.getInputStream();
       String content = Utils.readInputStream(istream);
       HashCode fileHash = Hashing.md5().hashString(content);
       fileHashes.add(fileHash);
       InputStream newStream = new ByteArrayInputStream(content.getBytes(Charsets.UTF_8));
 
       MetaMetadataRepository repo = null;
+      
+      boolean error = true;
       try
       {
         repo = (MetaMetadataRepository) mmdTScope.deserialize(newStream, format);
+        error	= false;
       }
       catch (SIMPLTranslationException e)
       {
-        error("Cannot deserialize repository from InputStream: " + istream);
         e.printStackTrace();
       }
-      if (repo != null)
+      if (!error)
       {
         result.add(repo);
         println("Deserialized " + repo);
+      }
+      else
+      {
+        error("Could not deserialize repository from InputStream: " + nistream.getName());
       }
     }
     HashCode repoHash = Hashing.combineUnordered(fileHashes);
