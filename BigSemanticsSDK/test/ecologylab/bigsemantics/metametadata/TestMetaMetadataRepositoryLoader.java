@@ -15,6 +15,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import ecologylab.io.NamedInputStream;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.formatenums.Format;
 
@@ -39,8 +40,8 @@ public class TestMetaMetadataRepositoryLoader
     File sampleRepoFile = new File("data/sampleRepositoryFileSearch.xml");
     assertTrue(sampleRepoFile.exists());
     InputStream istream = new FileInputStream(sampleRepoFile);
-    List<InputStream> istreams = new ArrayList<InputStream>();
-    istreams.add(istream);
+    List<NamedInputStream> istreams = new ArrayList<NamedInputStream>();
+    istreams.add(new NamedInputStream(sampleRepoFile));
     
     List<MetaMetadataRepository> repos = loader.deserializeRepositories(istreams, Format.XML);
     assertEquals(1, repos.size());

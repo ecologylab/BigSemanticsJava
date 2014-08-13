@@ -9,49 +9,30 @@ package ecologylab.bigsemantics.metadata.builtins.declarations;
  */
 
 import ecologylab.bigsemantics.metadata.Metadata;
-import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metadata.builtins.MetadataBuiltinsTypesScope;
 import ecologylab.bigsemantics.metadata.mm_name;
 import ecologylab.bigsemantics.metadata.scalar.MetadataParsedURL;
-import ecologylab.bigsemantics.metadata.scalar.MetadataString;
 import ecologylab.bigsemantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.bigsemantics.namesandnums.SemanticsNames;
 import ecologylab.net.ParsedURL;
-import ecologylab.serialization.annotations.Hint;
 import ecologylab.serialization.annotations.simpl_collection;
-import ecologylab.serialization.annotations.simpl_composite;
-import ecologylab.serialization.annotations.simpl_composite_as_scalar;
-import ecologylab.serialization.annotations.simpl_hints;
 import ecologylab.serialization.annotations.simpl_inherit;
 import ecologylab.serialization.annotations.simpl_scalar;
-import java.lang.String;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 /** 
- *The Document Class
+ *The Primitive Document Class. Even images should extend this.
  */ 
 @simpl_inherit
 public class DocumentDeclaration extends Metadata
 {
 	/** 
-	 *The Title of the Document
-	 */ 
-	@simpl_scalar
-	@simpl_hints({Hint.XML_LEAF})
-	@simpl_composite_as_scalar
-	private MetadataString title;
-
-	/** 
 	 *The document's actual location.
 	 */ 
 	@simpl_scalar
 	private MetadataParsedURL location;
-
-	@simpl_scalar
-	@simpl_hints({Hint.XML_LEAF})
-	private MetadataString description;
 
 	/** 
 	 *Relative location of a local copy of the document.
@@ -59,19 +40,9 @@ public class DocumentDeclaration extends Metadata
 	@simpl_scalar
 	private MetadataParsedURL localLocation;
 
-	/** 
-	 *Huamn readable name of the site.
-	 */ 
-	@simpl_scalar
-	private MetadataString siteName;
-
-	@simpl_collection("location")
+	@simpl_collection("additional_location")
 	@mm_name("additional_locations")
 	private List<MetadataParsedURL> additionalLocations;
-
-	@simpl_composite
-	@mm_name("see_also")
-	private Document seeAlso;
 
 	public DocumentDeclaration()
 	{ super(); }
@@ -80,38 +51,6 @@ public class DocumentDeclaration extends Metadata
 		super(mmd);
 	}
 
-
-	public MetadataString	title()
-	{
-		MetadataString	result = this.title;
-		if (result == null)
-		{
-			result = new MetadataString();
-			this.title = result;
-		}
-		return result;
-	}
-
-	public String getTitle()
-	{
-		return this.title == null ? null : title().getValue();
-	}
-
-	public MetadataString getTitleMetadata()
-	{
-		return title;
-	}
-
-	public void setTitle(String title)
-	{
-		if (title != null)
-			this.title().setValue(title);
-	}
-
-	public void setTitleMetadata(MetadataString title)
-	{
-		this.title = title;
-	}
 
 	public MetadataParsedURL	location()
 	{
@@ -143,38 +82,6 @@ public class DocumentDeclaration extends Metadata
 	public void setLocationMetadata(MetadataParsedURL location)
 	{
 		this.location = location;
-	}
-
-	public MetadataString	description()
-	{
-		MetadataString	result = this.description;
-		if (result == null)
-		{
-			result = new MetadataString();
-			this.description = result;
-		}
-		return result;
-	}
-
-	public String getDescription()
-	{
-		return this.description == null ? null : description().getValue();
-	}
-
-	public MetadataString getDescriptionMetadata()
-	{
-		return description;
-	}
-
-	public void setDescription(String description)
-	{
-		if (description != null)
-			this.description().setValue(description);
-	}
-
-	public void setDescriptionMetadata(MetadataString description)
-	{
-		this.description = description;
 	}
 
 	public MetadataParsedURL	localLocation()
@@ -209,38 +116,6 @@ public class DocumentDeclaration extends Metadata
 		this.localLocation = localLocation;
 	}
 
-	public MetadataString	siteName()
-	{
-		MetadataString	result = this.siteName;
-		if (result == null)
-		{
-			result = new MetadataString();
-			this.siteName = result;
-		}
-		return result;
-	}
-
-	public String getSiteName()
-	{
-		return this.siteName == null ? null : siteName().getValue();
-	}
-
-	public MetadataString getSiteNameMetadata()
-	{
-		return siteName;
-	}
-
-	public void setSiteName(String siteName)
-	{
-		if (siteName != null)
-			this.siteName().setValue(siteName);
-	}
-
-	public void setSiteNameMetadata(MetadataString siteName)
-	{
-		this.siteName = siteName;
-	}
-
 	public List<MetadataParsedURL> getAdditionalLocations()
 	{
 		return additionalLocations;
@@ -269,15 +144,5 @@ public class DocumentDeclaration extends Metadata
 	public void setAdditionalLocations(List<MetadataParsedURL> additionalLocations)
 	{
 		this.additionalLocations = additionalLocations;
-	}
-
-	public Document getSeeAlso()
-	{
-		return seeAlso;
-	}
-
-	public void setSeeAlso(Document seeAlso)
-	{
-		this.seeAlso = seeAlso;
 	}
 }

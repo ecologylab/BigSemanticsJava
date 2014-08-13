@@ -10,7 +10,6 @@ package ecologylab.bigsemantics.metadata.builtins.declarations;
 
 import ecologylab.bigsemantics.metadata.builtins.Audio;
 import ecologylab.bigsemantics.metadata.builtins.Clipping;
-import ecologylab.bigsemantics.metadata.builtins.CompoundDocument;
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metadata.builtins.Image;
 import ecologylab.bigsemantics.metadata.builtins.MetadataBuiltinsTypesScope;
@@ -22,6 +21,7 @@ import ecologylab.bigsemantics.namesandnums.SemanticsNames;
 import ecologylab.serialization.annotations.Hint;
 import ecologylab.serialization.annotations.simpl_collection;
 import ecologylab.serialization.annotations.simpl_composite;
+import ecologylab.serialization.annotations.simpl_composite_as_scalar;
 import ecologylab.serialization.annotations.simpl_hints;
 import ecologylab.serialization.annotations.simpl_inherit;
 import ecologylab.serialization.annotations.simpl_scalar;
@@ -35,6 +35,14 @@ import java.util.Map;
 public class CompoundDocumentDeclaration extends Document
 {
 	/** 
+	 *The Title of the Document
+	 */ 
+	@simpl_scalar
+	@simpl_hints({Hint.XML_LEAF})
+	@simpl_composite_as_scalar
+	private MetadataString title;
+
+	/** 
 	 *For debugging. Type of the structure recognized by information extraction.
 	 */ 
 	@simpl_scalar
@@ -47,6 +55,20 @@ public class CompoundDocumentDeclaration extends Document
 	@simpl_hints({Hint.XML_LEAF})
 	private MetadataString query;
 
+	@simpl_scalar
+	@simpl_hints({Hint.XML_LEAF})
+	private MetadataString description;
+
+	/** 
+	 *Huamn readable name of the site.
+	 */ 
+	@simpl_scalar
+	private MetadataString siteName;
+
+	@simpl_composite
+	@mm_name("see_also")
+	private Document seeAlso;
+
 	/** 
 	 *Clippings that this document contains.
 	 */ 
@@ -54,10 +76,6 @@ public class CompoundDocumentDeclaration extends Document
 	@simpl_scope("repository_clippings")
 	@mm_name("clippings")
 	private List<Clipping> clippings;
-
-	@simpl_composite
-	@mm_name("root_document")
-	private CompoundDocument rootDocument;
 
 	@simpl_composite
 	@mm_name("thumbnail")
@@ -86,6 +104,38 @@ public class CompoundDocumentDeclaration extends Document
 		super(mmd);
 	}
 
+
+	public MetadataString	title()
+	{
+		MetadataString	result = this.title;
+		if (result == null)
+		{
+			result = new MetadataString();
+			this.title = result;
+		}
+		return result;
+	}
+
+	public String getTitle()
+	{
+		return this.title == null ? null : title().getValue();
+	}
+
+	public MetadataString getTitleMetadata()
+	{
+		return title;
+	}
+
+	public void setTitle(String title)
+	{
+		if (title != null)
+			this.title().setValue(title);
+	}
+
+	public void setTitleMetadata(MetadataString title)
+	{
+		this.title = title;
+	}
 
 	public MetadataString	pageStructure()
 	{
@@ -151,6 +201,80 @@ public class CompoundDocumentDeclaration extends Document
 		this.query = query;
 	}
 
+	public MetadataString	description()
+	{
+		MetadataString	result = this.description;
+		if (result == null)
+		{
+			result = new MetadataString();
+			this.description = result;
+		}
+		return result;
+	}
+
+	public String getDescription()
+	{
+		return this.description == null ? null : description().getValue();
+	}
+
+	public MetadataString getDescriptionMetadata()
+	{
+		return description;
+	}
+
+	public void setDescription(String description)
+	{
+		if (description != null)
+			this.description().setValue(description);
+	}
+
+	public void setDescriptionMetadata(MetadataString description)
+	{
+		this.description = description;
+	}
+
+	public MetadataString	siteName()
+	{
+		MetadataString	result = this.siteName;
+		if (result == null)
+		{
+			result = new MetadataString();
+			this.siteName = result;
+		}
+		return result;
+	}
+
+	public String getSiteName()
+	{
+		return this.siteName == null ? null : siteName().getValue();
+	}
+
+	public MetadataString getSiteNameMetadata()
+	{
+		return siteName;
+	}
+
+	public void setSiteName(String siteName)
+	{
+		if (siteName != null)
+			this.siteName().setValue(siteName);
+	}
+
+	public void setSiteNameMetadata(MetadataString siteName)
+	{
+		this.siteName = siteName;
+	}
+
+	public Document getSeeAlso()
+	{
+		return seeAlso;
+	}
+
+	public void setSeeAlso(Document seeAlso)
+	{
+		this.seeAlso = seeAlso;
+	}
+
 	public List<Clipping> getClippings()
 	{
 		return clippings;
@@ -179,16 +303,6 @@ public class CompoundDocumentDeclaration extends Document
 	public void setClippings(List<Clipping> clippings)
 	{
 		this.clippings = clippings;
-	}
-
-	public CompoundDocument getRootDocument()
-	{
-		return rootDocument;
-	}
-
-	public void setRootDocument(CompoundDocument rootDocument)
-	{
-		this.rootDocument = rootDocument;
 	}
 
 	public Image getThumbnail()

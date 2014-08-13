@@ -22,7 +22,6 @@ import ecologylab.serialization.annotations.simpl_descriptor_classes;
 import ecologylab.serialization.annotations.simpl_inherit;
 import ecologylab.serialization.annotations.simpl_scalar;
 import ecologylab.serialization.annotations.simpl_scope;
-import ecologylab.serialization.annotations.simpl_tag;
 import java.lang.String;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +38,6 @@ public class MetadataDeclaration
 	 *Stores the name of the meta-metadata, and is used on restoring from XML.
 	 */ 
 	@simpl_scalar
-	@simpl_tag("mm_name")
 	private MetadataString metaMetadataName;
 
 	@simpl_collection

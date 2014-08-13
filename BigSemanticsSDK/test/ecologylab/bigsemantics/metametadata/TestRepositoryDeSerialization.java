@@ -15,7 +15,7 @@ import ecologylab.appframework.PropertiesAndDirectories;
 import ecologylab.bigsemantics.collecting.SemanticsSessionScope;
 import ecologylab.bigsemantics.cyberneko.CybernekoWrapper;
 import ecologylab.bigsemantics.generated.library.RepositoryMetadataTranslationScope;
-import ecologylab.bigsemantics.generated.library.urbanspoon.UrbanSpoonSearch;
+import ecologylab.bigsemantics.generated.library.search.Search;
 import ecologylab.bigsemantics.metadata.builtins.ClippableDocument;
 import ecologylab.bigsemantics.metadata.builtins.Clipping;
 import ecologylab.bigsemantics.metadata.builtins.Document;
@@ -150,7 +150,7 @@ public class TestRepositoryDeSerialization
   {
     SimplTypesScope.graphSwitch = GRAPH_SWITCH.ON;
 
-    SimplTypesScope scope = SimplTypesScope.get("urbanSpoonSearch", UrbanSpoonSearch.class);
+    SimplTypesScope scope = SimplTypesScope.get("Search", Search.class);
     StringBuilder serialized = SimplTypesScope.serialize(scope, StringFormat.XML);
 
     assertNotNull(serialized);
@@ -175,7 +175,7 @@ public class TestRepositoryDeSerialization
   {
     SimplTypesScope.graphSwitch = GRAPH_SWITCH.ON;
 
-    SimplTypesScope scope = SimplTypesScope.get("urbanSpoonSearch", UrbanSpoonSearch.class);
+    SimplTypesScope scope = SimplTypesScope.get("Search", Search.class);
     StringBuilder serialized = SimplTypesScope.serialize(scope, StringFormat.JSON);
 
     assertNotNull(serialized);

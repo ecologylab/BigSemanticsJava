@@ -181,56 +181,6 @@ public class Document extends DocumentDeclaration
   }
 
   /**
-   * The heavy weight setter method for field title
-   **/
-  public void hwSetTitle(String title)
-  {
-    title().setValue(title);
-    rebuildCompositeTermVector();
-  }
-
-  /**
-   * Heavy Weight Direct setter method for title
-   **/
-  public void hwSetTitleMetadata(MetadataString title)
-  {
-    if (!isTitleNull() && hasTermVector())
-      termVector().remove(getTitleMetadata().termVector());
-    setTitleMetadata(title);
-    rebuildCompositeTermVector();
-  }
-
-  public boolean isTitleNull()
-  {
-    return this.getTitleMetadata() == null || this.getTitleMetadata().getValue() == null;
-  }
-
-  /**
-   * The heavy weight setter method for field description
-   **/
-  public void hwSetDescription(String description)
-  {
-    description().setValue(description);
-    rebuildCompositeTermVector();
-  }
-
-  /**
-   * Heavy Weight Direct setter method for description
-   **/
-  public void hwSetDescriptionMetadata(MetadataString description)
-  {
-    if (!isDescriptionNull() && hasTermVector())
-      termVector().remove(getDescriptionMetadata().termVector());
-    setDescriptionMetadata(description);
-    rebuildCompositeTermVector();
-  }
-
-  public boolean isDescriptionNull()
-  {
-    return getDescriptionMetadata() == null || getDescriptionMetadata().getValue() == null;
-  }
-
-  /**
    * @return the alwaysAcceptRedirects
    */
   public boolean isAlwaysAcceptRedirect()
@@ -261,6 +211,37 @@ public class Document extends DocumentDeclaration
   {
     return semanticInlinks == null ? 0 : semanticInlinks.getEffectiveGeneration();
   }
+
+  /**
+   * FOR BACKWARD COMPATABILITY.
+   * The heavy weight setter method for field title
+   * FIXME
+   **/
+  public void hwSetTitle(String title)
+  {
+  }
+
+  /**
+   * FOR BACKWARD COMPATABILITY.
+   * 
+   * FIXME
+   **/
+	public String getTitle()
+	{
+		ParsedURL location	= getLocation();
+		return location == null ? null : location.toString();
+	}
+
+
+  /**
+   * FOR BACKWARD COMPATABILITY.
+   * 
+   * FIXME
+   **/
+	public void setTitle(String foo)
+	{
+	}
+
 
   /**
    * @return the sameDomainAsPrevious
