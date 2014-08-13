@@ -107,6 +107,8 @@ public class DocumentClosure extends SetElement
    * that they are traversable() and of the right mime types.
    */
   private boolean                             crawlLinks           = true;
+  
+  private boolean                             reload;
 
   private final Object                        DOWNLOAD_LOCK        = new Object();
 
@@ -320,6 +322,16 @@ public class DocumentClosure extends SetElement
   {
     return getDownloadStatus() == DownloadStatus.UNPROCESSED;
   }
+  
+  public boolean isReload()
+  {
+    return reload;
+  }
+
+  public void setReload(boolean reload)
+  {
+    this.reload = reload;
+  }
 
   /**
    * Test state variable inside of QUEUE_DOWNLOAD_LOCK.
@@ -439,7 +451,7 @@ public class DocumentClosure extends SetElement
     ParsedURL location = location();
     DocumentLogRecord logRecord = getLogRecord();
     MetaMetadata metaMetadata = (MetaMetadata) document.getMetaMetadata();
-    boolean noCache = metaMetadata.isNoCache();
+    boolean noCache = metaMetadata.isNoCache() || isReload();
     PersistentDocumentCache pCache = semanticsScope.getPersistentDocumentCache();
 
     // Check the persistent cache first
