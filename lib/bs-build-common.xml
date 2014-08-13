@@ -74,6 +74,7 @@
   	<echo message="Classpath: ${classpath_prop}" />
   	
     <mkdir dir="${classes.dir}" />
+  	<mkdir dir="${src.dir}" />
     <javac srcdir="${src.dir}" destdir="${classes.dir}" source="1.6" target="1.6" fork="yes"
            encoding="UTF-8" classpathref="classpath" />
     
