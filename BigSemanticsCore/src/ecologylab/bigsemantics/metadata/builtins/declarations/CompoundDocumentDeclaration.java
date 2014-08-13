@@ -65,6 +65,9 @@ public class CompoundDocumentDeclaration extends Document
 	@simpl_scalar
 	private MetadataString siteName;
 
+	@simpl_scalar
+	private MetadataString textKeywords;
+
 	@simpl_composite
 	@mm_name("see_also")
 	private Document seeAlso;
@@ -263,6 +266,38 @@ public class CompoundDocumentDeclaration extends Document
 	public void setSiteNameMetadata(MetadataString siteName)
 	{
 		this.siteName = siteName;
+	}
+
+	public MetadataString	textKeywords()
+	{
+		MetadataString	result = this.textKeywords;
+		if (result == null)
+		{
+			result = new MetadataString();
+			this.textKeywords = result;
+		}
+		return result;
+	}
+
+	public String getTextKeywords()
+	{
+		return this.textKeywords == null ? null : textKeywords().getValue();
+	}
+
+	public MetadataString getTextKeywordsMetadata()
+	{
+		return textKeywords;
+	}
+
+	public void setTextKeywords(String textKeywords)
+	{
+		if (textKeywords != null)
+			this.textKeywords().setValue(textKeywords);
+	}
+
+	public void setTextKeywordsMetadata(MetadataString textKeywords)
+	{
+		this.textKeywords = textKeywords;
 	}
 
 	public Document getSeeAlso()
