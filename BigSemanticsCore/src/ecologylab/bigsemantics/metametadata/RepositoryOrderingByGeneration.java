@@ -90,7 +90,9 @@ public class RepositoryOrderingByGeneration implements RepositoryOrdering
         if (superName == null)
           throw new RuntimeException("Non-root mmd without base mmd: " + mmd.getName());
         TreeNode superNode = nodes.get(superName);
-        superNode.addSubtype(node);
+        if (superNode == null)
+            throw new RuntimeException("Non-root mmd can't find base mmd[" + superName + "]: " + mmd.getName());
+       superNode.addSubtype(node);
       }
     }
     

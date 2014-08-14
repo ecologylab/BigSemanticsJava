@@ -419,7 +419,7 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 					f1.inheritMetaMetadata(inheritanceHandler);
 					MetaMetadata mmd0 = f0.getInheritedMmd();
 					MetaMetadata mmd1 = f1.getInheritedMmd();
-					if (mmd1.isDerivedFrom(mmd0))
+					if (mmd1 != null && mmd1.isDerivedFrom(mmd0))
 						this.setNewMetadataClass(true);
 					else
 						throw new MetaMetadataException("incompatible types: " + f0 + " => " + f1);
