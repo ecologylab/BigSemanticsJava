@@ -66,5 +66,43 @@ public class TestMmdDeSerialization
 //    
 //    System.out.println(authorsField);
 //  }
+  
+  @Test
+  public void testSerializeInheritedFieldInJson() throws SIMPLTranslationException
+  {
+    SimplTypesScope mmdTScope = MetaMetadataTranslationScope.get();
+
+    MetaMetadata mmd = new MetaMetadata();
+    mmd.setName("test_mmd");
+
+    MetaMetadataScalarField baseField = new MetaMetadataScalarField();
+    baseField.setName("base_field");
+
+    MetaMetadataScalarField field = new MetaMetadataScalarField();
+    field.setName("field");
+
+    field.setInheritedField(baseField);
+    field.setDeclaringMmd(mmd);
+    
+    String xml = SimplTypesScope.serialize(field, StringFormat.XML).toString();
+    MetaMetadataScalarField f =
+        (MetaMetadataScalarField) mmdTScope.deserialize(xml, StringFormat.XML);
+    assertNotNull(f.getInheritedField());
+    assertEquals("base_field", f.getInheritedField().getName());
+    assertNotNull(f.getDeclaringMmd());
+    assertEquals("test_mmd", f.getDeclaringMmd().getName());
+
+    String json = SimplTypesScope.serialize(field, StringFormat.JSON).toString();
+    System.out.println(json);
+    assertTrue(json.contains("inherited_field"));
+    assertTrue(json.contains("declaring_mmd"));
+    
+    MetaMetadataScalarField newField =
+        (MetaMetadataScalarField) mmdTScope.deserialize(json, StringFormat.JSON);
+    assertNotNull(newField.getInheritedField());
+    assertEquals("base_field", newField.getInheritedField().getName());
+    assertNotNull(newField.getDeclaringMmd());
+    assertEquals("test_mmd", newField.getDeclaringMmd().getName());
+  }
 
 }
