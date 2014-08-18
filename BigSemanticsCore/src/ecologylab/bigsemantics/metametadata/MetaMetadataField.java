@@ -1,6 +1,7 @@
 package ecologylab.bigsemantics.metametadata;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -8,6 +9,9 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ecologylab.bigsemantics.Utils;
 import ecologylab.bigsemantics.html.utils.StringBuilderUtils;
@@ -120,6 +124,8 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
 
   static Iterator<MetaMetadataField>                    EMPTY_ITERATOR         = EMPTY_COLLECTION
                                                                                    .iterator();
+  
+  private static Logger                                 logger = LoggerFactory.getLogger(MetaMetadataField.class);
 
   MetadataFieldDescriptor                               metadataFieldDescriptor;
 
@@ -465,7 +471,7 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
    * 
    * @return
    */
-  public String getDisplayedLabel()
+  public String getLabel()
   {
     String result = displayedLabel;
     if (result == null)
@@ -607,6 +613,7 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
   {
     return null;
   }
+
   /**
    * the xpath of this field.
    * @return
@@ -638,7 +645,7 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
     }
     return xpaths.size();
   }
-
+  
   /**
    * if this field should always be shown in visualization.
    * @return
@@ -914,7 +921,7 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
    */
   abstract protected String getTypeNameInJava();
   
-  public void inheritAttributes(MetaMetadataField inheritFrom)
+  public void inheritAttributes(MetaMetadataField inheritFrom, boolean processList)
   {
     MetaMetadataClassDescriptor classDescriptor = (MetaMetadataClassDescriptor)  ClassDescriptor.getClassDescriptor(this);;
   
@@ -922,27 +929,61 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
     {
       if (fieldDescriptor.isInheritable())
       {
+        String fieldName = fieldDescriptor.getName();
+        Field field = fieldDescriptor.getField();
         ScalarType scalarType = fieldDescriptor.getScalarType();
+
         try
         {
+          // If it is one of the following cases we should stop actually inheriting attribute:
+          // 1. scalarType is null.
+          // 2. the attribute is a scalar or composite value, and we already have a value specified
+          //    on the sub-field.
+          // 3. the value from the super-field is a default value.
           if (scalarType != null
-              && scalarType.isDefaultValue(fieldDescriptor.getField(), this)
-              && !scalarType.isDefaultValue(fieldDescriptor.getField(), inheritFrom))
+              && (fieldDescriptor.isCollection() || scalarType.isDefaultValue(field, this))
+              && !scalarType.isDefaultValue(field, inheritFrom))
           {
-            Object value = fieldDescriptor.getField().get(inheritFrom);
-            fieldDescriptor.setField(this, value);
-//            debug("inherit\t" + this.getName() + "." + fieldDescriptor.getFieldName() + "\t= "
-//                + value);
+            Object value = field.get(inheritFrom);
+            if (fieldDescriptor.isCollection())
+            {
+              if (processList)
+              {
+                // Append elements from inheritFrom to this field's list
+                List list = (List) value;
+                if (list != null && list.size() > 0)
+                {
+                  List localList = (List) field.get(this);
+                  if (localList == null)
+                  {
+                    localList = new ArrayList();
+                    field.set(this, localList);
+                  }
+                  for (Object element : list)
+                  {
+                    localList.add(element);
+                  }
+                }
+              }
+            }
+            else
+            {
+              // Just a scalar value
+              fieldDescriptor.setField(this, value);
+            }
+
+            Object localValue = field.get(this);
+            logger.debug("Field attribute inherited: {}.{} = {}, from {}",
+                         this,
+                         fieldName,
+                         localValue,
+                         inheritFrom);
           }
         }
-        catch (IllegalArgumentException e)
+        catch (Exception e)
         {
-          debug(inheritFrom.getName() + " doesn't have field " + fieldDescriptor.getName() + ", ignore it.");
-//          e.printStackTrace();
-        }
-        catch (IllegalAccessException e)
-        {
-          e.printStackTrace();
+          logger.error("Attribute inheritance failed: {}.{} from {}", this, fieldName, inheritFrom);
+          logger.error("Exception details: ", e);
         }
       }
     }

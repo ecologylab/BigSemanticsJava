@@ -383,13 +383,18 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 				}
 				if (fieldLocal != null)
 				{
+					if (!this.isLocalChild(fieldLocal))
+					{
+					  continue;
+					}
+					
 					if (field.getClass() != fieldLocal.getClass())
 						warning("local field " + fieldLocal + " hides field " + field + " with the same name in super mmd type!");
 					
 					if (field != fieldLocal && field.getInheritedField() != fieldLocal)
 						fieldLocal.setInheritedField(field);
 					fieldLocal.setDeclaringMmd(field.getDeclaringMmd());
-					fieldLocal.inheritAttributes(field);
+					fieldLocal.inheritAttributes(field, true);
 					if (fieldLocal instanceof MetaMetadataNestedField)
 						((MetaMetadataNestedField) fieldLocal).setPackageName(((MetaMetadataNestedField) field).packageName());
 				}
@@ -444,7 +449,12 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 		}
 	}
 
-	protected void prepareChildFieldForInheritance(MetaMetadataRepository repository,
+	private boolean isLocalChild(MetaMetadataField fieldLocal)
+  {
+    return fieldLocal.parent() == this;
+  }
+
+  protected void prepareChildFieldForInheritance(MetaMetadataRepository repository,
 			MetaMetadataField childField)
 	{
 		childField.setRepository(repository);

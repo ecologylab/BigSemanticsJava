@@ -309,7 +309,7 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 		{
 			MetaMetadataField inheritedField = this.getInheritedField();
 			if (inheritedField != null)
-				this.inheritAttributes(inheritedField);
+				this.inheritAttributes(inheritedField, false);
 			break;
 		}
 		}

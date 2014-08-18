@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<meta_metadata_repository package="test_inheritance_repo2">
+
+	<meta_metadata name="metadata">
+		<scalar name="meta_metadata_name" scalar_type="String" />
+	</meta_metadata>
+
+	<meta_metadata name="document" extends="metadata">
+		<scalar name="location" scalar_type="ParsedURL" />
+	</meta_metadata>
+
+	<meta_metadata name="creative_work" extends="document">
+		<collection name="authors" child_scalar_type="String">
+		  <xpath>//meta[@name='author']/@content</xpath>
+		</collection>
+		<collection name="keywords" child_scalar_type="String">
+		  <xpath>//meta[@name='keyword']/@content</xpath>
+		</collection>
+	</meta_metadata>
+
+	<meta_metadata name="book" extends="creative_work" parser="xpath">
+		<collection name="authors">
+			<xpath>//div[@class='author']/a</xpath>
+		</collection>
+
+		<collection name="tags" child_scalar_type="String">
+			<xpath>//div[@class='tag']/a</xpath>
+		</collection>
+
+		<collection name="related_books" child_type="book">
+			<collection name="authors">
+				<xpath>//div[@id='related']//div[@class='author']/a</xpath>
+			</collection>
+			<collection name="keywords">
+				<xpath>//div[@id='related']//div[@class='keyword']/a</xpath>
+			</collection>
+		</collection>
+	</meta_metadata>
+
+</meta_metadata_repository>

@@ -855,7 +855,7 @@ ISimplSerializationPre, ISimplDeserializationPost
 		div.setCssClass(MetadataConstants.METADATA_TEXT);//css for all
 		
 		///div.setText(metadata.getMetaMetadata().getDisplayedLabel());//label for all
-		div.setText(mmCompositeField.getDisplayedLabel());
+		div.setText(mmCompositeField.getLabel());
 		
 		if (numElements > 1)//add button
 		{
@@ -944,7 +944,7 @@ ISimplSerializationPre, ISimplDeserializationPost
 								navigatesFD						= childFD;
 							}
 							childFD.appendHtmlValueAsAttribute(currentMetadata, serializationContext, scalarTr,
-									mmdField.getDisplayedLabel(), MetadataConstants.FIELD_NAME, textCssClass, navigatesFD, mmdField.getSchemaOrgItemprop());
+									mmdField.getLabel(), MetadataConstants.FIELD_NAME, textCssClass, navigatesFD, mmdField.getSchemaOrgItemprop());
 
 							if (recursing)
 								compositeTable.rows.add(scalarTr);
@@ -985,7 +985,7 @@ ISimplSerializationPre, ISimplDeserializationPost
 							nestedTr.setCssClass(MetadataConstants.NESTED);
 
 							if (childFD.isWrapped())
-								childFD.writeHtmlWrap(false, thatCollection.size(), mmdField.getDisplayedLabel(), nestedTr);
+								childFD.writeHtmlWrap(false, thatCollection.size(), mmdField.getLabel(), nestedTr);
 							Td collectionTd = new Td();
 							collectionTd.setCssClass(MetadataConstants.NESTED_VALUE);
 														
@@ -1027,7 +1027,7 @@ ISimplSerializationPre, ISimplDeserializationPost
 
 							if (compositeAsScalarFD != null)
 							{
-								childFD.writeCompositeHtmlWrap(false, mmdField.getDisplayedLabel(), mmdField.getSchemaOrgItemtype(), compositeTr);
+								childFD.writeCompositeHtmlWrap(false, mmdField.getLabel(), mmdField.getSchemaOrgItemtype(), compositeTr);
 							}
 							else
 							{

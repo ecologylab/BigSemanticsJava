@@ -463,7 +463,7 @@ implements IMappable<String>//, HasLocalTranslationScope
 	protected void inheritFromInheritedMmd(MetaMetadata inheritedMmd, InheritanceHandler inheritanceHandler)
 	{
 		super.inheritFromInheritedMmd(inheritedMmd, inheritanceHandler);
-		this.inheritAttributes(inheritedMmd);
+		this.inheritAttributes(inheritedMmd, true);
 		if (this.genericTypeVars != null)
 			this.genericTypeVars.inheritFrom(inheritedMmd.genericTypeVars, inheritanceHandler);
 //		if (inheritedMmd.genericTypeVars != null)

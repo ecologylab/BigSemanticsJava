@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<meta_metadata_repository package="test_inheritance_repo1">
+
+	<meta_metadata name="metadata">
+	</meta_metadata>
+
+	<meta_metadata name="document" extends="metadata">
+		<scalar name="title" scalar_type="String" />
+	</meta_metadata>
+
+	<meta_metadata name="product_specs" extends="document">
+		<collection name="specifications" child_type="document" />
+	</meta_metadata>
+
+	<meta_metadata name="newegg_product" extends="document">
+		<collection name="detailed_specifications" child_type="product_specs">
+			<scalar name="title" label="type"/>
+		</collection>
+	</meta_metadata>
+
+	<meta_metadata name="newegg_subcategory_list" extends="document">
+		<collection name="items" child_type="newegg_product">
+			<collection name="detailed_specifications"/>
+		</collection>
+	</meta_metadata>
+
+</meta_metadata_repository>

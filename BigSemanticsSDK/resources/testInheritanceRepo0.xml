@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<meta_metadata_repository package="test_inheritance_repo1">
+
+  <meta_metadata name="metadata">
+    <scalar name="meta_metadata_name" scalar_type="String"/>
+  </meta_metadata>
+  
+  <meta_metadata name="document" extends="metadata">
+    <scalar name="location" scalar_type="ParsedURL"/>
+    <collection name="additional_locations" child_scalar_type="ParsedURL"/>
+  </meta_metadata>
+  
+  <meta_metadata name="creative_work" extends="document">
+    <collection name="tags" child_scalar_type="String"/>
+    <collection name="citations" child_type="creative_work"/>
+
+    <composite name="source" type="document">
+      <scalar name="location">
+        <xpath>//meta[@name='source']/@content</xpath>
+      </scalar>
+    </composite>
+  </meta_metadata>
+  
+  <meta_metadata name="book" extends="creative_work" parser="xpath">
+    <collection name="tags">
+      <xpath>//div[@class='book_tag']</xpath>
+    </collection>
+  </meta_metadata>
+  
+  <meta_metadata name="my_book" extends="book" parser="xpath">
+    <collection name="tags">
+      <xpath>//div[@class='my_book_tag']</xpath>
+    </collection>
+    <collection name="citations">
+      <collection name="tags">
+        <xpath>//div[@class='citation_book_tag']</xpath>
+      </collection>
+      <composite name="source">
+        <scalar name="location">
+          <xpath>//div[@class='citation_book']/a[@id='source']/@href</xpath>
+        </scalar>
+      </composite>
+    </collection>
+
+    <composite name="source">
+      <scalar name="location">
+        <xpath>//a[@id='my_book_source']/@href</xpath>
+      </scalar>
+    </composite>
+  </meta_metadata>
+
+</meta_metadata_repository>
