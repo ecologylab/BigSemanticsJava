@@ -371,7 +371,9 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 		}
 	}
 
-	protected void inheritFrom(MetaMetadataRepository repository, MetaMetadataCompositeField inheritedStructure, InheritanceHandler inheritanceHandler)
+	protected void inheritFrom(MetaMetadataRepository repository,
+	                           MetaMetadataCompositeField inheritedStructure,
+	                           InheritanceHandler inheritanceHandler)
 	{
 		// init nested fields inside this
 		for (MetaMetadataField f : this.getChildMetaMetadata())
@@ -418,6 +420,14 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
 					
 					if (field.getClass() != fieldLocal.getClass())
 						warning("local field " + fieldLocal + " hides field " + field + " with the same name in super mmd type!");
+					
+					if (!fieldLocal.isAuthoredChildOf(this))
+					{
+					  MetaMetadataField aClone = (MetaMetadataField) fieldLocal.clone();
+					  aClone.toString = this.toString() + "<" + fieldName + ">";
+					  fieldLocal = aClone;
+					  this.getChildMetaMetadata().put(fieldName, aClone);
+					}
 					
 					if (field != fieldLocal && field.getInheritedField() != fieldLocal)
 						fieldLocal.setInheritedField(field);
