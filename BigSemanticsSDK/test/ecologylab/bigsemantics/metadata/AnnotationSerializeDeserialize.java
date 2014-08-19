@@ -8,16 +8,14 @@ import java.util.Date;
 import org.junit.Test;
 
 import ecologylab.bigsemantics.generated.library.RepositoryMetadataTranslationScope;
+import ecologylab.bigsemantics.metadata.builtins.CompoundDocument;
 import ecologylab.bigsemantics.metadata.builtins.CreativeAct;
-import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metadata.builtins.HtmlText;
 import ecologylab.bigsemantics.metadata.builtins.RichArtifact;
 import ecologylab.net.ParsedURL;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.SimplTypesScope;
-import ecologylab.serialization.formatenums.Format;
 import ecologylab.serialization.formatenums.StringFormat;
-import ecologylab.translators.sql.testing.ecologylabXmlTest.GeneratedMetadataTranslationScopeTest;
 
 public class AnnotationSerializeDeserialize
 {
@@ -36,7 +34,7 @@ public class AnnotationSerializeDeserialize
 		
 		CreativeAct creativeAct = new CreativeAct();
 		creativeAct.setAction(2);
-		Document creator = new Document();
+		CompoundDocument creator = new CompoundDocument();
 		creator.setTitle("andrew");
 		creator.setLocation(new ParsedURL(new URL("http://ecologylab.net/people/andrew")));
 		creativeAct.setCreator(creator);

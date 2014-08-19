@@ -441,13 +441,13 @@ implements IMappable<String>//, HasLocalTranslationScope
 		}
 	}
 
-	public void inheritMetaMetadata()
+	public boolean inheritMetaMetadata()
 	{
-		this.inheritMetaMetadata(null);
+		return this.inheritMetaMetadata(null);
 	}
 
 	@Override
-	protected void inheritMetaMetadataHelper(InheritanceHandler inheritanceHandler)
+	protected boolean inheritMetaMetadataHelper(InheritanceHandler inheritanceHandler)
 	{
 //		debug("processing mmd: " + this);
 		inheritanceHandler = new InheritanceHandler(this);
@@ -456,14 +456,14 @@ implements IMappable<String>//, HasLocalTranslationScope
 		for (MetaMetadataField field : this.getChildMetaMetadata())
 			field.setDeclaringMmd(this);
 
-		super.inheritMetaMetadataHelper(inheritanceHandler);
+		return super.inheritMetaMetadataHelper(inheritanceHandler);
 	}
 	
 	@Override
 	protected void inheritFromInheritedMmd(MetaMetadata inheritedMmd, InheritanceHandler inheritanceHandler)
 	{
 		super.inheritFromInheritedMmd(inheritedMmd, inheritanceHandler);
-		this.inheritAttributes(inheritedMmd, true);
+		this.inheritAttributes(inheritedMmd, false);
 		if (this.genericTypeVars != null)
 			this.genericTypeVars.inheritFrom(inheritedMmd.genericTypeVars, inheritanceHandler);
 //		if (inheritedMmd.genericTypeVars != null)

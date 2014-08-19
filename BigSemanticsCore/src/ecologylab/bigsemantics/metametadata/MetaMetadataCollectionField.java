@@ -272,8 +272,10 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 	}
 	
 	@Override
-	protected void inheritMetaMetadataHelper(InheritanceHandler inheritanceHandler)
+	protected boolean inheritMetaMetadataHelper(InheritanceHandler inheritanceHandler)
 	{
+	  boolean result = false;
+
 		/*
 		 * the childComposite should hide all complexity between collection fields and composite fields,
 		 * through hooks when necessary.
@@ -299,7 +301,8 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 			childComposite.setDeclaringMmd(this.getDeclaringMmd());
 			childComposite.setMmdScope(this.getMmdScope());
 
-			childComposite.inheritMetaMetadata(inheritanceHandler); // inheritedMmd might be inferred from type/extends
+      // inheritedMmd might be inferred from type/extends
+			result = childComposite.inheritMetaMetadata(inheritanceHandler);
 			
 			this.setInheritedMmd(childComposite.getInheritedMmd());
 			this.setMmdScope(childComposite.getMmdScope());
@@ -310,9 +313,12 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 			MetaMetadataField inheritedField = this.getInheritedField();
 			if (inheritedField != null)
 				this.inheritAttributes(inheritedField, false);
+			result = true;
 			break;
 		}
 		}
+		
+		return result;
 	}
 
 	@Override
@@ -479,5 +485,22 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 	  StringBuilderUtils.release(sb);
 	  return fp;
 	}
+
+	@Override
+	public MetaMetadataCollectionField clone()
+	{
+	  MetaMetadataCollectionField result = (MetaMetadataCollectionField) super.clone();
+	  MetaMetadataCompositeField childComposite = result.getChildComposite();
+	  childComposite.name = UNRESOLVED_NAME;
+	  childComposite.inheritFinished = false;
+	  childComposite.inheritInProcess = false;
+	  childComposite.inheritedMmd = null;
+	  return result;
+	}
+
+  public void setChildType(String childType)
+  {
+    this.childType = childType;
+  }
 
 }

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<meta_metadata_repository package="test_inheritance_repo3">
+
+  <meta_metadata name="metadata">
+  </meta_metadata>
+  
+  <meta_metadata name="document" extends="metadata">
+    <scalar name="location" scalar_type="ParsedURL"/>
+  </meta_metadata>
+  
+  <meta_metadata name="compound_document" extends="document">
+    <collection name="main_images" child_type="document">
+      <scalar name="location">
+        <xpath>//meta[@name='image']/@content</xpath>
+      </scalar>
+    </collection>
+  </meta_metadata>
+  
+  <meta_metadata name="commodity" extends="compound_document">
+    <collection name="main_images" layer="3.0"/>
+  </meta_metadata>
+  
+  <meta_metadata name="ikea_product" extends="commodity" parser="xpath">
+    <scalar name="location">
+      <xpath>//test-location</xpath>
+    </scalar>
+    <collection name="depts" child_type="ikea_department" child_extends="compound_document">
+      <xpath>//div[@class='depts']</xpath>
+      <collection name="products" child_type="ikea_product">
+        <xpath>.//a[@class='prods']</xpath>
+        <scalar name="location">
+          <xpath>./@href</xpath>
+        </scalar>
+        <collection name="main_images">
+          <scalar name="location">
+            <xpath>./img/@src</xpath>
+          </scalar>
+        </collection>
+      </collection>
+    </collection>
+  </meta_metadata>
+
+</meta_metadata_repository>

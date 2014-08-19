@@ -10,7 +10,9 @@ package ecologylab.bigsemantics.metadata.builtins.declarations;
 
 import ecologylab.bigsemantics.metadata.builtins.Audio;
 import ecologylab.bigsemantics.metadata.builtins.Clipping;
+import ecologylab.bigsemantics.metadata.builtins.CompoundDocument;
 import ecologylab.bigsemantics.metadata.builtins.Document;
+import ecologylab.bigsemantics.metadata.builtins.HtmlText;
 import ecologylab.bigsemantics.metadata.builtins.Image;
 import ecologylab.bigsemantics.metadata.builtins.MetadataBuiltinsTypesScope;
 import ecologylab.bigsemantics.metadata.builtins.Video;
@@ -70,7 +72,7 @@ public class CompoundDocumentDeclaration extends Document
 
 	@simpl_composite
 	@mm_name("see_also")
-	private Document seeAlso;
+	private CompoundDocument seeAlso;
 
 	/** 
 	 *Clippings that this document contains.
@@ -96,9 +98,9 @@ public class CompoundDocumentDeclaration extends Document
 	@mm_name("main_audio")
 	private List<Audio> mainAudio;
 
-	@simpl_collection("document")
+	@simpl_collection("html_text")
 	@mm_name("article_bodies")
-	private List<Document> articleBodies;
+	private List<HtmlText> articleBodies;
 
 	public CompoundDocumentDeclaration()
 	{ super(); }
@@ -300,12 +302,12 @@ public class CompoundDocumentDeclaration extends Document
 		this.textKeywords = textKeywords;
 	}
 
-	public Document getSeeAlso()
+	public CompoundDocument getSeeAlso()
 	{
 		return seeAlso;
 	}
 
-	public void setSeeAlso(Document seeAlso)
+	public void setSeeAlso(CompoundDocument seeAlso)
 	{
 		this.seeAlso = seeAlso;
 	}
@@ -440,21 +442,21 @@ public class CompoundDocumentDeclaration extends Document
 		this.mainAudio = mainAudio;
 	}
 
-	public List<Document> getArticleBodies()
+	public List<HtmlText> getArticleBodies()
 	{
 		return articleBodies;
 	}
 
   // lazy evaluation:
-  public List<Document> articleBodies()
+  public List<HtmlText> articleBodies()
   {
     if (articleBodies == null)
-      articleBodies = new ArrayList<Document>();
+      articleBodies = new ArrayList<HtmlText>();
     return articleBodies;
   }
 
   // addTo:
-  public void addToArticleBodies(Document element)
+  public void addToArticleBodies(HtmlText element)
   {
     articleBodies().add(element);
   }
@@ -465,7 +467,7 @@ public class CompoundDocumentDeclaration extends Document
     return articleBodies == null ? 0 : articleBodies.size();
   }
 
-	public void setArticleBodies(List<Document> articleBodies)
+	public void setArticleBodies(List<HtmlText> articleBodies)
 	{
 		this.articleBodies = articleBodies;
 	}

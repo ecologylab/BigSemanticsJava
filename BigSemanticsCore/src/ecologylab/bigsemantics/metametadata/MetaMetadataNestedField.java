@@ -87,7 +87,7 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	 */
 	@simpl_composite
 	@mm_dont_inherit
-	private MetaMetadata											inheritedMmd;
+  protected MetaMetadata			  						inheritedMmd;
 
 	/**
 	 * the (local) scope of visible meta-metadata for this nested field.
@@ -240,20 +240,31 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	 * </ul>
 	 * @param inheritanceHandler TODO
 	 * @param mmdScope a scope used for looking up meta-metadata & perhaps adding new meta-metadata.
+	 * @return true if inheritance was done successfully. false if it needs to be delayed.
 	 */
-	public void inheritMetaMetadata(InheritanceHandler inheritanceHandler)
+	public boolean inheritMetaMetadata(InheritanceHandler inheritanceHandler)
 	{
 		if (!inheritFinished && !inheritInProcess)
 		{
 //			debug("inheriting " + this.toString());
 			inheritInProcess = true;
-			this.inheritMetaMetadataHelper(inheritanceHandler);
-			this.sortForDisplay();
-			inheritInProcess = false;
-			inheritFinished = true;
-			handleInheritFinishEventListeners();
+			boolean result = this.inheritMetaMetadataHelper(inheritanceHandler);
+			if (result)
+			{
+        finishInheritance();
+			}
+			return result;
 		}
+		return true;
 	}
+
+  protected void finishInheritance()
+  {
+    this.sortForDisplay();
+    inheritInProcess = false;
+    inheritFinished = true;
+    handleInheritFinishEventListeners();
+  }
 	
 	private void handleInheritFinishEventListeners()
 	{
@@ -287,8 +298,9 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	 * sub-classes to fine-control the inheritance process.
 	 * @param inheritanceHandler TODO
 	 * @param mmdScope a scope used for looking up meta-metadata & perhaps adding new meta-metadata.
+	 * @return true if inheritance was successful. false if inheritance needs to be delayed.
 	 */
-	abstract protected void inheritMetaMetadataHelper(InheritanceHandler inheritanceHandler);
+	abstract protected boolean inheritMetaMetadataHelper(InheritanceHandler inheritanceHandler);
 
 	/**
 	 * Get the MetaMetadataCompositeField associated with this.
@@ -670,6 +682,17 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField implemen
 	  String fp = sb.toString();
 	  StringBuilderUtils.release(sb);
 	  return fp;
+	}
+
+	@Override
+	public MetaMetadataNestedField clone()
+	{
+	  MetaMetadataNestedField result = (MetaMetadataNestedField) super.clone();
+	  result.inheritFinished = false;
+	  result.inheritInProcess = false;
+	  result.inheritedMmd = null;
+	  result.inheritFinishEventListeners = new ArrayList<MetaMetadataNestedField.InheritFinishEventListener>();
+	  return result;
 	}
 
 }

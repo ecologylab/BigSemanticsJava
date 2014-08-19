@@ -21,7 +21,7 @@ import ecologylab.bigsemantics.generated.library.RepositoryMetadataTranslationSc
 import ecologylab.bigsemantics.html.dom.IDOMProvider;
 import ecologylab.bigsemantics.metadata.MetadataFieldDescriptor;
 import ecologylab.bigsemantics.metadata.builtins.Document;
-import ecologylab.bigsemantics.metametadata.FieldUtils;
+import ecologylab.bigsemantics.metametadata.BaseMmdTest;
 import ecologylab.bigsemantics.metametadata.MetaMetadata;
 import ecologylab.bigsemantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.bigsemantics.metametadata.MetaMetadataField;
@@ -100,7 +100,7 @@ public class TestParserBase
     ClassDescriptor classDescriptor = ClassDescriptor.getClassDescriptor(TestProduct.class);
     FieldDescriptor fieldDescriptor = classDescriptor.getFieldDescriptorByFieldName("specs");
     assertTrue(fieldDescriptor instanceof MetadataFieldDescriptor);
-    FieldUtils.setMetadataFieldDescriptor(field, (MetadataFieldDescriptor) fieldDescriptor);
+    BaseMmdTest.setMetadataFieldDescriptor(field, (MetadataFieldDescriptor) fieldDescriptor);
 
     TestProduct testProduct = new TestProduct();
 

@@ -125,7 +125,7 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
   static Iterator<MetaMetadataField>                    EMPTY_ITERATOR         = EMPTY_COLLECTION
                                                                                    .iterator();
   
-  private static Logger                                 logger = LoggerFactory.getLogger(MetaMetadataField.class);
+  static Logger                                         logger = LoggerFactory.getLogger(MetaMetadataField.class);
 
   MetadataFieldDescriptor                               metadataFieldDescriptor;
 
@@ -395,6 +395,10 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
   
   private boolean                                       hashForExtractionInProgress;
   
+  private MetaMetadataField                             clonedFrom;
+  
+  private List<MetaMetadataField>                       clonedBy;
+  
   public MetaMetadataField()
   {
 
@@ -626,6 +630,11 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
   public List<String> getXpaths()
   {
     return xpaths;
+  }
+  
+  public int getXpathCount()
+  {
+    return xpaths == null ? 0 : xpaths.size();
   }
   
   public String getXpath(int i)
@@ -921,7 +930,7 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
    */
   abstract protected String getTypeNameInJava();
   
-  public void inheritAttributes(MetaMetadataField inheritFrom, boolean processList)
+  public void inheritAttributes(MetaMetadataField inheritFrom, boolean overwrite)
   {
     MetaMetadataClassDescriptor classDescriptor = (MetaMetadataClassDescriptor)  ClassDescriptor.getClassDescriptor(this);;
   
@@ -938,28 +947,28 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
           // If it is one of the following cases we should stop actually inheriting attribute:
           // 1. scalarType is null.
           // 2. the attribute is a scalar or composite value, and we already have a value specified
-          //    on the sub-field.
+          //    on the sub-field, and overwrite is false.
           // 3. the value from the super-field is a default value.
           if (scalarType != null
-              && (fieldDescriptor.isCollection() || scalarType.isDefaultValue(field, this))
+              && (overwrite || fieldDescriptor.isCollection() || scalarType.isDefaultValue(field, this))
               && !scalarType.isDefaultValue(field, inheritFrom))
           {
             Object value = field.get(inheritFrom);
             if (fieldDescriptor.isCollection())
             {
-              if (processList)
+              // Append elements from inheritFrom to this field's list
+              List list = (List) value;
+              if (list != null && list.size() > 0)
               {
-                // Append elements from inheritFrom to this field's list
-                List list = (List) value;
-                if (list != null && list.size() > 0)
+                List localList = (List) field.get(this);
+                if (localList == null)
                 {
-                  List localList = (List) field.get(this);
-                  if (localList == null)
-                  {
-                    localList = new ArrayList();
-                    field.set(this, localList);
-                  }
-                  for (Object element : list)
+                  localList = new ArrayList();
+                  field.set(this, localList);
+                }
+                for (Object element : list)
+                {
+                  if (!localList.contains(element))
                   {
                     localList.add(element);
                   }
@@ -1043,7 +1052,10 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
             
             // this method handles polymorphic type / changing tags
             if (this.metadataFieldDescriptor != null)
+            {
+              fieldDescriptorProxy = new MetadataFieldDescriptorProxy();
               customizeFieldDescriptor(metadataTScope, fieldDescriptorProxy);
+            }
             if (this.metadataFieldDescriptor != metadataFieldDescriptor)
             {
               // the field descriptor has been modified in customizeFieldDescriptor()!
@@ -1150,7 +1162,7 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
     
   }
   
-  private MetadataFieldDescriptorProxy fieldDescriptorProxy = new MetadataFieldDescriptorProxy();
+  private MetadataFieldDescriptorProxy fieldDescriptorProxy;
   
   /**
    * this method customizes field descriptor for this field, e.g. specific type or tag.
@@ -1432,6 +1444,36 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
         addToFp(fpBuilder, obj);
       }
     }
+  }
+  
+  public MetaMetadataField clone()
+  {
+    try
+    {
+      MetaMetadataField cloned = (MetaMetadataField) super.clone();
+      cloned.clonedFrom = this;
+      cloned.toString = null;
+      cloned.inheritFinished = false;
+      cloned.inheritInProcess = false;
+      
+      if (clonedBy == null)
+      {
+        clonedBy = new ArrayList<MetaMetadataField>();
+      }
+      clonedBy.add(cloned);
+
+      return cloned;
+    }
+    catch (CloneNotSupportedException e)
+    {
+      logger.error("Cannot clone " + this, e);
+    }
+    return null;
+  }
+
+  public MetaMetadataField getClonedFrom()
+  {
+    return clonedFrom;
   }
 
 }

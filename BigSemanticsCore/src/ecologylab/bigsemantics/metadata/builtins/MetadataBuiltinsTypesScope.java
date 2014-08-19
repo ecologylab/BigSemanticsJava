@@ -40,6 +40,12 @@ public class MetadataBuiltinsTypesScope extends Debug
 
 	public static SimplTypesScope get()
 	{
-		return SimplTypesScope.get(NAME, MetadataBuiltinDeclarationsTranslationScope.get(), MetadataMediaTypesScope.get(), CLASSES);
+    return SimplTypesScope.get(NAME,
+                               new SimplTypesScope[] {
+                                 MetadataBuiltinDeclarationsTranslationScope.get(),
+                                 MetadataMediaTypesScope.get(),
+                                 DocumentLogRecordScope.get(),
+                               },
+                               CLASSES);
 	}	
 }

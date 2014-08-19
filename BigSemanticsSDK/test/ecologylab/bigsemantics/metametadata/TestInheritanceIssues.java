@@ -1,7 +1,5 @@
 package ecologylab.bigsemantics.metametadata;
 
-import static ecologylab.bigsemantics.metametadata.UtilsForTest.getNestedField;
-import static ecologylab.bigsemantics.metametadata.UtilsForTest.serializeToTempFile;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -14,14 +12,13 @@ import ecologylab.serialization.SIMPLTranslationException;
  * 
  * @author quyin
  */
-public class TestInheritanceIssues
+public class TestInheritanceIssues extends BaseMmdTest
 {
 
   @Test
-  public void testTitleIssue() throws SIMPLTranslationException
+  public void testTitleLabelIssue() throws SIMPLTranslationException
   {
-    FixtureRepositoryLoader loader = new FixtureRepositoryLoader();
-    MetaMetadataRepository repo = loader.loadRepository("/testInheritanceRepo1.xml");
+    MetaMetadataRepository repo = loadRepository("/testInheritanceRepo1.xml");
     repo.traverseAndInheritMetaMetadata();
     MetaMetadata mmd = repo.getMMByName("document");
     serializeToTempFile(mmd, "1");
@@ -32,8 +29,7 @@ public class TestInheritanceIssues
   @Test
   public void testScalarCollectionIssue() throws SIMPLTranslationException
   {
-    FixtureRepositoryLoader loader = new FixtureRepositoryLoader();
-    MetaMetadataRepository repo = loader.loadRepository("/testInheritanceRepo2.xml");
+    MetaMetadataRepository repo = loadRepository("/testInheritanceRepo2.xml");
 
     assertNotNull(repo.getMMByName("metadata"));
     assertNotNull(repo.getMMByName("document"));
@@ -86,6 +82,51 @@ public class TestInheritanceIssues
     field = getNestedField(repo, "book", "related_books", "tags");
     assertEquals(1, field.getXpaths().size());
     assertEquals("//div[@class='tag']/a", field.getXpath(0));
+  }
+  
+  @Test
+  public void testInheritingFromBothTypeAndSuperFieldIssue() throws SIMPLTranslationException
+  {
+    MetaMetadataRepository repo = loadRepository("/testInheritanceRepo3.xml");
+    
+    MetaMetadataField field = null;
+    
+    repo.traverseAndInheritMetaMetadata();
+    
+    field = getNestedField(repo, "document", "location");
+    assertEquals(0, field.getXpathCount());
+
+    field = getNestedField(repo, "compound_document", "location");
+    assertEquals(0, field.getXpathCount());
+
+    field = getNestedField(repo, "compound_document", "main_images", "location");
+    assertEquals(1, field.getXpathCount());
+    assertEquals("//meta[@name='image']/@content", field.getXpath(0));
+
+    field = getNestedField(repo, "commodity", "location");
+    assertEquals(0, field.getXpathCount());
+
+    field = getNestedField(repo, "commodity", "main_images", "location");
+    assertEquals(1, field.getXpathCount());
+    assertEquals("//meta[@name='image']/@content", field.getXpath(0));
+
+    field = getNestedField(repo, "ikea_product", "location");
+    assertEquals(1, field.getXpathCount());
+    assertEquals("//test-location", field.getXpath(0));
+
+    field = getNestedField(repo, "ikea_product", "main_images", "location");
+    assertEquals(1, field.getXpathCount());
+    assertEquals("//meta[@name='image']/@content", field.getXpath(0));
+
+    field = getNestedField(repo, "ikea_product", "depts", "products", "location");
+    assertEquals(2, field.getXpathCount());
+    assertEquals("./@href", field.getXpath(0));
+    assertEquals("//test-location", field.getXpath(1));
+
+    field = getNestedField(repo, "ikea_product", "depts", "products", "main_images", "location");
+    assertEquals(2, field.getXpathCount());
+    assertEquals("./img/@src", field.getXpath(0));
+    assertEquals("//meta[@name='image']/@content", field.getXpath(1));
   }
 
 }
