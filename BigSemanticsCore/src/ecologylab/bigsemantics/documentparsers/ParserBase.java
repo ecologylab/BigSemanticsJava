@@ -361,7 +361,7 @@ implements ScalarUnmarshallingContext, SemanticsConstants
                                         Map<String, String> fieldParserContext,
                                         Scope<Object> params)
   {
-    HashMapArrayList<String, MetaMetadataField> fieldSet = mmdField.getChildMetaMetadata();
+    HashMapArrayList<String, MetaMetadataField> fieldSet = mmdField.getChildrenMap();
     if (fieldSet == null || fieldSet.isEmpty())
     {
       return false;
@@ -737,7 +737,7 @@ implements ScalarUnmarshallingContext, SemanticsConstants
         } // if (xpathString != null)
         
         i++;
-      } while (i < mmdField.xpathsSize());
+      } while (i < mmdField.getXpathsSize());
     }
 
     return evaluation;
@@ -988,7 +988,7 @@ implements ScalarUnmarshallingContext, SemanticsConstants
         if (metadataFieldDescriptor.isPolymorphic())
         {
           String polymorphTagName =
-              mmdField.getChildComposite().getInheritedMmd().getTagForTypesScope();
+              mmdField.getChildComposite().getTypeMmd().getTagForTypesScope();
           if (polymorphTagName != null)
           {
             elementClassDescriptor =

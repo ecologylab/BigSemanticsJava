@@ -79,7 +79,7 @@ public class MetaMetadataJavaTranslator extends JavaTranslator implements MmdCom
 		MetadataClassDescriptor mdInputClass = (MetadataClassDescriptor) inputClass;
 		MetaMetadata mmd = mdInputClass.getDefiningMmd();
 		MetaMetadataRepository repository = mmd.getRepository();
-		appendGenericTypeVarDefinitions(appendable, mmd.getMetaMetadataGenericTypeVars(), repository);
+		appendGenericTypeVarDefinitions(appendable, mmd.getGenericTypeVarsCollection(), repository);
 	}
 
 	@Override
@@ -89,7 +89,7 @@ public class MetaMetadataJavaTranslator extends JavaTranslator implements MmdCom
 		MetadataClassDescriptor mdInputClass = (MetadataClassDescriptor) inputClass;
 		MetaMetadata mmd = mdInputClass.getDefiningMmd();
 		MetaMetadataRepository repository = mmd.getRepository();
-		appendGenericTypeVarParameterizations(appendable, mmd.getMetaMetadataGenericTypeVars(), repository);
+		appendGenericTypeVarParameterizations(appendable, mmd.getGenericTypeVarsCollection(), repository);
 	}
 
 	@Override
@@ -112,7 +112,7 @@ public class MetaMetadataJavaTranslator extends JavaTranslator implements MmdCom
 		{
 			MetaMetadataNestedField nestedField = (MetaMetadataNestedField) field;
 			MetaMetadataRepository repository = nestedField.getRepository();
-			appendGenericTypeVarParameterizations(appendable, nestedField.getMetaMetadataGenericTypeVars(), repository);
+			appendGenericTypeVarParameterizations(appendable, nestedField.getGenericTypeVarsCollection(), repository);
 		}
 	}
 

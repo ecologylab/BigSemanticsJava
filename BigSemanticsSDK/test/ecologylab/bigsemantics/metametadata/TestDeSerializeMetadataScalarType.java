@@ -26,15 +26,15 @@ public class TestDeSerializeMetadataScalarType
   public void testDeSerializeMetadataScalarType() throws SIMPLTranslationException
   {
     MetaMetadataCollectionField collection = new MetaMetadataCollectionField();
-    collection.childScalarType = new MetadataParsedURLScalarType();
+    collection.setChildScalarType(new MetadataParsedURLScalarType());
     String xml = SimplTypesScope.serialize(collection, StringFormat.XML).toString();
     assertNotNull(xml);
     System.out.println("========>\t" + xml);
     
     SimplTypesScope mmdTScope = MetaMetadataTranslationScope.get();
     collection = (MetaMetadataCollectionField) mmdTScope.deserialize(xml, StringFormat.XML);
-    assertNotNull(collection.childScalarType);
-    assertTrue(collection.childScalarType instanceof MetadataParsedURLScalarType);
+    assertNotNull(collection.getChildScalarType());
+    assertTrue(collection.getChildScalarType() instanceof MetadataParsedURLScalarType);
   }
 
 }

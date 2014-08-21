@@ -153,7 +153,7 @@ public class MetaMetadataDotNetTranslator extends DotNetTranslator implements Mm
 		MetadataClassDescriptor mdCD = (MetadataClassDescriptor) inputClass;
 		MetaMetadata mmd = mdCD.getDefiningMmd();
 		MetaMetadataRepository repository = mmd.getRepository();
-		appendGenericTypeVarDefinitions(appendable, mmd.getMetaMetadataGenericTypeVars(), repository);
+		appendGenericTypeVarDefinitions(appendable, mmd.getGenericTypeVarsCollection(), repository);
 	}
 	
 	@Override
@@ -165,10 +165,10 @@ public class MetaMetadataDotNetTranslator extends DotNetTranslator implements Mm
 		MetaMetadataRepository repository = mmd.getRepository();
 
 		int firstIndexOf = appendable.toString().lastIndexOf("<");
-		Collection<MmdGenericTypeVar> mmdGenericTypeVars = mmd.getMetaMetadataGenericTypeVars();
+		Collection<MmdGenericTypeVar> mmdGenericTypeVars = mmd.getGenericTypeVarsCollection();
 		appendGenericTypeVarParameterizations(appendable, mmdGenericTypeVars, repository);
 
-		Collection<MmdGenericTypeVar> superMmdGenericTypeVars = ((MetadataClassDescriptor) inputClass.getSuperClass()).getDefiningMmd().getMetaMetadataGenericTypeVars();
+		Collection<MmdGenericTypeVar> superMmdGenericTypeVars = ((MetadataClassDescriptor) inputClass.getSuperClass()).getDefiningMmd().getGenericTypeVarsCollection();
 		if (appendable.toString().lastIndexOf("<") == firstIndexOf /*(mmdGenericTypeVars == null || mmdGenericTypeVars.size() == 0)*/ &&
 			(superMmdGenericTypeVars != null || superMmdGenericTypeVars.size() > 0))
 		{
@@ -176,7 +176,7 @@ public class MetaMetadataDotNetTranslator extends DotNetTranslator implements Mm
 		}
 		
 		// the where clause
-		appendGenericTypeVarWhereClause(appendable, (Collection<MmdGenericTypeVar>) mmd.getMetaMetadataGenericTypeVars(), repository);
+		appendGenericTypeVarWhereClause(appendable, (Collection<MmdGenericTypeVar>) mmd.getGenericTypeVarsCollection(), repository);
 	}
 
 	public void appendGenericTypeVarExtends(Appendable appendable,
@@ -230,7 +230,7 @@ public class MetaMetadataDotNetTranslator extends DotNetTranslator implements Mm
 			MetaMetadataNestedField nestedField = (MetaMetadataNestedField) field;
 			MetaMetadataRepository repository = nestedField.getRepository();
 			appendGenericTypeVarParameterizations(appendable, (List<MmdGenericTypeVar>) nestedField
-					.getMetaMetadataGenericTypeVars(), repository);
+					.getGenericTypeVarsCollection(), repository);
 		}
 	}
 

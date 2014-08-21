@@ -345,7 +345,9 @@ implements PackageSpecifier, DocumentParserTagNames
 	 */
 	public void addMetaMetadata(MetaMetadata additionalMMD)
 	{
-		if(additionalMMD == null || additionalMMD.name == null || additionalMMD.name.length() == 0)
+		if(additionalMMD == null
+		   || additionalMMD.getName() == null
+		   || additionalMMD.getName().length() == 0)
 		{
 			System.err.println("Invalid mmd, not adding to the repository!");
 			return;
@@ -353,7 +355,7 @@ implements PackageSpecifier, DocumentParserTagNames
 		if(repositoryByName == null) //initialize only if we need to.
 			repositoryByName = new HashMapArrayList<String, MetaMetadata>();
 		
-		repositoryByName.put(additionalMMD.name, additionalMMD);
+		repositoryByName.put(additionalMMD.getName(), additionalMMD);
 		
 	}
 	
@@ -805,9 +807,9 @@ implements PackageSpecifier, DocumentParserTagNames
 		
 		MetaMetadata metaMetadata = getCompoundDocumentMM(purl);
 	  List<ParsedURL> additionalLocations = new ArrayList<ParsedURL>();
-		if (metaMetadata.filterLocation != null)
+		if (metaMetadata.getFilterLocation() != null)
 		{
-		  ParsedURL newPurl = metaMetadata.filterLocation.filter(purl, additionalLocations);
+		  ParsedURL newPurl = metaMetadata.getFilterLocation().filter(purl, additionalLocations);
 		  if (!purl.equals(newPurl))
 		  {
 		    // if the purl has been changed by the filter, add the old one as additional locations,

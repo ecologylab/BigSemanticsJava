@@ -66,12 +66,12 @@ public class InheritanceHandler implements InheritanceComponentNames, Cloneable
 
 		// put generic type var scope
 		MmdGenericTypeVarScope existingMmdGenericTypeVarScope = (MmdGenericTypeVarScope) scope.get(GENERIC_TYPE_VAR_SCOPE);
-		MmdGenericTypeVarScope currentMmdGenericTypeVarScope = mmField.genericTypeVars;
+		MmdGenericTypeVarScope currentMmdGenericTypeVarScope = mmField.getGenericTypeVars();
 		if (currentMmdGenericTypeVarScope != null && existingMmdGenericTypeVarScope != null)
 		{
 			currentMmdGenericTypeVarScope.inheritFrom(existingMmdGenericTypeVarScope, this);
 		}
-		scope.putIfValueNotNull(GENERIC_TYPE_VAR_SCOPE, mmField.genericTypeVars);
+		scope.putIfValueNotNull(GENERIC_TYPE_VAR_SCOPE, mmField.getGenericTypeVars());
 	}
 
 	void pop(MetaMetadataField mmField)
@@ -117,7 +117,7 @@ public class InheritanceHandler implements InheritanceComponentNames, Cloneable
 		if (field instanceof MetaMetadataNestedField)
 		{
 			MetaMetadataNestedField nested = (MetaMetadataNestedField) field;
-			if (!nested.inheritFinished)
+			if (!nested.isInheritDone())
 			{
 			  nested.inheritMetaMetadata(this);
 			}
@@ -153,7 +153,7 @@ public class InheritanceHandler implements InheritanceComponentNames, Cloneable
 	
 	public boolean isUsingGenerics(MetaMetadataField field)
 	{
-		if (field.genericTypeVars != null && field.genericTypeVars.size() > 0)
+		if (field.getGenericTypeVars() != null && field.getGenericTypeVars().size() > 0)
 			return true;
 		MmdGenericTypeVarScope gtvScope = (MmdGenericTypeVarScope) scopeStack.peek().get(
 				GENERIC_TYPE_VAR_SCOPE);

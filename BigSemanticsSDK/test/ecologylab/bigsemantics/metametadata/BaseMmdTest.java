@@ -60,7 +60,7 @@ public class BaseMmdTest
     MetaMetadataField result = mmd;
     for (String fieldName : fieldNames)
     {
-      result = result.getChildMetaMetadata().get(fieldName);
+      result = result.getChildrenMap().get(fieldName);
       if (result == null)
       {
         return null;

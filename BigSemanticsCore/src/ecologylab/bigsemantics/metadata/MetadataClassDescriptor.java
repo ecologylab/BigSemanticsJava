@@ -72,7 +72,7 @@ public class MetadataClassDescriptor extends ClassDescriptor<MetadataFieldDescri
 	@Override
 	public boolean isGenericClass()
 	{
-		for (MmdGenericTypeVar mmdGenericTypeVar : this.definingMmd.getMetaMetadataGenericTypeVars())
+		for (MmdGenericTypeVar mmdGenericTypeVar : this.definingMmd.getGenericTypeVarsCollection())
 		{
 			// if name and bound specified, this should be a new definition of a generic type var.
 			// currently we require that a bound is needed, although in fact this can be omitted in some cases.

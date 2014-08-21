@@ -216,9 +216,9 @@ public class TestRepositoryDeSerialization
   {
     MetaMetadata photostream = repository.getMMByName("photostream");
     MetaMetadataCollectionField stream =
-        (MetaMetadataCollectionField) photostream.getChildMetaMetadata().get("stream");
+        (MetaMetadataCollectionField) photostream.getChildrenMap().get("stream");
     MetaMetadataCompositeField flickr_photo = stream.getChildComposite();
-    MetaMetadata mmd = flickr_photo.getInheritedMmd();
+    MetaMetadata mmd = flickr_photo.getTypeMmd();
     System.out.println("sampled inheritedMmd: " + mmd);
     return mmd;
   }

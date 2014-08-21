@@ -94,7 +94,7 @@ public class TestParserBase
         "</meta_metadata>";
     MetaMetadata mmd = (MetaMetadata) mmdScope.deserialize(mmdXml, StringFormat.XML);
     assertNotNull(mmd);
-    MetaMetadataField field = mmd.getChildMetaMetadata().get("specs");
+    MetaMetadataField field = mmd.getChildrenMap().get("specs");
     assertNotNull(field);
 
     ClassDescriptor classDescriptor = ClassDescriptor.getClassDescriptor(TestProduct.class);

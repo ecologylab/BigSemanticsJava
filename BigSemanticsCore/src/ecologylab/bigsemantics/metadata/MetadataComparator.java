@@ -52,11 +52,11 @@ public class MetadataComparator extends Debug implements Comparator<Metadata>
 
 	private int recursiveComparison(Metadata m1, Metadata m2, MetaMetadataNestedField mmd)
 	{
-		HashMapArrayList<String, MetaMetadataField> fieldSet = mmd.getChildMetaMetadata();
+		HashMapArrayList<String, MetaMetadataField> fieldSet = mmd.getChildrenMap();
 		if (fieldSet == null || fieldSet.isEmpty())
 			return -1;
 		
-		MetaMetadataNestedField targetParent = mmd.isUsedForInlineMmdDef() ? mmd.getInheritedMmd() : mmd;
+		MetaMetadataNestedField targetParent = mmd.isUsedToDefineInlineMmd() ? mmd.getTypeMmd() : mmd;
 		for (MetaMetadataField field : fieldSet)
 		{
 			if (!field.isAuthoredChildOf(targetParent))

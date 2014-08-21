@@ -94,37 +94,37 @@ public class TestInheritanceIssues extends BaseMmdTest
     repo.traverseAndInheritMetaMetadata();
     
     field = getNestedField(repo, "document", "location");
-    assertEquals(0, field.getXpathCount());
+    assertEquals(0, field.getXpathsSize());
 
     field = getNestedField(repo, "compound_document", "location");
-    assertEquals(0, field.getXpathCount());
+    assertEquals(0, field.getXpathsSize());
 
     field = getNestedField(repo, "compound_document", "main_images", "location");
-    assertEquals(1, field.getXpathCount());
+    assertEquals(1, field.getXpathsSize());
     assertEquals("//meta[@name='image']/@content", field.getXpath(0));
 
     field = getNestedField(repo, "commodity", "location");
-    assertEquals(0, field.getXpathCount());
+    assertEquals(0, field.getXpathsSize());
 
     field = getNestedField(repo, "commodity", "main_images", "location");
-    assertEquals(1, field.getXpathCount());
+    assertEquals(1, field.getXpathsSize());
     assertEquals("//meta[@name='image']/@content", field.getXpath(0));
 
     field = getNestedField(repo, "ikea_product", "location");
-    assertEquals(1, field.getXpathCount());
+    assertEquals(1, field.getXpathsSize());
     assertEquals("//test-location", field.getXpath(0));
 
     field = getNestedField(repo, "ikea_product", "main_images", "location");
-    assertEquals(1, field.getXpathCount());
+    assertEquals(1, field.getXpathsSize());
     assertEquals("//meta[@name='image']/@content", field.getXpath(0));
 
     field = getNestedField(repo, "ikea_product", "depts", "products", "location");
-    assertEquals(2, field.getXpathCount());
+    assertEquals(2, field.getXpathsSize());
     assertEquals("./@href", field.getXpath(0));
     assertEquals("//test-location", field.getXpath(1));
 
     field = getNestedField(repo, "ikea_product", "depts", "products", "main_images", "location");
-    assertEquals(2, field.getXpathCount());
+    assertEquals(2, field.getXpathsSize());
     assertEquals("./img/@src", field.getXpath(0));
     assertEquals("//meta[@name='image']/@content", field.getXpath(1));
   }

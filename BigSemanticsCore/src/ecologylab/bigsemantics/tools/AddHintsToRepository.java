@@ -71,9 +71,9 @@ public class AddHintsToRepository
 
 	private void addHints(MetaMetadataField mmf)
 	{
-		if (mmf.getChildMetaMetadata() != null)
+		if (mmf.getChildrenMap() != null)
 		{
-			for (MetaMetadataField child : mmf.getChildMetaMetadata())
+			for (MetaMetadataField child : mmf.getChildrenMap())
 			{
 				if (child instanceof MetaMetadataScalarField)
 				{

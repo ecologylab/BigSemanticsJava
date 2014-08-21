@@ -18,6 +18,7 @@ import ecologylab.bigsemantics.html.utils.StringBuilderUtils;
 import ecologylab.bigsemantics.metadata.Metadata;
 import ecologylab.bigsemantics.metadata.MetadataClassDescriptor;
 import ecologylab.bigsemantics.metadata.MetadataFieldDescriptor;
+import ecologylab.bigsemantics.metametadata.exceptions.MetaMetadataException;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.ElementState;
@@ -43,18 +44,19 @@ import ecologylab.textformat.NamedStyle;
  * The basic meta-metadata field class. Encapsulate common attributes and methods for all types of
  * meta-metadata fields.
  * 
+ * @author quyin
  * @author damaraju
- * 
  */
 @SuppressWarnings("rawtypes")
 @simpl_inherit
-@simpl_descriptor_classes({ MetaMetadataClassDescriptor.class, MetaMetadataFieldDescriptor.class })
+@simpl_descriptor_classes(
+{ MetaMetadataClassDescriptor.class, MetaMetadataFieldDescriptor.class })
 public abstract class MetaMetadataField extends ElementState
-implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneable
+    implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneable
 {
 
   /**
-   * the Comparator for conveniently sort fields.
+   * The Comparator for conveniently sort fields.
    */
   static class LayerComparator implements Comparator<MetaMetadataField>
   {
@@ -69,23 +71,22 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
   }
 
   /**
-   * the Iterator class of fields inside this one.
+   * The Iterator class of fields inside this one.
    */
-  // FIXME move this to NestedField.
   class MetaMetadataFieldIterator implements Iterator<MetaMetadataField>
   {
 
     int currentIndex = 0;
-  
+
     @Override
     public boolean hasNext()
     {
-      int size         = kids.size();
-      boolean result   = currentIndex < size;
-      
+      int size = kids.size();
+      boolean result = currentIndex < size;
+
       if (result)
       {
-        for(int i=currentIndex; i < size; i++)
+        for (int i = currentIndex; i < size; i++)
         {
           MetaMetadataField nextField = kids.get(i);
           if (nextField.isIgnoreCompletely())
@@ -93,315 +94,376 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
             currentIndex++;
           }
           else
+          {
             break;
+          }
         }
-        
+
         if (currentIndex == size)
+        {
           result = false;
+        }
       }
-      
+
       return result;
     }
-  
+
     @Override
     public MetaMetadataField next()
     {
       return kids.get(currentIndex++);
     }
-  
+
     @Override
     public void remove()
     {
-      // TODO Auto-generated method stub
-      
+      throw new MetaMetadataException("Removing child field through iterator is not yet supported");
     }
-    
+
   }
 
-  static LayerComparator                                LAYER_COMPARATOR       = new LayerComparator();
+  /**
+   * This class encapsulate the clone-on-write behavior of metadata field descriptor associated with
+   * this field.
+   * 
+   * @author quyin
+   *
+   */
+  protected class MetadataFieldDescriptorProxy
+  {
 
-  static ArrayList<MetaMetadataField>                   EMPTY_COLLECTION       = new ArrayList<MetaMetadataField>(0);
+    boolean fieldDescriptorCloned = false;
 
-  static Iterator<MetaMetadataField>                    EMPTY_ITERATOR         = EMPTY_COLLECTION
-                                                                                   .iterator();
-  
-  static Logger                                         logger = LoggerFactory.getLogger(MetaMetadataField.class);
+    private void cloneFieldDescriptorOnWrite()
+    {
+      if (!fieldDescriptorCloned)
+      {
+        MetaMetadataField.this.metadataFieldDescriptor = MetaMetadataField.this.metadataFieldDescriptor
+            .clone();
+        fieldDescriptorCloned = true;
+      }
+    }
 
-  MetadataFieldDescriptor                               metadataFieldDescriptor;
+    public void setTagName(String newTagName)
+    {
+      if (newTagName != null
+          && !newTagName.equals(MetaMetadataField.this.metadataFieldDescriptor.getTagName()))
+      {
+        cloneFieldDescriptorOnWrite();
+        MetaMetadataField.this.metadataFieldDescriptor.setTagName(newTagName);
+      }
+    }
+
+    public void setElementClassDescriptor(MetadataClassDescriptor metadataClassDescriptor)
+    {
+      if (metadataClassDescriptor != MetaMetadataField.this.metadataFieldDescriptor
+          .getElementClassDescriptor())
+      {
+        cloneFieldDescriptorOnWrite();
+        MetaMetadataField.this.metadataFieldDescriptor
+            .setElementClassDescriptor(metadataClassDescriptor);
+      }
+    }
+
+    public void setCollectionOrMapTagName(String childTag)
+    {
+      if (childTag != null
+          && !childTag.equals(MetaMetadataField.this.metadataFieldDescriptor
+              .getCollectionOrMapTagName()))
+      {
+        cloneFieldDescriptorOnWrite();
+        MetaMetadataField.this.metadataFieldDescriptor.setCollectionOrMapTagName(childTag);
+      }
+    }
+
+    public void setWrapped(boolean wrapped)
+    {
+      if (wrapped != MetaMetadataField.this.metadataFieldDescriptor.isWrapped())
+      {
+        cloneFieldDescriptorOnWrite();
+        MetaMetadataField.this.metadataFieldDescriptor.setWrapped(wrapped);
+      }
+    }
+
+  }
+
+  static LayerComparator                              LAYER_COMPARATOR;
+
+  static ArrayList<MetaMetadataField>                 EMPTY_COLLECTION;
+
+  static Iterator<MetaMetadataField>                  EMPTY_ITERATOR;
+
+  static Collection<MmdGenericTypeVar>                EMPTY_GENERIC_TYPE_VAR_COLLECTION;
+
+  static Logger                                       logger;
+
+  static
+  {
+    LAYER_COMPARATOR = new LayerComparator();
+    EMPTY_COLLECTION = new ArrayList<MetaMetadataField>(0);
+    EMPTY_ITERATOR = EMPTY_COLLECTION.iterator();
+    EMPTY_GENERIC_TYPE_VAR_COLLECTION = new ArrayList<MmdGenericTypeVar>();
+    logger = LoggerFactory.getLogger(MetaMetadataField.class);
+  }
 
   @simpl_scalar
-  protected String                                      name;
+  private String                                      name;
 
   @simpl_scalar
   @mm_dont_inherit
-  protected String                                      comment;
+  private String                                      comment;
+
+  /**
+   * The nested child fields inside this field.
+   */
+  @simpl_map
+  @simpl_scope(NestedMetaMetadataFieldTypesScope.NAME)
+  @simpl_nowrap
+  private HashMapArrayList<String, MetaMetadataField> kids;
 
   @simpl_scalar
-  protected String                                      tag;
+  private String                                      tag;
 
   @simpl_scalar
-  private String                                        otherTags;
+  private String                                      otherTags;
 
   @simpl_collection("xpath")
   @simpl_nowrap
-  protected List<String>                                xpaths;
+  private List<String>                                xpaths;
 
   @simpl_scalar
-  private boolean                                       extractAsHtml          = false;
+  private boolean                                     extractAsHtml;
 
   /**
    * Context node for xpath based extarction rules for this field. Default value is document root.
    */
-  @mm_dont_inherit
   @simpl_scalar
-  protected String                                      contextNode;
+  @mm_dont_inherit
+  private String                                      contextNode;
 
   /**
-   * used in the field_parser mechanism, which takes a string as input and parse it into values
-   * indexed by keys. this field indicates what key this field uses to decide the value for it
-   * inside a field_parser.
+   * Used in the field_parser mechanism, which takes a string as input and parse it into values
+   * indexed by keys.
+   * 
+   * This field indicates what key this field uses to decide the value for it inside a field_parser.
    */
   @simpl_scalar
-  protected String                                      fieldParserKey;
+  private String                                      fieldParserKey;
 
   /**
    * schema.org microdata item_prop name.
    */
   @simpl_scalar
-  private String                                        schemaOrgItemprop;
-
-  /**
-   * if this field should be lazily evaluated in ORM component. note that nested fields are
-   * automatically lazy.
-   */
-  @simpl_scalar
-  protected boolean                                     ormLazy;
+  private String                                      schemaOrgItemprop;
 
   /**
    * if this field should be indexed in database representation, used by the ORM component.
    */
   @simpl_scalar
-  protected boolean                                     indexed;
-
-  /**
-   * the nested structure inside this field.
-   */
-  // initializing kids here seems a waste of space, but I would argue for this because this field
-  // will get created during the inheritance process anyway. -- yin
-  // FIXME move this to NestedField.
-  @simpl_map
-  @simpl_scope(NestedMetaMetadataFieldTypesScope.NAME)
-  @simpl_nowrap
-  protected HashMapArrayList<String, MetaMetadataField>  kids                    = new HashMapArrayList<String, MetaMetadataField>();
-
-  // ///////////////////////////////// visualization fields /////////////////////////////////
-
-  /**
-   * true if this field should not be displayed in interactive in-context metadata
-   */
-  @simpl_scalar
-  protected boolean                                     hide;
-
-  /**
-   * If true the field is shown even if its null or empty.
-   */
-  @simpl_scalar
-  @mm_dont_inherit
-  protected boolean                                     alwaysShow;
-
-  /**
-   * name of a style.
-   */
-  @simpl_scalar
-  protected String                                      styleName;
-
-  /**
-   * Specifies the order in which a field is displayed in relation to other fields.
-   */
-  @simpl_scalar
-  protected float                                       layer;
-
-  /**
-   * Another field name that this field navigates to (e.g. from a label in in-context metadata)
-   */
-  @simpl_scalar
-  protected String                                      navigatesTo;
-
-  /**
-   * This MetaMetadataField shadows another field, so it is to be displayed instead of the other.It
-   * is kind of over-riding a field.
-   */
-  @simpl_scalar
-  protected String                                      shadows;
-
-  /**
-   * The label to be used when visualizing this field. Name is used by default. This overrides name.
-   */
-  @simpl_scalar
-  protected String                                      label;
+  private boolean                                     indexed;
 
   /**
    * The name of natural id if this field is used as one.
    */
   @simpl_scalar
-  protected String                                      asNaturalId;
+  private String                                      asNaturalId;
 
   /**
    * The format of this field. Used for normalization. Currently, only used with natural ids.
    */
   @simpl_scalar
-  protected String                                      format;
+  private String                                      format;
 
   /**
    * Indicate if this field is required for the upper level structure.
    */
   @simpl_scalar
-  protected boolean                                     required               = false;
+  private boolean                                     required;
 
   /**
    * if this field should be serialized.
    */
   @simpl_scalar
-  protected boolean                                     dontSerialize          = false;
-
-  // ///////////////////////////////// switches /////////////////////////////////
-
-  /**
-   * if this field is used as a facet.
-   */
-  @simpl_scalar
-  protected boolean                                     isFacet;
+  private boolean                                     dontSerialize;
 
   /**
    * if we should ignore this in the term vector.
    */
   @simpl_scalar
-  protected boolean                                     ignoreInTermVector;
+  private boolean                                     ignoreInTermVector;
 
   /**
    * if we should ignore this field completely (which will cause ignoring of this field for both
    * display and term vector).
    */
   @simpl_scalar
-  protected boolean                                     ignoreCompletely;
+  private boolean                                     ignoreCompletely;
 
   @simpl_collection
   @simpl_scope(FieldOpScope.NAME)
   @simpl_nowrap
-  protected List<FieldOp>                               fieldOps;
+  private List<FieldOp>                               fieldOps;
 
-  @simpl_map("generic_type_var")
-  @simpl_map_key_field("name")
-  @simpl_nowrap
-  MmdGenericTypeVarScope                                genericTypeVars;
-  
-  // ///////////////////////////////// members /////////////////////////////////
-
-  HashSet<String>                                       nonDisplayedFieldNames;
-
-  private boolean                                       fieldsSortedForDisplay = false;
-
-  private String                                        displayedLabel         = null;
+  // ////////////// Presentation Semantics Below ////////////////
 
   /**
-   * The (global) Meta-Metadata repository.
+   * true if this field should not be displayed in interactive in-context metadata
    */
-  private MetaMetadataRepository                        repository;
+  @simpl_scalar
+  private boolean                                     hide;
+
+  /**
+   * If true the field is shown even if its null or empty.
+   */
+  @simpl_scalar
+  @mm_dont_inherit
+  private boolean                                     alwaysShow;
+
+  /**
+   * name of a style.
+   */
+  @simpl_scalar
+  private String                                      styleName;
+
+  /**
+   * Collection of styles
+   */
+  @simpl_collection("style")
+  @simpl_nowrap
+  private List<MetaMetadataStyle>                     styles;
+
+  /**
+   * Specifies the order in which a field is displayed in relation to other fields.
+   */
+  @simpl_scalar
+  private float                                       layer;
+
+  /**
+   * Another field name that this field navigates to (e.g. from a label in in-context metadata)
+   */
+  @simpl_scalar
+  private String                                      navigatesTo;
+
+  /**
+   * This MetaMetadataField shadows another field, so it is to be displayed instead of the other.It
+   * is kind of over-riding a field.
+   */
+  @simpl_scalar
+  private String                                      shadows;
+
+  /**
+   * The label to be used when visualizing this field. Name is used by default. This overrides name.
+   */
+  @simpl_scalar
+  private String                                      label;
+
+  /**
+   * if this field is used as a facet.
+   */
+  @simpl_scalar
+  private boolean                                     isFacet;
+
+  /**
+   * Hint for renderer to not label the extracted value in presentation
+   */
+  @simpl_scalar
+  private boolean                                     hideLabel;
+
+  /**
+   * Another field name whose value can be used as label for this field
+   */
+  @simpl_scalar
+  private String                                      useValueAsLabel;
+
+  /**
+   * Hint for renderer to concatenate this field to another
+   */
+  @simpl_scalar
+  private String                                      concatenatesTo;
+
+  /**
+   * Hint for renderer how to position label w.r.t. value
+   */
+  @simpl_scalar
+  private String                                      labelAt;
+
+  // ////////////// Members Below ////////////////
+
+  private MetaMetadataRepository                      repository;
 
   @simpl_scalar
   @mm_dont_inherit
-  protected boolean                                     inheritFinished        = false;
+  private boolean                                     inheritDone;
+
+  private boolean                                     inheritOngoing;
 
   /**
-   * inheritInProcess prevents infinite loops, e.g. when A.b refers B while B.a refers A, then when
-   * you initialize A.b you will have to initialize A.b.a and you will have to initialize A.b.a.b
-   * ...
-   */
-  protected boolean                                     inheritInProcess       = false;
-
-  /**
-   * Class of the Metadata object that corresponds to this. Non-null for nested and collection
-   * fields. Null for scalar fields.
-   */
-  protected Class<? extends Metadata>                   metadataClass;
-
-  /**
-   * Class descriptor for the Metadata object that corresponds to this. Non-null for nested and
-   * collection fields. Null for scalar fields.
-   */
-  protected MetadataClassDescriptor                     metadataClassDescriptor;
-
-  /**
-   * (for caching toString())
-   */
-  String                                                toString;
-
-  /**
-   * from which field this one inherits. could be null if this field is declared for the first time.
+   * From which field this one inherits. Could be null if this field is declared for the first time.
    */
   @simpl_composite
   @simpl_scope(NestedMetaMetadataFieldTypesScope.NAME)
   @simpl_wrap
   @mm_dont_inherit
-  private MetaMetadataField                             inheritedField         = null;
+  private MetaMetadataField                           superField            = null;
 
   /**
    * in which meta-metadata this field is declared.
    */
   @simpl_composite
   @mm_dont_inherit
-  private MetaMetadata                                  declaringMmd           = null;
+  private MetaMetadata                                declaringMmd          = null;
 
   /**
-   * if this field is used to define inline meta-metadata types. this flag is used by extraction
-   * module to determine the true root element for child fields inside this field.
+   * If this field is used to define inline meta-metadata types.
+   * 
+   * This flag is used by extraction module to determine the true root element for child fields
+   * inside this field.
    */
   @simpl_scalar
   @mm_dont_inherit
-  private boolean                                       usedForInlineMmdDef    = false;
+  private boolean                                     usedToDefineInlineMmd = false;
 
-  /**
-   * hint for renderer to not label the extracted value in presentation
-   */
-  @simpl_scalar
-  private boolean                                       hideLabel;
-
-  /**
-   * Another field name whose value can be used as label for this field
-   */
-  @simpl_scalar
-  protected String                                      useValueAsLabel;
-
-  /**
-   * hint for renderer to concatenate this field to another
-   */
-  @simpl_scalar
-  protected String                                      concatenatesTo;
-
-  /**
-   * hint for renderer how to position label w.r.t. value
-   */
-  @simpl_scalar
-  protected String                                      labelAt;
-
-  /**
-   * collection of styles
-   */
-  @simpl_collection("style")
+  @simpl_map("generic_type_var")
+  @simpl_map_key_field("name")
   @simpl_nowrap
-  List<MetaMetadataStyle>                               styles;
-  
-  private String                                        hashForExtraction;
-  
-  private boolean                                       hashForExtractionInProgress;
-  
-  private MetaMetadataField                             clonedFrom;
-  
-  private List<MetaMetadataField>                       clonedBy;
-  
+  private MmdGenericTypeVarScope                      genericTypeVars;
+
+  private String                                      fieldNameInJava;
+
+  private String                                      capFieldNameInJava;
+
+  private MetadataFieldDescriptor                     metadataFieldDescriptor;
+
+  private MetadataFieldDescriptorProxy                fieldDescriptorProxy;
+
+  /**
+   * Class descriptor for the Metadata object that corresponds to this. Non-null for nested and
+   * collection fields. Null for scalar fields.
+   */
+  private MetadataClassDescriptor                     metadataClassDescriptor;
+
+  /**
+   * Class of the Metadata object that corresponds to this. Non-null for nested and collection
+   * fields. Null for scalar fields.
+   */
+  private Class<? extends Metadata>                   metadataClass;
+
+  private HashSet<String>                             nonDisplayedFieldNames;
+
+  private boolean                                     fieldsSortedForDisplay;
+
+  /**
+   * (For caching toString())
+   */
+  private String                                      toString;
+
+  private String                                      hashForExtraction;
+
+  private boolean                                     hashForExtractionOngoing;
+
   public MetaMetadataField()
   {
-
+    kids = new HashMapArrayList<String, MetaMetadataField>();
   }
 
   public MetaMetadataField(String name, HashMapArrayList<String, MetaMetadataField> children)
@@ -416,196 +478,11 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
     this.name = name;
     this.tag = copy.tag;
     this.kids = copy.kids;
-
-    // TODO -- do we need to propagate more fields here?
-
-    // this.childType = copy.childType;
-    // this.childTag = copy.childTag;
-    // this.noWrap = copy.noWrap;
-  }
-  
-  /**
-   * test if two fields are equal. equal fields are either the same one or inherited from the same
-   * origin.
-   */
-  @Override
-  public boolean equals(Object obj)
-  {
-    if (obj instanceof MetaMetadataField)
-    {
-      MetaMetadataField f = (MetaMetadataField) obj;
-      if (f.getName().equals(this.getName()) && f.getDeclaringMmd() == this.getDeclaringMmd())
-        return true;
-    }
-    return false;
   }
 
-  /**
-   * get the nested fields inside of this one.
-   * 
-   * @return
-   */
-  public HashMapArrayList<String, MetaMetadataField> getChildMetaMetadata()
-  {
-    return kids;
-  }
-
-  /**
-   * comment of this field.
-   * 
-   * @return
-   */
-  public String getComment()
-  {
-    return comment;
-  }
-
-  /**
-   * context node xpath (used in extraction).
-   * 
-   * @return
-   */
-  public final String getContextNode()
-  {
-    return contextNode;
-  }
-
-  /**
-   * the label used to display this field in visualization.
-   * 
-   * @return
-   */
-  public String getLabel()
-  {
-    String result = displayedLabel;
-    if (result == null)
-    {
-      if (label != null)
-        result = label;
-      else
-        result = name.replace("_", " ");
-
-      displayedLabel = result;
-    }
-    return result;
-  }
-
-  /**
-   * the key used by this field to index a value in the output of a field_parser.
-   * 
-   * @return
-   */
-  public String getFieldParserKey()
-  {
-    return fieldParserKey;
-  }
-
-  /**
-   * the file in which this field is declared.
-   * 
-   * @return
-   */
-  public File getFile()
-  {
-    MetaMetadataField parent = (MetaMetadataField) parent();
-    if (parent == null)
-      return null;
-    if (parent instanceof MetaMetadata)
-      return ((MetaMetadata) parent).getFile();
-    return parent.getFile();
-  }
-
-  /**
-   * @return the corresponding metadata class. should be used after inheritance and binding process.
-   *         null for scalars.
-   */
-  public Class<? extends Metadata> getMetadataClass()
-  {
-    Class<? extends Metadata> metadataClass = this.metadataClass;
-    if (metadataClass == null)
-    {
-      MetadataClassDescriptor metadataClassDescriptor = this.getMetadataClassDescriptor();
-      metadataClass = (Class<? extends Metadata>) (metadataClassDescriptor == null ? null : metadataClassDescriptor.getDescribedClass());
-      this.metadataClass = metadataClass;
-    }
-    return metadataClass;
-  }
-
-  /**
-   * @return the corresponding metadataClassDescriptor. null for scalars.
-   *         <p>
-   *         note that this class descriptor might be incomplete during the compilation process,
-   *         e.g. lacking the actual Class.
-   */
-  public MetadataClassDescriptor getMetadataClassDescriptor()
-  {
-    return metadataClassDescriptor;
-  }
-  
-  /**
-   * @return the corresponding metadataFieldDescriptor.
-   */
-  public MetadataFieldDescriptor getMetadataFieldDescriptor()
-  {
-    return metadataFieldDescriptor;
-  }
-  
-  /**
-   * 
-   * @return the style name.
-   */
-  public String getStyle()
-  {
-    return styleName;
-  }
-
-  /**
-   * 
-   * @return name of this field.
-   */
   public String getName()
   {
     return name;
-  }
-
-  /**
-   * 
-   * @return the link target (should be another ParsedURL field) of this field.
-   */
-  public String getNavigatesTo()
-  {
-    return navigatesTo;
-  }
-
-  /**
-   * 
-   * @return the meta-metadata repository in which this field is declared.
-   */
-  public MetaMetadataRepository getRepository()
-  {
-    if (repository == null)
-      repository = findRepository();
-    return repository;
-  }
-
-  /**
-   * 
-   * @return the tag if existed, or the name of this field. this method is different from
-   * getTagForTypesScope() which is overridden in MetaMetadataCollectionField. they have
-   * different purposes.
-   */
-  public String getTagOrName()
-  {
-    return tag != null ? tag : name;
-  }
-  
-  /**
-   * 
-   * @return the tag used to look up metadata from MetadataTypesScope.
-   */
-  public String getTagForTypesScope()
-  {
-    return tag != null ? tag : name;
   }
 
   public String getType()
@@ -618,25 +495,91 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
     return null;
   }
 
+  public String getComment()
+  {
+    return comment;
+  }
+
   /**
-   * the xpath of this field.
+   * @return The nested fields inside of this one as a collection.
+   */
+  public Collection<MetaMetadataField> getChildren()
+  {
+    return kids == null ? null : kids.values();
+  }
+
+  /**
+   * @return The nested fields inside of this one as a map.
+   */
+  public HashMapArrayList<String, MetaMetadataField> getChildrenMap()
+  {
+    return kids;
+  }
+  
+  public HashMapArrayList<String, MetaMetadataField> childrenMap()
+  {
+    if (kids == null)
+    {
+      kids = new HashMapArrayList<String, MetaMetadataField>();
+    }
+    return kids;
+  }
+
+  public boolean hasChildren()
+  {
+    return kids != null && kids.size() > 0;
+  }
+
+  public int getChildrenSize()
+  {
+    return kids == null ? 0 : kids.size();
+  }
+
+  public MetaMetadataField lookupChild(String name)
+  {
+    return kids == null ? null : kids.get(name);
+  }
+
+  public MetaMetadataField lookupChild(MetadataFieldDescriptor metadataFieldDescriptor)
+  {
+    return lookupChild(XMLTools.getXmlTagName(metadataFieldDescriptor.getName(), null));
+  }
+
+  public boolean isAuthoredChildOf(MetaMetadataField parentField)
+  {
+    if (parentField instanceof MetaMetadataCompositeField && this.parent() == parentField)
+      return true;
+    if (parentField instanceof MetaMetadataCollectionField
+        && this.parent() == ((MetaMetadataCollectionField) parentField).getChildComposite())
+      return true;
+    return false;
+  }
+
+  public boolean hasAuthoredChild(MetaMetadataField childField)
+  {
+    return childField.isAuthoredChildOf(this);
+  }
+
+  /**
+   * The (first) xpath of this field.
+   * 
    * @return
    */
   public String getXpath()
   {
     return getXpath(0);
   }
-  
+
   public List<String> getXpaths()
   {
     return xpaths;
   }
-  
-  public int getXpathCount()
+
+  public int getXpathsSize()
   {
     return xpaths == null ? 0 : xpaths.size();
   }
-  
+
   public String getXpath(int i)
   {
     if (xpaths == null || xpaths.size() == 0 || i > xpaths.size())
@@ -645,28 +588,80 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
     }
     return xpaths.get(i);
   }
-  
-  public int xpathsSize()
+
+  public String getTag()
   {
-    if (xpaths == null)
-    {
-      return 0;
-    }
-    return xpaths.size();
-  }
-  
-  /**
-   * if this field should always be shown in visualization.
-   * @return
-   */
-  public boolean isAlwaysShow()
-  {
-    return alwaysShow;
+    return tag;
   }
 
-  public boolean isChildFieldDisplayed(String childName)
+  public String getOtherTags()
   {
-    return nonDisplayedFieldNames == null ? true : !nonDisplayedFieldNames.contains(childName);
+    return otherTags;
+  }
+
+  public boolean isExtractAsHtml()
+  {
+    return extractAsHtml;
+  }
+
+  public String getContextNode()
+  {
+    return contextNode;
+  }
+
+  public String getFieldParserKey()
+  {
+    return fieldParserKey;
+  }
+
+  public String getSchemaOrgItemtype()
+  {
+    return null;
+  }
+
+  public String getSchemaOrgItemprop()
+  {
+    return schemaOrgItemprop;
+  }
+
+  public boolean isIndexed()
+  {
+    return indexed;
+  }
+
+  public String getAsNaturalId()
+  {
+    return asNaturalId;
+  }
+
+  public String getFormat()
+  {
+    return format;
+  }
+
+  public boolean isRequired()
+  {
+    return required;
+  }
+
+  public boolean isDontSerialize()
+  {
+    return dontSerialize;
+  }
+
+  public boolean isIgnoreInTermVector()
+  {
+    return ignoreInTermVector || isIgnoreCompletely();
+  }
+
+  public boolean isIgnoreCompletely()
+  {
+    return ignoreCompletely;
+  }
+
+  public List<FieldOp> getFieldOps()
+  {
+    return fieldOps;
   }
 
   public boolean isHide()
@@ -674,132 +669,19 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
     return hide || isIgnoreCompletely();
   }
 
-  public boolean isIgnoreInTermVector()
+  public boolean isAlwaysShow()
   {
-    return ignoreInTermVector || isIgnoreCompletely();
-  }
-  
-  public boolean isIgnoreCompletely()
-  {
-    return ignoreCompletely;
+    return alwaysShow;
   }
 
-  public int numNonDisplayedFields()
+  public String getStyleName()
   {
-    return nonDisplayedFieldNames == null ? 0 : nonDisplayedFieldNames.size();
+    return styleName;
   }
 
-  public String parentString()
+  public List<MetaMetadataStyle> getStyles()
   {
-    StringBuilder result = new StringBuilder();
-  
-    ElementState parent = parent();
-    while (parent instanceof MetaMetadataField)
-    {
-      MetaMetadataField pf = (MetaMetadataField) parent;
-      result.insert(0, "<" + pf.name + ">");
-      parent = parent.parent();
-    }
-    return result.toString();
-  }
-
-  public String shadows()
-  {
-    return shadows;
-  }
-
-  public int size()
-  {
-    return kids == null ? 0 : kids.size();
-  }
-
-  public void sortForDisplay()
-  {
-    if (!fieldsSortedForDisplay)
-    {
-  
-      HashMapArrayList<String, MetaMetadataField> childMetaMetadata = getChildMetaMetadata();
-      if (childMetaMetadata != null)
-        Collections.sort((ArrayList<MetaMetadataField>) childMetaMetadata.values(),
-            LAYER_COMPARATOR);
-      fieldsSortedForDisplay = true;
-    }
-  }
-
-  public boolean hasChildren()
-  {
-    return kids != null && kids.size() > 0;
-  }
-
-  /**
-   * @param childMetaMetadata
-   *          the childMetaMetadata to set
-   */
-  public void setChildMetaMetadata(HashMapArrayList<String, MetaMetadataField> childMetaMetadata)
-  {
-    this.kids = childMetaMetadata;
-  }
-
-  protected void setName(String name)
-  {
-    this.name = name;
-  }
-
-  public void setRepository(MetaMetadataRepository repository)
-  {
-    this.repository = repository;
-  }
-
-  /**
-   * @param tag
-   *          the tag to set
-   */
-  public void setTag(String tag)
-  {
-    this.tag = tag;
-  }
-
-  @Override
-  public Iterator<MetaMetadataField> iterator()
-  {
-    HashMapArrayList<String, MetaMetadataField> childMetaMetadata = getChildMetaMetadata();
-    return (childMetaMetadata != null) ? new MetaMetadataFieldIterator() : EMPTY_ITERATOR;
-  }
-
-  @Override
-  public String key()
-  {
-    return name;
-  }
-  
-  @Override
-  public String toString()
-  {
-    String result = toString;
-    if (result == null)
-    {
-      result = getClassSimpleName() + parentString() + "<" + name + ">";
-      toString = result;
-    }
-    return result;
-  }
-
-//  public HashMapArrayList<String, MetaMetadataField> initializeChildMetaMetadata()
-//  {
-//    this.kids = new HashMapArrayList<String, MetaMetadataField>();
-//    return this.kids;
-//  }
-
-  public MetaMetadataField lookupChild(MetadataFieldDescriptor metadataFieldDescriptor)
-  {
-    return lookupChild(XMLTools.getXmlTagName(metadataFieldDescriptor.getName(), null));
-  }
-
-  public MetaMetadataField lookupChild(String name)
-  {
-    if (kids == null)
-      throw new RuntimeException("Can't find child " + name + " in " + this + " <- " + this.parent());
-    return kids.get(name);
+    return styles;
   }
 
   public NamedStyle lookupStyle()
@@ -810,83 +692,110 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
     return (result != null) ? result : getRepository().getDefaultStyle();
   }
 
-  /**
-   * @return the tag
-   */
-  public String resolveTag()
+  public float getLayer()
   {
-    return (tag != null) ? tag : name;
-    // return (isNoWrap()) ? ((childTag != null) ? childTag : childType) : (tag != null) ? tag :
-    // name;
+    return layer;
   }
 
-  protected HashMapArrayList<String, MetaMetadataField> initializeChildMetaMetadata()
+  public String getNavigatesTo()
   {
-    return null;
+    return navigatesTo;
   }
 
-  protected HashSet<String> nonDisplayedFieldNames()
+  public String getShadows()
   {
-    HashSet<String> result = this.nonDisplayedFieldNames;
-    if (result == null)
+    return shadows;
+  }
+
+  public String getLabel()
+  {
+    return label;
+  }
+
+  public boolean isFacet()
+  {
+    return isFacet;
+  }
+
+  public boolean isHideLabel()
+  {
+    return hideLabel;
+  }
+
+  public String getUseValueAsLabel()
+  {
+    return useValueAsLabel;
+  }
+
+  public String getConcatenatesTo()
+  {
+    return concatenatesTo;
+  }
+
+  public String getLabelAt()
+  {
+    return labelAt;
+  }
+
+  public MetaMetadataRepository getRepository()
+  {
+    if (repository == null)
+      repository = findRepository();
+    return repository;
+  }
+
+  private MetaMetadataRepository findRepository()
+  {
+    ElementState parent = parent();
+    while (parent != null && !(parent instanceof MetaMetadataRepository))
     {
-      result = new HashSet<String>();
-      this.nonDisplayedFieldNames = result;
+      parent = parent.parent();
     }
-    return result;
-  }
-
-  /**
-   * @param metadataFieldDescriptor
-   *          the metadataFieldDescriptor to set
-   */
-  void setMetadataFieldDescriptor(MetadataFieldDescriptor metadataFieldDescriptor)
-  {
-    this.metadataFieldDescriptor = metadataFieldDescriptor;
-  }
-  
-  /**
-   * @param metadataClassDescriptor
-   *          the metadataClassDescriptor to set
-   */
-  void setMetadataClassDescriptor(MetadataClassDescriptor metadataClassDescriptor)
-  {
-    this.metadataClassDescriptor = metadataClassDescriptor;
-  }
-
-  protected String generateNewClassName()
-  {
-    String javaClassName = null;
-  
-    if (this instanceof MetaMetadataCollectionField)
+    if (parent == null)
     {
-      javaClassName = ((MetaMetadataCollectionField) this).childType;
+      logger.error("can't find repository for " + this);
+      return null;
     }
-    else
-    {
-      javaClassName = ((MetaMetadataCompositeField) this).getTypeOrName();
-    }
-  
-    return javaClassName;
+    return (MetaMetadataRepository) parent;
   }
-  
-  /**
-   * Add additional meta information about the field to an existing meta information list.
-   * 
-   * @param metaInfoBuf
-   *          The existing meta information list. Additional meta information will be added to this
-   *          list. Cannot be null.
-   * @param compiler
-   *          Providing compiler services such as dependency handling, in case needed in this
-   *          method. This is not used right now; just for extensibility.
-   */
-  abstract public void addAdditionalMetaInformation(List<MetaInformation> metaInfoBuf, MmdCompilerService compiler);
 
-  private String fieldNameInJava = null;
-  private String capFieldNameInJava = null;
-  
+  public boolean isInheritDone()
+  {
+    return inheritDone;
+  }
+
+  public boolean isInheritOngoing()
+  {
+    return inheritOngoing;
+  }
+
+  public MetaMetadataField getSuperField()
+  {
+    return superField;
+  }
+
+  public MetaMetadata getDeclaringMmd()
+  {
+    return declaringMmd;
+  }
+
+  public boolean isUsedToDefineInlineMmd()
+  {
+    return usedToDefineInlineMmd;
+  }
+
+  public MmdGenericTypeVarScope getGenericTypeVars()
+  {
+    return genericTypeVars;
+  }
+
+  public Collection<MmdGenericTypeVar> getGenericTypeVarsCollection()
+  {
+    return genericTypeVars == null ? EMPTY_GENERIC_TYPE_VAR_COLLECTION : genericTypeVars.values();
+  }
+
   /**
-   * get the field name in java.
+   * Get the field name in java.
    * 
    * @param capitalized
    * @return
@@ -895,7 +804,7 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
   {
     if (capitalized)
       return getCapFieldNameInJava();
-    
+
     String rst = fieldNameInJava;
     if (rst == null)
     {
@@ -904,9 +813,9 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
     }
     return fieldNameInJava;
   }
-  
+
   /**
-   * get the capitalized field name in java (could be used in method names).
+   * Get the capitalized field name in java (could be used in method names).
    * 
    * @return
    */
@@ -922,18 +831,513 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
   }
 
   /**
-   * generate java type name string. since type name will be used for several times (both in member
-   * definition and methods), it should be cached.
-   * 
-   * note that this could be different from changing getTypeName() into camel case: consider Entity
-   * for composite fields or ArrayList for collection fields.
+   * @return The corresponding metadataFieldDescriptor.
    */
-  abstract protected String getTypeNameInJava();
-  
+  public MetadataFieldDescriptor getMetadataFieldDescriptor()
+  {
+    return metadataFieldDescriptor;
+  }
+
+  public MetadataFieldDescriptorProxy getFieldDescriptorProxy()
+  {
+    return fieldDescriptorProxy;
+  }
+
+  /**
+   * @return The corresponding metadataClassDescriptor. Null for scalars.
+   * 
+   *         Note that this class descriptor might be incomplete during the compilation process,
+   *         e.g. lacking the actual Class object.
+   */
+  public MetadataClassDescriptor getMetadataClassDescriptor()
+  {
+    return metadataClassDescriptor;
+  }
+
+  /**
+   * @return The corresponding metadata class. Null for scalars.
+   * 
+   *         Should be used after inheritance and binding process.
+   */
+  public Class<? extends Metadata> getMetadataClass()
+  {
+    Class<? extends Metadata> metadataClass = this.metadataClass;
+    if (metadataClass == null)
+    {
+      MetadataClassDescriptor metadataClassDescriptor = this.getMetadataClassDescriptor();
+      if (metadataClassDescriptor != null)
+      {
+        metadataClass = (Class<? extends Metadata>) metadataClassDescriptor.getDescribedClass();
+      }
+      this.metadataClass = metadataClass;
+    }
+    return metadataClass;
+  }
+
+  public HashSet<String> getNonDisplayedFieldNames()
+  {
+    return nonDisplayedFieldNames;
+  }
+
+  protected HashSet<String> nonDisplayedFieldNames()
+  {
+    HashSet<String> result = this.nonDisplayedFieldNames;
+    if (result == null)
+    {
+      result = new HashSet<String>();
+      this.nonDisplayedFieldNames = result;
+    }
+    return result;
+  }
+
+  public boolean isChildFieldDisplayed(String childName)
+  {
+    return nonDisplayedFieldNames == null ? true : !nonDisplayedFieldNames.contains(childName);
+  }
+
+  public int getNonDisplayedFieldNamesSize()
+  {
+    return nonDisplayedFieldNames == null ? 0 : nonDisplayedFieldNames.size();
+  }
+
+  public boolean isFieldsSortedForDisplay()
+  {
+    return fieldsSortedForDisplay;
+  }
+
+  /**
+   * NOTE: This is not Object.getHashCode()!
+   * 
+   * @return A hash that is used for versioning.
+   */
+  public String getHashForExtraction()
+  {
+    if (hashForExtraction == null)
+    {
+      synchronized (this)
+      {
+        if (hashForExtraction == null)
+        {
+          hashForExtractionOngoing = true;
+          String fp = getFingerprintString();
+          byte[] bytes = Utils.secureHashBytes(fp);
+          hashForExtraction = Utils.base64urlEncode(bytes);
+          hashForExtractionOngoing = false;
+        }
+      }
+    }
+
+    return hashForExtraction;
+  }
+
+  protected String getFingerprintString()
+  {
+    StringBuilder sb = StringBuilderUtils.acquire();
+    addToFp(sb, name);
+    addToFp(sb, required);
+    addToFp(sb, tag);
+    addToFp(sb, schemaOrgItemprop);
+    addToFp(sb, contextNode);
+    addToFp(sb, extractAsHtml);
+    addToFp(sb, fieldParserKey);
+    addToFp(sb, format);
+    addCollectionToFp(sb, xpaths);
+    addCollectionToFp(sb, fieldOps);
+    for (MetaMetadataField field : kids)
+    {
+      if (field.hashForExtractionOngoing)
+      {
+        addToFp(sb, "self ref to " + field.name);
+      }
+      else
+      {
+        sb.append(field.name).append(" : ");
+        addToFp(sb, field.getHashForExtraction());
+      }
+    }
+
+    String fp = sb.toString();
+    StringBuilderUtils.release(sb);
+    return fp;
+  }
+
+  protected void addToFp(StringBuilder fpBuilder, Object obj)
+  {
+    fpBuilder.append(obj).append("\n");
+  }
+
+  protected void addCollectionToFp(StringBuilder fpBuilder, Collection collection)
+  {
+    if (collection != null)
+    {
+      for (Object obj : collection)
+      {
+        addToFp(fpBuilder, obj);
+      }
+    }
+  }
+
+  public String parentString()
+  {
+    StringBuilder result = new StringBuilder();
+
+    ElementState parent = parent();
+    while (parent instanceof MetaMetadataField)
+    {
+      MetaMetadataField pf = (MetaMetadataField) parent;
+      result.insert(0, "<" + pf.name + ">");
+      parent = parent.parent();
+    }
+    return result.toString();
+  }
+
+  @Override
+  public String toString()
+  {
+    String result = toString;
+    if (result == null)
+    {
+      result = getClassSimpleName() + parentString() + "<" + name + ">";
+      toString = result;
+    }
+    return result;
+  }
+
+  public boolean isHashForExtractionOngoing()
+  {
+    return hashForExtractionOngoing;
+  }
+
+  protected void setName(String name)
+  {
+    this.name = name;
+  }
+
+  protected void setComment(String comment)
+  {
+    this.comment = comment;
+  }
+
+  protected void setTag(String tag)
+  {
+    this.tag = tag;
+  }
+
+  protected void setOtherTags(String otherTags)
+  {
+    this.otherTags = otherTags;
+  }
+
+  protected void setChildrenMap(HashMapArrayList<String, MetaMetadataField> childMetaMetadata)
+  {
+    this.kids = childMetaMetadata;
+  }
+
+  protected HashMapArrayList<String, MetaMetadataField> initializeChildrenMap()
+  {
+    return null;
+  }
+
+  protected void setRepository(MetaMetadataRepository repository)
+  {
+    this.repository = repository;
+  }
+
+  protected void setExtractAsHtml(boolean extractAsHtml)
+  {
+    this.extractAsHtml = extractAsHtml;
+  }
+
+  protected void setContextNode(String contextNode)
+  {
+    this.contextNode = contextNode;
+  }
+
+  protected void setFieldParserKey(String fieldParserKey)
+  {
+    this.fieldParserKey = fieldParserKey;
+  }
+
+  protected void setSchemaOrgItemprop(String schemaOrgItemprop)
+  {
+    this.schemaOrgItemprop = schemaOrgItemprop;
+  }
+
+  protected void setIndexed(boolean indexed)
+  {
+    this.indexed = indexed;
+  }
+
+  protected void setAsNaturalId(String asNaturalId)
+  {
+    this.asNaturalId = asNaturalId;
+  }
+
+  protected void setFormat(String format)
+  {
+    this.format = format;
+  }
+
+  protected void setRequired(boolean required)
+  {
+    this.required = required;
+  }
+
+  protected void setDontSerialize(boolean dontSerialize)
+  {
+    this.dontSerialize = dontSerialize;
+  }
+
+  protected void setIgnoreInTermVector(boolean ignoreInTermVector)
+  {
+    this.ignoreInTermVector = ignoreInTermVector;
+  }
+
+  protected void setIgnoreCompletely(boolean ignoreCompletely)
+  {
+    this.ignoreCompletely = ignoreCompletely;
+  }
+
+  protected void setHide(boolean hide)
+  {
+    this.hide = hide;
+  }
+
+  protected void setAlwaysShow(boolean alwaysShow)
+  {
+    this.alwaysShow = alwaysShow;
+  }
+
+  protected void setStyleName(String styleName)
+  {
+    this.styleName = styleName;
+  }
+
+  protected void setLayer(float layer)
+  {
+    this.layer = layer;
+  }
+
+  protected void setNavigatesTo(String navigatesTo)
+  {
+    this.navigatesTo = navigatesTo;
+  }
+
+  protected void setShadows(String shadows)
+  {
+    this.shadows = shadows;
+  }
+
+  protected void setLabel(String label)
+  {
+    this.label = label;
+  }
+
+  protected void setFacet(boolean isFacet)
+  {
+    this.isFacet = isFacet;
+  }
+
+  protected void setHideLabel(boolean hideLabel)
+  {
+    this.hideLabel = hideLabel;
+  }
+
+  protected void setUseValueAsLabel(String useValueAsLabel)
+  {
+    this.useValueAsLabel = useValueAsLabel;
+  }
+
+  protected void setConcatenatesTo(String concatenatesTo)
+  {
+    this.concatenatesTo = concatenatesTo;
+  }
+
+  protected void setLabelAt(String labelAt)
+  {
+    this.labelAt = labelAt;
+  }
+
+  protected void setInheritDone(boolean inheritDone)
+  {
+    this.inheritDone = inheritDone;
+  }
+
+  protected void setInheritOngoing(boolean inheritOngoing)
+  {
+    this.inheritOngoing = inheritOngoing;
+  }
+
+  protected void setSuperField(MetaMetadataField superField)
+  {
+    this.superField = superField;
+  }
+
+  protected void setDeclaringMmd(MetaMetadata declaringMmd)
+  {
+    this.declaringMmd = declaringMmd;
+  }
+
+  protected void setUsedToDefineInlineMmd(boolean usedToDefineInlineMmd)
+  {
+    this.usedToDefineInlineMmd = usedToDefineInlineMmd;
+  }
+
+  protected void setGenericTypeVars(MmdGenericTypeVarScope genericTypeVars)
+  {
+    this.genericTypeVars = genericTypeVars;
+  }
+
+  protected void setMetadataFieldDescriptor(MetadataFieldDescriptor metadataFieldDescriptor)
+  {
+    this.metadataFieldDescriptor = metadataFieldDescriptor;
+  }
+
+  protected void setMetadataClassDescriptor(MetadataClassDescriptor metadataClassDescriptor)
+  {
+    this.metadataClassDescriptor = metadataClassDescriptor;
+  }
+
+  protected void setMetadataClass(Class metadataClass)
+  {
+    this.metadataClass = metadataClass;
+  }
+
+  protected void setNonDisplayedFieldNames(HashSet<String> nonDisplayedFieldNames)
+  {
+    this.nonDisplayedFieldNames = nonDisplayedFieldNames;
+  }
+
+  protected void setFieldsSortedForDisplay(boolean fieldsSortedForDisplay)
+  {
+    this.fieldsSortedForDisplay = fieldsSortedForDisplay;
+  }
+
+  protected void resetToString()
+  {
+    this.toString = null;
+  }
+
+  protected void setFieldDescriptorProxy(MetadataFieldDescriptorProxy fieldDescriptorProxy)
+  {
+    this.fieldDescriptorProxy = fieldDescriptorProxy;
+  }
+
+  /**
+   * @return The file in which this field is declared.
+   */
+  public File getFile()
+  {
+    Object parent = parent();
+    if (parent != null && parent instanceof MetaMetadataField)
+    {
+      return ((MetaMetadataField) parent).getFile();
+    }
+    return null;
+  }
+
+  public void sortForDisplay()
+  {
+    if (!fieldsSortedForDisplay)
+    {
+
+      HashMapArrayList<String, MetaMetadataField> childMetaMetadata = getChildrenMap();
+      if (childMetaMetadata != null)
+        Collections.sort((ArrayList<MetaMetadataField>) childMetaMetadata.values(),
+                         LAYER_COMPARATOR);
+      fieldsSortedForDisplay = true;
+    }
+  }
+
+  /**
+   * Test if two fields are the same one or inherited from the same origin.
+   */
+  public boolean equalOrSameOrigin(Object obj)
+  {
+    if (obj instanceof MetaMetadataField)
+    {
+      MetaMetadataField f = (MetaMetadataField) obj;
+      if (f.getName().equals(this.getName()) && f.getDeclaringMmd() == this.getDeclaringMmd())
+      {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * 
+   * @return The tag if existed, or the name of this field. this method is different from
+   *         getTagForTypesScope() which is overridden in MetaMetadataCollectionField. they have
+   *         different purposes.
+   */
+  @Deprecated
+  public String getTagOrName()
+  {
+    return tag != null ? tag : name;
+  }
+
+  /**
+   * 
+   * @return The tag used to look up metadata from MetadataTypesScope.
+   */
+  @Deprecated
+  public String getTagForTypesScope()
+  {
+    return tag != null ? tag : name;
+  }
+
+  public String resolveTag()
+  {
+    return (tag != null) ? tag : name;
+  }
+
+  @Override
+  public Iterator<MetaMetadataField> iterator()
+  {
+    HashMapArrayList<String, MetaMetadataField> childMetaMetadata = getChildrenMap();
+    return (childMetaMetadata != null) ? new MetaMetadataFieldIterator() : EMPTY_ITERATOR;
+  }
+
+  @Override
+  public String key()
+  {
+    return name;
+  }
+
+  public FieldType getFieldType()
+  {
+    if (this.metadataFieldDescriptor != null)
+      return metadataFieldDescriptor.getType();
+    else
+    {
+      if (this instanceof MetaMetadataCompositeField)
+        return FieldType.COMPOSITE_ELEMENT;
+      else if (this instanceof MetaMetadataCollectionField)
+      {
+        MetaMetadataCollectionField coll = (MetaMetadataCollectionField) this;
+        if (coll.getChildScalarType() != null)
+        {
+          return FieldType.COLLECTION_SCALAR;
+        }
+        else
+        {
+          return FieldType.COLLECTION_ELEMENT;
+        }
+      }
+      else
+      {
+        return FieldType.SCALAR;
+      }
+    }
+  }
+
   public void inheritAttributes(MetaMetadataField inheritFrom, boolean overwrite)
   {
-    MetaMetadataClassDescriptor classDescriptor = (MetaMetadataClassDescriptor)  ClassDescriptor.getClassDescriptor(this);;
-  
+    MetaMetadataClassDescriptor classDescriptor = (MetaMetadataClassDescriptor) ClassDescriptor
+        .getClassDescriptor(this);
+    ;
+
     for (MetaMetadataFieldDescriptor fieldDescriptor : classDescriptor)
     {
       if (fieldDescriptor.isInheritable())
@@ -947,10 +1351,11 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
           // If it is one of the following cases we should stop actually inheriting attribute:
           // 1. scalarType is null.
           // 2. the attribute is a scalar or composite value, and we already have a value specified
-          //    on the sub-field, and overwrite is false.
+          // on the sub-field, and overwrite is false.
           // 3. the value from the super-field is a default value.
           if (scalarType != null
-              && (overwrite || fieldDescriptor.isCollection() || scalarType.isDefaultValue(field, this))
+              && (overwrite || fieldDescriptor.isCollection() || scalarType.isDefaultValue(field,
+                                                                                           this))
               && !scalarType.isDefaultValue(field, inheritFrom))
           {
             Object value = field.get(inheritFrom);
@@ -998,19 +1403,6 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
     }
   }
 
-  private MetaMetadataRepository findRepository()
-  {
-    ElementState parent = parent();
-    while (parent != null && !(parent instanceof MetaMetadataRepository))
-      parent = parent.parent();
-    if (parent == null)
-    {
-      error("can't find repository for " + this);
-      return null;
-    }
-    return (MetaMetadataRepository) parent;
-  }
-
   /**
    * bind the corresponding metadata field descriptor to this field, matched by field name.
    * customize the field descriptor when needed.
@@ -1029,7 +1421,8 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
    * 
    * @see {@code customizeFieldDescriptor()}
    */
-  protected MetadataFieldDescriptor bindMetadataFieldDescriptor(SimplTypesScope metadataTScope, MetadataClassDescriptor metadataClassDescriptor)
+  protected MetadataFieldDescriptor bindMetadataFieldDescriptor(SimplTypesScope metadataTScope,
+                                                                MetadataClassDescriptor metadataClassDescriptor)
   {
     MetadataFieldDescriptor metadataFieldDescriptor = this.metadataFieldDescriptor;
     if (metadataFieldDescriptor == null)
@@ -1040,16 +1433,18 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
         String fieldName = this.getFieldNameInJava(false);
         if (metadataFieldDescriptor == null)
         {
-          metadataFieldDescriptor = (MetadataFieldDescriptor) metadataClassDescriptor.getFieldDescriptorByFieldName(fieldName);
+          metadataFieldDescriptor = (MetadataFieldDescriptor) metadataClassDescriptor
+              .getFieldDescriptorByFieldName(fieldName);
           if (metadataFieldDescriptor != null)
           {
             // if we don't have a field, then this is a wrapped collection, so we need to get the
             // wrapped field descriptor
             if (metadataFieldDescriptor.getField() == null)
-              metadataFieldDescriptor = (MetadataFieldDescriptor) metadataFieldDescriptor.getWrappedFD();
+              metadataFieldDescriptor = (MetadataFieldDescriptor) metadataFieldDescriptor
+                  .getWrappedFD();
 
             this.metadataFieldDescriptor = metadataFieldDescriptor;
-            
+
             // this method handles polymorphic type / changing tags
             if (this.metadataFieldDescriptor != null)
             {
@@ -1068,21 +1463,26 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
         }
         else
         {
-          warning("Ignoring <" + fieldName + "> because no corresponding MetadataFieldDescriptor can be found.");
+          warning("Ignoring <"
+                  + fieldName
+                  + "> because no corresponding MetadataFieldDescriptor can be found.");
         }
       }
     }
     return metadataFieldDescriptor;
   }
 
-  private void customizeFieldDescriptorInClass(SimplTypesScope metadataTScope, MetadataClassDescriptor metadataClassDescriptor)
+  private void customizeFieldDescriptorInClass(SimplTypesScope metadataTScope,
+                                               MetadataClassDescriptor metadataClassDescriptor)
   {
-    MetadataFieldDescriptor oldFD = metadataClassDescriptor.getFieldDescriptorByFieldName(this.getFieldNameInJava(false)); // oldFD is the non-wrapper one
+    MetadataFieldDescriptor oldFD = metadataClassDescriptor.getFieldDescriptorByFieldName(this
+        .getFieldNameInJava(false)); // oldFD is the non-wrapper one
     String newTagName = this.metadataFieldDescriptor.getTagName();
-    
+
     metadataClassDescriptor.replace(oldFD, this.metadataFieldDescriptor);
-    
-    MetadataFieldDescriptor wrapperFD = (MetadataFieldDescriptor) this.metadataFieldDescriptor.getWrapper();
+
+    MetadataFieldDescriptor wrapperFD = (MetadataFieldDescriptor) this.metadataFieldDescriptor
+        .getWrapper();
     if (wrapperFD != null)
     {
       MetadataFieldDescriptor clonedWrapperFD = wrapperFD.clone();
@@ -1090,7 +1490,7 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
       clonedWrapperFD.setWrappedFD(this.metadataFieldDescriptor);
       metadataClassDescriptor.replace(wrapperFD, clonedWrapperFD);
     }
-    
+
     FieldType fieldType = this.metadataFieldDescriptor.getType();
     if (fieldType == FieldType.COLLECTION_ELEMENT || fieldType == FieldType.MAP_ELEMENT)
     {
@@ -1104,67 +1504,6 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
   }
 
   /**
-   * this class encapsulate the clone-on-write behavior of metadata field descriptor associated
-   * with this field.
-   * 
-   * @author quyin
-   *
-   */
-  protected class MetadataFieldDescriptorProxy
-  {
-    
-    boolean fieldDescriptorCloned = false;
-
-    private void cloneFieldDescriptorOnWrite()
-    {
-      if (!fieldDescriptorCloned)
-      {
-        MetaMetadataField.this.metadataFieldDescriptor = MetaMetadataField.this.metadataFieldDescriptor.clone();
-        fieldDescriptorCloned = true;
-      }
-    }
-
-    public void setTagName(String newTagName)
-    {
-      if (newTagName != null && !newTagName.equals(MetaMetadataField.this.metadataFieldDescriptor.getTagName()))
-      {
-        cloneFieldDescriptorOnWrite();
-        MetaMetadataField.this.metadataFieldDescriptor.setTagName(newTagName);
-      }
-    }
-
-    public void setElementClassDescriptor(MetadataClassDescriptor metadataClassDescriptor)
-    {
-      if (metadataClassDescriptor != MetaMetadataField.this.metadataFieldDescriptor.getElementClassDescriptor())
-      {
-        cloneFieldDescriptorOnWrite();
-        MetaMetadataField.this.metadataFieldDescriptor.setElementClassDescriptor(metadataClassDescriptor);
-      }
-    }
-
-    public void setCollectionOrMapTagName(String childTag)
-    {
-      if (childTag != null && !childTag.equals(MetaMetadataField.this.metadataFieldDescriptor.getCollectionOrMapTagName()))
-      {
-        cloneFieldDescriptorOnWrite();
-        MetaMetadataField.this.metadataFieldDescriptor.setCollectionOrMapTagName(childTag);
-      }
-    }
-
-    public void setWrapped(boolean wrapped)
-    {
-      if (wrapped != MetaMetadataField.this.metadataFieldDescriptor.isWrapped())
-      {
-        cloneFieldDescriptorOnWrite();
-        MetaMetadataField.this.metadataFieldDescriptor.setWrapped(wrapped);
-      }
-    }
-    
-  }
-  
-  private MetadataFieldDescriptorProxy fieldDescriptorProxy;
-  
-  /**
    * this method customizes field descriptor for this field, e.g. specific type or tag.
    * 
    * @param metadataTScope
@@ -1172,101 +1511,17 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
    * @param fdProxy
    *          the current metadata field descriptor.
    */
-  protected void customizeFieldDescriptor(SimplTypesScope metadataTScope, MetadataFieldDescriptorProxy fdProxy)
+  protected void customizeFieldDescriptor(SimplTypesScope metadataTScope,
+                                          MetadataFieldDescriptorProxy fdProxy)
   {
     fdProxy.setTagName(this.getTagOrName());
   }
 
   /**
-   * get the type name of this field, in terms of meta-metadata.
    * 
-   * TODO redefining this.
-   * 
-   * @return the type name.
+   * @param deserializationMM
+   * @return true if binding succeeds
    */
-  abstract protected String getTypeName();
-
-  /**
-   * @return the meta-metadata field object from which this field inherits.
-   */
-  public MetaMetadataField getInheritedField()
-  {
-    return inheritedField;
-  }
-  
-  void setInheritedField(MetaMetadataField inheritedField)
-  {
-//    debug("setting " + this + ".inheritedField to " + inheritedField);
-    this.inheritedField = inheritedField;
-  }
-  
-  public FieldType getFieldType()
-  {
-    if (this.metadataFieldDescriptor != null)
-      return metadataFieldDescriptor.getType();
-    else
-    {
-      if (this instanceof MetaMetadataCompositeField)
-        return FieldType.COMPOSITE_ELEMENT;
-      else if (this instanceof MetaMetadataCollectionField)
-      {
-        MetaMetadataCollectionField coll = (MetaMetadataCollectionField) this;
-        if (coll.getChildScalarType() != null)
-        {
-          return FieldType.COLLECTION_SCALAR;
-        }
-        else
-        {
-          return FieldType.COLLECTION_ELEMENT;
-        }
-      }
-      else
-      {
-        return FieldType.SCALAR;
-      }
-    }
-  }
-
-  public String getAsNaturalId()
-  {
-    return asNaturalId;
-  }
-  
-  public boolean isRequired()
-  {
-    return required;
-  }
-  
-  public String getFormat()
-  {
-    return format;
-  }
-  
-  public boolean dontSerialize()
-  {
-    return dontSerialize;
-  }
-
-  public String getSchemaOrgItemprop()
-  {
-    return schemaOrgItemprop;
-  }
-  
-  public MetaMetadata getDeclaringMmd()
-  {
-    return declaringMmd;
-  }
-
-  void setDeclaringMmd(MetaMetadata declaringMmd)
-  {
-    this.declaringMmd = declaringMmd;
-  }
-
-/**
- * 
- * @param deserializationMM
- * @return  true if binding succeeds
- */
   public boolean validateMetaMetadataToMetadataBinding(MetaMetadataField deserializationMM)
   {
     if (deserializationMM != null) // should be always
@@ -1283,11 +1538,13 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
       boolean sameMetadataSubclass = originalClassDescriptor.equals(deserializationClassDescriptor);
       // if they have the same metadataClassDescriptor, they can be of the same type, or one
       // of them is using "type=" attribute.
-      boolean useMmdFromDeserialization = sameMetadataSubclass && (deserializationMM.getType() != null);
+      boolean useMmdFromDeserialization = sameMetadataSubclass
+                                          && (deserializationMM.getType() != null);
       if (!useMmdFromDeserialization && !sameMetadataSubclass)
         // if they have different metadataClassDescriptor, need to choose the more specific one
-        useMmdFromDeserialization = originalClassDescriptor.getDescribedClass().isAssignableFrom(
-            deserializationClassDescriptor.getDescribedClass());
+        useMmdFromDeserialization = originalClassDescriptor.getDescribedClass()
+            .isAssignableFrom(
+                              deserializationClassDescriptor.getDescribedClass());
       return useMmdFromDeserialization;
     }
     else
@@ -1296,184 +1553,55 @@ implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneab
       return false;
     }
   }
-  
-  abstract public MetadataFieldDescriptor findOrGenerateMetadataFieldDescriptor(SimplTypesScope tscope, MetadataClassDescriptor contextCd);
 
-  public String getOtherTags()
+  protected String generateNewClassName()
   {
-    return otherTags;
-  }
-  public String getSchemaOrgItemtype()
-  {
-    return null;
-  }
+    String javaClassName = null;
 
-  public boolean isExtractAsHtml()
-  {
-    return extractAsHtml;
-  }
+    if (this instanceof MetaMetadataCollectionField)
+    {
+      javaClassName = ((MetaMetadataCollectionField) this).getChildType();
+    }
+    else
+    {
+      javaClassName = ((MetaMetadataCompositeField) this).getTypeOrName();
+    }
 
-  public void setExtractAsHtml(boolean extractAsHtml)
-  {
-    this.extractAsHtml = extractAsHtml;
-  }
-
-  public boolean isAuthoredChildOf(MetaMetadataField parentField)
-  {
-    if (parentField instanceof MetaMetadataCompositeField && this.parent() == parentField)
-      return true;
-    if (parentField instanceof MetaMetadataCollectionField
-        && this.parent() == ((MetaMetadataCollectionField) parentField).getChildComposite())
-      return true;
-    return false;
-  }
-
-  public boolean isUsedForInlineMmdDef()
-  {
-    return usedForInlineMmdDef;
-  }
-
-  public void setUsedForInlineMmdDef(boolean usedForInlineMmdDef)
-  {
-    this.usedForInlineMmdDef = usedForInlineMmdDef;
+    return javaClassName;
   }
 
   /**
-   * @return FieldOps.
+   * get the type name of this field, in terms of meta-metadata.
+   * 
+   * TODO redefining this.
+   * 
+   * @return the type name.
    */
-  public List<FieldOp> getFieldOps()
-  {
-    return fieldOps;
-  }
-  
-  public MmdGenericTypeVarScope getMetaMetadataGenericTypeVarScope()
-  {
-    return genericTypeVars;
-  }
-  
-  static Collection<MmdGenericTypeVar> EMPTY_GENERIC_TYPE_VAR_COLLECTION = new ArrayList<MmdGenericTypeVar>();
-  
-  public Collection<MmdGenericTypeVar> getMetaMetadataGenericTypeVars()
-  {
-    return genericTypeVars == null ? EMPTY_GENERIC_TYPE_VAR_COLLECTION : genericTypeVars.values();
-  }
+  abstract protected String getTypeName();
 
-  public boolean isHideLabel() {
-    return hideLabel;
-  }
+  /**
+   * generate java type name string. since type name will be used for several times (both in member
+   * definition and methods), it should be cached.
+   * 
+   * note that this could be different from changing getTypeName() into camel case: consider Entity
+   * for composite fields or ArrayList for collection fields.
+   */
+  abstract protected String getTypeNameInJava();
 
-  public String getUseValueAsLabel() {
-    return useValueAsLabel;
-  }
+  abstract public MetadataFieldDescriptor findOrGenerateMetadataFieldDescriptor(SimplTypesScope tscope,
+                                                                                MetadataClassDescriptor contextCd);
 
-  public String getConcatenatesTo() {
-    return concatenatesTo;
-  }
-
-  public String getLabelAt() {
-    return labelAt;
-  }
-  
-	/**
-	 * NOTE: This is not Object.getHashCode()!
-	 * 
-	 * @return A hash that is used for versioning.
-	 */
-  public String getHashForExtraction()
-  {
-    if (hashForExtraction == null)
-    {
-      synchronized (this)
-      {
-        if (hashForExtraction == null)
-        {
-          hashForExtractionInProgress = true;
-          String fp = getFingerprintString();
-          byte[] bytes = Utils.secureHashBytes(fp);
-          hashForExtraction = Utils.base64urlEncode(bytes);
-          hashForExtractionInProgress = false;
-        }
-      }
-    }
-    
-    return hashForExtraction;
-  }
-	
-  protected String getFingerprintString()
-  {
-    StringBuilder sb = StringBuilderUtils.acquire();
-    addToFp(sb, name);
-    addToFp(sb, required);
-    addToFp(sb, tag);
-    addToFp(sb, schemaOrgItemprop);
-    addToFp(sb, contextNode);
-    addToFp(sb, extractAsHtml);
-    addToFp(sb, fieldParserKey);
-    addToFp(sb, format);
-    addCollectionToFp(sb, xpaths);
-    addCollectionToFp(sb, fieldOps);
-    for (MetaMetadataField field : kids)
-    {
-      if (field.hashForExtractionInProgress)
-      {
-        addToFp(sb, "self ref to " + field.name);
-      }
-      else
-      {
-        sb.append(field.name).append(" : ");
-        addToFp(sb, field.getHashForExtraction());
-      }
-    }
-    
-    String fp = sb.toString();
-    StringBuilderUtils.release(sb);
-    return fp;
-  }
-  
-  protected void addToFp(StringBuilder fpBuilder, Object obj)
-  {
-    fpBuilder.append(obj).append("\n");
-  }
-  
-  protected void addCollectionToFp(StringBuilder fpBuilder, Collection collection)
-  {
-    if (collection != null)
-    {
-      for (Object obj : collection)
-      {
-        addToFp(fpBuilder, obj);
-      }
-    }
-  }
-  
-  public MetaMetadataField clone()
-  {
-    try
-    {
-      MetaMetadataField cloned = (MetaMetadataField) super.clone();
-      cloned.clonedFrom = this;
-      cloned.toString = null;
-      cloned.inheritFinished = false;
-      cloned.inheritInProcess = false;
-      
-      if (clonedBy == null)
-      {
-        clonedBy = new ArrayList<MetaMetadataField>();
-      }
-      clonedBy.add(cloned);
-
-      return cloned;
-    }
-    catch (CloneNotSupportedException e)
-    {
-      logger.error("Cannot clone " + this, e);
-    }
-    return null;
-  }
-
-  public MetaMetadataField getClonedFrom()
-  {
-    return clonedFrom;
-  }
+  /**
+   * Add additional meta information about the field to an existing meta information list.
+   * 
+   * @param metaInfoBuf
+   *          The existing meta information list. Additional meta information will be added to this
+   *          list. Cannot be null.
+   * @param compiler
+   *          Providing compiler services such as dependency handling, in case needed in this
+   *          method. This is not used right now; just for extensibility.
+   */
+  abstract public void addAdditionalMetaInformation(List<MetaInformation> metaInfoBuf,
+                                                    MmdCompilerService compiler);
 
 }

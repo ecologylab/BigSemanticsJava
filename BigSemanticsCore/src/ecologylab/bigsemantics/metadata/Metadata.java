@@ -464,7 +464,7 @@ ISimplSerializationPre, ISimplDeserializationPost
 		if (metaMetadata instanceof MetaMetadata)
 			this.metaMetadata = (MetaMetadata) metaMetadata;
 		else
-			this.metaMetadata = metaMetadata.getInheritedMmd();
+			this.metaMetadata = metaMetadata.getTypeMmd();
 		
 		String metaMetadataName = this.metaMetadata.getName();
 		this.setMetaMetadataNameMetadata(new MetadataString(metaMetadataName));
@@ -912,7 +912,7 @@ ISimplSerializationPre, ISimplDeserializationPost
 			if (compositeMmd instanceof MetaMetadata)
 				schemaOrgItemtype = compositeMmd.getSchemaOrgItemtype();
 			else
-				schemaOrgItemtype = compositeMmd.getInheritedMmd().getSchemaOrgItemtype();
+				schemaOrgItemtype = compositeMmd.getTypeMmd().getSchemaOrgItemtype();
 			if (schemaOrgItemtype != null)
 				htmlTable.setSchemaOrgItemType(schemaOrgItemtype);
 			
@@ -925,7 +925,7 @@ ISimplSerializationPre, ISimplDeserializationPost
 				if (!mmdField.isHide())
 				{
 					FieldType type = childFD.getType();
-					String textCssClass = mmdField.getStyle();
+					String textCssClass = mmdField.getStyleName();
 					if (MetadataConstants.DEFAULT.equals(textCssClass))
 							textCssClass		= MetadataConstants.METADATA_TEXT;
 					if (type == FieldType.SCALAR)
@@ -1154,7 +1154,7 @@ ISimplSerializationPre, ISimplDeserializationPost
 			String mmdName = mmcf.getTypeName();
 			mmd = repository.getMMByName(mmdName);
 		}
-		MetaMetadataField field = mmd.getNaturalIdFields().get(naturalId);
+		MetaMetadataField field = mmd.getNaturalIdField(naturalId);
 		MetadataFieldDescriptor fd = field.getMetadataFieldDescriptor();
 		String valueString = fd.getValueString(this);
 		String format = field.getFormat();

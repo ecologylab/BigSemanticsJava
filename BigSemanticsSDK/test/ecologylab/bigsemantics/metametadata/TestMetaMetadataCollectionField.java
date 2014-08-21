@@ -37,8 +37,8 @@ public class TestMetaMetadataCollectionField
     MetaMetadataCollectionField collection =
         (MetaMetadataCollectionField) mmdScope.deserialize(xml, StringFormat.XML);
     assertNotNull(collection);
-    assertNotNull(collection.childScalarType);
-    assertTrue(collection.childScalarType instanceof MetadataStringScalarType);
+    assertNotNull(collection.getChildScalarType());
+    assertTrue(collection.getChildScalarType() instanceof MetadataStringScalarType);
   }
 
 }
