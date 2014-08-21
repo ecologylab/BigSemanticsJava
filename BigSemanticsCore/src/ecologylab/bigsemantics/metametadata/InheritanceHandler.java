@@ -3,6 +3,7 @@ package ecologylab.bigsemantics.metametadata;
 import java.util.List;
 import java.util.Stack;
 
+import ecologylab.bigsemantics.metametadata.declarations.MetaMetadataFieldDeclaration;
 import ecologylab.collections.MultiAncestorScope;
 import ecologylab.generic.Debug;
 import ecologylab.generic.StringTools;
@@ -74,9 +75,9 @@ public class InheritanceHandler implements InheritanceComponentNames, Cloneable
 		scope.putIfValueNotNull(GENERIC_TYPE_VAR_SCOPE, mmField.getGenericTypeVars());
 	}
 
-	void pop(MetaMetadataField mmField)
+	void pop(MetaMetadataFieldDeclaration mmField)
 	{
-		MetaMetadataField field = mmStack.pop();
+		MetaMetadataFieldDeclaration field = mmStack.pop();
 		Debug.println(this, "popping " + field);
 		scopeStack.pop();
 		assert (mmField == field);
@@ -109,7 +110,7 @@ public class InheritanceHandler implements InheritanceComponentNames, Cloneable
 		if (mmdName == null)
 			return null;
 		MetaMetadata result = null;
-		MetaMetadataField field = mmStack.peek();
+		MetaMetadataFieldDeclaration field = mmStack.peek();
 		if (nameType != null && nameType.length > 0)
 			nameType[0] = NameType.NONE;
 		

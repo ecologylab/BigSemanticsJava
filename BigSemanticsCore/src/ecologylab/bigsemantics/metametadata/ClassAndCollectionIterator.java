@@ -8,6 +8,7 @@ import java.util.Iterator;
 import ecologylab.bigsemantics.metadata.Metadata;
 import ecologylab.bigsemantics.metadata.MetadataBase;
 import ecologylab.bigsemantics.metadata.MetadataFieldDescriptor;
+import ecologylab.bigsemantics.metametadata.declarations.MetaMetadataFieldDeclaration;
 
 /**
  * Iterates through a Collection of things, and then through an Iterator of such (nested)
@@ -27,11 +28,11 @@ public class ClassAndCollectionIterator implements Iterator<MetadataBase>
 
 	private Iterator<MetadataBase>			collectionIterator;
 
-	private MetaMetadataField						root;
+	private MetaMetadataFieldDeclaration						root;
 
 	private MetadataBase								currentObject;
 
-	private MetaMetadataField						currentMMField;
+	private MetaMetadataFieldDeclaration						currentMMField;
 
 	private Metadata										metadata;
 	
@@ -171,7 +172,7 @@ public class ClassAndCollectionIterator implements Iterator<MetadataBase>
 		return iterator.hasNext() || (collectionIterator != null && collectionIterator.hasNext());
 	}
 
-	public MetaMetadataField getCurrentMMField()
+	public MetaMetadataFieldDeclaration getCurrentMMField()
 	{
 		return currentMMField;
 	}

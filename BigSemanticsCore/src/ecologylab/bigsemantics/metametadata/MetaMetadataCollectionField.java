@@ -9,6 +9,7 @@ import ecologylab.bigsemantics.metadata.MetadataFieldDescriptor;
 import ecologylab.bigsemantics.metadata.scalar.types.MetadataParsedURLScalarType;
 import ecologylab.bigsemantics.metadata.scalar.types.MetadataScalarType;
 import ecologylab.bigsemantics.metametadata.MetaMetadataCompositeField.AttributeChangeListener;
+import ecologylab.bigsemantics.metametadata.declarations.MetaMetadataFieldDeclaration;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.generic.StringTools;
 import ecologylab.serialization.ClassDescriptor;
@@ -212,7 +213,7 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
     {
       return true;
     }
-    MetaMetadataField superField = getSuperField();
+    MetaMetadataFieldDeclaration superField = getSuperField();
     if (superField != null)
     {
       return ((MetaMetadataCollectionField) superField).isCollectionOfScalars();
@@ -499,7 +500,7 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
         HashMapArrayList<String, MetaMetadataField> childsKids = childComposite.getChildrenMap();
         this.setChildrenMap(childsKids);
         if (childsKids != null)
-          for (MetaMetadataField field : childsKids)
+          for (MetaMetadataFieldDeclaration field : childsKids)
           {
             field.setParent(this);
             if (field instanceof MetaMetadataNestedField)

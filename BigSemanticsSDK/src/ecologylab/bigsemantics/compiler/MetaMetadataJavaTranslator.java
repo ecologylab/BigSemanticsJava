@@ -15,6 +15,7 @@ import ecologylab.bigsemantics.metametadata.MetaMetadataRepository;
 import ecologylab.bigsemantics.metametadata.MetaMetadataScalarField;
 import ecologylab.bigsemantics.metametadata.MmdCompilerService;
 import ecologylab.bigsemantics.metametadata.MmdGenericTypeVar;
+import ecologylab.bigsemantics.metametadata.declarations.MetaMetadataFieldDeclaration;
 import ecologylab.bigsemantics.metametadata.exceptions.MetaMetadataException;
 import ecologylab.bigsemantics.namesandnums.SemanticsNames;
 import ecologylab.generic.Debug;
@@ -107,7 +108,7 @@ public class MetaMetadataJavaTranslator extends JavaTranslator implements MmdCom
 		if (fieldDescriptor.getCollectionType() != null)
 			return; // should have been handled by MetadataFieldDescriptor.getJavaType()
 		MetadataFieldDescriptor mdFD = (MetadataFieldDescriptor) fieldDescriptor;
-		MetaMetadataField field = mdFD.getDefiningMmdField();
+		MetaMetadataFieldDeclaration field = mdFD.getDefiningMmdField();
 		if (field instanceof MetaMetadataNestedField)
 		{
 			MetaMetadataNestedField nestedField = (MetaMetadataNestedField) field;

@@ -16,6 +16,7 @@ import ecologylab.bigsemantics.metametadata.MetaMetadataNestedField;
 import ecologylab.bigsemantics.metametadata.MetaMetadataRepository;
 import ecologylab.bigsemantics.metametadata.MmdCompilerService;
 import ecologylab.bigsemantics.metametadata.MmdGenericTypeVar;
+import ecologylab.bigsemantics.metametadata.declarations.MetaMetadataFieldDeclaration;
 import ecologylab.bigsemantics.namesandnums.SemanticsNames;
 import ecologylab.generic.Debug;
 import ecologylab.generic.StringTools;
@@ -224,7 +225,7 @@ public class MetaMetadataDotNetTranslator extends DotNetTranslator implements Mm
 		if (fieldDescriptor.getCollectionType() != null)
 			return; // should have been handled by MetadataFieldDescriptor.getJavaType()
 		MetadataFieldDescriptor mdFD = (MetadataFieldDescriptor) fieldDescriptor;
-		MetaMetadataField field = mdFD.getDefiningMmdField();
+		MetaMetadataFieldDeclaration field = mdFD.getDefiningMmdField();
 		if (field instanceof MetaMetadataNestedField)
 		{
 			MetaMetadataNestedField nestedField = (MetaMetadataNestedField) field;

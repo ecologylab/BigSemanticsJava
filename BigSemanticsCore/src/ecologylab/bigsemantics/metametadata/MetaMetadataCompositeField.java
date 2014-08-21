@@ -9,6 +9,7 @@ import ecologylab.bigsemantics.metadata.MetadataClassDescriptor;
 import ecologylab.bigsemantics.metadata.MetadataFieldDescriptor;
 import ecologylab.bigsemantics.metametadata.InheritanceHandler.NameType;
 import ecologylab.bigsemantics.metametadata.MetaMetadata.Visibility;
+import ecologylab.bigsemantics.metametadata.declarations.MetaMetadataFieldDeclaration;
 import ecologylab.bigsemantics.metametadata.exceptions.MetaMetadataException;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.generic.ReflectionTools;
@@ -90,7 +91,7 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
     this.setName(name);
     this.getChildrenMap().clear();
     this.getChildrenMap().putAll(kids);
-    for (MetaMetadataField kid : kids)
+    for (MetaMetadataFieldDeclaration kid : kids)
     {
       kid.setParent(this);
     }
@@ -224,7 +225,7 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
   }
 
   @Override
-  protected void setTag(String tag)
+  public void setTag(String tag)
   {
     super.setTag(tag);
     if (attributeChangeListener != null)
@@ -242,7 +243,7 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
   }
 
   @Override
-  protected void setUsedToDefineInlineMmd(boolean usedForInlineMmdDef)
+  public void setUsedToDefineInlineMmd(boolean usedForInlineMmdDef)
   {
     super.setUsedToDefineInlineMmd(usedForInlineMmdDef);
     if (this.attributeChangeListener != null)
@@ -537,7 +538,7 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
       for (MetaMetadataField field : inheritedStructure.getChildrenMap())
       {
         String fieldName = field.getName();
-        MetaMetadataField fieldLocal = this.getChildrenMap().get(fieldName);
+        MetaMetadataFieldDeclaration fieldLocal = this.getChildrenMap().get(fieldName);
         if (fieldLocal == null)
         {
           this.getChildrenMap().put(fieldName, field);
@@ -546,8 +547,8 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
     }
   }
 
-  protected String determineMoreSpecificChildType(MetaMetadataField fieldLocal,
-                                                  MetaMetadataField field)
+  protected String determineMoreSpecificChildType(MetaMetadataFieldDeclaration fieldLocal,
+                                                  MetaMetadataFieldDeclaration field)
   {
     String childType = null;
     if (fieldLocal instanceof MetaMetadataCollectionField
@@ -575,7 +576,7 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
     return childType;
   }
 
-  protected String determineMoreSpecificType(MetaMetadataField fieldLocal, MetaMetadataField field)
+  protected String determineMoreSpecificType(MetaMetadataFieldDeclaration fieldLocal, MetaMetadataFieldDeclaration field)
   {
     String type = null;
     if (fieldLocal instanceof MetaMetadataCompositeField

@@ -19,6 +19,7 @@ import ecologylab.bigsemantics.metametadata.MetaMetadataField;
 import ecologylab.bigsemantics.metametadata.MetaMetadataNestedField;
 import ecologylab.bigsemantics.metametadata.MmdCompilerService;
 import ecologylab.bigsemantics.metametadata.MmdGenericTypeVar;
+import ecologylab.bigsemantics.metametadata.declarations.MetaMetadataFieldDeclaration;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.FieldDescriptor;
 import ecologylab.serialization.FieldType;
@@ -86,9 +87,16 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 		checkScalarType();
 	}
 	
-	public MetadataFieldDescriptor(MetaMetadataField definingMmdField, String tagName, String comment, FieldType type, ClassDescriptor elementClassDescriptor,
-			ClassDescriptor declaringClassDescriptor, String fieldName, ScalarType scalarType,
-			Hint xmlHint, String fieldType)
+  public MetadataFieldDescriptor(MetaMetadataField definingMmdField,
+                                 String tagName,
+                                 String comment,
+                                 FieldType type,
+                                 ClassDescriptor elementClassDescriptor,
+                                 ClassDescriptor declaringClassDescriptor,
+                                 String fieldName,
+                                 ScalarType scalarType,
+                                 Hint xmlHint,
+                                 String fieldType)
 	{
 		super(tagName, comment, type, elementClassDescriptor, declaringClassDescriptor, fieldName, scalarType, xmlHint, fieldType);
 		this.isMixin = false;

@@ -10,6 +10,7 @@ import ecologylab.bigsemantics.metadata.MetadataClassDescriptor;
 import ecologylab.bigsemantics.metadata.MetadataFieldDescriptor;
 import ecologylab.bigsemantics.metadata.scalar.types.MetadataScalarType;
 import ecologylab.bigsemantics.metadata.scalar.types.MetadataStringScalarType;
+import ecologylab.bigsemantics.metametadata.declarations.MetaMetadataFieldDeclaration;
 import ecologylab.bigsemantics.metametadata.exceptions.MetaMetadataException;
 import ecologylab.serialization.FieldType;
 import ecologylab.serialization.MetaInformation;
@@ -151,10 +152,10 @@ public class MetaMetadataScalarField extends MetaMetadataField
     {
       synchronized (this)
       {
-        MetaMetadataField field = this;
+        MetaMetadataFieldDeclaration field = this;
         while (!(field instanceof MetaMetadata))
         {
-          field = (MetaMetadataField) field.parent();
+          field = (MetaMetadataFieldDeclaration) field.parent();
         }
         MetaMetadata mmd = (MetaMetadata) field;
         metaMetadataParser = mmd.getParser();

@@ -14,6 +14,7 @@ import ecologylab.bigsemantics.html.utils.StringBuilderUtils;
 import ecologylab.bigsemantics.metadata.Metadata;
 import ecologylab.bigsemantics.metadata.MetadataClassDescriptor;
 import ecologylab.bigsemantics.metadata.MetadataFieldDescriptor;
+import ecologylab.bigsemantics.metametadata.declarations.MetaMetadataFieldDeclaration;
 import ecologylab.bigsemantics.metametadata.exceptions.MetaMetadataException;
 import ecologylab.generic.ReflectionTools;
 import ecologylab.net.ParsedURL;

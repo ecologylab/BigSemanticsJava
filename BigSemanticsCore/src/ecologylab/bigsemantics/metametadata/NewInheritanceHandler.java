@@ -2,6 +2,7 @@ package ecologylab.bigsemantics.metametadata;
 
 import java.util.ArrayList;
 
+import ecologylab.bigsemantics.metametadata.declarations.MetaMetadataFieldDeclaration;
 import ecologylab.serialization.FieldType;
 
 /**
@@ -18,17 +19,17 @@ public class NewInheritanceHandler
     stack.add(field);
   }
   
-  public MetaMetadataField pop()
+  public MetaMetadataFieldDeclaration pop()
   {
     return stack.remove(stack.size() - 1);
   }
   
-  public MetaMetadataField top()
+  public MetaMetadataFieldDeclaration top()
   {
     return stack.get(stack.size() - 1);
   }
   
-  public int search(MetaMetadataField field)
+  public int search(MetaMetadataFieldDeclaration field)
   {
     for (int i = 0; i < stack.size(); ++i)
     {
@@ -74,7 +75,7 @@ public class NewInheritanceHandler
     return mmd.isInheritDone();
   }
   
-  public boolean mergeAttributes(MetaMetadataField field, MetaMetadataField superField)
+  public boolean mergeAttributes(MetaMetadataFieldDeclaration field, MetaMetadataField superField)
   {
     field.setSuperField(superField);
     
@@ -148,7 +149,7 @@ public class NewInheritanceHandler
     return null;
   }
 
-  private MetaMetadata findTypeMmd(MetaMetadataField field)
+  private MetaMetadata findTypeMmd(MetaMetadataFieldDeclaration field)
   {
     // TODO Auto-generated method stub
     return null;

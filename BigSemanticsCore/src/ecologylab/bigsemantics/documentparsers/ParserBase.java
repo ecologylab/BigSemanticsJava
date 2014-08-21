@@ -56,6 +56,7 @@ import ecologylab.bigsemantics.metametadata.MetaMetadataScalarField;
 import ecologylab.bigsemantics.metametadata.MetaMetadataValueField;
 import ecologylab.bigsemantics.metametadata.ScalarDependencyException;
 import ecologylab.bigsemantics.metametadata.ScalarDependencyManager;
+import ecologylab.bigsemantics.metametadata.declarations.MetaMetadataFieldDeclaration;
 import ecologylab.bigsemantics.namesandnums.DocumentParserTagNames;
 import ecologylab.collections.Scope;
 import ecologylab.generic.HashMapArrayList;
@@ -387,7 +388,7 @@ implements ScalarUnmarshallingContext, SemanticsConstants
         }
       }
 
-      for (MetaMetadataField field : fieldSet)
+      for (MetaMetadataFieldDeclaration field : fieldSet)
       {
         try
         {
@@ -452,7 +453,7 @@ implements ScalarUnmarshallingContext, SemanticsConstants
     }
   }
 
-  private MetaMetadataField getCurrentSurroundingField(Scope<Object> params)
+  private MetaMetadataFieldDeclaration getCurrentSurroundingField(Scope<Object> params)
   {
     Stack<MetaMetadataField> stack =
         (Stack<MetaMetadataField>) params.get(SURROUNDING_META_METADATA_STACK);
@@ -473,7 +474,7 @@ implements ScalarUnmarshallingContext, SemanticsConstants
    */
   private boolean fieldsetContainsFieldsWithDependencies(HashMapArrayList<String, MetaMetadataField> fieldSet)
   {
-    for (MetaMetadataField field : fieldSet)
+    for (MetaMetadataFieldDeclaration field : fieldSet)
     {
       if (field instanceof MetaMetadataScalarField)
       {
@@ -630,7 +631,7 @@ implements ScalarUnmarshallingContext, SemanticsConstants
     return result;
   }
 
-  private Node findContextNodeIfNecessary(MetaMetadataField mmdField, Node currentContextNode,
+  private Node findContextNodeIfNecessary(MetaMetadataFieldDeclaration mmdField, Node currentContextNode,
                                           Scope<Object> params)
   {
     String contextNodeName = mmdField.getContextNode();
@@ -667,7 +668,7 @@ implements ScalarUnmarshallingContext, SemanticsConstants
     String evaluation = null;
     if (contextNode != null)
     {
-      MetaMetadataField surroundingField = getCurrentSurroundingField(params);
+      MetaMetadataFieldDeclaration surroundingField = getCurrentSurroundingField(params);
 
       int i = 0;
       do

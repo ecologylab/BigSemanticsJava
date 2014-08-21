@@ -11,6 +11,7 @@ import ecologylab.bigsemantics.metadata.MetadataClassDescriptor;
 import ecologylab.bigsemantics.metadata.MetadataFieldDescriptor;
 import ecologylab.bigsemantics.metadata.mm_name;
 import ecologylab.bigsemantics.metadata.semantics_mixin;
+import ecologylab.bigsemantics.metametadata.declarations.MetaMetadataFieldDeclaration;
 import ecologylab.bigsemantics.metametadata.exceptions.MetaMetadataException;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.serialization.ClassDescriptor;
@@ -663,7 +664,7 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
     }
 
     if (this.getChildrenMap() != null)
-      for (MetaMetadataField f : this.getChildrenMap())
+      for (MetaMetadataFieldDeclaration f : this.getChildrenMap())
       {
         if (f instanceof MetaMetadataNestedField)
         {
@@ -684,7 +685,7 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 
   public void recursivelyRestoreChildComposite()
   {
-    for (MetaMetadataField field : this.getChildrenMap())
+    for (MetaMetadataFieldDeclaration field : this.getChildrenMap())
     {
       if (field instanceof MetaMetadataNestedField)
         ((MetaMetadataNestedField) field).recursivelyRestoreChildComposite();

@@ -18,6 +18,7 @@ import ecologylab.bigsemantics.html.utils.StringBuilderUtils;
 import ecologylab.bigsemantics.metadata.Metadata;
 import ecologylab.bigsemantics.metadata.MetadataClassDescriptor;
 import ecologylab.bigsemantics.metadata.MetadataFieldDescriptor;
+import ecologylab.bigsemantics.metametadata.declarations.MetaMetadataFieldDeclaration;
 import ecologylab.bigsemantics.metametadata.exceptions.MetaMetadataException;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.serialization.ClassDescriptor;
@@ -27,15 +28,12 @@ import ecologylab.serialization.MetaInformation;
 import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.annotations.simpl_collection;
-import ecologylab.serialization.annotations.simpl_composite;
 import ecologylab.serialization.annotations.simpl_descriptor_classes;
 import ecologylab.serialization.annotations.simpl_inherit;
 import ecologylab.serialization.annotations.simpl_map;
 import ecologylab.serialization.annotations.simpl_map_key_field;
 import ecologylab.serialization.annotations.simpl_nowrap;
-import ecologylab.serialization.annotations.simpl_scalar;
 import ecologylab.serialization.annotations.simpl_scope;
-import ecologylab.serialization.annotations.simpl_wrap;
 import ecologylab.serialization.types.ScalarType;
 import ecologylab.serialization.types.element.IMappable;
 import ecologylab.textformat.NamedStyle;
@@ -51,7 +49,7 @@ import ecologylab.textformat.NamedStyle;
 @simpl_inherit
 @simpl_descriptor_classes(
 { MetaMetadataClassDescriptor.class, MetaMetadataFieldDescriptor.class })
-public abstract class MetaMetadataField extends ElementState
+public abstract class MetaMetadataField extends MetaMetadataFieldDeclaration
     implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneable
 {
 
@@ -65,7 +63,7 @@ public abstract class MetaMetadataField extends ElementState
     public int compare(MetaMetadataField o1, MetaMetadataField o2)
     {
       // return negation for descending ordering in sort
-      return -Float.compare(o1.layer, o2.layer);
+      return -Float.compare(o1.getLayer(), o2.getLayer());
     }
 
   }
@@ -206,13 +204,6 @@ public abstract class MetaMetadataField extends ElementState
     logger = LoggerFactory.getLogger(MetaMetadataField.class);
   }
 
-  @simpl_scalar
-  private String                                      name;
-
-  @simpl_scalar
-  @mm_dont_inherit
-  private String                                      comment;
-
   /**
    * The nested child fields inside this field.
    */
@@ -221,109 +212,11 @@ public abstract class MetaMetadataField extends ElementState
   @simpl_nowrap
   private HashMapArrayList<String, MetaMetadataField> kids;
 
-  @simpl_scalar
-  private String                                      tag;
-
-  @simpl_scalar
-  private String                                      otherTags;
-
-  @simpl_collection("xpath")
-  @simpl_nowrap
-  private List<String>                                xpaths;
-
-  @simpl_scalar
-  private boolean                                     extractAsHtml;
-
-  /**
-   * Context node for xpath based extarction rules for this field. Default value is document root.
-   */
-  @simpl_scalar
-  @mm_dont_inherit
-  private String                                      contextNode;
-
-  /**
-   * Used in the field_parser mechanism, which takes a string as input and parse it into values
-   * indexed by keys.
-   * 
-   * This field indicates what key this field uses to decide the value for it inside a field_parser.
-   */
-  @simpl_scalar
-  private String                                      fieldParserKey;
-
-  /**
-   * schema.org microdata item_prop name.
-   */
-  @simpl_scalar
-  private String                                      schemaOrgItemprop;
-
-  /**
-   * if this field should be indexed in database representation, used by the ORM component.
-   */
-  @simpl_scalar
-  private boolean                                     indexed;
-
-  /**
-   * The name of natural id if this field is used as one.
-   */
-  @simpl_scalar
-  private String                                      asNaturalId;
-
-  /**
-   * The format of this field. Used for normalization. Currently, only used with natural ids.
-   */
-  @simpl_scalar
-  private String                                      format;
-
-  /**
-   * Indicate if this field is required for the upper level structure.
-   */
-  @simpl_scalar
-  private boolean                                     required;
-
-  /**
-   * if this field should be serialized.
-   */
-  @simpl_scalar
-  private boolean                                     dontSerialize;
-
-  /**
-   * if we should ignore this in the term vector.
-   */
-  @simpl_scalar
-  private boolean                                     ignoreInTermVector;
-
-  /**
-   * if we should ignore this field completely (which will cause ignoring of this field for both
-   * display and term vector).
-   */
-  @simpl_scalar
-  private boolean                                     ignoreCompletely;
-
   @simpl_collection
   @simpl_scope(FieldOpScope.NAME)
-  @simpl_nowrap
-  private List<FieldOp>                               fieldOps;
+  @simpl_nowrap List<FieldOp>                               fieldOps;
 
   // ////////////// Presentation Semantics Below ////////////////
-
-  /**
-   * true if this field should not be displayed in interactive in-context metadata
-   */
-  @simpl_scalar
-  private boolean                                     hide;
-
-  /**
-   * If true the field is shown even if its null or empty.
-   */
-  @simpl_scalar
-  @mm_dont_inherit
-  private boolean                                     alwaysShow;
-
-  /**
-   * name of a style.
-   */
-  @simpl_scalar
-  private String                                      styleName;
 
   /**
    * Collection of styles
@@ -332,96 +225,13 @@ public abstract class MetaMetadataField extends ElementState
   @simpl_nowrap
   private List<MetaMetadataStyle>                     styles;
 
-  /**
-   * Specifies the order in which a field is displayed in relation to other fields.
-   */
-  @simpl_scalar
-  private float                                       layer;
-
-  /**
-   * Another field name that this field navigates to (e.g. from a label in in-context metadata)
-   */
-  @simpl_scalar
-  private String                                      navigatesTo;
-
-  /**
-   * This MetaMetadataField shadows another field, so it is to be displayed instead of the other.It
-   * is kind of over-riding a field.
-   */
-  @simpl_scalar
-  private String                                      shadows;
-
-  /**
-   * The label to be used when visualizing this field. Name is used by default. This overrides name.
-   */
-  @simpl_scalar
-  private String                                      label;
-
-  /**
-   * if this field is used as a facet.
-   */
-  @simpl_scalar
-  private boolean                                     isFacet;
-
-  /**
-   * Hint for renderer to not label the extracted value in presentation
-   */
-  @simpl_scalar
-  private boolean                                     hideLabel;
-
-  /**
-   * Another field name whose value can be used as label for this field
-   */
-  @simpl_scalar
-  private String                                      useValueAsLabel;
-
-  /**
-   * Hint for renderer to concatenate this field to another
-   */
-  @simpl_scalar
-  private String                                      concatenatesTo;
-
-  /**
-   * Hint for renderer how to position label w.r.t. value
-   */
-  @simpl_scalar
-  private String                                      labelAt;
+  
 
   // ////////////// Members Below ////////////////
 
   private MetaMetadataRepository                      repository;
 
-  @simpl_scalar
-  @mm_dont_inherit
-  private boolean                                     inheritDone;
-
   private boolean                                     inheritOngoing;
-
-  /**
-   * From which field this one inherits. Could be null if this field is declared for the first time.
-   */
-  @simpl_composite
-  @simpl_scope(NestedMetaMetadataFieldTypesScope.NAME)
-  @simpl_wrap
-  @mm_dont_inherit
-  private MetaMetadataField                           superField            = null;
-
-  /**
-   * in which meta-metadata this field is declared.
-   */
-  @simpl_composite
-  @mm_dont_inherit
-  private MetaMetadata                                declaringMmd          = null;
-
-  /**
-   * If this field is used to define inline meta-metadata types.
-   * 
-   * This flag is used by extraction module to determine the true root element for child fields
-   * inside this field.
-   */
-  @simpl_scalar
-  @mm_dont_inherit
-  private boolean                                     usedToDefineInlineMmd = false;
 
   @simpl_map("generic_type_var")
   @simpl_map_key_field("name")
@@ -466,23 +276,17 @@ public abstract class MetaMetadataField extends ElementState
     kids = new HashMapArrayList<String, MetaMetadataField>();
   }
 
-  public MetaMetadataField(String name, HashMapArrayList<String, MetaMetadataField> children)
+  public MetaMetadataField(String name, HashMapArrayList<String, MetaMetadataField> childrenMap)
   {
-    this.name = name;
-    this.kids = children;
+    this.setName(name);
+    this.setChildrenMap(childrenMap);
   }
 
   protected MetaMetadataField(MetaMetadataField copy, String name)
   {
-    this();
-    this.name = name;
-    this.tag = copy.tag;
-    this.kids = copy.kids;
-  }
-
-  public String getName()
-  {
-    return name;
+    this.setName(name);
+    this.setTag(copy.getTag());
+    this.setChildrenMap(copy.getChildrenMap());
   }
 
   public String getType()
@@ -493,11 +297,6 @@ public abstract class MetaMetadataField extends ElementState
   public String getExtendsAttribute()
   {
     return null;
-  }
-
-  public String getComment()
-  {
-    return comment;
   }
 
   /**
@@ -560,6 +359,11 @@ public abstract class MetaMetadataField extends ElementState
     return childField.isAuthoredChildOf(this);
   }
 
+  public List<FieldOp> getFieldOps()
+  {
+    return fieldOps;
+  }
+
   /**
    * The (first) xpath of this field.
    * 
@@ -570,113 +374,9 @@ public abstract class MetaMetadataField extends ElementState
     return getXpath(0);
   }
 
-  public List<String> getXpaths()
-  {
-    return xpaths;
-  }
-
-  public int getXpathsSize()
-  {
-    return xpaths == null ? 0 : xpaths.size();
-  }
-
-  public String getXpath(int i)
-  {
-    if (xpaths == null || xpaths.size() == 0 || i > xpaths.size())
-    {
-      return null;
-    }
-    return xpaths.get(i);
-  }
-
-  public String getTag()
-  {
-    return tag;
-  }
-
-  public String getOtherTags()
-  {
-    return otherTags;
-  }
-
-  public boolean isExtractAsHtml()
-  {
-    return extractAsHtml;
-  }
-
-  public String getContextNode()
-  {
-    return contextNode;
-  }
-
-  public String getFieldParserKey()
-  {
-    return fieldParserKey;
-  }
-
   public String getSchemaOrgItemtype()
   {
     return null;
-  }
-
-  public String getSchemaOrgItemprop()
-  {
-    return schemaOrgItemprop;
-  }
-
-  public boolean isIndexed()
-  {
-    return indexed;
-  }
-
-  public String getAsNaturalId()
-  {
-    return asNaturalId;
-  }
-
-  public String getFormat()
-  {
-    return format;
-  }
-
-  public boolean isRequired()
-  {
-    return required;
-  }
-
-  public boolean isDontSerialize()
-  {
-    return dontSerialize;
-  }
-
-  public boolean isIgnoreInTermVector()
-  {
-    return ignoreInTermVector || isIgnoreCompletely();
-  }
-
-  public boolean isIgnoreCompletely()
-  {
-    return ignoreCompletely;
-  }
-
-  public List<FieldOp> getFieldOps()
-  {
-    return fieldOps;
-  }
-
-  public boolean isHide()
-  {
-    return hide || isIgnoreCompletely();
-  }
-
-  public boolean isAlwaysShow()
-  {
-    return alwaysShow;
-  }
-
-  public String getStyleName()
-  {
-    return styleName;
   }
 
   public List<MetaMetadataStyle> getStyles()
@@ -687,54 +387,10 @@ public abstract class MetaMetadataField extends ElementState
   public NamedStyle lookupStyle()
   {
     NamedStyle result = null;
+    String styleName = getStyleName();
     if (styleName != null)
       result = getRepository().lookupStyle(styleName);
     return (result != null) ? result : getRepository().getDefaultStyle();
-  }
-
-  public float getLayer()
-  {
-    return layer;
-  }
-
-  public String getNavigatesTo()
-  {
-    return navigatesTo;
-  }
-
-  public String getShadows()
-  {
-    return shadows;
-  }
-
-  public String getLabel()
-  {
-    return label;
-  }
-
-  public boolean isFacet()
-  {
-    return isFacet;
-  }
-
-  public boolean isHideLabel()
-  {
-    return hideLabel;
-  }
-
-  public String getUseValueAsLabel()
-  {
-    return useValueAsLabel;
-  }
-
-  public String getConcatenatesTo()
-  {
-    return concatenatesTo;
-  }
-
-  public String getLabelAt()
-  {
-    return labelAt;
   }
 
   public MetaMetadataRepository getRepository()
@@ -759,29 +415,9 @@ public abstract class MetaMetadataField extends ElementState
     return (MetaMetadataRepository) parent;
   }
 
-  public boolean isInheritDone()
-  {
-    return inheritDone;
-  }
-
   public boolean isInheritOngoing()
   {
     return inheritOngoing;
-  }
-
-  public MetaMetadataField getSuperField()
-  {
-    return superField;
-  }
-
-  public MetaMetadata getDeclaringMmd()
-  {
-    return declaringMmd;
-  }
-
-  public boolean isUsedToDefineInlineMmd()
-  {
-    return usedToDefineInlineMmd;
   }
 
   public MmdGenericTypeVarScope getGenericTypeVars()
@@ -933,25 +569,25 @@ public abstract class MetaMetadataField extends ElementState
   protected String getFingerprintString()
   {
     StringBuilder sb = StringBuilderUtils.acquire();
-    addToFp(sb, name);
-    addToFp(sb, required);
-    addToFp(sb, tag);
-    addToFp(sb, schemaOrgItemprop);
-    addToFp(sb, contextNode);
-    addToFp(sb, extractAsHtml);
-    addToFp(sb, fieldParserKey);
-    addToFp(sb, format);
-    addCollectionToFp(sb, xpaths);
+    addToFp(sb, getName());
+    addToFp(sb, isRequired());
+    addToFp(sb, getTag());
+    addToFp(sb, getSchemaOrgItemprop());
+    addToFp(sb, getContextNode());
+    addToFp(sb, isExtractAsHtml());
+    addToFp(sb, getFieldParserKey());
+    addToFp(sb, getFormat());
+    addCollectionToFp(sb, getXpaths());
     addCollectionToFp(sb, fieldOps);
     for (MetaMetadataField field : kids)
     {
       if (field.hashForExtractionOngoing)
       {
-        addToFp(sb, "self ref to " + field.name);
+        addToFp(sb, "self ref to " + field.getName());
       }
       else
       {
-        sb.append(field.name).append(" : ");
+        sb.append(field.getName()).append(" : ");
         addToFp(sb, field.getHashForExtraction());
       }
     }
@@ -985,7 +621,7 @@ public abstract class MetaMetadataField extends ElementState
     while (parent instanceof MetaMetadataField)
     {
       MetaMetadataField pf = (MetaMetadataField) parent;
-      result.insert(0, "<" + pf.name + ">");
+      result.insert(0, "<" + pf.getName() + ">");
       parent = parent.parent();
     }
     return result.toString();
@@ -997,7 +633,7 @@ public abstract class MetaMetadataField extends ElementState
     String result = toString;
     if (result == null)
     {
-      result = getClassSimpleName() + parentString() + "<" + name + ">";
+      result = getClassSimpleName() + parentString() + "<" + getName() + ">";
       toString = result;
     }
     return result;
@@ -1006,26 +642,6 @@ public abstract class MetaMetadataField extends ElementState
   public boolean isHashForExtractionOngoing()
   {
     return hashForExtractionOngoing;
-  }
-
-  protected void setName(String name)
-  {
-    this.name = name;
-  }
-
-  protected void setComment(String comment)
-  {
-    this.comment = comment;
-  }
-
-  protected void setTag(String tag)
-  {
-    this.tag = tag;
-  }
-
-  protected void setOtherTags(String otherTags)
-  {
-    this.otherTags = otherTags;
   }
 
   protected void setChildrenMap(HashMapArrayList<String, MetaMetadataField> childMetaMetadata)
@@ -1043,144 +659,9 @@ public abstract class MetaMetadataField extends ElementState
     this.repository = repository;
   }
 
-  protected void setExtractAsHtml(boolean extractAsHtml)
-  {
-    this.extractAsHtml = extractAsHtml;
-  }
-
-  protected void setContextNode(String contextNode)
-  {
-    this.contextNode = contextNode;
-  }
-
-  protected void setFieldParserKey(String fieldParserKey)
-  {
-    this.fieldParserKey = fieldParserKey;
-  }
-
-  protected void setSchemaOrgItemprop(String schemaOrgItemprop)
-  {
-    this.schemaOrgItemprop = schemaOrgItemprop;
-  }
-
-  protected void setIndexed(boolean indexed)
-  {
-    this.indexed = indexed;
-  }
-
-  protected void setAsNaturalId(String asNaturalId)
-  {
-    this.asNaturalId = asNaturalId;
-  }
-
-  protected void setFormat(String format)
-  {
-    this.format = format;
-  }
-
-  protected void setRequired(boolean required)
-  {
-    this.required = required;
-  }
-
-  protected void setDontSerialize(boolean dontSerialize)
-  {
-    this.dontSerialize = dontSerialize;
-  }
-
-  protected void setIgnoreInTermVector(boolean ignoreInTermVector)
-  {
-    this.ignoreInTermVector = ignoreInTermVector;
-  }
-
-  protected void setIgnoreCompletely(boolean ignoreCompletely)
-  {
-    this.ignoreCompletely = ignoreCompletely;
-  }
-
-  protected void setHide(boolean hide)
-  {
-    this.hide = hide;
-  }
-
-  protected void setAlwaysShow(boolean alwaysShow)
-  {
-    this.alwaysShow = alwaysShow;
-  }
-
-  protected void setStyleName(String styleName)
-  {
-    this.styleName = styleName;
-  }
-
-  protected void setLayer(float layer)
-  {
-    this.layer = layer;
-  }
-
-  protected void setNavigatesTo(String navigatesTo)
-  {
-    this.navigatesTo = navigatesTo;
-  }
-
-  protected void setShadows(String shadows)
-  {
-    this.shadows = shadows;
-  }
-
-  protected void setLabel(String label)
-  {
-    this.label = label;
-  }
-
-  protected void setFacet(boolean isFacet)
-  {
-    this.isFacet = isFacet;
-  }
-
-  protected void setHideLabel(boolean hideLabel)
-  {
-    this.hideLabel = hideLabel;
-  }
-
-  protected void setUseValueAsLabel(String useValueAsLabel)
-  {
-    this.useValueAsLabel = useValueAsLabel;
-  }
-
-  protected void setConcatenatesTo(String concatenatesTo)
-  {
-    this.concatenatesTo = concatenatesTo;
-  }
-
-  protected void setLabelAt(String labelAt)
-  {
-    this.labelAt = labelAt;
-  }
-
-  protected void setInheritDone(boolean inheritDone)
-  {
-    this.inheritDone = inheritDone;
-  }
-
   protected void setInheritOngoing(boolean inheritOngoing)
   {
     this.inheritOngoing = inheritOngoing;
-  }
-
-  protected void setSuperField(MetaMetadataField superField)
-  {
-    this.superField = superField;
-  }
-
-  protected void setDeclaringMmd(MetaMetadata declaringMmd)
-  {
-    this.declaringMmd = declaringMmd;
-  }
-
-  protected void setUsedToDefineInlineMmd(boolean usedToDefineInlineMmd)
-  {
-    this.usedToDefineInlineMmd = usedToDefineInlineMmd;
   }
 
   protected void setGenericTypeVars(MmdGenericTypeVarScope genericTypeVars)
@@ -1274,7 +755,7 @@ public abstract class MetaMetadataField extends ElementState
   @Deprecated
   public String getTagOrName()
   {
-    return tag != null ? tag : name;
+    return getTag() != null ? getTag() : getName();
   }
 
   /**
@@ -1284,12 +765,12 @@ public abstract class MetaMetadataField extends ElementState
   @Deprecated
   public String getTagForTypesScope()
   {
-    return tag != null ? tag : name;
+    return getTag() != null ? getTag() : getName();
   }
 
   public String resolveTag()
   {
-    return (tag != null) ? tag : name;
+    return getTag() != null ? getTag() : getName();
   }
 
   @Override
@@ -1302,7 +783,7 @@ public abstract class MetaMetadataField extends ElementState
   @Override
   public String key()
   {
-    return name;
+    return getName();
   }
 
   public FieldType getFieldType()
@@ -1354,8 +835,9 @@ public abstract class MetaMetadataField extends ElementState
           // on the sub-field, and overwrite is false.
           // 3. the value from the super-field is a default value.
           if (scalarType != null
-              && (overwrite || fieldDescriptor.isCollection() || scalarType.isDefaultValue(field,
-                                                                                           this))
+              && (overwrite
+                  || fieldDescriptor.isCollection()
+                  || scalarType.isDefaultValue(field, this))
               && !scalarType.isDefaultValue(field, inheritFrom))
           {
             Object value = field.get(inheritFrom);

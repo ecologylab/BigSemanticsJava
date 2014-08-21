@@ -27,6 +27,7 @@ import ecologylab.bigsemantics.metametadata.MetaMetadataField;
 import ecologylab.bigsemantics.metametadata.MetaMetadataNestedField;
 import ecologylab.bigsemantics.metametadata.MetaMetadataOneLevelNestingIterator;
 import ecologylab.bigsemantics.metametadata.MetaMetadataRepository;
+import ecologylab.bigsemantics.metametadata.declarations.MetaMetadataFieldDeclaration;
 import ecologylab.bigsemantics.model.text.CompositeTermVector;
 import ecologylab.bigsemantics.model.text.ITermVector;
 import ecologylab.bigsemantics.model.text.OrderedNormalizedTermVectorCache;
@@ -493,7 +494,7 @@ ISimplSerializationPre, ISimplDeserializationPost
 		{
 			MetadataBase mb = i.next();
 
-			MetaMetadataField currentMMField = i.getCurrentMMField();
+			MetaMetadataFieldDeclaration currentMMField = i.getCurrentMMField();
 			if (mb != null && !currentMMField.isIgnoreInTermVector()
 					&& !mb.ignoreInTermVector())
 			{
@@ -651,8 +652,8 @@ ISimplSerializationPre, ISimplDeserializationPost
 	public MetaMetadataOneLevelNestingIterator fullNonRecursiveMetaMetadataIterator(
 			MetaMetadataField metaMetadataField)
 	{
-		MetaMetadataField firstMetaMetadataField = (metaMetadataField != null) ? metaMetadataField
-				: metaMetadata;
+		MetaMetadataField firstMetaMetadataField =
+		    (metaMetadataField != null) ? metaMetadataField : metaMetadata;
 		return new MetaMetadataOneLevelNestingIterator(firstMetaMetadataField, this);
 	}
 
