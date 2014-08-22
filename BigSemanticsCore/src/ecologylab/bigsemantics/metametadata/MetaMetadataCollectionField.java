@@ -114,6 +114,7 @@ public class MetaMetadataCollectionField extends MetaMetadataCollectionFieldDecl
     MetaMetadataCompositeField composite =
         new MetaMetadataCompositeField(elementCompositeName, kids);
     composite.setParent(this);
+    composite.setEnclosingCollectionField(this);
 
     final MetaMetadataCollectionField thisField = this;
     composite.setAttributeChangeListener(new AttributeChangeListener()

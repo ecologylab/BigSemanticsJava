@@ -1,5 +1,6 @@
 package ecologylab.bigsemantics.metametadata.declarations;
 
+import ecologylab.bigsemantics.metametadata.MetaMetadataCollectionField;
 import ecologylab.bigsemantics.metametadata.MetaMetadataField;
 import ecologylab.bigsemantics.metametadata.MetaMetadataNestedField;
 import ecologylab.bigsemantics.metametadata.mm_dont_inherit;
@@ -13,7 +14,7 @@ public abstract class MetaMetadataCompositeFieldDeclaration extends MetaMetadata
    * The type/class of metadata object.
    */
   @simpl_scalar
-  private String  type;
+  private String                      type;
 
   /**
    * the extends attribute of a composite field / meta-metadata.
@@ -21,19 +22,21 @@ public abstract class MetaMetadataCompositeFieldDeclaration extends MetaMetadata
   @simpl_tag("extends")
   @simpl_scalar
   @mm_dont_inherit
-  private String  extendsAttribute;
+  private String                      extendsAttribute;
 
   @simpl_scalar
-  private String  userAgentName;
+  private String                      userAgentName;
 
   @simpl_scalar
-  private String  userAgentString;
+  private String                      userAgentString;
 
   /**
    * if this composite should be wrapped.
    */
   @simpl_scalar
-  private boolean wrap;
+  private boolean                     wrap;
+
+  private MetaMetadataCollectionField enclosingCollectionField;
 
   public MetaMetadataCompositeFieldDeclaration()
   {
@@ -45,15 +48,20 @@ public abstract class MetaMetadataCompositeFieldDeclaration extends MetaMetadata
     super(copy, name);
   }
 
-  @Override
-  public String getType()
+  public MetaMetadataCollectionField getEnclosingCollectionField()
   {
-    return type;
+    return enclosingCollectionField;
   }
 
   public String getExtendsAttribute()
   {
     return extendsAttribute;
+  }
+
+  @Override
+  public String getType()
+  {
+    return type;
   }
 
   public String getUserAgentName()
@@ -71,10 +79,20 @@ public abstract class MetaMetadataCompositeFieldDeclaration extends MetaMetadata
     }
     return userAgentString;
   }
-  
+
   public boolean isWrap()
   {
     return wrap;
+  }
+
+  public void setEnclosingCollectionField(MetaMetadataCollectionField enclosingCollectionField)
+  {
+    this.enclosingCollectionField = enclosingCollectionField;
+  }
+
+  public void setExtendsAttribute(String extendsAttribute)
+  {
+    this.extendsAttribute = extendsAttribute;
   }
 
   public void setType(String type)
@@ -82,9 +100,19 @@ public abstract class MetaMetadataCompositeFieldDeclaration extends MetaMetadata
     this.type = type;
   }
 
-  public void setExtendsAttribute(String extendsAttribute)
+  public void setUserAgentName(String userAgentName)
   {
-    this.extendsAttribute = extendsAttribute;
+    this.userAgentName = userAgentName;
+  }
+
+  public void setUserAgentString(String userAgentString)
+  {
+    this.userAgentString = userAgentString;
+  }
+
+  public void setWrap(boolean wrap)
+  {
+    this.wrap = wrap;
   }
 
 }

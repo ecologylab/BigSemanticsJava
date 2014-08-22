@@ -1,7 +1,6 @@
 package ecologylab.bigsemantics.metametadata;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
@@ -19,7 +18,10 @@ public class TestInheritanceIssues extends BaseMmdTest
   public void testTitleLabelIssue() throws SIMPLTranslationException
   {
     MetaMetadataRepository repo = loadRepository("/testInheritanceIssue1.xml");
-    repo.traverseAndInheritMetaMetadata();
+
+    NewInheritanceHandler handler = new NewInheritanceHandler();
+    handler.handleMmdRepository(repo);
+
     MetaMetadata mmd = repo.getMMByName("document");
     serializeToTempFile(mmd, "1");
     MetaMetadataField titleField = getNestedField(mmd, "title");
@@ -31,14 +33,10 @@ public class TestInheritanceIssues extends BaseMmdTest
   {
     MetaMetadataRepository repo = loadRepository("/testInheritanceIssue2.xml");
 
-    assertNotNull(repo.getMMByName("metadata"));
-    assertNotNull(repo.getMMByName("document"));
-    assertNotNull(repo.getMMByName("creative_work"));
-    assertNotNull(repo.getMMByName("book"));
+    NewInheritanceHandler handler = new NewInheritanceHandler();
+    handler.handleMmdRepository(repo);
 
     MetaMetadataField field = null;
-
-    repo.traverseAndInheritMetaMetadata();
 
     // creative_work related:
 
@@ -83,16 +81,17 @@ public class TestInheritanceIssues extends BaseMmdTest
     assertEquals(1, field.getXpaths().size());
     assertEquals("//div[@class='tag']/a", field.getXpath(0));
   }
-  
+
   @Test
   public void testInheritingFromBothTypeAndSuperFieldIssue() throws SIMPLTranslationException
   {
     MetaMetadataRepository repo = loadRepository("/testInheritanceIssue3.xml");
-    
+
+    NewInheritanceHandler handler = new NewInheritanceHandler();
+    handler.handleMmdRepository(repo);
+
     MetaMetadataField field = null;
-    
-    repo.traverseAndInheritMetaMetadata();
-    
+
     field = getNestedField(repo, "document", "location");
     assertEquals(0, field.getXpathsSize());
 

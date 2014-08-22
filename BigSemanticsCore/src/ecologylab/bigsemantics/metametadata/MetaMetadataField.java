@@ -288,6 +288,12 @@ public abstract class MetaMetadataField extends MetaMetadataFieldDeclaration
     this.setTag(copy.getTag());
     this.setChildrenMap(copy.getChildrenMap());
   }
+  
+  public String getLabel()
+  {
+    String label = super.getLabel();
+    return label == null ? getName() : label;
+  }
 
   public String getType()
   {

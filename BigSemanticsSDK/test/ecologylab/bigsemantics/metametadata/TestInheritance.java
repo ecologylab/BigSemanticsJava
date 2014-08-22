@@ -26,7 +26,7 @@ public class TestInheritance extends BaseMmdTest
     MetaMetadataRepository repo = loadRepository("/testInheritance0.xml");
 
     NewInheritanceHandler handler = new NewInheritanceHandler();
-    assertTrue(handler.processMmdRepository(repo));
+    assertTrue(handler.handleMmdRepository(repo));
 
     MetaMetadataScalarField scalar = null;
 
@@ -41,7 +41,7 @@ public class TestInheritance extends BaseMmdTest
     MetaMetadataRepository repo = loadRepository("/testInheritance0.xml");
 
     NewInheritanceHandler handler = new NewInheritanceHandler();
-    assertTrue(handler.processMmdRepository(repo));
+    assertTrue(handler.handleMmdRepository(repo));
 
     MetaMetadataScalarField scalar = null;
     MetaMetadataCollectionField collection = null;
@@ -128,7 +128,7 @@ public class TestInheritance extends BaseMmdTest
     MetaMetadataRepository repo = loadRepository("/testInheritance0.xml");
 
     NewInheritanceHandler handler = new NewInheritanceHandler();
-    assertTrue(handler.processMmdRepository(repo));
+    assertTrue(handler.handleMmdRepository(repo));
 
     MetaMetadataScalarField scalar = null;
     MetaMetadataCompositeField composite = null;
@@ -193,7 +193,7 @@ public class TestInheritance extends BaseMmdTest
     MetaMetadataRepository repo = loadRepository("/testInheritance1.xml");
 
     NewInheritanceHandler handler = new NewInheritanceHandler();
-    assertTrue(handler.processMmdRepository(repo));
+    assertTrue(handler.handleMmdRepository(repo));
 
     MetaMetadataScalarField scalar = null;
     MetaMetadataCompositeField composite = null;
