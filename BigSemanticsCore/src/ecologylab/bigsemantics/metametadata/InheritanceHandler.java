@@ -75,9 +75,9 @@ public class InheritanceHandler implements InheritanceComponentNames, Cloneable
 		scope.putIfValueNotNull(GENERIC_TYPE_VAR_SCOPE, mmField.getGenericTypeVars());
 	}
 
-	void pop(MetaMetadataFieldDeclaration mmField)
+	void pop(MetaMetadataField mmField)
 	{
-		MetaMetadataFieldDeclaration field = mmStack.pop();
+		MetaMetadataField field = mmStack.pop();
 		Debug.println(this, "popping " + field);
 		scopeStack.pop();
 		assert (mmField == field);
@@ -110,7 +110,7 @@ public class InheritanceHandler implements InheritanceComponentNames, Cloneable
 		if (mmdName == null)
 			return null;
 		MetaMetadata result = null;
-		MetaMetadataFieldDeclaration field = mmStack.peek();
+		MetaMetadataField field = mmStack.peek();
 		if (nameType != null && nameType.length > 0)
 			nameType[0] = NameType.NONE;
 		

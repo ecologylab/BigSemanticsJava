@@ -2,19 +2,15 @@ package ecologylab.bigsemantics.metametadata;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import ecologylab.bigsemantics.documentparsers.ParserBase;
 import ecologylab.bigsemantics.html.utils.StringBuilderUtils;
 import ecologylab.bigsemantics.metadata.MetadataClassDescriptor;
 import ecologylab.bigsemantics.metadata.MetadataFieldDescriptor;
 import ecologylab.bigsemantics.metadata.scalar.types.MetadataScalarType;
-import ecologylab.bigsemantics.metadata.scalar.types.MetadataStringScalarType;
-import ecologylab.bigsemantics.metametadata.declarations.MetaMetadataFieldDeclaration;
 import ecologylab.bigsemantics.metametadata.exceptions.MetaMetadataException;
 import ecologylab.serialization.FieldType;
 import ecologylab.serialization.MetaInformation;
-import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.annotations.Hint;
 import ecologylab.serialization.annotations.simpl_collection;
@@ -23,7 +19,6 @@ import ecologylab.serialization.annotations.simpl_filter;
 import ecologylab.serialization.annotations.simpl_inherit;
 import ecologylab.serialization.annotations.simpl_scalar;
 import ecologylab.serialization.annotations.simpl_tag;
-import ecologylab.serialization.formatenums.StringFormat;
 import ecologylab.serialization.types.ScalarType;
 
 /**
@@ -152,10 +147,10 @@ public class MetaMetadataScalarField extends MetaMetadataField
     {
       synchronized (this)
       {
-        MetaMetadataFieldDeclaration field = this;
+        MetaMetadataField field = this;
         while (!(field instanceof MetaMetadata))
         {
-          field = (MetaMetadataFieldDeclaration) field.parent();
+          field = (MetaMetadataField) field.parent();
         }
         MetaMetadata mmd = (MetaMetadata) field;
         metaMetadataParser = mmd.getParser();

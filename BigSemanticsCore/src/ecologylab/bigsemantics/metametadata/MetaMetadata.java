@@ -50,13 +50,16 @@ public class MetaMetadata extends MetaMetadataCompositeField
 
   @simpl_collection("selector")
   @simpl_nowrap
+  @mm_dont_inherit
   private ArrayList<MetaMetadataSelector>         selectors;
 
   @simpl_collection("example_url")
   @simpl_nowrap
+  @mm_dont_inherit
   private ArrayList<ExampleUrl>                   exampleUrls;
 
   @simpl_composite
+  @mm_dont_inherit
   private FilterLocation                          filterLocation;
 
   @simpl_scalar
@@ -64,6 +67,7 @@ public class MetaMetadata extends MetaMetadataCompositeField
 
   @simpl_collection
   @simpl_scope(SemanticActionTranslationScope.SEMANTIC_ACTION_TRANSLATION_SCOPE)
+  @mm_dont_inherit
   private ArrayList<SemanticAction>               beforeSemanticActions;
 
   @simpl_collection
@@ -75,6 +79,7 @@ public class MetaMetadata extends MetaMetadataCompositeField
 
   @simpl_collection
   @simpl_scope(SemanticActionTranslationScope.SEMANTIC_ACTION_TRANSLATION_SCOPE)
+  @mm_dont_inherit
   private ArrayList<SemanticAction>               afterSemanticActions;
 
   @simpl_scalar
@@ -98,6 +103,7 @@ public class MetaMetadata extends MetaMetadataCompositeField
 
   @simpl_collection("url_generator")
   @simpl_nowrap
+  @mm_dont_inherit
   private ArrayList<UrlGenerator>                 urlGenerators;
 
   private Map<String, MetaMetadataField>          naturalIds;
@@ -113,6 +119,7 @@ public class MetaMetadata extends MetaMetadataCompositeField
   private boolean                                 noCache;
 
   @simpl_scalar
+  @mm_dont_inherit
   private String                                  cacheLife;
 
   private long                                    cacheLifeMs = -1;
@@ -567,6 +574,11 @@ public class MetaMetadata extends MetaMetadataCompositeField
         }
       }
     }
+  }
+
+  public void setSuperMmd(MetaMetadata result)
+  {
+    setSuperField(result);
   }
 
   protected void inheritSemanticActions(MetaMetadata inheritedMmd)

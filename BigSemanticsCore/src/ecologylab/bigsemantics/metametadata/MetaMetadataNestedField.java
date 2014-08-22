@@ -11,17 +11,14 @@ import ecologylab.bigsemantics.metadata.MetadataClassDescriptor;
 import ecologylab.bigsemantics.metadata.MetadataFieldDescriptor;
 import ecologylab.bigsemantics.metadata.mm_name;
 import ecologylab.bigsemantics.metadata.semantics_mixin;
-import ecologylab.bigsemantics.metametadata.declarations.MetaMetadataFieldDeclaration;
+import ecologylab.bigsemantics.metametadata.declarations.MetaMetadataNestedFieldDeclaration;
 import ecologylab.bigsemantics.metametadata.exceptions.MetaMetadataException;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.MetaInformation;
 import ecologylab.serialization.SimplTypesScope;
-import ecologylab.serialization.annotations.simpl_collection;
 import ecologylab.serialization.annotations.simpl_composite;
 import ecologylab.serialization.annotations.simpl_inherit;
-import ecologylab.serialization.annotations.simpl_nowrap;
-import ecologylab.serialization.annotations.simpl_scalar;
 import ecologylab.serialization.annotations.simpl_tag;
 import ecologylab.serialization.formatenums.StringFormat;
 
@@ -33,7 +30,7 @@ import ecologylab.serialization.formatenums.StringFormat;
 @SuppressWarnings(
 { "rawtypes" })
 @simpl_inherit
-public abstract class MetaMetadataNestedField extends MetaMetadataField
+public abstract class MetaMetadataNestedField extends MetaMetadataNestedFieldDeclaration
     implements PackageSpecifier
 {
 
@@ -49,68 +46,11 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 
   public static final String               POLYMORPHIC_CLASSES_SEP = ",";
 
-  @simpl_scalar
-  @simpl_tag("package")
-  private String                           packageName;
-
-  /**
-   * The polymorphic scope (@simp_scope) for this field.
-   */
-  @simpl_scalar
-  private String                           polymorphicScope;
-
-  /**
-   * Comma-separated classes for polymorphic classes (@simpl_classes) for this field.
-   */
-  @simpl_scalar
-  private String                           polymorphicClasses;
-
   @simpl_composite
   @simpl_tag("field_parser")
   private FieldParserElement               fieldParserElement;
 
-  @simpl_scalar
-  private String                           schemaOrgItemtype;
-
-  /**
-   * Used as variables during the extraction and semantic action processes.
-   */
-  @simpl_collection("def_var")
-  @simpl_nowrap
-  private ArrayList<DefVar>                defVars;
-
-  // ////////////// Presentation Semantics ////////////////
-
-  /**
-   * If children should be displayed at this level.
-   */
-  @simpl_scalar
-  private boolean                          promoteChildren;
-
-  @simpl_scalar
-  private boolean                          showExpandedInitially;
-
-  @simpl_scalar
-  private boolean                          showExpandedAlways;
-
   // ////////////// Inheritance Related ////////////////
-
-  /**
-   * Should we generate a metadata class descriptor for this field. used by the compiler.
-   */
-  @simpl_scalar
-  @mm_dont_inherit
-  private boolean                          newMetadataClass;
-
-  /**
-   * The mmd that defined the type this nested field uses. could be a generated one for inline
-   * definitions.
-   * 
-   * Corresponding attributes: (child_)type/extends.
-   */
-  @simpl_composite
-  @mm_dont_inherit
-  private MetaMetadata                     typeMmd;
 
   /**
    * The (local) scope of visible meta-metadata for this nested field.
@@ -173,20 +113,9 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
     lockInheritCommands = new Object();
   }
 
-  @Override
-  public final String packageName()
+  public String packageName()
   {
-    return this.packageName;
-  }
-
-  public String getPolymorphicScope()
-  {
-    return this.polymorphicScope;
-  }
-
-  public String getPolymorphicClasses()
-  {
-    return this.polymorphicClasses;
+    return this.getPackageName();
   }
 
   public FieldParserElement getFieldParserElement()
@@ -194,89 +123,9 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
     return fieldParserElement;
   }
 
-  @Override
-  public String getSchemaOrgItemtype()
-  {
-    return schemaOrgItemtype;
-  }
-
-  public final ArrayList<DefVar> getDefVars()
-  {
-    return defVars;
-  }
-
-  public boolean shouldPromoteChildren()
-  {
-    return promoteChildren;
-  }
-
-  public boolean isShowExpandedInitially()
-  {
-    return showExpandedInitially;
-  }
-
-  public boolean isShowExpandedAlways()
-  {
-    return showExpandedAlways;
-  }
-
-  /**
-   * Should we generate a metadata class descriptor for this field. Used by the compiler.
-   * 
-   * @return
-   */
-  public boolean isNewMetadataClass()
-  {
-    return newMetadataClass;
-  }
-
-  /**
-   * @return The meta-metadata defining the type used by this field.
-   */
-  public MetaMetadata getTypeMmd()
-  {
-    return typeMmd;
-  }
-
   public MmdScope getMmdScope()
   {
     return mmdScope;
-  }
-
-  protected void setPackageName(String packageName)
-  {
-    this.packageName = packageName;
-  }
-
-  public void setSchemaOrgItemtype(String schemaOrgItemtype)
-  {
-    this.schemaOrgItemtype = schemaOrgItemtype;
-  }
-
-  void setPromoteChildren(boolean promoteChildren)
-  {
-    this.promoteChildren = promoteChildren;
-  }
-
-  /**
-   * set the flag of generating (or not) metadata class descriptoer.
-   * 
-   * @param newMetadataClass
-   * @see isGenerateClassDescriptor
-   */
-  protected void setNewMetadataClass(boolean newMetadataClass)
-  {
-    this.newMetadataClass = newMetadataClass;
-  }
-
-  /**
-   * Set the type meta-metadata of this field.
-   * 
-   * @param typeMmd
-   */
-  protected void setTypeMmd(MetaMetadata typeMmd)
-  {
-    this.typeMmd = typeMmd;
   }
 
   protected void setMmdScope(MmdScope mmdScope)
@@ -372,6 +221,8 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
    */
   public boolean isPolymorphicInherently()
   {
+    String polymorphicScope = getPolymorphicScope();
+    String polymorphicClasses = getPolymorphicClasses();
     return (polymorphicScope != null && polymorphicScope.length() > 0)
            || (polymorphicClasses != null && polymorphicClasses.length() > 0);
   }
@@ -610,7 +461,7 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
     }
   }
 
-  MetadataClassDescriptor metadataClassDescriptor(SimplTypesScope metadataTScope)
+  protected MetadataClassDescriptor metadataClassDescriptor(SimplTypesScope metadataTScope)
   {
     MetadataClassDescriptor metadataCd = this.getMetadataClassDescriptor();
     if (metadataCd == null)
@@ -664,7 +515,7 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
     }
 
     if (this.getChildrenMap() != null)
-      for (MetaMetadataFieldDeclaration f : this.getChildrenMap())
+      for (MetaMetadataField f : this.getChildrenMap())
       {
         if (f instanceof MetaMetadataNestedField)
         {
@@ -685,7 +536,7 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
 
   public void recursivelyRestoreChildComposite()
   {
-    for (MetaMetadataFieldDeclaration field : this.getChildrenMap())
+    for (MetaMetadataField field : this.getChildrenMap())
     {
       if (field instanceof MetaMetadataNestedField)
         ((MetaMetadataNestedField) field).recursivelyRestoreChildComposite();
@@ -698,10 +549,10 @@ public abstract class MetaMetadataNestedField extends MetaMetadataField
     StringBuilder sb = StringBuilderUtils.acquire();
     sb.append(super.getFingerprintString());
     addToFp(sb, Utils.serializeToString(fieldParserElement, StringFormat.XML));
-    addToFp(sb, polymorphicScope);
-    addToFp(sb, polymorphicClasses);
-    addToFp(sb, schemaOrgItemtype);
-    addCollectionToFp(sb, defVars);
+    addToFp(sb, getPolymorphicScope());
+    addToFp(sb, getPolymorphicClasses());
+    addToFp(sb, getSchemaOrgItemtype());
+    addCollectionToFp(sb, getDefVars());
     String fp = sb.toString();
     StringBuilderUtils.release(sb);
     return fp;

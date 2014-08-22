@@ -3,12 +3,15 @@ package ecologylab.bigsemantics.metametadata.declarations;
 import java.util.List;
 
 import ecologylab.bigsemantics.metametadata.MetaMetadata;
+import ecologylab.bigsemantics.metametadata.MetaMetadataClassDescriptor;
 import ecologylab.bigsemantics.metametadata.MetaMetadataField;
+import ecologylab.bigsemantics.metametadata.MetaMetadataFieldDescriptor;
 import ecologylab.bigsemantics.metametadata.NestedMetaMetadataFieldTypesScope;
 import ecologylab.bigsemantics.metametadata.mm_dont_inherit;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.annotations.simpl_collection;
 import ecologylab.serialization.annotations.simpl_composite;
+import ecologylab.serialization.annotations.simpl_descriptor_classes;
 import ecologylab.serialization.annotations.simpl_nowrap;
 import ecologylab.serialization.annotations.simpl_scalar;
 import ecologylab.serialization.annotations.simpl_scope;
@@ -20,6 +23,8 @@ import ecologylab.serialization.annotations.simpl_wrap;
  * @author quyin
  */
 @SuppressWarnings("rawtypes")
+@simpl_descriptor_classes(
+{ MetaMetadataClassDescriptor.class, MetaMetadataFieldDescriptor.class })
 public class MetaMetadataFieldDeclaration extends ElementState
 {
 

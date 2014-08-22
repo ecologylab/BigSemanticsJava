@@ -4,19 +4,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ecologylab.bigsemantics.html.utils.StringBuilderUtils;
 import ecologylab.bigsemantics.metadata.MetadataClassDescriptor;
 import ecologylab.bigsemantics.metadata.MetadataFieldDescriptor;
 import ecologylab.bigsemantics.metametadata.InheritanceHandler.NameType;
 import ecologylab.bigsemantics.metametadata.MetaMetadata.Visibility;
-import ecologylab.bigsemantics.metametadata.declarations.MetaMetadataFieldDeclaration;
+import ecologylab.bigsemantics.metametadata.declarations.MetaMetadataCompositeFieldDeclaration;
 import ecologylab.bigsemantics.metametadata.exceptions.MetaMetadataException;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.generic.ReflectionTools;
 import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.annotations.simpl_inherit;
-import ecologylab.serialization.annotations.simpl_scalar;
 import ecologylab.serialization.annotations.simpl_tag;
 
 /**
@@ -28,7 +30,8 @@ import ecologylab.serialization.annotations.simpl_tag;
 { "rawtypes", "unchecked" })
 @simpl_inherit
 @simpl_tag("composite")
-public class MetaMetadataCompositeField extends MetaMetadataNestedField implements MMDConstants
+public class MetaMetadataCompositeField extends MetaMetadataCompositeFieldDeclaration
+    implements MMDConstants
 {
 
   static interface AttributeChangeListener
@@ -40,46 +43,29 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
     void tagChanged(String newTag);
 
     void usedForInlineMmdDefChanged(boolean usedForInlineMmdDef);
+    
+    void typeMmdChanged(MetaMetadata newTypeMmd);
+    
+    void mmdScopeChanged(MmdScope newMmdScope);
   }
 
-  /**
-   * The type/class of metadata object.
-   */
-  @simpl_scalar
-  private String                  type;
+  static Logger           logger;
 
-  /**
-   * the extends attribute of a composite field / meta-metadata.
-   */
-  @simpl_tag("extends")
-  @simpl_scalar
-  @mm_dont_inherit
-  private String                  extendsAttribute;
+  static
+  {
+    logger = LoggerFactory.getLogger(MetaMetadataCompositeField.class);
+  }
 
-  // FIXME move to MetaMetadata
-  @simpl_scalar
-  private String                  userAgentName;
-
-  // FIXME move to MetaMetadata
-  @simpl_scalar
-  private String                  userAgentString;
-
-  /**
-   * if this composite should be wrapped.
-   */
-  @simpl_scalar
-  private boolean                 wrap;
-
-  private MMSelectorType          mmSelectorType          = MMSelectorType.DEFAULT;
+  private MMSelectorType  mmSelectorType          = MMSelectorType.DEFAULT;
 
   /**
    * for caching getTypeNameInJava().
    */
-  private String                  typeNameInJava;
+  private String          typeNameInJava;
 
-  private boolean                 useClassLevelOtherTags;
+  private boolean         useClassLevelOtherTags;
 
-  private AttributeChangeListener attributeChangeListener = null;
+  AttributeChangeListener attributeChangeListener = null;
 
   public MetaMetadataCompositeField()
   {
@@ -91,7 +77,7 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
     this.setName(name);
     this.getChildrenMap().clear();
     this.getChildrenMap().putAll(kids);
-    for (MetaMetadataFieldDeclaration kid : kids)
+    for (MetaMetadataField kid : kids)
     {
       kid.setParent(this);
     }
@@ -113,26 +99,15 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
     return getChildrenMap();
   }
 
-  @Override
-  public String getType()
-  {
-    return type;
-  }
-
   public String getTypeOrName()
   {
-    return type == null ? getName() : type;
-  }
-
-  public String getExtendsAttribute()
-  {
-    return extendsAttribute;
+    return getType() == null ? getName() : getType();
   }
 
   @Override
   protected String getMetaMetadataTagToInheritFrom()
   {
-    return type != null ? type : null;
+    return getType() != null ? getType() : null;
   }
 
   /**
@@ -144,22 +119,6 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
   public MetaMetadataCompositeField metaMetadataCompositeField()
   {
     return this;
-  }
-
-  public String getUserAgentName()
-  {
-    return userAgentName;
-  }
-
-  public String getUserAgentString()
-  {
-    if (userAgentString == null)
-    {
-      userAgentString = (userAgentName == null)
-          ? getRepository().getDefaultUserAgentString()
-          : getRepository().getUserAgentString(userAgentName);
-    }
-    return userAgentString;
   }
 
   public MMSelectorType getMmSelectorType()
@@ -184,7 +143,7 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
    */
   protected boolean isInlineDefinition()
   {
-    return this.extendsAttribute != null;
+    return this.getExtendsAttribute() != null;
   }
 
   /**
@@ -199,6 +158,45 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
   }
 
   @Override
+  public void setType(String type)
+  {
+    super.setType(type);
+    if (attributeChangeListener != null)
+      attributeChangeListener.typeChanged(type);
+  }
+  
+  void setTypeDirectly(String type)
+  {
+    super.setType(type);
+  }
+
+  @Override
+  public void setExtendsAttribute(String extendsAttribute)
+  {
+    super.setExtendsAttribute(extendsAttribute);
+    if (attributeChangeListener != null)
+      attributeChangeListener.extendsChanged(extendsAttribute);
+  }
+
+  void setExtendsAttributeDirectly(String extendsAttribute)
+  {
+    super.setExtendsAttribute(extendsAttribute);
+  }
+
+  @Override
+  public void setTag(String tag)
+  {
+    super.setTag(tag);
+    if (attributeChangeListener != null)
+      attributeChangeListener.tagChanged(tag);
+  }
+
+  void setTagDirectly(String tag)
+  {
+    super.setTag(tag);
+  }
+
+  @Override
   protected String getTypeNameInJava()
   {
     String rst = typeNameInJava;
@@ -210,26 +208,32 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
     return typeNameInJava;
   }
 
-  protected void setType(String type)
+  public void setTypeMmd(MetaMetadata typeMmd)
   {
-    this.type = type;
+    super.setTypeMmd(typeMmd);
     if (attributeChangeListener != null)
-      attributeChangeListener.typeChanged(type);
+    {
+      attributeChangeListener.typeMmdChanged(typeMmd);
+    }
   }
 
-  protected void setExtendsAttribute(String extendsAttribute)
+  void setTypeMmdDirectly(MetaMetadata typeMmd)
   {
-    this.extendsAttribute = extendsAttribute;
+    super.setTypeMmd(typeMmd);
+  }
+  
+  protected void setMmdScope(MmdScope mmdScope)
+  {
+    super.setMmdScope(mmdScope);
     if (attributeChangeListener != null)
-      attributeChangeListener.extendsChanged(extendsAttribute);
+    {
+      attributeChangeListener.mmdScopeChanged(mmdScope);
+    }
   }
 
-  @Override
-  public void setTag(String tag)
+  protected void setMmdScopeDirectly(MmdScope mmdScope)
   {
-    super.setTag(tag);
-    if (attributeChangeListener != null)
-      attributeChangeListener.tagChanged(tag);
+    super.setMmdScope(mmdScope);
   }
 
   protected void setMmSelectorType(MMSelectorType mmSelectorType)
@@ -248,6 +252,11 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
     super.setUsedToDefineInlineMmd(usedForInlineMmdDef);
     if (this.attributeChangeListener != null)
       attributeChangeListener.usedForInlineMmdDefChanged(usedForInlineMmdDef);
+  }
+
+  void setUsedToDefineInlineMmdDirectly(boolean usedForInlineMmdDef)
+  {
+    super.setUsedToDefineInlineMmd(usedForInlineMmdDef);
   }
 
   public void setAttributeChangeListener(AttributeChangeListener attributeChangeListener)
@@ -538,7 +547,7 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
       for (MetaMetadataField field : inheritedStructure.getChildrenMap())
       {
         String fieldName = field.getName();
-        MetaMetadataFieldDeclaration fieldLocal = this.getChildrenMap().get(fieldName);
+        MetaMetadataField fieldLocal = this.getChildrenMap().get(fieldName);
         if (fieldLocal == null)
         {
           this.getChildrenMap().put(fieldName, field);
@@ -547,8 +556,8 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
     }
   }
 
-  protected String determineMoreSpecificChildType(MetaMetadataFieldDeclaration fieldLocal,
-                                                  MetaMetadataFieldDeclaration field)
+  protected String determineMoreSpecificChildType(MetaMetadataField fieldLocal,
+                                                  MetaMetadataField field)
   {
     String childType = null;
     if (fieldLocal instanceof MetaMetadataCollectionField
@@ -576,7 +585,8 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
     return childType;
   }
 
-  protected String determineMoreSpecificType(MetaMetadataFieldDeclaration fieldLocal, MetaMetadataFieldDeclaration field)
+  protected String determineMoreSpecificType(MetaMetadataField fieldLocal,
+                                             MetaMetadataField field)
   {
     String type = null;
     if (fieldLocal instanceof MetaMetadataCompositeField
@@ -823,7 +833,7 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
                                        null,
                                        javaTypeName);
     }
-    fd.setWrapped(wrap);
+    fd.setWrapped(isWrap());
     this.setMetadataFieldDescriptor(fd);
     return fd;
   }
@@ -833,9 +843,9 @@ public class MetaMetadataCompositeField extends MetaMetadataNestedField implemen
   {
     StringBuilder sb = StringBuilderUtils.acquire();
     sb.append(super.getFingerprintString());
-    addToFp(sb, type);
-    addToFp(sb, extendsAttribute);
-    addToFp(sb, wrap);
+    addToFp(sb, getType());
+    addToFp(sb, getExtendsAttribute());
+    addToFp(sb, isWrap());
     String fp = sb.toString();
     StringBuilderUtils.release(sb);
     return fp;

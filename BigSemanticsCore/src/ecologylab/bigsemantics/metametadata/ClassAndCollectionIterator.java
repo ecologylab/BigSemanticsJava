@@ -28,11 +28,11 @@ public class ClassAndCollectionIterator implements Iterator<MetadataBase>
 
 	private Iterator<MetadataBase>			collectionIterator;
 
-	private MetaMetadataFieldDeclaration						root;
+	private MetaMetadataField           root;
 
 	private MetadataBase								currentObject;
 
-	private MetaMetadataFieldDeclaration						currentMMField;
+	private MetaMetadataField           currentMMField;
 
 	private Metadata										metadata;
 	
@@ -172,7 +172,7 @@ public class ClassAndCollectionIterator implements Iterator<MetadataBase>
 		return iterator.hasNext() || (collectionIterator != null && collectionIterator.hasNext());
 	}
 
-	public MetaMetadataFieldDeclaration getCurrentMMField()
+	public MetaMetadataField getCurrentMMField()
 	{
 		return currentMMField;
 	}

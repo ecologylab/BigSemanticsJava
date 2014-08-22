@@ -1,9 +1,18 @@
 package ecologylab.bigsemantics.metametadata;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-import ecologylab.bigsemantics.metametadata.declarations.MetaMetadataFieldDeclaration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.FieldType;
+import ecologylab.serialization.types.ScalarType;
+
+// FIXME use the stack to print messages, instead of MetaMetadataField.toString()
 
 /**
  * 
@@ -11,25 +20,34 @@ import ecologylab.serialization.FieldType;
  */
 public class NewInheritanceHandler
 {
-  
-  ArrayList<MetaMetadataField> stack = new ArrayList<MetaMetadataField>();
-  
+
+  private static final Logger          logger;
+
+  static
+  {
+    logger = LoggerFactory.getLogger(NewInheritanceHandler.class);
+  }
+
+  private MetaMetadataRepository       repository;
+
+  private ArrayList<MetaMetadataField> stack = new ArrayList<MetaMetadataField>();
+
   public void push(MetaMetadataField field)
   {
     stack.add(field);
   }
-  
-  public MetaMetadataFieldDeclaration pop()
+
+  public MetaMetadataField pop()
   {
     return stack.remove(stack.size() - 1);
   }
-  
-  public MetaMetadataFieldDeclaration top()
+
+  public MetaMetadataField top()
   {
     return stack.get(stack.size() - 1);
   }
-  
-  public int search(MetaMetadataFieldDeclaration field)
+
+  public int search(MetaMetadataField field)
   {
     for (int i = 0; i < stack.size(); ++i)
     {
@@ -40,18 +58,43 @@ public class NewInheritanceHandler
     }
     return -1;
   }
-  
+
+  public boolean processMmdRepository(MetaMetadataRepository repository)
+  {
+    this.repository = repository;
+
+    List<MetaMetadata> mmds = new ArrayList<MetaMetadata>(repository.getMetaMetadataCollection());
+
+    RepositoryOrdering ordering = new RepositoryOrderingByGeneration();
+    mmds = ordering.orderMetaMetadataForInheritance(mmds);
+
+    for (MetaMetadata mmd : mmds)
+    {
+      if (!inheritMmd(mmd))
+      {
+        return false;
+      }
+    }
+    return true;
+  }
+
   public boolean inheritMmd(MetaMetadata mmd)
   {
     if (search(mmd) < 0)
     {
       push(mmd);
-      
+
       MetaMetadata superMmd = findSuperMmd(mmd);
-      
+
       if (superMmd == null)
       {
+        if (!MetaMetadata.isRootMetaMetadata(mmd))
+        {
+          // TODO throw exception
+        }
+
         // mmd is the root
+        mmd.setNewMetadataClass(true);
         for (MetaMetadataField child : mmd.getChildren())
         {
           inheritField(child, null);
@@ -64,95 +107,287 @@ public class NewInheritanceHandler
         {
           inheritMmd(superMmd);
         }
-        
+
         mergeAttributes(mmd, superMmd);
         mergeChildren(mmd, superMmd);
       }
-      
+
       mmd.setInheritDone(true);
       pop();
     }
     return mmd.isInheritDone();
   }
-  
-  public boolean mergeAttributes(MetaMetadataFieldDeclaration field, MetaMetadataField superField)
+
+  /**
+   * Merge attributes from superField to field.
+   * 
+   * Attributes include not only scalar values (e.g. hide, label) but also some collections (such as
+   * xpaths). If an attribute is a collection, it is expected that its elements have a by-content
+   * equals() defined.
+   * 
+   * Attributes explicitly specified on field will take precedence.
+   * 
+   * @param field
+   * @param superField
+   * @return
+   */
+  public boolean mergeAttributes(MetaMetadataField field, MetaMetadataField superField)
   {
-    field.setSuperField(superField);
-    
-    // TODO
-    return false;
+    MetaMetadataClassDescriptor superClassDescriptor =
+        (MetaMetadataClassDescriptor) ClassDescriptor.getClassDescriptor(superField);
+    MetaMetadataClassDescriptor classDescriptor =
+        (MetaMetadataClassDescriptor) ClassDescriptor.getClassDescriptor(field);
+
+    for (MetaMetadataFieldDescriptor fieldDescriptor : superClassDescriptor)
+    {
+      String fieldName = fieldDescriptor.getName();
+      if (classDescriptor.getFieldDescriptorByFieldName(fieldName) == null)
+      {
+        continue;
+      }
+
+      if (fieldDescriptor.isInheritable())
+      {
+        try
+        {
+          Object superValue = fieldDescriptor.getValue(superField);
+          Object localValue = fieldDescriptor.getValue(field);
+
+          boolean attributeInherited = false;
+
+          if (fieldDescriptor.isCollection())
+          {
+            // Append elements from inheritFrom to this field's list
+            List superList = (List) superValue;
+            if (superList != null && superList.size() > 0)
+            {
+              List localList = (List) localValue;
+              if (localList == null)
+              {
+                localList = new ArrayList();
+                fieldDescriptor.setField(field, localList);
+              }
+              for (Object element : superList)
+              {
+                // List.contains() uses equals() to compare, so element should have its own equals()
+                // defined, otherwise there can be problems!
+                if (!localList.contains(element))
+                {
+                  localList.add(element);
+                  attributeInherited = true;
+                }
+              }
+            }
+          }
+          else
+          {
+            // For a scalar field, scalarType will be the scalarType for that field.
+            // For a composite field or a collection-of-composite field, scalarType will be null.
+            // For a collection-of-scalar field, scalarType will be the child scalarType for that
+            // field.
+            ScalarType scalarType = fieldDescriptor.getScalarType();
+
+            if (scalarType != null
+                && scalarType.isDefaultValue(localValue)
+                && !scalarType.isDefaultValue(superValue))
+            {
+              fieldDescriptor.setField(field, superValue);
+              attributeInherited = true;
+            }
+          } // if (fieldDescriptor.isCollection)
+
+          if (attributeInherited)
+          {
+            logger.debug("Field attribute inherited: {}.{} = {}, from {}",
+                         field,
+                         fieldName,
+                         localValue,
+                         superField);
+          }
+        }
+        catch (Exception e)
+        {
+          String msg = String.format("Attribute inheritance failed: %s.%s from %s",
+                                     field,
+                                     fieldName,
+                                     superField);
+          logger.error(msg, e);
+        } // try ... catch
+      } // if (fieldDescriptor.isInheritable())
+    } // for (MetaMetadataFieldDescriptor fieldDescriptor : classDescriptor)
+
+    return true;
   }
-  
+
   public boolean mergeChildren(MetaMetadataField field, MetaMetadataField superField)
   {
-    if (superField.getChildren() != null)
+    Set<String> childrenNames = new HashSet<String>();
+    addChildrenNames(field, childrenNames);
+    addChildrenNames(superField, childrenNames);
+
+    // a special handling for scalar collections.
+    FieldType fieldType = field.getFieldType();
+    if (fieldType == FieldType.COLLECTION_SCALAR)
     {
-      for (MetaMetadataField f0 : superField.getChildren())
-      {
-        String childName = f0.getName();
-        MetaMetadataField f1 = field.lookupChild(childName);
-        if (f1.isAuthoredChildOf(field))
-        {
-          inheritField(f1, f0);
-        }
-        else
-        {
-          field.childrenMap().put(childName, f0);
-        }
-      }
-      return true;
+      childrenNames.remove(MetaMetadataCollectionField.UNRESOLVED_NAME);
     }
+
+    for (String childName : childrenNames)
+    {
+      MetaMetadataField f0 = superField.lookupChild(childName);
+      MetaMetadataField f1 = field.lookupChild(childName);
+      if (f0 != f1 && f1 != null)
+      {
+        inheritField(f1, f0);
+      }
+      else
+      {
+        field.childrenMap().put(childName, f0);
+      }
+    }
+
     return false;
   }
-  
+
+  private void addChildrenNames(MetaMetadataField field, Set<String> childrenNames)
+  {
+    if (field != null)
+    {
+      for (int i = 0; i < field.getChildrenSize(); ++i)
+      {
+        childrenNames.add(field.getChild(i).getName());
+      }
+    }
+  }
+
   public boolean inheritField(MetaMetadataField field, MetaMetadataField superField)
   {
     if (search(field) < 0)
     {
-      push(field);
-      
-      MetaMetadata typeMmd = findTypeMmd(field);
-
-      if (superField == null)
+      if (superField != null)
       {
-        // new field
-        FieldType fieldType = field.getFieldType();
-        if (fieldType == FieldType.COMPOSITE_ELEMENT || fieldType == FieldType.COLLECTION_ELEMENT)
+        if (!superField.isInheritDone())
         {
-          return inheritField(field, typeMmd);
+          logger.error("Super field inheritance not done: {}", superField);
+          return false;
         }
+
+        field.setSuperField(superField);
+        mergeAttributes(field, superField);
       }
-      else
+
+      FieldType fieldType = field.getFieldType();
+      if (fieldType != FieldType.SCALAR && fieldType != FieldType.COLLECTION_SCALAR)
       {
-        // not new field
-        assert superField.isInheritDone() : "Super field inheritance not done: " + superField;
-        if (typeMmd == findTypeMmd(superField))
+        MetaMetadata typeMmd = findTypeMmd(field);
+        if (typeMmd == null)
         {
-          mergeChildren(field, superField);
+          logger.error("Cannot find typeMmd for {}", field);
+          return false;
+        }
+
+        if (superField == null)
+        {
+          // new field
+          if (field instanceof MetaMetadataCollectionField)
+          {
+            MetaMetadataCompositeField elementComposite =
+                ((MetaMetadataCollectionField) field).getPreparedElementComposite();
+            return inheritField(elementComposite, typeMmd);
+          }
+          else
+          {
+            return inheritField(field, typeMmd);
+          }
         }
         else
         {
-          mergeChildren(field, typeMmd);
-          mergeChildren(field, superField);
+          // not new field
+          push(field);
+          if (typeMmd == findTypeMmd(superField))
+          {
+            mergeAttributes(field, superField);
+            mergeChildren(field, superField);
+          }
+          else
+          {
+            mergeAttributes(field, superField);
+            mergeChildren(field, typeMmd);
+            mergeChildren(field, superField);
+          }
+          pop();
         }
-      }
-      
+      } // if (fieldType != FieldType.SCALAR && fieldType != FieldType.COLLECTION_SCALAR)
       field.setInheritDone(true);
-      pop();
-    }
+    } // if (search(field) < 0)
+
     return field.isInheritDone();
   }
 
   private MetaMetadata findSuperMmd(MetaMetadata mmd)
   {
-    // TODO Auto-generated method stub
-    return null;
+    if (mmd.getSuperMmd() != null)
+    {
+      return mmd.getSuperMmd();
+    }
+
+    // TODO we need a thorough solution for scopes
+
+    String type = mmd.getType();
+    String extendsAttribute = mmd.getExtendsAttribute();
+
+    MetaMetadata result = null;
+
+    if (result == null && type != null)
+    {
+      result = repository.getMMByName(type);
+    }
+
+    if (result == null && extendsAttribute != null)
+    {
+      result = repository.getMMByName(extendsAttribute);
+      if (result != null)
+      {
+        mmd.setNewMetadataClass(true);
+      }
+    }
+
+    // TODO new scope = current scope (+) result.scope; associate new scope with mmd.
+
+    mmd.setSuperMmd(result);
+
+    return result;
   }
 
-  private MetaMetadata findTypeMmd(MetaMetadataFieldDeclaration field)
+  private MetaMetadata findTypeMmd(MetaMetadataField field)
   {
-    // TODO Auto-generated method stub
-    return null;
+    if (field.getTypeMmd() != null)
+    {
+      return field.getTypeMmd();
+    }
+
+    // TODO we need a thorough solution for scopes
+
+    String type = field.getType();
+    String extendsAttribute = field.getExtendsAttribute();
+
+    MetaMetadata result = null;
+
+    if (result == null && type != null)
+    {
+      result = repository.getMMByName(type);
+    }
+
+    if (result == null && extendsAttribute != null)
+    {
+      result = repository.getMMByName(extendsAttribute);
+    }
+
+    // TODO new scope = current scope (+) result.scope; associate new scope with field.
+
+    field.setTypeMmd(result);
+
+    return result;
   }
 
 }

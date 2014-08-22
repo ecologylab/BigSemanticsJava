@@ -494,7 +494,7 @@ ISimplSerializationPre, ISimplDeserializationPost
 		{
 			MetadataBase mb = i.next();
 
-			MetaMetadataFieldDeclaration currentMMField = i.getCurrentMMField();
+			MetaMetadataField currentMMField = i.getCurrentMMField();
 			if (mb != null && !currentMMField.isIgnoreInTermVector()
 					&& !mb.ignoreInTermVector())
 			{

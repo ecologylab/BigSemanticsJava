@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import ecologylab.bigsemantics.metadata.Metadata;
-import ecologylab.bigsemantics.metametadata.declarations.MetaMetadataFieldDeclaration;
 import ecologylab.generic.HashMapArrayList;
 
 /**
@@ -45,7 +44,7 @@ public class ScalarDependencyManager {
 		HashMapArrayList<String, MetaMetadataScalarField> scalars = new HashMapArrayList<String, MetaMetadataScalarField>();
 		for(String s : fields.keySet())
 		{
-			MetaMetadataFieldDeclaration mmf = fields.get(s);
+			MetaMetadataField mmf = fields.get(s);
 			if(mmf instanceof MetaMetadataScalarField)
 			{
 				scalars.put(s, (MetaMetadataScalarField)mmf);

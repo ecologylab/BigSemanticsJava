@@ -5,7 +5,6 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
-import ecologylab.bigsemantics.metametadata.declarations.MetaMetadataFieldDeclaration;
 import ecologylab.serialization.SIMPLTranslationException;
 
 /**
@@ -23,7 +22,7 @@ public class TestInheritanceIssues extends BaseMmdTest
     repo.traverseAndInheritMetaMetadata();
     MetaMetadata mmd = repo.getMMByName("document");
     serializeToTempFile(mmd, "1");
-    MetaMetadataFieldDeclaration titleField = getNestedField(mmd, "title");
+    MetaMetadataField titleField = getNestedField(mmd, "title");
     assertEquals("title", titleField.getLabel());
   }
 

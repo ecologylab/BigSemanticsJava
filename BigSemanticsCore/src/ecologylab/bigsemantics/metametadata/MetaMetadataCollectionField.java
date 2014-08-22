@@ -6,10 +6,8 @@ import java.util.Collection;
 import ecologylab.bigsemantics.html.utils.StringBuilderUtils;
 import ecologylab.bigsemantics.metadata.MetadataClassDescriptor;
 import ecologylab.bigsemantics.metadata.MetadataFieldDescriptor;
-import ecologylab.bigsemantics.metadata.scalar.types.MetadataParsedURLScalarType;
-import ecologylab.bigsemantics.metadata.scalar.types.MetadataScalarType;
 import ecologylab.bigsemantics.metametadata.MetaMetadataCompositeField.AttributeChangeListener;
-import ecologylab.bigsemantics.metametadata.declarations.MetaMetadataFieldDeclaration;
+import ecologylab.bigsemantics.metametadata.declarations.MetaMetadataCollectionFieldDeclaration;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.generic.StringTools;
 import ecologylab.serialization.ClassDescriptor;
@@ -19,14 +17,18 @@ import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.TranslationContext;
 import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.annotations.simpl_inherit;
-import ecologylab.serialization.annotations.simpl_scalar;
 import ecologylab.serialization.annotations.simpl_tag;
 import ecologylab.serialization.types.ScalarType;
 
+/**
+ * A collection field.
+ * 
+ * @author quyin
+ */
 @SuppressWarnings("rawtypes")
 @simpl_inherit
 @simpl_tag("collection")
-public class MetaMetadataCollectionField extends MetaMetadataNestedField
+public class MetaMetadataCollectionField extends MetaMetadataCollectionFieldDeclaration
 {
 
   public static final String UNRESOLVED_NAME = "&UNRESOLVED_NAME";
@@ -50,121 +52,17 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
       return;
     }
 
-    HashMapArrayList<String, MetaMetadataField> kids = super.getChildrenMap();
-    String childType = getChildType();
-    String childCompositeName = childType != null ? childType : UNRESOLVED_NAME;
-    final MetaMetadataCollectionField thisField = this;
-    MetaMetadataCompositeField composite = new MetaMetadataCompositeField(childCompositeName, kids);
-    composite.setAttributeChangeListener(new AttributeChangeListener()
-    {
-      @Override
-      public void typeChanged(String newType)
-      {
-        thisField.childType = newType;
-      }
-
-      @Override
-      public void extendsChanged(String newExtends)
-      {
-        thisField.childExtends = newExtends;
-      }
-
-      @Override
-      public void tagChanged(String newTag)
-      {
-        if (thisField.childTag == null)
-          thisField.childTag = newTag;
-      }
-
-      @Override
-      public void usedForInlineMmdDefChanged(boolean usedForInlineMmdDef)
-      {
-        thisField.setUsedToDefineInlineMmd(usedForInlineMmdDef);
-      }
-    });
-    composite.setParent(this);
-    composite.setType(childType);
-    composite.setExtendsAttribute(this.childExtends);
-    kids.clear();
-    kids.put(composite.getName(), composite);
-    composite.setPromoteChildren(this.shouldPromoteChildren());
+    createElementComposite();
   }
-
-  @simpl_scalar
-  private String             childTag;
-
-  /**
-   * The type for collection children.
-   */
-  @simpl_scalar
-  private String             childType;
-
-  @mm_dont_inherit
-  @simpl_scalar
-  private String             childExtends;
-
-  @simpl_scalar
-  private MetadataScalarType childScalarType;
-
-  /**
-   * Specifies adding @simpl_nowrap to the collection object in cases where items in the collection
-   * are not wrapped inside a tag.
-   */
-  @simpl_scalar
-  private boolean            noWrap;
 
   /**
    * for caching getTypeNameInJava().
    */
-  private String             typeNameInJava = null;
-
-  /**
-   * Another field name whose value can be used as label for each child
-   */
-  @simpl_scalar
-  private String             childUseValueAsLabel;
-
-  /**
-   * to show composite children expanded
-   */
-  @simpl_scalar
-  private boolean            childShowExpandedInitially;
-
-  @simpl_scalar
-  private boolean            childShowExpandedAlways;
+  private String  typeNameInJava;
 
   public MetaMetadataCollectionField()
   {
     // no op
-  }
-
-  public String getChildTag()
-  {
-    if (childTag != null)
-      return childTag;
-    if (childType != null)
-      return childType;
-    return null;
-  }
-
-  public String getChildType()
-  {
-    return childType;
-  }
-
-  public String getChildExtends()
-  {
-    return childExtends;
-  }
-
-  public ScalarType getChildScalarType()
-  {
-    return childScalarType;
-  }
-
-  public boolean isNoWrap()
-  {
-    return noWrap;
   }
 
   @Override
@@ -179,6 +77,15 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
     return getChildExtends();
   }
 
+  public String getChildTag()
+  {
+    if (super.getChildTag() != null)
+      return super.getChildTag();
+    if (super.getChildType() != null)
+      return super.getChildType();
+    return null;
+  }
+
   @Override
   public HashMapArrayList<String, MetaMetadataField> getChildrenMap()
   {
@@ -186,34 +93,110 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
     return (kids != null && kids.size() > 0) ? kids.get(0).getChildrenMap() : null;
   }
 
-  public MetaMetadataCompositeField getChildComposite()
+  public MetaMetadataCompositeField getElementComposite()
   {
     HashMapArrayList<String, MetaMetadataField> kids = super.getChildrenMap();
     return (kids != null && kids.size() > 0) ? (MetaMetadataCompositeField) kids.get(0) : null;
   }
-
-  public String getChildUseValueAsLabel()
+  
+  public MetaMetadataCompositeField getPreparedElementComposite()
   {
-    return childUseValueAsLabel;
+    MetaMetadataCompositeField elementComposite = getElementComposite();
+    prepareElementComposite(elementComposite);
+    return elementComposite;
   }
 
-  public boolean isChildShowExpandedInitially()
+  private MetaMetadataCompositeField createElementComposite()
   {
-    return childShowExpandedInitially;
+    HashMapArrayList<String, MetaMetadataField> kids = super.getChildrenMap();
+    String childType = getChildType();
+    String elementCompositeName = childType != null ? childType : UNRESOLVED_NAME;
+    MetaMetadataCompositeField composite =
+        new MetaMetadataCompositeField(elementCompositeName, kids);
+    composite.setParent(this);
+
+    final MetaMetadataCollectionField thisField = this;
+    composite.setAttributeChangeListener(new AttributeChangeListener()
+    {
+      @Override
+      public void typeChanged(String newType)
+      {
+        thisField.setChildType(newType);
+      }
+
+      @Override
+      public void extendsChanged(String newExtends)
+      {
+        thisField.setChildExtends(newExtends);
+      }
+
+      @Override
+      public void tagChanged(String newTag)
+      {
+        if (thisField.getChildTag() == null)
+        {
+          thisField.setChildTag(newTag);
+        }
+      }
+
+      @Override
+      public void usedForInlineMmdDefChanged(boolean usedForInlineMmdDef)
+      {
+        thisField.setUsedToDefineInlineMmd(usedForInlineMmdDef);
+      }
+
+      @Override
+      public void typeMmdChanged(MetaMetadata newTypeMmd)
+      {
+        thisField.setTypeMmd(newTypeMmd);
+      }
+
+      @Override
+      public void mmdScopeChanged(MmdScope newMmdScope)
+      {
+        thisField.setMmdScope(newMmdScope);
+      }
+    });
+
+    kids.clear();
+    kids.put(composite.getName(), composite);
+
+    prepareElementComposite(composite);
+  
+    return composite;
   }
 
-  public boolean isChildShowExpandedAlways()
+  private void prepareElementComposite(MetaMetadataCompositeField composite)
   {
-    return childShowExpandedAlways;
+    if (composite.getName().equals(UNRESOLVED_NAME))
+      composite.setName(this.getChildType() == null ? this.getName() : this.getChildType());
+  
+    composite.setRepository(this.getRepository());
+    composite.setPackageName(this.packageName());
+    composite.setDeclaringMmd(this.getDeclaringMmd());
+    composite.setMmdScope(this.getMmdScope());
+  
+    composite.setPromoteChildren(this.isPromoteChildren());
+    
+    // use set*Directly() to reduce unnecessary trigger of AttributeChangeListener
+    composite.setTypeDirectly(this.getChildType());
+    composite.setExtendsAttributeDirectly(this.getChildExtends());
+    composite.setTagDirectly(this.getChildTag());
+  
+    MetaMetadataCollectionField superField = (MetaMetadataCollectionField) this.getSuperField();
+    if (superField != null)
+    {
+      composite.setSuperField(superField.getElementComposite());
+    }
   }
 
   public boolean isCollectionOfScalars()
   {
-    if (childScalarType != null)
+    if (getChildScalarType() != null)
     {
       return true;
     }
-    MetaMetadataFieldDeclaration superField = getSuperField();
+    MetaMetadataField superField = getSuperField();
     if (superField != null)
     {
       return ((MetaMetadataCollectionField) superField).isCollectionOfScalars();
@@ -248,22 +231,12 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
     return typeNameInJava;
   }
 
-  public void setChildType(String childType)
-  {
-    this.childType = childType;
-  }
-
-  protected void setChildScalarType(MetadataParsedURLScalarType childScalarType)
-  {
-    this.childScalarType = childScalarType;
-  }
-
   @Override
   public String resolveTag()
   {
     if (isNoWrap())
     {
-      return (childTag != null) ? childTag : childType;
+      return (getChildTag() != null) ? getChildTag() : getChildType();
     }
     else
     {
@@ -275,13 +248,13 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
   public String getTagForTypesScope()
   {
     // FIXME: seems broken when rewriting collection xpath without re-indicating child_type
-    return childType != null ? childType : getTag() != null ? getTag() : getName();
+    return getChildType() != null ? getChildType() : getTag() != null ? getTag() : getName();
   }
 
   @Override
   protected String getMetaMetadataTagToInheritFrom()
   {
-    return childType != null ? childType : null;
+    return getChildType() != null ? getChildType() : null;
   }
 
   /**
@@ -292,7 +265,7 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
   @Override
   public MetaMetadataCompositeField metaMetadataCompositeField()
   {
-    return getChildComposite();
+    return getElementComposite();
   }
 
   @Override
@@ -310,30 +283,11 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
     case COLLECTION_ELEMENT:
     {
       // prepare childComposite: possibly new name, type, extends, tag and inheritedField
-      MetaMetadataCompositeField childComposite = this.getChildComposite();
-      if (childComposite.getName().equals(UNRESOLVED_NAME))
-        childComposite.setName(this.childType == null ? this.getName() : this.childType);
-      childComposite.setType(this.childType); // here not using setter to reduce unnecessary
-      // re-assignment of this.childType
-      childComposite.setExtendsAttribute(this.childExtends);
-      childComposite.setTag(this.childTag);
-      childComposite.setRepository(this.getRepository());
-      childComposite.setPackageName(this.packageName());
-
-      MetaMetadataCollectionField inheritedField =
-          (MetaMetadataCollectionField) this.getSuperField();
-      if (inheritedField != null)
-      {
-        childComposite.setSuperField(inheritedField.getChildComposite());
-      }
-      childComposite.setDeclaringMmd(this.getDeclaringMmd());
-      childComposite.setMmdScope(this.getMmdScope());
+      MetaMetadataCompositeField childComposite = getElementComposite();
+      prepareElementComposite(childComposite);
 
       // inheritedMmd might be inferred from type/extends
       result = childComposite.inheritMetaMetadata(inheritanceHandler);
-
-      this.setTypeMmd(childComposite.getTypeMmd());
-      this.setMmdScope(childComposite.getMmdScope());
       break;
     }
     case COLLECTION_SCALAR:
@@ -353,9 +307,9 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
   protected void clearInheritFinishedOrInProgressFlag()
   {
     super.clearInheritFinishedOrInProgressFlag();
-    if (this.getChildComposite() != null)
+    if (this.getElementComposite() != null)
     {
-      this.getChildComposite().clearInheritFinishedOrInProgressFlag();
+      this.getElementComposite().clearInheritFinishedOrInProgressFlag();
     }
   }
 
@@ -365,7 +319,7 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
     FieldType fieldType = getFieldType();
     if (fieldType == FieldType.COLLECTION_ELEMENT)
     {
-      MetaMetadataCompositeField childComposite = getChildComposite();
+      MetaMetadataCompositeField childComposite = getElementComposite();
       if (childComposite != null)
         return childComposite.bindMetadataClassDescriptor(metadataTScope);
     }
@@ -378,7 +332,7 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
   {
     super.customizeFieldDescriptor(metadataTScope, fdProxy);
 
-    fdProxy.setCollectionOrMapTagName(this.childTag);
+    fdProxy.setCollectionOrMapTagName(this.getChildTag());
     fdProxy.setWrapped(!this.isNoWrap());
   }
 
@@ -422,9 +376,9 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
                                          null,
                                          javaTypeName);
         genericTypeName = fieldCd.getDescribedClassSimpleName();
-        if (StringTools.isUpperCase(childType))
+        if (StringTools.isUpperCase(getChildType()))
         {
-          genericTypeVar.setName(childType);
+          genericTypeVar.setName(getChildType());
         }
         else
         {
@@ -451,12 +405,12 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
                   + " because child_scalar_type specified ...");
 
         ScalarType scalarType = this.getChildScalarType();
-        if (scalarType != null && childTag == null)
+        if (scalarType != null && getChildTag() == null)
         {
           String name = this.getName();
-          childTag = name.endsWith("s") ? name.substring(0, name.length() - 1) : name;
+          setChildTag(name.endsWith("s") ? name.substring(0, name.length() - 1) : name);
           warning("child_tag is necessary when using collection of scalars! will use a default child_tag: "
-                  + childTag);
+                  + getChildTag());
         }
         fd = new MetadataFieldDescriptor(
                                          this,
@@ -494,13 +448,13 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
 
     if (getChildrenSize() == 1)
     {
-      MetaMetadataCompositeField childComposite = getChildComposite();
+      MetaMetadataCompositeField childComposite = getElementComposite();
       if (childComposite != null)
       {
         HashMapArrayList<String, MetaMetadataField> childsKids = childComposite.getChildrenMap();
         this.setChildrenMap(childsKids);
         if (childsKids != null)
-          for (MetaMetadataFieldDeclaration field : childsKids)
+          for (MetaMetadataField field : childsKids)
           {
             field.setParent(this);
             if (field instanceof MetaMetadataNestedField)
@@ -517,11 +471,11 @@ public class MetaMetadataCollectionField extends MetaMetadataNestedField
   {
     StringBuilder sb = StringBuilderUtils.acquire();
     sb.append(super.getFingerprintString());
-    addToFp(sb, childTag);
-    addToFp(sb, childType);
-    addToFp(sb, childExtends);
-    addToFp(sb, childScalarType);
-    addToFp(sb, noWrap);
+    addToFp(sb, getChildTag());
+    addToFp(sb, getChildType());
+    addToFp(sb, getChildExtends());
+    addToFp(sb, getChildScalarType());
+    addToFp(sb, isNoWrap());
     String fp = sb.toString();
     StringBuilderUtils.release(sb);
     return fp;

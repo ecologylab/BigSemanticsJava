@@ -47,8 +47,6 @@ import ecologylab.textformat.NamedStyle;
  */
 @SuppressWarnings("rawtypes")
 @simpl_inherit
-@simpl_descriptor_classes(
-{ MetaMetadataClassDescriptor.class, MetaMetadataFieldDescriptor.class })
 public abstract class MetaMetadataField extends MetaMetadataFieldDeclaration
     implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneable
 {
@@ -210,11 +208,13 @@ public abstract class MetaMetadataField extends MetaMetadataFieldDeclaration
   @simpl_map
   @simpl_scope(NestedMetaMetadataFieldTypesScope.NAME)
   @simpl_nowrap
+  @mm_dont_inherit
   private HashMapArrayList<String, MetaMetadataField> kids;
 
   @simpl_collection
   @simpl_scope(FieldOpScope.NAME)
-  @simpl_nowrap List<FieldOp>                               fieldOps;
+  @simpl_nowrap
+  List<FieldOp>                               fieldOps;
 
   // ////////////// Presentation Semantics Below ////////////////
 
@@ -307,6 +307,21 @@ public abstract class MetaMetadataField extends MetaMetadataFieldDeclaration
     return kids == null ? null : kids.values();
   }
 
+  public int getChildrenSize()
+  {
+    return kids == null ? 0 : kids.size();
+  }
+
+  public boolean hasChildren()
+  {
+    return kids != null && kids.size() > 0;
+  }
+  
+  public MetaMetadataField getChild(int i)
+  {
+    return kids == null ? null : kids.get(i);
+  }
+
   /**
    * @return The nested fields inside of this one as a map.
    */
@@ -324,19 +339,10 @@ public abstract class MetaMetadataField extends MetaMetadataFieldDeclaration
     return kids;
   }
 
-  public boolean hasChildren()
-  {
-    return kids != null && kids.size() > 0;
-  }
-
-  public int getChildrenSize()
-  {
-    return kids == null ? 0 : kids.size();
-  }
-
   public MetaMetadataField lookupChild(String name)
   {
-    return kids == null ? null : kids.get(name);
+    HashMapArrayList<String, MetaMetadataField> childrenMap = getChildrenMap();
+    return childrenMap == null ? null : childrenMap.get(name);
   }
 
   public MetaMetadataField lookupChild(MetadataFieldDescriptor metadataFieldDescriptor)
@@ -349,7 +355,7 @@ public abstract class MetaMetadataField extends MetaMetadataFieldDeclaration
     if (parentField instanceof MetaMetadataCompositeField && this.parent() == parentField)
       return true;
     if (parentField instanceof MetaMetadataCollectionField
-        && this.parent() == ((MetaMetadataCollectionField) parentField).getChildComposite())
+        && this.parent() == ((MetaMetadataCollectionField) parentField).getElementComposite())
       return true;
     return false;
   }
@@ -728,6 +734,16 @@ public abstract class MetaMetadataField extends MetaMetadataFieldDeclaration
                          LAYER_COMPARATOR);
       fieldsSortedForDisplay = true;
     }
+  }
+
+  public MetaMetadata getTypeMmd()
+  {
+    return null;
+  }
+
+  public void setTypeMmd(MetaMetadata result)
+  {
+    // no op
   }
 
   /**

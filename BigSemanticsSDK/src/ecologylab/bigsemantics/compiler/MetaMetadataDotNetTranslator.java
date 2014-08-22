@@ -225,7 +225,7 @@ public class MetaMetadataDotNetTranslator extends DotNetTranslator implements Mm
 		if (fieldDescriptor.getCollectionType() != null)
 			return; // should have been handled by MetadataFieldDescriptor.getJavaType()
 		MetadataFieldDescriptor mdFD = (MetadataFieldDescriptor) fieldDescriptor;
-		MetaMetadataFieldDeclaration field = mdFD.getDefiningMmdField();
+		MetaMetadataField field = mdFD.getDefiningMmdField();
 		if (field instanceof MetaMetadataNestedField)
 		{
 			MetaMetadataNestedField nestedField = (MetaMetadataNestedField) field;

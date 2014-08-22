@@ -388,7 +388,7 @@ implements ScalarUnmarshallingContext, SemanticsConstants
         }
       }
 
-      for (MetaMetadataFieldDeclaration field : fieldSet)
+      for (MetaMetadataField field : fieldSet)
       {
         try
         {
@@ -453,7 +453,7 @@ implements ScalarUnmarshallingContext, SemanticsConstants
     }
   }
 
-  private MetaMetadataFieldDeclaration getCurrentSurroundingField(Scope<Object> params)
+  private MetaMetadataField getCurrentSurroundingField(Scope<Object> params)
   {
     Stack<MetaMetadataField> stack =
         (Stack<MetaMetadataField>) params.get(SURROUNDING_META_METADATA_STACK);
@@ -474,7 +474,7 @@ implements ScalarUnmarshallingContext, SemanticsConstants
    */
   private boolean fieldsetContainsFieldsWithDependencies(HashMapArrayList<String, MetaMetadataField> fieldSet)
   {
-    for (MetaMetadataFieldDeclaration field : fieldSet)
+    for (MetaMetadataField field : fieldSet)
     {
       if (field instanceof MetaMetadataScalarField)
       {
@@ -631,7 +631,8 @@ implements ScalarUnmarshallingContext, SemanticsConstants
     return result;
   }
 
-  private Node findContextNodeIfNecessary(MetaMetadataFieldDeclaration mmdField, Node currentContextNode,
+  private Node findContextNodeIfNecessary(MetaMetadataField mmdField,
+                                          Node currentContextNode,
                                           Scope<Object> params)
   {
     String contextNodeName = mmdField.getContextNode();
@@ -668,7 +669,7 @@ implements ScalarUnmarshallingContext, SemanticsConstants
     String evaluation = null;
     if (contextNode != null)
     {
-      MetaMetadataFieldDeclaration surroundingField = getCurrentSurroundingField(params);
+      MetaMetadataField surroundingField = getCurrentSurroundingField(params);
 
       int i = 0;
       do
@@ -989,7 +990,7 @@ implements ScalarUnmarshallingContext, SemanticsConstants
         if (metadataFieldDescriptor.isPolymorphic())
         {
           String polymorphTagName =
-              mmdField.getChildComposite().getTypeMmd().getTagForTypesScope();
+              mmdField.getElementComposite().getTypeMmd().getTagForTypesScope();
           if (polymorphTagName != null)
           {
             elementClassDescriptor =
@@ -1017,7 +1018,7 @@ implements ScalarUnmarshallingContext, SemanticsConstants
     // build the result list and populate
     ArrayList elements = new ArrayList();
     Class[] argClasses = new Class[] { MetaMetadataCompositeField.class };
-    Object[] argObjects = new Object[] { mmdField.getChildComposite() };
+    Object[] argObjects = new Object[] { mmdField.getElementComposite() };
     for (int i = 0; i < size; ++i)
     {
       Node thisNode = (nodeList == null) ? null : nodeList.item(i);

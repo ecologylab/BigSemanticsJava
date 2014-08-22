@@ -108,7 +108,7 @@ public class MetaMetadataJavaTranslator extends JavaTranslator implements MmdCom
 		if (fieldDescriptor.getCollectionType() != null)
 			return; // should have been handled by MetadataFieldDescriptor.getJavaType()
 		MetadataFieldDescriptor mdFD = (MetadataFieldDescriptor) fieldDescriptor;
-		MetaMetadataFieldDeclaration field = mdFD.getDefiningMmdField();
+		MetaMetadataField field = mdFD.getDefiningMmdField();
 		if (field instanceof MetaMetadataNestedField)
 		{
 			MetaMetadataNestedField nestedField = (MetaMetadataNestedField) field;
