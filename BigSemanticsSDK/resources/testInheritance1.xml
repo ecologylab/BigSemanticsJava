@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<meta_metadata_repository package="test_inheritance_repo0">
+<meta_metadata_repository package="test_inheritance1">
 
   <meta_metadata name="metadata">
     <scalar name="meta_metadata_name" scalar_type="String"/>
@@ -22,7 +22,7 @@
   </meta_metadata>
   
   <meta_metadata name="creative_work" extends="rich_document">
-    <scalar name="title"  style_name="caption" use_value_as_label="portrait"/>
+    <scalar name="title"  style_name="caption" use_value_as_label="test_value"/>
     
     <composite name="source" type="rich_document">
       <xpath>//div[@id='source']/a</xpath>
@@ -46,60 +46,6 @@
         <xpath>../p[@class='abstract']</xpath>
       </scalar>
     </collection>
-    
-    <collection name="citations" child_type="creative_work">
-      <xpath>//div[@id='citations']//a</xpath>
-      <scalar name="title" style_name="citation_caption">
-        <xpath>.</xpath>
-      </scalar>
-      <scalar name="location">
-        <xpath>./@href</xpath>
-      </scalar>
-      <scalar name="description" style_name="abstract">
-        <xpath>../p[@class='abstract']</xpath>
-      </scalar>
-      <collection name="citations">
-        <xpath>../div[@class='cited_by']/a</xpath>
-        <scalar name="title" style_name="further_citation">
-          <xpath>.</xpath>
-        </scalar>
-        <scalar name="location">
-          <xpath>./@href</xpath>
-        </scalar>
-      </collection>
-    </collection>
   </meta_metadata>
   
-  <!--
-  
-  <meta_metadata name="book" extends="creative_work" parser="xpath">
-    <collection name="tags">
-      <xpath>//div[@class='book_tag']</xpath>
-    </collection>
-  </meta_metadata>
-  
-  <meta_metadata name="my_book" extends="book" parser="xpath">
-    <collection name="tags">
-      <xpath>//div[@class='my_book_tag']</xpath>
-    </collection>
-    <collection name="citations">
-      <collection name="tags">
-        <xpath>//div[@class='citation_book_tag']</xpath>
-      </collection>
-      <composite name="source">
-        <scalar name="location">
-          <xpath>//div[@class='citation_book']/a[@id='source']/@href</xpath>
-        </scalar>
-      </composite>
-    </collection>
-
-    <composite name="source">
-      <scalar name="location">
-        <xpath>//a[@id='my_book_source']/@href</xpath>
-      </scalar>
-    </composite>
-  </meta_metadata>
-  
-  -->
-
 </meta_metadata_repository>

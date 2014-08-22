@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<meta_metadata_repository package="test_inheritance_repo2">
+<meta_metadata_repository package="test_inheritance_issue2">
 
 	<meta_metadata name="metadata">
 		<scalar name="meta_metadata_name" scalar_type="String" />

@@ -23,7 +23,7 @@ public class TestInheritance extends BaseMmdTest
   @Test
   public void testInheritingWholeField() throws SIMPLTranslationException
   {
-    MetaMetadataRepository repo = loadRepository("/testInheritance0.xml");
+    MetaMetadataRepository repo = loadRepository("/testInheritance1.xml");
 
     NewInheritanceHandler handler = new NewInheritanceHandler();
     assertTrue(handler.handleMmdRepository(repo));
@@ -38,7 +38,7 @@ public class TestInheritance extends BaseMmdTest
   @Test
   public void testMergingAttributes() throws SIMPLTranslationException
   {
-    MetaMetadataRepository repo = loadRepository("/testInheritance0.xml");
+    MetaMetadataRepository repo = loadRepository("/testInheritance1.xml");
 
     NewInheritanceHandler handler = new NewInheritanceHandler();
     assertTrue(handler.handleMmdRepository(repo));
@@ -119,13 +119,15 @@ public class TestInheritance extends BaseMmdTest
     assertEquals(MetadataStringScalarType.class, scalar.getScalarType().getClass());
     assertEquals("caption", scalar.getStyleName());
     assertEquals("location", scalar.getNavigatesTo());
-    assertEquals("portrait", scalar.getUseValueAsLabel());
+    assertEquals("test_value", scalar.getUseValueAsLabel());
+    assertEquals(1, scalar.getXpathsSize());
+    assertEquals("//meta[@name='title']/@content", scalar.getXpath(0));
   }
 
   @Test
   public void testMergingChildren() throws SIMPLTranslationException
   {
-    MetaMetadataRepository repo = loadRepository("/testInheritance0.xml");
+    MetaMetadataRepository repo = loadRepository("/testInheritance1.xml");
 
     NewInheritanceHandler handler = new NewInheritanceHandler();
     assertTrue(handler.handleMmdRepository(repo));
@@ -188,9 +190,10 @@ public class TestInheritance extends BaseMmdTest
     assertEquals("../p[@class='abstract']", scalar.getXpath(0));
   }
 
+  @Test
   public void testRecursiveDependencies() throws SIMPLTranslationException
   {
-    MetaMetadataRepository repo = loadRepository("/testInheritance1.xml");
+    MetaMetadataRepository repo = loadRepository("/testInheritance2.xml");
 
     NewInheritanceHandler handler = new NewInheritanceHandler();
     assertTrue(handler.handleMmdRepository(repo));
@@ -227,9 +230,41 @@ public class TestInheritance extends BaseMmdTest
     assertEquals("../p[@class='abstract']", scalar.getXpath(0));
   }
 
-  public void testInterdependencies()
+  @Test
+  public void testInterdependencies() throws SIMPLTranslationException
   {
+    MetaMetadataRepository repo = loadRepository("/testInheritance2.xml");
 
+    NewInheritanceHandler handler = new NewInheritanceHandler();
+    assertTrue(handler.handleMmdRepository(repo));
+
+    MetaMetadataScalarField scalar = null;
+    MetaMetadataCompositeField composite = null;
+    MetaMetadataCollectionField collection = null;
+    
+    // rich_document.title
+    scalar = (MetaMetadataScalarField) getNestedField(repo, "rich_document", "title");
+    assertEquals("title", scalar.getLabel());
+    
+    // creative_work.authors.title
+    scalar = (MetaMetadataScalarField) getNestedField(repo, "creative_work", "authors", "title");
+    assertEquals("name", scalar.getLabel());
+    assertEquals(2, scalar.getXpathsSize());
+    assertEquals("./text()", scalar.getXpath(0));
+    assertEquals("//meta[@name='title']/@content", scalar.getXpath(1));
+    
+    collection =
+        (MetaMetadataCollectionField) getNestedField(repo, "creative_work", "authors", "works");
+    assertNotNull(collection);
+    assertNotNull(collection.lookupChild("title"));
+    assertNotNull(collection.lookupChild("authors"));
+    assertNotNull(collection.lookupChild("source"));
+    assertNotNull(collection.lookupChild("references"));
+    assertNotNull(collection.lookupChild("citations"));
+    assertNotNull(collection.lookupChild("authors").lookupChild("title"));
+    assertNotNull(collection.lookupChild("source").lookupChild("title"));
+    assertNotNull(collection.lookupChild("references").lookupChild("title"));
+    assertNotNull(collection.lookupChild("citations").lookupChild("title"));
   }
 
 }

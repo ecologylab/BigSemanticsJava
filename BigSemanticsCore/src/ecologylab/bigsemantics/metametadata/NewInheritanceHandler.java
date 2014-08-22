@@ -339,6 +339,11 @@ public class NewInheritanceHandler
           logger.error("Cannot find typeMmd for {}", field);
           return false;
         }
+        
+        if (!typeMmd.isInheritDone())
+        {
+          handleMmd(typeMmd);
+        }
 
         if (superField == null)
         {
