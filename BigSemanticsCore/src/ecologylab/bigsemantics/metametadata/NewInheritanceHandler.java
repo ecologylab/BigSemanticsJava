@@ -225,24 +225,30 @@ public class NewInheritanceHandler
     addChildrenNames(field, childrenNames);
     addChildrenNames(superField, childrenNames);
 
-    // a special handling for scalar collections.
-    FieldType fieldType = field.getFieldType();
-    if (fieldType == FieldType.COLLECTION_SCALAR)
+    // first, for all immediate children, merge attributes or copy the field object over from
+    // superField.
+    // this "breadth-first" process is critical for dealing with recursions.
+    for (String childName : childrenNames)
     {
-      childrenNames.remove(MetaMetadataCollectionField.UNRESOLVED_NAME);
+      MetaMetadataField f0 = superField.lookupChild(childName);
+      MetaMetadataField f1 = field.lookupChild(childName);
+      if (f0 != null && f1 != null && f0 != f1)
+      {
+        mergeAttributes(f1, f0);
+      }
+      else if (f0 != null && f1 == null)
+      {
+        field.childrenMap().put(childName, f0);
+      }
     }
 
     for (String childName : childrenNames)
     {
       MetaMetadataField f0 = superField.lookupChild(childName);
       MetaMetadataField f1 = field.lookupChild(childName);
-      if (f0 != f1 && f1 != null)
+      if (f1 != null && f0 != f1)
       {
         inheritField(f1, f0);
-      }
-      else
-      {
-        field.childrenMap().put(childName, f0);
       }
     }
 
@@ -266,13 +272,10 @@ public class NewInheritanceHandler
     {
       if (superField != null)
       {
-        if (!superField.isInheritDone())
+        if (field.getSuperField() == null)
         {
-          logger.error("Super field inheritance not done: {}", superField);
-          return false;
+          field.setSuperField(superField);
         }
-
-        field.setSuperField(superField);
         mergeAttributes(field, superField);
       }
 
@@ -306,11 +309,13 @@ public class NewInheritanceHandler
           push(field);
           if (typeMmd == findTypeMmd(superField))
           {
+            // not changing type on the sub field.
             mergeAttributes(field, superField);
             mergeChildren(field, superField);
           }
           else
           {
+            // changing type on the sub field.
             mergeAttributes(field, superField);
             mergeChildren(field, typeMmd);
             mergeChildren(field, superField);

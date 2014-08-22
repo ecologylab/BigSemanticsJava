@@ -18,7 +18,7 @@ public class TestInheritanceIssues extends BaseMmdTest
   @Test
   public void testTitleLabelIssue() throws SIMPLTranslationException
   {
-    MetaMetadataRepository repo = loadRepository("/testInheritanceRepo1.xml");
+    MetaMetadataRepository repo = loadRepository("/testInheritanceIssue1.xml");
     repo.traverseAndInheritMetaMetadata();
     MetaMetadata mmd = repo.getMMByName("document");
     serializeToTempFile(mmd, "1");
@@ -29,7 +29,7 @@ public class TestInheritanceIssues extends BaseMmdTest
   @Test
   public void testScalarCollectionIssue() throws SIMPLTranslationException
   {
-    MetaMetadataRepository repo = loadRepository("/testInheritanceRepo2.xml");
+    MetaMetadataRepository repo = loadRepository("/testInheritanceIssue2.xml");
 
     assertNotNull(repo.getMMByName("metadata"));
     assertNotNull(repo.getMMByName("document"));
@@ -87,7 +87,7 @@ public class TestInheritanceIssues extends BaseMmdTest
   @Test
   public void testInheritingFromBothTypeAndSuperFieldIssue() throws SIMPLTranslationException
   {
-    MetaMetadataRepository repo = loadRepository("/testInheritanceRepo3.xml");
+    MetaMetadataRepository repo = loadRepository("/testInheritanceIssue3.xml");
     
     MetaMetadataField field = null;
     

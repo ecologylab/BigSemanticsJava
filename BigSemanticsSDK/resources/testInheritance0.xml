@@ -46,19 +46,6 @@
         <xpath>../p[@class='abstract']</xpath>
       </scalar>
     </collection>
-    
-    <collection name="citations" child_type="creative_work">
-      <xpath>//div[@id='citations']//a</xpath>
-      <scalar name="title" style_name="citation_caption">
-        <xpath>.</xpath>
-      </scalar>
-      <scalar name="location">
-        <xpath>./@href</xpath>
-      </scalar>
-      <scalar name="description" style_name="abstract">
-        <xpath>../p[@class='abstract']</xpath>
-      </scalar>
-    </collection>
   </meta_metadata>
   
   <!--

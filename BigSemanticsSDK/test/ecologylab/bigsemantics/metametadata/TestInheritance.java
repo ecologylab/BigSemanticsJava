@@ -23,7 +23,7 @@ public class TestInheritance extends BaseMmdTest
   @Test
   public void testInheritingWholeField() throws SIMPLTranslationException
   {
-    MetaMetadataRepository repo = loadRepository("/testInheritanceRepo0.xml");
+    MetaMetadataRepository repo = loadRepository("/testInheritance0.xml");
 
     NewInheritanceHandler handler = new NewInheritanceHandler();
     assertTrue(handler.processMmdRepository(repo));
@@ -38,7 +38,7 @@ public class TestInheritance extends BaseMmdTest
   @Test
   public void testMergingAttributes() throws SIMPLTranslationException
   {
-    MetaMetadataRepository repo = loadRepository("/testInheritanceRepo0.xml");
+    MetaMetadataRepository repo = loadRepository("/testInheritance0.xml");
 
     NewInheritanceHandler handler = new NewInheritanceHandler();
     assertTrue(handler.processMmdRepository(repo));
@@ -125,7 +125,7 @@ public class TestInheritance extends BaseMmdTest
   @Test
   public void testMergingChildren() throws SIMPLTranslationException
   {
-    MetaMetadataRepository repo = loadRepository("/testInheritanceRepo0.xml");
+    MetaMetadataRepository repo = loadRepository("/testInheritance0.xml");
 
     NewInheritanceHandler handler = new NewInheritanceHandler();
     assertTrue(handler.processMmdRepository(repo));
@@ -186,6 +186,18 @@ public class TestInheritance extends BaseMmdTest
     assertEquals("abstract", scalar.getStyleName());
     assertEquals(1, scalar.getXpathsSize());
     assertEquals("../p[@class='abstract']", scalar.getXpath(0));
+  }
+
+  public void testRecursiveDependencies() throws SIMPLTranslationException
+  {
+    MetaMetadataRepository repo = loadRepository("/testInheritance1.xml");
+
+    NewInheritanceHandler handler = new NewInheritanceHandler();
+    assertTrue(handler.processMmdRepository(repo));
+
+    MetaMetadataScalarField scalar = null;
+    MetaMetadataCompositeField composite = null;
+    MetaMetadataCollectionField collection = null;
 
     // creative_work.citations
 
@@ -215,17 +227,7 @@ public class TestInheritance extends BaseMmdTest
     assertEquals("../p[@class='abstract']", scalar.getXpath(0));
   }
 
-  public void testCopyingChild()
-  {
-
-  }
-
-  public void testInheritingMmd()
-  {
-
-  }
-
-  public void testChangingTypeOnSubField()
+  public void testInterdependencies()
   {
 
   }
