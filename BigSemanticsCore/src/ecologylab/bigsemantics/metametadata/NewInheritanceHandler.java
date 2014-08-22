@@ -170,7 +170,7 @@ public class NewInheritanceHandler
    * @param superField
    * @return
    */
-  public boolean mergeAttributes(MetaMetadataField field, MetaMetadataField superField)
+  protected boolean mergeAttributes(MetaMetadataField field, MetaMetadataField superField)
   {
     MetaMetadataClassDescriptor superClassDescriptor =
         (MetaMetadataClassDescriptor) ClassDescriptor.getClassDescriptor(superField);
@@ -266,7 +266,7 @@ public class NewInheritanceHandler
     }
   }
 
-  public boolean mergeChildren(MetaMetadataField field, MetaMetadataField superField)
+  protected boolean mergeChildren(MetaMetadataField field, MetaMetadataField superField)
   {
     Set<String> childrenNames = new HashSet<String>();
     addChildrenNames(field, childrenNames);
@@ -314,7 +314,7 @@ public class NewInheritanceHandler
     }
   }
 
-  public boolean inheritField(MetaMetadataField field, MetaMetadataField superField)
+  protected boolean inheritField(MetaMetadataField field, MetaMetadataField superField)
   {
     String fieldStackTrace = getFieldStackTrace(field);
     logger.debug("Handling field: " + fieldStackTrace);
@@ -431,7 +431,7 @@ public class NewInheritanceHandler
     }
   }
 
-  private MetaMetadata findSuperMmd(MetaMetadata mmd)
+  protected MetaMetadata findSuperMmd(MetaMetadata mmd)
   {
     if (mmd.getSuperMmd() != null)
     {
@@ -466,7 +466,7 @@ public class NewInheritanceHandler
     return result;
   }
 
-  private MetaMetadata findTypeMmd(MetaMetadataField field)
+  protected MetaMetadata findTypeMmd(MetaMetadataField field)
   {
     if (field instanceof MetaMetadata)
     {
