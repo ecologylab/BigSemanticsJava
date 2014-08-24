@@ -9,12 +9,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ecologylab.bigsemantics.metametadata.exceptions.MetaMetadataException;
+import ecologylab.collections.MultiAncestorScope;
+import ecologylab.generic.HashMapArrayList;
 import ecologylab.generic.StringBuilderBaseUtils;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.FieldType;
 import ecologylab.serialization.types.ScalarType;
-
-// FIXME use the stack to print messages, instead of MetaMetadataField.toString()
 
 /**
  * 
@@ -31,8 +31,6 @@ public class NewInheritanceHandler
   {
     logger = LoggerFactory.getLogger(NewInheritanceHandler.class);
   }
-
-  private MetaMetadataRepository       repository;
 
   private ArrayList<MetaMetadataField> stack = new ArrayList<MetaMetadataField>();
 
@@ -63,7 +61,7 @@ public class NewInheritanceHandler
     return -1;
   }
 
-  private String getFieldStackTrace(MetaMetadataField fieldToInclude)
+  public String getFieldStackTrace(MetaMetadataField fieldToInclude)
   {
     StringBuilder sb = StringBuilderBaseUtils.acquire();
     for (int i = 0; i <= stack.size(); ++i)
@@ -91,49 +89,49 @@ public class NewInheritanceHandler
     return result;
   }
 
-  public boolean handleMmdRepository(MetaMetadataRepository repository)
+  public void handleMmdRepository(MetaMetadataRepository repository)
   {
-    this.repository = repository;
-
     List<MetaMetadata> mmds = new ArrayList<MetaMetadata>(repository.getMetaMetadataCollection());
+
+    MultiAncestorScope<Object> repoScope = new MultiAncestorScope<Object>("repo");
+    for (MetaMetadata mmd : mmds)
+    {
+      repoScope.put(mmd.getName(), mmd);
+      mmd.scope().addAncestor(repoScope);
+    }
 
     RepositoryOrdering ordering = new RepositoryOrderingByGeneration();
     mmds = ordering.orderMetaMetadataForInheritance(mmds);
 
     for (MetaMetadata mmd : mmds)
     {
-      if (!handleMmd(mmd))
-      {
-        return false;
-      }
+      handleMmd(mmd);
     }
-    return true;
   }
 
-  public boolean handleMmd(MetaMetadata mmd)
+  public void handleMmd(MetaMetadata mmd)
   {
     if (search(mmd) < 0)
     {
+      logger.debug("{}: Handling...", mmd);
+
       push(mmd);
 
       try
       {
         MetaMetadata superMmd = findSuperMmd(mmd);
+        mmd.scope().addAncestor(superMmd == null ? null : superMmd.scope());
 
         if (superMmd == null)
         {
           if (!MetaMetadata.isRootMetaMetadata(mmd))
           {
             throw new MetaMetadataException("Can't find super type for " + mmd);
-            // TODO better error reporting
           }
 
           // mmd is the root
           mmd.setNewMetadataClass(true);
-          for (MetaMetadataField child : mmd.getChildren())
-          {
-            inheritField(child, null);
-          }
+          mergeChildren(mmd, null);
         }
         else
         {
@@ -148,13 +146,13 @@ public class NewInheritanceHandler
         }
 
         mmd.setInheritDone(true);
+        logger.debug("{}: Inheritance done", mmd);
       }
       finally
       {
         pop();
       }
     }
-    return mmd.isInheritDone();
   }
 
   /**
@@ -170,8 +168,10 @@ public class NewInheritanceHandler
    * @param superField
    * @return
    */
-  protected boolean mergeAttributes(MetaMetadataField field, MetaMetadataField superField)
+  protected void mergeAttributes(MetaMetadataField field, MetaMetadataField superField)
   {
+    logger.debug("{}: Merging attributes from {}...", field, superField);
+
     MetaMetadataClassDescriptor superClassDescriptor =
         (MetaMetadataClassDescriptor) ClassDescriptor.getClassDescriptor(superField);
     MetaMetadataClassDescriptor classDescriptor =
@@ -193,7 +193,7 @@ public class NewInheritanceHandler
         }
         catch (Exception e)
         {
-          String msg = String.format("Attribute inheritance failed: %s.%s from %s",
+          String msg = String.format("%s.%s: Attribute inheritance failed from %s",
                                      field,
                                      attributeName,
                                      superField);
@@ -201,8 +201,6 @@ public class NewInheritanceHandler
         }
       }
     }
-
-    return true;
   }
 
   private void mergeAttributeHelper(MetaMetadataField field,
@@ -258,16 +256,18 @@ public class NewInheritanceHandler
 
     if (attributeInherited)
     {
-      logger.debug("Field attribute inherited: {}.{} = {}, from {}",
+      logger.debug("{}.{}: Field attribute inherited from {}: {}",
                    field,
                    attributeName,
-                   localValue,
-                   superField);
+                   superField,
+                   localValue);
     }
   }
 
-  protected boolean mergeChildren(MetaMetadataField field, MetaMetadataField superField)
+  protected void mergeChildren(MetaMetadataField field, MetaMetadataField superField)
   {
+    logger.debug("{}: Merging children from {}...", field, superField);
+
     Set<String> childrenNames = new HashSet<String>();
     addChildrenNames(field, childrenNames);
     addChildrenNames(superField, childrenNames);
@@ -277,7 +277,7 @@ public class NewInheritanceHandler
     // this "breadth-first" process is critical for dealing with recursions.
     for (String childName : childrenNames)
     {
-      MetaMetadataField f0 = superField.lookupChild(childName);
+      MetaMetadataField f0 = superField == null ? null : superField.lookupChild(childName);
       MetaMetadataField f1 = field.lookupChild(childName);
       if (f0 != null && f1 != null && f0 != f1)
       {
@@ -286,21 +286,25 @@ public class NewInheritanceHandler
       else if (f0 != null && f1 == null)
       {
         field.childrenMap().put(childName, f0);
+        logger.debug("{}: Directly put {} into it", field, f0);
       }
     }
 
     // then, merge further nested structures in those immediate children
     for (String childName : childrenNames)
     {
-      MetaMetadataField f0 = superField.lookupChild(childName);
+      MetaMetadataField f0 = superField == null ? null : superField.lookupChild(childName);
       MetaMetadataField f1 = field.lookupChild(childName);
       if (f1 != null && f0 != f1)
       {
+        if (f1 instanceof MetaMetadataNestedField)
+        {
+          MultiAncestorScope<Object> f1scope = ((MetaMetadataNestedField) f1).scope();
+          f1scope.addAncestor(((MetaMetadataNestedField) field).scope());
+        }
         inheritField(f1, f0);
       }
     }
-
-    return false;
   }
 
   private void addChildrenNames(MetaMetadataField field, Set<String> childrenNames)
@@ -314,10 +318,10 @@ public class NewInheritanceHandler
     }
   }
 
-  protected boolean inheritField(MetaMetadataField field, MetaMetadataField superField)
+  protected void inheritField(MetaMetadataField field, MetaMetadataField superField)
   {
     String fieldStackTrace = getFieldStackTrace(field);
-    logger.debug("Handling field: " + fieldStackTrace);
+    logger.debug("{}: Inheriting from {}, stack trace: {}", field, superField, fieldStackTrace);
 
     if (search(field) < 0)
     {
@@ -331,15 +335,36 @@ public class NewInheritanceHandler
       }
 
       FieldType fieldType = field.getFieldType();
+      logger.debug("{}: Field type {}", field, fieldType);
       if (fieldType != FieldType.SCALAR && fieldType != FieldType.COLLECTION_SCALAR)
       {
-        MetaMetadata typeMmd = findTypeMmd(field);
+        MetaMetadataNestedField nested = (MetaMetadataNestedField) field;
+        if (superField != null)
+        {
+          MetaMetadataNestedField superNested = (MetaMetadataNestedField) superField;
+          nested.scope().addAncestor(superNested.scope());
+        }
+
+        MetaMetadata typeMmd = null;
+
+        if (nested.isInlineDefinition())
+        {
+          typeMmd = createInlineMmd(nested.metaMetadataCompositeField());
+        }
+        else
+        {
+          typeMmd = findTypeMmd(nested);
+          nested.scope().addAncestor(typeMmd == null ? null : typeMmd.scope());
+        }
+
         if (typeMmd == null)
         {
-          logger.error("Cannot find typeMmd for {}", field);
-          return false;
+          logger.error("{}: Cannot find typeMmd: type={}, extends={}",
+                       nested,
+                       nested.getType(),
+                       nested.getExtendsAttribute());
         }
-        
+
         if (!typeMmd.isInheritDone())
         {
           handleMmd(typeMmd);
@@ -347,22 +372,167 @@ public class NewInheritanceHandler
 
         if (superField == null)
         {
-          return inheritFromTypeMmd(field, typeMmd);
+          inheritFromTypeMmd(nested, typeMmd);
         }
         else
         {
-          return inheritFromSuperField(field, typeMmd, superField);
+          inheritFromSuperField(nested, typeMmd, superField);
         }
       }
       field.setInheritDone(true);
+      logger.debug("{}: Inheritance done", field);
     }
-
-    return field.isInheritDone();
   }
 
-  private boolean inheritFromTypeMmd(MetaMetadataField newField, MetaMetadata typeMmd)
+  protected MetaMetadata createInlineMmd(MetaMetadataCompositeField composite)
   {
-    // new field
+    logger.debug("{}: Creating inline mmd...", composite);
+
+    MultiAncestorScope<Object> scope = composite.scope();
+
+    // determine the new type name
+    String typeName = composite.getType();
+    if (typeName == null)
+    {
+      throw new MetaMetadataException("Cannot create inline type for " + composite
+                                      + ", did you specify type or child_type?");
+    }
+    if (scope.get(typeName) != null)
+    {
+      throw new MetaMetadataException("Type name " + typeName + " already in use: " + composite
+                                      + ", use another type name.");
+    }
+
+    // determine which existing mmd to inherit from
+    String extendsName = composite.getExtendsAttribute();
+    Object superMmdObj = scope.get(extendsName);
+    if (superMmdObj == null)
+    {
+      throw new MetaMetadataException("Cannot find super type " + extendsName + " for " + composite);
+    }
+    if (!(superMmdObj instanceof MetaMetadata))
+    {
+      throw new MetaMetadataException(extendsName + " is not a mmd type: " + composite);
+    }
+    MetaMetadata superMmd = (MetaMetadata) superMmdObj;
+    logger.debug("{}: Super type of inline mmd: {}", composite, superMmd);
+
+    // create inline mmd and add it to parent's scope
+    MetaMetadata inlineMmd = createInlineMmdHelper(composite, typeName, superMmd);
+    MultiAncestorScope<Object> parentScope = getParentScope(composite);
+    parentScope.put(inlineMmd.getName(), inlineMmd);
+
+    handleMmd(inlineMmd);
+
+    return inlineMmd;
+  }
+
+  private MetaMetadata createInlineMmdHelper(MetaMetadataCompositeField composite,
+                                             String typeName,
+                                             MetaMetadata superMmd)
+  {
+    // create and set inlineMmd attributes
+    MetaMetadata inlineMmd = new MetaMetadata();
+    inlineMmd.setName(typeName);
+    inlineMmd.setPackageName(composite.packageName());
+    inlineMmd.setType(null);
+    inlineMmd.setTypeMmd(superMmd);
+    inlineMmd.setExtendsAttribute(superMmd.getName());
+    inlineMmd.setRepository(composite.getRepository());
+    inlineMmd.scope().addAncestors(superMmd.scope(), composite.scope());
+    if (composite.getSchemaOrgItemtype() != null)
+    {
+      inlineMmd.setSchemaOrgItemtype(composite.getSchemaOrgItemtype());
+    }
+    inlineMmd.setNewMetadataClass(true);
+    logger.debug("{}: Inline mmd created", inlineMmd);
+
+    // set composite attributes and fields
+    composite.setInlineMmd(inlineMmd);
+    composite.setTypeMmd(inlineMmd);
+    composite.setType(inlineMmd.getName());
+    composite.setExtendsAttribute(null);
+    if (composite.getTag() == null)
+    {
+      composite.setTag(inlineMmd.getName()); // keep the tag name
+    }
+    HashMapArrayList<String, MetaMetadataField> kids = composite.getChildrenMap();
+    for (String kidKey : kids.keySet())
+    {
+      MetaMetadataField kid = kids.get(kidKey);
+      inlineMmd.getChildrenMap().put(kidKey, kid);
+      kid.setParent(inlineMmd);
+    }
+    kids.clear();
+    logger.debug("{}: Attributes and fields set after creating inline mmd", composite);
+
+    return inlineMmd;
+  }
+
+  private MultiAncestorScope<Object> getParentScope(MetaMetadataCompositeField composite)
+  {
+    if (composite.getEnclosingCollectionField() == composite.parent())
+    {
+      return ((MetaMetadataNestedField) composite.parent().parent()).scope();
+    }
+    return ((MetaMetadataNestedField) composite.parent()).scope();
+  }
+
+  protected MetaMetadata findSuperMmd(MetaMetadata mmd)
+  {
+    if (mmd.getSuperMmd() != null)
+    {
+      return mmd.getSuperMmd();
+    }
+    MetaMetadata result = findMmdFromScope(mmd);
+    mmd.setSuperMmd(result);
+    logger.debug("{}: Super type {}", mmd, result);
+    return result;
+  }
+
+  protected MetaMetadata findTypeMmd(MetaMetadataField field)
+  {
+    if (field instanceof MetaMetadata)
+    {
+      return (MetaMetadata) field;
+    }
+    if (field.getTypeMmd() != null)
+    {
+      return field.getTypeMmd();
+    }
+    MetaMetadata result = findMmdFromScope(field);
+    field.setTypeMmd(result);
+    logger.debug("{}: Type mmd {}", field, result);
+    return result;
+  }
+
+  private MetaMetadata findMmdFromScope(MetaMetadataField field)
+  {
+    MultiAncestorScope<Object> scope = field.scope();
+
+    String type = field.getType();
+    String extendsAttribute = field.getExtendsAttribute();
+
+    MetaMetadata result = null;
+    if (result == null && type != null)
+    {
+      result = (MetaMetadata) scope.get(type);
+    }
+    if (result == null && extendsAttribute != null)
+    {
+      result = (MetaMetadata) scope.get(extendsAttribute);
+      if (result != null && field instanceof MetaMetadata)
+      {
+        ((MetaMetadata) field).setNewMetadataClass(true);
+      }
+    }
+
+    return result;
+  }
+
+  protected void inheritFromTypeMmd(MetaMetadataField newField, MetaMetadata typeMmd)
+  {
+    logger.debug("{}: inheriting from type mmd {}", newField, typeMmd);
     if (newField instanceof MetaMetadataCollectionField)
     {
       push(newField);
@@ -370,7 +540,7 @@ public class NewInheritanceHandler
       {
         MetaMetadataCompositeField elementComposite =
             ((MetaMetadataCollectionField) newField).getPreparedElementComposite();
-        return inheritField(elementComposite, typeMmd);
+        inheritField(elementComposite, typeMmd);
       }
       finally
       {
@@ -379,14 +549,15 @@ public class NewInheritanceHandler
     }
     else
     {
-      return inheritField(newField, typeMmd);
+      inheritField(newField, typeMmd);
     }
   }
 
-  private boolean inheritFromSuperField(MetaMetadataField field,
-                                        MetaMetadata fieldTypeMmd,
-                                        MetaMetadataField superField)
+  protected void inheritFromSuperField(MetaMetadataField field,
+                                       MetaMetadata fieldTypeMmd,
+                                       MetaMetadataField superField)
   {
+    logger.debug("{}: inheriting from super field {}", field, superField);
     if (field instanceof MetaMetadataCollectionField)
     {
       push(field);
@@ -396,7 +567,7 @@ public class NewInheritanceHandler
             ((MetaMetadataCollectionField) field).getPreparedElementComposite();
         MetaMetadataCompositeField superElementComposite =
             ((MetaMetadataCollectionField) superField).getPreparedElementComposite();
-        return inheritField(elementComposite, superElementComposite);
+        inheritField(elementComposite, superElementComposite);
       }
       finally
       {
@@ -422,84 +593,12 @@ public class NewInheritanceHandler
           mergeChildren(field, superField);
         }
         field.setInheritDone(true);
-        return true;
       }
       finally
       {
         pop();
       }
     }
-  }
-
-  protected MetaMetadata findSuperMmd(MetaMetadata mmd)
-  {
-    if (mmd.getSuperMmd() != null)
-    {
-      return mmd.getSuperMmd();
-    }
-
-    // TODO we need a thorough solution for scopes
-
-    String type = mmd.getType();
-    String extendsAttribute = mmd.getExtendsAttribute();
-
-    MetaMetadata result = null;
-
-    if (result == null && type != null)
-    {
-      result = repository.getMMByName(type);
-    }
-
-    if (result == null && extendsAttribute != null)
-    {
-      result = repository.getMMByName(extendsAttribute);
-      if (result != null)
-      {
-        mmd.setNewMetadataClass(true);
-      }
-    }
-
-    // TODO new scope = current scope (+) result.scope; associate new scope with mmd.
-
-    mmd.setSuperMmd(result);
-
-    return result;
-  }
-
-  protected MetaMetadata findTypeMmd(MetaMetadataField field)
-  {
-    if (field instanceof MetaMetadata)
-    {
-      return (MetaMetadata) field;
-    }
-
-    if (field.getTypeMmd() != null)
-    {
-      return field.getTypeMmd();
-    }
-
-    // TODO we need a thorough solution for scopes
-
-    String type = field.getType();
-    String extendsAttribute = field.getExtendsAttribute();
-
-    MetaMetadata result = null;
-
-    if (result == null && type != null)
-    {
-      result = repository.getMMByName(type);
-    }
-
-    if (result == null && extendsAttribute != null)
-    {
-      result = repository.getMMByName(extendsAttribute);
-    }
-
-    // TODO new scope = current scope (+) result.scope; associate new scope with field.
-
-    field.setTypeMmd(result);
-
-    return result;
   }
 
 }

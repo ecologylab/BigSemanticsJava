@@ -14,8 +14,8 @@ import ecologylab.bigsemantics.html.utils.StringBuilderUtils;
 import ecologylab.bigsemantics.metadata.Metadata;
 import ecologylab.bigsemantics.metadata.MetadataClassDescriptor;
 import ecologylab.bigsemantics.metadata.MetadataFieldDescriptor;
-import ecologylab.bigsemantics.metametadata.declarations.MetaMetadataFieldDeclaration;
 import ecologylab.bigsemantics.metametadata.exceptions.MetaMetadataException;
+import ecologylab.collections.MultiAncestorScope;
 import ecologylab.generic.ReflectionTools;
 import ecologylab.net.ParsedURL;
 import ecologylab.serialization.SimplTypesScope;
@@ -307,6 +307,12 @@ public class MetaMetadata extends MetaMetadataCompositeField
   }
 
   @Override
+  protected boolean isInlineDefinition()
+  {
+    return false;
+  }
+
+  @Override
   public boolean isBuiltIn()
   {
     return builtIn;
@@ -489,9 +495,8 @@ public class MetaMetadata extends MetaMetadataCompositeField
   public Metadata constructMetadata(SimplTypesScope ts)
   {
     Metadata result = null;
-    // Class<? extends Metadata> metadataClass = getMetadataClass(ts);
-    Class<? extends Metadata> metadataClass = (Class<? extends Metadata>) this
-        .getMetadataClassDescriptor().getDescribedClass();
+    Class<? extends Metadata> metadataClass =
+        (Class<? extends Metadata>) this.getMetadataClassDescriptor().getDescribedClass();
 
     if (metadataClass != null)
     {

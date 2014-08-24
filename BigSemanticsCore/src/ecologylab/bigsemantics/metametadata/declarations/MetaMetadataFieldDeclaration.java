@@ -198,24 +198,21 @@ public class MetaMetadataFieldDeclaration extends ElementState
   @simpl_scope(NestedMetaMetadataFieldTypesScope.NAME)
   @simpl_wrap
   @mm_dont_inherit
-  private MetaMetadataField superField            = null;
+  private MetaMetadataField superField;
 
   /**
    * in which meta-metadata this field is declared.
    */
   @simpl_composite
   @mm_dont_inherit
-  private MetaMetadata      declaringMmd          = null;
+  private MetaMetadata      declaringMmd;
 
   /**
-   * If this field is used to define inline meta-metadata types.
-   * 
-   * This flag is used by extraction module to determine the true root element for child fields
-   * inside this field.
+   * The inline meta-metadata type this field defines.
    */
-  @simpl_scalar
+  @simpl_composite
   @mm_dont_inherit
-  private boolean           usedToDefineInlineMmd = false;
+  private MetaMetadata      inlineMmd;
 
   public MetaMetadataFieldDeclaration()
   {
@@ -391,9 +388,9 @@ public class MetaMetadataFieldDeclaration extends ElementState
     return declaringMmd;
   }
 
-  public boolean isUsedToDefineInlineMmd()
+  public MetaMetadata getInlineMmd()
   {
-    return usedToDefineInlineMmd;
+    return inlineMmd;
   }
 
   public void setName(String name)
@@ -546,9 +543,9 @@ public class MetaMetadataFieldDeclaration extends ElementState
     this.declaringMmd = declaringMmd;
   }
 
-  public void setUsedToDefineInlineMmd(boolean usedToDefineInlineMmd)
+  public void setInlineMmd(MetaMetadata inlineMmd)
   {
-    this.usedToDefineInlineMmd = usedToDefineInlineMmd;
+    this.inlineMmd = inlineMmd;
   }
 
 }

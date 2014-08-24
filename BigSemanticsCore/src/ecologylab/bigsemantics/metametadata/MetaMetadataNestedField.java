@@ -13,6 +13,7 @@ import ecologylab.bigsemantics.metadata.mm_name;
 import ecologylab.bigsemantics.metadata.semantics_mixin;
 import ecologylab.bigsemantics.metametadata.declarations.MetaMetadataNestedFieldDeclaration;
 import ecologylab.bigsemantics.metametadata.exceptions.MetaMetadataException;
+import ecologylab.collections.MultiAncestorScope;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.MetaInformation;
@@ -60,6 +61,8 @@ public abstract class MetaMetadataNestedField extends MetaMetadataNestedFieldDec
   private MmdScope                         mmdScope;
 
   private boolean                          mmdScopeTraversed;
+
+  private MultiAncestorScope<Object>       scope;
 
   private List<InheritFinishEventListener> inheritFinishEventListeners;
 
@@ -131,6 +134,20 @@ public abstract class MetaMetadataNestedField extends MetaMetadataNestedFieldDec
   protected void setMmdScope(MmdScope mmdScope)
   {
     this.mmdScope = mmdScope;
+  }
+
+  public MultiAncestorScope<Object> getScope()
+  {
+    return scope;
+  }
+
+  public MultiAncestorScope<Object> scope()
+  {
+    if (scope == null)
+    {
+      scope = new MultiAncestorScope<Object>(this.toString());
+    }
+    return scope;
   }
 
   public void addInheritFinishEventListener(InheritFinishEventListener listener)
@@ -226,6 +243,13 @@ public abstract class MetaMetadataNestedField extends MetaMetadataNestedFieldDec
     return (polymorphicScope != null && polymorphicScope.length() > 0)
            || (polymorphicClasses != null && polymorphicClasses.length() > 0);
   }
+
+  /**
+   * Determine if there is an inline meta-metadata defined by this field.
+   * 
+   * @return
+   */
+  abstract protected boolean isInlineDefinition();
 
   abstract protected String getMetaMetadataTagToInheritFrom();
 

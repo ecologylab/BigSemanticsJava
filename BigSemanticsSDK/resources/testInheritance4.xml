@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<meta_metadata_repository package="test_inheritance2">
+<meta_metadata_repository package="test_inheritance4">
 
   <meta_metadata name="metadata">
     <scalar name="meta_metadata_name" scalar_type="String" />
@@ -24,14 +24,15 @@
   <meta_metadata name="creative_work" extends="rich_document">
     <scalar name="title" style_name="caption" use_value_as_label="test_value" />
 
-    <collection name="authors" child_type="author">
+    <collection name="authors" child_type="author" child_extends="rich_document">
       <xpath>//div[@id='authors']/a</xpath>
-      <scalar name="title">
+      <scalar name="title" label="name">
         <xpath>./text()</xpath>
       </scalar>
       <scalar name="location">
         <xpath>./@href</xpath>
       </scalar>
+      <collection name="works" child_type="creative_work" />
     </collection>
 
     <composite name="source" type="rich_document">
@@ -80,27 +81,21 @@
     </collection>
   </meta_metadata>
 
-  <meta_metadata name="author" extends="rich_document">
-    <scalar name="title" label="name" />
-    <collection name="works" child_type="creative_work" />
-  </meta_metadata>
-
   <meta_metadata name="scholarly_article" extends="creative_work">
     <scalar name="description" label="abstract" />
-    <collection name="authors" child_type="scholar" />
+    <collection name="authors" child_type="scholar" child_extends="author">
+      <collection name="works" label="publications" child_type="scholarly_article" />
+      <composite name="affiliation" type="affiliation" extends="rich_document">
+        <scalar name="title" label="name" />
+        <scalar name="address" scalar_type="String" />
+      </composite>
+    </collection>
 
     <scalar name="doi" scalar_type="String" />
-    <composite name="journal" type="creative_work">
+    <composite name="journal" type="journal" extends="creative_work">
       <scalar name="title" label="journal_title" />
       <collection name="authors" label="editors" />
-    </composite>
-  </meta_metadata>
-
-  <meta_metadata name="scholar" extends="author">
-    <collection name="works" label="publications" child_type="scholarly_article" />
-
-    <composite name="affiliation" type="rich_document">
-      <scalar name="title" label="name" />
+      <composite name="publisher" type="rich_document" />
     </composite>
   </meta_metadata>
 

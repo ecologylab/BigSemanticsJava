@@ -1,4 +1,4 @@
-package ecologylab.bigsemantics.deserialization;
+package ecologylab.bigsemantics.metadata;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;

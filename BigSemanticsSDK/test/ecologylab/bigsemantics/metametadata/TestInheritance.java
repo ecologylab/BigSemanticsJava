@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import ecologylab.bigsemantics.metadata.scalar.types.MetadataParsedURLScalarType;
 import ecologylab.bigsemantics.metadata.scalar.types.MetadataStringScalarType;
+import ecologylab.collections.MultiAncestorScope;
 import ecologylab.serialization.SIMPLTranslationException;
 
 /**
@@ -26,7 +27,7 @@ public class TestInheritance extends BaseMmdTest
     MetaMetadataRepository repo = loadRepository("/testInheritance1.xml");
 
     NewInheritanceHandler handler = new NewInheritanceHandler();
-    assertTrue(handler.handleMmdRepository(repo));
+    handler.handleMmdRepository(repo);
 
     MetaMetadataScalarField scalar = null;
 
@@ -41,7 +42,7 @@ public class TestInheritance extends BaseMmdTest
     MetaMetadataRepository repo = loadRepository("/testInheritance1.xml");
 
     NewInheritanceHandler handler = new NewInheritanceHandler();
-    assertTrue(handler.handleMmdRepository(repo));
+    handler.handleMmdRepository(repo);
 
     MetaMetadataScalarField scalar = null;
     MetaMetadataCollectionField collection = null;
@@ -130,7 +131,7 @@ public class TestInheritance extends BaseMmdTest
     MetaMetadataRepository repo = loadRepository("/testInheritance1.xml");
 
     NewInheritanceHandler handler = new NewInheritanceHandler();
-    assertTrue(handler.handleMmdRepository(repo));
+    handler.handleMmdRepository(repo);
 
     MetaMetadataScalarField scalar = null;
     MetaMetadataCompositeField composite = null;
@@ -196,10 +197,9 @@ public class TestInheritance extends BaseMmdTest
     MetaMetadataRepository repo = loadRepository("/testInheritance2.xml");
 
     NewInheritanceHandler handler = new NewInheritanceHandler();
-    assertTrue(handler.handleMmdRepository(repo));
+    handler.handleMmdRepository(repo);
 
     MetaMetadataScalarField scalar = null;
-    MetaMetadataCompositeField composite = null;
     MetaMetadataCollectionField collection = null;
 
     // creative_work.citations
@@ -236,23 +236,22 @@ public class TestInheritance extends BaseMmdTest
     MetaMetadataRepository repo = loadRepository("/testInheritance2.xml");
 
     NewInheritanceHandler handler = new NewInheritanceHandler();
-    assertTrue(handler.handleMmdRepository(repo));
+    handler.handleMmdRepository(repo);
 
     MetaMetadataScalarField scalar = null;
-    MetaMetadataCompositeField composite = null;
     MetaMetadataCollectionField collection = null;
-    
+
     // rich_document.title
     scalar = (MetaMetadataScalarField) getNestedField(repo, "rich_document", "title");
     assertEquals("title", scalar.getLabel());
-    
+
     // creative_work.authors.title
     scalar = (MetaMetadataScalarField) getNestedField(repo, "creative_work", "authors", "title");
     assertEquals("name", scalar.getLabel());
     assertEquals(2, scalar.getXpathsSize());
     assertEquals("./text()", scalar.getXpath(0));
     assertEquals("//meta[@name='title']/@content", scalar.getXpath(1));
-    
+
     collection =
         (MetaMetadataCollectionField) getNestedField(repo, "creative_work", "authors", "works");
     assertNotNull(collection);
@@ -265,6 +264,135 @@ public class TestInheritance extends BaseMmdTest
     assertNotNull(collection.lookupChild("source").lookupChild("title"));
     assertNotNull(collection.lookupChild("references").lookupChild("title"));
     assertNotNull(collection.lookupChild("citations").lookupChild("title"));
+  }
+
+  @Test
+  public void testChangingTypeOnSubFields() throws SIMPLTranslationException
+  {
+    MetaMetadataRepository repo = loadRepository("/testInheritance2.xml");
+
+    NewInheritanceHandler handler = new NewInheritanceHandler();
+    handler.handleMmdRepository(repo);
+
+    MetaMetadataScalarField scalar = null;
+    MetaMetadataCollectionField collection = null;
+    MetaMetadata mmd = null;
+
+    // rich_document.description
+    scalar = (MetaMetadataScalarField) getNestedField(repo, "rich_document", "description");
+    assertEquals("description", scalar.getLabel());
+
+    // scholarly_article
+    mmd = (MetaMetadata) getNestedField(repo, "scholarly_article");
+    assertNotNull(mmd.lookupChild("title"));
+    assertNotNull(mmd.lookupChild("location"));
+    assertNotNull(mmd.lookupChild("description"));
+    assertNotNull(mmd.lookupChild("authors"));
+    assertNotNull(mmd.lookupChild("references"));
+    assertNotNull(mmd.lookupChild("citations"));
+    assertNotNull(mmd.lookupChild("doi"));
+    assertNotNull(mmd.lookupChild("journal"));
+
+    // scholarly_article.description
+    scalar = (MetaMetadataScalarField) mmd.lookupChild("description");
+    assertEquals("abstract", scalar.getLabel());
+
+    // scholarly_article.authors
+    collection = (MetaMetadataCollectionField) mmd.lookupChild("authors");
+    assertNotNull(collection.lookupChild("title"));
+    assertNotNull(collection.lookupChild("location"));
+    assertNotNull(collection.lookupChild("works"));
+    assertNotNull(collection.lookupChild("affiliation"));
+
+    // scholar
+    mmd = (MetaMetadata) getNestedField(repo, "scholar");
+    assertNotNull(mmd.lookupChild("title"));
+    assertNotNull(mmd.lookupChild("location"));
+    assertNotNull(mmd.lookupChild("works"));
+    assertNotNull(mmd.lookupChild("affiliation"));
+
+    // scholar.works
+    collection = (MetaMetadataCollectionField) getNestedField(repo, "scholar", "works");
+    assertNotNull(collection.lookupChild("title"));
+    assertNotNull(collection.lookupChild("location"));
+    assertNotNull(collection.lookupChild("description"));
+    assertNotNull(collection.lookupChild("authors"));
+    assertNotNull(collection.lookupChild("references"));
+    assertNotNull(collection.lookupChild("citations"));
+    assertNotNull(collection.lookupChild("doi"));
+    assertNotNull(collection.lookupChild("journal"));
+  }
+
+  @Test
+  public void testInlineMmd() throws SIMPLTranslationException
+  {
+    MetaMetadataRepository repo = loadRepository("/testInheritance3.xml");
+
+    NewInheritanceHandler handler = new NewInheritanceHandler();
+    handler.handleMmdRepository(repo);
+
+    MetaMetadata mmd = null;
+    MetaMetadata inlineMmd = null;
+    MultiAncestorScope<Object> scope = null;
+    MetaMetadataCollectionField collection = null;
+    MetaMetadataCompositeField composite = null;
+
+    // creative_work.scope
+    mmd = (MetaMetadata) getNestedField(repo, "creative_work");
+    scope = mmd.getScope();
+    assertNotNull(scope);
+    inlineMmd = (MetaMetadata) scope.get("author");
+    assertNotNull(inlineMmd);
+    assertNotNull(inlineMmd.lookupChild("works"));
+
+    // creative_work.authors.works
+    collection =
+        (MetaMetadataCollectionField) getNestedField(repo, "creative_work", "authors", "works");
+    assertNotNull(collection.lookupChild("title"));
+    assertNotNull(collection.lookupChild("location"));
+    assertNotNull(collection.lookupChild("description"));
+    assertNotNull(collection.lookupChild("authors"));
+    assertNotNull(collection.lookupChild("source"));
+    assertNotNull(collection.lookupChild("references"));
+    assertNotNull(collection.lookupChild("citations"));
+
+    // scholarly_article.scope
+    mmd = (MetaMetadata) getNestedField(repo, "scholarly_article");
+    scope = mmd.getScope();
+    assertNotNull(scope);
+    inlineMmd = (MetaMetadata) scope.get("scholar");
+    assertNotNull(inlineMmd);
+    assertNotNull(inlineMmd.lookupChild("works"));
+    inlineMmd = (MetaMetadata) scope.get("journal");
+    assertNotNull(inlineMmd);
+    assertNotNull(inlineMmd.lookupChild("publisher"));
+
+    // scholarly_article.authors
+    collection = (MetaMetadataCollectionField) getNestedField(repo, "scholarly_article", "authors");
+    assertNotNull(collection.lookupChild("title"));
+    assertNotNull(collection.lookupChild("location"));
+    assertNotNull(collection.lookupChild("description"));
+    assertNotNull(collection.lookupChild("works"));
+    assertNotNull(collection.lookupChild("affiliation"));
+
+    // scholarly_article.journal
+    composite = (MetaMetadataCompositeField) getNestedField(repo, "scholarly_article", "journal");
+    assertNotNull(composite.lookupChild("title"));
+    assertNotNull(composite.lookupChild("location"));
+    assertNotNull(composite.lookupChild("description"));
+    assertNotNull(composite.lookupChild("authors"));
+    assertNotNull(composite.lookupChild("source"));
+    assertNotNull(composite.lookupChild("references"));
+    assertNotNull(composite.lookupChild("citations"));
+  }
+
+  @Test
+  public void testGenerics() throws SIMPLTranslationException
+  {
+    MetaMetadataRepository repo = loadRepository("/testInheritance4.xml");
+
+    NewInheritanceHandler handler = new NewInheritanceHandler();
+    handler.handleMmdRepository(repo);
   }
 
 }

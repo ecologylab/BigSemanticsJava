@@ -141,9 +141,9 @@ public class MetaMetadataCollectionField extends MetaMetadataCollectionFieldDecl
       }
 
       @Override
-      public void usedForInlineMmdDefChanged(boolean usedForInlineMmdDef)
+      public void inlineMmdChanged(MetaMetadata newInlineMmd)
       {
-        thisField.setUsedToDefineInlineMmd(usedForInlineMmdDef);
+        thisField.setInlineMmd(newInlineMmd);
       }
 
       @Override
@@ -176,6 +176,7 @@ public class MetaMetadataCollectionField extends MetaMetadataCollectionFieldDecl
     composite.setPackageName(this.packageName());
     composite.setDeclaringMmd(this.getDeclaringMmd());
     composite.setMmdScope(this.getMmdScope());
+    composite.scope().addAncestor(this.scope());
   
     composite.setPromoteChildren(this.isPromoteChildren());
     
@@ -267,6 +268,12 @@ public class MetaMetadataCollectionField extends MetaMetadataCollectionFieldDecl
   public MetaMetadataCompositeField metaMetadataCompositeField()
   {
     return getElementComposite();
+  }
+  
+  @Override
+  protected boolean isInlineDefinition()
+  {
+    return getElementComposite().isInlineDefinition();
   }
 
   @Override

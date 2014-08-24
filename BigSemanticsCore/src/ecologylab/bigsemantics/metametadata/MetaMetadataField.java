@@ -20,6 +20,7 @@ import ecologylab.bigsemantics.metadata.MetadataClassDescriptor;
 import ecologylab.bigsemantics.metadata.MetadataFieldDescriptor;
 import ecologylab.bigsemantics.metametadata.declarations.MetaMetadataFieldDeclaration;
 import ecologylab.bigsemantics.metametadata.exceptions.MetaMetadataException;
+import ecologylab.collections.MultiAncestorScope;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.ElementState;
@@ -28,7 +29,6 @@ import ecologylab.serialization.MetaInformation;
 import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.annotations.simpl_collection;
-import ecologylab.serialization.annotations.simpl_descriptor_classes;
 import ecologylab.serialization.annotations.simpl_inherit;
 import ecologylab.serialization.annotations.simpl_map;
 import ecologylab.serialization.annotations.simpl_map_key_field;
@@ -214,7 +214,7 @@ public abstract class MetaMetadataField extends MetaMetadataFieldDeclaration
   @simpl_collection
   @simpl_scope(FieldOpScope.NAME)
   @simpl_nowrap
-  List<FieldOp>                               fieldOps;
+  List<FieldOp>                                       fieldOps;
 
   // ////////////// Presentation Semantics Below ////////////////
 
@@ -224,8 +224,6 @@ public abstract class MetaMetadataField extends MetaMetadataFieldDeclaration
   @simpl_collection("style")
   @simpl_nowrap
   private List<MetaMetadataStyle>                     styles;
-
-  
 
   // ////////////// Members Below ////////////////
 
@@ -288,7 +286,7 @@ public abstract class MetaMetadataField extends MetaMetadataFieldDeclaration
     this.setTag(copy.getTag());
     this.setChildrenMap(copy.getChildrenMap());
   }
-  
+
   public String getLabel()
   {
     String label = super.getLabel();
@@ -322,7 +320,7 @@ public abstract class MetaMetadataField extends MetaMetadataFieldDeclaration
   {
     return kids != null && kids.size() > 0;
   }
-  
+
   public MetaMetadataField getChild(int i)
   {
     return kids == null ? null : kids.get(i);
@@ -335,7 +333,7 @@ public abstract class MetaMetadataField extends MetaMetadataFieldDeclaration
   {
     return kids;
   }
-  
+
   public HashMapArrayList<String, MetaMetadataField> childrenMap()
   {
     if (kids == null)
@@ -430,6 +428,21 @@ public abstract class MetaMetadataField extends MetaMetadataFieldDeclaration
   public boolean isInheritOngoing()
   {
     return inheritOngoing;
+  }
+
+  public MultiAncestorScope<Object> getScope()
+  {
+    return MultiAncestorScope.EMPTY_SCOPE;
+  }
+
+  public MultiAncestorScope<Object> scope()
+  {
+    return MultiAncestorScope.EMPTY_SCOPE;
+  }
+
+  public void setScope(MultiAncestorScope<Object> scope)
+  {
+    // no op
   }
 
   public MmdGenericTypeVarScope getGenericTypeVars()
@@ -1107,5 +1120,10 @@ public abstract class MetaMetadataField extends MetaMetadataFieldDeclaration
    */
   abstract public void addAdditionalMetaInformation(List<MetaInformation> metaInfoBuf,
                                                     MmdCompilerService compiler);
+
+  public boolean isUsedToDefineInlineMmd()
+  {
+    return getInlineMmd() == null;
+  }
 
 }

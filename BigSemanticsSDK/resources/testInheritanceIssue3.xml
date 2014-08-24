@@ -3,11 +3,11 @@
 
   <meta_metadata name="metadata">
   </meta_metadata>
-  
+
   <meta_metadata name="document" extends="metadata">
-    <scalar name="location" scalar_type="ParsedURL"/>
+    <scalar name="location" scalar_type="ParsedURL" />
   </meta_metadata>
-  
+
   <meta_metadata name="compound_document" extends="document">
     <collection name="main_images" child_type="document">
       <scalar name="location">
@@ -15,11 +15,11 @@
       </scalar>
     </collection>
   </meta_metadata>
-  
+
   <meta_metadata name="commodity" extends="compound_document">
-    <collection name="main_images" layer="3.0"/>
+    <collection name="main_images" layer="3.0" />
   </meta_metadata>
-  
+
   <meta_metadata name="ikea_product" extends="commodity" parser="xpath">
     <scalar name="location">
       <xpath>//test-location</xpath>

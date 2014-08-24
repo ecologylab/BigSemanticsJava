@@ -42,7 +42,7 @@ public class MetaMetadataCompositeField extends MetaMetadataCompositeFieldDeclar
 
     void tagChanged(String newTag);
 
-    void usedForInlineMmdDefChanged(boolean usedForInlineMmdDef);
+    void inlineMmdChanged(MetaMetadata newInlineMmd);
     
     void typeMmdChanged(MetaMetadata newTypeMmd);
     
@@ -136,11 +136,7 @@ public class MetaMetadataCompositeField extends MetaMetadataCompositeFieldDeclar
     return false;
   }
 
-  /**
-   * determine if there is an inline meta-metadata defined by this field.
-   * 
-   * @return
-   */
+  @Override
   protected boolean isInlineDefinition()
   {
     return this.getExtendsAttribute() != null;
@@ -247,16 +243,16 @@ public class MetaMetadataCompositeField extends MetaMetadataCompositeFieldDeclar
   }
 
   @Override
-  public void setUsedToDefineInlineMmd(boolean usedForInlineMmdDef)
+  public void setInlineMmd(MetaMetadata inlineMmd)
   {
-    super.setUsedToDefineInlineMmd(usedForInlineMmdDef);
+    super.setInlineMmd(inlineMmd);
     if (this.attributeChangeListener != null)
-      attributeChangeListener.usedForInlineMmdDefChanged(usedForInlineMmdDef);
+      attributeChangeListener.inlineMmdChanged(inlineMmd);
   }
 
-  void setUsedToDefineInlineMmdDirectly(boolean usedForInlineMmdDef)
+  void setInlineMmdDirectly(MetaMetadata inlineMmd)
   {
-    super.setUsedToDefineInlineMmd(usedForInlineMmdDef);
+    super.setInlineMmd(inlineMmd);
   }
 
   public void setAttributeChangeListener(AttributeChangeListener attributeChangeListener)
@@ -758,7 +754,7 @@ public class MetaMetadataCompositeField extends MetaMetadataCompositeFieldDeclar
     kids.clear();
 
     makeThisFieldUseMmd(previousName, generatedMmd);
-    this.setUsedToDefineInlineMmd(true);
+    setInlineMmd(generatedMmd);
     return generatedMmd;
   }
 

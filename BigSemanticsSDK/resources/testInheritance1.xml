@@ -2,28 +2,28 @@
 <meta_metadata_repository package="test_inheritance1">
 
   <meta_metadata name="metadata">
-    <scalar name="meta_metadata_name" scalar_type="String"/>
+    <scalar name="meta_metadata_name" scalar_type="String" />
   </meta_metadata>
-  
+
   <meta_metadata name="document" extends="metadata">
-    <scalar name="location" scalar_type="ParsedURL"/>
-    <collection name="other_locations" child_scalar_type="ParsedURL"/>
+    <scalar name="location" scalar_type="ParsedURL" />
+    <collection name="other_locations" child_scalar_type="ParsedURL" />
   </meta_metadata>
-  
+
   <meta_metadata name="rich_document" extends="document">
-    <scalar name="meta_metadata_name" hide="true"/>
-    <scalar name="location" hide="true"/>
-    <collection name="other_locations" hide="true"/>
+    <scalar name="meta_metadata_name" hide="true" />
+    <scalar name="location" hide="true" />
+    <collection name="other_locations" hide="true" />
 
     <scalar name="title" scalar_type="String" style_name="h1" navigates_to="location">
       <xpath>//meta[@name='title']/@content</xpath>
     </scalar>
-    <scalar name="description" scalar_type="String" style_name="description"/>
+    <scalar name="description" scalar_type="String" style_name="description" />
   </meta_metadata>
-  
+
   <meta_metadata name="creative_work" extends="rich_document">
-    <scalar name="title"  style_name="caption" use_value_as_label="test_value"/>
-    
+    <scalar name="title" style_name="caption" use_value_as_label="test_value" />
+
     <composite name="source" type="rich_document">
       <xpath>//div[@id='source']/a</xpath>
       <scalar name="title">
@@ -33,7 +33,7 @@
         <xpath>./@href</xpath>
       </scalar>
     </composite>
-    
+
     <collection name="references" child_type="rich_document">
       <xpath>//div[@id='references']//a</xpath>
       <scalar name="title" style_name="reference_caption">
@@ -47,5 +47,5 @@
       </scalar>
     </collection>
   </meta_metadata>
-  
+
 </meta_metadata_repository>
