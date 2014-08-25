@@ -48,7 +48,7 @@ import ecologylab.textformat.NamedStyle;
 @SuppressWarnings("rawtypes")
 @simpl_inherit
 public abstract class MetaMetadataField extends MetaMetadataFieldDeclaration
-    implements IMappable<String>, Iterable<MetaMetadataField>, MMDConstants, Cloneable
+    implements ScopeProvider<Object>, IMappable<String>, Iterable<MetaMetadataField>, MMDConstants
 {
 
   /**

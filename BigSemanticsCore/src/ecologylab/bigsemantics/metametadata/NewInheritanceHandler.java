@@ -269,6 +269,8 @@ public class NewInheritanceHandler
     Set<String> childrenNames = new HashSet<String>();
     addChildrenNames(field, childrenNames);
     addChildrenNames(superField, childrenNames);
+    
+    Set<MetaMetadataField> reincarnated = new HashSet<MetaMetadataField>();
 
     // first, for all immediate children, merge attributes or copy the field object over from
     // superField.
@@ -289,6 +291,8 @@ public class NewInheritanceHandler
           ((MetaMetadataCollectionField) f1).createElementComposite();
         }
         field.getChildrenMap().put(childName, f1);
+        reincarnated.add(f1);
+        logger.debug("{}: Reincarnated since superField {} is generic", f1, f0);
       }
       if (f0 != null && f1 != null && f0 != f1)
       {
@@ -308,8 +312,19 @@ public class NewInheritanceHandler
       MetaMetadataField f1 = field.lookupChild(childName);
       if (f1 != null && f0 != f1)
       {
-        inheritScope(f1, field);
+        FieldType f1type = f1.getFieldType();
+        if (f1type != FieldType.SCALAR && f1type != FieldType.COLLECTION_SCALAR)
+        {
+          // currently, we only do scope inheritance for nested fields.
+          f1.scope().addAncestor(field.scope());
+        }
         inheritField(f1, f0);
+        
+        if (reincarnated.contains(f1) && f0.getTypeMmd() == f1.getTypeMmd())
+        {
+          field.getChildrenMap().put(childName, f0);
+          logger.debug("{}: Field unchanged, reincarnated instance destroyed", f1);
+        }
       }
     }
   }
@@ -517,10 +532,12 @@ public class NewInheritanceHandler
     if (result == null && type != null)
     {
       result = resolveTypeName(scope, type);
+      logger.debug("{}: Type name {} resolved to {}", field, type, result);
     }
     if (result == null && extendsAttribute != null)
     {
       result = resolveTypeName(scope, extendsAttribute);
+      logger.debug("{}: Type name {} resolved to {}", field, extendsAttribute, result);
       if (result != null && field instanceof MetaMetadata)
       {
         ((MetaMetadata) field).setNewMetadataClass(true);
@@ -540,13 +557,23 @@ public class NewInheritanceHandler
     else if (obj instanceof MmdGenericTypeVar)
     {
       MmdGenericTypeVar gtv = (MmdGenericTypeVar) obj;
+      MmdGenericTypeVarScope nestedGtvScope = gtv.getNestedGenericTypeVarScope();
+      if (nestedGtvScope != null && nestedGtvScope.size() > 0)
+      {
+        scope.putAll(nestedGtvScope);
+      }
       if (gtv.getArg() != null)
       {
         return resolveTypeName(scope, gtv.getArg());
       }
-      if (gtv.getExtendsAttribute() != null)
+      else if (gtv.getExtendsAttribute() != null)
       {
         return resolveTypeName(scope, gtv.getExtendsAttribute());
+      }
+      else
+      {
+        // neither arg nor extends specified for gtv
+        return resolveTypeName(scope, MetaMetadata.ROOT_MMD_NAME);
       }
     }
     else
@@ -554,7 +581,6 @@ public class NewInheritanceHandler
       throw new MetaMetadataException("MetaMetadata or GenericTypeVar expected, "
                                       + "but got " + obj + " with " + typeName);
     }
-    return null;
   }
 
   protected void inheritFromTypeMmd(MetaMetadataField newField, MetaMetadata typeMmd)
@@ -628,89 +654,105 @@ public class NewInheritanceHandler
     }
   }
 
-  protected void inheritScope(MetaMetadataField dest, MetaMetadataField src)
+  protected void inheritScope(ScopeProvider dest, ScopeProvider src)
   {
     if (src == null)
     {
       return;
     }
 
-    // mmd type scope
-    if (src.getScope() != null)
-    {
-      dest.scope().addAncestor(src.getScope());
-    }
+    MultiAncestorScope srcScope = src.getScope();
 
-    // handle generic type var scope (mostly checking bounds)
-    MmdGenericTypeVarScope srcScope = src.getGenericTypeVars();
     if (srcScope != null)
     {
-      MmdGenericTypeVarScope destScope = dest.getGenericTypeVars();
-      if (destScope == null)
+      MultiAncestorScope destScope = dest.scope();
+
+      if (srcScope.size() > 0)
       {
-        destScope = new MmdGenericTypeVarScope();
-        dest.setGenericTypeVars(destScope);
-      }
-
-      for (MmdGenericTypeVar gtv0 : srcScope.values())
-      {
-        if (gtv0.nothingSpecified())
+        // handle generic type vars (inheriting, checking bounds, etc)
+        logger.debug("{}: Inheriting and validating generic type vars from {}", dest, src);
+        for (Object obj : srcScope.values())
         {
-          gtv0.setExtendsAttribute(MetaMetadata.ROOT_MMD_NAME);
-        }
+          if (obj instanceof MmdGenericTypeVar)
+          {
+            MmdGenericTypeVar gtv0 = (MmdGenericTypeVar) obj;
 
-        String gtvName = gtv0.getName();
-        MmdGenericTypeVar gtv1 = destScope.get(gtvName);
-        if (gtv1 == null || gtv1.nothingSpecified())
-        {
-          // a GTV can be omitted if nothing changes about it. in this case, added to dest.
-          destScope.put(gtvName, gtv0);
-          dest.scope().put(gtvName, gtv0);
-        }
-        else
-        {
-          // otherwise, check bounds
+            if (gtv0.nothingSpecified())
+            {
+              gtv0.setExtendsAttribute(MetaMetadata.ROOT_MMD_NAME);
+            }
 
-          // check lower bound
-          if (gtv0.isAssignment() && gtv1.isAssignment())
-          {
-            if (!gtv0.getArg().equals(gtv1.getArg()))
+            String gtvName = gtv0.getName();
+            MmdGenericTypeVar gtv1 = (MmdGenericTypeVar) destScope.get(gtvName);
+            if (gtv1 != null)
             {
-              throw new MetaMetadataException("Incompatiable assignments to generic type var "
-                                              + gtvName + " from " + src + " to " + dest);
-            }
-          }
-          else if (gtv0.isAssignment() && gtv1.isBound())
-          {
-            throw new MetaMetadataException("Generic type var " + gtvName + " already assigned in "
-                                            + src + ", cannot respecify bound in " + dest);
-          }
-          else if (gtv0.isBound() && gtv1.isAssignment())
-          {
-            if (!checkAssignmentWithBounds(dest.scope(), gtvName, gtv1, gtv0))
-            {
-              throw new MetaMetadataException("Generic type bound(s) not satisfied for "
-                                              + gtvName + " in " + dest);
-            }
-          }
-          else
-          {
-            if (!checkBoundsWithBounds(dest.scope(), gtvName, gtv1, gtv0))
-            {
-              throw new MetaMetadataException("Generic type bound(s) not compatible for "
-                                              + gtvName + " in " + dest);
-            }
-          }
-        }
-      }
+              if (gtv1.nothingSpecified())
+              {
+                // a GTV can be omitted if nothing changes about it. in this case, ignore it.
+                destScope.remove(gtvName);
+              }
+              else
+              {
+                // otherwise, inherited nested type vars and check bounds
+                inheritScope(gtv1, gtv0);
+                validateGenericTypeVar(dest, src, gtvName, gtv1, gtv0);
+              }
+            } // if (gtv1 != null)
+          } // if (obj instanceof MmdGenericTypeVar)
+        } // for
+      } // if (srcScope.size() > 0)
+
+      // handle general scope
+      destScope.addAncestor(srcScope);
     }
   }
 
-  protected boolean checkAssignmentWithBounds(MultiAncestorScope<Object> scope,
-                                              String gtvName,
-                                              MmdGenericTypeVar argGtv,
-                                              MmdGenericTypeVar boundGtv)
+  private void validateGenericTypeVar(ScopeProvider dest,
+                                      ScopeProvider src,
+                                      String gtvName,
+                                      MmdGenericTypeVar destGtv,
+                                      MmdGenericTypeVar srcGtv)
   {
+    if (srcGtv.isAssignment() && destGtv.isAssignment())
+    {
+      // note that when evaluating srcMmd, we need to use destGtv because that is what will be used
+      // when determining field type. and srcGtv.scope should be an ancestor of destGtv.scope.
+      MetaMetadata srcMmd = resolveTypeName(destGtv.getScope(), srcGtv.getArg());
+      MetaMetadata destMmd = resolveTypeName(destGtv.getScope(), destGtv.getArg());
+      if (srcMmd != destMmd)
+      {
+        throw new MetaMetadataException("Incompatiable assignments to generic type var "
+                                        + gtvName + " from " + src + " to " + dest);
+      }
+    }
+    else if (srcGtv.isAssignment() && destGtv.isBound())
+    {
+      throw new MetaMetadataException("Generic type var " + gtvName + " already assigned in "
+                                      + src + ", cannot respecify bound in " + dest);
+    }
+    else if (srcGtv.isBound() && destGtv.isAssignment())
+    {
+      if (!checkAssignmentWithBounds(destGtv, srcGtv))
+      {
+        throw new MetaMetadataException("Generic type bound(s) not satisfied for "
+                                        + gtvName + " in " + dest);
+      }
+    }
+    else
+    {
+      if (!checkBoundsWithBounds(destGtv, srcGtv))
+      {
+        throw new MetaMetadataException("Generic type bound(s) not compatible for "
+                                        + gtvName + " in " + dest);
+      }
+    }
+
+    logger.debug("{}: Generic type var {} validated", dest, destGtv);
+  }
+
+  protected boolean checkAssignmentWithBounds(MmdGenericTypeVar argGtv, MmdGenericTypeVar boundGtv)
+  {
+    MultiAncestorScope<Object> scope = argGtv.getScope();
     MetaMetadata argMmd = resolveTypeName(scope, argGtv.getArg());
     handleMmd(argMmd);
     MetaMetadata lowerBoundMmd = resolveTypeName(scope, boundGtv.getExtendsAttribute());
@@ -722,11 +764,9 @@ public class NewInheritanceHandler
     return satisfyLowerBound;
   }
 
-  protected boolean checkBoundsWithBounds(MultiAncestorScope<Object> scope,
-                                          String gtvName,
-                                          MmdGenericTypeVar local,
-                                          MmdGenericTypeVar other)
+  protected boolean checkBoundsWithBounds(MmdGenericTypeVar local, MmdGenericTypeVar other)
   {
+    MultiAncestorScope<Object> scope = local.getScope();
     MetaMetadata lowerBoundMmdLocal = resolveTypeName(scope, local.getExtendsAttribute());
     lowerBoundMmdLocal.inheritMetaMetadata();
     MetaMetadata lowerBoundMmdOther = resolveTypeName(scope, other.getExtendsAttribute());

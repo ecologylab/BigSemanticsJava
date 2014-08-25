@@ -6,6 +6,7 @@ import java.util.Map;
 
 import ecologylab.bigsemantics.metadata.MetadataClassDescriptor;
 import ecologylab.bigsemantics.metametadata.exceptions.MetaMetadataException;
+import ecologylab.collections.MultiAncestorScope;
 import ecologylab.generic.StringBuilderBaseUtils;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.annotations.simpl_inherit;
@@ -23,7 +24,7 @@ import ecologylab.serialization.annotations.simpl_tag;
  */
 @simpl_tag("generic_type_var")
 @simpl_inherit
-public class MmdGenericTypeVar extends ElementState
+public class MmdGenericTypeVar extends ElementState implements ScopeProvider<Object>
 {
 
 	/**
@@ -58,6 +59,8 @@ public class MmdGenericTypeVar extends ElementState
 	private MmdGenericTypeVarScope	nestedGenericTypeVars;
 	
 	private boolean                 rebound;
+	
+	private MultiAncestorScope<Object> scope;
 
 	public String getName()
 	{
@@ -202,6 +205,36 @@ public class MmdGenericTypeVar extends ElementState
     String result = sb.toString();
     StringBuilderBaseUtils.release(sb);
     return result;
+  }
+
+  @Override
+  public MultiAncestorScope<Object> getScope()
+  {
+    return scope;
+  }
+
+  @Override
+  public MultiAncestorScope<Object> scope()
+  {
+    if (scope == null)
+    {
+      scope = new MultiAncestorScope<Object>();
+      if (nestedGenericTypeVars != null)
+      {
+        for (MmdGenericTypeVar nestedGtv : nestedGenericTypeVars.values())
+        {
+          nestedGtv.scope().addAncestor(scope);
+          scope.put(nestedGtv.getName(), nestedGtv);
+        }
+      }
+    }
+    return scope;
+  }
+
+  @Override
+  public void setScope(MultiAncestorScope<Object> scope)
+  {
+    this.scope = scope;
   }
 
 }

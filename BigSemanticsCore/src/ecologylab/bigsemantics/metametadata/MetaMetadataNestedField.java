@@ -155,6 +155,7 @@ public abstract class MetaMetadataNestedField extends MetaMetadataNestedFieldDec
         {
           MmdGenericTypeVar gtv = gtvScope.get(localGtvName);
           scope.put(localGtvName, gtv);
+          gtv.scope().addAncestor(scope);
         }
       }
     }

@@ -13,11 +13,15 @@
     <scalar name="title" scalar_type="String" />
   </meta_metadata>
 
+  <meta_metadata name="richer_doc" extends="rich_doc">
+    <collection name="images" child_scalar_type="ParsedURL" />
+  </meta_metadata>
+
   <!-- Foo<A extends Metadata, B extends Metadata> extends Document -->
   <meta_metadata name="foo" extends="document">
     <generic_type_var name="A" /><!-- default bound: metadata -->
     <generic_type_var name="B" extends="document" />
-    
+
     <composite name="foo_1" type="A" />
     <collection name="foo_2" child_type="B" />
   </meta_metadata>
@@ -28,18 +32,18 @@
     <scalar name="foobar" scalar_type="String" />
   </meta_metadata>
 
-  <!-- Base<R extends Metadata, S extends RichDoc, T extends Foo<R, S>, X extends 
-    R, Y extends S> extends Document -->
+  <!-- Base<R extends Metadata, S extends RichDoc, T extends Foo<? extends R, S>, 
+    X extends R, Y extends S> extends Document -->
   <meta_metadata name="base" extends="document">
     <generic_type_var name="R" />
     <generic_type_var name="S" extends="rich_doc" />
     <generic_type_var name="T" extends="foo">
-      <generic_type_var name="A" arg="R" />
-      <generic_type_var arg="S" />
+      <generic_type_var name="A" extends="R" />
+      <generic_type_var name="B" arg="S" />
     </generic_type_var>
     <generic_type_var name="X" extends="R" />
     <generic_type_var name="Y" extends="S" />
-    
+
     <composite name="f1" type="R" />
     <composite name="f2" type="S" />
     <composite name="f3" type="T" />
@@ -48,13 +52,18 @@
     <collection name="f5" child_type="Y" />
   </meta_metadata>
 
-  <!-- Sub<R extends Metadata, T extends Bar<R, RichDoc>, Y extends RichDoc, Z extends 
-    Metadata> extends Base<R, RichDoc, T, Document, Y> -->
+  <!-- Sub<R extends Metadata, T extends Bar<Foo<Document, Document>, RicherDoc>, 
+    Y extends RicherDoc, Z extends Metadata> extends Base<R, RicherDoc, T, Document, 
+    Y> -->
   <meta_metadata name="sub" extends="base">
     <!-- declaration for R omitted -->
-    <generic_type_var name="S" arg="rich_doc" /><!-- binding -->
+    <generic_type_var name="S" arg="richer_doc" /><!-- binding -->
     <generic_type_var name="T" extends="bar">
-      <!-- declarations for R and S omitted; should use what's defined for Sub -->
+      <generic_type_var name="A" arg="foo">
+        <generic_type_var name="A" arg="document" />
+        <generic_type_var name="B" arg="document" />
+      </generic_type_var>
+      <!-- declarations for B omitted; should use Sub.S which is bound to RicherDoc -->
     </generic_type_var>
     <generic_type_var name="X" arg="document" /><!-- binding -->
     <!-- declaration for Y omitted -->
