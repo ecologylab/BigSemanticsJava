@@ -7,12 +7,10 @@
 
   <meta_metadata name="document" extends="metadata">
     <scalar name="location" scalar_type="ParsedURL" />
-    <collection name="other_locations" child_scalar_type="ParsedURL" />
   </meta_metadata>
 
   <meta_metadata name="rich_doc" extends="document">
     <scalar name="title" scalar_type="String" />
-    <scalar name="description" scalar_type="String" />
   </meta_metadata>
 
   <meta_metadata name="foo" extends="metadata">

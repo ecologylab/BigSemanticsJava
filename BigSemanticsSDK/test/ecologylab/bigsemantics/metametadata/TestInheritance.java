@@ -442,6 +442,27 @@ public class TestInheritance extends BaseMmdTest
 
     NewInheritanceHandler handler = new NewInheritanceHandler();
     handler.handleMmdRepository(repo);
+    
+    MetaMetadataCompositeField composite = null;
+    MetaMetadataCollectionField collection = null;
+    
+    // foo.foo_1
+    composite = (MetaMetadataCompositeField) getNestedField(repo, "foo", "foo_1");
+    assertNotNull(composite.lookupChild("meta_metadata_name"));
+
+    // foo.foo_2
+    collection = (MetaMetadataCollectionField) getNestedField(repo, "foo", "foo_2");
+    assertNotNull(collection.lookupChild("meta_metadata_name"));
+    assertNotNull(collection.lookupChild("location"));
+    
+    // bar.foo_1
+    composite = (MetaMetadataCompositeField) getNestedField(repo, "bar", "foo_1");
+    assertNotNull(composite.lookupChild("meta_metadata_name"));
+
+    // bar.foo_2
+    collection = (MetaMetadataCollectionField) getNestedField(repo, "bar", "foo_2");
+    assertNotNull(collection.lookupChild("meta_metadata_name"));
+    assertNotNull(collection.lookupChild("location"));
   }
 
   @Test

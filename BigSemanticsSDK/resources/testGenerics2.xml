@@ -7,18 +7,19 @@
 
   <meta_metadata name="document" extends="metadata">
     <scalar name="location" scalar_type="ParsedURL" />
-    <collection name="other_locations" child_scalar_type="ParsedURL" />
   </meta_metadata>
 
   <meta_metadata name="rich_doc" extends="document">
     <scalar name="title" scalar_type="String" />
-    <scalar name="description" scalar_type="String" />
   </meta_metadata>
 
   <!-- Foo<A extends Metadata, B extends Metadata> extends Document -->
   <meta_metadata name="foo" extends="document">
     <generic_type_var name="A" /><!-- default bound: metadata -->
     <generic_type_var name="B" extends="document" />
+    
+    <composite name="foo_1" type="A" />
+    <collection name="foo_2" child_type="B" />
   </meta_metadata>
 
   <!-- Bar<A extends Metadata, B extends Metadata> extends Foo<A, B> -->
@@ -38,6 +39,13 @@
     </generic_type_var>
     <generic_type_var name="X" extends="R" />
     <generic_type_var name="Y" extends="S" />
+    
+    <composite name="f1" type="R" />
+    <composite name="f2" type="S" />
+    <composite name="f3" type="T" />
+
+    <collection name="f4" child_type="X" />
+    <collection name="f5" child_type="Y" />
   </meta_metadata>
 
   <!-- Sub<R extends Metadata, T extends Bar<R, RichDoc>, Y extends RichDoc, Z extends 
@@ -51,6 +59,8 @@
     <generic_type_var name="X" arg="document" /><!-- binding -->
     <!-- declaration for Y omitted -->
     <generic_type_var name="Z" /><!-- a new generic type var definition -->
+
+    <collection name="f6" child_type="Z" />
   </meta_metadata>
 
 </meta_metadata_repository>
