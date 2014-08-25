@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<meta_metadata_repository name="test_generics2">
+
+  <meta_metadata name="metadata">
+    <scalar name="meta_metadata_name" scalar_type="String" />
+  </meta_metadata>
+
+  <meta_metadata name="document" extends="metadata">
+    <scalar name="location" scalar_type="ParsedURL" />
+    <collection name="other_locations" child_scalar_type="ParsedURL" />
+  </meta_metadata>
+
+  <meta_metadata name="rich_doc" extends="document">
+    <scalar name="title" scalar_type="String" />
+    <scalar name="description" scalar_type="String" />
+  </meta_metadata>
+
+  <!-- Foo<A extends Metadata, B extends Metadata> extends Document -->
+  <meta_metadata name="foo" extends="document">
+    <generic_type_var name="A" /><!-- default bound: metadata -->
+    <generic_type_var name="B" extends="document" />
+  </meta_metadata>
+
+  <!-- Bar<A extends Metadata, B extends Metadata> extends Foo<A, B> -->
+  <meta_metadata name="bar" extends="foo">
+    <!-- declarations for A and B omitted -->
+    <scalar name="foobar" scalar_type="String" />
+  </meta_metadata>
+
+  <!-- Base<R extends Metadata, S extends RichDoc, T extends Foo<R, S>, X extends 
+    R, Y extends S> extends Document -->
+  <meta_metadata name="base" extends="document">
+    <generic_type_var name="R" />
+    <generic_type_var name="S" extends="rich_doc" />
+    <generic_type_var name="T" extends="foo">
+      <generic_type_var name="A" arg="R" />
+      <generic_type_var arg="S" />
+    </generic_type_var>
+    <generic_type_var name="X" extends="R" />
+    <generic_type_var name="Y" extends="S" />
+  </meta_metadata>
+
+  <!-- Sub<R extends Metadata, T extends Bar<R, RichDoc>, Y extends RichDoc, Z extends 
+    Metadata> extends Base<R, RichDoc, T, Document, Y> -->
+  <meta_metadata name="sub" extends="base">
+    <!-- declaration for R omitted -->
+    <generic_type_var name="S" arg="rich_doc" /><!-- binding -->
+    <generic_type_var name="T" extends="bar">
+      <!-- declarations for R and S omitted; should use what's defined for Sub -->
+    </generic_type_var>
+    <generic_type_var name="X" arg="document" /><!-- binding -->
+    <!-- declaration for Y omitted -->
+    <generic_type_var name="Z" /><!-- a new generic type var definition -->
+  </meta_metadata>
+
+</meta_metadata_repository>

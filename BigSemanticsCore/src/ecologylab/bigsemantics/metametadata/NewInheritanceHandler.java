@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import ecologylab.bigsemantics.metametadata.exceptions.MetaMetadataException;
 import ecologylab.collections.MultiAncestorScope;
 import ecologylab.generic.HashMapArrayList;
+import ecologylab.generic.ReflectionTools;
 import ecologylab.generic.StringBuilderBaseUtils;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.FieldType;
@@ -111,16 +112,16 @@ public class NewInheritanceHandler
 
   public void handleMmd(MetaMetadata mmd)
   {
-    if (search(mmd) < 0)
+    if (mmd != null && !mmd.isInheritDone() && search(mmd) < 0)
     {
-      logger.debug("{}: Handling...", mmd);
+      logger.debug("{}: Handling mmd {}", mmd, mmd);
 
       push(mmd);
 
       try
       {
         MetaMetadata superMmd = findSuperMmd(mmd);
-        mmd.scope().addAncestor(superMmd == null ? null : superMmd.scope());
+        inheritScope(mmd, superMmd);
 
         if (superMmd == null)
         {
@@ -136,10 +137,7 @@ public class NewInheritanceHandler
         else
         {
           // mmd is not the root
-          if (!superMmd.isInheritDone())
-          {
-            handleMmd(superMmd);
-          }
+          handleMmd(superMmd);
 
           mergeAttributes(mmd, superMmd);
           mergeChildren(mmd, superMmd);
@@ -279,6 +277,19 @@ public class NewInheritanceHandler
     {
       MetaMetadataField f0 = superField == null ? null : superField.lookupChild(childName);
       MetaMetadataField f1 = field.lookupChild(childName);
+      if (f0 != null && f1 == null && isUsingGenerics(f0))
+      {
+        // if the super field is using generics, we will need to re-evaluate generic type vars, and
+        // this can change the type that is being used for f1
+        f1 = ReflectionTools.getInstance(f0.getClass());
+        f1.setName(childName);
+        f1.setParent(field);
+        if (f1 instanceof MetaMetadataCollectionField)
+        {
+          ((MetaMetadataCollectionField) f1).createElementComposite();
+        }
+        field.getChildrenMap().put(childName, f1);
+      }
       if (f0 != null && f1 != null && f0 != f1)
       {
         mergeAttributes(f1, f0);
@@ -297,11 +308,7 @@ public class NewInheritanceHandler
       MetaMetadataField f1 = field.lookupChild(childName);
       if (f1 != null && f0 != f1)
       {
-        if (f1 instanceof MetaMetadataNestedField)
-        {
-          MultiAncestorScope<Object> f1scope = ((MetaMetadataNestedField) f1).scope();
-          f1scope.addAncestor(((MetaMetadataNestedField) field).scope());
-        }
+        inheritScope(f1, field);
         inheritField(f1, f0);
       }
     }
@@ -341,12 +348,10 @@ public class NewInheritanceHandler
         MetaMetadataNestedField nested = (MetaMetadataNestedField) field;
         if (superField != null)
         {
-          MetaMetadataNestedField superNested = (MetaMetadataNestedField) superField;
-          nested.scope().addAncestor(superNested.scope());
+          inheritScope(field, superField);
         }
 
         MetaMetadata typeMmd = null;
-
         if (nested.isInlineDefinition())
         {
           typeMmd = createInlineMmd(nested.metaMetadataCompositeField());
@@ -354,21 +359,16 @@ public class NewInheritanceHandler
         else
         {
           typeMmd = findTypeMmd(nested);
-          nested.scope().addAncestor(typeMmd == null ? null : typeMmd.scope());
+          inheritScope(nested, typeMmd);
         }
-
         if (typeMmd == null)
         {
-          logger.error("{}: Cannot find typeMmd: type={}, extends={}",
-                       nested,
-                       nested.getType(),
-                       nested.getExtendsAttribute());
+          throw new MetaMetadataException("Cannot find typeMmd for " + field
+                                          + ", type=" + nested.getType()
+                                          + ", extends=" + nested.getExtendsAttribute());
         }
 
-        if (!typeMmd.isInheritDone())
-        {
-          handleMmd(typeMmd);
-        }
+        handleMmd(typeMmd);
 
         if (superField == null)
         {
@@ -516,11 +516,11 @@ public class NewInheritanceHandler
     MetaMetadata result = null;
     if (result == null && type != null)
     {
-      result = (MetaMetadata) scope.get(type);
+      result = resolveTypeName(scope, type);
     }
     if (result == null && extendsAttribute != null)
     {
-      result = (MetaMetadata) scope.get(extendsAttribute);
+      result = resolveTypeName(scope, extendsAttribute);
       if (result != null && field instanceof MetaMetadata)
       {
         ((MetaMetadata) field).setNewMetadataClass(true);
@@ -528,6 +528,33 @@ public class NewInheritanceHandler
     }
 
     return result;
+  }
+
+  private MetaMetadata resolveTypeName(MultiAncestorScope<Object> scope, String typeName)
+  {
+    Object obj = scope.get(typeName);
+    if (obj instanceof MetaMetadata)
+    {
+      return (MetaMetadata) obj;
+    }
+    else if (obj instanceof MmdGenericTypeVar)
+    {
+      MmdGenericTypeVar gtv = (MmdGenericTypeVar) obj;
+      if (gtv.getArg() != null)
+      {
+        return resolveTypeName(scope, gtv.getArg());
+      }
+      if (gtv.getExtendsAttribute() != null)
+      {
+        return resolveTypeName(scope, gtv.getExtendsAttribute());
+      }
+    }
+    else
+    {
+      throw new MetaMetadataException("MetaMetadata or GenericTypeVar expected, "
+                                      + "but got " + obj + " with " + typeName);
+    }
+    return null;
   }
 
   protected void inheritFromTypeMmd(MetaMetadataField newField, MetaMetadata typeMmd)
@@ -599,6 +626,140 @@ public class NewInheritanceHandler
         pop();
       }
     }
+  }
+
+  protected void inheritScope(MetaMetadataField dest, MetaMetadataField src)
+  {
+    if (src == null)
+    {
+      return;
+    }
+
+    // mmd type scope
+    if (src.getScope() != null)
+    {
+      dest.scope().addAncestor(src.getScope());
+    }
+
+    // handle generic type var scope (mostly checking bounds)
+    MmdGenericTypeVarScope srcScope = src.getGenericTypeVars();
+    if (srcScope != null)
+    {
+      MmdGenericTypeVarScope destScope = dest.getGenericTypeVars();
+      if (destScope == null)
+      {
+        destScope = new MmdGenericTypeVarScope();
+        dest.setGenericTypeVars(destScope);
+      }
+
+      for (MmdGenericTypeVar gtv0 : srcScope.values())
+      {
+        if (gtv0.nothingSpecified())
+        {
+          gtv0.setExtendsAttribute(MetaMetadata.ROOT_MMD_NAME);
+        }
+
+        String gtvName = gtv0.getName();
+        MmdGenericTypeVar gtv1 = destScope.get(gtvName);
+        if (gtv1 == null || gtv1.nothingSpecified())
+        {
+          // a GTV can be omitted if nothing changes about it. in this case, added to dest.
+          destScope.put(gtvName, gtv0);
+          dest.scope().put(gtvName, gtv0);
+        }
+        else
+        {
+          // otherwise, check bounds
+
+          // check lower bound
+          if (gtv0.isAssignment() && gtv1.isAssignment())
+          {
+            if (!gtv0.getArg().equals(gtv1.getArg()))
+            {
+              throw new MetaMetadataException("Incompatiable assignments to generic type var "
+                                              + gtvName + " from " + src + " to " + dest);
+            }
+          }
+          else if (gtv0.isAssignment() && gtv1.isBound())
+          {
+            throw new MetaMetadataException("Generic type var " + gtvName + " already assigned in "
+                                            + src + ", cannot respecify bound in " + dest);
+          }
+          else if (gtv0.isBound() && gtv1.isAssignment())
+          {
+            if (!checkAssignmentWithBounds(dest.scope(), gtvName, gtv1, gtv0))
+            {
+              throw new MetaMetadataException("Generic type bound(s) not satisfied for "
+                                              + gtvName + " in " + dest);
+            }
+          }
+          else
+          {
+            if (!checkBoundsWithBounds(dest.scope(), gtvName, gtv1, gtv0))
+            {
+              throw new MetaMetadataException("Generic type bound(s) not compatible for "
+                                              + gtvName + " in " + dest);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  protected boolean checkAssignmentWithBounds(MultiAncestorScope<Object> scope,
+                                              String gtvName,
+                                              MmdGenericTypeVar argGtv,
+                                              MmdGenericTypeVar boundGtv)
+  {
+    MetaMetadata argMmd = resolveTypeName(scope, argGtv.getArg());
+    handleMmd(argMmd);
+    MetaMetadata lowerBoundMmd = resolveTypeName(scope, boundGtv.getExtendsAttribute());
+    handleMmd(lowerBoundMmd);
+    boolean satisfyLowerBound = lowerBoundMmd == null || argMmd.isDerivedFrom(lowerBoundMmd);
+
+    // future work: upper bound
+
+    return satisfyLowerBound;
+  }
+
+  protected boolean checkBoundsWithBounds(MultiAncestorScope<Object> scope,
+                                          String gtvName,
+                                          MmdGenericTypeVar local,
+                                          MmdGenericTypeVar other)
+  {
+    MetaMetadata lowerBoundMmdLocal = resolveTypeName(scope, local.getExtendsAttribute());
+    lowerBoundMmdLocal.inheritMetaMetadata();
+    MetaMetadata lowerBoundMmdOther = resolveTypeName(scope, other.getExtendsAttribute());
+    lowerBoundMmdOther.inheritMetaMetadata();
+
+    boolean lowerBoundsCompatible = lowerBoundMmdOther == null
+                                    || lowerBoundMmdLocal.isDerivedFrom(lowerBoundMmdOther);
+
+    // future work: upper bound
+
+    return lowerBoundsCompatible;
+  }
+
+  private boolean isUsingGenerics(MetaMetadataField field)
+  {
+    MmdGenericTypeVarScope gtvScope = field.getGenericTypeVars();
+    if (gtvScope != null && gtvScope.size() > 0)
+    {
+      return true;
+    }
+
+    Object obj = field.scope().get(field.getType());
+    if (obj == null)
+    {
+      obj = field.scope().get(field.getExtendsAttribute());
+    }
+
+    if (obj instanceof MmdGenericTypeVar)
+    {
+      return true;
+    }
+
+    return false;
   }
 
 }

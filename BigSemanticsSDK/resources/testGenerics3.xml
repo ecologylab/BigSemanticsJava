@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<meta_metadata_repository name="test_generics3">
+
+  <meta_metadata name="metadata">
+    <scalar name="meta_metadata_name" scalar_type="String" />
+  </meta_metadata>
+
+  <meta_metadata name="document" extends="metadata">
+    <scalar name="location" scalar_type="ParsedURL" />
+    <collection name="other_locations" child_scalar_type="ParsedURL" />
+  </meta_metadata>
+
+  <meta_metadata name="rich_doc" extends="document">
+    <scalar name="title" scalar_type="String" />
+    <scalar name="description" scalar_type="String" />
+  </meta_metadata>
+
+  <meta_metadata name="foo" extends="metadata">
+    <!-- scope: T1 extends Metadata, T2 extends Document -->
+    <generic_type_var name="T1" />
+    <generic_type_var name="T2" extends="document" />
+  </meta_metadata>
+
+  <meta_metadata name="bar" extends="metadata">
+    <generic_type_var name="S1" extends="document" />
+    <generic_type_var name="S2" extends="rich_doc" />
+
+    <composite name="source_doc" type="foo">
+      <!-- scope: S1 extends Document, S2 extends RichDoc, T1=S1, T2=S2 -->
+      <!-- check bounds: if S1 extends Document, if S2 extends RichDoc -->
+      <generic_type_var name="T1" arg="S1" />
+      <generic_type_var name="T2" arg="S2" />
+
+      <!-- T1=S1 extends Document, will inherit from document -->
+      <composite name="site" type="T1" />
+
+      <!-- T1=S2 extends RichDoc, will inherit from rich_doc -->
+      <collection name="linked_docs" child_type="T2" />
+    </composite>
+  </meta_metadata>
+
+  <meta_metadata name="qux" extends="bar">
+    <!-- scope: S1=RichDoc, S2=RichDoc -->
+    <!-- check bounds: if RichDoc extends Document, if RichDoc extends RichDoc -->
+    <generic_type_var name="S1" arg="rich_doc" />
+    <generic_type_var name="S2" arg="rich_doc" />
+
+    <!-- implicitly inherited field: source_doc of type foo -->
+    <!-- for implicitly inherited fields, no bound checking needed -->
+    <!-- source_doc.site should inherit from RichDoc -->
+    <!-- source_doc.linked_docs should inherit from RichDoc -->
+  </meta_metadata>
+
+</meta_metadata_repository>

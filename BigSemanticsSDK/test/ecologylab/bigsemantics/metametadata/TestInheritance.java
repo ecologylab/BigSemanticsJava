@@ -387,9 +387,67 @@ public class TestInheritance extends BaseMmdTest
   }
 
   @Test
-  public void testGenerics() throws SIMPLTranslationException
+  public void testGenerics1() throws SIMPLTranslationException
   {
-    MetaMetadataRepository repo = loadRepository("/testInheritance4.xml");
+    MetaMetadataRepository repo = loadRepository("/testGenerics1.xml");
+
+    NewInheritanceHandler handler = new NewInheritanceHandler();
+    handler.handleMmdRepository(repo);
+    
+    MetaMetadataCollectionField collection = null;
+    
+    // search.search_results
+    collection = (MetaMetadataCollectionField) getNestedField(repo, "search", "search_results");
+    assertNotNull(collection.lookupChild("meta_metadata_name"));
+    assertNotNull(collection.lookupChild("location"));
+    assertNotNull(collection.lookupChild("other_locations"));
+
+    // google_search.search_results
+    collection =
+        (MetaMetadataCollectionField) getNestedField(repo, "google_search", "search_results");
+    assertNotNull(collection.lookupChild("meta_metadata_name"));
+    assertNotNull(collection.lookupChild("location"));
+    assertNotNull(collection.lookupChild("other_locations"));
+    
+    // image_search.search_results
+    collection =
+        (MetaMetadataCollectionField) getNestedField(repo, "image_search", "search_results");
+    assertNotNull(collection.lookupChild("meta_metadata_name"));
+    assertNotNull(collection.lookupChild("location"));
+    assertNotNull(collection.lookupChild("other_locations"));
+    assertNotNull(collection.lookupChild("width"));
+    assertNotNull(collection.lookupChild("height"));
+    
+    // google_image_search.search_results
+    collection =
+        (MetaMetadataCollectionField) getNestedField(repo, "google_image_search", "search_results");
+    assertNotNull(collection.lookupChild("meta_metadata_name"));
+    assertNotNull(collection.lookupChild("location"));
+    assertNotNull(collection.lookupChild("other_locations"));
+    assertNotNull(collection.lookupChild("width"));
+    assertNotNull(collection.lookupChild("height"));
+
+    // google_image_search.search_results.source_page
+    MetaMetadataField composite = collection.lookupChild("source_page");
+    assertNotNull(composite);
+    assertNotNull(composite.lookupChild("meta_metadata_name"));
+    assertNotNull(composite.lookupChild("location"));
+    assertNotNull(composite.lookupChild("other_locations"));
+  }
+
+  @Test
+  public void testGenerics2() throws SIMPLTranslationException
+  {
+    MetaMetadataRepository repo = loadRepository("/testGenerics2.xml");
+
+    NewInheritanceHandler handler = new NewInheritanceHandler();
+    handler.handleMmdRepository(repo);
+  }
+
+  @Test
+  public void testGenerics3() throws SIMPLTranslationException
+  {
+    MetaMetadataRepository repo = loadRepository("/testGenerics3.xml");
 
     NewInheritanceHandler handler = new NewInheritanceHandler();
     handler.handleMmdRepository(repo);

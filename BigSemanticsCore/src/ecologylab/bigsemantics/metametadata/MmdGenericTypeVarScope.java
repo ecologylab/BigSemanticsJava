@@ -1,5 +1,7 @@
 package ecologylab.bigsemantics.metametadata;
 
+import java.util.Map;
+
 import ecologylab.bigsemantics.metametadata.exceptions.MetaMetadataException;
 import ecologylab.collections.MultiAncestorScope;
 
@@ -28,7 +30,7 @@ public class MmdGenericTypeVarScope extends MultiAncestorScope<MmdGenericTypeVar
 			}
 			else
 			{
-				localGenericTypeVar.resolveArgAndBounds(this);
+				localGenericTypeVar.resolveArgAndBounds((Map) this);
 
 				if (superGenericTypeVar.isAssignment() && localGenericTypeVar.isAssignment()
 						&& !superGenericTypeVar.getArg().equals(localGenericTypeVar.getArg()))

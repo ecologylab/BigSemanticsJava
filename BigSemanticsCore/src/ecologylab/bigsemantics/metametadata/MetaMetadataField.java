@@ -234,6 +234,7 @@ public abstract class MetaMetadataField extends MetaMetadataFieldDeclaration
   @simpl_map("generic_type_var")
   @simpl_map_key_field("name")
   @simpl_nowrap
+  @mm_dont_inherit
   private MmdGenericTypeVarScope                      genericTypeVars;
 
   private String                                      fieldNameInJava;
@@ -801,6 +802,12 @@ public abstract class MetaMetadataField extends MetaMetadataFieldDeclaration
   public String getTagForTypesScope()
   {
     return getTag() != null ? getTag() : getName();
+  }
+
+  public String getTypeOrName()
+  {
+    String type = getType();
+    return type == null ? getName() : type;
   }
 
   public String resolveTag()

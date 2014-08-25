@@ -2,9 +2,11 @@ package ecologylab.bigsemantics.metametadata;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
 import ecologylab.bigsemantics.metadata.MetadataClassDescriptor;
 import ecologylab.bigsemantics.metametadata.exceptions.MetaMetadataException;
+import ecologylab.generic.StringBuilderBaseUtils;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.annotations.simpl_inherit;
 import ecologylab.serialization.annotations.simpl_map;
@@ -136,14 +138,15 @@ public class MmdGenericTypeVar extends ElementState
 	  return rebound;
 	}
 
-	public void resolveArgAndBounds(MmdGenericTypeVarScope genericTypeVarScope)
+	public void resolveArgAndBounds(Map<String, Object> scope)
 	{
 		if (isAssignment())
 		{
-			MmdGenericTypeVar gtv = genericTypeVarScope.get(arg);
+			Object obj = scope.get(arg);
+      MmdGenericTypeVar gtv = (MmdGenericTypeVar) obj;
 			if (gtv != null)
 			{
-				gtv.resolveArgAndBounds(genericTypeVarScope);
+				gtv.resolveArgAndBounds(scope);
 
 				if (gtv.isAssignment())
 				{
@@ -159,16 +162,16 @@ public class MmdGenericTypeVar extends ElementState
 		}
 		else if (isBound())
 		{
-			MmdGenericTypeVar extendsGtv = genericTypeVarScope.get(extendsAttribute);
+			MmdGenericTypeVar extendsGtv = (MmdGenericTypeVar) scope.get(extendsAttribute);
 			if (extendsGtv != null)
 			{
-				extendsGtv.resolveArgAndBounds(genericTypeVarScope);
+				extendsGtv.resolveArgAndBounds(scope);
 				extendsAttribute = extendsGtv.arg != null ? extendsGtv.arg : extendsGtv.extendsAttribute;
 			}
 			
 			// TODO superAttribute
 			
-			if (genericTypeVarScope.get(name) != null)
+			if (scope.get(name) != null)
 			{
 				rebound = true;
 			}
@@ -177,5 +180,28 @@ public class MmdGenericTypeVar extends ElementState
 			throw new MetaMetadataException(
 					"wrong meta-metadata generic type var type! must either be an assignment or a bound.");
 	}
+
+  public boolean nothingSpecified()
+  {
+    return arg == null && extendsAttribute == null;
+  }
+
+  public String toString()
+  {
+    StringBuilder sb = StringBuilderBaseUtils.acquire();
+    sb.append(getClass().getSimpleName()).append("[").append(name);
+    if (arg != null)
+    {
+      sb.append(",arg=").append(arg);
+    }
+    if (extendsAttribute != null)
+    {
+      sb.append(",extends=").append(extendsAttribute);
+    }
+    sb.append("]");
+    String result = sb.toString();
+    StringBuilderBaseUtils.release(sb);
+    return result;
+  }
 
 }

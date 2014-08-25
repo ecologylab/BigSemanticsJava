@@ -335,7 +335,7 @@ public class MetaMetadata extends MetaMetadataCompositeField
     {
       if (mmd == base)
         return true;
-      mmd = mmd.getTypeMmd();
+      mmd = mmd.getSuperMmd();
     }
     return false;
   }

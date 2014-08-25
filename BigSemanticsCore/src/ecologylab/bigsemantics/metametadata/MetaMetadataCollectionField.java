@@ -106,7 +106,7 @@ public class MetaMetadataCollectionField extends MetaMetadataCollectionFieldDecl
     return elementComposite;
   }
 
-  private MetaMetadataCompositeField createElementComposite()
+  public MetaMetadataCompositeField createElementComposite()
   {
     HashMapArrayList<String, MetaMetadataField> kids = super.getChildrenMap();
     String childType = getChildType();

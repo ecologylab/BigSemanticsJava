@@ -146,6 +146,17 @@ public abstract class MetaMetadataNestedField extends MetaMetadataNestedFieldDec
     if (scope == null)
     {
       scope = new MultiAncestorScope<Object>(this.toString());
+
+      // also put all local GTVs into the scope
+      MmdGenericTypeVarScope gtvScope = getGenericTypeVars();
+      if (gtvScope != null)
+      {
+        for (String localGtvName : gtvScope.keySet())
+        {
+          MmdGenericTypeVar gtv = gtvScope.get(localGtvName);
+          scope.put(localGtvName, gtv);
+        }
+      }
     }
     return scope;
   }

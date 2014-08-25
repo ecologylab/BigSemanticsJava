@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<meta_metadata_repository name="test_generics1">
+
+  <meta_metadata name="metadata">
+    <scalar name="meta_metadata_name" scalar_type="String" />
+  </meta_metadata>
+
+  <meta_metadata name="document" extends="metadata">
+    <scalar name="location" scalar_type="ParsedURL" />
+    <collection name="other_locations" child_scalar_type="ParsedURL" />
+  </meta_metadata>
+
+  <meta_metadata name="image" extends="document">
+    <scalar name="width" scalar_type="Int" />
+    <scalar name="height" scalar_type="Int" />
+  </meta_metadata>
+
+  <meta_metadata name="google_image" extends="image">
+    <composite name="source_page" type="document" />
+  </meta_metadata>
+
+  <!-- Search<SR extends Document> -->
+  <meta_metadata name="search" extends="document">
+    <generic_type_var name="SR" extends="document" />
+    <collection name="search_results" child_type="SR" />
+  </meta_metadata>
+
+  <!-- GoogleSearch<SR extends Document> extends Search<SR> -->
+  <meta_metadata name="google_search" extends="search">
+    <generic_type_var name="SR" arg="document" />
+  </meta_metadata>
+
+  <!-- ImageSearch<SR extends Image> extends Search<SR> -->
+  <meta_metadata name="image_search" extends="search">
+    <generic_type_var name="SR" extends="image" />
+  </meta_metadata>
+
+  <!-- GoogleImageSearch extends ImageSearch<GoogleImage> -->
+  <meta_metadata name="google_image_search" extends="search">
+    <generic_type_var name="SR" arg="google_image" />
+  </meta_metadata>
+  
+</meta_metadata_repository>
