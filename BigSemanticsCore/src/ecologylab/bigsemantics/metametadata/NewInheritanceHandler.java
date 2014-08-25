@@ -18,6 +18,7 @@ import ecologylab.serialization.FieldType;
 import ecologylab.serialization.types.ScalarType;
 
 /**
+ * All inheritance magic happens here!
  * 
  * @author quyin
  */
@@ -62,6 +63,12 @@ public class NewInheritanceHandler
     return -1;
   }
 
+  /**
+   * @param fieldToInclude
+   *          If this is not null, the result string will include this field as if it was pushed to
+   *          the top of the stack. Nothing actually pushed though.
+   * @return A string representing the current content of the stack.
+   */
   public String getFieldStackTrace(MetaMetadataField fieldToInclude)
   {
     StringBuilder sb = StringBuilderBaseUtils.acquire();
@@ -164,9 +171,8 @@ public class NewInheritanceHandler
    * 
    * @param field
    * @param superField
-   * @return
    */
-  protected void mergeAttributes(MetaMetadataField field, MetaMetadataField superField)
+  private void mergeAttributes(MetaMetadataField field, MetaMetadataField superField)
   {
     logger.debug("{}: Merging attributes from {}...", field, superField);
 
@@ -201,6 +207,13 @@ public class NewInheritanceHandler
     }
   }
 
+  /**
+   * Merge one attribute.
+   * 
+   * @param field
+   * @param superField
+   * @param attributeFieldDescriptor
+   */
   private void mergeAttributeHelper(MetaMetadataField field,
                                     MetaMetadataField superField,
                                     MetaMetadataFieldDescriptor attributeFieldDescriptor)
@@ -262,14 +275,21 @@ public class NewInheritanceHandler
     }
   }
 
-  protected void mergeChildren(MetaMetadataField field, MetaMetadataField superField)
+  /**
+   * Merge children, in a breadth-first way: immediate children get processed first, then the next
+   * generation, and so on.
+   * 
+   * @param field
+   * @param superField
+   */
+  private void mergeChildren(MetaMetadataField field, MetaMetadataField superField)
   {
     logger.debug("{}: Merging children from {}...", field, superField);
 
     Set<String> childrenNames = new HashSet<String>();
-    addChildrenNames(field, childrenNames);
-    addChildrenNames(superField, childrenNames);
-    
+    collectChildrenNames(field, childrenNames);
+    collectChildrenNames(superField, childrenNames);
+
     Set<MetaMetadataField> reincarnated = new HashSet<MetaMetadataField>();
 
     // first, for all immediate children, merge attributes or copy the field object over from
@@ -319,8 +339,8 @@ public class NewInheritanceHandler
           f1.scope().addAncestor(field.scope());
         }
         inheritField(f1, f0);
-        
-        if (reincarnated.contains(f1) && f0.getTypeMmd() == f1.getTypeMmd())
+
+        if (reincarnated.contains(f1) && !isTypeDifferent(f1, f0))
         {
           field.getChildrenMap().put(childName, f0);
           logger.debug("{}: Field unchanged, reincarnated instance destroyed", f1);
@@ -329,7 +349,7 @@ public class NewInheritanceHandler
     }
   }
 
-  private void addChildrenNames(MetaMetadataField field, Set<String> childrenNames)
+  private void collectChildrenNames(MetaMetadataField field, Set<String> childrenNames)
   {
     if (field != null)
     {
@@ -340,7 +360,17 @@ public class NewInheritanceHandler
     }
   }
 
-  protected void inheritField(MetaMetadataField field, MetaMetadataField superField)
+  /**
+   * Entrance method for inheriting attributes and children from superField to field. It merges
+   * attributes, deals with scopes, finds the typeMmd, then call other methods to do the actual
+   * dirty work.
+   * 
+   * @param field
+   *          The field being processed.
+   * @param superField
+   *          Can be null.
+   */
+  private void inheritField(MetaMetadataField field, MetaMetadataField superField)
   {
     String fieldStackTrace = getFieldStackTrace(field);
     logger.debug("{}: Inheriting from {}, stack trace: {}", field, superField, fieldStackTrace);
@@ -399,7 +429,13 @@ public class NewInheritanceHandler
     }
   }
 
-  protected MetaMetadata createInlineMmd(MetaMetadataCompositeField composite)
+  /**
+   * Create inline mmd type using a composite.
+   * 
+   * @param composite
+   * @return The created inline mmd.
+   */
+  private MetaMetadata createInlineMmd(MetaMetadataCompositeField composite)
   {
     logger.debug("{}: Creating inline mmd...", composite);
 
@@ -484,6 +520,12 @@ public class NewInheritanceHandler
     return inlineMmd;
   }
 
+  /**
+   * A convenient method to deal with the element composite object inside a collection field.
+   * 
+   * @param composite
+   * @return
+   */
   private MultiAncestorScope<Object> getParentScope(MetaMetadataCompositeField composite)
   {
     if (composite.getEnclosingCollectionField() == composite.parent())
@@ -493,7 +535,13 @@ public class NewInheritanceHandler
     return ((MetaMetadataNestedField) composite.parent()).scope();
   }
 
-  protected MetaMetadata findSuperMmd(MetaMetadata mmd)
+  /**
+   * Finds the superMmd for a given mmd. The superMmd is specified by type or extends.
+   * 
+   * @param mmd
+   * @return
+   */
+  private MetaMetadata findSuperMmd(MetaMetadata mmd)
   {
     if (mmd.getSuperMmd() != null)
     {
@@ -505,7 +553,14 @@ public class NewInheritanceHandler
     return result;
   }
 
-  protected MetaMetadata findTypeMmd(MetaMetadataField field)
+  /**
+   * Finds the typeMmd for a (nested) field. The typeMmd is the mmd that is used as the type of a
+   * composite field or the child type of a collection field.
+   * 
+   * @param field
+   * @return
+   */
+  private MetaMetadata findTypeMmd(MetaMetadataField field)
   {
     if (field instanceof MetaMetadata)
     {
@@ -521,6 +576,12 @@ public class NewInheritanceHandler
     return result;
   }
 
+  /**
+   * Helper method that looks for mmd from the field's scope.
+   * 
+   * @param field
+   * @return
+   */
   private MetaMetadata findMmdFromScope(MetaMetadataField field)
   {
     MultiAncestorScope<Object> scope = field.scope();
@@ -547,6 +608,15 @@ public class NewInheritanceHandler
     return result;
   }
 
+  /**
+   * Resolve a name to a mmd. The name can be a concrete mmd name or a generic type var. In the
+   * later case, this method will use the scope to resolve the generic type var to the most general
+   * concrete mmd type that applies.
+   * 
+   * @param scope
+   * @param typeName
+   * @return
+   */
   private MetaMetadata resolveTypeName(MultiAncestorScope<Object> scope, String typeName)
   {
     Object obj = scope.get(typeName);
@@ -583,7 +653,13 @@ public class NewInheritanceHandler
     }
   }
 
-  protected void inheritFromTypeMmd(MetaMetadataField newField, MetaMetadata typeMmd)
+  /**
+   * Helper method that deals with collection fields and their element composites.
+   * 
+   * @param newField
+   * @param typeMmd
+   */
+  private void inheritFromTypeMmd(MetaMetadataField newField, MetaMetadata typeMmd)
   {
     logger.debug("{}: inheriting from type mmd {}", newField, typeMmd);
     if (newField instanceof MetaMetadataCollectionField)
@@ -606,9 +682,18 @@ public class NewInheritanceHandler
     }
   }
 
-  protected void inheritFromSuperField(MetaMetadataField field,
-                                       MetaMetadata fieldTypeMmd,
-                                       MetaMetadataField superField)
+  /**
+   * Inherit attributes and children from superField. This method also deals with cases where a more
+   * specific type (that is different from the type used on the superField) is used on the
+   * (sub)field.
+   * 
+   * @param field
+   * @param fieldTypeMmd
+   * @param superField
+   */
+  private void inheritFromSuperField(MetaMetadataField field,
+                                     MetaMetadata fieldTypeMmd,
+                                     MetaMetadataField superField)
   {
     logger.debug("{}: inheriting from super field {}", field, superField);
     if (field instanceof MetaMetadataCollectionField)
@@ -654,7 +739,13 @@ public class NewInheritanceHandler
     }
   }
 
-  protected void inheritScope(ScopeProvider dest, ScopeProvider src)
+  /**
+   * Key method to handle lexical scopes. For generic type vars, it also checks bounds.
+   * 
+   * @param dest
+   * @param src
+   */
+  private void inheritScope(ScopeProvider dest, ScopeProvider src)
   {
     if (src == null)
     {
@@ -707,6 +798,16 @@ public class NewInheritanceHandler
     }
   }
 
+  /**
+   * Validate generic type var bounds. Parameter dest, src, and gtvName are just for error
+   * reporting.
+   * 
+   * @param dest
+   * @param src
+   * @param gtvName
+   * @param destGtv
+   * @param srcGtv
+   */
   private void validateGenericTypeVar(ScopeProvider dest,
                                       ScopeProvider src,
                                       String gtvName,
@@ -750,7 +851,7 @@ public class NewInheritanceHandler
     logger.debug("{}: Generic type var {} validated", dest, destGtv);
   }
 
-  protected boolean checkAssignmentWithBounds(MmdGenericTypeVar argGtv, MmdGenericTypeVar boundGtv)
+  private boolean checkAssignmentWithBounds(MmdGenericTypeVar argGtv, MmdGenericTypeVar boundGtv)
   {
     MultiAncestorScope<Object> scope = argGtv.getScope();
     MetaMetadata argMmd = resolveTypeName(scope, argGtv.getArg());
@@ -764,7 +865,7 @@ public class NewInheritanceHandler
     return satisfyLowerBound;
   }
 
-  protected boolean checkBoundsWithBounds(MmdGenericTypeVar local, MmdGenericTypeVar other)
+  private boolean checkBoundsWithBounds(MmdGenericTypeVar local, MmdGenericTypeVar other)
   {
     MultiAncestorScope<Object> scope = local.getScope();
     MetaMetadata lowerBoundMmdLocal = resolveTypeName(scope, local.getExtendsAttribute());
@@ -780,6 +881,13 @@ public class NewInheritanceHandler
     return lowerBoundsCompatible;
   }
 
+  /**
+   * Determines if a field involves generics. If so, the inheritance code may need to re-evaluate
+   * the generic type vars.
+   * 
+   * @param field
+   * @return
+   */
   private boolean isUsingGenerics(MetaMetadataField field)
   {
     MmdGenericTypeVarScope gtvScope = field.getGenericTypeVars();
@@ -799,6 +907,31 @@ public class NewInheritanceHandler
       return true;
     }
 
+    return false;
+  }
+
+  /**
+   * @param f1
+   * @param f0
+   * @return If the type of the two fields, or the type of any of their children, is different.
+   */
+  private boolean isTypeDifferent(MetaMetadataField f1, MetaMetadataField f0)
+  {
+    if (f1 != null && f0 != null)
+    {
+      if (f0.getTypeMmd() != f1.getTypeMmd())
+      {
+        return true;
+      }
+      for (MetaMetadataField child1 : f1)
+      {
+        MetaMetadataField child0 = f0.lookupChild(child1.getName());
+        if (child0 == null || child0.getTypeMmd() != child1.getTypeMmd())
+        {
+          return true;
+        }
+      }
+    }
     return false;
   }
 

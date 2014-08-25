@@ -13,40 +13,34 @@
     <scalar name="title" scalar_type="String" />
   </meta_metadata>
 
+  <meta_metadata name="richer_doc" extends="rich_doc">
+    <collection name="images" child_scalar_type="ParsedURL" />
+  </meta_metadata>
+
   <meta_metadata name="foo" extends="metadata">
-    <!-- scope: T1 extends Metadata, T2 extends Document -->
     <generic_type_var name="T1" />
     <generic_type_var name="T2" extends="document" />
+
+    <collection name="cats" child_type="T1" />
+    <collection name="dogs" child_type="T2" />
   </meta_metadata>
 
   <meta_metadata name="bar" extends="metadata">
     <generic_type_var name="S1" extends="document" />
     <generic_type_var name="S2" extends="rich_doc" />
 
-    <composite name="source_doc" type="foo">
-      <!-- scope: S1 extends Document, S2 extends RichDoc, T1=S1, T2=S2 -->
-      <!-- check bounds: if S1 extends Document, if S2 extends RichDoc -->
+    <composite name="baz" type="foo">
       <generic_type_var name="T1" arg="S1" />
       <generic_type_var name="T2" arg="S2" />
-
-      <!-- T1=S1 extends Document, will inherit from document -->
-      <composite name="site" type="T1" />
-
-      <!-- T1=S2 extends RichDoc, will inherit from rich_doc -->
-      <collection name="linked_docs" child_type="T2" />
     </composite>
+
+    <collection name="tables" child_type="S1" />
+    <collection name="chairs" child_type="S2" />
   </meta_metadata>
 
   <meta_metadata name="qux" extends="bar">
-    <!-- scope: S1=RichDoc, S2=RichDoc -->
-    <!-- check bounds: if RichDoc extends Document, if RichDoc extends RichDoc -->
     <generic_type_var name="S1" arg="rich_doc" />
-    <generic_type_var name="S2" arg="rich_doc" />
-
-    <!-- implicitly inherited field: source_doc of type foo -->
-    <!-- for implicitly inherited fields, no bound checking needed -->
-    <!-- source_doc.site should inherit from RichDoc -->
-    <!-- source_doc.linked_docs should inherit from RichDoc -->
+    <generic_type_var name="S2" arg="richer_doc" />
   </meta_metadata>
 
 </meta_metadata_repository>

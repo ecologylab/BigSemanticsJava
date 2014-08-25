@@ -401,6 +401,7 @@ public class TestInheritance extends BaseMmdTest
     assertNotNull(collection.lookupChild("meta_metadata_name"));
     assertNotNull(collection.lookupChild("location"));
     assertNotNull(collection.lookupChild("other_locations"));
+    assertEquals("document", collection.getTypeMmd().getName());
 
     // google_search.search_results
     collection =
@@ -408,6 +409,7 @@ public class TestInheritance extends BaseMmdTest
     assertNotNull(collection.lookupChild("meta_metadata_name"));
     assertNotNull(collection.lookupChild("location"));
     assertNotNull(collection.lookupChild("other_locations"));
+    assertEquals("document", collection.getTypeMmd().getName());
 
     // image_search.search_results
     collection =
@@ -417,6 +419,7 @@ public class TestInheritance extends BaseMmdTest
     assertNotNull(collection.lookupChild("other_locations"));
     assertNotNull(collection.lookupChild("width"));
     assertNotNull(collection.lookupChild("height"));
+    assertEquals("image", collection.getTypeMmd().getName());
 
     // google_image_search.search_results
     collection =
@@ -426,6 +429,7 @@ public class TestInheritance extends BaseMmdTest
     assertNotNull(collection.lookupChild("other_locations"));
     assertNotNull(collection.lookupChild("width"));
     assertNotNull(collection.lookupChild("height"));
+    assertEquals("google_image", collection.getTypeMmd().getName());
 
     // google_image_search.search_results.source_page
     MetaMetadataField composite = collection.lookupChild("source_page");
@@ -433,6 +437,7 @@ public class TestInheritance extends BaseMmdTest
     assertNotNull(composite.lookupChild("meta_metadata_name"));
     assertNotNull(composite.lookupChild("location"));
     assertNotNull(composite.lookupChild("other_locations"));
+    assertEquals("document", composite.getTypeMmd().getName());
   }
 
   @Test
@@ -451,106 +456,107 @@ public class TestInheritance extends BaseMmdTest
     // foo.foo_1
     composite = (MetaMetadataCompositeField) getNestedField(repo, "foo", "foo_1");
     assertNotNull(composite.lookupChild("meta_metadata_name"));
+    assertEquals("metadata", composite.getTypeMmd().getName());
 
     // foo.foo_2
     collection = (MetaMetadataCollectionField) getNestedField(repo, "foo", "foo_2");
-    assertNotNull(collection.lookupChild("meta_metadata_name"));
     assertNotNull(collection.lookupChild("location"));
+    assertEquals("document", collection.getTypeMmd().getName());
 
     // bar.foo_1
     composite = (MetaMetadataCompositeField) getNestedField(repo, "bar", "foo_1");
     assertNotNull(composite.lookupChild("meta_metadata_name"));
+    assertEquals("metadata", composite.getTypeMmd().getName());
 
     // bar.foo_2
     collection = (MetaMetadataCollectionField) getNestedField(repo, "bar", "foo_2");
-    assertNotNull(collection.lookupChild("meta_metadata_name"));
     assertNotNull(collection.lookupChild("location"));
+    assertEquals("document", collection.getTypeMmd().getName());
 
     // base.f1
     composite = (MetaMetadataCompositeField) getNestedField(repo, "base", "f1");
     assertNotNull(composite.lookupChild("meta_metadata_name"));
+    assertEquals("metadata", composite.getTypeMmd().getName());
 
     // base.f2
     composite = (MetaMetadataCompositeField) getNestedField(repo, "base", "f2");
-    assertNotNull(composite.lookupChild("meta_metadata_name"));
-    assertNotNull(composite.lookupChild("location"));
     assertNotNull(composite.lookupChild("title"));
+    assertEquals("rich_doc", composite.getTypeMmd().getName());
 
     // base.f3
     composite = (MetaMetadataCompositeField) getNestedField(repo, "base", "f3");
-    assertNotNull(composite.lookupChild("meta_metadata_name"));
-    assertNotNull(composite.lookupChild("location"));
+    assertNotNull(composite.lookupChild("foo_1"));
+    assertNotNull(composite.lookupChild("foo_2"));
+    assertEquals("foo", composite.getTypeMmd().getName());
 
     // base.f3.foo_1 (extends metadata)
     comp = (MetaMetadataCompositeField) composite.lookupChild("foo_1");
     assertNotNull(comp);
     assertNotNull(comp.lookupChild("meta_metadata_name"));
+    assertEquals("metadata", comp.getTypeMmd().getName());
 
     // base.f3.foo_2 (extends rich_doc)
     coll = (MetaMetadataCollectionField) composite.lookupChild("foo_2");
     assertNotNull(coll);
-    assertNotNull(coll.lookupChild("meta_metadata_name"));
-    assertNotNull(coll.lookupChild("location"));
     assertNotNull(coll.lookupChild("title"));
+    assertEquals("rich_doc", coll.getTypeMmd().getName());
 
     // base.f4
     collection = (MetaMetadataCollectionField) getNestedField(repo, "base", "f4");
     assertNotNull(collection.lookupChild("meta_metadata_name"));
+    assertEquals("metadata", collection.getTypeMmd().getName());
 
     // base.f5
     collection = (MetaMetadataCollectionField) getNestedField(repo, "base", "f5");
-    assertNotNull(collection.lookupChild("meta_metadata_name"));
-    assertNotNull(collection.lookupChild("location"));
     assertNotNull(collection.lookupChild("title"));
+    assertEquals("rich_doc", collection.getTypeMmd().getName());
 
     // sub.f1
     composite = (MetaMetadataCompositeField) getNestedField(repo, "sub", "f1");
     assertNotNull(composite.lookupChild("meta_metadata_name"));
+    assertEquals("metadata", composite.getTypeMmd().getName());
 
     // sub.f2
     composite = (MetaMetadataCompositeField) getNestedField(repo, "sub", "f2");
-    assertNotNull(composite.lookupChild("meta_metadata_name"));
-    assertNotNull(composite.lookupChild("location"));
-    assertNotNull(composite.lookupChild("title"));
     assertNotNull(composite.lookupChild("images"));
+    assertEquals("richer_doc", composite.getTypeMmd().getName());
 
     // sub.f3
     composite = (MetaMetadataCompositeField) getNestedField(repo, "sub", "f3");
-    assertNotNull(composite.lookupChild("meta_metadata_name"));
-    assertNotNull(composite.lookupChild("location"));
     assertNotNull(composite.lookupChild("foobar"));
+    assertEquals("bar", composite.getTypeMmd().getName());
 
     // sub.f3.foo_1 (bound to foo<document, document>)
     comp = (MetaMetadataCompositeField) composite.lookupChild("foo_1");
     assertNotNull(comp);
-    assertNotNull(comp.lookupChild("meta_metadata_name"));
-    assertNotNull(comp.lookupChild("location"));
     assertNotNull(comp.lookupChild("foo_1"));
     assertNotNull(comp.lookupChild("foo_2"));
+    assertEquals("foo", comp.getTypeMmd().getName());
+
+    // sub.f3.foo_1.foo_1
     assertNotNull(comp.lookupChild("foo_1").lookupChild("location"));
+    assertEquals("document", comp.lookupChild("foo_1").getTypeMmd().getName());
 
     // sub.f3.foo_2 (extends richer_doc)
     coll = (MetaMetadataCollectionField) composite.lookupChild("foo_2");
     assertNotNull(coll);
-    assertNotNull(coll.lookupChild("meta_metadata_name"));
-    assertNotNull(coll.lookupChild("location"));
-    assertNotNull(coll.lookupChild("title"));
     assertNotNull(coll.lookupChild("images"));
+    assertEquals("richer_doc", coll.getTypeMmd().getName());
 
     // sub.f4
     collection = (MetaMetadataCollectionField) getNestedField(repo, "sub", "f4");
-    assertNotNull(collection.lookupChild("meta_metadata_name"));
+    assertNotNull(collection.lookupChild("location"));
+    assertEquals("document", collection.getTypeMmd().getName());
 
     // sub.f5
     collection = (MetaMetadataCollectionField) getNestedField(repo, "sub", "f5");
-    assertNotNull(collection.lookupChild("meta_metadata_name"));
-    assertNotNull(collection.lookupChild("location"));
-    assertNotNull(collection.lookupChild("title"));
     assertNotNull(collection.lookupChild("images"));
+    assertEquals("richer_doc", collection.getTypeMmd().getName());
 
     // sub.f6
     collection = (MetaMetadataCollectionField) getNestedField(repo, "sub", "f6");
     assertNotNull(collection.lookupChild("meta_metadata_name"));
+    assertEquals("metadata", collection.getTypeMmd().getName());
   }
 
   @Test
@@ -560,6 +566,75 @@ public class TestInheritance extends BaseMmdTest
 
     NewInheritanceHandler handler = new NewInheritanceHandler();
     handler.handleMmdRepository(repo);
+
+    MetaMetadataCompositeField composite = null;
+    MetaMetadataCollectionField collection = null;
+
+    // foo.cats
+    collection = (MetaMetadataCollectionField) getNestedField(repo, "foo", "cats");
+    assertNotNull(collection.lookupChild("meta_metadata_name"));
+    assertEquals("metadata", collection.getTypeMmd().getName());
+
+    // foo.dogs
+    collection = (MetaMetadataCollectionField) getNestedField(repo, "foo", "dogs");
+    assertNotNull(collection.lookupChild("location"));
+    assertEquals("document", collection.getTypeMmd().getName());
+
+    // bar.baz
+    composite = (MetaMetadataCompositeField) getNestedField(repo, "bar", "baz");
+    assertNotNull(composite.lookupChild("cats"));
+    assertNotNull(composite.lookupChild("dogs"));
+    assertEquals("foo", composite.getTypeMmd().getName());
+
+    // bar.baz.cats
+    collection = (MetaMetadataCollectionField) composite.lookupChild("cats");
+    assertNotNull(collection.lookupChild("location"));
+    assertEquals("document", collection.getTypeMmd().getName());
+
+    // bar.baz.dogs
+    collection = (MetaMetadataCollectionField) composite.lookupChild("dogs");
+    assertNotNull(collection.lookupChild("title"));
+    assertEquals("rich_doc", collection.getTypeMmd().getName());
+
+    // bar.tables
+    collection = (MetaMetadataCollectionField) getNestedField(repo, "bar", "tables");
+    assertNotNull(collection.lookupChild("location"));
+    assertEquals("document", collection.getTypeMmd().getName());
+
+    // bar.chairs
+    collection = (MetaMetadataCollectionField) getNestedField(repo, "bar", "chairs");
+    assertNotNull(collection.lookupChild("title"));
+    assertEquals("rich_doc", collection.getTypeMmd().getName());
+
+    // qux.baz
+    composite = (MetaMetadataCompositeField) getNestedField(repo, "qux", "baz");
+    assertNotNull(composite.lookupChild("cats"));
+    assertNotNull(composite.lookupChild("dogs"));
+    assertEquals("foo", composite.getTypeMmd().getName());
+
+    // qux.baz.cats
+    collection = (MetaMetadataCollectionField) composite.lookupChild("cats");
+    assertNotNull(collection);
+    System.out.println(composite);
+    System.out.println(collection);
+    assertNotNull(collection.lookupChild("title"));
+    assertEquals("rich_doc", collection.getTypeMmd().getName());
+
+    // qux.baz.dogs
+    collection = (MetaMetadataCollectionField) composite.lookupChild("dogs");
+    assertNotNull(collection);
+    assertNotNull(collection.lookupChild("images"));
+    assertEquals("richer_doc", collection.getTypeMmd().getName());
+
+    // qux.tables
+    collection = (MetaMetadataCollectionField) getNestedField(repo, "qux", "tables");
+    assertNotNull(collection.lookupChild("title"));
+    assertEquals("rich_doc", collection.getTypeMmd().getName());
+
+    // qux.chairs
+    collection = (MetaMetadataCollectionField) getNestedField(repo, "qux", "chairs");
+    assertNotNull(collection.lookupChild("images"));
+    assertEquals("richer_doc", collection.getTypeMmd().getName());
   }
 
 }

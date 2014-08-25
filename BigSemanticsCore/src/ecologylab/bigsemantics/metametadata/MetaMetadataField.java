@@ -818,8 +818,8 @@ public abstract class MetaMetadataField extends MetaMetadataFieldDeclaration
   @Override
   public Iterator<MetaMetadataField> iterator()
   {
-    HashMapArrayList<String, MetaMetadataField> childMetaMetadata = getChildrenMap();
-    return (childMetaMetadata != null) ? new MetaMetadataFieldIterator() : EMPTY_ITERATOR;
+    HashMapArrayList<String, MetaMetadataField> childrenMap = getChildrenMap();
+    return (childrenMap != null) ? new MetaMetadataFieldIterator() : EMPTY_ITERATOR;
   }
 
   @Override
