@@ -331,23 +331,23 @@ ISimplSerializationPre, ISimplDeserializationPost
 			boolean hasVisibleNonNullField = false;
 			MetadataFieldDescriptor mfd = metaMetadataField.getMetadataFieldDescriptor();
 
-			if (metaMetadata.isChildFieldDisplayed(metaMetadataField.getName()))
-			{
-				if (mfd.isScalar() && !mfd.isCollection())
-					hasVisibleNonNullField = MetadataString.isNotNullAndEmptyValue(mfd
-							.getValueString(currentMetadata));
-				else if (mfd.isNested())
-				{
-					Metadata nestedMetadata = (Metadata) mfd.getNestedMetadata(currentMetadata);
-					hasVisibleNonNullField = (nestedMetadata != null) ? (nestedMetadata
-							.numberOfVisibleFields() > 0) : false;
-				}
-				else if (mfd.isCollection())
-				{
-					Collection collection = mfd.getCollection(currentMetadata);
-					hasVisibleNonNullField = (collection != null) ? (collection.size() > 0) : false;
-				}
-			}
+//			if (metaMetadata.isChildFieldDisplayed(metaMetadataField.getName()))
+//			{
+//				if (mfd.isScalar() && !mfd.isCollection())
+//					hasVisibleNonNullField = MetadataString.isNotNullAndEmptyValue(mfd
+//							.getValueString(currentMetadata));
+//				else if (mfd.isNested())
+//				{
+//					Metadata nestedMetadata = (Metadata) mfd.getNestedMetadata(currentMetadata);
+//					hasVisibleNonNullField = (nestedMetadata != null) ? (nestedMetadata
+//							.numberOfVisibleFields() > 0) : false;
+//				}
+//				else if (mfd.isCollection())
+//				{
+//					Collection collection = mfd.getCollection(currentMetadata);
+//					hasVisibleNonNullField = (collection != null) ? (collection.size() > 0) : false;
+//				}
+//			}
 
 			// "null" happens with mixins fieldAccessor b'coz getValueString() returns "null".
 

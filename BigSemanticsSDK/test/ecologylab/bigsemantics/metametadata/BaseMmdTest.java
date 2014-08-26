@@ -41,12 +41,6 @@ public class BaseMmdTest
     MetaMetadataRepository repository =
         (MetaMetadataRepository) mmdScope.deserialize(istream, Format.XML);
     assert repository != null : "Failed to load testing repository!";
-    MmdScope mmdScope = new MmdScope();
-    for (MetaMetadata mmd : repository.getMetaMetadataCollection())
-    {
-      mmd.setMmdScope(mmdScope);
-      mmdScope.put(mmd.getName(), mmd);
-    }
     return repository;
   }
 

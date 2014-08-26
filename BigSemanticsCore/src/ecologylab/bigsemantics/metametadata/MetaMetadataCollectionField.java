@@ -11,6 +11,7 @@ import ecologylab.bigsemantics.metametadata.declarations.MetaMetadataCollectionF
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.generic.StringTools;
 import ecologylab.serialization.ClassDescriptor;
+import ecologylab.serialization.FieldDescriptor;
 import ecologylab.serialization.FieldType;
 import ecologylab.serialization.GenericTypeVar;
 import ecologylab.serialization.SimplTypesScope;
@@ -25,7 +26,7 @@ import ecologylab.serialization.types.ScalarType;
  * 
  * @author quyin
  */
-@SuppressWarnings("rawtypes")
+@SuppressWarnings({ "rawtypes", "unchecked" })
 @simpl_inherit
 @simpl_tag("collection")
 public class MetaMetadataCollectionField extends MetaMetadataCollectionFieldDeclaration
@@ -58,7 +59,7 @@ public class MetaMetadataCollectionField extends MetaMetadataCollectionFieldDecl
   /**
    * for caching getTypeNameInJava().
    */
-  private String  typeNameInJava;
+  private String typeNameInJava;
 
   public MetaMetadataCollectionField()
   {
@@ -98,7 +99,7 @@ public class MetaMetadataCollectionField extends MetaMetadataCollectionFieldDecl
     HashMapArrayList<String, MetaMetadataField> kids = super.getChildrenMap();
     return (kids != null && kids.size() > 0) ? (MetaMetadataCompositeField) kids.get(0) : null;
   }
-  
+
   public MetaMetadataCompositeField getPreparedElementComposite()
   {
     MetaMetadataCompositeField elementComposite = getElementComposite();
@@ -153,9 +154,9 @@ public class MetaMetadataCollectionField extends MetaMetadataCollectionFieldDecl
       }
 
       @Override
-      public void mmdScopeChanged(MmdScope newMmdScope)
+      public void scopeChanged(MmdScope newScope)
       {
-        thisField.setMmdScope(newMmdScope);
+        thisField.setScope(newScope);
       }
     });
 
@@ -163,7 +164,7 @@ public class MetaMetadataCollectionField extends MetaMetadataCollectionFieldDecl
     kids.put(composite.getName(), composite);
 
     prepareElementComposite(composite);
-  
+
     return composite;
   }
 
@@ -171,20 +172,19 @@ public class MetaMetadataCollectionField extends MetaMetadataCollectionFieldDecl
   {
     if (composite.getName().equals(UNRESOLVED_NAME))
       composite.setName(this.getChildType() == null ? this.getName() : this.getChildType());
-  
+
     composite.setRepository(this.getRepository());
     composite.setPackageName(this.packageName());
     composite.setDeclaringMmd(this.getDeclaringMmd());
-    composite.setMmdScope(this.getMmdScope());
-    composite.scope().addAncestor(this.scope());
-  
+
     composite.setPromoteChildren(this.isPromoteChildren());
-    
+
     // use set*Directly() to reduce unnecessary trigger of AttributeChangeListener
     composite.setTypeDirectly(this.getChildType());
     composite.setExtendsAttributeDirectly(this.getChildExtends());
     composite.setTagDirectly(this.getChildTag());
-  
+    composite.setScopeDirectly(this.scope());
+
     MetaMetadataCollectionField superField = (MetaMetadataCollectionField) this.getSuperField();
     if (superField != null)
     {
@@ -234,6 +234,13 @@ public class MetaMetadataCollectionField extends MetaMetadataCollectionFieldDecl
   }
 
   @Override
+  public String getTagForTypesScope()
+  {
+    // FIXME: seems broken when rewriting collection xpath without re-indicating child_type
+    return getChildType() != null ? getChildType() : getTag() != null ? getTag() : getName();
+  }
+
+  @Override
   public String resolveTag()
   {
     if (isNoWrap())
@@ -246,19 +253,6 @@ public class MetaMetadataCollectionField extends MetaMetadataCollectionFieldDecl
     }
   }
 
-  @Override
-  public String getTagForTypesScope()
-  {
-    // FIXME: seems broken when rewriting collection xpath without re-indicating child_type
-    return getChildType() != null ? getChildType() : getTag() != null ? getTag() : getName();
-  }
-
-  @Override
-  protected String getMetaMetadataTagToInheritFrom()
-  {
-    return getChildType() != null ? getChildType() : null;
-  }
-
   /**
    * Get the MetaMetadataCompositeField associated with this.
    * 
@@ -269,56 +263,11 @@ public class MetaMetadataCollectionField extends MetaMetadataCollectionFieldDecl
   {
     return getElementComposite();
   }
-  
+
   @Override
   protected boolean isInlineDefinition()
   {
     return getElementComposite().isInlineDefinition();
-  }
-
-  @Override
-  protected boolean inheritMetaMetadataHelper(InheritanceHandler inheritanceHandler)
-  {
-    boolean result = false;
-
-    /*
-     * the childComposite should hide all complexity between collection fields and composite fields,
-     * through hooks when necessary.
-     */
-    FieldType typeCode = this.getFieldType();
-    switch (typeCode)
-    {
-    case COLLECTION_ELEMENT:
-    {
-      // prepare childComposite: possibly new name, type, extends, tag and inheritedField
-      MetaMetadataCompositeField childComposite = getElementComposite();
-      prepareElementComposite(childComposite);
-
-      // inheritedMmd might be inferred from type/extends
-      result = childComposite.inheritMetaMetadata(inheritanceHandler);
-      break;
-    }
-    case COLLECTION_SCALAR:
-    {
-      MetaMetadataField inheritedField = this.getSuperField();
-      if (inheritedField != null)
-        this.inheritAttributes(inheritedField, false);
-      result = true;
-      break;
-    }
-    }
-
-    return result;
-  }
-
-  @Override
-  protected void clearInheritFinishedOrInProgressFlag()
-  {
-    super.clearInheritFinishedOrInProgressFlag();
-    if (this.getElementComposite() != null)
-    {
-      this.getElementComposite().clearInheritFinishedOrInProgressFlag();
-    }
   }
 
   @Override
@@ -432,8 +381,14 @@ public class MetaMetadataCollectionField extends MetaMetadataCollectionFieldDecl
                                          null,
                                          javaTypeName);
         genericTypeName = scalarType.getCSharpTypeName();
-        genericTypeVar.setClassDescriptor(ClassDescriptor.getClassDescriptor(scalarType
-            .getJavaClass()));
+        ClassDescriptor<? extends FieldDescriptor> cd =
+            ClassDescriptor.getClassDescriptor(scalarType.getJavaClass());
+        genericTypeVar.setClassDescriptor(cd);
+        break;
+      }
+      default:
+      {
+        error("Unrecognized field type " + typeCode + " for " + this);
         break;
       }
       }

@@ -6,15 +6,14 @@ import java.util.Map;
 
 import ecologylab.bigsemantics.metadata.MetadataClassDescriptor;
 import ecologylab.bigsemantics.metametadata.exceptions.MetaMetadataException;
-import ecologylab.collections.MultiAncestorScope;
 import ecologylab.generic.StringBuilderBaseUtils;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.annotations.simpl_inherit;
 import ecologylab.serialization.annotations.simpl_map;
-import ecologylab.serialization.annotations.simpl_map_key_field;
 import ecologylab.serialization.annotations.simpl_nowrap;
 import ecologylab.serialization.annotations.simpl_scalar;
 import ecologylab.serialization.annotations.simpl_tag;
+import ecologylab.serialization.types.element.IMappable;
 
 /**
  * the generic variable in meta-metadata.
@@ -22,167 +21,169 @@ import ecologylab.serialization.annotations.simpl_tag;
  * @author quyin
  * 
  */
+@SuppressWarnings("rawtypes")
 @simpl_tag("generic_type_var")
 @simpl_inherit
-public class MmdGenericTypeVar extends ElementState implements ScopeProvider<Object>
+public class MmdGenericTypeVar extends ElementState
+    implements IMappable<String>, ScopeProvider
 {
 
-	/**
-	 * the name of the generic type variable. should be all capitalized.
-	 */
-	@simpl_scalar
-	private String									name;
+  /**
+   * the name of the generic type variable. should be all capitalized.
+   */
+  @simpl_scalar
+  private String                         name;
 
-	/**
-	 * the (covariant) bound of the generic type. it could be either a concrete meta-metadata type
-	 * name, or an already defined generic type variable name.
-	 */
-	@simpl_scalar
-	@simpl_tag("extends")
-	private String									extendsAttribute;
+  /**
+   * the (covariant) bound of the generic type. it could be either a concrete meta-metadata type
+   * name, or an already defined generic type variable name.
+   */
+  @simpl_scalar
+  @simpl_tag("extends")
+  private String                         extendsAttribute;
 
-	// TODO @simpl_scalar @simpl_tag("super") private String superAttribute;
+  // TODO @simpl_scalar @simpl_tag("super") private String superAttribute;
 
-	/**
-	 * the type used to instantiate this generic type variable. it could be either a concrete
-	 * meta-metadata type name, or an already defined generic type variable name.
-	 */
-	@simpl_scalar
-	private String									arg;
+  /**
+   * the type used to instantiate this generic type variable. it could be either a concrete
+   * meta-metadata type name, or an already defined generic type variable name.
+   */
+  @simpl_scalar
+  private String                         arg;
 
-	/**
-	 * a scope of nested generic type variables. e.g. A, B in &lt;M extends Media&lt;A, B&gt;&gt;.
-	 */
-	@simpl_map("generic_type_var")
-	@simpl_map_key_field("name")
-	@simpl_nowrap
-	private MmdGenericTypeVarScope	nestedGenericTypeVars;
-	
-	private boolean                 rebound;
-	
-	private MultiAncestorScope<Object> scope;
+  /**
+   * a scope of nested generic type variables. e.g. A, B in &lt;M extends Media&lt;A, B&gt;&gt;.
+   */
+  @simpl_map("generic_type_var")
+  @simpl_nowrap
+  private Map<String, MmdGenericTypeVar> nestedGenericTypeVars;
 
-	public String getName()
-	{
-		return name;
-	}
+  private boolean                        rebound;
 
-	public void setName(String name)
-	{
-		this.name = name;
-	}
+  private MmdScope             scope;
 
-	public String getExtendsAttribute()
-	{
-		return extendsAttribute;
-	}
+  public String getName()
+  {
+    return name;
+  }
 
-	public void setExtendsAttribute(String extendsAttribute)
-	{
-		this.extendsAttribute = extendsAttribute;
-	}
+  public void setName(String name)
+  {
+    this.name = name;
+  }
 
-	public String getArg()
-	{
-		return arg;
-	}
+  public String getExtendsAttribute()
+  {
+    return extendsAttribute;
+  }
 
-	public void setArg(String arg)
-	{
-		this.arg = arg;
-	}
+  public void setExtendsAttribute(String extendsAttribute)
+  {
+    this.extendsAttribute = extendsAttribute;
+  }
 
-	public MmdGenericTypeVarScope getNestedGenericTypeVarScope()
-	{
-		return nestedGenericTypeVars;
-	}
-	
-	static Collection<MmdGenericTypeVar> EMPTY_COLLECTION = new ArrayList<MmdGenericTypeVar>();
-	
-	public Collection<MmdGenericTypeVar> getNestedGenericTypeVars()
-	{
-		return nestedGenericTypeVars == null ? EMPTY_COLLECTION : nestedGenericTypeVars.values();
-	}
+  public String getArg()
+  {
+    return arg;
+  }
 
-	public void setNestedGenericTypeVars(MmdGenericTypeVarScope nestedGenericTypeVars)
-	{
-		this.nestedGenericTypeVars = nestedGenericTypeVars;
-	}
+  public void setArg(String arg)
+  {
+    this.arg = arg;
+  }
 
-	public static String getMdClassNameFromMmdOrNoChange(String mmdName,
-			MetaMetadataRepository repository, MmdCompilerService compilerService)
-	{
-		MetaMetadata mmd = repository.getMMByName(mmdName);
-		if (mmd == null)
-		{
-			return mmdName;
-		}
-		else
-		{
-			MetadataClassDescriptor metadataClassDescriptor = mmd.getMetadataClassDescriptor();
-			if (compilerService != null)
-				compilerService.addCurrentClassDependency(metadataClassDescriptor);
-			return metadataClassDescriptor.getDescribedClassSimpleName();
-		}
-	}
+  public Map<String, MmdGenericTypeVar> getNestedGenericTypeVarScope()
+  {
+    return nestedGenericTypeVars;
+  }
 
-	public boolean isAssignment()
-	{
-		return arg != null;
-	}
+  static Collection<MmdGenericTypeVar> EMPTY_COLLECTION = new ArrayList<MmdGenericTypeVar>();
 
-	public boolean isBound()
-	{
-		return extendsAttribute != null /* || superAttribute != null */;
-	}
-	
-	public boolean isRebound()
-	{
-	  return rebound;
-	}
+  public Collection<MmdGenericTypeVar> getNestedGenericTypeVars()
+  {
+    return nestedGenericTypeVars == null ? EMPTY_COLLECTION : nestedGenericTypeVars.values();
+  }
 
-	public void resolveArgAndBounds(Map<String, Object> scope)
-	{
-		if (isAssignment())
-		{
-			Object obj = scope.get(arg);
+  public void setNestedGenericTypeVars(Map<String, MmdGenericTypeVar> nestedGenericTypeVars)
+  {
+    this.nestedGenericTypeVars = nestedGenericTypeVars;
+  }
+
+  public static String getMdClassNameFromMmdOrNoChange(String mmdName,
+                                                       MetaMetadataRepository repository,
+                                                       MmdCompilerService compilerService)
+  {
+    MetaMetadata mmd = repository.getMMByName(mmdName);
+    if (mmd == null)
+    {
+      return mmdName;
+    }
+    else
+    {
+      MetadataClassDescriptor metadataClassDescriptor = mmd.getMetadataClassDescriptor();
+      if (compilerService != null)
+        compilerService.addCurrentClassDependency(metadataClassDescriptor);
+      return metadataClassDescriptor.getDescribedClassSimpleName();
+    }
+  }
+
+  public boolean isAssignment()
+  {
+    return arg != null;
+  }
+
+  public boolean isBound()
+  {
+    return extendsAttribute != null /* || superAttribute != null */;
+  }
+
+  public boolean isRebound()
+  {
+    return rebound;
+  }
+
+  public void resolveArgAndBounds(Map<String, Object> scope)
+  {
+    if (isAssignment())
+    {
+      Object obj = scope.get(arg);
       MmdGenericTypeVar gtv = (MmdGenericTypeVar) obj;
-			if (gtv != null)
-			{
-				gtv.resolveArgAndBounds(scope);
+      if (gtv != null)
+      {
+        gtv.resolveArgAndBounds(scope);
 
-				if (gtv.isAssignment())
-				{
-					arg = gtv.arg;
-				}
-				else if (gtv.isBound())
-				{
-					arg = null;
-					extendsAttribute = gtv.extendsAttribute;
-					// superAttribute = gtv.superAttribute;
-				}
-			}
-		}
-		else if (isBound())
-		{
-			MmdGenericTypeVar extendsGtv = (MmdGenericTypeVar) scope.get(extendsAttribute);
-			if (extendsGtv != null)
-			{
-				extendsGtv.resolveArgAndBounds(scope);
-				extendsAttribute = extendsGtv.arg != null ? extendsGtv.arg : extendsGtv.extendsAttribute;
-			}
-			
-			// TODO superAttribute
-			
-			if (scope.get(name) != null)
-			{
-				rebound = true;
-			}
-		}
-		else
-			throw new MetaMetadataException(
-					"wrong meta-metadata generic type var type! must either be an assignment or a bound.");
-	}
+        if (gtv.isAssignment())
+        {
+          arg = gtv.arg;
+        }
+        else if (gtv.isBound())
+        {
+          arg = null;
+          extendsAttribute = gtv.extendsAttribute;
+          // superAttribute = gtv.superAttribute;
+        }
+      }
+    }
+    else if (isBound())
+    {
+      MmdGenericTypeVar extendsGtv = (MmdGenericTypeVar) scope.get(extendsAttribute);
+      if (extendsGtv != null)
+      {
+        extendsGtv.resolveArgAndBounds(scope);
+        extendsAttribute = extendsGtv.arg != null ? extendsGtv.arg : extendsGtv.extendsAttribute;
+      }
+
+      // TODO superAttribute
+
+      if (scope.get(name) != null)
+      {
+        rebound = true;
+      }
+    }
+    else
+      throw new MetaMetadataException(
+                                      "wrong meta-metadata generic type var type! must either be an assignment or a bound.");
+  }
 
   public boolean nothingSpecified()
   {
@@ -208,17 +209,17 @@ public class MmdGenericTypeVar extends ElementState implements ScopeProvider<Obj
   }
 
   @Override
-  public MultiAncestorScope<Object> getScope()
+  public MmdScope getScope()
   {
     return scope;
   }
 
   @Override
-  public MultiAncestorScope<Object> scope()
+  public MmdScope scope()
   {
     if (scope == null)
     {
-      scope = new MultiAncestorScope<Object>();
+      scope = new MmdScope();
       if (nestedGenericTypeVars != null)
       {
         for (MmdGenericTypeVar nestedGtv : nestedGenericTypeVars.values())
@@ -232,9 +233,15 @@ public class MmdGenericTypeVar extends ElementState implements ScopeProvider<Obj
   }
 
   @Override
-  public void setScope(MultiAncestorScope<Object> scope)
+  public void setScope(MmdScope scope)
   {
     this.scope = scope;
+  }
+
+  @Override
+  public String key()
+  {
+    return name;
   }
 
 }

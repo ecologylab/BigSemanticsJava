@@ -19,7 +19,7 @@ public class TestInheritanceIssues extends BaseMmdTest
   {
     MetaMetadataRepository repo = loadRepository("/testInheritanceIssue1.xml");
 
-    NewInheritanceHandler handler = new NewInheritanceHandler();
+    InheritanceHandler handler = new InheritanceHandler();
     handler.handleMmdRepository(repo);
 
     MetaMetadata mmd = repo.getMMByName("document");
@@ -33,7 +33,7 @@ public class TestInheritanceIssues extends BaseMmdTest
   {
     MetaMetadataRepository repo = loadRepository("/testInheritanceIssue2.xml");
 
-    NewInheritanceHandler handler = new NewInheritanceHandler();
+    InheritanceHandler handler = new InheritanceHandler();
     handler.handleMmdRepository(repo);
 
     MetaMetadataField field = null;
@@ -87,7 +87,7 @@ public class TestInheritanceIssues extends BaseMmdTest
   {
     MetaMetadataRepository repo = loadRepository("/testInheritanceIssue3.xml");
 
-    NewInheritanceHandler handler = new NewInheritanceHandler();
+    InheritanceHandler handler = new InheritanceHandler();
     handler.handleMmdRepository(repo);
 
     MetaMetadataField field = null;
@@ -126,6 +126,17 @@ public class TestInheritanceIssues extends BaseMmdTest
     assertEquals(2, field.getXpathsSize());
     assertEquals("./img/@src", field.getXpath(0));
     assertEquals("//meta[@name='image']/@content", field.getXpath(1));
+  }
+
+  @Test
+  public void testInheritingFromUnprocessedSuperField() throws SIMPLTranslationException
+  {
+    MetaMetadataRepository repo = loadRepository("/testInheritanceIssue4.xml");
+
+    InheritanceHandler handler = new InheritanceHandler();
+    handler.handleMmdRepository(repo);
+
+    // expect it does not throw an exception.
   }
 
 }

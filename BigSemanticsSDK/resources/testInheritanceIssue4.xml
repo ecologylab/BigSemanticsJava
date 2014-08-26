@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<meta_metadata_repository package="test_inheritance_issue4">
+
+  <meta_metadata name="metadata">
+  </meta_metadata>
+
+  <meta_metadata name="document" extends="metadata">
+    <scalar name="location" scalar_type="ParsedURL" />
+  </meta_metadata>
+
+  <meta_metadata name="image" extends="document">
+    <scalar name="width" scalar_type="Integer" />
+    <scalar name="height" scalar_type="Integer" />
+  </meta_metadata>
+
+  <meta_metadata name="post" extends="document">
+    <scalar name="post_date" scalar_type="Date" />
+    <composite name="twitter_microblog" type="twitter_microblog" />
+  </meta_metadata>
+
+  <meta_metadata name="blog" extends="document">
+    <composite name="photo" type="image" />
+    <collection name="posts" child_type="post" />
+  </meta_metadata>
+
+  <meta_metadata name="tweet" extends="post" parser="xpath">
+    <composite name="twitter_microblog" />
+  </meta_metadata>
+
+  <meta_metadata name="twitter_microblog" extends="blog" parser="xpath" no_cache="true">
+    <selector url_regex="https://twitter.com/[^/?]*" domain="twitter.com" />
+    <example_url url="https://twitter.com/nytimes" />
+
+    <collection name="tweets" child_type="tweet">
+      <composite name="twitter_microblog" type="twitter_microblog" hide_label="true">
+        <composite name="photo" label="image" />
+      </composite>
+    </collection>
+  </meta_metadata>
+
+</meta_metadata_repository>

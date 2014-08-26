@@ -26,6 +26,7 @@ import ecologylab.serialization.types.ScalarType;
  * 
  * @author quyin
  */
+@SuppressWarnings("rawtypes")
 @simpl_inherit
 @simpl_tag("scalar")
 public class MetaMetadataScalarField extends MetaMetadataField

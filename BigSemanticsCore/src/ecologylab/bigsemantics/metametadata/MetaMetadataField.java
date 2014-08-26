@@ -1,14 +1,12 @@
 package ecologylab.bigsemantics.metametadata;
 
 import java.io.File;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,9 +18,7 @@ import ecologylab.bigsemantics.metadata.MetadataClassDescriptor;
 import ecologylab.bigsemantics.metadata.MetadataFieldDescriptor;
 import ecologylab.bigsemantics.metametadata.declarations.MetaMetadataFieldDeclaration;
 import ecologylab.bigsemantics.metametadata.exceptions.MetaMetadataException;
-import ecologylab.collections.MultiAncestorScope;
 import ecologylab.generic.HashMapArrayList;
-import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.FieldType;
 import ecologylab.serialization.MetaInformation;
@@ -34,7 +30,6 @@ import ecologylab.serialization.annotations.simpl_map;
 import ecologylab.serialization.annotations.simpl_map_key_field;
 import ecologylab.serialization.annotations.simpl_nowrap;
 import ecologylab.serialization.annotations.simpl_scope;
-import ecologylab.serialization.types.ScalarType;
 import ecologylab.serialization.types.element.IMappable;
 import ecologylab.textformat.NamedStyle;
 
@@ -45,10 +40,10 @@ import ecologylab.textformat.NamedStyle;
  * @author quyin
  * @author damaraju
  */
-@SuppressWarnings("rawtypes")
+@SuppressWarnings({ "rawtypes", "unchecked" })
 @simpl_inherit
 public abstract class MetaMetadataField extends MetaMetadataFieldDeclaration
-    implements ScopeProvider<Object>, IMappable<String>, Iterable<MetaMetadataField>, MMDConstants
+    implements ScopeProvider, IMappable<String>, Iterable<MetaMetadataField>, MMDConstants
 {
 
   /**
@@ -229,13 +224,11 @@ public abstract class MetaMetadataField extends MetaMetadataFieldDeclaration
 
   private MetaMetadataRepository                      repository;
 
-  private boolean                                     inheritOngoing;
-
   @simpl_map("generic_type_var")
   @simpl_map_key_field("name")
   @simpl_nowrap
   @mm_dont_inherit
-  private MmdGenericTypeVarScope                      genericTypeVars;
+  private Map<String, MmdGenericTypeVar>              genericTypeVars;
 
   private String                                      fieldNameInJava;
 
@@ -256,10 +249,6 @@ public abstract class MetaMetadataField extends MetaMetadataFieldDeclaration
    * fields. Null for scalar fields.
    */
   private Class<? extends Metadata>                   metadataClass;
-
-  private HashSet<String>                             nonDisplayedFieldNames;
-
-  private boolean                                     fieldsSortedForDisplay;
 
   /**
    * (For caching toString())
@@ -407,46 +396,46 @@ public abstract class MetaMetadataField extends MetaMetadataFieldDeclaration
   public MetaMetadataRepository getRepository()
   {
     if (repository == null)
+    {
       repository = findRepository();
+    }
     return repository;
   }
 
   private MetaMetadataRepository findRepository()
   {
     ElementState parent = parent();
-    while (parent != null && !(parent instanceof MetaMetadataRepository))
+    if (parent != null && parent instanceof MetaMetadataField)
     {
-      parent = parent.parent();
+      return ((MetaMetadataField) parent).getRepository();
     }
-    if (parent == null)
+    else if (parent instanceof MetaMetadataRepository)
+    {
+      return (MetaMetadataRepository) parent;
+    }
+    else
     {
       logger.error("can't find repository for " + this);
       return null;
     }
-    return (MetaMetadataRepository) parent;
   }
 
-  public boolean isInheritOngoing()
+  public MmdScope getScope()
   {
-    return inheritOngoing;
+    return MmdScope.EMPTY_SCOPE;
   }
 
-  public MultiAncestorScope<Object> getScope()
+  public MmdScope scope()
   {
-    return MultiAncestorScope.EMPTY_SCOPE;
+    return MmdScope.EMPTY_SCOPE;
   }
 
-  public MultiAncestorScope<Object> scope()
-  {
-    return MultiAncestorScope.EMPTY_SCOPE;
-  }
-
-  public void setScope(MultiAncestorScope<Object> scope)
+  public void setScope(MmdScope scope)
   {
     // no op
   }
 
-  public MmdGenericTypeVarScope getGenericTypeVars()
+  public Map<String, MmdGenericTypeVar> getGenericTypeVars()
   {
     return genericTypeVars;
   }
@@ -536,37 +525,6 @@ public abstract class MetaMetadataField extends MetaMetadataFieldDeclaration
     return metadataClass;
   }
 
-  public HashSet<String> getNonDisplayedFieldNames()
-  {
-    return nonDisplayedFieldNames;
-  }
-
-  protected HashSet<String> nonDisplayedFieldNames()
-  {
-    HashSet<String> result = this.nonDisplayedFieldNames;
-    if (result == null)
-    {
-      result = new HashSet<String>();
-      this.nonDisplayedFieldNames = result;
-    }
-    return result;
-  }
-
-  public boolean isChildFieldDisplayed(String childName)
-  {
-    return nonDisplayedFieldNames == null ? true : !nonDisplayedFieldNames.contains(childName);
-  }
-
-  public int getNonDisplayedFieldNamesSize()
-  {
-    return nonDisplayedFieldNames == null ? 0 : nonDisplayedFieldNames.size();
-  }
-
-  public boolean isFieldsSortedForDisplay()
-  {
-    return fieldsSortedForDisplay;
-  }
-
   /**
    * NOTE: This is not Object.getHashCode()!
    * 
@@ -639,7 +597,7 @@ public abstract class MetaMetadataField extends MetaMetadataFieldDeclaration
     }
   }
 
-  public String parentString()
+  private String parentString()
   {
     StringBuilder result = new StringBuilder();
 
@@ -665,11 +623,6 @@ public abstract class MetaMetadataField extends MetaMetadataFieldDeclaration
     return result;
   }
 
-  public boolean isHashForExtractionOngoing()
-  {
-    return hashForExtractionOngoing;
-  }
-
   protected void setChildrenMap(HashMapArrayList<String, MetaMetadataField> childMetaMetadata)
   {
     this.kids = childMetaMetadata;
@@ -685,12 +638,7 @@ public abstract class MetaMetadataField extends MetaMetadataFieldDeclaration
     this.repository = repository;
   }
 
-  protected void setInheritOngoing(boolean inheritOngoing)
-  {
-    this.inheritOngoing = inheritOngoing;
-  }
-
-  protected void setGenericTypeVars(MmdGenericTypeVarScope genericTypeVars)
+  protected void setGenericTypeVars(Map<String, MmdGenericTypeVar> genericTypeVars)
   {
     this.genericTypeVars = genericTypeVars;
   }
@@ -708,16 +656,6 @@ public abstract class MetaMetadataField extends MetaMetadataFieldDeclaration
   protected void setMetadataClass(Class metadataClass)
   {
     this.metadataClass = metadataClass;
-  }
-
-  protected void setNonDisplayedFieldNames(HashSet<String> nonDisplayedFieldNames)
-  {
-    this.nonDisplayedFieldNames = nonDisplayedFieldNames;
-  }
-
-  protected void setFieldsSortedForDisplay(boolean fieldsSortedForDisplay)
-  {
-    this.fieldsSortedForDisplay = fieldsSortedForDisplay;
   }
 
   protected void resetToString()
@@ -741,19 +679,6 @@ public abstract class MetaMetadataField extends MetaMetadataFieldDeclaration
       return ((MetaMetadataField) parent).getFile();
     }
     return null;
-  }
-
-  public void sortForDisplay()
-  {
-    if (!fieldsSortedForDisplay)
-    {
-
-      HashMapArrayList<String, MetaMetadataField> childMetaMetadata = getChildrenMap();
-      if (childMetaMetadata != null)
-        Collections.sort((ArrayList<MetaMetadataField>) childMetaMetadata.values(),
-                         LAYER_COMPARATOR);
-      fieldsSortedForDisplay = true;
-    }
   }
 
   public MetaMetadata getTypeMmd()
@@ -788,18 +713,7 @@ public abstract class MetaMetadataField extends MetaMetadataFieldDeclaration
    *         getTagForTypesScope() which is overridden in MetaMetadataCollectionField. they have
    *         different purposes.
    */
-  @Deprecated
   public String getTagOrName()
-  {
-    return getTag() != null ? getTag() : getName();
-  }
-
-  /**
-   * 
-   * @return The tag used to look up metadata from MetadataTypesScope.
-   */
-  @Deprecated
-  public String getTagForTypesScope()
   {
     return getTag() != null ? getTag() : getName();
   }
@@ -810,7 +724,16 @@ public abstract class MetaMetadataField extends MetaMetadataFieldDeclaration
     return type == null ? getName() : type;
   }
 
-  public String resolveTag()
+  /**
+   * 
+   * @return The tag used to look up metadata from MetadataTypesScope.
+   */
+  public String getTagForTypesScope()
+  {
+    return getTag() != null ? getTag() : getName();
+  }
+
+  protected String resolveTag()
   {
     return getTag() != null ? getTag() : getName();
   }
@@ -855,76 +778,9 @@ public abstract class MetaMetadataField extends MetaMetadataFieldDeclaration
     }
   }
 
-  public void inheritAttributes(MetaMetadataField inheritFrom, boolean overwrite)
+  public boolean isUsedToDefineInlineMmd()
   {
-    MetaMetadataClassDescriptor classDescriptor = (MetaMetadataClassDescriptor) ClassDescriptor
-        .getClassDescriptor(this);
-    ;
-
-    for (MetaMetadataFieldDescriptor fieldDescriptor : classDescriptor)
-    {
-      if (fieldDescriptor.isInheritable())
-      {
-        String fieldName = fieldDescriptor.getName();
-        Field field = fieldDescriptor.getField();
-        ScalarType scalarType = fieldDescriptor.getScalarType();
-
-        try
-        {
-          // If it is one of the following cases we should stop actually inheriting attribute:
-          // 1. scalarType is null.
-          // 2. the attribute is a scalar or composite value, and we already have a value specified
-          // on the sub-field, and overwrite is false.
-          // 3. the value from the super-field is a default value.
-          if (scalarType != null
-              && (overwrite
-                  || fieldDescriptor.isCollection()
-                  || scalarType.isDefaultValue(field, this))
-              && !scalarType.isDefaultValue(field, inheritFrom))
-          {
-            Object value = field.get(inheritFrom);
-            if (fieldDescriptor.isCollection())
-            {
-              // Append elements from inheritFrom to this field's list
-              List list = (List) value;
-              if (list != null && list.size() > 0)
-              {
-                List localList = (List) field.get(this);
-                if (localList == null)
-                {
-                  localList = new ArrayList();
-                  field.set(this, localList);
-                }
-                for (Object element : list)
-                {
-                  if (!localList.contains(element))
-                  {
-                    localList.add(element);
-                  }
-                }
-              }
-            }
-            else
-            {
-              // Just a scalar value
-              fieldDescriptor.setField(this, value);
-            }
-
-            Object localValue = field.get(this);
-            logger.debug("Field attribute inherited: {}.{} = {}, from {}",
-                         this,
-                         fieldName,
-                         localValue,
-                         inheritFrom);
-          }
-        }
-        catch (Exception e)
-        {
-          logger.error("Attribute inheritance failed: {}.{} from {}", this, fieldName, inheritFrom);
-          logger.error("Exception details: ", e);
-        }
-      }
-    }
+    return getInlineMmd() == null;
   }
 
   /**
@@ -1078,22 +934,6 @@ public abstract class MetaMetadataField extends MetaMetadataFieldDeclaration
     }
   }
 
-  protected String generateNewClassName()
-  {
-    String javaClassName = null;
-
-    if (this instanceof MetaMetadataCollectionField)
-    {
-      javaClassName = ((MetaMetadataCollectionField) this).getChildType();
-    }
-    else
-    {
-      javaClassName = ((MetaMetadataCompositeField) this).getTypeOrName();
-    }
-
-    return javaClassName;
-  }
-
   /**
    * get the type name of this field, in terms of meta-metadata.
    * 
@@ -1127,10 +967,5 @@ public abstract class MetaMetadataField extends MetaMetadataFieldDeclaration
    */
   abstract public void addAdditionalMetaInformation(List<MetaInformation> metaInfoBuf,
                                                     MmdCompilerService compiler);
-
-  public boolean isUsedToDefineInlineMmd()
-  {
-    return getInlineMmd() == null;
-  }
 
 }

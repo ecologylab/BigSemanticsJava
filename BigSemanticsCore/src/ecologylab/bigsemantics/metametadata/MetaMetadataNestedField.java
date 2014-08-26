@@ -1,9 +1,8 @@
 package ecologylab.bigsemantics.metametadata;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Stack;
+import java.util.Map;
 
 import ecologylab.bigsemantics.Utils;
 import ecologylab.bigsemantics.html.utils.StringBuilderUtils;
@@ -13,13 +12,14 @@ import ecologylab.bigsemantics.metadata.mm_name;
 import ecologylab.bigsemantics.metadata.semantics_mixin;
 import ecologylab.bigsemantics.metametadata.declarations.MetaMetadataNestedFieldDeclaration;
 import ecologylab.bigsemantics.metametadata.exceptions.MetaMetadataException;
-import ecologylab.collections.MultiAncestorScope;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.MetaInformation;
 import ecologylab.serialization.SimplTypesScope;
+import ecologylab.serialization.annotations.simpl_classes;
 import ecologylab.serialization.annotations.simpl_composite;
 import ecologylab.serialization.annotations.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_map;
 import ecologylab.serialization.annotations.simpl_tag;
 import ecologylab.serialization.formatenums.StringFormat;
 
@@ -28,92 +28,36 @@ import ecologylab.serialization.formatenums.StringFormat;
  * 
  * @author quyin
  */
-@SuppressWarnings(
-{ "rawtypes" })
+@SuppressWarnings({ "rawtypes" })
 @simpl_inherit
 public abstract class MetaMetadataNestedField extends MetaMetadataNestedFieldDeclaration
     implements PackageSpecifier
 {
 
-  public static interface InheritFinishEventListener
-  {
-    void inheritFinish(Object... eventArgs);
-  }
-
-  protected static interface InheritCommand
-  {
-    void doInherit(Object... eventArgs);
-  }
-
-  public static final String               POLYMORPHIC_CLASSES_SEP = ",";
+  public static final String POLYMORPHIC_CLASSES_SEP = ",";
 
   @simpl_composite
   @simpl_tag("field_parser")
-  private FieldParserElement               fieldParserElement;
+  private FieldParserElement fieldParserElement;
 
-  // ////////////// Inheritance Related ////////////////
-
-  /**
-   * The (local) scope of visible meta-metadata for this nested field.
-   */
   @simpl_composite
-  @mm_dont_inherit
-  private MmdScope                         mmdScope;
+  private MmdScope scope;
 
-  private boolean                          mmdScopeTraversed;
-
-  private MultiAncestorScope<Object>       scope;
-
-  private List<InheritFinishEventListener> inheritFinishEventListeners;
-
-  /**
-   * this lock is currently useless, because all inheritance stuff happens in one thread. it is here
-   * just for possible future extensions.
-   */
-  protected Object                         lockInheritCommands;
-
-  /*
-   * how we handle cross-references in inheritance:
-   * 
-   * - each nested field has two possible sources to inherit from: the meta-metadata defining its
-   * type, and the inherited field that it is overriding. for some cases, e.g. fields defining
-   * inline meta-metadata, both sources are used.
-   * 
-   * - it is possible that when we are inheriting for a nested field, one or more than one of its
-   * inheriting sources is not ready (inheritInProgress == true). when this is the case, two things
-   * will be done: 1) a event listener will be added to the source structure; 2) a command will be
-   * added to this.waitForFinish.
-   * 
-   * - when a source structure finishes inheriting, it calls the event listener, which pops one
-   * command from waitForFinish and pushes it to waitForExecute. if waitForFinish is empty, it pops
-   * commands in waitForExecute one by one and execute them (do inheritance). in this way, we ensure
-   * that: 1) inheritance is done in the same order as they are supposed to be in the code; 2) it
-   * doesn't matter which structure is done first, or if it is done before the following ones are
-   * pushed into the stack, etc.
-   */
-
-  protected Stack<InheritCommand>          waitForFinish;
-
-  protected Stack<InheritCommand>          waitForExecute;
+  private boolean            mmdScopeTraversed;
 
   public MetaMetadataNestedField()
   {
-    inheritFinishEventListeners = new ArrayList<InheritFinishEventListener>();
-    lockInheritCommands = new Object();
+    super();
   }
 
   public MetaMetadataNestedField(String name, HashMapArrayList<String, MetaMetadataField> set)
   {
     super(name, set);
-    inheritFinishEventListeners = new ArrayList<InheritFinishEventListener>();
-    lockInheritCommands = new Object();
   }
 
   public MetaMetadataNestedField(MetaMetadataField copy, String name)
   {
     super(copy, name);
-    inheritFinishEventListeners = new ArrayList<InheritFinishEventListener>();
-    lockInheritCommands = new Object();
   }
 
   public String packageName()
@@ -126,29 +70,19 @@ public abstract class MetaMetadataNestedField extends MetaMetadataNestedFieldDec
     return fieldParserElement;
   }
 
-  public MmdScope getMmdScope()
-  {
-    return mmdScope;
-  }
-
-  protected void setMmdScope(MmdScope mmdScope)
-  {
-    this.mmdScope = mmdScope;
-  }
-
-  public MultiAncestorScope<Object> getScope()
+  public MmdScope getScope()
   {
     return scope;
   }
 
-  public MultiAncestorScope<Object> scope()
+  public MmdScope scope()
   {
     if (scope == null)
     {
-      scope = new MultiAncestorScope<Object>(this.toString());
+      scope = new MmdScope(this.toString());
 
       // also put all local GTVs into the scope
-      MmdGenericTypeVarScope gtvScope = getGenericTypeVars();
+      Map<String, MmdGenericTypeVar> gtvScope = getGenericTypeVars();
       if (gtvScope != null)
       {
         for (String localGtvName : gtvScope.keySet())
@@ -161,19 +95,10 @@ public abstract class MetaMetadataNestedField extends MetaMetadataNestedFieldDec
     }
     return scope;
   }
-
-  public void addInheritFinishEventListener(InheritFinishEventListener listener)
+  
+  public void setScope(MmdScope scope)
   {
-    synchronized (inheritFinishEventListeners)
-    {
-      inheritFinishEventListeners.add(listener);
-    }
-  }
-
-  protected void clearInheritFinishedOrInProgressFlag()
-  {
-    this.setInheritDone(false);
-    this.setInheritOngoing(false);
+    this.scope = scope;
   }
 
   /**
@@ -263,86 +188,6 @@ public abstract class MetaMetadataNestedField extends MetaMetadataNestedFieldDec
    */
   abstract protected boolean isInlineDefinition();
 
-  abstract protected String getMetaMetadataTagToInheritFrom();
-
-  /**
-   * The main entrance to the inheritance process. Also ensures that the inheritance process will
-   * not be carried out on the same field / meta-metadata twice.
-   * <p>
-   * Note that this inheritance process is used by both the compiler and the run-time repository
-   * loading process, thus there should be nothing about generating Class/FieldDescriptors inside.
-   * <p>
-   * prerequisites:<br>
-   * <ul>
-   * <li>for meta-metadata: name & type/extends set;</li>
-   * <li>for fields: attributes inherited & declaringMmd set;</li>
-   * <li>for both: parent element inheritedMmd set.</li>
-   * </ul>
-   * <p>
-   * consequences:<br>
-   * <ul>
-   * <li>if this is a MetaMetadata object, attributes inherited from inheritedMmd;</li>
-   * <li>inheritedMmd set;</li>
-   * <li>(first-level) fields inherited from inheritedMmd;</li>
-   * <li>inheritedField and declaringMmd set for all (first-level) fields;</li>
-   * <li>for all (first-level) fields, attributes inherited from their inheritedField. (enabling
-   * recursion)</li>
-   * </ul>
-   * 
-   * @param inheritanceHandler
-   *          TODO
-   * @param mmdScope
-   *          a scope used for looking up meta-metadata & perhaps adding new meta-metadata.
-   * @return true if inheritance was done successfully. false if it needs to be delayed.
-   */
-  public boolean inheritMetaMetadata(InheritanceHandler inheritanceHandler)
-  {
-    if (!isInheritDone() && !isInheritOngoing())
-    {
-      setInheritOngoing(true);
-      boolean result = this.inheritMetaMetadataHelper(inheritanceHandler);
-      if (result)
-      {
-        finishInheritance();
-      }
-      return result;
-    }
-    return true;
-  }
-
-  protected void finishInheritance()
-  {
-    this.sortForDisplay();
-    setInheritOngoing(false);
-    setInheritDone(true);
-    handleInheritFinishEventListeners();
-  }
-
-  private void handleInheritFinishEventListeners()
-  {
-    if (inheritFinishEventListeners != null)
-    {
-      synchronized (inheritFinishEventListeners)
-      {
-        for (InheritFinishEventListener listener : inheritFinishEventListeners)
-          listener.inheritFinish();
-        inheritFinishEventListeners.clear();
-      }
-    }
-  }
-
-  /**
-   * Helper method that actually does the inheritance process. This should be overridden in
-   * sub-classes to fine-control the inheritance process.
-   * 
-   * @param inheritanceHandler
-   *          TODO
-   * @param mmdScope
-   *          a scope used for looking up meta-metadata & perhaps adding new meta-metadata.
-   * @return true if inheritance was successful. false if inheritance needs to be delayed.
-   */
-  abstract protected boolean inheritMetaMetadataHelper(InheritanceHandler inheritanceHandler);
-
   /**
    * bind metadata field descriptors to sub-fields of this nested field, with field names as keys,
    * but without mixins field.
@@ -377,12 +222,12 @@ public abstract class MetaMetadataNestedField extends MetaMetadataNestedFieldDec
 
       metadataFieldDescriptor.setDefiningMmdField(thatChild);
 
-      // process hide and shadows
-      HashSet<String> nonDisplayedFieldNames = nonDisplayedFieldNames();
-      if (thatChild.isHide() && !thatChild.isAlwaysShow())
-        nonDisplayedFieldNames.add(thatChild.getName());
-      if (thatChild.getShadows() != null)
-        nonDisplayedFieldNames.add(thatChild.getShadows());
+      // // process hide and shadows
+      // HashSet<String> nonDisplayedFieldNames = nonDisplayedFieldNames();
+      // if (thatChild.isHide() && !thatChild.isAlwaysShow())
+      // nonDisplayedFieldNames.add(thatChild.getName());
+      // if (thatChild.getShadows() != null)
+      // nonDisplayedFieldNames.add(thatChild.getShadows());
 
       // recursively process sub-fields
       if (thatChild instanceof MetaMetadataScalarField)
@@ -403,16 +248,8 @@ public abstract class MetaMetadataNestedField extends MetaMetadataNestedFieldDec
       {
         // bind class descriptor for nested sub-fields
         MetaMetadataNestedField nested = (MetaMetadataNestedField) thatChild;
-        MetadataFieldDescriptor fd = nested.getMetadataFieldDescriptor();
-        // if (fd.isPolymorphic())
-        // {
-        // do not bind descriptor for truely polymorphic fields
-        // debug("Polymorphic field: " + nested + ", not binding an element class descriptor.");
-        // }
-        // else
-        // {
-        MetadataClassDescriptor elementClassDescriptor = ((MetaMetadataNestedField) thatChild)
-            .bindMetadataClassDescriptor(metadataTScope);
+        MetadataClassDescriptor elementClassDescriptor =
+            ((MetaMetadataNestedField) thatChild).bindMetadataClassDescriptor(metadataTScope);
         if (elementClassDescriptor != null)
         {
           MetaMetadata mmdForThatChild = nested.getTypeMmd();
@@ -542,11 +379,15 @@ public abstract class MetaMetadataNestedField extends MetaMetadataNestedFieldDec
 
     mmdScopeTraversed = true;
 
-    if (this.getMmdScope() != null)
+    if (this.getScope() != null)
     {
-      for (MetaMetadata inlineMmd : this.getMmdScope().values())
+      for (Object obj : this.getScope().values())
       {
-        inlineMmd.findOrGenerateMetadataClassDescriptor(tscope);
+        if (obj instanceof MetaMetadata)
+        {
+          MetaMetadata inlineMmd = (MetaMetadata) obj;
+          inlineMmd.findOrGenerateMetadataClassDescriptor(tscope);
+        }
       }
     }
 

@@ -10,7 +10,6 @@ import org.junit.Test;
 
 import ecologylab.bigsemantics.metadata.scalar.types.MetadataParsedURLScalarType;
 import ecologylab.bigsemantics.metadata.scalar.types.MetadataStringScalarType;
-import ecologylab.collections.MultiAncestorScope;
 import ecologylab.serialization.SIMPLTranslationException;
 
 /**
@@ -18,7 +17,7 @@ import ecologylab.serialization.SIMPLTranslationException;
  * 
  * @author quyin
  */
-public class TestInheritance extends BaseMmdTest
+public class TestInheritance extends TestInheritanceIssues
 {
 
   @Test
@@ -26,7 +25,7 @@ public class TestInheritance extends BaseMmdTest
   {
     MetaMetadataRepository repo = loadRepository("/testInheritance1.xml");
 
-    NewInheritanceHandler handler = new NewInheritanceHandler();
+    InheritanceHandler handler = new InheritanceHandler();
     handler.handleMmdRepository(repo);
 
     MetaMetadataScalarField scalar = null;
@@ -41,7 +40,7 @@ public class TestInheritance extends BaseMmdTest
   {
     MetaMetadataRepository repo = loadRepository("/testInheritance1.xml");
 
-    NewInheritanceHandler handler = new NewInheritanceHandler();
+    InheritanceHandler handler = new InheritanceHandler();
     handler.handleMmdRepository(repo);
 
     MetaMetadataScalarField scalar = null;
@@ -130,7 +129,7 @@ public class TestInheritance extends BaseMmdTest
   {
     MetaMetadataRepository repo = loadRepository("/testInheritance1.xml");
 
-    NewInheritanceHandler handler = new NewInheritanceHandler();
+    InheritanceHandler handler = new InheritanceHandler();
     handler.handleMmdRepository(repo);
 
     MetaMetadataScalarField scalar = null;
@@ -196,7 +195,7 @@ public class TestInheritance extends BaseMmdTest
   {
     MetaMetadataRepository repo = loadRepository("/testInheritance2.xml");
 
-    NewInheritanceHandler handler = new NewInheritanceHandler();
+    InheritanceHandler handler = new InheritanceHandler();
     handler.handleMmdRepository(repo);
 
     MetaMetadataScalarField scalar = null;
@@ -235,7 +234,7 @@ public class TestInheritance extends BaseMmdTest
   {
     MetaMetadataRepository repo = loadRepository("/testInheritance2.xml");
 
-    NewInheritanceHandler handler = new NewInheritanceHandler();
+    InheritanceHandler handler = new InheritanceHandler();
     handler.handleMmdRepository(repo);
 
     MetaMetadataScalarField scalar = null;
@@ -271,7 +270,7 @@ public class TestInheritance extends BaseMmdTest
   {
     MetaMetadataRepository repo = loadRepository("/testInheritance2.xml");
 
-    NewInheritanceHandler handler = new NewInheritanceHandler();
+    InheritanceHandler handler = new InheritanceHandler();
     handler.handleMmdRepository(repo);
 
     MetaMetadataScalarField scalar = null;
@@ -328,12 +327,12 @@ public class TestInheritance extends BaseMmdTest
   {
     MetaMetadataRepository repo = loadRepository("/testInheritance3.xml");
 
-    NewInheritanceHandler handler = new NewInheritanceHandler();
+    InheritanceHandler handler = new InheritanceHandler();
     handler.handleMmdRepository(repo);
 
     MetaMetadata mmd = null;
     MetaMetadata inlineMmd = null;
-    MultiAncestorScope<Object> scope = null;
+    MmdScope scope = null;
     MetaMetadataCollectionField collection = null;
     MetaMetadataCompositeField composite = null;
 
@@ -391,7 +390,7 @@ public class TestInheritance extends BaseMmdTest
   {
     MetaMetadataRepository repo = loadRepository("/testGenerics1.xml");
 
-    NewInheritanceHandler handler = new NewInheritanceHandler();
+    InheritanceHandler handler = new InheritanceHandler();
     handler.handleMmdRepository(repo);
 
     MetaMetadataCollectionField collection = null;
@@ -445,7 +444,7 @@ public class TestInheritance extends BaseMmdTest
   {
     MetaMetadataRepository repo = loadRepository("/testGenerics2.xml");
 
-    NewInheritanceHandler handler = new NewInheritanceHandler();
+    InheritanceHandler handler = new InheritanceHandler();
     handler.handleMmdRepository(repo);
 
     MetaMetadataCompositeField composite = null;
@@ -564,7 +563,7 @@ public class TestInheritance extends BaseMmdTest
   {
     MetaMetadataRepository repo = loadRepository("/testGenerics3.xml");
 
-    NewInheritanceHandler handler = new NewInheritanceHandler();
+    InheritanceHandler handler = new InheritanceHandler();
     handler.handleMmdRepository(repo);
 
     MetaMetadataCompositeField composite = null;

@@ -2,7 +2,6 @@ package ecologylab.bigsemantics.metametadata;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,7 +26,6 @@ import ecologylab.net.ParsedURL;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.formatenums.Format;
-import ecologylab.serialization.formatenums.StringFormat;
 
 /**
  * Take charge in loading the repository.
@@ -122,8 +120,8 @@ public class MetaMetadataRepositoryLoader extends Debug implements DocumentParse
    * 
    * @param nistreams
    * @param format
- * @return
-   * @throws IOException 
+   * @return
+   * @throws IOException
    * @throws SIMPLTranslationException
    */
   public MetaMetadataRepository loadFromInputStreams(List<NamedInputStream> nistreams, Format format)
@@ -142,19 +140,19 @@ public class MetaMetadataRepositoryLoader extends Debug implements DocumentParse
     List<HashCode> fileHashes = new ArrayList<HashCode>();
     for (NamedInputStream nistream : streams)
     {
-    	InputStream istream	= nistream.getInputStream();
+      InputStream istream = nistream.getInputStream();
       String content = Utils.readInputStream(istream);
       HashCode fileHash = Hashing.md5().hashString(content);
       fileHashes.add(fileHash);
       InputStream newStream = new ByteArrayInputStream(content.getBytes(Charsets.UTF_8));
 
       MetaMetadataRepository repo = null;
-      
+
       boolean error = true;
       try
       {
         repo = (MetaMetadataRepository) mmdTScope.deserialize(newStream, format);
-        error	= false;
+        error = false;
       }
       catch (SIMPLTranslationException e)
       {
@@ -214,8 +212,8 @@ public class MetaMetadataRepositoryLoader extends Debug implements DocumentParse
           MmdScope packageMmdScope = toRepository.packageMmdScopes.get(packageName);
           if (packageMmdScope == null)
           {
-            packageMmdScope = new MmdScope(toRepository.repositoryByName);
-            packageMmdScope.name = packageName;
+            packageMmdScope = new MmdScope("package:" + packageName);
+            packageMmdScope.putAll(toRepository.repositoryByName);
             toRepository.packageMmdScopes.put(packageName, packageMmdScope);
           }
 
@@ -232,7 +230,7 @@ public class MetaMetadataRepositoryLoader extends Debug implements DocumentParse
           }
           case PACKAGE:
           {
-            MetaMetadata existingMmd = packageMmdScope.get(mmdName);
+            MetaMetadata existingMmd = (MetaMetadata) packageMmdScope.get(mmdName);
             if (existingMmd != null && existingMmd != mmd)
               throw new MetaMetadataException("meta-metadata already exists: " + mmdName + " in "
                                               + fromRepository);
@@ -245,7 +243,7 @@ public class MetaMetadataRepositoryLoader extends Debug implements DocumentParse
         for (MetaMetadata mmd : fromRepository.repositoryByName.values())
         {
           MmdScope packageMmdScope = toRepository.packageMmdScopes.get(mmd.packageName());
-          mmd.setMmdScope(packageMmdScope);
+          mmd.scope().addAncestor(packageMmdScope);
         }
       }
 

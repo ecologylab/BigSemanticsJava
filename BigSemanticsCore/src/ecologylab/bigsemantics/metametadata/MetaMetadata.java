@@ -14,8 +14,6 @@ import ecologylab.bigsemantics.html.utils.StringBuilderUtils;
 import ecologylab.bigsemantics.metadata.Metadata;
 import ecologylab.bigsemantics.metadata.MetadataClassDescriptor;
 import ecologylab.bigsemantics.metadata.MetadataFieldDescriptor;
-import ecologylab.bigsemantics.metametadata.exceptions.MetaMetadataException;
-import ecologylab.collections.MultiAncestorScope;
 import ecologylab.generic.ReflectionTools;
 import ecologylab.net.ParsedURL;
 import ecologylab.serialization.SimplTypesScope;
@@ -32,11 +30,12 @@ import ecologylab.serialization.annotations.simpl_tag;
 import ecologylab.serialization.types.element.IMappable;
 
 /**
- * @author damaraju
+ * The meta-metadata class.
  * 
+ * @author quyin
+ * @author damaraju
  */
-@SuppressWarnings(
-{ "rawtypes" })
+@SuppressWarnings({ "rawtypes", "unchecked" })
 @simpl_inherit
 public class MetaMetadata extends MetaMetadataCompositeField
     implements IMappable<String>// , HasLocalTranslationScope
@@ -72,8 +71,7 @@ public class MetaMetadata extends MetaMetadataCompositeField
 
   @simpl_collection
   @simpl_tag("operations")
-  @simpl_other_tags(
-  { "semantic_actions" })
+  @simpl_other_tags({ "semantic_actions" })
   @simpl_scope(SemanticActionTranslationScope.SEMANTIC_ACTION_TRANSLATION_SCOPE)
   private ArrayList<SemanticAction>               semanticActions;
 
@@ -306,6 +304,11 @@ public class MetaMetadata extends MetaMetadataCompositeField
     return (MetaMetadata) super.getSuperField();
   }
 
+  public void setSuperMmd(MetaMetadata result)
+  {
+    setSuperField(result);
+  }
+
   @Override
   protected boolean isInlineDefinition()
   {
@@ -387,6 +390,10 @@ public class MetaMetadata extends MetaMetadataCompositeField
 
   public void addNaturalIdField(String naturalId, MetaMetadataField childField)
   {
+    if (naturalIds == null)
+    {
+      naturalIds = new HashMap<String, MetaMetadataField>();
+    }
     naturalIds.put(naturalId, childField);
   }
 
@@ -443,13 +450,6 @@ public class MetaMetadata extends MetaMetadataCompositeField
       return getExtendsAttribute();
     else
       return "metadata";
-  }
-
-  @Override
-  protected String getMetaMetadataTagToInheritFrom()
-  {
-    String extendsAttribute = getExtendsAttribute();
-    return (extendsAttribute != null) ? extendsAttribute : super.getMetaMetadataTagToInheritFrom();
   }
 
   @Override
@@ -581,11 +581,6 @@ public class MetaMetadata extends MetaMetadataCompositeField
     }
   }
 
-  public void setSuperMmd(MetaMetadata result)
-  {
-    setSuperField(result);
-  }
-
   protected void inheritSemanticActions(MetaMetadata inheritedMmd)
   {
     if (semanticActions == null)
@@ -597,101 +592,6 @@ public class MetaMetadata extends MetaMetadataCompositeField
       afterSemanticActions = inheritedMmd.getAfterSemanticActions();
     }
   }
-
-  public boolean inheritMetaMetadata()
-  {
-    return this.inheritMetaMetadata(null);
-  }
-
-  @Override
-  protected boolean inheritMetaMetadataHelper(InheritanceHandler inheritanceHandler)
-  {
-    // debug("processing mmd: " + this);
-    inheritanceHandler = new InheritanceHandler(this);
-
-    // init each field's declaringMmd to this (some of them may change during inheritance)
-    for (MetaMetadataField field : this.getChildrenMap())
-      field.setDeclaringMmd(this);
-
-    return super.inheritMetaMetadataHelper(inheritanceHandler);
-  }
-
-  @Override
-  protected void inheritFromInheritedMmd(MetaMetadata inheritedMmd,
-                                         InheritanceHandler inheritanceHandler)
-  {
-    super.inheritFromInheritedMmd(inheritedMmd, inheritanceHandler);
-    this.inheritAttributes(inheritedMmd, false);
-    if (this.getGenericTypeVars() != null)
-    {
-      this.getGenericTypeVars().inheritFrom(inheritedMmd.getGenericTypeVars(), inheritanceHandler);
-    }
-    inheritSemanticActions(inheritedMmd);
-  }
-
-  @Override
-  protected MetaMetadata findOrGenerateInheritedMetaMetadata(MetaMetadataRepository repository,
-                                                             InheritanceHandler inheritanceHandler)
-  {
-    if (MetaMetadata.isRootMetaMetadata(this))
-    {
-      this.setNewMetadataClass(true);
-      return null;
-    }
-
-    MetaMetadata inheritedMmd = this.getTypeMmd();
-    if (inheritedMmd == null)
-    {
-      String inheritedMmdName = this.getType();
-      if (inheritedMmdName == null)
-      {
-        inheritedMmdName = this.getExtendsAttribute();
-        this.setNewMetadataClass(true);
-      }
-      if (inheritedMmdName == null)
-        throw new MetaMetadataException("no type/extends specified: " + this);
-      inheritedMmd = this.getMmdScope().get(inheritedMmdName);
-      if (inheritedMmd == null)
-        throw new MetaMetadataException("meta-metadata '"
-                                        + inheritedMmdName
-                                        + "' not found in "
-                                        + this.getName()
-                                        + ". If this meta-metadata is defined in another file, make sure it compiled correcty.");
-      this.setTypeMmd(inheritedMmd);
-    }
-    return inheritedMmd;
-  }
-
-  @Override
-  protected void inheritFrom(MetaMetadataRepository repository,
-                             MetaMetadataCompositeField inheritedStructure,
-                             InheritanceHandler inheritanceHandler)
-  {
-    super.inheritFrom(repository, inheritedStructure, inheritanceHandler);
-
-    // for fields referring to this meta-metadata type
-    // need to do inheritMetaMetadata() again after copying fields from this.getInheritedMmd()
-    // for (MetaMetadataField f : this.getChildMetaMetadata())
-    // {
-    // if (f instanceof MetaMetadataNestedField)
-    // {
-    // MetaMetadataNestedField nested = (MetaMetadataNestedField) f;
-    // if (nested.getInheritedMmd() == this)
-    // {
-    // nested.clearInheritFinishedOrInProgressFlag();
-    // nested.inheritMetaMetadata();
-    // }
-    // }
-    // }
-  }
-
-  // @Override
-  // public boolean isNewMetadataClass()
-  // {
-  // // for meta-metadata, except for looking at its contents, we should also look at its built_in
-  // // attribute to determine if it is a new type
-  // return super.isNewMetadataClass() && !this.isBuiltIn();
-  // }
 
   @Override
   public MetadataClassDescriptor bindMetadataClassDescriptor(SimplTypesScope metadataTScope)
@@ -788,23 +688,19 @@ public class MetaMetadata extends MetaMetadataCompositeField
         this.setMetadataClassDescriptor(superCd);
       }
 
-      if (this.getMmdScope() != null)
+      if (this.getScope() != null)
       {
-        for (MetaMetadata inlineMmd : this.getMmdScope().values())
+        for (Object obj : this.getScope().values())
         {
-          inlineMmd.findOrGenerateMetadataClassDescriptor(tscope);
+          if (obj instanceof MetaMetadata)
+          {
+            MetaMetadata inlineMmd = (MetaMetadata) obj;
+            inlineMmd.findOrGenerateMetadataClassDescriptor(tscope);
+          }
         }
       }
     }
   }
-
-  // @Override
-  // public boolean isNewMetadataClass()
-  // {
-  // // for meta-metadata, except for looking at its contents, we should also look at its built_in
-  // // attribute to determine if it is a new type
-  // return super.isNewMetadataClass() && !this.isBuiltIn();
-  // }
 
   @Override
   protected String getFingerprintString()
@@ -818,13 +714,5 @@ public class MetaMetadata extends MetaMetadataCompositeField
     StringBuilderUtils.release(sb);
     return fp;
   }
-
-  // @Override
-  // public boolean isNewMetadataClass()
-  // {
-  // // for meta-metadata, except for looking at its contents, we should also look at its built_in
-  // // attribute to determine if it is a new type
-  // return super.isNewMetadataClass() && !this.isBuiltIn();
-  // }
 
 }
