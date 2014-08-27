@@ -142,6 +142,11 @@ public class MmdGenericTypeVar extends ElementState
     return rebound;
   }
 
+  public void setRebound(boolean rebound)
+  {
+    this.rebound = rebound;
+  }
+
   public void resolveArgAndBounds(Map<String, Object> scope)
   {
     if (isAssignment())

@@ -39,7 +39,7 @@ public abstract class MetaMetadataNestedField extends MetaMetadataNestedFieldDec
   private FieldParserElement fieldParserElement;
 
   @simpl_composite
-  private MmdScope scope;
+  private MmdScope           scope;
 
   private boolean            mmdScopeTraversed;
 
@@ -93,7 +93,7 @@ public abstract class MetaMetadataNestedField extends MetaMetadataNestedFieldDec
     }
     return scope;
   }
-  
+
   public void setScope(MmdScope scope)
   {
     this.scope = scope;

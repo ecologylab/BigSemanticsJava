@@ -9,7 +9,6 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ecologylab.bigsemantics.metametadata.declarations.MetaMetadataNestedFieldDeclaration;
 import ecologylab.bigsemantics.metametadata.exceptions.MetaMetadataException;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.generic.ReflectionTools;
@@ -883,8 +882,9 @@ public class InheritanceHandler
                                         + gtvName + " in " + dest);
       }
     }
-    else
+    else if (srcGtv.isBound() && destGtv.isBound())
     {
+      destGtv.setRebound(true);
       if (!checkBoundsWithBounds(destGtv, srcGtv))
       {
         throw new MetaMetadataException("Generic type bound(s) not compatible for "

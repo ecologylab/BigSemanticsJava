@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 @simpl_inherit
-public class ClippingDeclaration<M extends Metadata> extends RichArtifact
+public class ClippingDeclaration<M extends Metadata> extends RichArtifact<M>
 {
 	@simpl_composite
 	@simpl_wrap

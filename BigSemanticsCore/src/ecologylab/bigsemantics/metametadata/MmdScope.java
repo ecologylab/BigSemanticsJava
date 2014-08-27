@@ -70,7 +70,8 @@ public class MmdScope implements Map<String, Object>, IMappable<String>
   @simpl_classes({ MetaMetadata.class, MmdGenericTypeVar.class })
   private HashMap<String, Object>              local;
 
-  @simpl_collection("ancestor")
+  // FIXME we don't want to serialize this field in the service, but want to do it with tests.
+  // @simpl_collection("ancestor")
   private List<MmdScope>                       ancestors;
 
   public MmdScope()
