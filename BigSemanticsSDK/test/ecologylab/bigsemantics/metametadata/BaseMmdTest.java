@@ -6,6 +6,9 @@ import java.io.InputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ecologylab.bigsemantics.collecting.SemanticsSessionScope;
+import ecologylab.bigsemantics.cyberneko.CybernekoWrapper;
+import ecologylab.bigsemantics.generated.library.RepositoryMetadataTranslationScope;
 import ecologylab.bigsemantics.metadata.MetadataFieldDescriptor;
 import ecologylab.bigsemantics.metadata.scalar.types.MetadataScalarType;
 import ecologylab.serialization.SIMPLTranslationException;
@@ -23,9 +26,13 @@ import ecologylab.serialization.formatenums.Format;
 public class BaseMmdTest
 {
 
-  static Logger          logger = LoggerFactory.getLogger(BaseMmdTest.class);
+  static Logger                 logger = LoggerFactory.getLogger(BaseMmdTest.class);
 
-  static SimplTypesScope mmdScope;
+  static SimplTypesScope        mmdScope;
+
+  static SemanticsSessionScope  semanticsScope;
+
+  static MetaMetadataRepository realRepository;
 
   static
   {
@@ -42,6 +49,22 @@ public class BaseMmdTest
         (MetaMetadataRepository) mmdScope.deserialize(istream, Format.XML);
     assert repository != null : "Failed to load testing repository!";
     return repository;
+  }
+
+  public MetaMetadataRepository loadRealRepository()
+  {
+    if (realRepository == null)
+    {
+      SemanticsSessionScope semanticsScope = null;
+      if (semanticsScope == null)
+      {
+        semanticsScope =
+            new SemanticsSessionScope(RepositoryMetadataTranslationScope.get(),
+                                      CybernekoWrapper.class);
+      }
+      realRepository = semanticsScope.getMetaMetadataRepository();
+    }
+    return realRepository;
   }
 
   public MetaMetadataField getNestedField(MetaMetadata mmd, String... fieldNames)

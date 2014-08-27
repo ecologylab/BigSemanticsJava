@@ -321,8 +321,7 @@ public class MetaMetadataCollectionField extends MetaMetadataCollectionFieldDecl
         inheritedMmd.findOrGenerateMetadataClassDescriptor(tscope);
         MetadataClassDescriptor fieldCd = inheritedMmd.getMetadataClassDescriptor();
         assert fieldCd != null : "IMPOSSIBLE: fieldCd == null: something wrong in the inheritance process!";
-        fd = new MetadataFieldDescriptor(
-                                         this,
+        fd = new MetadataFieldDescriptor(this,
                                          tagName,
                                          this.getComment(),
                                          typeCode,

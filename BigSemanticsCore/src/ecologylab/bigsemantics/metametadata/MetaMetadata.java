@@ -475,7 +475,7 @@ public class MetaMetadata extends MetaMetadataCompositeField
       // re-using existing type
       // do not use this.type directly because we don't know if that is a definition or just
       // re-using exsiting type
-      MetaMetadata inheritedMmd = this.getTypeMmd();
+      MetaMetadata inheritedMmd = this.getSuperMmd();
       return inheritedMmd == null ? null : inheritedMmd.getMetadataClassSimpleName();
     }
   }

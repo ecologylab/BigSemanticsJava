@@ -339,10 +339,10 @@ public class InheritanceHandler
 
       if (f0 != null && f1 != null && f0 != f1)
       {
+        // set attributes and superField early. this is important because in the next for loop, when
+        // we do inheritField(f1, f0), it is possible that f0 is not yet done inheritance. in that
+        // case, we may want to deal with f0 first.
         mergeAttributes(f1, f0);
-        // set superField early. this is important because in the next for loop, when we do
-        // inheritField(f1, f0), it is possible that f0 is not yet done inheritance. in that case,
-        // we may want to deal with f0 first.
         f1.setSuperField(f0);
       }
       else if (f0 != null && f1 == null)
@@ -413,15 +413,6 @@ public class InheritanceHandler
 
     if (search(field) < 0)
     {
-      // if (superField != null)
-      // {
-      // if (field.getSuperField() == null)
-      // {
-      // field.setSuperField(superField);
-      // }
-      // mergeAttributes(field, superField);
-      // }
-
       FieldType fieldType = field.getFieldType();
       logger.debug("{}: Field type {}", field, fieldType);
       if (fieldType != FieldType.SCALAR && fieldType != FieldType.COLLECTION_SCALAR)
@@ -741,6 +732,7 @@ public class InheritanceHandler
             ((MetaMetadataCollectionField) field).getPreparedElementComposite();
         MetaMetadataCompositeField superElementComposite =
             ((MetaMetadataCollectionField) superField).getPreparedElementComposite();
+        mergeAttributes(elementComposite, superElementComposite);
         inheritField(elementComposite, superElementComposite);
       }
       finally
@@ -763,13 +755,11 @@ public class InheritanceHandler
         if (fieldTypeMmd == findTypeMmd(superField))
         {
           // not changing type on the sub field.
-          mergeAttributes(field, superField);
           mergeChildren(field, superField);
         }
         else
         {
           // changing type on the sub field.
-          mergeAttributes(field, superField);
           mergeChildren(field, fieldTypeMmd);
           mergeChildren(field, superField);
         }

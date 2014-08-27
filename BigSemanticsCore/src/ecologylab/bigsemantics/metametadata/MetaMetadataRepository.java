@@ -514,7 +514,7 @@ public class MetaMetadataRepository extends ElementState
       MetadataClassDescriptor mcd = mmd.getMetadataClassDescriptor();
       if (mcd != null)
       {
-        debug("Adding mapping from " + mcd + " to type " + mmd.getName());
+//        debug("Adding mapping from " + mcd + " to type " + mmd.getName());
         repositoryByClassName.put(mcd.getDescribedClass().getName(), mmd);
       }
 

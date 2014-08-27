@@ -14,6 +14,7 @@ import ecologylab.bigsemantics.metametadata.declarations.MetaMetadataNestedField
 import ecologylab.bigsemantics.metametadata.exceptions.MetaMetadataException;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.serialization.ClassDescriptor;
+import ecologylab.serialization.FieldType;
 import ecologylab.serialization.MetaInformation;
 import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.annotations.simpl_composite;
@@ -213,54 +214,37 @@ public abstract class MetaMetadataNestedField extends MetaMetadataNestedFieldDec
           .bindMetadataFieldDescriptor(metadataTScope, metadataClassDescriptor);
       if (metadataFieldDescriptor == null)
       {
-        warning("Cannot bind metadata field descriptor for " + thatChild);
+        warning("Cannot bind metadata field descriptor for " + thatChild
+                + ", class descriptor is " + metadataClassDescriptor);
         this.getChildrenMap().remove(thatChild.getName());
         continue;
       }
 
       metadataFieldDescriptor.setDefiningMmdField(thatChild);
 
-      // // process hide and shadows
-      // HashSet<String> nonDisplayedFieldNames = nonDisplayedFieldNames();
-      // if (thatChild.isHide() && !thatChild.isAlwaysShow())
-      // nonDisplayedFieldNames.add(thatChild.getName());
-      // if (thatChild.getShadows() != null)
-      // nonDisplayedFieldNames.add(thatChild.getShadows());
-
       // recursively process sub-fields
-      if (thatChild instanceof MetaMetadataScalarField)
+      FieldType fieldType = metadataFieldDescriptor.getType();
+      if (fieldType == FieldType.COMPOSITE_ELEMENT || fieldType == FieldType.COLLECTION_ELEMENT)
       {
-        // no! we can't add regex filters to field descriptors, because field descriptors
-        // are shared between fields and inherited fields.
-        // MetaMetadataScalarField scalar = (MetaMetadataScalarField) thatChild;
-        // if (scalar.getRegexPattern() != null)
-        // {
-        // MetadataFieldDescriptor fd = scalar.getMetadataFieldDescriptor();
-        // if (fd != null)
-        // fd.setRegexFilter(scalar.getRegexPattern(), scalar.getRegexReplacement());
-        // else
-        // warning("Encountered null fd for scalar: " + scalar);
-        // }
-      }
-      else if (thatChild instanceof MetaMetadataNestedField && thatChild.hasChildren())
-      {
-        // bind class descriptor for nested sub-fields
-        MetaMetadataNestedField nested = (MetaMetadataNestedField) thatChild;
-        MetadataClassDescriptor elementClassDescriptor =
-            ((MetaMetadataNestedField) thatChild).bindMetadataClassDescriptor(metadataTScope);
-        if (elementClassDescriptor != null)
+        if (thatChild.hasChildren())
         {
-          MetaMetadata mmdForThatChild = nested.getTypeMmd();
-          if (mmdForThatChild != null && mmdForThatChild.getMetadataClassDescriptor() == null)
-            // mmdForThatChild.setMetadataClassDescriptor(elementClassDescriptor);
-            mmdForThatChild.bindMetadataClassDescriptor(metadataTScope);
+          // bind class descriptor for nested sub-fields
+          MetaMetadataNestedField nested = (MetaMetadataNestedField) thatChild;
+          MetadataClassDescriptor elementClassDescriptor =
+              ((MetaMetadataNestedField) thatChild).bindMetadataClassDescriptor(metadataTScope);
+          if (elementClassDescriptor != null)
+          {
+            MetaMetadata mmdForThatChild = nested.getTypeMmd();
+            if (mmdForThatChild != null && mmdForThatChild.getMetadataClassDescriptor() == null)
+              // mmdForThatChild.setMetadataClassDescriptor(elementClassDescriptor);
+              mmdForThatChild.bindMetadataClassDescriptor(metadataTScope);
+          }
+          else
+          {
+            warning("Cannot determine elementClassDescriptor for " + thatChild);
+            this.getChildrenMap().remove(thatChild.getName());
+          }
         }
-        else
-        {
-          warning("Cannot determine elementClassDescriptor for " + thatChild);
-          this.getChildrenMap().remove(thatChild.getName());
-        }
-        // }
       }
 
       if (this instanceof MetaMetadata)
