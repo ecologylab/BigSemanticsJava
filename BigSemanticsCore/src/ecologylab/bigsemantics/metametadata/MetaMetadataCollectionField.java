@@ -261,7 +261,7 @@ public class MetaMetadataCollectionField extends MetaMetadataCollectionFieldDecl
   @Override
   public MetaMetadataCompositeField metaMetadataCompositeField()
   {
-    return getElementComposite();
+    return getPreparedElementComposite();
   }
 
   @Override

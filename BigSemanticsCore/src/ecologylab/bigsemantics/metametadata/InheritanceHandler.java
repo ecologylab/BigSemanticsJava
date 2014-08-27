@@ -9,6 +9,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ecologylab.bigsemantics.metametadata.declarations.MetaMetadataNestedFieldDeclaration;
 import ecologylab.bigsemantics.metametadata.exceptions.MetaMetadataException;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.generic.ReflectionTools;
@@ -304,12 +305,21 @@ public class InheritanceHandler
       if (f1 != null)
       {
         f1.scope().addAncestor(field.scope());
-      }
 
-      if (field instanceof MetaMetadata && f0 == null && f1 != null)
-      {
-        // f1 is a newly declared field
-        f1.setDeclaringMmd((MetaMetadata) field);
+        if (f0 == null)
+        {
+          field.setNewMetadataClass(true);
+          if (f1 instanceof MetaMetadataNestedField)
+          {
+            String packageName = ((MetaMetadataNestedField) field).packageName();
+            ((MetaMetadataNestedField) f1).setPackageName(packageName);
+          }
+
+          if (field instanceof MetaMetadata)
+          {
+            f1.setDeclaringMmd((MetaMetadata) field);
+          }
+        }
       }
 
       if (f0 != null && f1 == null && isUsingGenerics(f0))
@@ -358,6 +368,15 @@ public class InheritanceHandler
         }
         inheritField(f1, f0);
 
+        if (f1.isNewMetadataClass())
+        {
+          field.setNewMetadataClass(true);
+        }
+        if (f0 != null && f1.getTypeMmd() != f0.getTypeMmd())
+        {
+          field.setNewMetadataClass(true);
+        }
+
         if (reincarnated.contains(f1) && !isTypeDifferent(f1, f0))
         {
           field.getChildrenMap().put(childName, f0);
@@ -395,14 +414,14 @@ public class InheritanceHandler
 
     if (search(field) < 0)
     {
-//      if (superField != null)
-//      {
-//        if (field.getSuperField() == null)
-//        {
-//          field.setSuperField(superField);
-//        }
-//        mergeAttributes(field, superField);
-//      }
+      // if (superField != null)
+      // {
+      // if (field.getSuperField() == null)
+      // {
+      // field.setSuperField(superField);
+      // }
+      // mergeAttributes(field, superField);
+      // }
 
       FieldType fieldType = field.getFieldType();
       logger.debug("{}: Field type {}", field, fieldType);

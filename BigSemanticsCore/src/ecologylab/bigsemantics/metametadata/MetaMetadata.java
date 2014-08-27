@@ -642,22 +642,23 @@ public class MetaMetadata extends MetaMetadataCompositeField
     if (this.getMetadataClassDescriptor() == null)
     {
       // this.inheritMetaMetadata(inheritanceHandler);
-      MetaMetadata inheritedMmd = this.getTypeMmd();
-      if (inheritedMmd != null)
-        inheritedMmd.findOrGenerateMetadataClassDescriptor(tscope);
-      MetadataClassDescriptor superCd = inheritedMmd == null ? null : inheritedMmd
-          .getMetadataClassDescriptor();
+      MetaMetadata superMmd = this.getSuperMmd();
+      if (superMmd != null)
+      {
+        superMmd.findOrGenerateMetadataClassDescriptor(tscope);
+      }
+      MetadataClassDescriptor superCd =
+          superMmd == null ? null : superMmd.getMetadataClassDescriptor();
       if (this.isNewMetadataClass())
       {
         String tagOrName = this.getTagOrName();
-        MetadataClassDescriptor cd = new MetadataClassDescriptor(
-                                                                 this,
+        String className = XMLTools.classNameFromElementName(this.getName());
+        String packageName = this.packageName();
+        MetadataClassDescriptor cd = new MetadataClassDescriptor(this,
                                                                  tagOrName,
                                                                  this.getComment(),
-                                                                 this.packageName(),
-                                                                 XMLTools
-                                                                     .classNameFromElementName(this
-                                                                         .getName()),
+                                                                 packageName,
+                                                                 className,
                                                                  superCd,
                                                                  null);
         // setting this early allows referring to the same class in fields

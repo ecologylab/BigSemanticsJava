@@ -783,6 +783,16 @@ public abstract class MetaMetadataField extends MetaMetadataFieldDeclaration
     return getInlineMmd() == null;
   }
 
+  public boolean isNewMetadataClass()
+  {
+    return false;
+  }
+  
+  public void setNewMetadataClass(boolean newMetadataClass)
+  {
+    // no op
+  }
+
   /**
    * bind the corresponding metadata field descriptor to this field, matched by field name.
    * customize the field descriptor when needed.

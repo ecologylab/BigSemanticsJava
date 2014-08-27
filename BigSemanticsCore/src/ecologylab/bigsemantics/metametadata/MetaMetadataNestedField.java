@@ -16,10 +16,8 @@ import ecologylab.generic.HashMapArrayList;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.MetaInformation;
 import ecologylab.serialization.SimplTypesScope;
-import ecologylab.serialization.annotations.simpl_classes;
 import ecologylab.serialization.annotations.simpl_composite;
 import ecologylab.serialization.annotations.simpl_inherit;
-import ecologylab.serialization.annotations.simpl_map;
 import ecologylab.serialization.annotations.simpl_tag;
 import ecologylab.serialization.formatenums.StringFormat;
 

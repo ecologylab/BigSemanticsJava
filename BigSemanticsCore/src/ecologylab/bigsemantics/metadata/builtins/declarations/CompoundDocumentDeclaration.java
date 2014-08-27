@@ -44,19 +44,6 @@ public class CompoundDocumentDeclaration extends Document
 	@simpl_composite_as_scalar
 	private MetadataString title;
 
-	/** 
-	 *For debugging. Type of the structure recognized by information extraction.
-	 */ 
-	@simpl_scalar
-	private MetadataString pageStructure;
-
-	/** 
-	 *The search query
-	 */ 
-	@simpl_scalar
-	@simpl_hints({Hint.XML_LEAF})
-	private MetadataString query;
-
 	@simpl_scalar
 	@simpl_hints({Hint.XML_LEAF})
 	private MetadataString description;
@@ -73,6 +60,19 @@ public class CompoundDocumentDeclaration extends Document
 	@simpl_composite
 	@mm_name("see_also")
 	private CompoundDocument seeAlso;
+
+	/** 
+	 *The search query
+	 */ 
+	@simpl_scalar
+	@simpl_hints({Hint.XML_LEAF})
+	private MetadataString query;
+
+	/** 
+	 *For debugging. Type of the structure recognized by information extraction.
+	 */ 
+	@simpl_scalar
+	private MetadataString pageStructure;
 
 	/** 
 	 *Clippings that this document contains.
@@ -140,70 +140,6 @@ public class CompoundDocumentDeclaration extends Document
 	public void setTitleMetadata(MetadataString title)
 	{
 		this.title = title;
-	}
-
-	public MetadataString	pageStructure()
-	{
-		MetadataString	result = this.pageStructure;
-		if (result == null)
-		{
-			result = new MetadataString();
-			this.pageStructure = result;
-		}
-		return result;
-	}
-
-	public String getPageStructure()
-	{
-		return this.pageStructure == null ? null : pageStructure().getValue();
-	}
-
-	public MetadataString getPageStructureMetadata()
-	{
-		return pageStructure;
-	}
-
-	public void setPageStructure(String pageStructure)
-	{
-		if (pageStructure != null)
-			this.pageStructure().setValue(pageStructure);
-	}
-
-	public void setPageStructureMetadata(MetadataString pageStructure)
-	{
-		this.pageStructure = pageStructure;
-	}
-
-	public MetadataString	query()
-	{
-		MetadataString	result = this.query;
-		if (result == null)
-		{
-			result = new MetadataString();
-			this.query = result;
-		}
-		return result;
-	}
-
-	public String getQuery()
-	{
-		return this.query == null ? null : query().getValue();
-	}
-
-	public MetadataString getQueryMetadata()
-	{
-		return query;
-	}
-
-	public void setQuery(String query)
-	{
-		if (query != null)
-			this.query().setValue(query);
-	}
-
-	public void setQueryMetadata(MetadataString query)
-	{
-		this.query = query;
 	}
 
 	public MetadataString	description()
@@ -310,6 +246,70 @@ public class CompoundDocumentDeclaration extends Document
 	public void setSeeAlso(CompoundDocument seeAlso)
 	{
 		this.seeAlso = seeAlso;
+	}
+
+	public MetadataString	query()
+	{
+		MetadataString	result = this.query;
+		if (result == null)
+		{
+			result = new MetadataString();
+			this.query = result;
+		}
+		return result;
+	}
+
+	public String getQuery()
+	{
+		return this.query == null ? null : query().getValue();
+	}
+
+	public MetadataString getQueryMetadata()
+	{
+		return query;
+	}
+
+	public void setQuery(String query)
+	{
+		if (query != null)
+			this.query().setValue(query);
+	}
+
+	public void setQueryMetadata(MetadataString query)
+	{
+		this.query = query;
+	}
+
+	public MetadataString	pageStructure()
+	{
+		MetadataString	result = this.pageStructure;
+		if (result == null)
+		{
+			result = new MetadataString();
+			this.pageStructure = result;
+		}
+		return result;
+	}
+
+	public String getPageStructure()
+	{
+		return this.pageStructure == null ? null : pageStructure().getValue();
+	}
+
+	public MetadataString getPageStructureMetadata()
+	{
+		return pageStructure;
+	}
+
+	public void setPageStructure(String pageStructure)
+	{
+		if (pageStructure != null)
+			this.pageStructure().setValue(pageStructure);
+	}
+
+	public void setPageStructureMetadata(MetadataString pageStructure)
+	{
+		this.pageStructure = pageStructure;
 	}
 
 	public List<Clipping> getClippings()
