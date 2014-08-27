@@ -12,7 +12,7 @@ import ecologylab.bigsemantics.collecting.MetaMetadataRepositoryLocator;
 import ecologylab.bigsemantics.collecting.SemanticsSessionScope;
 import ecologylab.bigsemantics.cyberneko.CybernekoWrapper;
 import ecologylab.bigsemantics.generated.library.RepositoryMetadataTranslationScope;
-import ecologylab.bigsemantics.generated.library.creative_work.Curation;
+import ecologylab.bigsemantics.generated.library.curation.*;
 import ecologylab.bigsemantics.metadata.Metadata;
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metadata.builtins.DocumentClosure;
