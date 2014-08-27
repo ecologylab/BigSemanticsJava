@@ -60,7 +60,7 @@ public class MmdGenericTypeVar extends ElementState
 
   private boolean                        rebound;
 
-  private MmdScope             scope;
+  private MmdScope                       scope;
 
   public String getName()
   {
