@@ -9,7 +9,7 @@ package ecologylab.bigsemantics.metadata.builtins.declarations;
  */
 
 import ecologylab.bigsemantics.metadata.Metadata;
-import ecologylab.bigsemantics.metadata.builtins.CompoundDocument;
+import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metadata.builtins.MetadataBuiltinsTypesScope;
 import ecologylab.bigsemantics.metadata.mm_name;
 import ecologylab.bigsemantics.metadata.scalar.MetadataDate;
@@ -36,7 +36,7 @@ public class CreativeActDeclaration extends Metadata
 	@simpl_wrap
 	@simpl_scope("repository_documents")
 	@mm_name("creator")
-	private CompoundDocument creator;
+	private Document creator;
 
 	@simpl_scalar
 	private MetadataDate time;
@@ -81,12 +81,12 @@ public class CreativeActDeclaration extends Metadata
 		this.action = action;
 	}
 
-	public CompoundDocument getCreator()
+	public Document getCreator()
 	{
 		return creator;
 	}
 
-	public void setCreator(CompoundDocument creator)
+	public void setCreator(Document creator)
 	{
 		this.creator = creator;
 	}
