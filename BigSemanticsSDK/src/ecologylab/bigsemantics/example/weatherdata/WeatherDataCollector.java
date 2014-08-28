@@ -10,7 +10,7 @@ import ecologylab.bigsemantics.actions.SemanticAction;
 import ecologylab.bigsemantics.collecting.SemanticsSessionScope;
 import ecologylab.bigsemantics.cyberneko.CybernekoWrapper;
 import ecologylab.bigsemantics.generated.library.RepositoryMetadataTranslationScope;
-import ecologylab.bigsemantics.generated.library.WeatherReport;
+import ecologylab.bigsemantics.generated.library.weatherReport.*;
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metadata.builtins.DocumentClosure;
 import ecologylab.generic.Continuation;

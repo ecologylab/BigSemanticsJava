@@ -3,7 +3,7 @@
  */
 package ecologylab.bigsemantics.sensing;
 
-import ecologylab.bigsemantics.generated.library.gis.GisLocation;
+import ecologylab.bigsemantics.generated.library.gisLocation.*;
 import ecologylab.generic.Debug;
 import ecologylab.sensor.location.EarthData;
 

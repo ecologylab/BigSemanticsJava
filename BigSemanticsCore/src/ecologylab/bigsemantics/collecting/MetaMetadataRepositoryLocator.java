@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -50,8 +51,8 @@ public class MetaMetadataRepositoryLocator extends Debug
     SEMANTICS = "semantics/";
     DEFAULT_REPOSITORY_LOCATIONS = new String[]
     {
-      "../../BigSemanticsWrapperRepository/BigSemanticsWrappers/MmdRepository/mmdrepository",
-      "../../MetaMetadataRepository/MmdRepository/mmdrepository",
+      "../../BigSemanticsWrapperRepository/BigSemanticsWrappers/repository",
+      "../../MetaMetadataRepository/repository",
       "../ecologylabSemantics/repository",
     };
   }
@@ -218,21 +219,37 @@ public class MetaMetadataRepositoryLocator extends Debug
 
   public static List<File> listRepositoryFiles(File repositoryDir, Format repositoryFormat)
   {
+    
     FileFilter fileFilter = MetaMetadataRepositoryFileFormats.getFileFilter(repositoryFormat);
     assert fileFilter != null;
 
     List<File> allFiles = new ArrayList<File>();
-
-    File repositorySources = new File(repositoryDir, "repositorySources");
-    File powerUserDir = new File(repositoryDir, "powerUser");
-
-    addFilesInDirToList(repositoryDir, fileFilter, allFiles);
-    addFilesInDirToList(repositorySources, fileFilter, allFiles);
-    addFilesInDirToList(powerUserDir, fileFilter, allFiles);
+    
+    List<File> allDirectories = getSubDirectories(repositoryDir);
+    allDirectories.add(repositoryDir);
+    for(int i = 0; i < allDirectories.size(); i++){
+    	  addFilesInDirToList(allDirectories.get(i), fileFilter, allFiles);
+    }
 
     return allFiles;
   }
 
+	private static List<File> getSubDirectories(File rootDirectory){
+		  List<File> subdirectories = new ArrayList<File>();
+		  String[] directories = rootDirectory.list(new FilenameFilter() {
+		      @Override
+		      public boolean accept(File current, String name) {
+		        return new File(current, name).isDirectory();
+		      }
+		    });
+		  for(int i = 0; i < directories.length; i++){
+			  File directory  = new File(rootDirectory, directories[i]);
+			  subdirectories.add(directory);
+			  subdirectories.addAll(getSubDirectories(directory));
+		  }
+		  return subdirectories;
+	  }
+  
   private static void addFilesInDirToList(File dir, FileFilter filter, List<File> buf)
   {
     if (dir == null || !dir.exists())
