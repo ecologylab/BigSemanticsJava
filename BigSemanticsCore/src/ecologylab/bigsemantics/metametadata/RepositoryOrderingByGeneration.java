@@ -1,6 +1,7 @@
 package ecologylab.bigsemantics.metametadata;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +47,7 @@ public class RepositoryOrderingByGeneration implements RepositoryOrdering
   public TreeNode root;
 
   @Override
-  public List<MetaMetadata> orderMetaMetadataForInheritance(List<MetaMetadata> mmds)
+  public List<MetaMetadata> orderMetaMetadataForInheritance(Collection<MetaMetadata> mmds)
   {
     Map<String, TreeNode> nodes = new HashMap<String, TreeNode>(mmds.size());
     root = null;

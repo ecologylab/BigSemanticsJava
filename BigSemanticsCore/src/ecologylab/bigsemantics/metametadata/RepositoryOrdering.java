@@ -1,5 +1,6 @@
 package ecologylab.bigsemantics.metametadata;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -9,6 +10,6 @@ import java.util.List;
 public interface RepositoryOrdering
 {
 
-  List<MetaMetadata> orderMetaMetadataForInheritance(List<MetaMetadata> mmds);
+  List<MetaMetadata> orderMetaMetadataForInheritance(Collection<MetaMetadata> mmds);
   
 }

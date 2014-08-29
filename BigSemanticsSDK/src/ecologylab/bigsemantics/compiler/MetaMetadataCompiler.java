@@ -212,24 +212,21 @@ public class MetaMetadataCompiler extends Debug // ApplicationEnvironment
 
   public static void generateTreeVizData(File repositoryLocation, MetaMetadataRepository repository)
   {
-    File treeVizDataDir = new File(repositoryLocation.getParentFile().getParentFile(), "OntoViz");
+    File treeVizDataDir = new File(repositoryLocation.getParentFile(), "OntoViz");
     File treeVizDataFile = null;
     if (treeVizDataDir.exists() && treeVizDataDir.isDirectory())
     {
       treeVizDataFile = new File(treeVizDataDir, "mmd_repo.json");
-      if (repository.ordering instanceof RepositoryOrderingByGeneration)
+      RepositoryOrderingByGeneration ordering = new RepositoryOrderingByGeneration();
+      ordering.orderMetaMetadataForInheritance(repository.getMetaMetadataCollection());
+      try
       {
-        RepositoryOrderingByGeneration ordering =
-            (RepositoryOrderingByGeneration) repository.ordering;
-        try
-        {
-          SimplTypesScope.serialize(ordering.root, treeVizDataFile, Format.JSON);
-        }
-        catch (SIMPLTranslationException e)
-        {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
-        }
+        SimplTypesScope.serialize(ordering.root, treeVizDataFile, Format.JSON);
+      }
+      catch (SIMPLTranslationException e)
+      {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
       }
     }
   }
