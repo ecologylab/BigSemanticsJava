@@ -22,8 +22,7 @@ import ecologylab.serialization.types.ScalarType;
  * 
  * @author quyin
  */
-@SuppressWarnings(
-{ "rawtypes", "unchecked" })
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class InheritanceHandler
 {
 

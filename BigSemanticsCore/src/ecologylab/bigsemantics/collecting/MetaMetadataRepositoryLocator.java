@@ -87,23 +87,7 @@ public class MetaMetadataRepositoryLocator extends Debug
 
     if (repositoryLocation == null)
     {
-      // first, try assets
-      if (SingletonApplicationEnvironment.isInUse()
-          && !SingletonApplicationEnvironment.runningInEclipse())
-      {
-        ParsedURL semanticsRelativeUrl = EnvironmentGeneric.configDir().getRelative(SEMANTICS);
-        File repositoryDir = Files.newFile(PropertiesAndDirectories.thisApplicationDir(),
-                                           SEMANTICS + "/repository");
-        AssetsRoot mmAssetsRoot = new AssetsRoot(semanticsRelativeUrl, repositoryDir);
-        repositoryLocation = Assets.getAsset(mmAssetsRoot,
-                                             null,
-                                             "repository",
-                                             null,
-                                             !useAssetsCache,
-                                             SemanticsAssetVersions.METAMETADATA_ASSET_VERSION);
-      }
-
-      // then, try default locations
+      // try default locations
       if (repositoryLocation == null)
       {
         repositoryLocation = locateRepositoryByDefaultLocations();
@@ -186,7 +170,7 @@ public class MetaMetadataRepositoryLocator extends Debug
   int locateRepositoryAsJavaResourcesAndOpenStreams(List<NamedInputStream> result)
   {
     InputStream repositoryListStream =
-        this.getClass().getResourceAsStream("/mmdrepository/repositoryFiles.lst");
+        this.getClass().getResourceAsStream("/repositoryFiles.lst");
     BufferedReader br = new BufferedReader(new InputStreamReader(repositoryListStream));
 
     int n = 0;
@@ -207,7 +191,7 @@ public class MetaMetadataRepositoryLocator extends Debug
       line = line.trim();
       if (line.length() > 0)
       {
-        String repositoryFileResourceName = "/mmdrepository/" + line;
+        String repositoryFileResourceName = "/" + line;
         result.add(new NamedInputStream(repositoryFileResourceName,
         																this.getClass().getResourceAsStream(repositoryFileResourceName)));
         n++;
