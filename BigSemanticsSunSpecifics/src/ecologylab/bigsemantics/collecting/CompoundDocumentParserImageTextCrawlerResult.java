@@ -3,9 +3,9 @@
  */
 package ecologylab.bigsemantics.collecting;
 
-import ecologylab.bigsemantics.documentparsers.CompoundDocumentParserCrawlerResult;
+import ecologylab.bigsemantics.documentparsers.RichDocumentParserCrawlerResult;
 import ecologylab.bigsemantics.metadata.builtins.Clipping;
-import ecologylab.bigsemantics.metadata.builtins.CompoundDocument;
+import ecologylab.bigsemantics.metadata.builtins.RichDocument;
 import ecologylab.bigsemantics.metadata.builtins.DocumentClosure;
 import ecologylab.bigsemantics.metadata.builtins.Image;
 import ecologylab.bigsemantics.metadata.builtins.ImageClipping;
@@ -23,7 +23,7 @@ import ecologylab.generic.Continuation;
  * @author andruid
  */
 public class CompoundDocumentParserImageTextCrawlerResult 
-extends CompoundDocumentParserCrawlerResult<ImageTextCrawler>
+extends RichDocumentParserCrawlerResult<ImageTextCrawler>
 implements Continuation<DocumentClosure>
 {
 	/**
@@ -48,7 +48,7 @@ implements Continuation<DocumentClosure>
 	/**
 	 * @param compoundDocument
 	 */
-	public CompoundDocumentParserImageTextCrawlerResult(CompoundDocument compoundDocument)
+	public CompoundDocumentParserImageTextCrawlerResult(RichDocument compoundDocument)
 	{
 		super(compoundDocument);
 	}

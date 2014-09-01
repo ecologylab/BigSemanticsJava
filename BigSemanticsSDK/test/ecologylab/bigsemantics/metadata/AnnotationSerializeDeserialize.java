@@ -8,7 +8,7 @@ import java.util.Date;
 import org.junit.Test;
 
 import ecologylab.bigsemantics.generated.library.RepositoryMetadataTranslationScope;
-import ecologylab.bigsemantics.metadata.builtins.CompoundDocument;
+import ecologylab.bigsemantics.metadata.builtins.RichDocument;
 import ecologylab.bigsemantics.metadata.builtins.CreativeAct;
 import ecologylab.bigsemantics.metadata.builtins.HtmlText;
 import ecologylab.bigsemantics.metadata.builtins.RichArtifact;
@@ -34,7 +34,7 @@ public class AnnotationSerializeDeserialize
 		
 		CreativeAct creativeAct = new CreativeAct();
 		creativeAct.setAction(2);
-		CompoundDocument creator = new CompoundDocument();
+		RichDocument creator = new RichDocument();
 		creator.setTitle("andrew");
 		creator.setLocation(new ParsedURL(new URL("http://ecologylab.net/people/andrew")));
 		creativeAct.setCreator(creator);

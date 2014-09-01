@@ -8,9 +8,9 @@ import java.util.Observable;
 import java.util.Observer;
 
 import ecologylab.appframework.types.prefs.PrefBoolean;
-import ecologylab.bigsemantics.documentparsers.CompoundDocumentParserCrawlerResult;
+import ecologylab.bigsemantics.documentparsers.RichDocumentParserCrawlerResult;
 import ecologylab.bigsemantics.gui.InteractiveSpace;
-import ecologylab.bigsemantics.metadata.builtins.CompoundDocument;
+import ecologylab.bigsemantics.metadata.builtins.RichDocument;
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metadata.builtins.DocumentClosure;
 import ecologylab.bigsemantics.metadata.builtins.TextClipping;
@@ -224,7 +224,7 @@ implements Observer, ThreadMaster, Runnable, SemanticsPrefs
 					Document ancestorDocument	= c.getDocument().getAncestor();
 					if (ancestorDocument != null && !(ancestorDocument.isRecycled() /*|| ancestor.isRecycling() */))
 					{
-						CompoundDocumentParserCrawlerResult crawlerResult	= (CompoundDocumentParserCrawlerResult) ancestorDocument.getParserResult();
+						RichDocumentParserCrawlerResult crawlerResult	= (RichDocumentParserCrawlerResult) ancestorDocument.getParserResult();
 						if (crawlerResult != null)
 						{
 							DocumentClosure d = crawlerResult.swapNextBestOutlinkWith(c);
@@ -645,10 +645,10 @@ implements Observer, ThreadMaster, Runnable, SemanticsPrefs
 	 * 
 	 * @return	CompoundDocumentParserCrawlerResult
 	 */
-	public CompoundDocumentParserCrawlerResult 
-	constructCompoundDocumentParserResult(CompoundDocument compoundDocument, boolean justCrawl)
+	public RichDocumentParserCrawlerResult 
+	constructRichDocumentParserResult(RichDocument compoundDocument, boolean justCrawl)
 	{
-		return new CompoundDocumentParserCrawlerResult(compoundDocument);
+		return new RichDocumentParserCrawlerResult(compoundDocument);
 	}
 	
 	public void killSite(final SemanticsSite site)

@@ -160,7 +160,7 @@ public class DocumentLogRecord extends DownloadableLogRecord
     return msCompoundDocumentDnpDone;
   }
 
-  public void setMsCompoundDocumentDnpDone(long msCompoundDocumentDnpDone)
+  public void setMsRichDocumentDnpDone(long msCompoundDocumentDnpDone)
   {
     this.msCompoundDocumentDnpDone = msCompoundDocumentDnpDone;
   }

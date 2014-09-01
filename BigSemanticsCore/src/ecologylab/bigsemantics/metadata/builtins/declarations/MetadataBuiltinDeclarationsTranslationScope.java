@@ -32,7 +32,7 @@ public class MetadataBuiltinDeclarationsTranslationScope
 
 		ecologylab.bigsemantics.metadata.builtins.Clipping.class,
 
-		ecologylab.bigsemantics.metadata.builtins.CompoundDocument.class,
+		ecologylab.bigsemantics.metadata.builtins.RichDocument.class,
 
 		ecologylab.bigsemantics.metadata.builtins.CreativeAct.class,
 

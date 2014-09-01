@@ -23,7 +23,7 @@ import ecologylab.bigsemantics.html.documentstructure.RecognizedDocumentStructur
 import ecologylab.bigsemantics.html.documentstructure.SemanticAnchor;
 import ecologylab.bigsemantics.html.dom.IDOMProvider;
 import ecologylab.bigsemantics.html.utils.StringBuilderUtils;
-import ecologylab.bigsemantics.metadata.builtins.CompoundDocument;
+import ecologylab.bigsemantics.metadata.builtins.RichDocument;
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metadata.builtins.Image;
 import ecologylab.bigsemantics.metadata.builtins.ImageClipping;
@@ -193,14 +193,14 @@ public abstract class HTMLDOMParser<D extends Document> extends ContainerParser<
             .getMetaMetadataRepository().getMMByName(getSemanticsScope().TEXT_TAG));
         textClipping.setText(StringTools.toString(buffy));
         textClipping.setSourceDoc(getDocument());
-        ((CompoundDocument) getDocument()).addClipping(textClipping);
+        ((RichDocument) getDocument()).addClipping(textClipping);
       }
     }
   }
 
   public int numExtractedClippings()
   {
-    return ((CompoundDocument) getDocument()).numClippings();
+    return ((RichDocument) getDocument()).numClippings();
   }
 
   /**
@@ -276,7 +276,7 @@ public abstract class HTMLDOMParser<D extends Document> extends ContainerParser<
   {
     if (SHOW_PAGE_STRUCTURE_PREF.value())
     {
-      CompoundDocument metadata = (CompoundDocument) getDocument();
+      RichDocument metadata = (RichDocument) getDocument();
       if (metadata != null)
         metadata.setPageStructure(pageType.getSimpleName());
       else
@@ -376,7 +376,7 @@ public abstract class HTMLDOMParser<D extends Document> extends ContainerParser<
    */
   public ImageClipping constructAnchorImageClipping(ImgElement imgNode, ParsedURL anchorHref)
   {
-    CompoundDocument source = (CompoundDocument) getDocumentClosure().getDocument();
+    RichDocument source = (RichDocument) getDocumentClosure().getDocument();
     ImageClipping clipping = constructImageClipping(getDocument(), source, null, imgNode);
     // CompoundDocument outlink = (CompoundDocument)
     // getSemanticsScope().getOrConstructDocument(anchorHref);

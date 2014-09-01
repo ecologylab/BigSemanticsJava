@@ -5,13 +5,13 @@ package ecologylab.bigsemantics.documentparsers;
 
 import java.io.IOException;
 
-import ecologylab.bigsemantics.metadata.builtins.CompoundDocument;
+import ecologylab.bigsemantics.metadata.builtins.RichDocument;
 
 /**
  * @author andruid
  *
  */
-public class PdfParser extends DocumentParser<CompoundDocument>
+public class PdfParser extends DocumentParser<RichDocument>
 {
 
 	@Override

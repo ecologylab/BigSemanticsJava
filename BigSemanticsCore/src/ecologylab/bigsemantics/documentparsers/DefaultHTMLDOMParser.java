@@ -3,7 +3,7 @@ package ecologylab.bigsemantics.documentparsers;
 import java.io.IOException;
 
 import ecologylab.bigsemantics.actions.SemanticActionHandler;
-import ecologylab.bigsemantics.metadata.builtins.CompoundDocument;
+import ecologylab.bigsemantics.metadata.builtins.RichDocument;
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metametadata.MetaMetadataCompositeField;
 
@@ -12,7 +12,7 @@ import ecologylab.bigsemantics.metametadata.MetaMetadataCompositeField;
  * 
  * @author quyin
  */
-public class DefaultHTMLDOMParser extends ParserBase<CompoundDocument>
+public class DefaultHTMLDOMParser extends ParserBase<RichDocument>
 {
 
   @Override

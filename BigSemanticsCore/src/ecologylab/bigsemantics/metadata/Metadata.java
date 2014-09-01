@@ -826,7 +826,7 @@ ISimplSerializationPre, ISimplDeserializationPost
 	 * 
 	 * @return	false
 	 */
-	public boolean isCompoundDocument()
+	public boolean isRichDocument()
 	{
 		return false;
 	}

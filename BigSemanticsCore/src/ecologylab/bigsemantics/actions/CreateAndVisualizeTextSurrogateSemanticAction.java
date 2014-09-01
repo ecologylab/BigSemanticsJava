@@ -1,6 +1,6 @@
 package ecologylab.bigsemantics.actions;
 
-import ecologylab.bigsemantics.metadata.builtins.CompoundDocument;
+import ecologylab.bigsemantics.metadata.builtins.RichDocument;
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metadata.builtins.TextClipping;
 import ecologylab.serialization.annotations.simpl_inherit;
@@ -66,8 +66,8 @@ class CreateAndVisualizeTextSurrogateSemanticAction extends SemanticAction imple
 			textClipping.setContext(context);
 
 			textClipping.setSourceDoc(sourceDocument);
-			if (sourceDocument instanceof CompoundDocument)
-				((CompoundDocument) sourceDocument).addClipping(textClipping);
+			if (sourceDocument instanceof RichDocument)
+				((RichDocument) sourceDocument).addClipping(textClipping);
 		}
 		return null;
 	}

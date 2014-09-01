@@ -24,7 +24,7 @@ import ecologylab.bigsemantics.html.documentstructure.RecognizedDocumentStructur
 import ecologylab.bigsemantics.html.documentstructure.TextOnlyPage;
 import ecologylab.bigsemantics.html.utils.HTMLNames;
 import ecologylab.bigsemantics.html.utils.StringBuilderUtils;
-import ecologylab.bigsemantics.metadata.builtins.CompoundDocument;
+import ecologylab.bigsemantics.metadata.builtins.RichDocument;
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metametadata.MetaMetadata;
 import ecologylab.bigsemantics.metametadata.MetaMetadataCompositeField;
@@ -40,7 +40,7 @@ import ecologylab.serialization.XMLTools;
  *
  */
 public class HTMLDOMImageTextParser
-extends ParserBase<CompoundDocument>
+extends ParserBase<RichDocument>
 implements DOMParserInterface, HTMLNames
 {
 

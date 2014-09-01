@@ -4,7 +4,7 @@
 package ecologylab.bigsemantics.actions;
 
 import ecologylab.bigsemantics.documentparsers.SearchParser;
-import ecologylab.bigsemantics.metadata.builtins.CompoundDocument;
+import ecologylab.bigsemantics.metadata.builtins.RichDocument;
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metadata.builtins.DocumentClosure;
 import ecologylab.bigsemantics.metadata.builtins.Image;
@@ -84,8 +84,8 @@ class CreateAndVisualizeImgSurrogateSemanticAction
 				outlink				= sessionScope.getOrConstructDocument(hrefPURL);
 			
 			ImageClipping imageClipping	= image.constructClipping(source, outlink, caption, null);
-			if (source instanceof CompoundDocument)
-				((CompoundDocument) source).addClipping(imageClipping);
+			if (source instanceof RichDocument)
+				((RichDocument) source).addClipping(imageClipping);
 			
 			SeedDistributor resultsDistributor = null;
 			// look out for error condition

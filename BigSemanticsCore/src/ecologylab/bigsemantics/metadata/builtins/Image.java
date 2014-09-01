@@ -127,8 +127,8 @@ implements MimeType, ImageConstants
 	public ImageClipping constructClipping(Document basisDocument, Document sourceDocument, Document outlink, String caption, String context)
 	{
 		ImageClipping result	= constructClipping(sourceDocument, outlink, caption, context);
-		if (basisDocument instanceof CompoundDocument)
-			((CompoundDocument) basisDocument).addClipping( result);
+		if (basisDocument instanceof RichDocument)
+			((RichDocument) basisDocument).addClipping( result);
 		return result;
 	}
 	

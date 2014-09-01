@@ -8,9 +8,9 @@ import java.util.Observable;
 
 import ecologylab.bigsemantics.collecting.Crawler;
 import ecologylab.bigsemantics.collecting.SemanticsSite;
-import ecologylab.bigsemantics.documentparsers.CompoundDocumentParserCrawlerResult;
+import ecologylab.bigsemantics.documentparsers.RichDocumentParserCrawlerResult;
 import ecologylab.bigsemantics.gui.InteractiveSpace;
-import ecologylab.bigsemantics.metadata.builtins.CompoundDocument;
+import ecologylab.bigsemantics.metadata.builtins.RichDocument;
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metadata.builtins.DocumentClosure;
 import ecologylab.bigsemantics.metadata.builtins.Image;
@@ -103,7 +103,7 @@ public class ImageTextCrawler extends Crawler
 				//TODO -- check among all source documents!!!
 				Image image								= (Image) imageClosure.getDocument();
 				Document sourceDocument		= image.getClippingSource();
-				if (sourceDocument != null && sourceDocument.isCompoundDocument())
+				if (sourceDocument != null && sourceDocument.isRichDocument())
 				{
 					CompoundDocumentParserImageTextCrawlerResult crawlerResult	= (CompoundDocumentParserImageTextCrawlerResult) sourceDocument.getParserResult();
 					if (crawlerResult != null)
@@ -119,7 +119,7 @@ public class ImageTextCrawler extends Crawler
 			{
 				TextClipping textClipping	= textClippingElement.getGeneric();
 				Document sourceDocument		= textClipping.getSourceDoc();
-				if (sourceDocument != null && sourceDocument.isCompoundDocument())
+				if (sourceDocument != null && sourceDocument.isRichDocument())
 				{
 					CompoundDocumentParserImageTextCrawlerResult crawlerResult	= (CompoundDocumentParserImageTextCrawlerResult) sourceDocument.getParserResult();
 					if (crawlerResult != null)
@@ -314,11 +314,11 @@ public class ImageTextCrawler extends Crawler
 	 * @return	CompoundDocumentParserCrawlerResult
 	 */
 	@Override
-	public CompoundDocumentParserCrawlerResult 
-	constructCompoundDocumentParserResult(CompoundDocument compoundDocument, boolean justCrawl)
+	public RichDocumentParserCrawlerResult 
+	constructRichDocumentParserResult(RichDocument compoundDocument, boolean justCrawl)
 	{
 		return justCrawl ? new CompoundDocumentParserImageTextCrawlerResult(compoundDocument) 
-			: super.constructCompoundDocumentParserResult(compoundDocument, justCrawl);
+			: super.constructRichDocumentParserResult(compoundDocument, justCrawl);
 	}
 
 	public void killSite(final SemanticsSite site)

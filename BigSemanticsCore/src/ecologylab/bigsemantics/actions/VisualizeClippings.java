@@ -10,7 +10,7 @@ import ecologylab.bigsemantics.collecting.DownloadStatus;
 import ecologylab.bigsemantics.gui.InteractiveSpace;
 import ecologylab.bigsemantics.metadata.Metadata;
 import ecologylab.bigsemantics.metadata.builtins.Clipping;
-import ecologylab.bigsemantics.metadata.builtins.CompoundDocument;
+import ecologylab.bigsemantics.metadata.builtins.RichDocument;
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metadata.builtins.DocumentClosure;
 import ecologylab.bigsemantics.metadata.builtins.ImageClipping;
@@ -156,10 +156,10 @@ implements SemanticActionStandardMethods
 		{
 			debug("This is a drop.  Finding clippings to visualize.");
 			//TODO make something that waits for images to be downloaded
-			CompoundDocument compoundSource = null;
-			if(sourceDocument instanceof CompoundDocument)
+			RichDocument compoundSource = null;
+			if(sourceDocument instanceof RichDocument)
 			{
-				compoundSource = (CompoundDocument) sourceDocument;
+				compoundSource = (RichDocument) sourceDocument;
 			}
 			
 			TextClipping bestTextClipping = null;

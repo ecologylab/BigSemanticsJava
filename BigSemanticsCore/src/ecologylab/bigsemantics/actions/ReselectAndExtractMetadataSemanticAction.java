@@ -5,7 +5,7 @@ import java.util.Map;
 
 import ecologylab.bigsemantics.documentparsers.DocumentParser;
 import ecologylab.bigsemantics.documentparsers.ParserBase;
-import ecologylab.bigsemantics.metadata.builtins.CompoundDocument;
+import ecologylab.bigsemantics.metadata.builtins.RichDocument;
 import ecologylab.bigsemantics.metadata.builtins.DocumentClosure;
 import ecologylab.bigsemantics.metametadata.MetaMetadata;
 import ecologylab.bigsemantics.metametadata.MetaMetadataSelector;
@@ -33,7 +33,7 @@ public class ReselectAndExtractMetadataSemanticAction extends SemanticAction
 	@Override
 	public Object perform(Object obj) throws IOException
 	{
-		CompoundDocument doc = (CompoundDocument) obj;
+		RichDocument doc = (RichDocument) obj;
 		MetaMetadata mmd = (MetaMetadata) doc.getMetaMetadata();
 		Map<MetaMetadataSelector, MetaMetadata> reselectMap = mmd.getReselectMap();
 		if (reselectMap != null)
@@ -50,7 +50,7 @@ public class ReselectAndExtractMetadataSemanticAction extends SemanticAction
 					                            documentParser.getDownloadController());
 					if (documentParser instanceof ParserBase && newParser instanceof ParserBase)
 					{
-						CompoundDocument newDoc = (CompoundDocument) newMmd.constructMetadata();
+						RichDocument newDoc = (RichDocument) newMmd.constructMetadata();
 						newDoc.setLocation(doc.getLocation());
 						ParserBase newParserBase = (ParserBase) newParser;
 						org.w3c.dom.Document dom = ((ParserBase) documentParser).getDom();

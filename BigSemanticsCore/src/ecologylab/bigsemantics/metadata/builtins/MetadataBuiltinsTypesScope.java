@@ -21,7 +21,7 @@ public class MetadataBuiltinsTypesScope extends Debug
 		Metadata.class, 
 		ClippableDocument.class,
 		Clipping.class,
-		CompoundDocument.class,
+		RichDocument.class,
 		DebugMetadata.class,
 		Document.class, 
 		DocumentMetadataWrap.class,
