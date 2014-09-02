@@ -7,7 +7,7 @@ public interface DocumentParserTagNames
 
   public static final String DOCUMENT_TAG          = "document";
 
-  public static final String COMPOUND_DOCUMENT_TAG = "compound_document";
+  public static final String RICH_DOCUMENT_TAG     = "rich_document";
 
   public static final String IMAGE_TAG             = "image";
 

@@ -898,7 +898,7 @@ implements ScalarUnmarshallingContext, SemanticsConstants
       {
         MetaMetadata locMmd = repository.getCompoundDocumentMM(thisMetadataLocation);
         if (locMmd != null
-            && !locMmd.getName().equals(DocumentParserTagNames.COMPOUND_DOCUMENT_TAG))
+            && !locMmd.getName().equals(DocumentParserTagNames.RICH_DOCUMENT_TAG))
         {
           Class thisMetadataClass = thisMetadata.getClass();
           Class trueMetadataClass = locMmd.getMetadataClass();

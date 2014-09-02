@@ -696,7 +696,7 @@ public class MetaMetadataRepository extends ElementState
 
   public MetaMetadata getCompoundDocumentMM(ParsedURL purl)
   {
-    return getDocumentMM(purl, COMPOUND_DOCUMENT_TAG);
+    return getDocumentMM(purl, RICH_DOCUMENT_TAG);
   }
 
   public MetaMetadata getClippableDocumentMM(ParsedURL purl, String tagName)
