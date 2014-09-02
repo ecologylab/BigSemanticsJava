@@ -32,8 +32,6 @@ public class MetadataBuiltinDeclarationsTranslationScope
 
 		ecologylab.bigsemantics.metadata.builtins.Clipping.class,
 
-		ecologylab.bigsemantics.metadata.builtins.RichDocument.class,
-
 		ecologylab.bigsemantics.metadata.builtins.CreativeAct.class,
 
 		ecologylab.bigsemantics.metadata.builtins.CurateLink.class,
@@ -53,6 +51,8 @@ public class MetadataBuiltinDeclarationsTranslationScope
 		ecologylab.bigsemantics.metadata.builtins.ImageSelfmade.class,
 
 		ecologylab.bigsemantics.metadata.builtins.RichArtifact.class,
+
+		ecologylab.bigsemantics.metadata.builtins.RichDocument.class,
 
 		ecologylab.bigsemantics.metadata.builtins.SequencedClippableDocument.class,
 
