@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import ecologylab.bigsemantics.BaseMmdTest;
 import ecologylab.serialization.SIMPLTranslationException;
 
 /**

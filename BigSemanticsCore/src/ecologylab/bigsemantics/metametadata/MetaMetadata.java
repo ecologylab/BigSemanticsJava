@@ -612,7 +612,7 @@ public class MetaMetadata extends MetaMetadataCompositeField
     MetadataClassDescriptor thisCd = this.getMetadataClassDescriptor();
     if (thisCd != null)
     {
-      thisCd.setDefiningMmd(this);
+      thisCd.setDefiningMmdIfNotSet(this);
 
       MetadataClassDescriptor thatCd = (MetadataClassDescriptor) metadataTScope
           .getClassDescriptorByTag(thisCd.getTagName());

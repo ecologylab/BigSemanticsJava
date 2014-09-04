@@ -5,6 +5,8 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
+import ecologylab.bigsemantics.BaseMmdTest;
+
 /**
  * 
  * @author quyin

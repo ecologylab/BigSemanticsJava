@@ -29,7 +29,6 @@ public class MetadataBuiltinsTypesScope extends Debug
 		ImageClipping.class,
 		GeoLocation.class,
 		RichArtifact.class,
-		RichBookmark.class,
 		CreativeAct.class,
 	};
 	

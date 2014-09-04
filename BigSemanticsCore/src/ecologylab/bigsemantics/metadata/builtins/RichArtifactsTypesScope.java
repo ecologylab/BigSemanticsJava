@@ -19,7 +19,6 @@ public class RichArtifactsTypesScope extends Debug
 	protected static final Class CLASSES[] = 
 	{
 		RichArtifact.class,
-		RichBookmark.class,
 		CreativeAct.class,
 		ImageSelfmade.class,
 		TextSelfmade.class,

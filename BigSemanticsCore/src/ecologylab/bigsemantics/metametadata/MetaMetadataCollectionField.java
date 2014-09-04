@@ -341,7 +341,7 @@ public class MetaMetadataCollectionField extends MetaMetadataCollectionFieldDecl
           genericTypeVar.setClassDescriptor(fieldCd);
         }
         Collection<MmdGenericTypeVar> metaMetadataGenericTypeVars =
-            this.getGenericTypeVarsCollection();
+            this.getGenericTypeVarsList();
         if (metaMetadataGenericTypeVars != null && metaMetadataGenericTypeVars.size() > 0)
         {
           for (MmdGenericTypeVar mmdgtv : metaMetadataGenericTypeVars)

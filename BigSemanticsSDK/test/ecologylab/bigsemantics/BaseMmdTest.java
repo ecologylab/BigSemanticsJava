@@ -1,4 +1,4 @@
-package ecologylab.bigsemantics.metametadata;
+package ecologylab.bigsemantics;
 
 import java.io.File;
 import java.io.InputStream;
@@ -11,6 +11,10 @@ import ecologylab.bigsemantics.cyberneko.CybernekoWrapper;
 import ecologylab.bigsemantics.generated.library.RepositoryMetadataTranslationScope;
 import ecologylab.bigsemantics.metadata.MetadataFieldDescriptor;
 import ecologylab.bigsemantics.metadata.scalar.types.MetadataScalarType;
+import ecologylab.bigsemantics.metametadata.MetaMetadata;
+import ecologylab.bigsemantics.metametadata.MetaMetadataField;
+import ecologylab.bigsemantics.metametadata.MetaMetadataRepository;
+import ecologylab.bigsemantics.metametadata.MetaMetadataTranslationScope;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.SimplTypesScope.GRAPH_SWITCH;

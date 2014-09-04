@@ -24,4 +24,5 @@ public interface MmdCompilerService
 	void appendGenericTypeVarParameterizations(Appendable appendable, Collection<MmdGenericTypeVar> mmdGenericTypeVars, MetaMetadataRepository repository) throws IOException;
 	
 	void appendGenericTypeVarExtends(Appendable appendable, Collection<MmdGenericTypeVar> mmdGenericTypeVars, MetaMetadataRepository repository) throws IOException;
+	
 }

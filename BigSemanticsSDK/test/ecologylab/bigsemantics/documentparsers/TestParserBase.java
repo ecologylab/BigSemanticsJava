@@ -13,6 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Node;
 
+import ecologylab.bigsemantics.BaseMmdTest;
 import ecologylab.bigsemantics.actions.SemanticActionHandler;
 import ecologylab.bigsemantics.collecting.SemanticsSessionScope;
 import ecologylab.bigsemantics.cyberneko.CybernekoWrapper;
@@ -21,7 +22,6 @@ import ecologylab.bigsemantics.generated.library.RepositoryMetadataTranslationSc
 import ecologylab.bigsemantics.html.dom.IDOMProvider;
 import ecologylab.bigsemantics.metadata.MetadataFieldDescriptor;
 import ecologylab.bigsemantics.metadata.builtins.Document;
-import ecologylab.bigsemantics.metametadata.BaseMmdTest;
 import ecologylab.bigsemantics.metametadata.MetaMetadata;
 import ecologylab.bigsemantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.bigsemantics.metametadata.MetaMetadataField;
