@@ -896,7 +896,7 @@ implements ScalarUnmarshallingContext, SemanticsConstants
       ParsedURL thisMetadataLocation = thisMetadata.getLocation();
       if (thisMetadataLocation != null)
       {
-        MetaMetadata locMmd = repository.getCompoundDocumentMM(thisMetadataLocation);
+        MetaMetadata locMmd = repository.getRichDocumentMM(thisMetadataLocation);
         if (locMmd != null
             && !locMmd.getName().equals(DocumentParserTagNames.RICH_DOCUMENT_TAG))
         {

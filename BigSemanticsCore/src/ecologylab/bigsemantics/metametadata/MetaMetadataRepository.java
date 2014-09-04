@@ -694,7 +694,7 @@ public class MetaMetadataRepository extends ElementState
     return getDocumentMM(metadata.getLocation(), metadataTScope.getTag(metadata.getClass()));
   }
 
-  public MetaMetadata getCompoundDocumentMM(ParsedURL purl)
+  public MetaMetadata getRichDocumentMM(ParsedURL purl)
   {
     return getDocumentMM(purl, RICH_DOCUMENT_TAG);
   }
@@ -796,7 +796,7 @@ public class MetaMetadataRepository extends ElementState
     if (purl.isImg() || isImage)
       return constructImage(purl);
 
-    MetaMetadata metaMetadata = getCompoundDocumentMM(purl);
+    MetaMetadata metaMetadata = getRichDocumentMM(purl);
     List<ParsedURL> additionalLocations = new ArrayList<ParsedURL>();
     if (metaMetadata.getFilterLocation() != null)
     {
