@@ -255,10 +255,27 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 	@Override
 	public String toString()
 	{
-		String name = getName(); if (name == null) name = "NO_FIELD";
-		
-		return fixNull(this.getClassSimpleName()) + "[" + fixNull(name) + " < " + fixNull(declaringClassDescriptor == null ? null : declaringClassDescriptor.getDescribedClass().getName())
-				+ " type=0x" + (getType()!= null ? Integer.toHexString(getType().getTypeID()) : "NULL") + "]";
+		String name = getName();
+		if (name == null)
+		{
+			name = "NO_NAME";
+		}
+
+		Class describedClass = declaringClassDescriptor.getDescribedClass();
+		String describedClassName = describedClass == null ? null : describedClass.getName();
+		if (describedClassName == null)
+		{
+			describedClassName = "NO_CLASS";
+		}
+
+		FieldType fieldType = getType();
+		String fieldTypeName = fieldType == null ? null : fieldType.name();
+		if (fieldTypeName == null)
+		{
+			fieldTypeName = "NO_TYPE";
+		}
+
+		return getClassSimpleName() + "[" + name + " < " + describedClassName + ": " + fieldTypeName + "]";
 	}
 	
 	@Override
@@ -317,7 +334,7 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 		if (compilerService != null && collectionType != null && definingMmdField instanceof MetaMetadataNestedField)
 		{
 			MetaMetadataNestedField nested = (MetaMetadataNestedField) definingMmdField;
-			Collection<MmdGenericTypeVar> genericTypeVars = nested.getGenericTypeVarsCollection();
+			Collection<MmdGenericTypeVar> genericTypeVars = nested.getGenericTypeVarsList();
 			if (genericTypeVars != null && genericTypeVars.size() > 0)
 			{
 				StringBuilder sb = new StringBuilder();
@@ -326,7 +343,7 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 				sb.append(this.getElementClassDescriptor().getDescribedClassSimpleName());
 				try
 				{
-					compilerService.appendGenericTypeVarParameterizations(sb, nested.getGenericTypeVarsCollection(), nested.getRepository());
+					compilerService.appendGenericTypeVarParameterizations(sb, nested.getGenericTypeVarsList(), nested.getRepository());
 				}
 				catch (IOException e)
 				{
@@ -342,7 +359,7 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 		{
 			// FIXME this part needs to be debugged!!!!
 			MetaMetadataNestedField nested = (MetaMetadataNestedField) definingMmdField;
-			Collection<MmdGenericTypeVar> genericTypeVars = nested.getGenericTypeVarsCollection();
+			Collection<MmdGenericTypeVar> genericTypeVars = nested.getGenericTypeVarsList();
 			for (MmdGenericTypeVar mmdGenericTypeVar : genericTypeVars)
 			{
 				if (mmdGenericTypeVar.getNestedGenericTypeVarScope() == null || mmdGenericTypeVar.getNestedGenericTypeVars().size() == 0)
@@ -368,17 +385,22 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 		CollectionType collectionType = this.getCollectionType();
 		String csType = super.getCSharpType();
 		
-		String typeName = (csType.indexOf("<") < 0) ? 
-							csType :
-							csType.substring(csType.indexOf("<") + 1, csType.indexOf(">"));
+		String typeName = csType;
+		if (csType.indexOf("<") > 0)
+    {
+      typeName = csType.substring(csType.indexOf("<") + 1, csType.indexOf(">"));
+    }
 		
 		if (compilerService != null && definingMmdField instanceof MetaMetadataNestedField)
 		{
 			MetaMetadataNestedField nested = (MetaMetadataNestedField) definingMmdField;
-			Collection<MmdGenericTypeVar> genericTypeVars = nested.getGenericTypeVarsCollection();
-			Collection<MmdGenericTypeVar> superMmdGenericTypeVars = ((nested.getTypeMmd() != null )? 
-																		nested.getTypeMmd().getGenericTypeVarsCollection() :
-																		null);
+			Collection<MmdGenericTypeVar> genericTypeVars = nested.getGenericTypeVarsList();
+			Collection<MmdGenericTypeVar> superMmdGenericTypeVars = null;
+			if (nested.getTypeMmd() != null)
+      {
+			  superMmdGenericTypeVars = nested.getTypeMmd().getGenericTypeVarsList();
+      }
+
 			if (collectionType != null && genericTypeVars != null && genericTypeVars.size() > 0)
 			{
 				StringBuilder sb = new StringBuilder();
@@ -387,7 +409,7 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 				sb.append(this.getElementClassDescriptor().getDescribedClassSimpleName());
 				try
 				{
-					compilerService.appendGenericTypeVarParameterizations(sb, nested.getGenericTypeVarsCollection(), nested.getRepository());
+					compilerService.appendGenericTypeVarParameterizations(sb, nested.getGenericTypeVarsList(), nested.getRepository());
 				}
 				catch (IOException e)
 				{
@@ -397,16 +419,25 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 				sb.append(">");
 				return sb.toString();
 			}			
-			else if (nested.getRepository().getMMByName(XMLTools.getXmlTagName(typeName, null)) != null && 
-						superMmdGenericTypeVars != null && superMmdGenericTypeVars.size() > 0)
+			else if (nested.getTypeMmd() != null
+			         && superMmdGenericTypeVars != null
+			         && superMmdGenericTypeVars.size() > 0)
 			{
 				StringBuilder sb = new StringBuilder();
 				
+				String collType = collectionType == null ? null : csType.substring(0, csType.indexOf("<"));
+				String elemType = collectionType == null ? csType : csType.substring(csType.indexOf("<") + 1, csType.lastIndexOf(">"));
+				if (nested.isCovariant())
+				{
+				  elemType = "I" + elemType;
+				}
+								
 				if (collectionType != null)
-					sb.append(csType.substring(0, csType.indexOf(">")));
-				else
-					sb.append(csType);
-				//sb.append(this.getElementClassDescriptor().getDescribedClassSimpleName());
+				{
+					sb.append(collType).append("<");
+				}
+        sb.append(elemType);
+
 				try
 				{
 					compilerService.appendGenericTypeVarExtends(sb, superMmdGenericTypeVars, nested.getRepository());
@@ -418,8 +449,10 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 				}
 				
 				if (collectionType != null)
+				{
 					sb.append(">");
-								
+				}
+				
 				return sb.toString();
 			}	
 		}
@@ -427,7 +460,7 @@ public class MetadataFieldDescriptor<M extends Metadata> extends FieldDescriptor
 		if (getType() == FieldType.COMPOSITE_ELEMENT)
 		{
 			MetaMetadataNestedField nested = (MetaMetadataNestedField) definingMmdField;
-			for (MmdGenericTypeVar mmdGenericTypeVar : nested.getGenericTypeVarsCollection())
+			for (MmdGenericTypeVar mmdGenericTypeVar : nested.getGenericTypeVarsList())
 			{
 				if (mmdGenericTypeVar.getNestedGenericTypeVarScope() == null || mmdGenericTypeVar.getNestedGenericTypeVars().size() == 0)
 				{

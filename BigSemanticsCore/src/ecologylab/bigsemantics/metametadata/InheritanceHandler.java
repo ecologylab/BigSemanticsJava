@@ -1,6 +1,7 @@
 package ecologylab.bigsemantics.metametadata;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -128,7 +129,7 @@ public class InheritanceHandler
       try
       {
         MetaMetadata superMmd = findSuperMmd(mmd);
-        inheritScope(mmd, superMmd);
+        inheritScope(mmd, superMmd, true);
 
         if (superMmd == null)
         {
@@ -290,6 +291,9 @@ public class InheritanceHandler
     collectChildrenNames(field, childrenNames);
     collectChildrenNames(superField, childrenNames);
 
+    // these are purely inherited fields that need to be reincarnated as if they were authored in
+    // field, because they are using generic types and with the current scope the type will be
+    // different from what they were specified with in the superField.
     Set<MetaMetadataField> reincarnated = new HashSet<MetaMetadataField>();
 
     // first, for all immediate children, merge attributes or copy the field object over from
@@ -300,12 +304,11 @@ public class InheritanceHandler
       MetaMetadataField f0 = superField == null ? null : superField.lookupChild(childName);
       MetaMetadataField f1 = field.lookupChild(childName);
 
-      if (f1 != null)
+      if (f0 == null && f1 != null)
       {
-        f1.scope().addAncestor(field.scope());
+          // f1 is a newly defined field.
+          f1.scope().addAncestor(field.scope());
 
-        if (f0 == null)
-        {
           field.setNewMetadataClass(true);
           if (f1 instanceof MetaMetadataNestedField)
           {
@@ -317,7 +320,6 @@ public class InheritanceHandler
           {
             f1.setDeclaringMmd((MetaMetadata) field);
           }
-        }
       }
 
       if (f0 != null && f1 == null && isUsingGenerics(f0))
@@ -358,13 +360,19 @@ public class InheritanceHandler
       MetaMetadataField f1 = field.lookupChild(childName);
       if (f1 != null && f0 != f1)
       {
+        boolean previouslyNotAncestor = false;
         FieldType f1type = f1.getFieldType();
         if (f1type != FieldType.SCALAR && f1type != FieldType.COLLECTION_SCALAR)
         {
           // currently, we only do scope inheritance for nested fields.
+          previouslyNotAncestor = !f1.scope().isAncestor(field.scope());
           f1.scope().addAncestor(field.scope());
         }
         inheritField(f1, f0);
+        if (!f1.isAuthoredChildOf(field) && previouslyNotAncestor)
+        {
+          f1.scope().removeImmediateAncestor(field.scope());
+        }
 
         if (f1.isNewMetadataClass())
         {
@@ -419,7 +427,7 @@ public class InheritanceHandler
         MetaMetadataNestedField nested = (MetaMetadataNestedField) field;
         if (superField != null)
         {
-          inheritScope(field, superField);
+          inheritScope(field, superField, false);
         }
 
         MetaMetadata typeMmd = null;
@@ -430,7 +438,7 @@ public class InheritanceHandler
         else
         {
           typeMmd = findTypeMmd(nested);
-          inheritScope(nested, typeMmd);
+          inheritScope(nested, typeMmd, false);
         }
         if (typeMmd == null)
         {
@@ -660,11 +668,15 @@ public class InheritanceHandler
       }
       if (gtv.getArg() != null)
       {
-        return resolveTypeName(scope, gtv.getArg());
+        MetaMetadata resolvedArgMmd = resolveTypeName(scope, gtv.getArg());
+        gtv.setResolvedArgMmd(resolvedArgMmd);
+				return resolvedArgMmd;
       }
       else if (gtv.getExtendsAttribute() != null)
       {
-        return resolveTypeName(scope, gtv.getExtendsAttribute());
+        MetaMetadata resolvedExtendsMmd = resolveTypeName(scope, gtv.getExtendsAttribute());
+        gtv.setResolvedExtendsMmd(resolvedExtendsMmd);
+				return resolvedExtendsMmd;
       }
       else
       {
@@ -776,8 +788,9 @@ public class InheritanceHandler
    * 
    * @param dest
    * @param src
+   * @param validateGenerics
    */
-  private void inheritScope(ScopeProvider dest, ScopeProvider src)
+  private void inheritScope(ScopeProvider dest, ScopeProvider src, boolean validateGenerics)
   {
     if (src == null)
     {
@@ -794,34 +807,37 @@ public class InheritanceHandler
       {
         // handle generic type vars (inheriting, checking bounds, etc)
         logger.debug("{}: Inheriting and validating generic type vars from {}", dest, src);
-        for (Object obj : srcScope.values())
+        Collection<MmdGenericTypeVar> srcGtvs = srcScope.valuesOfType(MmdGenericTypeVar.class);
+        for (MmdGenericTypeVar srcGtv : srcGtvs)
         {
-          if (obj instanceof MmdGenericTypeVar)
+          if (srcGtv.nothingSpecified())
           {
-            MmdGenericTypeVar gtv0 = (MmdGenericTypeVar) obj;
+            srcGtv.setExtendsAttribute(MetaMetadata.ROOT_MMD_NAME);
+          }
 
-            if (gtv0.nothingSpecified())
+          String gtvName = srcGtv.getName();
+          MmdGenericTypeVar destGtv = (MmdGenericTypeVar) destScope.get(gtvName);
+          if (destGtv != null && destGtv != srcGtv)
+          {
+            if (destGtv.nothingSpecified())
             {
-              gtv0.setExtendsAttribute(MetaMetadata.ROOT_MMD_NAME);
+              // a GTV can be omitted if nothing changes about it. in this case, ignore it.
+              destScope.remove(gtvName);
             }
-
-            String gtvName = gtv0.getName();
-            MmdGenericTypeVar gtv1 = (MmdGenericTypeVar) destScope.get(gtvName);
-            if (gtv1 != null)
+            else
             {
-              if (gtv1.nothingSpecified())
+              // otherwise, inherited nested type vars
+              inheritScope(destGtv, srcGtv, validateGenerics);
+              if (validateGenerics)
               {
-                // a GTV can be omitted if nothing changes about it. in this case, ignore it.
-                destScope.remove(gtvName);
+                validateGenericTypeVar(dest, src, gtvName, destGtv, srcGtv);
               }
-              else
-              {
-                // otherwise, inherited nested type vars and check bounds
-                inheritScope(gtv1, gtv0);
-                validateGenericTypeVar(dest, src, gtvName, gtv1, gtv0);
-              }
-            } // if (gtv1 != null)
-          } // if (obj instanceof MmdGenericTypeVar)
+            }
+          }
+          else
+          {
+            destScope.put(gtvName, srcGtv);
+          } // if (gtv1 != null)
         } // for
       } // if (srcScope.size() > 0)
 

@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -184,7 +183,7 @@ public abstract class MetaMetadataField extends MetaMetadataFieldDeclaration
 
   static Iterator<MetaMetadataField>                  EMPTY_ITERATOR;
 
-  static Collection<MmdGenericTypeVar>                EMPTY_GENERIC_TYPE_VAR_COLLECTION;
+  static List<MmdGenericTypeVar>                      EMPTY_GENERIC_TYPE_VAR_LIST;
 
   static Logger                                       logger;
 
@@ -193,7 +192,7 @@ public abstract class MetaMetadataField extends MetaMetadataFieldDeclaration
     LAYER_COMPARATOR = new LayerComparator();
     EMPTY_COLLECTION = new ArrayList<MetaMetadataField>(0);
     EMPTY_ITERATOR = EMPTY_COLLECTION.iterator();
-    EMPTY_GENERIC_TYPE_VAR_COLLECTION = new ArrayList<MmdGenericTypeVar>();
+    EMPTY_GENERIC_TYPE_VAR_LIST = new ArrayList<MmdGenericTypeVar>();
     logger = LoggerFactory.getLogger(MetaMetadataField.class);
   }
 
@@ -228,7 +227,9 @@ public abstract class MetaMetadataField extends MetaMetadataFieldDeclaration
   @simpl_map_key_field("name")
   @simpl_nowrap
   @mm_dont_inherit
-  private Map<String, MmdGenericTypeVar>              genericTypeVars;
+  private HashMapArrayList<String, MmdGenericTypeVar> genericTypeVars;
+  
+  private HashMapArrayList<String, MmdGenericTypeVar> allGenericTypeVars;
 
   private String                                      fieldNameInJava;
 
@@ -435,14 +436,37 @@ public abstract class MetaMetadataField extends MetaMetadataFieldDeclaration
     // no op
   }
 
-  public Map<String, MmdGenericTypeVar> getGenericTypeVars()
+  public HashMapArrayList<String, MmdGenericTypeVar> getGenericTypeVars()
   {
     return genericTypeVars;
   }
-
-  public Collection<MmdGenericTypeVar> getGenericTypeVarsCollection()
+  
+  public List<MmdGenericTypeVar> getGenericTypeVarsList()
   {
-    return genericTypeVars == null ? EMPTY_GENERIC_TYPE_VAR_COLLECTION : genericTypeVars.values();
+  	if (genericTypeVars == null)
+  	{
+  		return EMPTY_GENERIC_TYPE_VAR_LIST;
+  	}
+    return (List<MmdGenericTypeVar>) genericTypeVars.values();
+  }
+  
+  public HashMapArrayList<String, MmdGenericTypeVar> getGenericTypeVarsFromScope()
+  {
+    HashMapArrayList<String, MmdGenericTypeVar> result = allGenericTypeVars;
+    if (result == null)
+    {
+      result = new HashMapArrayList<String, MmdGenericTypeVar>();
+      Collection<MmdGenericTypeVar> gtvs = getScope().valuesOfType(MmdGenericTypeVar.class);
+      for (MmdGenericTypeVar gtv : gtvs)
+      {
+        if (!result.containsKey(gtv.getName()))
+        {
+          result.put(gtv.getName(), gtv);
+        }
+      }
+      allGenericTypeVars = result;
+    }
+    return result;
   }
 
   /**
@@ -638,12 +662,12 @@ public abstract class MetaMetadataField extends MetaMetadataFieldDeclaration
     this.repository = repository;
   }
 
-  protected void setGenericTypeVars(Map<String, MmdGenericTypeVar> genericTypeVars)
+  protected void setGenericTypeVars(HashMapArrayList<String, MmdGenericTypeVar> genericTypeVars)
   {
     this.genericTypeVars = genericTypeVars;
   }
 
-  protected void setMetadataFieldDescriptor(MetadataFieldDescriptor metadataFieldDescriptor)
+  public void setMetadataFieldDescriptor(MetadataFieldDescriptor metadataFieldDescriptor)
   {
     this.metadataFieldDescriptor = metadataFieldDescriptor;
   }

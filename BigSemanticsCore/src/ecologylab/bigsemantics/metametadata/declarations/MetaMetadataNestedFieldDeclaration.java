@@ -70,6 +70,10 @@ public abstract class MetaMetadataNestedFieldDeclaration extends MetaMetadataFie
   @simpl_composite
   @mm_dont_inherit
   private MetaMetadata      typeMmd;
+  
+  @simpl_scalar
+  @mm_dont_inherit
+  private boolean           covariant;
 
   public MetaMetadataNestedFieldDeclaration()
   {
@@ -146,6 +150,11 @@ public abstract class MetaMetadataNestedFieldDeclaration extends MetaMetadataFie
     return typeMmd;
   }
 
+  public boolean isCovariant()
+  {
+    return covariant;
+  }
+
   public void setPackageName(String packageName)
   {
     this.packageName = packageName;
@@ -180,6 +189,11 @@ public abstract class MetaMetadataNestedFieldDeclaration extends MetaMetadataFie
   public void setTypeMmd(MetaMetadata typeMmd)
   {
     this.typeMmd = typeMmd;
+  }
+
+  public void setCovariant(boolean covariant)
+  {
+    this.covariant = covariant;
   }
 
 }

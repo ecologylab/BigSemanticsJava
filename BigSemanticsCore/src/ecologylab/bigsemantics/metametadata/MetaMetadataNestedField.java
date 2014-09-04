@@ -40,6 +40,7 @@ public abstract class MetaMetadataNestedField extends MetaMetadataNestedFieldDec
   private FieldParserElement fieldParserElement;
 
   @simpl_composite
+  @mm_dont_inherit
   private MmdScope           scope;
 
   private boolean            mmdScopeTraversed;

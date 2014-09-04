@@ -5,6 +5,7 @@ import static ecologylab.translators.net.DotNetTranslationConstants.SPACE;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import ecologylab.bigsemantics.html.utils.StringBuilderUtils;
 import ecologylab.bigsemantics.metadata.MetadataClassDescriptor;
@@ -16,6 +17,7 @@ import ecologylab.bigsemantics.metametadata.MetaMetadataNestedField;
 import ecologylab.bigsemantics.metametadata.MetaMetadataRepository;
 import ecologylab.bigsemantics.metametadata.MmdCompilerService;
 import ecologylab.bigsemantics.metametadata.MmdGenericTypeVar;
+import ecologylab.bigsemantics.metametadata.MmdScope;
 import ecologylab.bigsemantics.metametadata.declarations.MetaMetadataFieldDeclaration;
 import ecologylab.bigsemantics.namesandnums.SemanticsNames;
 import ecologylab.generic.Debug;
@@ -35,12 +37,14 @@ public class MetaMetadataDotNetTranslator extends DotNetTranslator implements Mm
 	public static final String	SCALAR_GETTER_SETTER_SUFFIX	= "Metadata";
 	
 	private static String[]			metaMetadataDefaultImports	= {
-		"Ecologylab.Semantics.MetaMetadataNS",
-		"Ecologylab.Semantics.MetadataNS.Builtins",
+		"Ecologylab.BigSemantics.MetaMetadataNS",
+		"Ecologylab.BigSemantics.MetadataNS.Builtins",
 	};
 
 	public MetaMetadataDotNetTranslator()
 	{
+		genericsRender.setMmdCompilerService(this);
+		
 		for (String importTarget : metaMetadataDefaultImports)
 		{
 			addGlobalDependency(importTarget);
@@ -49,16 +53,18 @@ public class MetaMetadataDotNetTranslator extends DotNetTranslator implements Mm
 //		addLibraryTScopeDependency("ecologylab.semantics.metadata.builtins");
 	}
 	
-  private static String csharpNSMetadata = "Ecologylab.Semantics.Metadata";
-  private static String csharpNSMetadataNS = "Ecologylab.Semantics.MetadataNS";
-  private static String csharpNSMetaMetadata = "Ecologylab.Semantics.Metametadata";
-  private static String csharpNSMetaMetadataNS = "Ecologylab.Semantics.MetaMetadataNS";
-  private static String csharpNSLibraryDot = "Ecologylab.Semantics.Generated.Library.";
+  private static String csharpNSMetadata = "Ecologylab.BigSemantics.Metadata";
+  private static String csharpNSMetadataNS = "Ecologylab.BigSemantics.MetadataNS";
+  private static String csharpNSMetaMetadata = "Ecologylab.BigSemantics.Metametadata";
+  private static String csharpNSMetaMetadataNS = "Ecologylab.BigSemantics.MetaMetadataNS";
+  private static String csharpNSLibraryDot = "Ecologylab.BigSemantics.Generated.Library.";
+
+  private DotNetGenericsRenderer genericsRender = new DotNetGenericsRenderer();
 
 	protected String javaPackage2CSharpNamespace(String packageName)
 	{
 	  String ns = super.javaPackage2CSharpNamespace(packageName);
-    ns = ns.replace("Ecologylab.Bigsemantics.", "Ecologylab.Semantics.");
+    ns = ns.replace("Ecologylab.Bigsemantics.", "Ecologylab.BigSemantics.");
 	  
 	  if (ns.startsWith(csharpNSMetadata)
 	      && !ns.startsWith(csharpNSMetadataNS))
@@ -83,8 +89,8 @@ public class MetaMetadataDotNetTranslator extends DotNetTranslator implements Mm
 	  return ns;
 	}
 	
-	private static final String csharpSemanticsNamespacePrefix = "Ecologylab.Semantics.";
-	private static final String csharpGeneratedSemanticsNamespacePrefix = "Ecologylab.Semantics.Generated.";
+	private static final String csharpSemanticsNamespacePrefix = "Ecologylab.BigSemantics.";
+	private static final String csharpGeneratedSemanticsNamespacePrefix = "Ecologylab.BigSemantics.Generated.";
 
 	@Override
 	protected String[] getGeneratedClassFileDirStructure(ClassDescriptor inputClass)
@@ -102,7 +108,7 @@ public class MetaMetadataDotNetTranslator extends DotNetTranslator implements Mm
 	protected String[] getGeneratedClassFileDirStructure(String classPackageName)
 	{
     String csharpNamespace = javaPackage2CSharpNamespace(classPackageName);
-    csharpNamespace = csharpNamespace.replace("Ecologylab.Bigsemantics.", "Ecologylab.Semantics.");
+    csharpNamespace = csharpNamespace.replace("Ecologylab.Bigsemantics.", "Ecologylab.BigSemantics.");
     if (csharpNamespace.startsWith(csharpGeneratedSemanticsNamespacePrefix))
     {
       String dirStructureStr = csharpNamespace.substring(csharpGeneratedSemanticsNamespacePrefix.length());
@@ -151,33 +157,19 @@ public class MetaMetadataDotNetTranslator extends DotNetTranslator implements Mm
 	@Override
 	protected void appendClassGenericTypeVariables(Appendable appendable, ClassDescriptor inputClass) throws IOException
 	{
-		MetadataClassDescriptor mdCD = (MetadataClassDescriptor) inputClass;
-		MetaMetadata mmd = mdCD.getDefiningMmd();
-		MetaMetadataRepository repository = mmd.getRepository();
-		appendGenericTypeVarDefinitions(appendable, mmd.getGenericTypeVarsCollection(), repository);
+	  genericsRender.renderDefinitions(appendable, (MetadataClassDescriptor) inputClass);
 	}
 	
 	@Override
 	protected void appendSuperClassGenericTypeVariables(Appendable appendable,
 			ClassDescriptor inputClass) throws IOException
 	{ 
-		MetadataClassDescriptor mdCD = (MetadataClassDescriptor) inputClass;
-		MetaMetadata mmd = mdCD.getDefiningMmd();
-		MetaMetadataRepository repository = mmd.getRepository();
+	  MetadataClassDescriptor clazz = (MetadataClassDescriptor) inputClass;
+    MmdScope currentScope = clazz.getDefiningMmd().getScope();
+	  MetadataClassDescriptor superClazz = (MetadataClassDescriptor) inputClass.getSuperClass();
 
-		int firstIndexOf = appendable.toString().lastIndexOf("<");
-		Collection<MmdGenericTypeVar> mmdGenericTypeVars = mmd.getGenericTypeVarsCollection();
-		appendGenericTypeVarParameterizations(appendable, mmdGenericTypeVars, repository);
-
-		Collection<MmdGenericTypeVar> superMmdGenericTypeVars = ((MetadataClassDescriptor) inputClass.getSuperClass()).getDefiningMmd().getGenericTypeVarsCollection();
-		if (appendable.toString().lastIndexOf("<") == firstIndexOf /*(mmdGenericTypeVars == null || mmdGenericTypeVars.size() == 0)*/ &&
-			(superMmdGenericTypeVars != null || superMmdGenericTypeVars.size() > 0))
-		{
-			appendGenericTypeVarExtends(appendable, superMmdGenericTypeVars, repository);
-		}
-		
-		// the where clause
-		appendGenericTypeVarWhereClause(appendable, (Collection<MmdGenericTypeVar>) mmd.getGenericTypeVarsCollection(), repository);
+	  genericsRender.renderBindings(appendable, superClazz, currentScope);
+	  genericsRender.renderWhereClause(appendable, clazz, currentScope);
 	}
 
 	public void appendGenericTypeVarExtends(Appendable appendable,
@@ -201,7 +193,9 @@ public class MetaMetadataDotNetTranslator extends DotNetTranslator implements Mm
 					}
 					else
 						appendable.append(", ");
-					appendable.append(MmdGenericTypeVar.getMdClassNameFromMmdOrNoChange(extendsName, repository, this));
+					
+					MetaMetadata mmd = mmdGenericTypeVar.getResolvedExtendsMmd();
+					appendable.append(mmd.getMetadataClassDescriptor().getDescribedClassSimpleName());
 					appendGenericTypeVarExtends(appendable, mmdGenericTypeVar.getNestedGenericTypeVars(), repository);
 				}
 			}
@@ -231,7 +225,7 @@ public class MetaMetadataDotNetTranslator extends DotNetTranslator implements Mm
 			MetaMetadataNestedField nestedField = (MetaMetadataNestedField) field;
 			MetaMetadataRepository repository = nestedField.getRepository();
 			appendGenericTypeVarParameterizations(appendable, (List<MmdGenericTypeVar>) nestedField
-					.getGenericTypeVarsCollection(), repository);
+					.getGenericTypeVarsList(), repository);
 		}
 	}
 
