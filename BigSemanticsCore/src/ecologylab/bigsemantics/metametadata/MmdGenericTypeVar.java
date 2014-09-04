@@ -61,6 +61,10 @@ public class MmdGenericTypeVar extends ElementState
   private boolean                        rebound;
 
   private MmdScope                       scope;
+  
+  private MetaMetadata                   resolvedArgMmd;
+  
+  private MetaMetadata                   resolvedExtendsMmd;
 
   public String getName()
   {
@@ -243,7 +247,27 @@ public class MmdGenericTypeVar extends ElementState
     this.scope = scope;
   }
 
-  @Override
+  public MetaMetadata getResolvedArgMmd()
+	{
+		return resolvedArgMmd;
+	}
+
+	public void setResolvedArgMmd(MetaMetadata resolvedArgMmd)
+	{
+		this.resolvedArgMmd = resolvedArgMmd;
+	}
+
+	public MetaMetadata getResolvedExtendsMmd()
+	{
+		return resolvedExtendsMmd;
+	}
+
+	public void setResolvedExtendsMmd(MetaMetadata resolvedExtendsMmd)
+	{
+		this.resolvedExtendsMmd = resolvedExtendsMmd;
+	}
+
+	@Override
   public String key()
   {
     return name;

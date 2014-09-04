@@ -3,13 +3,13 @@ package ecologylab.bigsemantics.metametadata;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import ecologylab.generic.StringBuilderBaseUtils;
 import ecologylab.serialization.annotations.simpl_classes;
-import ecologylab.serialization.annotations.simpl_collection;
 import ecologylab.serialization.annotations.simpl_map;
 import ecologylab.serialization.annotations.simpl_scalar;
 import ecologylab.serialization.types.element.IMappable;
@@ -420,25 +420,40 @@ public class MmdScope implements Map<String, Object>, IMappable<String>
   public String toString()
   {
     StringBuilder sb = StringBuilderBaseUtils.acquire();
-    sb.append(getClass().getSimpleName())
-        .append("[").append(id == null ? "noid" : id)
-        .append(",size=").append(size()).append("]: ")
-        .append(local == null ? "{}" : local);
+    Set<Object> visited = new HashSet<Object>();
+    toStringHelper(sb, "", visited);
+    String result = sb.toString();
+    StringBuilderBaseUtils.release(sb);
+    return result;
+  }
+
+  private void toStringHelper(StringBuilder buf, String indent, Set<Object> visited)
+  {
+    buf.append(getClass().getSimpleName());
+    buf.append(".").append(id == null ? "noid" : id);
+    buf.append(": [").append(size()).append("]");
+    buf.append(local == null ? "{}" : local);
     if (ancestors != null && ancestors.size() > 0)
     {
       for (MmdScope ancestor : ancestors)
       {
-        if (ancestor != null)
+        StringBuilder ancestorStr = StringBuilderBaseUtils.acquire();
+        ancestorStr.append("\n").append(indent).append("    -> ");
+        if (visited.contains(ancestor))
         {
-          String ancestorStr = ancestor.toString();
-          sb.append("\n\t -> ");
-          sb.append(ancestorStr.replace("\n", "\n\t"));
+          ancestorStr.append("(Ref: ");
+          ancestorStr.append(ancestor.getClass().getSimpleName());
+          ancestorStr.append(".").append(ancestor.getId()).append(")");
         }
+        else
+        {
+          visited.add(ancestor);
+          ancestor.toStringHelper(ancestorStr, indent + "    ", visited);
+        }
+        buf.append(ancestorStr);
+        StringBuilderBaseUtils.release(ancestorStr);
       }
     }
-    String result = sb.toString();
-    StringBuilderBaseUtils.release(sb);
-    return result;
   }
 
   public void reset()

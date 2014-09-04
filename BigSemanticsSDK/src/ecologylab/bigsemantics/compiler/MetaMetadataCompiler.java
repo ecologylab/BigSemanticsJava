@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ecologylab.bigsemantics.FileUtils;
 import ecologylab.bigsemantics.collecting.MetaMetadataRepositoryLocator;
 import ecologylab.bigsemantics.metadata.MetadataClassDescriptor;
 import ecologylab.bigsemantics.metametadata.FileTools;
@@ -33,7 +34,6 @@ import ecologylab.translators.CodeTranslator;
  * @author quyin
  * 
  */
-// TODO use ApplicationEnvironment to facilitate loading XML configs.
 public class MetaMetadataCompiler extends Debug // ApplicationEnvironment
 {
 	
@@ -56,7 +56,14 @@ public class MetaMetadataCompiler extends Debug // ApplicationEnvironment
 		MetaMetadataRepository repository = config.loadRepository();
 		SimplTypesScope tscope = repository.traverseAndGenerateTranslationScope(META_METADATA_COMPILER_TSCOPE_NAME);
 
-		CodeTranslator compiler = config.getCompiler();
+		CodeTranslator codeTranslator = config.getCompiler();
+		
+		File generatedSemanticsLocation = config.getGeneratedSemanticsLocation();
+		File libraryDir = new File(generatedSemanticsLocation, "Library");
+		if (libraryDir.exists() && libraryDir.isDirectory())
+		{
+			FileUtils.deleteDir(libraryDir);
+		}
 		
 		// generate declaration classes and scope
 		SimplTypesScope builtinDeclarationsScope = SimplTypesScope.get(META_METADATA_COMPILER_BUILTIN_DECLARATIONS_SCOPE, new Class[] {});
@@ -95,33 +102,20 @@ public class MetaMetadataCompiler extends Debug // ApplicationEnvironment
 		newConfig.getClassesExcludedFromGeneratedTScopeClass()
 		    .add("ecologylab.bigsemantics.metadata.builtins.InformationComposition");
 		ClassDescriptor infoCompCD = builtinDeclarationsScope.getClassDescriptorBySimpleName("InformationCompositionDeclaration");
-    compiler.excludeClassFromTranslation(infoCompCD);
+    codeTranslator.excludeClassFromTranslation(infoCompCD);
     if (config.getGeneratedBuiltinDeclarationsLocation() != null)
-  		compiler.translate(config.getGeneratedBuiltinDeclarationsLocation(), builtinDeclarationsScope, newConfig);
+  		codeTranslator.translate(config.getGeneratedBuiltinDeclarationsLocation(), builtinDeclarationsScope, newConfig);
 		
 		// generate normal metadata classes
 		for (ClassDescriptor mdCD : tscope.getClassDescriptors())
 		{
 			MetaMetadata definingMmd = ((MetadataClassDescriptor) mdCD).getDefiningMmd();
 			if (definingMmd.isBuiltIn())
-				compiler.excludeClassFromTranslation(mdCD);
+				codeTranslator.excludeClassFromTranslation(mdCD);
 		}
-		File generatedSemanticsLocation = config.getGeneratedSemanticsLocation();
 		debug("\n\n compiling to " + generatedSemanticsLocation + " ...\n\n");
-		compiler.translate(generatedSemanticsLocation, tscope, config);
-		
+		codeTranslator.translate(generatedSemanticsLocation, tscope, config);
 			
-//		CodeTranslator translator = CodeTranslatorConfig.getCodeTranslator(config.getTargetLanguage());
-//		if (translator instanceof AbstractCodeTranslator)
-//		{
-//			File directoryLocation = new File("../ecologylabSemantics/src"); // default location
-//			((AbstractCodeTranslator) translator).generateLibraryTScopeClass(directoryLocation, builtinDeclarationsScope, builtinPackage + DECLARATION_CLASS_PACKAGE, "MetadataBuiltinDeclarationsTranslationScope");
-//		}
-//		else
-//		{
-//			warning("Do not support generating declarations scope class in this target language!");
-//		}
-
 		// generate repository file list:
 		generateRepositoryFileList(config);
 		
