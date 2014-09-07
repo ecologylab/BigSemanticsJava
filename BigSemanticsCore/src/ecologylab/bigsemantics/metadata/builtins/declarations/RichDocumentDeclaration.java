@@ -13,6 +13,7 @@ import ecologylab.bigsemantics.metadata.builtins.Clipping;
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metadata.builtins.Image;
 import ecologylab.bigsemantics.metadata.builtins.MetadataBuiltinsTypesScope;
+import ecologylab.bigsemantics.metadata.builtins.RichDocument;
 import ecologylab.bigsemantics.metadata.builtins.Video;
 import ecologylab.bigsemantics.metadata.mm_name;
 import ecologylab.bigsemantics.metadata.scalar.MetadataString;
@@ -57,7 +58,7 @@ public class RichDocumentDeclaration extends Document
 
 	@simpl_composite
 	@mm_name("see_also")
-	private Document seeAlso;
+	private RichDocument seeAlso;
 
 	/** 
 	 *The search query
@@ -96,9 +97,9 @@ public class RichDocumentDeclaration extends Document
 	@mm_name("main_audio")
 	private List<Audio> mainAudio;
 
-	@simpl_collection("document")
+	@simpl_collection("article_bodie")
 	@mm_name("article_bodies")
-	private List<Document> articleBodies;
+	private List<MetadataString> articleBodies;
 
 	public RichDocumentDeclaration()
 	{ super(); }
@@ -236,12 +237,12 @@ public class RichDocumentDeclaration extends Document
 		this.textKeywords = textKeywords;
 	}
 
-	public Document getSeeAlso()
+	public RichDocument getSeeAlso()
 	{
 		return seeAlso;
 	}
 
-	public void setSeeAlso(Document seeAlso)
+	public void setSeeAlso(RichDocument seeAlso)
 	{
 		this.seeAlso = seeAlso;
 	}
@@ -440,21 +441,21 @@ public class RichDocumentDeclaration extends Document
 		this.mainAudio = mainAudio;
 	}
 
-	public List<Document> getArticleBodies()
+	public List<MetadataString> getArticleBodies()
 	{
 		return articleBodies;
 	}
 
   // lazy evaluation:
-  public List<Document> articleBodies()
+  public List<MetadataString> articleBodies()
   {
     if (articleBodies == null)
-      articleBodies = new ArrayList<Document>();
+      articleBodies = new ArrayList<MetadataString>();
     return articleBodies;
   }
 
   // addTo:
-  public void addToArticleBodies(Document element)
+  public void addToArticleBodies(MetadataString element)
   {
     articleBodies().add(element);
   }
@@ -465,7 +466,7 @@ public class RichDocumentDeclaration extends Document
     return articleBodies == null ? 0 : articleBodies.size();
   }
 
-	public void setArticleBodies(List<Document> articleBodies)
+	public void setArticleBodies(List<MetadataString> articleBodies)
 	{
 		this.articleBodies = articleBodies;
 	}
