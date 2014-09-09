@@ -686,7 +686,7 @@ public class MetaMetadataRepository extends ElementState
    */
   public MetaMetadata getDocumentMM(ParsedURL purl)
   {
-    return getDocumentMM(purl, DOCUMENT_TAG);
+    return getDocumentMM(purl, RICH_DOCUMENT_TAG);
   }
 
   public MetaMetadata getDocumentMM(Document metadata)
