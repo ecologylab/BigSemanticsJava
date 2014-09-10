@@ -368,6 +368,11 @@ public class InheritanceHandler
           previouslyNotAncestor = !f1.scope().isAncestor(field.scope());
           f1.scope().addAncestor(field.scope());
         }
+        if (f0 != null && f1.getClass() != f0.getClass())
+        {
+          throw new MetaMetadataException(f1 + ": Can't inherit from " + f0 + ": wrong field type!");
+        }
+    
         inheritField(f1, f0);
         if (!f1.isAuthoredChildOf(field) && previouslyNotAncestor)
         {
