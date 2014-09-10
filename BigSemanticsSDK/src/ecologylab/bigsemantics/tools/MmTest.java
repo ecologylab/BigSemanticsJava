@@ -16,7 +16,7 @@ import ecologylab.appframework.SingletonApplicationEnvironment;
 import ecologylab.bigsemantics.collecting.MetaMetadataRepositoryInit;
 import ecologylab.bigsemantics.collecting.SemanticsSessionScope;
 import ecologylab.bigsemantics.cyberneko.CybernekoWrapper;
-import ecologylab.bigsemantics.generated.library.RepositoryMetadataTranslationScope;
+import ecologylab.bigsemantics.generated.library.RepositoryMetadataTypesScope;
 import ecologylab.bigsemantics.generated.library.curation.*;
 import ecologylab.bigsemantics.metadata.Metadata;
 import ecologylab.bigsemantics.metadata.builtins.Document;
@@ -63,7 +63,7 @@ public class MmTest extends SingletonApplicationEnvironment implements
 
 	public MmTest(String appName, OutputStream outputStream) throws SIMPLTranslationException
 	{
-		this(appName, outputStream, RepositoryMetadataTranslationScope.get());
+		this(appName, outputStream, RepositoryMetadataTypesScope.get());
 	}
 
 	public MmTest(String appName, OutputStream outputStream,
@@ -82,7 +82,7 @@ public class MmTest extends SingletonApplicationEnvironment implements
 	public MmTest(String appName, OutputStream outputStream, File repositoryLocation,
 			Format repositoryFormat) throws SIMPLTranslationException
 	{
-		this(appName, outputStream, RepositoryMetadataTranslationScope.get(), repositoryLocation,
+		this(appName, outputStream, RepositoryMetadataTypesScope.get(), repositoryLocation,
 				repositoryFormat);
 	}
 

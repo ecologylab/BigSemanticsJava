@@ -2,7 +2,7 @@ package ecologylab.bigsemantics.metadata;
 
 import ecologylab.bigsemantics.collecting.SemanticsSessionScope;
 import ecologylab.bigsemantics.cyberneko.CybernekoWrapper;
-import ecologylab.bigsemantics.generated.library.RepositoryMetadataTranslationScope;
+import ecologylab.bigsemantics.generated.library.RepositoryMetadataTypesScope;
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metadata.builtins.DocumentClosure;
 import ecologylab.generic.Continuation;
@@ -11,7 +11,7 @@ import ecologylab.serialization.SimplTypesScope;
 
 public class MetadataTestHelper
 {
-	static SimplTypesScope				metadataTScope				= RepositoryMetadataTranslationScope.get();
+	static SimplTypesScope				metadataTScope				= RepositoryMetadataTypesScope.get();
 
 	static SemanticsSessionScope	semanticSessionScope	= new SemanticsSessionScope(metadataTScope,
 																													CybernekoWrapper.class);

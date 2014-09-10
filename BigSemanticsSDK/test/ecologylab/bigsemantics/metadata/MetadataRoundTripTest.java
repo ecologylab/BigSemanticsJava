@@ -11,7 +11,7 @@ import org.junit.Test;
 import ecologylab.appframework.PropertiesAndDirectories;
 import ecologylab.bigsemantics.collecting.SemanticsSessionScope;
 import ecologylab.bigsemantics.cyberneko.CybernekoWrapper;
-import ecologylab.bigsemantics.generated.library.RepositoryMetadataTranslationScope;
+import ecologylab.bigsemantics.generated.library.RepositoryMetadataTypesScope;
 import ecologylab.bigsemantics.metadata.MetadataDeserializationHookStrategy;
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metadata.builtins.DocumentClosure;
@@ -37,8 +37,8 @@ public class MetadataRoundTripTest
 
   static
   {
-    metadataScope = RepositoryMetadataTranslationScope.get();
-    semanticsScope = new SemanticsSessionScope(RepositoryMetadataTranslationScope.get(),
+    metadataScope = RepositoryMetadataTypesScope.get();
+    semanticsScope = new SemanticsSessionScope(RepositoryMetadataTypesScope.get(),
                                                CybernekoWrapper.class);
   }
 

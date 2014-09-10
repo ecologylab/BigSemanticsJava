@@ -9,7 +9,7 @@ import java.io.UnsupportedEncodingException;
 import ecologylab.bigsemantics.actions.SemanticAction;
 import ecologylab.bigsemantics.collecting.SemanticsSessionScope;
 import ecologylab.bigsemantics.cyberneko.CybernekoWrapper;
-import ecologylab.bigsemantics.generated.library.RepositoryMetadataTranslationScope;
+import ecologylab.bigsemantics.generated.library.RepositoryMetadataTypesScope;
 import ecologylab.bigsemantics.generated.library.weatherReport.*;
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metadata.builtins.DocumentClosure;
@@ -32,7 +32,7 @@ public class WeatherDataCollector implements Continuation<DocumentClosure>
 		SemanticAction.register(SaveImageSemanticAction.class);
 
 		// create the infoCollector
-		SemanticsSessionScope infoCollector = new SemanticsSessionScope(RepositoryMetadataTranslationScope.get(), CybernekoWrapper.class);
+		SemanticsSessionScope infoCollector = new SemanticsSessionScope(RepositoryMetadataTypesScope.get(), CybernekoWrapper.class);
 
 		// seeding start url
 		String seedUrlStr = "http://www.google.com/search?q=texas+site%3Awww.wunderground.com";

@@ -7,7 +7,7 @@ import java.util.Date;
 
 import org.junit.Test;
 
-import ecologylab.bigsemantics.generated.library.RepositoryMetadataTranslationScope;
+import ecologylab.bigsemantics.generated.library.RepositoryMetadataTypesScope;
 import ecologylab.bigsemantics.metadata.builtins.RichDocument;
 import ecologylab.bigsemantics.metadata.builtins.CreativeAct;
 import ecologylab.bigsemantics.metadata.builtins.HtmlText;
@@ -20,7 +20,7 @@ import ecologylab.serialization.formatenums.StringFormat;
 public class AnnotationSerializeDeserialize
 {
 	
-	private static final SimplTypesScope	META_METADATA_TRANSLATIONS	= RepositoryMetadataTranslationScope.get();
+	private static final SimplTypesScope	META_METADATA_TRANSLATIONS	= RepositoryMetadataTypesScope.get();
 	
 	RichArtifact<HtmlText> annotation;
 	

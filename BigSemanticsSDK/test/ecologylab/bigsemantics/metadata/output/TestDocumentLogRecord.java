@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import ecologylab.bigsemantics.collecting.SemanticsSessionScope;
 import ecologylab.bigsemantics.cyberneko.CybernekoWrapper;
-import ecologylab.bigsemantics.generated.library.RepositoryMetadataTranslationScope;
+import ecologylab.bigsemantics.generated.library.RepositoryMetadataTypesScope;
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metadata.builtins.DocumentClosure;
 import ecologylab.concurrent.DownloadableLogRecord;
@@ -27,7 +27,7 @@ public class TestDocumentLogRecord
 	{
 		DocumentLogRecord logRecord = new DocumentLogRecord();
 
-		SimplTypesScope metadataTScope = RepositoryMetadataTranslationScope.get();
+		SimplTypesScope metadataTScope = RepositoryMetadataTypesScope.get();
 		SemanticsSessionScope sss = new SemanticsSessionScope(metadataTScope, CybernekoWrapper.class);
 		ParsedURL purl = ParsedURL.getAbsolute("http://dl.acm.org/citation.cfm?id=1835572");
 		Document doc = sss.getOrConstructDocument(purl);

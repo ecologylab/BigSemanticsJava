@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import ecologylab.bigsemantics.collecting.SemanticsSessionScope;
 import ecologylab.bigsemantics.cyberneko.CybernekoWrapper;
-import ecologylab.bigsemantics.generated.library.RepositoryMetadataTranslationScope;
+import ecologylab.bigsemantics.generated.library.RepositoryMetadataTypesScope;
 import ecologylab.bigsemantics.metadata.MetadataFieldDescriptor;
 import ecologylab.bigsemantics.metadata.scalar.types.MetadataScalarType;
 import ecologylab.bigsemantics.metametadata.MetaMetadata;
@@ -63,7 +63,7 @@ public class BaseMmdTest
       if (semanticsScope == null)
       {
         semanticsScope =
-            new SemanticsSessionScope(RepositoryMetadataTranslationScope.get(),
+            new SemanticsSessionScope(RepositoryMetadataTypesScope.get(),
                                       CybernekoWrapper.class);
       }
       realRepository = semanticsScope.getMetaMetadataRepository();

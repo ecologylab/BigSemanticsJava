@@ -10,7 +10,7 @@ import ecologylab.bigsemantics.collecting.FakeSemanticsScope;
 import ecologylab.bigsemantics.cyberneko.CybernekoWrapper;
 import ecologylab.bigsemantics.downloadcontrollers.FakeDownloadControllerFactory;
 import ecologylab.bigsemantics.downloadcontrollers.HttpResponse;
-import ecologylab.bigsemantics.generated.library.RepositoryMetadataTranslationScope;
+import ecologylab.bigsemantics.generated.library.RepositoryMetadataTypesScope;
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metadata.builtins.DocumentClosure;
 import ecologylab.net.ParsedURL;
@@ -34,7 +34,7 @@ public class TestMmName
 
   static
   {
-    metadataScope = RepositoryMetadataTranslationScope.get();
+    metadataScope = RepositoryMetadataTypesScope.get();
     factory = new FakeDownloadControllerFactory();
     semanticsScope = new FakeSemanticsScope(metadataScope, CybernekoWrapper.class);
     semanticsScope.setFakeDownloadControllerFactory(factory);

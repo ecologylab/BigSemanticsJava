@@ -2,7 +2,7 @@ package ecologylab.bigsemantics.example;
 
 import ecologylab.bigsemantics.collecting.SemanticsSessionScope;
 import ecologylab.bigsemantics.cyberneko.CybernekoWrapper;
-import ecologylab.bigsemantics.generated.library.RepositoryMetadataTranslationScope;
+import ecologylab.bigsemantics.generated.library.RepositoryMetadataTypesScope;
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metadata.builtins.DocumentClosure;
 import ecologylab.generic.Continuation;
@@ -32,7 +32,7 @@ public class ExampleOne implements Continuation<DocumentClosure>
      * The metadataTypesScope contains descriptions of the generated metadata classes. These classes
      * are used to represent extracted metadata in program.
      */
-    SimplTypesScope metadataTypesScope = RepositoryMetadataTranslationScope.get();
+    SimplTypesScope metadataTypesScope = RepositoryMetadataTypesScope.get();
 
     /**
      * DOM provider is used to convert a HTML stream into a DOM tree. BigSemantics by default uses

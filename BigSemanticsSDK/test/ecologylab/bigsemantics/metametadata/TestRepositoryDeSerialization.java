@@ -14,7 +14,7 @@ import org.junit.Test;
 import ecologylab.appframework.PropertiesAndDirectories;
 import ecologylab.bigsemantics.collecting.SemanticsSessionScope;
 import ecologylab.bigsemantics.cyberneko.CybernekoWrapper;
-import ecologylab.bigsemantics.generated.library.RepositoryMetadataTranslationScope;
+import ecologylab.bigsemantics.generated.library.RepositoryMetadataTypesScope;
 import ecologylab.bigsemantics.generated.library.search.Search;
 import ecologylab.bigsemantics.metadata.builtins.ClippableDocument;
 import ecologylab.bigsemantics.metadata.builtins.Clipping;
@@ -42,7 +42,7 @@ public class TestRepositoryDeSerialization
   {
     SimplTypesScope.graphSwitch = GRAPH_SWITCH.ON;
 	
-	    SemanticsSessionScope scope = new SemanticsSessionScope(RepositoryMetadataTranslationScope.get(),
+	    SemanticsSessionScope scope = new SemanticsSessionScope(RepositoryMetadataTypesScope.get(),
 	                                                            CybernekoWrapper.class);
     MetaMetadataRepository repo = scope.getMetaMetadataRepository();
     assertNotNull(getSampleInheritedMmd(repo));
@@ -72,7 +72,7 @@ public class TestRepositoryDeSerialization
   {
     SimplTypesScope.graphSwitch = GRAPH_SWITCH.ON;
 
-    SimplTypesScope scope = RepositoryMetadataTranslationScope.get();
+    SimplTypesScope scope = RepositoryMetadataTypesScope.get();
     createDerivedScopes(scope);
 
     SimplTypesScope scopeWithBasic = SimplTypesScope.get("mmd_and_translation_scope", scope, (Class[]) null);
@@ -104,7 +104,7 @@ public class TestRepositoryDeSerialization
   {
     SimplTypesScope.graphSwitch = GRAPH_SWITCH.ON;
 
-    SimplTypesScope scope = RepositoryMetadataTranslationScope.get();
+    SimplTypesScope scope = RepositoryMetadataTypesScope.get();
     createDerivedScopes(scope);
 
     StringBuilder serialized = SimplTypesScope.serialize(scope, StringFormat.JSON);

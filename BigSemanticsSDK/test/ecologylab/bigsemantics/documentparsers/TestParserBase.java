@@ -18,7 +18,7 @@ import ecologylab.bigsemantics.actions.SemanticActionHandler;
 import ecologylab.bigsemantics.collecting.SemanticsSessionScope;
 import ecologylab.bigsemantics.cyberneko.CybernekoWrapper;
 import ecologylab.bigsemantics.downloadcontrollers.DefaultDownloadController;
-import ecologylab.bigsemantics.generated.library.RepositoryMetadataTranslationScope;
+import ecologylab.bigsemantics.generated.library.RepositoryMetadataTypesScope;
 import ecologylab.bigsemantics.html.dom.IDOMProvider;
 import ecologylab.bigsemantics.metadata.MetadataFieldDescriptor;
 import ecologylab.bigsemantics.metadata.builtins.Document;
@@ -79,7 +79,7 @@ public class TestParserBase
     MetaMetadataRepository.initializeTypes();
     mmdScope = MetaMetadataTranslationScope.get();
     semanticsSessionScope =
-        new SemanticsSessionScope(RepositoryMetadataTranslationScope.get(), CybernekoWrapper.class);
+        new SemanticsSessionScope(RepositoryMetadataTypesScope.get(), CybernekoWrapper.class);
     parser = new FakeParserBase();
     parser.setSemanticsScope(semanticsSessionScope);
   }

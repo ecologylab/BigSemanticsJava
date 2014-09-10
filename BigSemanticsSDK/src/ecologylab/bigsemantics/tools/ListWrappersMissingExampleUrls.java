@@ -7,7 +7,7 @@ import java.util.List;
 
 import ecologylab.bigsemantics.collecting.SemanticsSessionScope;
 import ecologylab.bigsemantics.cyberneko.CybernekoWrapper;
-import ecologylab.bigsemantics.generated.library.RepositoryMetadataTranslationScope;
+import ecologylab.bigsemantics.generated.library.RepositoryMetadataTypesScope;
 import ecologylab.bigsemantics.metametadata.ExampleUrl;
 import ecologylab.bigsemantics.metametadata.MetaMetadata;
 import ecologylab.bigsemantics.metametadata.MetaMetadataSelector;
@@ -21,7 +21,7 @@ public class ListWrappersMissingExampleUrls
 
   public ListWrappersMissingExampleUrls()
   {
-    scope = new SemanticsSessionScope(RepositoryMetadataTranslationScope.get(),
+    scope = new SemanticsSessionScope(RepositoryMetadataTypesScope.get(),
                                       CybernekoWrapper.class);
   }
 

@@ -7,7 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import ecologylab.bigsemantics.collecting.MetaMetadataRepositoryInit;
-import ecologylab.bigsemantics.generated.library.RepositoryMetadataTranslationScope;
+import ecologylab.bigsemantics.generated.library.RepositoryMetadataTypesScope;
 import ecologylab.bigsemantics.metadata.scalar.types.SemanticsTypes;
 import ecologylab.bigsemantics.tools.MmTest;
 import ecologylab.serialization.SIMPLTranslationException;
@@ -260,7 +260,7 @@ public class TestRepositoryInJSON
 		MmTest mmTest;
 		try
 		{
-			mmTest = new MmTest("NewMmTest", System.out, RepositoryMetadataTranslationScope.get(), repositoryLocation, MetaMetadataRepositoryInit.DEFAULT_REPOSITORY_FORMAT);
+			mmTest = new MmTest("NewMmTest", System.out, RepositoryMetadataTypesScope.get(), repositoryLocation, MetaMetadataRepositoryInit.DEFAULT_REPOSITORY_FORMAT);
 			mmTest.collect(testUrls);
 		}
 		catch (SIMPLTranslationException e)

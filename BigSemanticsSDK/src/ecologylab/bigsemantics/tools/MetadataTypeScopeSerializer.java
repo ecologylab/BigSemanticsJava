@@ -2,7 +2,7 @@ package ecologylab.bigsemantics.tools;
 
 import java.io.File;
 
-import ecologylab.bigsemantics.generated.library.RepositoryMetadataTranslationScope;
+import ecologylab.bigsemantics.generated.library.RepositoryMetadataTypesScope;
 import ecologylab.bigsemantics.metadata.builtins.ClippableDocument;
 import ecologylab.bigsemantics.metadata.builtins.Clipping;
 import ecologylab.bigsemantics.metadata.builtins.Document;
@@ -29,7 +29,7 @@ public class MetadataTypeScopeSerializer
   {
     SimplTypesScope.graphSwitch = GRAPH_SWITCH.ON;
 
-    SimplTypesScope scope = RepositoryMetadataTranslationScope.get();
+    SimplTypesScope scope = RepositoryMetadataTypesScope.get();
     createDerivedScopes(scope);
     SimplTypesScope.serialize(scope, serializedScopeFile, format);
   }

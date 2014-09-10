@@ -9,7 +9,7 @@ import java.util.List;
 
 import ecologylab.bigsemantics.collecting.SemanticsSessionScope;
 import ecologylab.bigsemantics.cyberneko.CybernekoWrapper;
-import ecologylab.bigsemantics.generated.library.RepositoryMetadataTranslationScope;
+import ecologylab.bigsemantics.generated.library.RepositoryMetadataTypesScope;
 import ecologylab.bigsemantics.generated.library.scholarlyArticle.ScholarlyArticle;
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metadata.builtins.DocumentClosure;
@@ -40,7 +40,7 @@ public class LinkingMetadata implements Continuation<DocumentClosure>
 			count = urls.size();
 	
 			// create the infoCollector
-			SemanticsSessionScope infoCollector = new SemanticsSessionScope(RepositoryMetadataTranslationScope.get(), CybernekoWrapper.class);
+			SemanticsSessionScope infoCollector = new SemanticsSessionScope(RepositoryMetadataTypesScope.get(), CybernekoWrapper.class);
 	
 			// seed start urls
 			for (String url : urls)

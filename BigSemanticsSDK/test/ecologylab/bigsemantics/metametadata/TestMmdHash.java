@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import ecologylab.bigsemantics.collecting.SemanticsSessionScope;
 import ecologylab.bigsemantics.cyberneko.CybernekoWrapper;
-import ecologylab.bigsemantics.generated.library.RepositoryMetadataTranslationScope;
+import ecologylab.bigsemantics.generated.library.RepositoryMetadataTypesScope;
 import ecologylab.serialization.SimplTypesScope;
 
 public class TestMmdHash
@@ -15,7 +15,7 @@ public class TestMmdHash
   @Test
   public void testAllHash()
   {
-		SimplTypesScope metadataTranslationScope = RepositoryMetadataTranslationScope.get();
+		SimplTypesScope metadataTranslationScope = RepositoryMetadataTypesScope.get();
 		SemanticsSessionScope semanticsSessionScope =
 		    new SemanticsSessionScope(metadataTranslationScope, CybernekoWrapper.class);
 		MetaMetadataRepository repository = semanticsSessionScope.getMetaMetadataRepository();

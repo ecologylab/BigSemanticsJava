@@ -3,7 +3,7 @@ package ecologylab.bigsemantics.compiler;
 import java.io.File;
 
 import ecologylab.bigsemantics.collecting.SemanticsSessionScope;
-import ecologylab.bigsemantics.generated.library.RepositoryMetadataTranslationScope;
+import ecologylab.bigsemantics.generated.library.RepositoryMetadataTypesScope;
 import ecologylab.bigsemantics.metametadata.MetaMetadataRepository;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.SimplTypesScope;
@@ -31,7 +31,7 @@ public class PostInheritanceRepositorySerializer
   {
     SimplTypesScope.graphSwitch = GRAPH_SWITCH.ON;
 
-    SemanticsSessionScope scope = new SemanticsSessionScope(RepositoryMetadataTranslationScope.get(),
+    SemanticsSessionScope scope = new SemanticsSessionScope(RepositoryMetadataTypesScope.get(),
                                                             null);
     MetaMetadataRepository repo = scope.getMetaMetadataRepository();
     SimplTypesScope.serialize(repo, serializedRepoFile, format);

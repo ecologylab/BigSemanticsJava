@@ -16,7 +16,7 @@ import ecologylab.appframework.PropertiesAndDirectories;
 import ecologylab.appframework.SingletonApplicationEnvironment;
 import ecologylab.bigsemantics.collecting.SemanticsSessionScope;
 import ecologylab.bigsemantics.cyberneko.CybernekoWrapper;
-import ecologylab.bigsemantics.generated.library.RepositoryMetadataTranslationScope;
+import ecologylab.bigsemantics.generated.library.RepositoryMetadataTypesScope;
 import ecologylab.bigsemantics.metametadata.MetaMetadata;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.SimplTypesScope;
@@ -58,7 +58,7 @@ public class MmdTypeHierarchyVisualizer extends SingletonApplicationEnvironment
     
     check(isDotRunnable(), "Cannot run graphviz/dot: is it installed and in your PATH?");
     
-    SimplTypesScope metadataTScope = RepositoryMetadataTranslationScope.get();
+    SimplTypesScope metadataTScope = RepositoryMetadataTypesScope.get();
     sessionScope = new SemanticsSessionScope(metadataTScope, CybernekoWrapper.class);
     allNodes = new HashMap<String, Node>();
     for (MetaMetadata mmd : sessionScope.getMetaMetadataRepository().getMetaMetadataCollection())

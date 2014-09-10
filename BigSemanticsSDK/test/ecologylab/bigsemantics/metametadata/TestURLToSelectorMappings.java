@@ -11,7 +11,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import ecologylab.bigsemantics.collecting.SemanticsSessionScope;
-import ecologylab.bigsemantics.generated.library.RepositoryMetadataTranslationScope;
+import ecologylab.bigsemantics.generated.library.RepositoryMetadataTypesScope;
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.serialization.SimplTypesScope;
 
@@ -40,7 +40,7 @@ public class TestURLToSelectorMappings
     // Setup that constucts a parameterized test for each example URL
     Collection<Object[]> params = new ArrayList<Object[]>();
 
-    SimplTypesScope metadataTScope = RepositoryMetadataTranslationScope.get();
+    SimplTypesScope metadataTScope = RepositoryMetadataTypesScope.get();
     SemanticsSessionScope sss = new SemanticsSessionScope(metadataTScope, null);
     MetaMetadataRepository repository = sss.getMetaMetadataRepository();
 

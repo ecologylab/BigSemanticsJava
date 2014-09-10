@@ -2,7 +2,7 @@ package ecologylab.bigsemantics.metametadata;
 
 import ecologylab.bigsemantics.collecting.SemanticsSessionScope;
 import ecologylab.bigsemantics.cyberneko.CybernekoWrapper;
-import ecologylab.bigsemantics.generated.library.RepositoryMetadataTranslationScope;
+import ecologylab.bigsemantics.generated.library.RepositoryMetadataTypesScope;
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.net.ParsedURL;
 import ecologylab.serialization.SIMPLTranslationException;
@@ -23,7 +23,7 @@ public class TestReselect
 		ParsedURL url1 = ParsedURL.getAbsolute("http://www.amazon.com/gp/product/1118013689/"); // book
 		ParsedURL url2 = ParsedURL.getAbsolute("http://www.amazon.com/gp/product/B004Z6NWAU"); // electronic
 
-		SemanticsSessionScope infoCollector = new SemanticsSessionScope(RepositoryMetadataTranslationScope.get(), CybernekoWrapper.class);
+		SemanticsSessionScope infoCollector = new SemanticsSessionScope(RepositoryMetadataTypesScope.get(), CybernekoWrapper.class);
 		download(url1, infoCollector);
 		download(url2, infoCollector);
 

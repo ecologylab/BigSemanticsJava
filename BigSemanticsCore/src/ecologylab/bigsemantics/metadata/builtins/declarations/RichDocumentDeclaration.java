@@ -82,6 +82,10 @@ public class RichDocumentDeclaration extends Document
 	private List<Clipping> clippings;
 
 	@simpl_composite
+	@mm_name("favicon")
+	private Image favicon;
+
+	@simpl_composite
 	@mm_name("thumbnail")
 	private Image thumbnail;
 
@@ -339,6 +343,16 @@ public class RichDocumentDeclaration extends Document
 	public void setClippings(List<Clipping> clippings)
 	{
 		this.clippings = clippings;
+	}
+
+	public Image getFavicon()
+	{
+		return favicon;
+	}
+
+	public void setFavicon(Image favicon)
+	{
+		this.favicon = favicon;
 	}
 
 	public Image getThumbnail()

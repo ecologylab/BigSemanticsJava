@@ -7,7 +7,7 @@ import static org.junit.Assert.assertNotNull;
 import org.junit.Before;
 import org.junit.Test;
 
-import ecologylab.bigsemantics.generated.library.RepositoryMetadataTranslationScope;
+import ecologylab.bigsemantics.generated.library.RepositoryMetadataTypesScope;
 import ecologylab.bigsemantics.metadata.builtins.declarations.MetadataDeclaration;
 import ecologylab.bigsemantics.metadata.scalar.MetadataString;
 import ecologylab.bigsemantics.metadata.scalar.types.MetadataStringScalarType;
@@ -63,7 +63,7 @@ public class TestBuiltinDescription {
 	public void testThatTheRepositoryScopeExists()
 	{
 		
-		SimplTypesScope defaultGet = RepositoryMetadataTranslationScope.get();
+		SimplTypesScope defaultGet = RepositoryMetadataTypesScope.get();
 		
 		assertNotNull(defaultGet);
 		

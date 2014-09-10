@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import ecologylab.bigsemantics.collecting.SemanticsSessionScope;
 import ecologylab.bigsemantics.cyberneko.CybernekoWrapper;
-import ecologylab.bigsemantics.generated.library.RepositoryMetadataTranslationScope;
+import ecologylab.bigsemantics.generated.library.RepositoryMetadataTypesScope;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.formatenums.Format;
@@ -20,7 +20,7 @@ public class TestRestoringChildComposite
   @Test
   public void testRestoringChildComposite() throws SIMPLTranslationException, IOException
   {
-    SimplTypesScope metadataTranslationScope = RepositoryMetadataTranslationScope.get();
+    SimplTypesScope metadataTranslationScope = RepositoryMetadataTypesScope.get();
     semanticsSessionScope = new SemanticsSessionScope(metadataTranslationScope,
                                                       CybernekoWrapper.class);
     MetaMetadataRepository repository = semanticsSessionScope.getMetaMetadataRepository();
