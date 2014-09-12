@@ -133,6 +133,12 @@ public class MetaMetadataFieldDeclaration extends ElementState
   private String            styleName;
 
   /**
+   * name of a style.
+   */
+  @simpl_scalar
+  private String            collapsedStyleName;
+
+  /**
    * Specifies the order in which a field is displayed in relation to other fields.
    */
   @simpl_scalar
@@ -328,6 +334,11 @@ public class MetaMetadataFieldDeclaration extends ElementState
     return styleName;
   }
 
+  public String getCollapsedStyleName()
+  {
+    return collapsedStyleName;
+  }
+
   public float getLayer()
   {
     return layer;
@@ -482,7 +493,11 @@ public class MetaMetadataFieldDeclaration extends ElementState
   {
     this.styleName = styleName;
   }
-
+  public void setCollapsedStyleName(String collapsedStyleName)
+  {
+    this.collapsedStyleName = collapsedStyleName;
+  }
+  
   public void setLayer(float layer)
   {
     this.layer = layer;
