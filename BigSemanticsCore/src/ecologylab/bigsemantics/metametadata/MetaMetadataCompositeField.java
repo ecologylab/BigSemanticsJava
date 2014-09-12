@@ -11,6 +11,7 @@ import ecologylab.generic.HashMapArrayList;
 import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.XMLTools;
 import ecologylab.serialization.annotations.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_scalar;
 import ecologylab.serialization.annotations.simpl_tag;
 
 /**
@@ -42,6 +43,9 @@ public class MetaMetadataCompositeField extends MetaMetadataCompositeFieldDeclar
   }
 
   static Logger           logger;
+  
+  @simpl_scalar
+  private boolean         notExpandable;
 
   static
   {
