@@ -3,8 +3,9 @@
  */
 package ecologylab.bigsemantics.metadata;
 
-import ecologylab.bigsemantics.generated.library.rss.Channel;
-import ecologylab.bigsemantics.generated.library.item.*;
+import ecologylab.bigsemantics.generated.library.Channel;
+import ecologylab.bigsemantics.generated.library.Rss;
+import ecologylab.bigsemantics.generated.library.Item;
 import ecologylab.net.ParsedURL;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.SIMPLTranslationException;

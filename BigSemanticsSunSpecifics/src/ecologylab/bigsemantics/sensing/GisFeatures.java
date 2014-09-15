@@ -12,11 +12,9 @@ import ecologylab.bigsemantics.metadata.builtins.DocumentClosure;
 import ecologylab.generic.Continuation;
 import ecologylab.generic.Debug;
 import ecologylab.net.ParsedURL;
-import ecologylab.bigsemantics.generated.library.gisLocation.*;
-import ecologylab.bigsemantics.generated.library.postalAddress.*;
-import ecologylab.bigsemantics.generated.library.yahooSearch.YahooGeoCodeResult;
-import ecologylab.bigsemantics.generated.library.yahooSearch.YahooResult;
-import ecologylab.bigsemantics.generated.library.yahooSearch.YahooResultSet;
+import ecologylab.bigsemantics.generated.library.GisLocation;
+import ecologylab.bigsemantics.generated.library.PostalAddress;
+import ecologylab.bigsemantics.generated.library.search.*;
 import ecologylab.serialization.types.scalar.DoubleType;
 
 /**

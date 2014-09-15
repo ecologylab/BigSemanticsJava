@@ -9,7 +9,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import ecologylab.bigsemantics.generated.library.author.*;
+import ecologylab.bigsemantics.generated.library.person.author.*;
 // import ecologylab.bigsemantics.generated.library.curated.CurationRecord;
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metadata.scalar.MetadataString;

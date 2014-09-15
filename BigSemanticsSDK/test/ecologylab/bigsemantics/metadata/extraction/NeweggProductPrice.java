@@ -4,7 +4,7 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 
-import ecologylab.bigsemantics.generated.library.product.*;
+import ecologylab.bigsemantics.generated.library.commodity.product.*;
 import ecologylab.bigsemantics.metadata.MetadataTestHelper;
 import ecologylab.net.ParsedURL;
 

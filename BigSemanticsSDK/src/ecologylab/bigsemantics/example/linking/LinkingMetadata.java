@@ -10,7 +10,7 @@ import java.util.List;
 import ecologylab.bigsemantics.collecting.SemanticsSessionScope;
 import ecologylab.bigsemantics.cyberneko.CybernekoWrapper;
 import ecologylab.bigsemantics.generated.library.RepositoryMetadataTypesScope;
-import ecologylab.bigsemantics.generated.library.scholarlyArticle.ScholarlyArticle;
+import ecologylab.bigsemantics.generated.library.creativeWork.scholarlyArticle.*;
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metadata.builtins.DocumentClosure;
 import ecologylab.bigsemantics.metadata.output.HtmlRenderer;
