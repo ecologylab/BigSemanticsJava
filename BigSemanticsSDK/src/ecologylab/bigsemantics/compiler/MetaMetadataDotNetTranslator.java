@@ -65,6 +65,8 @@ public class MetaMetadataDotNetTranslator extends DotNetTranslator implements Mm
 	{
 	  String ns = super.javaPackage2CSharpNamespace(packageName);
     ns = ns.replace("Ecologylab.Bigsemantics.", "Ecologylab.BigSemantics.");
+    
+    ns = fixNameCollisions(ns);
 	  
 	  if (ns.startsWith(csharpNSMetadata)
 	      && !ns.startsWith(csharpNSMetadataNS))
@@ -88,6 +90,20 @@ public class MetaMetadataDotNetTranslator extends DotNetTranslator implements Mm
 	  
 	  return ns;
 	}
+
+  private String fixNameCollisions(String ns)
+  {
+    String[] intermediateNames = ns.split("\\.");
+    for (int i = 0; i < intermediateNames.length; ++i)
+    {
+      if (isSimpleClassName(intermediateNames[i]))
+      {
+        intermediateNames[i] = intermediateNames[i] + "NS";
+      }
+    }
+    ns = StringTools.join(".", intermediateNames);
+    return ns;
+  }
 	
 	private static final String csharpSemanticsNamespacePrefix = "Ecologylab.BigSemantics.";
 	private static final String csharpGeneratedSemanticsNamespacePrefix = "Ecologylab.BigSemantics.Generated.";
