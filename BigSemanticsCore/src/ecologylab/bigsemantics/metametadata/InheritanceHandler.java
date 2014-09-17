@@ -692,7 +692,9 @@ public class InheritanceHandler
     else
     {
       throw new MetaMetadataException("MetaMetadata or GenericTypeVar expected, "
-                                      + "but got " + obj + " with " + typeName);
+                                      + "but got " + obj + " with " + typeName
+                                      + ". Current mmd field stack for inheritance: "
+                                      + getFieldStackTrace(null));
     }
   }
 
