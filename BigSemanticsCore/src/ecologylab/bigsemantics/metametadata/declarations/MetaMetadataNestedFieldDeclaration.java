@@ -53,6 +53,12 @@ public abstract class MetaMetadataNestedFieldDeclaration extends MetaMetadataFie
 
   @simpl_scalar
   private boolean           showExpandedAlways;
+  
+  @simpl_scalar
+  private boolean           dontShowExpandedInitially;
+
+  @simpl_scalar
+  private boolean           dontShowExpandedAlways;
 
   /**
    * Should we generate a metadata class descriptor for this field. used by the compiler.
@@ -132,7 +138,17 @@ public abstract class MetaMetadataNestedFieldDeclaration extends MetaMetadataFie
     return showExpandedAlways;
   }
 
-  /**
+  public boolean isDontShowExpandedInitially() 
+  {
+	return dontShowExpandedInitially;
+  }
+
+  public boolean isDontShowExpandedAlways() 
+  {
+	return dontShowExpandedAlways;
+  }
+
+/**
    * Should we generate a metadata class descriptor for this field. Used by the compiler.
    * 
    * @return
