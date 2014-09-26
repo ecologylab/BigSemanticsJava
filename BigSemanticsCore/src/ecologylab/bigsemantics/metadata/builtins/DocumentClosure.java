@@ -22,8 +22,10 @@ import ecologylab.bigsemantics.collecting.DownloadStatus;
 import ecologylab.bigsemantics.collecting.SemanticsDownloadMonitors;
 import ecologylab.bigsemantics.collecting.SemanticsGlobalScope;
 import ecologylab.bigsemantics.collecting.SemanticsSite;
+import ecologylab.bigsemantics.documentcache.CachedMmdStaleEvent;
 import ecologylab.bigsemantics.documentcache.PersistenceMetaInfo;
 import ecologylab.bigsemantics.documentcache.PersistentDocumentCache;
+import ecologylab.bigsemantics.documentcache.RawContentStaleEvent;
 import ecologylab.bigsemantics.documentparsers.DocumentParser;
 import ecologylab.bigsemantics.downloadcontrollers.CachedPageDownloadController;
 import ecologylab.bigsemantics.downloadcontrollers.DownloadController;
@@ -466,6 +468,7 @@ public class DocumentClosure extends SetElement
       {
         logRecord.setId(cacheMetaInfo.getDocId());
         logRecord.setPersistentCacheHit(true);
+        logRecord.setPersistenceMetaInfo(cacheMetaInfo);
 
         // check if cached raw content is too old.
         Date accessTime = cacheMetaInfo.getAccessTime();
@@ -487,6 +490,14 @@ public class DocumentClosure extends SetElement
             cachedDoc = pCache.retrieveDoc(cacheMetaInfo);
             logRecord.setMsPersistentDocumentRead(System.currentTimeMillis() - t1);
           }
+          else
+          {
+            logRecord.logPost().addEvent(new CachedMmdStaleEvent());
+          }
+        }
+        else
+        {
+          logRecord.logPost().addEventNow(new RawContentStaleEvent());
         }
       }
     }
@@ -687,6 +698,7 @@ public class DocumentClosure extends SetElement
                        doc.getMetaMetadata().getHashForExtraction());
       getLogRecord().setId(metaInfo.getDocId());
       getLogRecord().setMsPersistentCacheWrite(System.currentTimeMillis() - t0);
+      getLogRecord().setPersistenceMetaInfo(metaInfo);
     }
     else
     {

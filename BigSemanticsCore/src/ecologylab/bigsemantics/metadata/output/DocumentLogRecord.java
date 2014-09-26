@@ -1,8 +1,11 @@
 package ecologylab.bigsemantics.metadata.output;
 
+import ecologylab.bigsemantics.documentcache.PersistenceMetaInfo;
 import ecologylab.concurrent.DownloadableLogRecord;
 import ecologylab.net.ParsedURL;
+import ecologylab.serialization.annotations.Hint;
 import ecologylab.serialization.annotations.simpl_composite;
+import ecologylab.serialization.annotations.simpl_hints;
 import ecologylab.serialization.annotations.simpl_inherit;
 import ecologylab.serialization.annotations.simpl_scalar;
 
@@ -11,45 +14,62 @@ public class DocumentLogRecord extends DownloadableLogRecord
 {
 
   @simpl_scalar
+  @simpl_hints(Hint.XML_LEAF)
   private ParsedURL           documentUrl;
 
   @simpl_scalar
+  @simpl_hints(Hint.XML_LEAF)
   private boolean             InMemDocumentCacheHit;
 
   @simpl_scalar
+  @simpl_hints(Hint.XML_LEAF)
   private boolean             persistentCacheHit;
 
   @simpl_scalar
+  @simpl_hints(Hint.XML_LEAF)
   private long                msPersistentHtmlRead;
 
   @simpl_scalar
+  @simpl_hints(Hint.XML_LEAF)
   private long                msPersistentDocumentRead;
 
   @simpl_scalar
+  @simpl_hints(Hint.XML_LEAF)
   private long                msPersistentCacheWrite;
 
   @simpl_scalar
+  @simpl_hints(Hint.XML_LEAF)
   private long                msPersistentCacheUpdate;
 
+  @simpl_composite
+  private PersistenceMetaInfo persistenceMetaInfo;
+
   @simpl_scalar
+  @simpl_hints(Hint.XML_LEAF)
   private long                msHtmlDownload;
 
   @simpl_scalar
+  @simpl_hints(Hint.XML_LEAF)
   private long                msExtraction;
 
   @simpl_scalar
+  @simpl_hints(Hint.XML_LEAF)
   private long                msDomCreation;
 
   @simpl_scalar
+  @simpl_hints(Hint.XML_LEAF)
   private long                msCompoundDocumentDnpDone;
 
   @simpl_scalar
+  @simpl_hints(Hint.XML_LEAF)
   private long                msContentBodyAndClippings;
 
   @simpl_scalar
+  @simpl_hints(Hint.XML_LEAF)
   private long                msImageTextParserCallingSuperParse;
 
   @simpl_scalar
+  @simpl_hints(Hint.XML_LEAF)
   private long                msSerialization;
 
   @simpl_composite
@@ -123,6 +143,16 @@ public class DocumentLogRecord extends DownloadableLogRecord
   public void setMsPersistentCacheUpdate(long msPersistentCacheUpdate)
   {
     this.msPersistentCacheUpdate = msPersistentCacheUpdate;
+  }
+
+  public PersistenceMetaInfo getPersistenceMetaInfo()
+  {
+    return persistenceMetaInfo;
+  }
+
+  public void setPersistenceMetaInfo(PersistenceMetaInfo persistenceMetaInfo)
+  {
+    this.persistenceMetaInfo = persistenceMetaInfo;
   }
 
   public long getMsHtmlDownload()
