@@ -678,8 +678,9 @@ implements ScalarUnmarshallingContext, SemanticsConstants
 
         String xpathString = mmdField.getXpath(i);
         if ((xpathString == null || xpathString.length() == 0)
+            && mmdField.parent() == surroundingField
             && mmdField instanceof MetaMetadataNestedField
-            && mmdField.parent() == surroundingField)
+            && !((MetaMetadataNestedField) mmdField).isPolymorphicInherently())
         {
           // If there is no xpath associated with the current nested field, and
           // the current field is intentionally authored, the runtime will just
