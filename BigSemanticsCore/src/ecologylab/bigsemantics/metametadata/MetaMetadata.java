@@ -647,6 +647,12 @@ public class MetaMetadata extends MetaMetadataCompositeField
       {
         superMmd.findOrGenerateMetadataClassDescriptor(tscope);
       }
+      
+      if (this.getMetadataClassDescriptor() == null)
+      {
+    	  // here we need to do another check, because superMmd.findOrGenerateMetadataClassDescriptor()
+    	  // can be recursive and already set the class descriptor for this.
+    	  
       MetadataClassDescriptor superCd =
           superMmd == null ? null : superMmd.getMetadataClassDescriptor();
       if (this.isNewMetadataClass())
@@ -673,7 +679,10 @@ public class MetaMetadata extends MetaMetadataCompositeField
           }
           // if (!f.isCloned() && f instanceof MetaMetadataNestedField)
           if (f.parent() == this && f instanceof MetaMetadataNestedField)
+          {
             ((MetaMetadataNestedField) f).findOrGenerateMetadataClassDescriptor(tscope);
+          }
+          
         }
 
         MetadataClassDescriptor existingCdWithThisTag = (MetadataClassDescriptor) tscope
@@ -699,6 +708,7 @@ public class MetaMetadata extends MetaMetadataCompositeField
             inlineMmd.findOrGenerateMetadataClassDescriptor(tscope);
           }
         }
+      }
       }
     }
   }
