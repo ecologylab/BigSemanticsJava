@@ -8,10 +8,10 @@ import java.util.Date;
 import org.junit.Test;
 
 import ecologylab.bigsemantics.generated.library.RepositoryMetadataTypesScope;
-import ecologylab.bigsemantics.metadata.builtins.RichDocument;
 import ecologylab.bigsemantics.metadata.builtins.CreativeAct;
 import ecologylab.bigsemantics.metadata.builtins.HtmlText;
 import ecologylab.bigsemantics.metadata.builtins.RichArtifact;
+import ecologylab.bigsemantics.metadata.builtins.person.author.IdeaMacheUser;
 import ecologylab.net.ParsedURL;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.SimplTypesScope;
@@ -34,7 +34,7 @@ public class AnnotationSerializeDeserialize
 		
 		CreativeAct creativeAct = new CreativeAct();
 		creativeAct.setAction(2);
-		RichDocument creator = new RichDocument();
+		IdeaMacheUser creator = new IdeaMacheUser();
 		creator.setTitle("andrew");
 		creator.setLocation(new ParsedURL(new URL("http://ecologylab.net/people/andrew")));
 		creativeAct.setCreator(creator);

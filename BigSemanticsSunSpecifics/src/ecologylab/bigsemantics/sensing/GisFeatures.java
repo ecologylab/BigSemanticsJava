@@ -6,15 +6,17 @@ package ecologylab.bigsemantics.sensing;
 import com.drew.metadata.exif.GpsDirectory;
 
 import ecologylab.bigsemantics.collecting.SemanticsGlobalScope;
+import ecologylab.bigsemantics.generated.library.PostalAddress;
+import ecologylab.bigsemantics.generated.library.search.YahooGeoCodeResult;
+import ecologylab.bigsemantics.generated.library.search.YahooResult;
+import ecologylab.bigsemantics.generated.library.search.YahooResultSet;
 import ecologylab.bigsemantics.metadata.Metadata;
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metadata.builtins.DocumentClosure;
+import ecologylab.bigsemantics.metadata.builtins.GisLocation;
 import ecologylab.generic.Continuation;
 import ecologylab.generic.Debug;
 import ecologylab.net.ParsedURL;
-import ecologylab.bigsemantics.generated.library.GisLocation;
-import ecologylab.bigsemantics.generated.library.PostalAddress;
-import ecologylab.bigsemantics.generated.library.search.*;
 import ecologylab.serialization.types.scalar.DoubleType;
 
 /**

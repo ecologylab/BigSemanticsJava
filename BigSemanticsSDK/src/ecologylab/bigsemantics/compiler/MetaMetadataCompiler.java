@@ -84,7 +84,7 @@ public class MetaMetadataCompiler extends Debug // ApplicationEnvironment
 				else
 				{
 					builtinPackage = packageName; // essentially, the old package name
-					packageName += DECLARATION_CLASS_PACKAGE;
+					packageName = packageName.replace(BUILTINS_CLASS_PACKAGE, BUILTINS_CLASS_PACKAGE + DECLARATION_CLASS_PACKAGE);
 					classSimpleName += DECLARATION_CLASS_SUFFIX;
 				}
 				declCD.setDescribedClassPackageName(packageName);

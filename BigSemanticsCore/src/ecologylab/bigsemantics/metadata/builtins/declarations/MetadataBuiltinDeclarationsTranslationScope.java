@@ -32,6 +32,8 @@ public class MetadataBuiltinDeclarationsTranslationScope
 
 		ecologylab.bigsemantics.metadata.builtins.Clipping.class,
 
+		ecologylab.bigsemantics.metadata.builtins.ContactPoint.class,
+
 		ecologylab.bigsemantics.metadata.builtins.CreativeAct.class,
 
 		ecologylab.bigsemantics.metadata.builtins.CurateLink.class,
@@ -41,6 +43,8 @@ public class MetadataBuiltinDeclarationsTranslationScope
 		ecologylab.bigsemantics.metadata.builtins.Document.class,
 
 		ecologylab.bigsemantics.metadata.builtins.DocumentMetadataWrap.class,
+
+		ecologylab.bigsemantics.metadata.builtins.GisLocation.class,
 
 		ecologylab.bigsemantics.metadata.builtins.HtmlText.class,
 
@@ -61,6 +65,22 @@ public class MetadataBuiltinDeclarationsTranslationScope
 		ecologylab.bigsemantics.metadata.builtins.TextSelfmade.class,
 
 		ecologylab.bigsemantics.metadata.builtins.Video.class,
+
+		ecologylab.bigsemantics.metadata.builtins.comment.Comment.class,
+
+		ecologylab.bigsemantics.metadata.builtins.comment.Rating.class,
+
+		ecologylab.bigsemantics.metadata.builtins.creativeWork.CreativeWork.class,
+
+		ecologylab.bigsemantics.metadata.builtins.creativeWork.Curation.class,
+
+		ecologylab.bigsemantics.metadata.builtins.person.BirthDetail.class,
+
+		ecologylab.bigsemantics.metadata.builtins.person.Person.class,
+
+		ecologylab.bigsemantics.metadata.builtins.person.author.Author.class,
+
+		ecologylab.bigsemantics.metadata.builtins.person.author.IdeaMacheUser.class,
 
 	};
 

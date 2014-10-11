@@ -9,8 +9,8 @@ package ecologylab.bigsemantics.metadata.builtins.declarations;
  */
 
 import ecologylab.bigsemantics.metadata.Metadata;
-import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metadata.builtins.MetadataBuiltinsTypesScope;
+import ecologylab.bigsemantics.metadata.builtins.person.author.IdeaMacheUser;
 import ecologylab.bigsemantics.metadata.mm_name;
 import ecologylab.bigsemantics.metadata.scalar.MetadataDate;
 import ecologylab.bigsemantics.metadata.scalar.MetadataInteger;
@@ -19,8 +19,6 @@ import ecologylab.bigsemantics.namesandnums.SemanticsNames;
 import ecologylab.serialization.annotations.simpl_composite;
 import ecologylab.serialization.annotations.simpl_inherit;
 import ecologylab.serialization.annotations.simpl_scalar;
-import ecologylab.serialization.annotations.simpl_scope;
-import ecologylab.serialization.annotations.simpl_wrap;
 import java.lang.Integer;
 import java.util.Date;
 import java.util.List;
@@ -33,10 +31,8 @@ public class CreativeActDeclaration extends Metadata
 	private MetadataInteger action;
 
 	@simpl_composite
-	@simpl_wrap
-	@simpl_scope("repository_documents")
 	@mm_name("creator")
-	private Document creator;
+	private IdeaMacheUser creator;
 
 	@simpl_scalar
 	private MetadataDate time;
@@ -81,12 +77,12 @@ public class CreativeActDeclaration extends Metadata
 		this.action = action;
 	}
 
-	public Document getCreator()
+	public IdeaMacheUser getCreator()
 	{
 		return creator;
 	}
 
-	public void setCreator(Document creator)
+	public void setCreator(IdeaMacheUser creator)
 	{
 		this.creator = creator;
 	}
