@@ -96,9 +96,11 @@ public class MetaMetadataDotNetTranslator extends DotNetTranslator implements Mm
     String[] intermediateNames = ns.split("\\.");
     for (int i = 0; i < intermediateNames.length; ++i)
     {
-      if (isSimpleClassName(intermediateNames[i]))
+      String intermediateName = intermediateNames[i];
+	  if (isSimpleClassName(intermediateName)
+	      || isSimpleClassName(intermediateName + "Declaration"))
       {
-        intermediateNames[i] = intermediateNames[i] + "NS";
+        intermediateNames[i] = intermediateName + "NS";
       }
     }
     ns = StringTools.join(".", intermediateNames);
