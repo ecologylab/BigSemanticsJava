@@ -33,6 +33,9 @@ public class MetaMetadataSelectorParam implements IMappable<String>
 
   @simpl_scalar
   private String  value;
+  
+  @simpl_scalar
+  private String  valueIsNot;
 
   @simpl_scalar
   private boolean allowEmptyValue;
@@ -83,6 +86,16 @@ public class MetaMetadataSelectorParam implements IMappable<String>
   public void setValue(String value)
   {
     this.value = value;
+  }
+
+  public String getValueIsNot()
+  {
+    return valueIsNot;
+  }
+
+  public void setValueIsNot(String valueIsNot)
+  {
+    this.valueIsNot = valueIsNot;
   }
 
   public boolean isAllowEmptyValue()

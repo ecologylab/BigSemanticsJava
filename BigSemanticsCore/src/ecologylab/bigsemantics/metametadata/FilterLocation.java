@@ -27,6 +27,9 @@ import ecologylab.serialization.annotations.simpl_scalar;
 public class FilterLocation extends Debug
 {
   
+  @simpl_composite
+  private OverrideParams overrideParams;
+  
 	@simpl_classes({SetParam.class, StripParam.class})
 	@simpl_nowrap
 	@simpl_collection
@@ -49,6 +52,16 @@ public class FilterLocation extends Debug
 	{
 		// TODO Auto-generated constructor stub
 	}
+
+  public OverrideParams getOverrideParams()
+  {
+    return overrideParams;
+  }
+
+  public void setOverrideParams(OverrideParams overrideParams)
+  {
+    this.overrideParams = overrideParams;
+  }
 
   public ArrayList<ParamOp> getParamOps()
   {
@@ -112,9 +125,16 @@ public class FilterLocation extends Debug
 		}
 		else
 		{
+      HashMap<String, String>	parametersMap	= filteredLocation.extractParams(true);
+
+		  if (overrideParams != null)
+		  {
+		    overrideParams.overrideParams(parametersMap, origLocation.fragment());
+		    filteredLocation = filteredLocation.updateParams(parametersMap);
+		  }
+
   		if (paramOps != null && paramOps.size() > 0)
   		{
-  			HashMap<String, String>	parametersMap	= filteredLocation.extractParams(true);
   			if (parametersMap == null)
   				parametersMap												= new HashMap<String, String>(paramOps.size());
   			for (ParamOp paramOp: paramOps)

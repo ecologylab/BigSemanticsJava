@@ -246,19 +246,30 @@ class MetaMetadataSelector extends ElementState implements IMappable<String>
 	    {
 	      String paramName = param.getName();
 	      String paramValue = param.getValue();
-        if (purlParams == null || !purlParams.containsKey(paramName))
-          return false;
-        String actualValue = purlParams.get(paramName);
-        
-        if (paramValue != null && !paramValue.equals(actualValue))
-          return false;
-        
+	      String paramValueIsNot = param.getValueIsNot();
+	      String actualValue = purlParams == null ? null : purlParams.get(paramName);
         if (actualValue == null)
-          actualValue = "";
-        if (!param.isAllowEmptyValue() && actualValue.length() == 0)
         {
-          return false;
+          actualValue = "";
         }
+
+	      if (paramValue != null && paramValue.length() > 0)
+	      {
+	        
+	        boolean allowEmptyAndIsEmpty = param.isAllowEmptyValue() && actualValue.length() == 0;
+	        if (!allowEmptyAndIsEmpty && !paramValue.equals(actualValue))
+	        {
+	          return false;
+	        }
+	      }
+
+	      if (paramValueIsNot != null && paramValueIsNot.length() > 0)
+	      {
+	        if (paramValueIsNot.equals(actualValue))
+	        {
+	          return false;
+	        }
+	      }
 	    }
 	  }
 	  return true;
