@@ -16,6 +16,7 @@ import ecologylab.serialization.formatenums.StringFormat;
  * 
  * @author quyin
  */
+@Deprecated
 @simpl_inherit
 public class UrlDecodeOp implements FieldOp
 {

@@ -3,9 +3,13 @@
  */
 package ecologylab.bigsemantics.metametadata;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ecologylab.bigsemantics.collecting.SemanticsGlobalScope;
 import ecologylab.generic.Debug;
@@ -24,8 +28,10 @@ import ecologylab.serialization.annotations.simpl_scalar;
  * 
  * @author andruid
  */
-public class FilterLocation extends Debug
+public class FilterLocation extends Debug implements FieldOp
 {
+  
+  private static Logger logger = LoggerFactory.getLogger(FilterLocation.class);
   
   @simpl_composite
   private OverrideParams overrideParams;
@@ -44,6 +50,12 @@ public class FilterLocation extends Debug
 	
 	@simpl_scalar
 	String							stripPrefix;
+	
+	@simpl_scalar
+	private String      extractParam;
+	
+	@simpl_scalar
+	private boolean     decodeUrl;
 	
 	/**
 	 * 
@@ -102,6 +114,8 @@ public class FilterLocation extends Debug
   {
     this.stripPrefix = stripPrefix;
   }
+  
+  private static enum ResultType { PURL, STRING }; 
 
   /**
    * Extract location ParsedURL parameters into a HashMap. Let ParamOps operate on this Map. Derive
@@ -117,6 +131,18 @@ public class FilterLocation extends Debug
    */
 	public ParsedURL filter(ParsedURL origLocation, List<ParsedURL> alternativeLocations)
 	{
+	  return (ParsedURL) doFilter(origLocation, alternativeLocations, ResultType.PURL);
+	}
+	
+	public String filterAsString(ParsedURL origLocation, List<ParsedURL> alternativeLocations)
+	{
+	  return (String) doFilter(origLocation, alternativeLocations, ResultType.STRING);
+	}
+	
+	private Object doFilter(ParsedURL origLocation,
+	                        List<ParsedURL> alternativeLocations,
+	                        ResultType resultType)
+  {
 		ParsedURL filteredLocation      = origLocation;
 		
 		if (origLocation.isFile())
@@ -173,9 +199,37 @@ public class FilterLocation extends Debug
   				}
   			}
   		}
+  		
+      if (extractParam != null
+          && parametersMap.containsKey(extractParam)
+          && resultType == ResultType.STRING)
+  		{
+  		  String value = parametersMap.get(extractParam);
+  		  if (decodeUrl)
+  		  {
+  		    try
+          {
+            return java.net.URLDecoder.decode(value, "UTF-8");
+          }
+          catch (UnsupportedEncodingException e)
+          {
+            logger.error("UTF-8 codec not available ?!", e);
+          }
+  		  }
+        return value;
+  		}
 		}
 		
-		return filteredLocation;
+		switch (resultType)
+		{
+		case PURL:
+		  return filteredLocation;
+		case STRING:
+		  return filteredLocation.toString();
+		}
+		
+		logger.error("Should never reach here!");
+		return null;
 	}
 	
 	/**
@@ -201,5 +255,23 @@ public class FilterLocation extends Debug
 	  }
 	  return purl;
 	}
+	
+	void setExtractParam(String extractParam)
+	{
+	  this.extractParam = extractParam;
+	}
+	
+	void setDecodeUrl(boolean decodeUrl)
+	{
+	  this.decodeUrl = decodeUrl;
+	}
+
+  @Override
+  public String operateOn(String rawValue)
+  {
+    ParsedURL rawPurl = ParsedURL.getAbsolute(rawValue);
+    String result = filterAsString(rawPurl, new ArrayList<ParsedURL>());
+    return result;
+  }
 
 }
