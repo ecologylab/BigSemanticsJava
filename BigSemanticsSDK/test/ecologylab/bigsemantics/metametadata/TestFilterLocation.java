@@ -19,7 +19,7 @@ public class TestFilterLocation
   public void testOverrideParams()
   {
     String url = "https://www.google.com/search?tbm=isch&source=hp&biw=1147&bih=1218&q=avatar&oq=avatar#newwindow=1&tbm=isch&q=3d+movies";
-    ParsedURL orig = ParsedURL.getAbsoluteWithFragment(url);
+    ParsedURL orig = ParsedURL.getAbsolute(url);
     
     OverrideParams overrideParams = new OverrideParams();
     FilterLocation filter = new FilterLocation();
