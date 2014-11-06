@@ -16,9 +16,15 @@ import ecologylab.textformat.NamedStyle;
 
 public class MetaMetadataTranslationScope extends Debug
 {
-	public static final String		NAME						= "meta_metadata";
+	public static final String		NAME					   = "meta_metadata";
 
-	public static final String		BASE_NAME				= "meta_metadata_base";
+	public static final String		BASE_NAME				   = "meta_metadata_base";
+	
+	private static final SimplTypesScope FIELD_OP_SCOPE        = FieldOpScope.get();
+	
+	private static final SimplTypesScope SEMANTIC_ACTION_SCOPE = SemanticActionTranslationScope.get();
+	
+	private static final SimplTypesScope CONDITION_SCOPE       = ConditionTranslationScope.get();
 
 	@SuppressWarnings("rawtypes")
 	protected static final Class	BASE_CLASSES[]	=
@@ -62,11 +68,11 @@ public class MetaMetadataTranslationScope extends Debug
 
 	public static final SimplTypesScope[]	SCOPE_SET	= 
 	{
+		FIELD_OP_SCOPE,
+		CONDITION_SCOPE,
+		SEMANTIC_ACTION_SCOPE,
 		BASE_TRANSLATIONS, 
-		FieldOpScope.get(),
 		NestedMetaMetadataFieldTypesScope.get(),
-		SemanticActionTranslationScope.get(),
-		ConditionTranslationScope.get(),
 	};
 
 	public static SimplTypesScope get()

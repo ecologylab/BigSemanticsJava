@@ -18,6 +18,7 @@ import ecologylab.serialization.annotations.simpl_classes;
 import ecologylab.serialization.annotations.simpl_collection;
 import ecologylab.serialization.annotations.simpl_composite;
 import ecologylab.serialization.annotations.simpl_nowrap;
+import ecologylab.serialization.annotations.simpl_other_tags;
 import ecologylab.serialization.annotations.simpl_scalar;
 
 /**
@@ -28,6 +29,7 @@ import ecologylab.serialization.annotations.simpl_scalar;
  * 
  * @author andruid
  */
+@simpl_other_tags("location_op")
 public class FilterLocation extends Debug implements FieldOp
 {
   
@@ -271,6 +273,7 @@ public class FilterLocation extends Debug implements FieldOp
   {
     ParsedURL rawPurl = ParsedURL.getAbsolute(rawValue);
     String result = filterAsString(rawPurl, new ArrayList<ParsedURL>());
+    logger.info("Raw value: {}\nNew value: {}", rawValue, result);
     return result;
   }
 
