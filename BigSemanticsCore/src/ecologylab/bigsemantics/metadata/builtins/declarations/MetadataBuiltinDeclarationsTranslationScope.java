@@ -54,6 +54,8 @@ public class MetadataBuiltinDeclarationsTranslationScope
 
 		ecologylab.bigsemantics.metadata.builtins.ImageSelfmade.class,
 
+		ecologylab.bigsemantics.metadata.builtins.PersistenceMetaInfo.class,
+
 		ecologylab.bigsemantics.metadata.builtins.RichArtifact.class,
 
 		ecologylab.bigsemantics.metadata.builtins.RichDocument.class,

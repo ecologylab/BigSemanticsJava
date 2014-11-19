@@ -4,6 +4,7 @@
 package ecologylab.bigsemantics.documentcache;
 
 import ecologylab.bigsemantics.metadata.builtins.Document;
+import ecologylab.bigsemantics.metadata.builtins.PersistenceMetaInfo;
 import ecologylab.net.ParsedURL;
 
 /**
@@ -34,8 +35,8 @@ public interface PersistentDocumentCache<D extends Document>
    * @param mmdHash
    * @return The corresponding PersistenceMetaInfo object.
    */
-  PersistenceMetaInfo store(D document,
-                            String rawContent,
+  PersistenceMetaInfo store(D document, //metadata
+                            String rawContent, //html
                             String charset,
                             String mimeType,
                             String mmdHash);
@@ -47,7 +48,7 @@ public interface PersistentDocumentCache<D extends Document>
    * @param newDoc
    * @return true if the operation was successful; otherwise false.
    */
-  boolean updateDoc(PersistenceMetaInfo metaInfo, D newDoc);
+  boolean updateDoc(PersistenceMetaInfo metaInfo, D newDoc);//metadata
 
   /**
    * Retrieve a document.
@@ -72,5 +73,7 @@ public interface PersistentDocumentCache<D extends Document>
    * @return true if the operation was successful; otherwise false.
    */
   boolean remove(PersistenceMetaInfo metaInfo);
+  
+  //boolean updateRawDoc maybe...
 
 }

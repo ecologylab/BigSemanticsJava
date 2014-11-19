@@ -23,7 +23,6 @@ import ecologylab.bigsemantics.collecting.SemanticsDownloadMonitors;
 import ecologylab.bigsemantics.collecting.SemanticsGlobalScope;
 import ecologylab.bigsemantics.collecting.SemanticsSite;
 import ecologylab.bigsemantics.documentcache.CachedMmdStaleEvent;
-import ecologylab.bigsemantics.documentcache.PersistenceMetaInfo;
 import ecologylab.bigsemantics.documentcache.PersistentDocumentCache;
 import ecologylab.bigsemantics.documentcache.RawContentStaleEvent;
 import ecologylab.bigsemantics.documentparsers.DocumentParser;
@@ -31,7 +30,6 @@ import ecologylab.bigsemantics.downloadcontrollers.CachedPageDownloadController;
 import ecologylab.bigsemantics.downloadcontrollers.DownloadController;
 import ecologylab.bigsemantics.html.documentstructure.SemanticInLinks;
 import ecologylab.bigsemantics.metadata.output.DocumentLogRecord;
-import ecologylab.bigsemantics.metadata.scalar.MetadataParsedURL;
 import ecologylab.bigsemantics.metametadata.MetaMetadata;
 import ecologylab.bigsemantics.metametadata.MetaMetadataRepository;
 import ecologylab.bigsemantics.model.text.ITermVector;
@@ -515,7 +513,7 @@ public class DocumentClosure extends SetElement
       {
         downloadController =
             new CachedPageDownloadController(cacheMetaInfo.getLocation(),
-                                             cacheMetaInfo.getAdditionalLocations(),
+                                             cacheMetaInfo.getRawAdditionalLocations(),
                                              cacheMetaInfo.getCharset(),
                                              cacheMetaInfo.getMimeType(),
                                              200,

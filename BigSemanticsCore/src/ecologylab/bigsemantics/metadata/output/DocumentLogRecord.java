@@ -1,6 +1,6 @@
 package ecologylab.bigsemantics.metadata.output;
 
-import ecologylab.bigsemantics.documentcache.PersistenceMetaInfo;
+import ecologylab.bigsemantics.metadata.builtins.PersistenceMetaInfo;
 import ecologylab.concurrent.DownloadableLogRecord;
 import ecologylab.net.ParsedURL;
 import ecologylab.serialization.annotations.Hint;

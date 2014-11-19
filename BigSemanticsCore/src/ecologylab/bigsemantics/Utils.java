@@ -86,7 +86,6 @@ public class Utils
     {
       return null;
     }
-
     try
     {
       return SimplTypesScope.serialize(obj, format).toString();
