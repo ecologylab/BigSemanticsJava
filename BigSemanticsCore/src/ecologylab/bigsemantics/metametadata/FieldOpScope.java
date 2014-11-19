@@ -11,6 +11,7 @@ public class FieldOpScope
                                      {
                                      RegexOp.class,
                                      UrlDecodeOp.class,
+                                     FilterLocation.class,
                                      };
 
   public static SimplTypesScope get()

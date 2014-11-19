@@ -10,6 +10,7 @@ import java.util.List;
 import ecologylab.bigsemantics.collecting.LocalDocumentCollections;
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metametadata.FilterLocation;
+import ecologylab.bigsemantics.metametadata.OverrideParams;
 import ecologylab.bigsemantics.metametadata.ParamOp;
 import ecologylab.bigsemantics.metametadata.Regex;
 import ecologylab.bigsemantics.metametadata.SetParam;
@@ -39,6 +40,9 @@ public class FilterLocationAction extends SemanticAction
   // hacky way to make this work for both inside metadata and in semantic actions :(
   // we should really make simpl_nowrap work for composte correctly and use it instead of
   // cloning fields here!
+  
+  @simpl_composite
+  private OverrideParams overrideParams;
   
 	@simpl_classes({SetParam.class, StripParam.class})
 	@simpl_nowrap
@@ -82,6 +86,7 @@ public class FilterLocationAction extends SemanticAction
 	private FilterLocation getFilter()
 	{
 	  FilterLocation filter = new FilterLocation();
+	  filter.setOverrideParams(overrideParams);
 	  filter.setParamOps(paramOps);
 	  filter.setAlternativeHosts(alternativeHosts);
 	  filter.setRegex(regex);

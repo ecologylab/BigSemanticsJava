@@ -1156,14 +1156,21 @@ implements ScalarUnmarshallingContext, SemanticsConstants
     }
   
     evaluation = concatenateValues(evaluation, mmdField, metadata, params);
+    
+    MetadataFieldDescriptor fd = mmdField.getMetadataFieldDescriptor();
+    ScalarType fdScalarType = fd == null ? null : fd.getScalarType();
+    if (fdScalarType != null && fdScalarType instanceof MetadataParsedURLScalarType)
+    {
+    	MetadataParsedURL wholePurl =
+    			(MetadataParsedURL) fdScalarType.getInstance(evaluation, null, this);
+    	evaluation = wholePurl.toString();
+    }
   
     // after we have evaluated the expression we might need to modify it.
     evaluation = applyFieldOps(evaluation, mmdField);
     if (StringTools.isNullOrEmpty(evaluation))
       return false;
   
-    MetadataFieldDescriptor fd = mmdField.getMetadataFieldDescriptor();
-    ScalarType fdScalarType = fd == null ? null : fd.getScalarType();
     if (fdScalarType != null && fdScalarType instanceof MetadataParsedURLScalarType)
     {
       // if this is a ParsedURL, we try to filter it using <filter_location>, if applicable.

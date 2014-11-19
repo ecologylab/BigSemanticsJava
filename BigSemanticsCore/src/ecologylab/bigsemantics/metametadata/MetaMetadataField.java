@@ -28,6 +28,7 @@ import ecologylab.serialization.annotations.simpl_inherit;
 import ecologylab.serialization.annotations.simpl_map;
 import ecologylab.serialization.annotations.simpl_map_key_field;
 import ecologylab.serialization.annotations.simpl_nowrap;
+import ecologylab.serialization.annotations.simpl_scalar;
 import ecologylab.serialization.annotations.simpl_scope;
 import ecologylab.serialization.types.element.IMappable;
 import ecologylab.textformat.NamedStyle;
@@ -39,12 +40,17 @@ import ecologylab.textformat.NamedStyle;
  * @author quyin
  * @author damaraju
  */
+
 @SuppressWarnings({ "rawtypes", "unchecked" })
+
+
+
 @simpl_inherit
 public abstract class MetaMetadataField extends MetaMetadataFieldDeclaration
     implements ScopeProvider, IMappable<String>, Iterable<MetaMetadataField>, MMDConstants
 {
-
+	  @simpl_scalar
+	  private String           			facetType;
   /**
    * The Comparator for conveniently sort fields.
    */
