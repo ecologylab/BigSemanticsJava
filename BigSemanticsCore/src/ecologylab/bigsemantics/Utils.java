@@ -79,7 +79,18 @@ public class Utils
   {
     return base64Encoder.encode(bytes);
   }
-
+  
+  /**
+   * Decode base64 string to bytes
+   * 
+   * @param string
+   * @return bytes
+   */
+   public static byte[] base64urlDecode(String input)
+   {
+	   return base64Encoder.decode(input);
+   }
+  
   public static String serializeToString(Object obj, StringFormat format)
   {
     if (obj == null)

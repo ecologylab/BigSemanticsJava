@@ -3,12 +3,13 @@ package ecologylab.bigsemantics.compiler;
 import java.io.File;
 
 import ecologylab.bigsemantics.collecting.SemanticsSessionScope;
-import ecologylab.bigsemantics.generated.library.RepositoryMetadataTypesScope;
 import ecologylab.bigsemantics.metametadata.MetaMetadataRepository;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.SimplTypesScope.GRAPH_SWITCH;
 import ecologylab.serialization.formatenums.Format;
+import ecologylab.bigsemantics.generated.library.*;
+import ecologylab.bigsemantics.generated.library.RepositoryMetadataTypesScope;
 
 /**
  * Serialize post-inheritance meta-metadata repository into a single file, for use in languages

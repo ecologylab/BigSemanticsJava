@@ -10,7 +10,7 @@
 
   <target name="compile">
     <mkdir dir="${classes.dir}" />
-    <javac srcdir="${src.dir}" destdir="${classes.dir}" source="1.6" target="1.6" fork="yes"
+    <javac srcdir="${src.dir}" destdir="${classes.dir}" source="1.7" target="1.7" fork="yes"
            excludes="**/test/*"
            encoding="UTF-8" classpathref="classpath">
       <compilerarg line="-XDignore.symbol.file" />
