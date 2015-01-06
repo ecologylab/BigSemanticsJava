@@ -60,12 +60,12 @@
 
   <target name="depend.DownloaderPool" depends="depend.simplCore,depend.simplSunSpecifics,depend.DownloaderPoolMessages,depend.ModifiedHttpClient">
     <ant antfile="${ant.file.bs-projects}/../../../BigSemanticsService/DownloaderPool/build.xml"
-         target="war" inheritall="no" />
+         target="dpool-jar" inheritall="no" />
   </target>
 
   <target name="depend.BigSemanticsService" depends="depend.simplCore,depend.simplSunSpecifics,depend.DownloaderPoolMessages,depend.ModifiedHttpClient,depend.BigSemanticsCore,depend.cyberneko,depend.BigSemanticsCybernekoWrapper,depend.imageMetadataExtractor,depend.BigSemanticsSunSpecifics,depend.BigSemanticsGeneratedClassesJava,depend.BigSemanticsWrappers">
     <ant antfile="${ant.file.bs-projects}/../../../BigSemanticsService/BigSemanticsService/build.xml"
-         target="war" inheritall="no" />
+         target="service-jar" inheritall="no" />
   </target>
 
   <target name="depend.WrapperDevAssist">

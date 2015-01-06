@@ -55,7 +55,7 @@ public class Utils
    */
   public static byte[] fingerprintBytes(String s)
   {
-    return fingerprintHashFunc.hashString(s).asBytes();
+    return fingerprintHashFunc.hashString(s, Charsets.UTF_8).asBytes();
   }
 
   /**

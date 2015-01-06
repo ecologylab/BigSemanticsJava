@@ -142,7 +142,7 @@ public class MetaMetadataRepositoryLoader extends Debug implements DocumentParse
     {
       InputStream istream = nistream.getInputStream();
       String content = Utils.readInputStream(istream);
-      HashCode fileHash = Hashing.md5().hashString(content);
+      HashCode fileHash = Hashing.md5().hashString(content, Charsets.UTF_8);
       fileHashes.add(fileHash);
       InputStream newStream = new ByteArrayInputStream(content.getBytes(Charsets.UTF_8));
 
