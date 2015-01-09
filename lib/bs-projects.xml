@@ -58,7 +58,7 @@
          target="jar" inheritall="no" />
   </target>
 
-  <target name="depend.DownloaderPool" depends="depend.simplCore,depend.simplSunSpecifics,depend.DownloaderPoolMessages,depend.ModifiedHttpClient">
+  <target name="depend.DownloaderPool" depends="depend.simplCore,depend.simplSunSpecifics,depend.DownloaderPoolMessages,depend.ModifiedHttpClient,depend.BigSemanticsCore">
     <ant antfile="${ant.file.bs-projects}/../../../BigSemanticsService/DownloaderPool/build.xml"
          target="jar" inheritall="no" />
   </target>

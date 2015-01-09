@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -170,5 +172,25 @@ public class Utils
       }
     }
   }
-
+  
+  public static Map<String, String> parseCommandlineFlags(String args[])
+  {
+    Map<String, String> flags = new HashMap<String, String>();
+    for (int i = 0; i < args.length; ++i)
+    {
+      int p = args[i].indexOf('=');
+      if (p >= 0)
+      {
+        String key = args[i].substring(0, p);
+        if (key.startsWith("--"))
+        {
+          key = key.substring(2);
+        }
+        String value = args[i].substring(p + 1);
+        flags.put(key, value);
+      }
+    }
+    return flags;
+  }
+  
 }
