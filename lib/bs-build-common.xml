@@ -111,5 +111,46 @@
   <target name="main">
     <antcall target="depend.${ant.project.name}" />
   </target>
+	
+  <property name="dist.dir" value="${build.dir}/dist" />
+  <property name="dist.classes.dir" value="${dist.dir}/WEB-INF/classes" />
+  <property name="dist.lib.dir" value="${dist.dir}/WEB-INF/lib" />
+
+  <target name="prep-dist-dir" depends="compile">
+    <mkdir dir="${dist.dir}" />
+
+    <mkdir dir="${dist.classes.dir}" />
+  	<echo>copying classes ...</echo>
+  	<copy todir="${dist.classes.dir}">
+  		<fileset dir="${classes.dir}" includes="**" />
+  	</copy>
+  	<echo>copying resources ...</echo>
+    <copy todir="${dist.classes.dir}">
+      <fileset dir="${resources.dir}" includes="**" />
+    </copy>
+
+    <mkdir dir="${dist.lib.dir}" />
+    <echo>adding dependent project as libs ...</echo>
+    <path id="dep_proj_jars">
+      <filelist dir="/" files="${dep_jars}" />
+    </path>
+    <copy todir="${dist.lib.dir}" flatten="true">
+      <path refid="dep_proj_jars" />
+    </copy>
+    <echo>...done.</echo>
+
+    <echo>adding maven dependencies ...</echo>
+    <copy todir="${dist.lib.dir}" flatten="true">
+      <fileset refid="maven_deps" />
+    </copy>
+    <echo>...done.</echo>
+    
+    <echo>adding additional jar(s) ...</echo>
+    <copy todir="${dist.lib.dir}">
+      <fileset dir="${lib.dir}" includes="xercesMinimal.jar" />
+      <fileset dir="${lib.dir}" includes="json-simple-1.1.1.jar" />
+    </copy>
+    <echo>...done.</echo>
+  </target>
 
 </project>

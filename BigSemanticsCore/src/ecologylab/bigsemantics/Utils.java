@@ -10,6 +10,7 @@ import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.configuration.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,18 +82,18 @@ public class Utils
   {
     return base64Encoder.encode(bytes);
   }
-  
+
   /**
    * Decode base64 string to bytes
    * 
    * @param string
    * @return bytes
    */
-   public static byte[] base64urlDecode(String input)
-   {
-	   return base64Encoder.decode(input);
-   }
-  
+  public static byte[] base64urlDecode(String input)
+  {
+    return base64Encoder.decode(input);
+  }
+
   public static String serializeToString(Object obj, StringFormat format)
   {
     if (obj == null)
@@ -172,25 +173,58 @@ public class Utils
       }
     }
   }
-  
-  public static Map<String, String> parseCommandlineFlags(String args[])
+
+  /**
+   * Parse commandline flags from arguments.
+   * 
+   * @param flags The output buffer.
+   * @param args The commandline arguments.
+   * @return Index to the first element that is not a flag.
+   */
+  public static int parseCommandlineFlags(Map<String, String> flags, String args[])
   {
-    Map<String, String> flags = new HashMap<String, String>();
-    for (int i = 0; i < args.length; ++i)
+    int i = 0;
+    while (i < args.length)
     {
-      int p = args[i].indexOf('=');
-      if (p >= 0)
+      if (args[i].equals("--"))
       {
-        String key = args[i].substring(0, p);
-        if (key.startsWith("--"))
+        i += 1;
+        break;
+      }
+      else if (args[i].startsWith("--"))
+      {
+
+        int p = args[i].indexOf('=');
+        if (p >= 0)
         {
-          key = key.substring(2);
+          String key = args[i].substring(2, p);
+          String value = args[i].substring(p + 1);
+          flags.put(key, value);
         }
-        String value = args[i].substring(p + 1);
-        flags.put(key, value);
+      }
+      else
+      {
+        break;
+      }
+
+      i += 1;
+    }
+    return i;
+  }
+
+  public static void mergeFlagsToConfigs(Configuration targetConfigs, Map<String, String> flags)
+  {
+    for (String flag : flags.keySet())
+    {
+      if (targetConfigs.containsKey(flag))
+      {
+        String newValue = flags.get(flag);
+        if (newValue != null)
+        {
+          targetConfigs.setProperty(flag, newValue);
+        }
       }
     }
-    return flags;
   }
-  
+
 }
