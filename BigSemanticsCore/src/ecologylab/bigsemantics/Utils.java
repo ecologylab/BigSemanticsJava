@@ -6,8 +6,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.nio.charset.Charset;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.configuration.Configuration;
@@ -225,6 +226,14 @@ public class Utils
         }
       }
     }
+  }
+  
+  public static String getStackTraceAsString(Throwable t)
+  {
+    StringWriter sw = new StringWriter();
+    PrintWriter pw = new PrintWriter(sw);
+    t.printStackTrace(pw);
+    return sw.toString();
   }
 
 }

@@ -432,33 +432,53 @@ public class DocumentClosure extends SetElement
   @Override
   public void performDownload() throws IOException
   {
-    if (recycled() || document.isRecycled())
-    {
-      logger.error("Recycled document closure in performDownload(): " + document);
-      return;
-    }
+    MetaMetadata metaMetadata = (MetaMetadata) document.getMetaMetadata();
+    boolean noCache = metaMetadata.isNoCache();
 
     synchronized (DOWNLOAD_STATUS_LOCK)
     {
-      if (!(downloadStatus == DownloadStatus.QUEUED
-          || downloadStatus == DownloadStatus.UNPROCESSED))
+      if (noCache || reload)
       {
-        return;
+        switch (downloadStatus)
+        {
+        case CONNECTING:
+        case PARSING:
+          return;
+        default:
+          break;
+        }
+      }
+      else
+      {
+        if (recycled() || document.isRecycled())
+        {
+          logger.error("Recycled document closure in performDownload(): " + document);
+          return;
+        }
+        switch (downloadStatus)
+        {
+        case CONNECTING:
+        case PARSING:
+        case DOWNLOAD_DONE:
+        case IOERROR:
+        case RECYCLED:
+          return;
+        default:
+          break;
+        }
       }
       setDownloadStatusInternal(DownloadStatus.CONNECTING);
     }
 
     ParsedURL location = location();
     DocumentLogRecord logRecord = getLogRecord();
-    MetaMetadata metaMetadata = (MetaMetadata) document.getMetaMetadata();
-    boolean noCache = metaMetadata.isNoCache() || isReload();
     PersistentDocumentCache pCache = semanticsScope.getPersistentDocumentCache();
 
     // Check the persistent cache first
     PersistenceMetaInfo cacheMetaInfo = null;
     String cachedRawContent = null;
     Document cachedDoc = null;
-    if (pCache != null && !noCache)
+    if (pCache != null && !noCache && !reload)
     {
       cacheMetaInfo = pCache.getMetaInfo(location);
 
