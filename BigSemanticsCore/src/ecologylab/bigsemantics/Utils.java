@@ -21,6 +21,7 @@ import com.google.common.hash.Hashing;
 import com.google.common.io.BaseEncoding;
 
 import ecologylab.generic.StringBuilderBaseUtils;
+import ecologylab.net.ParsedURL;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.formatenums.StringFormat;
@@ -40,6 +41,8 @@ public class Utils
   private static HashFunction secureHashFunc;
 
   private static BaseEncoding base64Encoder;
+  
+  private static BaseEncoding base64NoPadding;
 
   private static final int    BUF_SIZE = 1024;
 
@@ -49,10 +52,12 @@ public class Utils
     fingerprintHashFunc = Hashing.goodFastHash(32);
     secureHashFunc = Hashing.sha256();
     base64Encoder = BaseEncoding.base64Url();
+    base64NoPadding = BaseEncoding.base64Url().omitPadding();
   }
 
   /**
-   * Get the fingerprint of an input string. A fingerprint is not secure hash.
+   * Get the fingerprint of an input string. A fingerprint is not secure hash. And it's not supposed
+   * to be stable (can be different between invocations).
    * 
    * @param s
    * @return
@@ -93,6 +98,39 @@ public class Utils
   public static byte[] base64urlDecode(String input)
   {
     return base64Encoder.decode(input);
+  }
+  
+  /**
+   * Base64 encoding, without padding. Since padding info is lost, usually we do not try to decode
+   * the result, thus there is not a corresponding decoding function.
+   * 
+   * @param bytes
+   * @return
+   */
+  public static String base64NoPaddingEncode(byte[] bytes)
+  {
+    return base64NoPadding.encode(bytes);
+  }
+
+  public static String secureHashBase64NoPadding(ParsedURL purl)
+  {
+    return secureHashBase64NoPadding(purl.toString());
+  }
+
+  public static String secureHashBase64NoPadding(String purl)
+  {
+    if (purl == null)
+    {
+      return null;
+    }
+    byte[] hash = secureHashBytes(purl);
+    String code = base64NoPaddingEncode(hash);
+    return code;
+  }
+  
+  public static String getLocationHash(ParsedURL location)
+  {
+    return "A" + secureHashBase64NoPadding(location);
   }
 
   public static String serializeToString(Object obj, StringFormat format)
@@ -178,8 +216,10 @@ public class Utils
   /**
    * Parse commandline flags from arguments.
    * 
-   * @param flags The output buffer.
-   * @param args The commandline arguments.
+   * @param flags
+   *          The output buffer.
+   * @param args
+   *          The commandline arguments.
    * @return Index to the first element that is not a flag.
    */
   public static int parseCommandlineFlags(Map<String, String> flags, String args[])
@@ -227,7 +267,7 @@ public class Utils
       }
     }
   }
-  
+
   public static String getStackTraceAsString(Throwable t)
   {
     StringWriter sw = new StringWriter();
