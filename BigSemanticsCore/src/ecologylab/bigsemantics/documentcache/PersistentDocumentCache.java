@@ -3,6 +3,8 @@
  */
 package ecologylab.bigsemantics.documentcache;
 
+import org.apache.commons.configuration.Configuration;
+
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metadata.builtins.PersistenceMetaInfo;
 import ecologylab.net.ParsedURL;
@@ -15,6 +17,8 @@ import ecologylab.net.ParsedURL;
  */
 public interface PersistentDocumentCache<D extends Document>
 {
+
+  void configure(Configuration configs) throws Exception;
 
   /**
    * Get the persistence metadata for a given document.
