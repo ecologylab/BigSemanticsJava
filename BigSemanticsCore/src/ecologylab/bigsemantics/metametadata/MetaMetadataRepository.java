@@ -139,6 +139,16 @@ public class MetaMetadataRepository extends ElementState
   @simpl_map("meta_metadata")
   @simpl_nowrap
   HashMapArrayList<String, MetaMetadata>                     repositoryByName;
+  
+  /**
+   * The map from alternative meta-metadata names to meta-metadata type objects.
+   * 
+   * Call initAltNames() to fill in this collection after loading the repository.
+   * 
+   * When looking up meta-metadata by name, canonical names should be looked up before this map.
+   */
+  @simpl_map("entry")
+  HashMapArrayList<String, MetaMetadataAltNameEntry>         altNames;
 
   // [endregion]
 
@@ -560,7 +570,18 @@ public class MetaMetadataRepository extends ElementState
   {
     if (name == null)
       return null;
-    return repositoryByName.get(name);
+    MetaMetadata result = repositoryByName.get(name);
+    return result == null ? getMMByAltName(name) : result;
+  }
+  
+  private MetaMetadata getMMByAltName(String altName)
+  {
+    if (altNames != null)
+    {
+      MetaMetadataAltNameEntry entry = altNames.get(altName);
+      return entry == null ? null : entry.mmd;
+    }
+    return null;
   }
 
   /**
@@ -1078,6 +1099,30 @@ public class MetaMetadataRepository extends ElementState
               Debug.error(this, "Selector "
                                 + selector.getName()
                                 + " is ambiguous.  Set the pref_name or use a default_pref.");
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  public void initAltNames()
+  {
+    if (altNames == null)
+    {
+      altNames = new HashMapArrayList<String, MetaMetadataAltNameEntry>();
+      for (MetaMetadata mmd : repositoryByName.values())
+      {
+        String otherTags = mmd.getOtherTags();
+        if (otherTags != null && otherTags.length() > 0)
+        {
+          String[] tags = otherTags.split(",");
+          for (String tag : tags)
+          {
+            tag = tag.trim();
+            if (tag.length() > 0)
+            {
+              altNames.put(tag, new MetaMetadataAltNameEntry(tag, mmd));
             }
           }
         }

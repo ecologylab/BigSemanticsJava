@@ -254,6 +254,8 @@ public class MetaMetadataRepositoryLoader extends Debug implements DocumentParse
 
   void initializeRepository(MetaMetadataRepository result)
   {
+    result.initAltNames();
+
     // initialize meta-metadata look-up maps
     // result.initializeLocationBasedMaps(); // cannot do this since it needs the metadata TScope.
     result.initializeSuffixAndMimeBasedMaps();
