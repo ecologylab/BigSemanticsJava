@@ -8,7 +8,7 @@ import ecologylab.serialization.annotations.simpl_inherit;
  * @author quyin
  */
 @simpl_inherit
-public class PersistentCacheHit extends LogEvent
+public class PersistenceCacheDocHit extends LogEvent
 {
 
 }

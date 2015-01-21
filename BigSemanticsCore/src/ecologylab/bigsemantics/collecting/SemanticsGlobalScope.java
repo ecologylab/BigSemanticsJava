@@ -24,8 +24,9 @@ import ecologylab.bigsemantics.logging.DocumentLogRecord;
 import ecologylab.bigsemantics.logging.ErrorEvent;
 import ecologylab.bigsemantics.logging.MemoryCacheHit;
 import ecologylab.bigsemantics.logging.MemoryCacheMiss;
-import ecologylab.bigsemantics.logging.PersistentCacheHit;
-import ecologylab.bigsemantics.logging.PersistentCacheMiss;
+import ecologylab.bigsemantics.logging.PersistenceCacheDocHit;
+import ecologylab.bigsemantics.logging.PersistenceCacheHtmlHit;
+import ecologylab.bigsemantics.logging.PersistenceCacheMiss;
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metadata.builtins.DocumentClosure;
 import ecologylab.bigsemantics.metadata.builtins.Image;
@@ -69,8 +70,9 @@ public class SemanticsGlobalScope extends MetaMetadataRepositoryInit
     LogEventTypeScope.addEventClass(ErrorEvent.class);
     LogEventTypeScope.addEventClass(MemoryCacheHit.class);
     LogEventTypeScope.addEventClass(MemoryCacheMiss.class);
-    LogEventTypeScope.addEventClass(PersistentCacheHit.class);
-    LogEventTypeScope.addEventClass(PersistentCacheMiss.class);
+    LogEventTypeScope.addEventClass(PersistenceCacheDocHit.class);
+    LogEventTypeScope.addEventClass(PersistenceCacheHtmlHit.class);
+    LogEventTypeScope.addEventClass(PersistenceCacheMiss.class);
   }
 
   /**

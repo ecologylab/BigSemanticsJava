@@ -31,6 +31,9 @@ import ecologylab.bigsemantics.logging.CachedHtmlStale;
 import ecologylab.bigsemantics.logging.CachedMmdStale;
 import ecologylab.bigsemantics.logging.ChangeLocation;
 import ecologylab.bigsemantics.logging.DocumentLogRecord;
+import ecologylab.bigsemantics.logging.PersistenceCacheDocHit;
+import ecologylab.bigsemantics.logging.PersistenceCacheHtmlHit;
+import ecologylab.bigsemantics.logging.PersistenceCacheMiss;
 import ecologylab.bigsemantics.logging.Phase;
 import ecologylab.bigsemantics.metametadata.MetaMetadata;
 import ecologylab.bigsemantics.metametadata.MetaMetadataRepository;
@@ -492,12 +495,14 @@ public class DocumentClosure extends SetElement
         {
           // it's not too old, we should use the cached raw content.
           cachedRawContent = pCache.retrieveRawContent(cacheMetaInfo);
+          logRecord.logPost().addEventNow(new PersistenceCacheHtmlHit());
 
           // check if cached document needs to be re-extracted
           String currentHash = metaMetadata.getHashForExtraction();
           if (currentHash.equals(cacheMetaInfo.getMmdHash()))
           {
             cachedDoc = pCache.retrieveDoc(cacheMetaInfo);
+            logRecord.logPost().addEventNow(new PersistenceCacheDocHit());
           }
           else
           {
@@ -508,6 +513,10 @@ public class DocumentClosure extends SetElement
         {
           logRecord.logPost().addEventNow(new CachedHtmlStale());
         }
+      }
+      else
+      {
+          logRecord.logPost().addEventNow(new PersistenceCacheMiss());
       }
 
       logRecord.endPhase(Phase.PCACHE_READ);
