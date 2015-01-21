@@ -3,6 +3,7 @@
  */
 package ecologylab.bigsemantics.metadata.builtins;
 
+import ecologylab.bigsemantics.logging.DocumentLogRecordScope;
 import ecologylab.bigsemantics.metadata.Metadata;
 import ecologylab.bigsemantics.metadata.builtins.declarations.MetadataBuiltinDeclarationsTranslationScope;
 import ecologylab.bigsemantics.metadata.scalar.types.MetadataScalarType;

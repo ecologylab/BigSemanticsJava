@@ -22,14 +22,16 @@ import ecologylab.bigsemantics.collecting.DownloadStatus;
 import ecologylab.bigsemantics.collecting.SemanticsDownloadMonitors;
 import ecologylab.bigsemantics.collecting.SemanticsGlobalScope;
 import ecologylab.bigsemantics.collecting.SemanticsSite;
-import ecologylab.bigsemantics.documentcache.CachedMmdStaleEvent;
 import ecologylab.bigsemantics.documentcache.PersistentDocumentCache;
-import ecologylab.bigsemantics.documentcache.RawContentStaleEvent;
 import ecologylab.bigsemantics.documentparsers.DocumentParser;
 import ecologylab.bigsemantics.downloadcontrollers.CachedPageDownloadController;
 import ecologylab.bigsemantics.downloadcontrollers.DownloadController;
 import ecologylab.bigsemantics.html.documentstructure.SemanticInLinks;
-import ecologylab.bigsemantics.metadata.output.DocumentLogRecord;
+import ecologylab.bigsemantics.logging.CachedHtmlStale;
+import ecologylab.bigsemantics.logging.CachedMmdStale;
+import ecologylab.bigsemantics.logging.ChangeLocation;
+import ecologylab.bigsemantics.logging.DocumentLogRecord;
+import ecologylab.bigsemantics.logging.Phase;
 import ecologylab.bigsemantics.metametadata.MetaMetadata;
 import ecologylab.bigsemantics.metametadata.MetaMetadataRepository;
 import ecologylab.bigsemantics.model.text.ITermVector;
@@ -253,15 +255,7 @@ public class DocumentClosure extends SetElement
   @Override
   public DocumentLogRecord getLogRecord()
   {
-    if (document != null)
-    {
-      DocumentLogRecord record = document.getLogRecord();
-      if (record != null)
-      {
-        return record;
-      }
-    }
-    return DocumentLogRecord.DUMMY;
+    return document.logRecord();
   }
 
   @Override
@@ -469,10 +463,12 @@ public class DocumentClosure extends SetElement
       }
       setDownloadStatusInternal(DownloadStatus.CONNECTING);
     }
-
+    
     ParsedURL location = location();
     DocumentLogRecord logRecord = getLogRecord();
     PersistentDocumentCache pCache = semanticsScope.getPersistentDocumentCache();
+    
+    logRecord.beginPhase(Phase.DOWNLOAD_AND_PARSE);
 
     // Check the persistent cache first
     PersistenceMetaInfo cacheMetaInfo = null;
@@ -480,12 +476,11 @@ public class DocumentClosure extends SetElement
     Document cachedDoc = null;
     if (pCache != null && !noCache && !reload)
     {
-      cacheMetaInfo = pCache.getMetaInfo(location);
+      logRecord.beginPhase(Phase.PCACHE_READ);
 
+      cacheMetaInfo = pCache.getMetaInfo(location);
       if (cacheMetaInfo != null)
       {
-        logRecord.setId(cacheMetaInfo.getDocId());
-        logRecord.setPersistentCacheHit(true);
         logRecord.setPersistenceMetaInfo(cacheMetaInfo);
 
         // check if cached raw content is too old.
@@ -496,28 +491,26 @@ public class DocumentClosure extends SetElement
         if (diff <= cacheLifeMs)
         {
           // it's not too old, we should use the cached raw content.
-          long t0 = System.currentTimeMillis();
           cachedRawContent = pCache.retrieveRawContent(cacheMetaInfo);
-          logRecord.setMsPersistentHtmlRead(System.currentTimeMillis() - t0);
 
           // check if cached document needs to be re-extracted
           String currentHash = metaMetadata.getHashForExtraction();
           if (currentHash.equals(cacheMetaInfo.getMmdHash()))
           {
-            long t1 = System.currentTimeMillis();
             cachedDoc = pCache.retrieveDoc(cacheMetaInfo);
-            logRecord.setMsPersistentDocumentRead(System.currentTimeMillis() - t1);
           }
           else
           {
-            logRecord.logPost().addEvent(new CachedMmdStaleEvent());
+            logRecord.logPost().addEventNow(new CachedMmdStale());
           }
         }
         else
         {
-          logRecord.logPost().addEventNow(new RawContentStaleEvent());
+          logRecord.logPost().addEventNow(new CachedHtmlStale());
         }
       }
+
+      logRecord.endPhase(Phase.PCACHE_READ);
     }
 
     // If not in the persistent cache, download the raw page and parse
@@ -565,22 +558,25 @@ public class DocumentClosure extends SetElement
       {
         logger.error("Network connection error: " + document);
         setDownloadStatus(DownloadStatus.IOERROR);
+        logRecord.endPhase(Phase.DOWNLOAD_AND_PARSE);
         return;
       }
     }
 
     document.downloadAndParseDone(documentParser);
+    logRecord.endPhase(Phase.DOWNLOAD_AND_PARSE);
     setDownloadStatus(DownloadStatus.DOWNLOAD_DONE);
   }
 
   private DownloadController downloadRawPage(ParsedURL location) throws IOException
   {
+    getLogRecord().beginPhase(Phase.DOWNLOAD);
     String userAgent = document.getMetaMetadata().getUserAgentString();
     DownloadController downloadController = semanticsScope.createDownloadController(this);
     downloadController.setUserAgent(userAgent);
-    long t0 = System.currentTimeMillis();
     downloadController.accessAndDownload(location);
-    getLogRecord().setMsHtmlDownload(System.currentTimeMillis() - t0);
+    getLogRecord().setDownloadStatusCode(downloadController.getStatus());
+    getLogRecord().endPhase(Phase.DOWNLOAD);
     return downloadController;
   }
 
@@ -663,16 +659,16 @@ public class DocumentClosure extends SetElement
 
   private void doParse(MetaMetadata metaMetadata) throws IOException
   {
+    getLogRecord().beginPhase(Phase.EXTRACT);
+
     // container or not (it could turn out to be an image or some other mime type), parse the baby!
     setDownloadStatus(DownloadStatus.PARSING);
-
-    long t0 = System.currentTimeMillis();
     takeSemanticActions(metaMetadata, metaMetadata.getBeforeSemanticActions());
     documentParser.parse();
     takeSemanticActions(metaMetadata, metaMetadata.getAfterSemanticActions());
-    getLogRecord().setMsExtraction(System.currentTimeMillis() - t0);
-
     addDocGraphCallbacksIfNeeded();
+
+    getLogRecord().endPhase(Phase.EXTRACT);
   }
 
   private void takeSemanticActions(MetaMetadata metaMetadata, ArrayList<SemanticAction> actions)
@@ -705,7 +701,7 @@ public class DocumentClosure extends SetElement
                          boolean rawContentDownloaded)
       throws IOException
   {
-    long t0 = System.currentTimeMillis();
+    getLogRecord().beginPhase(Phase.PCACHE_WRITE);
     if (rawContentDownloaded)
     {
       PersistenceMetaInfo metaInfo =
@@ -715,15 +711,14 @@ public class DocumentClosure extends SetElement
                        downloadController.getMimeType(),
                        doc.getMetaMetadata().getHashForExtraction());
       getLogRecord().setId(metaInfo.getDocId());
-      getLogRecord().setMsPersistentCacheWrite(System.currentTimeMillis() - t0);
       getLogRecord().setPersistenceMetaInfo(metaInfo);
     }
     else
     {
       PersistenceMetaInfo metaInfo = pCache.getMetaInfo(doc.getLocation());
       pCache.updateDoc(metaInfo, doc);
-      getLogRecord().setMsPersistentCacheUpdate(System.currentTimeMillis() - t0);
     }
+    getLogRecord().endPhase(Phase.PCACHE_WRITE);
   }
 
   /**
@@ -854,14 +849,9 @@ public class DocumentClosure extends SetElement
   {
     synchronized (DOCUMENT_LOCK)
     {
-      DocumentLogRecord logRecord = getLogRecord();
-      if (logRecord  != DocumentLogRecord.DUMMY)
-      {
-        newDocument.setLogRecord(logRecord);
-      }
-
       Document oldDocument = document;
       document = newDocument;
+      newDocument.setLogRecord(oldDocument.getLogRecord());
 
       SemanticsSite oldSite = oldDocument.site();
       SemanticsSite newSite = newDocument.site();
@@ -876,6 +866,10 @@ public class DocumentClosure extends SetElement
 
       semanticInlinks = newDocument.getSemanticInlinks(); // probably not needed, but just in case.
       oldDocument.recycle();
+      
+      ChangeLocation changeLocationEvent =
+          new ChangeLocation(oldDocument.getLocation(), newDocument.getLocation());
+      getLogRecord().logPost().addEventNow(changeLocationEvent);
     }
   }
 

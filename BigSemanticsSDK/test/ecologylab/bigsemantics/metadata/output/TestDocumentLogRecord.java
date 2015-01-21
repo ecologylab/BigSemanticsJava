@@ -8,6 +8,8 @@ import org.junit.Test;
 import ecologylab.bigsemantics.collecting.SemanticsSessionScope;
 import ecologylab.bigsemantics.cyberneko.CybernekoWrapper;
 import ecologylab.bigsemantics.generated.library.RepositoryMetadataTypesScope;
+import ecologylab.bigsemantics.logging.DocumentLogRecord;
+import ecologylab.bigsemantics.logging.Phase;
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metadata.builtins.DocumentClosure;
 import ecologylab.concurrent.DownloadableLogRecord;
@@ -50,8 +52,8 @@ public class TestDocumentLogRecord
 			lockDoc.wait();
 		}
 
-		Assert.assertTrue(logRecord.getMsExtraction() > 0);
-		Assert.assertTrue(logRecord.getMsHtmlDownload() > 0);
+		Assert.assertTrue(logRecord.getTotalMs(Phase.EXTRACT) > 0);
+		Assert.assertTrue(logRecord.getTotalMs(Phase.DOWNLOAD) > 0);
 	}
 
 	private String serializeToJson(Object myObject) throws SIMPLTranslationException

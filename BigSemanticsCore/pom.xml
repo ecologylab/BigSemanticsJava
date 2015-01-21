@@ -74,5 +74,10 @@
       <artifactId>httpclient</artifactId>
       <version>${httpclient-version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.codehaus.jackson</groupId>
+      <artifactId>jackson-core-lgpl</artifactId>
+      <version>1.7.8</version>
+    </dependency>
   </dependencies>
 </project>

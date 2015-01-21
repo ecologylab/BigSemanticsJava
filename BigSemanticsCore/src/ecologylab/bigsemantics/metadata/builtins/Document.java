@@ -19,12 +19,11 @@ import ecologylab.bigsemantics.documentparsers.DocumentParser;
 import ecologylab.bigsemantics.documentparsers.ParserResult;
 import ecologylab.bigsemantics.html.documentstructure.SemanticAnchor;
 import ecologylab.bigsemantics.html.documentstructure.SemanticInLinks;
+import ecologylab.bigsemantics.logging.DocumentLogRecord;
 import ecologylab.bigsemantics.metadata.Metadata;
 import ecologylab.bigsemantics.metadata.mm_no;
 import ecologylab.bigsemantics.metadata.builtins.declarations.DocumentDeclaration;
-import ecologylab.bigsemantics.metadata.output.DocumentLogRecord;
 import ecologylab.bigsemantics.metadata.scalar.MetadataParsedURL;
-import ecologylab.bigsemantics.metadata.scalar.MetadataString;
 import ecologylab.bigsemantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.bigsemantics.metametadata.MetaMetadataRepository;
 import ecologylab.bigsemantics.seeding.SearchState;
@@ -34,11 +33,9 @@ import ecologylab.net.ParsedURL;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.annotations.FieldUsage;
-import ecologylab.serialization.annotations.simpl_composite;
 import ecologylab.serialization.annotations.simpl_exclude_usage;
 import ecologylab.serialization.annotations.simpl_inherit;
 import ecologylab.serialization.annotations.simpl_scalar;
-import ecologylab.serialization.annotations.simpl_scope;
 import ecologylab.serialization.formatenums.StringFormat;
 
 /**
@@ -58,8 +55,6 @@ public class Document extends DocumentDeclaration
 
   private SemanticInLinks               semanticInlinks;
 
-  @simpl_composite
-  @simpl_scope(DocumentLogRecordScope.NAME)
   private DocumentLogRecord             logRecord;
 
   private DocumentClosure               documentClosure;
@@ -163,6 +158,7 @@ public class Document extends DocumentDeclaration
     if (location != null)
     {
       this.location().setValue(location);
+      this.logRecord.setDocumentLocation(location);
 
       Document ancestor = getAncestor();
       if (ancestor != null)
@@ -330,24 +326,35 @@ public class Document extends DocumentDeclaration
     this.semanticsScope = semanticsSessionScope;
   }
   
-  public boolean hasLogRecord()
+  /**
+   * Get or lazily create a DocumentLogRecord or subclass instance.
+   * 
+   * @return
+   */
+  public DocumentLogRecord logRecord()
   {
-    return logRecord != null;
+    if (logRecord == null)
+    {
+      synchronized (this)
+      {
+        if (logRecord == null)
+        {
+          logRecord = new DocumentLogRecord();
+        }
+      }
+    }
+    return logRecord;
   }
   
   public DocumentLogRecord getLogRecord()
   {
-    if (logRecord == null)
-    {
-      return DocumentLogRecord.DUMMY;
-    }
     return logRecord;
   }
   
   public void setLogRecord(DocumentLogRecord logRecord)
   {
     this.logRecord = logRecord;
-    logRecord.setDocumentUrl(this.getLocation());
+    logRecord.setDocumentLocation(this.getLocation());
   }
 
   public void addAdditionalLocation(ParsedURL newPurl)

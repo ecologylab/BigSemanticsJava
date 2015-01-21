@@ -16,13 +16,23 @@ import ecologylab.bigsemantics.downloadcontrollers.DefaultDownloadController;
 import ecologylab.bigsemantics.downloadcontrollers.DownloadController;
 import ecologylab.bigsemantics.gui.InteractiveSpace;
 import ecologylab.bigsemantics.html.dom.IDOMProvider;
+import ecologylab.bigsemantics.logging.CacheError;
+import ecologylab.bigsemantics.logging.CachedHtmlStale;
+import ecologylab.bigsemantics.logging.CachedMmdStale;
+import ecologylab.bigsemantics.logging.ChangeLocation;
+import ecologylab.bigsemantics.logging.DocumentLogRecord;
+import ecologylab.bigsemantics.logging.ErrorEvent;
+import ecologylab.bigsemantics.logging.MemoryCacheHit;
+import ecologylab.bigsemantics.logging.MemoryCacheMiss;
+import ecologylab.bigsemantics.logging.PersistentCacheHit;
+import ecologylab.bigsemantics.logging.PersistentCacheMiss;
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metadata.builtins.DocumentClosure;
 import ecologylab.bigsemantics.metadata.builtins.Image;
-import ecologylab.bigsemantics.metadata.output.DocumentLogRecord;
 import ecologylab.bigsemantics.metametadata.FieldParserRegistry;
 import ecologylab.bigsemantics.metametadata.MetaMetadataRepository;
 import ecologylab.generic.ReflectionTools;
+import ecologylab.logging.LogEventTypeScope;
 import ecologylab.net.ParsedURL;
 import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.formatenums.Format;
@@ -51,6 +61,16 @@ public class SemanticsGlobalScope extends MetaMetadataRepositoryInit
   static
   {
     logger = LoggerFactory.getLogger(SemanticsGlobalScope.class);
+    
+    LogEventTypeScope.addEventClass(CachedHtmlStale.class);
+    LogEventTypeScope.addEventClass(CachedMmdStale.class);
+    LogEventTypeScope.addEventClass(CacheError.class);
+    LogEventTypeScope.addEventClass(ChangeLocation.class);
+    LogEventTypeScope.addEventClass(ErrorEvent.class);
+    LogEventTypeScope.addEventClass(MemoryCacheHit.class);
+    LogEventTypeScope.addEventClass(MemoryCacheMiss.class);
+    LogEventTypeScope.addEventClass(PersistentCacheHit.class);
+    LogEventTypeScope.addEventClass(PersistentCacheMiss.class);
   }
 
   /**
@@ -155,7 +175,7 @@ public class SemanticsGlobalScope extends MetaMetadataRepositoryInit
       return null;
     Document result = localDocumentCollection.getOrConstruct(location, false);
     result.setSemanticsSessionScope(this);
-    if (!result.hasLogRecord())
+    if (result.getLogRecord() == null)
     {
       result.setLogRecord(createLogRecord());
     }

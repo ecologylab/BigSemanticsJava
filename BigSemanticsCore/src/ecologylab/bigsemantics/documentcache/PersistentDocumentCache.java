@@ -3,6 +3,8 @@
  */
 package ecologylab.bigsemantics.documentcache;
 
+import org.apache.commons.configuration.Configuration;
+
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metadata.builtins.PersistenceMetaInfo;
 import ecologylab.net.ParsedURL;
@@ -15,6 +17,8 @@ import ecologylab.net.ParsedURL;
  */
 public interface PersistentDocumentCache<D extends Document>
 {
+  
+  void configure(Configuration configs) throws Exception;
 
   /**
    * Get the persistence metadata for a given document.
@@ -22,7 +26,7 @@ public interface PersistentDocumentCache<D extends Document>
    * @param location
    * @return The meta info for the given location, or null if not found in the cache.
    */
-  PersistenceMetaInfo getMetaInfo(ParsedURL location);
+  PersistenceMetaInfo getMetaInfo(ParsedURL location) throws Exception;
   
   /**
    * Stores a document and raw page content into the persistent cache.
@@ -39,7 +43,7 @@ public interface PersistentDocumentCache<D extends Document>
                             String rawContent, //html
                             String charset,
                             String mimeType,
-                            String mmdHash);
+                            String mmdHash) throws Exception;
   
   /**
    * Update the cached document. Keeps the cache raw page content unchanged. 
@@ -48,7 +52,7 @@ public interface PersistentDocumentCache<D extends Document>
    * @param newDoc
    * @return true if the operation was successful; otherwise false.
    */
-  boolean updateDoc(PersistenceMetaInfo metaInfo, D newDoc);//metadata
+  boolean updateDoc(PersistenceMetaInfo metaInfo, D newDoc) throws Exception;//metadata
 
   /**
    * Retrieve a document.
@@ -56,7 +60,7 @@ public interface PersistentDocumentCache<D extends Document>
    * @param metaInfo
    * @return The doc, or null if not found.
    */
-  D retrieveDoc(PersistenceMetaInfo metaInfo);
+  D retrieveDoc(PersistenceMetaInfo metaInfo) throws Exception;
 
   /**
    * Retrieve the raw page content.
@@ -64,7 +68,7 @@ public interface PersistentDocumentCache<D extends Document>
    * @param metaInfo
    * @return
    */
-  String retrieveRawContent(PersistenceMetaInfo metaInfo);
+  String retrieveRawContent(PersistenceMetaInfo metaInfo) throws Exception;
 
   /**
    * Removes a document and corresponding raw page content from the cacle.
@@ -72,7 +76,7 @@ public interface PersistentDocumentCache<D extends Document>
    * @param metaInfo
    * @return true if the operation was successful; otherwise false.
    */
-  boolean remove(PersistenceMetaInfo metaInfo);
+  boolean remove(PersistenceMetaInfo metaInfo) throws Exception;
   
   //boolean updateRawDoc maybe...
 

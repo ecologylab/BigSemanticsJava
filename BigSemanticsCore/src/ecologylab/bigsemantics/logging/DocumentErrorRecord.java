@@ -1,14 +1,18 @@
-package ecologylab.bigsemantics.metadata.output;
+package ecologylab.bigsemantics.logging;
 
 import ecologylab.serialization.annotations.simpl_scalar;
 
+/**
+ * 
+ * @author quyin
+ */
 public class DocumentErrorRecord
 {
 
 	@simpl_scalar
-	int erroCode;
+	String message;
 	
 	@simpl_scalar
-	String errorMsg;
+	String stackTrace;
 
 }

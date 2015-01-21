@@ -12,16 +12,15 @@ import java.util.List;
 import ecologylab.bigsemantics.actions.SemanticsConstants;
 import ecologylab.bigsemantics.collecting.SemanticsGlobalScope;
 import ecologylab.bigsemantics.downloadcontrollers.DownloadController;
+import ecologylab.bigsemantics.logging.DocumentLogRecord;
 import ecologylab.bigsemantics.metadata.Metadata;
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metadata.builtins.DocumentClosure;
-import ecologylab.bigsemantics.metadata.output.DocumentLogRecord;
 import ecologylab.bigsemantics.metametadata.MetaMetadata;
 import ecologylab.bigsemantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.bigsemantics.metametadata.MetaMetadataRepository;
 import ecologylab.bigsemantics.seeding.Seed;
 import ecologylab.collections.Scope;
-import ecologylab.concurrent.DownloadableLogRecord;
 import ecologylab.generic.Debug;
 import ecologylab.generic.ReflectionTools;
 import ecologylab.net.ParsedURL;
@@ -264,20 +263,7 @@ abstract public class DocumentParser<D extends Document> extends Debug
    */
   public DocumentLogRecord getLogRecord()
   {
-    DocumentClosure documentClosure = getDocumentClosure();
-    if (documentClosure != null)
-    {
-      DownloadableLogRecord downloadableLogRecord = documentClosure.getLogRecord();
-      if (downloadableLogRecord instanceof DocumentLogRecord)
-      {
-        return (DocumentLogRecord) downloadableLogRecord;
-      }
-    }
-    else
-    {
-      debug("weird: documentClosure is null!");
-    }
-    return DocumentLogRecord.DUMMY;
+    return documentClosure.getLogRecord();
   }
 
   /**

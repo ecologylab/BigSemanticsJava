@@ -185,7 +185,7 @@ public class RichDocument extends RichDocumentDeclaration
 	@Override
 	public void downloadAndParseDone(DocumentParser documentParser)
 	{
-	  long t0 = System.currentTimeMillis();
+//	  long t0 = System.currentTimeMillis();
 	  
 		if (documentParser != null && numClippings() > 0)
 		{	
@@ -220,10 +220,10 @@ public class RichDocument extends RichDocumentDeclaration
 			//			recycle();	// so free all resources, including connectionRecycle()
 		}
 		
-		if (documentParser != null)
-		{
-  		documentParser.getLogRecord().setMsRichDocumentDnpDone(System.currentTimeMillis() - t0);
-		}
+//		if (documentParser != null)
+//		{
+//  		documentParser.getLogRecord().setMsRichDocumentDnpDone(System.currentTimeMillis() - t0);
+//		}
 	}
 
 	@Override

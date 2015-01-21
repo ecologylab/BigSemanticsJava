@@ -108,16 +108,16 @@ public abstract class HTMLDOMParser<D extends Document> extends ContainerParser<
    */
   private org.w3c.dom.Document createDom() throws IOException
   {
-    long t0 = System.currentTimeMillis();
+//    long t0 = System.currentTimeMillis();
     provider = getSemanticsScope().constructDOMProvider();
     InputStream inputStream = inputStream();
     Reader reader = reader();
     org.w3c.dom.Document document = null;
     try
     {
-      document = reader != null ? provider.parseDOM(reader, null) : provider.parseDOM(inputStream,
-                                                                                      null);
-      getLogRecord().setMsDomCreation(System.currentTimeMillis() - t0);
+      document = reader != null ? provider.parseDOM(reader, null)
+                                : provider.parseDOM(inputStream, null);
+//      getLogRecord().setMsDomCreation(System.currentTimeMillis() - t0);
     }
     finally
     {

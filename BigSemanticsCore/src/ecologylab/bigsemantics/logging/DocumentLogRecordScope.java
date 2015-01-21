@@ -1,6 +1,5 @@
-package ecologylab.bigsemantics.metadata.builtins;
+package ecologylab.bigsemantics.logging;
 
-import ecologylab.bigsemantics.metadata.output.DocumentLogRecord;
 import ecologylab.generic.Debug;
 import ecologylab.serialization.SimplTypesScope;
 
@@ -13,10 +12,11 @@ public class DocumentLogRecordScope extends Debug
 
   public static final String   NAME      = "document_log_record_scope";
 
-  protected static final Class CLASSES[] =
-  {
-    DocumentLogRecord.class,
-  };
+  protected static final Class CLASSES[] = {
+                                         DocumentLogRecord.class,
+                                         Phase.class,
+                                         DocumentErrorRecord.class,
+                                         };
 
   public static SimplTypesScope get()
   {
