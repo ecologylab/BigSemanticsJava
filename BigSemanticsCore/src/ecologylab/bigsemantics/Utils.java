@@ -107,7 +107,7 @@ public class Utils
    * @param bytes
    * @return
    */
-  public static String base64NoPaddingEncode(byte[] bytes)
+  public static String base64urlNoPaddingEncode(byte[] bytes)
   {
     return base64NoPadding.encode(bytes);
   }
@@ -124,7 +124,7 @@ public class Utils
       return null;
     }
     byte[] hash = secureHashBytes(purl);
-    String code = base64NoPaddingEncode(hash);
+    String code = base64urlNoPaddingEncode(hash);
     return code;
   }
   

@@ -571,7 +571,7 @@ public abstract class MetaMetadataField extends MetaMetadataFieldDeclaration
           hashForExtractionOngoing = true;
           String fp = getFingerprintString();
           byte[] bytes = Utils.secureHashBytes(fp);
-          hashForExtraction = Utils.base64urlEncode(bytes);
+          hashForExtraction = Utils.base64urlNoPaddingEncode(bytes);
           hashForExtractionOngoing = false;
         }
       }

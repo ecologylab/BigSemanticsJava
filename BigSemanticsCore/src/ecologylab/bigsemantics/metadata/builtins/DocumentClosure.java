@@ -876,27 +876,35 @@ public class DocumentClosure extends SetElement
   {
     synchronized (DOCUMENT_LOCK)
     {
-      Document oldDocument = document;
-      document = newDocument;
-      newDocument.setLogRecord(oldDocument.getLogRecord());
-
-      SemanticsSite oldSite = oldDocument.site();
-      SemanticsSite newSite = newDocument.site();
-      if (oldSite != null && oldSite != newSite)
+      if (newDocument != document)
       {
-        // calling changeDocument() because of redirecting?
-        if (oldSite.isDownloading())
-          oldSite.endDownload(oldDocument.getDownloadLocation());
+        Document oldDocument = document;
+        document = newDocument;
+        newDocument.setLogRecord(oldDocument.getLogRecord());
+
+        SemanticsSite oldSite = oldDocument.site();
+        SemanticsSite newSite = newDocument.site();
+        if (oldSite != null && oldSite != newSite)
+        {
+          // calling changeDocument() because of redirecting?
+          if (oldSite.isDownloading())
+            oldSite.endDownload(oldDocument.getDownloadLocation());
+        }
+
+        newDocument.inheritValues(oldDocument);
+
+        semanticInlinks = newDocument.getSemanticInlinks(); // probably not needed, but just in case.
+        oldDocument.recycle();
+        
+        
+        ParsedURL oldLoc = oldDocument.getLocation();
+        ParsedURL newLoc = newDocument.getLocation();
+        if (!oldLoc.equals(newLoc))
+        {
+          ChangeLocation changeLocationEvent = new ChangeLocation(oldLoc, newLoc);
+          getLogRecord().logPost().addEventNow(changeLocationEvent);
+        }
       }
-
-      newDocument.inheritValues(oldDocument);
-
-      semanticInlinks = newDocument.getSemanticInlinks(); // probably not needed, but just in case.
-      oldDocument.recycle();
-      
-      ChangeLocation changeLocationEvent =
-          new ChangeLocation(oldDocument.getLocation(), newDocument.getLocation());
-      getLogRecord().logPost().addEventNow(changeLocationEvent);
     }
   }
 

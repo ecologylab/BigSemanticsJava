@@ -158,7 +158,10 @@ public class Document extends DocumentDeclaration
     if (location != null)
     {
       this.location().setValue(location);
-      this.logRecord.setDocumentLocation(location);
+      if (logRecord != null)
+      {
+        logRecord.setDocumentLocation(location);
+      }
 
       Document ancestor = getAncestor();
       if (ancestor != null)
