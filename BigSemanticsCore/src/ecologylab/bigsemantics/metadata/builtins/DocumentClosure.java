@@ -481,42 +481,51 @@ public class DocumentClosure extends SetElement
     {
       logRecord.beginPhase(Phase.PCACHE_READ);
 
-      cacheMetaInfo = pCache.getMetaInfo(location);
-      if (cacheMetaInfo != null)
+      try
       {
-        logRecord.setPersistenceMetaInfo(cacheMetaInfo);
-
-        // check if cached raw content is too old.
-        Date accessTime = cacheMetaInfo.getAccessTime();
-        Date currentTime = new Date();
-        long diff = currentTime.getTime() - accessTime.getTime();
-        long cacheLifeMs = metaMetadata.getCacheLifeMs();
-        if (diff <= cacheLifeMs)
+        cacheMetaInfo = pCache.getMetaInfo(location);
+        if (cacheMetaInfo != null)
         {
-          // it's not too old, we should use the cached raw content.
-          cachedRawContent = pCache.retrieveRawContent(cacheMetaInfo);
-          logRecord.logPost().addEventNow(new PersistenceCacheHtmlHit());
+          logRecord.setPersistenceMetaInfo(cacheMetaInfo);
 
-          // check if cached document needs to be re-extracted
-          String currentHash = metaMetadata.getHashForExtraction();
-          if (currentHash.equals(cacheMetaInfo.getMmdHash()))
+          // check if cached raw content is too old.
+          Date accessTime = cacheMetaInfo.getAccessTime();
+          Date currentTime = new Date();
+          long diff = currentTime.getTime() - accessTime.getTime();
+          long cacheLifeMs = metaMetadata.getCacheLifeMs();
+          if (diff <= cacheLifeMs)
           {
-            cachedDoc = pCache.retrieveDoc(cacheMetaInfo);
-            logRecord.logPost().addEventNow(new PersistenceCacheDocHit());
+            // it's not too old, we should use the cached raw content.
+            cachedRawContent = pCache.retrieveRawContent(cacheMetaInfo);
+            logRecord.logPost().addEventNow(new PersistenceCacheHtmlHit());
+
+            // check if cached document needs to be re-extracted
+            String currentHash = metaMetadata.getHashForExtraction();
+            if (currentHash.equals(cacheMetaInfo.getMmdHash()))
+            {
+              cachedDoc = pCache.retrieveDoc(cacheMetaInfo);
+              logRecord.logPost().addEventNow(new PersistenceCacheDocHit());
+            }
+            else
+            {
+              logRecord.logPost().addEventNow(new CachedMmdStale());
+            }
           }
           else
           {
-            logRecord.logPost().addEventNow(new CachedMmdStale());
+            logRecord.logPost().addEventNow(new CachedHtmlStale());
           }
         }
         else
         {
-          logRecord.logPost().addEventNow(new CachedHtmlStale());
+          logRecord.logPost().addEventNow(new PersistenceCacheMiss());
         }
       }
-      else
+      catch (Exception e)
       {
-          logRecord.logPost().addEventNow(new PersistenceCacheMiss());
+        String errMsg = "Error accessing persistence cache.";
+        logger.error(errMsg, e);
+        logRecord.addErrorRecord(errMsg, e);
       }
 
       logRecord.endPhase(Phase.PCACHE_READ);
@@ -711,6 +720,8 @@ public class DocumentClosure extends SetElement
       throws IOException
   {
     getLogRecord().beginPhase(Phase.PCACHE_WRITE);
+    try
+    {
     if (rawContentDownloaded)
     {
       PersistenceMetaInfo metaInfo =
@@ -726,6 +737,13 @@ public class DocumentClosure extends SetElement
     {
       PersistenceMetaInfo metaInfo = pCache.getMetaInfo(doc.getLocation());
       pCache.updateDoc(metaInfo, doc);
+    }
+    }
+    catch(Exception e)
+    {
+      String errMsg = "Error storing to persistence cache.";
+      logger.error(errMsg, e);
+      getLogRecord().addErrorRecord(errMsg, e);
     }
     getLogRecord().endPhase(Phase.PCACHE_WRITE);
   }

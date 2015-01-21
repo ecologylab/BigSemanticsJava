@@ -1,6 +1,8 @@
 package ecologylab.bigsemantics.logging;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import ecologylab.bigsemantics.Utils;
 import ecologylab.bigsemantics.metadata.builtins.PersistenceMetaInfo;
@@ -35,8 +37,8 @@ public class DocumentLogRecord extends DownloadableLogRecord
   @simpl_scalar
   int                             downloadStatusCode;
 
-  @simpl_composite
-  DocumentErrorRecord             errorRecord;
+  @simpl_collection("record")
+  List<DocumentErrorRecord>       errorRecords;
 
   public ParsedURL getDocumentLocation()
   {
@@ -143,21 +145,34 @@ public class DocumentLogRecord extends DownloadableLogRecord
     this.downloadStatusCode = downloadStatusCode;
   }
 
-  public DocumentErrorRecord getErrorRecord()
+  public List<DocumentErrorRecord> getErrorRecords()
   {
-    return errorRecord;
+    return errorRecords;
   }
 
-  public void setErrorRecord(DocumentErrorRecord errorRecord)
+  public List<DocumentErrorRecord> errorRecords()
   {
-    this.errorRecord = errorRecord;
+    if (errorRecords == null)
+    {
+      synchronized (this)
+      {
+        if (errorRecords == null)
+        {
+          errorRecords = new ArrayList<DocumentErrorRecord>();
+        }
+      }
+    }
+    return errorRecords;
   }
 
-  public void setErrorRecord(String message, Throwable throwable)
+  public void addErrorRecord(DocumentErrorRecord errorRecord)
   {
-    this.errorRecord = new DocumentErrorRecord();
-    this.errorRecord.message = message;
-    this.errorRecord.stackTrace = Utils.getStackTraceAsString(throwable);
+    errorRecords().add(errorRecord);
+  }
+
+  public void addErrorRecord(String message, Throwable throwable)
+  {
+    addErrorRecord(new DocumentErrorRecord(message, Utils.getStackTraceAsString(throwable)));
   }
 
 }
