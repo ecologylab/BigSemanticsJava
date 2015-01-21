@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ecologylab.bigsemantics.collecting.Crawler;
-import ecologylab.bigsemantics.documentparsers.RichDocumentParserCrawlerResult;
 import ecologylab.bigsemantics.documentparsers.DocumentParser;
+import ecologylab.bigsemantics.documentparsers.RichDocumentParserCrawlerResult;
 import ecologylab.bigsemantics.metadata.builtins.declarations.RichDocumentDeclaration;
 import ecologylab.bigsemantics.metadata.scalar.MetadataString;
 import ecologylab.bigsemantics.metametadata.MetaMetadataCompositeField;
@@ -17,6 +17,7 @@ import ecologylab.bigsemantics.seeding.Seed;
 import ecologylab.net.ParsedURL;
 import ecologylab.serialization.TranslationContext;
 import ecologylab.serialization.annotations.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_other_tags;
 
 /**
  * A Document that can be broken down into clippings, including references to other documents.
@@ -25,6 +26,7 @@ import ecologylab.serialization.annotations.simpl_inherit;
  * @author andruid
  */
 @simpl_inherit
+@simpl_other_tags({"compound_document", "html_document"})
 public class RichDocument extends RichDocumentDeclaration
 {
 	
