@@ -1,9 +1,8 @@
-package ecologylab.bigsemantics.dpool;
+package ecologylab.bigsemantics.distributed;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.spy;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,7 +14,11 @@ import java.util.Random;
 
 import org.junit.Test;
 
-import ecologylab.bigsemantics.dpool.Task.State;
+import ecologylab.bigsemantics.distributed.Dispatcher;
+import ecologylab.bigsemantics.distributed.Task;
+import ecologylab.bigsemantics.distributed.Task.State;
+import ecologylab.bigsemantics.distributed.TaskEventHandler;
+import ecologylab.bigsemantics.distributed.Worker;
 
 /**
  * 
@@ -46,7 +49,7 @@ public class TestDispatcherMultiThreads
     }
 
     @Override
-    public boolean perform(Object arg) throws Exception
+    public boolean perform() throws Exception
     {
       Thread.sleep(waitTime);
       return getFailCount() >= maxFailCount;
@@ -95,10 +98,10 @@ public class TestDispatcherMultiThreads
   @Test
   public void testMultiThreads() throws InterruptedException
   {
-    final Dispatcher dispatcher = spy(new Dispatcher()
+    final Dispatcher dispatcher = new Dispatcher()
     {
       @Override
-      protected void beginDispatch(Task task)
+      protected void onDispatch(Task task)
       {
         if (task instanceof FakeTask)
         {
@@ -115,7 +118,7 @@ public class TestDispatcherMultiThreads
       {
         return task.getFailCount() >= 4;
       }
-    });
+    };
 
     // add 4 workers, each with 4 threads and 2 domains that it cannot handle
     for (int i = 1; i <= 4; ++i)
@@ -236,8 +239,9 @@ public class TestDispatcherMultiThreads
         }
         ttime += time;
 
-        System.out.format("FC=%d, WT=%d: Tmean = %.0f, Rmean = %.0f, Umean = %.0f\n",
-                          failCount, waitTime, time / n, retries / n, uniqw / n);
+        System.out.format("FC=%d, WT=%d: Tmin = %d, Tmean = %.0f, Rmean = %.0f, Umean = %.0f\n",
+                          failCount, waitTime, failCount * waitTime,
+                          time / n, retries / n, uniqw / n);
       }
     }
 

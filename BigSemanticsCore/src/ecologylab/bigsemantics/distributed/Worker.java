@@ -1,4 +1,4 @@
-package ecologylab.bigsemantics.dpool;
+package ecologylab.bigsemantics.distributed;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -6,7 +6,7 @@ import java.util.concurrent.Executors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ecologylab.bigsemantics.dpool.Task.State;
+import ecologylab.bigsemantics.distributed.Task.State;
 
 /**
  * Represents a worker. This implementation uses a fixed size thread pool, but subclasses can
@@ -90,60 +90,12 @@ public class Worker<T extends Task>
   protected synchronized void decOngoing()
   {
     numOngoingTasks--;
+    triggerAvailableEventIfOk();
   }
 
   public boolean canHandle(Task task)
   {
     return true;
-  }
-
-  private class WorkerHandler implements TaskEventHandler<T>
-  {
-
-    private TaskEventHandler<T> handler;
-
-    private WorkerHandler(TaskEventHandler<T> handler)
-    {
-      this.handler = handler;
-    }
-
-    @Override
-    public void onComplete(T task)
-    {
-      notifyWorker(task);
-      if (handler != null)
-      {
-        handler.onComplete(task);
-      }
-    }
-
-    @Override
-    public void onFail(T task)
-    {
-      notifyWorker(task);
-      if (handler != null)
-      {
-        handler.onFail(task);
-      }
-    }
-
-    @Override
-    public void onTerminate(T task)
-    {
-      notifyWorker(task);
-      if (handler != null)
-      {
-        handler.onTerminate(task);
-      }
-    }
-
-    void notifyWorker(T task)
-    {
-      logger.debug("Task {} performed in worker {}", task, Worker.this);
-      decOngoing();
-      triggerAvailableEventIfOk();
-    }
-
   }
 
   /**
@@ -161,31 +113,45 @@ public class Worker<T extends Task>
       return Result.REJECTED;
     }
 
-    WorkerHandler workerHandler = new WorkerHandler(handler);
-
-    doSubmit(task, workerHandler);
+    doSubmit(task, handler);
     incOngoing();
 
-    if (numOngoingTasks < numThreads)
-    {
-      return Result.ACCEPTED;
-    }
-    else
-    {
-      return Result.ACCEPTED_AND_FULL;
-    }
+    return (numOngoingTasks < numThreads) ? Result.ACCEPTED : Result.ACCEPTED_AND_FULL;
   }
 
   protected void doSubmit(final T task, final TaskEventHandler<T> handler)
   {
+    onSubmitAccept(task, handler);
     executors.submit(new Runnable()
     {
       @Override
       public void run()
       {
         performTask(task, handler);
+
+        logger.debug("Task {} performed in worker {}", task, Worker.this);
+        onTaskPerformed(task, handler);
+        decOngoing();
       }
+
     });
+  }
+
+  /**
+   * Subclasses can override this to take actions when task is accepted by this worker, e.g. to
+   * provide worker-specific information for performing.
+   */
+  protected void onSubmitAccept(T task, TaskEventHandler<T> handler)
+  {
+    // no op
+  }
+
+  /**
+   * Subclasses can override this to take actions after task is performed by this worker.
+   */
+  protected void onTaskPerformed(T task, TaskEventHandler<T> handler)
+  {
+    // no op
   }
 
   protected void performTask(T task, TaskEventHandler<T> handler)
@@ -203,8 +169,7 @@ public class Worker<T extends Task>
         task.setState(State.ONGOING);
         try
         {
-          Object taskArg = getPerformArg();
-          if (task.perform(taskArg))
+          if (task.perform())
           {
             task.setState(State.SUCCEEDED);
             logger.debug("Task {} completed", task);
@@ -228,7 +193,6 @@ public class Worker<T extends Task>
         catch (Exception e)
         {
           task.setState(State.TERMINATED);
-          task.setError(e);
           logger.error("Exception when performing task " + task, e);
           if (handler != null)
           {
@@ -238,16 +202,6 @@ public class Worker<T extends Task>
         }
       }
     }
-  }
-
-  /**
-   * Subclasses should override this to provide arguments for the task to perform.
-   * 
-   * @return
-   */
-  protected Object getPerformArg()
-  {
-    return this;
   }
 
   @Override

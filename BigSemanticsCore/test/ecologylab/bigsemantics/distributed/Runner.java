@@ -1,4 +1,4 @@
-package ecologylab.bigsemantics.dpool;
+package ecologylab.bigsemantics.distributed;
 
 /**
  * Helper class.

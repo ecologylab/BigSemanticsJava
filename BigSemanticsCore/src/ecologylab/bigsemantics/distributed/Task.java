@@ -1,4 +1,4 @@
-package ecologylab.bigsemantics.dpool;
+package ecologylab.bigsemantics.distributed;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +13,7 @@ import ecologylab.serialization.annotations.simpl_scalar;
  * @param <A>
  *          Type of the argument for performing.
  */
-public abstract class Task<A>
+public abstract class Task implements Cloneable
 {
 
   public static enum State
@@ -21,21 +21,19 @@ public abstract class Task<A>
     WAITING, ONGOING, SUCCEEDED, TERMINATED
   }
 
-  static Logger     logger = LoggerFactory.getLogger(Task.class);
+  static Logger  logger = LoggerFactory.getLogger(Task.class);
 
   @simpl_scalar
-  private String    id;
+  private String id;
 
   @simpl_scalar
-  private int       priority;
+  private int    priority;
 
   @simpl_scalar
-  private State     state  = State.WAITING;
+  private State  state  = State.WAITING;
 
   @simpl_scalar
-  private int       failCount;
-
-  private Exception error;
+  private int    failCount;
 
   public Task(String id)
   {
@@ -78,16 +76,6 @@ public abstract class Task<A>
     failCount++;
   }
 
-  public Exception getError()
-  {
-    return error;
-  }
-
-  protected void setError(Exception error)
-  {
-    this.error = error;
-  }
-
   /**
    * Perform the task.
    * 
@@ -95,18 +83,24 @@ public abstract class Task<A>
    * is thrown, but this method returns false (which means the task failed), the system will retry
    * the task.
    * 
-   * @param arg
-   *          The argument provided by the caller. For example, can be environmental information.
    * @return true if the task succeeded; otherwise false.
    * @throws Exception
    */
-  abstract public boolean perform(A arg) throws Exception;
+  abstract public boolean perform() throws Exception;
 
   public synchronized void waitForDone() throws InterruptedException
   {
     if (state != State.SUCCEEDED && state != State.TERMINATED)
     {
       this.wait();
+    }
+  }
+
+  public synchronized void waitForDone(long ms) throws InterruptedException
+  {
+    if (state != State.SUCCEEDED && state != State.TERMINATED)
+    {
+      this.wait(ms);
     }
   }
 

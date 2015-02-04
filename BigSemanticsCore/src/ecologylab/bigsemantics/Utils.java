@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.io.Reader;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
 import java.util.Map;
@@ -41,7 +42,7 @@ public class Utils
   private static HashFunction secureHashFunc;
 
   private static BaseEncoding base64Encoder;
-  
+
   private static BaseEncoding base64NoPadding;
 
   private static final int    BUF_SIZE = 1024;
@@ -99,7 +100,7 @@ public class Utils
   {
     return base64Encoder.decode(input);
   }
-  
+
   /**
    * Base64 encoding, without padding. Since padding info is lost, usually we do not try to decode
    * the result, thus there is not a corresponding decoding function.
@@ -127,7 +128,7 @@ public class Utils
     String code = base64urlNoPaddingEncode(hash);
     return code;
   }
-  
+
   public static String getLocationHash(ParsedURL location)
   {
     return "A" + secureHashBase64NoPadding(location);
@@ -175,11 +176,16 @@ public class Utils
   public static String readInputStream(InputStream inputStream, Charset charset) throws IOException
   {
     BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, charset));
+    return readAllFromReader(br);
+  }
+
+  public static String readAllFromReader(Reader reader) throws IOException
+  {
     StringBuilder sb = StringBuilderBaseUtils.acquire();
     char[] buf = new char[BUF_SIZE];
     while (true)
     {
-      int n = br.read(buf, 0, BUF_SIZE);
+      int n = reader.read(buf, 0, BUF_SIZE);
       if (n < 0)
       {
         break;

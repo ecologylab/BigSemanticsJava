@@ -1,4 +1,4 @@
-package ecologylab.bigsemantics.dpool;
+package ecologylab.bigsemantics.distributed;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,8 +9,8 @@ import java.util.concurrent.PriorityBlockingQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ecologylab.bigsemantics.dpool.Task.State;
-import ecologylab.bigsemantics.dpool.Worker.AvailableEventHandler;
+import ecologylab.bigsemantics.distributed.Task.State;
+import ecologylab.bigsemantics.distributed.Worker.AvailableEventHandler;
 
 /**
  * The dispatcher. Needs a set of workers. Can queue tasks to this.
@@ -140,7 +140,7 @@ public class Dispatcher<T extends Task, W extends Worker<T>>
   {
     TaskEntry<T> taskEntry = taskQueue.take(); // this will block if taskQueue is empty
     T task = taskEntry.getTask(); // the task to dispatch in this invocation
-    beginDispatch(task);
+    onDispatch(task);
     TaskEventHandler<T> handler = taskEntry.getHandler();
     logger.debug("Task taken: {}", task);
 
@@ -210,7 +210,7 @@ public class Dispatcher<T extends Task, W extends Worker<T>>
    * 
    * @param task
    */
-  protected void beginDispatch(T task)
+  protected void onDispatch(T task)
   {
     // no op
   }
@@ -278,7 +278,7 @@ public class Dispatcher<T extends Task, W extends Worker<T>>
    * @param task
    * @return true if there are too many failures for the input task; otherwise false.
    */
-  protected boolean isTooManyFail(Task task)
+  protected boolean isTooManyFail(T task)
   {
     return true;
   }
