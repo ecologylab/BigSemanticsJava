@@ -63,9 +63,11 @@ public class MetaMetadata extends MetaMetadataCompositeField
 
   @simpl_scalar
   private String                                  parser;
+
   @simpl_scalar
   @mm_dont_inherit
   private String                                  extractWith;
+
   @simpl_collection
   @simpl_scope(SemanticActionTranslationScope.SEMANTIC_ACTION_TRANSLATION_SCOPE)
   @mm_dont_inherit
@@ -88,6 +90,9 @@ public class MetaMetadata extends MetaMetadataCompositeField
 
   @simpl_scalar
   private RedirectHandling                        redirectHandling;
+
+  @simpl_scalar
+  private String                                  bibtexType;
 
   /**
    * Mixins are needed so that we can have objects of multiple metadata classes in side a single

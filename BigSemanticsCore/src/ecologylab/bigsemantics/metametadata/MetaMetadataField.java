@@ -42,15 +42,11 @@ import ecologylab.textformat.NamedStyle;
  */
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
-
-
-
 @simpl_inherit
 public abstract class MetaMetadataField extends MetaMetadataFieldDeclaration
     implements ScopeProvider, IMappable<String>, Iterable<MetaMetadataField>, MMDConstants
 {
-	  @simpl_scalar
-	  private String           			facetType;
+
   /**
    * The Comparator for conveniently sort fields.
    */
@@ -202,6 +198,12 @@ public abstract class MetaMetadataField extends MetaMetadataFieldDeclaration
     logger = LoggerFactory.getLogger(MetaMetadataField.class);
   }
 
+  @simpl_scalar
+  private String                                      facetType;
+
+  @simpl_scalar
+  private String                                      bibtexField;
+
   /**
    * The nested child fields inside this field.
    */
@@ -234,7 +236,7 @@ public abstract class MetaMetadataField extends MetaMetadataFieldDeclaration
   @simpl_nowrap
   @mm_dont_inherit
   private HashMapArrayList<String, MmdGenericTypeVar> genericTypeVars;
-  
+
   private HashMapArrayList<String, MmdGenericTypeVar> allGenericTypeVars;
 
   private String                                      fieldNameInJava;
