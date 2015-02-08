@@ -14,7 +14,9 @@ import org.apache.http.ParseException;
 import org.apache.http.util.EntityUtils;
 
 import ecologylab.generic.HashMapArrayList;
+import ecologylab.serialization.annotations.Hint;
 import ecologylab.serialization.annotations.simpl_collection;
+import ecologylab.serialization.annotations.simpl_hints;
 import ecologylab.serialization.annotations.simpl_map;
 import ecologylab.serialization.annotations.simpl_scalar;
 
@@ -49,6 +51,7 @@ public class SimplHttpResponse
    * The content of the page, e.g. in HTML.
    */
   @simpl_scalar
+  @simpl_hints(Hint.XML_LEAF)
   private String                                    content;
 
   private String                                    mimeType;
@@ -196,6 +199,11 @@ public class SimplHttpResponse
     this.content = content;
   }
 
+  public int getContentLength()
+  {
+    return content == null ? 0 : content.length();
+  }
+
   public static SimplHttpResponse parse(String initialUrl, InputStream istream) throws Exception
   {
     return new HttpResponseParser().parse(initialUrl, istream);
@@ -232,7 +240,8 @@ public class SimplHttpResponse
     result.parseContentType();
 
     HttpEntity entity = resp.getEntity();
-    EntityUtils.toString(entity, Charset.forName("UTF-8"));
+    String content = EntityUtils.toString(entity, Charset.forName("UTF-8"));
+    result.setContent(content);
 
     return result;
   }

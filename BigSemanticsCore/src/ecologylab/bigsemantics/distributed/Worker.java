@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ecologylab.bigsemantics.distributed.Task.State;
+import ecologylab.serialization.annotations.simpl_scalar;
 
 /**
  * Represents a worker. This implementation uses a fixed size thread pool, but subclasses can
@@ -29,8 +30,10 @@ public class Worker<T extends Task>
 
   static Logger                    logger = LoggerFactory.getLogger(Worker.class);
 
+  @simpl_scalar
   private String                   id;
 
+  @simpl_scalar
   private int                      numThreads;
 
   private int                      priority;
@@ -40,6 +43,14 @@ public class Worker<T extends Task>
   private int                      numOngoingTasks;
 
   private AvailableEventHandler<T> availableEventHandler;
+
+  /**
+   * For deserialization only.
+   */
+  public Worker()
+  {
+    this("UNINITIALIZED_WORKER", 1);
+  }
 
   public Worker(String id, int numThreads)
   {
@@ -57,6 +68,11 @@ public class Worker<T extends Task>
   public String getId()
   {
     return this.id;
+  }
+
+  protected void setId(String id)
+  {
+    this.id = id;
   }
 
   public int getNumThreads()
@@ -93,7 +109,7 @@ public class Worker<T extends Task>
     triggerAvailableEventIfOk();
   }
 
-  public boolean canHandle(Task task)
+  public boolean canHandle(T task)
   {
     return true;
   }

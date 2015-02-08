@@ -81,9 +81,10 @@ public class HttpResponseParser
   }
 
   private HashMapArrayList<String, SimplHttpHeader> readHeaders(InputStream istream)
-      throws IOException
+      throws IOException, HttpClientException
   {
-    HashMapArrayList<String, SimplHttpHeader> result = new HashMapArrayList<String, SimplHttpHeader>();
+    HashMapArrayList<String, SimplHttpHeader> result =
+        new HashMapArrayList<String, SimplHttpHeader>();
     while (true)
     {
       String line = readUntil(istream, "\r\n");
@@ -92,10 +93,19 @@ public class HttpResponseParser
         break;
       }
       int p = line.indexOf(':');
-      String name = line.substring(0, p);
-      String value = line.substring(p + 1).trim();
-      SimplHttpHeader header = new SimplHttpHeader(name, value);
-      result.put(name, header);
+      if (p > 0)
+      {
+        String name = line.substring(0, p).trim();
+        String value = line.substring(p + 1).trim();
+        if (name.length() > 0 && value.length() > 0)
+        {
+          SimplHttpHeader header = new SimplHttpHeader(name, value);
+          result.put(name, header);
+          continue;
+        }
+      }
+
+      throw new HttpClientException("Invalid header: " + line);
     }
     return result;
   }

@@ -104,87 +104,61 @@ public class HttpClientUtils
   public static SimplHttpResponse doGet(String userAgent,
                                         String url,
                                         Map<String, String> additionalParams)
+      throws URISyntaxException, IOException
   {
-    try
-    {
-      URIBuilder ub = toUriBuilder(url);
+    URIBuilder ub = toUriBuilder(url);
 
-      if (additionalParams != null)
+    if (additionalParams != null)
+    {
+      for (String key : additionalParams.keySet())
       {
-        for (String key : additionalParams.keySet())
-        {
-          String value = additionalParams.get(key);
-          ub.addParameter(key, value);
-        }
+        String value = additionalParams.get(key);
+        ub.addParameter(key, value);
       }
-      URI uri = ub.build();
+    }
+    URI uri = ub.build();
 
-      String hostName = uri.getHost();
-      int port = uri.getPort();
-      String host = hostName + ((port > 0) ? (":" + port) : "");
+    String hostName = uri.getHost();
+    int port = uri.getPort();
+    String host = hostName + ((port > 0) ? (":" + port) : "");
 
-      HttpGet get = new HttpGet(uri);
-      get.addHeader("HOST", host); // this header is required by HTTP 1.1
+    HttpGet get = new HttpGet(uri);
+    get.addHeader("HOST", host); // this header is required by HTTP 1.1
 
-      return doRequest(userAgent, url, get);
-    }
-    catch (UnsupportedEncodingException e)
-    {
-      logger.error("Exception when generating a HttpGet object for " + url, e);
-    }
-    catch (URISyntaxException e)
-    {
-      logger.error("Exception when generating a HttpGet object for " + url, e);
-    }
-    catch (ClientProtocolException e)
-    {
-      logger.error("Exception processing HttpGet for " + url, e);
-    }
-    catch (IOException e)
-    {
-      logger.error("Exception processing HttpGet for " + url, e);
-    }
-    return null;
+    return doRequest(userAgent, url, get);
   }
 
   public static SimplHttpResponse doPost(String userAgent,
                                          String url,
                                          Map<String, String> formParams)
+      throws URISyntaxException, IOException
   {
-    try
+    URIBuilder ub = toUriBuilder(url);
+    URI uri = ub.build();
+    String hostName = uri.getHost();
+    int port = uri.getPort();
+    String host = hostName + ((port > 0) ? (":" + port) : "");
+    HttpPost post = new HttpPost(uri);
+    post.addHeader("HOST", host); // this header is required by HTTP 1.1
+
+    List<NameValuePair> params = new ArrayList<NameValuePair>();
+    for (String key : formParams.keySet())
     {
-      HttpPost post = new HttpPost(url);
-      URI uri = post.getURI();
-      String hostName = uri.getHost();
-      int port = uri.getPort();
-      String host = hostName + ((port > 0) ? (":" + port) : "");
-      post.addHeader("HOST", host); // this header is required by HTTP 1.1
-  
-      List<NameValuePair> params = new ArrayList<NameValuePair>();
-      for (String key : formParams.keySet())
+      String value = formParams.get(key);
+      if (value != null)
       {
-        String value = formParams.get(key);
-        if (value != null)
-        {
-          params.add(new BasicNameValuePair(key, value));
-        }
+        params.add(new BasicNameValuePair(key, value));
       }
-      HttpEntity entity = new UrlEncodedFormEntity(params, Charset.forName("UTF-8"));
-      post.setEntity(entity);
-  
-      return doRequest(userAgent, url, post);
     }
-    catch (IOException e)
-    {
-      logger.error("Exception processing HttpPost for " + url, e);
-    }
-    return null;
+    HttpEntity entity = new UrlEncodedFormEntity(params, Charset.forName("UTF-8"));
+    post.setEntity(entity);
+
+    return doRequest(userAgent, url, post);
   }
 
   private static SimplHttpResponse doRequest(String userAgent,
                                              final String url,
-                                             HttpUriRequest get)
-      throws IOException, ClientProtocolException
+                                             HttpUriRequest get) throws IOException
   {
     AbstractHttpClient client = factory.create(userAgent);
     // client must use BasicRedirectStrategy!

@@ -96,6 +96,11 @@ public class Dispatcher<T extends Task, W extends Worker<T>>
     workerQueue = new PriorityBlockingQueue<WorkerEntry<T, W>>();
   }
 
+  Map<String, W> getWorkers()
+  {
+    return workers;
+  }
+
   public void addWorker(W worker)
   {
     worker.setAvailableEventHandler(new AvailableEventHandler<T>()
@@ -122,7 +127,18 @@ public class Dispatcher<T extends Task, W extends Worker<T>>
   public void queueTask(T task, TaskEventHandler<T> handler)
   {
     taskQueue.put(new TaskEntry<T>(task, handler));
+    onQueued(task);
     logger.debug("Task queued: {}", task);
+  }
+
+  /**
+   * Subclasses can use this to notify the task that it is being dispatched.
+   * 
+   * @param task
+   */
+  protected void onQueued(T task)
+  {
+    // no op
   }
 
   protected void queueWorker(W worker)
