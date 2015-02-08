@@ -1,7 +1,9 @@
 package ecologylab.bigsemantics.httpclient;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +16,7 @@ import org.apache.http.ParseException;
 import org.apache.http.util.EntityUtils;
 
 import ecologylab.generic.HashMapArrayList;
+import ecologylab.net.ParsedURL;
 import ecologylab.serialization.annotations.Hint;
 import ecologylab.serialization.annotations.simpl_collection;
 import ecologylab.serialization.annotations.simpl_hints;
@@ -58,6 +61,8 @@ public class SimplHttpResponse
 
   private String                                    charset;
 
+  private InputStream                               contentStream;
+
   public String getUrl()
   {
     return url;
@@ -90,6 +95,21 @@ public class SimplHttpResponse
   protected void setOtherUrls(List<String> otherUrls)
   {
     this.otherUrls = otherUrls;
+  }
+
+  public List<ParsedURL> getOtherPurls()
+  {
+    if (otherUrls != null)
+    {
+      List<ParsedURL> result = new ArrayList<ParsedURL>();
+      for (String url : otherUrls)
+      {
+        ParsedURL purl = ParsedURL.getAbsolute(url);
+        result.add(purl);
+      }
+      return result;
+    }
+    return null;
   }
 
   public int getCode()
@@ -197,11 +217,21 @@ public class SimplHttpResponse
   public void setContent(String content)
   {
     this.content = content;
+    this.contentStream = null;
   }
 
   public int getContentLength()
   {
     return content == null ? 0 : content.length();
+  }
+
+  public InputStream getContentAsStream() throws UnsupportedEncodingException
+  {
+    if (contentStream == null && content != null)
+    {
+      contentStream = new ByteArrayInputStream(content.getBytes("UTF-8"));
+    }
+    return contentStream;
   }
 
   public static SimplHttpResponse parse(String initialUrl, InputStream istream) throws Exception
@@ -221,12 +251,19 @@ public class SimplHttpResponse
     }
     else
     {
-      result.setUrl(redirectedUrls.get(redirectedUrls.size() - 1));
-      result.addOtherUrl(initialUrl);
-      for (int i = 0; i < redirectedUrls.size() - 1; ++i)
+      List<String> otherUrls = new ArrayList<String>();
+      String url = initialUrl;
+      for (String redirectedUrl : redirectedUrls)
       {
-        result.addOtherUrl(redirectedUrls.get(i));
+        otherUrls.add(url);
+        if (HttpClientUtils.looksLikeRelative(redirectedUrl))
+        {
+          redirectedUrl = HttpClientUtils.relativeToAbsolute(url, redirectedUrl);
+        }
+        url = redirectedUrl;
       }
+      result.setUrl(url);
+      result.otherUrls = otherUrls;
     }
 
     result.setCode(resp.getStatusLine().getStatusCode());

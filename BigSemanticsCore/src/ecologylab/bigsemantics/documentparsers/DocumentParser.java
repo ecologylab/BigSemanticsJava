@@ -6,6 +6,7 @@ package ecologylab.bigsemantics.documentparsers;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.util.HashSet;
 import java.util.List;
 
@@ -290,10 +291,10 @@ abstract public class DocumentParser<D extends Document> extends Debug
 
     if (downloadController != null)
     {
-      ParsedURL connPurl = downloadController.getLocation();
+      ParsedURL connPurl = downloadController.getOriginalLocation();
       if (connPurl == null)
       {
-        List<ParsedURL> redirects = downloadController.getRedirectedLocations();
+        List<ParsedURL> redirects = downloadController.getHttpResponse().getOtherPurls();
         if (redirects != null && redirects.size() > 0)
         {
           connPurl = redirects.get(0);
@@ -332,15 +333,20 @@ abstract public class DocumentParser<D extends Document> extends Debug
   {
     DownloadController downloadController = documentClosure.reConnect();
     this.downloadController = downloadController;
-    return downloadController.getInputStream();
+    return downloadController.getHttpResponse().getContentAsStream();
   }
 
   /**
    * @return The input stream to the raw document being downloaded, if any.
+   * @throws UnsupportedEncodingException
    */
-  protected InputStream inputStream()
+  protected InputStream inputStream() throws UnsupportedEncodingException
   {
-    return (downloadController == null) ? null : downloadController.getInputStream();
+    if (downloadController != null)
+    {
+      return downloadController.getHttpResponse().getContentAsStream();
+    }
+    return null;
   }
 
   /**

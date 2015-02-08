@@ -1,9 +1,8 @@
 package ecologylab.bigsemantics.downloadcontrollers;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
 
+import ecologylab.bigsemantics.httpclient.SimplHttpResponse;
 import ecologylab.net.ParsedURL;
 
 /**
@@ -32,6 +31,15 @@ public interface DownloadController
   public boolean accessAndDownload(ParsedURL location) throws IOException;
 
   /**
+   * Returns a ParsedURL object corresponding to the original resource location used to initiate the
+   * connection. This value does not change if the connection is redirected
+   * 
+   * @return a ParsedURL object corresponding to the original resource location used to initiate the
+   *         connection
+   */
+  public ParsedURL getOriginalLocation();
+
+  /**
    * Returns a boolean indicating if the HTTP response code is that of a good connection
    * 
    * @return a boolean indicating if the HTTP response code is that of a good connection
@@ -39,69 +47,9 @@ public interface DownloadController
   public boolean isGood();
 
   /**
-   * Returns the status code of the HTTP response message for the connection
-   * 
-   * @return the status code of the HTTP response message for the connection
+   * @return The HTTP response. If accessAndDownload() and isGood() returns true, this should never
+   *         be null.
    */
-  public int getStatus();
-
-  /**
-   * Returns the message from the HTTP response message
-   * 
-   * @return the message from the HTTP response message
-   */
-  public String getStatusMessage();
-
-  /**
-   * Returns a ParsedURL object corresponding to the original resource location used to initiate the
-   * connection. This value does not change if the connection is redirected
-   * 
-   * @return a ParsedURL object corresponding to the original resource location used to initiate the
-   *         connection
-   */
-  public ParsedURL getLocation();
-
-  /**
-   * Returns a list of ParsedURLs corresponding to the location of the resource with which the
-   * connection is associated. This value does change with redirects
-   * 
-   * @return a list of ParsedURLs associated with the resource.
-   */
-  public List<ParsedURL> getRedirectedLocations();
-
-  /**
-   * Returns the String representation of the content type
-   * 
-   * @return the String representation of the content type
-   */
-  public String getMimeType();
-
-  /**
-   * Returns the content encoding type (character set)
-   * 
-   * @return a String representation of the content encoding type (character set)
-   */
-  public String getCharset();
-
-  /**
-   * Returns the content of the named header field
-   * 
-   * @param name
-   *          the name of the requested header field
-   * @return a String of the content of the named header field
-   */
-  public String getHeader(String name);
-
-  /**
-   * @return The content of the downloaded document.
-   */
-  public String getContent() throws IOException;
-
-  /**
-   * Returns an input stream which reads from the connection
-   * 
-   * @return an input stream which reads from the connection
-   */
-  public InputStream getInputStream();
+  public SimplHttpResponse getHttpResponse();
 
 }

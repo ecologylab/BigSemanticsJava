@@ -1,8 +1,5 @@
 package ecologylab.bigsemantics.httpclient;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.http.client.params.ClientPNames;
 import org.apache.http.client.protocol.RequestAcceptEncoding;
 import org.apache.http.client.protocol.ResponseContentEncoding;
@@ -18,16 +15,13 @@ import org.apache.http.params.CoreProtocolPNames;
 public class HttpClientFactory
 {
 
-  private PoolingClientConnectionManager  connectionManager;
-
-  private Map<String, AbstractHttpClient> clients;
+  private PoolingClientConnectionManager connectionManager;
 
   public HttpClientFactory()
   {
     connectionManager = new PoolingClientConnectionManager();
     connectionManager.setDefaultMaxPerRoute(20);
     connectionManager.setMaxTotal(200);
-    clients = new HashMap<String, AbstractHttpClient>();
   }
 
   public AbstractHttpClient create()
@@ -37,20 +31,20 @@ public class HttpClientFactory
 
   public synchronized AbstractHttpClient create(String userAgent)
   {
-    if (!clients.containsKey(userAgent))
+    if (userAgent == null)
     {
-      // From Apache HttpClient doc: "HttpClient is fully thread-safe when used
-      // with a thread-safe connection manager." The
-      // PoolingClientConnectionManager we are using is such as thread-safe one.
-      AbstractHttpClient client = new RedirectHttpClient(connectionManager);
-      prepareHttpClient(client);
-      if (userAgent.length() > 0)
-      {
-        client.getParams().setParameter(CoreProtocolPNames.USER_AGENT, userAgent);
-      }
-      clients.put(userAgent, client);
+      userAgent = "";
     }
-    return clients.get(userAgent);
+    // From Apache HttpClient doc: "HttpClient is fully thread-safe when used
+    // with a thread-safe connection manager." The
+    // PoolingClientConnectionManager we are using is such as thread-safe one.
+    AbstractHttpClient client = new RedirectHttpClient(connectionManager);
+    prepareHttpClient(client);
+    if (userAgent.length() > 0)
+    {
+      client.getParams().setParameter(CoreProtocolPNames.USER_AGENT, userAgent);
+    }
+    return client;
   }
 
   private void prepareHttpClient(AbstractHttpClient client)

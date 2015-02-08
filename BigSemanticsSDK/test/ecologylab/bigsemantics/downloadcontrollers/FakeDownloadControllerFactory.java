@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Charsets;
 
 import ecologylab.bigsemantics.Utils;
+import ecologylab.bigsemantics.httpclient.SimplHttpResponse;
 import ecologylab.net.ParsedURL;
 
 /**
@@ -23,18 +24,18 @@ import ecologylab.net.ParsedURL;
 public class FakeDownloadControllerFactory
 {
 
-  static Logger                     logger;
+  static Logger                          logger;
 
   static
   {
     logger = LoggerFactory.getLogger(FakeDownloadControllerFactory.class);
   }
 
-  private Map<String, HttpResponse> presetResponses;
+  private Map<String, SimplHttpResponse> presetResponses;
 
   public FakeDownloadControllerFactory()
   {
-    presetResponses = new HashMap<String, HttpResponse>();
+    presetResponses = new HashMap<String, SimplHttpResponse>();
   }
 
   /**
@@ -43,11 +44,11 @@ public class FakeDownloadControllerFactory
    * @param location
    * @param response
    */
-  public void setResponse(String location, HttpResponse response)
+  public void setResponse(String location, SimplHttpResponse response)
   {
-    if (response.getLocation() == null)
+    if (response.getUrl() == null)
     {
-      response.setLocation(location.toString());
+      response.setUrl(location.toString());
     }
     presetResponses.put(location, response);
   }
@@ -59,7 +60,7 @@ public class FakeDownloadControllerFactory
    * @param response
    * @param content
    */
-  public void setResponse(String location, HttpResponse response, String content)
+  public void setResponse(String location, SimplHttpResponse response, String content)
   {
     response.setContent(content == null ? "" : content);
     setResponse(location, response);
@@ -72,22 +73,22 @@ public class FakeDownloadControllerFactory
    * @param response
    * @param contentStream
    */
-  public void setResponse(ParsedURL location, HttpResponse response, InputStream contentStream)
+  public void setResponse(ParsedURL location, SimplHttpResponse response, InputStream contentStream)
   {
     Charset charset = Utils.getCharsetByName(response.getCharset(), Charsets.UTF_8);
     String content = "";
     try
     {
       content = Utils.readInputStream(contentStream, charset);
+      setResponse(location.toString(), response, content);
     }
     catch (IOException e)
     {
       logger.warn("Cannot read content stream for {}", location);
     }
-    response.setContent(content);
   }
 
-  protected Map<String, HttpResponse> presetResponses()
+  protected Map<String, SimplHttpResponse> presetResponses()
   {
     return presetResponses;
   }

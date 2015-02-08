@@ -1,16 +1,12 @@
 package ecologylab.bigsemantics.downloadcontrollers;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ecologylab.bigsemantics.httpclient.HttpClientUtils;
+import ecologylab.bigsemantics.httpclient.SimplHttpResponse;
 import ecologylab.net.ParsedURL;
 
 /**
@@ -21,16 +17,7 @@ import ecologylab.net.ParsedURL;
 public class DefaultDownloadController extends AbstractDownloadController
 {
 
-  static Logger             logger;
-
-  static
-  {
-    logger = LoggerFactory.getLogger(DefaultDownloadController.class);
-  }
-
-  public static final int   MAX_REDIRECTS = 10;
-
-  private HttpURLConnection connection;
+  static Logger logger = LoggerFactory.getLogger(DefaultDownloadController.class);
 
   /**
    * Opens the HttpURLConnection to the specified location and downloads the resource
@@ -41,87 +28,23 @@ public class DefaultDownloadController extends AbstractDownloadController
    */
   public boolean accessAndDownload(ParsedURL location) throws IOException
   {
-    setLocation(location);
-
+    setOriginalLocation(location);
     try
     {
-      connection = (HttpURLConnection) location.url().openConnection();
-
-      // Attempt to follow redirects until redirect limit is reached
-      int redirects = 0;
-      Set<String> redirectedLocs = new HashSet<String>();
-      while (true)
+      SimplHttpResponse result = HttpClientUtils.doGet(getUserAgent(), location.toString(), null);
+      int httpStatus = result.getCode();
+      if (httpStatus >= 200 && httpStatus < 300)
       {
-        String userAgent = getUserAgent();
-        if (userAgent != null)
-        {
-          connection.setRequestProperty("User-Agent", userAgent);
-        }
-        int httpStatus = connection.getResponseCode();
-        setStatus(httpStatus);
-
-        if (isRedirecting(httpStatus) && redirects <= MAX_REDIRECTS)
-        {
-          String redirectedLoc = connection.getHeaderField("Location");
-          addToSet(redirectedLocs, redirectedLoc);
-          connection = (HttpURLConnection) new URL(redirectedLoc).openConnection();
-        }
-        else
-        {
-          break;
-        }
-      }
-      if (redirectedLocs.size() > 0)
-      {
-        for (String loc : redirectedLocs)
-        {
-          addRedirectedLocation(ParsedURL.getAbsolute(loc));
-        }
-      }
-
-      if (connection.getContentType() != null)
-      {
-        String[] contentType = connection.getContentType().split(";");
-
-        setMimeType(contentType[0]);
-        String charset = contentType.length > 1
-            ? contentType[1].trim().substring("charset=".length())
-            : null;
-        setCharset(charset);
-      }
-
-      int httpStatus = getStatus();
-      boolean isGood = (200 <= httpStatus && httpStatus < 300);
-      setIsGood(isGood);
-
-      if (isGood)
-      {
-        InputStream contentStream = connection.getInputStream();
-        this.setInputStream(contentStream);
-        setStatusMessage(connection.getResponseMessage());
+        setIsGood(true);
+        setHttpResponse(result);
       }
     }
-    catch (MalformedURLException e)
+    catch (Exception e)
     {
       logger.error("Error connecting to " + location, e);
       setIsGood(false);
     }
-
     return isGood();
-  }
-
-  private boolean isRedirecting(int httpStatus)
-  {
-    return httpStatus == HttpURLConnection.HTTP_MOVED_PERM
-        || httpStatus == HttpURLConnection.HTTP_MOVED_TEMP;
-  }
-
-  private void addToSet(Set<String> redirectedLocs, String redirectedLoc)
-  {
-    if (redirectedLoc != null && !redirectedLoc.equals(getLocation().toString()))
-    {
-      redirectedLocs.add(redirectedLoc);
-    }
   }
 
 }

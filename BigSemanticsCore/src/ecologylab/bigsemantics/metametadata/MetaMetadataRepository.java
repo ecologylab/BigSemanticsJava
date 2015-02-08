@@ -814,8 +814,25 @@ public class MetaMetadataRepository extends ElementState
    */
   public Document constructDocument(ParsedURL purl, boolean isImage)
   {
-    if (purl.isImg() || isImage)
+    if (isImage)
+    {
       return constructImage(purl);
+    }
+    if (purl.isImg())
+    {
+      try
+      {
+        Image img = constructImage(purl);
+        if (img != null)
+        {
+          return img;
+        }
+      }
+      catch (Exception e)
+      {
+        // ignore
+      }
+    }
 
     MetaMetadata metaMetadata = getRichDocumentMM(purl);
     List<ParsedURL> additionalLocations = new ArrayList<ParsedURL>();

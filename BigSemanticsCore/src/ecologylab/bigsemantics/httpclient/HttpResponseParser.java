@@ -46,7 +46,12 @@ public class HttpResponseParser
         {
           // redirection happened
           otherUrls.add(url);
+          String previousUrl = url;
           url = headers.get("Location").getValue();
+          if (HttpClientUtils.looksLikeRelative(url))
+          {
+            url = HttpClientUtils.relativeToAbsolute(previousUrl, url);
+          }
           continue;
         }
         result.setHeaders(headers);

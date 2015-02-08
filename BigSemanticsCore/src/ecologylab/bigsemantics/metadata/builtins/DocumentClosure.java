@@ -27,6 +27,7 @@ import ecologylab.bigsemantics.documentparsers.DocumentParser;
 import ecologylab.bigsemantics.downloadcontrollers.CachedPageDownloadController;
 import ecologylab.bigsemantics.downloadcontrollers.DownloadController;
 import ecologylab.bigsemantics.html.documentstructure.SemanticInLinks;
+import ecologylab.bigsemantics.httpclient.SimplHttpResponse;
 import ecologylab.bigsemantics.logging.CachedHtmlStale;
 import ecologylab.bigsemantics.logging.CachedMmdStale;
 import ecologylab.bigsemantics.logging.ChangeLocation;
@@ -58,8 +59,7 @@ import ecologylab.serialization.library.geom.PointInt;
  * 
  * @author andruid
  */
-@SuppressWarnings(
-{ "rawtypes", "unchecked" })
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class DocumentClosure extends SetElement
     implements TermVectorFeature, Downloadable, SemanticsConstants,
     Continuation<DocumentClosure>
@@ -560,7 +560,8 @@ public class DocumentClosure extends SetElement
       if (downloadController.isGood())
       {
         handleRedirections(downloadController, location);
-        metaMetadata = changeMetaMetadataIfNeeded(downloadController.getMimeType());
+        metaMetadata =
+            changeMetaMetadataIfNeeded(downloadController.getHttpResponse().getMimeType());
 
         findParser(metaMetadata, downloadController);
         if (documentParser != null)
@@ -592,26 +593,34 @@ public class DocumentClosure extends SetElement
     String userAgent = document.getMetaMetadata().getUserAgentString();
     DownloadController downloadController = semanticsScope.createDownloadController(this);
     downloadController.setUserAgent(userAgent);
-    downloadController.accessAndDownload(location);
-    getLogRecord().setDownloadStatusCode(downloadController.getStatus());
+    if (downloadController.accessAndDownload(location))
+    {
+      SimplHttpResponse httpResp = downloadController.getHttpResponse();
+      getLogRecord().setDownloadStatusCode(httpResp.getCode());
+    }
     getLogRecord().endPhase(Phase.DOWNLOAD);
     return downloadController;
   }
 
   private void handleRedirections(DownloadController downloadController, ParsedURL location)
   {
-    // handle redirections:
-    List<ParsedURL> redirectedLocations = downloadController.getRedirectedLocations();
-    if (redirectedLocations != null)
+    String newUrl = downloadController.getHttpResponse().getUrl();
+    ParsedURL newPurl = ParsedURL.getAbsolute(newUrl);
+    Document newDoc = semanticsScope.getOrConstructDocument(newPurl);
+    logger.info("Original location: {}, New location: {}", location, newUrl);
+    changeDocument(newDoc);
+    logger.info("After changing: document={}, original location={}", document, location);
+
+    // handle other locations:
+    List<ParsedURL> otherLocations = downloadController.getHttpResponse().getOtherPurls();
+    if (otherLocations != null)
     {
-      for (ParsedURL redirectedLocation : redirectedLocations)
+      for (ParsedURL otherLocation : otherLocations)
       {
-        if (redirectedLocation != null)
+        if (otherLocation != null)
         {
-          document.addAdditionalLocation(redirectedLocation);
-          Document newDocument = semanticsScope.getOrConstructDocument(redirectedLocation);
-          newDocument.addAdditionalLocation(location);
-          changeDocument(newDocument);
+          document.addAdditionalLocation(otherLocation);
+          semanticsScope.getLocalDocumentCollection().addMapping(otherLocation, document);
         }
       }
     }
@@ -722,24 +731,24 @@ public class DocumentClosure extends SetElement
     getLogRecord().beginPhase(Phase.PCACHE_WRITE);
     try
     {
-    if (rawContentDownloaded)
-    {
-      PersistenceMetaInfo metaInfo =
-          pCache.store(doc,
-                       downloadController.getContent(),
-                       downloadController.getCharset(),
-                       downloadController.getMimeType(),
-                       doc.getMetaMetadata().getHashForExtraction());
-      getLogRecord().setId(metaInfo.getDocId());
-      getLogRecord().setPersistenceMetaInfo(metaInfo);
+      if (rawContentDownloaded)
+      {
+        PersistenceMetaInfo metaInfo =
+            pCache.store(doc,
+                         downloadController.getHttpResponse().getContent(),
+                         downloadController.getHttpResponse().getCharset(),
+                         downloadController.getHttpResponse().getMimeType(),
+                         doc.getMetaMetadata().getHashForExtraction());
+        getLogRecord().setId(metaInfo.getDocId());
+        getLogRecord().setPersistenceMetaInfo(metaInfo);
+      }
+      else
+      {
+        PersistenceMetaInfo metaInfo = pCache.getMetaInfo(doc.getLocation());
+        pCache.updateDoc(metaInfo, doc);
+      }
     }
-    else
-    {
-      PersistenceMetaInfo metaInfo = pCache.getMetaInfo(doc.getLocation());
-      pCache.updateDoc(metaInfo, doc);
-    }
-    }
-    catch(Exception e)
+    catch (Exception e)
     {
       String errMsg = "Error storing to persistence cache.";
       logger.error(errMsg, e);
@@ -880,7 +889,6 @@ public class DocumentClosure extends SetElement
       {
         Document oldDocument = document;
         document = newDocument;
-        newDocument.setLogRecord(oldDocument.getLogRecord());
 
         SemanticsSite oldSite = oldDocument.site();
         SemanticsSite newSite = newDocument.site();
@@ -893,17 +901,20 @@ public class DocumentClosure extends SetElement
 
         newDocument.inheritValues(oldDocument);
 
-        semanticInlinks = newDocument.getSemanticInlinks(); // probably not needed, but just in case.
-        oldDocument.recycle();
-        
-        
+        semanticInlinks = newDocument.getSemanticInlinks(); // probably not needed, but just in
+                                                            // case.
+
+        newDocument.setLogRecord(oldDocument.getLogRecord());
+
         ParsedURL oldLoc = oldDocument.getLocation();
         ParsedURL newLoc = newDocument.getLocation();
-        if (!oldLoc.equals(newLoc))
+        if (oldLoc != null && !oldLoc.equals(newLoc))
         {
           ChangeLocation changeLocationEvent = new ChangeLocation(oldLoc, newLoc);
           getLogRecord().logPost().addEventNow(changeLocationEvent);
         }
+
+        oldDocument.recycle();
       }
     }
   }

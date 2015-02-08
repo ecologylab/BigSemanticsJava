@@ -56,7 +56,6 @@ import ecologylab.bigsemantics.metametadata.MetaMetadataScalarField;
 import ecologylab.bigsemantics.metametadata.MetaMetadataValueField;
 import ecologylab.bigsemantics.metametadata.ScalarDependencyException;
 import ecologylab.bigsemantics.metametadata.ScalarDependencyManager;
-import ecologylab.bigsemantics.metametadata.declarations.MetaMetadataFieldDeclaration;
 import ecologylab.bigsemantics.namesandnums.DocumentParserTagNames;
 import ecologylab.collections.Scope;
 import ecologylab.generic.HashMapArrayList;
@@ -421,7 +420,7 @@ implements ScalarUnmarshallingContext, SemanticsConstants
         }
         catch (Exception e)
         {
-          logger.error("Error extracting " + field,e);
+          logger.error("Error extracting " + field, e);
         }
       }
     }
@@ -948,10 +947,10 @@ implements ScalarUnmarshallingContext, SemanticsConstants
    *         (elements that has no actual information or lacks required field values).
    */
   private boolean extractCollection(MetaMetadataCollectionField mmdField,
-                            Metadata metadata,
-                            Node contextNode,
-                            Map<String, String> fieldParserContext,
-                            Scope<Object> params)
+                                    Metadata metadata,
+                                    Node contextNode,
+                                    Map<String, String> fieldParserContext,
+                                    Scope<Object> params)
   {
     NestedFieldHelper helper = extractNestedHelper(mmdField, contextNode, fieldParserContext,
                                                    params);
@@ -1154,23 +1153,23 @@ implements ScalarUnmarshallingContext, SemanticsConstants
     {
       return false; // This is the final catch all.
     }
-  
+
     evaluation = concatenateValues(evaluation, mmdField, metadata, params);
-    
+
     MetadataFieldDescriptor fd = mmdField.getMetadataFieldDescriptor();
     ScalarType fdScalarType = fd == null ? null : fd.getScalarType();
     if (fdScalarType != null && fdScalarType instanceof MetadataParsedURLScalarType)
     {
-    	MetadataParsedURL wholePurl =
-    			(MetadataParsedURL) fdScalarType.getInstance(evaluation, null, this);
-    	evaluation = wholePurl.toString();
+      MetadataParsedURL wholePurl =
+          (MetadataParsedURL) fdScalarType.getInstance(evaluation, null, this);
+      evaluation = wholePurl.toString();
     }
-  
+
     // after we have evaluated the expression we might need to modify it.
     evaluation = applyFieldOps(evaluation, mmdField);
     if (StringTools.isNullOrEmpty(evaluation))
       return false;
-  
+
     if (fdScalarType != null && fdScalarType instanceof MetadataParsedURLScalarType)
     {
       // if this is a ParsedURL, we try to filter it using <filter_location>, if applicable.
@@ -1333,7 +1332,7 @@ implements ScalarUnmarshallingContext, SemanticsConstants
       MetaMetadata metaMetadata = (MetaMetadata) this.getMetaMetadata();
 
       SimplTypesScope tscope = metaMetadata.getLocalMetadataTypesScope();
-      InputStream istream = getDownloadController().getInputStream();
+      InputStream istream = getDownloadController().getHttpResponse().getContentAsStream();
       DeserializationHookStrategy<Metadata, MetadataFieldDescriptor> strategy =
           new ParserDeserializationHookStrategy(this);
       newDocument = (Document) tscope.deserialize(istream, strategy, Format.XML);
@@ -1351,16 +1350,16 @@ implements ScalarUnmarshallingContext, SemanticsConstants
     }
     return newDocument;
   }
-  
+
   /**
    * Helper class for direct binding.
    * 
    * @author quyin
    */
   public static class ParserDeserializationHookStrategy
-  implements DeserializationHookStrategy<Metadata, MetadataFieldDescriptor>
+      implements DeserializationHookStrategy<Metadata, MetadataFieldDescriptor>
   {
-    
+
     DocumentParser                 parser;
 
     Stack<MetaMetadataNestedField> currentMMstack    = new Stack<MetaMetadataNestedField>();

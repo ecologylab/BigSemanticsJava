@@ -75,7 +75,7 @@ public class SemanticActionHandler
 		this.documentParser 			= documentParser;
 		semanticActionVariableMap.put(
 				SemanticsConstants.PURLCONNECTION_MIME,
-				documentParser.getDownloadController().getMimeType());
+				documentParser.getDownloadController().getHttpResponse().getMimeType());
 		this.semanticActionVariableMap	= semanticActionVariableMap;
 	}
 

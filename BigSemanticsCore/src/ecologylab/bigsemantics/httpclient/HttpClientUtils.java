@@ -19,6 +19,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.client.utils.URIUtils;
 import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
@@ -101,6 +102,25 @@ public class HttpClientUtils
     return ub;
   }
 
+  public static boolean looksLikeRelative(String url)
+  {
+    return !url.matches("^\\w+://.+");
+  }
+
+  public static String relativeToAbsolute(String baseUrl, String url)
+  {
+    try
+    {
+      URI result = URIUtils.resolve(new URI(baseUrl), url);
+      return result.toString();
+    }
+    catch (Exception e)
+    {
+      logger.warn("Cannot convert relative URL " + url + " to absolute, with base " + baseUrl, e);
+    }
+    return url;
+  }
+
   public static SimplHttpResponse doGet(String userAgent,
                                         String url,
                                         Map<String, String> additionalParams)
@@ -125,7 +145,14 @@ public class HttpClientUtils
     HttpGet get = new HttpGet(uri);
     get.addHeader("HOST", host); // this header is required by HTTP 1.1
 
-    return doRequest(userAgent, url, get);
+    try
+    {
+      return doRequest(userAgent, url, get);
+    }
+    finally
+    {
+      get.releaseConnection();
+    }
   }
 
   public static SimplHttpResponse doPost(String userAgent,
@@ -153,18 +180,25 @@ public class HttpClientUtils
     HttpEntity entity = new UrlEncodedFormEntity(params, Charset.forName("UTF-8"));
     post.setEntity(entity);
 
-    return doRequest(userAgent, url, post);
+    try
+    {
+      return doRequest(userAgent, url, post);
+    }
+    finally
+    {
+      post.releaseConnection();
+    }
   }
 
   private static SimplHttpResponse doRequest(String userAgent,
                                              final String url,
-                                             HttpUriRequest get) throws IOException
+                                             HttpUriRequest request) throws IOException
   {
     AbstractHttpClient client = factory.create(userAgent);
     // client must use BasicRedirectStrategy!
     final BasicRedirectStrategy redirectStrategy =
         (BasicRedirectStrategy) client.getRedirectStrategy();
-    SimplHttpResponse result = client.execute(get, new ResponseHandler<SimplHttpResponse>()
+    SimplHttpResponse result = client.execute(request, new ResponseHandler<SimplHttpResponse>()
     {
       @Override
       public SimplHttpResponse handleResponse(HttpResponse response)

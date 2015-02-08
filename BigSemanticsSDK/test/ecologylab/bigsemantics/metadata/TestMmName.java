@@ -9,8 +9,8 @@ import org.junit.Test;
 import ecologylab.bigsemantics.collecting.FakeSemanticsScope;
 import ecologylab.bigsemantics.cyberneko.CybernekoWrapper;
 import ecologylab.bigsemantics.downloadcontrollers.FakeDownloadControllerFactory;
-import ecologylab.bigsemantics.downloadcontrollers.HttpResponse;
 import ecologylab.bigsemantics.generated.library.RepositoryMetadataTypesScope;
+import ecologylab.bigsemantics.httpclient.SimplHttpResponse;
 import ecologylab.bigsemantics.metadata.builtins.Document;
 import ecologylab.bigsemantics.metadata.builtins.DocumentClosure;
 import ecologylab.net.ParsedURL;
@@ -40,11 +40,11 @@ public class TestMmName
     semanticsScope.setFakeDownloadControllerFactory(factory);
   }
 
-  private HttpResponse newDefaultResponse()
+  private SimplHttpResponse newDefaultResponse()
   {
-    HttpResponse response = new HttpResponse();
-    response.setHttpRespCode(200);
-    response.setHttpRespMsg("OK");
+    SimplHttpResponse response = new SimplHttpResponse();
+    response.setCode(200);
+    response.setMessage("OK");
     response.setContent("<html><head><title>Test Page</title></head><body></body></html>");
     return response;
   }
@@ -66,7 +66,7 @@ public class TestMmName
   @Test
   public void testMmName() throws IOException
   {
-    HttpResponse response = newDefaultResponse();
+    SimplHttpResponse response = newDefaultResponse();
     String url = "http://www.amazon.com/SomeProduct/dp/0000000000";
     factory.setResponse(url, response);
 
@@ -83,7 +83,7 @@ public class TestMmName
   @Test
   public void testMmNameNonTypeMmd() throws IOException
   {
-    HttpResponse response = newDefaultResponse();
+    SimplHttpResponse response = newDefaultResponse();
     String url = "http://www.nytimes.com/2014/05/15/news/some-random-news.html";
     factory.setResponse(url, response);
 
@@ -99,10 +99,10 @@ public class TestMmName
   @Test
   public void testMmNameWithRedirection() throws IOException
   {
-    HttpResponse response = newDefaultResponse();
+    SimplHttpResponse response = newDefaultResponse();
     String initialUrl = "http://redirect.com/";
     String realUrl = "http://dl.acm.org/citation.cfm?id=1234567";
-    response.addAdditionalLocation(realUrl); // mimic redirection.
+    response.addOtherUrl(realUrl); // mimic redirection.
     factory.setResponse(initialUrl, response);
 
     Document doc = getDocument(initialUrl);

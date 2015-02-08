@@ -231,7 +231,8 @@ public class ImageParserAwt extends ImageParser
     {
       boolean is_ico = false;
       // Mime type is checked to determine if the incoming file is a ICO file format
-      if (downloadController.getMimeType() == "image/x-icon")
+      String mimeType = downloadController.getHttpResponse().getMimeType();
+      if (mimeType == "image/x-icon")
       {
         is_ico = true;
       }
@@ -304,8 +305,7 @@ public class ImageParserAwt extends ImageParser
               }
               // look in the URL itself
               else if (location.isNoAlpha()
-                       || downloadController.getMimeType() != null
-                       && noAlphaMimeMap.containsKey(downloadController.getMimeType()))
+                       || mimeType != null && noAlphaMimeMap.containsKey(mimeType))
               {
                 readImageType = BufferedImage.TYPE_INT_RGB;
               }

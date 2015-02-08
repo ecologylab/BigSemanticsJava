@@ -357,7 +357,10 @@ public class Document extends DocumentDeclaration
   public void setLogRecord(DocumentLogRecord logRecord)
   {
     this.logRecord = logRecord;
-    logRecord.setDocumentLocation(this.getLocation());
+    if (logRecord != null)
+    {
+      logRecord.setDocumentLocation(this.getLocation());
+    }
   }
 
   public void addAdditionalLocation(ParsedURL newPurl)

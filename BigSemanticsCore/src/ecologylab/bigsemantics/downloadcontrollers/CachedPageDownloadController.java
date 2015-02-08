@@ -3,6 +3,7 @@ package ecologylab.bigsemantics.downloadcontrollers;
 import java.io.IOException;
 import java.util.List;
 
+import ecologylab.bigsemantics.httpclient.SimplHttpResponse;
 import ecologylab.net.ParsedURL;
 
 /**
@@ -12,7 +13,7 @@ import ecologylab.net.ParsedURL;
  */
 public class CachedPageDownloadController extends AbstractDownloadController
 {
-  
+
   public CachedPageDownloadController(ParsedURL location,
                                       List<ParsedURL> additionalLocations,
                                       String charset,
@@ -23,13 +24,20 @@ public class CachedPageDownloadController extends AbstractDownloadController
   {
     if (location != null && cachedRawContent != null)
     {
-      setLocation(location);
-      setRedirectedLocations(additionalLocations);
-      setCharset(charset);
-      setMimeType(mimeType);
-      setStatus(statusCode);
-      setStatusMessage(statusMessage);
-      setContent(cachedRawContent);
+      setOriginalLocation(location);
+
+      SimplHttpResponse resp = new SimplHttpResponse();
+      resp.setUrl(location.toString());
+      for (ParsedURL purl : additionalLocations)
+      {
+        resp.addOtherUrl(purl.toString());
+      }
+      resp.setHeader("Content-Type", String.format("%s; charset=%s", mimeType, charset));
+      resp.setCode(statusCode);
+      resp.setMessage(statusMessage);
+      resp.setContent(cachedRawContent);
+
+      setHttpResponse(resp);
       setIsGood(true);
     }
   }
