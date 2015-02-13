@@ -319,6 +319,11 @@ public class MetaMetadataRepository extends ElementState
   {
     return sites.getOrConstruct(document, semanticsSessionScope);
   }
+  
+  public SemanticsSiteMap getSemanticsSiteMap()
+  {
+    return sites;
+  }
 
   public SimplTypesScope metadataTranslationScope()
   {

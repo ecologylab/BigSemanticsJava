@@ -109,7 +109,7 @@ public class Worker<T extends Task>
     triggerAvailableEventIfOk();
   }
 
-  public boolean canHandle(T task)
+  public boolean canHandle(T task) throws Exception
   {
     return true;
   }

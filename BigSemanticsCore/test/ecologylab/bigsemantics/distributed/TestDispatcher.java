@@ -56,7 +56,7 @@ public class TestDispatcher
     Runner runner = new Runner()
     {
       @Override
-      protected void body() throws InterruptedException
+      protected void body() throws Exception
       {
         dispatcher.dispatchTask();
       }
@@ -104,7 +104,7 @@ public class TestDispatcher
     Runner runner = new Runner()
     {
       @Override
-      protected void body() throws InterruptedException
+      protected void body() throws Exception
       {
         dispatcher.dispatchTask();
       }

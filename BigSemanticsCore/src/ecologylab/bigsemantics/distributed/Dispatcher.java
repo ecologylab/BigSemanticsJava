@@ -112,9 +112,20 @@ public class Dispatcher<T extends Task, W extends Worker<T>>
         queueWorker((W) worker);
       }
     });
+    onAddWorker(worker);
     String id = worker.getId();
     workers.put(id, worker);
     queueWorker(worker);
+  }
+
+  /**
+   * Subclasses can use this to operate on a worker when it is added to this dispatcher.
+   * 
+   * @param worker
+   */
+  protected void onAddWorker(W worker)
+  {
+    // no op
   }
 
   /**
@@ -149,10 +160,9 @@ public class Dispatcher<T extends Task, W extends Worker<T>>
   /**
    * Key method for dispatching one task (or moving it to the end if no workers can handle it right
    * now).
-   * 
-   * @throws InterruptedException
+   * @throws Exception 
    */
-  public void dispatchTask() throws InterruptedException
+  public void dispatchTask() throws Exception
   {
     TaskEntry<T> taskEntry = taskQueue.take(); // this will block if taskQueue is empty
     T task = taskEntry.getTask(); // the task to dispatch in this invocation
