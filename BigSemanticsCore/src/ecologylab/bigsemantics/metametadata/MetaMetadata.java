@@ -121,6 +121,9 @@ public class MetaMetadata extends MetaMetadataCompositeField
   protected Visibility                            visibility  = Visibility.GLOBAL;
 
   @simpl_scalar
+  private String                                  renderer;
+
+  @simpl_scalar
   private boolean                                 noCache;
 
   @simpl_scalar
