@@ -80,6 +80,11 @@ public class Worker<T extends Task>
     return numThreads;
   }
 
+  protected void setNumThreads(int numThreads)
+  {
+    this.numThreads = numThreads;
+  }
+
   public int getPriority()
   {
     return priority;

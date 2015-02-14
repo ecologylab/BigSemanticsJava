@@ -160,7 +160,8 @@ public class Dispatcher<T extends Task, W extends Worker<T>>
   /**
    * Key method for dispatching one task (or moving it to the end if no workers can handle it right
    * now).
-   * @throws Exception 
+   * 
+   * @throws Exception
    */
   public void dispatchTask() throws Exception
   {
