@@ -28,11 +28,19 @@ public class CachedPageDownloadController extends AbstractDownloadController
 
       SimplHttpResponse resp = new SimplHttpResponse();
       resp.setUrl(location.toString());
-      for (ParsedURL purl : additionalLocations)
+      if (additionalLocations != null)
       {
-        resp.addOtherUrl(purl.toString());
+        for (ParsedURL purl : additionalLocations)
+        {
+          resp.addOtherUrl(purl.toString());
+        }
       }
-      resp.setHeader("Content-Type", String.format("%s; charset=%s", mimeType, charset));
+      if (mimeType != null)
+      {
+        String contentType =
+            charset == null ? mimeType : String.format("%s; charset=%s", mimeType, charset);
+        resp.setHeader("Content-Type", contentType);
+      }
       resp.setCode(statusCode);
       resp.setMessage(statusMessage);
       resp.setContent(cachedRawContent);
