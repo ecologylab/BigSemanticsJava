@@ -84,6 +84,8 @@ public class Dispatcher<T extends Task, W extends Worker<T>>
   }
 
   private Map<String, W>                           workers;
+  
+  private int                                      maxConsecutiveWorkerFailures;
 
   private PriorityBlockingQueue<TaskEntry<T>>      taskQueue;
 
@@ -96,7 +98,7 @@ public class Dispatcher<T extends Task, W extends Worker<T>>
     workerQueue = new PriorityBlockingQueue<WorkerEntry<T, W>>();
   }
 
-  Map<String, W> getWorkers()
+  public Map<String, W> getWorkers()
   {
     return workers;
   }
@@ -109,6 +111,13 @@ public class Dispatcher<T extends Task, W extends Worker<T>>
       @Override
       public void onAvailable(Worker<T> worker)
       {
+        if (maxConsecutiveWorkerFailures > 0
+            && worker.getConsecutiveFailures() > maxConsecutiveWorkerFailures)
+        {
+          logger.warn("Too many worker failures, removed: {}", worker);
+          workers.remove(worker.getId());
+          return;
+        }
         queueWorker((W) worker);
       }
     });
@@ -116,6 +125,16 @@ public class Dispatcher<T extends Task, W extends Worker<T>>
     String id = worker.getId();
     workers.put(id, worker);
     queueWorker(worker);
+  }
+
+  public int getMaxConsecutiveWorkerFailures()
+  {
+    return maxConsecutiveWorkerFailures;
+  }
+
+  public void setMaxConsecutiveWorkerFailures(int maxConsecutiveWorkerFailures)
+  {
+    this.maxConsecutiveWorkerFailures = maxConsecutiveWorkerFailures;
   }
 
   /**

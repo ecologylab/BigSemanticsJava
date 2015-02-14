@@ -23,8 +23,7 @@ import ecologylab.serialization.annotations.simpl_wrap;
  * @author quyin
  */
 @SuppressWarnings("rawtypes")
-@simpl_descriptor_classes(
-{ MetaMetadataClassDescriptor.class, MetaMetadataFieldDescriptor.class })
+@simpl_descriptor_classes({ MetaMetadataClassDescriptor.class, MetaMetadataFieldDescriptor.class })
 public class MetaMetadataFieldDeclaration extends ElementState
 {
 

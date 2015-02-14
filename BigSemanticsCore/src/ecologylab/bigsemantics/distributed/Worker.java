@@ -40,7 +40,11 @@ public class Worker<T extends Task>
 
   private ExecutorService          executors;
 
+  @simpl_scalar
   private int                      numOngoingTasks;
+  
+  @simpl_scalar
+  private int                      consecutiveFailures;
 
   private AvailableEventHandler<T> availableEventHandler;
 
@@ -88,6 +92,19 @@ public class Worker<T extends Task>
   public int getPriority()
   {
     return priority;
+  }
+  
+  public int getConsecutiveFailures()
+  {
+    return consecutiveFailures;
+  }
+  
+  /**
+   * Subclasses should use this when the failure is caused by the worker itself, not the task.
+   */
+  protected void incConsecutiveFailures()
+  {
+    consecutiveFailures++;
   }
 
   public void setAvailableEventHandler(AvailableEventHandler<T> availableEventHandler)
@@ -210,6 +227,7 @@ public class Worker<T extends Task>
               handler.onFail(task);
             }
           }
+          consecutiveFailures = 0;
         }
         catch (Exception e)
         {

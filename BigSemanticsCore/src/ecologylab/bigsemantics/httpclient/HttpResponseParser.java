@@ -9,6 +9,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ecologylab.bigsemantics.Utils;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.generic.StringBuilderBaseUtils;
@@ -20,10 +23,13 @@ import ecologylab.generic.StringBuilderBaseUtils;
 public class HttpResponseParser
 {
 
+  private static Logger logger;
+  
   private static Pattern pStatusLine;
 
   static
   {
+    logger = LoggerFactory.getLogger(HttpResponseParser.class);
     pStatusLine = Pattern.compile("HTTP/\\d.\\d\\s+(\\d+)\\s+(.*)");
   }
 
@@ -47,10 +53,18 @@ public class HttpResponseParser
           // redirection happened
           otherUrls.add(url);
           String previousUrl = url;
-          url = headers.get("Location").getValue();
-          if (HttpClientUtils.looksLikeRelative(url))
+          SimplHttpHeader locationHeader = headers.get("Location");
+          if (locationHeader == null)
           {
-            url = HttpClientUtils.relativeToAbsolute(previousUrl, url);
+            logger.warn("Redirection without Location header: {}", headers);
+          }
+          else
+          {
+            url = locationHeader.getValue();
+            if (HttpClientUtils.looksLikeRelative(url))
+            {
+              url = HttpClientUtils.relativeToAbsolute(previousUrl, url);
+            }
           }
           continue;
         }
