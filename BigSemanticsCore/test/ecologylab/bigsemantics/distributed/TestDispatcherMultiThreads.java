@@ -14,11 +14,7 @@ import java.util.Random;
 
 import org.junit.Test;
 
-import ecologylab.bigsemantics.distributed.Dispatcher;
-import ecologylab.bigsemantics.distributed.Task;
 import ecologylab.bigsemantics.distributed.Task.State;
-import ecologylab.bigsemantics.distributed.TaskEventHandler;
-import ecologylab.bigsemantics.distributed.Worker;
 
 /**
  * 
@@ -49,10 +45,17 @@ public class TestDispatcherMultiThreads
     }
 
     @Override
-    public boolean perform() throws Exception
+    public Result perform()
     {
-      Thread.sleep(waitTime);
-      return getFailCount() >= maxFailCount;
+      try
+      {
+        Thread.sleep(waitTime);
+      }
+      catch (InterruptedException e)
+      {
+        return Result.FATAL;
+      }
+      return getFailCount() >= maxFailCount ? Result.OK : Result.ERROR;
     }
 
   }

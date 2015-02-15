@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import ecologylab.bigsemantics.distributed.Task.State;
 import ecologylab.bigsemantics.distributed.Worker.AvailableEventHandler;
+import ecologylab.bigsemantics.distributed.Worker.SubmissionResult;
 
 /**
  * The dispatcher. Needs a set of workers. Can queue tasks to this.
@@ -84,7 +85,7 @@ public class Dispatcher<T extends Task, W extends Worker<T>>
   }
 
   private Map<String, W>                           workers;
-  
+
   private int                                      maxConsecutiveWorkerFailures;
 
   private PriorityBlockingQueue<TaskEntry<T>>      taskQueue;
@@ -218,7 +219,7 @@ public class Dispatcher<T extends Task, W extends Worker<T>>
       {
         DispatcherHandler dispatcherHandler = getDispatcherHandler(handler);
         logger.debug("Trying submitting task {} to worker {}", task, worker);
-        Worker.Result result = worker.submit(task, dispatcherHandler);
+        SubmissionResult result = worker.submit(task, dispatcherHandler);
         logger.debug("Submitted task {} to worker {}, result: {}", task, worker, result);
         switch (result)
         {

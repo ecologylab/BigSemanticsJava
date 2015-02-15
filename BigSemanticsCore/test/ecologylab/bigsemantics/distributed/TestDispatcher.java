@@ -9,10 +9,7 @@ import static org.mockito.Mockito.verify;
 
 import org.junit.Test;
 
-import ecologylab.bigsemantics.distributed.Dispatcher;
-import ecologylab.bigsemantics.distributed.Task;
-import ecologylab.bigsemantics.distributed.TaskEventHandler;
-import ecologylab.bigsemantics.distributed.Worker;
+import ecologylab.bigsemantics.distributed.Task.Result;
 
 /**
  * 
@@ -25,16 +22,16 @@ public class TestDispatcher
   @Test
   public void testComplete() throws Exception
   {
-    testSimple(true, 1, 0, 0);
+    testSimple(Result.OK, 1, 0, 0);
   }
 
   @Test
   public void testTerminate() throws Exception
   {
-    testSimple(false, 0, 0, 1);
+    testSimple(Result.ERROR, 0, 0, 1);
   }
 
-  void testSimple(final boolean taskResult, int cTimes, int fTimes, int tTimes)
+  void testSimple(final Result taskResult, int cTimes, int fTimes, int tTimes)
       throws Exception
   {
     final Dispatcher dispatcher = new Dispatcher();
@@ -45,7 +42,7 @@ public class TestDispatcher
     Task task = spy(new Task("test-task")
     {
       @Override
-      public boolean perform() throws Exception
+      public Result perform()
       {
         return taskResult;
       }
@@ -93,9 +90,9 @@ public class TestDispatcher
       int n = 0;
 
       @Override
-      public boolean perform() throws Exception
+      public Result perform()
       {
-        return ++n >= 3;
+        return ++n >= 3 ? Result.OK : Result.ERROR;
       }
     });
 

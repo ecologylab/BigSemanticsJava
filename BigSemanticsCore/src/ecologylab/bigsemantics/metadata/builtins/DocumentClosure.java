@@ -607,9 +607,7 @@ public class DocumentClosure extends SetElement
     String newUrl = downloadController.getHttpResponse().getUrl();
     ParsedURL newPurl = ParsedURL.getAbsolute(newUrl);
     Document newDoc = semanticsScope.getOrConstructDocument(newPurl);
-    logger.info("Original location: {}, New location: {}", location, newUrl);
     changeDocument(newDoc);
-    logger.info("After changing: document={}, original location={}", document, location);
 
     // handle other locations:
     List<ParsedURL> otherLocations = downloadController.getHttpResponse().getOtherPurls();
@@ -889,6 +887,8 @@ public class DocumentClosure extends SetElement
       {
         Document oldDocument = document;
         document = newDocument;
+
+        logger.info("Changing {} to {}", oldDocument, newDocument);
 
         SemanticsSite oldSite = oldDocument.site();
         SemanticsSite newSite = newDocument.site();

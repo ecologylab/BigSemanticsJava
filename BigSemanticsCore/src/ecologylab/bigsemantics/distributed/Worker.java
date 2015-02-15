@@ -6,6 +6,7 @@ import java.util.concurrent.Executors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ecologylab.bigsemantics.distributed.Task.Result;
 import ecologylab.bigsemantics.distributed.Task.State;
 import ecologylab.serialization.annotations.simpl_scalar;
 
@@ -23,7 +24,7 @@ public class Worker<T extends Task>
     void onAvailable(Worker<T> worker);
   }
 
-  public static enum Result
+  public static enum SubmissionResult
   {
     ACCEPTED, ACCEPTED_AND_FULL, REJECTED
   }
@@ -42,7 +43,7 @@ public class Worker<T extends Task>
 
   @simpl_scalar
   private int                      numOngoingTasks;
-  
+
   @simpl_scalar
   private int                      consecutiveFailures;
 
@@ -93,12 +94,12 @@ public class Worker<T extends Task>
   {
     return priority;
   }
-  
+
   public int getConsecutiveFailures()
   {
     return consecutiveFailures;
   }
-  
+
   /**
    * Subclasses should use this when the failure is caused by the worker itself, not the task.
    */
@@ -144,17 +145,19 @@ public class Worker<T extends Task>
    *          The callback.
    * @return
    */
-  public synchronized Result submit(T task, final TaskEventHandler<T> handler)
+  public synchronized SubmissionResult submit(T task, final TaskEventHandler<T> handler)
   {
     if (numOngoingTasks >= numThreads)
     {
-      return Result.REJECTED;
+      return SubmissionResult.REJECTED;
     }
 
     doSubmit(task, handler);
     incOngoing();
 
-    return (numOngoingTasks < numThreads) ? Result.ACCEPTED : Result.ACCEPTED_AND_FULL;
+    return (numOngoingTasks < numThreads)
+        ? SubmissionResult.ACCEPTED
+        : SubmissionResult.ACCEPTED_AND_FULL;
   }
 
   protected void doSubmit(final T task, final TaskEventHandler<T> handler)
@@ -205,40 +208,49 @@ public class Worker<T extends Task>
         return;
       default:
         task.setState(State.ONGOING);
+        Result result = Result.FATAL;
         try
         {
-          if (task.perform())
-          {
-            task.setState(State.SUCCEEDED);
-            logger.debug("Task {} completed", task);
-            if (handler != null)
-            {
-              handler.onComplete(task);
-            }
-            task.notifyAll();
-          }
-          else
-          {
-            task.setState(State.WAITING);
-            task.incFailCount();
-            logger.debug("Task {} failed", task);
-            if (handler != null)
-            {
-              handler.onFail(task);
-            }
-          }
-          consecutiveFailures = 0;
+          result = task.perform();
         }
         catch (Exception e)
         {
-          task.setState(State.TERMINATED);
+          result = Result.FATAL;
           logger.error("Exception when performing task " + task, e);
+        }
+
+        if (result == Result.OK)
+        {
+          task.setState(State.SUCCEEDED);
+          logger.debug("Task {} completed", task);
+          if (handler != null)
+          {
+            handler.onComplete(task);
+          }
+          task.notifyAll();
+        }
+        else if (result == Result.ERROR)
+        {
+          task.setState(State.WAITING);
+          task.incFailCount();
+          logger.debug("Task {} failed", task);
+          if (handler != null)
+          {
+            handler.onFail(task);
+          }
+        }
+        else
+        {
+          // result == Result.FATAL
+          task.setState(State.TERMINATED);
+          logger.debug("Task {} terminated with fatal problem", task);
           if (handler != null)
           {
             handler.onTerminate(task);
           }
           task.notifyAll();
         }
+        consecutiveFailures = 0;
       }
     }
   }

@@ -21,6 +21,11 @@ public abstract class Task implements Cloneable
     WAITING, ONGOING, SUCCEEDED, TERMINATED
   }
 
+  public static enum Result
+  {
+    OK, ERROR, FATAL
+  }
+
   static Logger  logger = LoggerFactory.getLogger(Task.class);
 
   @simpl_scalar
@@ -79,14 +84,11 @@ public abstract class Task implements Cloneable
   /**
    * Perform the task.
    * 
-   * If an Exception is thrown, the system will NOT retry the task but terminate it. If no Exception
-   * is thrown, but this method returns false (which means the task failed), the system will retry
-   * the task.
-   * 
-   * @return true if the task succeeded; otherwise false.
-   * @throws Exception
+   * @return The result status. OK means task succeeded, ERROR means there is an error and the
+   *         system should retry, and FATAL means there is a non-recoverable error happened and the
+   *         task should be abandoned.
    */
-  abstract public boolean perform() throws Exception;
+  abstract public Result perform();
 
   public synchronized void waitForDone() throws InterruptedException
   {
