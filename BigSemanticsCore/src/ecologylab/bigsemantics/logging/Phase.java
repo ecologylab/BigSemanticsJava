@@ -7,12 +7,13 @@ import ecologylab.serialization.annotations.Hint;
 import ecologylab.serialization.annotations.simpl_composite;
 import ecologylab.serialization.annotations.simpl_hints;
 import ecologylab.serialization.annotations.simpl_scalar;
+import ecologylab.serialization.types.element.IMappable;
 
 /**
  * 
  * @author quyin
  */
-public class Phase
+public class Phase implements IMappable<String>
 {
 
   // predefined names:
@@ -65,6 +66,12 @@ public class Phase
       }
     }
     return logPost;
+  }
+
+  @Override
+  public String key()
+  {
+    return name;
   }
 
 }

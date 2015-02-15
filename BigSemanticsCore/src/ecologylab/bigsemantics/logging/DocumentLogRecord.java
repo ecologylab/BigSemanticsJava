@@ -9,11 +9,10 @@ import ecologylab.bigsemantics.metadata.builtins.PersistenceMetaInfo;
 import ecologylab.concurrent.DownloadableLogRecord;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.net.ParsedURL;
-import ecologylab.serialization.annotations.Hint;
 import ecologylab.serialization.annotations.simpl_collection;
 import ecologylab.serialization.annotations.simpl_composite;
-import ecologylab.serialization.annotations.simpl_hints;
 import ecologylab.serialization.annotations.simpl_inherit;
+import ecologylab.serialization.annotations.simpl_map;
 import ecologylab.serialization.annotations.simpl_scalar;
 
 /**
@@ -25,10 +24,9 @@ public class DocumentLogRecord extends DownloadableLogRecord
 {
 
   @simpl_scalar
-  @simpl_hints(Hint.XML_LEAF)
   ParsedURL                       documentLocation;
 
-  @simpl_collection("phase")
+  @simpl_map("phase")
   HashMapArrayList<String, Phase> phases;
 
   @simpl_composite
@@ -172,7 +170,8 @@ public class DocumentLogRecord extends DownloadableLogRecord
 
   public void addErrorRecord(String message, Throwable throwable)
   {
-    addErrorRecord(new DocumentErrorRecord(message, Utils.getStackTraceAsString(throwable)));
+    String stacktrace = throwable == null ? null : Utils.getStackTraceAsString(throwable);
+    addErrorRecord(new DocumentErrorRecord(message, stacktrace));
   }
 
 }
