@@ -279,7 +279,8 @@ public class Utils
     StringWriter sw = new StringWriter();
     PrintWriter pw = new PrintWriter(sw);
     t.printStackTrace(pw);
-    return sw.toString();
+    String result = sw.toString().replaceAll(System.lineSeparator(), "    ").replace("\t", "  ");
+    return result;
   }
 
 }
