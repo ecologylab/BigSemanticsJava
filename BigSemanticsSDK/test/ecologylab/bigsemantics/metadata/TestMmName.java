@@ -53,7 +53,7 @@ public class TestMmName
   {
     Document doc = semanticsScope.getOrConstructDocument(ParsedURL.getAbsolute(url));
     DocumentClosure closure = doc.getOrConstructClosure();
-    closure.performDownloadSynchronously();
+    closure.performDownloadSynchronously(false, false);
     doc = closure.getDocument();
     return doc;
   }

@@ -174,7 +174,6 @@ public class Worker<T extends Task>
         onTaskPerformed(task, handler);
         decOngoing();
       }
-
     });
   }
 

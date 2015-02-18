@@ -113,8 +113,6 @@ public class DocumentClosure extends SetElement
    */
   private boolean                             crawlLinks           = true;
   
-  private boolean                             reload;
-
   private final Object                        DOWNLOAD_LOCK        = new Object();
 
   /**
@@ -320,16 +318,6 @@ public class DocumentClosure extends SetElement
     return getDownloadStatus() == DownloadStatus.UNPROCESSED;
   }
   
-  public boolean isReload()
-  {
-    return reload;
-  }
-
-  public void setReload(boolean reload)
-  {
-    this.reload = reload;
-  }
-
   /**
    * Test state variable inside of QUEUE_DOWNLOAD_LOCK.
    * 
@@ -419,6 +407,25 @@ public class DocumentClosure extends SetElement
   }
 
   /**
+   * In use cases such as the service, we want to be able to call performDownload() synchronously,
+   * and in the same time make sure that the same closure will be downloaded by one thread at a
+   * time. This method uses a lock to implement this.
+   * @param noCacheRead 
+   * @param noCacheWrite 
+   * 
+   * @throws IOException
+   */
+  public DownloadStatus performDownloadSynchronously(boolean noCacheRead, boolean noCacheWrite)
+      throws IOException
+  {
+    synchronized (DOWNLOAD_LOCK)
+    {
+      performDownload(noCacheRead, noCacheWrite);
+      return downloadStatus;
+    }
+  }
+
+  /**
    * Connect to the information resource. Figure out the appropriate MetaMetadata and DocumentType.
    * Download the information resource and parse it. Do cleanup afterwards.
    * 
@@ -429,12 +436,22 @@ public class DocumentClosure extends SetElement
   @Override
   public void performDownload() throws IOException
   {
+    performDownload(false, false);
+  }
+
+  public void performDownload(boolean noCacheRead, boolean noCacheWrite) throws IOException
+  {
     MetaMetadata metaMetadata = (MetaMetadata) document.getMetaMetadata();
-    boolean noCache = metaMetadata.isNoCache();
+    if (metaMetadata.isNoCache())
+    {
+      noCacheRead = true;
+      noCacheWrite = true;
+    }
 
     synchronized (DOWNLOAD_STATUS_LOCK)
     {
-      if (noCache || reload)
+      logger.info("Entering performDownload(), downloadStatus = " + downloadStatus + " skipCache=" + noCacheRead);
+      if (noCacheRead)
       {
         switch (downloadStatus)
         {
@@ -464,6 +481,7 @@ public class DocumentClosure extends SetElement
           break;
         }
       }
+      logger.info("Changing status from " + downloadStatus + " to connecting: " + this);
       setDownloadStatusInternal(DownloadStatus.CONNECTING);
     }
     
@@ -477,7 +495,7 @@ public class DocumentClosure extends SetElement
     PersistenceMetaInfo cacheMetaInfo = null;
     String cachedRawContent = null;
     Document cachedDoc = null;
-    if (pCache != null && !noCache && !reload)
+    if (pCache != null && !noCacheRead)
     {
       logRecord.beginPhase(Phase.PCACHE_READ);
 
@@ -534,6 +552,7 @@ public class DocumentClosure extends SetElement
     // If not in the persistent cache, download the raw page and parse
     if (cachedDoc != null)
     {
+      semanticsScope.getLocalDocumentCollection().remap(document, cachedDoc);
       changeDocument(cachedDoc);
     }
     else
@@ -567,7 +586,7 @@ public class DocumentClosure extends SetElement
         if (documentParser != null)
         {
           doParse(metaMetadata);
-          if (pCache != null && !noCache)
+          if (pCache != null && !noCacheWrite)
           {
             doPersist(pCache, downloadController, document, rawContentDownloaded);
           }
@@ -753,21 +772,6 @@ public class DocumentClosure extends SetElement
       getLogRecord().addErrorRecord(errMsg, e);
     }
     getLogRecord().endPhase(Phase.PCACHE_WRITE);
-  }
-
-  /**
-   * In use cases such as the service, we want to be able to call performDownload() synchronously,
-   * and in the same time make sure that the same closure will be downloaded by one thread at a
-   * time. This method uses a lock to implement this.
-   * 
-   * @throws IOException
-   */
-  public void performDownloadSynchronously() throws IOException
-  {
-    synchronized (DOWNLOAD_LOCK)
-    {
-      performDownload();
-    }
   }
 
   /**

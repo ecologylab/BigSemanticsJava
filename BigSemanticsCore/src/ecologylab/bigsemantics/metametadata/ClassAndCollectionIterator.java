@@ -5,10 +5,12 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ecologylab.bigsemantics.metadata.Metadata;
 import ecologylab.bigsemantics.metadata.MetadataBase;
 import ecologylab.bigsemantics.metadata.MetadataFieldDescriptor;
-import ecologylab.bigsemantics.metametadata.declarations.MetaMetadataFieldDeclaration;
 
 /**
  * Iterates through a Collection of things, and then through an Iterator of such (nested)
@@ -24,6 +26,14 @@ import ecologylab.bigsemantics.metametadata.declarations.MetaMetadataFieldDeclar
  */
 public class ClassAndCollectionIterator implements Iterator<MetadataBase>
 {
+  
+  static Logger                       logger;
+
+  static
+  {
+    logger = LoggerFactory.getLogger(ClassAndCollectionIterator.class);
+  }
+
 	private Iterator<MetaMetadataField>	iterator;
 
 	private Iterator<MetadataBase>			collectionIterator;
@@ -97,7 +107,7 @@ public class ClassAndCollectionIterator implements Iterator<MetadataBase>
 				}
 				catch(IllegalArgumentException e)
 				{
-					e.printStackTrace();
+				  logger.warn("Failed to get field " + field.getName() + " from " + metadata, e);
 				}
 				boolean isComposite = (md instanceof Metadata);
 				if (isComposite && visitedMetadata.contains(md))
@@ -114,12 +124,15 @@ public class ClassAndCollectionIterator implements Iterator<MetadataBase>
 		}
 		catch (IllegalArgumentException e)
 		{
-			e.printStackTrace();
+      logger.warn("Exception when iterating thru fields of " + metadata
+                  + ", currentMMField=" + currentMMField
+                  + ", currentObject=" + currentObject, e);
 		}
 		catch (IllegalAccessException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+      logger.warn("Exception when iterating thru fields of " + metadata
+                  + ", currentMMField=" + currentMMField
+                  + ", currentObject=" + currentObject, e);
 		}
 		return null;
 	}

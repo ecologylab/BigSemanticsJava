@@ -73,7 +73,7 @@ public class MetadataRoundTripTest
     ParsedURL purl = ParsedURL.getAbsolute("http://dl.acm.org/citation.cfm?id=1979124");
     Document doc = semanticsScope.getOrConstructDocument(purl);
     DocumentClosure closure = doc.getOrConstructClosure();
-    closure.performDownloadSynchronously();
+    closure.performDownloadSynchronously(false, false);
     doc = closure.getDocument();
     assertNotNull(doc);
 
