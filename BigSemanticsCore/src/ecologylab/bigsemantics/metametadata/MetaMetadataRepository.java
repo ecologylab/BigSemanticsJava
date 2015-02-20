@@ -6,6 +6,7 @@ package ecologylab.bigsemantics.metametadata;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -548,6 +549,42 @@ public class MetaMetadataRepository extends ElementState
   public void traverseAndInheritMetaMetadata()
   {
     getInheritanceHandler().handleMmdRepository(this);
+    traverseAndResolveGenericTypeVars();
+  }
+
+  private void traverseAndResolveGenericTypeVars()
+  {
+    HashSet<MetaMetadataNestedField> visited = new HashSet<MetaMetadataNestedField>();
+    for (MetaMetadata mmd : repositoryByName)
+    {
+      resolveGenericTypeVars(mmd, visited);
+    }
+  }
+
+  private void resolveGenericTypeVars(MetaMetadataNestedField nestedField,
+                                      HashSet<MetaMetadataNestedField> visited)
+  {
+    if (!visited.contains(nestedField))
+    {
+      visited.add(nestedField);
+      MmdScope scope = nestedField.getScope();
+      if (scope != null)
+      {
+        scope.resolveGenericTypeVars();
+      }
+
+      Collection<MetaMetadataField> children = nestedField.getChildren();
+      if (children != null)
+      {
+        for (MetaMetadataField field : children)
+        {
+          if (field instanceof MetaMetadataNestedField)
+          {
+            resolveGenericTypeVars((MetaMetadataNestedField) field, visited);
+          }
+        }
+      }
+    }
   }
 
   private InheritanceHandler inheritanceHandler;

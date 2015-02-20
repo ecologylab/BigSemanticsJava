@@ -74,6 +74,13 @@ public class MmdScope implements Map<String, Object>, IMappable<String>
   // @simpl_collection("ancestor")
   private List<MmdScope>                       ancestors;
 
+  /**
+   * Contains info about resolved generic type vars, so that the client can use them. This field is
+   * for serialization only; the inheritance code does not use it.
+   */
+  @simpl_map("resolved_generic_type_var")
+  private HashMap<String, MmdGenericTypeVar>   resolvedGenericTypeVars;
+
   public MmdScope()
   {
     this(NO_ID, new MmdScope[] {});
@@ -461,6 +468,29 @@ public class MmdScope implements Map<String, Object>, IMappable<String>
     id = null;
     local = null;
     ancestors = null;
+  }
+
+  public void resolveGenericTypeVars()
+  {
+    HashMap<String, MmdGenericTypeVar> result = new HashMap<String, MmdGenericTypeVar>();
+    if (local != null)
+    {
+      for (MmdGenericTypeVar gtv : valuesOfType(MmdGenericTypeVar.class))
+      {
+        result.put(gtv.getName(), gtv);
+      }
+    }
+    if (ancestors != null)
+    {
+      for (MmdScope ancestor : ancestors)
+      {
+        for (MmdGenericTypeVar gtv : ancestor.valuesOfType(MmdGenericTypeVar.class))
+        {
+          result.put(gtv.getName(), gtv);
+        }
+      }
+    }
+    resolvedGenericTypeVars = result;
   }
 
   /**
