@@ -590,6 +590,7 @@ public class DocumentClosure extends SetElement
           {
             doPersist(pCache, downloadController, document, rawContentDownloaded);
           }
+          documentParser = null;
         }
       }
       else
@@ -599,6 +600,7 @@ public class DocumentClosure extends SetElement
         logRecord.endPhase(Phase.DOWNLOAD_AND_PARSE);
         return;
       }
+      downloadController.recycle();
     }
 
     document.downloadAndParseDone(documentParser);

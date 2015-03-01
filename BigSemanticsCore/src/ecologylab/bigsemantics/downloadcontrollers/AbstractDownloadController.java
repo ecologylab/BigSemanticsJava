@@ -65,4 +65,11 @@ public abstract class AbstractDownloadController implements DownloadController
     this.httpResponse = httpResponse;
   }
 
+  public void recycle()
+  {
+    this.isGood = false;
+    this.originalLocation = null;
+    this.httpResponse = null;
+  }
+
 }

@@ -52,4 +52,10 @@ public interface DownloadController
    */
   public SimplHttpResponse getHttpResponse();
 
+  /**
+   * Release resources held by this controller. The controller is expected to be ready for next call
+   * to accessAndDownload() after this.
+   */
+  public void recycle();
+
 }
