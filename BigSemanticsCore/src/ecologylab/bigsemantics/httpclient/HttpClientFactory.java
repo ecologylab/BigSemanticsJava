@@ -19,9 +19,14 @@ public class HttpClientFactory
 
   public HttpClientFactory()
   {
+    this(20, 200);
+  }
+
+  public HttpClientFactory(int maxPerRoute, int maxTotal)
+  {
     connectionManager = new PoolingClientConnectionManager();
-    connectionManager.setDefaultMaxPerRoute(20);
-    connectionManager.setMaxTotal(200);
+    connectionManager.setDefaultMaxPerRoute(maxPerRoute);
+    connectionManager.setMaxTotal(maxTotal);
   }
 
   public AbstractHttpClient create()
