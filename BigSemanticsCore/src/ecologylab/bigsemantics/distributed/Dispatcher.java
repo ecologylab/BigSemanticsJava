@@ -117,6 +117,7 @@ public class Dispatcher<T extends Task, W extends Worker<T>>
         {
           logger.warn("Too many worker failures, removed: {}", worker);
           workers.remove(worker.getId());
+          worker.onRemoval();
           return;
         }
         queueWorker((W) worker);

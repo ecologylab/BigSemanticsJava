@@ -194,6 +194,14 @@ public class Worker<T extends Task>
     // no op
   }
 
+  /**
+   * Subclasses can override this to take actions when this worker is removed from the dispatcher.
+   */
+  protected void onRemoval()
+  {
+    // no op
+  }
+
   protected void performTask(T task, TaskEventHandler<T> handler)
   {
     logger.debug("Performing task {}", task);
