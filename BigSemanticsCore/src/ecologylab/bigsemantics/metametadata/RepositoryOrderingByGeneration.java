@@ -12,6 +12,11 @@ import ecologylab.serialization.annotations.simpl_nowrap;
 import ecologylab.serialization.annotations.simpl_scalar;
 import ecologylab.serialization.annotations.simpl_tag;
 
+/**
+ * Ordering repository by generation, in a BFS-like way.
+ * 
+ * @author quyin
+ */
 public class RepositoryOrderingByGeneration implements RepositoryOrdering
 {
 
@@ -20,21 +25,31 @@ public class RepositoryOrderingByGeneration implements RepositoryOrdering
   {
 
     @simpl_scalar
-    String       name;
+    String         name;
 
-    MetaMetadata mmd;
+    MetaMetadata   mmd;
 
     @simpl_scalar
-    String exampleUrl;
-    
+    String         exampleUrl;
+
     @simpl_collection("all_example_url")
     @simpl_nowrap
-    List<String> allExampleUrls;
+    List<String>   allExampleUrls;
 
     @simpl_collection("subtype")
     @simpl_nowrap
     List<TreeNode> subtypes;
-    
+
+    public String getName()
+    {
+      return name;
+    }
+
+    public List<String> getAllExampleUrls()
+    {
+      return allExampleUrls;
+    }
+
     public void addSubtype(TreeNode child)
     {
       if (subtypes == null)
@@ -42,8 +57,13 @@ public class RepositoryOrderingByGeneration implements RepositoryOrdering
       subtypes.add(child);
     }
 
+    public List<TreeNode> getSubtypes()
+    {
+      return subtypes;
+    }
+
   }
-  
+
   public TreeNode root;
 
   @Override
@@ -51,7 +71,7 @@ public class RepositoryOrderingByGeneration implements RepositoryOrdering
   {
     Map<String, TreeNode> nodes = new HashMap<String, TreeNode>(mmds.size());
     root = null;
-    
+
     // build the tree
     for (MetaMetadata mmd : mmds)
     {
@@ -87,16 +107,19 @@ public class RepositoryOrderingByGeneration implements RepositoryOrdering
       TreeNode node = nodes.get(mmd.getName());
       if (!MetaMetadata.isRootMetaMetadata(mmd))
       {
-        String superName = mmd.getType() == null ? mmd.getExtendsAttribute() : mmd.getType(); 
+        String superName = mmd.getType() == null ? mmd.getExtendsAttribute() : mmd.getType();
         if (superName == null)
           throw new RuntimeException("Non-root mmd without base mmd: " + mmd.getName());
         TreeNode superNode = nodes.get(superName);
         if (superNode == null)
-            throw new RuntimeException("Non-root mmd can't find base mmd[" + superName + "]: " + mmd.getName());
-       superNode.addSubtype(node);
+          throw new RuntimeException("Non-root mmd can't find base mmd["
+                                     + superName
+                                     + "]: "
+                                     + mmd.getName());
+        superNode.addSubtype(node);
       }
     }
-    
+
     // BFS and output
     if (root == null)
       throw new RuntimeException("No root mmd found!");
@@ -115,5 +138,5 @@ public class RepositoryOrderingByGeneration implements RepositoryOrdering
 
     return result;
   }
-  
+
 }

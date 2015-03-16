@@ -122,8 +122,6 @@ public class MetaMetadataCompiler extends Debug // ApplicationEnvironment
 		// serialize post-inheritance repository files:
 		serializePostInheritanceRepository(config.getRepositoryLocation(), repository);
 		
-		generateTreeVizData(config.getRepositoryLocation(), repository);
-
 		debug("\n\n compiler finished.");
 	}
 
@@ -201,27 +199,6 @@ public class MetaMetadataCompiler extends Debug // ApplicationEnvironment
       
       writeStringToFile(xmlPostInheritanceRepositoryFile, strs.get(StringFormat.XML));
       writeStringToFile(jsonPostInheritanceRepositoryFile, strs.get(StringFormat.JSON));
-    }
-  }
-
-  public static void generateTreeVizData(File repositoryLocation, MetaMetadataRepository repository)
-  {
-    File treeVizDataDir = new File(repositoryLocation.getParentFile(), "OntoViz");
-    File treeVizDataFile = null;
-    if (treeVizDataDir.exists() && treeVizDataDir.isDirectory())
-    {
-      treeVizDataFile = new File(treeVizDataDir, "mmd_repo.json");
-      RepositoryOrderingByGeneration ordering = new RepositoryOrderingByGeneration();
-      ordering.orderMetaMetadataForInheritance(repository.getMetaMetadataCollection());
-      try
-      {
-        SimplTypesScope.serialize(ordering.root, treeVizDataFile, Format.JSON);
-      }
-      catch (SIMPLTranslationException e)
-      {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
     }
   }
 
