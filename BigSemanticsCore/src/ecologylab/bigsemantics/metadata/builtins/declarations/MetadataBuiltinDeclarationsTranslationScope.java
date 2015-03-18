@@ -22,6 +22,10 @@ public class MetadataBuiltinDeclarationsTranslationScope
 	{
 		ecologylab.bigsemantics.metadata.Metadata.class,
 
+		ecologylab.bigsemantics.metadata.builtins.AggregateMedia.class,
+
+		ecologylab.bigsemantics.metadata.builtins.AggregateSelfmade.class,
+
 		ecologylab.bigsemantics.metadata.builtins.Annotate.class,
 
 		ecologylab.bigsemantics.metadata.builtins.AssignPrimaryLink.class,
@@ -44,6 +48,8 @@ public class MetadataBuiltinDeclarationsTranslationScope
 
 		ecologylab.bigsemantics.metadata.builtins.DocumentMetadataWrap.class,
 
+		ecologylab.bigsemantics.metadata.builtins.FrameSelfmade.class,
+
 		ecologylab.bigsemantics.metadata.builtins.GisLocation.class,
 
 		ecologylab.bigsemantics.metadata.builtins.HtmlText.class,
@@ -55,6 +61,8 @@ public class MetadataBuiltinDeclarationsTranslationScope
 		ecologylab.bigsemantics.metadata.builtins.ImageSelfmade.class,
 
 		ecologylab.bigsemantics.metadata.builtins.PersistenceMetaInfo.class,
+
+		ecologylab.bigsemantics.metadata.builtins.PresentationFrame.class,
 
 		ecologylab.bigsemantics.metadata.builtins.RichArtifact.class,
 
