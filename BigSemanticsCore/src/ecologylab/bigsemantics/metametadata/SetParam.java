@@ -30,6 +30,9 @@ public class SetParam extends ParamOp
 	@simpl_scalar
 	private String			collectionIndex;
 	
+	@simpl_scalar
+	private boolean     onlyWhenNotSet;
+	
 	/**
 	 * 
 	 */
@@ -37,12 +40,19 @@ public class SetParam extends ParamOp
 	{
 	}
 
-
 	@Override
 	void transformParams(HashMap<String, String> parametersMap)
 	{
+	  String currValue = parametersMap.get(getName());
+	  if (currValue != null && onlyWhenNotSet)
+	  {
+	    return;
+	  }
+
 		if (value != null)
+		{
 			parametersMap.put(getName(), value);
+		}
 		else if (valueFrom != null && handler != null)
 		{
 			parametersMap.put(getName(), handler.getSemanticActionVariableMap().get(valueFrom).toString());
