@@ -59,6 +59,9 @@ public class FilterLocation extends Debug implements FieldOp
 	@simpl_scalar
 	private boolean     decodeUrl;
 	
+	@simpl_collection("param")
+	ArrayList<String>   stripParamsBut;
+	
 	/**
 	 * 
 	 */
@@ -220,6 +223,20 @@ public class FilterLocation extends Debug implements FieldOp
   		  }
         return value;
   		}
+      
+      if (stripParamsBut != null && parametersMap != null)
+      {
+        HashMap<String, String>	newParamsMap = new HashMap<String, String>();
+        for (String key : parametersMap.keySet())
+        {
+          if (stripParamsBut.contains(key))
+          {
+            newParamsMap.put(key, parametersMap.get(key));
+          }
+        }
+        parametersMap = newParamsMap;
+  			filteredLocation = filteredLocation.updateParams(parametersMap);
+      }
 		}
 		
 		switch (resultType)
