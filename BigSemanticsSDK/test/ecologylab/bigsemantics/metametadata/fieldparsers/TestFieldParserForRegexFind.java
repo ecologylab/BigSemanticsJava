@@ -1,9 +1,12 @@
-package ecologylab.bigsemantics.metametadata;
+package ecologylab.bigsemantics.metametadata.fieldparsers;
 
 import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.junit.Test;
+
+import ecologylab.bigsemantics.metametadata.fieldparsers.FieldParserElement;
+import ecologylab.bigsemantics.metametadata.fieldparsers.FieldParserForRegexFind;
 
 public class TestFieldParserForRegexFind
 {

@@ -70,8 +70,6 @@ public interface SemanticActionStandardMethods
 	 */
 	public static String	VISUALIZE_CLIPPINGS									= "visualize_clippings";
 	
-	public static String	FILTER_LOCATION											= "filter_location";
-
 	/**
 	 * start a new search.
 	 */

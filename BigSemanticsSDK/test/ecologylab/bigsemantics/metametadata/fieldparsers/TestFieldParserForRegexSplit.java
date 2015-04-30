@@ -1,10 +1,13 @@
-package ecologylab.bigsemantics.metametadata;
+package ecologylab.bigsemantics.metametadata.fieldparsers;
 
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.junit.Test;
+
+import ecologylab.bigsemantics.metametadata.fieldparsers.FieldParserElement;
+import ecologylab.bigsemantics.metametadata.fieldparsers.FieldParserForRegexSplit;
 
 public class TestFieldParserForRegexSplit
 {

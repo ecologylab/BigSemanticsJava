@@ -1,4 +1,4 @@
-package ecologylab.bigsemantics.metametadata;
+package ecologylab.bigsemantics.metametadata.fieldparsers;
 
 import java.util.ArrayList;
 import java.util.List;

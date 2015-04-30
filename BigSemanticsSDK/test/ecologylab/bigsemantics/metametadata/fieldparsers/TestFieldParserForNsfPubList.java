@@ -1,4 +1,4 @@
-package ecologylab.bigsemantics.metametadata;
+package ecologylab.bigsemantics.metametadata.fieldparsers;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -7,6 +7,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import org.junit.Test;
+
+import ecologylab.bigsemantics.metametadata.fieldparsers.FieldParserForNsfPubList;
 
 public class TestFieldParserForNsfPubList
 {

@@ -36,7 +36,9 @@ import ecologylab.bigsemantics.logging.PersistenceCacheDocHit;
 import ecologylab.bigsemantics.logging.PersistenceCacheHtmlHit;
 import ecologylab.bigsemantics.logging.PersistenceCacheMiss;
 import ecologylab.bigsemantics.logging.Phase;
+import ecologylab.bigsemantics.metametadata.FilterLocation;
 import ecologylab.bigsemantics.metametadata.MetaMetadata;
+import ecologylab.bigsemantics.metametadata.MetaMetadataCompositeField;
 import ecologylab.bigsemantics.metametadata.MetaMetadataRepository;
 import ecologylab.bigsemantics.model.text.ITermVector;
 import ecologylab.bigsemantics.model.text.TermVectorFeature;
@@ -629,6 +631,33 @@ public class DocumentClosure extends SetElement
     ParsedURL newPurl = ParsedURL.getAbsolute(newUrl);
     Document newDoc = semanticsScope.getOrConstructDocument(newPurl);
     changeDocument(newDoc);
+
+    MetaMetadataCompositeField mmd = newDoc.getMetaMetadata();
+    if (mmd instanceof MetaMetadata)
+    {
+      FilterLocation filter = ((MetaMetadata) mmd).getFilterLocation();
+      if (filter != null)
+      {
+        ArrayList<ParsedURL> altLocs = new ArrayList<ParsedURL>();
+        try
+        {
+          newPurl = filter.filter(newPurl, altLocs);
+          if (newPurl != null && !newPurl.equals(document.getLocation()))
+          {
+            document.setLocation(newPurl);
+          }
+          for (ParsedURL altLoc : altLocs)
+          {
+            document.addAdditionalLocation(altLoc);
+            semanticsScope.getLocalDocumentCollection().addMapping(altLoc, document);
+          }
+        }
+        catch (Exception e)
+        {
+          logger.error("Exception filtering location " + newPurl, e);
+        }
+      }
+    }
 
     // handle other locations:
     List<ParsedURL> otherLocations = downloadController.getHttpResponse().getOtherPurls();

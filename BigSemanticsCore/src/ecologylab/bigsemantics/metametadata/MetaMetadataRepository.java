@@ -13,6 +13,9 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ecologylab.appframework.types.prefs.Pref;
 import ecologylab.bigsemantics.collecting.CookieProcessing;
 import ecologylab.bigsemantics.collecting.LinkedMetadataMonitor;
@@ -58,6 +61,8 @@ import ecologylab.textformat.NamedStyle;
 public class MetaMetadataRepository extends ElementState
     implements PackageSpecifier, DocumentParserTagNames
 {
+  
+  static final Logger logger = LoggerFactory.getLogger(MetaMetadataRepository.class);
 
   private static final String                                DEFAULT_STYLE_NAME              = "default";
 
@@ -877,22 +882,37 @@ public class MetaMetadataRepository extends ElementState
     }
 
     MetaMetadata metaMetadata = getRichDocumentMM(purl);
-    List<ParsedURL> additionalLocations = new ArrayList<ParsedURL>();
-    if (metaMetadata.getFilterLocation() != null)
+    FilterLocation rewriteLocation = metaMetadata.getRewriteLocation();
+    List<ParsedURL> additionalLocations = null;
+    if (rewriteLocation != null)
     {
-      ParsedURL newPurl = metaMetadata.getFilterLocation().filter(purl, additionalLocations);
-      if (!purl.equals(newPurl))
+      try
       {
-        // if the purl has been changed by the filter, add the old one as additional locations,
-        // and use the new one as the primary location.
-        additionalLocations.add(purl);
-        purl = newPurl;
+        additionalLocations = new ArrayList<ParsedURL>();
+        ParsedURL newPurl = rewriteLocation.filter(purl, additionalLocations);
+        if (!purl.equals(newPurl))
+        {
+          // if the purl has been changed by the filter, add the old one as additional locations,
+          // and use the new one as the primary location.
+          additionalLocations.add(purl);
+          purl = newPurl;
+        }
+      }
+      catch (Exception e)
+      {
+        logger.error("Exception filtering location " + purl, e);
       }
     }
+
     Document result = (Document) metaMetadata.constructMetadata(metadataTScope);
     result.setLocation(purl);
-    for (ParsedURL additionalLocation : additionalLocations)
-      result.addAdditionalLocation(additionalLocation);
+    if (additionalLocations != null)
+    {
+      for (ParsedURL additionalLocation : additionalLocations)
+      {
+        result.addAdditionalLocation(additionalLocation);
+      }
+    }
     return result;
   }
 

@@ -12,6 +12,7 @@ import ecologylab.bigsemantics.metadata.mm_name;
 import ecologylab.bigsemantics.metadata.semantics_mixin;
 import ecologylab.bigsemantics.metametadata.declarations.MetaMetadataNestedFieldDeclaration;
 import ecologylab.bigsemantics.metametadata.exceptions.MetaMetadataException;
+import ecologylab.bigsemantics.metametadata.fieldparsers.FieldParserElement;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.FieldType;
