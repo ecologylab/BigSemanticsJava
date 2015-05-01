@@ -10,10 +10,10 @@ public class Substring implements FieldOp
 {
 
   @simpl_scalar
-  private int    begin = -1;
+  private int    begin;
 
   @simpl_scalar
-  private int    end   = -1;
+  private int    end;
 
   @simpl_scalar
   private String after;
@@ -94,11 +94,7 @@ public class Substring implements FieldOp
     {
       String s = rawValue.toString();
       int a = 0;
-      if (begin >= 0)
-      {
-        a = begin;
-      }
-      else if (after != null)
+      if (after != null)
       {
         int p = s.indexOf(after);
         if (p >= 0)
@@ -114,13 +110,13 @@ public class Substring implements FieldOp
           a = p;
         }
       }
+      else
+      {
+        a = begin;
+      }
 
       int b = s.length();
-      if (end >= 0)
-      {
-        b = end;
-      }
-      else if (before != null)
+      if (before != null)
       {
         int p = s.lastIndexOf(before);
         if (p >= 0)
@@ -135,6 +131,10 @@ public class Substring implements FieldOp
         {
           b = p + inclusiveBefore.length();
         }
+      }
+      else
+      {
+        b = (end == 0) ? s.length() : end;
       }
 
       return s.substring(a, b);

@@ -51,6 +51,8 @@ public class TestSubstring
     Substring ss = new Substring();
     ss.setBefore(" comes");
     assertEquals("After a storm", ss.operateOn(s));
+    ss.setBefore("xyz");
+    assertEquals("After a storm comes a calm.", ss.operateOn(s));
   }
 
   @Test
