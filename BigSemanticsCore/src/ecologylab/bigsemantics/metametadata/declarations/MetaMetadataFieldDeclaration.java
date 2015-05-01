@@ -44,6 +44,10 @@ public class MetaMetadataFieldDeclaration extends ElementState
   @simpl_nowrap
   private List<String>      xpaths;
 
+  @simpl_collection("xpath_for")
+  @simpl_nowrap
+  private List<XPathFor>    xpathsFor;
+
   @simpl_scalar
   private boolean           extractAsHtml;
 
