@@ -201,6 +201,10 @@ public abstract class MetaMetadataField extends MetaMetadataFieldDeclaration
   @simpl_scalar
   private String                                      facetType;
 
+
+  @simpl_scalar
+  private String                                      minkStyle;
+  
   @simpl_scalar
   private String                                      bibtexField;
 
