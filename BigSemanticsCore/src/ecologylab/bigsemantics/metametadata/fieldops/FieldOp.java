@@ -1,4 +1,4 @@
-package ecologylab.bigsemantics.metametadata;
+package ecologylab.bigsemantics.metametadata.fieldops;
 
 /**
  * Provides a general way of operating on raw extraction strings for a field. This operation should
@@ -11,10 +11,10 @@ public interface FieldOp
 
   /**
    * @param rawValue
-   *          The raw extraction results, as a string.
-   * @return New string as the extraction result.
+   *          The raw extraction result.
+   * @return New (modified) extraction result.
    */
-  String operateOn(String rawValue);
+  Object operateOn(Object rawValue) throws Exception;
 
   /**
    * @return A serialized form of this FieldOp. Used as the fingerprint string of this object.

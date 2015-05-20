@@ -41,10 +41,6 @@ import ecologylab.bigsemantics.metadata.scalar.MetadataParsedURL;
 import ecologylab.bigsemantics.metadata.scalar.types.MetadataParsedURLScalarType;
 import ecologylab.bigsemantics.metadata.scalar.types.MetadataScalarType;
 import ecologylab.bigsemantics.metametadata.DefVar;
-import ecologylab.bigsemantics.metametadata.FieldOp;
-import ecologylab.bigsemantics.metametadata.FieldParser;
-import ecologylab.bigsemantics.metametadata.FieldParserElement;
-import ecologylab.bigsemantics.metametadata.FieldParserForRegexSplit;
 import ecologylab.bigsemantics.metametadata.FilterLocation;
 import ecologylab.bigsemantics.metametadata.MetaMetadata;
 import ecologylab.bigsemantics.metametadata.MetaMetadataCollectionField;
@@ -56,6 +52,10 @@ import ecologylab.bigsemantics.metametadata.MetaMetadataScalarField;
 import ecologylab.bigsemantics.metametadata.MetaMetadataValueField;
 import ecologylab.bigsemantics.metametadata.ScalarDependencyException;
 import ecologylab.bigsemantics.metametadata.ScalarDependencyManager;
+import ecologylab.bigsemantics.metametadata.fieldops.FieldOp;
+import ecologylab.bigsemantics.metametadata.fieldparsers.FieldParser;
+import ecologylab.bigsemantics.metametadata.fieldparsers.FieldParserElement;
+import ecologylab.bigsemantics.metametadata.fieldparsers.FieldParserForRegexSplit;
 import ecologylab.bigsemantics.namesandnums.DocumentParserTagNames;
 import ecologylab.collections.Scope;
 import ecologylab.generic.HashMapArrayList;
@@ -1085,13 +1085,19 @@ implements ScalarUnmarshallingContext, SemanticsConstants
 
         if (value != null)
         {
-          value = applyFieldOps(value, mmdField);
-
-          MetadataBase element;
-          element = (MetadataBase) scalarType.getInstance(value, null, this);
-          if (element != null)
+          try
           {
-            elements.add(element);
+            value = applyFieldOps(value, mmdField);
+            MetadataBase element;
+            element = (MetadataBase) scalarType.getInstance(value, null, this);
+            if (element != null)
+            {
+              elements.add(element);
+            }
+          }
+          catch (Exception e)
+          {
+            logger.error("Exception applying field ops.", e);
           }
         }
       }
@@ -1118,12 +1124,13 @@ implements ScalarUnmarshallingContext, SemanticsConstants
    * @param params
    * @return true if the scalar value is not null / empty, or false. If &lt;filter&gt; defined it
    *         will be applied before checking null / empty value.
+   * @throws Exception 
    */
   private boolean extractScalar(MetaMetadataScalarField mmdField,
                                 Metadata metadata,
                                 Node contextNode,
                                 Map<String, String> fieldParserContext,
-                                Scope<Object> params)
+                                Scope<Object> params) throws Exception
   {
     String xpathString = mmdField.getXpath();
     String fieldParserKey = mmdField.getFieldParserKey();
@@ -1260,29 +1267,31 @@ implements ScalarUnmarshallingContext, SemanticsConstants
    * @param evaluation
    * @param field
    * @return Modified evaluation.
+   * @throws Exception 
    */
-  private String applyFieldOps(String evaluation, MetaMetadataField field)
+  private String applyFieldOps(String evaluation, MetaMetadataField field) throws Exception
   {
     if (evaluation == null)
     {
       return null;
     }
   
-    // to remove unwanted XML characters
-    evaluation = XMLTools.unescapeXML(evaluation);
+    Object result = XMLTools.unescapeXML(evaluation);
   
     List<FieldOp> fieldOps = field.getFieldOps();
     if (fieldOps != null)
     {
       for (int i = 0; i < fieldOps.size(); ++i)
       {
-        evaluation = fieldOps.get(i).operateOn(evaluation);
+        result = fieldOps.get(i).operateOn(result);
       }
     }
   
-    // remove white spaces if any
-    evaluation = evaluation.trim();
-    return evaluation;
+    if (result == null)
+    {
+      return null;
+    }
+    return result.toString().trim();
   }
 
   private static Properties innerHtmlProps = new Properties();

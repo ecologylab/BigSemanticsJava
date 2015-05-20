@@ -8,6 +8,9 @@ import ecologylab.bigsemantics.collecting.CookieProcessing;
 import ecologylab.bigsemantics.collecting.SemanticsSite;
 import ecologylab.bigsemantics.metadata.MetadataClassDescriptor;
 import ecologylab.bigsemantics.metadata.MetadataFieldDescriptor;
+import ecologylab.bigsemantics.metametadata.declarations.XPathFor;
+import ecologylab.bigsemantics.metametadata.fieldops.FieldOpScope;
+import ecologylab.bigsemantics.metametadata.fieldparsers.FieldParserElement;
 import ecologylab.concurrent.BasicSite;
 import ecologylab.generic.Debug;
 import ecologylab.net.UserAgent;
@@ -40,6 +43,8 @@ public class MetaMetadataTranslationScope extends Debug
 		NamedStyle.class, 
 		SemanticAction.class,
 		NestedSemanticAction.class,
+		
+		XPathFor.class,
 		
 		SemanticsSite.class,
 		BasicSite.class,

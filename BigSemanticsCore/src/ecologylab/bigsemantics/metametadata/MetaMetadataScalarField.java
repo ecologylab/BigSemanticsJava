@@ -3,7 +3,6 @@ package ecologylab.bigsemantics.metametadata;
 import java.util.ArrayList;
 import java.util.List;
 
-import ecologylab.bigsemantics.documentparsers.ParserBase;
 import ecologylab.bigsemantics.html.utils.StringBuilderUtils;
 import ecologylab.bigsemantics.metadata.MetadataClassDescriptor;
 import ecologylab.bigsemantics.metadata.MetadataFieldDescriptor;
@@ -15,7 +14,6 @@ import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.annotations.Hint;
 import ecologylab.serialization.annotations.simpl_collection;
 import ecologylab.serialization.annotations.simpl_composite_as_scalar;
-import ecologylab.serialization.annotations.simpl_filter;
 import ecologylab.serialization.annotations.simpl_inherit;
 import ecologylab.serialization.annotations.simpl_scalar;
 import ecologylab.serialization.annotations.simpl_tag;
@@ -187,39 +185,39 @@ public class MetaMetadataScalarField extends MetaMetadataField
     if (this.compositeScalar)
       metaInfoBuf.add(new MetaInformation(simpl_composite_as_scalar.class));
 
-    List<FieldOp> fieldOps = getFieldOps();
-    if (fieldOps != null && fieldOps.size() > 0)
-    {
-      // TODO currently we can have only one @simpl_filter for a field.
-      FieldOp op = fieldOps.get(0);
-      if (op instanceof RegexOp)
-      {
-        // @simpl_filter
-        RegexOp filter = (RegexOp) op;
-        if (filter != null && filter.getRegex() != null
-            && filter.getRegex().pattern().length() > 0
-            && getMetaMetadataParser().equals(ParserBase.DIRECT_BINDING_PARSER))
-        {
-          List<String> argNames = new ArrayList<String>();
-          List<Object> argValues = new ArrayList<Object>();
-          argNames.add("regex");
-          argValues.add(filter.getJavaRegex());
-          if (filter.getGroup() > 0)
-          {
-            argNames.add("group");
-            argValues.add(filter.getGroup());
-          }
-          if (filter.getReplace() != null)
-          {
-            argNames.add("replace");
-            argValues.add(filter.getReplace());
-          }
-          metaInfoBuf.add(new MetaInformation(simpl_filter.class,
-                                              argNames.toArray(new String[] {}),
-                                              argValues.toArray()));
-        }
-      }
-    }
+    // FIXME Field operations, e.g. regex matching & replacing, should be done above the simpl layer
+//    List<FieldOp> fieldOps = getFieldOps();
+//    if (fieldOps != null && fieldOps.size() > 0)
+//    {
+//      FieldOp op = fieldOps.get(0);
+//      if (op instanceof RegexOp)
+//      {
+//        // @simpl_filter
+//        RegexOp filter = (RegexOp) op;
+//        if (filter != null && filter.getRegex() != null
+//            && filter.getRegex().pattern().length() > 0
+//            && getMetaMetadataParser().equals(ParserBase.DIRECT_BINDING_PARSER))
+//        {
+//          List<String> argNames = new ArrayList<String>();
+//          List<Object> argValues = new ArrayList<Object>();
+//          argNames.add("regex");
+//          argValues.add(filter.getJavaRegex());
+//          if (filter.getGroup() > 0)
+//          {
+//            argNames.add("group");
+//            argValues.add(filter.getGroup());
+//          }
+//          if (filter.getReplace() != null)
+//          {
+//            argNames.add("replace");
+//            argValues.add(filter.getReplace());
+//          }
+//          metaInfoBuf.add(new MetaInformation(simpl_filter.class,
+//                                              argNames.toArray(new String[] {}),
+//                                              argValues.toArray()));
+//        }
+//      }
+//    }
   }
 
   @Override

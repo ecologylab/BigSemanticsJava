@@ -1,11 +1,12 @@
-package ecologylab.bigsemantics.metametadata;
+package ecologylab.bigsemantics.metametadata.fieldparsers;
 
 import java.util.Map;
 
 import org.junit.Assert;
-
 import org.junit.Before;
 import org.junit.Test;
+
+import ecologylab.bigsemantics.metametadata.fieldparsers.FieldParserForAcmReferences;
 
 public class TestFieldParserForAcmReferences
 {

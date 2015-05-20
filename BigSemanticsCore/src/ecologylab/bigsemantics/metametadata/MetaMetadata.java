@@ -57,6 +57,16 @@ public class MetaMetadata extends MetaMetadataCompositeField
   @mm_dont_inherit
   private ArrayList<ExampleUrl>                   exampleUrls;
 
+  /**
+   * Filter location <b>before</b> downloading the page.
+   */
+  @simpl_composite
+  @mm_dont_inherit
+  private FilterLocation                          rewriteLocation;
+
+  /**
+   * Filter location <b>after</b> downloading the page.
+   */
   @simpl_composite
   @mm_dont_inherit
   private FilterLocation                          filterLocation;
@@ -156,6 +166,11 @@ public class MetaMetadata extends MetaMetadataCompositeField
   public ArrayList<ExampleUrl> getExampleUrls()
   {
     return exampleUrls;
+  }
+  
+  public FilterLocation getRewriteLocation()
+  {
+    return rewriteLocation == null ? filterLocation : rewriteLocation;
   }
 
   public FilterLocation getFilterLocation()

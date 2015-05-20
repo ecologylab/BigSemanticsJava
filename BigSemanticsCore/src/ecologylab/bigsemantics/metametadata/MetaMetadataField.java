@@ -17,6 +17,8 @@ import ecologylab.bigsemantics.metadata.MetadataClassDescriptor;
 import ecologylab.bigsemantics.metadata.MetadataFieldDescriptor;
 import ecologylab.bigsemantics.metametadata.declarations.MetaMetadataFieldDeclaration;
 import ecologylab.bigsemantics.metametadata.exceptions.MetaMetadataException;
+import ecologylab.bigsemantics.metametadata.fieldops.FieldOp;
+import ecologylab.bigsemantics.metametadata.fieldops.FieldOpScope;
 import ecologylab.generic.HashMapArrayList;
 import ecologylab.serialization.ElementState;
 import ecologylab.serialization.FieldType;
