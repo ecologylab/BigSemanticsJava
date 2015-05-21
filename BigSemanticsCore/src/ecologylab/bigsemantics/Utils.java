@@ -263,13 +263,10 @@ public class Utils
   {
     for (String flag : flags.keySet())
     {
-      if (targetConfigs.containsKey(flag))
+      String newValue = flags.get(flag);
+      if (newValue != null)
       {
-        String newValue = flags.get(flag);
-        if (newValue != null)
-        {
-          targetConfigs.setProperty(flag, newValue);
-        }
+        targetConfigs.setProperty(flag, newValue);
       }
     }
   }
