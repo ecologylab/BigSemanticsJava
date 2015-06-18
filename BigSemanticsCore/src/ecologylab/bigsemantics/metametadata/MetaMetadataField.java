@@ -208,8 +208,17 @@ public abstract class MetaMetadataField extends MetaMetadataFieldDeclaration
   private String                                      minkStyle;
   
   @simpl_scalar
+  private String									  explorableLabel;
+  
+  @simpl_scalar
+  private String									  showInSnippet;
+  
+  @simpl_scalar
   private String                                      bibtexField;
-
+  @simpl_scalar
+  private int         minkHeight;
+  @simpl_scalar
+  private int         minkWidth;
   /**
    * The nested child fields inside this field.
    */

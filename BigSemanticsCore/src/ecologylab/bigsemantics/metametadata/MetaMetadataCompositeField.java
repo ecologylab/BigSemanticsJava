@@ -46,6 +46,10 @@ public class MetaMetadataCompositeField extends MetaMetadataCompositeFieldDeclar
   
   @simpl_scalar
   private boolean         notExpandable;
+  @simpl_scalar
+  private int         minkHeight;
+  @simpl_scalar
+  private int         minkWidth;
 
   static
   {

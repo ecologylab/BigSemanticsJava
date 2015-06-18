@@ -29,6 +29,8 @@ import ecologylab.serialization.types.ScalarType;
 @SuppressWarnings({ "rawtypes", "unchecked" })
 @simpl_inherit
 @simpl_tag("collection")
+
+
 public class MetaMetadataCollectionField extends MetaMetadataCollectionFieldDeclaration
 {
 
