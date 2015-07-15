@@ -43,6 +43,10 @@ public class MetaMetadataFieldDeclaration extends ElementState
   @simpl_collection("xpath")
   @simpl_nowrap
   private List<String>      xpaths;
+  
+  @simpl_collection("json_path")
+  @simpl_nowrap
+  private List<String>      jsonPaths;
 
   @simpl_collection("xpath_for")
   @simpl_nowrap
@@ -256,7 +260,26 @@ public class MetaMetadataFieldDeclaration extends ElementState
   {
     return xpaths == null ? 0 : xpaths.size();
   }
+  
+  public List<String> getJsonPaths() {
+	return jsonPaths;
+  }
 
+  public String getJsonPath(int i)
+  {
+    if (jsonPaths == null || jsonPaths.size() == 0 || i > jsonPaths.size())
+    {
+      return null;
+    }
+    return jsonPaths.get(i);
+  }
+
+  public int getJsonPathsSize()
+  {
+    return jsonPaths == null ? 0 : jsonPaths.size();
+  }
+
+  
   public String getTag()
   {
     return tag;
