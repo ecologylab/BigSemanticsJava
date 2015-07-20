@@ -416,7 +416,7 @@ public class MetaMetadataFieldDeclaration extends ElementState
     return labelAt;
   }
   
-  public boolean getStreaming()
+  public boolean isStreaming()
   {
     return streaming;
   }
