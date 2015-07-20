@@ -199,6 +199,12 @@ public class MetaMetadataFieldDeclaration extends ElementState
    */
   @simpl_scalar
   private String            labelAt;
+  
+  /**
+   * Hint for renderer that field updates
+   */
+  @simpl_scalar
+  private boolean			streaming;
 
   @simpl_scalar
   @mm_dont_inherit
@@ -409,6 +415,11 @@ public class MetaMetadataFieldDeclaration extends ElementState
   {
     return labelAt;
   }
+  
+  public boolean getStreaming()
+  {
+    return streaming;
+  }
 
   public boolean isInheritDone()
   {
@@ -567,6 +578,11 @@ public class MetaMetadataFieldDeclaration extends ElementState
   public void setLabelAt(String labelAt)
   {
     this.labelAt = labelAt;
+  }
+  
+  public void setStreaming(boolean streaming)
+  {
+    this.streaming = streaming;
   }
 
   public void setInheritDone(boolean inheritDone)
