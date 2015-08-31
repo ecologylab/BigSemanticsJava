@@ -1160,6 +1160,8 @@ implements ScalarUnmarshallingContext, SemanticsConstants
     {
       return false; // This is the final catch all.
     }
+    logger.info("evaluation");
+    logger.info(evaluation.toString());
 
     evaluation = concatenateValues(evaluation, mmdField, metadata, params);
 
@@ -1183,6 +1185,9 @@ implements ScalarUnmarshallingContext, SemanticsConstants
       MetadataParsedURL metadataPurl = (MetadataParsedURL) fdScalarType.getInstance(evaluation,
                                                                                     null,
                                                                                     this);
+      logger.info("ParsedURL");
+      logger.info(      metadataPurl.getValue().toString());
+
       if (metadataPurl != null)
       {
         ParsedURL purl = metadataPurl.getValue();

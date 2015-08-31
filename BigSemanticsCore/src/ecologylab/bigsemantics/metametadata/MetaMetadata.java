@@ -73,10 +73,15 @@ public class MetaMetadata extends MetaMetadataCompositeField
 
   @simpl_scalar
   private String                                  parser;
-
+  
+  @simpl_scalar
+  @mm_dont_inherit
+  private String                                  forceLocationFilter;
+  
   @simpl_scalar
   @mm_dont_inherit
   private String                                  extractWith;
+
 
   @simpl_collection
   @simpl_scope(SemanticActionTranslationScope.SEMANTIC_ACTION_TRANSLATION_SCOPE)
