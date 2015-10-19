@@ -45,6 +45,9 @@ public abstract class MetaMetadataCollectionFieldDeclaration extends MetaMetadat
 
   @simpl_scalar
   private boolean            childShowExpandedAlways;
+  
+  @simpl_scalar
+  private String            childStyleName;
 
   public MetaMetadataCollectionFieldDeclaration()
   {
@@ -96,6 +99,10 @@ public abstract class MetaMetadataCollectionFieldDeclaration extends MetaMetadat
   {
     return childShowExpandedInitially;
   }
+  
+  public String getChildStyleName() {
+	return childStyleName;
+  }
 
   public boolean isNoWrap()
   {
@@ -122,7 +129,11 @@ public abstract class MetaMetadataCollectionFieldDeclaration extends MetaMetadat
     this.childShowExpandedInitially = childShowExpandedInitially;
   }
 
-  public void setChildTag(String childTag)
+  public void setChildStyleName(String childStyleName) {
+	this.childStyleName = childStyleName;
+  }
+
+public void setChildTag(String childTag)
   {
     this.childTag = childTag;
   }
