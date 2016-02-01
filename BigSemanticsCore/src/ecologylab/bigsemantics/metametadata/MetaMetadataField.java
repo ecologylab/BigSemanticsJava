@@ -215,6 +215,10 @@ public abstract class MetaMetadataField extends MetaMetadataFieldDeclaration
   
   @simpl_scalar
   private String                                      bibtexField;
+  
+  @simpl_scalar
+  private String                                      fieldAsCount;
+
   @simpl_scalar
   private int         minkHeight;
   @simpl_scalar

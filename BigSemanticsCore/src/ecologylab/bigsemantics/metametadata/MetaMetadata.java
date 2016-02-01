@@ -73,7 +73,13 @@ public class MetaMetadata extends MetaMetadataCompositeField
 
   @simpl_scalar
   private String                                  parser;
-  
+  @simpl_scalar
+  private String								  searchResultIterator;
+  @simpl_scalar
+  private String								  finalPageCanary;
+  @simpl_scalar
+  private String								  resultsPerPage;
+
   @simpl_scalar
   @mm_dont_inherit
   private String                                  forceLocationFilter;
