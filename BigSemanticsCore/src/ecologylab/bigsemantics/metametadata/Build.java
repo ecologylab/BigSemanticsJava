@@ -21,4 +21,11 @@ public class Build
   @simpl_scalar
   public String user;
 
+  public void copyFrom(Build build)
+  {
+    this.date = build.date;
+    this.host = build.host;
+    this.user = build.user;
+  }
+
 }

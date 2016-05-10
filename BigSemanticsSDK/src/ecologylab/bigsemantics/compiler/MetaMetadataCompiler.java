@@ -120,11 +120,12 @@ public class MetaMetadataCompiler extends Debug // ApplicationEnvironment
     debug("\n\n compiling to " + generatedSemanticsLocation + " ...\n\n");
     codeTranslator.translate(generatedSemanticsLocation, tscope, config);
       
-    // generate repository file list:
-    generateRepositoryFileList(config);
-    
     // generate repository build info:
     generateRepositoryBuildInfo(config);
+    repository.build().copyFrom(this.build);
+    
+    // generate repository file list:
+    generateRepositoryFileList(config);
     
     // serialize post-inheritance repository files:
     serializePostInheritanceRepository(config.getRepositoryLocation(), repository);
@@ -136,6 +137,43 @@ public class MetaMetadataCompiler extends Debug // ApplicationEnvironment
   
   static private String REPOSITORY_BUILD_FILE = "buildInfo.xml";
   
+  private Build build;
+
+  public void generateRepositoryBuildInfo(CompilerConfig config)
+  {
+    File repositoryLocation = config.getRepositoryLocation();
+    assert repositoryLocation != null;
+    assert repositoryLocation.exists();
+    assert repositoryLocation.isDirectory();
+    debug("Repository location: " + repositoryLocation);
+    
+    MetaMetadataRepository repoBuild = new MetaMetadataRepository();
+    build = repoBuild.build();
+    build.date = new Date();
+    try
+    {
+      build.host = InetAddress.getLocalHost().getHostName();
+    }
+    catch (UnknownHostException e1)
+    {
+      build.host = "<unable to get host name>";
+      e1.printStackTrace();
+    }
+    build.user = System.getProperty("user.name");
+    
+    File repoBuildFile = new File(repositoryLocation, REPOSITORY_BUILD_FILE);
+    
+    try
+    {
+      SimplTypesScope.serialize(repoBuild, repoBuildFile, Format.XML);
+    }
+    catch (SIMPLTranslationException e2)
+    {
+      error("Error saving build info!");
+      e2.printStackTrace();
+    }
+  }
+
   public void generateRepositoryFileList(CompilerConfig config)
   {
     File repositoryLocation = config.getRepositoryLocation();
@@ -161,41 +199,6 @@ public class MetaMetadataCompiler extends Debug // ApplicationEnvironment
     catch (FileNotFoundException e)
     {
       error("Cannot write to " + repoFilesLst);
-    }
-  }
-
-  public void generateRepositoryBuildInfo(CompilerConfig config)
-  {
-    File repositoryLocation = config.getRepositoryLocation();
-    assert repositoryLocation != null;
-    assert repositoryLocation.exists();
-    assert repositoryLocation.isDirectory();
-    debug("Repository location: " + repositoryLocation);
-    
-    MetaMetadataRepository repoBuild = new MetaMetadataRepository();
-    Build build = repoBuild.build();
-    build.date = new Date();
-    try
-    {
-      build.host = InetAddress.getLocalHost().getHostName();
-    }
-    catch (UnknownHostException e1)
-    {
-      build.host = "<unable to get host name>";
-      e1.printStackTrace();
-    }
-    build.user = System.getProperty("user.name");
-    
-    File repoBuildFile = new File(repositoryLocation, REPOSITORY_BUILD_FILE);
-    
-    try
-    {
-      SimplTypesScope.serialize(repoBuild, repoBuildFile, Format.XML);
-    }
-    catch (SIMPLTranslationException e2)
-    {
-      error("Error saving build info!");
-      e2.printStackTrace();
     }
   }
 
