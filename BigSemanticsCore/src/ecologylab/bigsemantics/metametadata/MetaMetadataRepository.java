@@ -80,6 +80,9 @@ public class MetaMetadataRepository extends ElementState
 
   private String                                             hash;
 
+  @simpl_composite
+  private Build                                              build;
+  
   /**
    * The package in which the class files have to be generated.
    */
@@ -253,6 +256,15 @@ public class MetaMetadataRepository extends ElementState
     this.name = name;
   }
 
+  public Build build()
+  {
+    if (this.build == null)
+    {
+      this.build = new Build();
+    }
+    return this.build;
+  }
+
   @Override
   public String packageName()
   {
@@ -418,6 +430,11 @@ public class MetaMetadataRepository extends ElementState
     if (this.defaultCacheLife == null)
     {
       this.defaultCacheLife = theOtherRepository.defaultCacheLife;
+    }
+    
+    if (this.build == null)
+    {
+      this.build = theOtherRepository.build;
     }
   }
 

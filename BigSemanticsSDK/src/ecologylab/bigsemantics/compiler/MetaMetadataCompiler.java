@@ -6,7 +6,10 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +17,7 @@ import java.util.Map;
 import ecologylab.bigsemantics.FileUtils;
 import ecologylab.bigsemantics.collecting.MetaMetadataRepositoryLocator;
 import ecologylab.bigsemantics.metadata.MetadataClassDescriptor;
+import ecologylab.bigsemantics.metametadata.Build;
 import ecologylab.bigsemantics.metametadata.FileTools;
 import ecologylab.bigsemantics.metametadata.MetaMetadata;
 import ecologylab.bigsemantics.metametadata.MetaMetadataRepository;
@@ -36,103 +40,108 @@ import ecologylab.translators.CodeTranslator;
  */
 public class MetaMetadataCompiler extends Debug // ApplicationEnvironment
 {
-	
-	public static final String	BUILTINS_CLASS_PACKAGE														= ".builtins";
+  
+  public static final String  BUILTINS_CLASS_PACKAGE                            = ".builtins";
 
-	public static final String	DECLARATION_CLASS_PACKAGE													= ".declarations";
+  public static final String  DECLARATION_CLASS_PACKAGE                          = ".declarations";
 
-	public static final String	DECLARATION_CLASS_SUFFIX													= "Declaration";
+  public static final String  DECLARATION_CLASS_SUFFIX                          = "Declaration";
 
-	private static final String	META_METADATA_COMPILER_TSCOPE_NAME								= "meta-metadata-compiler-tscope";
+  private static final String  META_METADATA_COMPILER_TSCOPE_NAME                = "meta-metadata-compiler-tscope";
 
-	private static final String	META_METADATA_COMPILER_BUILTIN_DECLARATIONS_SCOPE	= "meta-metadata-compiler-builtin-declarations-scope";
+  private static final String  META_METADATA_COMPILER_BUILTIN_DECLARATIONS_SCOPE  = "meta-metadata-compiler-builtin-declarations-scope";
 
-	public void compile(CompilerConfig config) throws IOException, SIMPLTranslationException,
-			CodeTranslationException
-	{
-		debug("\n\n loading repository ...\n\n");
-		SimplTypesScope.enableGraphSerialization();
-		MetaMetadataRepository.initializeTypes();
-		MetaMetadataRepository repository = config.loadRepository();
-		SimplTypesScope tscope = repository.traverseAndGenerateTranslationScope(META_METADATA_COMPILER_TSCOPE_NAME);
+  public void compile(CompilerConfig config) throws IOException, SIMPLTranslationException,
+      CodeTranslationException
+  {
+    debug("\n\n loading repository ...\n\n");
+    SimplTypesScope.enableGraphSerialization();
+    MetaMetadataRepository.initializeTypes();
+    MetaMetadataRepository repository = config.loadRepository();
+    SimplTypesScope tscope = repository.traverseAndGenerateTranslationScope(META_METADATA_COMPILER_TSCOPE_NAME);
 
-		CodeTranslator codeTranslator = config.getCompiler();
-		
-		File generatedSemanticsLocation = config.getGeneratedSemanticsLocation();
-		File libraryDir = new File(generatedSemanticsLocation, "Library");
-		if (libraryDir.exists() && libraryDir.isDirectory())
-		{
-			FileUtils.deleteDir(libraryDir);
-		}
-		
-		// generate declaration classes and scope
-		SimplTypesScope builtinDeclarationsScope = SimplTypesScope.get(META_METADATA_COMPILER_BUILTIN_DECLARATIONS_SCOPE, new Class[] {});
-		String builtinPackage = null;
-		for (ClassDescriptor mdCD : tscope.getClassDescriptors())
-		{
-			MetaMetadata definingMmd = ((MetadataClassDescriptor) mdCD).getDefiningMmd();
-			if (definingMmd.isBuiltIn())
-			{
-				ClassDescriptor declCD = (ClassDescriptor) mdCD.clone();
-				String packageName = mdCD.getDescribedClassPackageName();
-				String classSimpleName = mdCD.getDescribedClassSimpleName();
-				if (definingMmd.isRootMetaMetadata())
-				{
-					packageName += BUILTINS_CLASS_PACKAGE + DECLARATION_CLASS_PACKAGE;
-					classSimpleName += DECLARATION_CLASS_SUFFIX;
-				}
-				else
-				{
-					builtinPackage = packageName; // essentially, the old package name
-					packageName = packageName.replace(BUILTINS_CLASS_PACKAGE, BUILTINS_CLASS_PACKAGE + DECLARATION_CLASS_PACKAGE);
-					classSimpleName += DECLARATION_CLASS_SUFFIX;
-				}
-				declCD.setDescribedClassPackageName(packageName);
-				declCD.setDescribedClassSimpleName(classSimpleName);
-				builtinDeclarationsScope.addTranslation(declCD);
-			}
-		}
-//			compiler.translate(cd, config.getGeneratedBuiltinDeclarationsLocation(), config,
-//					newPackageName, newSimpleName, GenerateAbstractClass.TRUE);
-		CompilerConfig newConfig = (CompilerConfig) config.clone();
-		newConfig.setLibraryTScopeClassPackage("ecologylab.bigsemantics.metadata.builtins.declarations");
-		newConfig.setLibraryTScopeClassSimpleName("MetadataBuiltinDeclarationsTranslationScope");
-//		newConfig.setGenerateAbstractClass(true);
-		newConfig.setBuiltinDeclarationScopeName(SemanticsNames.REPOSITORY_BUILTIN_DECLARATIONS_TYPE_SCOPE);
-		newConfig.getClassesExcludedFromGeneratedTScopeClass()
-		    .add("ecologylab.bigsemantics.metadata.builtins.InformationComposition");
-		ClassDescriptor infoCompCD = builtinDeclarationsScope.getClassDescriptorBySimpleName("InformationCompositionDeclaration");
+    CodeTranslator codeTranslator = config.getCompiler();
+    
+    File generatedSemanticsLocation = config.getGeneratedSemanticsLocation();
+    File libraryDir = new File(generatedSemanticsLocation, "Library");
+    if (libraryDir.exists() && libraryDir.isDirectory())
+    {
+      FileUtils.deleteDir(libraryDir);
+    }
+    
+    // generate declaration classes and scope
+    SimplTypesScope builtinDeclarationsScope = SimplTypesScope.get(META_METADATA_COMPILER_BUILTIN_DECLARATIONS_SCOPE, new Class[] {});
+    String builtinPackage = null;
+    for (ClassDescriptor mdCD : tscope.getClassDescriptors())
+    {
+      MetaMetadata definingMmd = ((MetadataClassDescriptor) mdCD).getDefiningMmd();
+      if (definingMmd.isBuiltIn())
+      {
+        ClassDescriptor declCD = (ClassDescriptor) mdCD.clone();
+        String packageName = mdCD.getDescribedClassPackageName();
+        String classSimpleName = mdCD.getDescribedClassSimpleName();
+        if (definingMmd.isRootMetaMetadata())
+        {
+          packageName += BUILTINS_CLASS_PACKAGE + DECLARATION_CLASS_PACKAGE;
+          classSimpleName += DECLARATION_CLASS_SUFFIX;
+        }
+        else
+        {
+          builtinPackage = packageName; // essentially, the old package name
+          packageName = packageName.replace(BUILTINS_CLASS_PACKAGE, BUILTINS_CLASS_PACKAGE + DECLARATION_CLASS_PACKAGE);
+          classSimpleName += DECLARATION_CLASS_SUFFIX;
+        }
+        declCD.setDescribedClassPackageName(packageName);
+        declCD.setDescribedClassSimpleName(classSimpleName);
+        builtinDeclarationsScope.addTranslation(declCD);
+      }
+    }
+//      compiler.translate(cd, config.getGeneratedBuiltinDeclarationsLocation(), config,
+//          newPackageName, newSimpleName, GenerateAbstractClass.TRUE);
+    CompilerConfig newConfig = (CompilerConfig) config.clone();
+    newConfig.setLibraryTScopeClassPackage("ecologylab.bigsemantics.metadata.builtins.declarations");
+    newConfig.setLibraryTScopeClassSimpleName("MetadataBuiltinDeclarationsTranslationScope");
+//    newConfig.setGenerateAbstractClass(true);
+    newConfig.setBuiltinDeclarationScopeName(SemanticsNames.REPOSITORY_BUILTIN_DECLARATIONS_TYPE_SCOPE);
+    newConfig.getClassesExcludedFromGeneratedTScopeClass()
+        .add("ecologylab.bigsemantics.metadata.builtins.InformationComposition");
+    ClassDescriptor infoCompCD = builtinDeclarationsScope.getClassDescriptorBySimpleName("InformationCompositionDeclaration");
     codeTranslator.excludeClassFromTranslation(infoCompCD);
     if (config.getGeneratedBuiltinDeclarationsLocation() != null)
-  		codeTranslator.translate(config.getGeneratedBuiltinDeclarationsLocation(), builtinDeclarationsScope, newConfig);
-		
-		// generate normal metadata classes
-		for (ClassDescriptor mdCD : tscope.getClassDescriptors())
-		{
-			MetaMetadata definingMmd = ((MetadataClassDescriptor) mdCD).getDefiningMmd();
-			if (definingMmd.isBuiltIn())
-				codeTranslator.excludeClassFromTranslation(mdCD);
-		}
-		debug("\n\n compiling to " + generatedSemanticsLocation + " ...\n\n");
-		codeTranslator.translate(generatedSemanticsLocation, tscope, config);
-			
-		// generate repository file list:
-		generateRepositoryFileList(config);
-		
-		// serialize post-inheritance repository files:
-		serializePostInheritanceRepository(config.getRepositoryLocation(), repository);
-		
-		debug("\n\n compiler finished.");
-	}
+      codeTranslator.translate(config.getGeneratedBuiltinDeclarationsLocation(), builtinDeclarationsScope, newConfig);
+    
+    // generate normal metadata classes
+    for (ClassDescriptor mdCD : tscope.getClassDescriptors())
+    {
+      MetaMetadata definingMmd = ((MetadataClassDescriptor) mdCD).getDefiningMmd();
+      if (definingMmd.isBuiltIn())
+        codeTranslator.excludeClassFromTranslation(mdCD);
+    }
+    debug("\n\n compiling to " + generatedSemanticsLocation + " ...\n\n");
+    codeTranslator.translate(generatedSemanticsLocation, tscope, config);
+      
+    // generate repository file list:
+    generateRepositoryFileList(config);
+    
+    // generate repository build info:
+    generateRepositoryBuildInfo(config);
+    
+    // serialize post-inheritance repository files:
+    serializePostInheritanceRepository(config.getRepositoryLocation(), repository);
+    
+    debug("\n\n compiler finished.");
+  }
 
   static private String REPOSITORY_FILES_LST = "repositoryFiles.lst";
-	
-	public void generateRepositoryFileList(CompilerConfig config)
-	{
-	  File repositoryLocation = config.getRepositoryLocation();
-	  assert repositoryLocation != null;
-	  assert repositoryLocation.exists();
-	  assert repositoryLocation.isDirectory();
+  
+  static private String REPOSITORY_BUILD_FILE = "buildInfo.xml";
+  
+  public void generateRepositoryFileList(CompilerConfig config)
+  {
+    File repositoryLocation = config.getRepositoryLocation();
+    assert repositoryLocation != null;
+    assert repositoryLocation.exists();
+    assert repositoryLocation.isDirectory();
     debug("Repository location: " + repositoryLocation);
     
     List<String> items = getRepositoryFileItems(repositoryLocation, config.getRepositoryFormat());
@@ -153,12 +162,47 @@ public class MetaMetadataCompiler extends Debug // ApplicationEnvironment
     {
       error("Cannot write to " + repoFilesLst);
     }
-	}
+  }
+
+  public void generateRepositoryBuildInfo(CompilerConfig config)
+  {
+    File repositoryLocation = config.getRepositoryLocation();
+    assert repositoryLocation != null;
+    assert repositoryLocation.exists();
+    assert repositoryLocation.isDirectory();
+    debug("Repository location: " + repositoryLocation);
+    
+    MetaMetadataRepository repoBuild = new MetaMetadataRepository();
+    Build build = repoBuild.build();
+    build.date = new Date();
+    try
+    {
+      build.host = InetAddress.getLocalHost().getHostName();
+    }
+    catch (UnknownHostException e1)
+    {
+      build.host = "<unable to get host name>";
+      e1.printStackTrace();
+    }
+    build.user = System.getProperty("user.name");
+    
+    File repoBuildFile = new File(repositoryLocation, REPOSITORY_BUILD_FILE);
+    
+    try
+    {
+      SimplTypesScope.serialize(repoBuild, repoBuildFile, Format.XML);
+    }
+    catch (SIMPLTranslationException e2)
+    {
+      error("Error saving build info!");
+      e2.printStackTrace();
+    }
+  }
 
   private List<String> getRepositoryFileItems(File repositoryLocation, Format repositoryFormat)
   {
     String repositoryPath = repositoryLocation.getAbsolutePath();
-	  
+    
     List<File> files = MetaMetadataRepositoryLocator.listRepositoryFiles(repositoryLocation,
                                                                          repositoryFormat);
     List<String> items = new ArrayList<String>();
@@ -178,9 +222,9 @@ public class MetaMetadataCompiler extends Debug // ApplicationEnvironment
   
   public static void serializePostInheritanceRepository(File repositoryLocation, MetaMetadataRepository repository)
   {
-	  assert repositoryLocation != null;
-	  assert repositoryLocation.exists();
-	  assert repositoryLocation.isDirectory();
+    assert repositoryLocation != null;
+    assert repositoryLocation.exists();
+    assert repositoryLocation.isDirectory();
     Debug.debugT(MetaMetadataCompiler.class, "Repository location: " + repositoryLocation);
     
     File postInheritanceRepositoryDir = new File(repositoryLocation.getParentFile(),
@@ -247,34 +291,34 @@ public class MetaMetadataCompiler extends Debug // ApplicationEnvironment
     Debug.error(MetaMetadataCompiler.class, msg);
   }
 
-	/**
-	 * @param args
-	 * 
-	 * @throws IOException
-	 * @throws SIMPLTranslationException
-	 * @throws CodeTranslationException
-	 */
-	public static void main(String[] args) throws IOException, SIMPLTranslationException,
-			CodeTranslationException
-	{
-		if (args.length < 2 || args.length > 3)
-		{
-			error("args: <target-language> <generated-semantics-location> [<generated-builtin-declarations-location>]");
-			error("  - <target-language>: e.g. java or csharp (cs, c#).");
-			error("  - <generated-semantics-location>: the path to the location for generated semantics.");
-			error("  - <generated-builtin-declarations-location>: the path to the location for generated builtin declarations.");
-			System.exit(-1);
-		}
+  /**
+   * @param args
+   * 
+   * @throws IOException
+   * @throws SIMPLTranslationException
+   * @throws CodeTranslationException
+   */
+  public static void main(String[] args) throws IOException, SIMPLTranslationException,
+      CodeTranslationException
+  {
+    if (args.length < 2 || args.length > 3)
+    {
+      error("args: <target-language> <generated-semantics-location> [<generated-builtin-declarations-location>]");
+      error("  - <target-language>: e.g. java or csharp (cs, c#).");
+      error("  - <generated-semantics-location>: the path to the location for generated semantics.");
+      error("  - <generated-builtin-declarations-location>: the path to the location for generated builtin declarations.");
+      System.exit(-1);
+    }
 
-		String lang = args[0].toLowerCase();
-		String semanticsLoc = args[1];
-		String builtinDeclarationsLoc = args.length == 3 ? args[2] : null;
+    String lang = args[0].toLowerCase();
+    String semanticsLoc = args[1];
+    String builtinDeclarationsLoc = args.length == 3 ? args[2] : null;
 
-		File generatedSemanticsLocation = new File(semanticsLoc);
-		File generatedBuiltinSemanticsLocation = builtinDeclarationsLoc == null ? null : new File(builtinDeclarationsLoc);
+    File generatedSemanticsLocation = new File(semanticsLoc);
+    File generatedBuiltinSemanticsLocation = builtinDeclarationsLoc == null ? null : new File(builtinDeclarationsLoc);
     CompilerConfig config = new CompilerConfig(lang, generatedSemanticsLocation, generatedBuiltinSemanticsLocation);
-		MetaMetadataCompiler compiler = new MetaMetadataCompiler();
-		compiler.compile(config);
-	}
+    MetaMetadataCompiler compiler = new MetaMetadataCompiler();
+    compiler.compile(config);
+  }
 
 }
