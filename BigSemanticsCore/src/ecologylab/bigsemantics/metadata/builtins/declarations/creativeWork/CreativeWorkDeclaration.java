@@ -5,7 +5,7 @@ package ecologylab.bigsemantics.metadata.builtins.declarations.creativeWork;
  *
  * DO NOT modify this code manually: All your changes may get lost!
  *
- * Copyright (2015) Interface Ecology Lab.
+ * Copyright (2016) Interface Ecology Lab.
  */
 
 import ecologylab.bigsemantics.metadata.builtins.MetadataBuiltinsTypesScope;
@@ -64,6 +64,10 @@ public class CreativeWorkDeclaration extends RichDocument
 	@simpl_scope("repository_documents")
 	@mm_name("citations")
 	private List<CreativeWork> citations;
+
+	@simpl_collection("rich_document")
+	@mm_name("keywords")
+	private List<RichDocument> keywords;
 
 	@simpl_composite
 	@mm_name("rich_media")
@@ -239,6 +243,36 @@ public class CreativeWorkDeclaration extends RichDocument
 	public void setCitations(List<CreativeWork> citations)
 	{
 		this.citations = citations;
+	}
+
+	public List<RichDocument> getKeywords()
+	{
+		return keywords;
+	}
+
+  // lazy evaluation:
+  public List<RichDocument> keywords()
+  {
+    if (keywords == null)
+      keywords = new ArrayList<RichDocument>();
+    return keywords;
+  }
+
+  // addTo:
+  public void addToKeywords(RichDocument element)
+  {
+    keywords().add(element);
+  }
+
+  // size:
+  public int keywordsSize()
+  {
+    return keywords == null ? 0 : keywords.size();
+  }
+
+	public void setKeywords(List<RichDocument> keywords)
+	{
+		this.keywords = keywords;
 	}
 
 	public RichDocument getRichMedia()
