@@ -6,7 +6,7 @@ import ecologylab.net.ParsedURL;
 import ecologylab.serialization.annotations.simpl_scalar;
 
 /**
- * 
+ *
  * @author quyin
  */
 public class SetParam implements FieldOp
@@ -50,6 +50,7 @@ public class SetParam implements FieldOp
           ? ((ParsedURL) rawValue)
           : ParsedURL.getAbsolute(rawValue.toString());
       HashMap<String, String> params = purl.extractParams(true);
+      if (params == null) params = new HashMap<String, String>();
       if (!onlyWhenNotSet || !params.containsKey(name))
       {
         params.put(name, value);
