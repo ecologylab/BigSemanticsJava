@@ -40,6 +40,9 @@ public class MetaMetadataSelectorParam implements IMappable<String>
   @simpl_scalar
   private boolean allowEmptyValue;
 
+  @simpl_scalar
+  private boolean mustNotValued;
+
   public MetaMetadataSelectorParam()
   {
     this(null);
@@ -106,6 +109,16 @@ public class MetaMetadataSelectorParam implements IMappable<String>
   public void setAllowEmptyValue(boolean allowEmptyValue)
   {
     this.allowEmptyValue = allowEmptyValue;
+  }
+
+  public boolean isMustNotValued()
+  {
+    return mustNotValued;
+  }
+
+  public void setMustNotValued(boolean mustNotValued)
+  {
+    this.mustNotValued = mustNotValued;
   }
 
   @Override

@@ -2,6 +2,7 @@ package ecologylab.bigsemantics.metametadata;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -80,8 +81,8 @@ class MetaMetadataSelector extends ElementState implements IMappable<String>
 	private HashMapArrayList<String, MetaMetadataSelectorReselectField> reselectFields;
 	
 	@simpl_nowrap
-	@simpl_map("param")
-	private HashMapArrayList<String, MetaMetadataSelectorParam>         params;
+	@simpl_collection("param")
+	private ArrayList<MetaMetadataSelectorParam>         params;
 	
 	public MetaMetadataSelector()
 	{
@@ -225,7 +226,7 @@ class MetaMetadataSelector extends ElementState implements IMappable<String>
 		return true;
 	}
 	
-	public Map<String, MetaMetadataSelectorParam> getParams()
+	public List<MetaMetadataSelectorParam> getParams()
 	{
 	  return params;
 	}
@@ -233,8 +234,8 @@ class MetaMetadataSelector extends ElementState implements IMappable<String>
 	void addParam(MetaMetadataSelectorParam param)
 	{
 	  if (params == null)
-	    params = new HashMapArrayList<String, MetaMetadataSelectorParam>();
-	  params.put(param.getName(), param);
+	    params = new ArrayList<MetaMetadataSelectorParam>();
+	  params.add(param);
 	}
 	
 	public boolean checkForParams(final ParsedURL purl)
